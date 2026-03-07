@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
+        "baseUrl": "/.",
 
         "target": "es2022",
         "module": "nodenext",

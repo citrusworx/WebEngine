@@ -1,4 +1,4 @@
-import { Blueprint, Project } from "@citrusworx/types";
+import { Blueprint} from "@citrusworx/types";
 import { Environment } from "@citrusworx/types/environment/environment.js";
 import {DeploymentManifest} from "@citrusworx/types/deployment/deployment-manifest.js"
 
