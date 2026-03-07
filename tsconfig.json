@@ -1,0 +1,7 @@
+{
+    "files": [],
+    "references": [
+        {"path": "./libraries/types"},
+        {"path": "./engines/webengine"}
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "@citrusworx/webengine",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "yarn tsc"
+    },
+    "dependencies": {
+        "@citrusworx/types": "workspace:*"
+    },
+    "devDependencies": {
+        "typescript": "^5.9.3"
+    }
+}
