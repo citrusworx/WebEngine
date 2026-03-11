@@ -1,0 +1,18 @@
+blueprint:
+    name: "create-single-droplet"
+    droplet:
+        name: ""
+        region: ""
+        size: ""
+        image: ""
+        ssh_keys: []
+        backups: true
+        backup_policy:
+            name: ""
+        ipv6: false
+        monitoring: true
+        tags: []
+        user_data: ""
+        volumes: []
+        vpc_uuid: ""
+        with_droplet_agent: false

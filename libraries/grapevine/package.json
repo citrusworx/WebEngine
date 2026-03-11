@@ -1,0 +1,24 @@
+{
+    "name": "@citrusworx/grapevine",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc -b",
+        "dev": "tsc -w"
+    },
+    "dependencies": {
+        "@citrusworx/types": "workspace:*",
+        "axios": "^1.13.6",
+        "js-yaml": "^4.1.1",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@types/js-yaml": "^4",
+        "ts-node": "^10.9.2"
+    }
+}

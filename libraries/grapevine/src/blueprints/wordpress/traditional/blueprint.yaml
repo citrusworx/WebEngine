@@ -1,0 +1,26 @@
+blueprint:
+  name: wordpress
+  version: "0.1"
+
+runtime:
+  language: php
+  version: "8.3"
+
+services:
+  database:
+    engine: mariadb
+    version: 11
+  cache:
+    engine: redis
+    version: 7
+
+network:
+  cdn: enabled
+
+storage:
+  type: object
+  provider: citrode-object
+
+operations:
+  backups:
+    schedule: daily
