@@ -1,0 +1,17 @@
+{
+    "name": "@citrusworx/nectarine",
+    "version": "0.0.1",
+    "main": "dist/index.js",
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/js-yaml": "^4.0.9",
+        "@types/node": "^25.5.0",
+        "@types/pg": "^8.18.0",
+        "eslint": "^10.0.3",
+        "express": "^5.2.1",
+        "js-yaml": "^4.1.1",
+        "mongodb": "^7.1.0",
+        "pg": "^8.20.0",
+        "ts-node": "^10.9.2"
+    }
+}

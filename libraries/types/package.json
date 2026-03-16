@@ -2,21 +2,20 @@
   "name": "@citrusworx/types",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./environment/environment.js": {
+      "types": "./dist/environment/environment.d.ts",
+      "default": "./dist/environment/environment.js"
+    },
+    "./deployment/deployment-manifest.js": {
+      "types": "./dist/deployment/deployment-manifest.d.ts",
+      "default": "./dist/deployment/deployment-manifest.js"
     }
-  },
-  "scripts": {
-    "build": "tsc"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.3"
   }
 }

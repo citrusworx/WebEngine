@@ -1,0 +1,114 @@
+user:
+  get:
+    userByAge:
+      type: SELECT
+      fields:
+        - id
+        - name
+      action: FROM
+      table: users
+      conditions:
+        condition: 'WHERE'
+        column: age
+        operator: '>'
+        value: $1
+
+    AllUsers:
+      type: SELECT
+      table: users
+      action: FROM
+      fields: '*'
+
+    UserById:
+      type: SELECT
+      table: users
+      fields:
+          id
+      conditions:
+          condition: 'WHERE'
+          column: id
+          operator: '='
+          value: $1
+
+    UsersByEmail:
+      type: SELECT
+      action: FROM
+      table: users
+      fields:
+        email
+      conditions:
+        condition: 'WHERE'
+        column: email
+        operator: '='
+        value: $1
+
+    userLogin:
+      type: SELECT
+      action: FROM
+      fields:
+        - id
+        - name
+        - password
+      table: users
+      conditions:
+        condition: 'WHERE'
+        column: email
+        operator: '='
+        value: $1
+
+  update:
+    userById:
+        type: UPDATE
+        table: users
+        updates:
+          column: name, age
+          value: $1, $2
+        conditions:
+          condition: 'WHERE'
+          column: id
+          operator: '='
+          value: $3
+    userPassword:
+      type: UPDATE
+      table: users
+      action: SET
+      fields:
+        - password
+        - updated_at
+      conditions:
+        condition: 'WHERE'
+        operator: '='
+        column: email
+        values:
+          - $1
+          - $2
+          - NOW()
+
+
+  create:
+    newUser:
+      type: INSERT
+      action: INTO
+      table: users
+      values: VALUES
+      updates:
+        column:
+          - email
+          - password
+          - name
+          - created_at
+        values:
+          - $1
+          - $2
+          - $3
+          - NOW()
+  delete:
+    user:
+      type: DELETE
+      action: FROM
+      table: users
+      conditions:
+        condition: 'WHERE'
+        column: id
+        operator: '='
+        value: $1

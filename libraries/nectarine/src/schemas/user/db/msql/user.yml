@@ -1,0 +1,58 @@
+user:
+  ##############
+  ### CREATE ###
+  #    Crud    #
+  ##############
+  create:
+      new:
+        type: INSERT
+        action: INTO
+        table: users
+        values: VALUES
+        updates:
+          column:
+            - email
+            - password
+            - name
+            - created_at
+          values:
+            - ?
+            - ?
+            - ?
+            - NOW()
+  ##############
+  ### UPDATE ###
+  #    cRud    #
+  ##############
+  get:
+    user:
+      type: SELECT
+      action: FROM
+      table: users
+      clause: WHERE
+      statement:
+        column:
+          - email
+        operator: =
+        values:
+          - ?
+
+  ##############
+  ### UPDATE ###
+  #    crUd    #
+  ##############
+  update:
+
+  ##############################
+  ############ DELETE ##########
+  ############  cruD  ##########  
+  ##############################
+  delete:
+      user:
+        type:
+        action:
+        table:
+        values:
+        updates:
+          column:
+          values:

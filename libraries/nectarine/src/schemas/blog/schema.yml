@@ -1,0 +1,29 @@
+User:
+  table: users
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: string UNIQUE NOT NULL
+    email: string UNIQUE NOT NULL
+    password: string NOT NULL
+    created_at: timestamp DEAFULT NOW()
+    role: enum(admin, author, user) DEFAULT 'user'
+    
+Post:
+  table: posts
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    title: string NOT NULL
+    content: text NOT NULL
+    author_id: int FOREIGN KEY REFERENCES users(id)
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+
+Comment:
+  table: comments
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    post_id: int FOREIGN KEY REFERENCES posts(id)
+    user_id: int FOREIGN KEY REFERENCES users(id)
+    content: text NOT NULL
+    created_at: timestamp DEFAULT NOW()
+

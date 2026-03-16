@@ -1,0 +1,9 @@
+user:
+  default:
+    name: string
+    password: string
+    email: string
+    username: string
+  profile:
+    bio: string
+    location: string

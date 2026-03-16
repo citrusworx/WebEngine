@@ -27,7 +27,7 @@ export async function createVPC(blueprint: VPCBlueprint){
 
     return response.data.vpc;
 }
-
+ 
 export async function deleteVPC(id: string){
     await client.delete(`/vpcs/${id}`);
 }

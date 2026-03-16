@@ -1,0 +1,5 @@
+{
+    "name": "@citrusworx/sigjs",
+    "version": "0.0.1",
+    "main": "dist/index.js"
+}
