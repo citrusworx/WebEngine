@@ -2,6 +2,10 @@
     "files": [],
     "references": [
         {"path": "./libraries/types"},
+        {"path": "./libraries/grapevine"},
+        {"path": "./libraries/nectarine"},
+        {"path": "./libraries/juice"},
+        {"path": "./libraries/sig"},
         {"path": "./engines/webengine"}
     ]
 }

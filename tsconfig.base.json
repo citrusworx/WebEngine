@@ -1,19 +1,34 @@
 {
     "compilerOptions": {
-        "baseUrl": "/.",
+        "baseUrl": ".",
 
         "target": "es2022",
         "module": "nodenext",
         "moduleResolution": "nodenext",
+
         "strict": true,
         "declaration": true,
         "sourceMap": true,
+
         "esModuleInterop": true,
         "skipLibCheck": true,
         "resolveJsonModule": true,
+        "moduleDetection": "force",
+
+        "types": ["node"],
+
         "paths": {
             "@citrusworx/types": ["libraries/types/src"],
-            "@citrusworx/types/*": ["libraries/types/src/*"]
-        }
+            "@citrusworx/types/*": ["libraries/types/src/*"],
+
+            "@citrusworx/grapevine": ["libraries/grapevine/src"],
+            "@citrusworx/grapevine/*": ["libraries/grapevine/src/*"],
+
+            "@citrusworx/nectarine": ["libraries/nectarine/src"],
+            "@citrusworx/nectarine/*": ["libraries/nectarine/src/*"],
+
+            "@citrusworx/sig": ["libraries/sig/src"],
+            "@citrusworx/sig/*": ["libraries/sig/src/*"]
+            }
     }
 }

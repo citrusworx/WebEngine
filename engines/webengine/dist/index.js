@@ -1,21 +1,13 @@
-import { Blueprint} from "@citrusworx/types";
-import { Environment } from "@citrusworx/types";
-import {DeploymentManifest} from "@citrusworx/types"
-
 export class WebEngine {
-        private currentBlueprint?: Blueprint;
-        private manifest: DeploymentManifest | null = null;
-
-
-    constructor(){
+    currentBlueprint;
+    manifest = null;
+    constructor() {
         console.log("WebEngine initialized");
     }
-
-    start(){
+    start() {
         console.log("WebEngine runtime started");
     }
-
-    loadBlueprint(blueprint: Blueprint, custom?: string){
+    loadBlueprint(blueprint, custom) {
         // 1. Check blueprint name
         // 2. Verify Blueprint exists
         // 3. Parse Blueprint Config
@@ -23,62 +15,49 @@ export class WebEngine {
         // 5. Insert Deploy Manifest (via GrapeVine)
         // 6. Deploy Blueprint into Application
         // ? How do we integrate blueprint without crashing or reducing usability?
-        
-        this.validateBlueprint(blueprint)
+        this.validateBlueprint(blueprint);
         this.currentBlueprint = blueprint;
-
         console.log(`Blueprint loaded: ${blueprint.name}`);
     }
-
-    resolveModules(){
-        if(!this.currentBlueprint){
+    resolveModules() {
+        if (!this.currentBlueprint) {
             throw new Error("No blueprint loaded");
         }
-
-        console.log("Resolving modules...")
-
-        for(const module of this.currentBlueprint.modules){
-            console.log(`Loading module: ${module}`)
+        console.log("Resolving modules...");
+        for (const module of this.currentBlueprint.modules) {
+            console.log(`Loading module: ${module}`);
         }
     }
-
-    deploy(env: Environment){
-        if(!this.currentBlueprint){
+    deploy(env) {
+        if (!this.currentBlueprint) {
             throw new Error("Cannot deploy without a blueprint");
         }
-        console.log(`Deploying ${this.currentBlueprint.name} to ${env}`)
+        console.log(`Deploying ${this.currentBlueprint.name} to ${env}`);
     }
-
-    private validateBlueprint(blueprint: Blueprint){
-        if(!blueprint.modules || blueprint.modules.length === 0){
+    validateBlueprint(blueprint) {
+        if (!blueprint.modules || blueprint.modules.length === 0) {
             throw new Error("Blueprint must include modules");
         }
     }
-
-    private buildManifest(id: string, createdAt: Date, projectId: string, env: Environment, blueprintName: Blueprint){
+    buildManifest(id, createdAt, projectId, env, blueprintName) {
         // 1. Parse manifest
         // ? What other steps are required to build the Deployment Manifest?
-        const manifest: DeploymentManifest = {
+        const manifest = {
             id,
             createdAt,
             projectId,
             blueprint: blueprintName,
             environment: env,
-
             services: ["service"],
-
-            modules: this.currentBlueprint!.modules,
-
+            modules: this.currentBlueprint.modules,
             adapters: this.currentBlueprint?.adapters,
-
             infrastructure: {
                 server: true,
                 database: true
             }
-        }
-
+        };
         this.manifest = manifest;
-
         return manifest;
     }
 }
+//# sourceMappingURL=index.js.map
