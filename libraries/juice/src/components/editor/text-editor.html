@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/juice.css">
+    <title>Text Editor Tool Bar</title>
+</head>
+<body class="grad--grape[to-bot]">
+    <section class="pb:rel:10 mt:10 w:80% m:auto">
+        <h3 class="text:xxlg tc-white-100">WYSIWYG Editor</h3>
+        <div data-jc-toolbar="file" class="bgc-white-300 py:rel:2 h:3">
+            <div id="file-bar" class="flex gap-1 mx:2">
+                <div data-jc-file-button="file"><p>File</p></div>
+                <div data-jc-file-button="edit"><p>Edit</p></div>
+                <div data-jc-file-button="add"><p>Add</p></div>
+            </div>
+        </div>
+            <div class="flex items-center justify-around bgc-white-500 py:rel:3" data-jc-toolbar="toolbar" id="toolbar">
+                <div class="flex items-center justify-center gap[10px]">
+                    <i class="fas-solid addressbook icon:md icon:black-100 :hover-black-300"></i><span>Create Contact</span>
+                </div>
+                <div>
+                    |
+                </div>
+                <div>
+                    <form action="" class="flex gap[10px] items:center justify-center">
+                        <h3>Text Style: </h3>
+                        <select name="font-styles" id="font-styles" title="Font Styles">
+                            <option value="paragraph">Paragraph</option>
+                            <option value="paragraph">Subheading</option>
+                            <option value="paragraph">Heading</option>
+                            <option value="paragraph">Code</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <form action="" class="">
+                        <label for="font-color"><i class="fas-solid paint-roller icon:sm icon:black-100"></i>  Font Color</label>
+                        <input type="color" name="font-color" id="font-color">
+                    </form>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <form action="" class="">
+                        <label for="font-color"><i class="fas-solid paintbrush icon:sm icon:black-100"></i>  Highlight</label>
+                        <input type="color" name="font-color" id="font-color">
+                    </form>
+                </div>
+                <div>
+                    |
+                </div>
+                <div class="flex col items-center justify-center" id="boldButton">
+                    <i class="fas-solid bold icon:sm icon:black-100 :hover-black-300" id="boldIcon"></i><span id="boldText">Bold</span>
+                </div>
+                <div class="flex col items-center justify-center" id="italicButton">
+                    <i class="fas-solid italic icon:sm icon:black-100 :hover-black-300" id="italicIcon"></i><span id="italicText">Italic</span>
+                </div>
+                <div class="flex col items-center justify-center" id="underlineButton">
+                    <i class="fas-solid underline icon:sm icon:black-100 :hover-black-300" id="underlineIcon"></i><span id="underlineText">Underline</span>
+                </div>
+                <div class="flex col items-center justify-center" id="justLeftButton">
+                    <i class="fas-solid align-left icon:sm icon:black-100 :hover-black-300" id="justLeftIcon"></i><span id="justLeftText">Left</span>
+                </div>
+                <div class="flex col items-center justify-center" id="justCenterButton">
+                    <i class="fas-solid align-center icon:sm icon:black-100 :hover-black-300" id="justCenterIcon"></i><span id="justCenterText">Center</span>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <i class="fas-solid align-right icon:sm icon:black-100 :hover-black-300"></i><span>Right</span>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <i class="fas-solid link icon:sm icon:black-100 :hover-black-300"></i><span>Hyperlink</span>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <i class="fas-solid list icon:sm icon:black-100 :hover-black-300"></i><span>List</span>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <i class="fas-solid clone icon:sm icon:black-100 :hover-black-300"></i><span>Copy</span>
+                </div>
+                <div class="flex col items-center justify-center">
+                    <i class="fas-solid paste icon:sm icon:black-100 :hover-black-300"></i><span>Paste</span>
+                </div>
+                <div>
+                    |
+                </div>
+                <div class="flex col items-center justify-center">
+                    <i class="fas-solid table icon:sm icon:black-100 :hover-black-300"></i><span>Table</span>
+                </div>
+            </div>
+            <div class="w:full% h:half bgc-white-100 lato ::focus ds:sm" contenteditable="" id="text-editor" data-jc-editor="default" spellcheck="true"></div>
+    </section>
+    <script src="./juiceditor.js"></script>
+</body>
+</html>

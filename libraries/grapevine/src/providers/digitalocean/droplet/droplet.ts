@@ -25,7 +25,7 @@ export interface DropletBlueprint {
     }
 }
 
-interface DropletResource {
+export interface DropletResource {
     id: number;
     name: string;
     memory: number;

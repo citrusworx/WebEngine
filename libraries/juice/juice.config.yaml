@@ -1,0 +1,56 @@
+version: "0.1"
+type: scss # css | scss | external
+endpoints:
+  vanilla: ""
+  react: ""
+  templates: ""
+entry: "juice.scss"
+
+# colors
+colors:
+  black:
+    base: true
+    swatches:
+      - Obsidian
+      - Onyx
+  blue:
+    base: true
+    swatches:
+      - Cornflower
+      - Electric
+  custom:
+    name: ""
+    definition: "something.yml"
+
+typography:
+  fonts:
+    primary:
+      family: "Korolev"
+      weights: [400, 600, 700]
+      source: adobe
+      url: ""
+    secondary:
+      family: "Korolev"
+      weights: [400, 600, 700]
+      source: adobe
+      url: ""
+    tertiary:
+      family: "Korolev"
+      weights: [400, 600, 700]
+      source: adobe
+      url: ""
+
+
+
+# Experimental
+mode:
+  layout: juice
+  tailwind:
+    use: false
+    config:
+      entry: ""
+
+  bootstrap:
+    use: false
+    config:
+      entry: ""

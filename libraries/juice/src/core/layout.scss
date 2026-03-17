@@ -1,0 +1,28 @@
+$spacing--sm: 0.5rem;
+$spacing--md: 1rem;
+$spacing--lg: 1.5rem;
+
+[stack]{
+    display: flex;
+    flex-direction: column;
+}
+
+[stack][reverse]{
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+[row]{
+    display: flex;
+    flex-direction: row;
+}
+
+[grid]{
+    display: grid;
+}
+
+// Setup Grid Cols and Rows system 
+
+[float="left"]{
+    float: left;
+}

@@ -1,5 +1,27 @@
 {
-    "name": "@citrusworx/sigjs",
-    "version": "0.0.1",
-    "main": "dist/index.js"
+  "name": "@citrusworx/sigjs",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "import": "./dist/jsx-dev-runtime.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }
