@@ -84,4 +84,6 @@ export function effect(fn: Subscriber){
     currentSubscriber = fn;
     fn();
     currentSubscriber = null;
+
+    return () => {}
 }

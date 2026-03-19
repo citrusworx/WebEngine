@@ -1,0 +1,37 @@
+@use "../../../../../../tokens/color/black/swatch/obsidian/obsidian.scss" as *;
+
+[bgColor="obsidian-100"]{
+    background-color: $obsidian-100;
+}
+
+[bgColor="obsidian-200"]{
+    background-color: $obsidian-200;
+}
+
+[bgColor="obsidian-300"]{
+    background-color: $obsidian-300;
+}
+
+[bgColor="obsidian-400"]{
+    background-color: $obsidian-400;
+}
+
+[bgColor="obsidian-500"]{
+    background-color: $obsidian-500;
+}
+
+[bgColor="obsidian-600"]{
+    background-color: $obsidian-600;
+}
+
+[bgColor="obsidian-700"]{
+    background-color: $obsidian-700;
+}
+
+[bgColor="obsidian-800"]{
+    background-color: $obsidian-800;
+}
+
+[bgColor="obsidian-900"]{
+    background-color: $obsidian-900;
+}

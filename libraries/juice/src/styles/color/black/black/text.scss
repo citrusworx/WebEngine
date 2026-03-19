@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/black/black.scss" as *;
+
+[fontColor="black-100"]{
+    color: $black-100;
+}
+
+[fontColor="black-200"]{
+    color: $black-200;
+}
+
+[fontColor="black-300"]{
+    color: $black-300;
+}
+
+[fontColor="black-400"]{
+    color: $black-500;
+}
+
+[fontColor="black-500"]{
+    color: $black-600;
+}
+
+[fontColor="black-700"]{
+    color: $black-700;
+}
+
+[fontColor="black-800"]{
+    color: $black-800;
+}
+
+[fontColor="black-900"]{
+    color: $black-900;
+}

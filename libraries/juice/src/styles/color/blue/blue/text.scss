@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/blue/blue.scss" as *;
+
+[fontColor="blue-100"]{
+    color: $blue-100;
+}
+
+[fontColor="blue-200"]{
+    color: $blue-200;
+}
+
+[fontColor="blue-300"]{
+    color: $blue-300;
+}
+
+[fontColor="blue-400"]{
+    color: $blue-500;
+}
+
+[fontColor="blue-500"]{
+    color: $blue-600;
+}
+
+[fontColor="blue-700"]{
+    color: $blue-700;
+}
+
+[fontColor="blue-800"]{
+    color: $blue-800;
+}
+
+[fontColor="blue-900"]{
+    color: $blue-900;
+}

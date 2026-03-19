@@ -1,0 +1,94 @@
+@use "../../../../../../tokens/color/black/swatch/obsidian/obsidian.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="obsidian-100"]:hover {
+    background-color: $obsidian-100;
+    border-color: $obsidian-100;
+}
+
+[hover="obsidian-200"]:hover {
+    background-color: $obsidian-200;
+    border-color: $obsidian-200;
+}
+
+[hover="obsidian-300"]:hover {
+    background-color: $obsidian-300;
+    border-color: $obsidian-300;
+}
+
+[hover="obsidian-400"]:hover {
+    background-color: $obsidian-400;
+    border-color: $obsidian-400;
+}
+
+[hover="obsidian-500"]:hover {
+    background-color: $obsidian-500;
+    border-color: $obsidian-500;
+}
+
+[hover="obsidian-600"]:hover {
+    background-color: $obsidian-600;
+    border-color: $obsidian-600;
+}
+
+[hover="obsidian-700"]:hover {
+    background-color: $obsidian-700;
+    border-color: $obsidian-700;
+}
+
+[hover="obsidian-800"]:hover {
+    background-color: $obsidian-800;
+    border-color: $obsidian-800;
+}
+
+[hover="obsidian-900"]:hover {
+    background-color: $obsidian-900;
+    border-color: $obsidian-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="obsidian-100"][outline]:hover {
+    color: $obsidian-100;
+    border-color: $obsidian-100;
+}
+
+[hover="obsidian-200"][outline]:hover {
+    color: $obsidian-200;
+    border-color: $obsidian-200;
+}
+
+[hover="obsidian-300"][outline]:hover {
+    color: $obsidian-300;
+    border-color: $obsidian-300;
+}
+
+[hover="obsidian-400"][outline]:hover {
+    color: $obsidian-400;
+    border-color: $obsidian-400;
+}
+
+[hover="obsidian-500"][outline]:hover {
+    color: $obsidian-500;
+    border-color: $obsidian-500;
+}
+
+[hover="obsidian-600"][outline]:hover {
+    color: $obsidian-600;
+    border-color: $obsidian-600;
+}
+
+[hover="obsidian-700"][outline]:hover {
+    color: $obsidian-700;
+    border-color: $obsidian-700;
+}
+
+[hover="obsidian-800"][outline]:hover {
+    color: $obsidian-800;
+    border-color: $obsidian-800;
+}
+
+[hover="obsidian-900"][outline]:hover {
+    color: $obsidian-900;
+    border-color: $obsidian-900;
+}

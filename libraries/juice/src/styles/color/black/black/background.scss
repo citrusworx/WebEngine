@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/black/black.scss" as *;
+
+[bgColor="black-100"]{
+    background-color: $black-100;
+}
+
+[bgColor="black-200"]{
+    background-color: $black-200;
+}
+
+[bgColor="black-300"]{
+    background-color: $black-300;
+}
+
+[bgColor="black-400"]{
+    background-color: $black-400;
+}
+
+[bgColor="black-500"]{
+    background-color: $black-500;
+}
+
+[bgColor="black-600"]{
+    background-color: $black-600;
+}
+
+[bgColor="black-700"]{
+    background-color: $black-700;
+}
+
+[bgColor="black-800"]{
+    background-color: $black-800;
+}
+
+[bgColor="black-900"]{
+    background-color: $black-900;
+}

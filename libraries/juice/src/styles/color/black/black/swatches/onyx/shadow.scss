@@ -1,0 +1,38 @@
+@use "../../../../../../tokens/color/black/swatch/onyx/onyx.scss" as *;
+
+// Default Shadow
+[shadow="onyx-100"]{
+    box-shadow: 0 0 0 $onyx-100;
+}
+
+[shadow="onyx-200"]{
+    box-shadow: 0 0 0 $onyx-200;
+}
+
+[shadow="onyx-300"]{
+    box-shadow: 0 0 0 $onyx-300;
+}
+
+[shadow="onyx-400"]{
+    box-shadow: 0 0 0 $onyx-400;
+}
+
+[shadow="onyx-500"]{
+    box-shadow: 0 0 0 $onyx-500;
+}
+
+[shadow="onyx-600"]{
+    box-shadow: 0 0 0 $onyx-600;
+}
+
+[shadow="onyx-700"]{
+    box-shadow: 0 0 0 $onyx-700;
+}
+
+[shadow="onyx-800"]{
+    box-shadow: 0 0 0 $onyx-100;
+}
+
+[shadow="onyx-900"]{
+    box-shadow: 0 0 0 $onyx-100;
+}

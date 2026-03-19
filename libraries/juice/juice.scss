@@ -1,5 +1,8 @@
 @use './src/core/reset';
 @use './src/core/typography';
-@use './src/core/layout';
+@use './src/core/layout/layout.scss';
 @use './src/core/mixins';
 @use './src/core/utilities';
+@use './src/tokens/color/blue/blue.scss';
+@use './src/tokens/fonts/google.scss';
+@use './src/styles/styles.scss';

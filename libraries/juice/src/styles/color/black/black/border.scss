@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/black/black.scss" as *;
+
+[borderColor="black-100"]{
+    border-color: $black-100;
+}
+
+[borderColor="black-200"]{
+    border-color: $black-200;
+}
+
+[borderColor="black-300"]{
+    border-color: $black-300;
+}
+
+[borderColor="black-400"]{
+    border-color: $black-400;
+}
+
+[borderColor="black-500"]{
+    border-color: $black-500;
+}
+
+[borderColor="black-600"]{
+    border-color: $black-600;
+}
+
+[borderColor="black-700"]{
+    border-color: $black-700;
+}
+
+[borderColor="black-800"]{
+    border-color: $black-800;
+}
+
+[borderColor="black-900"]{
+    border-color: $black-900;
+}
