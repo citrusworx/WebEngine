@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/blue/blue.scss" as *;
+
+[bgColor="blue-100"]{
+    background-color: $blue-100;
+}
+
+[bgColor="blue-200"]{
+    background-color: $blue-200;
+}
+
+[bgColor="blue-300"]{
+    background-color: $blue-300;
+}
+
+[bgColor="blue-400"]{
+    background-color: $blue-400;
+}
+
+[bgColor="blue-500"]{
+    background-color: $blue-500;
+}
+
+[bgColor="blue-600"]{
+    background-color: $blue-600;
+}
+
+[bgColor="blue-700"]{
+    background-color: $blue-700;
+}
+
+[bgColor="blue-800"]{
+    background-color: $blue-800;
+}
+
+[bgColor="blue-900"]{
+    background-color: $blue-900;
+}

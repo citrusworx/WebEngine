@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/blue/blue.scss" as *;
+
+[borderColor="blue-100"]{
+    border-color: $blue-100;
+}
+
+[borderColor="blue-200"]{
+    border-color: $blue-200;
+}
+
+[borderColor="blue-300"]{
+    border-color: $blue-300;
+}
+
+[borderColor="blue-400"]{
+    border-color: $blue-400;
+}
+
+[borderColor="blue-500"]{
+    border-color: $blue-500;
+}
+
+[borderColor="blue-600"]{
+    border-color: $blue-600;
+}
+
+[borderColor="blue-700"]{
+    border-color: $blue-700;
+}
+
+[borderColor="blue-800"]{
+    border-color: $blue-800;
+}
+
+[borderColor="blue-900"]{
+    border-color: $blue-900;
+}

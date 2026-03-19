@@ -1,0 +1,37 @@
+@use "../../../../../../tokens/color/black/swatch/obsidian/obsidian.scss" as *;
+
+[shadow="obsidian-100"]{
+    box-shadow: 0 0 0 $obsidian-100;
+}
+
+[shadow="obsidian-200"]{
+    box-shadow: 0 0 0 $obsidian-200;
+}
+
+[shadow="obsidian-300"]{
+    box-shadow: 0 0 0 $obsidian-300;
+}
+
+[shadow="obsidian-400"]{
+    box-shadow: 0 0 0 $obsidian-400;
+}
+
+[shadow="obsidian-500"]{
+    box-shadow: 0 0 0 $obsidian-500;
+}
+
+[shadow="obsidian-600"]{
+    box-shadow: 0 0 0 $obsidian-600;
+}
+
+[shadow="obsidian-700"]{
+    box-shadow: 0 0 0 $obsidian-700;
+}
+
+[shadow="obsidian-800"]{
+    box-shadow: 0 0 0 $obsidian-100;
+}
+
+[shadow="obsidian-900"]{
+    box-shadow: 0 0 0 $obsidian-100;
+}

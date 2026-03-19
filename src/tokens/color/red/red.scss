@@ -1,0 +1,17 @@
+@forward './swatch/brickred/brickred.scss';
+@forward './swatch/burgundy/burgundy.scss';
+@forward './swatch/candyapple/candyapple.scss';
+@forward './swatch/cherryred/cherryred.scss';
+@forward './swatch/crimson/crimson.scss';
+@forward './swatch/maroon/maroon.scss';
+@forward './swatch/scarlett/scarlett.scss';
+
+$red-100: hsl(0, 100%, 95%);
+$red-200: hsl(0, 100%, 90%);
+$red-300: hsl(0, 100%, 85%);
+$red-400: hsl(0, 100%, 80%);
+$red-500: hsl(0, 100%, 75%);
+$red-600: hsl(0, 100%, 70%);
+$red-700: hsl(0, 100%, 65%);
+$red-800: hsl(0, 100%, 60%);
+$red-900: hsl(0, 100%, 55%);
