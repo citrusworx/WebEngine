@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/orange/swatch/peach/peach.scss" as *;
+
+[fontColor="peach-100"]{
+    color: $peach-100;
+}
+
+[fontColor="peach-200"]{
+    color: $peach-200;
+}
+
+[fontColor="peach-300"]{
+    color: $peach-300;
+}
+
+[fontColor="peach-400"]{
+    color: $peach-500;
+}
+
+[fontColor="peach-500"]{
+    color: $peach-600;
+}
+
+[fontColor="peach-700"]{
+    color: $peach-700;
+}
+
+[fontColor="peach-800"]{
+    color: $peach-800;
+}
+
+[fontColor="peach-900"]{
+    color: $peach-900;
+}

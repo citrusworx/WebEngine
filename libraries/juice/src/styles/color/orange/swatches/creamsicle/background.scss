@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/orange/swatch/creamsicle/creamsicle.scss" as *;
+
+[bgColor="creamsicle-100"]{
+    background-color: $creamsicle-100;
+}
+
+[bgColor="creamsicle-200"]{
+    background-color: $creamsicle-200;
+}
+
+[bgColor="creamsicle-300"]{
+    background-color: $creamsicle-300;
+}
+
+[bgColor="creamsicle-400"]{
+    background-color: $creamsicle-400;
+}
+
+[bgColor="creamsicle-500"]{
+    background-color: $creamsicle-500;
+}
+
+[bgColor="creamsicle-600"]{
+    background-color: $creamsicle-600;
+}
+
+[bgColor="creamsicle-700"]{
+    background-color: $creamsicle-700;
+}
+
+[bgColor="creamsicle-800"]{
+    background-color: $creamsicle-800;
+}
+
+[bgColor="creamsicle-900"]{
+    background-color: $creamsicle-900;
+}

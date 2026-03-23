@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/yellow/yellow.scss" as *;
+
+[bgColor="yellow-100"]{
+    background-color: $yellow-100;
+}
+
+[bgColor="yellow-200"]{
+    background-color: $yellow-200;
+}
+
+[bgColor="yellow-300"]{
+    background-color: $yellow-300;
+}
+
+[bgColor="yellow-400"]{
+    background-color: $yellow-400;
+}
+
+[bgColor="yellow-500"]{
+    background-color: $yellow-500;
+}
+
+[bgColor="yellow-600"]{
+    background-color: $yellow-600;
+}
+
+[bgColor="yellow-700"]{
+    background-color: $yellow-700;
+}
+
+[bgColor="yellow-800"]{
+    background-color: $yellow-800;
+}
+
+[bgColor="yellow-900"]{
+    background-color: $yellow-900;
+}

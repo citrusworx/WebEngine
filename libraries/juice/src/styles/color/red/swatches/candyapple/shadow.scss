@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/candyapple/candyapple.scss" as *;
+
+[shadow="candyapple-100"]{
+    box-shadow: 0 0 0 $candyapple-100;
+}
+
+[shadow="candyapple-200"]{
+    box-shadow: 0 0 0 $candyapple-200;
+}
+
+[shadow="candyapple-300"]{
+    box-shadow: 0 0 0 $candyapple-300;
+}
+
+[shadow="candyapple-400"]{
+    box-shadow: 0 0 0 $candyapple-400;
+}
+
+[shadow="candyapple-500"]{
+    box-shadow: 0 0 0 $candyapple-500;
+}
+
+[shadow="candyapple-600"]{
+    box-shadow: 0 0 0 $candyapple-600;
+}
+
+[shadow="candyapple-700"]{
+    box-shadow: 0 0 0 $candyapple-700;
+}
+
+[shadow="candyapple-800"]{
+    box-shadow: 0 0 0 $candyapple-100;
+}
+
+[shadow="candyapple-900"]{
+    box-shadow: 0 0 0 $candyapple-100;
+}

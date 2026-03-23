@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/burgundy/burgundy.scss" as *;
+
+[bgColor="burgundy-100"]{
+    background-color: $burgundy-100;
+}
+
+[bgColor="burgundy-200"]{
+    background-color: $burgundy-200;
+}
+
+[bgColor="burgundy-300"]{
+    background-color: $burgundy-300;
+}
+
+[bgColor="burgundy-400"]{
+    background-color: $burgundy-400;
+}
+
+[bgColor="burgundy-500"]{
+    background-color: $burgundy-500;
+}
+
+[bgColor="burgundy-600"]{
+    background-color: $burgundy-600;
+}
+
+[bgColor="burgundy-700"]{
+    background-color: $burgundy-700;
+}
+
+[bgColor="burgundy-800"]{
+    background-color: $burgundy-800;
+}
+
+[bgColor="burgundy-900"]{
+    background-color: $burgundy-900;
+}

@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/yellow/swatch/dandelion/dandelion.scss" as *;
+[borderColor="dandelion-100"]{
+    border-color: $dandelion-100;
+}
+
+[borderColor="dandelion-200"]{
+    border-color: $dandelion-200;
+}
+
+[borderColor="dandelion-300"]{
+    border-color: $dandelion-300;
+}
+
+[borderColor="dandelion-400"]{
+    border-color: $dandelion-400;
+}
+
+[borderColor="dandelion-500"]{
+    border-color: $dandelion-500;
+}
+
+[borderColor="dandelion-600"]{
+    border-color: $dandelion-600;
+}
+
+[borderColor="dandelion-700"]{
+    border-color: $dandelion-700;
+}
+
+[borderColor="dandelion-800"]{
+    border-color: $dandelion-800;
+}
+
+[borderColor="dandelion-900"]{
+    border-color: $dandelion-900;
+}

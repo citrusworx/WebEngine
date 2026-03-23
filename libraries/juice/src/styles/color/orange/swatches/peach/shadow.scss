@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/orange/swatch/peach/peach.scss" as *;
+
+[shadow="peach-100"]{
+    box-shadow: 0 0 0 $peach-100;
+}
+
+[shadow="peach-200"]{
+    box-shadow: 0 0 0 $peach-200;
+}
+
+[shadow="peach-300"]{
+    box-shadow: 0 0 0 $peach-300;
+}
+
+[shadow="peach-400"]{
+    box-shadow: 0 0 0 $peach-400;
+}
+
+[shadow="peach-500"]{
+    box-shadow: 0 0 0 $peach-500;
+}
+
+[shadow="peach-600"]{
+    box-shadow: 0 0 0 $peach-600;
+}
+
+[shadow="peach-700"]{
+    box-shadow: 0 0 0 $peach-700;
+}
+
+[shadow="peach-800"]{
+    box-shadow: 0 0 0 $peach-100;
+}
+
+[shadow="peach-900"]{
+    box-shadow: 0 0 0 $peach-100;
+}

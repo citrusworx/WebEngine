@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/red/swatch/cherryred/cherryred.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="cherryred-100"]:hover {
+    background-color: $cherryred-100;
+    border-color: $cherryred-100;
+}
+
+[hover="cherryred-200"]:hover {
+    background-color: $cherryred-200;
+    border-color: $cherryred-200;
+}
+
+[hover="cherryred-300"]:hover {
+    background-color: $cherryred-300;
+    border-color: $cherryred-300;
+}
+
+[hover="cherryred-400"]:hover {
+    background-color: $cherryred-400;
+    border-color: $cherryred-400;
+}
+
+[hover="cherryred-500"]:hover {
+    background-color: $cherryred-500;
+    border-color: $cherryred-500;
+}
+
+[hover="cherryred-600"]:hover {
+    background-color: $cherryred-600;
+    border-color: $cherryred-600;
+}
+
+[hover="cherryred-700"]:hover {
+    background-color: $cherryred-700;
+    border-color: $cherryred-700;
+}
+
+[hover="cherryred-800"]:hover {
+    background-color: $cherryred-800;
+    border-color: $cherryred-800;
+}
+
+[hover="cherryred-900"]:hover {
+    background-color: $cherryred-900;
+    border-color: $cherryred-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="cherryred-100"][outline]:hover {
+    color: $cherryred-100;
+    border-color: $cherryred-100;
+}
+
+[hover="cherryred-200"][outline]:hover {
+    color: $cherryred-200;
+    border-color: $cherryred-200;
+}
+
+[hover="cherryred-300"][outline]:hover {
+    color: $cherryred-300;
+    border-color: $cherryred-300;
+}
+
+[hover="cherryred-400"][outline]:hover {
+    color: $cherryred-400;
+    border-color: $cherryred-400;
+}
+
+[hover="cherryred-500"][outline]:hover {
+    color: $cherryred-500;
+    border-color: $cherryred-500;
+}
+
+[hover="cherryred-600"][outline]:hover {
+    color: $cherryred-600;
+    border-color: $cherryred-600;
+}
+
+[hover="cherryred-700"][outline]:hover {
+    color: $cherryred-700;
+    border-color: $cherryred-700;
+}
+
+[hover="cherryred-800"][outline]:hover {
+    color: $cherryred-800;
+    border-color: $cherryred-800;
+}
+
+[hover="cherryred-900"][outline]:hover {
+    color: $cherryred-900;
+    border-color: $cherryred-900;
+}

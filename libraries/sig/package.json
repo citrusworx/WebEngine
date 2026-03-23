@@ -12,6 +12,9 @@
     },
     "./jsx-dev-runtime": {
       "import": "./dist/jsx-dev-runtime.js"
+    },
+    "./sig-router": {
+      "import": "./dist/sig-router.js"
     }
   },
   "files": [
@@ -19,7 +22,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "playwright test"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

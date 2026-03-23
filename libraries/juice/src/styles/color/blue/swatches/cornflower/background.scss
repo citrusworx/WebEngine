@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/cornflower/cornflower.scss" as *;
+
+[bgColor="cornflower-100"]{
+    background-color: $cornflower-100;
+}
+
+[bgColor="cornflower-200"]{
+    background-color: $cornflower-200;
+}
+
+[bgColor="cornflower-300"]{
+    background-color: $cornflower-300;
+}
+
+[bgColor="cornflower-400"]{
+    background-color: $cornflower-400;
+}
+
+[bgColor="cornflower-500"]{
+    background-color: $cornflower-500;
+}
+
+[bgColor="cornflower-600"]{
+    background-color: $cornflower-600;
+}
+
+[bgColor="cornflower-700"]{
+    background-color: $cornflower-700;
+}
+
+[bgColor="cornflower-800"]{
+    background-color: $cornflower-800;
+}
+
+[bgColor="cornflower-900"]{
+    background-color: $cornflower-900;
+}

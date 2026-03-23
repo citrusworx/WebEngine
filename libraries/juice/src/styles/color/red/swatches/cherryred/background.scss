@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/cherryred/cherryred.scss" as *;
+
+[bgColor="cherryred-100"]{
+    background-color: $cherryred-100;
+}
+
+[bgColor="cherryred-200"]{
+    background-color: $cherryred-200;
+}
+
+[bgColor="cherryred-300"]{
+    background-color: $cherryred-300;
+}
+
+[bgColor="cherryred-400"]{
+    background-color: $cherryred-400;
+}
+
+[bgColor="cherryred-500"]{
+    background-color: $cherryred-500;
+}
+
+[bgColor="cherryred-600"]{
+    background-color: $cherryred-600;
+}
+
+[bgColor="cherryred-700"]{
+    background-color: $cherryred-700;
+}
+
+[bgColor="cherryred-800"]{
+    background-color: $cherryred-800;
+}
+
+[bgColor="cherryred-900"]{
+    background-color: $cherryred-900;
+}

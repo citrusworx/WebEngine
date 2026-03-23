@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/royalblue/royalblue.scss" as *;
+
+[borderColor="royalblue-100"]{
+    border-color: $royalblue-100;
+}
+
+[borderColor="royalblue-200"]{
+    border-color: $royalblue-200;
+}
+
+[borderColor="royalblue-300"]{
+    border-color: $royalblue-300;
+}
+
+[borderColor="royalblue-400"]{
+    border-color: $royalblue-400;
+}
+
+[borderColor="royalblue-500"]{
+    border-color: $royalblue-500;
+}
+
+[borderColor="royalblue-600"]{
+    border-color: $royalblue-600;
+}
+
+[borderColor="royalblue-700"]{
+    border-color: $royalblue-700;
+}
+
+[borderColor="royalblue-800"]{
+    border-color: $royalblue-800;
+}
+
+[borderColor="royalblue-900"]{
+    border-color: $royalblue-900;
+}

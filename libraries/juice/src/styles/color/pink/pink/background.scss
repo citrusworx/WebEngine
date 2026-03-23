@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/pink/pink.scss" as *;
+
+[bgColor="pink-100"]{
+    background-color: $pink-100;
+}
+
+[bgColor="pink-200"]{
+    background-color: $pink-200;
+}
+
+[bgColor="pink-300"]{
+    background-color: $pink-300;
+}
+
+[bgColor="pink-400"]{
+    background-color: $pink-400;
+}
+
+[bgColor="pink-500"]{
+    background-color: $pink-500;
+}
+
+[bgColor="pink-600"]{
+    background-color: $pink-600;
+}
+
+[bgColor="pink-700"]{
+    background-color: $pink-700;
+}
+
+[bgColor="pink-800"]{
+    background-color: $pink-800;
+}
+
+[bgColor="pink-900"]{
+    background-color: $pink-900;
+}

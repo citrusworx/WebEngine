@@ -13,6 +13,12 @@
         "mongodb": "^7.1.0",
         "pg": "^8.20.0",
         "ts-node": "^10.9.2",
+        "typescript": "^5.9.3",
         "zod": "^4.3.6"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "playwright test"
     }
 }

@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/yellow/swatch/dandelion/dandelion.scss" as *;
+
+[bgColor="dandelion-100"]{
+    background-color: $dandelion-100;
+}
+
+[bgColor="dandelion-200"]{
+    background-color: $dandelion-200;
+}
+
+[bgColor="dandelion-300"]{
+    background-color: $dandelion-300;
+}
+
+[bgColor="dandelion-400"]{
+    background-color: $dandelion-400;
+}
+
+[bgColor="dandelion-500"]{
+    background-color: $dandelion-500;
+}
+
+[bgColor="dandelion-600"]{
+    background-color: $dandelion-600;
+}
+
+[bgColor="dandelion-700"]{
+    background-color: $dandelion-700;
+}
+
+[bgColor="dandelion-800"]{
+    background-color: $dandelion-800;
+}
+
+[bgColor="dandelion-900"]{
+    background-color: $dandelion-900;
+}

@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/red/red.scss" as *;
+
+[fontColor="red-100"]{
+    color: $red-100;
+}
+
+[fontColor="red-200"]{
+    color: $red-200;
+}
+
+[fontColor="red-300"]{
+    color: $red-300;
+}
+
+[fontColor="red-400"]{
+    color: $red-500;
+}
+
+[fontColor="red-500"]{
+    color: $red-600;
+}
+
+[fontColor="red-700"]{
+    color: $red-700;
+}
+
+[fontColor="red-800"]{
+    color: $red-800;
+}
+
+[fontColor="red-900"]{
+    color: $red-900;
+}

@@ -8,6 +8,7 @@ export default defineConfig({
             formats: ["es"],
             fileName: "index"
         },
-        cssCodeSplit: false
+        cssCodeSplit: false,
+        emptyOutDir: false
     }
 });

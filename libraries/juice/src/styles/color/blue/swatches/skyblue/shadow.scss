@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/skyblue/skyblue.scss" as *;
+
+[shadow="skyblue-100"]{
+    box-shadow: 0 0 0 $skyblue-100;
+}
+
+[shadow="skyblue-200"]{
+    box-shadow: 0 0 0 $skyblue-200;
+}
+
+[shadow="skyblue-300"]{
+    box-shadow: 0 0 0 $skyblue-300;
+}
+
+[shadow="skyblue-400"]{
+    box-shadow: 0 0 0 $skyblue-400;
+}
+
+[shadow="skyblue-500"]{
+    box-shadow: 0 0 0 $skyblue-500;
+}
+
+[shadow="skyblue-600"]{
+    box-shadow: 0 0 0 $skyblue-600;
+}
+
+[shadow="skyblue-700"]{
+    box-shadow: 0 0 0 $skyblue-700;
+}
+
+[shadow="skyblue-800"]{
+    box-shadow: 0 0 0 $skyblue-100;
+}
+
+[shadow="skyblue-900"]{
+    box-shadow: 0 0 0 $skyblue-100;
+}

@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/brown/brown.scss" as *;
+
+[bgColor="brown-100"]{
+    background-color: $brown-100;
+}
+
+[bgColor="brown-200"]{
+    background-color: $brown-200;
+}
+
+[bgColor="brown-300"]{
+    background-color: $brown-300;
+}
+
+[bgColor="brown-400"]{
+    background-color: $brown-400;
+}
+
+[bgColor="brown-500"]{
+    background-color: $brown-500;
+}
+
+[bgColor="brown-600"]{
+    background-color: $brown-600;
+}
+
+[bgColor="brown-700"]{
+    background-color: $brown-700;
+}
+
+[bgColor="brown-800"]{
+    background-color: $brown-800;
+}
+
+[bgColor="brown-900"]{
+    background-color: $brown-900;
+}

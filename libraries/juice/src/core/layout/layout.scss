@@ -12,6 +12,11 @@ $spacing--lg: 1.5rem;
     flex-direction: column-reverse;
 }
 
+[stack][centered]{
+    align-items: center;
+    justify-content: center;
+}
+
 [row]{
     display: flex;
     flex-direction: row;

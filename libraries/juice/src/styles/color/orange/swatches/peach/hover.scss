@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/orange/swatch/peach/peach.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="peach-100"]:hover {
+    background-color: $peach-100;
+    border-color: $peach-100;
+}
+
+[hover="peach-200"]:hover {
+    background-color: $peach-200;
+    border-color: $peach-200;
+}
+
+[hover="peach-300"]:hover {
+    background-color: $peach-300;
+    border-color: $peach-300;
+}
+
+[hover="peach-400"]:hover {
+    background-color: $peach-400;
+    border-color: $peach-400;
+}
+
+[hover="peach-500"]:hover {
+    background-color: $peach-500;
+    border-color: $peach-500;
+}
+
+[hover="peach-600"]:hover {
+    background-color: $peach-600;
+    border-color: $peach-600;
+}
+
+[hover="peach-700"]:hover {
+    background-color: $peach-700;
+    border-color: $peach-700;
+}
+
+[hover="peach-800"]:hover {
+    background-color: $peach-800;
+    border-color: $peach-800;
+}
+
+[hover="peach-900"]:hover {
+    background-color: $peach-900;
+    border-color: $peach-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="peach-100"][outline]:hover {
+    color: $peach-100;
+    border-color: $peach-100;
+}
+
+[hover="peach-200"][outline]:hover {
+    color: $peach-200;
+    border-color: $peach-200;
+}
+
+[hover="peach-300"][outline]:hover {
+    color: $peach-300;
+    border-color: $peach-300;
+}
+
+[hover="peach-400"][outline]:hover {
+    color: $peach-400;
+    border-color: $peach-400;
+}
+
+[hover="peach-500"][outline]:hover {
+    color: $peach-500;
+    border-color: $peach-500;
+}
+
+[hover="peach-600"][outline]:hover {
+    color: $peach-600;
+    border-color: $peach-600;
+}
+
+[hover="peach-700"][outline]:hover {
+    color: $peach-700;
+    border-color: $peach-700;
+}
+
+[hover="peach-800"][outline]:hover {
+    color: $peach-800;
+    border-color: $peach-800;
+}
+
+[hover="peach-900"][outline]:hover {
+    color: $peach-900;
+    border-color: $peach-900;
+}

@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/royalblue/royalblue.scss" as *;
+
+[shadow="royalblue-100"]{
+    box-shadow: 0 0 0 $royalblue-100;
+}
+
+[shadow="royalblue-200"]{
+    box-shadow: 0 0 0 $royalblue-200;
+}
+
+[shadow="royalblue-300"]{
+    box-shadow: 0 0 0 $royalblue-300;
+}
+
+[shadow="royalblue-400"]{
+    box-shadow: 0 0 0 $royalblue-400;
+}
+
+[shadow="royalblue-500"]{
+    box-shadow: 0 0 0 $royalblue-500;
+}
+
+[shadow="royalblue-600"]{
+    box-shadow: 0 0 0 $royalblue-600;
+}
+
+[shadow="royalblue-700"]{
+    box-shadow: 0 0 0 $royalblue-700;
+}
+
+[shadow="royalblue-800"]{
+    box-shadow: 0 0 0 $royalblue-100;
+}
+
+[shadow="royalblue-900"]{
+    box-shadow: 0 0 0 $royalblue-100;
+}

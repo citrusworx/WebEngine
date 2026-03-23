@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/green/green.scss" as *;
+
+[fontColor="green-100"]{
+    color: $green-100;
+}
+
+[fontColor="green-200"]{
+    color: $green-200;
+}
+
+[fontColor="green-300"]{
+    color: $green-300;
+}
+
+[fontColor="green-400"]{
+    color: $green-500;
+}
+
+[fontColor="green-500"]{
+    color: $green-600;
+}
+
+[fontColor="green-700"]{
+    color: $green-700;
+}
+
+[fontColor="green-800"]{
+    color: $green-800;
+}
+
+[fontColor="green-900"]{
+    color: $green-900;
+}

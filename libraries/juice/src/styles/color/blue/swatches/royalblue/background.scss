@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/royalblue/royalblue.scss" as *;
+
+[bgColor="royalblue-100"]{
+    background-color: $royalblue-100;
+}
+
+[bgColor="royalblue-200"]{
+    background-color: $royalblue-200;
+}
+
+[bgColor="royalblue-300"]{
+    background-color: $royalblue-300;
+}
+
+[bgColor="royalblue-400"]{
+    background-color: $royalblue-400;
+}
+
+[bgColor="royalblue-500"]{
+    background-color: $royalblue-500;
+}
+
+[bgColor="royalblue-600"]{
+    background-color: $royalblue-600;
+}
+
+[bgColor="royalblue-700"]{
+    background-color: $royalblue-700;
+}
+
+[bgColor="royalblue-800"]{
+    background-color: $royalblue-800;
+}
+
+[bgColor="royalblue-900"]{
+    background-color: $royalblue-900;
+}

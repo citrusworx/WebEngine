@@ -1,0 +1,13 @@
+@use "sass:meta";
+@use "sass:string";
+@use "../../../core/mixins.scss" as *;
+
+// To generate values for xs - xxl
+@mixin height-class($size){
+    [height="#{$size}"]{
+        height: $size;
+    }
+}
+
+
+@include attribute-generator("height", "vh");

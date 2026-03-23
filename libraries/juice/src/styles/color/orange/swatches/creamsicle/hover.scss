@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/orange/swatch/creamsicle/creamsicle.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="creamsicle-100"]:hover {
+    background-color: $creamsicle-100;
+    border-color: $creamsicle-100;
+}
+
+[hover="creamsicle-200"]:hover {
+    background-color: $creamsicle-200;
+    border-color: $creamsicle-200;
+}
+
+[hover="creamsicle-300"]:hover {
+    background-color: $creamsicle-300;
+    border-color: $creamsicle-300;
+}
+
+[hover="creamsicle-400"]:hover {
+    background-color: $creamsicle-400;
+    border-color: $creamsicle-400;
+}
+
+[hover="creamsicle-500"]:hover {
+    background-color: $creamsicle-500;
+    border-color: $creamsicle-500;
+}
+
+[hover="creamsicle-600"]:hover {
+    background-color: $creamsicle-600;
+    border-color: $creamsicle-600;
+}
+
+[hover="creamsicle-700"]:hover {
+    background-color: $creamsicle-700;
+    border-color: $creamsicle-700;
+}
+
+[hover="creamsicle-800"]:hover {
+    background-color: $creamsicle-800;
+    border-color: $creamsicle-800;
+}
+
+[hover="creamsicle-900"]:hover {
+    background-color: $creamsicle-900;
+    border-color: $creamsicle-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="creamsicle-100"][outline]:hover {
+    color: $creamsicle-100;
+    border-color: $creamsicle-100;
+}
+
+[hover="creamsicle-200"][outline]:hover {
+    color: $creamsicle-200;
+    border-color: $creamsicle-200;
+}
+
+[hover="creamsicle-300"][outline]:hover {
+    color: $creamsicle-300;
+    border-color: $creamsicle-300;
+}
+
+[hover="creamsicle-400"][outline]:hover {
+    color: $creamsicle-400;
+    border-color: $creamsicle-400;
+}
+
+[hover="creamsicle-500"][outline]:hover {
+    color: $creamsicle-500;
+    border-color: $creamsicle-500;
+}
+
+[hover="creamsicle-600"][outline]:hover {
+    color: $creamsicle-600;
+    border-color: $creamsicle-600;
+}
+
+[hover="creamsicle-700"][outline]:hover {
+    color: $creamsicle-700;
+    border-color: $creamsicle-700;
+}
+
+[hover="creamsicle-800"][outline]:hover {
+    color: $creamsicle-800;
+    border-color: $creamsicle-800;
+}
+
+[hover="creamsicle-900"][outline]:hover {
+    color: $creamsicle-900;
+    border-color: $creamsicle-900;
+}

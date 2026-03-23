@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/red/swatch/candyapple/candyapple.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="candyapple-100"]:hover {
+    background-color: $candyapple-100;
+    border-color: $candyapple-100;
+}
+
+[hover="candyapple-200"]:hover {
+    background-color: $candyapple-200;
+    border-color: $candyapple-200;
+}
+
+[hover="candyapple-300"]:hover {
+    background-color: $candyapple-300;
+    border-color: $candyapple-300;
+}
+
+[hover="candyapple-400"]:hover {
+    background-color: $candyapple-400;
+    border-color: $candyapple-400;
+}
+
+[hover="candyapple-500"]:hover {
+    background-color: $candyapple-500;
+    border-color: $candyapple-500;
+}
+
+[hover="candyapple-600"]:hover {
+    background-color: $candyapple-600;
+    border-color: $candyapple-600;
+}
+
+[hover="candyapple-700"]:hover {
+    background-color: $candyapple-700;
+    border-color: $candyapple-700;
+}
+
+[hover="candyapple-800"]:hover {
+    background-color: $candyapple-800;
+    border-color: $candyapple-800;
+}
+
+[hover="candyapple-900"]:hover {
+    background-color: $candyapple-900;
+    border-color: $candyapple-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="candyapple-100"][outline]:hover {
+    color: $candyapple-100;
+    border-color: $candyapple-100;
+}
+
+[hover="candyapple-200"][outline]:hover {
+    color: $candyapple-200;
+    border-color: $candyapple-200;
+}
+
+[hover="candyapple-300"][outline]:hover {
+    color: $candyapple-300;
+    border-color: $candyapple-300;
+}
+
+[hover="candyapple-400"][outline]:hover {
+    color: $candyapple-400;
+    border-color: $candyapple-400;
+}
+
+[hover="candyapple-500"][outline]:hover {
+    color: $candyapple-500;
+    border-color: $candyapple-500;
+}
+
+[hover="candyapple-600"][outline]:hover {
+    color: $candyapple-600;
+    border-color: $candyapple-600;
+}
+
+[hover="candyapple-700"][outline]:hover {
+    color: $candyapple-700;
+    border-color: $candyapple-700;
+}
+
+[hover="candyapple-800"][outline]:hover {
+    color: $candyapple-800;
+    border-color: $candyapple-800;
+}
+
+[hover="candyapple-900"][outline]:hover {
+    color: $candyapple-900;
+    border-color: $candyapple-900;
+}

@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/red/swatch/cherryred/cherryred.scss" as *;
+
+[fontColor="cherryred-100"]{
+    color: $cherryred-100;
+}
+
+[fontColor="cherryred-200"]{
+    color: $cherryred-200;
+}
+
+[fontColor="cherryred-300"]{
+    color: $cherryred-300;
+}
+
+[fontColor="cherryred-400"]{
+    color: $cherryred-500;
+}
+
+[fontColor="cherryred-500"]{
+    color: $cherryred-600;
+}
+
+[fontColor="cherryred-700"]{
+    color: $cherryred-700;
+}
+
+[fontColor="cherryred-800"]{
+    color: $cherryred-800;
+}
+
+[fontColor="cherryred-900"]{
+    color: $cherryred-900;
+}

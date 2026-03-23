@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/black/swatch/onyx/onyx.scss" as *;
+
+[fontColor="onyx-100"]{
+    color: $onyx-100;
+}
+
+[fontColor="onyx-200"]{
+    color: $onyx-200;
+}
+
+[fontColor="onyx-300"]{
+    color: $onyx-300;
+}
+
+[fontColor="onyx-400"]{
+    color: $onyx-500;
+}
+
+[fontColor="onyx-500"]{
+    color: $onyx-600;
+}
+
+[fontColor="onyx-700"]{
+    color: $onyx-700;
+}
+
+[fontColor="onyx-800"]{
+    color: $onyx-800;
+}
+
+[fontColor="onyx-900"]{
+    color: $onyx-900;
+}

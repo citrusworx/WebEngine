@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/pink/swatch/bubblegum/bubblegum.scss" as *;
+
+[shadow="bubblegum-100"]{
+    box-shadow: 0 0 0 $bubblegum-100;
+}
+
+[shadow="bubblegum-200"]{
+    box-shadow: 0 0 0 $bubblegum-200;
+}
+
+[shadow="bubblegum-300"]{
+    box-shadow: 0 0 0 $bubblegum-300;
+}
+
+[shadow="bubblegum-400"]{
+    box-shadow: 0 0 0 $bubblegum-400;
+}
+
+[shadow="bubblegum-500"]{
+    box-shadow: 0 0 0 $bubblegum-500;
+}
+
+[shadow="bubblegum-600"]{
+    box-shadow: 0 0 0 $bubblegum-600;
+}
+
+[shadow="bubblegum-700"]{
+    box-shadow: 0 0 0 $bubblegum-700;
+}
+
+[shadow="bubblegum-800"]{
+    box-shadow: 0 0 0 $bubblegum-100;
+}
+
+[shadow="bubblegum-900"]{
+    box-shadow: 0 0 0 $bubblegum-100;
+}

@@ -1,0 +1,95 @@
+@use "../../../../tokens/color/white/white.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="white-100"]:hover {
+    background-color: $white-100;
+    border-color: $white-100;
+}
+
+[hover="white-200"]:hover {
+    background-color: $white-200;
+    border-color: $white-200;
+}
+
+[hover="white-300"]:hover {
+    background-color: $white-300;
+    border-color: $white-300;
+}
+
+[hover="white-400"]:hover {
+    background-color: $white-400;
+    border-color: $white-400;
+}
+
+[hover="white-500"]:hover {
+    background-color: $white-500;
+    border-color: $white-500;
+}
+
+[hover="white-600"]:hover {
+    background-color: $white-600;
+    border-color: $white-600;
+}
+
+[hover="white-700"]:hover {
+    background-color: $white-700;
+    border-color: $white-700;
+}
+
+[hover="white-800"]:hover {
+    background-color: $white-800;
+    border-color: $white-800;
+}
+
+[hover="white-900"]:hover {
+    background-color: $white-900;
+    border-color: $white-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="white-100"][outline]:hover {
+    color: $white-100;
+    border-color: $white-100;
+}
+
+[hover="white-200"][outline]:hover {
+    color: $white-200;
+    border-color: $white-200;
+}
+
+[hover="white-300"][outline]:hover {
+    color: $white-300;
+    border-color: $white-300;
+}
+
+[hover="white-400"][outline]:hover {
+    color: $white-400;
+    border-color: $white-400;
+}
+
+[hover="white-500"][outline]:hover {
+    color: $white-500;
+    border-color: $white-500;
+}
+
+[hover="white-600"][outline]:hover {
+    color: $white-600;
+    border-color: $white-600;
+}
+
+[hover="white-700"][outline]:hover {
+    color: $white-700;
+    border-color: $white-700;
+}
+
+[hover="white-800"][outline]:hover {
+    color: $white-800;
+    border-color: $white-800;
+}
+
+[hover="white-900"][outline]:hover {
+    color: $white-900;
+    border-color: $white-900;
+}

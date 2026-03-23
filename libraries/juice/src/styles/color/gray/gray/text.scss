@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/gray/gray.scss" as *;
+
+[fontColor="gray-100"]{
+    color: $gray-100;
+}
+
+[fontColor="gray-200"]{
+    color: $gray-200;
+}
+
+[fontColor="gray-300"]{
+    color: $gray-300;
+}
+
+[fontColor="gray-400"]{
+    color: $gray-500;
+}
+
+[fontColor="gray-500"]{
+    color: $gray-600;
+}
+
+[fontColor="gray-700"]{
+    color: $gray-700;
+}
+
+[fontColor="gray-800"]{
+    color: $gray-800;
+}
+
+[fontColor="gray-900"]{
+    color: $gray-900;
+}

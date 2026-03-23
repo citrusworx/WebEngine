@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/morningblue/morningblue.scss" as *;
+
+[bgColor="morningblue-100"]{
+    background-color: $morningblue-100;
+}
+
+[bgColor="morningblue-200"]{
+    background-color: $morningblue-200;
+}
+
+[bgColor="morningblue-300"]{
+    background-color: $morningblue-300;
+}
+
+[bgColor="morningblue-400"]{
+    background-color: $morningblue-400;
+}
+
+[bgColor="morningblue-500"]{
+    background-color: $morningblue-500;
+}
+
+[bgColor="morningblue-600"]{
+    background-color: $morningblue-600;
+}
+
+[bgColor="morningblue-700"]{
+    background-color: $morningblue-700;
+}
+
+[bgColor="morningblue-800"]{
+    background-color: $morningblue-800;
+}
+
+[bgColor="morningblue-900"]{
+    background-color: $morningblue-900;
+}

@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/pink/swatch/bubblegum/bubblegum.scss" as *;
+
+[fontColor="bubblegum-100"]{
+    color: $bubblegum-100;
+}
+
+[fontColor="bubblegum-200"]{
+    color: $bubblegum-200;
+}
+
+[fontColor="bubblegum-300"]{
+    color: $bubblegum-300;
+}
+
+[fontColor="bubblegum-400"]{
+    color: $bubblegum-500;
+}
+
+[fontColor="bubblegum-500"]{
+    color: $bubblegum-600;
+}
+
+[fontColor="bubblegum-700"]{
+    color: $bubblegum-700;
+}
+
+[fontColor="bubblegum-800"]{
+    color: $bubblegum-800;
+}
+
+[fontColor="bubblegum-900"]{
+    color: $bubblegum-900;
+}

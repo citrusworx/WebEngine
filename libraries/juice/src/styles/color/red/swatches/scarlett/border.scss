@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/red/swatch/scarlett/scarlett.scss" as *;
+[borderColor="scarlett-100"]{
+    border-color: $scarlett-100;
+}
+
+[borderColor="scarlett-200"]{
+    border-color: $scarlett-200;
+}
+
+[borderColor="scarlett-300"]{
+    border-color: $scarlett-300;
+}
+
+[borderColor="scarlett-400"]{
+    border-color: $scarlett-400;
+}
+
+[borderColor="scarlett-500"]{
+    border-color: $scarlett-500;
+}
+
+[borderColor="scarlett-600"]{
+    border-color: $scarlett-600;
+}
+
+[borderColor="scarlett-700"]{
+    border-color: $scarlett-700;
+}
+
+[borderColor="scarlett-800"]{
+    border-color: $scarlett-800;
+}
+
+[borderColor="scarlett-900"]{
+    border-color: $scarlett-900;
+}

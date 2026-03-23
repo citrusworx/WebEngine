@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/brown/brown.scss" as *;
+
+[borderColor="brown-100"]{
+    border-color: $brown-100;
+}
+
+[borderColor="brown-200"]{
+    border-color: $brown-200;
+}
+
+[borderColor="brown-300"]{
+    border-color: $brown-300;
+}
+
+[borderColor="brown-400"]{
+    border-color: $brown-400;
+}
+
+[borderColor="brown-500"]{
+    border-color: $brown-500;
+}
+
+[borderColor="brown-600"]{
+    border-color: $brown-600;
+}
+
+[borderColor="brown-700"]{
+    border-color: $brown-700;
+}
+
+[borderColor="brown-800"]{
+    border-color: $brown-800;
+}
+
+[borderColor="brown-900"]{
+    border-color: $brown-900;
+}

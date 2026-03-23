@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/gray/gray.scss" as *;
+
+[borderColor="gray-100"]{
+    border-color: $gray-100;
+}
+
+[borderColor="gray-200"]{
+    border-color: $gray-200;
+}
+
+[borderColor="gray-300"]{
+    border-color: $gray-300;
+}
+
+[borderColor="gray-400"]{
+    border-color: $gray-400;
+}
+
+[borderColor="gray-500"]{
+    border-color: $gray-500;
+}
+
+[borderColor="gray-600"]{
+    border-color: $gray-600;
+}
+
+[borderColor="gray-700"]{
+    border-color: $gray-700;
+}
+
+[borderColor="gray-800"]{
+    border-color: $gray-800;
+}
+
+[borderColor="gray-900"]{
+    border-color: $gray-900;
+}

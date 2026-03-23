@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/purple/purple.scss" as *;
+
+[fontColor="purple-100"]{
+    color: $purple-100;
+}
+
+[fontColor="purple-200"]{
+    color: $purple-200;
+}
+
+[fontColor="purple-300"]{
+    color: $purple-300;
+}
+
+[fontColor="purple-400"]{
+    color: $purple-500;
+}
+
+[fontColor="purple-500"]{
+    color: $purple-600;
+}
+
+[fontColor="purple-700"]{
+    color: $purple-700;
+}
+
+[fontColor="purple-800"]{
+    color: $purple-800;
+}
+
+[fontColor="purple-900"]{
+    color: $purple-900;
+}

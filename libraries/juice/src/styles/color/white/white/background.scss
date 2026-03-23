@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/white/white.scss" as *;
+
+[bgColor="white-100"]{
+    background-color: $white-100;
+}
+
+[bgColor="white-200"]{
+    background-color: $white-200;
+}
+
+[bgColor="white-300"]{
+    background-color: $white-300;
+}
+
+[bgColor="white-400"]{
+    background-color: $white-400;
+}
+
+[bgColor="white-500"]{
+    background-color: $white-500;
+}
+
+[bgColor="white-600"]{
+    background-color: $white-600;
+}
+
+[bgColor="white-700"]{
+    background-color: $white-700;
+}
+
+[bgColor="white-800"]{
+    background-color: $white-800;
+}
+
+[bgColor="white-900"]{
+    background-color: $white-900;
+}

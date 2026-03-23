@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/red/swatch/crimson/crimson.scss" as *;
+[borderColor="crimson-100"]{
+    border-color: $crimson-100;
+}
+
+[borderColor="crimson-200"]{
+    border-color: $crimson-200;
+}
+
+[borderColor="crimson-300"]{
+    border-color: $crimson-300;
+}
+
+[borderColor="crimson-400"]{
+    border-color: $crimson-400;
+}
+
+[borderColor="crimson-500"]{
+    border-color: $crimson-500;
+}
+
+[borderColor="crimson-600"]{
+    border-color: $crimson-600;
+}
+
+[borderColor="crimson-700"]{
+    border-color: $crimson-700;
+}
+
+[borderColor="crimson-800"]{
+    border-color: $crimson-800;
+}
+
+[borderColor="crimson-900"]{
+    border-color: $crimson-900;
+}

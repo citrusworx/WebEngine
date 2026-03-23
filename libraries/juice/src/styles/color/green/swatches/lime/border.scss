@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/green/swatch/lime/lime.scss" as *;
+[borderColor="lime-100"]{
+    border-color: $lime-100;
+}
+
+[borderColor="lime-200"]{
+    border-color: $lime-200;
+}
+
+[borderColor="lime-300"]{
+    border-color: $lime-300;
+}
+
+[borderColor="lime-400"]{
+    border-color: $lime-400;
+}
+
+[borderColor="lime-500"]{
+    border-color: $lime-500;
+}
+
+[borderColor="lime-600"]{
+    border-color: $lime-600;
+}
+
+[borderColor="lime-700"]{
+    border-color: $lime-700;
+}
+
+[borderColor="lime-800"]{
+    border-color: $lime-800;
+}
+
+[borderColor="lime-900"]{
+    border-color: $lime-900;
+}

@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/white/white.scss" as *;
+
+[fontColor="white-100"]{
+    color: $white-100;
+}
+
+[fontColor="white-200"]{
+    color: $white-200;
+}
+
+[fontColor="white-300"]{
+    color: $white-300;
+}
+
+[fontColor="white-400"]{
+    color: $white-500;
+}
+
+[fontColor="white-500"]{
+    color: $white-600;
+}
+
+[fontColor="white-700"]{
+    color: $white-700;
+}
+
+[fontColor="white-800"]{
+    color: $white-800;
+}
+
+[fontColor="white-900"]{
+    color: $white-900;
+}

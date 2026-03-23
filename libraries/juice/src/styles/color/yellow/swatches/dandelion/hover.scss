@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/yellow/swatch/dandelion/dandelion.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="dandelion-100"]:hover {
+    background-color: $dandelion-100;
+    border-color: $dandelion-100;
+}
+
+[hover="dandelion-200"]:hover {
+    background-color: $dandelion-200;
+    border-color: $dandelion-200;
+}
+
+[hover="dandelion-300"]:hover {
+    background-color: $dandelion-300;
+    border-color: $dandelion-300;
+}
+
+[hover="dandelion-400"]:hover {
+    background-color: $dandelion-400;
+    border-color: $dandelion-400;
+}
+
+[hover="dandelion-500"]:hover {
+    background-color: $dandelion-500;
+    border-color: $dandelion-500;
+}
+
+[hover="dandelion-600"]:hover {
+    background-color: $dandelion-600;
+    border-color: $dandelion-600;
+}
+
+[hover="dandelion-700"]:hover {
+    background-color: $dandelion-700;
+    border-color: $dandelion-700;
+}
+
+[hover="dandelion-800"]:hover {
+    background-color: $dandelion-800;
+    border-color: $dandelion-800;
+}
+
+[hover="dandelion-900"]:hover {
+    background-color: $dandelion-900;
+    border-color: $dandelion-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="dandelion-100"][outline]:hover {
+    color: $dandelion-100;
+    border-color: $dandelion-100;
+}
+
+[hover="dandelion-200"][outline]:hover {
+    color: $dandelion-200;
+    border-color: $dandelion-200;
+}
+
+[hover="dandelion-300"][outline]:hover {
+    color: $dandelion-300;
+    border-color: $dandelion-300;
+}
+
+[hover="dandelion-400"][outline]:hover {
+    color: $dandelion-400;
+    border-color: $dandelion-400;
+}
+
+[hover="dandelion-500"][outline]:hover {
+    color: $dandelion-500;
+    border-color: $dandelion-500;
+}
+
+[hover="dandelion-600"][outline]:hover {
+    color: $dandelion-600;
+    border-color: $dandelion-600;
+}
+
+[hover="dandelion-700"][outline]:hover {
+    color: $dandelion-700;
+    border-color: $dandelion-700;
+}
+
+[hover="dandelion-800"][outline]:hover {
+    color: $dandelion-800;
+    border-color: $dandelion-800;
+}
+
+[hover="dandelion-900"][outline]:hover {
+    color: $dandelion-900;
+    border-color: $dandelion-900;
+}

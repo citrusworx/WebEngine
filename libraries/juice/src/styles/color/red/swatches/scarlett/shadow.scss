@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/scarlett/scarlett.scss" as *;
+
+[shadow="scarlett-100"]{
+    box-shadow: 0 0 0 $scarlett-100;
+}
+
+[shadow="scarlett-200"]{
+    box-shadow: 0 0 0 $scarlett-200;
+}
+
+[shadow="scarlett-300"]{
+    box-shadow: 0 0 0 $scarlett-300;
+}
+
+[shadow="scarlett-400"]{
+    box-shadow: 0 0 0 $scarlett-400;
+}
+
+[shadow="scarlett-500"]{
+    box-shadow: 0 0 0 $scarlett-500;
+}
+
+[shadow="scarlett-600"]{
+    box-shadow: 0 0 0 $scarlett-600;
+}
+
+[shadow="scarlett-700"]{
+    box-shadow: 0 0 0 $scarlett-700;
+}
+
+[shadow="scarlett-800"]{
+    box-shadow: 0 0 0 $scarlett-100;
+}
+
+[shadow="scarlett-900"]{
+    box-shadow: 0 0 0 $scarlett-100;
+}

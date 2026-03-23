@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/orange/orange.scss" as *;
+
+[borderColor="orange-100"]{
+    border-color: $orange-100;
+}
+
+[borderColor="orange-200"]{
+    border-color: $orange-200;
+}
+
+[borderColor="orange-300"]{
+    border-color: $orange-300;
+}
+
+[borderColor="orange-400"]{
+    border-color: $orange-400;
+}
+
+[borderColor="orange-500"]{
+    border-color: $orange-500;
+}
+
+[borderColor="orange-600"]{
+    border-color: $orange-600;
+}
+
+[borderColor="orange-700"]{
+    border-color: $orange-700;
+}
+
+[borderColor="orange-800"]{
+    border-color: $orange-800;
+}
+
+[borderColor="orange-900"]{
+    border-color: $orange-900;
+}

@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/pink/swatch/bubblegum/bubblegum.scss" as *;
+[borderColor="bubblegum-100"]{
+    border-color: $bubblegum-100;
+}
+
+[borderColor="bubblegum-200"]{
+    border-color: $bubblegum-200;
+}
+
+[borderColor="bubblegum-300"]{
+    border-color: $bubblegum-300;
+}
+
+[borderColor="bubblegum-400"]{
+    border-color: $bubblegum-400;
+}
+
+[borderColor="bubblegum-500"]{
+    border-color: $bubblegum-500;
+}
+
+[borderColor="bubblegum-600"]{
+    border-color: $bubblegum-600;
+}
+
+[borderColor="bubblegum-700"]{
+    border-color: $bubblegum-700;
+}
+
+[borderColor="bubblegum-800"]{
+    border-color: $bubblegum-800;
+}
+
+[borderColor="bubblegum-900"]{
+    border-color: $bubblegum-900;
+}

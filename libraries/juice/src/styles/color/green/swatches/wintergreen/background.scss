@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/green/swatch/wintergreen/wintergreen.scss" as *;
+
+[bgColor="wintergreen-100"]{
+    background-color: $wintergreen-100;
+}
+
+[bgColor="wintergreen-200"]{
+    background-color: $wintergreen-200;
+}
+
+[bgColor="wintergreen-300"]{
+    background-color: $wintergreen-300;
+}
+
+[bgColor="wintergreen-400"]{
+    background-color: $wintergreen-400;
+}
+
+[bgColor="wintergreen-500"]{
+    background-color: $wintergreen-500;
+}
+
+[bgColor="wintergreen-600"]{
+    background-color: $wintergreen-600;
+}
+
+[bgColor="wintergreen-700"]{
+    background-color: $wintergreen-700;
+}
+
+[bgColor="wintergreen-800"]{
+    background-color: $wintergreen-800;
+}
+
+[bgColor="wintergreen-900"]{
+    background-color: $wintergreen-900;
+}

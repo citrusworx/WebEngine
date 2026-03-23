@@ -1,0 +1,95 @@
+@use "../../../../../tokens/color/blue/swatch/cornflower/cornflower.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="cornflower-100"]:hover {
+    background-color: $cornflower-100;
+    border-color: $cornflower-100;
+}
+
+[hover="cornflower-200"]:hover {
+    background-color: $cornflower-200;
+    border-color: $cornflower-200;
+}
+
+[hover="cornflower-300"]:hover {
+    background-color: $cornflower-300;
+    border-color: $cornflower-300;
+}
+
+[hover="cornflower-400"]:hover {
+    background-color: $cornflower-400;
+    border-color: $cornflower-400;
+}
+
+[hover="cornflower-500"]:hover {
+    background-color: $cornflower-500;
+    border-color: $cornflower-500;
+}
+
+[hover="cornflower-600"]:hover {
+    background-color: $cornflower-600;
+    border-color: $cornflower-600;
+}
+
+[hover="cornflower-700"]:hover {
+    background-color: $cornflower-700;
+    border-color: $cornflower-700;
+}
+
+[hover="cornflower-800"]:hover {
+    background-color: $cornflower-800;
+    border-color: $cornflower-800;
+}
+
+[hover="cornflower-900"]:hover {
+    background-color: $cornflower-900;
+    border-color: $cornflower-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="cornflower-100"][outline]:hover {
+    color: $cornflower-100;
+    border-color: $cornflower-100;
+}
+
+[hover="cornflower-200"][outline]:hover {
+    color: $cornflower-200;
+    border-color: $cornflower-200;
+}
+
+[hover="cornflower-300"][outline]:hover {
+    color: $cornflower-300;
+    border-color: $cornflower-300;
+}
+
+[hover="cornflower-400"][outline]:hover {
+    color: $cornflower-400;
+    border-color: $cornflower-400;
+}
+
+[hover="cornflower-500"][outline]:hover {
+    color: $cornflower-500;
+    border-color: $cornflower-500;
+}
+
+[hover="cornflower-600"][outline]:hover {
+    color: $cornflower-600;
+    border-color: $cornflower-600;
+}
+
+[hover="cornflower-700"][outline]:hover {
+    color: $cornflower-700;
+    border-color: $cornflower-700;
+}
+
+[hover="cornflower-800"][outline]:hover {
+    color: $cornflower-800;
+    border-color: $cornflower-800;
+}
+
+[hover="cornflower-900"][outline]:hover {
+    color: $cornflower-900;
+    border-color: $cornflower-900;
+}

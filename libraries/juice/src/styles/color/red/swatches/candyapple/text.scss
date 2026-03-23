@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/red/swatch/candyapple/candyapple.scss" as *;
+
+[fontColor="candyapple-100"]{
+    color: $candyapple-100;
+}
+
+[fontColor="candyapple-200"]{
+    color: $candyapple-200;
+}
+
+[fontColor="candyapple-300"]{
+    color: $candyapple-300;
+}
+
+[fontColor="candyapple-400"]{
+    color: $candyapple-500;
+}
+
+[fontColor="candyapple-500"]{
+    color: $candyapple-600;
+}
+
+[fontColor="candyapple-700"]{
+    color: $candyapple-700;
+}
+
+[fontColor="candyapple-800"]{
+    color: $candyapple-800;
+}
+
+[fontColor="candyapple-900"]{
+    color: $candyapple-900;
+}

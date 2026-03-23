@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/red/swatch/brickred/brickred.scss" as *;
+
+[fontColor="brickred-100"]{
+    color: $brickred-100;
+}
+
+[fontColor="brickred-200"]{
+    color: $brickred-200;
+}
+
+[fontColor="brickred-300"]{
+    color: $brickred-300;
+}
+
+[fontColor="brickred-400"]{
+    color: $brickred-500;
+}
+
+[fontColor="brickred-500"]{
+    color: $brickred-600;
+}
+
+[fontColor="brickred-700"]{
+    color: $brickred-700;
+}
+
+[fontColor="brickred-800"]{
+    color: $brickred-800;
+}
+
+[fontColor="brickred-900"]{
+    color: $brickred-900;
+}

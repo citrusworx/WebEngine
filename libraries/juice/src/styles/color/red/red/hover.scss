@@ -1,0 +1,95 @@
+@use "../../../../tokens/color/red/red.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="red-100"]:hover {
+    background-color: $red-100;
+    border-color: $red-100;
+}
+
+[hover="red-200"]:hover {
+    background-color: $red-200;
+    border-color: $red-200;
+}
+
+[hover="red-300"]:hover {
+    background-color: $red-300;
+    border-color: $red-300;
+}
+
+[hover="red-400"]:hover {
+    background-color: $red-400;
+    border-color: $red-400;
+}
+
+[hover="red-500"]:hover {
+    background-color: $red-500;
+    border-color: $red-500;
+}
+
+[hover="red-600"]:hover {
+    background-color: $red-600;
+    border-color: $red-600;
+}
+
+[hover="red-700"]:hover {
+    background-color: $red-700;
+    border-color: $red-700;
+}
+
+[hover="red-800"]:hover {
+    background-color: $red-800;
+    border-color: $red-800;
+}
+
+[hover="red-900"]:hover {
+    background-color: $red-900;
+    border-color: $red-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="red-100"][outline]:hover {
+    color: $red-100;
+    border-color: $red-100;
+}
+
+[hover="red-200"][outline]:hover {
+    color: $red-200;
+    border-color: $red-200;
+}
+
+[hover="red-300"][outline]:hover {
+    color: $red-300;
+    border-color: $red-300;
+}
+
+[hover="red-400"][outline]:hover {
+    color: $red-400;
+    border-color: $red-400;
+}
+
+[hover="red-500"][outline]:hover {
+    color: $red-500;
+    border-color: $red-500;
+}
+
+[hover="red-600"][outline]:hover {
+    color: $red-600;
+    border-color: $red-600;
+}
+
+[hover="red-700"][outline]:hover {
+    color: $red-700;
+    border-color: $red-700;
+}
+
+[hover="red-800"][outline]:hover {
+    color: $red-800;
+    border-color: $red-800;
+}
+
+[hover="red-900"][outline]:hover {
+    color: $red-900;
+    border-color: $red-900;
+}

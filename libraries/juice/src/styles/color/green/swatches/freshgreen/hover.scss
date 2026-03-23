@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/green/swatch/freshgreen/freshgreen.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="freshgreen-100"]:hover {
+    background-color: $freshgreen-100;
+    border-color: $freshgreen-100;
+}
+
+[hover="freshgreen-200"]:hover {
+    background-color: $freshgreen-200;
+    border-color: $freshgreen-200;
+}
+
+[hover="freshgreen-300"]:hover {
+    background-color: $freshgreen-300;
+    border-color: $freshgreen-300;
+}
+
+[hover="freshgreen-400"]:hover {
+    background-color: $freshgreen-400;
+    border-color: $freshgreen-400;
+}
+
+[hover="freshgreen-500"]:hover {
+    background-color: $freshgreen-500;
+    border-color: $freshgreen-500;
+}
+
+[hover="freshgreen-600"]:hover {
+    background-color: $freshgreen-600;
+    border-color: $freshgreen-600;
+}
+
+[hover="freshgreen-700"]:hover {
+    background-color: $freshgreen-700;
+    border-color: $freshgreen-700;
+}
+
+[hover="freshgreen-800"]:hover {
+    background-color: $freshgreen-800;
+    border-color: $freshgreen-800;
+}
+
+[hover="freshgreen-900"]:hover {
+    background-color: $freshgreen-900;
+    border-color: $freshgreen-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="freshgreen-100"][outline]:hover {
+    color: $freshgreen-100;
+    border-color: $freshgreen-100;
+}
+
+[hover="freshgreen-200"][outline]:hover {
+    color: $freshgreen-200;
+    border-color: $freshgreen-200;
+}
+
+[hover="freshgreen-300"][outline]:hover {
+    color: $freshgreen-300;
+    border-color: $freshgreen-300;
+}
+
+[hover="freshgreen-400"][outline]:hover {
+    color: $freshgreen-400;
+    border-color: $freshgreen-400;
+}
+
+[hover="freshgreen-500"][outline]:hover {
+    color: $freshgreen-500;
+    border-color: $freshgreen-500;
+}
+
+[hover="freshgreen-600"][outline]:hover {
+    color: $freshgreen-600;
+    border-color: $freshgreen-600;
+}
+
+[hover="freshgreen-700"][outline]:hover {
+    color: $freshgreen-700;
+    border-color: $freshgreen-700;
+}
+
+[hover="freshgreen-800"][outline]:hover {
+    color: $freshgreen-800;
+    border-color: $freshgreen-800;
+}
+
+[hover="freshgreen-900"][outline]:hover {
+    color: $freshgreen-900;
+    border-color: $freshgreen-900;
+}

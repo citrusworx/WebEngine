@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/red/swatch/cherryred/cherryred.scss" as *;
+[borderColor="cherryred-100"]{
+    border-color: $cherryred-100;
+}
+
+[borderColor="cherryred-200"]{
+    border-color: $cherryred-200;
+}
+
+[borderColor="cherryred-300"]{
+    border-color: $cherryred-300;
+}
+
+[borderColor="cherryred-400"]{
+    border-color: $cherryred-400;
+}
+
+[borderColor="cherryred-500"]{
+    border-color: $cherryred-500;
+}
+
+[borderColor="cherryred-600"]{
+    border-color: $cherryred-600;
+}
+
+[borderColor="cherryred-700"]{
+    border-color: $cherryred-700;
+}
+
+[borderColor="cherryred-800"]{
+    border-color: $cherryred-800;
+}
+
+[borderColor="cherryred-900"]{
+    border-color: $cherryred-900;
+}

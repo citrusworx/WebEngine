@@ -1,0 +1,37 @@
+@use '../../../../../tokens/gradients/green/green.scss' as *;
+
+[gradient="green-blue-100"][direction="left"]{
+    background: $green-blue-100;
+}
+
+[gradient="green-blue-200"][direction="left"]{
+    background: $green-blue-200;
+}
+
+[gradient="green-blue-300"][direction="left"]{
+    background: $green-blue-300;
+}
+
+[gradient="green-blue-400"][direction="left"]{
+    background: $green-blue-400;
+}
+
+[gradient="green-blue-500"][direction="left"]{
+    background: $green-blue-500;
+}
+
+[gradient="green-blue-600"][direction="left"]{
+    background: $green-blue-600;
+}
+
+[gradient="green-blue-700"][direction="left"]{
+    background: $green-blue-700;
+}
+
+[gradient="green-blue-800"][direction="left"]{
+    background: $green-blue-800;
+}
+
+[gradient="green-blue-900"][direction="left"]{
+    background: $green-blue-900;
+}

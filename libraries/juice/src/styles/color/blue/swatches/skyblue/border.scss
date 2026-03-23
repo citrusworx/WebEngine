@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/skyblue/skyblue.scss" as *;
+
+[borderColor="skyblue-100"]{
+    border-color: $skyblue-100;
+}
+
+[borderColor="skyblue-200"]{
+    border-color: $skyblue-200;
+}
+
+[borderColor="skyblue-300"]{
+    border-color: $skyblue-300;
+}
+
+[borderColor="skyblue-400"]{
+    border-color: $skyblue-400;
+}
+
+[borderColor="skyblue-500"]{
+    border-color: $skyblue-500;
+}
+
+[borderColor="skyblue-600"]{
+    border-color: $skyblue-600;
+}
+
+[borderColor="skyblue-700"]{
+    border-color: $skyblue-700;
+}
+
+[borderColor="skyblue-800"]{
+    border-color: $skyblue-800;
+}
+
+[borderColor="skyblue-900"]{
+    border-color: $skyblue-900;
+}

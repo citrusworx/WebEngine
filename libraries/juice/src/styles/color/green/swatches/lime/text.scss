@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/green/swatch/lime/lime.scss" as *;
+
+[fontColor="lime-100"]{
+    color: $lime-100;
+}
+
+[fontColor="lime-200"]{
+    color: $lime-200;
+}
+
+[fontColor="lime-300"]{
+    color: $lime-300;
+}
+
+[fontColor="lime-400"]{
+    color: $lime-500;
+}
+
+[fontColor="lime-500"]{
+    color: $lime-600;
+}
+
+[fontColor="lime-700"]{
+    color: $lime-700;
+}
+
+[fontColor="lime-800"]{
+    color: $lime-800;
+}
+
+[fontColor="lime-900"]{
+    color: $lime-900;
+}

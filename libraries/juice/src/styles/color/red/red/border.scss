@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/red/red.scss" as *;
+
+[borderColor="red-100"]{
+    border-color: $red-100;
+}
+
+[borderColor="red-200"]{
+    border-color: $red-200;
+}
+
+[borderColor="red-300"]{
+    border-color: $red-300;
+}
+
+[borderColor="red-400"]{
+    border-color: $red-400;
+}
+
+[borderColor="red-500"]{
+    border-color: $red-500;
+}
+
+[borderColor="red-600"]{
+    border-color: $red-600;
+}
+
+[borderColor="red-700"]{
+    border-color: $red-700;
+}
+
+[borderColor="red-800"]{
+    border-color: $red-800;
+}
+
+[borderColor="red-900"]{
+    border-color: $red-900;
+}

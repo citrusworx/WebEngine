@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/skyblue/skyblue.scss" as *;
+
+[bgColor="skyblue-100"]{
+    background-color: $skyblue-100;
+}
+
+[bgColor="skyblue-200"]{
+    background-color: $skyblue-200;
+}
+
+[bgColor="skyblue-300"]{
+    background-color: $skyblue-300;
+}
+
+[bgColor="skyblue-400"]{
+    background-color: $skyblue-400;
+}
+
+[bgColor="skyblue-500"]{
+    background-color: $skyblue-500;
+}
+
+[bgColor="skyblue-600"]{
+    background-color: $skyblue-600;
+}
+
+[bgColor="skyblue-700"]{
+    background-color: $skyblue-700;
+}
+
+[bgColor="skyblue-800"]{
+    background-color: $skyblue-800;
+}
+
+[bgColor="skyblue-900"]{
+    background-color: $skyblue-900;
+}

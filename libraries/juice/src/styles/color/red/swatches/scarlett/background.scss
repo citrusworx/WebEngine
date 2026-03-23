@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/scarlett/scarlett.scss" as *;
+
+[bgColor="scarlett-100"]{
+    background-color: $scarlett-100;
+}
+
+[bgColor="scarlett-200"]{
+    background-color: $scarlett-200;
+}
+
+[bgColor="scarlett-300"]{
+    background-color: $scarlett-300;
+}
+
+[bgColor="scarlett-400"]{
+    background-color: $scarlett-400;
+}
+
+[bgColor="scarlett-500"]{
+    background-color: $scarlett-500;
+}
+
+[bgColor="scarlett-600"]{
+    background-color: $scarlett-600;
+}
+
+[bgColor="scarlett-700"]{
+    background-color: $scarlett-700;
+}
+
+[bgColor="scarlett-800"]{
+    background-color: $scarlett-800;
+}
+
+[bgColor="scarlett-900"]{
+    background-color: $scarlett-900;
+}

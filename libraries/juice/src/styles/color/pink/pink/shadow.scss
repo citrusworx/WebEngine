@@ -1,0 +1,42 @@
+@use "../../../../tokens/color/pink/pink.scss" as *;
+
+// Default Shadow
+[shadow]{
+    box-shadow: 0 0 0 $pink-500;
+}
+
+[shadow="pink-100"]{
+    box-shadow: 0 0 0 $pink-100;
+}
+
+[shadow="pink-200"]{
+    box-shadow: 0 0 0 $pink-200;
+}
+
+[shadow="pink-300"]{
+    box-shadow: 0 0 0 $pink-300;
+}
+
+[shadow="pink-400"]{
+    box-shadow: 0 0 0 $pink-400;
+}
+
+[shadow="pink-500"]{
+    box-shadow: 0 0 0 $pink-500;
+}
+
+[shadow="pink-600"]{
+    box-shadow: 0 0 0 $pink-600;
+}
+
+[shadow="pink-700"]{
+    box-shadow: 0 0 0 $pink-700;
+}
+
+[shadow="pink-800"]{
+    box-shadow: 0 0 0 $pink-100;
+}
+
+[shadow="pink-900"]{
+    box-shadow: 0 0 0 $pink-100;
+}

@@ -1,0 +1,95 @@
+@use "../../../../tokens/color/yellow/yellow.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="yellow-100"]:hover {
+    background-color: $yellow-100;
+    border-color: $yellow-100;
+}
+
+[hover="yellow-200"]:hover {
+    background-color: $yellow-200;
+    border-color: $yellow-200;
+}
+
+[hover="yellow-300"]:hover {
+    background-color: $yellow-300;
+    border-color: $yellow-300;
+}
+
+[hover="yellow-400"]:hover {
+    background-color: $yellow-400;
+    border-color: $yellow-400;
+}
+
+[hover="yellow-500"]:hover {
+    background-color: $yellow-500;
+    border-color: $yellow-500;
+}
+
+[hover="yellow-600"]:hover {
+    background-color: $yellow-600;
+    border-color: $yellow-600;
+}
+
+[hover="yellow-700"]:hover {
+    background-color: $yellow-700;
+    border-color: $yellow-700;
+}
+
+[hover="yellow-800"]:hover {
+    background-color: $yellow-800;
+    border-color: $yellow-800;
+}
+
+[hover="yellow-900"]:hover {
+    background-color: $yellow-900;
+    border-color: $yellow-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="yellow-100"][outline]:hover {
+    color: $yellow-100;
+    border-color: $yellow-100;
+}
+
+[hover="yellow-200"][outline]:hover {
+    color: $yellow-200;
+    border-color: $yellow-200;
+}
+
+[hover="yellow-300"][outline]:hover {
+    color: $yellow-300;
+    border-color: $yellow-300;
+}
+
+[hover="yellow-400"][outline]:hover {
+    color: $yellow-400;
+    border-color: $yellow-400;
+}
+
+[hover="yellow-500"][outline]:hover {
+    color: $yellow-500;
+    border-color: $yellow-500;
+}
+
+[hover="yellow-600"][outline]:hover {
+    color: $yellow-600;
+    border-color: $yellow-600;
+}
+
+[hover="yellow-700"][outline]:hover {
+    color: $yellow-700;
+    border-color: $yellow-700;
+}
+
+[hover="yellow-800"][outline]:hover {
+    color: $yellow-800;
+    border-color: $yellow-800;
+}
+
+[hover="yellow-900"][outline]:hover {
+    color: $yellow-900;
+    border-color: $yellow-900;
+}
