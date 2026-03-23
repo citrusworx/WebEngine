@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/burgundy/burgundy.scss" as *;
+
+[shadow="burgundy-100"]{
+    box-shadow: 0 0 0 $burgundy-100;
+}
+
+[shadow="burgundy-200"]{
+    box-shadow: 0 0 0 $burgundy-200;
+}
+
+[shadow="burgundy-300"]{
+    box-shadow: 0 0 0 $burgundy-300;
+}
+
+[shadow="burgundy-400"]{
+    box-shadow: 0 0 0 $burgundy-400;
+}
+
+[shadow="burgundy-500"]{
+    box-shadow: 0 0 0 $burgundy-500;
+}
+
+[shadow="burgundy-600"]{
+    box-shadow: 0 0 0 $burgundy-600;
+}
+
+[shadow="burgundy-700"]{
+    box-shadow: 0 0 0 $burgundy-700;
+}
+
+[shadow="burgundy-800"]{
+    box-shadow: 0 0 0 $burgundy-100;
+}
+
+[shadow="burgundy-900"]{
+    box-shadow: 0 0 0 $burgundy-100;
+}

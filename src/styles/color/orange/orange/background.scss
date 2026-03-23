@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/orange/orange.scss" as *;
+
+[bgColor="orange-100"]{
+    background-color: $orange-100;
+}
+
+[bgColor="orange-200"]{
+    background-color: $orange-200;
+}
+
+[bgColor="orange-300"]{
+    background-color: $orange-300;
+}
+
+[bgColor="orange-400"]{
+    background-color: $orange-400;
+}
+
+[bgColor="orange-500"]{
+    background-color: $orange-500;
+}
+
+[bgColor="orange-600"]{
+    background-color: $orange-600;
+}
+
+[bgColor="orange-700"]{
+    background-color: $orange-700;
+}
+
+[bgColor="orange-800"]{
+    background-color: $orange-800;
+}
+
+[bgColor="orange-900"]{
+    background-color: $orange-900;
+}

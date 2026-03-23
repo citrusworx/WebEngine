@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/candyapple/candyapple.scss" as *;
+
+[bgColor="candyapple-100"]{
+    background-color: $candyapple-100;
+}
+
+[bgColor="candyapple-200"]{
+    background-color: $candyapple-200;
+}
+
+[bgColor="candyapple-300"]{
+    background-color: $candyapple-300;
+}
+
+[bgColor="candyapple-400"]{
+    background-color: $candyapple-400;
+}
+
+[bgColor="candyapple-500"]{
+    background-color: $candyapple-500;
+}
+
+[bgColor="candyapple-600"]{
+    background-color: $candyapple-600;
+}
+
+[bgColor="candyapple-700"]{
+    background-color: $candyapple-700;
+}
+
+[bgColor="candyapple-800"]{
+    background-color: $candyapple-800;
+}
+
+[bgColor="candyapple-900"]{
+    background-color: $candyapple-900;
+}

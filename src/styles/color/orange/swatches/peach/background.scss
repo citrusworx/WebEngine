@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/orange/swatch/peach/peach.scss" as *;
+
+[bgColor="peach-100"]{
+    background-color: $peach-100;
+}
+
+[bgColor="peach-200"]{
+    background-color: $peach-200;
+}
+
+[bgColor="peach-300"]{
+    background-color: $peach-300;
+}
+
+[bgColor="peach-400"]{
+    background-color: $peach-400;
+}
+
+[bgColor="peach-500"]{
+    background-color: $peach-500;
+}
+
+[bgColor="peach-600"]{
+    background-color: $peach-600;
+}
+
+[bgColor="peach-700"]{
+    background-color: $peach-700;
+}
+
+[bgColor="peach-800"]{
+    background-color: $peach-800;
+}
+
+[bgColor="peach-900"]{
+    background-color: $peach-900;
+}

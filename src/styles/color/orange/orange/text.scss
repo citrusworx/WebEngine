@@ -1,0 +1,33 @@
+@use "../../../../tokens/color/orange/orange.scss" as *;
+
+[fontColor="orange-100"]{
+    color: $orange-100;
+}
+
+[fontColor="orange-200"]{
+    color: $orange-200;
+}
+
+[fontColor="orange-300"]{
+    color: $orange-300;
+}
+
+[fontColor="orange-400"]{
+    color: $orange-500;
+}
+
+[fontColor="orange-500"]{
+    color: $orange-600;
+}
+
+[fontColor="orange-700"]{
+    color: $orange-700;
+}
+
+[fontColor="orange-800"]{
+    color: $orange-800;
+}
+
+[fontColor="orange-900"]{
+    color: $orange-900;
+}

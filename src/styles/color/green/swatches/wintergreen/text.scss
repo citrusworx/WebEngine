@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/green/swatch/wintergreen/wintergreen.scss" as *;
+
+[fontColor="wintergreen-100"]{
+    color: $wintergreen-100;
+}
+
+[fontColor="wintergreen-200"]{
+    color: $wintergreen-200;
+}
+
+[fontColor="wintergreen-300"]{
+    color: $wintergreen-300;
+}
+
+[fontColor="wintergreen-400"]{
+    color: $wintergreen-500;
+}
+
+[fontColor="wintergreen-500"]{
+    color: $wintergreen-600;
+}
+
+[fontColor="wintergreen-700"]{
+    color: $wintergreen-700;
+}
+
+[fontColor="wintergreen-800"]{
+    color: $wintergreen-800;
+}
+
+[fontColor="wintergreen-900"]{
+    color: $wintergreen-900;
+}

@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/morningblue/morningblue.scss" as *;
+
+[borderColor="morningblue-100"]{
+    border-color: $morningblue-100;
+}
+
+[borderColor="morningblue-200"]{
+    border-color: $morningblue-200;
+}
+
+[borderColor="morningblue-300"]{
+    border-color: $morningblue-300;
+}
+
+[borderColor="morningblue-400"]{
+    border-color: $morningblue-400;
+}
+
+[borderColor="morningblue-500"]{
+    border-color: $morningblue-500;
+}
+
+[borderColor="morningblue-600"]{
+    border-color: $morningblue-600;
+}
+
+[borderColor="morningblue-700"]{
+    border-color: $morningblue-700;
+}
+
+[borderColor="morningblue-800"]{
+    border-color: $morningblue-800;
+}
+
+[borderColor="morningblue-900"]{
+    border-color: $morningblue-900;
+}

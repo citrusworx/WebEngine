@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/gray/swatch/concrete/concrete.scss" as *;
+
+[shadow="concrete-100"]{
+    box-shadow: 0 0 0 $concrete-100;
+}
+
+[shadow="concrete-200"]{
+    box-shadow: 0 0 0 $concrete-200;
+}
+
+[shadow="concrete-300"]{
+    box-shadow: 0 0 0 $concrete-300;
+}
+
+[shadow="concrete-400"]{
+    box-shadow: 0 0 0 $concrete-400;
+}
+
+[shadow="concrete-500"]{
+    box-shadow: 0 0 0 $concrete-500;
+}
+
+[shadow="concrete-600"]{
+    box-shadow: 0 0 0 $concrete-600;
+}
+
+[shadow="concrete-700"]{
+    box-shadow: 0 0 0 $concrete-700;
+}
+
+[shadow="concrete-800"]{
+    box-shadow: 0 0 0 $concrete-100;
+}
+
+[shadow="concrete-900"]{
+    box-shadow: 0 0 0 $concrete-100;
+}

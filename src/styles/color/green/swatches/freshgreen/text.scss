@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/green/swatch/freshgreen/freshgreen.scss" as *;
+
+[fontColor="freshgreen-100"]{
+    color: $freshgreen-100;
+}
+
+[fontColor="freshgreen-200"]{
+    color: $freshgreen-200;
+}
+
+[fontColor="freshgreen-300"]{
+    color: $freshgreen-300;
+}
+
+[fontColor="freshgreen-400"]{
+    color: $freshgreen-500;
+}
+
+[fontColor="freshgreen-500"]{
+    color: $freshgreen-600;
+}
+
+[fontColor="freshgreen-700"]{
+    color: $freshgreen-700;
+}
+
+[fontColor="freshgreen-800"]{
+    color: $freshgreen-800;
+}
+
+[fontColor="freshgreen-900"]{
+    color: $freshgreen-900;
+}

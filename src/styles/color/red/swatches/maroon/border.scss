@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/red/swatch/maroon/maroon.scss" as *;
+[borderColor="maroon-100"]{
+    border-color: $maroon-100;
+}
+
+[borderColor="maroon-200"]{
+    border-color: $maroon-200;
+}
+
+[borderColor="maroon-300"]{
+    border-color: $maroon-300;
+}
+
+[borderColor="maroon-400"]{
+    border-color: $maroon-400;
+}
+
+[borderColor="maroon-500"]{
+    border-color: $maroon-500;
+}
+
+[borderColor="maroon-600"]{
+    border-color: $maroon-600;
+}
+
+[borderColor="maroon-700"]{
+    border-color: $maroon-700;
+}
+
+[borderColor="maroon-800"]{
+    border-color: $maroon-800;
+}
+
+[borderColor="maroon-900"]{
+    border-color: $maroon-900;
+}

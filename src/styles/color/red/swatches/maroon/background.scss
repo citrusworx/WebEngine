@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/maroon/maroon.scss" as *;
+
+[bgColor="maroon-100"]{
+    background-color: $maroon-100;
+}
+
+[bgColor="maroon-200"]{
+    background-color: $maroon-200;
+}
+
+[bgColor="maroon-300"]{
+    background-color: $maroon-300;
+}
+
+[bgColor="maroon-400"]{
+    background-color: $maroon-400;
+}
+
+[bgColor="maroon-500"]{
+    background-color: $maroon-500;
+}
+
+[bgColor="maroon-600"]{
+    background-color: $maroon-600;
+}
+
+[bgColor="maroon-700"]{
+    background-color: $maroon-700;
+}
+
+[bgColor="maroon-800"]{
+    background-color: $maroon-800;
+}
+
+[bgColor="maroon-900"]{
+    background-color: $maroon-900;
+}

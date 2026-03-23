@@ -1,0 +1,95 @@
+@use "../../../../../tokens/color/blue/swatch/royalblue/royalblue.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="royalblue-100"]:hover {
+    background-color: $royalblue-100;
+    border-color: $royalblue-100;
+}
+
+[hover="royalblue-200"]:hover {
+    background-color: $royalblue-200;
+    border-color: $royalblue-200;
+}
+
+[hover="royalblue-300"]:hover {
+    background-color: $royalblue-300;
+    border-color: $royalblue-300;
+}
+
+[hover="royalblue-400"]:hover {
+    background-color: $royalblue-400;
+    border-color: $royalblue-400;
+}
+
+[hover="royalblue-500"]:hover {
+    background-color: $royalblue-500;
+    border-color: $royalblue-500;
+}
+
+[hover="royalblue-600"]:hover {
+    background-color: $royalblue-600;
+    border-color: $royalblue-600;
+}
+
+[hover="royalblue-700"]:hover {
+    background-color: $royalblue-700;
+    border-color: $royalblue-700;
+}
+
+[hover="royalblue-800"]:hover {
+    background-color: $royalblue-800;
+    border-color: $royalblue-800;
+}
+
+[hover="royalblue-900"]:hover {
+    background-color: $royalblue-900;
+    border-color: $royalblue-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="royalblue-100"][outline]:hover {
+    color: $royalblue-100;
+    border-color: $royalblue-100;
+}
+
+[hover="royalblue-200"][outline]:hover {
+    color: $royalblue-200;
+    border-color: $royalblue-200;
+}
+
+[hover="royalblue-300"][outline]:hover {
+    color: $royalblue-300;
+    border-color: $royalblue-300;
+}
+
+[hover="royalblue-400"][outline]:hover {
+    color: $royalblue-400;
+    border-color: $royalblue-400;
+}
+
+[hover="royalblue-500"][outline]:hover {
+    color: $royalblue-500;
+    border-color: $royalblue-500;
+}
+
+[hover="royalblue-600"][outline]:hover {
+    color: $royalblue-600;
+    border-color: $royalblue-600;
+}
+
+[hover="royalblue-700"][outline]:hover {
+    color: $royalblue-700;
+    border-color: $royalblue-700;
+}
+
+[hover="royalblue-800"][outline]:hover {
+    color: $royalblue-800;
+    border-color: $royalblue-800;
+}
+
+[hover="royalblue-900"][outline]:hover {
+    color: $royalblue-900;
+    border-color: $royalblue-900;
+}

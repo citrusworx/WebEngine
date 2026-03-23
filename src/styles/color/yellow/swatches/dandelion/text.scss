@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/yellow/swatch/dandelion/dandelion.scss" as *;
+
+[fontColor="dandelion-100"]{
+    color: $dandelion-100;
+}
+
+[fontColor="dandelion-200"]{
+    color: $dandelion-200;
+}
+
+[fontColor="dandelion-300"]{
+    color: $dandelion-300;
+}
+
+[fontColor="dandelion-400"]{
+    color: $dandelion-500;
+}
+
+[fontColor="dandelion-500"]{
+    color: $dandelion-600;
+}
+
+[fontColor="dandelion-700"]{
+    color: $dandelion-700;
+}
+
+[fontColor="dandelion-800"]{
+    color: $dandelion-800;
+}
+
+[fontColor="dandelion-900"]{
+    color: $dandelion-900;
+}

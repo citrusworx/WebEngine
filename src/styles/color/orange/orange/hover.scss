@@ -1,0 +1,95 @@
+@use "../../../../tokens/color/orange/orange.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="orange-100"]:hover {
+    background-color: $orange-100;
+    border-color: $orange-100;
+}
+
+[hover="orange-200"]:hover {
+    background-color: $orange-200;
+    border-color: $orange-200;
+}
+
+[hover="orange-300"]:hover {
+    background-color: $orange-300;
+    border-color: $orange-300;
+}
+
+[hover="orange-400"]:hover {
+    background-color: $orange-400;
+    border-color: $orange-400;
+}
+
+[hover="orange-500"]:hover {
+    background-color: $orange-500;
+    border-color: $orange-500;
+}
+
+[hover="orange-600"]:hover {
+    background-color: $orange-600;
+    border-color: $orange-600;
+}
+
+[hover="orange-700"]:hover {
+    background-color: $orange-700;
+    border-color: $orange-700;
+}
+
+[hover="orange-800"]:hover {
+    background-color: $orange-800;
+    border-color: $orange-800;
+}
+
+[hover="orange-900"]:hover {
+    background-color: $orange-900;
+    border-color: $orange-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="orange-100"][outline]:hover {
+    color: $orange-100;
+    border-color: $orange-100;
+}
+
+[hover="orange-200"][outline]:hover {
+    color: $orange-200;
+    border-color: $orange-200;
+}
+
+[hover="orange-300"][outline]:hover {
+    color: $orange-300;
+    border-color: $orange-300;
+}
+
+[hover="orange-400"][outline]:hover {
+    color: $orange-400;
+    border-color: $orange-400;
+}
+
+[hover="orange-500"][outline]:hover {
+    color: $orange-500;
+    border-color: $orange-500;
+}
+
+[hover="orange-600"][outline]:hover {
+    color: $orange-600;
+    border-color: $orange-600;
+}
+
+[hover="orange-700"][outline]:hover {
+    color: $orange-700;
+    border-color: $orange-700;
+}
+
+[hover="orange-800"][outline]:hover {
+    color: $orange-800;
+    border-color: $orange-800;
+}
+
+[hover="orange-900"][outline]:hover {
+    color: $orange-900;
+    border-color: $orange-900;
+}

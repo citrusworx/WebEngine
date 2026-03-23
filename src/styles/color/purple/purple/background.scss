@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/red/red.scss" as *;
+
+[bgColor="red-100"]{
+    background-color: $red-100;
+}
+
+[bgColor="red-200"]{
+    background-color: $red-200;
+}
+
+[bgColor="red-300"]{
+    background-color: $red-300;
+}
+
+[bgColor="red-400"]{
+    background-color: $red-400;
+}
+
+[bgColor="red-500"]{
+    background-color: $red-500;
+}
+
+[bgColor="red-600"]{
+    background-color: $red-600;
+}
+
+[bgColor="red-700"]{
+    background-color: $red-700;
+}
+
+[bgColor="red-800"]{
+    background-color: $red-800;
+}
+
+[bgColor="red-900"]{
+    background-color: $red-900;
+}

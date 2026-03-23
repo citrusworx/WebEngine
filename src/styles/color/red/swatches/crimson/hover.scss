@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/red/swatch/crimson/crimson.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="crimson-100"]:hover {
+    background-color: $crimson-100;
+    border-color: $crimson-100;
+}
+
+[hover="crimson-200"]:hover {
+    background-color: $crimson-200;
+    border-color: $crimson-200;
+}
+
+[hover="crimson-300"]:hover {
+    background-color: $crimson-300;
+    border-color: $crimson-300;
+}
+
+[hover="crimson-400"]:hover {
+    background-color: $crimson-400;
+    border-color: $crimson-400;
+}
+
+[hover="crimson-500"]:hover {
+    background-color: $crimson-500;
+    border-color: $crimson-500;
+}
+
+[hover="crimson-600"]:hover {
+    background-color: $crimson-600;
+    border-color: $crimson-600;
+}
+
+[hover="crimson-700"]:hover {
+    background-color: $crimson-700;
+    border-color: $crimson-700;
+}
+
+[hover="crimson-800"]:hover {
+    background-color: $crimson-800;
+    border-color: $crimson-800;
+}
+
+[hover="crimson-900"]:hover {
+    background-color: $crimson-900;
+    border-color: $crimson-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="crimson-100"][outline]:hover {
+    color: $crimson-100;
+    border-color: $crimson-100;
+}
+
+[hover="crimson-200"][outline]:hover {
+    color: $crimson-200;
+    border-color: $crimson-200;
+}
+
+[hover="crimson-300"][outline]:hover {
+    color: $crimson-300;
+    border-color: $crimson-300;
+}
+
+[hover="crimson-400"][outline]:hover {
+    color: $crimson-400;
+    border-color: $crimson-400;
+}
+
+[hover="crimson-500"][outline]:hover {
+    color: $crimson-500;
+    border-color: $crimson-500;
+}
+
+[hover="crimson-600"][outline]:hover {
+    color: $crimson-600;
+    border-color: $crimson-600;
+}
+
+[hover="crimson-700"][outline]:hover {
+    color: $crimson-700;
+    border-color: $crimson-700;
+}
+
+[hover="crimson-800"][outline]:hover {
+    color: $crimson-800;
+    border-color: $crimson-800;
+}
+
+[hover="crimson-900"][outline]:hover {
+    color: $crimson-900;
+    border-color: $crimson-900;
+}

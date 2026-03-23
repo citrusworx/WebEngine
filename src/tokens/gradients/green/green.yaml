@@ -1,0 +1,10 @@
+green-blue:
+  100: linear-gradient(90deg, hsla(160, 100%, 97%, 1.0), hsla(160, 100%, 65%, 1.0));
+  200: linear-gradient(90deg, hsla(160, 100%, 90%, 1.0), hsla(160, 100%, 50%, 1.0));
+  300: linear-gradient(90deg, hsla(160, 100%, 80%, 1.0), hsla(160, 100%, 45%, 1.0));
+  400: linear-gradient(90deg, hsla(160, 100%, 70%, 1.0), hsla(160, 100%, 40%, 1.0));
+  500: linear-gradient(90deg, hsla(160, 100%, 60%, 1.0), hsla(160, 100%, 35%, 1.0));
+  600: linear-gradient(90deg, hsla(160, 100%, 50%, 1.0), hsla(160, 100%, 30%, 1.0));
+  700: linear-gradient(90deg, hsla(160, 100%, 40%, 1.0), hsla(160, 100%, 25%, 1.0));
+  800: linear-gradient(90deg, hsla(160, 100%, 30%, 1.0), hsla(160, 100%, 20%, 1.0));
+  900: linear-gradient(90deg, hsla(160, 100%, 20%, 1.0), hsla(160, 100%, 15%, 1.0));

@@ -1,0 +1,95 @@
+@use "../../../../../tokens/color/blue/swatch/morningblue/morningblue.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="morningblue-100"]:hover {
+    background-color: $morningblue-100;
+    border-color: $morningblue-100;
+}
+
+[hover="morningblue-200"]:hover {
+    background-color: $morningblue-200;
+    border-color: $morningblue-200;
+}
+
+[hover="morningblue-300"]:hover {
+    background-color: $morningblue-300;
+    border-color: $morningblue-300;
+}
+
+[hover="morningblue-400"]:hover {
+    background-color: $morningblue-400;
+    border-color: $morningblue-400;
+}
+
+[hover="morningblue-500"]:hover {
+    background-color: $morningblue-500;
+    border-color: $morningblue-500;
+}
+
+[hover="morningblue-600"]:hover {
+    background-color: $morningblue-600;
+    border-color: $morningblue-600;
+}
+
+[hover="morningblue-700"]:hover {
+    background-color: $morningblue-700;
+    border-color: $morningblue-700;
+}
+
+[hover="morningblue-800"]:hover {
+    background-color: $morningblue-800;
+    border-color: $morningblue-800;
+}
+
+[hover="morningblue-900"]:hover {
+    background-color: $morningblue-900;
+    border-color: $morningblue-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="morningblue-100"][outline]:hover {
+    color: $morningblue-100;
+    border-color: $morningblue-100;
+}
+
+[hover="morningblue-200"][outline]:hover {
+    color: $morningblue-200;
+    border-color: $morningblue-200;
+}
+
+[hover="morningblue-300"][outline]:hover {
+    color: $morningblue-300;
+    border-color: $morningblue-300;
+}
+
+[hover="morningblue-400"][outline]:hover {
+    color: $morningblue-400;
+    border-color: $morningblue-400;
+}
+
+[hover="morningblue-500"][outline]:hover {
+    color: $morningblue-500;
+    border-color: $morningblue-500;
+}
+
+[hover="morningblue-600"][outline]:hover {
+    color: $morningblue-600;
+    border-color: $morningblue-600;
+}
+
+[hover="morningblue-700"][outline]:hover {
+    color: $morningblue-700;
+    border-color: $morningblue-700;
+}
+
+[hover="morningblue-800"][outline]:hover {
+    color: $morningblue-800;
+    border-color: $morningblue-800;
+}
+
+[hover="morningblue-900"][outline]:hover {
+    color: $morningblue-900;
+    border-color: $morningblue-900;
+}

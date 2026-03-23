@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/green/swatch/wintergreen/wintergreen.scss" as *;
+
+[shadow="wintergreen-100"]{
+    box-shadow: 0 0 0 $wintergreen-100;
+}
+
+[shadow="wintergreen-200"]{
+    box-shadow: 0 0 0 $wintergreen-200;
+}
+
+[shadow="wintergreen-300"]{
+    box-shadow: 0 0 0 $wintergreen-300;
+}
+
+[shadow="wintergreen-400"]{
+    box-shadow: 0 0 0 $wintergreen-400;
+}
+
+[shadow="wintergreen-500"]{
+    box-shadow: 0 0 0 $wintergreen-500;
+}
+
+[shadow="wintergreen-600"]{
+    box-shadow: 0 0 0 $wintergreen-600;
+}
+
+[shadow="wintergreen-700"]{
+    box-shadow: 0 0 0 $wintergreen-700;
+}
+
+[shadow="wintergreen-800"]{
+    box-shadow: 0 0 0 $wintergreen-100;
+}
+
+[shadow="wintergreen-900"]{
+    box-shadow: 0 0 0 $wintergreen-100;
+}

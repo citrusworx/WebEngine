@@ -1,0 +1,95 @@
+@use "../../../../../tokens/color/blue/swatch/skyblue/skyblue.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="skyblue-100"]:hover {
+    background-color: $skyblue-100;
+    border-color: $skyblue-100;
+}
+
+[hover="skyblue-200"]:hover {
+    background-color: $skyblue-200;
+    border-color: $skyblue-200;
+}
+
+[hover="skyblue-300"]:hover {
+    background-color: $skyblue-300;
+    border-color: $skyblue-300;
+}
+
+[hover="skyblue-400"]:hover {
+    background-color: $skyblue-400;
+    border-color: $skyblue-400;
+}
+
+[hover="skyblue-500"]:hover {
+    background-color: $skyblue-500;
+    border-color: $skyblue-500;
+}
+
+[hover="skyblue-600"]:hover {
+    background-color: $skyblue-600;
+    border-color: $skyblue-600;
+}
+
+[hover="skyblue-700"]:hover {
+    background-color: $skyblue-700;
+    border-color: $skyblue-700;
+}
+
+[hover="skyblue-800"]:hover {
+    background-color: $skyblue-800;
+    border-color: $skyblue-800;
+}
+
+[hover="skyblue-900"]:hover {
+    background-color: $skyblue-900;
+    border-color: $skyblue-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="skyblue-100"][outline]:hover {
+    color: $skyblue-100;
+    border-color: $skyblue-100;
+}
+
+[hover="skyblue-200"][outline]:hover {
+    color: $skyblue-200;
+    border-color: $skyblue-200;
+}
+
+[hover="skyblue-300"][outline]:hover {
+    color: $skyblue-300;
+    border-color: $skyblue-300;
+}
+
+[hover="skyblue-400"][outline]:hover {
+    color: $skyblue-400;
+    border-color: $skyblue-400;
+}
+
+[hover="skyblue-500"][outline]:hover {
+    color: $skyblue-500;
+    border-color: $skyblue-500;
+}
+
+[hover="skyblue-600"][outline]:hover {
+    color: $skyblue-600;
+    border-color: $skyblue-600;
+}
+
+[hover="skyblue-700"][outline]:hover {
+    color: $skyblue-700;
+    border-color: $skyblue-700;
+}
+
+[hover="skyblue-800"][outline]:hover {
+    color: $skyblue-800;
+    border-color: $skyblue-800;
+}
+
+[hover="skyblue-900"][outline]:hover {
+    color: $skyblue-900;
+    border-color: $skyblue-900;
+}

@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/crimson/crimson.scss" as *;
+
+[shadow="crimson-100"]{
+    box-shadow: 0 0 0 $crimson-100;
+}
+
+[shadow="crimson-200"]{
+    box-shadow: 0 0 0 $crimson-200;
+}
+
+[shadow="crimson-300"]{
+    box-shadow: 0 0 0 $crimson-300;
+}
+
+[shadow="crimson-400"]{
+    box-shadow: 0 0 0 $crimson-400;
+}
+
+[shadow="crimson-500"]{
+    box-shadow: 0 0 0 $crimson-500;
+}
+
+[shadow="crimson-600"]{
+    box-shadow: 0 0 0 $crimson-600;
+}
+
+[shadow="crimson-700"]{
+    box-shadow: 0 0 0 $crimson-700;
+}
+
+[shadow="crimson-800"]{
+    box-shadow: 0 0 0 $crimson-100;
+}
+
+[shadow="crimson-900"]{
+    box-shadow: 0 0 0 $crimson-100;
+}

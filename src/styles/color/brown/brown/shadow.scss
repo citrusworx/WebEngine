@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/brown/brown.scss" as *;
+
+[shadow="brown-100"]{
+    box-shadow: 0 0 0 $brown-100;
+}
+
+[shadow="brown-200"]{
+    box-shadow: 0 0 0 $brown-200;
+}
+
+[shadow="brown-300"]{
+    box-shadow: 0 0 0 $brown-300;
+}
+
+[shadow="brown-400"]{
+    box-shadow: 0 0 0 $brown-400;
+}
+
+[shadow="brown-500"]{
+    box-shadow: 0 0 0 $brown-500;
+}
+
+[shadow="brown-600"]{
+    box-shadow: 0 0 0 $brown-600;
+}
+
+[shadow="brown-700"]{
+    box-shadow: 0 0 0 $brown-700;
+}
+
+[shadow="brown-800"]{
+    box-shadow: 0 0 0 $brown-100;
+}
+
+[shadow="brown-900"]{
+    box-shadow: 0 0 0 $brown-100;
+}

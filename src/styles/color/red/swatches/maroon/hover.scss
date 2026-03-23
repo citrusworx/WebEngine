@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/red/swatch/maroon/maroon.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="maroon-100"]:hover {
+    background-color: $maroon-100;
+    border-color: $maroon-100;
+}
+
+[hover="maroon-200"]:hover {
+    background-color: $maroon-200;
+    border-color: $maroon-200;
+}
+
+[hover="maroon-300"]:hover {
+    background-color: $maroon-300;
+    border-color: $maroon-300;
+}
+
+[hover="maroon-400"]:hover {
+    background-color: $maroon-400;
+    border-color: $maroon-400;
+}
+
+[hover="maroon-500"]:hover {
+    background-color: $maroon-500;
+    border-color: $maroon-500;
+}
+
+[hover="maroon-600"]:hover {
+    background-color: $maroon-600;
+    border-color: $maroon-600;
+}
+
+[hover="maroon-700"]:hover {
+    background-color: $maroon-700;
+    border-color: $maroon-700;
+}
+
+[hover="maroon-800"]:hover {
+    background-color: $maroon-800;
+    border-color: $maroon-800;
+}
+
+[hover="maroon-900"]:hover {
+    background-color: $maroon-900;
+    border-color: $maroon-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="maroon-100"][outline]:hover {
+    color: $maroon-100;
+    border-color: $maroon-100;
+}
+
+[hover="maroon-200"][outline]:hover {
+    color: $maroon-200;
+    border-color: $maroon-200;
+}
+
+[hover="maroon-300"][outline]:hover {
+    color: $maroon-300;
+    border-color: $maroon-300;
+}
+
+[hover="maroon-400"][outline]:hover {
+    color: $maroon-400;
+    border-color: $maroon-400;
+}
+
+[hover="maroon-500"][outline]:hover {
+    color: $maroon-500;
+    border-color: $maroon-500;
+}
+
+[hover="maroon-600"][outline]:hover {
+    color: $maroon-600;
+    border-color: $maroon-600;
+}
+
+[hover="maroon-700"][outline]:hover {
+    color: $maroon-700;
+    border-color: $maroon-700;
+}
+
+[hover="maroon-800"][outline]:hover {
+    color: $maroon-800;
+    border-color: $maroon-800;
+}
+
+[hover="maroon-900"][outline]:hover {
+    color: $maroon-900;
+    border-color: $maroon-900;
+}

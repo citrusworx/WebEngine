@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/red/swatch/crimson/crimson.scss" as *;
+
+[fontColor="crimson-100"]{
+    color: $crimson-100;
+}
+
+[fontColor="crimson-200"]{
+    color: $crimson-200;
+}
+
+[fontColor="crimson-300"]{
+    color: $crimson-300;
+}
+
+[fontColor="crimson-400"]{
+    color: $crimson-500;
+}
+
+[fontColor="crimson-500"]{
+    color: $crimson-600;
+}
+
+[fontColor="crimson-700"]{
+    color: $crimson-700;
+}
+
+[fontColor="crimson-800"]{
+    color: $crimson-800;
+}
+
+[fontColor="crimson-900"]{
+    color: $crimson-900;
+}

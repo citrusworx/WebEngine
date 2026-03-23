@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/orange/swatch/creamsicle/creamsicle.scss" as *;
+[borderColor="creamsicle-100"]{
+    border-color: $creamsicle-100;
+}
+
+[borderColor="creamsicle-200"]{
+    border-color: $creamsicle-200;
+}
+
+[borderColor="creamsicle-300"]{
+    border-color: $creamsicle-300;
+}
+
+[borderColor="creamsicle-400"]{
+    border-color: $creamsicle-400;
+}
+
+[borderColor="creamsicle-500"]{
+    border-color: $creamsicle-500;
+}
+
+[borderColor="creamsicle-600"]{
+    border-color: $creamsicle-600;
+}
+
+[borderColor="creamsicle-700"]{
+    border-color: $creamsicle-700;
+}
+
+[borderColor="creamsicle-800"]{
+    border-color: $creamsicle-800;
+}
+
+[borderColor="creamsicle-900"]{
+    border-color: $creamsicle-900;
+}

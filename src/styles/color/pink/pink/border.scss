@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/pink/pink.scss" as *;
+
+[borderColor="pink-100"]{
+    border-color: $pink-100;
+}
+
+[borderColor="pink-200"]{
+    border-color: $pink-200;
+}
+
+[borderColor="pink-300"]{
+    border-color: $pink-300;
+}
+
+[borderColor="pink-400"]{
+    border-color: $pink-400;
+}
+
+[borderColor="pink-500"]{
+    border-color: $pink-500;
+}
+
+[borderColor="pink-600"]{
+    border-color: $pink-600;
+}
+
+[borderColor="pink-700"]{
+    border-color: $pink-700;
+}
+
+[borderColor="pink-800"]{
+    border-color: $pink-800;
+}
+
+[borderColor="pink-900"]{
+    border-color: $pink-900;
+}

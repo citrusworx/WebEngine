@@ -1,42 +1,37 @@
 @use "../../../../tokens/color/blue/blue.scss" as *;
 
-// Default Shadow
-[shadow]{
-    box-shadow: 0 0 0 $blue-500;
-}
-
 [shadow="blue-100"]{
-    box-shadow: 0 0 0 $blue-100;
+    --shadow-color: #{$blue-100};
 }
 
 [shadow="blue-200"]{
-    box-shadow: 0 0 0 $blue-200;
+    --shadow-color: #{$blue-200};
 }
 
 [shadow="blue-300"]{
-    box-shadow: 0 0 0 $blue-300;
+    --shadow-color: #{$blue-300};
 }
 
 [shadow="blue-400"]{
-    box-shadow: 0 0 0 $blue-400;
+    --shadow-color: #{$blue-400};
 }
 
 [shadow="blue-500"]{
-    box-shadow: 0 0 0 $blue-500;
+    --shadow-color: #{$blue-500};
 }
 
 [shadow="blue-600"]{
-    box-shadow: 0 0 0 $blue-600;
+    --shadow-color: #{$blue-600};
 }
 
 [shadow="blue-700"]{
-    box-shadow: 0 0 0 $blue-700;
+    --shadow-color: #{$blue-700};
 }
 
 [shadow="blue-800"]{
-    box-shadow: 0 0 0 $blue-100;
+    --shadow-color: #{$blue-800};
 }
 
 [shadow="blue-900"]{
-    box-shadow: 0 0 0 $blue-100;
+    --shadow-color: $blue-900;
 }

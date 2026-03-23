@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/red/swatch/candyapple/candyapple.scss" as *;
+[borderColor="candyapple-100"]{
+    border-color: $candyapple-100;
+}
+
+[borderColor="candyapple-200"]{
+    border-color: $candyapple-200;
+}
+
+[borderColor="candyapple-300"]{
+    border-color: $candyapple-300;
+}
+
+[borderColor="candyapple-400"]{
+    border-color: $candyapple-400;
+}
+
+[borderColor="candyapple-500"]{
+    border-color: $candyapple-500;
+}
+
+[borderColor="candyapple-600"]{
+    border-color: $candyapple-600;
+}
+
+[borderColor="candyapple-700"]{
+    border-color: $candyapple-700;
+}
+
+[borderColor="candyapple-800"]{
+    border-color: $candyapple-800;
+}
+
+[borderColor="candyapple-900"]{
+    border-color: $candyapple-900;
+}

@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/gray/swatch/concrete/concrete.scss" as *;
+
+[fontColor="concrete-100"]{
+    color: $concrete-100;
+}
+
+[fontColor="concrete-200"]{
+    color: $concrete-200;
+}
+
+[fontColor="concrete-300"]{
+    color: $concrete-300;
+}
+
+[fontColor="concrete-400"]{
+    color: $concrete-500;
+}
+
+[fontColor="concrete-500"]{
+    color: $concrete-600;
+}
+
+[fontColor="concrete-700"]{
+    color: $concrete-700;
+}
+
+[fontColor="concrete-800"]{
+    color: $concrete-800;
+}
+
+[fontColor="concrete-900"]{
+    color: $concrete-900;
+}

@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/blue/swatch/cornflower/cornflower.scss" as *;
+
+[borderColor="cornflower-100"]{
+    border-color: $cornflower-100;
+}
+
+[borderColor="cornflower-200"]{
+    border-color: $cornflower-200;
+}
+
+[borderColor="cornflower-300"]{
+    border-color: $cornflower-300;
+}
+
+[borderColor="cornflower-400"]{
+    border-color: $cornflower-400;
+}
+
+[borderColor="cornflower-500"]{
+    border-color: $cornflower-500;
+}
+
+[borderColor="cornflower-600"]{
+    border-color: $cornflower-600;
+}
+
+[borderColor="cornflower-700"]{
+    border-color: $cornflower-700;
+}
+
+[borderColor="cornflower-800"]{
+    border-color: $cornflower-800;
+}
+
+[borderColor="cornflower-900"]{
+    border-color: $cornflower-900;
+}

@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/green/swatch/freshgreen/freshgreen.scss" as *;
+
+[bgColor="freshgreen-100"]{
+    background-color: $freshgreen-100;
+}
+
+[bgColor="freshgreen-200"]{
+    background-color: $freshgreen-200;
+}
+
+[bgColor="freshgreen-300"]{
+    background-color: $freshgreen-300;
+}
+
+[bgColor="freshgreen-400"]{
+    background-color: $freshgreen-400;
+}
+
+[bgColor="freshgreen-500"]{
+    background-color: $freshgreen-500;
+}
+
+[bgColor="freshgreen-600"]{
+    background-color: $freshgreen-600;
+}
+
+[bgColor="freshgreen-700"]{
+    background-color: $freshgreen-700;
+}
+
+[bgColor="freshgreen-800"]{
+    background-color: $freshgreen-800;
+}
+
+[bgColor="freshgreen-900"]{
+    background-color: $freshgreen-900;
+}

@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/red/swatch/scarlett/scarlett.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="scarlett-100"]:hover {
+    background-color: $scarlett-100;
+    border-color: $scarlett-100;
+}
+
+[hover="scarlett-200"]:hover {
+    background-color: $scarlett-200;
+    border-color: $scarlett-200;
+}
+
+[hover="scarlett-300"]:hover {
+    background-color: $scarlett-300;
+    border-color: $scarlett-300;
+}
+
+[hover="scarlett-400"]:hover {
+    background-color: $scarlett-400;
+    border-color: $scarlett-400;
+}
+
+[hover="scarlett-500"]:hover {
+    background-color: $scarlett-500;
+    border-color: $scarlett-500;
+}
+
+[hover="scarlett-600"]:hover {
+    background-color: $scarlett-600;
+    border-color: $scarlett-600;
+}
+
+[hover="scarlett-700"]:hover {
+    background-color: $scarlett-700;
+    border-color: $scarlett-700;
+}
+
+[hover="scarlett-800"]:hover {
+    background-color: $scarlett-800;
+    border-color: $scarlett-800;
+}
+
+[hover="scarlett-900"]:hover {
+    background-color: $scarlett-900;
+    border-color: $scarlett-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="scarlett-100"][outline]:hover {
+    color: $scarlett-100;
+    border-color: $scarlett-100;
+}
+
+[hover="scarlett-200"][outline]:hover {
+    color: $scarlett-200;
+    border-color: $scarlett-200;
+}
+
+[hover="scarlett-300"][outline]:hover {
+    color: $scarlett-300;
+    border-color: $scarlett-300;
+}
+
+[hover="scarlett-400"][outline]:hover {
+    color: $scarlett-400;
+    border-color: $scarlett-400;
+}
+
+[hover="scarlett-500"][outline]:hover {
+    color: $scarlett-500;
+    border-color: $scarlett-500;
+}
+
+[hover="scarlett-600"][outline]:hover {
+    color: $scarlett-600;
+    border-color: $scarlett-600;
+}
+
+[hover="scarlett-700"][outline]:hover {
+    color: $scarlett-700;
+    border-color: $scarlett-700;
+}
+
+[hover="scarlett-800"][outline]:hover {
+    color: $scarlett-800;
+    border-color: $scarlett-800;
+}
+
+[hover="scarlett-900"][outline]:hover {
+    color: $scarlett-900;
+    border-color: $scarlett-900;
+}

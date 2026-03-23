@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/red/swatch/brickred/brickred.scss" as *;
+
+[shadow="brickred-100"]{
+    box-shadow: 0 0 0 $brickred-100;
+}
+
+[shadow="brickred-200"]{
+    box-shadow: 0 0 0 $brickred-200;
+}
+
+[shadow="brickred-300"]{
+    box-shadow: 0 0 0 $brickred-300;
+}
+
+[shadow="brickred-400"]{
+    box-shadow: 0 0 0 $brickred-400;
+}
+
+[shadow="brickred-500"]{
+    box-shadow: 0 0 0 $brickred-500;
+}
+
+[shadow="brickred-600"]{
+    box-shadow: 0 0 0 $brickred-600;
+}
+
+[shadow="brickred-700"]{
+    box-shadow: 0 0 0 $brickred-700;
+}
+
+[shadow="brickred-800"]{
+    box-shadow: 0 0 0 $brickred-100;
+}
+
+[shadow="brickred-900"]{
+    box-shadow: 0 0 0 $brickred-100;
+}

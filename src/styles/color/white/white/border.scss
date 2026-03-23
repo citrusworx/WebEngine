@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/white/white.scss" as *;
+
+[borderColor="white-100"]{
+    border-color: $white-100;
+}
+
+[borderColor="white-200"]{
+    border-color: $white-200;
+}
+
+[borderColor="white-300"]{
+    border-color: $white-300;
+}
+
+[borderColor="white-400"]{
+    border-color: $white-400;
+}
+
+[borderColor="white-500"]{
+    border-color: $white-500;
+}
+
+[borderColor="white-600"]{
+    border-color: $white-600;
+}
+
+[borderColor="white-700"]{
+    border-color: $white-700;
+}
+
+[borderColor="white-800"]{
+    border-color: $white-800;
+}
+
+[borderColor="white-900"]{
+    border-color: $white-900;
+}

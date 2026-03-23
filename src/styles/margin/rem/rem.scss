@@ -1,0 +1,7 @@
+@use '../../../core/mixins.scss' as *;
+
+@include attribute-generator("margin", "rem");
+@include attribute-generator("margin-top", "rem");
+@include attribute-generator("margin-bottom", "rem");
+@include attribute-generator("margin-left", "rem");
+@include attribute-generator("margin-right", "rem");

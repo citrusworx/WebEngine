@@ -1,0 +1,9 @@
+@mixin attribute-generator($property, $unit) {
+    @for $i from 1 through 100 {
+        @for $i from 1 through 100 {
+            [#{$property}="#{$i}#{$unit}"] {
+                #{$property}: #{$i}#{$unit};
+            }
+        };
+    }
+}

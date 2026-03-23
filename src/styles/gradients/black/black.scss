@@ -1,0 +1,9 @@
+@use '../../../tokens/gradients/black/black.scss' as *;
+
+[gradient="black-down-100"]{
+    background: $black-down-100;
+}
+
+[gradient="black-down-900"]{
+    background: $black-down-900;
+}

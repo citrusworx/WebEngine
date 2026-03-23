@@ -1,0 +1,95 @@
+@use "../../../../../tokens/color/gray/swatch/concrete/concrete.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="concrete-100"]:hover {
+    background-color: $concrete-100;
+    border-color: $concrete-100;
+}
+
+[hover="concrete-200"]:hover {
+    background-color: $concrete-200;
+    border-color: $concrete-200;
+}
+
+[hover="concrete-300"]:hover {
+    background-color: $concrete-300;
+    border-color: $concrete-300;
+}
+
+[hover="concrete-400"]:hover {
+    background-color: $concrete-400;
+    border-color: $concrete-400;
+}
+
+[hover="concrete-500"]:hover {
+    background-color: $concrete-500;
+    border-color: $concrete-500;
+}
+
+[hover="concrete-600"]:hover {
+    background-color: $concrete-600;
+    border-color: $concrete-600;
+}
+
+[hover="concrete-700"]:hover {
+    background-color: $concrete-700;
+    border-color: $concrete-700;
+}
+
+[hover="concrete-800"]:hover {
+    background-color: $concrete-800;
+    border-color: $concrete-800;
+}
+
+[hover="concrete-900"]:hover {
+    background-color: $concrete-900;
+    border-color: $concrete-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="concrete-100"][outline]:hover {
+    color: $concrete-100;
+    border-color: $concrete-100;
+}
+
+[hover="concrete-200"][outline]:hover {
+    color: $concrete-200;
+    border-color: $concrete-200;
+}
+
+[hover="concrete-300"][outline]:hover {
+    color: $concrete-300;
+    border-color: $concrete-300;
+}
+
+[hover="concrete-400"][outline]:hover {
+    color: $concrete-400;
+    border-color: $concrete-400;
+}
+
+[hover="concrete-500"][outline]:hover {
+    color: $concrete-500;
+    border-color: $concrete-500;
+}
+
+[hover="concrete-600"][outline]:hover {
+    color: $concrete-600;
+    border-color: $concrete-600;
+}
+
+[hover="concrete-700"][outline]:hover {
+    color: $concrete-700;
+    border-color: $concrete-700;
+}
+
+[hover="concrete-800"][outline]:hover {
+    color: $concrete-800;
+    border-color: $concrete-800;
+}
+
+[hover="concrete-900"][outline]:hover {
+    color: $concrete-900;
+    border-color: $concrete-900;
+}

@@ -1,0 +1,42 @@
+@use "../../../../tokens/color/orange/orange.scss" as *;
+
+// Default Shadow
+[shadow]{
+    box-shadow: 0 0 0 $orange-500;
+}
+
+[shadow="orange-100"]{
+    box-shadow: 0 0 0 $orange-100;
+}
+
+[shadow="orange-200"]{
+    box-shadow: 0 0 0 $orange-200;
+}
+
+[shadow="orange-300"]{
+    box-shadow: 0 0 0 $orange-300;
+}
+
+[shadow="orange-400"]{
+    box-shadow: 0 0 0 $orange-400;
+}
+
+[shadow="orange-500"]{
+    box-shadow: 0 0 0 $orange-500;
+}
+
+[shadow="orange-600"]{
+    box-shadow: 0 0 0 $orange-600;
+}
+
+[shadow="orange-700"]{
+    box-shadow: 0 0 0 $orange-700;
+}
+
+[shadow="orange-800"]{
+    box-shadow: 0 0 0 $orange-100;
+}
+
+[shadow="orange-900"]{
+    box-shadow: 0 0 0 $orange-100;
+}

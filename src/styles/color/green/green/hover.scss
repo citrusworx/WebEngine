@@ -1,0 +1,95 @@
+@use "../../../../tokens/color/green/green.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="green-100"]:hover {
+    background-color: $green-100;
+    border-color: $green-100;
+}
+
+[hover="green-200"]:hover {
+    background-color: $green-200;
+    border-color: $green-200;
+}
+
+[hover="green-300"]:hover {
+    background-color: $green-300;
+    border-color: $green-300;
+}
+
+[hover="green-400"]:hover {
+    background-color: $green-400;
+    border-color: $green-400;
+}
+
+[hover="green-500"]:hover {
+    background-color: $green-500;
+    border-color: $green-500;
+}
+
+[hover="green-600"]:hover {
+    background-color: $green-600;
+    border-color: $green-600;
+}
+
+[hover="green-700"]:hover {
+    background-color: $green-700;
+    border-color: $green-700;
+}
+
+[hover="green-800"]:hover {
+    background-color: $green-800;
+    border-color: $green-800;
+}
+
+[hover="green-900"]:hover {
+    background-color: $green-900;
+    border-color: $green-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="green-100"][outline]:hover {
+    color: $green-100;
+    border-color: $green-100;
+}
+
+[hover="green-200"][outline]:hover {
+    color: $green-200;
+    border-color: $green-200;
+}
+
+[hover="green-300"][outline]:hover {
+    color: $green-300;
+    border-color: $green-300;
+}
+
+[hover="green-400"][outline]:hover {
+    color: $green-400;
+    border-color: $green-400;
+}
+
+[hover="green-500"][outline]:hover {
+    color: $green-500;
+    border-color: $green-500;
+}
+
+[hover="green-600"][outline]:hover {
+    color: $green-600;
+    border-color: $green-600;
+}
+
+[hover="green-700"][outline]:hover {
+    color: $green-700;
+    border-color: $green-700;
+}
+
+[hover="green-800"][outline]:hover {
+    color: $green-800;
+    border-color: $green-800;
+}
+
+[hover="green-900"][outline]:hover {
+    color: $green-900;
+    border-color: $green-900;
+}

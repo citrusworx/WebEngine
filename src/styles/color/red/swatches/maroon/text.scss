@@ -1,0 +1,33 @@
+@use "../../../../../tokens/color/red/swatch/maroon/maroon.scss" as *;
+
+[fontColor="maroon-100"]{
+    color: $maroon-100;
+}
+
+[fontColor="maroon-200"]{
+    color: $maroon-200;
+}
+
+[fontColor="maroon-300"]{
+    color: $maroon-300;
+}
+
+[fontColor="maroon-400"]{
+    color: $maroon-500;
+}
+
+[fontColor="maroon-500"]{
+    color: $maroon-600;
+}
+
+[fontColor="maroon-700"]{
+    color: $maroon-700;
+}
+
+[fontColor="maroon-800"]{
+    color: $maroon-800;
+}
+
+[fontColor="maroon-900"]{
+    color: $maroon-900;
+}

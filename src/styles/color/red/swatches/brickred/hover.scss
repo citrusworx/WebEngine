@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/red/swatch/brickred/brickred.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="brickred-100"]:hover {
+    background-color: $brickred-100;
+    border-color: $brickred-100;
+}
+
+[hover="brickred-200"]:hover {
+    background-color: $brickred-200;
+    border-color: $brickred-200;
+}
+
+[hover="brickred-300"]:hover {
+    background-color: $brickred-300;
+    border-color: $brickred-300;
+}
+
+[hover="brickred-400"]:hover {
+    background-color: $brickred-400;
+    border-color: $brickred-400;
+}
+
+[hover="brickred-500"]:hover {
+    background-color: $brickred-500;
+    border-color: $brickred-500;
+}
+
+[hover="brickred-600"]:hover {
+    background-color: $brickred-600;
+    border-color: $brickred-600;
+}
+
+[hover="brickred-700"]:hover {
+    background-color: $brickred-700;
+    border-color: $brickred-700;
+}
+
+[hover="brickred-800"]:hover {
+    background-color: $brickred-800;
+    border-color: $brickred-800;
+}
+
+[hover="brickred-900"]:hover {
+    background-color: $brickred-900;
+    border-color: $brickred-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="brickred-100"][outline]:hover {
+    color: $brickred-100;
+    border-color: $brickred-100;
+}
+
+[hover="brickred-200"][outline]:hover {
+    color: $brickred-200;
+    border-color: $brickred-200;
+}
+
+[hover="brickred-300"][outline]:hover {
+    color: $brickred-300;
+    border-color: $brickred-300;
+}
+
+[hover="brickred-400"][outline]:hover {
+    color: $brickred-400;
+    border-color: $brickred-400;
+}
+
+[hover="brickred-500"][outline]:hover {
+    color: $brickred-500;
+    border-color: $brickred-500;
+}
+
+[hover="brickred-600"][outline]:hover {
+    color: $brickred-600;
+    border-color: $brickred-600;
+}
+
+[hover="brickred-700"][outline]:hover {
+    color: $brickred-700;
+    border-color: $brickred-700;
+}
+
+[hover="brickred-800"][outline]:hover {
+    color: $brickred-800;
+    border-color: $brickred-800;
+}
+
+[hover="brickred-900"][outline]:hover {
+    color: $brickred-900;
+    border-color: $brickred-900;
+}

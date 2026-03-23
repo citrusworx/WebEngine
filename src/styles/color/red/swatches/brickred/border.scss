@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/red/swatch/brickred/brickred.scss" as *;
+[borderColor="brickred-100"]{
+    border-color: $brickred-100;
+}
+
+[borderColor="brickred-200"]{
+    border-color: $brickred-200;
+}
+
+[borderColor="brickred-300"]{
+    border-color: $brickred-300;
+}
+
+[borderColor="brickred-400"]{
+    border-color: $brickred-400;
+}
+
+[borderColor="brickred-500"]{
+    border-color: $brickred-500;
+}
+
+[borderColor="brickred-600"]{
+    border-color: $brickred-600;
+}
+
+[borderColor="brickred-700"]{
+    border-color: $brickred-700;
+}
+
+[borderColor="brickred-800"]{
+    border-color: $brickred-800;
+}
+
+[borderColor="brickred-900"]{
+    border-color: $brickred-900;
+}

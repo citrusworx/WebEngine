@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/green/green.scss" as *;
+
+[borderColor="green-100"]{
+    border-color: $green-100;
+}
+
+[borderColor="green-200"]{
+    border-color: $green-200;
+}
+
+[borderColor="green-300"]{
+    border-color: $green-300;
+}
+
+[borderColor="green-400"]{
+    border-color: $green-400;
+}
+
+[borderColor="green-500"]{
+    border-color: $green-500;
+}
+
+[borderColor="green-600"]{
+    border-color: $green-600;
+}
+
+[borderColor="green-700"]{
+    border-color: $green-700;
+}
+
+[borderColor="green-800"]{
+    border-color: $green-800;
+}
+
+[borderColor="green-900"]{
+    border-color: $green-900;
+}

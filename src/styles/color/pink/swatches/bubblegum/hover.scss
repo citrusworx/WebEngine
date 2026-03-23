@@ -1,0 +1,94 @@
+@use "../../../../../tokens/color/pink/swatch/bubblegum/bubblegum.scss" as *;
+// Standard Hover - changes background and border.
+
+[hover="bubblegum-100"]:hover {
+    background-color: $bubblegum-100;
+    border-color: $bubblegum-100;
+}
+
+[hover="bubblegum-200"]:hover {
+    background-color: $bubblegum-200;
+    border-color: $bubblegum-200;
+}
+
+[hover="bubblegum-300"]:hover {
+    background-color: $bubblegum-300;
+    border-color: $bubblegum-300;
+}
+
+[hover="bubblegum-400"]:hover {
+    background-color: $bubblegum-400;
+    border-color: $bubblegum-400;
+}
+
+[hover="bubblegum-500"]:hover {
+    background-color: $bubblegum-500;
+    border-color: $bubblegum-500;
+}
+
+[hover="bubblegum-600"]:hover {
+    background-color: $bubblegum-600;
+    border-color: $bubblegum-600;
+}
+
+[hover="bubblegum-700"]:hover {
+    background-color: $bubblegum-700;
+    border-color: $bubblegum-700;
+}
+
+[hover="bubblegum-800"]:hover {
+    background-color: $bubblegum-800;
+    border-color: $bubblegum-800;
+}
+
+[hover="bubblegum-900"]:hover {
+    background-color: $bubblegum-900;
+    border-color: $bubblegum-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="bubblegum-100"][outline]:hover {
+    color: $bubblegum-100;
+    border-color: $bubblegum-100;
+}
+
+[hover="bubblegum-200"][outline]:hover {
+    color: $bubblegum-200;
+    border-color: $bubblegum-200;
+}
+
+[hover="bubblegum-300"][outline]:hover {
+    color: $bubblegum-300;
+    border-color: $bubblegum-300;
+}
+
+[hover="bubblegum-400"][outline]:hover {
+    color: $bubblegum-400;
+    border-color: $bubblegum-400;
+}
+
+[hover="bubblegum-500"][outline]:hover {
+    color: $bubblegum-500;
+    border-color: $bubblegum-500;
+}
+
+[hover="bubblegum-600"][outline]:hover {
+    color: $bubblegum-600;
+    border-color: $bubblegum-600;
+}
+
+[hover="bubblegum-700"][outline]:hover {
+    color: $bubblegum-700;
+    border-color: $bubblegum-700;
+}
+
+[hover="bubblegum-800"][outline]:hover {
+    color: $bubblegum-800;
+    border-color: $bubblegum-800;
+}
+
+[hover="bubblegum-900"][outline]:hover {
+    color: $bubblegum-900;
+    border-color: $bubblegum-900;
+}

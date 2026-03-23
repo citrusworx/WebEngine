@@ -1,0 +1,37 @@
+@use "../../../../tokens/color/purple/purple.scss" as *;
+
+[borderColor="purple-100"]{
+    border-color: $purple-100;
+}
+
+[borderColor="purple-200"]{
+    border-color: $purple-200;
+}
+
+[borderColor="purple-300"]{
+    border-color: $purple-300;
+}
+
+[borderColor="purple-400"]{
+    border-color: $purple-400;
+}
+
+[borderColor="purple-500"]{
+    border-color: $purple-500;
+}
+
+[borderColor="purple-600"]{
+    border-color: $purple-600;
+}
+
+[borderColor="purple-700"]{
+    border-color: $purple-700;
+}
+
+[borderColor="purple-800"]{
+    border-color: $purple-800;
+}
+
+[borderColor="purple-900"]{
+    border-color: $purple-900;
+}

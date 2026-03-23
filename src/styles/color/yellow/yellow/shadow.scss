@@ -1,0 +1,42 @@
+@use "../../../../tokens/color/yellow/yellow.scss" as *;
+
+// Default Shadow
+[shadow]{
+    box-shadow: 0 0 0 $yellow-500;
+}
+
+[shadow="yellow-100"]{
+    box-shadow: 0 0 0 $yellow-100;
+}
+
+[shadow="yellow-200"]{
+    box-shadow: 0 0 0 $yellow-200;
+}
+
+[shadow="yellow-300"]{
+    box-shadow: 0 0 0 $yellow-300;
+}
+
+[shadow="yellow-400"]{
+    box-shadow: 0 0 0 $yellow-400;
+}
+
+[shadow="yellow-500"]{
+    box-shadow: 0 0 0 $yellow-500;
+}
+
+[shadow="yellow-600"]{
+    box-shadow: 0 0 0 $yellow-600;
+}
+
+[shadow="yellow-700"]{
+    box-shadow: 0 0 0 $yellow-700;
+}
+
+[shadow="yellow-800"]{
+    box-shadow: 0 0 0 $yellow-100;
+}
+
+[shadow="yellow-900"]{
+    box-shadow: 0 0 0 $yellow-100;
+}

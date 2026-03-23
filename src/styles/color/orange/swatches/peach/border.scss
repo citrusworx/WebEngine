@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/orange/swatch/peach/peach.scss" as *;
+[borderColor="peach-100"]{
+    border-color: $peach-100;
+}
+
+[borderColor="peach-200"]{
+    border-color: $peach-200;
+}
+
+[borderColor="peach-300"]{
+    border-color: $peach-300;
+}
+
+[borderColor="peach-400"]{
+    border-color: $peach-400;
+}
+
+[borderColor="peach-500"]{
+    border-color: $peach-500;
+}
+
+[borderColor="peach-600"]{
+    border-color: $peach-600;
+}
+
+[borderColor="peach-700"]{
+    border-color: $peach-700;
+}
+
+[borderColor="peach-800"]{
+    border-color: $peach-800;
+}
+
+[borderColor="peach-900"]{
+    border-color: $peach-900;
+}

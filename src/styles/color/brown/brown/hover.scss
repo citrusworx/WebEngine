@@ -1,0 +1,95 @@
+@use "../../../../tokens/color/brown/brown.scss" as *;
+
+// Standard Hover - changes background and border.
+
+[hover="brown-100"]:hover {
+    background-color: $brown-100;
+    border-color: $brown-100;
+}
+
+[hover="brown-200"]:hover {
+    background-color: $brown-200;
+    border-color: $brown-200;
+}
+
+[hover="brown-300"]:hover {
+    background-color: $brown-300;
+    border-color: $brown-300;
+}
+
+[hover="brown-400"]:hover {
+    background-color: $brown-400;
+    border-color: $brown-400;
+}
+
+[hover="brown-500"]:hover {
+    background-color: $brown-500;
+    border-color: $brown-500;
+}
+
+[hover="brown-600"]:hover {
+    background-color: $brown-600;
+    border-color: $brown-600;
+}
+
+[hover="brown-700"]:hover {
+    background-color: $brown-700;
+    border-color: $brown-700;
+}
+
+[hover="brown-800"]:hover {
+    background-color: $brown-800;
+    border-color: $brown-800;
+}
+
+[hover="brown-900"]:hover {
+    background-color: $brown-900;
+    border-color: $brown-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="brown-100"][outline]:hover {
+    color: $brown-100;
+    border-color: $brown-100;
+}
+
+[hover="brown-200"][outline]:hover {
+    color: $brown-200;
+    border-color: $brown-200;
+}
+
+[hover="brown-300"][outline]:hover {
+    color: $brown-300;
+    border-color: $brown-300;
+}
+
+[hover="brown-400"][outline]:hover {
+    color: $brown-400;
+    border-color: $brown-400;
+}
+
+[hover="brown-500"][outline]:hover {
+    color: $brown-500;
+    border-color: $brown-500;
+}
+
+[hover="brown-600"][outline]:hover {
+    color: $brown-600;
+    border-color: $brown-600;
+}
+
+[hover="brown-700"][outline]:hover {
+    color: $brown-700;
+    border-color: $brown-700;
+}
+
+[hover="brown-800"][outline]:hover {
+    color: $brown-800;
+    border-color: $brown-800;
+}
+
+[hover="brown-900"][outline]:hover {
+    color: $brown-900;
+    border-color: $brown-900;
+}

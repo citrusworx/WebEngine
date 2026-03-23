@@ -1,0 +1,27 @@
+@use '../../tokens/fonts/adobe.scss' as *;
+
+[font="korolev-rounded"]{
+    font-family: $korolev-rounded;
+    font-weight: 500;
+    font-style: normal;
+}
+
+[font="alientz"]{
+    font-family: $alientz;
+}
+
+[font="darka"]{
+    font-family: $darka;
+}
+
+[font="grange"]{
+    font-family: $grange;
+}
+
+[font="p22-sting"]{
+    font-family: $p22-sting;
+}
+
+[font="private-sans"]{
+    font-family: $private-sans;
+}

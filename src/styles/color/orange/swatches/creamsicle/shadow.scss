@@ -1,0 +1,37 @@
+@use "../../../../../tokens/color/orange/swatch/creamsicle/creamsicle.scss" as *;
+
+[shadow="creamsicle-100"]{
+    box-shadow: 0 0 0 $creamsicle-100;
+}
+
+[shadow="creamsicle-200"]{
+    box-shadow: 0 0 0 $creamsicle-200;
+}
+
+[shadow="creamsicle-300"]{
+    box-shadow: 0 0 0 $creamsicle-300;
+}
+
+[shadow="creamsicle-400"]{
+    box-shadow: 0 0 0 $creamsicle-400;
+}
+
+[shadow="creamsicle-500"]{
+    box-shadow: 0 0 0 $creamsicle-500;
+}
+
+[shadow="creamsicle-600"]{
+    box-shadow: 0 0 0 $creamsicle-600;
+}
+
+[shadow="creamsicle-700"]{
+    box-shadow: 0 0 0 $creamsicle-700;
+}
+
+[shadow="creamsicle-800"]{
+    box-shadow: 0 0 0 $creamsicle-100;
+}
+
+[shadow="creamsicle-900"]{
+    box-shadow: 0 0 0 $creamsicle-100;
+}

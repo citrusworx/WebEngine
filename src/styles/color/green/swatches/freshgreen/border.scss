@@ -1,0 +1,36 @@
+@use "../../../../../tokens/color/green/swatch/freshgreen/freshgreen.scss" as *;
+[borderColor="freshgreen-100"]{
+    border-color: $freshgreen-100;
+}
+
+[borderColor="freshgreen-200"]{
+    border-color: $freshgreen-200;
+}
+
+[borderColor="freshgreen-300"]{
+    border-color: $freshgreen-300;
+}
+
+[borderColor="freshgreen-400"]{
+    border-color: $freshgreen-400;
+}
+
+[borderColor="freshgreen-500"]{
+    border-color: $freshgreen-500;
+}
+
+[borderColor="freshgreen-600"]{
+    border-color: $freshgreen-600;
+}
+
+[borderColor="freshgreen-700"]{
+    border-color: $freshgreen-700;
+}
+
+[borderColor="freshgreen-800"]{
+    border-color: $freshgreen-800;
+}
+
+[borderColor="freshgreen-900"]{
+    border-color: $freshgreen-900;
+}
