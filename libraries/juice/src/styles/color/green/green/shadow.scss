@@ -1,42 +1,38 @@
 @use "../../../../tokens/color/green/green.scss" as *;
 
-// Default Shadow
-[shadow]{
-    box-shadow: 0 0 0 $green-500;
-}
-
 [shadow="green-100"]{
-    box-shadow: 0 0 0 $green-100;
+    --shadow-color: #{$green-100};
 }
 
 [shadow="green-200"]{
-    box-shadow: 0 0 0 $green-200;
+    --shadow-color: #{$green-200};
 }
 
 [shadow="green-300"]{
-    box-shadow: 0 0 0 $green-300;
+    --shadow-color: #{$green-300};
 }
 
 [shadow="green-400"]{
-    box-shadow: 0 0 0 $green-400;
+    --shadow-color: #{$green-400};
 }
 
 [shadow="green-500"]{
-    box-shadow: 0 0 0 $green-500;
+    --shadow-color: #{$green-500};
 }
 
 [shadow="green-600"]{
-    box-shadow: 0 0 0 $green-600;
+    --shadow-color: #{$green-600};
 }
 
 [shadow="green-700"]{
-    box-shadow: 0 0 0 $green-700;
+    --shadow-color: #{$green-700};
 }
 
 [shadow="green-800"]{
-    box-shadow: 0 0 0 $green-100;
+    --shadow-color: #{$green-800};
 }
 
 [shadow="green-900"]{
-    box-shadow: 0 0 0 $green-100;
+    --shadow-color: #{$green-900};
 }
+

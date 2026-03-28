@@ -2,41 +2,42 @@
 
 // Default Shadow
 [shadow]{
-    box-shadow: 0 0 0 $black-500;
+    --shadow-color: #{$black-500};
 }
 
 [shadow="black-100"]{
-    box-shadow: 0 0 0 $black-100;
+    --shadow-color: #{$black-100};
 }
 
 [shadow="black-200"]{
-    box-shadow: 0 0 0 $black-200;
+    --shadow-color: #{$black-200};
 }
 
 [shadow="black-300"]{
-    box-shadow: 0 0 0 $black-300;
+    --shadow-color: #{$black-300};
 }
 
 [shadow="black-400"]{
-    box-shadow: 0 0 0 $black-400;
+    --shadow-color: #{$black-400};
 }
 
 [shadow="black-500"]{
-    box-shadow: 0 0 0 $black-500;
+    --shadow-color: #{$black-500};
 }
 
 [shadow="black-600"]{
-    box-shadow: 0 0 0 $black-600;
+    --shadow-color: #{$black-600};
 }
 
 [shadow="black-700"]{
-    box-shadow: 0 0 0 $black-700;
+    --shadow-color: #{$black-700};
 }
 
 [shadow="black-800"]{
-    box-shadow: 0 0 0 $black-100;
+    --shadow-color: #{$black-800};
 }
 
 [shadow="black-900"]{
-    box-shadow: 0 0 0 $black-100;
+    --shadow-color: #{$black-900};
 }
+

@@ -1,4 +1,4 @@
-import { client } from "@citrusworx/grapevine/infrastructure/util/utilities.js";
+import { client } from "../../../infrastructure/util/utilities.js";
 
 export interface FireWall {
     name: string;

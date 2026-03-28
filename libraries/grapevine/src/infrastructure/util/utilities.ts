@@ -5,7 +5,7 @@ import { DropletCreateResponse } from "@citrusworx/grapevine";
 // Create a script that has utilities for parsing
 // the blueprints and creating various IaC formats
 
-export function loadYAML<T>(file: string): T {
+export function parseYAML<T>(file: string): T {
     const deployManifest = fs.readFileSync(file, "utf8");
     return jsyaml.load(deployManifest) as T;
 }

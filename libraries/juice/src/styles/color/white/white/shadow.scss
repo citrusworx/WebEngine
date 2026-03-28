@@ -1,42 +1,38 @@
 @use "../../../../tokens/color/white/white.scss" as *;
 
-// Default Shadow
-[shadow]{
-    box-shadow: 0 0 0 $white-500;
-}
-
 [shadow="white-100"]{
-    box-shadow: 0 0 0 $white-100;
+    --shadow-color: #{$white-100};
 }
 
 [shadow="white-200"]{
-    box-shadow: 0 0 0 $white-200;
+    --shadow-color: #{$white-200};
 }
 
 [shadow="white-300"]{
-    box-shadow: 0 0 0 $white-300;
+    --shadow-color: #{$white-300};
 }
 
 [shadow="white-400"]{
-    box-shadow: 0 0 0 $white-400;
+    --shadow-color: #{$white-400};
 }
 
 [shadow="white-500"]{
-    box-shadow: 0 0 0 $white-500;
+    --shadow-color: #{$white-500};
 }
 
 [shadow="white-600"]{
-    box-shadow: 0 0 0 $white-600;
+    --shadow-color: #{$white-600};
 }
 
 [shadow="white-700"]{
-    box-shadow: 0 0 0 $white-700;
+    --shadow-color: #{$white-700};
 }
 
 [shadow="white-800"]{
-    box-shadow: 0 0 0 $white-100;
+    --shadow-color: #{$white-800};
 }
 
 [shadow="white-900"]{
-    box-shadow: 0 0 0 $white-100;
+    --shadow-color: #{$white-900};
 }
+

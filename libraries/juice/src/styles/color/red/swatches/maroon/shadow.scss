@@ -1,37 +1,38 @@
 @use "../../../../../tokens/color/red/swatch/maroon/maroon.scss" as *;
 
 [shadow="maroon-100"]{
-    box-shadow: 0 0 0 $maroon-100;
+    --shadow-color: #{$maroon-100};
 }
 
 [shadow="maroon-200"]{
-    box-shadow: 0 0 0 $maroon-200;
+    --shadow-color: #{$maroon-200};
 }
 
 [shadow="maroon-300"]{
-    box-shadow: 0 0 0 $maroon-300;
+    --shadow-color: #{$maroon-300};
 }
 
 [shadow="maroon-400"]{
-    box-shadow: 0 0 0 $maroon-400;
+    --shadow-color: #{$maroon-400};
 }
 
 [shadow="maroon-500"]{
-    box-shadow: 0 0 0 $maroon-500;
+    --shadow-color: #{$maroon-500};
 }
 
 [shadow="maroon-600"]{
-    box-shadow: 0 0 0 $maroon-600;
+    --shadow-color: #{$maroon-600};
 }
 
 [shadow="maroon-700"]{
-    box-shadow: 0 0 0 $maroon-700;
+    --shadow-color: #{$maroon-700};
 }
 
 [shadow="maroon-800"]{
-    box-shadow: 0 0 0 $maroon-100;
+    --shadow-color: #{$maroon-800};
 }
 
 [shadow="maroon-900"]{
-    box-shadow: 0 0 0 $maroon-100;
+    --shadow-color: #{$maroon-900};
 }
+

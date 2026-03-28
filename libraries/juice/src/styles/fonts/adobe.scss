@@ -1,8 +1,20 @@
 @use '../../tokens/fonts/adobe.scss' as *;
 
+[font="korolev-rounded-light"]{
+    font-family: $korolev-rounded;
+    font-weight: 300;
+    font-style: normal;
+}
+
 [font="korolev-rounded"]{
     font-family: $korolev-rounded;
     font-weight: 500;
+    font-style: normal;
+}
+
+[font="korolev-rounded-bold"]{
+    font-family: $korolev-rounded;
+    font-weight: 700;
     font-style: normal;
 }
 

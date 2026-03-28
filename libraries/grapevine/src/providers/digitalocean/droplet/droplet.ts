@@ -1,5 +1,6 @@
 import axios from "axios";
-import { loadYAML } from "../../../infrastructure/util/utilities.js";
+import { parseYAML } from "../../../infrastructure/util/utilities.js";
+import { cleanPayload } from "../utilities.js";
 
 export interface DropletBlueprint {
     blueprint: {
@@ -9,18 +10,18 @@ export interface DropletBlueprint {
             region: string;
             size: string;
             image: string;
-            ssh_keys: string[];
+            ssh_keys?: string[];
             backups: boolean;
-            backup_policy: {
+            backup_policy?: {
                 name: string;
             }
-            ipv6: boolean;
-            monitoring: boolean;
-            tags: string[];
-            user_data: string;
-            volumes: string[];
-            vpc_uuid: string;
-            with_droplet_agent: boolean;
+            ipv6?: boolean;
+            monitoring?: boolean;
+            tags?: string[];
+            user_data?: string;
+            volumes?: string[];
+            vpc_uuid?: string;
+            with_droplet_agent?: boolean;
         }
     }
 }
@@ -58,9 +59,10 @@ export interface DropletCreateResponse {
 
 
 export async function deployByBlueprint(blueprint: string): Promise<DropletResource>{
-    const manifest= loadYAML<DropletBlueprint>(blueprint)
-    const droplet = manifest.blueprint.droplet
-    
+    const manifest= parseYAML<DropletBlueprint>(blueprint)
+    const droplet = cleanPayload(manifest.blueprint.droplet);
+    console.log(JSON.stringify(droplet, null, 2));
+    try {
     const response = await axios.post<DropletCreateResponse>(
         "https://api.digitalocean.com/v2/droplets",
         droplet,
@@ -71,9 +73,20 @@ export async function deployByBlueprint(blueprint: string): Promise<DropletResou
             }
         }
     )
-    return response.data.droplet
+        console.log(response);
+        return response.data.droplet
+    }
+    catch(error) {
+        if(axios.isAxiosError(error)){
+            console.log(error.response?.data);
+            
+        }
+        throw error;
+    }
 }
 
+
+// Returns the status of a particular droplet by ID
 export async function getDropletStatus(id: number): Promise<string>{
     const response = await axios.get<{ droplet: DropletResource }>(
         `https://api.digitalocean.com/v2/droplets/${id}`,

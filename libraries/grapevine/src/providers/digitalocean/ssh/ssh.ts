@@ -1,6 +1,6 @@
 import { createHash, generateKeyPairSync, hash } from "node:crypto";
 import sshpk from "sshpk"
-import { client } from "@citrusworx/grapevine/infrastructure/util/utilities.js";
+import { client } from "../../../infrastructure/util/utilities.js";
 
 export interface SSHKey { // This is DigitalOceans shape
     public_key: string;
