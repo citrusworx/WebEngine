@@ -24,6 +24,124 @@
   font-size: 1.5rem;
 }
 
+[grid="2x2"] {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+[grid="3x2"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+[grid="3x3"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+[grid="4x3"] {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+[grid="4x4"] {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+
+[span="1"] {
+  grid-column: span 1;
+}
+
+[span="2"] {
+  grid-column: span 2;
+}
+
+[span="3"] {
+  grid-column: span 3;
+}
+
+[span="4"] {
+  grid-column: span 4;
+}
+
+[span="5"] {
+  grid-column: span 5;
+}
+
+[span="6"] {
+  grid-column: span 6;
+}
+
+[span="1"] {
+  grid-row: span 1;
+}
+
+[span="2"] {
+  grid-row: span 2;
+}
+
+[span="3"] {
+  grid-row: span 3;
+}
+
+[span="4"] {
+  grid-row: span 4;
+}
+
+[span="5"] {
+  grid-row: span 5;
+}
+
+[span="6"] {
+  grid-row: span 6;
+}
+
+[gap="1"] {
+  gap: 1rem;
+}
+
+[gap="2"] {
+  gap: 2rem;
+}
+
+[gap="3"] {
+  gap: 3rem;
+}
+
+[gap="4"] {
+  gap: 4rem;
+}
+
+[gap="5"] {
+  gap: 5rem;
+}
+
+[gap="6"] {
+  gap: 6rem;
+}
+
+[gap="7"] {
+  gap: 7rem;
+}
+
+[gap="8"] {
+  gap: 8rem;
+}
+
+[gap="9"] {
+  gap: 9rem;
+}
+
+[gap="10"] {
+  gap: 10rem;
+}
+
 [stack] {
   display: flex;
   flex-direction: column;
@@ -35,6 +153,7 @@
 }
 
 [stack][centered] {
+  margin: 0 auto;
   align-items: center;
   justify-content: center;
 }
@@ -350,9 +469,21 @@
   font-family: "Yanone Kaffeesatz", sans-serif;
 }
 
+[font=korolev-rounded-light] {
+  font-family: "korolev-rounded", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
 [font=korolev-rounded] {
   font-family: "korolev-rounded", sans-serif;
   font-weight: 500;
+  font-style: normal;
+}
+
+[font=korolev-rounded-bold] {
+  font-family: "korolev-rounded", sans-serif;
+  font-weight: 700;
   font-style: normal;
 }
 
@@ -539,43 +670,43 @@
 }
 
 [shadow] {
-  box-shadow: 0 0 0 hsl(0, 0%, 30%);
+  --shadow-color: hsl(0, 0%, 30%);
 }
 
 [shadow=black-100] {
-  box-shadow: 0 0 0 hsl(0, 0%, 50%);
+  --shadow-color: hsl(0, 0%, 50%);
 }
 
 [shadow=black-200] {
-  box-shadow: 0 0 0 hsl(0, 0%, 45%);
+  --shadow-color: hsl(0, 0%, 45%);
 }
 
 [shadow=black-300] {
-  box-shadow: 0 0 0 hsl(0, 0%, 40%);
+  --shadow-color: hsl(0, 0%, 40%);
 }
 
 [shadow=black-400] {
-  box-shadow: 0 0 0 hsl(0, 0%, 35%);
+  --shadow-color: hsl(0, 0%, 35%);
 }
 
 [shadow=black-500] {
-  box-shadow: 0 0 0 hsl(0, 0%, 30%);
+  --shadow-color: hsl(0, 0%, 30%);
 }
 
 [shadow=black-600] {
-  box-shadow: 0 0 0 hsl(0, 0%, 25%);
+  --shadow-color: hsl(0, 0%, 25%);
 }
 
 [shadow=black-700] {
-  box-shadow: 0 0 0 hsl(0, 0%, 20%);
+  --shadow-color: hsl(0, 0%, 20%);
 }
 
 [shadow=black-800] {
-  box-shadow: 0 0 0 hsl(0, 0%, 50%);
+  --shadow-color: hsl(0, 0%, 15%);
 }
 
 [shadow=black-900] {
-  box-shadow: 0 0 0 hsl(0, 0%, 50%);
+  --shadow-color: hsl(0, 0%, 10%);
 }
 
 [fontColor=black-100] {
@@ -773,39 +904,39 @@
 }
 
 [shadow=obsidian-100] {
-  box-shadow: 0 0 0 hsl(0, 3%, 50%);
+  --shadow-color: hsl(0, 3%, 50%);
 }
 
 [shadow=obsidian-200] {
-  box-shadow: 0 0 0 hsl(0, 3%, 45%);
+  --shadow-color: hsl(0, 3%, 45%);
 }
 
 [shadow=obsidian-300] {
-  box-shadow: 0 0 0 hsl(0, 3%, 40%);
+  --shadow-color: hsl(0, 3%, 40%);
 }
 
 [shadow=obsidian-400] {
-  box-shadow: 0 0 0 hsl(0, 3%, 35%);
+  --shadow-color: hsl(0, 3%, 35%);
 }
 
 [shadow=obsidian-500] {
-  box-shadow: 0 0 0 hsl(0, 3%, 30%);
+  --shadow-color: hsl(0, 3%, 30%);
 }
 
 [shadow=obsidian-600] {
-  box-shadow: 0 0 0 hsl(0, 3%, 25%);
+  --shadow-color: hsl(0, 3%, 25%);
 }
 
 [shadow=obsidian-700] {
-  box-shadow: 0 0 0 hsl(0, 3%, 20%);
+  --shadow-color: hsl(0, 3%, 20%);
 }
 
 [shadow=obsidian-800] {
-  box-shadow: 0 0 0 hsl(0, 3%, 50%);
+  --shadow-color: hsl(0, 3%, 15%);
 }
 
 [shadow=obsidian-900] {
-  box-shadow: 0 0 0 hsl(0, 3%, 50%);
+  --shadow-color: hsl(0, 3%, 10%);
 }
 
 [fontColor=obsidian-100] {
@@ -913,39 +1044,39 @@
 }
 
 [shadow=onyx-100] {
-  box-shadow: 0 0 0 hsl(0, 5%, 50%);
+  --shadow-color: hsl(0, 5%, 50%);
 }
 
 [shadow=onyx-200] {
-  box-shadow: 0 0 0 hsl(0, 5%, 45%);
+  --shadow-color: hsl(0, 5%, 45%);
 }
 
 [shadow=onyx-300] {
-  box-shadow: 0 0 0 hsl(0, 5%, 40%);
+  --shadow-color: hsl(0, 5%, 40%);
 }
 
 [shadow=onyx-400] {
-  box-shadow: 0 0 0 hsl(0, 5%, 35%);
+  --shadow-color: hsl(0, 5%, 35%);
 }
 
 [shadow=onyx-500] {
-  box-shadow: 0 0 0 hsl(0, 5%, 30%);
+  --shadow-color: hsl(0, 5%, 30%);
 }
 
 [shadow=onyx-600] {
-  box-shadow: 0 0 0 hsl(0, 5%, 25%);
+  --shadow-color: hsl(0, 5%, 25%);
 }
 
 [shadow=onyx-700] {
-  box-shadow: 0 0 0 hsl(0, 5%, 20%);
+  --shadow-color: hsl(0, 5%, 20%);
 }
 
 [shadow=onyx-800] {
-  box-shadow: 0 0 0 hsl(0, 5%, 50%);
+  --shadow-color: hsl(0, 5%, 15%);
 }
 
 [shadow=onyx-900] {
-  box-shadow: 0 0 0 hsl(0, 5%, 50%);
+  --shadow-color: hsl(0, 5%, 10%);
 }
 
 [fontColor=onyx-100] {
@@ -1175,7 +1306,7 @@
 }
 
 [shadow=blue-900] {
-  --shadow-color: $blue-900;
+  --shadow-color: hsl(210, 80%, 20%);
 }
 
 [fontColor=blue-100] {
@@ -1401,11 +1532,11 @@
 }
 
 [shadow=cornflower-800] {
-  --shadow-color: hsl(223, 73%, 75%);
+  --shadow-color: hsl(223, 73%, 35%);
 }
 
 [shadow=cornflower-900] {
-  --shadow-color: hsl(223, 73%, 75%);
+  --shadow-color: hsl(223, 73%, 30%);
 }
 
 [fontColor=cornflower-100] {
@@ -1603,39 +1734,39 @@
 }
 
 [shadow=morningblue-100] {
-  box-shadow: 0 0 0 hsl(191, 77%, 90%);
+  --shadow-color: hsl(191, 77%, 90%);
 }
 
 [shadow=morningblue-200] {
-  box-shadow: 0 0 0 hsl(191, 77%, 80%);
+  --shadow-color: hsl(191, 77%, 80%);
 }
 
 [shadow=morningblue-300] {
-  box-shadow: 0 0 0 hsl(191, 77%, 70%);
+  --shadow-color: hsl(191, 77%, 70%);
 }
 
 [shadow=morningblue-400] {
-  box-shadow: 0 0 0 hsl(191, 77%, 60%);
+  --shadow-color: hsl(191, 77%, 60%);
 }
 
 [shadow=morningblue-500] {
-  box-shadow: 0 0 0 hsl(191, 77%, 50%);
+  --shadow-color: hsl(191, 77%, 50%);
 }
 
 [shadow=morningblue-600] {
-  box-shadow: 0 0 0 hsl(191, 77%, 40%);
+  --shadow-color: hsl(191, 77%, 40%);
 }
 
 [shadow=morningblue-700] {
-  box-shadow: 0 0 0 hsl(191, 77%, 30%);
+  --shadow-color: hsl(191, 77%, 30%);
 }
 
 [shadow=morningblue-800] {
-  box-shadow: 0 0 0 hsl(191, 77%, 90%);
+  --shadow-color: hsl(191, 77%, 25%);
 }
 
 [shadow=morningblue-900] {
-  box-shadow: 0 0 0 hsl(191, 77%, 90%);
+  --shadow-color: hsl(191, 77%, 20%);
 }
 
 [fontColor=morningblue-100] {
@@ -1833,39 +1964,39 @@
 }
 
 [shadow=royalblue-100] {
-  box-shadow: 0 0 0 hsl(223, 100%, 70%);
+  --shadow-color: hsl(223, 100%, 70%);
 }
 
 [shadow=royalblue-200] {
-  box-shadow: 0 0 0 hsl(223, 100%, 64%);
+  --shadow-color: hsl(223, 100%, 64%);
 }
 
 [shadow=royalblue-300] {
-  box-shadow: 0 0 0 hsl(223, 100%, 58%);
+  --shadow-color: hsl(223, 100%, 58%);
 }
 
 [shadow=royalblue-400] {
-  box-shadow: 0 0 0 hsl(223, 100%, 52%);
+  --shadow-color: hsl(223, 100%, 52%);
 }
 
 [shadow=royalblue-500] {
-  box-shadow: 0 0 0 hsl(223, 100%, 46%);
+  --shadow-color: hsl(223, 100%, 46%);
 }
 
 [shadow=royalblue-600] {
-  box-shadow: 0 0 0 hsl(223, 100%, 40%);
+  --shadow-color: hsl(223, 100%, 40%);
 }
 
 [shadow=royalblue-700] {
-  box-shadow: 0 0 0 hsl(223, 100%, 34%);
+  --shadow-color: hsl(223, 100%, 34%);
 }
 
 [shadow=royalblue-800] {
-  box-shadow: 0 0 0 hsl(223, 100%, 70%);
+  --shadow-color: hsl(223, 100%, 28%);
 }
 
 [shadow=royalblue-900] {
-  box-shadow: 0 0 0 hsl(223, 100%, 70%);
+  --shadow-color: hsl(223, 100%, 22%);
 }
 
 [fontColor=royalblue-100] {
@@ -1973,39 +2104,39 @@
 }
 
 [shadow=skyblue-100] {
-  box-shadow: 0 0 0 hsl(210, 100%, 80%);
+  --shadow-color: hsl(210, 100%, 80%);
 }
 
 [shadow=skyblue-200] {
-  box-shadow: 0 0 0 hsl(210, 100%, 70%);
+  --shadow-color: hsl(210, 100%, 70%);
 }
 
 [shadow=skyblue-300] {
-  box-shadow: 0 0 0 hsl(210, 100%, 60%);
+  --shadow-color: hsl(210, 100%, 60%);
 }
 
 [shadow=skyblue-400] {
-  box-shadow: 0 0 0 hsl(210, 100%, 50%);
+  --shadow-color: hsl(210, 100%, 50%);
 }
 
 [shadow=skyblue-500] {
-  box-shadow: 0 0 0 hsl(210, 100%, 40%);
+  --shadow-color: hsl(210, 100%, 40%);
 }
 
 [shadow=skyblue-600] {
-  box-shadow: 0 0 0 hsl(210, 100%, 30%);
+  --shadow-color: hsl(210, 100%, 30%);
 }
 
 [shadow=skyblue-700] {
-  box-shadow: 0 0 0 hsl(210, 100%, 25%);
+  --shadow-color: hsl(210, 100%, 25%);
 }
 
 [shadow=skyblue-800] {
-  box-shadow: 0 0 0 hsl(210, 100%, 80%);
+  --shadow-color: hsl(210, 100%, 20%);
 }
 
 [shadow=skyblue-900] {
-  box-shadow: 0 0 0 hsl(210, 100%, 80%);
+  --shadow-color: hsl(210, 100%, 15%);
 }
 
 [hover=skyblue-100]:hover {
@@ -2293,39 +2424,39 @@
 }
 
 [shadow=brown-100] {
-  box-shadow: 0 0 0 hsl(30, 59%, 87%);
+  --shadow-color: hsl(30, 59%, 87%);
 }
 
 [shadow=brown-200] {
-  box-shadow: 0 0 0 hsl(30, 59%, 77%);
+  --shadow-color: hsl(30, 59%, 77%);
 }
 
 [shadow=brown-300] {
-  box-shadow: 0 0 0 hsl(30, 59%, 67%);
+  --shadow-color: hsl(30, 59%, 67%);
 }
 
 [shadow=brown-400] {
-  box-shadow: 0 0 0 hsl(30, 59%, 57%);
+  --shadow-color: hsl(30, 59%, 57%);
 }
 
 [shadow=brown-500] {
-  box-shadow: 0 0 0 hsl(30, 59%, 47%);
+  --shadow-color: hsl(30, 59%, 47%);
 }
 
 [shadow=brown-600] {
-  box-shadow: 0 0 0 hsl(30, 59%, 37%);
+  --shadow-color: hsl(30, 59%, 37%);
 }
 
 [shadow=brown-700] {
-  box-shadow: 0 0 0 hsl(30, 59%, 27%);
+  --shadow-color: hsl(30, 59%, 27%);
 }
 
 [shadow=brown-800] {
-  box-shadow: 0 0 0 hsl(30, 59%, 87%);
+  --shadow-color: hsl(30, 59%, 17%);
 }
 
 [shadow=brown-900] {
-  box-shadow: 0 0 0 hsl(30, 59%, 87%);
+  --shadow-color: hsl(30, 59%, 14%);
 }
 
 [fontColor=brown-100] {
@@ -2522,44 +2653,40 @@
   border-color: hsl(0, 0%, 55%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(0, 0%, 75%);
-}
-
 [shadow=gray-100] {
-  box-shadow: 0 0 0 hsl(0, 0%, 95%);
+  --shadow-color: hsl(0, 0%, 95%);
 }
 
 [shadow=gray-200] {
-  box-shadow: 0 0 0 hsl(0, 0%, 90%);
+  --shadow-color: hsl(0, 0%, 90%);
 }
 
 [shadow=gray-300] {
-  box-shadow: 0 0 0 hsl(0, 0%, 85%);
+  --shadow-color: hsl(0, 0%, 85%);
 }
 
 [shadow=gray-400] {
-  box-shadow: 0 0 0 hsl(0, 0%, 80%);
+  --shadow-color: hsl(0, 0%, 80%);
 }
 
 [shadow=gray-500] {
-  box-shadow: 0 0 0 hsl(0, 0%, 75%);
+  --shadow-color: hsl(0, 0%, 75%);
 }
 
 [shadow=gray-600] {
-  box-shadow: 0 0 0 hsl(0, 0%, 70%);
+  --shadow-color: hsl(0, 0%, 70%);
 }
 
 [shadow=gray-700] {
-  box-shadow: 0 0 0 hsl(0, 0%, 65%);
+  --shadow-color: hsl(0, 0%, 65%);
 }
 
 [shadow=gray-800] {
-  box-shadow: 0 0 0 hsl(0, 0%, 95%);
+  --shadow-color: hsl(0, 0%, 60%);
 }
 
 [shadow=gray-900] {
-  box-shadow: 0 0 0 hsl(0, 0%, 95%);
+  --shadow-color: hsl(0, 0%, 55%);
 }
 
 [fontColor=gray-100] {
@@ -2757,39 +2884,39 @@
 }
 
 [shadow=concrete-100] {
-  box-shadow: 0 0 0 hsl(0, 5%, 95%);
+  --shadow-color: hsl(0, 5%, 95%);
 }
 
 [shadow=concrete-200] {
-  box-shadow: 0 0 0 hsl(0, 5%, 90%);
+  --shadow-color: hsl(0, 5%, 90%);
 }
 
 [shadow=concrete-300] {
-  box-shadow: 0 0 0 hsl(0, 5%, 85%);
+  --shadow-color: hsl(0, 5%, 85%);
 }
 
 [shadow=concrete-400] {
-  box-shadow: 0 0 0 hsl(0, 5%, 80%);
+  --shadow-color: hsl(0, 5%, 80%);
 }
 
 [shadow=concrete-500] {
-  box-shadow: 0 0 0 hsl(0, 5%, 75%);
+  --shadow-color: hsl(0, 5%, 75%);
 }
 
 [shadow=concrete-600] {
-  box-shadow: 0 0 0 hsl(0, 5%, 70%);
+  --shadow-color: hsl(0, 5%, 70%);
 }
 
 [shadow=concrete-700] {
-  box-shadow: 0 0 0 hsl(0, 5%, 65%);
+  --shadow-color: hsl(0, 5%, 65%);
 }
 
 [shadow=concrete-800] {
-  box-shadow: 0 0 0 hsl(0, 5%, 95%);
+  --shadow-color: hsl(0, 5%, 60%);
 }
 
 [shadow=concrete-900] {
-  box-shadow: 0 0 0 hsl(0, 5%, 95%);
+  --shadow-color: hsl(0, 5%, 55%);
 }
 
 [fontColor=concrete-100] {
@@ -2986,44 +3113,40 @@
   border-color: hsl(140, 50%, 55%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(140, 50%, 75%);
-}
-
 [shadow=green-100] {
-  box-shadow: 0 0 0 hsl(140, 50%, 95%);
+  --shadow-color: hsl(140, 50%, 95%);
 }
 
 [shadow=green-200] {
-  box-shadow: 0 0 0 hsl(140, 50%, 90%);
+  --shadow-color: hsl(140, 50%, 90%);
 }
 
 [shadow=green-300] {
-  box-shadow: 0 0 0 hsl(140, 50%, 85%);
+  --shadow-color: hsl(140, 50%, 85%);
 }
 
 [shadow=green-400] {
-  box-shadow: 0 0 0 hsl(140, 50%, 80%);
+  --shadow-color: hsl(140, 50%, 80%);
 }
 
 [shadow=green-500] {
-  box-shadow: 0 0 0 hsl(140, 50%, 75%);
+  --shadow-color: hsl(140, 50%, 75%);
 }
 
 [shadow=green-600] {
-  box-shadow: 0 0 0 hsl(140, 50%, 70%);
+  --shadow-color: hsl(140, 50%, 70%);
 }
 
 [shadow=green-700] {
-  box-shadow: 0 0 0 hsl(140, 50%, 65%);
+  --shadow-color: hsl(140, 50%, 65%);
 }
 
 [shadow=green-800] {
-  box-shadow: 0 0 0 hsl(140, 50%, 95%);
+  --shadow-color: hsl(140, 50%, 60%);
 }
 
 [shadow=green-900] {
-  box-shadow: 0 0 0 hsl(140, 50%, 95%);
+  --shadow-color: hsl(140, 50%, 55%);
 }
 
 [fontColor=green-100] {
@@ -3221,39 +3344,39 @@
 }
 
 [shadow=freshgreen-100] {
-  box-shadow: 0 0 0 hsl(121, 100%, 90%);
+  --shadow-color: hsl(121, 100%, 90%);
 }
 
 [shadow=freshgreen-200] {
-  box-shadow: 0 0 0 hsl(121, 100%, 80%);
+  --shadow-color: hsl(121, 100%, 80%);
 }
 
 [shadow=freshgreen-300] {
-  box-shadow: 0 0 0 hsl(121, 100%, 70%);
+  --shadow-color: hsl(121, 100%, 70%);
 }
 
 [shadow=freshgreen-400] {
-  box-shadow: 0 0 0 hsl(121, 100%, 60%);
+  --shadow-color: hsl(121, 100%, 60%);
 }
 
 [shadow=freshgreen-500] {
-  box-shadow: 0 0 0 hsl(121, 100%, 50%);
+  --shadow-color: hsl(121, 100%, 50%);
 }
 
 [shadow=freshgreen-600] {
-  box-shadow: 0 0 0 hsl(121, 100%, 40%);
+  --shadow-color: hsl(121, 100%, 40%);
 }
 
 [shadow=freshgreen-700] {
-  box-shadow: 0 0 0 hsl(121, 100%, 30%);
+  --shadow-color: hsl(121, 100%, 30%);
 }
 
 [shadow=freshgreen-800] {
-  box-shadow: 0 0 0 hsl(121, 100%, 90%);
+  --shadow-color: hsl(121, 100%, 25%);
 }
 
 [shadow=freshgreen-900] {
-  box-shadow: 0 0 0 hsl(121, 100%, 90%);
+  --shadow-color: hsl(121, 100%, 20%);
 }
 
 [fontColor=freshgreen-100] {
@@ -3451,39 +3574,39 @@
 }
 
 [shadow=lime-100] {
-  box-shadow: 0 0 0 hsl(99, 70%, 90%);
+  --shadow-color: hsl(99, 70%, 90%);
 }
 
 [shadow=lime-200] {
-  box-shadow: 0 0 0 hsl(99, 70%, 80%);
+  --shadow-color: hsl(99, 70%, 80%);
 }
 
 [shadow=lime-300] {
-  box-shadow: 0 0 0 hsl(99, 70%, 70%);
+  --shadow-color: hsl(99, 70%, 70%);
 }
 
 [shadow=lime-400] {
-  box-shadow: 0 0 0 hsl(99, 70%, 60%);
+  --shadow-color: hsl(99, 70%, 60%);
 }
 
 [shadow=lime-500] {
-  box-shadow: 0 0 0 hsl(99, 70%, 50%);
+  --shadow-color: hsl(99, 70%, 50%);
 }
 
 [shadow=lime-600] {
-  box-shadow: 0 0 0 hsl(99, 70%, 40%);
+  --shadow-color: hsl(99, 70%, 40%);
 }
 
 [shadow=lime-700] {
-  box-shadow: 0 0 0 hsl(99, 70%, 30%);
+  --shadow-color: hsl(99, 70%, 30%);
 }
 
 [shadow=lime-800] {
-  box-shadow: 0 0 0 hsl(99, 70%, 90%);
+  --shadow-color: hsl(99, 70%, 20%);
 }
 
 [shadow=lime-900] {
-  box-shadow: 0 0 0 hsl(99, 70%, 90%);
+  --shadow-color: hsl(99, 70%, 15%);
 }
 
 [fontColor=lime-100] {
@@ -3681,39 +3804,39 @@
 }
 
 [shadow=wintergreen-100] {
-  box-shadow: 0 0 0 hsl(152, 99%, 80%);
+  --shadow-color: hsl(152, 99%, 80%);
 }
 
 [shadow=wintergreen-200] {
-  box-shadow: 0 0 0 hsl(152, 99%, 70%);
+  --shadow-color: hsl(152, 99%, 70%);
 }
 
 [shadow=wintergreen-300] {
-  box-shadow: 0 0 0 hsl(152, 99%, 60%);
+  --shadow-color: hsl(152, 99%, 60%);
 }
 
 [shadow=wintergreen-400] {
-  box-shadow: 0 0 0 hsl(152, 99%, 50%);
+  --shadow-color: hsl(152, 99%, 50%);
 }
 
 [shadow=wintergreen-500] {
-  box-shadow: 0 0 0 hsl(152, 99%, 40%);
+  --shadow-color: hsl(152, 99%, 40%);
 }
 
 [shadow=wintergreen-600] {
-  box-shadow: 0 0 0 hsl(152, 99%, 30%);
+  --shadow-color: hsl(152, 99%, 30%);
 }
 
 [shadow=wintergreen-700] {
-  box-shadow: 0 0 0 hsl(152, 99%, 25%);
+  --shadow-color: hsl(152, 99%, 25%);
 }
 
 [shadow=wintergreen-800] {
-  box-shadow: 0 0 0 hsl(152, 99%, 80%);
+  --shadow-color: hsl(152, 99%, 20%);
 }
 
 [shadow=wintergreen-900] {
-  box-shadow: 0 0 0 hsl(152, 99%, 80%);
+  --shadow-color: hsl(152, 99%, 15%);
 }
 
 [fontColor=wintergreen-100] {
@@ -3910,44 +4033,40 @@
   border-color: hsl(20, 100%, 25%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(20, 100%, 60%);
-}
-
 [shadow=orange-100] {
-  box-shadow: 0 0 0 hsl(20, 100%, 97%);
+  --shadow-color: hsl(20, 100%, 97%);
 }
 
 [shadow=orange-200] {
-  box-shadow: 0 0 0 hsl(20, 100%, 90%);
+  --shadow-color: hsl(20, 100%, 90%);
 }
 
 [shadow=orange-300] {
-  box-shadow: 0 0 0 hsl(20, 100%, 85%);
+  --shadow-color: hsl(20, 100%, 85%);
 }
 
 [shadow=orange-400] {
-  box-shadow: 0 0 0 hsl(20, 100%, 75%);
+  --shadow-color: hsl(20, 100%, 75%);
 }
 
 [shadow=orange-500] {
-  box-shadow: 0 0 0 hsl(20, 100%, 60%);
+  --shadow-color: hsl(20, 100%, 60%);
 }
 
 [shadow=orange-600] {
-  box-shadow: 0 0 0 hsl(20, 100%, 50%);
+  --shadow-color: hsl(20, 100%, 50%);
 }
 
 [shadow=orange-700] {
-  box-shadow: 0 0 0 hsl(20, 100%, 40%);
+  --shadow-color: hsl(20, 100%, 40%);
 }
 
 [shadow=orange-800] {
-  box-shadow: 0 0 0 hsl(20, 100%, 97%);
+  --shadow-color: hsl(20, 100%, 35%);
 }
 
 [shadow=orange-900] {
-  box-shadow: 0 0 0 hsl(20, 100%, 97%);
+  --shadow-color: hsl(20, 100%, 25%);
 }
 
 [fontColor=orange-100] {
@@ -4145,39 +4264,39 @@
 }
 
 [shadow=creamsicle-100] {
-  box-shadow: 0 0 0 hsl(25, 80%, 97%);
+  --shadow-color: hsl(25, 80%, 97%);
 }
 
 [shadow=creamsicle-200] {
-  box-shadow: 0 0 0 hsl(25, 80%, 90%);
+  --shadow-color: hsl(25, 80%, 90%);
 }
 
 [shadow=creamsicle-300] {
-  box-shadow: 0 0 0 hsl(25, 80%, 85%);
+  --shadow-color: hsl(25, 80%, 85%);
 }
 
 [shadow=creamsicle-400] {
-  box-shadow: 0 0 0 hsl(25, 80%, 80%);
+  --shadow-color: hsl(25, 80%, 80%);
 }
 
 [shadow=creamsicle-500] {
-  box-shadow: 0 0 0 hsl(25, 80%, 75%);
+  --shadow-color: hsl(25, 80%, 75%);
 }
 
 [shadow=creamsicle-600] {
-  box-shadow: 0 0 0 hsl(25, 80%, 65%);
+  --shadow-color: hsl(25, 80%, 65%);
 }
 
 [shadow=creamsicle-700] {
-  box-shadow: 0 0 0 hsl(25, 80%, 60%);
+  --shadow-color: hsl(25, 80%, 60%);
 }
 
 [shadow=creamsicle-800] {
-  box-shadow: 0 0 0 hsl(25, 80%, 97%);
+  --shadow-color: hsl(25, 80%, 55%);
 }
 
 [shadow=creamsicle-900] {
-  box-shadow: 0 0 0 hsl(25, 80%, 97%);
+  --shadow-color: hsl(25, 80%, 50%);
 }
 
 [fontColor=creamsicle-100] {
@@ -4375,39 +4494,39 @@
 }
 
 [shadow=peach-100] {
-  box-shadow: 0 0 0 hsl(30, 100%, 97%);
+  --shadow-color: hsl(30, 100%, 97%);
 }
 
 [shadow=peach-200] {
-  box-shadow: 0 0 0 hsl(30, 100%, 90%);
+  --shadow-color: hsl(30, 100%, 90%);
 }
 
 [shadow=peach-300] {
-  box-shadow: 0 0 0 hsl(30, 100%, 85%);
+  --shadow-color: hsl(30, 100%, 85%);
 }
 
 [shadow=peach-400] {
-  box-shadow: 0 0 0 hsl(30, 100%, 80%);
+  --shadow-color: hsl(30, 100%, 80%);
 }
 
 [shadow=peach-500] {
-  box-shadow: 0 0 0 hsl(30, 100%, 75%);
+  --shadow-color: hsl(30, 100%, 75%);
 }
 
 [shadow=peach-600] {
-  box-shadow: 0 0 0 hsl(30, 100%, 65%);
+  --shadow-color: hsl(30, 100%, 65%);
 }
 
 [shadow=peach-700] {
-  box-shadow: 0 0 0 hsl(30, 100%, 60%);
+  --shadow-color: hsl(30, 100%, 60%);
 }
 
 [shadow=peach-800] {
-  box-shadow: 0 0 0 hsl(30, 100%, 97%);
+  --shadow-color: hsl(30, 100%, 55%);
 }
 
 [shadow=peach-900] {
-  box-shadow: 0 0 0 hsl(30, 100%, 97%);
+  --shadow-color: hsl(30, 100%, 50%);
 }
 
 [fontColor=peach-100] {
@@ -4604,44 +4723,40 @@
   border-color: hsl(300, 100%, 45%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(300, 100%, 75%);
-}
-
 [shadow=pink-100] {
-  box-shadow: 0 0 0 hsl(300, 100%, 95%);
+  --shadow-color: hsl(300, 100%, 95%);
 }
 
 [shadow=pink-200] {
-  box-shadow: 0 0 0 hsl(300, 100%, 90%);
+  --shadow-color: hsl(300, 100%, 90%);
 }
 
 [shadow=pink-300] {
-  box-shadow: 0 0 0 hsl(300, 100%, 85%);
+  --shadow-color: hsl(300, 100%, 85%);
 }
 
 [shadow=pink-400] {
-  box-shadow: 0 0 0 hsl(300, 100%, 80%);
+  --shadow-color: hsl(300, 100%, 80%);
 }
 
 [shadow=pink-500] {
-  box-shadow: 0 0 0 hsl(300, 100%, 75%);
+  --shadow-color: hsl(300, 100%, 75%);
 }
 
 [shadow=pink-600] {
-  box-shadow: 0 0 0 hsl(300, 100%, 70%);
+  --shadow-color: hsl(300, 100%, 70%);
 }
 
 [shadow=pink-700] {
-  box-shadow: 0 0 0 hsl(300, 100%, 65%);
+  --shadow-color: hsl(300, 100%, 65%);
 }
 
 [shadow=pink-800] {
-  box-shadow: 0 0 0 hsl(300, 100%, 95%);
+  --shadow-color: hsl(300, 100%, 60%);
 }
 
 [shadow=pink-900] {
-  box-shadow: 0 0 0 hsl(300, 100%, 95%);
+  --shadow-color: hsl(300, 100%, 45%);
 }
 
 [fontColor=pink-100] {
@@ -4839,39 +4954,39 @@
 }
 
 [shadow=bubblegum-100] {
-  box-shadow: 0 0 0 hsl(310, 100%, 90%);
+  --shadow-color: hsl(310, 100%, 90%);
 }
 
 [shadow=bubblegum-200] {
-  box-shadow: 0 0 0 hsl(310, 100%, 80%);
+  --shadow-color: hsl(310, 100%, 80%);
 }
 
 [shadow=bubblegum-300] {
-  box-shadow: 0 0 0 hsl(310, 100%, 70%);
+  --shadow-color: hsl(310, 100%, 70%);
 }
 
 [shadow=bubblegum-400] {
-  box-shadow: 0 0 0 hsl(310, 100%, 60%);
+  --shadow-color: hsl(310, 100%, 60%);
 }
 
 [shadow=bubblegum-500] {
-  box-shadow: 0 0 0 hsl(310, 100%, 50%);
+  --shadow-color: hsl(310, 100%, 50%);
 }
 
 [shadow=bubblegum-600] {
-  box-shadow: 0 0 0 hsl(310, 100%, 40%);
+  --shadow-color: hsl(310, 100%, 40%);
 }
 
 [shadow=bubblegum-700] {
-  box-shadow: 0 0 0 hsl(310, 100%, 30%);
+  --shadow-color: hsl(310, 100%, 30%);
 }
 
 [shadow=bubblegum-800] {
-  box-shadow: 0 0 0 hsl(310, 100%, 90%);
+  --shadow-color: hsl(310, 100%, 25%);
 }
 
 [shadow=bubblegum-900] {
-  box-shadow: 0 0 0 hsl(310, 100%, 90%);
+  --shadow-color: hsl(310, 100%, 20%);
 }
 
 [fontColor=bubblegum-100] {
@@ -5068,44 +5183,40 @@
   border-color: hsl(255, 100%, 55%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(255, 100%, 75%);
-}
-
 [shadow=purple-100] {
-  box-shadow: 0 0 0 hsl(255, 100%, 95%);
+  --shadow-color: hsl(255, 100%, 95%);
 }
 
 [shadow=purple-200] {
-  box-shadow: 0 0 0 hsl(255, 100%, 90%);
+  --shadow-color: hsl(255, 100%, 90%);
 }
 
 [shadow=purple-300] {
-  box-shadow: 0 0 0 hsl(255, 100%, 85%);
+  --shadow-color: hsl(255, 100%, 85%);
 }
 
 [shadow=purple-400] {
-  box-shadow: 0 0 0 hsl(255, 100%, 80%);
+  --shadow-color: hsl(255, 100%, 80%);
 }
 
 [shadow=purple-500] {
-  box-shadow: 0 0 0 hsl(255, 100%, 75%);
+  --shadow-color: hsl(255, 100%, 75%);
 }
 
 [shadow=purple-600] {
-  box-shadow: 0 0 0 hsl(255, 100%, 70%);
+  --shadow-color: hsl(255, 100%, 70%);
 }
 
 [shadow=purple-700] {
-  box-shadow: 0 0 0 hsl(255, 100%, 65%);
+  --shadow-color: hsl(255, 100%, 65%);
 }
 
 [shadow=purple-800] {
-  box-shadow: 0 0 0 hsl(255, 100%, 95%);
+  --shadow-color: hsl(255, 100%, 60%);
 }
 
 [shadow=purple-900] {
-  box-shadow: 0 0 0 hsl(255, 100%, 95%);
+  --shadow-color: hsl(255, 100%, 55%);
 }
 
 [fontColor=purple-100] {
@@ -5302,44 +5413,40 @@
   border-color: hsl(0, 100%, 55%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(0, 100%, 75%);
-}
-
 [shadow=red-100] {
-  box-shadow: 0 0 0 hsl(0, 100%, 95%);
+  --shadow-color: hsl(0, 100%, 95%);
 }
 
 [shadow=red-200] {
-  box-shadow: 0 0 0 hsl(0, 100%, 90%);
+  --shadow-color: hsl(0, 100%, 90%);
 }
 
 [shadow=red-300] {
-  box-shadow: 0 0 0 hsl(0, 100%, 85%);
+  --shadow-color: hsl(0, 100%, 85%);
 }
 
 [shadow=red-400] {
-  box-shadow: 0 0 0 hsl(0, 100%, 80%);
+  --shadow-color: hsl(0, 100%, 80%);
 }
 
 [shadow=red-500] {
-  box-shadow: 0 0 0 hsl(0, 100%, 75%);
+  --shadow-color: hsl(0, 100%, 75%);
 }
 
 [shadow=red-600] {
-  box-shadow: 0 0 0 hsl(0, 100%, 70%);
+  --shadow-color: hsl(0, 100%, 70%);
 }
 
 [shadow=red-700] {
-  box-shadow: 0 0 0 hsl(0, 100%, 65%);
+  --shadow-color: hsl(0, 100%, 65%);
 }
 
 [shadow=red-800] {
-  box-shadow: 0 0 0 hsl(0, 100%, 95%);
+  --shadow-color: hsl(0, 100%, 60%);
 }
 
 [shadow=red-900] {
-  box-shadow: 0 0 0 hsl(0, 100%, 95%);
+  --shadow-color: hsl(0, 100%, 55%);
 }
 
 [fontColor=red-100] {
@@ -5537,39 +5644,39 @@
 }
 
 [shadow=brickred-100] {
-  box-shadow: 0 0 0 hsl(0, 100%, 95%);
+  --shadow-color: hsl(0, 100%, 95%);
 }
 
 [shadow=brickred-200] {
-  box-shadow: 0 0 0 hsl(0, 70%, 85%);
+  --shadow-color: hsl(0, 70%, 85%);
 }
 
 [shadow=brickred-300] {
-  box-shadow: 0 0 0 hsl(0, 70%, 75%);
+  --shadow-color: hsl(0, 70%, 75%);
 }
 
 [shadow=brickred-400] {
-  box-shadow: 0 0 0 hsl(0, 100%, 65%);
+  --shadow-color: hsl(0, 100%, 65%);
 }
 
 [shadow=brickred-500] {
-  box-shadow: 0 0 0 hsl(0, 70%, 55%);
+  --shadow-color: hsl(0, 70%, 55%);
 }
 
 [shadow=brickred-600] {
-  box-shadow: 0 0 0 hsl(0, 70%, 45%);
+  --shadow-color: hsl(0, 70%, 45%);
 }
 
 [shadow=brickred-700] {
-  box-shadow: 0 0 0 hsl(0, 100%, 35%);
+  --shadow-color: hsl(0, 100%, 35%);
 }
 
 [shadow=brickred-800] {
-  box-shadow: 0 0 0 hsl(0, 100%, 95%);
+  --shadow-color: hsl(0, 70%, 25%);
 }
 
 [shadow=brickred-900] {
-  box-shadow: 0 0 0 hsl(0, 100%, 95%);
+  --shadow-color: hsl(0, 70%, 15%);
 }
 
 [fontColor=brickred-100] {
@@ -5767,39 +5874,39 @@
 }
 
 [shadow=burgundy-100] {
-  box-shadow: 0 0 0 hsl(345, 100%, 65%);
+  --shadow-color: hsl(345, 100%, 65%);
 }
 
 [shadow=burgundy-200] {
-  box-shadow: 0 0 0 hsl(345, 100%, 55%);
+  --shadow-color: hsl(345, 100%, 55%);
 }
 
 [shadow=burgundy-300] {
-  box-shadow: 0 0 0 hsl(345, 100%, 40%);
+  --shadow-color: hsl(345, 100%, 40%);
 }
 
 [shadow=burgundy-400] {
-  box-shadow: 0 0 0 hsl(345, 100%, 35%);
+  --shadow-color: hsl(345, 100%, 35%);
 }
 
 [shadow=burgundy-500] {
-  box-shadow: 0 0 0 hsl(345, 100%, 25%);
+  --shadow-color: hsl(345, 100%, 25%);
 }
 
 [shadow=burgundy-600] {
-  box-shadow: 0 0 0 hsl(345, 100%, 20%);
+  --shadow-color: hsl(345, 100%, 20%);
 }
 
 [shadow=burgundy-700] {
-  box-shadow: 0 0 0 hsl(345, 100%, 15%);
+  --shadow-color: hsl(345, 100%, 15%);
 }
 
 [shadow=burgundy-800] {
-  box-shadow: 0 0 0 hsl(345, 100%, 65%);
+  --shadow-color: hsl(345, 100%, 10%);
 }
 
 [shadow=burgundy-900] {
-  box-shadow: 0 0 0 hsl(345, 100%, 65%);
+  --shadow-color: hsl(345, 95%, 10%);
 }
 
 [fontColor=burgundy-100] {
@@ -5997,39 +6104,39 @@
 }
 
 [shadow=candyapple-100] {
-  box-shadow: 0 0 0 hsl(10, 100%, 97%);
+  --shadow-color: hsl(10, 100%, 97%);
 }
 
 [shadow=candyapple-200] {
-  box-shadow: 0 0 0 hsl(10, 100%, 90%);
+  --shadow-color: hsl(10, 100%, 90%);
 }
 
 [shadow=candyapple-300] {
-  box-shadow: 0 0 0 hsl(10, 100%, 80%);
+  --shadow-color: hsl(10, 100%, 80%);
 }
 
 [shadow=candyapple-400] {
-  box-shadow: 0 0 0 hsl(10, 100%, 70%);
+  --shadow-color: hsl(10, 100%, 70%);
 }
 
 [shadow=candyapple-500] {
-  box-shadow: 0 0 0 hsl(10, 100%, 60%);
+  --shadow-color: hsl(10, 100%, 60%);
 }
 
 [shadow=candyapple-600] {
-  box-shadow: 0 0 0 hsl(10, 100%, 50%);
+  --shadow-color: hsl(10, 100%, 50%);
 }
 
 [shadow=candyapple-700] {
-  box-shadow: 0 0 0 hsl(10, 100%, 40%);
+  --shadow-color: hsl(10, 100%, 40%);
 }
 
 [shadow=candyapple-800] {
-  box-shadow: 0 0 0 hsl(10, 100%, 97%);
+  --shadow-color: hsl(10, 100%, 30%);
 }
 
 [shadow=candyapple-900] {
-  box-shadow: 0 0 0 hsl(10, 100%, 97%);
+  --shadow-color: hsl(10, 100%, 20%);
 }
 
 [fontColor=candyapple-100] {
@@ -6227,39 +6334,39 @@
 }
 
 [shadow=cherryred-100] {
-  box-shadow: 0 0 0 hsl(0, 90%, 90%);
+  --shadow-color: hsl(0, 90%, 90%);
 }
 
 [shadow=cherryred-200] {
-  box-shadow: 0 0 0 hsl(0, 90%, 80%);
+  --shadow-color: hsl(0, 90%, 80%);
 }
 
 [shadow=cherryred-300] {
-  box-shadow: 0 0 0 hsl(0, 90%, 70%);
+  --shadow-color: hsl(0, 90%, 70%);
 }
 
 [shadow=cherryred-400] {
-  box-shadow: 0 0 0 hsl(0, 90%, 60%);
+  --shadow-color: hsl(0, 90%, 60%);
 }
 
 [shadow=cherryred-500] {
-  box-shadow: 0 0 0 hsl(0, 90%, 50%);
+  --shadow-color: hsl(0, 90%, 50%);
 }
 
 [shadow=cherryred-600] {
-  box-shadow: 0 0 0 hsl(0, 90%, 40%);
+  --shadow-color: hsl(0, 90%, 40%);
 }
 
 [shadow=cherryred-700] {
-  box-shadow: 0 0 0 hsl(0, 90%, 30%);
+  --shadow-color: hsl(0, 90%, 30%);
 }
 
 [shadow=cherryred-800] {
-  box-shadow: 0 0 0 hsl(0, 90%, 90%);
+  --shadow-color: hsl(0, 90%, 20%);
 }
 
 [shadow=cherryred-900] {
-  box-shadow: 0 0 0 hsl(0, 90%, 90%);
+  --shadow-color: hsl(0, 90%, 10%);
 }
 
 [fontColor=cherryred-100] {
@@ -6457,39 +6564,39 @@
 }
 
 [shadow=crimson-100] {
-  box-shadow: 0 0 0 hsl(340, 100%, 98%);
+  --shadow-color: hsl(340, 100%, 98%);
 }
 
 [shadow=crimson-200] {
-  box-shadow: 0 0 0 hsl(340, 100%, 90%);
+  --shadow-color: hsl(340, 100%, 90%);
 }
 
 [shadow=crimson-300] {
-  box-shadow: 0 0 0 hsl(340, 100%, 80%);
+  --shadow-color: hsl(340, 100%, 80%);
 }
 
 [shadow=crimson-400] {
-  box-shadow: 0 0 0 hsl(340, 100%, 70%);
+  --shadow-color: hsl(340, 100%, 70%);
 }
 
 [shadow=crimson-500] {
-  box-shadow: 0 0 0 hsl(340, 100%, 60%);
+  --shadow-color: hsl(340, 100%, 60%);
 }
 
 [shadow=crimson-600] {
-  box-shadow: 0 0 0 hsl(340, 100%, 50%);
+  --shadow-color: hsl(340, 100%, 50%);
 }
 
 [shadow=crimson-700] {
-  box-shadow: 0 0 0 hsl(340, 100%, 40%);
+  --shadow-color: hsl(340, 100%, 40%);
 }
 
 [shadow=crimson-800] {
-  box-shadow: 0 0 0 hsl(340, 100%, 98%);
+  --shadow-color: hsl(340, 100%, 30%);
 }
 
 [shadow=crimson-900] {
-  box-shadow: 0 0 0 hsl(340, 100%, 98%);
+  --shadow-color: hsl(340, 100%, 20%);
 }
 
 [fontColor=crimson-100] {
@@ -6687,39 +6794,39 @@
 }
 
 [shadow=maroon-100] {
-  box-shadow: 0 0 0 hsl(330, 100%, 65%);
+  --shadow-color: hsl(330, 100%, 65%);
 }
 
 [shadow=maroon-200] {
-  box-shadow: 0 0 0 hsl(330, 100%, 55%);
+  --shadow-color: hsl(330, 100%, 55%);
 }
 
 [shadow=maroon-300] {
-  box-shadow: 0 0 0 hsl(330, 100%, 45%);
+  --shadow-color: hsl(330, 100%, 45%);
 }
 
 [shadow=maroon-400] {
-  box-shadow: 0 0 0 hsl(330, 100%, 35%);
+  --shadow-color: hsl(330, 100%, 35%);
 }
 
 [shadow=maroon-500] {
-  box-shadow: 0 0 0 hsl(330, 100%, 25%);
+  --shadow-color: hsl(330, 100%, 25%);
 }
 
 [shadow=maroon-600] {
-  box-shadow: 0 0 0 hsl(330, 100%, 20%);
+  --shadow-color: hsl(330, 100%, 20%);
 }
 
 [shadow=maroon-700] {
-  box-shadow: 0 0 0 hsl(330, 100%, 15%);
+  --shadow-color: hsl(330, 100%, 15%);
 }
 
 [shadow=maroon-800] {
-  box-shadow: 0 0 0 hsl(330, 100%, 65%);
+  --shadow-color: hsl(330, 100%, 10%);
 }
 
 [shadow=maroon-900] {
-  box-shadow: 0 0 0 hsl(330, 100%, 65%);
+  --shadow-color: hsl(330, 95%, 10%);
 }
 
 [fontColor=maroon-100] {
@@ -6917,39 +7024,39 @@
 }
 
 [shadow=scarlett-100] {
-  box-shadow: 0 0 0 hsl(5, 100%, 95%);
+  --shadow-color: hsl(5, 100%, 95%);
 }
 
 [shadow=scarlett-200] {
-  box-shadow: 0 0 0 hsl(5, 100%, 85%);
+  --shadow-color: hsl(5, 100%, 85%);
 }
 
 [shadow=scarlett-300] {
-  box-shadow: 0 0 0 hsl(5, 100%, 75%);
+  --shadow-color: hsl(5, 100%, 75%);
 }
 
 [shadow=scarlett-400] {
-  box-shadow: 0 0 0 hsl(5, 100%, 65%);
+  --shadow-color: hsl(5, 100%, 65%);
 }
 
 [shadow=scarlett-500] {
-  box-shadow: 0 0 0 hsl(5, 100%, 55%);
+  --shadow-color: hsl(5, 100%, 55%);
 }
 
 [shadow=scarlett-600] {
-  box-shadow: 0 0 0 hsl(5, 100%, 45%);
+  --shadow-color: hsl(5, 100%, 45%);
 }
 
 [shadow=scarlett-700] {
-  box-shadow: 0 0 0 hsl(5, 100%, 35%);
+  --shadow-color: hsl(5, 100%, 35%);
 }
 
 [shadow=scarlett-800] {
-  box-shadow: 0 0 0 hsl(5, 100%, 95%);
+  --shadow-color: hsl(5, 100%, 25%);
 }
 
 [shadow=scarlett-900] {
-  box-shadow: 0 0 0 hsl(5, 100%, 95%);
+  --shadow-color: hsl(5, 100%, 15%);
 }
 
 [fontColor=scarlett-100] {
@@ -7146,44 +7253,40 @@
   border-color: hsl(0, 0%, 60%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(0, 0%, 80%);
-}
-
 [shadow=white-100] {
-  box-shadow: 0 0 0 hsl(0, 0%, 100%);
+  --shadow-color: hsl(0, 0%, 100%);
 }
 
 [shadow=white-200] {
-  box-shadow: 0 0 0 hsl(0, 0%, 95%);
+  --shadow-color: hsl(0, 0%, 95%);
 }
 
 [shadow=white-300] {
-  box-shadow: 0 0 0 hsl(0, 0%, 90%);
+  --shadow-color: hsl(0, 0%, 90%);
 }
 
 [shadow=white-400] {
-  box-shadow: 0 0 0 hsl(0, 0%, 85%);
+  --shadow-color: hsl(0, 0%, 85%);
 }
 
 [shadow=white-500] {
-  box-shadow: 0 0 0 hsl(0, 0%, 80%);
+  --shadow-color: hsl(0, 0%, 80%);
 }
 
 [shadow=white-600] {
-  box-shadow: 0 0 0 hsl(0, 0%, 75%);
+  --shadow-color: hsl(0, 0%, 75%);
 }
 
 [shadow=white-700] {
-  box-shadow: 0 0 0 hsl(0, 0%, 70%);
+  --shadow-color: hsl(0, 0%, 70%);
 }
 
 [shadow=white-800] {
-  box-shadow: 0 0 0 hsl(0, 0%, 100%);
+  --shadow-color: hsl(0, 0%, 65%);
 }
 
 [shadow=white-900] {
-  box-shadow: 0 0 0 hsl(0, 0%, 100%);
+  --shadow-color: hsl(0, 0%, 60%);
 }
 
 [fontColor=white-100] {
@@ -7380,44 +7483,40 @@
   border-color: hsl(60, 100%, 55%);
 }
 
-[shadow] {
-  box-shadow: 0 0 0 hsl(60, 100%, 75%);
-}
-
 [shadow=yellow-100] {
-  box-shadow: 0 0 0 hsl(60, 100%, 95%);
+  --shadow-color: hsl(60, 100%, 95%);
 }
 
 [shadow=yellow-200] {
-  box-shadow: 0 0 0 hsl(60, 100%, 90%);
+  --shadow-color: hsl(60, 100%, 90%);
 }
 
 [shadow=yellow-300] {
-  box-shadow: 0 0 0 hsl(60, 100%, 85%);
+  --shadow-color: hsl(60, 100%, 85%);
 }
 
 [shadow=yellow-400] {
-  box-shadow: 0 0 0 hsl(60, 100%, 80%);
+  --shadow-color: hsl(60, 100%, 80%);
 }
 
 [shadow=yellow-500] {
-  box-shadow: 0 0 0 hsl(60, 100%, 75%);
+  --shadow-color: hsl(60, 100%, 75%);
 }
 
 [shadow=yellow-600] {
-  box-shadow: 0 0 0 hsl(60, 100%, 70%);
+  --shadow-color: hsl(60, 100%, 70%);
 }
 
 [shadow=yellow-700] {
-  box-shadow: 0 0 0 hsl(60, 100%, 65%);
+  --shadow-color: hsl(60, 100%, 65%);
 }
 
 [shadow=yellow-800] {
-  box-shadow: 0 0 0 hsl(60, 100%, 95%);
+  --shadow-color: hsl(60, 100%, 60%);
 }
 
 [shadow=yellow-900] {
-  box-shadow: 0 0 0 hsl(60, 100%, 95%);
+  --shadow-color: hsl(60, 100%, 55%);
 }
 
 [fontColor=yellow-100] {
@@ -7615,39 +7714,39 @@
 }
 
 [shadow=dandelion-100] {
-  box-shadow: 0 0 0 hsl(55, 100%, 80%);
+  --shadow-color: hsl(55, 100%, 80%);
 }
 
 [shadow=dandelion-200] {
-  box-shadow: 0 0 0 hsl(55, 100%, 70%);
+  --shadow-color: hsl(55, 100%, 70%);
 }
 
 [shadow=dandelion-300] {
-  box-shadow: 0 0 0 hsl(55, 100%, 60%);
+  --shadow-color: hsl(55, 100%, 60%);
 }
 
 [shadow=dandelion-400] {
-  box-shadow: 0 0 0 hsl(55, 100%, 55%);
+  --shadow-color: hsl(55, 100%, 55%);
 }
 
 [shadow=dandelion-500] {
-  box-shadow: 0 0 0 hsl(55, 100%, 50%);
+  --shadow-color: hsl(55, 100%, 50%);
 }
 
 [shadow=dandelion-600] {
-  box-shadow: 0 0 0 hsl(55, 100%, 45%);
+  --shadow-color: hsl(55, 100%, 45%);
 }
 
 [shadow=dandelion-700] {
-  box-shadow: 0 0 0 hsl(55, 100%, 35%);
+  --shadow-color: hsl(55, 100%, 35%);
 }
 
 [shadow=dandelion-800] {
-  box-shadow: 0 0 0 hsl(55, 100%, 80%);
+  --shadow-color: hsl(55, 100%, 30%);
 }
 
 [shadow=dandelion-900] {
-  box-shadow: 0 0 0 hsl(55, 100%, 80%);
+  --shadow-color: hsl(55, 100%, 25%);
 }
 
 [fontColor=dandelion-100] {

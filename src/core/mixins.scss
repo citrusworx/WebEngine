@@ -7,3 +7,35 @@
         };
     }
 }
+
+@mixin grid-generator($cols, $rows){
+    [grid="#{$cols}x#{$rows}"]{
+        display: grid;
+        grid-template-columns: repeat(#{$cols}, 1fr);
+        grid-template-rows: repeat(#{$rows}, 1fr);
+    }
+}
+
+@mixin col-span-generator(){
+    @for $i from 1 through 6 {
+        [span="#{$i}"]{
+            grid-column: span #{$i};
+        }
+    }
+}
+
+@mixin row-span-generator(){
+    @for $i from 1 through 6 {
+        [span="#{$i}"]{
+            grid-row: span #{$i};
+        }
+    }
+}
+
+@mixin gap-generator(){
+    @for $i from 1 through 10 {
+        [gap="#{$i}"]{
+            gap: #{$i}rem;
+        }
+    }
+}

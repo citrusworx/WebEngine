@@ -5,4 +5,4 @@
 @forward './black/text.scss';
 
 // Swatch import
-@use './swatches/swatches.scss';
+@forward './swatches/swatches.scss';

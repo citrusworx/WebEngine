@@ -33,5 +33,6 @@
 }
 
 [shadow="blue-900"]{
-    --shadow-color: $blue-900;
+    --shadow-color: #{$blue-900};
 }
+

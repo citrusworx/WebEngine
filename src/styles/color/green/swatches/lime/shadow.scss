@@ -1,37 +1,38 @@
 @use "../../../../../tokens/color/green/swatch/lime/lime.scss" as *;
 
 [shadow="lime-100"]{
-    box-shadow: 0 0 0 $lime-100;
+    --shadow-color: #{$lime-100};
 }
 
 [shadow="lime-200"]{
-    box-shadow: 0 0 0 $lime-200;
+    --shadow-color: #{$lime-200};
 }
 
 [shadow="lime-300"]{
-    box-shadow: 0 0 0 $lime-300;
+    --shadow-color: #{$lime-300};
 }
 
 [shadow="lime-400"]{
-    box-shadow: 0 0 0 $lime-400;
+    --shadow-color: #{$lime-400};
 }
 
 [shadow="lime-500"]{
-    box-shadow: 0 0 0 $lime-500;
+    --shadow-color: #{$lime-500};
 }
 
 [shadow="lime-600"]{
-    box-shadow: 0 0 0 $lime-600;
+    --shadow-color: #{$lime-600};
 }
 
 [shadow="lime-700"]{
-    box-shadow: 0 0 0 $lime-700;
+    --shadow-color: #{$lime-700};
 }
 
 [shadow="lime-800"]{
-    box-shadow: 0 0 0 $lime-100;
+    --shadow-color: #{$lime-800};
 }
 
 [shadow="lime-900"]{
-    box-shadow: 0 0 0 $lime-100;
+    --shadow-color: #{$lime-900};
 }
+

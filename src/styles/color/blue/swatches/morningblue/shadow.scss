@@ -1,37 +1,38 @@
 @use "../../../../../tokens/color/blue/swatch/morningblue/morningblue.scss" as *;
 
 [shadow="morningblue-100"]{
-    box-shadow: 0 0 0 $morningblue-100;
+    --shadow-color: #{$morningblue-100};
 }
 
 [shadow="morningblue-200"]{
-    box-shadow: 0 0 0 $morningblue-200;
+    --shadow-color: #{$morningblue-200};
 }
 
 [shadow="morningblue-300"]{
-    box-shadow: 0 0 0 $morningblue-300;
+    --shadow-color: #{$morningblue-300};
 }
 
 [shadow="morningblue-400"]{
-    box-shadow: 0 0 0 $morningblue-400;
+    --shadow-color: #{$morningblue-400};
 }
 
 [shadow="morningblue-500"]{
-    box-shadow: 0 0 0 $morningblue-500;
+    --shadow-color: #{$morningblue-500};
 }
 
 [shadow="morningblue-600"]{
-    box-shadow: 0 0 0 $morningblue-600;
+    --shadow-color: #{$morningblue-600};
 }
 
 [shadow="morningblue-700"]{
-    box-shadow: 0 0 0 $morningblue-700;
+    --shadow-color: #{$morningblue-700};
 }
 
 [shadow="morningblue-800"]{
-    box-shadow: 0 0 0 $morningblue-100;
+    --shadow-color: #{$morningblue-800};
 }
 
 [shadow="morningblue-900"]{
-    box-shadow: 0 0 0 $morningblue-100;
+    --shadow-color: #{$morningblue-900};
 }
+

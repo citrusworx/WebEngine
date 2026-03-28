@@ -1,37 +1,38 @@
 @use "../../../../../tokens/color/green/swatch/freshgreen/freshgreen.scss" as *;
 
 [shadow="freshgreen-100"]{
-    box-shadow: 0 0 0 $freshgreen-100;
+    --shadow-color: #{$freshgreen-100};
 }
 
 [shadow="freshgreen-200"]{
-    box-shadow: 0 0 0 $freshgreen-200;
+    --shadow-color: #{$freshgreen-200};
 }
 
 [shadow="freshgreen-300"]{
-    box-shadow: 0 0 0 $freshgreen-300;
+    --shadow-color: #{$freshgreen-300};
 }
 
 [shadow="freshgreen-400"]{
-    box-shadow: 0 0 0 $freshgreen-400;
+    --shadow-color: #{$freshgreen-400};
 }
 
 [shadow="freshgreen-500"]{
-    box-shadow: 0 0 0 $freshgreen-500;
+    --shadow-color: #{$freshgreen-500};
 }
 
 [shadow="freshgreen-600"]{
-    box-shadow: 0 0 0 $freshgreen-600;
+    --shadow-color: #{$freshgreen-600};
 }
 
 [shadow="freshgreen-700"]{
-    box-shadow: 0 0 0 $freshgreen-700;
+    --shadow-color: #{$freshgreen-700};
 }
 
 [shadow="freshgreen-800"]{
-    box-shadow: 0 0 0 $freshgreen-100;
+    --shadow-color: #{$freshgreen-800};
 }
 
 [shadow="freshgreen-900"]{
-    box-shadow: 0 0 0 $freshgreen-100;
+    --shadow-color: #{$freshgreen-900};
 }
+

@@ -1,37 +1,38 @@
 @use "../../../../../tokens/color/red/swatch/cherryred/cherryred.scss" as *;
 
 [shadow="cherryred-100"]{
-    box-shadow: 0 0 0 $cherryred-100;
+    --shadow-color: #{$cherryred-100};
 }
 
 [shadow="cherryred-200"]{
-    box-shadow: 0 0 0 $cherryred-200;
+    --shadow-color: #{$cherryred-200};
 }
 
 [shadow="cherryred-300"]{
-    box-shadow: 0 0 0 $cherryred-300;
+    --shadow-color: #{$cherryred-300};
 }
 
 [shadow="cherryred-400"]{
-    box-shadow: 0 0 0 $cherryred-400;
+    --shadow-color: #{$cherryred-400};
 }
 
 [shadow="cherryred-500"]{
-    box-shadow: 0 0 0 $cherryred-500;
+    --shadow-color: #{$cherryred-500};
 }
 
 [shadow="cherryred-600"]{
-    box-shadow: 0 0 0 $cherryred-600;
+    --shadow-color: #{$cherryred-600};
 }
 
 [shadow="cherryred-700"]{
-    box-shadow: 0 0 0 $cherryred-700;
+    --shadow-color: #{$cherryred-700};
 }
 
 [shadow="cherryred-800"]{
-    box-shadow: 0 0 0 $cherryred-100;
+    --shadow-color: #{$cherryred-800};
 }
 
 [shadow="cherryred-900"]{
-    box-shadow: 0 0 0 $cherryred-100;
+    --shadow-color: #{$cherryred-900};
 }
+

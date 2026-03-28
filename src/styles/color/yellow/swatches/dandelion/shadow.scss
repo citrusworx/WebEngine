@@ -1,37 +1,38 @@
 @use "../../../../../tokens/color/yellow/swatch/dandelion/dandelion.scss" as *;
 
 [shadow="dandelion-100"]{
-    box-shadow: 0 0 0 $dandelion-100;
+    --shadow-color: #{$dandelion-100};
 }
 
 [shadow="dandelion-200"]{
-    box-shadow: 0 0 0 $dandelion-200;
+    --shadow-color: #{$dandelion-200};
 }
 
 [shadow="dandelion-300"]{
-    box-shadow: 0 0 0 $dandelion-300;
+    --shadow-color: #{$dandelion-300};
 }
 
 [shadow="dandelion-400"]{
-    box-shadow: 0 0 0 $dandelion-400;
+    --shadow-color: #{$dandelion-400};
 }
 
 [shadow="dandelion-500"]{
-    box-shadow: 0 0 0 $dandelion-500;
+    --shadow-color: #{$dandelion-500};
 }
 
 [shadow="dandelion-600"]{
-    box-shadow: 0 0 0 $dandelion-600;
+    --shadow-color: #{$dandelion-600};
 }
 
 [shadow="dandelion-700"]{
-    box-shadow: 0 0 0 $dandelion-700;
+    --shadow-color: #{$dandelion-700};
 }
 
 [shadow="dandelion-800"]{
-    box-shadow: 0 0 0 $dandelion-100;
+    --shadow-color: #{$dandelion-800};
 }
 
 [shadow="dandelion-900"]{
-    box-shadow: 0 0 0 $dandelion-100;
+    --shadow-color: #{$dandelion-900};
 }
+

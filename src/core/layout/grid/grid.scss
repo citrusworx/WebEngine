@@ -1,0 +1,10 @@
+@use '../../mixins.scss' as *;
+
+@include grid-generator(2, 2);
+@include grid-generator(3, 2);
+@include grid-generator(3, 3);
+@include grid-generator(4, 3);
+@include grid-generator(4, 4);
+@include col-span-generator();
+@include row-span-generator();
+@include gap-generator();
