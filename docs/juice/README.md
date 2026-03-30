@@ -72,6 +72,11 @@ libraries/juice/
 
 ## Documentation map
 
+- [Attributes Reference](./juice-attributes.md): comprehensive list of all supported HTML attributes and their values
+- [Colors Reference](./juice-colors.md): complete guide to all available colors and swatches
+- [Spacing Reference](./juice-spacing.md): detailed guide to padding, margin, and gap attributes
+- [Sizing Reference](./juice-sizing.md): detailed guide to width and height attributes
+- [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
 - [Styles](./juice-styles.md): attribute names, examples, and selector conventions
 - [Token System](./juice-token-system.md): how tokens are stored and consumed
 - [Layout](./juice-layout.md): stacks, rows, grids, spans, and numeric sizing utilities

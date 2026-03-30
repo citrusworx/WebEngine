@@ -241,3 +241,19 @@ v1.0  ← stable API
 ## Status
 
 Sig.js is in active development as a WebEngine native module. The core API is functional and in use in the CitrusWorx reference implementation.
+
+---
+
+## Documentation
+
+Complete guides and references for using Sig.js:
+
+| Document | Purpose |
+|----------|---------|
+| [Getting Started](./sig-getting-started.md) | Quick introduction and basic concepts |
+| [API Reference](./sig-api.md) | Complete API for Signal, effect, batch, memo, JSX runtime, and router |
+| [Router Guide](./sig-router.md) | Building SPAs with SigRouter, link interception, named routes |
+| [Examples](./sig-examples.md) | Real-world patterns: counter, todo app, forms, API integration, WebSockets |
+| [Sig.js + Juice Integration](./sig-juice-integration.md) | Building complete apps with Sig.js reactivity and Juice styling |
+| [Project Status](./sig-status.md) | Roadmap, known limitations, comparison with other frameworks |
+| [Troubleshooting](./sig-troubleshooting.md) | Common issues and solutions |
