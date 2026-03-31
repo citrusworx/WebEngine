@@ -38,6 +38,21 @@ yarn add @citrusworx/grapevine
 
 ---
 
+## Documentation
+
+Complete guides and references for using GrapeVine:
+
+| Document | Purpose |
+|----------|---------|
+| [Getting Started](./grapevine-getting-started.md) | Quick introduction and first deployment |
+| [API Reference](./grapevine-api.md) | Complete API for all GrapeVine functions |
+| [Configuration Guide](./grapevine-config.md) | YAML configuration reference |
+| [DigitalOcean Guide](./grapevine-digitalocean.md) | DigitalOcean provider setup and guide |
+| [Examples](./grapevine-examples.md) | Real-world deployment examples |
+| [Project Status](./grapevine-status.md) | Roadmap, known limitations, comparison |
+
+---
+
 ## Configuration
 
 Grapevine infrastructure can be defined three ways:
@@ -98,6 +113,54 @@ firewall:
   outbound:
     - protocol: tcp
       ports: "all"
+```
+
+---
+
+## Quick Start
+
+### 1. Set up DigitalOcean token
+
+```bash
+export DO_TOKEN=dop_v1_...  # Your DigitalOcean API token
+```
+
+### 2. Deploy infrastructure
+
+```typescript
+import {
+  createVPC,
+  createFireWall,
+  deployByBlueprint,
+  createSSHKey,
+  uploadSSHKey
+} from "@citrusworx/grapevine";
+
+// Create SSH key
+const sshKey = createSSHKey("my-key");
+await uploadSSHKey({
+  name: sshKey.name,
+  public_key: sshKey.publicKey
+});
+
+// Create network
+const vpc = await createVPC({
+  name: "production",
+  region: "nyc1",
+  ip_range: "10.0.0.0/16"
+});
+
+// Deploy droplet
+const droplet = await deployByBlueprint("./blueprint.yaml");
+
+console.log(`Deployed to ${droplet.networks.v4[0].ip_address}`);
+```
+
+---
+
+## Status
+
+Grapevine is in active development as a WebEngine native module. The core API is functional and ready for deployment to DigitalOcean. See [grapevine-status.md](./grapevine-status.md) for roadmap and planned features.
       destinations: ["0.0.0.0/0"]
 ```
 
