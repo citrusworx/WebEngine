@@ -1,10 +1,20 @@
 {
     "extends": "../../tsconfig.base.json",
+    "include": [
+        "src/**/*"
+    ],
 
     "compilerOptions": {
+        "target": "esnext",
+        "module": "nodenext",
         "rootDir": "src",
-        "outDir": "dist"
-    },
-
-    "include": ["src/**/*"]
+        "outDir": "dist",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@citrusworx/sigjs",
+        "strict": true,
+        "isolatedModules": true,
+        "noUncheckedSideEffectImports": true,
+        "moduleDetection": "force",
+        "skipLibCheck": true
+    }
 }

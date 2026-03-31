@@ -11,6 +11,9 @@
     "files": [
         "dist"
     ],
+    "dependencies": {
+        "@citrusworx/sigjs": "workspace:*"
+    },
     "devDependencies": {
         "@types/gulp": "^4.0.18",
         "@types/gulp-postcss": "^8.0.6",

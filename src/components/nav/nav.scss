@@ -1,0 +1,63 @@
+@use '../../tokens/gradients/green/swatches/citrus-mint/citrus-mint.scss' as *;
+@use '../../tokens/color/green/swatch/freshgreen/freshgreen.scss' as *;
+
+nav[type="bar"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 10vh;
+    width: 100vw;
+    position: relative;
+    overflow: visible;
+
+    ul {
+        list-style: none;
+        display: flex;
+        gap: 2rem;
+
+        li {
+            list-style: none;
+            
+            a {
+                text-decoration: none;}
+        }
+    }
+
+    &[theme="citrusmint-300"]{
+        background: $freshgreen-100;
+        color: $freshgreen-600;
+
+        a {
+            color: $freshgreen-600;
+        }
+
+        a:hover {
+            color: $freshgreen-300;
+        }
+    }
+}
+
+nav[sticky]{
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+nav[fixed]{
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+
+nav[type="strip"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 5vh;
+    width: 100vw;
+
+    &[gradient="citrusmint-300"]{
+        background: linear-gradient(90deg, var(--citrusmint-300) 0%, var(--citrusmint-200) 100%);
+    }
+}

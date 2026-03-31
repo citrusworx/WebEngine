@@ -1,7 +1,7 @@
 @use "../../../../tokens/color/black/black.scss" as *;
 
 // Default Shadow
-[shadow]{
+:where([shadow]){
     --shadow-color: #{$black-500};
 }
 

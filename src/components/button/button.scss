@@ -1,0 +1,23 @@
+@use '../../tokens/color/green/green.scss' as *;
+
+[btn="flat"]{
+    border-style: solid;
+
+    &[theme="citrusmint-300"]{
+        background: $freshgreen-300;
+        color: $freshgreen-600;
+        border-color: $freshgreen-600;
+
+        &:hover {
+            background: $freshgreen-600;
+            color: $freshgreen-100;
+            border-color: $freshgreen-100;
+        }
+    }
+
+    [scale="lg"]{
+        height: 4vh;
+        width: 7vw;
+        padding: 0.5rem 1rem;
+    }
+}

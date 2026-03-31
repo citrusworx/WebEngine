@@ -32,7 +32,7 @@
     --shadow-color: #{$red-800};
 }
 
-[shadow="red-900"]{
+:where([shadow="red-900"]){
     --shadow-color: #{$red-900};
 }
 
