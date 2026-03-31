@@ -9,6 +9,11 @@ interface Route {
 export class SigRouter {
     private routes: Map<string, Route> = new Map();
     private namedRoutes: Map<string, string> = new Map();
+    private target: string;
+
+    constructor(target: string = "#root") {
+        this.target = target;
+    }
 
     set(path: string, component: Node | null, name?: string){
         this.routes.set(path, {path, component, name})
@@ -27,6 +32,15 @@ export class SigRouter {
         return this.routes.get(name);
     }
 
+    private render(path: string){
+        const route = this.routes.get(path);
+        if(!route || !route.component) return;
+        const target = document.querySelector(this.target);
+        if(!target) return;
+        target.replaceChildren(route.component);
+    }
+
+
     start(){
         this.globalanchorintercept();
     }
@@ -35,7 +49,8 @@ export class SigRouter {
         const route = this.routes.get(path);
         if(!route) return;
 
-        window.history.pushState({}, "", path)
+        window.history.pushState({}, "", path);
+        this.render(path);
     }
 
     goBack(){
@@ -48,18 +63,23 @@ export class SigRouter {
 
     private globalanchorintercept(){
             document.addEventListener('click', (e) => {
-            const anchor = (e.target as HTMLElement).closest('a');
-            if(!anchor) return;
-            if(anchor.target === "_blank") return;
-            if(anchor.hasAttribute("download")) return;
+                const anchor = (e.target as HTMLElement).closest('a');
+                if(!anchor) return;
+                if(anchor.target === "_blank") return;
+                if(anchor.hasAttribute("download")) return;
 
-            const href = anchor.getAttribute("href");
-            if(!href) return;
-            if(href?.startsWith("http") || href?.startsWith("https")) return;
-            if(href?.startsWith("mailto") || href?.startsWith("tel") || href?.startsWith("ftp")) return;
+                const href = anchor.getAttribute("href");
+                if(!href) return;
+                if(href?.startsWith("http") || href?.startsWith("https")) return;
+                if(href?.startsWith("mailto") || href?.startsWith("tel") || href?.startsWith("ftp")) return;
 
-            e.preventDefault();
+                e.preventDefault();
+                this.navigate(href);
         })
+
+        window.addEventListener('popstate', () => {
+            this.render(window.location.pathname);
+        }
+        )
     }
-    
 }

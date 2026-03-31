@@ -16,6 +16,8 @@
  * count.set(1); // Only the effect callback runs, updating the DOM
  * ```
  */
+let isBatching = false;
+const pendingSubscribers = new Set();
 let currentSubscriber = null;
 export function Signal(value) {
     const subscribers = new Set();
@@ -34,9 +36,42 @@ export function Signal(value) {
         set: setter
     };
 }
+export function batch(fn) {
+    isBatching = true;
+    fn();
+    isBatching = false;
+    pendingSubscribers.forEach(fn => fn());
+    pendingSubscribers.clear();
+}
+export function memo(fn) {
+    let cachedValue;
+    let isDirty = true;
+    const subscribers = new Set();
+    const invalidate = () => {
+        isDirty = true;
+        subscribers.forEach(fn => fn());
+    };
+    function getter() {
+        if (currentSubscriber) {
+            subscribers.add(currentSubscriber);
+        }
+        if (isDirty) {
+            const prevSubscriber = currentSubscriber;
+            currentSubscriber = invalidate;
+            cachedValue = fn();
+            currentSubscriber = prevSubscriber;
+            isDirty = false;
+        }
+        return cachedValue;
+    }
+    return {
+        get: getter
+    };
+}
 export function effect(fn) {
     currentSubscriber = fn;
     fn();
     currentSubscriber = null;
+    return () => { };
 }
 //# sourceMappingURL=signal.js.map

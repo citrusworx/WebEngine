@@ -56,7 +56,8 @@
 
 
 type Subscriber = () => void;
-
+let isBatching = false;
+const pendingSubscribers = new Set<Subscriber>();
 let currentSubscriber: Subscriber | null = null;
 
 export function Signal<T>(value: T){
@@ -77,6 +78,45 @@ export function Signal<T>(value: T){
     return {
         get: getter,
         set: setter
+    };
+}
+
+export function batch(fn: () => void){
+    isBatching = true;
+    fn();
+    isBatching = false;
+
+    pendingSubscribers.forEach(fn => fn());
+    pendingSubscribers.clear();
+}
+
+export function memo<T>(fn: () => T){
+    let cachedValue: T | undefined;
+    let isDirty = true;
+    const subscribers = new Set<Subscriber>();
+
+    const invalidate: Subscriber = () => {
+        isDirty = true;
+        subscribers.forEach(fn => fn());
+    }
+
+    function getter(){
+        if(currentSubscriber){
+            subscribers.add(currentSubscriber);
+        }
+
+        if(isDirty){
+            const prevSubscriber = currentSubscriber;
+            currentSubscriber = invalidate;
+            cachedValue = fn();
+            currentSubscriber = prevSubscriber;
+            isDirty = false;
+        }
+        return cachedValue;
+    }
+
+    return {
+        get: getter
     };
 }
 

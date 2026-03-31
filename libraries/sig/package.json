@@ -5,16 +5,20 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./jsx-runtime": {
-      "import": "./dist/jsx-runtime.js"
+      "import": "./dist/jsx-runtime.js",
+      "types": "./dist/jsx-runtime.d.ts"
     },
     "./jsx-dev-runtime": {
-      "import": "./dist/jsx-dev-runtime.js"
+      "import": "./dist/jsx-dev-runtime.js",
+      "types": "./dist/jsx-dev-runtime.d.ts"
     },
     "./sig-router": {
-      "import": "./dist/sig-router.js"
+      "import": "./dist/sig-router.js",
+      "types": "./dist/sig-router.d.ts"
     }
   },
   "files": [

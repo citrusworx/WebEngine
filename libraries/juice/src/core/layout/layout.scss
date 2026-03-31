@@ -4,9 +4,24 @@ $spacing--sm: 0.5rem;
 $spacing--md: 1rem;
 $spacing--lg: 1.5rem;
 
-[stack]{
+[position="toBack"]{
+    position: relative;
+    z-index: -1;
+}
+
+[position="toFront"]{
+    position: relative;
+    z-index: 1;
+}
+
+[position="absolute"]{
+    position: absolute;
+}
+
+:where([stack]){
     display: flex;
-    flex-direction: column;
+    flex-direction: column !important;
+    margin: 0 auto;
 }
 
 [stack][reverse]{
@@ -23,6 +38,19 @@ $spacing--lg: 1.5rem;
 [row]{
     display: flex;
     flex-direction: row;
+}
+
+[row][centered]{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    [row]{
+        flex-direction: column;
+    }
 }
 
 [grid]{

@@ -23,7 +23,7 @@ user:
       type: SELECT
       table: users
       fields:
-          id
+        - id
       conditions:
           condition: 'WHERE'
           column: id

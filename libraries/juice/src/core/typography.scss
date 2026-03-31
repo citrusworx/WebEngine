@@ -28,3 +28,28 @@ $text--xxl: 3rem;
 [fontSize="lg"]{
     font-size: $text--lg;
 }
+
+[fontSize="xl"]{
+    font-size: $text--xl;
+}
+
+[fontSize="xxl"]{
+    font-size: $text--xxl;
+}
+
+// Alignment and Decoration
+p[align="center"]{
+    text-align: center;
+}
+
+p[align="right"]{
+    text-align: right;
+}
+
+p[align="justify"]{
+    text-align: justify;
+}
+
+p[decoration="underline"]{
+    text-decoration: underline;
+}

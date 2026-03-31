@@ -1,0 +1,26 @@
+form[type="signin"]{
+
+}
+
+form[type="signup"]{
+
+}
+
+form[type="search"]{
+    [scale="lg"]{
+        width: 100%;
+        height: 6vh;
+    }
+}
+
+form {
+    [field]{
+        display: flex;
+        flex-direction: row;
+    }
+
+    [field][stack]{
+        display: flex;
+        flex-direction: column;
+    }
+}

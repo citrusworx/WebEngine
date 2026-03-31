@@ -54,5 +54,9 @@ export declare function Signal<T>(value: T): {
     get: () => T;
     set: (newValue: T) => void;
 };
-export declare function effect(fn: Subscriber): void;
+export declare function batch(fn: () => void): void;
+export declare function memo<T>(fn: () => T): {
+    get: () => T | undefined;
+};
+export declare function effect(fn: Subscriber): () => void;
 export {};
