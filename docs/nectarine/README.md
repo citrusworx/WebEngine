@@ -4,6 +4,8 @@ Nectarine is a config-driven backend library that empowers developers to define 
 
 Nectarine is a WebEngine native module but is fully independent. It can be used in any project.
 
+**Latest Version**: 0.0.1 (Alpha)
+
 ---
 
 ## Philosophy
@@ -18,21 +20,55 @@ Backend development is repetitive. Models, schemas, queries, and API routes foll
 
 ---
 
-## Installation
+## Quick Start
 
 ```bash
+# Install
 yarn add @citrusworx/nectarine
+
+# Define schema (schemas/user/userSchema.yml)
+User:
+  table: users
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+    password: VARCHAR(255) NOT NULL
+
+# Generate backend
+const userRoutes = generateRoutes(schema, queries, api);
+app.use("/api", userRoutes);
+
+# Use API
+GET /api/users
+POST /api/users
 ```
+
+**[→ Full Getting Started Guide](./nectarine-getting-started.md)**
+
+---
+
+## Documentation
+
+| Guide | Topic |
+|-------|-------|
+| [Getting Started](./nectarine-getting-started.md) | Installation, setup, first backend |
+| [API Reference](./nectarine-api.md) | Complete API documentation |
+| [Schema Guide](./nectarine-schema-guide.md) | Schema definition and field types |
+| [Examples](./nectarine-examples.md) | Real-world examples (blog, store, SaaS, CMS) |
+| [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
+| [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |
+| [Project Status](./nectarine-status.md) | Roadmap, limitations, comparison |
 
 ---
 
 ## Supported Databases
 
-| Database | Status |
-|----------|--------|
-| PostgreSQL | Active development |
-| MySQL | Active development |
-| MongoDB | Active development |
+| Database | Status | Guide |
+|----------|--------|-------|
+| PostgreSQL | ✓ Active | [PostgreSQL Guide](./nectarine-postgresql.md) |
+| MySQL | ✓ Active | Coming soon |
+| MongoDB | ✓ Active | [MongoDB Guide](./nectarine-mongodb.md) |
 
 ---
 
@@ -41,12 +77,142 @@ yarn add @citrusworx/nectarine
 Nectarine reads three YAML files per resource and generates a fully functional backend:
 
 ```
-userSchema.yml    ← defines the model and table structure
-user.yml          ← defines queries (SELECT, INSERT, UPDATE, DELETE)
-userAPI.yml       ← defines REST endpoints and HTTP methods
+userSchema.yml    ← Model definitions and table structure
+userQueries.yml   ← Query definitions (SELECT, INSERT, UPDATE, DELETE)
+userAPI.yml       ← REST endpoint routing
 ```
 
-These three files are all that is needed to define a complete backend resource. Nectarine reads them, generates SQL or MongoDB queries, wires up routes, and exposes a REST API.
+These three files define a complete backend resource. Nectarine:
+1. Parses the YAML schemas
+2. Generates database queries
+3. Wires up Express routes
+4. Validates data with Zod
+5. Exposes a REST API
+
+---
+
+## Installation
+
+```bash
+yarn add @citrusworx/nectarine
+```
+
+---
+
+## Core Features
+
+✓ **Schema-Driven**: Define backend in YAML, get API automatically
+✓ **Database Support**: PostgreSQL, MySQL, MongoDB
+✓ **Type Safe**: Zod validation on all routes
+✓ **Express Native**: Generates Express routes
+✓ **Pre-built Schemas**: User, Blog, CMS, Store, Banking models included
+✓ **Query Builder**: SELECT, INSERT, UPDATE, DELETE operations
+✓ **Relationships**: Foreign keys and relationships supported
+✓ **Flexible**: Extend and override as needed
+
+---
+
+## Example: Blog Backend
+
+Define a blog with posts and comments:
+
+```yaml
+# userSchema.yml
+User:
+  table: users
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+
+Post:
+  table: posts
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    title: VARCHAR(255) NOT NULL
+    content: text NOT NULL
+    author_id: int FOREIGN KEY REFERENCES users(id)
+
+Comment:
+  table: comments
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    content: text NOT NULL
+    post_id: int FOREIGN KEY REFERENCES posts(id)
+    author_id: int FOREIGN KEY REFERENCES users(id)
+```
+
+Nectarine automatically generates:
+- 3 CREATE operations (users, posts, comments)
+- 3 READ operations (get all, get by ID)
+- 3 UPDATE operations
+- 3 DELETE operations
+- Full CRUD API with validation
+
+**[See full blog example →](./nectarine-examples.md#simple-blog)**
+
+---
+
+## Use Cases
+
+✓ **Rapid Prototyping**: Build backends in minutes, not days
+✓ **Startups**: Bootstrap quickly with minimal code
+✓ **GraphQL to REST**: Take GraphQL schema, generate REST API
+✓ **CMS Backends**: Content management with any database
+✓ **APIs**: Build CRUD APIs without repeating patterns
+✓ **Microservices**: Lightweight backends for microservice architecture
+
+---
+
+## What's Included
+
+- Schema definition system
+- Query builder
+- Express route generation
+- Zod validation
+- PostgreSQL adapter
+- MongoDB adapter
+- MySQL adapter
+- Pre-built model schemas
+- Connection pooling
+
+---
+
+## What's Planned
+
+- [ ] GraphQL support
+- [ ] Caching layer
+- [ ] Authorization system
+- [ ] Audit logging
+- [ ] Real-time updates
+- [ ] Multi-tenant support
+- [ ] CLI tools
+
+**[See full roadmap →](./nectarine-status.md#roadmap-summary)**
+
+---
+
+## Next Steps
+
+1. **[Get Started](./nectarine-getting-started.md)** — Installation and first backend
+2. **[Learn the Concepts](./nectarine-schema-guide.md)** — Understand schemas
+3. **[See Examples](./nectarine-examples.md)** — Real-world backends
+4. **[Choose Your Database](./nectarine-postgresql.md)** — Setup guide
+5. **[Build Your Backend](./nectarine-getting-started.md)** — Create your first API
+
+---
+
+## Requirements
+
+- Node.js 14+
+- Express.js
+- One of: PostgreSQL, MySQL, MongoDB
+
+---
+
+## License
+
+MIT - Use freely in any project
 
 ---
 
