@@ -1,42 +1,21 @@
+import { heroNode, HeroNode } from "./nodes/HeroNode";
+import { Port, SugarNode, SugarEdge } from "./interfaces/interfaces";
+import { NodeType } from "./types/types";
+
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Node Types
-type NodeType = "content" | "parameter" | "operation";
-
-interface Port {
-    id: string;
-    label: string;
-    type: "input" | "output";
-}
-
-interface SugarNode {
-    id: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    label: string;
-    type: NodeType;
-    isDragging: boolean;
-    ports: Port[];
-    fields?: { label: string; value: string }[];
-}
-
-interface SugarEdge {
-    id: string;
-    fromNodeId: string;
-    fromPortType: "content" | "parameter" | "operation";
-    toNodeId: string;
-}
 
 // Colors
 const NODE_COLORS: Record<NodeType, { header: string; border: string; port: string }> = {
     content:   { header: "#4caf50", border: "#388e3c", port: "#81c784" },
     parameter: { header: "#fbc02d", border: "#f9a825", port: "#ffe082" },
     operation: { header: "#5c6bc0", border: "#3949ab", port: "#9fa8da" },
+    event: { header: "#e64a19", border: "#d84315", port: "#ff8a65" },
+    variable: { header: "#0097a7", border: "#00796b", port: "#4dd0e1" }
 };
 
 // Nodes
@@ -45,7 +24,7 @@ const nodes: SugarNode[] = [
         id: "1",
         x: 60, y: 200,
         width: 180, height: 70,
-        label: "GetDocument",
+        label: "Get Page",
         type: "content",
         isDragging: false,
         ports: [{ id: "out", label: "out", type: "output" }]
@@ -54,7 +33,7 @@ const nodes: SugarNode[] = [
         id: "2",
         x: 300, y: 200,
         width: 200, height: 90,
-        label: "getElement",
+        label: "Grab Container",
         type: "operation",
         isDragging: false,
         ports: [
@@ -67,9 +46,10 @@ const nodes: SugarNode[] = [
         id: "3",
         x: 560, y: 200,
         width: 200, height: 70,
-        label: "addSimpleTitle",
+        label: "Add Button",
         type: "content",
         isDragging: false,
+        fields:  [{ label: "text", value: "Click Me" }],
         ports: [
             { id: "in", label: "in", type: "input" },
             { id: "out", label: "out", type: "output" }
@@ -97,6 +77,18 @@ const nodes: SugarNode[] = [
         isDragging: false,
         ports: [{ id: "out", label: "out", type: "output" }],
         fields: [{ label: "value", value: "content.title" }]
+    },
+    {
+        id: "6",
+        x: 300, y: 360,
+        width: 200, height: 70,
+        label: "Log",
+        type: "event",
+        isDragging: false,
+        ports: [{ id: "in", label: "in", type: "input" }]
+    },
+    {
+        ...heroNode
     }
 ];
 
@@ -106,6 +98,7 @@ const edges: SugarEdge[] = [
     { id: "e2", fromNodeId: "2", fromPortType: "operation", toNodeId: "3" },
     { id: "e3", fromNodeId: "3", fromPortType: "content",   toNodeId: "4" },
     { id: "e4", fromNodeId: "5", fromPortType: "parameter", toNodeId: "4" },
+    { id: "e5", fromNodeId: "2", fromPortType: "operation", toNodeId: "7" },
 ];
 
 // Port positions
