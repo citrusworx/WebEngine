@@ -1,2 +1,291 @@
 @forward './black/black.scss';
 @forward './green/green.scss';
+
+:root{
+
+/* GRADIENTS */
+
+    /* Styles */
+
+    --warm-to-cold: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(240, 100%, 50%));
+    --sunset: linear-gradient(90deg, hsl(30, 100%, 50%), hsl(330, 100%, 50%));
+    --ocean: linear-gradient(90deg, hsl(200, 60%, 50%), hsl(200, 100%, 50%));
+    --fire: linear-gradient(90deg, hsl(20, 100%, 50%), hsl(40, 100%, 50%));
+    --forest: linear-gradient(90deg, hsl(120, 30%, 20%), hsl(120, 60%, 30%));
+    --golden-hour: linear-gradient(90deg, hsl(30, 60%, 70%), hsl(40, 80%, 50%));
+    --pastel-rainbow: linear-gradient(
+        90deg,
+        red 0%,
+        yellow 20%,
+        lime 40%,
+        cyan 60%,
+        blue 80%,
+        magenta 100%,
+        red 120%,
+        yellow 140%
+);
+    --muted-rainbow: linear-gradient(
+        90deg, 
+        hsla(0, 100%, 50%, 0.7), 
+        hsla(45, 100%, 50%, 0.7), 
+        hsla(90, 100%, 50%, 0.7), 
+        hsla(135, 100%, 50%, 0.7), 
+        hsla(180, 100%, 50%, 0.7), 
+        hsla(225, 100%, 50%, 0.7), 
+        hsla(270, 100%, 50%, 0.7)
+      );
+      --contrast-rainbow: linear-gradient(
+        90deg, 
+        hsl(0, 100%, 50%),       /* Red */
+        hsl(40, 100%, 50%),      /* Orange */
+        hsl(80, 100%, 50%),      /* Yellow */
+        hsl(120, 100%, 50%),     /* Green */
+        hsl(160, 100%, 50%),     /* Cyan */
+        hsl(200, 100%, 50%),     /* Blue */
+        hsl(240, 100%, 50%),     /* Purple */
+        hsl(280, 100%, 50%)      /* Magenta */
+      );
+
+
+    /* Color Gradient Sets */
+
+    --skylight:  linear-gradient(90deg, hsl(210, 100%, 90%), hsl(210, 100%, 60%));
+    --seaside: linear-gradient(90deg, hsl(180, 100%, 50%), hsl(240, 100%, 20%));
+    --oceanspray: linear-gradient(90deg, hsl(200, 100%, 80%), hsl(240, 100%, 40%));
+
+    
+
+}
+
+/* Gradient Base Styles */
+
+body[gradient]{
+  isolation: isolate;
+}
+
+[gradient]{
+    /* display: inline-block; */
+    position: relative;
+    z-index: 0;
+    /* background-size: cover; */
+}
+
+[gradient]:not([text]){
+    position: relative;
+}
+
+[gradient][text]{
+    background: var(--grad-active);
+    display: inline-block;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+[gradient]:not([text])::before {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: var(--grad-active);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+body[gradient]:not([text])::before{
+  background-size: 100% 100%;
+}
+
+body[gradient]:not([text])::before{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 0;
+
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Animation */
+[gradient]:not([text])[animation="flow"]::before{
+    background-size: 300% 100%;
+    animation: gradShiftX 3s linear infinite;
+}
+
+button[gradient]:not([text])[animation="flow"]::before{
+    background-size: 800% 100%;
+    animation: gradShiftX 8s linear infinite;
+}
+
+[text][animation="flow"]{
+    background-size: 800% 100%;
+    animation: gradShiftX 8s linear infinite;
+}
+
+
+body[gradient]:not([text])[animation="fall"]::before{
+    background-size: 300% 300%;
+    animation: gradShiftY 10s linear infinite;
+}
+
+@keyframes gradShiftX {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+@keyframes gradShiftY {
+    0% { background-position: 50% 0%; }
+    50% { background-position: 50% 100%; }
+    100% { background-position: 50% 0%; }
+}
+
+/* Special Colors */
+[gradient="pastel-rainbow"]{
+    --grad-active: var(--pastel-rainbow);
+}
+
+.bg-pastel-rainbow {
+  background: var(--pastel-rainbow);
+}
+
+[gradient="muted-rainbow"] {
+  --grad-active: var(--muted-rainbow);
+}
+
+.bg-contrast-rainbow {
+  background: var(--contrast-rainbow);
+}
+
+.bg-sunset {
+  background: var(--sunset);
+}
+
+.bg-ocean {
+  background: var(--ocean);
+}
+
+.bg-golden-hour {
+  background: var(--golden-hour);
+}
+
+.bg-forest {
+  background: var(--forest);
+}
+
+.bg-seaside {
+  background: var(--seaside);
+}
+
+.bg-skylight {
+  background: var(--skylight);
+}
+
+.bg-ocean-spray {
+  background: var(--oceanspray);
+}
+
+.grad--warm-to-cold {
+  background: var(--warm-to-cold);
+}
+
+.grad--lilac\[43-deg\]
+{
+  background-color: #4158D0;
+  background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+}
+
+.grad--turq\[to-bot\] {
+  background: linear-gradient(to bottom, #0093E9, #80D0C7);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.bg\:grad\:lav {
+  background-color: #8EC5FC;
+  background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
+}
+
+.bg\:grad\:faded-cotton-candy {
+  background-color: #D9AFD9;
+  background-image: linear-gradient(0deg, #D9AFD9 0%, #97D9E1 100%);
+}
+
+.bg\:grad\:rocketsicle {
+  background-color: #FFFFFF;
+  background-image: linear-gradient(180deg, #FFFFFF 0%, #6284FF 50%, #FF0000 100%);
+}
+
+.bg\:grad.peach {
+  background-color: #FBAB7E;
+  background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%);
+}
+
+.bg\:grad.limeade {
+  background-color: #85FFBD;
+  background-image: linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);
+}
+
+.bg\:grad\:periwinkle {
+  background-color: #8BC6EC;
+  background-image: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+}
+
+.bg\:grad.soapy {
+  background-color: #FA8BFF;
+  background-image: linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);
+}
+
+.bg\:grad.blueberry-pie {
+  background-color: #21D4FD;
+  background-image: linear-gradient(19deg, #21D4FD 0%, #B721FF 100%);
+}
+
+.bg\:grad.peach fizz {
+  background-color: #FF9A8B;
+  background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+}
+
+.bg\:grad.orangello {
+  background-color: #FAD961;
+  background-image: linear-gradient(90deg, #FAD961 0%, #F76B1C 100%);
+}
+
+.bg\:grad.cool-cherry {
+  background-color: #FF3CAC;
+  background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+}
+
+.bg\:grad.paleface {
+  background-color: #FAACA8;
+  background-image: linear-gradient(19deg, #FAACA8 0%, #DDD6F3 100%);   
+}
+
+.bg\:grad.seafoam{
+  background-color: #74EBD5;
+  background-image: linear-gradient(90deg, #74EBD5 0%, #9FACE6 100%);
+}
+
+.bg\:grad.cotton-candy {
+  background-color: #8EC5FC;
+  background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 50%, #97eef5 100%);
+}
+
+.bg\:grad.coppertone {
+  background-color: #ecac55;
+  background-image: linear-gradient(135deg, #ecac55 0%, #ea7b46 50%, #ff9f05 100%);
+}
+
+.bg\:grad.copper{
+  background-color: #ec6d55;
+  background-image: linear-gradient(135deg, #ec6d55 0%, #ea7b46 50%, #ff6205 100%);  
+}
