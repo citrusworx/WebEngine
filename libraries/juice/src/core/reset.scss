@@ -3,3 +3,13 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+
+#app > *,
+#root > * {
+    width: 100%;
+}
+
+#app {
+    container-type: inline-size;
+}

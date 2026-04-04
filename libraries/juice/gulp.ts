@@ -22,10 +22,15 @@ const styles = () => {
         });
 };
 
+const icons = () => {
+    return gulp.src("./src/icons/**/*.svg")
+            .pipe(gulp.dest("./dist/icons"));
+}
+
 const watch = () => {
     gulp.watch("./src/**/*.scss", styles)
 }
 
-export const build = gulp.series(styles);
+export const build = gulp.series(styles, icons);
 export const dev = gulp.series(styles, watch);
 export default build;

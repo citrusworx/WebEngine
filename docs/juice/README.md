@@ -78,6 +78,8 @@ libraries/juice/
 - [Sizing Reference](./juice-sizing.md): detailed guide to width and height attributes
 - [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
 - [Styles](./juice-styles.md): attribute names, examples, and selector conventions
+- [Icons — Brands](./juice-icons-brands.md): how the icon attribute maps to FontAwesome brand masks
+- [Icons — Regular](./juice-icons-regular.md): how the icon attribute maps to FontAwesome regular masks
 - [Token System](./juice-token-system.md): how tokens are stored and consumed
 - [Layout](./juice-layout.md): stacks, rows, grids, spans, and numeric sizing utilities
 

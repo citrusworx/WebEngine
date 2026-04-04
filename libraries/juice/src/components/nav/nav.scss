@@ -6,7 +6,7 @@ nav[type="bar"]{
     align-items: center;
     justify-content: space-around;
     height: 10vh;
-    width: 100vw;
+    width: 100%;
     position: relative;
     overflow: visible;
 
@@ -49,13 +49,33 @@ nav[fixed]{
     left: 0;
 }
 
+nav[type="footer"]{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ul {
+        list-style: none;
+        display: flex;
+        gap: 2rem;
+
+        li {
+            list-style: none;
+            
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+        }
+    }
+}
 
 nav[type="strip"]{
     display: flex;
     align-items: center;
     justify-content: space-around;
     height: 5vh;
-    width: 100vw;
+    width: 100%;
 
     &[gradient="citrusmint-300"]{
         background: linear-gradient(90deg, var(--citrusmint-300) 0%, var(--citrusmint-200) 100%);
