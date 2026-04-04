@@ -2,6 +2,8 @@
 
 This page documents the `brands.scss` icon file used by Juice.
 
+Juice uses the FontAwesome icon naming convention and SVG marks for its brand icons.
+
 ## File location
 
 `libraries/juice/src/styles/icons/fontawesome/brands.scss`
@@ -11,6 +13,8 @@ This file is imported by `libraries/juice/src/styles/icons/icon.scss`, which is 
 ## Purpose
 
 `brands.scss` defines the FontAwesome Brand icon set using attribute selectors. Each entry maps an `icon` attribute value to a `mask-image` SVG asset.
+
+> These icons are based on the official FontAwesome brand collection. For more details, visit [FontAwesome Brands](https://fontawesome.com/icons?d=gallery&s=brands).
 
 ## How it works
 

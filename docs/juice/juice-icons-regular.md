@@ -2,6 +2,8 @@
 
 This page documents the `regular.scss` icon file used by Juice.
 
+Juice uses the FontAwesome icon naming convention and SVG masks for its regular icon set.
+
 ## File location
 
 `libraries/juice/src/styles/icons/fontawesome/regular.scss`
@@ -11,6 +13,8 @@ This file is imported by `libraries/juice/src/styles/icons/icon.scss`, which is 
 ## Purpose
 
 `regular.scss` defines the FontAwesome Regular icon set using attribute selectors. Each entry maps an `icon` attribute value to a regular-style SVG asset.
+
+> These icons are sourced from the FontAwesome Regular collection. Learn more at [FontAwesome Regular](https://fontawesome.com/icons?d=gallery&p=2&s=regular).
 
 ## How it works
 

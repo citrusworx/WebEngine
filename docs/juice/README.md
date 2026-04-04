@@ -78,8 +78,8 @@ libraries/juice/
 - [Sizing Reference](./juice-sizing.md): detailed guide to width and height attributes
 - [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
 - [Styles](./juice-styles.md): attribute names, examples, and selector conventions
-- [Icons — Brands](./juice-icons-brands.md): how the icon attribute maps to FontAwesome brand masks
-- [Icons — Regular](./juice-icons-regular.md): how the icon attribute maps to FontAwesome regular masks
+- [Icons — Brands](./juice-icons-brands.md): how the icon attribute maps to FontAwesome brand masks (based on FontAwesome Brands)
+- [Icons — Regular](./juice-icons-regular.md): how the icon attribute maps to FontAwesome regular masks (based on FontAwesome Regular)
 - [Token System](./juice-token-system.md): how tokens are stored and consumed
 - [Layout](./juice-layout.md): stacks, rows, grids, spans, and numeric sizing utilities
 
@@ -93,3 +93,12 @@ A few areas are still early:
 - `themes/` exists but is mostly schema/config data right now
 - `components/` is present but there are not yet public component exports
 - `juice.config.yaml` is a draft configuration surface rather than a fully wired generator contract
+
+## External resources
+
+Juice uses FontAwesome icon naming conventions and asset masks for its icon system. For the latest FontAwesome icon collections and licensing details, see:
+
+- [FontAwesome Brands](https://fontawesome.com/icons?d=gallery&s=brands)
+- [FontAwesome Regular](https://fontawesome.com/icons?d=gallery&s=regular)
+- [FontAwesome home](https://fontawesome.com)
+
