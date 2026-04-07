@@ -1,0 +1,11 @@
+{
+    "name": "selzter",
+    "version": "0.0.1",
+    "description": "An execution environment library",
+    "scripts": {
+
+    },
+    "devDependencies": {
+        
+    }
+}
