@@ -187,6 +187,1206 @@ p {
   gap: 10rem;
 }
 
+[gap="1rem"] {
+  gap: 1rem;
+}
+
+[gap="1px"] {
+  gap: 1px;
+}
+
+[gap="1%"] {
+  gap: 1 %;
+}
+
+[gap="2rem"] {
+  gap: 2rem;
+}
+
+[gap="2px"] {
+  gap: 2px;
+}
+
+[gap="2%"] {
+  gap: 2 %;
+}
+
+[gap="3rem"] {
+  gap: 3rem;
+}
+
+[gap="3px"] {
+  gap: 3px;
+}
+
+[gap="3%"] {
+  gap: 3 %;
+}
+
+[gap="4rem"] {
+  gap: 4rem;
+}
+
+[gap="4px"] {
+  gap: 4px;
+}
+
+[gap="4%"] {
+  gap: 4 %;
+}
+
+[gap="5rem"] {
+  gap: 5rem;
+}
+
+[gap="5px"] {
+  gap: 5px;
+}
+
+[gap="5%"] {
+  gap: 5 %;
+}
+
+[gap="6rem"] {
+  gap: 6rem;
+}
+
+[gap="6px"] {
+  gap: 6px;
+}
+
+[gap="6%"] {
+  gap: 6 %;
+}
+
+[gap="7rem"] {
+  gap: 7rem;
+}
+
+[gap="7px"] {
+  gap: 7px;
+}
+
+[gap="7%"] {
+  gap: 7 %;
+}
+
+[gap="8rem"] {
+  gap: 8rem;
+}
+
+[gap="8px"] {
+  gap: 8px;
+}
+
+[gap="8%"] {
+  gap: 8 %;
+}
+
+[gap="9rem"] {
+  gap: 9rem;
+}
+
+[gap="9px"] {
+  gap: 9px;
+}
+
+[gap="9%"] {
+  gap: 9 %;
+}
+
+[gap="10rem"] {
+  gap: 10rem;
+}
+
+[gap="10px"] {
+  gap: 10px;
+}
+
+[gap="10%"] {
+  gap: 10 %;
+}
+
+[gap="11rem"] {
+  gap: 11rem;
+}
+
+[gap="11px"] {
+  gap: 11px;
+}
+
+[gap="11%"] {
+  gap: 11 %;
+}
+
+[gap="12rem"] {
+  gap: 12rem;
+}
+
+[gap="12px"] {
+  gap: 12px;
+}
+
+[gap="12%"] {
+  gap: 12 %;
+}
+
+[gap="13rem"] {
+  gap: 13rem;
+}
+
+[gap="13px"] {
+  gap: 13px;
+}
+
+[gap="13%"] {
+  gap: 13 %;
+}
+
+[gap="14rem"] {
+  gap: 14rem;
+}
+
+[gap="14px"] {
+  gap: 14px;
+}
+
+[gap="14%"] {
+  gap: 14 %;
+}
+
+[gap="15rem"] {
+  gap: 15rem;
+}
+
+[gap="15px"] {
+  gap: 15px;
+}
+
+[gap="15%"] {
+  gap: 15 %;
+}
+
+[gap="16rem"] {
+  gap: 16rem;
+}
+
+[gap="16px"] {
+  gap: 16px;
+}
+
+[gap="16%"] {
+  gap: 16 %;
+}
+
+[gap="17rem"] {
+  gap: 17rem;
+}
+
+[gap="17px"] {
+  gap: 17px;
+}
+
+[gap="17%"] {
+  gap: 17 %;
+}
+
+[gap="18rem"] {
+  gap: 18rem;
+}
+
+[gap="18px"] {
+  gap: 18px;
+}
+
+[gap="18%"] {
+  gap: 18 %;
+}
+
+[gap="19rem"] {
+  gap: 19rem;
+}
+
+[gap="19px"] {
+  gap: 19px;
+}
+
+[gap="19%"] {
+  gap: 19 %;
+}
+
+[gap="20rem"] {
+  gap: 20rem;
+}
+
+[gap="20px"] {
+  gap: 20px;
+}
+
+[gap="20%"] {
+  gap: 20 %;
+}
+
+[gap="21rem"] {
+  gap: 21rem;
+}
+
+[gap="21px"] {
+  gap: 21px;
+}
+
+[gap="21%"] {
+  gap: 21 %;
+}
+
+[gap="22rem"] {
+  gap: 22rem;
+}
+
+[gap="22px"] {
+  gap: 22px;
+}
+
+[gap="22%"] {
+  gap: 22 %;
+}
+
+[gap="23rem"] {
+  gap: 23rem;
+}
+
+[gap="23px"] {
+  gap: 23px;
+}
+
+[gap="23%"] {
+  gap: 23 %;
+}
+
+[gap="24rem"] {
+  gap: 24rem;
+}
+
+[gap="24px"] {
+  gap: 24px;
+}
+
+[gap="24%"] {
+  gap: 24 %;
+}
+
+[gap="25rem"] {
+  gap: 25rem;
+}
+
+[gap="25px"] {
+  gap: 25px;
+}
+
+[gap="25%"] {
+  gap: 25 %;
+}
+
+[gap="26rem"] {
+  gap: 26rem;
+}
+
+[gap="26px"] {
+  gap: 26px;
+}
+
+[gap="26%"] {
+  gap: 26 %;
+}
+
+[gap="27rem"] {
+  gap: 27rem;
+}
+
+[gap="27px"] {
+  gap: 27px;
+}
+
+[gap="27%"] {
+  gap: 27 %;
+}
+
+[gap="28rem"] {
+  gap: 28rem;
+}
+
+[gap="28px"] {
+  gap: 28px;
+}
+
+[gap="28%"] {
+  gap: 28 %;
+}
+
+[gap="29rem"] {
+  gap: 29rem;
+}
+
+[gap="29px"] {
+  gap: 29px;
+}
+
+[gap="29%"] {
+  gap: 29 %;
+}
+
+[gap="30rem"] {
+  gap: 30rem;
+}
+
+[gap="30px"] {
+  gap: 30px;
+}
+
+[gap="30%"] {
+  gap: 30 %;
+}
+
+[gap="31rem"] {
+  gap: 31rem;
+}
+
+[gap="31px"] {
+  gap: 31px;
+}
+
+[gap="31%"] {
+  gap: 31 %;
+}
+
+[gap="32rem"] {
+  gap: 32rem;
+}
+
+[gap="32px"] {
+  gap: 32px;
+}
+
+[gap="32%"] {
+  gap: 32 %;
+}
+
+[gap="33rem"] {
+  gap: 33rem;
+}
+
+[gap="33px"] {
+  gap: 33px;
+}
+
+[gap="33%"] {
+  gap: 33 %;
+}
+
+[gap="34rem"] {
+  gap: 34rem;
+}
+
+[gap="34px"] {
+  gap: 34px;
+}
+
+[gap="34%"] {
+  gap: 34 %;
+}
+
+[gap="35rem"] {
+  gap: 35rem;
+}
+
+[gap="35px"] {
+  gap: 35px;
+}
+
+[gap="35%"] {
+  gap: 35 %;
+}
+
+[gap="36rem"] {
+  gap: 36rem;
+}
+
+[gap="36px"] {
+  gap: 36px;
+}
+
+[gap="36%"] {
+  gap: 36 %;
+}
+
+[gap="37rem"] {
+  gap: 37rem;
+}
+
+[gap="37px"] {
+  gap: 37px;
+}
+
+[gap="37%"] {
+  gap: 37 %;
+}
+
+[gap="38rem"] {
+  gap: 38rem;
+}
+
+[gap="38px"] {
+  gap: 38px;
+}
+
+[gap="38%"] {
+  gap: 38 %;
+}
+
+[gap="39rem"] {
+  gap: 39rem;
+}
+
+[gap="39px"] {
+  gap: 39px;
+}
+
+[gap="39%"] {
+  gap: 39 %;
+}
+
+[gap="40rem"] {
+  gap: 40rem;
+}
+
+[gap="40px"] {
+  gap: 40px;
+}
+
+[gap="40%"] {
+  gap: 40 %;
+}
+
+[gap="41rem"] {
+  gap: 41rem;
+}
+
+[gap="41px"] {
+  gap: 41px;
+}
+
+[gap="41%"] {
+  gap: 41 %;
+}
+
+[gap="42rem"] {
+  gap: 42rem;
+}
+
+[gap="42px"] {
+  gap: 42px;
+}
+
+[gap="42%"] {
+  gap: 42 %;
+}
+
+[gap="43rem"] {
+  gap: 43rem;
+}
+
+[gap="43px"] {
+  gap: 43px;
+}
+
+[gap="43%"] {
+  gap: 43 %;
+}
+
+[gap="44rem"] {
+  gap: 44rem;
+}
+
+[gap="44px"] {
+  gap: 44px;
+}
+
+[gap="44%"] {
+  gap: 44 %;
+}
+
+[gap="45rem"] {
+  gap: 45rem;
+}
+
+[gap="45px"] {
+  gap: 45px;
+}
+
+[gap="45%"] {
+  gap: 45 %;
+}
+
+[gap="46rem"] {
+  gap: 46rem;
+}
+
+[gap="46px"] {
+  gap: 46px;
+}
+
+[gap="46%"] {
+  gap: 46 %;
+}
+
+[gap="47rem"] {
+  gap: 47rem;
+}
+
+[gap="47px"] {
+  gap: 47px;
+}
+
+[gap="47%"] {
+  gap: 47 %;
+}
+
+[gap="48rem"] {
+  gap: 48rem;
+}
+
+[gap="48px"] {
+  gap: 48px;
+}
+
+[gap="48%"] {
+  gap: 48 %;
+}
+
+[gap="49rem"] {
+  gap: 49rem;
+}
+
+[gap="49px"] {
+  gap: 49px;
+}
+
+[gap="49%"] {
+  gap: 49 %;
+}
+
+[gap="50rem"] {
+  gap: 50rem;
+}
+
+[gap="50px"] {
+  gap: 50px;
+}
+
+[gap="50%"] {
+  gap: 50 %;
+}
+
+[gap="51rem"] {
+  gap: 51rem;
+}
+
+[gap="51px"] {
+  gap: 51px;
+}
+
+[gap="51%"] {
+  gap: 51 %;
+}
+
+[gap="52rem"] {
+  gap: 52rem;
+}
+
+[gap="52px"] {
+  gap: 52px;
+}
+
+[gap="52%"] {
+  gap: 52 %;
+}
+
+[gap="53rem"] {
+  gap: 53rem;
+}
+
+[gap="53px"] {
+  gap: 53px;
+}
+
+[gap="53%"] {
+  gap: 53 %;
+}
+
+[gap="54rem"] {
+  gap: 54rem;
+}
+
+[gap="54px"] {
+  gap: 54px;
+}
+
+[gap="54%"] {
+  gap: 54 %;
+}
+
+[gap="55rem"] {
+  gap: 55rem;
+}
+
+[gap="55px"] {
+  gap: 55px;
+}
+
+[gap="55%"] {
+  gap: 55 %;
+}
+
+[gap="56rem"] {
+  gap: 56rem;
+}
+
+[gap="56px"] {
+  gap: 56px;
+}
+
+[gap="56%"] {
+  gap: 56 %;
+}
+
+[gap="57rem"] {
+  gap: 57rem;
+}
+
+[gap="57px"] {
+  gap: 57px;
+}
+
+[gap="57%"] {
+  gap: 57 %;
+}
+
+[gap="58rem"] {
+  gap: 58rem;
+}
+
+[gap="58px"] {
+  gap: 58px;
+}
+
+[gap="58%"] {
+  gap: 58 %;
+}
+
+[gap="59rem"] {
+  gap: 59rem;
+}
+
+[gap="59px"] {
+  gap: 59px;
+}
+
+[gap="59%"] {
+  gap: 59 %;
+}
+
+[gap="60rem"] {
+  gap: 60rem;
+}
+
+[gap="60px"] {
+  gap: 60px;
+}
+
+[gap="60%"] {
+  gap: 60 %;
+}
+
+[gap="61rem"] {
+  gap: 61rem;
+}
+
+[gap="61px"] {
+  gap: 61px;
+}
+
+[gap="61%"] {
+  gap: 61 %;
+}
+
+[gap="62rem"] {
+  gap: 62rem;
+}
+
+[gap="62px"] {
+  gap: 62px;
+}
+
+[gap="62%"] {
+  gap: 62 %;
+}
+
+[gap="63rem"] {
+  gap: 63rem;
+}
+
+[gap="63px"] {
+  gap: 63px;
+}
+
+[gap="63%"] {
+  gap: 63 %;
+}
+
+[gap="64rem"] {
+  gap: 64rem;
+}
+
+[gap="64px"] {
+  gap: 64px;
+}
+
+[gap="64%"] {
+  gap: 64 %;
+}
+
+[gap="65rem"] {
+  gap: 65rem;
+}
+
+[gap="65px"] {
+  gap: 65px;
+}
+
+[gap="65%"] {
+  gap: 65 %;
+}
+
+[gap="66rem"] {
+  gap: 66rem;
+}
+
+[gap="66px"] {
+  gap: 66px;
+}
+
+[gap="66%"] {
+  gap: 66 %;
+}
+
+[gap="67rem"] {
+  gap: 67rem;
+}
+
+[gap="67px"] {
+  gap: 67px;
+}
+
+[gap="67%"] {
+  gap: 67 %;
+}
+
+[gap="68rem"] {
+  gap: 68rem;
+}
+
+[gap="68px"] {
+  gap: 68px;
+}
+
+[gap="68%"] {
+  gap: 68 %;
+}
+
+[gap="69rem"] {
+  gap: 69rem;
+}
+
+[gap="69px"] {
+  gap: 69px;
+}
+
+[gap="69%"] {
+  gap: 69 %;
+}
+
+[gap="70rem"] {
+  gap: 70rem;
+}
+
+[gap="70px"] {
+  gap: 70px;
+}
+
+[gap="70%"] {
+  gap: 70 %;
+}
+
+[gap="71rem"] {
+  gap: 71rem;
+}
+
+[gap="71px"] {
+  gap: 71px;
+}
+
+[gap="71%"] {
+  gap: 71 %;
+}
+
+[gap="72rem"] {
+  gap: 72rem;
+}
+
+[gap="72px"] {
+  gap: 72px;
+}
+
+[gap="72%"] {
+  gap: 72 %;
+}
+
+[gap="73rem"] {
+  gap: 73rem;
+}
+
+[gap="73px"] {
+  gap: 73px;
+}
+
+[gap="73%"] {
+  gap: 73 %;
+}
+
+[gap="74rem"] {
+  gap: 74rem;
+}
+
+[gap="74px"] {
+  gap: 74px;
+}
+
+[gap="74%"] {
+  gap: 74 %;
+}
+
+[gap="75rem"] {
+  gap: 75rem;
+}
+
+[gap="75px"] {
+  gap: 75px;
+}
+
+[gap="75%"] {
+  gap: 75 %;
+}
+
+[gap="76rem"] {
+  gap: 76rem;
+}
+
+[gap="76px"] {
+  gap: 76px;
+}
+
+[gap="76%"] {
+  gap: 76 %;
+}
+
+[gap="77rem"] {
+  gap: 77rem;
+}
+
+[gap="77px"] {
+  gap: 77px;
+}
+
+[gap="77%"] {
+  gap: 77 %;
+}
+
+[gap="78rem"] {
+  gap: 78rem;
+}
+
+[gap="78px"] {
+  gap: 78px;
+}
+
+[gap="78%"] {
+  gap: 78 %;
+}
+
+[gap="79rem"] {
+  gap: 79rem;
+}
+
+[gap="79px"] {
+  gap: 79px;
+}
+
+[gap="79%"] {
+  gap: 79 %;
+}
+
+[gap="80rem"] {
+  gap: 80rem;
+}
+
+[gap="80px"] {
+  gap: 80px;
+}
+
+[gap="80%"] {
+  gap: 80 %;
+}
+
+[gap="81rem"] {
+  gap: 81rem;
+}
+
+[gap="81px"] {
+  gap: 81px;
+}
+
+[gap="81%"] {
+  gap: 81 %;
+}
+
+[gap="82rem"] {
+  gap: 82rem;
+}
+
+[gap="82px"] {
+  gap: 82px;
+}
+
+[gap="82%"] {
+  gap: 82 %;
+}
+
+[gap="83rem"] {
+  gap: 83rem;
+}
+
+[gap="83px"] {
+  gap: 83px;
+}
+
+[gap="83%"] {
+  gap: 83 %;
+}
+
+[gap="84rem"] {
+  gap: 84rem;
+}
+
+[gap="84px"] {
+  gap: 84px;
+}
+
+[gap="84%"] {
+  gap: 84 %;
+}
+
+[gap="85rem"] {
+  gap: 85rem;
+}
+
+[gap="85px"] {
+  gap: 85px;
+}
+
+[gap="85%"] {
+  gap: 85 %;
+}
+
+[gap="86rem"] {
+  gap: 86rem;
+}
+
+[gap="86px"] {
+  gap: 86px;
+}
+
+[gap="86%"] {
+  gap: 86 %;
+}
+
+[gap="87rem"] {
+  gap: 87rem;
+}
+
+[gap="87px"] {
+  gap: 87px;
+}
+
+[gap="87%"] {
+  gap: 87 %;
+}
+
+[gap="88rem"] {
+  gap: 88rem;
+}
+
+[gap="88px"] {
+  gap: 88px;
+}
+
+[gap="88%"] {
+  gap: 88 %;
+}
+
+[gap="89rem"] {
+  gap: 89rem;
+}
+
+[gap="89px"] {
+  gap: 89px;
+}
+
+[gap="89%"] {
+  gap: 89 %;
+}
+
+[gap="90rem"] {
+  gap: 90rem;
+}
+
+[gap="90px"] {
+  gap: 90px;
+}
+
+[gap="90%"] {
+  gap: 90 %;
+}
+
+[gap="91rem"] {
+  gap: 91rem;
+}
+
+[gap="91px"] {
+  gap: 91px;
+}
+
+[gap="91%"] {
+  gap: 91 %;
+}
+
+[gap="92rem"] {
+  gap: 92rem;
+}
+
+[gap="92px"] {
+  gap: 92px;
+}
+
+[gap="92%"] {
+  gap: 92 %;
+}
+
+[gap="93rem"] {
+  gap: 93rem;
+}
+
+[gap="93px"] {
+  gap: 93px;
+}
+
+[gap="93%"] {
+  gap: 93 %;
+}
+
+[gap="94rem"] {
+  gap: 94rem;
+}
+
+[gap="94px"] {
+  gap: 94px;
+}
+
+[gap="94%"] {
+  gap: 94 %;
+}
+
+[gap="95rem"] {
+  gap: 95rem;
+}
+
+[gap="95px"] {
+  gap: 95px;
+}
+
+[gap="95%"] {
+  gap: 95 %;
+}
+
+[gap="96rem"] {
+  gap: 96rem;
+}
+
+[gap="96px"] {
+  gap: 96px;
+}
+
+[gap="96%"] {
+  gap: 96 %;
+}
+
+[gap="97rem"] {
+  gap: 97rem;
+}
+
+[gap="97px"] {
+  gap: 97px;
+}
+
+[gap="97%"] {
+  gap: 97 %;
+}
+
+[gap="98rem"] {
+  gap: 98rem;
+}
+
+[gap="98px"] {
+  gap: 98px;
+}
+
+[gap="98%"] {
+  gap: 98 %;
+}
+
+[gap="99rem"] {
+  gap: 99rem;
+}
+
+[gap="99px"] {
+  gap: 99px;
+}
+
+[gap="99%"] {
+  gap: 99 %;
+}
+
+[gap="100rem"] {
+  gap: 100rem;
+}
+
+[gap="100px"] {
+  gap: 100px;
+}
+
+[gap="100%"] {
+  gap: 100 %;
+}
+
 [bleed] {
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -281,6 +1481,1221 @@ p {
   gap: 10rem;
 }
 
+[gap="1rem"] {
+  gap: 1rem;
+}
+
+[gap="1px"] {
+  gap: 1px;
+}
+
+[gap="1%"] {
+  gap: 1 %;
+}
+
+[gap="2rem"] {
+  gap: 2rem;
+}
+
+[gap="2px"] {
+  gap: 2px;
+}
+
+[gap="2%"] {
+  gap: 2 %;
+}
+
+[gap="3rem"] {
+  gap: 3rem;
+}
+
+[gap="3px"] {
+  gap: 3px;
+}
+
+[gap="3%"] {
+  gap: 3 %;
+}
+
+[gap="4rem"] {
+  gap: 4rem;
+}
+
+[gap="4px"] {
+  gap: 4px;
+}
+
+[gap="4%"] {
+  gap: 4 %;
+}
+
+[gap="5rem"] {
+  gap: 5rem;
+}
+
+[gap="5px"] {
+  gap: 5px;
+}
+
+[gap="5%"] {
+  gap: 5 %;
+}
+
+[gap="6rem"] {
+  gap: 6rem;
+}
+
+[gap="6px"] {
+  gap: 6px;
+}
+
+[gap="6%"] {
+  gap: 6 %;
+}
+
+[gap="7rem"] {
+  gap: 7rem;
+}
+
+[gap="7px"] {
+  gap: 7px;
+}
+
+[gap="7%"] {
+  gap: 7 %;
+}
+
+[gap="8rem"] {
+  gap: 8rem;
+}
+
+[gap="8px"] {
+  gap: 8px;
+}
+
+[gap="8%"] {
+  gap: 8 %;
+}
+
+[gap="9rem"] {
+  gap: 9rem;
+}
+
+[gap="9px"] {
+  gap: 9px;
+}
+
+[gap="9%"] {
+  gap: 9 %;
+}
+
+[gap="10rem"] {
+  gap: 10rem;
+}
+
+[gap="10px"] {
+  gap: 10px;
+}
+
+[gap="10%"] {
+  gap: 10 %;
+}
+
+[gap="11rem"] {
+  gap: 11rem;
+}
+
+[gap="11px"] {
+  gap: 11px;
+}
+
+[gap="11%"] {
+  gap: 11 %;
+}
+
+[gap="12rem"] {
+  gap: 12rem;
+}
+
+[gap="12px"] {
+  gap: 12px;
+}
+
+[gap="12%"] {
+  gap: 12 %;
+}
+
+[gap="13rem"] {
+  gap: 13rem;
+}
+
+[gap="13px"] {
+  gap: 13px;
+}
+
+[gap="13%"] {
+  gap: 13 %;
+}
+
+[gap="14rem"] {
+  gap: 14rem;
+}
+
+[gap="14px"] {
+  gap: 14px;
+}
+
+[gap="14%"] {
+  gap: 14 %;
+}
+
+[gap="15rem"] {
+  gap: 15rem;
+}
+
+[gap="15px"] {
+  gap: 15px;
+}
+
+[gap="15%"] {
+  gap: 15 %;
+}
+
+[gap="16rem"] {
+  gap: 16rem;
+}
+
+[gap="16px"] {
+  gap: 16px;
+}
+
+[gap="16%"] {
+  gap: 16 %;
+}
+
+[gap="17rem"] {
+  gap: 17rem;
+}
+
+[gap="17px"] {
+  gap: 17px;
+}
+
+[gap="17%"] {
+  gap: 17 %;
+}
+
+[gap="18rem"] {
+  gap: 18rem;
+}
+
+[gap="18px"] {
+  gap: 18px;
+}
+
+[gap="18%"] {
+  gap: 18 %;
+}
+
+[gap="19rem"] {
+  gap: 19rem;
+}
+
+[gap="19px"] {
+  gap: 19px;
+}
+
+[gap="19%"] {
+  gap: 19 %;
+}
+
+[gap="20rem"] {
+  gap: 20rem;
+}
+
+[gap="20px"] {
+  gap: 20px;
+}
+
+[gap="20%"] {
+  gap: 20 %;
+}
+
+[gap="21rem"] {
+  gap: 21rem;
+}
+
+[gap="21px"] {
+  gap: 21px;
+}
+
+[gap="21%"] {
+  gap: 21 %;
+}
+
+[gap="22rem"] {
+  gap: 22rem;
+}
+
+[gap="22px"] {
+  gap: 22px;
+}
+
+[gap="22%"] {
+  gap: 22 %;
+}
+
+[gap="23rem"] {
+  gap: 23rem;
+}
+
+[gap="23px"] {
+  gap: 23px;
+}
+
+[gap="23%"] {
+  gap: 23 %;
+}
+
+[gap="24rem"] {
+  gap: 24rem;
+}
+
+[gap="24px"] {
+  gap: 24px;
+}
+
+[gap="24%"] {
+  gap: 24 %;
+}
+
+[gap="25rem"] {
+  gap: 25rem;
+}
+
+[gap="25px"] {
+  gap: 25px;
+}
+
+[gap="25%"] {
+  gap: 25 %;
+}
+
+[gap="26rem"] {
+  gap: 26rem;
+}
+
+[gap="26px"] {
+  gap: 26px;
+}
+
+[gap="26%"] {
+  gap: 26 %;
+}
+
+[gap="27rem"] {
+  gap: 27rem;
+}
+
+[gap="27px"] {
+  gap: 27px;
+}
+
+[gap="27%"] {
+  gap: 27 %;
+}
+
+[gap="28rem"] {
+  gap: 28rem;
+}
+
+[gap="28px"] {
+  gap: 28px;
+}
+
+[gap="28%"] {
+  gap: 28 %;
+}
+
+[gap="29rem"] {
+  gap: 29rem;
+}
+
+[gap="29px"] {
+  gap: 29px;
+}
+
+[gap="29%"] {
+  gap: 29 %;
+}
+
+[gap="30rem"] {
+  gap: 30rem;
+}
+
+[gap="30px"] {
+  gap: 30px;
+}
+
+[gap="30%"] {
+  gap: 30 %;
+}
+
+[gap="31rem"] {
+  gap: 31rem;
+}
+
+[gap="31px"] {
+  gap: 31px;
+}
+
+[gap="31%"] {
+  gap: 31 %;
+}
+
+[gap="32rem"] {
+  gap: 32rem;
+}
+
+[gap="32px"] {
+  gap: 32px;
+}
+
+[gap="32%"] {
+  gap: 32 %;
+}
+
+[gap="33rem"] {
+  gap: 33rem;
+}
+
+[gap="33px"] {
+  gap: 33px;
+}
+
+[gap="33%"] {
+  gap: 33 %;
+}
+
+[gap="34rem"] {
+  gap: 34rem;
+}
+
+[gap="34px"] {
+  gap: 34px;
+}
+
+[gap="34%"] {
+  gap: 34 %;
+}
+
+[gap="35rem"] {
+  gap: 35rem;
+}
+
+[gap="35px"] {
+  gap: 35px;
+}
+
+[gap="35%"] {
+  gap: 35 %;
+}
+
+[gap="36rem"] {
+  gap: 36rem;
+}
+
+[gap="36px"] {
+  gap: 36px;
+}
+
+[gap="36%"] {
+  gap: 36 %;
+}
+
+[gap="37rem"] {
+  gap: 37rem;
+}
+
+[gap="37px"] {
+  gap: 37px;
+}
+
+[gap="37%"] {
+  gap: 37 %;
+}
+
+[gap="38rem"] {
+  gap: 38rem;
+}
+
+[gap="38px"] {
+  gap: 38px;
+}
+
+[gap="38%"] {
+  gap: 38 %;
+}
+
+[gap="39rem"] {
+  gap: 39rem;
+}
+
+[gap="39px"] {
+  gap: 39px;
+}
+
+[gap="39%"] {
+  gap: 39 %;
+}
+
+[gap="40rem"] {
+  gap: 40rem;
+}
+
+[gap="40px"] {
+  gap: 40px;
+}
+
+[gap="40%"] {
+  gap: 40 %;
+}
+
+[gap="41rem"] {
+  gap: 41rem;
+}
+
+[gap="41px"] {
+  gap: 41px;
+}
+
+[gap="41%"] {
+  gap: 41 %;
+}
+
+[gap="42rem"] {
+  gap: 42rem;
+}
+
+[gap="42px"] {
+  gap: 42px;
+}
+
+[gap="42%"] {
+  gap: 42 %;
+}
+
+[gap="43rem"] {
+  gap: 43rem;
+}
+
+[gap="43px"] {
+  gap: 43px;
+}
+
+[gap="43%"] {
+  gap: 43 %;
+}
+
+[gap="44rem"] {
+  gap: 44rem;
+}
+
+[gap="44px"] {
+  gap: 44px;
+}
+
+[gap="44%"] {
+  gap: 44 %;
+}
+
+[gap="45rem"] {
+  gap: 45rem;
+}
+
+[gap="45px"] {
+  gap: 45px;
+}
+
+[gap="45%"] {
+  gap: 45 %;
+}
+
+[gap="46rem"] {
+  gap: 46rem;
+}
+
+[gap="46px"] {
+  gap: 46px;
+}
+
+[gap="46%"] {
+  gap: 46 %;
+}
+
+[gap="47rem"] {
+  gap: 47rem;
+}
+
+[gap="47px"] {
+  gap: 47px;
+}
+
+[gap="47%"] {
+  gap: 47 %;
+}
+
+[gap="48rem"] {
+  gap: 48rem;
+}
+
+[gap="48px"] {
+  gap: 48px;
+}
+
+[gap="48%"] {
+  gap: 48 %;
+}
+
+[gap="49rem"] {
+  gap: 49rem;
+}
+
+[gap="49px"] {
+  gap: 49px;
+}
+
+[gap="49%"] {
+  gap: 49 %;
+}
+
+[gap="50rem"] {
+  gap: 50rem;
+}
+
+[gap="50px"] {
+  gap: 50px;
+}
+
+[gap="50%"] {
+  gap: 50 %;
+}
+
+[gap="51rem"] {
+  gap: 51rem;
+}
+
+[gap="51px"] {
+  gap: 51px;
+}
+
+[gap="51%"] {
+  gap: 51 %;
+}
+
+[gap="52rem"] {
+  gap: 52rem;
+}
+
+[gap="52px"] {
+  gap: 52px;
+}
+
+[gap="52%"] {
+  gap: 52 %;
+}
+
+[gap="53rem"] {
+  gap: 53rem;
+}
+
+[gap="53px"] {
+  gap: 53px;
+}
+
+[gap="53%"] {
+  gap: 53 %;
+}
+
+[gap="54rem"] {
+  gap: 54rem;
+}
+
+[gap="54px"] {
+  gap: 54px;
+}
+
+[gap="54%"] {
+  gap: 54 %;
+}
+
+[gap="55rem"] {
+  gap: 55rem;
+}
+
+[gap="55px"] {
+  gap: 55px;
+}
+
+[gap="55%"] {
+  gap: 55 %;
+}
+
+[gap="56rem"] {
+  gap: 56rem;
+}
+
+[gap="56px"] {
+  gap: 56px;
+}
+
+[gap="56%"] {
+  gap: 56 %;
+}
+
+[gap="57rem"] {
+  gap: 57rem;
+}
+
+[gap="57px"] {
+  gap: 57px;
+}
+
+[gap="57%"] {
+  gap: 57 %;
+}
+
+[gap="58rem"] {
+  gap: 58rem;
+}
+
+[gap="58px"] {
+  gap: 58px;
+}
+
+[gap="58%"] {
+  gap: 58 %;
+}
+
+[gap="59rem"] {
+  gap: 59rem;
+}
+
+[gap="59px"] {
+  gap: 59px;
+}
+
+[gap="59%"] {
+  gap: 59 %;
+}
+
+[gap="60rem"] {
+  gap: 60rem;
+}
+
+[gap="60px"] {
+  gap: 60px;
+}
+
+[gap="60%"] {
+  gap: 60 %;
+}
+
+[gap="61rem"] {
+  gap: 61rem;
+}
+
+[gap="61px"] {
+  gap: 61px;
+}
+
+[gap="61%"] {
+  gap: 61 %;
+}
+
+[gap="62rem"] {
+  gap: 62rem;
+}
+
+[gap="62px"] {
+  gap: 62px;
+}
+
+[gap="62%"] {
+  gap: 62 %;
+}
+
+[gap="63rem"] {
+  gap: 63rem;
+}
+
+[gap="63px"] {
+  gap: 63px;
+}
+
+[gap="63%"] {
+  gap: 63 %;
+}
+
+[gap="64rem"] {
+  gap: 64rem;
+}
+
+[gap="64px"] {
+  gap: 64px;
+}
+
+[gap="64%"] {
+  gap: 64 %;
+}
+
+[gap="65rem"] {
+  gap: 65rem;
+}
+
+[gap="65px"] {
+  gap: 65px;
+}
+
+[gap="65%"] {
+  gap: 65 %;
+}
+
+[gap="66rem"] {
+  gap: 66rem;
+}
+
+[gap="66px"] {
+  gap: 66px;
+}
+
+[gap="66%"] {
+  gap: 66 %;
+}
+
+[gap="67rem"] {
+  gap: 67rem;
+}
+
+[gap="67px"] {
+  gap: 67px;
+}
+
+[gap="67%"] {
+  gap: 67 %;
+}
+
+[gap="68rem"] {
+  gap: 68rem;
+}
+
+[gap="68px"] {
+  gap: 68px;
+}
+
+[gap="68%"] {
+  gap: 68 %;
+}
+
+[gap="69rem"] {
+  gap: 69rem;
+}
+
+[gap="69px"] {
+  gap: 69px;
+}
+
+[gap="69%"] {
+  gap: 69 %;
+}
+
+[gap="70rem"] {
+  gap: 70rem;
+}
+
+[gap="70px"] {
+  gap: 70px;
+}
+
+[gap="70%"] {
+  gap: 70 %;
+}
+
+[gap="71rem"] {
+  gap: 71rem;
+}
+
+[gap="71px"] {
+  gap: 71px;
+}
+
+[gap="71%"] {
+  gap: 71 %;
+}
+
+[gap="72rem"] {
+  gap: 72rem;
+}
+
+[gap="72px"] {
+  gap: 72px;
+}
+
+[gap="72%"] {
+  gap: 72 %;
+}
+
+[gap="73rem"] {
+  gap: 73rem;
+}
+
+[gap="73px"] {
+  gap: 73px;
+}
+
+[gap="73%"] {
+  gap: 73 %;
+}
+
+[gap="74rem"] {
+  gap: 74rem;
+}
+
+[gap="74px"] {
+  gap: 74px;
+}
+
+[gap="74%"] {
+  gap: 74 %;
+}
+
+[gap="75rem"] {
+  gap: 75rem;
+}
+
+[gap="75px"] {
+  gap: 75px;
+}
+
+[gap="75%"] {
+  gap: 75 %;
+}
+
+[gap="76rem"] {
+  gap: 76rem;
+}
+
+[gap="76px"] {
+  gap: 76px;
+}
+
+[gap="76%"] {
+  gap: 76 %;
+}
+
+[gap="77rem"] {
+  gap: 77rem;
+}
+
+[gap="77px"] {
+  gap: 77px;
+}
+
+[gap="77%"] {
+  gap: 77 %;
+}
+
+[gap="78rem"] {
+  gap: 78rem;
+}
+
+[gap="78px"] {
+  gap: 78px;
+}
+
+[gap="78%"] {
+  gap: 78 %;
+}
+
+[gap="79rem"] {
+  gap: 79rem;
+}
+
+[gap="79px"] {
+  gap: 79px;
+}
+
+[gap="79%"] {
+  gap: 79 %;
+}
+
+[gap="80rem"] {
+  gap: 80rem;
+}
+
+[gap="80px"] {
+  gap: 80px;
+}
+
+[gap="80%"] {
+  gap: 80 %;
+}
+
+[gap="81rem"] {
+  gap: 81rem;
+}
+
+[gap="81px"] {
+  gap: 81px;
+}
+
+[gap="81%"] {
+  gap: 81 %;
+}
+
+[gap="82rem"] {
+  gap: 82rem;
+}
+
+[gap="82px"] {
+  gap: 82px;
+}
+
+[gap="82%"] {
+  gap: 82 %;
+}
+
+[gap="83rem"] {
+  gap: 83rem;
+}
+
+[gap="83px"] {
+  gap: 83px;
+}
+
+[gap="83%"] {
+  gap: 83 %;
+}
+
+[gap="84rem"] {
+  gap: 84rem;
+}
+
+[gap="84px"] {
+  gap: 84px;
+}
+
+[gap="84%"] {
+  gap: 84 %;
+}
+
+[gap="85rem"] {
+  gap: 85rem;
+}
+
+[gap="85px"] {
+  gap: 85px;
+}
+
+[gap="85%"] {
+  gap: 85 %;
+}
+
+[gap="86rem"] {
+  gap: 86rem;
+}
+
+[gap="86px"] {
+  gap: 86px;
+}
+
+[gap="86%"] {
+  gap: 86 %;
+}
+
+[gap="87rem"] {
+  gap: 87rem;
+}
+
+[gap="87px"] {
+  gap: 87px;
+}
+
+[gap="87%"] {
+  gap: 87 %;
+}
+
+[gap="88rem"] {
+  gap: 88rem;
+}
+
+[gap="88px"] {
+  gap: 88px;
+}
+
+[gap="88%"] {
+  gap: 88 %;
+}
+
+[gap="89rem"] {
+  gap: 89rem;
+}
+
+[gap="89px"] {
+  gap: 89px;
+}
+
+[gap="89%"] {
+  gap: 89 %;
+}
+
+[gap="90rem"] {
+  gap: 90rem;
+}
+
+[gap="90px"] {
+  gap: 90px;
+}
+
+[gap="90%"] {
+  gap: 90 %;
+}
+
+[gap="91rem"] {
+  gap: 91rem;
+}
+
+[gap="91px"] {
+  gap: 91px;
+}
+
+[gap="91%"] {
+  gap: 91 %;
+}
+
+[gap="92rem"] {
+  gap: 92rem;
+}
+
+[gap="92px"] {
+  gap: 92px;
+}
+
+[gap="92%"] {
+  gap: 92 %;
+}
+
+[gap="93rem"] {
+  gap: 93rem;
+}
+
+[gap="93px"] {
+  gap: 93px;
+}
+
+[gap="93%"] {
+  gap: 93 %;
+}
+
+[gap="94rem"] {
+  gap: 94rem;
+}
+
+[gap="94px"] {
+  gap: 94px;
+}
+
+[gap="94%"] {
+  gap: 94 %;
+}
+
+[gap="95rem"] {
+  gap: 95rem;
+}
+
+[gap="95px"] {
+  gap: 95px;
+}
+
+[gap="95%"] {
+  gap: 95 %;
+}
+
+[gap="96rem"] {
+  gap: 96rem;
+}
+
+[gap="96px"] {
+  gap: 96px;
+}
+
+[gap="96%"] {
+  gap: 96 %;
+}
+
+[gap="97rem"] {
+  gap: 97rem;
+}
+
+[gap="97px"] {
+  gap: 97px;
+}
+
+[gap="97%"] {
+  gap: 97 %;
+}
+
+[gap="98rem"] {
+  gap: 98rem;
+}
+
+[gap="98px"] {
+  gap: 98px;
+}
+
+[gap="98%"] {
+  gap: 98 %;
+}
+
+[gap="99rem"] {
+  gap: 99rem;
+}
+
+[gap="99px"] {
+  gap: 99px;
+}
+
+[gap="99%"] {
+  gap: 99 %;
+}
+
+[gap="100rem"] {
+  gap: 100rem;
+}
+
+[gap="100px"] {
+  gap: 100px;
+}
+
+[gap="100%"] {
+  gap: 100 %;
+}
+
+[center] {
+  margin: 0 auto;
+  text-align: center;
+}
+
+[left] {
+  margin: 0 auto;
+  text-align: left;
+}
+
+[right] {
+  margin: 0 auto;
+  text-align: right;
+}
+
 [position=toBack] {
   position: relative;
   z-index: -1;
@@ -322,6 +2737,26 @@ p {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+[space=between] {
+  justify-content: space-between;
+}
+
+[space=around] {
+  justify-content: space-around;
+}
+
+[space=evenly] {
+  justify-content: space-evenly;
+}
+
+[space=start] {
+  justify-content: flex-start;
+}
+
+[space=end] {
+  justify-content: flex-end;
 }
 
 @media (min-width: 768px) {
@@ -404,6 +2839,111 @@ section > * {
   height: 4vh;
   width: 7vw;
   padding: 0.5rem 1rem;
+}
+
+[btn=outline] {
+  border-style: solid;
+  background: transparent;
+  text-align: center;
+}
+[btn=outline][theme=citrusmint-300] {
+  color: hsl(121, 100%, 70%);
+  border-color: hsl(121, 100%, 70%);
+}
+[btn=outline][theme=citrusmint-300]:hover {
+  background: hsl(121, 100%, 70%);
+  color: hsl(121, 100%, 90%);
+  border-color: hsl(121, 100%, 90%);
+}
+[btn=outline][scale=lg] {
+  height: 4vh;
+  width: 7vw;
+  padding: 0.5rem 1rem;
+}
+
+[btn=text] {
+  background: transparent;
+  text-align: center;
+  border: none;
+}
+[btn=text][theme=citrusmint-300] {
+  color: hsl(121, 100%, 70%);
+}
+[btn=text][theme=citrusmint-300]:hover {
+  background: hsl(121, 100%, 70%);
+  color: hsl(121, 100%, 90%);
+}
+[btn=text][scale=lg] {
+  height: 4vh;
+  width: 7vw;
+  padding: 0.5rem 1rem;
+}
+
+[btn="3d"] {
+  background: hsl(121, 100%, 70%);
+  color: hsl(121, 100%, 20%);
+  border: none;
+  box-shadow: 0 4px 0 0 hsl(121, 100%, 40%);
+  text-align: center;
+}
+[btn="3d"]:hover {
+  background: hsl(121, 100%, 40%);
+  color: hsl(121, 100%, 90%);
+  box-shadow: 0 2px 0 0 hsl(121, 100%, 90%);
+  transform: translateY(2px);
+}
+[btn="3d"][scale=lg] {
+  height: 4vh;
+  width: 7vw;
+  padding: 0.5rem 1rem;
+}
+
+[btn=metallic] {
+  background: linear-gradient(135deg, hsl(121, 100%, 70%), hsl(121, 100%, 40%), hsl(121, 100%, 70%));
+  color: hsl(121, 100%, 90%);
+  border: none;
+  box-shadow: 0 4px 0 0 hsl(121, 100%, 20%);
+  text-align: center;
+}
+[btn=metallic]:hover {
+  background: linear-gradient(135deg, hsl(121, 100%, 40%), hsl(121, 100%, 20%), hsl(121, 100%, 40%));
+  color: hsl(121, 100%, 90%);
+  box-shadow: 0 2px 0 0 hsl(121, 100%, 90%);
+  transform: translateY(2px);
+}
+[btn=metallic][scale=lg] {
+  height: 4vh;
+  width: 7vw;
+  padding: 0.5rem 1rem;
+}
+
+[card] {
+  height: auto;
+  width: 30vw;
+  border-radius: 0.5rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+[card-large] {
+  height: auto;
+  width: 50vw;
+  border-radius: 0.5rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+[card-small] {
+  height: auto;
+  width: 15vw;
+  border-radius: 0.5rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+[card=feature] {
+  padding: 2rem;
+  line-height: 1.8;
 }
 
 form[type=search] [scale=lg] {

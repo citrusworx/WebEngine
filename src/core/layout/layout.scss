@@ -11,6 +11,22 @@
 
 @include gap-generator();
 
+[center]{
+    margin: 0 auto;
+    text-align: center;
+}
+
+[left]{
+    // align left and center vertically within the container, with a comfortable max-width for readability
+    margin: 0 auto;
+    text-align: left;
+}
+
+[right]{
+    margin: 0 auto;
+    text-align: right;
+}
+
 $spacing--sm: 0.5rem;
 $spacing--md: 1rem;
 $spacing--lg: 1.5rem;
@@ -56,6 +72,26 @@ $spacing--lg: 1.5rem;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+}
+
+[space="between"]{
+    justify-content: space-between;
+}
+
+[space="around"]{
+    justify-content: space-around;
+}
+
+[space="evenly"]{
+    justify-content: space-evenly;
+}
+
+[space="start"]{
+    justify-content: flex-start;
+}
+
+[space="end"]{
+    justify-content: flex-end;
 }
 
 // Tablet and up
