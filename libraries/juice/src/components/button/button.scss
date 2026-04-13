@@ -22,3 +22,90 @@
         padding: 0.5rem 1rem;
     }
 }
+
+[btn="outline"]{
+    border-style: solid;
+    background: transparent;
+    text-align: center;
+
+    &[theme="citrusmint-300"]{
+        color: $freshgreen-300;
+        border-color: $freshgreen-300;
+
+        &:hover {
+            background: $freshgreen-300;
+            color: $freshgreen-100;
+            border-color: $freshgreen-100;
+        }
+    }
+
+    &[scale="lg"]{
+        height: 4vh;
+        width: 7vw;
+        padding: 0.5rem 1rem;
+    }
+}
+
+[btn="text"]{
+    background: transparent;
+    text-align: center;
+    border: none;
+
+    &[theme="citrusmint-300"]{
+        color: $freshgreen-300;
+
+        &:hover {
+            background: $freshgreen-300;
+            color: $freshgreen-100;
+        }
+    }
+
+    &[scale="lg"]{
+        height: 4vh;
+        width: 7vw;
+        padding: 0.5rem 1rem;
+    }
+}
+
+[btn="3d"]{
+    background: $freshgreen-300;
+    color: $freshgreen-900;
+    border: none;
+    box-shadow: 0 4px 0 0 $freshgreen-600;
+    text-align: center;
+
+    &:hover {
+        background: $freshgreen-600;
+        color: $freshgreen-100;
+        box-shadow: 0 2px 0 0 $freshgreen-100;
+        transform: translateY(2px);
+    }
+
+    &[scale="lg"]{
+        height: 4vh;
+        width: 7vw;
+        padding: 0.5rem 1rem;
+    }
+}
+
+[btn="metallic"]{
+    // The linear gradients should have a lighter color in middle at angle and darker shades at edges
+    background: linear-gradient(135deg, $freshgreen-300, $freshgreen-600, $freshgreen-300);
+    color: $freshgreen-100;
+    border: none;
+    box-shadow: 0 4px 0 0 $freshgreen-900;
+    text-align: center;
+
+    &:hover {
+        background: linear-gradient(135deg, $freshgreen-600, $freshgreen-900, $freshgreen-600);
+        color: $freshgreen-100;
+        box-shadow: 0 2px 0 0 $freshgreen-100;
+        transform: translateY(2px);
+    }
+
+    &[scale="lg"]{
+        height: 4vh;
+        width: 7vw;
+        padding: 0.5rem 1rem;
+    }
+}

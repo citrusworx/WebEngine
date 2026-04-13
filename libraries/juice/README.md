@@ -33,8 +33,9 @@ import "@citrusworx/juice/styles";
 - compiled CSS output at `dist/index.css`
 - color tokens and swatches
 - Google and Adobe font selectors
-- attribute selectors for color, spacing, width, height, gradients, and shadows
+- attribute selectors for color, spacing, width, height, gradients, shadows, and icons
 - layout primitives for `stack`, `row`, `grid`, `gap`, and `span`
+- FontAwesome Free icon integration across the solid, regular, and brands sets
 
 ## Build
 

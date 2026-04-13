@@ -36,4 +36,18 @@
             gap: #{$i}rem;
         }
     }
+
+    @for $i from 1 through 100 {
+        [gap="#{$i}rem"]{
+            gap: #{$i}rem;
+        }
+
+        [gap="#{$i}px"]{
+            gap: #{$i}px;
+        }
+
+        [gap="#{$i}%"]{
+            gap: #{$i}%;
+        }
+    }
 }
