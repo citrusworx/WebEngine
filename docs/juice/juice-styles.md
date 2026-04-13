@@ -1,6 +1,6 @@
 # Juice Styles
 
-Juice uses HTML attributes as its primary styling API. Instead of piling utility classes onto an element, Juice lets markup describe intent with attributes like `font`, `fontColor`, `bgColor`, `grid`, `gap`, and `padding`.
+Juice uses HTML attributes as its primary styling API. Instead of piling utility classes onto an element, Juice lets markup describe intent with attributes like `font`, `fontColor`, `bgColor`, `grid`, `gap`, `padding`, and `icon`.
 
 ## Core idea
 
@@ -32,31 +32,16 @@ Juice currently uses three kinds of selectors:
 - classes for app-specific state or behavior
 - ids for unique elements
 
-Examples:
-
-```html
-<button font="lato" bgColor="green-500" class="is-loading" id="checkout-button">
-  Checkout
-</button>
-```
-
 ## Typography selectors
 
-Font family:
+Examples:
 
 ```html
 <h1 font="bebas-neue">Display</h1>
 <p font="lato">Body copy</p>
 <code font="source-code-pro">const juice = true;</code>
 <span font="korolev-rounded-bold">Brand text</span>
-```
-
-Font size:
-
-```html
-<p fontSize="sm">Small</p>
-<p fontSize="md">Medium</p>
-<p fontSize="lg">Large</p>
+<p fontSize="lg">Large copy</p>
 ```
 
 Notes:
@@ -70,29 +55,10 @@ Notes:
 Text color uses `fontColor`:
 
 ```html
-<p fontColor="black-100">black-100</p>
-<p fontColor="obsidian-700">obsidian-700</p>
-<p fontColor="citrusmint-500">Not valid unless that token exists as a color token</p>
-```
-
-Background and border colors:
-
-```html
+<p fontColor="obsidian-700">Text token</p>
 <div bgColor="green-500" fontColor="white-100">Background token</div>
 <div borderColor="green-700">Border token</div>
-```
-
-Hover states:
-
-```html
 <button hover="green-600" bgColor="green-500">Filled hover</button>
-<button hover="green-600" outline borderColor="green-500">Outline hover</button>
-```
-
-Shadow color plus depth:
-
-```html
-<div shadow="green-500" depth="md">Shadowed card</div>
 ```
 
 Notes:
@@ -112,6 +78,27 @@ Gradients are also attribute-driven:
 ```
 
 Gradient selectors currently live under `src/styles/gradients`.
+
+## Icon selectors
+
+Juice icons are also attribute-driven. The `icon` attribute maps to FontAwesome Free SVG masks from the solid, regular, and brands sets.
+
+Examples:
+
+```html
+<i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
+<i icon="calendar" width="1.25rem" height="1.25rem" fontColor="obsidian-700"></i>
+<i icon="github" width="1.5rem" height="1.5rem" fontColor="gray-900"></i>
+```
+
+Important details:
+
+- icons inherit visible color from `currentColor`
+- `fontColor` is the easiest way to tint an icon
+- the shared icon behavior lives in `src/styles/icons/icon.scss`
+- the current icon sources are `src/icons/fontawesome/web/svgs/{solid,regular,brands}`
+
+For the set-by-set docs, see [Icons](./juice-icons.md).
 
 ## Spacing selectors
 
@@ -141,8 +128,6 @@ Examples:
 <div width="80vw" height="100vh"></div>
 ```
 
-The generator comes from `src/core/mixins.scss`, which creates selectors from `1` through `100` for each supported unit.
-
 ## Practical guidance
 
 Use Juice attributes for:
@@ -152,6 +137,7 @@ Use Juice attributes for:
 - spacing
 - size
 - layout primitives
+- icons
 
 Keep regular classes for:
 

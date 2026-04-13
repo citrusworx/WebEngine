@@ -8,6 +8,7 @@ Today, the most complete parts of Juice are:
 - font tokens and font selectors
 - attribute-based utility styles
 - layout primitives such as `stack`, `row`, `grid`, `gap`, and `span`
+- icon utilities backed by the FontAwesome Free library
 - build tooling for compiling `src/juice.scss` into `dist/index.css`
 
 ## What Juice ships
@@ -42,13 +43,11 @@ Once the stylesheet is imported, Juice selectors are available directly in marku
   <p font="lato" fontColor="gray-700">
     Attribute-driven styling built from tokens.
   </p>
-  <div row gap="1">
+  <div row gap="1" centered>
     <button bgColor="green-500" hover="green-600" fontColor="white-100" padding="1rem">
       Primary action
     </button>
-    <button borderColor="green-500" hover="green-500" outline fontColor="green-700" padding="1rem">
-      Secondary action
-    </button>
+    <i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
   </div>
 </section>
 ```
@@ -62,6 +61,7 @@ libraries/juice/
     styles/      attribute selectors that map to token values
     tokens/      SCSS tokens and YAML source data
     themes/      theme definitions, still early
+    icons/       FontAwesome Free SVG assets used by the icon system
     juice.scss   master stylesheet entrypoint
   dist/
     index.css    compiled CSS output
@@ -78,8 +78,10 @@ libraries/juice/
 - [Sizing Reference](./juice-sizing.md): detailed guide to width and height attributes
 - [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
 - [Styles](./juice-styles.md): attribute names, examples, and selector conventions
-- [Icons — Brands](./juice-icons-brands.md): how the icon attribute maps to FontAwesome brand masks (based on FontAwesome Brands)
-- [Icons — Regular](./juice-icons-regular.md): how the icon attribute maps to FontAwesome regular masks (based on FontAwesome Regular)
+- [Icons](./juice-icons.md): overview of the Juice icon system and the `icon` attribute
+- [Icons - Solid](./juice-icons-solid.md): how the icon attribute maps to FontAwesome Free solid masks
+- [Icons - Regular](./juice-icons-regular.md): how the icon attribute maps to FontAwesome Free regular masks
+- [Icons - Brands](./juice-icons-brands.md): how the icon attribute maps to FontAwesome Free brand marks
 - [Token System](./juice-token-system.md): how tokens are stored and consumed
 - [Layout](./juice-layout.md): stacks, rows, grids, spans, and numeric sizing utilities
 
@@ -96,9 +98,9 @@ A few areas are still early:
 
 ## External resources
 
-Juice uses FontAwesome icon naming conventions and asset masks for its icon system. For the latest FontAwesome icon collections and licensing details, see:
+Juice uses FontAwesome Free icon naming conventions and asset masks for its icon system. The repo currently includes the Free Solid, Free Regular, and Free Brands collections. For more details, see:
 
+- [FontAwesome Solid](https://fontawesome.com/icons?d=gallery&s=solid)
 - [FontAwesome Brands](https://fontawesome.com/icons?d=gallery&s=brands)
 - [FontAwesome Regular](https://fontawesome.com/icons?d=gallery&s=regular)
 - [FontAwesome home](https://fontawesome.com)
-

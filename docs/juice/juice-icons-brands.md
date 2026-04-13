@@ -1,4 +1,4 @@
-# Juice Icon System — FontAwesome Brands
+# Juice Icon System - FontAwesome Brands
 
 This page documents the `brands.scss` icon file used by Juice.
 
@@ -8,22 +8,22 @@ Juice uses the FontAwesome icon naming convention and SVG marks for its brand ic
 
 `libraries/juice/src/styles/icons/fontawesome/brands.scss`
 
-This file is imported by `libraries/juice/src/styles/icons/icon.scss`, which is itself used by `libraries/juice/src/styles/styles.scss`.
+This file is forwarded by `libraries/juice/src/styles/icons/icon.scss`, which is itself imported by `libraries/juice/src/styles/styles.scss`.
 
 ## Purpose
 
-`brands.scss` defines the FontAwesome Brand icon set using attribute selectors. Each entry maps an `icon` attribute value to a `mask-image` SVG asset.
+`brands.scss` defines the FontAwesome Brands icon set using attribute selectors. Each entry maps an `icon` attribute value to a brand SVG asset from the FontAwesome Free library.
 
-> These icons are based on the official FontAwesome brand collection. For more details, visit [FontAwesome Brands](https://fontawesome.com/icons?d=gallery&s=brands).
+> These icons are based on the official FontAwesome Brands collection. For more details, visit [FontAwesome Brands](https://fontawesome.com/icons?d=gallery&s=brands).
 
 ## How it works
 
 Each icon rule is defined using the `[icon="..."]` selector. For example:
 
 ```scss
-[icon="github"]{
-    -webkit-mask-image: url('./icons/fontawesome/web/svgs/brands/github.svg');
-    mask-image: url('./icons/fontawesome/web/svgs/brands/github.svg');
+[icon="github"] {
+  -webkit-mask-image: url('./icons/fontawesome/web/svgs/brands/github.svg');
+  mask-image: url('./icons/fontawesome/web/svgs/brands/github.svg');
 }
 ```
 
@@ -33,19 +33,13 @@ When the stylesheet is loaded, any element with `icon="github"` will receive tha
 
 - The attribute value is the FontAwesome icon key.
 - The icon key is typically the SVG file name without the `.svg` extension.
-- Some names include special characters like `:` that are escaped in the selector, for example:
-
-```scss
-[icon="app-store\:ios"]{
-    ...
-}
-```
+- Some names include special characters like `:` that are escaped in the selector.
 
 ## SVG asset source
 
 Brand SVG assets are stored in:
 
-`libraries/juice/src/styles/icons/fontawesome/web/svgs/brands/`
+`libraries/juice/src/icons/fontawesome/web/svgs/brands/`
 
 Each rule in `brands.scss` points to a corresponding file in that directory.
 
@@ -56,27 +50,19 @@ Use the `icon` attribute directly in markup:
 ```html
 <i icon="github"></i>
 <span icon="airbnb"></span>
+<i icon="shopify"></i>
 ```
 
-A CSS icon component or global icon style should provide width, height, color, and mask background settings.
+A shared icon rule should provide width, height, color, and mask behavior.
 
 ## Adding a brand icon
 
-1. Add the SVG to `libraries/juice/src/styles/icons/fontawesome/web/svgs/brands/`.
+1. Add the SVG to `libraries/juice/src/icons/fontawesome/web/svgs/brands/`.
 2. Add a rule to `libraries/juice/src/styles/icons/fontawesome/brands.scss`.
 3. Use the same icon key in markup.
 
-Example:
-
-```scss
-[icon="new-brand"]{
-    -webkit-mask-image: url('./icons/fontawesome/web/svgs/brands/new-brand.svg');
-    mask-image: url('./icons/fontawesome/web/svgs/brands/new-brand.svg');
-}
-```
-
 ## Key details
 
-- `brands.scss` is brand-specific and should only contain FontAwesome Brands icons.
-- The file is large and intentionally grouped by brand namespace.
+- `brands.scss` is brand-specific and should only contain FontAwesome Free Brands icons.
 - The icon system is class-free; it is driven by the `icon` attribute selector.
+- Brand icons are intended for product, company, and platform marks rather than general UI controls.
