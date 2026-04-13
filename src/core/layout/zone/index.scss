@@ -1,0 +1,18 @@
+@use '../../breakpoints/breakpoints.scss' as *;
+@use 'sass:map';
+[zone]{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: map.get($breakpoints, md)){
+    [zone]{
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    [zone] > * {
+        flex: 1;
+    }
+}

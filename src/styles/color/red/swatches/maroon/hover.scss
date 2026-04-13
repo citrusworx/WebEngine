@@ -1,4 +1,4 @@
-@use "../../../../../tokens/color/red/swatch/maroon/maroon.scss" as *;
+@use '../../../tokens/tokens.scss' as *;
 // Standard Hover - changes background and border.
 
 [hover="maroon-100"]:hover {

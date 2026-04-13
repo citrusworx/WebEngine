@@ -1,0 +1,17 @@
+@mixin icon-mask-map($icons, $base-path: './icons/') {
+  @each $name, $file in $icons {
+    [icon="#{$name}"] {
+      -webkit-mask-image: url('#{$base-path}#{$file}');
+      mask-image: url('#{$base-path}#{$file}');
+    }
+  }
+}
+
+@mixin solid-icon-mask-map($icons, $base-path: './icons/') {
+  @each $name, $file in $icons {
+    [icon="#{$name}"][lib="solid"] {
+      -webkit-mask-image: url('#{$base-path}#{$file}');
+      mask-image: url('#{$base-path}#{$file}');
+    }
+  }
+}

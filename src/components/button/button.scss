@@ -3,6 +3,7 @@
 [btn="flat"]{
     border-style: solid;
 
+    text-align: center;
     &[theme="citrusmint-300"]{
         background: $freshgreen-300;
         color: $freshgreen-600;
@@ -15,7 +16,7 @@
         }
     }
 
-    [scale="lg"]{
+    &[scale="lg"]{
         height: 4vh;
         width: 7vw;
         padding: 0.5rem 1rem;

@@ -1,0 +1,12 @@
+[content]{
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+// Variations and contexts of the [content] component
+[content][centered]{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

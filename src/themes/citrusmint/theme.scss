@@ -1,0 +1,30 @@
+@use '../../tokens/color/green/green.scss' as *;
+
+[theme="citrusmint"]{
+    // Create a full theme
+    h1, h2, h3, h4, h5, h6 {
+        color: $freshgreen-800;
+    }
+
+    p, span {
+        color: $freshgreen-500;
+    }
+
+    // Generate backgrounds that are complementary
+    section, nav {
+        background-color: $freshgreen-200;
+    }
+
+    body {
+        background-color: $freshgreen-100;
+    }
+
+    div {
+        background-color: $freshgreen-300;
+    }
+
+
+
+
+
+}

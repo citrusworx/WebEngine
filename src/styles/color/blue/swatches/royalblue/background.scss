@@ -1,4 +1,4 @@
-@use "../../../../../tokens/color/blue/swatch/royalblue/royalblue.scss" as *;
+@use '../../../tokens/tokens.scss' as *;
 
 [bgColor="royalblue-100"]{
     background-color: $royalblue-100;
