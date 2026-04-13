@@ -1,6 +1,15 @@
 @forward './grid/grid.scss';
+@forward './bleed/index.scss';
+@forward './container/index.scss';
+@forward './content/index.scss';
+@forward './flex/flex.scss';
+@forward './zone/index.scss';
 @use '../breakpoints/breakpoints.scss' as *;
 @use 'sass:map';
+
+@use '../mixins.scss' as *;
+
+@include gap-generator();
 
 $spacing--sm: 0.5rem;
 $spacing--md: 1rem;

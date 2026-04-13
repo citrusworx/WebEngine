@@ -1,4 +1,4 @@
-@use "../../../../tokens/color/orange/orange.scss" as *;
+@use '../../tokens/tokens.scss' as *;
 
 [bgColor="orange-100"]{
     background-color: $orange-100;
