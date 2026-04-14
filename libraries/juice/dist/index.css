@@ -2918,34 +2918,164 @@ section > * {
 }
 
 [card] {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   height: auto;
-  width: 30vw;
+  width: min(100%, 30vw);
   border-radius: 0.5rem;
   margin: 0 auto;
   padding: 1rem;
+  box-sizing: border-box;
 }
 
 [card-large] {
-  height: auto;
-  width: 50vw;
-  border-radius: 0.5rem;
-  margin: 0 auto;
-  padding: 1rem;
+  width: min(100%, 50vw);
 }
 
 [card-small] {
-  height: auto;
-  width: 15vw;
-  border-radius: 0.5rem;
-  margin: 0 auto;
+  width: min(100%, 15vw);
+}
+
+[card-size=sm] {
+  width: min(100%, 15vw);
+}
+
+[card-size=md] {
+  width: min(100%, 30vw);
+}
+
+[card-size=lg] {
+  width: min(100%, 50vw);
+}
+
+[card-padding=sm] {
+  padding: 0.75rem;
+}
+
+[card-padding=md] {
   padding: 1rem;
 }
 
+[card-padding=lg] {
+  padding: 1.5rem;
+}
+
+[card=compact] {
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
 [card=feature] {
+  gap: 1.5rem;
   padding: 2rem;
   line-height: 1.8;
 }
 
+[card=interactive] {
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+[card=interactive]:hover {
+  transform: translateY(-2px);
+}
+[card=interactive]:focus-within {
+  transform: translateY(-2px);
+}
+
+[card=split] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+[card=cta] {
+  gap: 1.5rem;
+}
+
+[card-flow=horizontal] {
+  flex-direction: row;
+  align-items: center;
+}
+
+[card-flow=vertical] {
+  flex-direction: column;
+}
+
+[card-header] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+[card-header][row] {
+  align-items: center;
+}
+
+[card-body] {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+[card-media] {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+[card-actions] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+[card-actions][center] {
+  justify-content: center;
+}
+
+[card-actions][right] {
+  justify-content: flex-end;
+}
+
+[card-meta] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+[card-divider] {
+  display: block;
+  width: 100%;
+  height: 1px;
+  opacity: 0.12;
+  background: currentColor;
+}
+
+[card=cta] [card-actions] {
+  padding-top: 0.5rem;
+}
+
+[card=split] > [card-media] {
+  height: 100%;
+}
+
+[card=split] > [card-body] {
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  [card] {
+    width: 100%;
+  }
+  [card=split] {
+    grid-template-columns: 1fr;
+  }
+}
 form[type=search] [scale=lg] {
   width: 100%;
   height: 6vh;
