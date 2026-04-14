@@ -1,6 +1,6 @@
 # Juice Styles
 
-Juice uses HTML attributes as its primary styling API. Instead of piling utility classes onto an element, Juice lets markup describe intent with attributes like `font`, `fontColor`, `bgColor`, `grid`, `gap`, `padding`, and `icon`.
+Juice uses HTML attributes as its primary styling API. Instead of piling utility classes onto an element, Juice lets markup describe intent with attributes like `font`, `fontColor`, `bgColor`, `grid`, `gap`, `padding`, `card`, and `icon`.
 
 ## Core idea
 
@@ -99,6 +99,38 @@ Important details:
 - the current icon sources are `src/icons/fontawesome/web/svgs/{solid,regular,brands}`
 
 For the set-by-set docs, see [Icons](./juice-icons.md).
+
+## Card selectors
+
+Juice cards are structural selectors rather than visual skins. The card layer is meant to handle width, padding, content flow, and content regions while leaving theme styling to normal Juice attributes.
+
+Examples:
+
+```html
+<div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div card-header row space="between" centered>
+    <h3 font="korolev-rounded-bold">Card title</h3>
+    <i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
+  </div>
+
+  <div card-body stack gap="1rem">
+    <p font="korolev-rounded">Card content</p>
+  </div>
+
+  <div card-actions center>
+    <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
+  </div>
+</div>
+```
+
+Important details:
+
+- `card` enables the base card container behavior
+- variants such as `card="feature"` or `card="interactive"` adjust structure and behavior
+- `card-size`, `card-padding`, and `card-flow` refine the layout without hardcoding brand styling
+- `card-header`, `card-body`, `card-actions`, `card-meta`, `card-media`, and `card-divider` are semantic region hooks
+
+For the dedicated card guide, see [Cards](./juice-cards.md).
 
 ## Spacing selectors
 

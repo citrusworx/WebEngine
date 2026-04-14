@@ -28,6 +28,9 @@ Juice uses HTML attributes to apply styles directly in markup. Attributes are gr
 - `content`: content-width layout helper
 - `bleed`: full-bleed layout helper
 - `zone`: layout zoning helper
+- `center`: centers inline content through wrapper layout helpers
+- `left`: left-aligns wrapper content
+- `right`: right-aligns wrapper content
 
 ### Positioning
 
@@ -39,7 +42,9 @@ Juice uses HTML attributes to apply styles directly in markup. Attributes are gr
 ### Spacing Within Layout
 
 - `gap`
-  Values: `"1"` through `"10"` in rem-based utility steps
+  Values: `"1"` through `"10"` and generated explicit values like `"2rem"`, `"24px"`, and `"10%"`
+- `space`
+  Values: `"between"`, `"around"`, `"evenly"`, `"start"`, `"end"`
 
 ## Typography Attributes
 
@@ -165,13 +170,38 @@ For more detail, see [Icons](./juice-icons.md).
 ### Buttons
 
 - `btn`
-  Values: `"flat"`
+  Values: `"flat"`, `"outline"`, `"text"`, `"3d"`, `"metallic"`
 - `scale`
   Values currently include `"lg"` for button sizing
 - `theme`
   Example: `"citrusmint-300"`
 - `outline`
   Boolean modifier
+
+### Cards
+
+- `card`
+  Values: boolean, `"compact"`, `"feature"`, `"interactive"`, `"split"`, `"cta"`
+- `card-size`
+  Values: `"sm"`, `"md"`, `"lg"`
+- `card-padding`
+  Values: `"sm"`, `"md"`, `"lg"`
+- `card-flow`
+  Values: `"vertical"`, `"horizontal"`
+- `card-header`
+  Boolean region hook
+- `card-body`
+  Boolean region hook
+- `card-actions`
+  Boolean region hook
+- `card-meta`
+  Boolean region hook
+- `card-media`
+  Boolean region hook
+- `card-divider`
+  Boolean region hook
+
+For more detail, see [Cards](./juice-cards.md).
 
 ### Forms
 
@@ -204,6 +234,19 @@ For more detail, see [Icons](./juice-icons.md).
     <i icon="github" width="1rem" height="1rem" fontColor="gray-900"></i>
   </div>
 </section>
+
+<div card card="cta" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div card-header row space="between" centered>
+    <h3 font="korolev-rounded-bold">Card Title</h3>
+    <i icon="toggle-on" width="2rem" height="2rem" fontColor="red-800"></i>
+  </div>
+  <div card-body stack gap="1rem">
+    <p font="korolev-rounded">Structured card content.</p>
+  </div>
+  <div card-actions center>
+    <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
+  </div>
+</div>
 ```
 
 ## Notes
