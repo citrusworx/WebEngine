@@ -78,6 +78,8 @@ libraries/juice/
 - [Sizing Reference](./juice-sizing.md): detailed guide to width and height attributes
 - [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
 - [Styles](./juice-styles.md): attribute names, examples, and selector conventions
+- [Best Practices](./juice-best-practices.md): recommended composition patterns and usage guidance
+- [Forms](./juice-forms.md): how to compose forms and field states with Juice
 - [Cards](./juice-cards.md): card structure, variants, sizing, and content regions
 - [Icons](./juice-icons.md): overview of the Juice icon system and the `icon` attribute
 - [Icons - Solid](./juice-icons-solid.md): how the icon attribute maps to FontAwesome Free solid masks

@@ -81,3 +81,131 @@ nav[type="strip"]{
         background: linear-gradient(90deg, var(--citrusmint-300) 0%, var(--citrusmint-200) 100%);
     }
 }
+
+nav[type="subnav"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 8vh;
+    width: 100%;
+}
+
+nav[type="sidebar"]{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    width: 15vw;
+}
+
+nav[type="breadcrumb"]{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 5vh;
+    width: 100%;
+    gap: 0.5rem;
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+nav[type="pagination"]{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5vh;
+    width: 100%;
+    gap: 0.5rem;
+
+    a {
+        text-decoration: none;
+        color: inherit;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+    }
+
+    a:hover {
+        background-color: $freshgreen-100;
+    }
+}
+
+nav[type="mobile"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 10vh;
+    width: 100%;
+}
+
+nav[type="compact"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 8vh;
+    width: 100%;
+}
+
+nav[type="divider"]{
+    height: 1px;
+    width: 100%;
+    background-color: $freshgreen-300;
+}
+
+nav[cta]{
+    a {
+        text-decoration: none;
+        color: $freshgreen-600;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        background-color: $freshgreen-100;
+    }
+
+    a:hover {
+        background-color: $freshgreen-300;
+    }
+}
+
+nav[type="brand"]{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 10vh;
+    width: 100%;
+}
+
+nav[type="links"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 8vh;
+    width: 100%;
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+nav[type="actions"]{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 8vh;
+    width: 100%;
+
+    a {
+        text-decoration: none;
+        color: $freshgreen-600;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        background-color: $freshgreen-100;
+    }
+
+    a:hover {
+        background-color: $freshgreen-300;
+    }
+}
