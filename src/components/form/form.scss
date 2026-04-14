@@ -1,19 +1,13 @@
-form[type="signin"]{
-
-}
-
-form[type="signup"]{
-
-}
-
-form[type="search"]{
-    [scale="lg"]{
-        width: 100%;
-        height: 6vh;
-    }
-}
+@use '../../styles/color/tokens/tokens.scss' as *;
 
 form {
+    input::placeholder,
+    input::-moz-placeholder,
+    input:-ms-input-placeholder,
+    input::-webkit-input-placeholder{
+        padding-left: 0.5rem;
+    }
+
     [field]{
         display: flex;
         flex-direction: row;
@@ -23,4 +17,95 @@ form {
         display: flex;
         flex-direction: column;
     }
+
+    [field][label] label{
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+
+    [field][help]{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    [field][error]{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    [field][invalid] input,
+    [field][invalid]:focus,
+    [field][invalid] textarea,
+    [field][invalid] select
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-color: $red-500;
+        color: $red-700;
+    }
+
+    [field][group]{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+}
+
+form[type="signin"]{
+    [scale="sm"]{
+        width: 100%;
+        height: 6vh;
+    }
+
+    [scale="md"]{
+        width: 100%;
+        height: 8vh;
+    }
+
+    [scale="lg"]{
+        width: 100%;
+        height: 12vh;
+    }
+}
+
+form[type="signup"]{
+    [scale="sm"]{
+        width: 100%;
+        height: 6vh;
+    }
+
+    [scale="md"]{
+        width: 100%;
+        height: 8vh;
+    }
+
+    [scale="lg"]{
+        width: 100%;
+        height: 12vh;
+    }
+}
+
+form[type="search"]{
+    [scale="lg"]{
+        width: 100%;
+        height: 6vh;
+    }
+}
+
+[form][type="checkout"]{
+    [actions]{
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+}
+
+[form][actions]{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 }

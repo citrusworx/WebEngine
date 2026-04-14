@@ -2768,6 +2768,11 @@ p {
 @media screen and (max-width: 768px) {
   [row] {
     flex-direction: column;
+    flex-wrap: wrap;
+  }
+  [row][centered] {
+    flex-direction: column;
+    flex-wrap: wrap;
   }
 }
 @media (min-width: 1024px) {
@@ -3076,11 +3081,12 @@ section > * {
     grid-template-columns: 1fr;
   }
 }
-form[type=search] [scale=lg] {
-  width: 100%;
-  height: 6vh;
+form input::placeholder,
+form input::-moz-placeholder,
+form input:-ms-input-placeholder,
+form input::-webkit-input-placeholder {
+  padding-left: 0.5rem;
 }
-
 form [field] {
   display: flex;
   flex-direction: row;
@@ -3088,6 +3094,79 @@ form [field] {
 form [field][stack] {
   display: flex;
   flex-direction: column;
+}
+form [field][label] label {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+form [field][help] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+form [field][error] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+form [field][invalid] input,
+form [field][invalid]:focus,
+form [field][invalid] textarea,
+form [field][invalid] select {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-color: hsl(0, 100%, 75%);
+  color: hsl(0, 100%, 65%);
+}
+form [field][group] {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+form[type=signin] [scale=sm] {
+  width: 100%;
+  height: 6vh;
+}
+form[type=signin] [scale=md] {
+  width: 100%;
+  height: 8vh;
+}
+form[type=signin] [scale=lg] {
+  width: 100%;
+  height: 12vh;
+}
+
+form[type=signup] [scale=sm] {
+  width: 100%;
+  height: 6vh;
+}
+form[type=signup] [scale=md] {
+  width: 100%;
+  height: 8vh;
+}
+form[type=signup] [scale=lg] {
+  width: 100%;
+  height: 12vh;
+}
+
+form[type=search] [scale=lg] {
+  width: 100%;
+  height: 6vh;
+}
+
+[form][type=checkout] [actions] {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+[form][actions] {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 nav[type=bar] {
@@ -3160,6 +3239,125 @@ nav[type=strip] {
 }
 nav[type=strip][gradient=citrusmint-300] {
   background: linear-gradient(90deg, var(--citrusmint-300) 0%, var(--citrusmint-200) 100%);
+}
+
+nav[type=subnav] {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 8vh;
+  width: 100%;
+}
+
+nav[type=sidebar] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 15vw;
+}
+
+nav[type=breadcrumb] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 5vh;
+  width: 100%;
+  gap: 0.5rem;
+}
+nav[type=breadcrumb] a {
+  text-decoration: none;
+  color: inherit;
+}
+
+nav[type=pagination] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5vh;
+  width: 100%;
+  gap: 0.5rem;
+}
+nav[type=pagination] a {
+  text-decoration: none;
+  color: inherit;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+nav[type=pagination] a:hover {
+  background-color: hsl(121, 100%, 90%);
+}
+
+nav[type=mobile] {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 10vh;
+  width: 100%;
+}
+
+nav[type=compact] {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 8vh;
+  width: 100%;
+}
+
+nav[type=divider] {
+  height: 1px;
+  width: 100%;
+  background-color: hsl(121, 100%, 70%);
+}
+
+nav[cta] a {
+  text-decoration: none;
+  color: hsl(121, 100%, 40%);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: hsl(121, 100%, 90%);
+}
+nav[cta] a:hover {
+  background-color: hsl(121, 100%, 70%);
+}
+
+nav[type=brand] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10vh;
+  width: 100%;
+}
+
+nav[type=links] {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 8vh;
+  width: 100%;
+}
+nav[type=links] a {
+  text-decoration: none;
+  color: inherit;
+}
+
+nav[type=actions] {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 8vh;
+  width: 100%;
+}
+nav[type=actions] a {
+  text-decoration: none;
+  color: hsl(121, 100%, 40%);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: hsl(121, 100%, 90%);
+}
+nav[type=actions] a:hover {
+  background-color: hsl(121, 100%, 70%);
 }
 
 @font-face {
