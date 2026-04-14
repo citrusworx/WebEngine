@@ -166,14 +166,14 @@ Good:
 
 Do not treat `field` as a global-purpose layout helper outside form composition.
 
-## Use icons as color-inheriting masks
+## Use icons with `iconcolor`
 
-Juice icons inherit from `currentColor`, so use `fontColor` to tint them.
+Juice icons are mask-based and the public coloring attribute is `iconcolor`.
 
 Good:
 
 ```html
-<i icon="github" width="1.25rem" height="1.25rem" fontColor="gray-900"></i>
+<i icon="github" width="1.25rem" height="1.25rem" iconcolor="gray-900"></i>
 ```
 
 ## Keep the public surface small and clear

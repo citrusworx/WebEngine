@@ -39,12 +39,12 @@ Each icon set then maps an `icon` attribute value to a specific SVG file:
 ## Usage
 
 ```html
-<i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
-<i icon="calendar" width="1.25rem" height="1.25rem" fontColor="obsidian-700"></i>
-<i icon="github" width="1.5rem" height="1.5rem" fontColor="gray-900"></i>
+<i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
+<i icon="calendar" width="1.25rem" height="1.25rem" iconcolor="obsidian-700"></i>
+<i icon="github" width="1.5rem" height="1.5rem" iconcolor="gray-900"></i>
 ```
 
-Because the icon uses `currentColor`, set icon color with a text color utility such as `fontColor`.
+Use `iconcolor` to control icon color in Juice.
 
 ## Choosing an icon set
 

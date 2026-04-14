@@ -79,6 +79,7 @@ libraries/juice/
 - [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
 - [Styles](./juice-styles.md): attribute names, examples, and selector conventions
 - [Best Practices](./juice-best-practices.md): recommended composition patterns and usage guidance
+- [Page Tutorial](./juice-page-tutorial.md): step-by-step walkthrough for building a page with Juice
 - [Forms](./juice-forms.md): how to compose forms and field states with Juice
 - [Cards](./juice-cards.md): card structure, variants, sizing, and content regions
 - [Icons](./juice-icons.md): overview of the Juice icon system and the `icon` attribute

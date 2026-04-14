@@ -10,7 +10,7 @@ Use `field` and related field modifiers inside form composition. They are meant 
 
 Related reading:
 
-- [Rule #001 - Form-Scoped Attributes](./rules/001-Field%20Scrope.md)
+- `docs/juice/rules/001-Field Scrope.md`
 
 ## Base form patterns
 

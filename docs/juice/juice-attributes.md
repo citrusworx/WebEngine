@@ -152,6 +152,8 @@ For more detail, see [Sizing Reference](./juice-sizing.md).
 
 - `icon`: applies a FontAwesome Free icon mask
   Values: any icon key that exists in the Juice solid, regular, or brands sets
+- `iconcolor`: applies icon color through Juice's icon color selectors
+  Values: token-backed color values such as `"red-800"`, `"gray-900"`, or `"freshgreen-600"`
 
 Examples:
 
@@ -161,7 +163,7 @@ Examples:
 - `"shopify"`
 - `"shield-halved"`
 
-Icons inherit their visible color from `currentColor`, so use `fontColor` to tint them.
+Use `iconcolor` to tint icons.
 
 For more detail, see [Icons](./juice-icons.md).
 
@@ -230,15 +232,15 @@ For more detail, see [Cards](./juice-cards.md).
     <button bgColor="green-500" hover="green-600" fontColor="white-100" padding="1rem">
       Primary
     </button>
-    <i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
-    <i icon="github" width="1rem" height="1rem" fontColor="gray-900"></i>
+    <i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
+    <i icon="github" width="1rem" height="1rem" iconcolor="gray-900"></i>
   </div>
 </section>
 
 <div card card="cta" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
   <div card-header row space="between" centered>
     <h3 font="korolev-rounded-bold">Card Title</h3>
-    <i icon="toggle-on" width="2rem" height="2rem" fontColor="red-800"></i>
+    <i icon="toggle-on" width="2rem" height="2rem" iconcolor="red-800"></i>
   </div>
   <div card-body stack gap="1rem">
     <p font="korolev-rounded">Structured card content.</p>

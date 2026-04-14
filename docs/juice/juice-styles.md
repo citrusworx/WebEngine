@@ -86,15 +86,14 @@ Juice icons are also attribute-driven. The `icon` attribute maps to FontAwesome 
 Examples:
 
 ```html
-<i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
-<i icon="calendar" width="1.25rem" height="1.25rem" fontColor="obsidian-700"></i>
-<i icon="github" width="1.5rem" height="1.5rem" fontColor="gray-900"></i>
+<i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
+<i icon="calendar" width="1.25rem" height="1.25rem" iconcolor="obsidian-700"></i>
+<i icon="github" width="1.5rem" height="1.5rem" iconcolor="gray-900"></i>
 ```
 
 Important details:
 
-- icons inherit visible color from `currentColor`
-- `fontColor` is the easiest way to tint an icon
+- icons are tinted through the `iconcolor` attribute in Juice
 - the shared icon behavior lives in `src/styles/icons/icon.scss`
 - the current icon sources are `src/icons/fontawesome/web/svgs/{solid,regular,brands}`
 
@@ -110,7 +109,7 @@ Examples:
 <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
   <div card-header row space="between" centered>
     <h3 font="korolev-rounded-bold">Card title</h3>
-    <i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
+    <i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
   </div>
 
   <div card-body stack gap="1rem">
