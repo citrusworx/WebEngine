@@ -1,12 +1,12 @@
-.spin {
+[motion="spin"] {
     animation: spin 2s linear infinite;
 }
 
-.spin\:fast {
+[motion="spin::fast"] {
     animation: spin 0.5s linear infinite;
 }
 
-.spin\:slow {
+[motion="spin::slow"] {
     animation: spin 4s linear infinite;
 }
 

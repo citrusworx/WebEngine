@@ -1,0 +1,222 @@
+/* 
+
+    GRUNGE TEXTURES
+
+*/
+
+[texture="grunge.splash-001"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 1.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-002"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 2.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-003"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 3.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-004"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 4.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-005"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 5.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-006"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 6.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-007"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 7.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-008"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 8.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-009"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 9.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-010"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 10.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-011"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 11.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-012"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 12.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-013"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 13.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-014"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 14.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-015"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 15.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grunge.splash-016"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./png/Texture\ 16.png');
+    height: 100%;
+    width: 100%;
+}
+
+[texture^="grunge.splash-"]::after {
+    display: block;
+    background-repeat: repeat;
+    background-position: center;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    z-index: -1;
+}
+
+.bg\:test\[op-8\] > * {
+    position: relative;
+    z-index: 1;
+}
+
+.texture\:grunge\:\:splash-016\[blur\]::before {
+    content: "";
+    background-image: url('./grunge/png/Texture\ 16.png');
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-size: cover;
+    pointer-events: none;
+    filter:contrast(20%);
+}

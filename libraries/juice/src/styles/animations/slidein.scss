@@ -1,14 +1,15 @@
-.slideInLeft {
+[motion="slideIn.left"] {
     animation: slideInLeft 1.2s linear forwards;
 }
 
-.slideInLeft\:fast {
+[motion="slideIn.left::fast"] {
     animation: slideInLeft 0.4s linear forwards;
 }
 
-.slideInLeft\:slow {
+[motion="slideIn.left::slow"] {
     animation: slideInLeft 1s ease-in;
 }
+
 
 @keyframes slideInLeft {
     0% {

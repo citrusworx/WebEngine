@@ -1,0 +1,33 @@
+@forward 'grain/grain.scss';
+@forward 'grid/grid.scss';
+@forward 'grunge/grunge.scss';
+@forward 'hexa/hexa.scss';
+@forward 'shadow/shadow.scss';
+
+[texture] {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    isolation: isolate;
+}
+
+
+.darken {
+    mix-blend-mode: darken;
+}
+
+.multiply {
+    mix-blend-mode: multiply;
+}
+
+.color\:\:burn {
+    mix-blend-mode: color-burn;
+}
+
+.cover {
+    background-size: cover;
+}
+
+.bg\:test\[op-8\] {
+    background: hsla(20, 50%, 50%, 0.8);
+}

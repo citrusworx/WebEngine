@@ -31,13 +31,11 @@
 }
 
 @mixin gap-generator(){
-    @for $i from 1 through 10 {
+    @for $i from 1 through 100 {
         [gap="#{$i}"]{
             gap: #{$i}rem;
         }
-    }
 
-    @for $i from 1 through 100 {
         [gap="#{$i}rem"]{
             gap: #{$i}rem;
         }
@@ -45,9 +43,87 @@
         [gap="#{$i}px"]{
             gap: #{$i}px;
         }
+    }
+}
 
-        [gap="#{$i}%"]{
-            gap: #{$i}%;
+@mixin padding-maker(){
+    // Updated to generate selectors matching TSX values like "1rem", "2rem", etc.
+    @for $i from 1 through 10 {
+        [paddingX="#{$i}rem"]{
+            padding-left: #{$i}rem;
+            padding-right: #{$i}rem;
+        }
+
+        [paddingY="#{$i}rem"]{
+            padding-top: #{$i}rem;
+            padding-bottom: #{$i}rem;
+        }
+    }
+}
+
+@mixin margin-maker(){
+    // Updated similarly for consistency
+    @for $i from 1 through 10 {
+        [marginX="#{$i}rem"]{
+            margin-left: #{$i}rem;
+            margin-right: #{$i}rem;
+        }
+
+        [marginY="#{$i}rem"]{
+            margin-top: #{$i}rem;
+            margin-bottom: #{$i}rem;
+        }
+    }
+}
+
+@mixin padding-hybrid-maker(){
+    // Updated to match intended TSX format like padding="x-2 y-4" (assuming "x-2rem y-4rem")
+    // Simplified loops to ascending for efficiency; adjust ranges if needed
+    @for $i from 1 through 10 {
+        @for $j from 1 through 10 {
+            [padding="x-#{$i}rem y-#{$j}rem"]{
+                padding-top: #{$i}rem;
+                padding-bottom: #{$i}rem;
+                padding-left: #{$j}rem;
+                padding-right: #{$j}rem;
+            }
+        }
+    }
+
+    // For px, kept but simplified
+    @for $i from 1 through 100 {
+        @for $j from 1 through 100 {
+            [padding="x-#{$i}px y-#{$j}px"]{
+                padding-top: #{$i}px;
+                padding-bottom: #{$i}px;
+                padding-left: #{$j}px;
+                padding-right: #{$j}px;
+            }
+        }
+    }
+}
+
+@mixin margin-hybrid-maker(){
+    // Similar update for margin hybrid
+    @for $i from 1 through 10 {
+        @for $j from 1 through 10 {
+            [margin="x-#{$i}rem y-#{$j}rem"]{
+                margin-top: #{$i}rem;
+                margin-bottom: #{$i}rem;
+                margin-left: #{$j}rem;
+                margin-right: #{$j}rem;
+            }
+        }
+    }
+
+    @for $i from 1 through 100 {
+        @for $j from 1 through 100 {
+            [margin="x-#{$i}px y-#{$j}px"]{
+                margin-top: #{$i}px;
+                margin-bottom: #{$i}px;
+                margin-left: #{$j}px;
+                margin-right: #{$j}px;
+            }
         }
     }
 }
