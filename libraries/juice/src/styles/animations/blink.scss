@@ -1,0 +1,103 @@
+[motion="blink"],
+[animation="blink"],
+[animate="blink"] {
+    animation: blink-default 1.6s ease-in-out infinite;
+    transform-origin: center;
+}
+
+[motion="blink:slow"],
+[animation="blink:slow"],
+[animate="blink:slow"] {
+    animation: blink-soft 3.4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+[motion="blink:fast"],
+[animation="blink:fast"],
+[animate="blink:fast"] {
+    animation: blink-soft 1.4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+[motion="blink:signal"],
+[animation="blink:signal"],
+[animate="blink:signal"] {
+    animation: blink-signal 2s ease-in-out infinite;
+    transform-origin: center;
+}
+
+[motion="blink:terminal"],
+[animation="blink:terminal"],
+[animate="blink:terminal"] {
+    animation: blink-terminal 1.2s steps(2, end) infinite;
+}
+
+[motion^="blink"]:hover,
+[animation^="blink"]:hover,
+[animate^="blink"]:hover {
+    animation-play-state: paused;
+}
+
+@keyframes blink-soft {
+    0%,
+    100% {
+        opacity: 0.45;
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.03);
+        filter: brightness(1.15);
+    }
+}
+
+@keyframes blink-default {
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.015);
+    }
+}
+
+@keyframes blink-signal {
+    0%,
+    100% {
+        opacity: 0.35;
+        filter: drop-shadow(0 0 0 transparent);
+    }
+
+    50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 0.4rem currentColor);
+    }
+}
+
+@keyframes blink-terminal {
+    0%,
+    49% {
+        opacity: 1;
+    }
+
+    50%,
+    100% {
+        opacity: 0.2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [motion^="blink"],
+    [animation^="blink"],
+    [animate^="blink"] {
+        animation: none;
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}

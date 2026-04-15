@@ -3526,6 +3526,191 @@ nav[type=actions] a:hover {
 /* Added */
 /* Added */
 /* Added */
+[motion=blink],
+[animation=blink],
+[animate=blink] {
+  animation: blink-default 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+[motion="blink:slow"],
+[animation="blink:slow"],
+[animate="blink:slow"] {
+  animation: blink-soft 3.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+[motion="blink:fast"],
+[animation="blink:fast"],
+[animate="blink:fast"] {
+  animation: blink-soft 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+[motion="blink:signal"],
+[animation="blink:signal"],
+[animate="blink:signal"] {
+  animation: blink-signal 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+[motion="blink:terminal"],
+[animation="blink:terminal"],
+[animate="blink:terminal"] {
+  animation: blink-terminal 1.2s steps(2, end) infinite;
+}
+
+[motion^=blink]:hover,
+[animation^=blink]:hover,
+[animate^=blink]:hover {
+  animation-play-state: paused;
+}
+
+@keyframes blink-soft {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+    filter: brightness(1.15);
+  }
+}
+@keyframes blink-default {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+}
+@keyframes blink-signal {
+  0%, 100% {
+    opacity: 0.35;
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 0.4rem currentColor);
+  }
+}
+@keyframes blink-terminal {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0.2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [motion^=blink],
+  [animation^=blink],
+  [animate^=blink] {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+/* 
+
+TODO:Bounce Out
+TODO:Bounce Out Left
+TODO:Bounce Out Right
+TODO:Fade In Down
+TODO:Fade In Up
+TODO:Fade Out Down
+TODO:Fade Out Up
+TODO:Flip
+TODO:Flip In X
+TODO:Flip In Y
+TODO:Flip Out X
+TODO:Flip Out Y
+TODO:Light Speed In
+TODO:Light Speed Out
+TODO:Roll In
+TODO:Roll Out
+TODO:Rotate In
+TODO:Rotate In Down Left
+TODO:Rotate In Down Right
+TODO:Rotate In Up Left
+TODO:Rotate In Up Right
+TODO:Rotate Out
+TODO:Rotate Out Down Left
+TODO:Rotate Out Down Right
+TODO:Rotate Out Up Left
+TODO:Rotate Out Up Right
+TODO:Slide Out Left
+TODO:Slide Out Right
+TODO:Slide Out Up
+TODO:Slide Out Down
+TODO:Zoom In
+TODO:Zoom In Down
+TODO:Zoom In Left
+TODO:Zoom In Right
+TODO:Zoom In Up
+TODO:Zoom Out
+TODO:Zoom Out Down
+TODO:Zoom Out Left
+TODO:Zoom Out Right
+TODO:Zoom Out Up
+
+berillium animations:
+TODO: Jelly
+TODO: Heartbeat
+TODO: Wobble
+TODO: Rubber Band
+TODO: Swing
+TODO: Hinge
+TODO: Skew
+TODO: Shake
+TODO: Fade out w/ Shrink
+TODO: Parallax Scroll
+TODO: Drift
+TODO: Starburst
+TODO: Glitch
+TODO: Ripple
+TODO: Flip Card
+TODO: Reveal
+TODO: Wave
+TODO: Float
+TODO: Earthquake
+TODO: 3D Rotate
+*/
+/* Transition Utilities */
+.t-all {
+  transition: all 0.3s ease;
+}
+
+.t-width {
+  transition: width 0.3s ease;
+}
+
+.t-height {
+  transition: height 0.3s ease;
+}
+
+.t-flex {
+  transition: flex 0.3s ease;
+}
+
+.t-bg {
+  transition: background-color 0.3s ease;
+}
+
+.sm-to-md {
+  width: 15vw;
+  transition: width 1s ease;
+}
+
+.sm-to-md.expand {
+  width: 30vw;
+}
+
 [font=abril-fatface] {
   font-family: "Abril Fatface", serif;
 }
@@ -13252,21 +13437,25 @@ body[gradient]:not([text])::before {
 }
 
 /* Animation */
+[gradient]:not([text])[motion=flow]::before,
 [gradient]:not([text])[animation=flow]::before {
   background-size: 300% 100%;
   animation: gradShiftX 3s linear infinite;
 }
 
+button[gradient]:not([text])[motion=flow]::before,
 button[gradient]:not([text])[animation=flow]::before {
   background-size: 800% 100%;
   animation: gradShiftX 8s linear infinite;
 }
 
+[text][motion=flow],
 [text][animation=flow] {
   background-size: 800% 100%;
   animation: gradShiftX 8s linear infinite;
 }
 
+body[gradient]:not([text])[motion=fall]::before,
 body[gradient]:not([text])[animation=fall]::before {
   background-size: 300% 300%;
   animation: gradShiftY 10s linear infinite;

@@ -1,0 +1,9 @@
+.tilt {
+    transform: rotate(0deg);
+    animation: transform 1s ease-in;
+    transform-origin: bottom left;
+}
+
+.tilt:hover {
+    transform: rotate(-20deg);
+}

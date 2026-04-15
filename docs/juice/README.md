@@ -1,110 +1,145 @@
 # Juice
 
-Juice is CitrusWorx's attribute-driven styling library. It ships a compiled stylesheet, a design-token source tree, and a small TypeScript entrypoint that lets apps consume the package as `@citrusworx/juice`.
+Attribute-based UI for developers who want expressive markup without utility-class soup.
 
-Today, the most complete parts of Juice are:
+Juice is a UI system for building interfaces with HTML attributes instead of long class strings. It exists to make layout, styling, motion, and tokens readable in the markup itself while staying flexible enough to work in plain HTML or alongside frameworks like React and Vue.
 
-- color tokens and swatches
-- font tokens and font selectors
-- attribute-based utility styles
-- layout primitives such as `stack`, `row`, `grid`, `gap`, and `span`
-- icon utilities backed by the FontAwesome Free library
-- build tooling for compiling `src/juice.scss` into `dist/index.css`
+It’s part of the CitrusWorx ecosystem, alongside projects like KiwiEngine and Citrode.
 
-## What Juice ships
+## Why Juice
 
-Package entrypoints:
+Tailwind is fast, but it pushes design intent into dense class lists.
 
-- `@citrusworx/juice` -> `dist/index.mjs`
-- `@citrusworx/juice/styles` -> `dist/index.css`
+```html
+<!-- Tailwind -->
+<section class="flex flex-col items-center justify-center gap-4 p-8 bg-gradient-to-r from-lime-200 to-green-400 rounded-xl shadow-md">
+  <h1 class="text-4xl font-bold text-green-950">Stewarded Infrastructure</h1>
+  <p class="max-w-2xl text-center text-green-900">Governed execution for modern platforms.</p>
+  <button class="rounded-lg border border-green-700 px-6 py-3 text-green-900 hover:bg-green-100">
+    Get Started
+  </button>
+</section>
+```
 
-Main source entrypoints:
+```html
+<!-- Juice -->
+<section stack centered gap="2" padding="2rem" gradient="citrusmint-300" rounded="lg" shadow depth="md">
+  <h1 font="korolev-rounded-bold" fontSize="xxl" fontColor="green-950">
+    Stewarded Infrastructure
+  </h1>
+  <p width="50%" align="center" fontColor="green-900">
+    Governed execution for modern platforms.
+  </p>
+  <div center>
+    <button btn="outline" theme="citrusmint-300" scale="lg">Get Started</button>
+  </div>
+</section>
+```
 
-- `libraries/juice/src/juice.scss`
-- `libraries/juice/src/index.ts`
-- `libraries/juice/src/styles/styles.scss`
-- `libraries/juice/src/tokens`
+## Features
 
-## Install and use
+- Attribute-based styling for layout, spacing, sizing, typography, color, and structure
+- Built-in flex, grid, content, container, and card patterns
+- Design tokens for colors, fonts, spacing, and themes
+- Responsive behavior baked into the system
+- Native motion attributes for quick animation effects
+- Optional GSAP adapter support for advanced animation workflows
+- Works in plain HTML, server-rendered apps, or frameworks like React and Vue
+- Can be used standalone or as part of the CitrusWorx stack
+
+## Quick Start
 
 ```bash
-yarn add @citrusworx/juice
+npm install @citrusworx/juice
 ```
 
 ```ts
 import "@citrusworx/juice/styles";
 ```
 
-Once the stylesheet is imported, Juice selectors are available directly in markup:
+```html
+<main gradient="citrusmint-300" stack gap="2" padding="2rem">
+  <section card bgColor="white-100" rounded shadow depth="sm">
+    <h1 fontSize="xxl">Hello Juice</h1>
+    <p>Attribute-based UI, no class soup required.</p>
+  </section>
+</main>
+```
+
+## Example
 
 ```html
-<section stack gap="2" padding="2rem">
-  <h1 font="bebas-neue" fontSize="lg" fontColor="onyx-900">Juice</h1>
-  <p font="lato" fontColor="gray-700">
-    Attribute-driven styling built from tokens.
-  </p>
-  <div row gap="1" centered>
-    <button bgColor="green-500" hover="green-600" fontColor="white-100" padding="1rem">
-      Primary action
-    </button>
-    <i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
+<section content stack gap="2" padding="2rem">
+  <div center>
+    <h2 font="korolev-rounded-bold" fontSize="xl">
+      Start with your domain
+    </h2>
+  </div>
+
+  <div card card="cta" bgColor="white-100" rounded shadow depth="sm">
+    <div card-body stack gap="1">
+      <p align="center">
+        Search, register, or transfer your domain from one place.
+      </p>
+
+      <form type="search">
+        <div row gap="1" centered>
+          <div field width="40vw">
+            <input type="text" placeholder="Search for your domain" scale="lg" rounded />
+          </div>
+          <button btn="flat" theme="citrusmint-300">Search</button>
+        </div>
+      </form>
+    </div>
   </div>
 </section>
 ```
 
-## How Juice is organized
+## Animations
 
-```text
-libraries/juice/
-  src/
-    core/        base layout, typography, mixins, reset
-    styles/      attribute selectors that map to token values
-    tokens/      SCSS tokens and YAML source data
-    themes/      theme definitions, still early
-    icons/       FontAwesome Free SVG assets used by the icon system
-    juice.scss   master stylesheet entrypoint
-  dist/
-    index.css    compiled CSS output
-    index.mjs    compiled JS entrypoint
-  gulp.ts        stylesheet build pipeline
-  vite.config.ts JS library build
+Juice supports native attribute-driven motion for fast UI feedback.
+
+```html
+<h1 motion="blink">Animated headline</h1>
+<div gradient="citrusmint-300" motion="flow"></div>
 ```
 
-## Documentation map
+For more advanced animation control, Juice can also be paired with a GSAP adapter. Use the built-in motion attributes for the simple cases, then layer GSAP on top when you need orchestration, timelines, or app-driven transitions.
 
-- [Attributes Reference](./juice-attributes.md): comprehensive list of all supported HTML attributes and their values
-- [Colors Reference](./juice-colors.md): complete guide to all available colors and swatches
-- [Spacing Reference](./juice-spacing.md): detailed guide to padding, margin, and gap attributes
-- [Sizing Reference](./juice-sizing.md): detailed guide to width and height attributes
-- [Typography Reference](./juice-typography.md): complete guide to all integrated Google and Adobe fonts
-- [Styles](./juice-styles.md): attribute names, examples, and selector conventions
-- [Best Practices](./juice-best-practices.md): recommended composition patterns and usage guidance
-- [Page Tutorial](./juice-page-tutorial.md): step-by-step walkthrough for building a page with Juice
-- [Forms](./juice-forms.md): how to compose forms and field states with Juice
-- [Cards](./juice-cards.md): card structure, variants, sizing, and content regions
-- [Icons](./juice-icons.md): overview of the Juice icon system and the `icon` attribute
-- [Icons - Solid](./juice-icons-solid.md): how the icon attribute maps to FontAwesome Free solid masks
-- [Icons - Regular](./juice-icons-regular.md): how the icon attribute maps to FontAwesome Free regular masks
-- [Icons - Brands](./juice-icons-brands.md): how the icon attribute maps to FontAwesome Free brand marks
-- [Token System](./juice-token-system.md): how tokens are stored and consumed
-- [Layout](./juice-layout.md): stacks, rows, grids, spans, and numeric sizing utilities
+## Philosophy
 
-## Current status
+### Attributes over classes
 
-Juice is usable today as a stylesheet and token library. The docs below intentionally describe the code that exists in this repo right now, not the longer-term roadmap.
+Juice keeps styling intent in readable markup.
 
-A few areas are still early:
+```html
+<div row gap="2" space="between" padding="1rem"></div>
+```
 
-- the JS exports are minimal
-- `themes/` exists but is mostly schema/config data right now
-- `components/` is present but there are not yet public component exports
-- `juice.config.yaml` is a draft configuration surface rather than a fully wired generator contract
+### Expressive UI
 
-## External resources
+The goal is not minimal syntax. The goal is clear syntax.
 
-Juice uses FontAwesome Free icon naming conventions and asset masks for its icon system. The repo currently includes the Free Solid, Free Regular, and Free Brands collections. For more details, see:
+### Scalable system
 
-- [FontAwesome Solid](https://fontawesome.com/icons?d=gallery&s=solid)
-- [FontAwesome Brands](https://fontawesome.com/icons?d=gallery&s=brands)
-- [FontAwesome Regular](https://fontawesome.com/icons?d=gallery&s=regular)
-- [FontAwesome home](https://fontawesome.com)
+Juice is designed to grow from prototypes to full applications through tokens, structure, and repeatable patterns.
+
+## Use Cases
+
+- Dashboards
+- Product apps
+- Marketing pages
+- Internal tools
+- Rapid prototyping
+- Design-system experimentation
+
+## Status
+
+Juice is currently in **ALPHA**.
+
+The core direction is solid, but APIs and patterns may still evolve. Feedback, issues, and real-world usage are welcome.
+
+## Links
+
+- Docs: `TODO`
+- Ecosystem: KiwiEngine and the broader CitrusWorx stack
