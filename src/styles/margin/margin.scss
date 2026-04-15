@@ -1,3 +1,7 @@
 @forward './per/percent.scss';
 @forward './px/px.scss';
 @forward './rem/rem.scss';
+@use '../../core/mixins' as *;
+
+@include margin-maker();
+@include margin-hybrid-maker();

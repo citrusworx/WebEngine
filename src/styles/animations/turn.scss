@@ -1,28 +1,22 @@
-.turn {
+[motion="turn"] {
     animation: spin 5s linear infinite;
     animation-play-state: paused;
     overflow-y: hidden;
 }
 
-.turn\:fast {
+[motion="turn::fast"] {
     animation: spin 2s linear infinite;
     animation-play-state: paused;
 }
 
-.turn\:slow {
+[motion="turn::slow"] {
     animation: spin 7s linear infinite;
     animation-play-state: paused;
 }
 
-.turn:hover{
-    animation-play-state: running;
-}
-
-.turn\:slow:hover{
-    animation-play-state: running;
-}
-
-.turn\:fast:hover{
+[motion="turn"]:hover, 
+[motion="turn::fast"]:hover,
+[motion="turn::slow"]:hover {
     animation-play-state: running;
 }
 

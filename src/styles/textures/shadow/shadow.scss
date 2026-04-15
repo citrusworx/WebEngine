@@ -1,0 +1,28 @@
+// create a mixin for shadow patterns
+
+@mixin shadow-texture(){
+    @for $i from 1 through 20 {
+        [texture="shadow.pat-#{$i}"]::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: url('./shadow/#{$i}.png');
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            pointer-events: none;
+        }
+    }
+}
+
+@include shadow-texture();
+
+[texture^="shadow.pat-"]::after {
+    display: block;
+    background-repeat: repeat;
+    background-position: center;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    z-index: -1;
+}

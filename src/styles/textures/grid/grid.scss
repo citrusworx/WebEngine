@@ -1,0 +1,159 @@
+/* 
+
+    GRID STYLES
+
+*/
+
+[texture="grid.pat-001"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 01.png');
+    background-repeat: repeat;
+    background-position: center;
+    background-size: auto;
+    mix-blend-mode: overlay;
+    opacity: 0.35;
+}
+
+[texture="grid.pat-002"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 02.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-003"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 03.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-004"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 04.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-005"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 05.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-006"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 06.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-007"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 07.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-008"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 08.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-009"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 09.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-010"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 10.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-011"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 11.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture="grid.pat-012"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./grid/Grid\ 12.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    pointer-events: none;
+}
+
+[texture^="grid.pat-"]::after {
+    display: block;
+    background-repeat: repeat;
+    background-position: center;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    z-index: -1;
+}

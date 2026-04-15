@@ -2,11 +2,11 @@
     FADE IN
 */
 
-.fade\:in{ 
+[motion="fade.in"]{ 
     animation: fadeIn 1s linear forwards;
 }
 
-.fade\:in\:\:fast {
+[motion="fade.in::fast"] {
     animation: fadeIn 0.3s linear forwards;
 }
 
@@ -23,7 +23,7 @@
     FADE OUT
 */
 
-.fade\:out{
+[motion="fade.out"]{
     animation: fadeOut 1s linear forwards;
 }
 
