@@ -14,6 +14,15 @@ yarn add @citrusworx/juice
 import "@citrusworx/juice/styles";
 ```
 
+## Use the built files directly
+
+If you are hosting Juice assets yourself, the main built files are:
+
+- `dist/index.css`
+- `dist/index.mjs`
+
+These can be served from a CDN or static asset host and loaded directly into a project.
+
 ## Example
 
 ```html
@@ -31,11 +40,24 @@ import "@citrusworx/juice/styles";
 ## What is implemented today
 
 - compiled CSS output at `dist/index.css`
+- compiled JS output at `dist/index.mjs`
 - color tokens and swatches
 - Google and Adobe font selectors
 - attribute selectors for color, spacing, width, height, gradients, shadows, and icons
 - layout primitives for `stack`, `row`, `grid`, `gap`, and `span`
 - FontAwesome Free icon integration across the solid, regular, and brands sets
+
+## Optional config
+
+Juice also includes an optional config surface at `juice.config.yaml`.
+
+This is intended for describing project-level branding concerns like:
+
+- base colors and swatches
+- typography roles
+- experimental integration options
+
+Config is not required to use Juice. The most stable current entrypoint is still the compiled stylesheet plus the existing attribute system.
 
 ## Build
 

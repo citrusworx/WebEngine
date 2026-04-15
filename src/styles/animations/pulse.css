@@ -1,0 +1,15 @@
+.pulse {
+    animation: 5s infinite pulse;
+}
+
+@keyframes pulse {
+    0% {
+        font-size: 1rem;
+    }
+    50% {
+        font-size: 2rem;
+    }
+    100% {
+        font-size: 1rem;
+    }
+}

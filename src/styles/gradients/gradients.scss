@@ -114,22 +114,26 @@ body[gradient]:not([text])::before{
 }
 
 /* Animation */
+[gradient]:not([text])[motion="flow"]::before,
 [gradient]:not([text])[animation="flow"]::before{
     background-size: 300% 100%;
     animation: gradShiftX 3s linear infinite;
 }
 
+button[gradient]:not([text])[motion="flow"]::before,
 button[gradient]:not([text])[animation="flow"]::before{
     background-size: 800% 100%;
     animation: gradShiftX 8s linear infinite;
 }
 
+[text][motion="flow"],
 [text][animation="flow"]{
     background-size: 800% 100%;
     animation: gradShiftX 8s linear infinite;
 }
 
 
+body[gradient]:not([text])[motion="fall"]::before,
 body[gradient]:not([text])[animation="fall"]::before{
     background-size: 300% 300%;
     animation: gradShiftY 10s linear infinite;
