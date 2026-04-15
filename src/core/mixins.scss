@@ -1,7 +1,41 @@
+@use './breakpoints/breakpoints.scss' as *;
+@use 'sass:list' as list;
+@use 'sass:map';
+
+@function responsive-unit($unit) {
+    @return list.index(("%", "vw", "vh"), $unit) == null;
+}
+
 @mixin attribute-generator($property, $unit) {
     @for $i from 1 through 100 {
         [#{$property}="#{$i}#{$unit}"] {
             #{$property}: #{$i}#{$unit};
+        }
+    }
+}
+
+@mixin responsive-attribute-generator($property, $unit, $max-value: 100) {
+    @for $i from 1 through $max-value {
+        [#{$property}="#{$i}#{$unit}"] {
+            // Desktop and up (lg+) - full value
+            #{$property}: #{$i}#{$unit};
+
+            @if responsive-unit($unit) {
+                // Tablet (md) - 80% of value
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    #{$property}: #{$i * 0.8}#{$unit};
+                }
+
+                // Small tablet (sm) - 75% of value
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    #{$property}: #{$i * 0.75}#{$unit};
+                }
+
+                // Mobile (xs) - 50% of value
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    #{$property}: #{$i * 0.5}#{$unit};
+                }
+            }
         }
     }
 }
@@ -34,14 +68,59 @@
     @for $i from 1 through 100 {
         [gap="#{$i}"]{
             gap: #{$i}rem;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{$i * 0.8}rem;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{$i * 0.75}rem;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{$i * 0.5}rem;
+            }
         }
 
         [gap="#{$i}rem"]{
             gap: #{$i}rem;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{$i * 0.8}rem;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{$i * 0.75}rem;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{$i * 0.5}rem;
+            }
         }
 
         [gap="#{$i}px"]{
             gap: #{$i}px;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{$i * 0.8}px;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{$i * 0.75}px;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{$i * 0.5}px;
+            }
         }
     }
 }
@@ -52,11 +131,47 @@
         [paddingX="#{$i}rem"]{
             padding-left: #{$i}rem;
             padding-right: #{$i}rem;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                padding-left: #{$i * 0.8}rem;
+                padding-right: #{$i * 0.8}rem;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                padding-left: #{$i * 0.75}rem;
+                padding-right: #{$i * 0.75}rem;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                padding-left: #{$i * 0.5}rem;
+                padding-right: #{$i * 0.5}rem;
+            }
         }
 
         [paddingY="#{$i}rem"]{
             padding-top: #{$i}rem;
             padding-bottom: #{$i}rem;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                padding-top: #{$i * 0.8}rem;
+                padding-bottom: #{$i * 0.8}rem;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                padding-top: #{$i * 0.75}rem;
+                padding-bottom: #{$i * 0.75}rem;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                padding-top: #{$i * 0.5}rem;
+                padding-bottom: #{$i * 0.5}rem;
+            }
         }
     }
 }
@@ -67,11 +182,47 @@
         [marginX="#{$i}rem"]{
             margin-left: #{$i}rem;
             margin-right: #{$i}rem;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                margin-left: #{$i * 0.8}rem;
+                margin-right: #{$i * 0.8}rem;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                margin-left: #{$i * 0.75}rem;
+                margin-right: #{$i * 0.75}rem;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                margin-left: #{$i * 0.5}rem;
+                margin-right: #{$i * 0.5}rem;
+            }
         }
 
         [marginY="#{$i}rem"]{
             margin-top: #{$i}rem;
             margin-bottom: #{$i}rem;
+
+            // Tablet (md) - 80% of value
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                margin-top: #{$i * 0.8}rem;
+                margin-bottom: #{$i * 0.8}rem;
+            }
+
+            // Small tablet (sm) - 75% of value
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                margin-top: #{$i * 0.75}rem;
+                margin-bottom: #{$i * 0.75}rem;
+            }
+
+            // Mobile (xs) - 50% of value
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                margin-top: #{$i * 0.5}rem;
+                margin-bottom: #{$i * 0.5}rem;
+            }
         }
     }
 }

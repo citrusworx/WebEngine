@@ -1,3 +1,3 @@
 @use '../../../core/mixins.scss' as *;
 
-@include attribute-generator("height", "rem");
+@include responsive-attribute-generator("height", "rem");
