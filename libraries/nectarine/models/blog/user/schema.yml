@@ -1,0 +1,20 @@
+User:
+  table: users
+  fields:
+    id:
+      type: int
+      primaryKey: true
+      autoIncrement: true
+    username:
+      type: string
+      unique: true
+      null: false
+    email:
+      type: string
+      unique: true
+      null: false
+    password:
+      type: string
+      null: false
+    created_at: timestamp DEAFULT NOW()
+    role: enum(admin, author, user) DEFAULT 'user'

@@ -1,0 +1,42 @@
+Comment:
+  table: comments
+  fields:
+    id:
+      type: int
+      primaryKey: true
+      default: {fn: uuid_v4}
+    
+    post_id:
+      type: uuid
+      required: true
+
+    author_name:
+      type: string
+      required: true
+
+    author_email:
+      type: string
+    
+    user_id:
+      type: int
+      foreignKey: REFERENCES users(id)
+    
+    content:
+      type: text
+      required: true
+      null: false
+
+    status:
+      type: enum
+      values: [pending, approved, spam]
+      default: pending
+    
+    created_at:
+      type: timestamp
+      default: {fn: now}
+
+relations:
+  post:
+    type: many-to-many
+    model: Post
+    foreignKey: post_id

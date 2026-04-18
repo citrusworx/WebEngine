@@ -1,0 +1,39 @@
+queries:
+  getPublishedPosts:
+    select: [id, title, slug, excerpt, created_at]
+    where:
+      column: status
+      operator: eq
+      value: 'published'
+    orderBy: desc
+
+  getPostBySlug:
+    select: '*'
+    from: posts
+    where:
+      column: slug
+      operator: eq
+      value: $slug
+
+  createPost:
+    insert: [title, slug, content, author_id]
+    into: posts
+    values: [$1, $2, $3, $4]
+
+  updatePost:
+    update: [title, content, {fn: now}]
+    table: posts
+    where:
+      column: id
+      operator: eq
+      value: $1
+
+  deletePost:
+    delete:
+      from: posts
+      where:
+        column: id
+        operator: eq
+        value: $1
+
+

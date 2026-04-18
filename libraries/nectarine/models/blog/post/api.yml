@@ -1,0 +1,6 @@
+post:
+  get:
+    allPosts:
+      api:
+        method: GET
+        endpoint: /posts

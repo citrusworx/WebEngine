@@ -1,0 +1,37 @@
+Post:
+  table: posts
+  fields:
+    id:
+      type: uuid
+      default: {fn: uuid_v4}
+      primaryKey: true
+      autoIncrement: true
+    
+    title:
+      type: string
+      required: true
+      null: false
+    
+    content:
+      type: text
+      required: true
+      null: false
+    
+    slug:
+      type: string
+      unique: true
+      required: true
+    
+    status:
+      type: enum
+      values: [draft, published, archived]
+      default: draft
+    
+    featured_image:
+      type: string
+    
+    author_id:
+      type: uuid
+      foreignKey: REFERENCES users(id)
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()

@@ -1,0 +1,33 @@
+model: Author
+table: authors
+
+fields:
+  id:
+    type: uuid
+    primary: true
+    default: {fn: uuid_v4}
+  
+  name:
+    type: string
+    required: true
+
+  email:
+    type: string
+    unique: true
+    required: true
+
+  bio:
+    type: text
+
+  avatar:
+    type: string
+
+  created_at:
+    type: timestamp
+    default: {fn: now}
+
+  relations:
+    posts:
+      type: one-to-many
+      model: Post
+      foreignKey: author_id

@@ -1,0 +1,22 @@
+model: Category
+table: categories
+
+fields:
+  id:
+    type: uuid
+    primary: true
+    default: {fn: uuid_v4}
+
+  name:
+    type: string
+    required: true
+
+  slug:
+    type: string
+    unique: true
+
+relations:
+  posts:
+    type: many-to-many
+    model: Post
+    join_table: post_categories

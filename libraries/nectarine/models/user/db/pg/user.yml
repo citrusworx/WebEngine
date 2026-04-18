@@ -1,0 +1,74 @@
+user:
+  get:
+    UserByAge:
+      select: ['id', 'name']
+      from: users
+      where:
+        column: age
+        operator: gt # lt | gt | lte | gte | eq | neq
+        value: $1
+
+    AllUsers:
+      select: ['*']
+      from: users
+
+    UserById:
+      select: ['id']
+      from: users
+      where:
+          column: id
+          operator: eq
+          value: $1
+
+    UsersByEmail:
+      select: ['email']
+      from: users
+      where:
+        column: email
+        operator: eq
+        value: $1
+
+    UserLogin:
+      select: ['id', 'name', 'password']
+      from: users
+      where:
+        column: email
+        operator: eq
+        value: $1
+
+  update:
+    UserById:
+      table: users
+      set: ['name', 'age', 'updated_at']
+      values: [$1, $2, { fn: now }]
+      where:
+        column: id
+        operator: eq
+        value: $3
+
+
+    UserPassword:
+      table: users
+      set: ['password', 'updated_at']
+      values: [$1, { fn: now }]
+      where:
+        column: email
+        operator: eq
+        value: $2
+
+
+  create:
+    NewUser:
+      insert:
+        into: users
+        columns: ['email', 'password', 'name', 'created_at']
+        values: [$1, $2, $3, { fn: now }]
+
+
+  delete:
+    User:
+      from: users
+      where:
+        column: id
+        operator: eq
+        value: $1

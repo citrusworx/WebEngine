@@ -1,0 +1,61 @@
+User:
+  table: users
+  fields:
+    id:
+      type: int 
+      primaryKey: true
+      autoIncrement: true
+    username:
+      type: VARCHAR
+      length: 55
+      unique: true
+      null: false
+    email:
+      type: VARCHAR
+      size: 100
+      unique: true 
+      null: false
+    password:
+      type: VARCHAR
+      size: 50
+      null: false
+    created_at: timestamp DEAFULT NOW()
+    role: enum(admin, author, user) DEFAULT 'user'
+    
+Post:
+  table: posts
+  fields:
+    id:
+      type: int
+      primaryKey: true
+      autoIncrement: true
+    title:
+      type: string
+      null: false
+    content:
+      type: text
+      null: false
+    author_id:
+      type: int
+      foreignKey: REFERENCES users(id)
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+
+Comment:
+  table: comments
+  fields:
+    id:
+      type: int
+      primaryKey: true
+      autoIncrement: true
+    post_id:
+      type: int
+      foreignKey: REFERENCES posts(id)
+    user_id:
+      type: int
+      foreignKey: REFERENCES users(id)
+    content:
+      type: text
+      null: false
+    created_at: timestamp DEFAULT NOW()
+

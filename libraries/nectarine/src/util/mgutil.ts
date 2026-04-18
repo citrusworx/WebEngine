@@ -1,6 +1,6 @@
-import { parseYAML } from './util';
+import { parser } from './util';
 
 export function loadMongoConfig(){
-    const myaml = parseYAML('sql.yml');
+    const myaml = parser.yaml('sql.yml');
     
 }
