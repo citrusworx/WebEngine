@@ -1,20 +1,54 @@
 @use './breakpoints/breakpoints.scss' as *;
 @use 'sass:list' as list;
 @use 'sass:map';
+@use 'sass:math';
 
 @function responsive-unit($unit) {
     @return list.index(("%", "vw", "vh"), $unit) == null;
 }
 
 @mixin attribute-generator($property, $unit) {
+    @for $i from 1 through 9 {
+        [#{$property}="0.#{$i}#{$unit}"] {
+            #{$property}: #{math.div($i, 10)}#{$unit};
+        }
+    }
+
     @for $i from 1 through 100 {
         [#{$property}="#{$i}#{$unit}"] {
             #{$property}: #{$i}#{$unit};
         }
+
+        @for $j from 1 through 9 {
+            [#{$property}="#{$i}.#{$j}#{$unit}"] {
+                #{$property}: #{$i + math.div($j, 10)}#{$unit};
+            }
+        }
     }
 }
 
+
 @mixin responsive-attribute-generator($property, $unit, $max-value: 100) {
+    @for $i from 1 through 9 {
+        [#{$property}="0.#{$i}#{$unit}"] {
+            #{$property}: #{math.div($i, 10)}#{$unit};
+
+            @if responsive-unit($unit) {
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    #{$property}: #{math.div($i, 10) * 0.8}#{$unit};
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    #{$property}: #{math.div($i, 10) * 0.75}#{$unit};
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    #{$property}: #{math.div($i, 10) * 0.5}#{$unit};
+                }
+            }
+        }
+    }
+
     @for $i from 1 through $max-value {
         [#{$property}="#{$i}#{$unit}"] {
             // Desktop and up (lg+) - full value
@@ -34,6 +68,26 @@
                 // Mobile (xs) - 50% of value
                 @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
                     #{$property}: #{$i * 0.5}#{$unit};
+                }
+            }
+        }
+
+        @for $j from 1 through 9 {
+            [#{$property}="#{$i}.#{$j}#{$unit}"] {
+                #{$property}: #{$i + math.div($j, 10)}#{$unit};
+
+                @if responsive-unit($unit) {
+                    @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                        #{$property}: #{($i + math.div($j, 10)) * 0.8}#{$unit};
+                    }
+
+                    @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                        #{$property}: #{($i + math.div($j, 10)) * 0.75}#{$unit};
+                    }
+
+                    @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                        #{$property}: #{($i + math.div($j, 10)) * 0.5}#{$unit};
+                    }
                 }
             }
         }
