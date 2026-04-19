@@ -5,6 +5,7 @@
     ],
 
     "compilerOptions": {
+        "ignoreDeprecations": "6.0",
         "target": "esnext",
         "module": "nodenext",
         "rootDir": "src",

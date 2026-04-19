@@ -74,6 +74,10 @@ $spacing--lg: 1.5rem;
     justify-content: center;
 }
 
+[row][wrap]{
+    flex-wrap: wrap;
+}
+
 [space="between"]{
     justify-content: space-between;
 }
