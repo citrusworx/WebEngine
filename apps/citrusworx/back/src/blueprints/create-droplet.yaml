@@ -1,0 +1,21 @@
+grapevine: "1.0"
+provider: digitalocean
+
+blueprint:
+    name: "create-single-droplet"
+    droplet:
+        name: "test.com"
+        region: "nyc3"
+        size: "s-1vcpu-1gb"
+        image: "ubuntu-24-04-x64"
+        ssh_keys: []
+        backups: true
+        backup_policy:
+            name: ""
+        ipv6: false
+        monitoring: true
+        tags: ["testing"]
+        user_data: ""
+        volumes: []
+        vpc_uuid: ""
+        with_droplet_agent: false

@@ -1,20 +1,56 @@
+import { runKernelLifecycle, shutdownKernel } from "./kernel/orchestrator.js";
+export { findKiwiConfigPath, KIWI_CONFIG_FILENAME } from "./config/find-kiwi-config.js";
+export { loadKiwiConfigFromPath, loadKiwiConfigFromPath as loadKiwiConfig } from "./config/load-kiwi-config.js";
+export { kiwiConfigSchema, webRuntimeConfigSchema, yamlRuntimeConfigSchema } from "./config/kiwi-schema.js";
+export { resolveRuntimeConfigPath } from "./config/runtime-paths.js";
+export { runKernelLifecycle, shutdownKernel } from "./kernel/orchestrator.js";
+export { createBuiltinRegistry } from "./kernel/registry.js";
+export { KernelContext } from "./kernel/types.js";
 export class WebEngine {
     currentBlueprint;
     manifest = null;
+    kernelContext = null;
+    healthSummary = null;
+    modulesInOrder = [];
     constructor() {
         console.log("WebEngine initialized");
     }
-    start() {
+    /**
+     * Loads kiwi.config.toml, runs scaffold → bootstrap → health for enabled kernel modules.
+     */
+    async start(options) {
+        const cwd = options?.cwd ?? process.cwd();
+        const result = await runKernelLifecycle(cwd);
+        this.kernelContext = result.context;
+        this.healthSummary = result.healthSummary;
+        this.modulesInOrder = result.modulesInOrder;
         console.log("WebEngine runtime started");
     }
-    loadBlueprint(blueprint, custom) {
-        // 1. Check blueprint name
-        // 2. Verify Blueprint exists
-        // 3. Parse Blueprint Config
-        // 4. Create Deploy Manifest based on Blueprint config
-        // 5. Insert Deploy Manifest (via GrapeVine)
-        // 6. Deploy Blueprint into Application
-        // ? How do we integrate blueprint without crashing or reducing usability?
+    getKernelContext() {
+        return this.kernelContext;
+    }
+    getHealthSummary() {
+        return this.healthSummary;
+    }
+    assertHealthy() {
+        if (!this.healthSummary) {
+            throw new Error("Kernel has not been started; call start() first");
+        }
+        if (!this.healthSummary.allOk) {
+            const failed = this.healthSummary.modules.filter((m) => !m.ok);
+            const msg = failed.map((m) => `${m.id}: ${m.detail ?? "unhealthy"}`).join("; ");
+            throw new Error(`Kernel health check failed: ${msg}`);
+        }
+    }
+    async shutdown() {
+        if (this.kernelContext && this.modulesInOrder.length > 0) {
+            await shutdownKernel(this.modulesInOrder, this.kernelContext);
+        }
+        this.kernelContext = null;
+        this.healthSummary = null;
+        this.modulesInOrder = [];
+    }
+    loadBlueprint(blueprint, _custom) {
         this.validateBlueprint(blueprint);
         this.currentBlueprint = blueprint;
         console.log(`Blueprint loaded: ${blueprint.name}`);
@@ -40,8 +76,6 @@ export class WebEngine {
         }
     }
     buildManifest(id, createdAt, projectId, env, blueprintName) {
-        // 1. Parse manifest
-        // ? What other steps are required to build the Deployment Manifest?
         const manifest = {
             id,
             createdAt,
@@ -53,8 +87,8 @@ export class WebEngine {
             adapters: this.currentBlueprint?.adapters,
             infrastructure: {
                 server: true,
-                database: true
-            }
+                database: true,
+            },
         };
         this.manifest = manifest;
         return manifest;

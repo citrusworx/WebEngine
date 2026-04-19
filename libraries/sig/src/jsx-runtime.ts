@@ -51,7 +51,14 @@ function setProp(el: HTMLElement, key: string, value: any) {
     }
 
     // DOM properties that must be assigned directly
-    if (key in el && !key.startsWith("data-") && !key.startsWith("aria-")) {
+    if (
+        key in el &&
+        key !== "animate" &&
+        key !== "animation" &&
+        key !== "motion" &&
+        !key.startsWith("data-") &&
+        !key.startsWith("aria-")
+    ) {
         (el as any)[key] = value;
         return;
     }

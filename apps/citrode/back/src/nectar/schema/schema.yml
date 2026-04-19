@@ -1,0 +1,722 @@
+# Citrode Platform Core Models
+# Governed Infrastructure Hosting Platform
+
+User:
+  table: users
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    username: 
+      type: VARCHAR
+      size: 50
+      unique: true
+      notNull: true
+    email: 
+      type: VARCHAR
+      size: 255
+      unique: true
+      notNull: true
+    password_hash: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    first_name: 
+      type: VARCHAR
+      size: 100
+    last_name: 
+      type: VARCHAR
+      size: 100
+    company: 
+      type: VARCHAR
+      size: 255
+    phone: 
+      type: VARCHAR
+      size: 20
+    avatar_url: 
+      type: VARCHAR
+      size: 500
+    email_verified: 
+      type: BOOLEAN
+      default: FALSE
+    two_factor_enabled: 
+      type: BOOLEAN
+      default: FALSE
+    role: 
+      type: ENUM
+      values: ['admin', 'manager', 'developer', 'user']
+      default: 'user'
+    status: 
+      type: ENUM
+      values: ['active', 'suspended', 'pending']
+      default: 'active'
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP
+    last_login_at: 
+      type: TIMESTAMP
+      null: true
+
+Organization:
+  table: organizations
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    slug: 
+      type: VARCHAR
+      size: 100
+      unique: true
+      notNull: true
+    description: 
+      type: TEXT
+    logo_url: 
+      type: VARCHAR
+      size: 500
+    website: 
+      type: VARCHAR
+      size: 255
+    billing_email: 
+      type: VARCHAR
+      size: 255
+    address_street: 
+      type: VARCHAR
+      size: 255
+    address_city: 
+      type: VARCHAR
+      size: 100
+    address_state: 
+      type: VARCHAR
+      size: 100
+    address_zip: 
+      type: VARCHAR
+      size: 20
+    address_country: 
+      type: VARCHAR
+      size: 100
+    tax_id: 
+      type: VARCHAR
+      size: 50
+    payment_method: 
+      type: ENUM
+      values: ['stripe', 'paypal', 'bank', 'invoice']
+      default: 'stripe'
+    subscription_tier: 
+      type: ENUM
+      values: ['starter', 'professional', 'enterprise']
+      default: 'starter'
+    status: 
+      type: ENUM
+      values: ['active', 'suspended', 'cancelled']
+      default: 'active'
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP
+
+OrganizationMember:
+  table: organization_members
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    organization_id: 
+      type: int
+      notNull: true
+    user_id: 
+      type: int
+      notNull: true
+    role: 
+      type: ENUM
+      values: ['owner', 'admin', 'member']
+      default: 'member'
+    invited_by: 
+      type: int
+      null: true
+    invited_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    joined_at: 
+      type: TIMESTAMP
+      null: true
+    status: 
+      type: ENUM
+      values: ['pending', 'active', 'removed']
+      default: 'pending'
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP
+    foreignKeys:
+      organization_id:
+        references: organizations(id)
+        onDelete: CASCADE
+      user_id:
+        references: users(id)
+        onDelete: CASCADE
+      invited_by:
+        references: users(id)
+
+Product:
+  table: products
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    slug: 
+      type: VARCHAR
+      size: 100
+      unique: true
+      notNull: true
+    description: 
+      type: TEXT
+    category: 
+      type: ENUM
+      values: ['hosting', 'domain', 'ssl', 'backup', 'security', 'monitoring', 'consulting']
+      notNull: true
+    type: 
+      type: ENUM
+      values: ['service', 'addon', 'bundle']
+      default: 'service'
+    pricing_model: 
+      type: ENUM
+      values: ['fixed', 'usage', 'tiered']
+      default: 'fixed'
+    base_price: 
+      type: DECIMAL
+      precision: 10
+      scale: 2
+      notNull: true
+    currency: 
+      type: VARCHAR
+      size: 3
+      default: 'USD'
+    billing_cycle: 
+      type: ENUM
+      values: ['monthly', 'quarterly', 'yearly', 'one-time']
+      default: 'monthly'
+    is_active: 
+      type: BOOLEAN
+      default: true
+    is_featured: 
+      type: BOOLEAN
+      default: false
+    sort_order: 
+      type: int
+      default: 0
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP
+
+Server:
+  table: servers
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    hostname: 
+      type: VARCHAR
+      size: 255
+      unique: true
+      notNull: true
+    ip_address: 
+      type: VARCHAR
+      size: 45
+      notNull: true
+    provider: 
+      type: ENUM
+      values: ['aws', 'digitalocean', 'linode', 'vultr', 'hetzner', 'gcp', 'azure', 'on-premise']
+      notNull: true
+    region: 
+      type: VARCHAR
+      size: 100
+      notNull: true
+    size: 
+      type: VARCHAR
+      size: 50
+      notNull: true
+    os: 
+      type: VARCHAR
+      size: 100
+      notNull: true
+    cpu_cores: 
+      type: int
+      notNull: true
+    memory_gb: 
+      type: DECIMAL
+      precision: 5
+      scale: 2
+      notNull: true
+    storage_gb: 
+      type: int
+      notNull: true
+    storage_type: 
+      type: ENUM
+      values: ['ssd', 'hdd', 'nvme']
+      default: 'ssd'
+    status: 
+      type: ENUM
+      values: ['provisioning', 'active', 'maintenance', 'suspended', 'terminated']
+      default: 'provisioning'
+    organization_id: 
+      type: int
+      notNull: true
+    created_by: 
+      type: int
+      notNull: true
+    provisioned_at: 
+      type: TIMESTAMP
+      null: true
+    terminated_at: 
+      type: TIMESTAMP
+      null: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE FOREIGN KEY (created_by) REFERENCES users(id)
+
+VirtualMachine:
+  table: virtual_machines
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    server_id: 
+      type: int
+      notNull: true
+    container_id: 
+      type: VARCHAR
+      size: 100
+      unique: true
+      notNull: true
+    os: 
+      type: VARCHAR
+      size: 100
+      notNull: true
+    cpu_cores: 
+      type: DECIMAL
+      precision: 3
+      scale: 1
+      notNull: true
+    memory_gb: 
+      type: DECIMAL
+      precision: 5
+      scale: 2
+      notNull: true
+    storage_gb: 
+      type: int
+      notNull: true
+    ip_address: 
+      type: VARCHAR
+      size: 45
+      null: true
+    status: 
+      type: ENUM
+      values: ['creating', 'running', 'stopped', 'suspended', 'terminated']
+      default: 'creating'
+    auto_start: 
+      type: BOOLEAN
+      default: true
+    backup_enabled: 
+      type: BOOLEAN
+      default: false
+    monitoring_enabled: 
+      type: BOOLEAN
+      default: true
+    organization_id: 
+      type: int
+      notNull: true
+    created_by: 
+      type: int
+      notNull: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE FOREIGN KEY (created_by) REFERENCES users(id)
+
+Domain:
+  table: domains
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 253
+      unique: true
+      notNull: true
+    tld: 
+      type: VARCHAR
+      size: 10
+      notNull: true
+    registrar: 
+      type: VARCHAR
+      size: 100
+      notNull: true
+    registration_date: 
+      type: DATE
+      notNull: true
+    expiry_date: 
+      type: DATE
+      notNull: true
+    auto_renew: 
+      type: BOOLEAN
+      default: true
+    privacy_protection: 
+      type: BOOLEAN
+      default: true
+    dns_provider: 
+      type: VARCHAR
+      size: 100
+      default: 'citrode'
+    status: 
+      type: ENUM
+      values: ['active', 'expired', 'pending', 'transferred']
+      default: 'active'
+    organization_id: 
+      type: int
+      notNull: true
+    created_by: 
+      type: int
+      notNull: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE FOREIGN KEY (created_by) REFERENCES users(id)
+
+Deployment:
+  table: deployments
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    description: 
+      type: TEXT
+    type: 
+      type: ENUM
+      values: ['web', 'api', 'database', 'worker', 'static']
+      notNull: true
+    framework: 
+      type: VARCHAR
+      size: 100
+      null: true
+    runtime: 
+      type: VARCHAR
+      size: 100
+      null: true
+    repository_url: 
+      type: VARCHAR
+      size: 500
+      null: true
+    branch: 
+      type: VARCHAR
+      size: 100
+      default: 'main'
+    build_command: 
+      type: VARCHAR
+      size: 500
+      null: true
+    start_command: 
+      type: VARCHAR
+      size: 500
+      null: true
+    environment: 
+      type: ENUM
+      values: ['development', 'staging', 'production']
+      default: 'production'
+    virtual_machine_id: 
+      type: int
+      notNull: true
+    domain_id: 
+      type: int
+      null: true
+    port: 
+      type: int
+      null: true
+    health_check_url: 
+      type: VARCHAR
+      size: 500
+      null: true
+    status: 
+      type: ENUM
+      values: ['building', 'deploying', 'running', 'stopped', 'failed']
+      default: 'building'
+    last_deployed_at:
+      type: TIMESTAMP
+      notNull: true
+    organization_id: 
+      type: int
+      notNull: true
+    created_by: 
+      type: int
+      notNull: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (virtual_machine_id) REFERENCES virtual_machines(id) ON DELETE CASCADE FOREIGN KEY (domain_id) REFERENCES domains(id) ON DELETE SET NULL FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE FOREIGN KEY (created_by) REFERENCES users(id)
+
+SSL:
+  table: ssl_certificates
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    domain_id: 
+      type: int
+      notNull: true
+    certificate_authority: 
+      type: ENUM
+      values: ['letsencrypt', 'digicert', 'comodo', 'godaddy']
+      default: 'letsencrypt'
+    certificate_type: 
+      type: ENUM
+      values: ['dv', 'ov', 'ev']
+      default: 'dv'
+    status: 
+      type: ENUM
+      values: ['pending', 'issued', 'expired', 'revoked']
+      default: 'pending'
+    issued_at: 
+      type: TIMESTAMP
+      null: true
+    expires_at: 
+      type: TIMESTAMP
+      null: true
+    auto_renew: 
+      type: BOOLEAN
+      default: true
+    certificate_data: 
+      type: TEXT
+      null: true
+    private_key: 
+      type: TEXT
+      null: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (domain_id) REFERENCES domains(id) ON DELETE CASCADE
+
+Backup:
+  table: backups
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    name: 
+      type: VARCHAR
+      size: 255
+      notNull: true
+    type: 
+      type: ENUM
+      values: ['server', 'vm', 'database', 'files']
+      notNull: true
+    resource_id: 
+      type: int
+      notNull: true
+    provider: 
+      type: ENUM
+      values: ['aws_s3', 'digitalocean_spaces', 'local', 'gcp_storage']
+      default: 'local'
+    schedule: 
+      type: ENUM
+      values: ['daily', 'weekly', 'monthly', 'manual']
+      default: 'weekly'
+    retention_days: 
+      type: int
+      default: 30
+    size_bytes: 
+      type: BIGINT
+      null: true
+    status: 
+      type: ENUM
+      values: ['pending', 'running', 'completed', 'failed']
+      default: 'pending'
+    last_backup_at: 
+      type: TIMESTAMP
+      null: true
+    next_backup_at: 
+      type: TIMESTAMP
+      null: true
+    organization_id: 
+      type: int
+      notNull: true
+    created_by: 
+      type: int
+      notNull: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE FOREIGN KEY (created_by) REFERENCES users(id)
+
+Invoice:
+  table: invoices
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    invoice_number: 
+      type: VARCHAR
+      size: 50
+      unique: true
+      notNull: true
+    organization_id: 
+      type: int
+      notNull: true
+    status: 
+      type: ENUM
+      values: ['draft', 'sent', 'paid', 'overdue', 'cancelled']
+      default: 'draft'
+    currency: 
+      type: VARCHAR
+      size: 3
+      default: 'USD'
+    subtotal: 
+      type: DECIMAL
+      precision: 10
+      scale: 2
+      notNull: true
+    tax_rate: 
+      type: DECIMAL
+      precision: 5
+      scale: 2
+      default: 0.00
+    tax_amount: 
+      type: DECIMAL
+      precision: 10
+      scale: 2
+      default: 0.00
+    total: 
+      type: DECIMAL
+      precision: 10
+      scale: 2
+      notNull: true
+    due_date: 
+      type: DATE
+      notNull: true
+    paid_at: 
+      type: TIMESTAMP
+      null: true
+    payment_method: 
+      type: VARCHAR
+      size: 100
+      null: true
+    notes: 
+      type: TEXT
+      null: true
+    created_by: 
+      type: int
+      notNull: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+    updated_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP
+      onUpdate: CURRENT_TIMESTAMP FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE FOREIGN KEY (created_by) REFERENCES users(id)
+
+InvoiceItem:
+  table: invoice_items
+  fields:
+    id: 
+      type: int
+      primary: true
+      autoIncrement: true
+    invoice_id: 
+      type: int
+      notNull: true
+    product_id: 
+      type: int
+      null: true
+    description: 
+      type: VARCHAR
+      size: 500
+      notNull: true
+    quantity: 
+      type: int
+      default: 1
+    unit_price: 
+      type: DECIMAL
+      precision: 10
+      scale: 2
+      notNull: true
+    total: 
+      type: DECIMAL
+      precision: 10
+      scale: 2
+      notNull: true
+    resource_type: 
+      type: ENUM
+      values: ['server', 'vm', 'domain', 'ssl', 'backup', 'other']
+      null: true
+    resource_id: 
+      type: int
+      null: true
+    created_at: 
+      type: TIMESTAMP
+      default: CURRENT_TIMESTAMP 
+      foreignKeys:
+        - (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+        - (product_id) REFERENCES products(id) ON DELETE SET NULL

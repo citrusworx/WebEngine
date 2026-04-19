@@ -16,5 +16,4 @@ export const heroNode: HeroNode = {
         { id: "out", label: "out", type: "output" }
     ],
     fields: [{ label: "heading-level", value: "2" }, { label: "text", value: "Welcome to CitrusWorx!" }]
-
 }

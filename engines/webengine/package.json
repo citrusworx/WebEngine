@@ -11,9 +11,15 @@
         "build": "yarn tsc"
     },
     "dependencies": {
-        "@citrusworx/types": "workspace:*"
+        "@citrusworx/types": "workspace:*",
+        "js-yaml": "^4.1.1",
+        "json5": "^2.2.3",
+        "smol-toml": "^1.6.1",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
+        "@types/js-yaml": "^4.0.9",
+        "@types/node": "^25.6.0",
         "typescript": "^5.9.3"
     }
 }

@@ -1,0 +1,12 @@
+D:\CitrusWorx\tooling\cli\juice\target\debug\deps\colored-90b2b90057e13072.d: C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\lib.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\color.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\control.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\error.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\style.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\customcolors.rs
+
+D:\CitrusWorx\tooling\cli\juice\target\debug\deps\libcolored-90b2b90057e13072.rlib: C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\lib.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\color.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\control.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\error.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\style.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\customcolors.rs
+
+D:\CitrusWorx\tooling\cli\juice\target\debug\deps\libcolored-90b2b90057e13072.rmeta: C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\lib.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\color.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\control.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\error.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\style.rs C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\customcolors.rs
+
+C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\lib.rs:
+C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\color.rs:
+C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\control.rs:
+C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\error.rs:
+C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\style.rs:
+C:\Users\Stink\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\colored-3.1.1\src\customcolors.rs:

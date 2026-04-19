@@ -1,2 +1,2 @@
 // Node Types
-export type NodeType = "content" | "parameter" | "operation" | "event" | "variable";
+export type NodeType = "content" | "parameter" | "operation" | "event" | "variable" | "utility" | "custom";

@@ -4,6 +4,7 @@
     "packageManager": "yarn@4.13.0",
     "workspaces": [
         "apps/*",
+        "apps/*/*",
         "engines/*",
         "libraries/*",
         "packages/*",
@@ -15,6 +16,7 @@
         "dev": "turbo run dev --parallel"
     },
     "devDependencies": {
+        "@playwright/test": "^1.58.2",
         "@types/node": "^25.4.0",
         "turbo": "^2.8.15",
         "typescript": "^5.9.3"

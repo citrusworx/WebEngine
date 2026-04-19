@@ -5,7 +5,9 @@
         {"path": "./libraries/grapevine"},
         {"path": "./libraries/nectarine"},
         {"path": "./libraries/juice"},
+        {"path": "./libraries/seltzer"},
         {"path": "./libraries/sig"},
+        {"path": "./tooling/sugar"},
         {"path": "./engines/webengine"}
     ]
 }

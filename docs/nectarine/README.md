@@ -55,6 +55,7 @@ POST /api/users
 | [Getting Started](./nectarine-getting-started.md) | Installation, setup, first backend |
 | [API Reference](./nectarine-api.md) | Complete API documentation |
 | [Schema Guide](./nectarine-schema-guide.md) | Schema definition and field types |
+| [Query DSL](./nectarine-query-dsl.md) | Current YAML query DSL shape and conventions |
 | [Examples](./nectarine-examples.md) | Real-world examples (blog, store, SaaS, CMS) |
 | [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
 | [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |

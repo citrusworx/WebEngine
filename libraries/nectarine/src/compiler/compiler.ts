@@ -38,7 +38,15 @@ export class CCompiler {
 // const parse = compiler.parse_config('./nectar/models/user/sql.yml')
 // const clean = compiler.clean_parse(parse, 'get', 'user')
 // const getUserById = compiler.buildQuery(clean, 'GetUserById')
-// const getAllUsers = compilter.buildQuery(clean, 'GetAllUsers')
+// const getAllUsers = compiler.buildQuery(clean, 'GetAllUsers') // Builds a SQL statement
 // 
 // You would then pass the getUserById variable into the DB adapter to
 // query your Relational database of choice.
+// 
+// export function query(query: string){
+//  pg.connect()
+//  pg.execute(query)
+//  pg.disconnect()
+// }
+// 
+// query(getAllUsers)

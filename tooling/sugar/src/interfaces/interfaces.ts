@@ -17,11 +17,12 @@ export interface SugarNode {
     isDragging: boolean;
     ports: Port[];
     fields?: { label: string; value: string }[];
+    tooltip?: HTMLDivElement // Optional tooltip property for nodes
 }
 
 export interface SugarEdge {
     id: string;
     fromNodeId: string;
-    fromPortType: "content" | "parameter" | "operation";
+    fromPortType: "content" | "parameter" | "operation" | "event" | "variable" | "utility" | "custom";
     toNodeId: string;
 }

@@ -1,0 +1,21 @@
+{
+    "extends": "../../../tsconfig.base.json",
+    "include": [
+        "src/**/*", 
+        "../../../libraries/sig/src/jsx.ts"
+    ],
+    "compilerOptions": {
+        "ignoreDeprecations": "6.0",
+        "target": "esnext",
+        "module": "esnext",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@citrusworx/sigjs",
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "noUncheckedSideEffectImports": true,
+        "moduleDetection": "force",
+        "moduleResolution": "bundler",
+        "skipLibCheck": true
+    }
+}

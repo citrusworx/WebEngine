@@ -1,10 +1,12 @@
 import { heroNode, HeroNode } from "./nodes/HeroNode";
 import { Port, SugarNode, SugarEdge } from "./interfaces/interfaces";
 import { NodeType } from "./types/types";
+import { createTooltip } from "./util/utility";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
-canvas.width = window.innerWidth;
+let activeTooltip: HTMLDivElement | null = null;
+canvas.width = window.innerWidth; // Extra space for dragging
 canvas.height = window.innerHeight;
 
 // Node Types
@@ -15,7 +17,9 @@ const NODE_COLORS: Record<NodeType, { header: string; border: string; port: stri
     parameter: { header: "#fbc02d", border: "#f9a825", port: "#ffe082" },
     operation: { header: "#5c6bc0", border: "#3949ab", port: "#9fa8da" },
     event: { header: "#e64a19", border: "#d84315", port: "#ff8a65" },
-    variable: { header: "#0097a7", border: "#00796b", port: "#4dd0e1" }
+    variable: { header: "#0097a7", border: "#00796b", port: "#4dd0e1" },
+    utility: { header: "#7b1fa2", border: "#4a148c", port: "#ba68c8" },
+    custom: { header: "#616161", border: "#212121", port: "#bdbdbd" }
 };
 
 // Nodes
@@ -24,10 +28,11 @@ const nodes: SugarNode[] = [
         id: "1",
         x: 60, y: 200,
         width: 180, height: 70,
-        label: "Get Page",
+        label: "Danny Licks Buttsholes",
         type: "content",
         isDragging: false,
-        ports: [{ id: "out", label: "out", type: "output" }]
+        ports: [{ id: "out", label: "out", type: "output" }],
+        tooltip: createTooltip("Fetches the current page content")
     },
     {
         id: "2",
@@ -51,8 +56,9 @@ const nodes: SugarNode[] = [
         isDragging: false,
         fields:  [{ label: "text", value: "Click Me" }],
         ports: [
-            { id: "in", label: "in", type: "input" },
-            { id: "out", label: "out", type: "output" }
+            { id: "in", label: "request", type: "input" },
+            { id: "out", label: "out", type: "output" },
+            {id: "out", label: "response", type: "output" }
         ]
     },
     {
@@ -63,8 +69,10 @@ const nodes: SugarNode[] = [
         type: "operation",
         isDragging: false,
         ports: [
-            { id: "in", label: "in", type: "input" },
-            { id: "params", label: "params", type: "input" }
+            { id: "in", label: "request", type: "input" },
+            { id: "params", label: "params", type: "input" },
+            { id: "out", label: "error", type: "output" },
+            { id: "out", label: "response", type: "output" }
         ],
         fields: [{ label: "url", value: "https://api.example.com/doc" }]
     },
@@ -76,11 +84,11 @@ const nodes: SugarNode[] = [
         type: "parameter",
         isDragging: false,
         ports: [{ id: "out", label: "out", type: "output" }],
-        fields: [{ label: "value", value: "content.title" }]
+        fields: [{ label: "value", value: "title" }]
     },
     {
         id: "6",
-        x: 300, y: 360,
+        x: 1270, y: 160,
         width: 200, height: 70,
         label: "Log",
         type: "event",
@@ -89,6 +97,20 @@ const nodes: SugarNode[] = [
     },
     {
         ...heroNode
+    },
+    {
+        id: "8",
+        x: 1200, y: 500,
+        width: 200, height: 70,
+        label: "userPosts",
+        type: "variable",
+        isDragging: false,
+        ports: [
+            { id: "in", label: "in", type: "input" },
+            { id: "out", label: "out", type: "output" }
+        ],
+        fields: [{ label: "custom-field", value: "Custom Value" }],
+        tooltip: createTooltip("This is a custom node with user-defined behavior")
     }
 ];
 
@@ -99,6 +121,9 @@ const edges: SugarEdge[] = [
     { id: "e3", fromNodeId: "3", fromPortType: "content",   toNodeId: "4" },
     { id: "e4", fromNodeId: "5", fromPortType: "parameter", toNodeId: "4" },
     { id: "e5", fromNodeId: "2", fromPortType: "operation", toNodeId: "7" },
+    { id: "e6", fromNodeId: "4", fromPortType: "content",   toNodeId: "6" },
+    { id: "e7", fromNodeId: "7", fromPortType: "content",   toNodeId: "4" },
+    { id: "e8", fromNodeId: "4", fromPortType: "variable",  toNodeId: "8" }
 ];
 
 // Port positions
@@ -251,6 +276,30 @@ function getNodeAtPosition(x: number, y: number): SugarNode | null {
 let dragTarget: SugarNode | null = null;
 let offSetX = 0;
 let offSetY = 0;
+
+// In index.ts — replace your existing mousemove listener with this
+canvas.addEventListener("mousemove", (e) => {
+    // Handle drag
+    if (dragTarget) {
+        dragTarget.x = e.offsetX - offSetX;
+        dragTarget.y = e.offsetY - offSetY;
+        return;
+    }
+
+    // Handle tooltip
+    const node = getNodeAtPosition(e.offsetX, e.offsetY);
+    if (node && node.tooltip) {
+        node.tooltip.style.display = "block";
+        node.tooltip.style.left = `${e.pageX + 10}px`;
+        node.tooltip.style.top = `${e.pageY + 10}px`;
+        activeTooltip = node.tooltip;
+    } else {
+        if (activeTooltip) {
+            activeTooltip.style.display = "none";
+            activeTooltip = null;
+        }
+    }
+});
 
 canvas.addEventListener("mousedown", (e) => {
     const node = getNodeAtPosition(e.offsetX, e.offsetY);

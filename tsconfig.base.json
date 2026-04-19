@@ -18,17 +18,26 @@
         "types": ["node"],
 
         "paths": {
-            "@citrusworx/types": ["libraries/types/src"],
-            "@citrusworx/types/*": ["libraries/types/src/*"],
+            "@citrusworx/types": ["../../../libraries/types/dist"],
+            "@citrusworx/types/*": ["../../../libraries/types/dist/*"],
 
-            "@citrusworx/grapevine": ["libraries/grapevine/src"],
-            "@citrusworx/grapevine/*": ["libraries/grapevine/src/*"],
+            "@citrusworx/grapevine": ["../../../libraries/grapevine/dist"],
+            "@citrusworx/grapevine/*": ["../../../libraries/grapevine/dist/*"],
 
-            "@citrusworx/nectarine": ["libraries/nectarine/src"],
-            "@citrusworx/nectarine/*": ["libraries/nectarine/src/*"],
+            "@citrusworx/nectarine": ["../../../libraries/nectarine/dist"],
+            "@citrusworx/nectarine/*": ["../../../libraries/nectarine/dist/*"],
 
-            "@citrusworx/sig": ["libraries/sig/src"],
-            "@citrusworx/sig/*": ["libraries/sig/src/*"]
+            "@citrusworx/sigjs": ["../../../libraries/sig/dist"],
+            "@citrusworx/sigjs/*": ["../../../libraries/sig/dist/*"],
+
+            "@citrusworx/juice": ["../../../libraries/juice/src/index.ts"],
+            "@citrusworx/juice/styles": ["../../../libraries/juice/dist/index.css"],
+
+            "@citrusworx/seltzer": ["../../../libraries/seltzer/src/seltzer.ts"],
+            "@citrusworx/seltzer/*": ["../../../libraries/seltzer/src/*"],
+
+            "@citrusworx/sigjs/jsx-runtime": ["../../../libraries/sig/src/sig/jsx-runtime.ts"],
+            "@citrusworx/sugar": ["../../../tooling/sugar/src/index.ts"]
             }
     }
 }

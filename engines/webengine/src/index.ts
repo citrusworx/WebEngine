@@ -15,10 +15,14 @@ export class WebEngine {
         console.log("WebEngine runtime started");
     }
 
+    // ? Is development environment different from production? If so, how do we handle differences in deployment?
+    // ? Is Sugar a development tool or a runtime component? If it's a development tool, how do we integrate it into the workflow?
     loadBlueprint(blueprint: Blueprint, custom?: string){
         // 1. Check blueprint name
         // 2. Verify Blueprint exists
+        // ? If there's no blueprint, do we create a default one? Or throw an error?
         // 3. Parse Blueprint Config
+        // ? Do we need to resolve modules at this stage? Or do we wait until deployment?
         // 4. Create Deploy Manifest based on Blueprint config
         // 5. Insert Deploy Manifest (via GrapeVine)
         // 6. Deploy Blueprint into Application

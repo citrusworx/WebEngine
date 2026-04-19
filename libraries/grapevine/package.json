@@ -11,7 +11,8 @@
         "clean": "rimraf dist",
         "build": "yarn clean && tsc -b",
         "dev": "tsc -w",
-        "test": "playwright test"
+        "test": "vitest",
+        "test:ui": "vitest --ui"
     },
     "dependencies": {
         "@citrusworx/types": "workspace:*",

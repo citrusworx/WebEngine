@@ -61,9 +61,9 @@ user:
   create:
     newUser:
       insert:
-      into: users
-      set: ['name', 'email', 'password', 'created_at']
-      values: [$1, $2, $3, $4, {fn: now}]
+        into: users
+        set: ['name', 'email', 'password', 'created_at']
+        values: [$1, $2, $3, $4, {fn: now}]
 
   delete:
     user:
