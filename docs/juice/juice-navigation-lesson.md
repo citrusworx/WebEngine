@@ -66,7 +66,7 @@ The browser is the common ground all those environments eventually share.
 An early implementation often assumes:
 
 - one nav
-- one mobile trigger
+- one mobile toggle
 - one sidebar
 
 That is too fragile.
@@ -92,7 +92,7 @@ and then applies behavior across them.
 
 Once you support multiple nav instances, a new problem appears:
 
-> which mobile trigger controls which sidebar?
+> which mobile toggle controls which sidebar?
 
 The runtime solves this with proximity rules:
 

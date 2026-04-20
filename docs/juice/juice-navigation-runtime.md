@@ -79,7 +79,7 @@ type NavigationOptions = {
   root?: ParentNode;
   navSelector?: string;
   sidebarSelector?: string;
-  triggerSelector?: string;
+  toggleSelector?: string;
   mobileBreakpoint?: number;
 };
 ```
@@ -91,7 +91,7 @@ By default, Juice uses:
   root: document,
   navSelector: 'nav[type="bar"], nav[type="links"]',
   sidebarSelector: 'nav[type="sidebar"]',
-  triggerSelector: 'nav[type="mobile"]',
+  toggleSelector: 'nav[type="mobile"]',
   mobileBreakpoint: 768
 }
 ```
@@ -102,7 +102,7 @@ The runtime performs four main jobs:
 
 1. Detect whether the viewport is mobile or desktop
 2. Hide desktop nav types on mobile
-3. Show mobile trigger nav types on mobile
+3. Show mobile toggle nav types on mobile
 4. Open and close the corresponding sidebar nav
 
 On desktop:
@@ -151,19 +151,19 @@ This matters because a page may contain:
 
 The runtime is designed to behave reasonably in those cases instead of assuming there is only one navigation instance in the entire document.
 
-## How Trigger-to-Sidebar Pairing Works
+## How Toggle-to-Sidebar Pairing Works
 
-The hardest part is deciding which sidebar a mobile trigger should control.
+The hardest part is deciding which sidebar a mobile toggle should control.
 
 The runtime uses DOM locality heuristics:
 
-1. look in the trigger’s parent
+1. look in the toggle's parent
 2. walk upward through ancestors
 3. fall back to the first available sidebar
 
 This is not magical routing logic. It is simply a practical way to make “drop in Juice nav markup and it works” feasible for common document structures.
 
-The same logic is used in reverse when a sidebar needs to find its nearest trigger.
+The same logic is used in reverse when a sidebar needs to find its nearest toggle.
 
 ## Why MutationObserver Is Used
 
