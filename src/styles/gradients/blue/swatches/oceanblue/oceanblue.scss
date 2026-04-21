@@ -1,0 +1,9 @@
+@use '../../../../../tokens/gradients/blue/oceanblue/oceanblue.scss' as *;
+
+[gradient="oceanblue"][direction="linear"] {
+    --grad-active: #{$oceanblue-linear};
+}
+
+[gradient="oceanblue"][direction="radial"] {
+    --grad-active: #{$oceanblue-radial};
+}

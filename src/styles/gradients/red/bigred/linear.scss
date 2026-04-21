@@ -1,0 +1,6 @@
+@use '../../../../tokens/gradients/red/swatches/bigred/tokens.scss' as *;
+@use 'sass:map';
+
+[gradient="bigred"][direction="linear"]{
+    background: linear-gradient(180deg, map.get($bigred, "lite") 0%, map.get($bigred, "dark") 100%);
+}

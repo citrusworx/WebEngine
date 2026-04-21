@@ -1,0 +1,5 @@
+$oceanblue-light: hsla(212, 100%, 50%, 1);
+$oceanblue-dark: hsla(260, 100%, 44%, 1);
+
+$oceanblue-linear: linear-gradient(180deg, $oceanblue-light, $oceanblue-dark);
+$oceanblue-radial: radial-gradient(circle, $oceanblue-light, $oceanblue-dark);

@@ -1,0 +1,6 @@
+@use '../../../../../tokens/gradients/orange/swatches/burntorange/tokens.scss' as *;
+@use 'sass:map';
+
+[gradient="burntorange"][direction="linear"]{
+    background: linear-gradient(180deg, map.get($burntorange, "lite") 0%, map.get($burntorange, "dark") 100%);
+}

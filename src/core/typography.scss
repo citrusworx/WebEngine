@@ -65,3 +65,34 @@ h2 {
 p {
     font-size: clamp(1rem, 1.5vw, 1.25rem);
 }
+
+// LEADING
+@mixin create-leading(){
+    @for $i from 1 through 10 {
+        [leading="#{$i}px"]{
+            letter-spacing: #{$i}px;
+        }
+    }
+}
+
+// Line Height
+@mixin create-line-height(){
+    @for $i from 1 through 10 {
+        [lineHeight="#{$i}rem"]{
+            line-height: #{$i}rem;
+        }
+    }
+}
+
+// Font Weight
+@mixin create-weight(){
+    @for $i from 1 through 9 {
+        [fontWeight="#{$i}00"]{
+            font-weight: #{$i}00;
+        }
+    }
+}
+
+@include create-leading();
+@include create-line-height();
+@include create-weight();
