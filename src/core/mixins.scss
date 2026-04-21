@@ -119,6 +119,40 @@
 }
 
 @mixin gap-generator(){
+    @for $i from 1 through 9 {
+        [gap="0.#{$i}"]{
+            gap: #{math.div($i, 10)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{math.div($i, 10) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{math.div($i, 10) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{math.div($i, 10) * 0.5}rem;
+            }
+        }
+
+        [gap="0.#{$i}rem"]{
+            gap: #{math.div($i, 10)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{math.div($i, 10) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{math.div($i, 10) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{math.div($i, 10) * 0.5}rem;
+            }
+        }
+    }
+
     @for $i from 1 through 100 {
         [gap="#{$i}"]{
             gap: #{$i}rem;
@@ -180,6 +214,48 @@
 }
 
 @mixin padding-maker(){
+    @for $i from 1 through 9 {
+        [paddingX="0.#{$i}rem"]{
+            padding-left: #{math.div($i, 10)}rem;
+            padding-right: #{math.div($i, 10)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                padding-left: #{math.div($i, 10) * 0.8}rem;
+                padding-right: #{math.div($i, 10) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                padding-left: #{math.div($i, 10) * 0.75}rem;
+                padding-right: #{math.div($i, 10) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                padding-left: #{math.div($i, 10) * 0.5}rem;
+                padding-right: #{math.div($i, 10) * 0.5}rem;
+            }
+        }
+
+        [paddingY="0.#{$i}rem"]{
+            padding-top: #{math.div($i, 10)}rem;
+            padding-bottom: #{math.div($i, 10)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                padding-top: #{math.div($i, 10) * 0.8}rem;
+                padding-bottom: #{math.div($i, 10) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                padding-top: #{math.div($i, 10) * 0.75}rem;
+                padding-bottom: #{math.div($i, 10) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                padding-top: #{math.div($i, 10) * 0.5}rem;
+                padding-bottom: #{math.div($i, 10) * 0.5}rem;
+            }
+        }
+    }
+
     // Updated to generate selectors matching TSX values like "1rem", "2rem", etc.
     @for $i from 1 through 10 {
         [paddingX="#{$i}rem"]{
@@ -231,6 +307,48 @@
 }
 
 @mixin margin-maker(){
+    @for $i from 1 through 9 {
+        [marginX="0.#{$i}rem"]{
+            margin-left: #{math.div($i, 10)}rem;
+            margin-right: #{math.div($i, 10)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                margin-left: #{math.div($i, 10) * 0.8}rem;
+                margin-right: #{math.div($i, 10) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                margin-left: #{math.div($i, 10) * 0.75}rem;
+                margin-right: #{math.div($i, 10) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                margin-left: #{math.div($i, 10) * 0.5}rem;
+                margin-right: #{math.div($i, 10) * 0.5}rem;
+            }
+        }
+
+        [marginY="0.#{$i}rem"]{
+            margin-top: #{math.div($i, 10)}rem;
+            margin-bottom: #{math.div($i, 10)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                margin-top: #{math.div($i, 10) * 0.8}rem;
+                margin-bottom: #{math.div($i, 10) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                margin-top: #{math.div($i, 10) * 0.75}rem;
+                margin-bottom: #{math.div($i, 10) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                margin-top: #{math.div($i, 10) * 0.5}rem;
+                margin-bottom: #{math.div($i, 10) * 0.5}rem;
+            }
+        }
+    }
+
     // Updated similarly for consistency
     @for $i from 1 through 10 {
         [marginX="#{$i}rem"]{
