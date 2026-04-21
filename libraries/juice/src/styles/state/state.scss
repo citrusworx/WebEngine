@@ -1,0 +1,40 @@
+@use '../../tokens/color/red/red.scss' as *;
+@use '../../tokens/color/yellow/yellow.scss' as *;
+@use '../../tokens/color/green/green.scss' as *;
+@use '../../tokens/color/blue/blue.scss' as *;
+
+[state="alert"]
+{
+    background-color: $red-900;
+
+    p, span {
+        color: $red-100;
+    }
+}
+
+[state="warning"]
+{
+    background-color: $yellow-900;
+
+    p, span {
+        color: $yellow-100;
+    }
+}
+
+[state="success"]
+{
+    background-color: $green-900;
+
+    p, span {
+        color: $green-100;
+    }
+}
+
+[state="info"]
+{
+    background-color: $blue-900;
+
+    p, span {
+        color: $blue-100;
+    }
+}

@@ -1,0 +1,4 @@
+@use './tokens.scss' as *;
+
+$deepblue-linear: linear-gradient(180deg, $deepblue-light, $deepblue-dark);
+$deepblue-radial: radial-gradient(circle, $deepblue-light, $deepblue-dark);

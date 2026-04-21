@@ -1,0 +1,22 @@
+@use '../../../../../tokens/gradients/green/swatches/limeade/tokens.scss' as *;
+@use 'sass:map';
+
+[gradient="limeade"]{
+    background: linear-gradient(180deg, map.get($colors, "limeade-lite"), map.get($colors, "limeade-dark"));
+}
+
+[gradient="peppermint"]{
+    background: linear-gradient(180deg, map.get($colors, "peppermint-lite") 0%, map.get($colors, "peppermint-dark") 100%);
+}
+
+[gradient="mintjulep"][direction="linear"]{
+    background: linear-gradient(180deg, map.get($colors, "mintjulep-lite") 0%, map.get($colors, "mintjulep-dark") 100%);
+}
+
+[gradient="mintjulep"][direction="radial"]{
+    background: radial-gradient(52.58% 52.58% at 50.1% 47.42%, map.get($colors, "mintjulep-lite") 0%, map.get($colors, "mintjulep-dark") 100%);
+}
+
+[gradient="mintjulep-reverse"][direction="radial"]{
+    background: radial-gradient(52.58% 52.58% at 50.1% 47.42%, map.get($colors, "mintjulep-dark") 0%, map.get($colors, "mintjulep-lite") 100%);
+}

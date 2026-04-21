@@ -3,6 +3,8 @@
 @use 'sass:map';
 @use 'sass:math';
 
+$quarter-steps: 25, 75;
+
 @function responsive-unit($unit) {
     @return list.index(("%", "vw", "vh"), $unit) == null;
 }
@@ -22,6 +24,12 @@
         @for $j from 1 through 9 {
             [#{$property}="#{$i}.#{$j}#{$unit}"] {
                 #{$property}: #{$i + math.div($j, 10)}#{$unit};
+            }
+        }
+
+        @each $step in $quarter-steps {
+            [#{$property}="#{$i}.#{$step}#{$unit}"] {
+                #{$property}: #{$i + math.div($step, 100)}#{$unit};
             }
         }
     }
@@ -44,6 +52,26 @@
 
                 @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
                     #{$property}: #{math.div($i, 10) * 0.5}#{$unit};
+                }
+            }
+        }
+    }
+
+    @each $step in $quarter-steps {
+        [#{$property}="0.#{$step}#{$unit}"] {
+            #{$property}: #{math.div($step, 100)}#{$unit};
+
+            @if responsive-unit($unit) {
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    #{$property}: #{math.div($step, 100) * 0.8}#{$unit};
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    #{$property}: #{math.div($step, 100) * 0.75}#{$unit};
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    #{$property}: #{math.div($step, 100) * 0.5}#{$unit};
                 }
             }
         }
@@ -87,6 +115,26 @@
 
                     @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
                         #{$property}: #{($i + math.div($j, 10)) * 0.5}#{$unit};
+                    }
+                }
+            }
+        }
+
+        @each $step in $quarter-steps {
+            [#{$property}="#{$i}.#{$step}#{$unit}"] {
+                #{$property}: #{$i + math.div($step, 100)}#{$unit};
+
+                @if responsive-unit($unit) {
+                    @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                        #{$property}: #{($i + math.div($step, 100)) * 0.8}#{$unit};
+                    }
+
+                    @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                        #{$property}: #{($i + math.div($step, 100)) * 0.75}#{$unit};
+                    }
+
+                    @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                        #{$property}: #{($i + math.div($step, 100)) * 0.5}#{$unit};
                     }
                 }
             }
@@ -153,6 +201,40 @@
         }
     }
 
+    @each $step in $quarter-steps {
+        [gap="0.#{$step}"]{
+            gap: #{math.div($step, 100)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{math.div($step, 100) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{math.div($step, 100) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{math.div($step, 100) * 0.5}rem;
+            }
+        }
+
+        [gap="0.#{$step}rem"]{
+            gap: #{math.div($step, 100)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                gap: #{math.div($step, 100) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                gap: #{math.div($step, 100) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                gap: #{math.div($step, 100) * 0.5}rem;
+            }
+        }
+    }
+
     @for $i from 1 through 100 {
         [gap="#{$i}"]{
             gap: #{$i}rem;
@@ -210,6 +292,40 @@
                 gap: #{$i * 0.5}px;
             }
         }
+
+        @each $step in $quarter-steps {
+            [gap="#{$i}.#{$step}"]{
+                gap: #{$i + math.div($step, 100)}rem;
+
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    gap: #{($i + math.div($step, 100)) * 0.8}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    gap: #{($i + math.div($step, 100)) * 0.75}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    gap: #{($i + math.div($step, 100)) * 0.5}rem;
+                }
+            }
+
+            [gap="#{$i}.#{$step}rem"]{
+                gap: #{$i + math.div($step, 100)}rem;
+
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    gap: #{($i + math.div($step, 100)) * 0.8}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    gap: #{($i + math.div($step, 100)) * 0.75}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    gap: #{($i + math.div($step, 100)) * 0.5}rem;
+                }
+            }
+        }
     }
 }
 
@@ -256,8 +372,49 @@
         }
     }
 
-    // Updated to generate selectors matching TSX values like "1rem", "2rem", etc.
-    @for $i from 1 through 10 {
+    @each $step in $quarter-steps {
+        [paddingX="0.#{$step}rem"]{
+            padding-left: #{math.div($step, 100)}rem;
+            padding-right: #{math.div($step, 100)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                padding-left: #{math.div($step, 100) * 0.8}rem;
+                padding-right: #{math.div($step, 100) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                padding-left: #{math.div($step, 100) * 0.75}rem;
+                padding-right: #{math.div($step, 100) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                padding-left: #{math.div($step, 100) * 0.5}rem;
+                padding-right: #{math.div($step, 100) * 0.5}rem;
+            }
+        }
+
+        [paddingY="0.#{$step}rem"]{
+            padding-top: #{math.div($step, 100)}rem;
+            padding-bottom: #{math.div($step, 100)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                padding-top: #{math.div($step, 100) * 0.8}rem;
+                padding-bottom: #{math.div($step, 100) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                padding-top: #{math.div($step, 100) * 0.75}rem;
+                padding-bottom: #{math.div($step, 100) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                padding-top: #{math.div($step, 100) * 0.5}rem;
+                padding-bottom: #{math.div($step, 100) * 0.5}rem;
+            }
+        }
+    }
+
+    @for $i from 1 through 100 {
         [paddingX="#{$i}rem"]{
             padding-left: #{$i}rem;
             padding-right: #{$i}rem;
@@ -301,6 +458,48 @@
             @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
                 padding-top: #{$i * 0.5}rem;
                 padding-bottom: #{$i * 0.5}rem;
+            }
+        }
+
+        @each $step in $quarter-steps {
+            [paddingX="#{$i}.#{$step}rem"]{
+                padding-left: #{$i + math.div($step, 100)}rem;
+                padding-right: #{$i + math.div($step, 100)}rem;
+
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    padding-left: #{($i + math.div($step, 100)) * 0.8}rem;
+                    padding-right: #{($i + math.div($step, 100)) * 0.8}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    padding-left: #{($i + math.div($step, 100)) * 0.75}rem;
+                    padding-right: #{($i + math.div($step, 100)) * 0.75}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    padding-left: #{($i + math.div($step, 100)) * 0.5}rem;
+                    padding-right: #{($i + math.div($step, 100)) * 0.5}rem;
+                }
+            }
+
+            [paddingY="#{$i}.#{$step}rem"]{
+                padding-top: #{$i + math.div($step, 100)}rem;
+                padding-bottom: #{$i + math.div($step, 100)}rem;
+
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    padding-top: #{($i + math.div($step, 100)) * 0.8}rem;
+                    padding-bottom: #{($i + math.div($step, 100)) * 0.8}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    padding-top: #{($i + math.div($step, 100)) * 0.75}rem;
+                    padding-bottom: #{($i + math.div($step, 100)) * 0.75}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    padding-top: #{($i + math.div($step, 100)) * 0.5}rem;
+                    padding-bottom: #{($i + math.div($step, 100)) * 0.5}rem;
+                }
             }
         }
     }
@@ -349,8 +548,49 @@
         }
     }
 
-    // Updated similarly for consistency
-    @for $i from 1 through 10 {
+    @each $step in $quarter-steps {
+        [marginX="0.#{$step}rem"]{
+            margin-left: #{math.div($step, 100)}rem;
+            margin-right: #{math.div($step, 100)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                margin-left: #{math.div($step, 100) * 0.8}rem;
+                margin-right: #{math.div($step, 100) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                margin-left: #{math.div($step, 100) * 0.75}rem;
+                margin-right: #{math.div($step, 100) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                margin-left: #{math.div($step, 100) * 0.5}rem;
+                margin-right: #{math.div($step, 100) * 0.5}rem;
+            }
+        }
+
+        [marginY="0.#{$step}rem"]{
+            margin-top: #{math.div($step, 100)}rem;
+            margin-bottom: #{math.div($step, 100)}rem;
+
+            @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                margin-top: #{math.div($step, 100) * 0.8}rem;
+                margin-bottom: #{math.div($step, 100) * 0.8}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                margin-top: #{math.div($step, 100) * 0.75}rem;
+                margin-bottom: #{math.div($step, 100) * 0.75}rem;
+            }
+
+            @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                margin-top: #{math.div($step, 100) * 0.5}rem;
+                margin-bottom: #{math.div($step, 100) * 0.5}rem;
+            }
+        }
+    }
+
+    @for $i from 1 through 100 {
         [marginX="#{$i}rem"]{
             margin-left: #{$i}rem;
             margin-right: #{$i}rem;
@@ -394,6 +634,48 @@
             @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
                 margin-top: #{$i * 0.5}rem;
                 margin-bottom: #{$i * 0.5}rem;
+            }
+        }
+
+        @each $step in $quarter-steps {
+            [marginX="#{$i}.#{$step}rem"]{
+                margin-left: #{$i + math.div($step, 100)}rem;
+                margin-right: #{$i + math.div($step, 100)}rem;
+
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    margin-left: #{($i + math.div($step, 100)) * 0.8}rem;
+                    margin-right: #{($i + math.div($step, 100)) * 0.8}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    margin-left: #{($i + math.div($step, 100)) * 0.75}rem;
+                    margin-right: #{($i + math.div($step, 100)) * 0.75}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    margin-left: #{($i + math.div($step, 100)) * 0.5}rem;
+                    margin-right: #{($i + math.div($step, 100)) * 0.5}rem;
+                }
+            }
+
+            [marginY="#{$i}.#{$step}rem"]{
+                margin-top: #{$i + math.div($step, 100)}rem;
+                margin-bottom: #{$i + math.div($step, 100)}rem;
+
+                @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+                    margin-top: #{($i + math.div($step, 100)) * 0.8}rem;
+                    margin-bottom: #{($i + math.div($step, 100)) * 0.8}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+                    margin-top: #{($i + math.div($step, 100)) * 0.75}rem;
+                    margin-bottom: #{($i + math.div($step, 100)) * 0.75}rem;
+                }
+
+                @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+                    margin-top: #{($i + math.div($step, 100)) * 0.5}rem;
+                    margin-bottom: #{($i + math.div($step, 100)) * 0.5}rem;
+                }
             }
         }
     }

@@ -1,0 +1,6 @@
+@use '../../../../tokens/gradients/red/swatches/cinnamint/tokens.scss' as *;
+@use 'sass:map';
+
+[gradient="cinnamint"][direction="linear"]{
+    background: linear-gradient(129deg, map.get($cinnamint, "lite") 52.67%, map.get($cinnamint, "dark") 84.55%);
+}

@@ -1,0 +1,9 @@
+@use '../../../../../tokens/gradients/blue/deepblue/deepblue.scss' as *;
+
+[gradient="deepblue"][direction="linear"] {
+    --grad-active: #{$deepblue-linear};
+}
+
+[gradient="deepblue"][direction="radial"] {
+    --grad-active: #{$deepblue-radial};
+}

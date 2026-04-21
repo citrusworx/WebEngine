@@ -1,0 +1,5 @@
+@use '../../../tokens/gradients/purple/purple.scss' as *;
+
+[gradient="grapesoda"]{
+    --grad-active: #{$grapesoda};
+}
