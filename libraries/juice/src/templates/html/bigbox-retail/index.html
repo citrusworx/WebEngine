@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../../dist/index.css">
+    <title>BigBox Retail Template</title>
+</head>
+<body bgColor="gray-100" font="oswald">
+    <main stack gap="1rem">
+        <div bgColor="obsidian-900" paddingX="2rem" paddingY="1rem">
+            <div row wrap space="between" gap="1rem">
+                <div row wrap gap="1rem">
+                    <span fontColor="yellow-300">Curbside Pickup</span>
+                    <span fontColor="white-100">Store Locator</span>
+                    <span fontColor="white-100">Top Deals</span>
+                </div>
+                <div row wrap gap="1rem">
+                    <span fontColor="white-100">Sign In</span>
+                    <span fontColor="white-100">Orders</span>
+                    <span fontColor="white-100">Cart (2)</span>
+                </div>
+            </div>
+        </div>
+
+        <div bgColor="white-100" paddingX="2rem" paddingY="1rem" shadow depth="md">
+            <div row wrap space="between" gap="1rem">
+                <div row centered gap="1rem">
+                    <div bgColor="yellow-300" width="3.5rem" height="3.5rem" rounded="lg"></div>
+                    <div stack gap="0.5">
+                        <p font="oswald" fontColor="obsidian-900">JUICE TEMPLATE</p>
+                        <h1 font="oswald">BigBox Retail</h1>
+                    </div>
+                </div>
+
+                <div row wrap centered gap="0.5">
+                    <button paddingX="1rem" paddingY="0.5rem" rounded bgColor="obsidian-900" fontColor="yellow-300">Shop Categories</button>
+                    <input width="24rem" paddingX="1rem" paddingY="0.5rem" rounded bgColor="gray-100" placeholder="Search TVs, laptops, appliances, games" />
+                    <button paddingX="1rem" paddingY="0.5rem" rounded bgColor="yellow-300" fontColor="obsidian-900">Search</button>
+                </div>
+            </div>
+
+            <div row wrap gap="1rem" paddingY="1rem">
+                <a href="#doorbusters" fontColor="obsidian-900">Doorbusters</a>
+                <a href="#categories" fontColor="obsidian-900">Categories</a>
+                <a href="#brands" fontColor="obsidian-900">Brands</a>
+                <a href="#services" fontColor="obsidian-900">Services</a>
+                <a href="#membership" fontColor="obsidian-900">Membership</a>
+                <a href="#clearance" fontColor="red-500">Open Box & Clearance</a>
+            </div>
+        </div>
+
+        <div paddingX="2rem" paddingY="1rem">
+            <div row gap="1rem">
+                <div width="16rem" stack gap="0.5">
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                        <p font="oswald" fontColor="obsidian-900">Shop by Category</p>
+                    </div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md"><span>TVs & Home Theater</span></div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md"><span>Laptops & Tablets</span></div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md"><span>Gaming</span></div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md"><span>Appliances</span></div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md"><span>Smart Home</span></div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md"><span>Audio</span></div>
+                </div>
+
+                <div width="100%" stack gap="1rem">
+                    <div row gap="1rem">
+                        <div card card-size="lg" card-padding="lg" rounded="lg" shadow depth="lg" gradient="golden-hour" texture="grid.pat-001">
+                            <div card-body stack gap="1rem">
+                                <p font="oswald" fontColor="obsidian-900">DOORBUSTER EVENT</p>
+                                <h2 font="archivo-black">Major savings on home tech, kitchen upgrades, and premium screen sizes.</h2>
+                                <p fontColor="obsidian-900">
+                                    This version leans into big-box electronics retail: category rails, sharper typography,
+                                    darker neutrals, and utility-first promo blocks.
+                                </p>
+                                <div row wrap gap="1rem">
+                                    <button paddingX="1rem" paddingY="1rem" rounded bgColor="obsidian-900" fontColor="yellow-300">Shop Doorbusters</button>
+                                    <button paddingX="1rem" paddingY="1rem" rounded bgColor="white-100" fontColor="obsidian-900">Browse Weekly Ad</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div card card-size="md" card-padding="lg" bgColor="obsidian-900" rounded="lg" shadow depth="lg" left>
+                            <div card-body stack gap="1rem" marginX="2rem" marginY="2rem">
+                                <p font="oswald" fontColor="yellow-300">TODAY ONLY</p>
+                                <strong fontColor="white-100" fontSize="md">Member early access to open-box markdowns</strong>
+                                <p fontColor="white-100">Refurb laptops, display TVs, and overstock audio gear priced to move.</p>
+                                <button paddingX="1rem" paddingY="1rem" rounded bgColor="yellow-300" fontColor="obsidian-900">Unlock Access</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="doorbusters" grid="4x4" gap="1rem">
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="gray-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">4K Smart TVs</p>
+                            <span fontColor="gray-700">Big-screen upgrades for game day and movie night</span>
+                            <strong fontColor="red-500">Save up to $400</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="yellow-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Laptop Deals</p>
+                            <span fontColor="gray-700">Work, school, and creator-ready machines</span>
+                            <strong fontColor="red-500">From $349</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="blue-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Gaming Week</p>
+                            <span fontColor="gray-700">Consoles, accessories, monitors, and chairs</span>
+                            <strong fontColor="red-500">Bundle savings live</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="green-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Kitchen Refresh</p>
+                            <span fontColor="gray-700">Air fryers, mixers, coffee bars, and more</span>
+                            <strong fontColor="red-500">Extra 15% off</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="gray-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">4K Smart TVs</p>
+                            <span fontColor="gray-700">Big-screen upgrades for game day and movie night</span>
+                            <strong fontColor="red-500">Save up to $400</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="yellow-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Laptop Deals</p>
+                            <span fontColor="gray-700">Work, school, and creator-ready machines</span>
+                            <strong fontColor="red-500">From $349</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="blue-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Gaming Week</p>
+                            <span fontColor="gray-700">Consoles, accessories, monitors, and chairs</span>
+                            <strong fontColor="red-500">Bundle savings live</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="green-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Kitchen Refresh</p>
+                            <span fontColor="gray-700">Air fryers, mixers, coffee bars, and more</span>
+                            <strong fontColor="red-500">Extra 15% off</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="gray-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">4K Smart TVs</p>
+                            <span fontColor="gray-700">Big-screen upgrades for game day and movie night</span>
+                            <strong fontColor="red-500">Save up to $400</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="yellow-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Laptop Deals</p>
+                            <span fontColor="gray-700">Work, school, and creator-ready machines</span>
+                            <strong fontColor="red-500">From $349</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="blue-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Gaming Week</p>
+                            <span fontColor="gray-700">Consoles, accessories, monitors, and chairs</span>
+                            <strong fontColor="red-500">Bundle savings live</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="green-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Kitchen Refresh</p>
+                            <span fontColor="gray-700">Air fryers, mixers, coffee bars, and more</span>
+                            <strong fontColor="red-500">Extra 15% off</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="gray-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">4K Smart TVs</p>
+                            <span fontColor="gray-700">Big-screen upgrades for game day and movie night</span>
+                            <strong fontColor="red-500">Save up to $400</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="yellow-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Laptop Deals</p>
+                            <span fontColor="gray-700">Work, school, and creator-ready machines</span>
+                            <strong fontColor="red-500">From $349</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="blue-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Gaming Week</p>
+                            <span fontColor="gray-700">Consoles, accessories, monitors, and chairs</span>
+                            <strong fontColor="red-500">Bundle savings live</strong>
+                        </div>
+                        <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" shadow depth="md">
+                            <div bgColor="green-100" width="100%" height="8rem" rounded="md"></div>
+                            <p font="oswald" fontColor="obsidian-900">Kitchen Refresh</p>
+                            <span fontColor="gray-700">Air fryers, mixers, coffee bars, and more</span>
+                            <strong fontColor="red-500">Extra 15% off</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="categories" paddingX="2rem">
+            <div stack gap="1rem">
+                <div row wrap space="between" gap="1rem">
+                    <div stack gap="0.5">
+                        <p font="oswald" fontColor="obsidian-900">POPULAR CATEGORIES</p>
+                        <h3 font="archivo-black">Built more like a retail floor map than a restaurant promo deck.</h3>
+                    </div>
+                    <button paddingX="1rem" paddingY="0.5rem" rounded bgColor="white-100" fontColor="obsidian-900" shadow depth="sm">View All Categories</button>
+                </div>
+
+                <div row wrap gap="1rem">
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" width="14rem" shadow depth="md">
+                        <strong font="oswald">Computing</strong>
+                        <p fontColor="gray-700">Laptops, desktops, printers, storage</p>
+                    </div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" width="14rem" shadow depth="md">
+                        <strong font="oswald">TV & Audio</strong>
+                        <p fontColor="gray-700">OLED, soundbars, home speakers</p>
+                    </div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" width="14rem" shadow depth="md">
+                        <strong font="oswald">Mobile</strong>
+                        <p fontColor="gray-700">Phones, watches, accessories</p>
+                    </div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" width="14rem" shadow depth="md">
+                        <strong font="oswald">Appliances</strong>
+                        <p fontColor="gray-700">Laundry, kitchen, floor care</p>
+                    </div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" width="14rem" shadow depth="md">
+                        <strong font="oswald">Smart Home</strong>
+                        <p fontColor="gray-700">Security, lighting, thermostats</p>
+                    </div>
+                    <div bgColor="white-100" rounded="lg" paddingX="1rem" paddingY="1rem" width="14rem" shadow depth="md">
+                        <strong font="oswald">Outlet</strong>
+                        <p fontColor="gray-700">Clearance, open box, refurbished</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div row gap="1rem" paddingX="2rem" paddingY="1rem">
+            <div id="brands" card card-size="lg" card-padding="lg" bgColor="white-100" rounded="lg" shadow depth="lg">
+                <div card-body stack gap="1rem">
+                    <div stack gap="0.5">
+                        <p font="oswald" fontColor="obsidian-900">FEATURED BRANDS</p>
+                        <h3 font="archivo-black">Vendor blocks, endcap promos, and event-led merchandising.</h3>
+                    </div>
+
+                    <div row wrap gap="0.5">
+                        <div bgColor="gray-100" rounded paddingX="1rem" paddingY="1rem" width="10rem"><strong font="oswald">NovaDisplay</strong></div>
+                        <div bgColor="gray-100" rounded paddingX="1rem" paddingY="1rem" width="10rem"><strong font="oswald">AmpHaus</strong></div>
+                        <div bgColor="gray-100" rounded paddingX="1rem" paddingY="1rem" width="10rem"><strong font="oswald">PixelCore</strong></div>
+                        <div bgColor="gray-100" rounded paddingX="1rem" paddingY="1rem" width="10rem"><strong font="oswald">BrightKitchen</strong></div>
+                        <div bgColor="gray-100" rounded paddingX="1rem" paddingY="1rem" width="10rem"><strong font="oswald">GameForge</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="services" card card-size="md" card-padding="lg" rounded="lg" shadow depth="lg" gradient="ocean" texture="grain.film-003">
+                <div card-body stack gap="1rem">
+                    <div stack gap="0.5">
+                        <p font="oswald" fontColor="white-100">STORE SERVICES</p>
+                        <h3 font="archivo-black" fontColor="white-100">Pickup, delivery, install, and protection plans.</h3>
+                    </div>
+
+                    <div stack gap="0.5">
+                        <div bgColor="white-100" rounded paddingX="1rem" paddingY="1rem">
+                            <strong font="oswald">Curbside Pickup</strong>
+                            <p fontColor="gray-700">Reserve online and collect from the front lane.</p>
+                        </div>
+                        <div bgColor="white-100" rounded paddingX="1rem" paddingY="1rem">
+                            <strong font="oswald">Home Setup</strong>
+                            <p fontColor="gray-700">Delivery, install, and tech support scheduling.</p>
+                        </div>
+                        <div bgColor="white-100" rounded paddingX="1rem" paddingY="1rem">
+                            <strong font="oswald">Protection Plans</strong>
+                            <p fontColor="gray-700">Coverage options on major electronics and appliances.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="membership" bgColor="obsidian-900" paddingX="2rem" paddingY="1.5rem">
+            <div row wrap space="between" gap="1rem">
+                <div stack gap="0.5">
+                    <p font="oswald" fontColor="yellow-300">MEMBERSHIP</p>
+                    <h3 font="archivo-black" fontColor="white-100">Perks for faster shipping, exclusive pricing, and early access events.</h3>
+                </div>
+                <div row wrap centered gap="0.5">
+                    <button paddingX="1rem" paddingY="0.5rem" rounded bgColor="yellow-300" fontColor="obsidian-900">Join BigBox+</button>
+                    <button id="clearance" paddingX="1rem" paddingY="0.5rem" rounded bgColor="red-500" fontColor="white-100">Shop Clearance</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

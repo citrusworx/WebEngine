@@ -18,6 +18,9 @@ export interface VPCResponse {
     created_at: string;
 }
 
+// Create a VPC
+// 
+// 
 export async function createVPC(blueprint: VPCBlueprint){
     const response = await client.post<{ vpc: VPCResponse }>("/vpcs", blueprint);
 
@@ -27,7 +30,30 @@ export async function createVPC(blueprint: VPCBlueprint){
 
     return response.data.vpc;
 }
- 
+
+export async function createPeering(vpc: string){}
+
+// List VPC
+// 
+// 
+export async function listAllVPCs(){}
+
+export async function listExistingVPC(){}
+
+export async function listMemberResources(vpc: string){}
+
+// Update VPC
+// 
+// 
+export async function updateVPC(vpc: string){}
+
+export async function paritalUpdateVPC(vpc: string){}
+
+export async function updateVPCPeering(){}
+
+// Delete a VPC
+// 
+// 
 export async function deleteVPC(id: string){
     await client.delete(`/vpcs/${id}`);
 }
