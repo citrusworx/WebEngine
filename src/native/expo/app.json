@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Juice Native Playground",
+    "slug": "juice-native-playground",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
