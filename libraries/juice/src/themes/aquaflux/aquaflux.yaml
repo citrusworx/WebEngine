@@ -1,0 +1,90 @@
+id: aquaflux
+name: Aquaflux
+selector: theme="aquaflux"
+version: 1
+summary: Calm hospitality and wellness theme built around luminous water-toned surfaces.
+
+philosophy:
+  role: "Identity layer for serene, premium, restorative interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+    - named themed surfaces
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: calm, readable, hospitality-first
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: bold, upscale, editorial
+
+palette:
+  page:
+    base: white-100
+    tint: blue-100
+    deep: blue-900
+  text:
+    default: blue-800
+    muted: blue-600
+    heading: blue-900
+  accents:
+    primary: blue-500
+    secondary: purple-700
+    soft: purple-300
+    highlight: blue-200
+  surfaces:
+    default: white-100 / blue-100 translucent blend
+    strong: white-100 elevated surface
+    muted: blue-100 softened panel
+    hero: blue-900 to purple-700 atmospheric gradient
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+named_surfaces:
+  - name: aqua-card
+    purpose: Elevated content card for treatments, pricing, and hospitality modules.
+  - name: aqua-panel
+    purpose: Softer supporting panel for quieter informational blocks.
+  - name: aqua-hero
+    purpose: High-contrast marquee surface for hero and lead sections.
+
+recommended_use_cases:
+  - spas
+  - bathhouses
+  - medspas
+  - recovery studios
+  - boutique hospitality brands
+  - serene wellness product sites
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Let Juice layout primitives handle structure and responsiveness.
+  - Use aqua-card and aqua-panel for supporting surfaces.
+  - Use aqua-hero sparingly for the strongest section on the page.
+  - Keep accent colors restrained and let surface contrast create hierarchy.
+
+example:
+  root: '<body theme="aquaflux">'
+  surfaces:
+    - '<section aqua-hero>...</section>'
+    - '<article aqua-card>...</article>'
+    - '<aside aqua-panel>...</aside>'
