@@ -29197,6 +29197,13 @@ TODO: 3D Rotate
   box-shadow: 8px 8px 16px var(--shadow-color) !important;
 }
 
+[surfaceTone=soft] {
+  background-color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(216.75, 216.75, 216.75, 0.6);
+  box-shadow: 0 18px 40px -28px rgba(140.25, 140.25, 140.25, 0.35);
+  backdrop-filter: blur(10px);
+}
+
 [bgColor=black-100] {
   background-color: hsl(0, 0%, 50%);
 }
@@ -81793,7 +81800,7 @@ body[gradient]:not([text])[animation=fall]::before {
 }
 
 /* SIZING */
-[iconSize="icon:xxs"] {
+[iconSize=xxs] {
   height: 10px;
   width: 10px;
 }
