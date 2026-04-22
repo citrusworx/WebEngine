@@ -141,5 +141,15 @@ The core direction is solid, but APIs and patterns may still evolve. Feedback, i
 
 ## Links
 
-- Docs: `TODO`
+- Docs:
+  - [Getting Started](/d:/CitrusWorx/docs/juice/juice-getting-started.md)
+  - [Layout](/d:/CitrusWorx/docs/juice/juice-layout.md)
+  - [Layout Flow](/d:/CitrusWorx/docs/juice/juice-layout-flow.md)
+  - [Spacing](/d:/CitrusWorx/docs/juice/juice-spacing.md)
+  - [Sizing](/d:/CitrusWorx/docs/juice/juice-sizing.md)
+  - [Typography](/d:/CitrusWorx/docs/juice/juice-typography.md)
+  - [Colors](/d:/CitrusWorx/docs/juice/juice-colors.md)
+  - [Styles](/d:/CitrusWorx/docs/juice/juice-styles.md)
+  - [Surface Spec](/d:/CitrusWorx/docs/juice/juice-surface-spec.md)
+  - [Roadmap](/d:/CitrusWorx/docs/juice/juice-roadmap.md)
 - Ecosystem: KiwiEngine and the broader CitrusWorx stack

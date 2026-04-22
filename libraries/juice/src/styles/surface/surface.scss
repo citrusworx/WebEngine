@@ -1,0 +1,9 @@
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+[surfaceTone="soft"] {
+    background-color: rgba($white-100, 0.88);
+    border: 1px solid rgba($gray-300, 0.6);
+    box-shadow: 0 18px 40px -28px rgba($gray-900, 0.35);
+    backdrop-filter: blur(10px);
+}
