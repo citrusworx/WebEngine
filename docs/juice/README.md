@@ -143,13 +143,23 @@ The core direction is solid, but APIs and patterns may still evolve. Feedback, i
 
 - Docs:
   - [Getting Started](./juice-getting-started.md)
+  - [Semantics](./juice-semantics.md)
   - [Layout](./juice-layout.md)
   - [Layout Flow](./juice-layout-flow.md)
+  - [Responsive Philosophy](./juice-responsive-philosophy.md)
   - [Spacing](./juice-spacing.md)
   - [Sizing](./juice-sizing.md)
   - [Typography](./juice-typography.md)
   - [Colors](./juice-colors.md)
   - [Styles](./juice-styles.md)
+  - [Theme Authoring](./juice-theme-authoring.md)
+  - [Template Authoring](./juice-template-authoring.md)
+  - [Component Authoring](./juice-component-authoring.md)
+  - [Runtime Behavior](./juice-runtime-behavior.md)
+  - [Anti-Patterns](./juice-anti-patterns.md)
   - [Surface Spec](./juice-surface-spec.md)
+  - [Token System](./juice-token-system.md)
+  - [Token Architecture](./juice-token-architecture.md)
+  - [Visual Design Language](./juice-visual-design-language.md)
   - [Roadmap](./juice-roadmap.md)
 - Ecosystem: KiwiEngine and the broader CitrusWorx stack
