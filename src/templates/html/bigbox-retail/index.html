@@ -6,289 +6,194 @@
     <link rel="stylesheet" href="../../../../dist/index.css">
     <title>BigBox Retail Template</title>
 </head>
-<body bgColor="gray-100" font="roboto">
+<body bgColor="white-100" font="roboto">
     <main stack gap="0">
-        <div bgColor="blue-800" paddingX="2rem" paddingY="0.75rem">
-            <div content row wrap space="between" centered gap="1">
-                <div row wrap gap="1">
-                    <span fontColor="white-100">Pickup</span>
-                    <span fontColor="white-100">Delivery</span>
-                    <span fontColor="white-100">Store Locator</span>
-                </div>
-                <div row wrap gap="1">
-                    <span fontColor="white-100">My Items</span>
-                    <span fontColor="white-100">Reorder</span>
-                    <span fontColor="white-100">Help</span>
-                </div>
-            </div>
-        </div>
-
-        <header bgColor="white-100" shadow depth="xs">
+        <header bgColor="blue-700">
             <div content stack gap="1" paddingX="2rem" paddingY="1rem">
                 <div row wrap space="between" centered gap="1">
                     <div row centered gap="1">
-                        <div bgColor="red-600" rounded="full" paddingX="1rem" paddingY="1rem">
-                            <span icon="bullseye" lib="solid" iconSize="lg" iconcolor="white-100"></span>
+                        <div bgColor="yellow-300" rounded="full" paddingX="1rem" paddingY="1rem">
+                            <span icon="store" lib="solid" iconSize="lg" iconcolor="blue-700"></span>
                         </div>
-                        <div stack gap="1">
-                            <p fontColor="red-600" fontWeight="500">JUICE TEMPLATE</p>
-                            <h1 font="oswald" fontWeight="400">BigBox Retail</h1>
+                        <div bgColor="blue-800" rounded="full" paddingX="1rem" paddingY="1rem">
+                            <div stack gap="1">
+                                <strong fontColor="white-100">Pickup or delivery?</strong>
+                                <span fontColor="blue-100">Milton Supercenter</span>
+                            </div>
                         </div>
+                    </div>
+
+                    <div row centered gap="1" bgColor="white-100" rounded="full" paddingX="1rem" paddingY="1rem">
+                        <span icon="magnifying-glass" lib="solid" iconSize="sm" iconcolor="blue-700"></span>
+                        <input bgColor="white-100" placeholder="Search everything at BigBox online and in store" />
                     </div>
 
                     <div row wrap centered gap="1">
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="gray-100" fontColor="obsidian-900">All Departments</button>
-                        <div row centered gap="1" bgColor="gray-100" rounded="full" paddingX="1rem" paddingY="1rem">
-                            <span icon="magnifying-glass" lib="solid" iconSize="sm" iconcolor="gray-500"></span>
-                            <input bgColor="gray-100" placeholder="Search groceries, patio sets, TVs, tools" />
-                        </div>
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="red-600" fontColor="white-100">Search</button>
-                    </div>
-
-                    <div row wrap centered gap="1">
                         <div stack centered gap="1">
-                            <span icon="location-dot" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
-                            <span fontColor="gray-700">Store</span>
+                            <span icon="heart" lib="solid" iconSize="sm" iconcolor="white-100"></span>
+                            <span fontColor="white-100">My Items</span>
                         </div>
                         <div stack centered gap="1">
-                            <span icon="user" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
-                            <span fontColor="gray-700">Account</span>
+                            <span icon="user" lib="solid" iconSize="sm" iconcolor="white-100"></span>
+                            <span fontColor="white-100">Account</span>
                         </div>
                         <div stack centered gap="1">
-                            <span icon="heart" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
-                            <span fontColor="gray-700">Lists</span>
-                        </div>
-                        <div stack centered gap="1">
-                            <span icon="cart-shopping" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
-                            <span fontColor="gray-700">Cart</span>
+                            <span icon="cart-shopping" lib="solid" iconSize="sm" iconcolor="white-100"></span>
+                            <span fontColor="white-100">$0.00</span>
                         </div>
                     </div>
-                </div>
-
-                <div row wrap gap="1">
-                    <a href="#featured" fontColor="obsidian-900">Deals</a>
-                    <a href="#departments" fontColor="obsidian-900">Departments</a>
-                    <a href="#pickup" fontColor="obsidian-900">Pickup & Delivery</a>
-                    <a href="#brands" fontColor="obsidian-900">Brands</a>
-                    <a href="#services" fontColor="obsidian-900">Services</a>
-                    <a href="#membership" fontColor="obsidian-900">Membership</a>
-                    <a href="#clearance" fontColor="red-600">Clearance</a>
                 </div>
             </div>
         </header>
 
-        <div bgColor="yellow-300" paddingX="2rem" paddingY="1rem">
+        <div bgColor="gray-100" paddingX="2rem" paddingY="1rem">
             <div content row wrap space="between" centered gap="1">
-                <p fontColor="obsidian-900">Spring savings on patio, appliances, and home essentials with free pickup on qualifying orders.</p>
-                <button paddingX="1rem" paddingY="1rem" rounded bgColor="obsidian-900" fontColor="white-100">Shop Weekly Ad</button>
+                <div row wrap gap="1">
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Departments</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Services</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Rollbacks & More</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Mother's Day</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Get It Fast</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Pharmacy</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">New Arrivals</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Spring Home</button>
+                    <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="blue-800">Patio & Garden</button>
+                </div>
+
+                <div row centered gap="1" bgColor="obsidian-900" rounded="lg" paddingX="1rem" paddingY="1rem">
+                    <span icon="globe" lib="solid" iconSize="sm" iconcolor="white-100"></span>
+                    <span fontColor="white-100">Spanish / Español now available</span>
+                </div>
             </div>
         </div>
 
         <div content stack gap="1" paddingX="2rem" paddingY="2rem">
-            <section>
-                <div bgColor="white-100" rounded="xl" paddingX="2rem" paddingY="2rem" shadow depth="sm">
-                    <div row wrap centered gap="1">
-                        <div width="48%" stack gap="1">
-                            <p fontColor="red-600">WEEKLY LOW PRICES</p>
-                            <h2 font="oswald" fontWeight="400">Everything for spring projects, backyard weekends, and everyday essentials.</h2>
-                            <p fontColor="gray-700">
-                                Designed more like a modern Walmart, Lowe's, or Target-style homepage:
-                                search-first, service-aware, and driven by category and promo blocks instead of flashy hero gimmicks.
-                            </p>
-                            <div row wrap gap="1">
-                                <button paddingX="1rem" paddingY="1rem" rounded bgColor="red-600" fontColor="white-100">Shop Spring Deals</button>
-                                <button paddingX="1rem" paddingY="1rem" rounded bgColor="gray-100" fontColor="obsidian-900">Choose My Store</button>
-                            </div>
-                        </div>
-                        <div width="48%" bgColor="gray-100" rounded="xl" paddingX="2rem" paddingY="2rem">
-                            <div stack gap="1">
-                                <p fontColor="gray-600">Promotional Feature</p>
-                                <div gradient="golden-hour" width="100%" height="18rem" rounded="lg"></div>
-                                <div row wrap space="between" centered gap="1">
-                                    <strong>Outdoor living from $24</strong>
-                                    <span fontColor="red-600">Limited-time offers</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div bgColor="blue-800" rounded="xl" paddingX="2rem" paddingY="2rem" shadow depth="sm">
-                    <div row wrap space="between" centered gap="1">
-                        <div stack gap="1">
-                            <p fontColor="blue-100">FAST FULFILLMENT</p>
-                            <h3 font="oswald" fontWeight="400" fontColor="white-100">Pickup in hours. Delivery as soon as today.</h3>
-                            <p fontColor="gray-200">Set your store, build a list, and get what you need without wasting the trip.</p>
-                        </div>
-                        <div row wrap centered gap="1">
-                            <button paddingX="1rem" paddingY="1rem" rounded bgColor="white-100" fontColor="blue-800">See Pickup Items</button>
-                            <button paddingX="1rem" paddingY="1rem" rounded bgColor="yellow-300" fontColor="obsidian-900">Track My Order</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div id="departments" stack gap="1">
-                <div row wrap space="between" centered gap="1">
-                    <div stack gap="1">
-                        <h2 font="oswald" fontWeight="400">Shop Departments</h2>
-                        <p fontColor="gray-600">The high-traffic categories you would expect at a major national retailer.</p>
-                    </div>
-                    <a href="#all-departments" fontColor="red-600">View all departments</a>
-                </div>
-
-                <section>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Grocery</strong>
-                        <p fontColor="gray-600">Fresh food, pantry, beverages, and household basics</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Patio & Garden</strong>
-                        <p fontColor="gray-600">Furniture, planters, grills, and outdoor decor</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Home Improvement</strong>
-                        <p fontColor="gray-600">Paint, flooring, storage, and renovation supplies</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Electronics</strong>
-                        <p fontColor="gray-600">TVs, laptops, tablets, and gaming</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Appliances</strong>
-                        <p fontColor="gray-600">Kitchen suites, laundry, and floor care</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Baby & Kids</strong>
-                        <p fontColor="gray-600">Nursery, toys, apparel, and school essentials</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Health & Wellness</strong>
-                        <p fontColor="gray-600">OTC, personal care, and fitness gear</p>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <strong>Auto & Tires</strong>
-                        <p fontColor="gray-600">Auto care, batteries, tools, and installation</p>
-                    </div>
-                </section>
-            </div>
-
-            <div id="featured" stack gap="1">
-                <div row wrap space="between" centered gap="1">
-                    <div stack gap="1">
-                        <h2 font="oswald" fontWeight="400">Featured Deals</h2>
-                        <p fontColor="gray-600">A cleaner grid of offers built around the way big-box sites merchandise value.</p>
-                    </div>
-                    <div row wrap gap="1">
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="obsidian-900" fontColor="white-100">Top Deals</button>
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="white-100" fontColor="obsidian-900">Backyard</button>
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="white-100" fontColor="obsidian-900">Tech</button>
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="white-100" fontColor="obsidian-900">Kitchen</button>
-                    </div>
-                </div>
-
-                <section>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <div stack gap="1">
-                            <div bgColor="gray-100" width="100%" height="9rem" rounded="lg"></div>
-                            <strong>Patio Furniture</strong>
-                            <p fontColor="gray-600">Conversation sets, dining, umbrellas</p>
-                            <strong fontColor="red-600">Save up to 35%</strong>
-                        </div>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <div stack gap="1">
-                            <div bgColor="gray-100" width="100%" height="9rem" rounded="lg"></div>
-                            <strong>Smart TVs</strong>
-                            <p fontColor="gray-600">4K, OLED, and streaming bundles</p>
-                            <strong fontColor="red-600">From $248</strong>
-                        </div>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <div stack gap="1">
-                            <div bgColor="gray-100" width="100%" height="9rem" rounded="lg"></div>
-                            <strong>Power Tools</strong>
-                            <p fontColor="gray-600">Combo kits and workshop upgrades</p>
-                            <strong fontColor="red-600">Free battery with select kits</strong>
-                        </div>
-                    </div>
-                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem" shadow depth="xs">
-                        <div stack gap="1">
-                            <div bgColor="gray-100" width="100%" height="9rem" rounded="lg"></div>
-                            <strong>Kitchen Appliances</strong>
-                            <p fontColor="gray-600">Coffee, air fryers, mixers, blenders</p>
-                            <strong fontColor="red-600">Extra 15% off</strong>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <section>
-                <div id="pickup" bgColor="white-100" rounded="xl" paddingX="2rem" paddingY="2rem" shadow depth="sm">
-                    <div stack gap="1">
-                        <div stack gap="1">
-                            <p fontColor="gray-600">PICKUP & DELIVERY</p>
-                            <h3 font="oswald" fontWeight="400">Retail convenience should feel like a service layer, not an afterthought.</h3>
-                        </div>
-                        <section>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem">
-                                <strong>Store Pickup</strong>
-                                <p fontColor="gray-600">Reserve online and pick up curbside or in-store.</p>
-                            </div>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem">
-                                <strong>Same-Day Delivery</strong>
-                                <p fontColor="gray-600">Thousands of items available from your local store.</p>
-                            </div>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem">
-                                <strong>Scheduled Install</strong>
-                                <p fontColor="gray-600">Appliances, TVs, and home setup services.</p>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-
-                <div id="brands" bgColor="white-100" rounded="xl" paddingX="2rem" paddingY="2rem" shadow depth="sm">
-                    <div stack gap="1">
-                        <div stack gap="1">
-                            <p fontColor="gray-600">SHOP BY BRAND</p>
-                            <h3 font="oswald" fontWeight="400">Trusted national brands and store-label value.</h3>
-                        </div>
-                        <div row wrap gap="1">
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem"><strong>Northline</strong></div>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem"><strong>HomeCraft</strong></div>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem"><strong>BrightWash</strong></div>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem"><strong>ToolWorks</strong></div>
-                            <div bgColor="gray-100" rounded="lg" paddingX="1rem" paddingY="1rem"><strong>PlayCore</strong></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div id="services" bgColor="blue-800" rounded="xl" paddingX="2rem" paddingY="2rem">
-                <div row wrap space="between" centered gap="1">
-                    <div stack gap="1">
-                        <p fontColor="blue-100">SERVICES</p>
-                        <h3 font="oswald" fontWeight="400" fontColor="white-100">Auto care, assembly, install, protection plans, and returns made easy.</h3>
-                    </div>
-                    <div row wrap centered gap="1">
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="white-100" fontColor="blue-800">Book Services</button>
-                        <button paddingX="1rem" paddingY="1rem" rounded bgColor="yellow-300" fontColor="obsidian-900">Manage Orders</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="membership" bgColor="obsidian-900" paddingX="2rem" paddingY="2rem">
-            <div content row wrap space="between" centered gap="1">
-                <div stack gap="1">
-                    <p fontColor="yellow-300">MEMBERSHIP</p>
-                    <h3 font="oswald" fontWeight="400" fontColor="white-100">Exclusive pricing, free delivery thresholds, and member-first events.</h3>
-                </div>
+            <div bgColor="blue-700" rounded="xl" paddingX="2rem" paddingY="2rem">
                 <div row wrap centered gap="1">
-                    <button paddingX="1rem" paddingY="1rem" rounded bgColor="yellow-300" fontColor="obsidian-900">Join BigBox+</button>
-                    <button id="clearance" paddingX="1rem" paddingY="1rem" rounded bgColor="red-600" fontColor="white-100">Shop Clearance</button>
+                    <div width="48%" stack gap="1">
+                        <p fontColor="white-100">Celebrate Mom!</p>
+                        <h2 font="oswald" fontWeight="400" fontColor="white-100">Get Mother's Day gifts delivered free, as fast as today.</h2>
+                        <div row>
+                            <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="obsidian-900">Try BigBox+</button>
+                        </div>
+                        <p fontColor="blue-100">$35 min. T&amp;C apply.</p>
+                    </div>
+
+                    <div width="48%" bgColor="blush-100" rounded="xl" paddingX="2rem" paddingY="2rem">
+                        <div gradient="blush" width="100%" height="16rem" rounded="lg"></div>
+                    </div>
                 </div>
             </div>
+
+            <div stack gap="1">
+                <div row wrap space="between" centered gap="1">
+                    <h2 font="oswald" fontWeight="400">Discover Great Brands</h2>
+                    <a href="#all" fontColor="obsidian-900">Shop all</a>
+                </div>
+
+                <section>
+                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem">
+                        <div stack gap="1">
+                            <div bgColor="gray-100" width="100%" height="12rem" rounded="lg"></div>
+                            <div row space="between" centered>
+                                <div></div>
+                                <span icon="heart" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
+                            </div>
+                            <div row>
+                                <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="obsidian-900">Options</button>
+                            </div>
+                            <div row gap="1" centered>
+                                <strong fontColor="green-700">$16.95</strong>
+                                <span fontColor="gray-500">$18.95</span>
+                            </div>
+                            <p fontColor="gray-700">Sports Research High Absorption Magnesium Glycinate</p>
+                        </div>
+                    </div>
+
+                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem">
+                        <div stack gap="1">
+                            <div bgColor="gray-100" width="100%" height="12rem" rounded="lg"></div>
+                            <div row space="between" centered>
+                                <div></div>
+                                <span icon="heart" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
+                            </div>
+                            <div row>
+                                <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="obsidian-900">Options</button>
+                            </div>
+                            <strong>$18.97</strong>
+                            <p fontColor="gray-700">Effaclar Gel Facial Wash for Oily Skin</p>
+                        </div>
+                    </div>
+
+                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem">
+                        <div stack gap="1">
+                            <div bgColor="gray-100" width="100%" height="12rem" rounded="lg"></div>
+                            <div row space="between" centered>
+                                <div></div>
+                                <span icon="heart" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
+                            </div>
+                            <div row>
+                                <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="obsidian-900">Add</button>
+                            </div>
+                            <strong>$13.89</strong>
+                            <p fontColor="gray-700">Marvis Toothpaste Jasmine Mint</p>
+                        </div>
+                    </div>
+
+                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem">
+                        <div stack gap="1">
+                            <div bgColor="gray-100" width="100%" height="12rem" rounded="lg"></div>
+                            <div row space="between" centered>
+                                <div></div>
+                                <span icon="heart" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
+                            </div>
+                            <div row>
+                                <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="obsidian-900">Options</button>
+                            </div>
+                            <strong>$14.97</strong>
+                            <p fontColor="gray-700">Vitamin D3 + K2 with Coconut MCT Oil</p>
+                        </div>
+                    </div>
+
+                    <div bgColor="white-100" rounded="xl" paddingX="1rem" paddingY="1rem">
+                        <div stack gap="1">
+                            <div bgColor="gray-100" width="100%" height="12rem" rounded="lg"></div>
+                            <div row space="between" centered>
+                                <div></div>
+                                <span icon="heart" lib="solid" iconSize="sm" iconcolor="obsidian-900"></span>
+                            </div>
+                            <div row>
+                                <button paddingX="1rem" paddingY="1rem" rounded="full" bgColor="white-100" fontColor="obsidian-900">Add</button>
+                            </div>
+                            <strong>$41.99</strong>
+                            <p fontColor="gray-700">Anti-Dandruff Scalp Sync Shampoo</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section>
+                <div bgColor="gray-100" rounded="xl" paddingX="2rem" paddingY="2rem">
+                    <div stack gap="1">
+                        <h3 font="oswald" fontWeight="400">Telehealth your way</h3>
+                        <p fontColor="gray-700">Care and wellness services with same-day convenience.</p>
+                    </div>
+                </div>
+
+                <div bgColor="gray-100" rounded="xl" paddingX="2rem" paddingY="2rem">
+                    <div stack gap="1">
+                        <h3 font="oswald" fontWeight="400">BigBox+ members earn more</h3>
+                        <p fontColor="gray-700">Delivery perks, fuel savings, and special access events.</p>
+                    </div>
+                </div>
+
+                <div bgColor="gray-100" rounded="xl" paddingX="2rem" paddingY="2rem">
+                    <div stack gap="1">
+                        <h3 font="oswald" fontWeight="400">As low as $15/month with OnePay</h3>
+                        <p fontColor="gray-700">Flexible pay-over-time options across select categories.</p>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 </body>
