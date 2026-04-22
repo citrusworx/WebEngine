@@ -7,4 +7,7 @@ const blueConfig = parser.yaml<{
     blue: Record<number, string>;
 }>(bluePath);
 
-console.log(blueConfig.blue[100]);
+export const bluePalette = {
+    100: blueConfig.blue[100],
+    200: blueConfig.blue[200]
+}
