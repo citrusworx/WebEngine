@@ -1,6 +1,7 @@
 import React from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { bluePalette } from "./tokens";
+import { bg } from '../tokens/black';
 
 export default function App() {
   return (
@@ -20,7 +21,7 @@ export default function App() {
           </Text>
         </View>
 
-        <View style={styles.card}>
+        <View style={bg.screen}>
           <Text style={styles.cardTitle}>Next step</Text>
           <Text style={styles.cardBody}>
             Start here for component and layout testing, then we can wire Juice Native helpers in as we replace the
