@@ -1,9 +1,5 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-
-type ApiDefinition = {
-    method: string;
-    endpoint: string;
-};
+import type { ApiDefinition } from "../types/api";
 
 type CleanUserRoutes = {
     allUsers: ApiDefinition;
