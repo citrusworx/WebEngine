@@ -153,6 +153,7 @@ The core direction is solid, but APIs and patterns may still evolve. Feedback, i
   - [Colors](./juice-colors.md)
   - [Styles](./juice-styles.md)
   - [Theme Authoring](./juice-theme-authoring.md)
+  - [Theme Manual](./juice-theme-manual.md)
   - [Template Authoring](./juice-template-authoring.md)
   - [Component Authoring](./juice-component-authoring.md)
   - [Runtime Behavior](./juice-runtime-behavior.md)
