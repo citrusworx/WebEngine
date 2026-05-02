@@ -9,6 +9,30 @@ KiwiPress is an object-oriented WordPress integration layer built on top of:
 
 KiwiPress is not intended to be a loose collection of REST helpers. It is a structured WordPress application layer with clear boundaries between transport, configuration, CRUD behavior, authentication, and synchronization.
 
+## Current Status
+
+KiwiPress is currently in an early but working read-side phase.
+
+What is working now:
+
+- `WPCore` as the shared WordPress config/infrastructure layer
+- `WPClient` as the executable WordPress client layer
+- `WPRead` as the shared read behavior layer
+- `Users`, `Posts`, and `Pages` as read-side domain objects
+- route alias translation from clean KiwiPress shapes into WordPress-compatible query shapes
+- live smoke testing through `apps/kiwipress`
+- package consumption through `@citrusworx/kiwipress`
+
+What is not finished yet:
+
+- `WPCreate`
+- `WPUpdate`
+- `WPDelete`
+- `WPAuth`
+- `WPSync`
+- full response normalization
+- full write/auth workflow coverage
+
 ## Stack Roles
 
 ### `Seltzer`
@@ -57,6 +81,13 @@ KiwiPress is split into six main object areas:
 
 These objects are intentionally separated so each area has a single responsibility.
 
+The current implemented spine is:
+
+- `WPCore`
+- `WPClient`
+- `WPRead`
+- read-side domain objects built on `WPRead`
+
 ## Class Responsibilities
 
 ### `WPCore`
@@ -66,12 +97,12 @@ These objects are intentionally separated so each area has a single responsibili
 It owns:
 
 - WordPress base URL
-- shared request execution
-- endpoint interpolation
-- common headers
 - environment/config loading
-- error normalization
+- common headers
+- endpoint interpolation
 - shared low-level request plumbing
+
+It does not own request execution directly.
 
 `WPCore` knows how to talk to WordPress.
 
@@ -124,6 +155,8 @@ Examples:
 
 It should build on `WPCore` for execution details.
 
+In the current implementation, `WPRead` builds on `WPClient`, which itself builds on `WPCore`.
+
 ### `WPUpdate`
 
 `WPUpdate` owns WordPress update operations.
@@ -170,24 +203,26 @@ Routes should not own large amounts of WordPress logic.
 
 Routes should:
 
-- register the endpoint with `Seltzer`
-- delegate behavior to the appropriate KiwiPress service object
+- define the clean KiwiPress-facing route shape
+- translate that shape into the real underlying WordPress request when necessary
+- keep WordPress-specific query quirks inside handlers rather than leaking them into the public API
 
 Example intent:
 
 ```ts
-const wpread = new WPRead();
-
-const route = {
+export const getUserByEmail: Route<Endpoint> = {
   method: "GET",
   path: "/users/:email",
-  handler: () => {
-    return fetch(wpread.getUserByEmail());
+  handler: async (ctx) => {
+    const email = decodeURIComponent(ctx.path.split("/").pop() ?? "");
+    const baseUrl = ctx.options?.baseUrl ?? "";
+
+    return fetch(`${baseUrl}/users?email=${encodeURIComponent(email)}`);
   }
-};
+}
 ```
 
-The important rule is that route handlers delegate. They do not become the primary home for WordPress business behavior.
+The important rule is that KiwiPress keeps a clean public route shape while handlers absorb WordPress-specific query formats underneath.
 
 ## Config-Driven Routing
 
@@ -208,6 +243,12 @@ This means:
 - `Nectarine` supplies the route metadata
 - `Seltzer` supplies route execution
 - `KiwiPress` supplies the object model and business behavior
+
+Current practical note:
+
+- the package architecture is still aligned with `Nectarine`
+- but the browser-safe smoke-test path currently uses static route definitions instead of runtime YAML parsing
+- this is a current implementation constraint, not the long-term design target
 
 ## Direction of Dependency
 
@@ -241,13 +282,34 @@ It also prevents `Seltzer` from becoming WordPress-aware and prevents route file
 Near-term implementation should proceed in this order:
 
 1. Stabilize `WPCore`
-2. Build `WPRead`
-3. Build `WPCreate`
-4. Build `WPUpdate`
-5. Build `WPDelete`
-6. Add `WPAuth`
-7. Add `WPSync`
-8. Keep route handlers thin and delegated throughout
+2. Stabilize `WPClient`
+3. Finish `WPRead`
+4. Expand read-side domain objects consistently
+5. Build `WPCreate`
+6. Build `WPUpdate`
+7. Build `WPDelete`
+8. Add `WPAuth`
+9. Add `WPSync`
+10. Keep route handlers thin and delegated throughout
+
+## Current Exported Surface
+
+The current package exports:
+
+- `WPCore`
+- `WPClient`
+- `WPRead`
+- `Users`
+- `Posts`
+- `Pages`
+- read-side route definitions for each domain
+
+The app-level smoke test currently proves:
+
+- `Posts.getAll()`
+- `Posts.getBySlug()`
+- `Pages.getAll()`
+- `Users.getByEmail()`
 
 ## Non-Goals
 

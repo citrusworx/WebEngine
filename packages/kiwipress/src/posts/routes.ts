@@ -1,5 +1,9 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import type { ApiDefinition } from "../types/api";
+import {
+    createAliasedQueryRoute,
+    createWordPressRoute
+} from "../core/route-utils";
 
 type CleanPostRoutes = {
     allPosts: ApiDefinition;
@@ -57,116 +61,35 @@ const routes: CleanPostRoutes = {
     }
 };
 
-async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
-    const response = await fetch(ctx.endpoint, init);
 
-    if (!response.ok) {
-        throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);
-    }
+export const getAllPosts = createWordPressRoute(routes.allPosts);
 
-    return response.json();
-}
+export const getPostById = createWordPressRoute(routes.postById);
 
-function createPostRoute(config: ApiDefinition, init?: RequestInit): Route<Endpoint> {
-    return {
-        method: config.method,
-        path: config.endpoint,
-        handler: async (ctx: Endpoint) => requestWordPress(ctx, init)
-    };
-}
+export const getPostBySlug = createAliasedQueryRoute(routes.postBySlug, "posts", "slug");
 
-function getLastParam(ctx: Endpoint): string {
-    return decodeURIComponent(ctx.path.split("/").pop() ?? "");
-}
+export const getPostByAuthor = createAliasedQueryRoute(routes.postByAuthor, "posts", "author");
 
-function buildAliasedEndpoint(ctx: Endpoint, query: string): string {
-    const baseUrl = ctx.options?.baseUrl ?? "";
-    return `${baseUrl}/posts?${query}`;
-}
+export const getPostsByTag = createAliasedQueryRoute(routes.postsByTag, "posts", "tags");
 
-export const getAllPosts = createPostRoute(routes.allPosts);
+export const getPostsByCategory = createAliasedQueryRoute(routes.postsByCategory, "posts", "categories");
 
-export const getPostById = createPostRoute(routes.postById);
+export const getPostsByDate = createAliasedQueryRoute(routes.postsByDate, "posts", "after");
 
-export const getPostBySlug: Route<Endpoint> = {
-    method: routes.postBySlug.method,
-    path: routes.postBySlug.endpoint,
-    handler: async (ctx: Endpoint) => {
-        const slug = getLastParam(ctx);
-
-        return requestWordPress({
-            ...ctx,
-            endpoint: buildAliasedEndpoint(ctx, `slug=${encodeURIComponent(slug)}`)
-        });
-    }
-};
-
-export const getPostByAuthor: Route<Endpoint> = {
-    method: routes.postByAuthor.method,
-    path: routes.postByAuthor.endpoint,
-    handler: async (ctx: Endpoint) => {
-        const author = getLastParam(ctx);
-
-        return requestWordPress({
-            ...ctx,
-            endpoint: buildAliasedEndpoint(ctx, `author=${encodeURIComponent(author)}`)
-        });
-    }
-};
-
-export const getPostsByTag: Route<Endpoint> = {
-    method: routes.postsByTag.method,
-    path: routes.postsByTag.endpoint,
-    handler: async (ctx: Endpoint) => {
-        const tag = getLastParam(ctx);
-
-        return requestWordPress({
-            ...ctx,
-            endpoint: buildAliasedEndpoint(ctx, `tags=${encodeURIComponent(tag)}`)
-        });
-    }
-};
-
-export const getPostsByCategory: Route<Endpoint> = {
-    method: routes.postsByCategory.method,
-    path: routes.postsByCategory.endpoint,
-    handler: async (ctx: Endpoint) => {
-        const category = getLastParam(ctx);
-
-        return requestWordPress({
-            ...ctx,
-            endpoint: buildAliasedEndpoint(ctx, `categories=${encodeURIComponent(category)}`)
-        });
-    }
-};
-
-export const getPostsByDate: Route<Endpoint> = {
-    method: routes.postsByDate.method,
-    path: routes.postsByDate.endpoint,
-    handler: async (ctx: Endpoint) => {
-        const date = getLastParam(ctx);
-
-        return requestWordPress({
-            ...ctx,
-            endpoint: buildAliasedEndpoint(ctx, `after=${encodeURIComponent(date)}`)
-        });
-    }
-};
-
-export const createPost = createPostRoute(routes.createPost, {
+export const createPost = createWordPressRoute(routes.createPost, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
     }
 });
 
-export const updatePost = createPostRoute(routes.updatePost, {
+export const updatePost = createWordPressRoute(routes.updatePost, {
     method: "PUT",
     headers: {
         "Content-Type": "application/json"
     }
 });
 
-export const deletePost = createPostRoute(routes.deletePost, {
+export const deletePost = createWordPressRoute(routes.deletePost, {
     method: "DELETE"
 });

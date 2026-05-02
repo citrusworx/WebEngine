@@ -1,0 +1,15 @@
+<article class="card">
+    {{if item.featuredImage}}
+    <img src="{{ item.featuredImage.url }}" alt="{{ item.featuredImage.alt }}">
+    {{endif}}
+
+    <div class="card__body">
+        <h2><a href="{{ item.url }}">{{ item.title }}</a></h2>
+        <p class="excerpt">{{ item.excerpt }}</p>
+    </div>
+
+    <footer class="card__footer">
+        <span class="author">{{ item.author.name }}</span>
+        <time datetime="{{ item.date }}">{{ item.dateFormatted }}</time>
+    </footer>
+</article>

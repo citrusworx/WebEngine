@@ -1,0 +1,38 @@
+[extends "layout"]
+
+[fill "styles"]
+<link rel="stylesheet" href="/css/post.css">
+[endfill]
+
+[fill "content"]
+<article class="post">
+    <header>
+        <h1>{{ post.title }}</h1>
+
+        {{if post.published}}
+        <p class="byline">By {{ post.author.name }} &mdash; {{ post.date }}</p>
+        {{elseif post.draft}}
+        <p class="byline draft">Draft &mdash; {{ post.date }}</p>
+        {{else}}
+        <p class="byline">Unpublished</p>
+        {{endif}}
+    </header>
+
+    [# Render each content block #]
+    {{for block in post.blocks}}
+    <section class="block block--{{ block.type }}">
+        {{ block.content }}
+    </section>
+    {{endfor}}
+
+    {{if post.tags}}
+    <footer class="tags">
+        {{for tag in post.tags}}
+        [Tag label="{{ tag.name }}" href="/tag/{{ tag.slug }}"]
+        {{endfor}}
+    </footer>
+    {{endif}}
+</article>
+
+[include "partials/related.stzl" with post]
+[endfill]

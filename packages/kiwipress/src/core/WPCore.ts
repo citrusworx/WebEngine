@@ -2,6 +2,7 @@ export type WPCoreConfig = {
     url: string;
     apiBase: string;
     username?: string;
+    appPassword?: string;
     token?: string;
     apiKey?: string;
     headers?: Record<string, string>;
@@ -33,9 +34,24 @@ function loadNodeEnvConfig(): Partial<WPCoreConfig> {
         url: maybeProcess.env.WP_URL?.trim(),
         apiBase: maybeProcess.env.WP_API?.trim(),
         username: maybeProcess.env.WP_USER?.trim(),
+        appPassword: maybeProcess.env.WP_APP_PASSWORD?.trim(),
         token: maybeProcess.env.WP_TOKEN?.trim(),
         apiKey: maybeProcess.env.WP_API_KEY?.trim()
     };
+}
+
+function encodeBase64(value: string): string {
+    const maybeBuffer = typeof Buffer !== "undefined" ? Buffer : undefined;
+
+    if (maybeBuffer) {
+        return maybeBuffer.from(value).toString("base64");
+    }
+
+    if (typeof btoa !== "undefined") {
+        return btoa(value);
+    }
+
+    throw new Error("Unable to encode WordPress credentials.");
 }
 
 export class WPCore {
@@ -50,6 +66,7 @@ export class WPCore {
         const url = overrides?.url ?? envConfig.url ?? "";
         const apiBase = overrides?.apiBase ?? envConfig.apiBase ?? "wp-json/v2";
         const username = overrides?.username ?? envConfig.username;
+        const appPassword = overrides?.appPassword ?? envConfig.appPassword;
         const token = overrides?.token ?? envConfig.token;
         const apiKey = overrides?.apiKey ?? envConfig.apiKey;
         const headers = overrides?.headers ?? {};
@@ -62,6 +79,7 @@ export class WPCore {
             url: url.replace(/\/+$/, ""),
             apiBase: apiBase.replace(/^\/+/, "").replace(/\/+$/, ""),
             username,
+            appPassword,
             token,
             apiKey,
             headers
@@ -73,18 +91,15 @@ export class WPCore {
             ...this.config.headers
         };
 
-        if (this.config.token) {
+        if (this.config.username && this.config.appPassword) {
+            headers.Authorization = `Basic ${encodeBase64(`${this.config.username}:${this.config.appPassword}`)}`;
+        } else if (this.config.token) {
             headers.Authorization = `Bearer ${this.config.token}`;
         }
 
         if (this.config.apiKey) {
             headers["X-API-Key"] = this.config.apiKey;
         }
-
-        if (this.config.username) {
-            headers["X-WP-User"] = this.config.username;
-        }
-
         return headers;
     }
 

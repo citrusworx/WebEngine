@@ -1,4 +1,4 @@
-import { Seltzer } from "./core/seltzer";
+import { Seltzer } from "./core/seltzer.ts";
 
 const app = Seltzer.init();
 

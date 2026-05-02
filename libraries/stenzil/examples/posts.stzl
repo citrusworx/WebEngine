@@ -1,0 +1,23 @@
+[extends "layout"]
+
+[fill "content"]
+<section class="posts">
+    <h1>{{ page.title }}</h1>
+
+    [block "filters"]
+    <div class="filters">
+        <input type="search" placeholder="Search posts...">
+    </div>
+    [endblock]
+
+    {{if posts.length}}
+    <div class="post-grid">
+        {{for post in posts}}
+        [include "partials/card.stzl" with post as item]
+        {{endfor}}
+    </div>
+    {{else}}
+    <p class="empty">No posts found.</p>
+    {{endif}}
+</section>
+[endfill]

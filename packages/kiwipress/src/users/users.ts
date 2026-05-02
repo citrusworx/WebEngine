@@ -1,11 +1,15 @@
 import { WPRead } from "../core/WPRead";
 import {
+    createUser,
+    deleteUser,
     getAllUsers,
     getUserByEmail,
     getUserById,
     getUsersByCity,
-    getUsersByCityState
+    getUsersByCityState,
+    updateUser
 } from "./routes";
+import type { WordPressPayload } from "../types/api";
 
 export class Users extends WPRead {
     getAll() {
@@ -26,5 +30,17 @@ export class Users extends WPRead {
 
     getByCityState(state: string, city: string) {
         return this.read(getUsersByCityState, { state, city });
+    }
+
+    create(data: WordPressPayload) {
+        return this.mutate(createUser, data);
+    }
+
+    update(id: string | number, data: WordPressPayload) {
+        return this.mutate(updateUser, data, { id });
+    }
+
+    delete(id: string | number) {
+        return this.mutate(deleteUser, undefined, { id });
     }
 }

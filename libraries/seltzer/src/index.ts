@@ -1,1 +1,1 @@
-export * from "./core/seltzer";
+export * from "./core/seltzer.ts";

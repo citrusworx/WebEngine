@@ -1,6 +1,8 @@
 import { Seltzer } from "@citrusworx/seltzer";
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import { WPCore, type RouteParams, type WPCoreConfig } from "./WPCore";
+import { requestWordPress } from "./route-utils";
+import type { WordPressPayload } from "../types/api";
 
 export class WPClient extends WPCore {
     protected readonly app: Seltzer;
@@ -34,6 +36,20 @@ export class WPClient extends WPCore {
     protected execute(route: Route<Endpoint>, params?: RouteParams) {
         const endpoint = this.buildEndpoint(route, params);
         return route.handler(endpoint);
+    }
+
+    protected mutate(route: Route<Endpoint>, body?: WordPressPayload, params?: RouteParams) {
+        const endpoint = this.buildEndpoint(route, params);
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            ...(endpoint.options?.headers ?? {})
+        };
+
+        return requestWordPress(endpoint, {
+            method: route.method,
+            headers,
+            body: body ? JSON.stringify(body) : undefined
+        });
     }
 
     protected getApp(): Seltzer {

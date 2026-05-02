@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ site.name }}</title>
+    [slot "styles"]
+</head>
+<body>
+    [Navbar brand="{{ site.name }}" theme="dark"]
+
+    <main>
+        [slot "content"]
+    </main>
+
+    [Footer year="{{ site.year }}" links="{{ site.footerLinks }}"]
+
+    [slot "scripts" position="bottom"]
+</body>
+</html>

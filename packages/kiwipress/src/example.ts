@@ -1,17 +1,26 @@
-import { Users } from "./users/users";
+import { Posts } from "./posts/posts";
 
 async function runExample() {
-    const users = new Users();
+    const posts = new Posts({
+        url: "http://localhost:8080",
+        apiBase: "wp-json/wp/v2"
+    });
+    const slug = `kiwipress-smoke-${Date.now()}`;
 
-    console.log("KiwiPress Step 1 smoke test starting...");
+    console.log("KiwiPress create post smoke test starting...");
 
-    const allUsers = await users.getAll();
-    console.log("All users:", allUsers);
+    const createdPost = await posts.create({
+        title: "KiwiPress Smoke Test Post",
+        content: "<p>This post was created through KiwiPress.</p>",
+        status: "draft",
+        slug
+    });
+    console.log("Created post:", createdPost);
 
-    const userByEmail = await users.getByEmail("hello@example.com");
-    console.log("User by email:", userByEmail);
+    const postBySlug = await posts.getBySlug(slug);
+    console.log("Post by slug:", postBySlug);
 
-    console.log("KiwiPress Step 1 smoke test complete.");
+    console.log("KiwiPress create post smoke test complete.");
 }
 
 runExample().catch((error) => {

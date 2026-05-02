@@ -1,5 +1,9 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import type { ApiDefinition } from "../types/api";
+import {
+    createAliasedQueryRoute,
+    createWordPressRoute
+} from "../core/route-utils";
 
 type CleanUserRoutes = {
     allUsers: ApiDefinition;
@@ -47,61 +51,30 @@ const routes: CleanUserRoutes = {
     }
 };
 
-async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
-    const response = await fetch(ctx.endpoint, init);
+export const getAllUsers = createWordPressRoute(routes.allUsers);
 
-    if (!response.ok) {
-        throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);
-    }
+export const getUserById = createWordPressRoute(routes.usersById);
 
-    return response.json();
-}
+export const getUserByEmail = createAliasedQueryRoute(routes.usersByEmail, "users", "email");
 
-function createUserRoute(config: ApiDefinition, init?: RequestInit): Route<Endpoint> {
-    return {
-        method: config.method,
-        path: config.endpoint,
-        handler: async (ctx: Endpoint) => requestWordPress(ctx, init)
-    };
-}
+export const getUsersByCity = createWordPressRoute(routes.usersByCity);
 
-export const getAllUsers = createUserRoute(routes.allUsers);
+export const getUsersByCityState = createWordPressRoute(routes.usersByCityState);
 
-export const getUserById = createUserRoute(routes.usersById);
-
-export const getUserByEmail: Route<Endpoint> = {
-    method: routes.usersByEmail.method,
-    path: routes.usersByEmail.endpoint,
-    handler: async (ctx: Endpoint) => {
-        const email = decodeURIComponent(ctx.path.split("/").pop() ?? "");
-        const baseUrl = ctx.options?.baseUrl ?? "";
-        const endpoint = `${baseUrl}/users?email=${encodeURIComponent(email)}`;
-
-        return requestWordPress({
-            ...ctx,
-            endpoint
-        });
-    }
-};
-
-export const getUsersByCity = createUserRoute(routes.usersByCity);
-
-export const getUsersByCityState = createUserRoute(routes.usersByCityState);
-
-export const createUser = createUserRoute(routes.createUser, {
+export const createUser = createWordPressRoute(routes.createUser, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
     }
 });
 
-export const updateUser = createUserRoute(routes.updateUser, {
+export const updateUser = createWordPressRoute(routes.updateUser, {
     method: "PUT",
     headers: {
         "Content-Type": "application/json"
     }
 });
 
-export const deleteUser = createUserRoute(routes.deleteUser, {
+export const deleteUser = createWordPressRoute(routes.deleteUser, {
     method: "DELETE"
 });

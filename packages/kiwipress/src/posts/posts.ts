@@ -1,13 +1,17 @@
 import { WPRead } from "../core/WPRead";
 import {
+    createPost,
+    deletePost,
     getAllPosts,
     getPostByAuthor,
     getPostById,
     getPostBySlug,
     getPostsByCategory,
     getPostsByDate,
-    getPostsByTag
+    getPostsByTag,
+    updatePost
 } from "./routes";
+import type { WordPressPayload } from "../types/api";
 
 export class Posts extends WPRead {
     getAll() {
@@ -36,5 +40,17 @@ export class Posts extends WPRead {
 
     getByDate(date: string) {
         return this.read(getPostsByDate, { date });
+    }
+
+    create(data: WordPressPayload) {
+        return this.mutate(createPost, data);
+    }
+
+    update(id: string | number, data: WordPressPayload) {
+        return this.mutate(updatePost, data, { id });
+    }
+
+    delete(id: string | number) {
+        return this.mutate(deletePost, undefined, { id });
     }
 }
