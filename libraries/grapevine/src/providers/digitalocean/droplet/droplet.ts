@@ -26,6 +26,28 @@ export interface DropletBlueprint {
     }
 }
 
+export interface Droplet {
+        name: string;    
+        droplet: {
+            name: string;
+            region: string;
+            size: string;
+            image: string;
+            ssh_keys?: string[];
+            backups: boolean;
+            backup_policy?: {
+                name: string;
+            }
+            ipv6?: boolean;
+            monitoring?: boolean;
+            tags?: string[];
+            user_data?: string;
+            volumes?: string[];
+            vpc_uuid?: string;
+            with_droplet_agent?: boolean;
+        }
+}
+
 export interface DropletResource {
     id: number | undefined;
     name: string;
@@ -109,8 +131,8 @@ export async function getDropletStatus(id: number): Promise<string>{
 }
 
 // List all droplets
-export async function listAllDroplets(){
-    const response = await axios.get<{droplets: AllDroplets}>(
+export async function listAllDroplets(): Promise<DropletResource[]>{
+    const response = await axios.get<{droplets: DropletResource[]}>(
         `https://api.digitalocean.com/v2/droplets`,
         {
             headers: {
@@ -123,9 +145,9 @@ export async function listAllDroplets(){
 }
 
 // Get single droplet
-export async function getDroplet(name: string){
+export async function getDroplet(id: number): Promise<DropletResource>{
     const response = await axios.get<{droplet: DropletResource}>(
-        `https://api.digitalocean.com/v2/droplets/${name}`,
+        `https://api.digitalocean.com/v2/droplets/${id}`,
         {
             headers: {
                 Authorization: `Bearer ${process.env.DO_TOKEN}`
@@ -137,42 +159,150 @@ export async function getDroplet(name: string){
 }
 
 // Create New Droplet
-export async function createDroplet(){}
+export async function createDroplet(droplet: Droplet): Promise<DropletResource>{
+    const response = await axios.post<DropletCreateResponse>(
+        "https://api.digitalocean.com/v2/droplets",
+        droplet.droplet,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`,
+                "Content-Type": "application/json"
+            }
+        }
+    )
+    return response.data.droplet
+}
 
-export async function createDroplets(){}
+export async function createDroplets(droplets: Droplet[]): Promise<DropletResource[]>{
+    const promises = droplets.map(createDroplet);
+    return Promise.all(promises);
+}
 
 // Deleting Droplets
 // 
 // 
 // 
 
-export async function deleteDropletsByTag(tag: string){}
+export async function deleteDropletsByTag(tag: string): Promise<{message: string}>{
+    // Delete all droplets with a specific tag
+    const response = await axios.delete(
+        `https://api.digitalocean.com/v2/droplets?tag_name=${tag}`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`
+            }
+        }
+    )
+    return response.data
+}
 
-export async function NukeDroplet(droplet: string){}
+export async function NukeDroplet(id: number): Promise<{message: string}>{
+    // Delete a droplet and all associated resources (volumes, snapshots, etc.)
+    const response = await axios.delete(
+        `https://api.digitalocean.com/v2/droplets/${id}/destroy_with_associated_resources/dangerous`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`,
+                "X-Dangerous": "true"
+            }
+        }
+    )
+    return response.data
+}
 
-export async function NukeDropletLite(droplet: string){}
+export async function NukeDropletLite(
+        id: number, resources: 
+        {
+            reserved_ips?: string[],
+            volumes?: string[],
+            snapshots?: string[],
+            volume_snapshots?: string[]
+        }): Promise<{message: string}>
+        {
+    // Selectively delete a droplet and its associated resources
+        const response = await axios.delete(
+            `https://api.digitalocean.com/v2/droplets/${id}/destroy_with_associated_resources/selective`,
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.DO_TOKEN}`
+            },
+            data: resources
+        }
+    )
+    return response.data
+}
 
-export async function deleteDroplet(droplet: string){}
+export async function deleteDroplet(id: number): Promise<{message: string}>{
+    const response = await axios.delete(
+        `https://api.digitalocean.com/v2/droplets/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`
+            }
+        }
+    )
+    return response.data
+}
 
 // Backups for Droplets
 // 
 // 
 // 
 
-export async function listBackups(droplet: string){}
+export async function listBackups(id: number): Promise<object[]>{
+    const response = await axios.get<{backups: object[]}>(
+        `https://api.digitalocean.com/v2/droplets/${id}/backups`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`
+            }
+        }
+    )
+    return response.data.backups
+}
 
-export async function listBackupPolicy(droplet: string){}
+export async function listBackupPolicy(id: number): Promise<object>{
+    const response = await axios.get<{backup_policy: object}>(
+        `https://api.digitalocean.com/v2/droplets/${id}/backups/policy`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`
+            }
+        }
+    )
+    return response.data.backup_policy
+}
 
 // Firewalls for Droplets
 // 
 // 
 // 
 
-export async function listFirewalls(droplet: string){}
+export async function listFirewalls(id: number): Promise<object[]>{
+    const response = await axios.get<{firewalls: object[]}>(
+        `https://api.digitalocean.com/v2/droplets/${id}/firewalls`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`
+            }
+        }
+    )
+    return response.data.firewalls
+}
 
 // Snapshots for Droplets
 // 
 // 
 // 
 
-export async function listSnapshots(droplet: string){}
+export async function listSnapshots(id: number): Promise<object[]>{
+    const response = await axios.get<{snapshots: object[]}>(
+        `https://api.digitalocean.com/v2/droplets/${id}/snapshots`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.DO_TOKEN}`
+            }
+        }
+    )
+    return response.data.snapshots
+}

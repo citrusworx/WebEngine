@@ -1,5 +1,5 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import type { RouteParams, WPCoreConfig } from "./WPCore";
+import type { RouteParams, WPCoreConfig } from "./WPCore.ts";
 import { WPClient } from "./WPClient";
 
 export class WPDelete extends WPClient {

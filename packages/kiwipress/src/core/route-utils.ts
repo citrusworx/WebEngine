@@ -1,5 +1,5 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import type { ApiDefinition } from "../types/api";
+import type { ApiDefinition } from "../types/api.ts";
 
 export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
     const headers = {
@@ -7,10 +7,32 @@ export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
         ...(init?.headers ?? {})
     };
 
-    const response = await fetch(ctx.endpoint, {
+    const requestInit: RequestInit = {
         ...init,
         headers
-    });
+    };
+
+    const allowSelfSigned =
+        typeof ctx.options === "object" &&
+        ctx.options !== null &&
+        "allowSelfSigned" in ctx.options &&
+        Boolean((ctx.options as Record<string, unknown>).allowSelfSigned);
+
+    let response: Response;
+
+    if (allowSelfSigned && ctx.endpoint.startsWith("https://")) {
+        const { Agent } = await import("undici");
+        response = await fetch(ctx.endpoint, {
+            ...requestInit,
+            dispatcher: new Agent({
+                connect: {
+                    rejectUnauthorized: false
+                }
+            })
+        } as unknown as RequestInit);
+    } else {
+        response = await fetch(ctx.endpoint, requestInit);
+    }
 
     if (!response.ok) {
         throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);

@@ -11,7 +11,7 @@ import {
     getPostsByTag,
     updatePost
 } from "./routes";
-import type { WordPressPayload } from "../types/api";
+import type { WordPressPayload } from "../types/api.ts";
 
 export class Posts extends WPRead {
     getAll() {

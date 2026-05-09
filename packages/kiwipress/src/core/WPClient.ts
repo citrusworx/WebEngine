@@ -2,7 +2,7 @@ import { Seltzer } from "@citrusworx/seltzer";
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import { WPCore, type RouteParams, type WPCoreConfig } from "./WPCore";
 import { requestWordPress } from "./route-utils";
-import type { WordPressPayload } from "../types/api";
+import type { WordPressPayload } from "../types/api.ts";
 
 export class WPClient extends WPCore {
     protected readonly app: Seltzer;
@@ -13,7 +13,8 @@ export class WPClient extends WPCore {
             adapter: "node:http",
             options: {
                 baseUrl: `${this.config.url}/${this.config.apiBase}`,
-                headers: this.createAuthHeaders()
+                headers: this.createAuthHeaders(),
+                allowSelfSigned: this.config.allowSelfSigned
             }
         });
     }
@@ -28,7 +29,8 @@ export class WPClient extends WPCore {
             endpoint,
             options: {
                 baseUrl: `${this.config.url}/${this.config.apiBase}`,
-                headers: this.createAuthHeaders()
+                headers: this.createAuthHeaders(),
+                allowSelfSigned: this.config.allowSelfSigned
             }
         };
     }

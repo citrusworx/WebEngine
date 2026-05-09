@@ -1,5 +1,4 @@
-import type { Endpoint, Route } from "@citrusworx/seltzer";
-import type { ApiDefinition } from "../types/api";
+import type { ApiDefinition } from "../types/api.ts";
 import {
     createAliasedQueryRoute,
     createWordPressRoute

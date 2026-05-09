@@ -10,7 +10,7 @@ import {
     getPageByTag,
     updatePage
 } from "./routes";
-import type { WordPressPayload } from "../types/api";
+import type { WordPressPayload } from "../types/api.ts";
 
 export class Pages extends WPRead {
     getAll() {
