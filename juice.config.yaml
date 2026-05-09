@@ -1,10 +1,4 @@
 version: "0.1"
-type: scss # css | scss | external
-endpoints:
-  vanilla: ""
-  react: ""
-  templates: ""
-entry: "juice.scss"
 
 # colors
 colors:
@@ -17,28 +11,35 @@ colors:
     base: true
     swatches:
       - Cornflower
-      - Electric
+      - Electric # will generate a [light] error (will not be used (logged) but rest of config can load.)
   custom:
-    name: ""
+    name: "brand"
+    swatch:
+      primary: "#FF5733"
+      secondary: "#33FF57"
+      tertiary: "#5733FF"
+      alerts:
+        success: "#28a745"
+        warning: "#ffc107"
+        information: "#17a2b8"
+        error: "#dc3545"
     definition: "something.yml"
 
 typography:
   fonts:
+    source: adobe
+    url: "https://fonts.adobe.com/{typekit-url}"
     primary:
       family: "Korolev"
       weights: [400, 600, 700]
-      source: adobe
-      url: ""
     secondary:
       family: "Korolev"
       weights: [400, 600, 700]
-      source: adobe
-      url: ""
     tertiary:
-      family: "Korolev"
+      family: "Google Sans"
       weights: [400, 600, 700]
-      source: adobe
-      url: ""
+      source: google
+      url: "https://fonts.google.com/{google-font-url}"
 
 
 
@@ -48,9 +49,7 @@ mode:
   tailwind:
     use: false
     config:
-      entry: ""
 
   bootstrap:
     use: false
     config:
-      entry: ""

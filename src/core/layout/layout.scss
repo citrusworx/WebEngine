@@ -48,7 +48,6 @@ $spacing--lg: 1.5rem;
 :where([stack]){
     display: flex;
     flex-direction: column !important;
-    margin: 0 auto;
 }
 
 [stack][reverse]{
