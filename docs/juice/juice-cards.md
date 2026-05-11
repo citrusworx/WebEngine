@@ -1,6 +1,8 @@
 # Juice Cards
 
-Juice cards are structural components. They are meant to define spacing, sizing, content flow, and internal regions while leaving color, typography, icons, and theme styling to the consumer through regular Juice attributes.
+Juice cards are structural components. They define spacing, sizing, content flow, and internal regions while leaving color, typography, icons, and theme styling to the consumer through regular Juice attributes.
+
+Cards follow the parent/child/sibling naming rule from [Juice Naming](./juice-naming.md). Children use bare slot names; variants and scalars live on the card itself.
 
 ## Design intent
 
@@ -12,7 +14,7 @@ Cards in Juice should answer questions like:
 - Does the card have a header, body, media area, or actions area?
 - Is the card interactive?
 
-Cards should not hardcode brand styling that belongs to the app using Juice.
+Cards should not hardcode brand styling that belongs to the app or theme using Juice.
 
 ## Base card
 
@@ -36,6 +38,8 @@ The base card currently provides:
 
 ## Card variants
 
+Variants live as values on the `card` attribute.
+
 ### `card="compact"`
 
 Use for denser UI and smaller content blocks.
@@ -56,103 +60,159 @@ Use for two-region layouts such as media + content or content + sidebar.
 
 Use for cards that end in a clear action area and need a little more space around the action row.
 
+### `card="pricing"`
+
+Use for pricing tiers. Pairs naturally with a `plan` child region.
+
+### `card="large"`, `card="muted"`, `card="hero"`
+
+Sizing and surface-character variants. These replace the legacy `card-large`, `card-muted`, `hero-panel` shorthands.
+
 ## Card sizing
 
-Prefer the newer `card-size` attribute over the older legacy shorthands.
+Sizing lives on the card itself with the bare `size` attribute.
 
 ```html
-<div card card-size="sm"></div>
-<div card card-size="md"></div>
-<div card card-size="lg"></div>
+<div card size="sm"></div>
+<div card size="md"></div>
+<div card size="lg"></div>
 ```
 
 Supported values:
 
-- `card-size="sm"`
-- `card-size="md"`
-- `card-size="lg"`
+- `size="sm"`
+- `size="md"`
+- `size="lg"`
 
-Legacy shorthands still present in the stylesheet:
-
-- `card-small`
-- `card-large`
+Selector scoping happens through attribute combination, e.g. `[card][size="md"]`.
 
 ## Card padding
 
 ```html
-<div card card-padding="sm"></div>
-<div card card-padding="md"></div>
-<div card card-padding="lg"></div>
+<div card padding="sm"></div>
+<div card padding="md"></div>
+<div card padding="lg"></div>
 ```
 
 Supported values:
 
-- `card-padding="sm"`
-- `card-padding="md"`
-- `card-padding="lg"`
+- `padding="sm"`
+- `padding="md"`
+- `padding="lg"`
+
+`padding` also accepts numeric values like `padding="2rem"` (see [Spacing](./juice-spacing.md)).
 
 ## Card flow
 
-Cards can explicitly change their internal flow:
+Cards can explicitly change their internal flow with the bare `flow` attribute.
 
 ```html
-<div card card-flow="vertical"></div>
-<div card card-flow="horizontal"></div>
+<div card flow="vertical"></div>
+<div card flow="horizontal"></div>
 ```
 
 Supported values:
 
-- `card-flow="vertical"`
-- `card-flow="horizontal"`
+- `flow="vertical"`
+- `flow="horizontal"`
 
 ## Card regions
 
-Juice now provides a small set of card region hooks so card markup can be more semantic and repeatable.
+Region children use bare slot names from the universal vocabulary. Their meaning comes from the parent `card`.
 
-### `card-header`
+### `header`
 
 Top section for title, intro, toggle rows, or leading metadata.
 
-### `card-body`
+### `body`
 
-Main content region. This is usually where text, lists, or core information lives.
+Main content region. Text, lists, or core information.
 
-### `card-actions`
+### `action`
 
 Action row for buttons, links, and CTA controls.
 
-### `card-meta`
+### `meta`
 
 Small supporting metadata row for pills, labels, or short supporting facts.
 
-### `card-media`
+### `media`
 
 Media region for icons, illustrations, or images.
 
-### `card-divider`
+### `divider`
 
 Simple visual divider inside a card.
 
 ## Example
 
 ```html
-<div card card="cta" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div card-header row space="between" centered>
+<div card="cta" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div header row space="between" centered>
     <h3 font="korolev-rounded-bold" fontSize="xl">Simple Mode</h3>
     <i icon="toggle-on" width="2rem" height="2rem" fontColor="red-800"></i>
   </div>
 
-  <div card-body stack gap="1rem">
+  <div body stack gap="1rem">
     <p font="korolev-rounded">
       Managed hosting and governance for teams that want clarity without losing control.
     </p>
   </div>
 
-  <div card-actions center>
+  <div action center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Click Me</button>
   </div>
 </div>
 ```
+
+## Pricing card example
+
+```html
+<div card="pricing" featured>
+  <span badge="ribbon">Most Popular</span>
+  <div plan>
+    <div header>
+      <div name>Pro</div>
+      <div price>
+        <span currency>$</span>
+        <span amount>20</span>
+        <span period>/month</span>
+      </div>
+      <p description>For professional WordPress sites</p>
+    </div>
+
+    <ul features>
+      <li>10 WordPress sites</li>
+      <li>1TB bandwidth</li>
+      <li>Priority support</li>
+    </ul>
+
+    <div action>
+      <button full type="button">Start Free Trial</button>
+    </div>
+  </div>
+</div>
+```
+
+## Legacy shorthands
+
+Previous versions of Juice used BEM-style compound names. These are deprecated; the canonical forms above should be used in all new code.
+
+| Legacy | Canonical |
+| --- | --- |
+| `card-header` | `header` |
+| `card-body` | `body` |
+| `card-actions` | `action` |
+| `card-meta` | `meta` |
+| `card-media` | `media` |
+| `card-divider` | `divider` |
+| `card-size="X"` | `size="X"` |
+| `card-padding="X"` | `padding="X"` |
+| `card-flow="X"` | `flow="X"` |
+| `card-large` | `card="large"` |
+| `card-small` | `card="small"` |
+| `card-compact` | `card="compact"` |
+| `card-muted` | `card="muted"` |
 
 ## Recommended usage
 
@@ -162,6 +222,7 @@ Good separation of concerns:
 
 - card controls internal flow
 - wrapper controls alignment and placement
-- app code controls colors, fonts, and theme expression
+- the theme controls colors, fonts, and visual character
+- app code controls behavior
 
-That keeps the card system flexible and consistent with Juice’s overall philosophy.
+That keeps the card system flexible and consistent with Juice's overall philosophy. See [Layers](./juice-layers.md) for the full ownership split.

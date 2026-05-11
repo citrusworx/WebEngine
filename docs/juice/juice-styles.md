@@ -106,17 +106,17 @@ Juice cards are structural selectors rather than visual skins. The card layer is
 Examples:
 
 ```html
-<div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div card-header row space="between" centered>
+<div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div header row space="between" centered>
     <h3 font="korolev-rounded-bold">Card title</h3>
     <i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
   </div>
 
-  <div card-body stack gap="1rem">
+  <div body stack gap="1rem">
     <p font="korolev-rounded">Card content</p>
   </div>
 
-  <div card-actions center>
+  <div action center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
   </div>
 </div>
@@ -125,11 +125,12 @@ Examples:
 Important details:
 
 - `card` enables the base card container behavior
-- variants such as `card="feature"` or `card="interactive"` adjust structure and behavior
-- `card-size`, `card-padding`, and `card-flow` refine the layout without hardcoding brand styling
-- `card-header`, `card-body`, `card-actions`, `card-meta`, `card-media`, and `card-divider` are semantic region hooks
+- variants such as `card="feature"`, `card="pricing"`, or `card="interactive"` adjust structure and behavior
+- `size`, `padding`, and `flow` refine the card's layout (scoped via `[card][size="md"]`)
+- `header`, `body`, `action`, `meta`, `media`, and `divider` are semantic region hooks — bare slot names whose meaning comes from the parent `[card]`
+- region selectors are scoped through the parent, e.g. `[card] [header]`
 
-For the dedicated card guide, see [Cards](./juice-cards.md).
+For the dedicated card guide, see [Cards](./juice-cards.md). For the naming rule that makes bare slot names work, see [Naming](./juice-naming.md).
 
 ## Spacing selectors
 

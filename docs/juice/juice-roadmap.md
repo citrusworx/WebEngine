@@ -35,7 +35,7 @@ The Aquaflux theme demonstrates the intended model:
 * `theme="aquaflux"` establishes color and typography tone
 * standard HTML elements like `main`, `section`, `article`, `aside`, `nav`, `header`, and `footer` can be themed directly
 * headings and general text are styled at the theme level
-* theme-specific surface attributes like `aqua-card` and `aqua-hero` now exist
+* the theme owns the visual treatment of Juice's structural attributes (`[card]`, `[card="hero"]`, etc.) and may add brand-specific variants on the same attributes (e.g. `card="aqua-hero"`) — see [Layers](./juice-layers.md) and [Surface Spec](./juice-surface-spec.md)
 
 This means the roadmap no longer needs to treat themes as purely conceptual. Theming is now an active design layer in Juice.
 
@@ -256,7 +256,7 @@ Recommended next additions:
 * `borderStrength`
 * `variant`
 * `blur`
-* more component-style surface attrs like `card-large`, `card-muted`, `hero-panel`
+* more structural variants on `card` (e.g. `card="large"`, `card="muted"`, `card="hero"`) — see [Surface Spec](./juice-surface-spec.md) for the canonical naming model
 
 This would make templates feel far more polished with less manual assembly.
 

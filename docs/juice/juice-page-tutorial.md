@@ -136,36 +136,36 @@ This is where Juice cards become useful. Let the card control structure and let 
   </div>
 
   <div row gap="2rem" space="between">
-    <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-      <div card-header row space="between" centered>
+    <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+      <div header row space="between" centered>
         <h3 font="korolev-rounded-bold" fontSize="lg">Simple Mode</h3>
         <i icon="toggle-on" width="2rem" height="2rem" iconcolor="red-800"></i>
       </div>
 
-      <div card-body stack gap="1rem">
+      <div body stack gap="1rem">
         <p font="korolev-rounded">
           Managed hosting and governance for teams that need clarity and stability.
         </p>
       </div>
 
-      <div card-actions center>
+      <div action center>
         <button btn="outline" theme="citrusmint-300" scale="lg">Learn More</button>
       </div>
     </div>
 
-    <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-      <div card-header row space="between" centered>
+    <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+      <div header row space="between" centered>
         <h3 font="korolev-rounded-bold" fontSize="lg">Advanced Mode</h3>
         <i icon="toggle-off" width="2rem" height="2rem" iconcolor="blue-800"></i>
       </div>
 
-      <div card-body stack gap="1rem">
+      <div body stack gap="1rem">
         <p font="korolev-rounded">
           More control for teams that need flexible workflows and deeper operational visibility.
         </p>
       </div>
 
-      <div card-actions center>
+      <div action center>
         <button btn="outline" theme="citrusmint-300" scale="lg">Compare</button>
       </div>
     </div>
@@ -177,8 +177,8 @@ Best-practice notes:
 
 - wrappers control section placement
 - `card` defines internal structure
-- `card-header`, `card-body`, and `card-actions` make the card readable
-- colors and fonts remain user-controlled through standard Juice attributes
+- `header`, `body`, and `action` are bare slot names scoped through `[card]` — see [Naming](./juice-naming.md)
+- colors and fonts remain theme- and author-controlled through standard Juice attributes
 
 ## Step 6: Add a CTA section
 
@@ -186,18 +186,18 @@ Use the same structural thinking for final calls to action.
 
 ```html
 <section padding="2rem">
-  <div card card="cta" card-size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
-    <div card-header center>
+  <div card="cta" size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
+    <div header center>
       <h2 font="korolev-rounded-bold" fontSize="xl">Ready to launch?</h2>
     </div>
 
-    <div card-body center>
+    <div body center>
       <p font="korolev-rounded">
         Start with your domain, deploy faster, and keep the whole stack governed from day one.
       </p>
     </div>
 
-    <div card-actions center>
+    <div action center>
       <button btn="flat" theme="citrusmint-300" scale="lg">Get Started</button>
       <button btn="text" theme="citrusmint-300" scale="lg">Contact Sales</button>
     </div>
@@ -261,28 +261,28 @@ Use the same structural thinking for final calls to action.
     </div>
 
     <div row gap="2rem" space="between">
-      <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-        <div card-header row space="between" centered>
+      <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+        <div header row space="between" centered>
           <h3 font="korolev-rounded-bold" fontSize="lg">Simple Mode</h3>
           <i icon="toggle-on" width="2rem" height="2rem" iconcolor="red-800"></i>
         </div>
-        <div card-body stack gap="1rem">
+        <div body stack gap="1rem">
           <p font="korolev-rounded">Managed hosting and governance for stable operational teams.</p>
         </div>
-        <div card-actions center>
+        <div action center>
           <button btn="outline" theme="citrusmint-300" scale="lg">Learn More</button>
         </div>
       </div>
 
-      <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-        <div card-header row space="between" centered>
+      <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+        <div header row space="between" centered>
           <h3 font="korolev-rounded-bold" fontSize="lg">Advanced Mode</h3>
           <i icon="toggle-off" width="2rem" height="2rem" iconcolor="blue-800"></i>
         </div>
-        <div card-body stack gap="1rem">
+        <div body stack gap="1rem">
           <p font="korolev-rounded">More control for flexible workflows and deeper operational visibility.</p>
         </div>
-        <div card-actions center>
+        <div action center>
           <button btn="outline" theme="citrusmint-300" scale="lg">Compare</button>
         </div>
       </div>

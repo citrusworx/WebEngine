@@ -183,27 +183,34 @@ For more detail, see [Icons](./juice-icons.md).
 ### Cards
 
 - `card`
-  Values: boolean, `"compact"`, `"feature"`, `"interactive"`, `"split"`, `"cta"`
-- `card-size`
-  Values: `"sm"`, `"md"`, `"lg"`
-- `card-padding`
-  Values: `"sm"`, `"md"`, `"lg"`
-- `card-flow`
+  Values: boolean, `"compact"`, `"feature"`, `"interactive"`, `"split"`, `"cta"`, `"pricing"`, `"large"`, `"muted"`, `"hero"`
+- `size`
+  Values: `"sm"`, `"md"`, `"lg"` (on a `[card]`, scoped via `[card][size="md"]`)
+- `padding`
+  Values: `"sm"`, `"md"`, `"lg"`, or numeric (`"2rem"`, `"24px"`)
+- `flow`
   Values: `"vertical"`, `"horizontal"`
-- `card-header`
-  Boolean region hook
-- `card-body`
-  Boolean region hook
-- `card-actions`
-  Boolean region hook
-- `card-meta`
-  Boolean region hook
-- `card-media`
-  Boolean region hook
-- `card-divider`
-  Boolean region hook
 
-For more detail, see [Cards](./juice-cards.md).
+Card region children use bare slot names. Their meaning is scoped through the parent `[card]` selector.
+
+- `header` — top region
+- `body` — main content region
+- `action` — action row for buttons and CTAs
+- `meta` — supporting metadata row
+- `media` — icons, illustrations, or images
+- `divider` — visual divider
+
+For more detail, see [Cards](./juice-cards.md) and [Naming](./juice-naming.md).
+
+### State flags
+
+Boolean attributes that mark structural state. Themes decide their visual treatment.
+
+- `featured` — emphasized element (e.g. the highlighted pricing tier)
+- `active` — currently selected
+- `warm` — softer visual emphasis
+- `full` — full-width control
+- `recommended` — promoted item in a list
 
 ### Forms
 
@@ -237,15 +244,15 @@ For more detail, see [Cards](./juice-cards.md).
   </div>
 </section>
 
-<div card card="cta" card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div card-header row space="between" centered>
+<div card="cta" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+  <div header row space="between" centered>
     <h3 font="korolev-rounded-bold">Card Title</h3>
     <i icon="toggle-on" width="2rem" height="2rem" iconcolor="red-800"></i>
   </div>
-  <div card-body stack gap="1rem">
+  <div body stack gap="1rem">
     <p font="korolev-rounded">Structured card content.</p>
   </div>
-  <div card-actions center>
+  <div action center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
   </div>
 </div>

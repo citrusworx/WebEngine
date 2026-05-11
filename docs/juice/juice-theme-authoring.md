@@ -40,14 +40,16 @@ A healthy Juice theme should own:
 * page background relationship
 * semantic element defaults
 * control styling tone
-* named themed surfaces
+* visual treatment of Juice's structural attributes
+* brand-specific structural variants (added as values on existing Juice attributes)
 
 Good theme-level examples:
 
-* `theme="aquaflux"`
-* `aqua-card`
-* `aqua-panel`
-* `aqua-hero`
+* `theme="aquaflux"` — the theme root selector
+* visual treatment of `[card]`, `[card="hero"]`, `[card="cta"]`, `[featured]`, etc. — the theme decides what these look like
+* theme-specific variants like `card="aqua-hero"` — when a theme needs its own structural pattern beyond Juice's defaults
+
+Themes should **not** introduce parallel top-level attributes that replace structural primitives. `<section aqua-hero>` is the wrong shape; `<section card="hero" theme="aquaflux">` (or `card="aqua-hero"` if the theme needs its own variant) is the right shape. See [Layers](./juice-layers.md) and [Anti-Patterns](./juice-anti-patterns.md).
 
 ---
 
@@ -177,15 +179,16 @@ They should not invent separate layout behavior for them.
 
 ### 5. Named Surfaces
 
-These are the theme-specific authored surfaces.
+These are the theme-specific authored surfaces — added as values on existing Juice structural attributes, not as new top-level attributes.
 
 Examples:
 
-* `aqua-card`
-* `aqua-panel`
-* `aqua-hero`
+* `card="aqua-hero"` — a theme-specific hero pattern
+* `card="aqua-panel"` — a theme-specific panel pattern
 
-These give authors higher-level theme surfaces without forcing every page to be assembled from raw background and border decisions.
+The theme also styles Juice's default structural attributes directly (`[theme="aquaflux"] [card]`, `[theme="aquaflux"] [card="cta"]`, etc.) — those do not need new names.
+
+This gives authors higher-level theme surfaces without forcing every page to be assembled from raw background and border decisions, while keeping the structural vocabulary consistent across themes.
 
 ---
 
@@ -194,17 +197,19 @@ These give authors higher-level theme surfaces without forcing every page to be 
 ```html
 <body theme="aquaflux">
   <main stack gap="1">
-    <section aqua-hero>
-      ...
+    <section card="hero">
+      <div heading>...</div>
+      <div content>...</div>
     </section>
 
     <section>
       <div row wrap gap="1">
-        <article aqua-card>
-          ...
+        <article card>
+          <div header>...</div>
+          <div body>...</div>
         </article>
 
-        <aside aqua-panel>
+        <aside card="aqua-panel">
           ...
         </aside>
       </div>
@@ -215,8 +220,9 @@ These give authors higher-level theme surfaces without forcing every page to be 
 
 This is the right relationship:
 
-* Juice controls layout
-* the theme controls identity and surface tone
+* Juice controls layout and structural vocabulary (`card`, `header`, `body`, `heading`, `content`)
+* the theme controls identity, surface tone, and may add its own variants (`card="aqua-panel"`)
+* the theme attribute (`theme="aquaflux"`) scopes the visual treatment without renaming structure
 
 ---
 

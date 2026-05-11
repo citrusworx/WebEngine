@@ -153,11 +153,11 @@ Example:
   </section>
 
   <section padding="2rem">
-    <div card card-size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-      <div card-header>
+    <div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
+      <div header>
         <h2 font="korolev-rounded-bold">Card title</h2>
       </div>
-      <div card-body>
+      <div body>
         <p font="korolev-rounded">Card content</p>
       </div>
     </div>
@@ -203,7 +203,7 @@ export function ToggleCard() {
 
   return (
     <div card bgColor="white-100">
-      <div card-header row space="between" centered>
+      <div header row space="between" centered>
         <h3 font="korolev-rounded-bold">Interactive card</h3>
         {icon}
       </div>
@@ -284,18 +284,18 @@ That keeps the system readable and prevents overengineering.
   </section>
 
   <section padding="2rem">
-    <div card card="cta" card-size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
-      <div card-header center>
+    <div card="cta" size="lg" bgColor="white-100" shadow="gray-400" depth="sm">
+      <div header center>
         <h2 font="korolev-rounded-bold" fontSize="xl">Start With Your Domain</h2>
       </div>
 
-      <div card-body center>
+      <div body center>
         <p font="korolev-rounded">
           Search, register, or transfer your domain from one place.
         </p>
       </div>
 
-      <div card-actions center>
+      <div action center>
         <button btn="flat" theme="citrusmint-300" scale="lg">Search</button>
       </div>
     </div>
@@ -347,6 +347,8 @@ If a card or nav pattern already expresses the right structure, start there and 
 
 After this guide, the best next docs are:
 
+- [Naming](./juice-naming.md)
+- [Layers](./juice-layers.md)
 - [Best Practices](./juice-best-practices.md)
 - [Page Tutorial](./juice-page-tutorial.md)
 - [Patterns](./juice-patterns.md)
@@ -361,8 +363,10 @@ After this guide, the best next docs are:
 If you are completely new:
 
 1. this guide
-2. [Best Practices](./juice-best-practices.md)
-3. [Page Tutorial](./juice-page-tutorial.md)
-4. [Patterns](./juice-patterns.md)
-5. [Token System](./juice-token-system.md)
-6. deeper reference docs as needed
+2. [Naming](./juice-naming.md)
+3. [Layers](./juice-layers.md)
+4. [Best Practices](./juice-best-practices.md)
+5. [Page Tutorial](./juice-page-tutorial.md)
+6. [Patterns](./juice-patterns.md)
+7. [Token System](./juice-token-system.md)
+8. deeper reference docs as needed

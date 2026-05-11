@@ -99,23 +99,23 @@ When a Juice component offers structural regions, use them.
 Good:
 
 ```html
-<div card card="cta" bgColor="white-100">
-  <div card-header row space="between" centered>
+<div card="cta" bgColor="white-100">
+  <div header row space="between" centered>
     <h3 font="korolev-rounded-bold">Simple Mode</h3>
     <i icon="toggle-on" width="2rem" height="2rem" fontColor="red-800"></i>
   </div>
 
-  <div card-body stack gap="1rem">
+  <div body stack gap="1rem">
     <p font="korolev-rounded">Structured content.</p>
   </div>
 
-  <div card-actions center>
+  <div action center>
     <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
   </div>
 </div>
 ```
 
-This reads more clearly than a sequence of anonymous wrappers.
+Region children use bare slot names (`header`, `body`, `action`) — see [Naming](./juice-naming.md). Their meaning is scoped through the parent `[card]`. This reads more clearly than a sequence of anonymous wrappers.
 
 ## Keep responsive behavior simple
 
@@ -194,6 +194,7 @@ Juice works best when:
 - wrappers control placement
 - components control structure
 - tokens control visual language
+- themes control brand expression
 - app code controls behavior
 
-That split keeps the system readable and prevents the attribute model from turning into noise.
+That split keeps the system readable and prevents the attribute model from turning into noise. See [Layers](./juice-layers.md) for the full ownership boundary between Juice and themes.

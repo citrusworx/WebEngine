@@ -85,6 +85,69 @@ If a pattern should be native to Juice, do not keep it in a half-class, half-att
 
 This has been a recurring issue around icon sizing and similar areas.
 
+## 8. BEM-Style Compound Child Names
+
+Bad:
+
+```html
+<div card="pricing">
+  <div plan>
+    <div plan-header>
+      <div plan-price>
+        <span plan-amount>20</span>
+      </div>
+    </div>
+    <ul plan-features>...</ul>
+  </div>
+</div>
+```
+
+Why it is bad:
+
+* the parent attribute already establishes scope
+* CSS selectors like `[card="pricing"] [plan] [header]` handle context natively
+* compound names like `plan-header` and `plan-price` repeat the scope the selector already gives you
+* the universal slot vocabulary (`header`, `body`, `action`, `name`, `price`) becomes unusable across components
+
+Better:
+
+```html
+<div card="pricing">
+  <div plan>
+    <div header>
+      <div price>
+        <span amount>20</span>
+      </div>
+    </div>
+    <ul features>...</ul>
+  </div>
+</div>
+```
+
+See [Naming](./juice-naming.md) for the full rule.
+
+## 9. Putting Brand Colors or Fonts in Juice
+
+Themes own brand expression. Juice owns structural mechanics. If a value is a color, font, shadow, gradient, or radius treatment, it belongs in a theme — not in a Juice attribute name or default.
+
+See [Layers](./juice-layers.md) for the ownership split.
+
+## 10. Theme Attributes That Replace Structural Names
+
+Bad:
+
+```html
+<section aqua-hero>...</section>
+```
+
+Better:
+
+```html
+<section card="hero" theme="aquaflux">...</section>
+```
+
+Themes can add new *values* to existing structural attributes (`card="aqua-hero"` if a theme-specific hero is needed). Themes should not introduce parallel top-level attributes that replace `card`, `btn`, or other Juice structural primitives.
+
 ## Summary
 
 The most common Juice failures come from:
@@ -93,5 +156,7 @@ The most common Juice failures come from:
 * over-constrained widths
 * incorrect primitive choice
 * over-painted surfaces
+* BEM-style compound names instead of parent-scoped bare slots
+* brand expression leaking into Juice instead of staying in the theme
 
 Most of the time, the fix is to simplify the structure and trust the system more.

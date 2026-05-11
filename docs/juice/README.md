@@ -76,8 +76,8 @@ import "@citrusworx/juice/styles";
     </h2>
   </div>
 
-  <div card card="cta" bgColor="white-100" rounded shadow depth="sm">
-    <div card-body stack gap="1">
+  <div card="cta" bgColor="white-100" rounded shadow depth="sm">
+    <div body stack gap="1">
       <p align="center">
         Search, register, or transfer your domain from one place.
       </p>
@@ -143,6 +143,8 @@ The core direction is solid, but APIs and patterns may still evolve. Feedback, i
 
 - Docs:
   - [Getting Started](./juice-getting-started.md)
+  - [Naming](./juice-naming.md)
+  - [Layers](./juice-layers.md)
   - [Semantics](./juice-semantics.md)
   - [Layout](./juice-layout.md)
   - [Layout Flow](./juice-layout-flow.md)
