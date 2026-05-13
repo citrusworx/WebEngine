@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "nectarine/nectarine-api.md",
-                "mode": "source",
+                "file": "juice/juice-getting-started.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "nectarine-api"
+              "title": "juice-getting-started"
             }
           }
         ]
@@ -183,8 +183,15 @@
       "bases:Create new base": false
     }
   },
-  "active": "f5237b442d8fc541",
+  "active": "99b52f32b2a83395",
   "lastOpenFiles": [
+    "juice/README.md",
+    "juice/juice-theme-manual.md",
+    "juice/juice-theme-authoring.md",
+    "juice/juice-layers.md",
+    "juice/juice-naming.md",
+    "juice/juice-getting-started.md",
+    "nectarine/nectarine-api.md",
     "webengine/README.md.tmp.73848.1777509783754",
     "juice/juice-visual-design-language.md",
     "juice/juice-token-architecture.md",
@@ -192,7 +199,6 @@
     "juice/juice-runtime-behavior.md",
     "juice/juice-template-authoring.md",
     "juice/juice-component-authoring.md",
-    "juice/juice-theme-authoring.md",
     "juice/juice-responsive-philosophy.md",
     "juice/juice-semantics.md",
     "juice/juice-layout-flow.md",
@@ -200,8 +206,6 @@
     "juice/rules/004 - One Concern Per Attribute.md",
     "juice/juice-cards.md",
     "juice/juice-best-practices.md",
-    "juice/juice-getting-started.md",
-    "juice/README.md",
     "juice/rules/003-Padding Over Box Size.md"
   ]
 }
