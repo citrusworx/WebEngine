@@ -156,7 +156,7 @@ Sig.js works seamlessly with Juice for styling:
 
 ```tsx
 import { Signal } from "@citrusworx/sigjs";
-import "@citrusworx/juice/dist/juice.css";
+import "@citrusworx/juiceui/dist/juice.css";
 
 function StyledComponent() {
   const isActive = Signal(false);

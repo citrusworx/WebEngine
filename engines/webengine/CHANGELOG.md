@@ -1,5 +1,16 @@
 # @citrusworx/webengine
 
+## 0.2.0
+
+### Minor Changes
+
+- Added READMEs to each
+
+### Patch Changes
+
+- Updated dependencies
+  - @citrusworx/types@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

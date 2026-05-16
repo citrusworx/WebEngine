@@ -32,19 +32,19 @@ Behavior belongs in app code. In CitrusWorx projects, that often means pairing J
 ## Install and import
 
 ```bash
-yarn add @citrusworx/juice
+yarn add @citrusworx/juiceui
 ```
 
 Import the stylesheet once near your app entrypoint:
 
 ```ts
-import "@citrusworx/juice/styles";
+import "@citrusworx/juiceui/styles";
 ```
 
 If you want the small JS entrypoint too:
 
 ```ts
-import "@citrusworx/juice";
+import "@citrusworx/juiceui";
 ```
 
 ## Use Juice from a CDN

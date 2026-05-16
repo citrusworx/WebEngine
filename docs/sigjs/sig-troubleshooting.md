@@ -182,7 +182,7 @@ function Counter() {
 
 ```tsx
 // ✅ Correct - CSS first
-import "@citrusworx/juice/dist/juice.css";
+import "@citrusworx/juiceui/dist/juice.css";
 import { mount } from "@citrusworx/sigjs";
 
 // Then use Juice attributes

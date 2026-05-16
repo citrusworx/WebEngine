@@ -30,8 +30,8 @@
             "@citrusworx/sigjs": ["../../../libraries/sig/dist"],
             "@citrusworx/sigjs/*": ["../../../libraries/sig/dist/*"],
 
-            "@citrusworx/juice": ["../../../libraries/juice/src/index.ts"],
-            "@citrusworx/juice/styles": ["../../../libraries/juice/dist/index.css"],
+            "@citrusworx/juiceui": ["../../../libraries/juice/src/index.ts"],
+            "@citrusworx/juiceui/styles": ["../../../libraries/juice/dist/index.css"],
 
             "@citrusworx/seltzer": ["../../../libraries/seltzer/src/index.ts"],
             "@citrusworx/seltzer/*": ["../../../libraries/seltzer/src/*"],

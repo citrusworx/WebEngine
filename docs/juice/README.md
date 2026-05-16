@@ -50,11 +50,11 @@ Tailwind is fast, but it pushes design intent into dense class lists.
 ## Quick Start
 
 ```bash
-npm install @citrusworx/juice
+npm install @citrusworx/juiceui
 ```
 
 ```ts
-import "@citrusworx/juice/styles";
+import "@citrusworx/juiceui/styles";
 ```
 
 ```html

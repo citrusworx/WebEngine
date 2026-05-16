@@ -123,7 +123,7 @@ Per-package architecture specs also live in their own folders (e.g. `packages/ki
 - `tsconfig.base.json` — shared TS settings
 
 ## ⚙️ Workspace Scripts
-- `yarn workspace @citrusworx/juice build`
+- `yarn workspace @citrusworx/juiceui build`
 - `yarn workspace @citrusworx/grapevine dev`
 - `yarn workspace @citrusworx/nectarine test`
 - `yarn workspace @citrusworx/kiwipress build`

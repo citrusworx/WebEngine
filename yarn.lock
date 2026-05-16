@@ -1399,9 +1399,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/juice@workspace:*, @citrusworx/juice@workspace:libraries/juice":
+"@citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:libraries/juice":
   version: 0.0.0-use.local
-  resolution: "@citrusworx/juice@workspace:libraries/juice"
+  resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
     "@citrusworx/sigjs": "workspace:*"
     "@testing-library/jest-dom": "npm:^6.9.1"
@@ -1455,7 +1455,7 @@ __metadata:
   resolution: "@citrusworx/kiwipressapp@workspace:apps/kiwipress"
   dependencies:
     "@citrusworx/dns": "workspace:*"
-    "@citrusworx/juice": "workspace:*"
+    "@citrusworx/juiceui": "workspace:*"
     "@citrusworx/kiwipress": "workspace:*"
     "@citrusworx/sigjs": "workspace:*"
     "@types/node": "npm:^25.4.0"
@@ -1515,7 +1515,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/sugar@workspace:tooling/Sugar"
   dependencies:
-    "@citrusworx/juice": "workspace:*"
+    "@citrusworx/juiceui": "workspace:*"
     "@citrusworx/sigjs": "workspace:*"
     json5: "npm:^2.2.3"
     typescript: "npm:^6.0.2"
@@ -1541,6 +1541,12 @@ __metadata:
     smol-toml: "npm:^1.6.1"
     typescript: "npm:^5.9.3"
     zod: "npm:^4.3.6"
+  languageName: unknown
+  linkType: soft
+
+"@citrusworx/webstore@workspace:packages/webstore":
+  version: 0.0.0-use.local
+  resolution: "@citrusworx/webstore@workspace:packages/webstore"
   languageName: unknown
   linkType: soft
 
@@ -14511,12 +14517,6 @@ __metadata:
   checksum: 10c0/3f6f327ca5fa0c065ed8ed0ef3b72f33623376e68f958e9b7bd0df49fdb0b908139ac2338d19fb45bd0e05595bda96cb6d1622222a8b413daa38a17aacc4dd46
   languageName: node
   linkType: hard
-
-"webstore-1e1ddf@workspace:packages/webstore":
-  version: 0.0.0-use.local
-  resolution: "webstore-1e1ddf@workspace:packages/webstore"
-  languageName: unknown
-  linkType: soft
 
 "whatwg-fetch@npm:^3.0.0":
   version: 3.6.20

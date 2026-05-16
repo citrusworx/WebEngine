@@ -197,7 +197,7 @@ This makes Sig.js suitable for:
 Sig.js and Juice are separate libraries that compose naturally. Juice provides static HTML components, Sig.js wires at the app level.
 
 ```tsx
-import { Button } from "@citrusworx/juice";
+import { Button } from "@citrusworx/juiceui";
 import { Signal, effect, mount } from "@citrusworx/sigjs";
 
 const count = Signal(0);

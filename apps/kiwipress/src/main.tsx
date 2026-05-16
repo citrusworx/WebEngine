@@ -1,5 +1,5 @@
 import { mount } from "@citrusworx/sigjs";
-import "@citrusworx/juice/styles";
+import "@citrusworx/juiceui/styles";
 import { App } from "./App";
 import { router } from "./router";
 import { Home } from "./pages/home/Home";

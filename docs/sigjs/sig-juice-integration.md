@@ -20,7 +20,7 @@ Together they enable building complete applications with:
 ### 1. Install Dependencies
 
 ```bash
-yarn add @citrusworx/juice @citrusworx/sigjs
+yarn add @citrusworx/juiceui @citrusworx/sigjs
 ```
 
 ### 2. Configure TypeScript
@@ -40,7 +40,7 @@ Create your main entry file:
 
 ```tsx
 // main.tsx
-import "@citrusworx/juice/dist/juice.css";
+import "@citrusworx/juiceui/dist/juice.css";
 import { mount } from "@citrusworx/sigjs";
 import { App } from "./App";
 
@@ -753,7 +753,7 @@ effect(() => {
 **Solution**: Import Juice CSS before mounting
 
 ```tsx
-import "@citrusworx/juice/dist/juice.css"; // Must be first!
+import "@citrusworx/juiceui/dist/juice.css"; // Must be first!
 import { mount } from "@citrusworx/sigjs";
 ```
 
