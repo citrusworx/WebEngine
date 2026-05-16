@@ -5,6 +5,60 @@
 
 $quarter-steps: 25, 75;
 
+$spacing-scale: (
+    snug: 0.5rem,
+    cozy: 1rem,
+    comfortable: 2rem,
+    roomy: 4rem,
+    expansive: 6rem
+);
+
+@mixin spacing-responsive($properties, $base) {
+    @each $prop in $properties {
+        #{$prop}: $base;
+    }
+
+    @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, md)) {
+        @each $prop in $properties {
+            #{$prop}: calc(#{$base} * 0.8);
+        }
+    }
+
+    @media (max-width: calc(map.get($breakpoints, md) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+        @each $prop in $properties {
+            #{$prop}: calc(#{$base} * 0.75);
+        }
+    }
+
+    @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+        @each $prop in $properties {
+            #{$prop}: calc(#{$base} * 0.5);
+        }
+    }
+}
+
+@mixin semantic-spacing-maker() {
+    @each $name, $value in $spacing-scale {
+        [padding="#{$name}"]        { @include spacing-responsive(padding, $value); }
+        [paddingX="#{$name}"]       { @include spacing-responsive((padding-left, padding-right), $value); }
+        [paddingY="#{$name}"]       { @include spacing-responsive((padding-top, padding-bottom), $value); }
+        [padding-top="#{$name}"]    { @include spacing-responsive(padding-top, $value); }
+        [padding-right="#{$name}"]  { @include spacing-responsive(padding-right, $value); }
+        [padding-bottom="#{$name}"] { @include spacing-responsive(padding-bottom, $value); }
+        [padding-left="#{$name}"]   { @include spacing-responsive(padding-left, $value); }
+
+        [margin="#{$name}"]         { @include spacing-responsive(margin, $value); }
+        [marginX="#{$name}"]        { @include spacing-responsive((margin-left, margin-right), $value); }
+        [marginY="#{$name}"]        { @include spacing-responsive((margin-top, margin-bottom), $value); }
+        [margin-top="#{$name}"]     { @include spacing-responsive(margin-top, $value); }
+        [margin-right="#{$name}"]   { @include spacing-responsive(margin-right, $value); }
+        [margin-bottom="#{$name}"]  { @include spacing-responsive(margin-bottom, $value); }
+        [margin-left="#{$name}"]    { @include spacing-responsive(margin-left, $value); }
+
+        [gap="#{$name}"]            { @include spacing-responsive(gap, $value); }
+    }
+}
+
 @function responsive-unit($unit) {
     @return list.index(("%", "vw", "vh"), $unit) == null;
 }

@@ -1,27 +1,24 @@
-// create a mixin for shadow patterns
+/*
+    SHADOW STYLES
+    20 photographic shadow overlays. Each PNG covers the container (one big stretched image),
+    not a tiled pattern. PNGs live at ./shadow/ in dist (gulp shadowTextures task).
+*/
 
-@mixin shadow-texture(){
-    @for $i from 1 through 20 {
-        [texture="shadow.pat-#{$i}"]::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background-image: url('./shadow/#{$i}.png');
-            height: 100%;
-            width: 100%;
-            background-size: cover;
-            pointer-events: none;
-        }
+@for $i from 1 through 20 {
+    [texture="shadow.pat-#{$i}"]::after {
+        background-image: url('./shadow/#{$i}.png');
     }
 }
 
-@include shadow-texture();
-
 [texture^="shadow.pat-"]::after {
+    content: "";
     display: block;
-    background-repeat: repeat;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: no-repeat;
     background-position: center;
+    background-size: cover;
     mix-blend-mode: multiply;
     opacity: 0.55;
     z-index: -1;

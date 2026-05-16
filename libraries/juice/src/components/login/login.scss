@@ -1,0 +1,163 @@
+/* =====================================================================
+   Login — centered sign-in card
+   Owns: page wrapper, card, header, fields, submit, provider row, footer.
+   Structure only — theme paints colors.
+   ===================================================================== */
+
+[login-page] {
+    min-height: calc(100vh - 8rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[login-page] > [container][narrow] {
+    max-width: 28rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+}
+
+[login-card] {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2.5rem;
+    border: 1px solid;
+    border-radius: 1rem;
+}
+
+[login-header] {
+    text-align: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+[login-brand] {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+}
+
+[login-brand] [logo="text"] {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+[login-brand] [logo-suffix] {
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+[login-header] > h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5rem;
+}
+
+[login-header] > [lede] {
+    font-size: 0.9375rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+[login-form] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+[login-field] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+[login-field] > span {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+[login-field-label] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+[forgot-link] {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+[login-field] > input {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+[login-submit] {
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    margin-top: 0.5rem;
+}
+
+[login-divider] {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+[login-divider]::before,
+[login-divider]::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+}
+
+[login-providers] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+[login-providers] > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+}
+
+[login-footer] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+[login-footer] > a {
+    font-weight: 500;
+    text-decoration: none;
+}

@@ -12,7 +12,13 @@
 #!.yarn/cache
 .pnp.*
 
+mockups/*
+.mockups/*
 
 node_modules
 # .yarn/
 # .vscode/
+
+*.pem
+sshkey
+*.pub

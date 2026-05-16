@@ -13,9 +13,13 @@
     ],
     "scripts": {
         "build": "turbo run build",
-        "dev": "turbo run dev --parallel"
+        "dev": "turbo run dev --parallel",
+        "changeset": "changeset",
+        "version-packages": "changeset version",
+        "release-packages": "changeset publish"
     },
     "devDependencies": {
+        "@changesets/cli": "2.29.6",
         "@playwright/test": "^1.58.2",
         "@types/node": "^25.4.0",
         "turbo": "^2.8.15",

@@ -20,3 +20,4 @@ export type TLDs =
     | 'design'
     | 'agency'
     | 'solutions'
+    | (string & {});

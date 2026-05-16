@@ -1,8 +1,8 @@
-@forward 'grain/grain.scss';
+// Only SVG-based textures are wired up. PNG-based categories (grain, grunge, shadow,
+// silhouette, snow) are pending Illustrator conversion to SVG; their source files remain
+// under src/styles/textures/ for reference but are not @forwarded into the build.
 @forward 'grid/grid.scss';
-@forward 'grunge/grunge.scss';
 @forward 'hexa/hexa.scss';
-@forward 'shadow/shadow.scss';
 
 [texture] {
     position: relative;

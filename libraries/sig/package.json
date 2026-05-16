@@ -1,32 +1,37 @@
 {
   "name": "@citrusworx/sigjs",
   "version": "0.0.1",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./jsx-runtime": {
-      "import": "./dist/jsx-runtime.js",
-      "types": "./dist/jsx-runtime.d.ts"
+      "types": "./dist/jsx-runtime.d.ts",
+      "default": "./dist/jsx-runtime.js"
     },
     "./jsx-dev-runtime": {
-      "import": "./dist/jsx-dev-runtime.js",
-      "types": "./dist/jsx-dev-runtime.d.ts"
+      "types": "./dist/jsx-dev-runtime.d.ts",
+      "default": "./dist/jsx-dev-runtime.js"
     },
     "./sig-router": {
-      "import": "./dist/sig-router.js",
-      "types": "./dist/sig-router.d.ts"
+      "types": "./dist/sig-router.d.ts",
+      "default": "./dist/sig-router.js"
     }
   },
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "prepack": "yarn build",
     "test": "playwright test"
   },
   "devDependencies": {

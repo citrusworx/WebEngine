@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="208" viewBox="0 0 240 208">
+  <defs>
+    <pattern id="honeycomb" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+      <polygon points="30,0 60,15 60,37 30,52 0,37 0,15" stroke="#000" stroke-width="1" fill="none"/>
+      <polygon points="0,52 30,52 0,37" stroke="#000" stroke-width="1" fill="none"/>
+      <polygon points="30,52 60,52 60,37" stroke="#000" stroke-width="1" fill="none"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#honeycomb)"/>
+</svg>

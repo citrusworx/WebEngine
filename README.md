@@ -1,19 +1,31 @@
 # WebEngine
 
 ## 🚀 Overview
-WebEngine is the CitrusWorx full-stack framework ecosystem — a monorepo of libraries, engines, packages, and apps focused on building, deploying, and managing real customer applications end-to-end.
+WebEngine is the CitrusWorx full-stack framework ecosystem. It defines the canonical project shape for any application built on the stack — a monorepo with prebuilt slots for libraries, engines, packages, and apps — and ships a CLI (`kiwi`) that populates those slots on demand.
 
 The architecture splits into four tiers:
 
 - **Libraries** — reusable building blocks (UI, HTTP, config parsing, DNS, infrastructure)
 - **Engines** — runtime orchestrators that compose libraries into application lifecycles
-- **Packages** — opinionated integrations targeting specific product domains (WordPress, mail, chat, storefront)
-- **Apps** — end-user products and demos that consume the stack
+- **Packages** — opinionated integrations targeting specific product domains (WordPress, mail, chat, storefront), pulled in via the CLI
+- **Apps** — end-user products and demos that consume the stack, scaffolded via the CLI
+
+## 🧭 Developer Experience
+
+The monorepo layout below is the **default project shape** for any WebEngine project. A fresh `kiwi init` produces this skeleton with `apps/` and `packages/` empty.
+
+- `kiwi add <package>` — pulls a package (e.g. `kiwipress`, `mail`, `webstore`) into `packages/`
+- `kiwi new app <name>` — scaffolds a new app under `apps/<name>`
+- `kiwi init --services` — opts into the `services/` tier (platform-specific infrastructure; not part of default projects)
+
+Libraries are consumed as workspace dependencies (`@citrusworx/*`) — they don't live inside a user's project tree.
+
+The directory tree below reflects the *full* CitrusWorx monorepo, which is also the framework's reference implementation. In a generated project, only the slot structure exists by default; everything inside `packages/`, `apps/`, and `services/` arrives through the CLI.
 
 ## 📁 Repository Layout
 
 ```
-/libraries
+/libraries          (consumed as @citrusworx/* workspace deps; not in user projects)
   /sig          - signal-based reactive UI engine + custom JSX runtime
   /juice        - attribute-driven CSS framework (ships compiled CSS + bundled JS)
   /seltzer      - HTTP routing + execution environment (request lifecycle, route contracts)
@@ -28,26 +40,26 @@ The architecture splits into four tiers:
   /kiwiengine
   /kiwisys
 
-/packages
+/packages           (empty in fresh projects; populated by `kiwi add <package>`)
   /kiwipress    - WordPress integration layer built on Seltzer + Nectarine (WPCore/WPClient + CRUD axes)
   /chat
   /mail
   /webstore
 
-/apps
+/apps               (empty in fresh projects; populated by `kiwi new app <name>`)
   /citrusworx   - example multi-tenant app
   /citrode      - admin / managed-services UI
   /kiwipress
   /drewwinkles
   /miamakes
 
-/services
+/services           (opt-in via `kiwi init --services`; platform-specific)
   /DNS
   /kiwimail
 
 /tooling
   /Sugar
-  /cli
+  /cli          - the `kiwi` CLI
   /vscode-stenzil
 
 /blueprints     - reusable infrastructure blueprints

@@ -1,0 +1,36 @@
+[cta] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 5rem 1.5rem;
+    box-sizing: border-box;
+}
+
+[cta-title] {
+    max-width: 44rem;
+}
+
+[cta-subtitle] {
+    max-width: 38rem;
+}
+
+[cta-actions] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+[cta-note] {
+    font-size: 0.875rem;
+    opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+    [cta] {
+        padding: 3rem 1rem;
+        gap: 1.25rem;
+    }
+}

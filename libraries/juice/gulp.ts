@@ -1,42 +1,56 @@
 import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 import gulp from "gulp";
 import rename from "gulp-rename";
-import dartSass from "sass";
+import * as dartSass from "sass";
 import gulpSass from "gulp-sass";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import postcss from "gulp-postcss";
 
 const sass = gulpSass(dartSass);
-const JUICE_ASSET_BASE = "/juice";
+const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
+const TEXTURE_SRC_ROOT = resolve(ROOT_DIR, "src/styles/textures");
+const DIST_ROOT = resolve(ROOT_DIR, "dist");
 
-const rewriteTextureUrls = () => {
+const inlineSvgTextures = () => {
     return {
-        postcssPlugin: "rewrite-texture-urls",
+        postcssPlugin: "inline-svg-textures",
         Declaration(decl: { value?: string }) {
             if (!decl.value?.includes("url(")) return;
 
-            decl.value = decl.value
-                .replace(/url\((['"]?)\.\/grid\//g, `url($1${JUICE_ASSET_BASE}/grid/`)
-                .replace(/url\((['"]?)\.\/shadow\//g, `url($1${JUICE_ASSET_BASE}/shadow/`)
-                .replace(/url\((['"]?)\.\/grunge\/png\//g, `url($1${JUICE_ASSET_BASE}/grunge/png/`)
-                .replace(/url\((['"]?)\.\/png\//g, `url($1${JUICE_ASSET_BASE}/png/`);
+            decl.value = decl.value.replace(
+                /url\((['"]?)\.\/(grid|hexa)\/svg\/([^'")]+\.svg)\1\)/g,
+                (_match, _quote, category, file) => {
+                    const filePath = resolve(TEXTURE_SRC_ROOT, category, "svg", file);
+                    const svg = fs.readFileSync(filePath, "utf8")
+                        .replace(/<\?xml[^?]*\?>/g, "")
+                        .replace(/<!--[\s\S]*?-->/g, "")
+                        .replace(/\s+/g, " ")
+                        .trim();
+                    const encoded = svg
+                        .replace(/"/g, "'")
+                        .replace(/[<>#%{}|\\^~\[\]`]/g, c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+                    return `url("data:image/svg+xml,${encoded}")`;
+                }
+            );
         },
     };
 };
 
-(rewriteTextureUrls as unknown as { postcss?: boolean }).postcss = true;
+(inlineSvgTextures as unknown as { postcss?: boolean }).postcss = true;
 
+
+const clean = async () => {
+    await fs.promises.rm(DIST_ROOT, { recursive: true, force: true });
+    await fs.promises.mkdir(DIST_ROOT, { recursive: true });
+};
 
 const styles = () => {
-    return gulp.src(resolve(__dirname, "src/juice.scss"))
+    return gulp.src(resolve(ROOT_DIR, "src/juice.scss"))
         .pipe(sass().on("error", (err: any) => console.error("SASS ERROR:", err.message)))
-        .pipe(postcss([rewriteTextureUrls()]))
+        .pipe(postcss([inlineSvgTextures()]))
         .pipe(rename("index.css"))
-        .pipe(gulp.dest(resolve(__dirname, "dist")))
-        .on("end", () => {
-            console.log("Dest path:", resolve(__dirname, "dist"));
-            console.log("Files in dist:", fs.readdirSync(resolve(__dirname, "dist")));
-        });
+        .pipe(gulp.dest(DIST_ROOT));
 };
 
 const icons = () => {
@@ -44,51 +58,12 @@ const icons = () => {
             .pipe(gulp.dest("./dist/icons"));
 }
 
-const grainTextures = () => {
-    return gulp.src("./src/styles/textures/grain/png/**/*")
-        .pipe(gulp.dest("./dist/png"));
-}
-
-const grungeTextures = () => {
-    return gulp.src("./src/styles/textures/grunge/png/**/*")
-        .pipe(gulp.dest("./dist/png"));
-}
-
-const grungeNestedTextures = () => {
-    return gulp.src("./src/styles/textures/grunge/png/**/*")
-        .pipe(gulp.dest("./dist/grunge/png"));
-}
-
-const hexaTextures = () => {
-    return gulp.src("./src/styles/textures/hexa/png/**/*")
-        .pipe(gulp.dest("./dist/png"));
-}
-
-const gridTextures = () => {
-    return gulp.src("./src/styles/textures/grid/grid/**/*")
-        .pipe(gulp.dest("./dist/grid"));
-}
-
-const shadowTextures = () => {
-    return gulp.src("./src/styles/textures/shadow/shadow/**/*")
-        .pipe(gulp.dest("./dist/shadow"));
-}
-
-const textures = gulp.parallel(
-    grainTextures,
-    grungeTextures,
-    grungeNestedTextures,
-    hexaTextures,
-    gridTextures,
-    shadowTextures,
-);
-
 const watch = () => {
     gulp.watch("./src/**/*.scss", styles);
     gulp.watch("./src/icons/**/*.svg", icons);
-    gulp.watch("./src/styles/textures/**/*", textures);
 }
 
-export const build = gulp.series(styles, gulp.parallel(icons, textures));
-export const dev = gulp.series(styles, gulp.parallel(icons, textures), watch);
+export { clean };
+export const build = gulp.series(clean, styles, icons);
+export const dev = gulp.series(styles, icons, watch);
 export default build;

@@ -1,11 +1,44 @@
 {
     "name": "@citrusworx/nectarine",
     "version": "0.0.1",
-    "main": "dist/index.js",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./compiler": {
+            "types": "./dist/compiler/compiler.d.ts",
+            "default": "./dist/compiler/compiler.js"
+        },
+        "./adapters/mg": {
+            "types": "./dist/adapters/mg/mgz.d.ts",
+            "default": "./dist/adapters/mg/mgz.js"
+        },
+        "./adapters/ms": {
+            "types": "./dist/adapters/ms/msqlz.d.ts",
+            "default": "./dist/adapters/ms/msqlz.js"
+        },
+        "./adapters/pg": {
+            "types": "./dist/adapters/pg/pgz.d.ts",
+            "default": "./dist/adapters/pg/pgz.js"
+        },
+        "./util": {
+            "types": "./dist/util/util.d.ts",
+            "default": "./dist/util/util.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
     "devDependencies": {
         "@types/express": "^5.0.6",
         "@types/js-yaml": "^4.0.9",
-        "@types/node": "^25.5.0",
+        "@types/node": "^25.6.2",
         "@types/pg": "^8.18.0",
         "eslint": "^10.0.3",
         "express": "^5.2.1",
@@ -21,6 +54,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "tsc --watch",
+        "prepack": "yarn build",
         "test": "playwright test && vitest run"
     }
 }

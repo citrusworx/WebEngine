@@ -80,6 +80,25 @@
     gap: 1.5rem;
 }
 
+[card="pricing"]{
+    gap: 2rem;
+    padding: 2.5rem;
+    position: relative;
+    border-width: 2px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+[card="pricing"][featured]{
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px){
+    [card="pricing"][featured]{
+        transform: none;
+    }
+}
+
 [card-flow="horizontal"]{
     flex-direction: row;
     align-items: center;

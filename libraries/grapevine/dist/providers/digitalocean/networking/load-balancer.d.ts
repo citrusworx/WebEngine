@@ -1,0 +1,9 @@
+export declare function listAllLoadBalancers(): Promise<void>;
+export declare function createLoadBalancer(): Promise<void>;
+export declare function listLoadBalancer(): Promise<void>;
+export declare function updateLoadBalancer(): Promise<void>;
+export declare function deleteLoadBalancer(): Promise<void>;
+export declare function addDropletsToLoadBalancer(): Promise<void>;
+export declare function addForwardingRulesToLoadBalancer(): Promise<void>;
+export declare function removeDropletsFromLoadBalancer(): Promise<void>;
+export declare function removeForwardingRulesFromLoadBalancer(): Promise<void>;

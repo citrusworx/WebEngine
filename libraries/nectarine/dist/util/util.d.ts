@@ -5,5 +5,5 @@ export declare const parser: {
     yaml: (filepath: string) => YAMLdata;
     registerRoute: (yaml: string, method: string, route: string) => any;
     genSQL: (yaml: string, type: string, method: string, config: string) => any;
+    buildSQL: (genSQL: Record<string, any>) => void;
 };
-export declare function buildSQL(): void;

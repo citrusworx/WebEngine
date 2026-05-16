@@ -1,0 +1,1 @@
+{"version":3,"file":"dns.js","sourceRoot":"","sources":["../../src/core/dns.ts"],"names":[],"mappings":"AAGA,MAAM,OAAO,GAAG;IACJ,SAAS,CAAoB;IAErC,YAAY,SAA4B;QACpC,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC;IAC/B,CAAC;IAED,YAAY,CAAC,KAAwB;QACjC,OAAO,IAAI,CAAC,SAAS,CAAC,MAAM,CAAC,KAAK,CAAkC,CAAC;IACzE,CAAC;CACJ"}

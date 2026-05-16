@@ -1,16 +1,22 @@
 {
     "name": "@citrusworx/juice",
     "version": "0.0.1",
-    "main": "dist/index.js",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.mjs"
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
         },
         "./styles": "./dist/index.css"
     },
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "dependencies": {
         "@citrusworx/sigjs": "workspace:*"
     },
@@ -48,7 +54,8 @@
     },
     "scripts": {
         "dev": "gulp dev & vite dev --watch",
-        "build": "gulp build --gulpfile gulp.ts && vite build",
+        "build": "gulp build --gulpfile gulp.ts && vite build && tsc -p tsconfig.types.json",
+        "prepack": "yarn build",
         "test": "npx playwright test"
     }
 }

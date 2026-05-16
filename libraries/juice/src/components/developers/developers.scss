@@ -1,0 +1,270 @@
+/* =====================================================================
+   Developers — developer hub landing page
+   Owns: hero, quickstart card, categories grid, resources strip.
+   Structure only — theme paints colors per tier.
+   ===================================================================== */
+
+/* Hero --------------------------------------------------------------- */
+[developers-hero] {
+    text-align: center;
+}
+
+[dev-hero-header] {
+    max-width: 48rem;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+[dev-hero-header] > [badge] {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
+[dev-hero-header] > h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+}
+
+@media (min-width: 1024px) {
+    [dev-hero-header] > h1 {
+        font-size: 3.25rem;
+    }
+}
+
+[dev-hero-header] > [lede] {
+    font-size: 1.125rem;
+    line-height: 1.65;
+    margin: 0 auto 2rem;
+    max-width: 36rem;
+}
+
+[dev-hero-actions] {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+[dev-hero-actions] > a {
+    text-decoration: none;
+}
+
+[dev-hero-actions] button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Quickstart --------------------------------------------------------- */
+[dev-quickstart] > [container][narrow] {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+[quickstart-card] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    border: 1px solid;
+}
+
+@media (max-width: 900px) {
+    [quickstart-card] {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+[quickstart-body] > [eyebrow] {
+    display: inline-block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+}
+
+[quickstart-body] > h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+[quickstart-body] > p {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    margin: 0;
+}
+
+[code-block] {
+    margin: 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.625rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+/* Install paths ------------------------------------------------------ */
+[install-grid] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 1.25rem;
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+[install-card] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 2rem 1.75rem;
+    border: 1px solid;
+    border-radius: 0.875rem;
+    background: transparent;
+}
+
+[install-card] [code-block] {
+    margin-top: 0.5rem;
+}
+
+[install-icon] {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid;
+    margin-bottom: 0.25rem;
+}
+
+[install-card] > h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+}
+
+[install-card] > p {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    margin: 0;
+}
+
+[install-footnote] {
+    max-width: 48rem;
+    margin: 2.5rem auto 0;
+    text-align: center;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+/* Categories grid ---------------------------------------------------- */
+[categories-grid] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.25rem;
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+[category-card] {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 2rem 1.75rem;
+    border: 1px solid;
+    border-radius: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    background: transparent;
+}
+
+[category-card]:hover {
+    transform: translateY(-2px);
+}
+
+[category-icon] {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid;
+}
+
+[category-card] > h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+}
+
+[category-card] > p {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    margin: 0;
+    flex: 1;
+}
+
+[category-cta] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* Resources strip ---------------------------------------------------- */
+[resources-grid] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+[resource-tile] {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+[resource-tile]:hover {
+    transform: translateY(-1px);
+}
+
+[resource-tile] > i {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+[resource-tile] h4 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+[resource-tile] p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}

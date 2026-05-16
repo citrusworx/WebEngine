@@ -1,6 +1,71 @@
 @use '../../tokens/gradients/green/swatches/citrus-mint/citrus-mint.scss' as *;
 @use '../../tokens/color/green/swatch/freshgreen/freshgreen.scss' as *;
 
+// Bare <nav> default — top-bar layout. Themes paint, do not redefine.
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1rem 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+
+    ul {
+        list-style: none;
+        display: flex;
+        gap: 2rem;
+        margin: 0;
+        padding: 0;
+
+        li {
+            list-style: none;
+            a { text-decoration: none; }
+        }
+    }
+}
+
+[nav-brand] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+[nav-links] {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+[nav-actions] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+// When nav has a [container] child, container handles the inner flex layout
+// so the brand/links/actions sit inside the bounded max-width.
+nav > [container] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    nav {
+        padding: 0.75rem 1rem;
+        gap: 1rem;
+    }
+    [nav-links] {
+        display: none;
+    }
+    [nav-actions] {
+        gap: 0.5rem;
+    }
+}
+
 nav[type="bar"]{
     display: flex;
     align-items: center;

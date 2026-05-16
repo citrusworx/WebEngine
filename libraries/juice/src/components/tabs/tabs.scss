@@ -1,0 +1,19 @@
+[tabs] {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+}
+
+[tabs] > button,
+[tab] {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    margin-bottom: -2px;
+}

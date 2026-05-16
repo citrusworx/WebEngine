@@ -2,10 +2,25 @@
     "name": "@citrusworx/seltzer",
     "version": "0.0.1",
     "description": "An execution environment library",
-    "main": "./src/index.ts",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "tsc",
         "dev": "ts-node src/index.ts",
+        "prepack": "yarn build",
         "typecheck": "tsc --noEmit"
     },
     "devDependencies": {

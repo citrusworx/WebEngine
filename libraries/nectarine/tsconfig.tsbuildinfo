@@ -1,0 +1,1 @@
+{"root":["./src/adapters/mg/mgz.ts","./src/adapters/ms/msqlz.ts","./src/adapters/pg/pgz.example.ts","./src/adapters/pg/pgz.ts","./src/compiler/compiler.ts","./src/util/mgutil.ts","./src/util/msqlutil.ts","./src/util/util.ts"],"version":"5.9.3"}

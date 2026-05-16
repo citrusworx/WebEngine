@@ -28338,6 +28338,412 @@ button[full] {
     gap: 1.25rem;
   }
 }
+/* =====================================================================
+   Dashboard — logged-in customer cloud chrome
+   Owns: shell, sidebar, nav, page-header, placeholder.
+   Structure only — colors come from the theme.
+   ===================================================================== */
+[dashboard-shell] {
+  display: flex;
+  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+[dashboard-sidebar] {
+  width: 16rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid;
+  box-sizing: border-box;
+}
+
+[sidebar-brand] {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-bottom: 1px solid;
+}
+
+[sidebar-brand] [logo] {
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+}
+
+[sidebar-brand] [logo-suffix] {
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+[sidebar-nav] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 1rem;
+  overflow-y: auto;
+  width: auto;
+}
+
+[nav-group] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+[nav-divider] {
+  border: none;
+  border-top: 1px solid;
+  margin: 1rem 0;
+}
+
+[nav-link] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+[nav-link] > span {
+  line-height: 1.2;
+}
+
+[sidebar-footer] {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid;
+  background: transparent;
+}
+
+[sidebar-footer] [version] {
+  font-size: 0.75rem;
+  margin: 0 0 0.25rem;
+}
+
+[sidebar-footer] [doc-link] {
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+[dashboard-main] {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2.5rem 3rem;
+  box-sizing: border-box;
+}
+
+[page-header] {
+  margin-bottom: 2rem;
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+[page-header] > h1 {
+  font-size: 2rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+
+[page-header] > [lede] {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* When the dashboard takes the page, hide the marketing nav + footer
+   that wrap the routed content. Triggered purely by markup presence. */
+[theme]:has([dashboard-shell]) > nav,
+[theme]:has([dashboard-shell]) > footer {
+  display: none;
+}
+
+[theme]:has([dashboard-shell]) > #page-content {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* =====================================================================
+   Developers — developer hub landing page
+   Owns: hero, quickstart card, categories grid, resources strip.
+   Structure only — theme paints colors per tier.
+   ===================================================================== */
+/* Hero --------------------------------------------------------------- */
+[developers-hero] {
+  text-align: center;
+}
+
+[dev-hero-header] {
+  max-width: 48rem;
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+[dev-hero-header] > [badge] {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+[dev-hero-header] > h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  [dev-hero-header] > h1 {
+    font-size: 3.25rem;
+  }
+}
+[dev-hero-header] > [lede] {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  margin: 0 auto 2rem;
+  max-width: 36rem;
+}
+
+[dev-hero-actions] {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+[dev-hero-actions] > a {
+  text-decoration: none;
+}
+
+[dev-hero-actions] button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Quickstart --------------------------------------------------------- */
+[dev-quickstart] > [container][narrow] {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+[quickstart-card] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  border: 1px solid;
+}
+
+@media (max-width: 900px) {
+  [quickstart-card] {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+[quickstart-body] > [eyebrow] {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+[quickstart-body] > h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+[quickstart-body] > p {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+[code-block] {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.625rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Install paths ------------------------------------------------------ */
+[install-grid] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.25rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+[install-card] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 2rem 1.75rem;
+  border: 1px solid;
+  border-radius: 0.875rem;
+  background: transparent;
+}
+
+[install-card] [code-block] {
+  margin-top: 0.5rem;
+}
+
+[install-icon] {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  margin-bottom: 0.25rem;
+}
+
+[install-card] > h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+[install-card] > p {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+[install-footnote] {
+  max-width: 48rem;
+  margin: 2.5rem auto 0;
+  text-align: center;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* Categories grid ---------------------------------------------------- */
+[categories-grid] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.25rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+[category-card] {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 2rem 1.75rem;
+  border: 1px solid;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  background: transparent;
+}
+
+[category-card]:hover {
+  transform: translateY(-2px);
+}
+
+[category-icon] {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+}
+
+[category-card] > h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+[category-card] > p {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 0;
+  flex: 1;
+}
+
+[category-cta] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+/* Resources strip ---------------------------------------------------- */
+[resources-grid] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+[resource-tile] {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+[resource-tile]:hover {
+  transform: translateY(-1px);
+}
+
+[resource-tile] > i {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+[resource-tile] h4 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+[resource-tile] p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
 form input::placeholder,
 form input::-moz-placeholder,
 form input:-ms-input-placeholder,
@@ -28481,6 +28887,633 @@ form[type=search] [scale=lg] {
     width: 100%;
   }
 }
+/* =====================================================================
+   How It Works — three-tier architecture explainer
+   Owns: hero, tier diagram, philosophy, four-step list, architecture
+         overview, two-way comparison, engineers strip, final CTA.
+   Structure only — theme paints colors per tier.
+   ===================================================================== */
+/* Shared section-header (centered variant) --------------------------- */
+[section-header][centered] {
+  text-align: center;
+  max-width: 42rem;
+  margin: 0 auto 3rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+[section-header] > h2 {
+  font-size: 2rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  [section-header] > h2 {
+    font-size: 2.5rem;
+  }
+}
+[section-header] > [lede] {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Hero --------------------------------------------------------------- */
+[architecture-hero] {
+  text-align: center;
+}
+
+[arch-hero-header] {
+  max-width: 56rem;
+  margin: 0 auto 3rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+[arch-hero-header] > h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  [arch-hero-header] > h1 {
+    font-size: 3.5rem;
+  }
+}
+[arch-hero-header] > [lede] {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  margin: 0 auto 2.5rem;
+  max-width: 44rem;
+}
+
+[arch-hero-actions] {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Three-tier diagram ------------------------------------------------- */
+[tier-diagram] {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  max-width: 64rem;
+  margin: 3rem auto 0;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+[tier-cell] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+[tier-label] {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  text-align: center;
+}
+
+[tier] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 1.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid;
+  text-align: center;
+  min-height: 5.5rem;
+}
+
+[tier] > strong {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+[tier] > span {
+  font-size: 0.875rem;
+}
+
+[tier-arrow] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1.6rem; /* visually center against [tier] (offset for [tier-label]) */
+}
+
+@media (max-width: 768px) {
+  [tier-diagram] {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  [tier-arrow] {
+    transform: rotate(90deg);
+    padding-top: 0;
+  }
+}
+/* Philosophy --------------------------------------------------------- */
+[philosophy-grid] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+[philosophy-card] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
+  border: 1px solid;
+  border-radius: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[philosophy-card][featured] {
+  border-width: 2px;
+}
+
+[philosophy-badge] {
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #ffffff;
+}
+
+[philosophy-card] > h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+[philosophy-card] > p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Four steps (vertical) --------------------------------------------- */
+[four-steps-list] {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+[step-row] {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid;
+  border-radius: 0.75rem;
+}
+
+[step-marker] {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+[step-body] > h3 {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  margin: 0 0 0.375rem;
+}
+
+[step-body] > p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+[step-arrow] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+}
+
+/* Architecture overview --------------------------------------------- */
+[arch-stack] {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+[arch-layer-wrap] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+[arch-layer-label] {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+[arch-layer] {
+  padding: 1.5rem 1.75rem;
+  border: 2px solid;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+[arch-layer] > h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+[arch-features] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.625rem;
+}
+
+[arch-feature] {
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+[arch-divider] {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  text-align: center;
+}
+
+[arch-divider]::before,
+[arch-divider]::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+[arch-divider] > span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+[arch-summary] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem 2rem;
+  max-width: 64rem;
+  margin: 2rem auto 0;
+  padding: 1.75rem 2rem;
+  border: 1px solid;
+  border-radius: 0.75rem;
+}
+
+[arch-summary-item] > h4 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+[arch-summary-item] > p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Two Ways comparison ------------------------------------------------ */
+[two-ways-grid] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.5rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+[two-way] {
+  padding: 2rem;
+  border: 2px solid;
+  border-radius: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+[two-way] > h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+[two-way] > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+[two-way] > ul > li {
+  padding: 1rem 1.25rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+/* Engineers (dark) --------------------------------------------------- */
+[engineers] {
+  color-scheme: dark;
+}
+
+[engineers-list] {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 56rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+[engineer-item] {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid;
+  border-radius: 0.625rem;
+}
+
+[engineer-item][featured] {
+  border-width: 2px;
+}
+
+[check-mark] {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #ffffff;
+}
+
+[engineer-item] h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+[engineer-item] p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Final CTA ---------------------------------------------------------- */
+[final-cta] > [container][narrow] {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+[final-cta-inner] {
+  padding: 4rem 2rem;
+  border-radius: 1rem;
+  text-align: center;
+}
+
+[final-cta-inner] > h2 {
+  font-size: 2rem;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+@media (min-width: 1024px) {
+  [final-cta-inner] > h2 {
+    font-size: 2.5rem;
+  }
+}
+[final-cta-inner] > p {
+  font-size: 1.125rem;
+  line-height: 1.55;
+  margin: 0 auto 2rem;
+  max-width: 38rem;
+}
+
+[final-cta-inner] > [row] {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* =====================================================================
+   Login — centered sign-in card
+   Owns: page wrapper, card, header, fields, submit, provider row, footer.
+   Structure only — theme paints colors.
+   ===================================================================== */
+[login-page] {
+  min-height: calc(100vh - 8rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[login-page] > [container][narrow] {
+  max-width: 28rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+[login-card] {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2.5rem;
+  border: 1px solid;
+  border-radius: 1rem;
+}
+
+[login-header] {
+  text-align: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+[login-brand] {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+}
+
+[login-brand] [logo=text] {
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+[login-brand] [logo-suffix] {
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+[login-header] > h1 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+}
+
+[login-header] > [lede] {
+  font-size: 0.9375rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+[login-form] {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+[login-field] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+[login-field] > span {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+[login-field-label] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[forgot-link] {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+[login-field] > input {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+[login-submit] {
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  margin-top: 0.5rem;
+}
+
+[login-divider] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+[login-divider]::before,
+[login-divider]::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+[login-providers] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+[login-providers] > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+}
+
+[login-footer] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+[login-footer] > a {
+  font-weight: 500;
+  text-decoration: none;
+}
+
 [modal-overlay] {
   position: fixed;
   inset: 0;
@@ -29027,6 +30060,507 @@ nav[type=actions] a:hover {
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
   margin-bottom: -2px;
+}
+
+/* =====================================================================
+   Wizard — multi-step onboarding chrome
+   Owns: shell, header, rails, step tracker, order summary, step pages,
+         feature cards, pill, navigation. Structure only — colors live
+         in the theme.
+   ===================================================================== */
+/* Shell --------------------------------------------------------------- */
+[wizard-shell] {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+[wizard-header] {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid;
+  backdrop-filter: blur(8px);
+}
+
+[wizard-header] > [container] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[wizard-header] [brand] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+[wizard-header] [brand] [logo] {
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+}
+
+[wizard-header] [brand] [badge] {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Body layout — three column on xl, two on lg, single on md ----------- */
+[wizard-body] {
+  display: flex;
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+[wizard-rail=left] {
+  display: none;
+  flex-shrink: 0;
+}
+@media (min-width: 1024px) {
+  [wizard-rail=left] {
+    display: block;
+    width: 20rem;
+    border-right: 1px solid;
+  }
+}
+
+[wizard-rail=right] {
+  display: none;
+  flex-shrink: 0;
+}
+@media (min-width: 1280px) {
+  [wizard-rail=right] {
+    display: block;
+    width: 24rem;
+    border-left: 1px solid;
+  }
+}
+
+[wizard-content] {
+  flex: 1;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+}
+@media (min-width: 1024px) {
+  [wizard-content] {
+    padding: 3rem;
+  }
+}
+
+[wizard-content][data-step=provisioning],
+[wizard-content][data-step=live] {
+  padding: 0;
+  max-width: none;
+}
+
+/* Step tracker (left rail) -------------------------------------------- */
+[step-tracker] {
+  padding: 2rem;
+  position: sticky;
+  top: 4rem;
+}
+
+[step-tracker] > header {
+  margin-bottom: 2rem;
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+[step-tracker] [eyebrow] {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+[step-tracker] > header > p {
+  font-size: 0.8125rem;
+  font-family: monospace;
+  margin: 0;
+}
+
+[steps] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+[steps] > [step] {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+/* Connector line between step indicators */
+[steps] > [step]:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(1.25rem - 1px);
+  top: 3rem;
+  width: 2px;
+  height: 1rem;
+}
+
+[step-indicator] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+[step-body] {
+  flex: 1;
+  padding-top: 0.375rem;
+  min-width: 0;
+}
+
+[step-body] > h4 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.2;
+}
+
+[step-body] > p {
+  font-size: 0.75rem;
+  margin: 0.25rem 0 0;
+  line-height: 1.4;
+}
+
+/* Order summary (right rail) ------------------------------------------ */
+[order-summary] {
+  padding: 2rem;
+  position: sticky;
+  top: 4rem;
+}
+
+[order-summary] > header {
+  margin-bottom: 1.5rem;
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+[order-summary] > header > p {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+[summary-card] {
+  border: 1px solid;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+[summary-mode] {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid;
+  margin-bottom: 1.5rem;
+}
+
+[mode-row] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+[mode-row] > div > p {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin: 0 0 0.25rem;
+}
+
+[mode-row] > div > p[subtle] {
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+[summary-items] {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+[summary-items] > p[subtle] {
+  font-size: 0.8125rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+[line-item] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+[line-item] [line-body] {
+  flex: 1;
+  min-width: 0;
+}
+
+[line-item] [line-body] > p {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+[line-item] [line-body] > p[subtle] {
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+[line-item] [line-cost] {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+[summary-total] {
+  padding-top: 1rem;
+  border-top: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+[summary-total] > span:first-child {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+[total-amount] {
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+[summary-card] > p[subtle] {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+[trust] {
+  list-style: none;
+  padding: 1.5rem 0 0;
+  margin: 1.5rem 0 0;
+  border-top: 1px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+[trust] > li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+[trust] [dot] {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Step pages ---------------------------------------------------------- */
+[step-page] {
+  max-width: 48rem;
+}
+
+[step-page] > h1,
+[step-header] > h1 {
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+}
+
+@media (min-width: 1024px) {
+  [step-page] > h1,
+  [step-header] > h1 {
+    font-size: 3rem;
+  }
+}
+[step-page] [lede],
+[step-header] [lede] {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin: 0 0 2.5rem;
+}
+
+[step-header] {
+  margin-bottom: 2rem;
+}
+
+/* Welcome page features */
+[step-page=welcome] [features] {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+[feature] {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  transition: border-color 0.2s;
+  background: transparent;
+}
+
+[feature] > div:last-child {
+  flex: 1;
+}
+
+[feature] h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.375rem;
+  line-height: 1.3;
+}
+
+[feature] p {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+[feature-icon] {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid;
+}
+
+/* Pill */
+[pill=accent] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+/* Welcome actions row */
+[step-page] [actions] {
+  margin: 0 0 3rem;
+  flex-wrap: wrap;
+}
+
+/* Welcome trust row */
+[step-page] > [trust] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  margin-top: 3rem;
+}
+
+[step-page] > [trust] > li {
+  font-size: 0.8125rem;
+}
+
+/* Step navigation */
+[step-nav] {
+  margin-top: 2rem;
+  justify-content: flex-end;
+}
+
+/* Placeholder for unimplemented step content */
+[placeholder] {
+  padding: 2rem;
+  border: 1px dashed;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+[placeholder] > p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Domain step summary */
+[domain-summary] {
+  margin-bottom: 1.5rem;
+}
+
+[selected-domain] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+}
+
+[selected-domain] > strong {
+  font-size: 1.0625rem;
+}
+
+[selected-domain] > [subtle] {
+  font-size: 0.875rem;
+  font-family: monospace;
+  margin-left: auto;
+}
+
+/* Generic eyebrow & subtle helpers used inside the wizard chrome */
+[eyebrow] {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+[subtle] {
+  font-size: 0.875rem;
 }
 
 [workflow] {
@@ -335419,6 +336953,19 @@ body[gradient]:not([text])[animation=fall]::before {
   --kw-warm: hsl(38, 92%, 50%);
   --kw-warm-soft: hsl(48, 100%, 96%);
   --kw-warm-tint: hsl(48, 96%, 76%);
+  /* Tier coding — used for layered architecture diagrams */
+  --kw-tier-content: hsl(223, 73%, 40%);
+  --kw-tier-content-strong: hsl(223, 73%, 35%);
+  --kw-tier-content-soft: hsl(223, 73%, 75%);
+  --kw-tier-content-tint: hsl(223, 73%, 70%);
+  --kw-tier-application: hsl(161, 94%, 30%);
+  --kw-tier-application-strong: hsl(163, 94%, 24%);
+  --kw-tier-application-soft: hsl(152, 81%, 96%);
+  --kw-tier-application-tint: hsl(149, 80%, 90%);
+  --kw-tier-runtime: hsl(38, 92%, 50%);
+  --kw-tier-runtime-strong: hsl(32, 95%, 44%);
+  --kw-tier-runtime-soft: hsl(48, 100%, 96%);
+  --kw-tier-runtime-tint: hsl(48, 96%, 76%);
   /* Surface recipes */
   --kw-hero-background: linear-gradient(180deg, hsl(152, 81%, 96%) 0%, hsl(0, 0%, 100%) 100%);
   --kw-cta-background: linear-gradient(135deg, hsl(161, 94%, 30%) 0%, hsl(163, 94%, 24%) 100%);
@@ -335800,6 +337347,874 @@ body[gradient]:not([text])[animation=fall]::before {
 [theme=kiwipress] [tab][active] {
   color: var(--kw-accent);
   border-bottom-color: var(--kw-accent);
+}
+
+/* Developers hub -------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/developers.
+   ====================================================================== */
+[theme=kiwipress] [developers-hero] {
+  background: var(--kw-hero-background);
+}
+
+[theme=kiwipress] [dev-hero-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [dev-quickstart] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [quickstart-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 4px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [quickstart-body] > [eyebrow] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [quickstart-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [code-block] {
+  background-color: hsl(0, 0%, 10%);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[theme=kiwipress] [code-block] > code {
+  color: inherit;
+}
+
+[theme=kiwipress] [dev-categories] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [category-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [category-card]:hover {
+  box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [category-card=content]:hover {
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application]:hover {
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime]:hover {
+  border-color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [category-card=content] [category-icon] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content-tint);
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [category-card=application] [category-icon] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application-tint);
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [category-card=runtime] [category-icon] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime-tint);
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [category-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [category-card=content] [category-cta] {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [category-card=application] [category-cta] {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [category-card=runtime] [category-cta] {
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [dev-resources] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [resource-tile] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [resource-tile]:hover {
+  border-color: var(--kw-accent);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [resource-tile] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [resource-tile] p {
+  color: var(--kw-text-soft);
+}
+
+/* How It Works ---------------------------------------------------------
+   Three-tier architecture explainer. Tier colors are content=blue,
+   application=green, runtime=orange.
+   ====================================================================== */
+[theme=kiwipress] [architecture-hero] {
+  background: var(--kw-hero-background);
+}
+
+[theme=kiwipress] [arch-hero-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+/* Tier diagram (hero) */
+[theme=kiwipress] [tier-diagram] {
+  background-color: var(--kw-surface);
+  border: 1px solid var(--kw-border);
+  box-shadow: 0 4px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [tier-label] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [tier=content] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content);
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [tier=content] > strong {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [tier=application] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [tier=application] > strong {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [tier=runtime] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime);
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [tier=runtime] > strong {
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [tier-arrow] {
+  color: var(--kw-text-soft);
+}
+
+/* Centered section headers (shared) */
+[theme=kiwipress] [section-header][centered] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+/* Philosophy */
+[theme=kiwipress] [philosophy] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [philosophy-card] {
+  background-color: var(--kw-surface-muted);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [philosophy-card]:hover {
+  border-color: var(--kw-border-strong);
+}
+
+[theme=kiwipress] [philosophy-card][featured] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [philosophy-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [philosophy-badge=content] {
+  background-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [philosophy-badge=application] {
+  background-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [philosophy-badge=runtime] {
+  background-color: var(--kw-tier-runtime);
+}
+
+/* Four steps */
+[theme=kiwipress] [four-steps] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [step-row] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [step-marker] {
+  background: var(--kw-step-marker-background);
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [step-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [step-arrow] {
+  color: var(--kw-accent);
+}
+
+/* Architecture overview */
+[theme=kiwipress] [architecture-overview] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [arch-stack] {
+  background-color: var(--kw-surface-muted);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [arch-layer-label] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [arch-layer=content] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [arch-layer=content] > h3 {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [arch-layer=application] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [arch-layer=application] > h3 {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [arch-layer=runtime] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [arch-layer=runtime] > h3 {
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [arch-feature] {
+  background-color: var(--kw-surface);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [arch-divider]::before,
+[theme=kiwipress] [arch-divider]::after {
+  background-color: var(--kw-border);
+}
+
+[theme=kiwipress] [arch-divider] > span {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [arch-summary] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [arch-summary-item] > p {
+  color: var(--kw-text-soft);
+}
+
+/* Two Ways */
+[theme=kiwipress] [two-ways] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [two-way=plain] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [two-way=plain] > h3 {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [two-way=developer] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [two-way=developer] > h3 {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [two-way] > ul > li {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+/* Engineers (dark) */
+[theme=kiwipress] [engineers] {
+  background-color: hsl(0, 0%, 10%);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[theme=kiwipress] [engineers] [section-header] > h2 {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [engineers] [section-header] > [lede] {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[theme=kiwipress] [engineer-item] {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[theme=kiwipress] [engineer-item][featured] {
+  border-color: var(--kw-accent);
+  background-color: rgba(4.59, 148.41, 102.867, 0.08);
+}
+
+[theme=kiwipress] [engineer-item] h4 {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [engineer-item] p {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+[theme=kiwipress] [check-mark] {
+  background-color: var(--kw-accent);
+}
+
+/* Final CTA */
+[theme=kiwipress] [final-cta] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [final-cta-inner] {
+  background: var(--kw-cta-background);
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [final-cta-inner] > h2 {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [final-cta-inner] > p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button) {
+  background-color: hsl(0, 0%, 100%);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button:hover) {
+  background-color: var(--kw-accent-soft);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button[btn=outline]) {
+  background-color: transparent;
+  color: hsl(0, 0%, 100%);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button[btn=outline]:hover) {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: hsl(0, 0%, 100%);
+}
+
+/* Developer hub --------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/developers.
+   ====================================================================== */
+[theme=kiwipress] [developers-hero] {
+  background: var(--kw-hero-background);
+}
+
+[theme=kiwipress] [dev-hero-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [dev-quickstart] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [quickstart-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 4px 16px var(--kw-shadow);
+}
+
+[theme=kiwipress] [quickstart-body] > [eyebrow] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [quickstart-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [code-block] {
+  background-color: hsl(0, 0%, 10%);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid hsl(0, 0%, 10%);
+}
+
+[theme=kiwipress] [dev-install] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [install-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [install-card]:hover {
+  border-color: var(--kw-border-strong);
+}
+
+[theme=kiwipress] [install-icon] {
+  background-color: var(--kw-accent-soft);
+  border-color: var(--kw-accent-tint);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [install-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [install-footnote] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [install-footnote] > a {
+  color: var(--kw-accent);
+  font-weight: 500;
+}
+
+/* Categories */
+[theme=kiwipress] [dev-categories] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [category-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [category-card]:hover {
+  border-color: var(--kw-border-strong);
+  box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [category-card=content]:hover {
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application]:hover {
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime]:hover {
+  border-color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [category-card=content] [category-icon] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content-tint);
+  color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application] [category-icon] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application-tint);
+  color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime] [category-icon] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime-tint);
+  color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [category-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [category-card=content] [category-cta] {
+  color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application] [category-cta] {
+  color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime] [category-cta] {
+  color: var(--kw-tier-runtime);
+}
+
+/* Resources */
+[theme=kiwipress] [dev-resources] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [resource-tile] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [resource-tile]:hover {
+  border-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [resource-tile] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [resource-tile] p {
+  color: var(--kw-text-soft);
+}
+
+/* Login chrome ---------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/login.
+   ====================================================================== */
+[theme=kiwipress] [login-page] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [login-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 8px 32px var(--kw-shadow);
+}
+
+[theme=kiwipress] [login-brand] [logo=text] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [login-brand] [logo-suffix] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-field] > span {
+  color: var(--kw-text-muted);
+}
+
+[theme=kiwipress] [forgot-link] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [forgot-link]:hover {
+  color: var(--kw-accent-strong);
+}
+
+[theme=kiwipress] [login-divider] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-divider]::before,
+[theme=kiwipress] [login-divider]::after {
+  background-color: var(--kw-border);
+}
+
+[theme=kiwipress] [login-footer] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-footer] > a {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [login-footer] > a:hover {
+  color: var(--kw-accent-strong);
+}
+
+/* Dashboard chrome -----------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/dashboard.
+   ====================================================================== */
+[theme=kiwipress] [dashboard-shell] {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [dashboard-sidebar] {
+  background-color: var(--kw-surface);
+  border-right-color: var(--kw-border);
+}
+
+[theme=kiwipress] [sidebar-brand] {
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [sidebar-brand] [logo] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [sidebar-brand] [logo-suffix] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [sidebar-nav] {
+  background: transparent;
+  border-bottom: none;
+  backdrop-filter: none;
+}
+
+[theme=kiwipress] [nav-divider] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [nav-link] {
+  color: var(--kw-text-muted);
+}
+
+[theme=kiwipress] [nav-link]:hover {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [nav-link][nav-link=active] {
+  background-color: var(--kw-accent-soft);
+  color: var(--kw-accent-strong);
+}
+
+[theme=kiwipress] [sidebar-footer] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [sidebar-footer] [version] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [sidebar-footer] [doc-link] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [sidebar-footer] [doc-link]:hover {
+  color: var(--kw-accent-strong);
+}
+
+[theme=kiwipress] [dashboard-main] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [page-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+/* Wizard chrome --------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/wizard.
+   ====================================================================== */
+[theme=kiwipress] [wizard-shell] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [wizard-header] {
+  background-color: var(--kw-surface-strong);
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [wizard-header] [brand] [logo] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [wizard-header] [brand] [badge] {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-text-muted);
+  border: 1px solid var(--kw-border);
+}
+
+[theme=kiwipress] [wizard-header] button {
+  background-color: transparent;
+  color: var(--kw-text-muted);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+[theme=kiwipress] [wizard-header] button:hover {
+  background-color: var(--kw-surface-muted);
+  transform: none;
+  box-shadow: none;
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [wizard-rail=left],
+[theme=kiwipress] [wizard-rail=right] {
+  background-color: var(--kw-surface-muted);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [step-tracker] [eyebrow] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [step-tracker] > header > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step][step=pending] [step-indicator] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step][step=active] [step-indicator] {
+  background-color: var(--kw-accent);
+  border-color: var(--kw-accent);
+  color: #ffffff;
+}
+
+[theme=kiwipress] [steps] > [step][step=completed] [step-indicator] {
+  background-color: var(--kw-accent-strong);
+  border-color: var(--kw-accent-strong);
+  color: #ffffff;
+}
+
+[theme=kiwipress] [steps] > [step][step=pending] [step-body] > h4 {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step][step=active] [step-body] > h4,
+[theme=kiwipress] [steps] > [step][step=completed] [step-body] > h4 {
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [steps] > [step] [step-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step]:not(:last-child)::after {
+  background-color: var(--kw-border);
+}
+
+[theme=kiwipress] [steps] > [step][step=completed]:not(:last-child)::after {
+  background-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [order-summary] [eyebrow],
+[theme=kiwipress] [order-summary] > header > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [summary-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 1px 2px var(--kw-shadow);
+}
+
+[theme=kiwipress] [summary-mode] {
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [mode-row] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [mode-row] > div > p[subtle],
+[theme=kiwipress] [summary-items] > p[subtle],
+[theme=kiwipress] [line-item] [line-body] > p[subtle],
+[theme=kiwipress] [summary-card] > p[subtle] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [line-item] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [summary-total] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [trust] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [trust] > li {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [trust] [dot] {
+  background-color: var(--kw-accent);
+}
+
+/* Welcome page features (wizard scope only — distinct from [card="feature"]) */
+[theme=kiwipress] [step-page=welcome] [feature] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [step-page=welcome] [feature]:hover {
+  border-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [step-page=welcome] [feature] [feature-icon] {
+  background-color: var(--kw-accent-soft);
+  border-color: var(--kw-accent-tint);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [pill=accent] {
+  background-color: var(--kw-accent-soft);
+  color: var(--kw-accent);
+  border-color: var(--kw-accent-tint);
+}
+
+[theme=kiwipress] [placeholder] {
+  border-color: var(--kw-border-strong);
+  background-color: var(--kw-surface);
+}
+
+[theme=kiwipress] [placeholder] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [selected-domain] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [selected-domain] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [selected-domain] > [subtle] {
+  color: var(--kw-text-soft);
 }
 
 /* Modal */

@@ -1,0 +1,9 @@
+export declare function listScans(): Promise<void>;
+export declare function getLatestScans(): Promise<void>;
+export declare function getScan(): Promise<void>;
+export declare function listSettings(): Promise<void>;
+export declare function listAffectedResources(): Promise<void>;
+export declare function createScan(): Promise<void>;
+export declare function createSuppression(): Promise<void>;
+export declare function updatePlan(): Promise<void>;
+export declare function deleteSuppression(): Promise<void>;

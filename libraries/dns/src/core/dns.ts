@@ -1,23 +1,14 @@
+import type { AvailabilityQuery, AvailabilityResult } from "./availability.js";
+import type { RegistrarProvider } from "./provider.js";
+
 export class DNS {
-    constructor(){}
+    private registrar: RegistrarProvider;
 
-    init(){}
+    constructor(registrar: RegistrarProvider) {
+        this.registrar = registrar;
+    }
 
-    register(){}
-
-    transfer(){}
-
-    cancelTransfer(){}
-
-    renew(){}
-
-    restore(){}
-
-    search(){}
-
-    getNameservers(){}
-
-    setNameservers(){}
-
-    updateRecords(){}
+    availability(query: AvailabilityQuery): Promise<AvailabilityResult[]> {
+        return this.registrar.search(query) as Promise<AvailabilityResult[]>;
+    }
 }

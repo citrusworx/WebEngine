@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/jsx-dev-runtime.ts","./src/jsx-runtime.ts","./src/jsx.ts","./src/router.test.ts","./src/sig-router.ts","./src/signal.test.ts","./src/signal.ts"],"errors":true,"version":"5.9.3"}

@@ -1,0 +1,468 @@
+/* =====================================================================
+   How It Works — three-tier architecture explainer
+   Owns: hero, tier diagram, philosophy, four-step list, architecture
+         overview, two-way comparison, engineers strip, final CTA.
+   Structure only — theme paints colors per tier.
+   ===================================================================== */
+
+/* Shared section-header (centered variant) --------------------------- */
+[section-header][centered] {
+    text-align: center;
+    max-width: 42rem;
+    margin: 0 auto 3rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+[section-header] > h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+}
+
+@media (min-width: 1024px) {
+    [section-header] > h2 {
+        font-size: 2.5rem;
+    }
+}
+
+[section-header] > [lede] {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Hero --------------------------------------------------------------- */
+[architecture-hero] {
+    text-align: center;
+}
+
+[arch-hero-header] {
+    max-width: 56rem;
+    margin: 0 auto 3rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+[arch-hero-header] > h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+}
+
+@media (min-width: 1024px) {
+    [arch-hero-header] > h1 {
+        font-size: 3.5rem;
+    }
+}
+
+[arch-hero-header] > [lede] {
+    font-size: 1.125rem;
+    line-height: 1.65;
+    margin: 0 auto 2.5rem;
+    max-width: 44rem;
+}
+
+[arch-hero-actions] {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Three-tier diagram ------------------------------------------------- */
+[tier-diagram] {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    max-width: 64rem;
+    margin: 3rem auto 0;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+[tier-cell] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+[tier-label] {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-align: center;
+}
+
+[tier] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 1.5rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid;
+    text-align: center;
+    min-height: 5.5rem;
+}
+
+[tier] > strong {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+[tier] > span {
+    font-size: 0.875rem;
+}
+
+[tier-arrow] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1.6rem; /* visually center against [tier] (offset for [tier-label]) */
+}
+
+@media (max-width: 768px) {
+    [tier-diagram] {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    [tier-arrow] {
+        transform: rotate(90deg);
+        padding-top: 0;
+    }
+}
+
+/* Philosophy --------------------------------------------------------- */
+[philosophy-grid] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.5rem;
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+[philosophy-card] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 2rem 1.5rem;
+    border: 1px solid;
+    border-radius: 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[philosophy-card][featured] {
+    border-width: 2px;
+}
+
+[philosophy-badge] {
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.875rem;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #ffffff;
+}
+
+[philosophy-card] > h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+}
+
+[philosophy-card] > p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Four steps (vertical) --------------------------------------------- */
+[four-steps-list] {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 48rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+[step-row] {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border: 1px solid;
+    border-radius: 0.75rem;
+}
+
+[step-marker] {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+[step-body] > h3 {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    margin: 0 0 0.375rem;
+}
+
+[step-body] > p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+[step-arrow] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+}
+
+/* Architecture overview --------------------------------------------- */
+[arch-stack] {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 2rem;
+    border: 1px solid;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+[arch-layer-wrap] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+[arch-layer-label] {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+[arch-layer] {
+    padding: 1.5rem 1.75rem;
+    border: 2px solid;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+[arch-layer] > h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+[arch-features] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 0.625rem;
+}
+
+[arch-feature] {
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+[arch-divider] {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    text-align: center;
+}
+
+[arch-divider]::before,
+[arch-divider]::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+}
+
+[arch-divider] > span {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+[arch-summary] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1rem 2rem;
+    max-width: 64rem;
+    margin: 2rem auto 0;
+    padding: 1.75rem 2rem;
+    border: 1px solid;
+    border-radius: 0.75rem;
+}
+
+[arch-summary-item] > h4 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+[arch-summary-item] > p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Two Ways comparison ------------------------------------------------ */
+[two-ways-grid] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 1.5rem;
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+[two-way] {
+    padding: 2rem;
+    border: 2px solid;
+    border-radius: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+[two-way] > h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+[two-way] > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+[two-way] > ul > li {
+    padding: 1rem 1.25rem;
+    border: 1px solid;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+}
+
+/* Engineers (dark) --------------------------------------------------- */
+[engineers] {
+    color-scheme: dark;
+}
+
+[engineers-list] {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 56rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+[engineer-item] {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid;
+    border-radius: 0.625rem;
+}
+
+[engineer-item][featured] {
+    border-width: 2px;
+}
+
+[check-mark] {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #ffffff;
+}
+
+[engineer-item] h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+[engineer-item] p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Final CTA ---------------------------------------------------------- */
+[final-cta] > [container][narrow] {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+[final-cta-inner] {
+    padding: 4rem 2rem;
+    border-radius: 1rem;
+    text-align: center;
+}
+
+[final-cta-inner] > h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+    margin: 0 0 1rem;
+}
+
+@media (min-width: 1024px) {
+    [final-cta-inner] > h2 {
+        font-size: 2.5rem;
+    }
+}
+
+[final-cta-inner] > p {
+    font-size: 1.125rem;
+    line-height: 1.55;
+    margin: 0 auto 2rem;
+    max-width: 38rem;
+}
+
+[final-cta-inner] > [row] {
+    justify-content: center;
+    flex-wrap: wrap;
+}

@@ -33,8 +33,11 @@
             "@citrusworx/juice": ["../../../libraries/juice/src/index.ts"],
             "@citrusworx/juice/styles": ["../../../libraries/juice/dist/index.css"],
 
-            "@citrusworx/seltzer": ["../../../libraries/seltzer/src/seltzer.ts"],
+            "@citrusworx/seltzer": ["../../../libraries/seltzer/src/index.ts"],
             "@citrusworx/seltzer/*": ["../../../libraries/seltzer/src/*"],
+
+            "@citrusworx/stenzil": ["../../../libraries/stenzil/src/index.ts"],
+            "@citrusworx/stenzil/*": ["../../../libraries/stenzil/src/*"],
 
             "@citrusworx/sigjs/jsx-runtime": ["../../../libraries/sig/src/sig/jsx-runtime.ts"],
             "@citrusworx/sugar": ["../../../tooling/sugar/src/index.ts"]

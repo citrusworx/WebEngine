@@ -17,5 +17,16 @@
       "types": "./dist/deployment/deployment-manifest.d.ts",
       "default": "./dist/deployment/deployment-manifest.js"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -w",
+    "prepack": "yarn build"
   }
 }

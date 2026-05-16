@@ -2,15 +2,25 @@
     "name": "@citrusworx/grapevine",
     "version": "0.1.0",
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
-        "clean": "rimraf dist",
+        "clean": "rimraf dist tsconfig.tsbuildinfo",
         "build": "yarn clean && tsc -b",
         "dev": "tsc -w",
+        "prepack": "yarn build",
         "test": "vitest",
         "test:ui": "vitest --ui"
     },

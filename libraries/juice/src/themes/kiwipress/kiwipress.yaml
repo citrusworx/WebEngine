@@ -1,0 +1,102 @@
+id: kiwipress
+name: KiwiPress
+selector: theme="kiwipress"
+version: 2
+summary: Confident publishing theme built around fresh kiwi-green accents and warm marmalade highlights on cool slate surfaces.
+
+philosophy:
+  intent: "Identity layer for friendly, productive, SaaS-leaning publishing interfaces."
+  owns:
+    - typography voice
+    - color relationships
+    - semantic element defaults
+    - paint applied to Juice component primitives
+  does_not_own:
+    - layout
+    - spacing
+    - structural primitives
+    - typography scale
+    - responsiveness
+    - component vocabulary (Juice owns hero, card, cta, panel, modal, badge, stat, workflow, search-panel, tabs, plan, section-header)
+
+typography:
+  body:
+    family: korolev-rounded
+    fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif
+    tone: clean, modern, approachable
+  heading:
+    family: korolev-rounded
+    fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif
+    tone: confident, friendly, brand-forward
+
+palette:
+  page:
+    base: white-100
+    tint: kiwi-100
+    deep: black-900
+  text:
+    default: slate-700
+    muted: slate-600
+    soft: slate-500
+    heading: black-900
+  accents:
+    primary: kiwi-700
+    primary-strong: kiwi-800
+    soft: kiwi-100
+    tint: kiwi-200
+  warm:
+    primary: marmalade-600
+    soft: marmalade-100
+    tint: marmalade-300
+  surfaces:
+    default: white-100
+    muted: slate-100 quiet panel
+    deep: black-900 footer / inverted bands
+    hero: kiwi-100 to white-100 vertical wash
+    cta: kiwi-700 to kiwi-800 diagonal gradient
+    workflow: white-100 to kiwi-100 vertical wash
+    pricing: white-100 to slate-100 vertical wash
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - header
+    - form
+  nav_behavior: translucent white surface with blurred backdrop and bottom border
+  footer_behavior: inverted dark surface
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+theme_modifiers:
+  - attribute: warm
+    applies_to: [badge, "card=feature"]
+    effect: switches the accent to the marmalade warm tone instead of kiwi
+  - attribute: section[type=pricing]
+    effect: paints the white-to-slate vertical wash
+  - attribute: section[type=workflow]
+    effect: paints the white-to-kiwi vertical wash
+
+recommended_use_cases:
+  - SaaS marketing sites
+  - publishing platforms
+  - hosting and domain product pages
+  - developer-focused product sites
+  - friendly B2B landing pages
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
+  - Use Juice layout primitives (stack, row, grid, gap, container, span) and semantic spacing tokens (snug, cozy, comfortable, roomy, expansive) for structure and spacing.
+  - Reserve [featured] for one [card="pricing"] per group.
+  - Use [warm] as the occasional marmalade accent against the kiwi base; do not co-equal them.
+
+example:
+  root: '<body theme="kiwipress">'
+  surfaces:
+    - '<section hero>...</section>'
+    - '<article card="feature">...</article>'
+    - '<article card="pricing" featured>...</article>'
+    - '<section cta>...</section>'
+    - '<aside panel>...</aside>'

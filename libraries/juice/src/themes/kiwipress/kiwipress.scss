@@ -1,1238 +1,1287 @@
-@use './tokens.scss' as *;
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/green/swatch/kiwi/kiwi.scss' as *;
+@use '../../tokens/color/orange/swatch/marmalade/marmalade.scss' as *;
+@use '../../tokens/color/gray/swatch/slate/slate.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+@use '../../tokens/color/blue/swatch/cornflower/cornflower.scss' as *;
 
-// =====================================================================
-// Local color tokens
-// Promote these into ./tokens.scss as your swatches land.
-// =====================================================================
-$kw-green-50:   #f0fdf4;
-$kw-green-100:  #d1fae5;
-$kw-green-600:  #059669;
-$kw-green-700:  #047857;
+/*
+  KiwiPress is a Juice theme.
+  The theme paints Juice's component primitives — it does not define them.
+  Structure (hero, card, cta, panel, modal, badge, stat, workflow, search-panel,
+  tabs, plan, section-header) lives in src/components. The theme only owns:
+  - color relationships
+  - typography voice
+  - semantic element defaults
+*/
 
-$kw-orange-50:  #fffbeb;
-$kw-orange-200: #fed7aa;
-$kw-orange-500: #f59e0b;
+[theme="kiwipress"] {
+    /* Foundation */
+    --kw-page: #{$white-100};
+    --kw-page-tint: #{$kiwi-100};
+    --kw-surface: #{$white-100};
+    --kw-surface-muted: #{$slate-100};
+    --kw-surface-strong: #{rgba($white-100, 0.95)};
+    --kw-surface-deep: #{$black-900};
+    --kw-border: #{$slate-300};
+    --kw-border-strong: #{$slate-400};
+    --kw-shadow: #{rgba($black-900, 0.08)};
+    --kw-shadow-strong: #{rgba($black-900, 0.12)};
 
-$kw-ink:        #1a1a1a;
-$kw-gray-700:   #374151;
-$kw-gray-600:   #4b5563;
-$kw-gray-500:   #6b7280;
-$kw-gray-400:   #9ca3af;
-$kw-gray-200:   #e5e7eb;
-$kw-gray-100:   #f3f4f6;
-$kw-gray-50:    #f9fafb;
-$kw-border:     #e5e5e5;
+    /* Typography */
+    --kw-text: #{$slate-700};
+    --kw-text-muted: #{$slate-600};
+    --kw-text-soft: #{$slate-500};
+    --kw-heading: #{$black-900};
+    --kw-body-font: 'korolev-rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    --kw-heading-font: 'korolev-rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
 
+    /* Accent system */
+    --kw-accent: #{$kiwi-700};
+    --kw-accent-strong: #{$kiwi-800};
+    --kw-accent-soft: #{$kiwi-100};
+    --kw-accent-tint: #{$kiwi-200};
+    --kw-warm: #{$marmalade-600};
+    --kw-warm-soft: #{$marmalade-100};
+    --kw-warm-tint: #{$marmalade-300};
 
-[theme="kiwipress"]{
+    /* Tier coding — used for layered architecture diagrams */
+    --kw-tier-content: #{$cornflower-700};
+    --kw-tier-content-strong: #{$cornflower-800};
+    --kw-tier-content-soft: #{$cornflower-100};
+    --kw-tier-content-tint: #{$cornflower-200};
+    --kw-tier-application: #{$kiwi-700};
+    --kw-tier-application-strong: #{$kiwi-800};
+    --kw-tier-application-soft: #{$kiwi-100};
+    --kw-tier-application-tint: #{$kiwi-200};
+    --kw-tier-runtime: #{$marmalade-600};
+    --kw-tier-runtime-strong: #{$marmalade-700};
+    --kw-tier-runtime-soft: #{$marmalade-100};
+    --kw-tier-runtime-tint: #{$marmalade-300};
 
-    // -----------------------------------------------------------------
-    // Base
-    // -----------------------------------------------------------------
-    font-family: 'korolev-rounded', -apple-system, BlinkMacSystemFont,
-                 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    /* Surface recipes */
+    --kw-hero-background: linear-gradient(180deg, #{$kiwi-100} 0%, #{$white-100} 100%);
+    --kw-cta-background: linear-gradient(135deg, #{$kiwi-700} 0%, #{$kiwi-800} 100%);
+    --kw-workflow-background: linear-gradient(180deg, #{$white-100} 0%, #{$kiwi-100} 100%);
+    --kw-pricing-background: linear-gradient(180deg, #{$white-100} 0%, #{$slate-100} 100%);
+    --kw-step-marker-background: linear-gradient(135deg, #{$kiwi-700} 0%, #{$kiwi-800} 100%);
+
+    background-color: var(--kw-page);
+    color: var(--kw-text);
+    font-family: var(--kw-body-font);
+}
+
+/* Theme root behavior */
+[theme="kiwipress"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="kiwipress"] :where(div) {
+    background-color: transparent;
+    color: inherit;
+}
+
+/* Semantic element defaults */
+[theme="kiwipress"] :where(section, article, aside, header, form) {
+    background-color: var(--kw-surface);
+    color: var(--kw-text);
+}
+
+[theme="kiwipress"] :where(nav) {
+    background-color: var(--kw-surface-strong);
+    border-bottom: 1px solid var(--kw-border);
+    backdrop-filter: blur(10px);
+}
+
+[theme="kiwipress"] :where(footer) {
+    background-color: var(--kw-surface-deep);
+    color: $white-100;
+    border-top: 1px solid $slate-700;
+}
+
+/* Typography hierarchy */
+[theme="kiwipress"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--kw-heading);
+    font-family: var(--kw-heading-font);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+[theme="kiwipress"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--kw-text);
+    font-family: var(--kw-body-font);
     line-height: 1.6;
-    color: $kw-ink;
-    background: #ffffff;
-    width: 100%;
-    overflow-x: hidden;
-
-    [container]{
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 24px;
-    }
-
-
-    // -----------------------------------------------------------------
-    // Navigation
-    // -----------------------------------------------------------------
-    nav[type="main"]{
-        position: sticky;
-        top: 0;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid $kw-border;
-        padding: 16px 0;
-        z-index: 100;
-
-        > [container]{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        a {
-            text-decoration: none;
-            color: $kw-gray-600;
-            font-weight: 500;
-            transition: color 0.2s;
-
-            &:hover { color: $kw-green-600; }
-        }
-    }
-
-    [logo="text"]{
-        font-size: 24px;
-        font-weight: 700;
-        color: $kw-green-600;
-    }
-
-    [logo="image"]{
-        height: 36px;
-        width: auto;
-        display: block;
-    }
-
-    a[logo]{
-        text-decoration: none;
-        color: inherit;
-    }
-
-    [nav]{
-        display: flex;
-        gap: 32px;
-
-        a {
-            text-decoration: none;
-            color: $kw-gray-600;
-            font-weight: 500;
-            transition: color 0.2s;
-
-            &:hover { color: $kw-green-600; }
-        }
-    }
-
-    [actions="header"]{
-        display: flex;
-        gap: 12px;
-    }
-
-
-    // -----------------------------------------------------------------
-    // Buttons
-    // -----------------------------------------------------------------
-    button[btn="primary"],
-    button[btn="secondary"],
-    button[btn="outline"]{
-        padding: 10px 24px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: none;
-        outline: none;
-    }
-
-    button[btn="primary"]{
-        background: $kw-green-600;
-        color: white;
-
-        &:hover {
-            background: $kw-green-700;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-        }
-    }
-
-    button[btn="secondary"]{
-        background: transparent;
-        color: $kw-gray-600;
-        border: 1px solid transparent;
-
-        &:hover { background: $kw-gray-100; }
-    }
-
-    button[btn="outline"]{
-        background: transparent;
-        color: $kw-green-600;
-        border: 2px solid $kw-green-600;
-
-        &:hover {
-            background: $kw-green-50;
-            transform: translateY(-1px);
-        }
-    }
-
-    button[scale="lg"]{
-        padding: 14px 32px;
-        font-size: 16px;
-        // Undo Juice base button.scss vh/vw sizing
-        height: auto;
-        width: auto;
-    }
-
-    button[full]{
-        width: 100%;
-    }
-
-
-    // -----------------------------------------------------------------
-    // Hero
-    // -----------------------------------------------------------------
-    [hero]{
-        padding: 100px 0 80px;
-        background: linear-gradient(180deg, $kw-green-50 0%, #ffffff 100%);
-
-        [content]{
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 56px;
-            font-weight: 800;
-            line-height: 1.1;
-            color: $kw-ink;
-            margin-bottom: 24px;
-        }
-
-        [subtitle]{
-            font-size: 20px;
-            color: $kw-gray-500;
-            margin-bottom: 40px;
-            line-height: 1.7;
-        }
-
-        [actions]{
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-bottom: 64px;
-        }
-    }
-
-    [badge="hero"]{
-        display: inline-block;
-        padding: 8px 16px;
-        background: white;
-        border: 1px solid $kw-orange-200;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 600;
-        color: $kw-orange-500;
-        margin-bottom: 24px;
-    }
-
-
-    // -----------------------------------------------------------------
-    // Stats
-    // -----------------------------------------------------------------
-    [stats]{
-        display: flex;
-        gap: 64px;
-        justify-content: center;
-        padding-top: 40px;
-        border-top: 1px solid $kw-gray-200;
-    }
-
-    [stat]{
-        text-align: center;
-
-        [number]{
-            font-size: 36px;
-            font-weight: 700;
-            color: $kw-green-600;
-            margin-bottom: 8px;
-        }
-
-        [label]{
-            font-size: 14px;
-            color: $kw-gray-500;
-            font-weight: 500;
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Shared section header (features / pricing / etc.)
-    // -----------------------------------------------------------------
-    [section-header]{
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 64px;
-
-        h2 {
-            font-size: 42px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 16px;
-        }
-
-        p {
-            font-size: 18px;
-            color: $kw-gray-500;
-            line-height: 1.7;
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Features
-    // -----------------------------------------------------------------
-    section[type="features"]{
-        padding: 100px 0;
-        background: white;
-    }
-
-    [grid="features"]{
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 32px;
-    }
-
-    [card="feature"]{
-        padding: 40px;
-        background: $kw-gray-50;
-        border-radius: 16px;
-        transition: all 0.3s;
-
-        &:hover {
-            background: $kw-green-50;
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        // Alternating accent: every 2nd / 4th card uses orange
-        &:nth-child(2):hover,
-        &:nth-child(4):hover { background: $kw-orange-50; }
-
-        [icon]{
-            width: 64px;
-            height: 64px;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: $kw-green-600;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 24px;
-        }
-
-        &:nth-child(2) [icon],
-        &:nth-child(4) [icon] { color: $kw-orange-500; }
-
-        h3 {
-            font-size: 22px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 12px;
-        }
-
-        p {
-            font-size: 16px;
-            color: $kw-gray-500;
-            line-height: 1.7;
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Pricing
-    // -----------------------------------------------------------------
-    section[type="pricing"]{
-        padding: 100px 0;
-        background: linear-gradient(180deg, #ffffff 0%, $kw-gray-50 100%);
-    }
-
-    [grid="pricing"]{
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 32px;
-        margin-top: 64px;
-    }
-
-    [card="pricing"]{
-        background: white;
-        border: 2px solid $kw-gray-200;
-        border-radius: 16px;
-        padding: 40px;
-        position: relative;
-        transition: all 0.3s;
-
-        &:hover {
-            border-color: $kw-green-600;
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        &[featured]{
-            border-color: $kw-green-600;
-            box-shadow: 0 8px 24px rgba(5, 150, 105, 0.15);
-            transform: scale(1.05);
-
-            &:hover { transform: scale(1.05) translateY(-4px); }
-        }
-    }
-
-    [badge="featured"]{
-        position: absolute;
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: $kw-green-600;
-        color: white;
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    [plan]{
-        [header]{
-            text-align: center;
-            margin-bottom: 32px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid $kw-gray-200;
-        }
-
-        [name]{
-            font-size: 24px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 16px;
-        }
-
-        [price]{
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            margin-bottom: 16px;
-
-            [currency]{
-                font-size: 24px;
-                color: $kw-gray-500;
-                font-weight: 600;
-            }
-
-            [amount]{
-                font-size: 56px;
-                font-weight: 800;
-                color: $kw-ink;
-            }
-
-            [period]{
-                font-size: 18px;
-                color: $kw-gray-500;
-                margin-left: 4px;
-            }
-        }
-
-        [description]{
-            font-size: 15px;
-            color: $kw-gray-500;
-        }
-
-        [features]{
-            list-style: none;
-            margin-bottom: 32px;
-
-            li {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 10px 0;
-                font-size: 15px;
-                color: $kw-gray-600;
-            }
-
-            svg {
-                color: $kw-green-600;
-                flex-shrink: 0;
-            }
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // CTA banner
-    // -----------------------------------------------------------------
-    section[type="cta"]{
-        padding: 100px 0;
-        background: linear-gradient(135deg, $kw-green-600 0%, $kw-green-700 100%);
-        color: white;
-
-        [content]{
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        h2 {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        [subtitle]{
-            font-size: 20px;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-
-        [actions]{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-
-            button[btn="primary"]{
-                background: white;
-                color: $kw-green-600;
-
-                &:hover { background: $kw-green-50; }
-            }
-        }
-
-        [note]{
-            font-size: 14px;
-            opacity: 0.8;
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Footer
-    // -----------------------------------------------------------------
-    footer {
-        padding: 80px 0 32px;
-        background: $kw-ink;
-        color: white;
-
-        [content]{
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 48px;
-            margin-bottom: 48px;
-        }
-
-        [col]{
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        [title]{
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        [text]{
-            font-size: 14px;
-            color: $kw-gray-400;
-            line-height: 1.7;
-        }
-
-        [links]{
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-
-            a {
-                text-decoration: none;
-                color: $kw-gray-400;
-                font-size: 14px;
-                transition: color 0.2s;
-
-                &:hover { color: white; }
-            }
-        }
-
-        [bottom]{
-            text-align: center;
-            padding-top: 32px;
-            border-top: 1px solid $kw-gray-700;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-
-            p {
-                font-size: 14px;
-                color: $kw-gray-400;
-            }
-        }
-
-        [powered-by]{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-
-            [text]{
-                font-size: 13px;
-                color: $kw-gray-500;
-            }
-
-            [logo]{
-                height: 24px;
-                width: auto;
-                display: block;
-            }
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Domain search
-    // -----------------------------------------------------------------
-    section[type="domain"]{
-        padding: 80px 0;
-        background: white;
-    }
-
-    [domain-search]{
-        max-width: 900px;
-        margin: 0 auto;
-        background: $kw-gray-50;
-        border: 1px solid $kw-gray-200;
-        border-radius: 16px;
-        padding: 48px;
-
-        [header]{
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        h2 {
-            font-size: 32px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 12px;
-        }
-
-        [subtitle]{
-            font-size: 16px;
-            color: $kw-gray-500;
-            line-height: 1.6;
-        }
-
-        form { margin-bottom: 24px; }
-
-        [input-wrapper]{
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: white;
-            border: 2px solid $kw-gray-200;
-            border-radius: 12px;
-            padding: 4px 4px 4px 16px;
-            transition: all 0.2s;
-
-            &:focus-within {
-                border-color: $kw-green-600;
-                box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-            }
-        }
-
-        [search-icon]{
-            color: $kw-gray-400;
-            flex-shrink: 0;
-        }
-
-        input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            padding: 12px 8px;
-            color: $kw-ink;
-
-            &::placeholder { color: $kw-gray-400; }
-        }
-
-        button[search]{
-            background: $kw-green-600;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-
-            &:hover {
-                background: $kw-green-700;
-                transform: translateY(-1px);
-            }
-        }
-    }
-
-    [tabs="domain"]{
-        display: flex;
-        gap: 8px;
-        margin-bottom: 24px;
-        border-bottom: 1px solid $kw-gray-200;
-        padding-bottom: 2px;
-
-        button {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            color: $kw-gray-500;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-
-            &:hover { color: $kw-ink; }
-
-            &[active]{
-                color: $kw-green-600;
-                border-bottom-color: $kw-green-600;
-            }
-        }
-    }
-
-    [results="domain"]{
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-bottom: 32px;
-        max-height: 400px;
-        overflow-y: auto;
-
-        [result]{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background: white;
-            border: 1px solid $kw-gray-200;
-            border-radius: 10px;
-            transition: all 0.2s;
-
-            &:hover {
-                border-color: $kw-green-600;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            }
-
-            [info]{
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                flex: 1;
-            }
-
-            [status]{ display: flex; align-items: center; }
-
-            [icon="available"]{ color: $kw-green-600; }
-            [icon="unavailable"]{ color: $kw-gray-400; }
-
-            [name]{
-                font-size: 16px;
-                font-weight: 600;
-                color: $kw-ink;
-            }
-
-            [actions]{
-                display: flex;
-                align-items: center;
-                gap: 16px;
-            }
-
-            [price]{
-                font-size: 15px;
-                font-weight: 600;
-                color: $kw-gray-600;
-            }
-
-            button[buy]{
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                padding: 8px 16px;
-                background: $kw-green-600;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 14px;
-                cursor: pointer;
-                transition: all 0.2s;
-
-                &:hover {
-                    background: $kw-green-700;
-                    transform: translateY(-1px);
-                }
-            }
-
-            [unavailable]{
-                font-size: 14px;
-                color: $kw-gray-400;
-                font-weight: 500;
-            }
-        }
-    }
-
-    [badge="available"]{
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px 10px;
-        background: $kw-green-100;
-        color: $kw-green-600;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    [features="domain"]{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        padding-top: 24px;
-        border-top: 1px solid $kw-gray-200;
-
-        [feature]{
-            text-align: center;
-
-            [label]{
-                font-size: 13px;
-                color: $kw-gray-500;
-                font-weight: 500;
-            }
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Workflow
-    // -----------------------------------------------------------------
-    section[type="workflow"]{
-        padding: 100px 0;
-        background: linear-gradient(180deg, #ffffff 0%, $kw-green-50 100%);
-    }
-
-    [workflow-steps]{
-        display: grid;
-        grid-template-columns: 1fr auto 1fr auto 1fr;
-        align-items: center;
-        gap: 32px;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-
-    [workflow-step]{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 32px;
-        background: white;
-        border: 2px solid $kw-gray-200;
-        border-radius: 16px;
-        transition: all 0.3s;
-
-        &:hover {
-            border-color: $kw-green-600;
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        [number]{
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, $kw-green-600 0%, $kw-green-700 100%);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        [content]{ flex: 1; }
-
-        h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 12px;
-        }
-
-        p {
-            font-size: 15px;
-            color: $kw-gray-500;
-            line-height: 1.6;
-        }
-    }
-
-    [workflow-connector]{
-        width: 48px;
-        height: 2px;
-        background: linear-gradient(90deg, $kw-gray-200 0%, $kw-green-600 50%, $kw-gray-200 100%);
-        position: relative;
-
-        &::after {
-            content: '→';
-            position: absolute;
-            right: -12px;
-            top: -10px;
-            color: $kw-green-600;
-            font-size: 20px;
-            font-weight: 700;
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Modal
-    // -----------------------------------------------------------------
-    [modal="overlay"]{
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 24px;
-        animation: kw-fadeIn 0.2s ease-out;
-    }
-
-    [modal="content"]{
-        background: white;
-        border-radius: 16px;
-        max-width: 640px;
-        width: 100%;
-        max-height: 90vh;
-        overflow: auto;
-        position: relative;
-        animation: kw-slideUp 0.3s ease-out;
-    }
-
-    [modal="close"]{
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: white;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        transition: all 0.2s;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-        &:hover {
-            background: $kw-gray-100;
-            transform: rotate(90deg);
-        }
-    }
-
-    [modal="header"]{
-        text-align: center;
-        padding: 48px 48px 32px;
-
-        h2 {
-            font-size: 32px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 12px;
-        }
-
-        p {
-            font-size: 16px;
-            color: $kw-gray-500;
-            line-height: 1.6;
-        }
-    }
-
-    [modal="video"]{
-        position: relative;
-        padding: 0 48px 48px;
-
-        img, video {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            display: block;
-        }
-
-        [play]{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            transition: all 0.2s;
-
-            &:hover { transform: translate(-50%, -50%) scale(1.1); }
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Contact page
-    // -----------------------------------------------------------------
-    [contact="page"]{
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
-
-    [contact="hero"]{
-        padding: 100px 0 60px;
-        background: linear-gradient(180deg, $kw-green-50 0%, #ffffff 100%);
-        text-align: center;
-
-        [content]{
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 48px;
-            font-weight: 800;
-            color: $kw-ink;
-            margin-bottom: 16px;
-        }
-
-        [subtitle]{
-            font-size: 20px;
-            color: $kw-gray-500;
-            line-height: 1.7;
-        }
-    }
-
-    [contact="content"]{
-        padding: 80px 0;
-        flex: 1;
-    }
-
-    [contact="grid"]{
-        display: grid;
-        grid-template-columns: 1.2fr 1fr;
-        gap: 64px;
-    }
-
-    [contact] h2 {
-        font-size: 24px;
-        font-weight: 700;
-        color: $kw-ink;
-        margin-bottom: 32px;
-    }
-
-    [contact] form {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-
-    [form-group]{
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-
-        label {
-            font-size: 14px;
-            font-weight: 600;
-            color: $kw-gray-700;
-        }
-
-        input,
-        textarea {
-            padding: 12px 16px;
-            border: 2px solid $kw-gray-200;
-            border-radius: 8px;
-            font-size: 15px;
-            color: $kw-ink;
-            transition: all 0.2s;
-            font-family: inherit;
-
-            &:focus {
-                outline: none;
-                border-color: $kw-green-600;
-                box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-            }
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-    }
-
-    [contact-info]{
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        margin-bottom: 40px;
-    }
-
-    [card="contact-info"]{
-        padding: 24px;
-        background: $kw-gray-50;
-        border: 1px solid $kw-gray-200;
-        border-radius: 12px;
-
-        [icon]{
-            width: 48px;
-            height: 48px;
-            background: $kw-green-100;
-            color: $kw-green-600;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-        }
-
-        h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: $kw-ink;
-            margin-bottom: 8px;
-        }
-
-        p {
-            font-size: 15px;
-            color: $kw-gray-600;
-            margin-bottom: 4px;
-        }
-
-        [subtext]{
-            font-size: 14px;
-            color: $kw-gray-500;
-        }
-    }
-
-    [contact-cta]{
-        padding: 32px;
-        background: linear-gradient(135deg, $kw-green-600 0%, $kw-green-700 100%);
-        border-radius: 16px;
-        text-align: center;
-        color: white;
-
-        h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        p {
-            font-size: 15px;
-            margin-bottom: 24px;
-            opacity: 0.9;
-        }
-
-        button[btn="primary"]{
-            background: white;
-            color: $kw-green-600;
-
-            &:hover { background: $kw-green-50; }
-        }
-    }
-
-
-    // -----------------------------------------------------------------
-    // Responsive
-    // -----------------------------------------------------------------
-    @media (max-width: 768px){
-        [nav]{ display: none; }
-        [actions="header"]{ gap: 8px; }
-
-        [hero]{
-            padding: 60px 0 40px;
-
-            h1 { font-size: 36px; }
-            [subtitle]{ font-size: 18px; }
-            [actions]{ flex-direction: column; margin-bottom: 40px; }
-        }
-
-        [stats]{ flex-direction: column; gap: 32px; }
-
-        [section-header] h2 { font-size: 32px; }
-
-        [grid="features"]{ grid-template-columns: 1fr; }
-
-        [grid="pricing"]{ grid-template-columns: 1fr; }
-        [card="pricing"][featured]{
-            transform: scale(1);
-            &:hover { transform: translateY(-4px); }
-        }
-
-        section[type="cta"]{
-            h2 { font-size: 32px; }
-            [subtitle]{ font-size: 18px; }
-        }
-
-        footer [content]{ grid-template-columns: 1fr; gap: 32px; }
-
-        [domain-search]{
-            padding: 32px 24px;
-
-            h2 { font-size: 24px; }
-            [input-wrapper]{ flex-direction: column; padding: 16px; }
-            input { width: 100%; }
-            button[search]{ width: 100%; }
-        }
-
-        [features="domain"]{ grid-template-columns: repeat(2, 1fr); }
-
-        [results="domain"] [result]{
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
-
-            [actions]{ width: 100%; justify-content: space-between; }
-        }
-
-        [workflow-steps]{
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
-
-        [workflow-connector]{
-            width: 2px;
-            height: 48px;
-            background: linear-gradient(180deg, $kw-gray-200 0%, $kw-green-600 50%, $kw-gray-200 100%);
-
-            &::after {
-                content: '↓';
-                right: -9px;
-                top: auto;
-                bottom: -12px;
-            }
-        }
-
-        [modal="header"]{
-            padding: 32px 24px 24px;
-            h2 { font-size: 24px; }
-        }
-        [modal="video"]{ padding: 0 24px 24px; }
-
-        [contact="hero"]{
-            padding: 60px 0 40px;
-            h1 { font-size: 32px; }
-            [subtitle]{ font-size: 18px; }
-        }
-        [contact="content"]{ padding: 60px 0; }
-        [contact="grid"]{ grid-template-columns: 1fr; gap: 48px; }
-    }
-
+}
+
+[theme="kiwipress"] :where(small, figcaption) {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] :where(strong, b) {
+    color: var(--kw-heading);
+}
+
+/* Links */
+[theme="kiwipress"] :where(a) {
+    color: var(--kw-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+[theme="kiwipress"] :where(a:hover, a:focus-visible) {
+    color: var(--kw-accent);
+}
+
+/* Controls */
+[theme="kiwipress"] :where(input, textarea, select) {
+    background-color: var(--kw-surface);
+    color: var(--kw-text);
+    border: 2px solid var(--kw-border);
+    border-radius: 8px;
+    font-family: var(--kw-body-font);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[theme="kiwipress"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: none;
+    border-color: var(--kw-accent);
+    box-shadow: 0 0 0 3px #{rgba($kiwi-700, 0.1)};
+}
+
+[theme="kiwipress"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] :where(button) {
+    background-color: var(--kw-accent);
+    color: $white-100;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--kw-body-font);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+[theme="kiwipress"] :where(button:hover, button:focus-visible) {
+    background-color: var(--kw-accent-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px #{rgba($kiwi-700, 0.3)};
+}
+
+[theme="kiwipress"] :where(button[btn="secondary"]) {
+    background-color: transparent;
+    color: var(--kw-text-muted);
+}
+
+[theme="kiwipress"] :where(button[btn="secondary"]:hover) {
+    background-color: var(--kw-surface-muted);
+    transform: none;
+    box-shadow: none;
+}
+
+[theme="kiwipress"] :where(button[btn="outline"]) {
+    background-color: transparent;
+    color: var(--kw-accent);
+    border: 2px solid var(--kw-accent);
+}
+
+[theme="kiwipress"] :where(button[btn="outline"]:hover) {
+    background-color: var(--kw-accent-soft);
+}
+
+[theme="kiwipress"] :where(code, pre) {
+    background-color: var(--kw-surface-muted);
+    color: var(--kw-heading);
+    border: 1px solid var(--kw-border);
+    border-radius: 6px;
+}
+
+[theme="kiwipress"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--kw-border);
+}
+
+/* Logo */
+[theme="kiwipress"] [logo="text"] {
+    color: var(--kw-accent);
+    font-weight: 700;
+}
+
+/* Badges */
+[theme="kiwipress"] [badge] {
+    background-color: var(--kw-accent-tint);
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [badge][warm] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-warm-tint);
+    color: var(--kw-warm);
+}
+
+[theme="kiwipress"] [badge="ribbon"] {
+    background-color: var(--kw-accent);
+    color: $white-100;
+}
+
+/* Hero */
+[theme="kiwipress"] [hero] {
+    background: var(--kw-hero-background);
+}
+
+/* Stat */
+[theme="kiwipress"] [stat-value] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [stat-label] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [stats] {
+    border-top: 1px solid var(--kw-border);
+    padding-top: 2.5rem;
+}
+
+/* Feature card */
+[theme="kiwipress"] [card="feature"] {
+    background-color: var(--kw-surface-muted);
+    border-radius: 16px;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+[theme="kiwipress"] [card="feature"]:hover {
+    background-color: var(--kw-accent-soft);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [card="feature"][warm]:hover {
+    background-color: var(--kw-warm-soft);
+}
+
+[theme="kiwipress"] [card="feature"] [icon] {
+    background-color: var(--kw-surface);
+    color: var(--kw-accent);
+    border-radius: 12px;
+}
+
+[theme="kiwipress"] [card="feature"][warm] [icon] {
+    color: var(--kw-warm);
+}
+
+/* Pricing card */
+[theme="kiwipress"] [card="pricing"] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+[theme="kiwipress"] [card="pricing"]:hover {
+    border-color: var(--kw-accent);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px var(--kw-shadow-strong);
+}
+
+[theme="kiwipress"] [card="pricing"][featured] {
+    border-color: var(--kw-accent);
+    box-shadow: 0 8px 24px #{rgba($kiwi-700, 0.15)};
+}
+
+[theme="kiwipress"] [card="pricing"][featured]:hover {
+    transform: scale(1.05) translateY(-4px);
+}
+
+/* Plan internals */
+[theme="kiwipress"] [plan-header] {
+    border-bottom-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [plan-currency],
+[theme="kiwipress"] [plan-period] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [plan-amount] {
+    color: var(--kw-heading);
+}
+
+[theme="kiwipress"] [plan-description] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [plan-features] li {
+    color: var(--kw-text-muted);
+}
+
+[theme="kiwipress"] [plan-features] li svg {
+    color: var(--kw-accent);
+}
+
+/* Section paints */
+[theme="kiwipress"] section[type="pricing"] {
+    background: var(--kw-pricing-background);
+}
+
+[theme="kiwipress"] section[type="workflow"] {
+    background: var(--kw-workflow-background);
+}
+
+/* CTA */
+[theme="kiwipress"] [cta] {
+    background: var(--kw-cta-background);
+    color: $white-100;
+}
+
+[theme="kiwipress"] [cta] :where(h1, h2, h3, h4, h5, h6) {
+    color: $white-100;
+}
+
+[theme="kiwipress"] [cta] :where(p, span, li, small) {
+    color: #{rgba($white-100, 0.9)};
+}
+
+[theme="kiwipress"] [cta] :where(button) {
+    background-color: $white-100;
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [cta] :where(button:hover) {
+    background-color: var(--kw-accent-soft);
+}
+
+/* Workflow */
+[theme="kiwipress"] [workflow-step] {
+    background-color: var(--kw-surface);
+    border: 2px solid var(--kw-border);
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+[theme="kiwipress"] [workflow-step]:hover {
+    border-color: var(--kw-accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [workflow-step-marker] {
+    background: var(--kw-step-marker-background);
+    color: $white-100;
+}
+
+[theme="kiwipress"] [workflow-connector] {
+    background: linear-gradient(90deg, #{$slate-300} 0%, #{$kiwi-700} 50%, #{$slate-300} 100%);
+}
+
+[theme="kiwipress"] [workflow-connector]::after {
+    color: var(--kw-accent);
+}
+
+/* Panel — used for supporting info cards (e.g. contact-info) */
+[theme="kiwipress"] [panel] {
+    background-color: var(--kw-surface-muted);
+    border: 1px solid var(--kw-border);
+}
+
+[theme="kiwipress"] [panel] [icon] {
+    background-color: var(--kw-accent-tint);
+    color: var(--kw-accent);
+    border-radius: 10px;
+}
+
+/* Search panel */
+[theme="kiwipress"] [search-panel] {
+    background-color: var(--kw-surface-muted);
+    border: 1px solid var(--kw-border);
+}
+
+[theme="kiwipress"] [search-input-group] {
+    background-color: var(--kw-surface);
+    border: 2px solid var(--kw-border);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[theme="kiwipress"] [search-input-group]:focus-within {
+    border-color: var(--kw-accent);
+    box-shadow: 0 0 0 3px #{rgba($kiwi-700, 0.1)};
+}
+
+[theme="kiwipress"] [search-result] {
+    background-color: var(--kw-surface);
+    border: 1px solid var(--kw-border);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[theme="kiwipress"] [search-result]:hover {
+    border-color: var(--kw-accent);
+    box-shadow: 0 2px 8px var(--kw-shadow);
+}
+
+/* Tabs */
+[theme="kiwipress"] [tabs] {
+    border-bottom-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [tabs] > button,
+[theme="kiwipress"] [tab] {
+    background-color: transparent;
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [tabs] > button:hover,
+[theme="kiwipress"] [tab]:hover {
+    background-color: transparent;
+    color: var(--kw-heading);
+    transform: none;
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [tabs] > button[active],
+[theme="kiwipress"] [tab][active] {
+    color: var(--kw-accent);
+    border-bottom-color: var(--kw-accent);
+}
+
+/* Developers hub -------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/developers.
+   ====================================================================== */
+[theme="kiwipress"] [developers-hero] {
+    background: var(--kw-hero-background);
+}
+
+[theme="kiwipress"] [dev-hero-header] > [lede] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [dev-quickstart] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [quickstart-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    box-shadow: 0 4px 24px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [quickstart-body] > [eyebrow] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [quickstart-body] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [code-block] {
+    background-color: $black-900;
+    color: #{rgba($white-100, 0.92)};
+    border: 1px solid #{rgba($white-100, 0.08)};
+}
+
+[theme="kiwipress"] [code-block] > code {
+    color: inherit;
+}
+
+[theme="kiwipress"] [dev-categories] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [category-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [category-card]:hover {
+    box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [category-card="content"]:hover     { border-color: var(--kw-tier-content); }
+[theme="kiwipress"] [category-card="application"]:hover { border-color: var(--kw-tier-application); }
+[theme="kiwipress"] [category-card="runtime"]:hover     { border-color: var(--kw-tier-runtime); }
+
+[theme="kiwipress"] [category-card="content"] [category-icon] {
+    background-color: var(--kw-tier-content-soft);
+    border-color: var(--kw-tier-content-tint);
+    color: var(--kw-tier-content-strong);
+}
+
+[theme="kiwipress"] [category-card="application"] [category-icon] {
+    background-color: var(--kw-tier-application-soft);
+    border-color: var(--kw-tier-application-tint);
+    color: var(--kw-tier-application-strong);
+}
+
+[theme="kiwipress"] [category-card="runtime"] [category-icon] {
+    background-color: var(--kw-tier-runtime-soft);
+    border-color: var(--kw-tier-runtime-tint);
+    color: var(--kw-tier-runtime-strong);
+}
+
+[theme="kiwipress"] [category-card] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [category-card="content"]     [category-cta] { color: var(--kw-tier-content-strong); }
+[theme="kiwipress"] [category-card="application"] [category-cta] { color: var(--kw-tier-application-strong); }
+[theme="kiwipress"] [category-card="runtime"]     [category-cta] { color: var(--kw-tier-runtime-strong); }
+
+[theme="kiwipress"] [dev-resources] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [resource-tile] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    color: var(--kw-text);
+}
+
+[theme="kiwipress"] [resource-tile]:hover {
+    border-color: var(--kw-accent);
+    color: var(--kw-text);
+}
+
+[theme="kiwipress"] [resource-tile] > i {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [resource-tile] p {
+    color: var(--kw-text-soft);
+}
+
+/* How It Works ---------------------------------------------------------
+   Three-tier architecture explainer. Tier colors are content=blue,
+   application=green, runtime=orange.
+   ====================================================================== */
+[theme="kiwipress"] [architecture-hero] {
+    background: var(--kw-hero-background);
+}
+
+[theme="kiwipress"] [arch-hero-header] > [lede] {
+    color: var(--kw-text-soft);
+}
+
+/* Tier diagram (hero) */
+[theme="kiwipress"] [tier-diagram] {
+    background-color: var(--kw-surface);
+    border: 1px solid var(--kw-border);
+    box-shadow: 0 4px 24px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [tier-label] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [tier="content"] {
+    background-color: var(--kw-tier-content-soft);
+    border-color: var(--kw-tier-content);
+    color: var(--kw-tier-content-strong);
+}
+
+[theme="kiwipress"] [tier="content"] > strong { color: var(--kw-tier-content-strong); }
+
+[theme="kiwipress"] [tier="application"] {
+    background-color: var(--kw-tier-application-soft);
+    border-color: var(--kw-tier-application);
+    color: var(--kw-tier-application-strong);
+}
+
+[theme="kiwipress"] [tier="application"] > strong { color: var(--kw-tier-application-strong); }
+
+[theme="kiwipress"] [tier="runtime"] {
+    background-color: var(--kw-tier-runtime-soft);
+    border-color: var(--kw-tier-runtime);
+    color: var(--kw-tier-runtime-strong);
+}
+
+[theme="kiwipress"] [tier="runtime"] > strong { color: var(--kw-tier-runtime-strong); }
+
+[theme="kiwipress"] [tier-arrow] {
+    color: var(--kw-text-soft);
+}
+
+/* Centered section headers (shared) */
+[theme="kiwipress"] [section-header][centered] > [lede] {
+    color: var(--kw-text-soft);
+}
+
+/* Philosophy */
+[theme="kiwipress"] [philosophy] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [philosophy-card] {
+    background-color: var(--kw-surface-muted);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [philosophy-card]:hover {
+    border-color: var(--kw-border-strong);
+}
+
+[theme="kiwipress"] [philosophy-card][featured] {
+    background-color: var(--kw-tier-application-soft);
+    border-color: var(--kw-tier-application);
+}
+
+[theme="kiwipress"] [philosophy-card] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [philosophy-badge="content"]     { background-color: var(--kw-tier-content); }
+[theme="kiwipress"] [philosophy-badge="application"] { background-color: var(--kw-tier-application); }
+[theme="kiwipress"] [philosophy-badge="runtime"]     { background-color: var(--kw-tier-runtime); }
+
+/* Four steps */
+[theme="kiwipress"] [four-steps] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [step-row] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [step-marker] {
+    background: var(--kw-step-marker-background);
+    color: $white-100;
+}
+
+[theme="kiwipress"] [step-body] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [step-arrow] {
+    color: var(--kw-accent);
+}
+
+/* Architecture overview */
+[theme="kiwipress"] [architecture-overview] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [arch-stack] {
+    background-color: var(--kw-surface-muted);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [arch-layer-label] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [arch-layer="content"] {
+    background-color: var(--kw-tier-content-soft);
+    border-color: var(--kw-tier-content);
+}
+[theme="kiwipress"] [arch-layer="content"] > h3 { color: var(--kw-tier-content-strong); }
+
+[theme="kiwipress"] [arch-layer="application"] {
+    background-color: var(--kw-tier-application-soft);
+    border-color: var(--kw-tier-application);
+}
+[theme="kiwipress"] [arch-layer="application"] > h3 { color: var(--kw-tier-application-strong); }
+
+[theme="kiwipress"] [arch-layer="runtime"] {
+    background-color: var(--kw-tier-runtime-soft);
+    border-color: var(--kw-tier-runtime);
+}
+[theme="kiwipress"] [arch-layer="runtime"] > h3 { color: var(--kw-tier-runtime-strong); }
+
+[theme="kiwipress"] [arch-feature] {
+    background-color: var(--kw-surface);
+    color: var(--kw-text);
+}
+
+[theme="kiwipress"] [arch-divider]::before,
+[theme="kiwipress"] [arch-divider]::after {
+    background-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [arch-divider] > span {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [arch-summary] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [arch-summary-item] > p {
+    color: var(--kw-text-soft);
+}
+
+/* Two Ways */
+[theme="kiwipress"] [two-ways] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [two-way="plain"] {
+    background-color: var(--kw-tier-application-soft);
+    border-color: var(--kw-tier-application);
+}
+
+[theme="kiwipress"] [two-way="plain"] > h3 {
+    color: var(--kw-tier-application-strong);
+}
+
+[theme="kiwipress"] [two-way="developer"] {
+    background-color: var(--kw-tier-content-soft);
+    border-color: var(--kw-tier-content);
+}
+
+[theme="kiwipress"] [two-way="developer"] > h3 {
+    color: var(--kw-tier-content-strong);
+}
+
+[theme="kiwipress"] [two-way] > ul > li {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+/* Engineers (dark) */
+[theme="kiwipress"] [engineers] {
+    background-color: $black-900;
+    color: #{rgba($white-100, 0.9)};
+}
+
+[theme="kiwipress"] [engineers] [section-header] > h2 {
+    color: $white-100;
+}
+
+[theme="kiwipress"] [engineers] [section-header] > [lede] {
+    color: #{rgba($white-100, 0.7)};
+}
+
+[theme="kiwipress"] [engineer-item] {
+    background-color: #{rgba($white-100, 0.04)};
+    border-color: #{rgba($white-100, 0.12)};
+}
+
+[theme="kiwipress"] [engineer-item][featured] {
+    border-color: var(--kw-accent);
+    background-color: #{rgba($kiwi-700, 0.08)};
+}
+
+[theme="kiwipress"] [engineer-item] h4 {
+    color: $white-100;
+}
+
+[theme="kiwipress"] [engineer-item] p {
+    color: #{rgba($white-100, 0.65)};
+}
+
+[theme="kiwipress"] [check-mark] {
+    background-color: var(--kw-accent);
+}
+
+/* Final CTA */
+[theme="kiwipress"] [final-cta] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [final-cta-inner] {
+    background: var(--kw-cta-background);
+    color: $white-100;
+}
+
+[theme="kiwipress"] [final-cta-inner] > h2 {
+    color: $white-100;
+}
+
+[theme="kiwipress"] [final-cta-inner] > p {
+    color: #{rgba($white-100, 0.9)};
+}
+
+[theme="kiwipress"] [final-cta-inner] :where(button) {
+    background-color: $white-100;
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [final-cta-inner] :where(button:hover) {
+    background-color: var(--kw-accent-soft);
+}
+
+[theme="kiwipress"] [final-cta-inner] :where(button[btn="outline"]) {
+    background-color: transparent;
+    color: $white-100;
+    border-color: #{rgba($white-100, 0.4)};
+}
+
+[theme="kiwipress"] [final-cta-inner] :where(button[btn="outline"]:hover) {
+    background-color: #{rgba($white-100, 0.1)};
+    border-color: $white-100;
+}
+
+/* Developer hub --------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/developers.
+   ====================================================================== */
+[theme="kiwipress"] [developers-hero] {
+    background: var(--kw-hero-background);
+}
+
+[theme="kiwipress"] [dev-hero-header] > [lede] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [dev-quickstart] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [quickstart-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    box-shadow: 0 4px 16px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [quickstart-body] > [eyebrow] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [quickstart-body] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [code-block] {
+    background-color: $black-900;
+    color: #{rgba($white-100, 0.92)};
+    border: 1px solid $black-900;
+}
+
+[theme="kiwipress"] [dev-install] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [install-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [install-card]:hover {
+    border-color: var(--kw-border-strong);
+}
+
+[theme="kiwipress"] [install-icon] {
+    background-color: var(--kw-accent-soft);
+    border-color: var(--kw-accent-tint);
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [install-card] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [install-footnote] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [install-footnote] > a {
+    color: var(--kw-accent);
+    font-weight: 500;
+}
+
+/* Categories */
+[theme="kiwipress"] [dev-categories] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [category-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [category-card]:hover {
+    border-color: var(--kw-border-strong);
+    box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [category-card="content"]:hover     { border-color: var(--kw-tier-content); }
+[theme="kiwipress"] [category-card="application"]:hover { border-color: var(--kw-tier-application); }
+[theme="kiwipress"] [category-card="runtime"]:hover     { border-color: var(--kw-tier-runtime); }
+
+[theme="kiwipress"] [category-card="content"] [category-icon] {
+    background-color: var(--kw-tier-content-soft);
+    border-color: var(--kw-tier-content-tint);
+    color: var(--kw-tier-content);
+}
+
+[theme="kiwipress"] [category-card="application"] [category-icon] {
+    background-color: var(--kw-tier-application-soft);
+    border-color: var(--kw-tier-application-tint);
+    color: var(--kw-tier-application);
+}
+
+[theme="kiwipress"] [category-card="runtime"] [category-icon] {
+    background-color: var(--kw-tier-runtime-soft);
+    border-color: var(--kw-tier-runtime-tint);
+    color: var(--kw-tier-runtime);
+}
+
+[theme="kiwipress"] [category-card] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [category-card="content"] [category-cta]     { color: var(--kw-tier-content); }
+[theme="kiwipress"] [category-card="application"] [category-cta] { color: var(--kw-tier-application); }
+[theme="kiwipress"] [category-card="runtime"] [category-cta]     { color: var(--kw-tier-runtime); }
+
+/* Resources */
+[theme="kiwipress"] [dev-resources] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [resource-tile] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    color: var(--kw-text);
+}
+
+[theme="kiwipress"] [resource-tile]:hover {
+    border-color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [resource-tile] > i {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [resource-tile] p {
+    color: var(--kw-text-soft);
+}
+
+/* Login chrome ---------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/login.
+   ====================================================================== */
+[theme="kiwipress"] [login-page] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [login-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    box-shadow: 0 8px 32px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [login-brand] [logo="text"] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [login-brand] [logo-suffix] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [login-header] > [lede] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [login-field] > span {
+    color: var(--kw-text-muted);
+}
+
+[theme="kiwipress"] [forgot-link] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [forgot-link]:hover {
+    color: var(--kw-accent-strong);
+}
+
+[theme="kiwipress"] [login-divider] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [login-divider]::before,
+[theme="kiwipress"] [login-divider]::after {
+    background-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [login-footer] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [login-footer] > a {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [login-footer] > a:hover {
+    color: var(--kw-accent-strong);
+}
+
+/* Dashboard chrome -----------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/dashboard.
+   ====================================================================== */
+[theme="kiwipress"] [dashboard-shell] {
+    background-color: var(--kw-surface-muted);
+    color: var(--kw-text);
+}
+
+[theme="kiwipress"] [dashboard-sidebar] {
+    background-color: var(--kw-surface);
+    border-right-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [sidebar-brand] {
+    border-bottom-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [sidebar-brand] [logo] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [sidebar-brand] [logo-suffix] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [sidebar-nav] {
+    background: transparent;
+    border-bottom: none;
+    backdrop-filter: none;
+}
+
+[theme="kiwipress"] [nav-divider] {
+    border-top-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [nav-link] {
+    color: var(--kw-text-muted);
+}
+
+[theme="kiwipress"] [nav-link]:hover {
+    background-color: var(--kw-surface-muted);
+    color: var(--kw-heading);
+}
+
+[theme="kiwipress"] [nav-link][nav-link="active"] {
+    background-color: var(--kw-accent-soft);
+    color: var(--kw-accent-strong);
+}
+
+[theme="kiwipress"] [sidebar-footer] {
+    border-top-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [sidebar-footer] [version] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [sidebar-footer] [doc-link] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [sidebar-footer] [doc-link]:hover {
+    color: var(--kw-accent-strong);
+}
+
+[theme="kiwipress"] [dashboard-main] {
+    background-color: var(--kw-surface-muted);
+}
+
+[theme="kiwipress"] [page-header] > [lede] {
+    color: var(--kw-text-soft);
+}
+
+/* Wizard chrome --------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/wizard.
+   ====================================================================== */
+[theme="kiwipress"] [wizard-shell] {
+    background-color: var(--kw-page);
+}
+
+[theme="kiwipress"] [wizard-header] {
+    background-color: var(--kw-surface-strong);
+    border-bottom-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [wizard-header] [brand] [logo] {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [wizard-header] [brand] [badge] {
+    background-color: var(--kw-surface-muted);
+    color: var(--kw-text-muted);
+    border: 1px solid var(--kw-border);
+}
+
+[theme="kiwipress"] [wizard-header] button {
+    background-color: transparent;
+    color: var(--kw-text-muted);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+[theme="kiwipress"] [wizard-header] button:hover {
+    background-color: var(--kw-surface-muted);
+    transform: none;
+    box-shadow: none;
+    color: var(--kw-heading);
+}
+
+[theme="kiwipress"] [wizard-rail="left"],
+[theme="kiwipress"] [wizard-rail="right"] {
+    background-color: var(--kw-surface-muted);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [step-tracker] [eyebrow] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [step-tracker] > header > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [steps] > [step][step="pending"] [step-indicator] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [steps] > [step][step="active"] [step-indicator] {
+    background-color: var(--kw-accent);
+    border-color: var(--kw-accent);
+    color: #ffffff;
+}
+
+[theme="kiwipress"] [steps] > [step][step="completed"] [step-indicator] {
+    background-color: var(--kw-accent-strong);
+    border-color: var(--kw-accent-strong);
+    color: #ffffff;
+}
+
+[theme="kiwipress"] [steps] > [step][step="pending"] [step-body] > h4 {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [steps] > [step][step="active"] [step-body] > h4,
+[theme="kiwipress"] [steps] > [step][step="completed"] [step-body] > h4 {
+    color: var(--kw-heading);
+}
+
+[theme="kiwipress"] [steps] > [step] [step-body] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [steps] > [step]:not(:last-child)::after {
+    background-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [steps] > [step][step="completed"]:not(:last-child)::after {
+    background-color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [order-summary] [eyebrow],
+[theme="kiwipress"] [order-summary] > header > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [summary-card] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+    box-shadow: 0 1px 2px var(--kw-shadow);
+}
+
+[theme="kiwipress"] [summary-mode] {
+    border-bottom-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [mode-row] > i {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [mode-row] > div > p[subtle],
+[theme="kiwipress"] [summary-items] > p[subtle],
+[theme="kiwipress"] [line-item] [line-body] > p[subtle],
+[theme="kiwipress"] [summary-card] > p[subtle] {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [line-item] > i {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [summary-total] {
+    border-top-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [trust] {
+    border-top-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [trust] > li {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [trust] [dot] {
+    background-color: var(--kw-accent);
+}
+
+/* Welcome page features (wizard scope only — distinct from [card="feature"]) */
+[theme="kiwipress"] [step-page="welcome"] [feature] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [step-page="welcome"] [feature]:hover {
+    border-color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [step-page="welcome"] [feature] [feature-icon] {
+    background-color: var(--kw-accent-soft);
+    border-color: var(--kw-accent-tint);
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [pill="accent"] {
+    background-color: var(--kw-accent-soft);
+    color: var(--kw-accent);
+    border-color: var(--kw-accent-tint);
+}
+
+[theme="kiwipress"] [placeholder] {
+    border-color: var(--kw-border-strong);
+    background-color: var(--kw-surface);
+}
+
+[theme="kiwipress"] [placeholder] > p {
+    color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [selected-domain] {
+    background-color: var(--kw-surface);
+    border-color: var(--kw-border);
+}
+
+[theme="kiwipress"] [selected-domain] > i {
+    color: var(--kw-accent);
+}
+
+[theme="kiwipress"] [selected-domain] > [subtle] {
+    color: var(--kw-text-soft);
+}
+
+/* Modal */
+[theme="kiwipress"] [modal-overlay] {
+    background-color: #{rgba($black-900, 0.75)};
+    animation: kw-fadeIn 0.2s ease-out;
+}
+
+[theme="kiwipress"] [modal] {
+    background-color: var(--kw-surface);
+    animation: kw-slideUp 0.3s ease-out;
+}
+
+[theme="kiwipress"] [modal-close] {
+    background-color: var(--kw-surface);
+    box-shadow: 0 2px 8px var(--kw-shadow);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+[theme="kiwipress"] [modal-close]:hover {
+    background-color: var(--kw-surface-muted);
+    transform: rotate(90deg);
 }
 
 
-// =====================================================================
-// Animations (kept outside the theme scope so refs work globally)
-// =====================================================================
+/* =====================================================================
+   Animations (declared outside the theme scope so animation refs work)
+   ===================================================================== */
 @keyframes kw-fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }

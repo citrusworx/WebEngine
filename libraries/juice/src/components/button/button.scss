@@ -1,5 +1,32 @@
 @use '../../tokens/color/green/green.scss' as *;
 
+// Bare <button> baseline sizing — themes paint colors / borders / radii.
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font: inherit;
+    line-height: 1.2;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+button[scale="sm"] {
+    padding: 0.4rem 0.875rem;
+    font-size: 0.875rem;
+}
+
+button[scale="lg"] {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+}
+
+button[full] {
+    width: 100%;
+}
+
 [btn="flat"]{
     border-style: solid;
 
@@ -17,9 +44,8 @@
     }
 
     &[scale="lg"]{
-        height: 4vh;
-        width: 7vw;
-        padding: 0.5rem 1rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
     }
 }
 
@@ -40,9 +66,8 @@
     }
 
     &[scale="lg"]{
-        height: 4vh;
-        width: 7vw;
-        padding: 0.5rem 1rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
     }
 }
 
@@ -61,9 +86,8 @@
     }
 
     &[scale="lg"]{
-        height: 4vh;
-        width: 7vw;
-        padding: 0.5rem 1rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
     }
 }
 
@@ -82,9 +106,8 @@
     }
 
     &[scale="lg"]{
-        height: 4vh;
-        width: 7vw;
-        padding: 0.5rem 1rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
     }
 }
 
@@ -104,8 +127,7 @@
     }
 
     &[scale="lg"]{
-        height: 4vh;
-        width: 7vw;
-        padding: 0.5rem 1rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
     }
 }
