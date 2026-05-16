@@ -1,0 +1,10 @@
+export declare const getAllPosts: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const getPostById: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const getPostBySlug: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const getPostByAuthor: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const getPostsByTag: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const getPostsByCategory: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const getPostsByDate: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const createPost: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const updatePost: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;
+export declare const deletePost: import("libraries/seltzer/dist").Route<import("libraries/seltzer/dist").Endpoint>;

@@ -1,4 +1,4 @@
-import type { ApiDefinition } from "../types/api.ts";
+import type { ApiDefinition } from "../types/api";
 import {
     createAliasedQueryRoute,
     createWordPressRoute

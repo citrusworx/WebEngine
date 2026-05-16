@@ -10,7 +10,7 @@ import {
     getPageByTag,
     updatePage
 } from "./routes";
-import type { WordPressPayload } from "../types/api.ts";
+import type { WordPressPayload } from "../types/api";
 
 export class Pages extends WPRead {
     getAll() {
@@ -49,4 +49,3 @@ export class Pages extends WPRead {
         return this.mutate(deletePage, undefined, { id });
     }
 }
-

@@ -1,5 +1,5 @@
 import { createAliasedQueryRoute, createWordPressRoute } from "../core/route-utils";
-import type { ApiDefinition } from "../types/api.ts";
+import type { ApiDefinition } from "../types/api";
 
 type CleanCategoryRoutes = {
     allCategories: ApiDefinition;

@@ -1,6 +1,6 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import type { RouteParams, WPCoreConfig } from "./WPCore.ts";
-import type { WordPressPayload } from "../types/api.ts";
+import type { RouteParams, WPCoreConfig } from "./WPCore";
+import type { WordPressPayload } from "../types/api";
 import { WPClient } from "./WPClient";
 
 export class WPCreate extends WPClient {

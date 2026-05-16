@@ -1,8 +1,8 @@
-import type { ApiDefinition } from "../types/api.ts";
+import type { ApiDefinition } from "../types/api";
 import {
     createAliasedQueryRoute,
     createWordPressRoute
-} from "../core/route-utils.ts";
+} from "../core/route-utils";
 
 type CleanUserRoutes = {
     allUsers: ApiDefinition;

@@ -9,7 +9,7 @@ import {
     getUsersByCityState,
     updateUser
 } from "./routes";
-import type { WordPressPayload } from "../types/api.ts";
+import type { WordPressPayload } from "../types/api";
 
 export class Users extends WPRead {
     getAll() {
