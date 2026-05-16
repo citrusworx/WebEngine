@@ -1,17 +1,17 @@
-# @citrusworx/juice
+# @citrusworx/juiceui
 
 Juice is an attribute-driven styling library for CitrusWorx apps. It packages the compiled Juice stylesheet and a small JS entrypoint so applications can import shared tokens and styles from one place.
 
 ## Install
 
 ```bash
-yarn add @citrusworx/juice
+yarn add @citrusworx/juiceui
 ```
 
 ## Use the stylesheet
 
 ```ts
-import "@citrusworx/juice/styles";
+import "@citrusworx/juiceui/styles";
 ```
 
 ## Use the built files directly
@@ -62,7 +62,7 @@ Config is not required to use Juice. The most stable current entrypoint is still
 ## Build
 
 ```bash
-yarn workspace @citrusworx/juice build
+yarn workspace @citrusworx/juiceui build
 ```
 
 The build runs:

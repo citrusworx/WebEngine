@@ -1,5 +1,11 @@
 # @citrusworx/types
 
+## 0.2.0
+
+### Minor Changes
+
+- Added READMEs to each
+
 ## 0.1.1
 
 ### Patch Changes
