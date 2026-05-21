@@ -11,7 +11,7 @@
 
 #!.yarn/cache
 .pnp.*
-./.npmrc
+.npmrc
 mockups/*
 .mockups/*
 
