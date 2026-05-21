@@ -1,4 +1,4 @@
-import { WPClient } from "./WPClient";
+import { WPClient } from "./WPClient.js";
 export class WPCreate extends WPClient {
     constructor(config) {
         super(config);

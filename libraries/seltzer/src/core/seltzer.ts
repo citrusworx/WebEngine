@@ -1,3 +1,5 @@
+import http from "node:http";
+
 export type Endpoint = {
     route?: Route;
     path: string;
@@ -43,15 +45,11 @@ export class Seltzer {
     }
 
     listen(port: number){
-        const requireFn = Function("return typeof require !== 'undefined' ? require : null;")() as
-            | ((id: string) => any)
-            | null;
-
-        if (!requireFn) {
+        if (typeof process === "undefined" || !process.versions?.node) {
             throw new Error("Seltzer.listen requires a Node.js runtime.");
         }
 
-        const http = requireFn("node:http");
+        // Server
         const server = http.createServer(
             (req: any, res: any) => {
                 const url = new URL(req.url || "/", `http://${req.headers.host}`);
@@ -73,6 +71,8 @@ export class Seltzer {
             }
             return match?.handler(ctx)
         });
-        server.listen(port);
+        server.listen(port, () => {
+            console.log(`Seltzer server listening on port ${port}`);
+        });
     }
 }

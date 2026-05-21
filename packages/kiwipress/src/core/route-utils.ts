@@ -1,5 +1,5 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import type { ApiDefinition } from "../types/api";
+import type { ApiDefinition } from "../types/api.js";
 
 export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
     const headers = {

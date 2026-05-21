@@ -1,25 +1,4 @@
-import { Signal, effect } from "@citrusworx/sigjs";
-
-type ToolbarAction = {
-    label: string;
-    command: string;
-    value?: string;
-};
-
-const textActions: ToolbarAction[] = [
-    { label: "Bold", command: "bold" },
-    { label: "Italic", command: "italic" },
-    { label: "Underline", command: "underline" },
-    { label: "Quote", command: "formatBlock", value: "<blockquote>" },
-    { label: "Code", command: "formatBlock", value: "<pre>" }
-];
-
-const alignActions: ToolbarAction[] = [
-    { label: "Left", command: "justifyLeft" },
-    { label: "Center", command: "justifyCenter" },
-    { label: "Right", command: "justifyRight" },
-    { label: "List", command: "insertUnorderedList" }
-];
+import { Signal } from "@citrusworx/sigjs";
 
 type Mode = "editor" | "preview"
 
@@ -34,7 +13,6 @@ export function EditorShell(){
 // Editor Logic
 export class WYSIWYG {
     private inEdit = Signal(false);
-    private inPreview = Signal(false);
 
     private mode: Mode = "editor";
 

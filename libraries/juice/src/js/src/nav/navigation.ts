@@ -15,16 +15,22 @@ export type NavigationController = {
   isMobile: () => boolean;
 };
 
+const DEFAULT_ROOT: ParentNode =
+  typeof document !== 'undefined' ? document : ({} as ParentNode);
+
 const DEFAULTS: Required<NavigationOptions> = {
-  root: document,
+  root: DEFAULT_ROOT,
   navSelector: 'nav[type="bar"], nav[type="links"]',
   sidebarSelector: 'nav[type="sidebar"]',
   toggleSelector: 'nav[type="mobile"]',
-  mobileBreakpoint: 768,
+  mobileBreakpoint: 960,
 };
 
 const asArray = <T extends Element>(nodes: NodeListOf<T>): T[] =>
   Array.from(nodes);
+
+const SIDEBAR_ID_PREFIX = 'juice-sidebar';
+const TOGGLE_LABEL = 'Toggle navigation menu';
 
 const setVisibility = (element: HTMLElement, visible: boolean) => {
   if (visible) {
@@ -34,6 +40,10 @@ const setVisibility = (element: HTMLElement, visible: boolean) => {
 
   element.setAttribute('hidden', 'true');
 };
+
+const isNativeInteractiveToggle = (element: HTMLElement) =>
+  element instanceof HTMLButtonElement ||
+  element instanceof HTMLAnchorElement;
 
 export const createNavigation = (
   options: NavigationOptions = {}
@@ -61,6 +71,49 @@ export const createNavigation = (
     asArray(root.querySelectorAll<HTMLElement>(settings.toggleSelector));
 
   const isMobile = () => window.innerWidth <= settings.mobileBreakpoint;
+
+  let sidebarIdCounter = 0;
+
+  const ensureSidebarId = (sidebar: HTMLElement) => {
+    if (sidebar.id) return sidebar.id;
+    sidebarIdCounter += 1;
+    const sidebarId = `${SIDEBAR_ID_PREFIX}-${sidebarIdCounter}`;
+    sidebar.id = sidebarId;
+    return sidebarId;
+  };
+
+  const ensureToggleAccessibility = (
+    toggle: HTMLElement | null | undefined,
+    sidebar: HTMLElement | null | undefined
+  ) => {
+    if (!toggle) return;
+    const hasVisibleContent =
+      toggle.children.length > 0 || (toggle.textContent?.trim().length ?? 0) > 0;
+
+    if (sidebar) {
+      toggle.setAttribute('aria-controls', ensureSidebarId(sidebar));
+    }
+
+    if (hasVisibleContent) {
+      toggle.removeAttribute('data-nav-toggle-icon');
+    } else {
+      toggle.setAttribute('data-nav-toggle-icon', 'default');
+    }
+
+    if (!toggle.hasAttribute('aria-label') && !toggle.hasAttribute('aria-labelledby')) {
+      const text = toggle.textContent?.trim() ?? '';
+      if (text.length === 0) {
+        toggle.setAttribute('aria-label', TOGGLE_LABEL);
+      }
+    }
+
+    if (!isNativeInteractiveToggle(toggle)) {
+      toggle.setAttribute('role', 'button');
+      if (!toggle.hasAttribute('tabindex')) {
+        toggle.setAttribute('tabindex', '0');
+      }
+    }
+  };
 
   const resolveSidebar = (toggle?: HTMLElement | null) => {
     const sidebars = getSidebars();
@@ -122,6 +175,8 @@ export const createNavigation = (
 
     if (!sidebar) return;
 
+    ensureSidebarId(sidebar);
+    ensureToggleAccessibility(resolvedToggle, sidebar);
     sidebar.removeAttribute('hidden');
     sidebar.setAttribute('aria-hidden', 'false');
     resolvedToggle?.setAttribute('aria-expanded', 'true');
@@ -133,6 +188,8 @@ export const createNavigation = (
 
     if (!sidebar) return;
 
+    ensureSidebarId(sidebar);
+    ensureToggleAccessibility(resolvedToggle, sidebar);
     if (isMobile()) {
       sidebar.setAttribute('hidden', 'true');
     }
@@ -162,6 +219,8 @@ export const createNavigation = (
 
     navs.forEach((nav) => setVisibility(nav, !mobile));
     toggles.forEach((toggle) => {
+      const sidebar = resolveSidebar(toggle);
+      ensureToggleAccessibility(toggle, sidebar);
       setVisibility(toggle, mobile);
       if (!mobile) {
         toggle.setAttribute('aria-expanded', 'false');
@@ -169,7 +228,9 @@ export const createNavigation = (
     });
 
     sidebars.forEach((sidebar) => {
+      ensureSidebarId(sidebar);
       const toggle = resolveToggle(sidebar);
+      ensureToggleAccessibility(toggle, sidebar);
 
       if (!mobile) {
         sidebar.removeAttribute('hidden');
@@ -202,6 +263,22 @@ export const createNavigation = (
     toggleSidebar(toggle);
   };
 
+  const handleRootKeydown = (event: Event) => {
+    if (!(event instanceof KeyboardEvent)) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const toggle = target.closest(settings.toggleSelector);
+    if (!(toggle instanceof HTMLElement) || isNativeInteractiveToggle(toggle)) {
+      return;
+    }
+
+    event.preventDefault();
+    toggleSidebar(toggle);
+  };
+
   let syncScheduled = false;
   const scheduleSync = () => {
     if (syncScheduled) return;
@@ -220,6 +297,7 @@ export const createNavigation = (
 
   window.addEventListener('resize', handleResize);
   rootEvents.addEventListener('click', handleRootClick);
+  rootEvents.addEventListener('keydown', handleRootKeydown);
 
   if (observer && root instanceof Node) {
     observer.observe(root, {
@@ -236,6 +314,7 @@ export const createNavigation = (
     destroy: () => {
       window.removeEventListener('resize', handleResize);
       rootEvents.removeEventListener('click', handleRootClick);
+      rootEvents.removeEventListener('keydown', handleRootKeydown);
       observer?.disconnect();
     },
     openSidebar,

@@ -29582,6 +29582,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
   gap: 2rem;
   padding: 1rem 1.5rem;
   width: 100%;
@@ -29627,7 +29628,7 @@ nav > [container] {
   padding: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 960px) {
   nav {
     padding: 0.75rem 1rem;
     gap: 1rem;
@@ -29636,7 +29637,7 @@ nav > [container] {
     display: none;
   }
   [nav-actions] {
-    gap: 0.5rem;
+    display: none;
   }
 }
 nav[type=bar] {
@@ -29720,14 +29721,40 @@ nav[type=subnav] {
 }
 
 nav[type=sidebar] {
-  display: flex;
+  display: none;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
-  height: 100vh;
-  width: 15vw;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 1rem;
+  width: min(20rem, 100vw - 2rem);
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  padding: 0;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  z-index: 30;
+  box-sizing: border-box;
 }
 
+nav[type=sidebar] a {
+  text-decoration: none;
+  color: inherit;
+}
+
+nav[type=sidebar] button,
+nav[type=sidebar] a[href] {
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  nav[type=sidebar]:not([hidden]) {
+    display: flex;
+  }
+}
 nav[type=breadcrumb] {
   display: flex;
   align-items: center;
@@ -29760,11 +29787,60 @@ nav[type=pagination] a:hover {
 }
 
 nav[type=mobile] {
-  display: flex;
+  display: none;
   align-items: center;
-  justify-content: space-around;
-  height: 10vh;
-  width: 100%;
+  justify-content: center;
+  position: relative;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+@media (max-width: 960px) {
+  nav[type=mobile] {
+    display: inline-flex;
+  }
+}
+nav[type=mobile][data-nav-toggle-icon=default]::before,
+nav[type=mobile][data-nav-toggle-icon=default]::after {
+  content: "";
+  position: absolute;
+  width: 1.125rem;
+  height: 2px;
+  border-radius: 999px;
+  background-color: currentColor;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+nav[type=mobile][data-nav-toggle-icon=default]::before {
+  box-shadow: 0 -0.35rem 0 currentColor, 0 0.35rem 0 currentColor;
+}
+
+nav[type=mobile][data-nav-toggle-icon=default]::after {
+  opacity: 0;
+}
+
+nav[type=mobile][data-nav-toggle-icon=default][aria-expanded=true]::before {
+  transform: rotate(45deg);
+  box-shadow: none;
+}
+
+nav[type=mobile][data-nav-toggle-icon=default][aria-expanded=true]::after {
+  opacity: 1;
+  transform: rotate(-45deg);
+}
+
+nav[type=mobile]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 nav[type=compact] {
@@ -30626,10 +30702,6 @@ nav[type=actions] a:hover {
     bottom: -0.75rem;
     left: -0.625rem;
   }
-}
-@font-face {
-  font-family: "Luckiest Guy";
-  src: url("./otf/luckiest-guy/luckiest-guy.ttf") format("truetype");
 }
 /* Added */
 /* Added */
@@ -75123,8 +75195,8 @@ body[gradient]:not([text])[animation=fall]::before {
 }
 
 [icon=monero] {
-  -webkit-mask-image: url("./icons/fontawesome/web/svgs/brands/mondero.svg");
-  mask-image: url("./icons/fontawesome/web/svgs/brands/mondero.svg");
+  -webkit-mask-image: url("./icons/fontawesome/web/svgs/brands/monero.svg");
+  mask-image: url("./icons/fontawesome/web/svgs/brands/monero.svg");
 }
 
 [icon=napster] {
@@ -75783,8 +75855,8 @@ body[gradient]:not([text])[animation=fall]::before {
 }
 
 [icon=stripes] {
-  -webkit-mask-image: url("./icons/fontawesome/web/svgs/brands/stripes.svg");
-  mask-image: url("./icons/fontawesome/web/svgs/brands/stripes.svg");
+  -webkit-mask-image: url("./icons/fontawesome/web/svgs/brands/stripe-s.svg");
+  mask-image: url("./icons/fontawesome/web/svgs/brands/stripe-s.svg");
 }
 
 [icon=stripe] {
@@ -75953,8 +76025,8 @@ body[gradient]:not([text])[animation=fall]::before {
 }
 
 [icon=untapped] {
-  -webkit-mask-image: url("./icons/fontawesome/web/svgs/brands/untapped.svg");
-  mask-image: url("./icons/fontawesome/web/svgs/brands/untapped.svg");
+  -webkit-mask-image: url("./icons/fontawesome/web/svgs/brands/untappd.svg");
+  mask-image: url("./icons/fontawesome/web/svgs/brands/untappd.svg");
 }
 
 [icon=ups] {

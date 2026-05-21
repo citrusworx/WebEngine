@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/grapevine",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -25,7 +25,7 @@
         "test:ui": "vitest --ui"
     },
     "dependencies": {
-        "@citrusworx/types": "workspace:*",
+        "@citrusworx/types": "^0.2.0",
         "axios": "^1.13.6",
         "js-yaml": "^4.1.1",
         "sshpk": "^1.18.0",

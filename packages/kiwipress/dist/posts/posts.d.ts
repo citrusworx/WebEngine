@@ -1,5 +1,5 @@
-import { WPRead } from "../core/WPRead";
-import type { WordPressPayload } from "../types/api";
+import { WPRead } from "../core/WPRead.js";
+import type { WordPressPayload } from "../types/api.js";
 export declare class Posts extends WPRead {
     getAll(): any;
     getById(id: string | number): any;

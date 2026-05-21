@@ -1,4 +1,4 @@
-import { WPRead } from "../core/WPRead";
+import { WPRead } from "../core/WPRead.js";
 import {
     createPost,
     deletePost,
@@ -10,8 +10,8 @@ import {
     getPostsByDate,
     getPostsByTag,
     updatePost
-} from "./routes";
-import type { WordPressPayload } from "../types/api";
+} from "./routes.js";
+import type { WordPressPayload } from "../types/api.js";
 
 export class Posts extends WPRead {
     getAll() {

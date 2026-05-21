@@ -1,9 +1,9 @@
-import { WPRead } from "../core/WPRead";
+import { WPRead } from "../core/WPRead.js";
 import {
     getAllTags,
     getTagById,
     getTagBySlug
-} from "./routes";
+} from "./routes.js";
 
 export class Tags extends WPRead {
     getAll() {

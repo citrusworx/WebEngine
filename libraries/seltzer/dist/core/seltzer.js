@@ -1,3 +1,4 @@
+import http from "node:http";
 export class Seltzer {
     constructor() {
         this.routes = [];
@@ -15,11 +16,10 @@ export class Seltzer {
         return this;
     }
     listen(port) {
-        const requireFn = Function("return typeof require !== 'undefined' ? require : null;")();
-        if (!requireFn) {
+        if (typeof process === "undefined" || !process.versions?.node) {
             throw new Error("Seltzer.listen requires a Node.js runtime.");
         }
-        const http = requireFn("node:http");
+        // Server
         const server = http.createServer((req, res) => {
             const url = new URL(req.url || "/", `http://${req.headers.host}`);
             const match = this.routes.find((route) => route.method === req.method && route.path === url.pathname);

@@ -1,4 +1,12 @@
-# @citrusworx/kiwipressapp
+# @citrusworx/kiwipressapp-front
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @citrusworx/juiceui@0.1.1
+  - @citrusworx/kiwipress@0.2.1
 
 ## 0.1.0
 

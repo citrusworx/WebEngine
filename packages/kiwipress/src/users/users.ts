@@ -1,4 +1,4 @@
-import { WPRead } from "../core/WPRead";
+import { WPRead } from "../core/WPRead.js";
 import {
     createUser,
     deleteUser,
@@ -8,8 +8,8 @@ import {
     getUsersByCity,
     getUsersByCityState,
     updateUser
-} from "./routes";
-import type { WordPressPayload } from "../types/api";
+} from "./routes.js";
+import type { WordPressPayload } from "../types/api.js";
 
 export class Users extends WPRead {
     getAll() {

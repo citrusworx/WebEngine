@@ -3,6 +3,16 @@
     "include": [
         "src/**/*"
     ],
+    "exclude": [
+        "dist",
+        "node_modules",
+        "src/native/**/*",
+        "src/templates/**/*",
+        "src/tools/**/*",
+        "src/schema/**/*",
+        ".mockups/**/*",
+        "test-results/**/*"
+    ],
 
     "compilerOptions": {
         "target": "esnext",

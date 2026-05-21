@@ -18,4 +18,4 @@ RUN yarn install
 
 EXPOSE 5173
 
-CMD ["yarn", "workspace", "@citrusworx/kiwipressapp", "dev", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["yarn", "workspace", "@citrusworx/kiwipressapp-front", "dev", "--host", "0.0.0.0", "--port", "5173"]

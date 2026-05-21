@@ -1,9 +1,9 @@
-import { WPRead } from "../core/WPRead";
+import { WPRead } from "../core/WPRead.js";
 import {
     getAllCategories,
     getCategoryById,
     getCategoryBySlug
-} from "./routes";
+} from "./routes.js";
 
 export class Categories extends WPRead {
     getAll() {

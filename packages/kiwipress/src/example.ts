@@ -1,4 +1,4 @@
-import { Posts } from "./posts/posts";
+import { Posts } from "./posts/posts.js";
 
 async function runExample() {
     const posts = new Posts({

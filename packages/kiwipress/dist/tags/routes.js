@@ -1,4 +1,4 @@
-import { createAliasedQueryRoute, createWordPressRoute } from "../core/route-utils";
+import { createAliasedQueryRoute, createWordPressRoute } from "../core/route-utils.js";
 const routes = {
     allTags: {
         method: "GET",

@@ -1,1 +1,1 @@
-export * from "./accordion/accordion";
+export { Accordion } from "./accordion/accordion.js";

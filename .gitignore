@@ -27,3 +27,8 @@ sshkey
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/launch.json
+
+.editorconfig
+
+citrusworx-cs-study-guide.md
+kiwipress-docker-compose.yml

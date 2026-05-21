@@ -10,15 +10,22 @@ interface AccordionProps {
 
 export function Accordion(props: AccordionProps) {
     const isExpanded = Signal(props.defaultExpanded ?? false);
-    const panelId = `${props.name}-panel`;
+    const slug = props.name
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "accordion";
+    const buttonId = `${slug}-trigger`;
+    const panelId = `${slug}-panel`;
 
     return (
         <section accordion name={props.name}>
             <button
                 {...(props.attributes ?? {})}
                 type="button"
+                id={buttonId}
                 accordion-item
-                aria-expanded={() => { String(isExpanded.get()) }}
+                aria-expanded={() => String(isExpanded.get())}
                 aria-controls={panelId}
                 onclick={() => isExpanded.set(!isExpanded.get())}
             >
@@ -27,9 +34,11 @@ export function Accordion(props: AccordionProps) {
 
             <div
                 id={panelId}
-                content={() => { isExpanded.get() ? "active" : "hidden" }}
-                hidden={!isExpanded.get()}
-                aria-hidden={String(!isExpanded.get())}
+                role="region"
+                aria-labelledby={buttonId}
+                content={() => (isExpanded.get() ? "active" : "hidden")}
+                hidden={() => (!isExpanded.get() ? true : undefined)}
+                aria-hidden={() => String(!isExpanded.get())}
             >
                 {props.children}
             </div>

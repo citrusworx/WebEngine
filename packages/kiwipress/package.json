@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/kiwipress",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -28,7 +28,7 @@
         "zod": "^4.3.6"
     },
     "dependencies": {
-        "@citrusworx/nectarine": "workspace:*",
-        "@citrusworx/seltzer": "workspace:*"
+        "@citrusworx/nectarine": "^0.1.0",
+        "@citrusworx/seltzer": "^0.1.0"
     }
 }

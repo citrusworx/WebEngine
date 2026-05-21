@@ -1,5 +1,11 @@
 # @citrusworx/grapevine
 
+## 0.2.1
+
+### Patch Changes
+
+- Replace monorepo-only internal dependency ranges with published semver ranges so consumers outside the workspace can install these packages correctly.
+
 ## 0.2.0
 
 ### Minor Changes

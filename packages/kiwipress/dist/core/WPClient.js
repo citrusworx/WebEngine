@@ -1,6 +1,6 @@
 import { Seltzer } from "@citrusworx/seltzer";
-import { WPCore } from "./WPCore";
-import { requestWordPress } from "./route-utils";
+import { WPCore } from "./WPCore.js";
+import { requestWordPress } from "./route-utils.js";
 export class WPClient extends WPCore {
     app;
     constructor(config) {

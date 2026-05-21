@@ -1,8 +1,8 @@
 import { Seltzer } from "@citrusworx/seltzer";
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import { WPCore, type RouteParams, type WPCoreConfig } from "./WPCore";
-import { requestWordPress } from "./route-utils";
-import type { WordPressPayload } from "../types/api";
+import { WPCore, type RouteParams, type WPCoreConfig } from "./WPCore.js";
+import { requestWordPress } from "./route-utils.js";
+import type { WordPressPayload } from "../types/api.js";
 
 export class WPClient extends WPCore {
     protected readonly app: Seltzer;

@@ -1,8 +1,8 @@
-import type { ApiDefinition } from "../types/api";
+import type { ApiDefinition } from "../types/api.js";
 import {
     createAliasedQueryRoute,
     createWordPressRoute
-} from "../core/route-utils";
+} from "../core/route-utils.js";
 
 type CleanPageRoutes = {
     allPages: ApiDefinition;

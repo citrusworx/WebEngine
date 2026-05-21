@@ -1,5 +1,5 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import type { ApiDefinition } from "../types/api";
+import type { ApiDefinition } from "../types/api.js";
 export declare function requestWordPress(ctx: Endpoint, init?: RequestInit): Promise<any>;
 export declare function createWordPressRoute(config: ApiDefinition, init?: RequestInit): Route<Endpoint>;
 export declare function getLastParam(ctx: Endpoint): string;

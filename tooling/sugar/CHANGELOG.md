@@ -1,5 +1,13 @@
 # @citrusworx/sugar
 
+## 0.2.1
+
+### Patch Changes
+
+- Replace monorepo-only internal dependency ranges with published semver ranges so consumers outside the workspace can install these packages correctly.
+- Updated dependencies
+  - @citrusworx/juiceui@0.1.1
+
 ## 0.2.0
 
 ### Minor Changes

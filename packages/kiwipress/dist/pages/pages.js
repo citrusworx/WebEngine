@@ -1,5 +1,5 @@
-import { WPRead } from "../core/WPRead";
-import { createPage, deletePage, getAllPages, getPageByAuthor, getPageByCategory, getPageById, getPageBySlug, getPageByTag, updatePage } from "./routes";
+import { WPRead } from "../core/WPRead.js";
+import { createPage, deletePage, getAllPages, getPageByAuthor, getPageByCategory, getPageById, getPageBySlug, getPageByTag, updatePage } from "./routes.js";
 export class Pages extends WPRead {
     getAll() {
         return this.read(getAllPages);

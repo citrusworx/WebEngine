@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/webengine",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
         "prepack": "yarn build"
     },
     "dependencies": {
-        "@citrusworx/types": "workspace:*",
+        "@citrusworx/types": "^0.2.0",
         "js-yaml": "^4.1.1",
         "json5": "^2.2.3",
         "smol-toml": "^1.6.1",

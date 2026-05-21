@@ -1,17 +1,15 @@
-import axios from "axios";
-import path from "path";
-
+import { client, parseYAML } from "../../../infrastructure/util/utilities.js";
 
 export const postAlertPolicy = async (policy: string) => {
     // Create One Axios Call for usage in createAlertPolicy
-    const client = await axios.post(`https:api.digitalocean.com/v1/insights/droplet`, policy,  {
+    const response = await client.post(`https:api.digitalocean.com/v1/insights/droplet`, policy,  {
         headers:{  
             Authorization: `Bearer ${process.env.DO_TOKEN}`,
             "Content-Type": "application/json"
         }
     })
-    console.log(client)
-    return client.data;
+    console.log(response)
+    return response.data;
 }
 
 export interface CreateAlertPolicy {
@@ -37,4 +35,14 @@ export const createAlertPolicy = {
 
     },
     percentCPU: (id: number) => {}
+}
+
+export async function listAlertPolicies() {
+    const response = await client.get(`https:api.digitalocean.com/v1/insights/droplet`);
+    return response.data.alert_policies;
+}
+
+export async function getAlertPolicy(alert_uuid: string) {
+    const response = await client.get(`v2/monitoring/alerts/${alert_uuid}`);
+    return response.data.alert_policy;
 }

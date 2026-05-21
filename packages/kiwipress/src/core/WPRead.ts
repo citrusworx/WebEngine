@@ -1,5 +1,5 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
-import { WPClient } from "./WPClient";
+import { WPClient } from "./WPClient.js";
 
 export class WPRead extends WPClient {
     protected read(route: Route<Endpoint>, params?: Record<string, string | number>) {

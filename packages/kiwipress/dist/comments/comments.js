@@ -1,5 +1,5 @@
-import { WPRead } from "../core/WPRead";
-import { getAllComments, getCommentById, getCommentsByPost } from "./routes";
+import { WPRead } from "../core/WPRead.js";
+import { getAllComments, getCommentById, getCommentsByPost } from "./routes.js";
 export class Comments extends WPRead {
     getAll() {
         return this.read(getAllComments);

@@ -1,5 +1,5 @@
-import { WPRead } from "../core/WPRead";
-import { createPost, deletePost, getAllPosts, getPostByAuthor, getPostById, getPostBySlug, getPostsByCategory, getPostsByDate, getPostsByTag, updatePost } from "./routes";
+import { WPRead } from "../core/WPRead.js";
+import { createPost, deletePost, getAllPosts, getPostByAuthor, getPostById, getPostBySlug, getPostsByCategory, getPostsByDate, getPostsByTag, updatePost } from "./routes.js";
 export class Posts extends WPRead {
     getAll() {
         return this.read(getAllPosts);

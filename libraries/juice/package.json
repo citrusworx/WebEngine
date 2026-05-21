@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/juiceui",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -14,11 +14,14 @@
     "files": [
         "dist"
     ],
+    "sideEffects": [
+        "./dist/index.css"
+    ],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
-        "@citrusworx/sigjs": "workspace:*"
+        "@citrusworx/sigjs": "^0.1.0"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^6.9.1",
@@ -30,11 +33,9 @@
         "@types/js-yaml": "^4.0.9",
         "@types/react": "^19",
         "@types/react-dom": "^19",
-        "@types/react-native-web": "^0",
         "@types/sass": "^1.45.0",
         "autoprefixer": "^10.4.27",
         "cssnano": "^7.1.3",
-        "expo": "^55.0.17",
         "gulp": "^5.0.1",
         "gulp-postcss": "^10.0.0",
         "gulp-rename": "^2.1.0",
@@ -44,8 +45,6 @@
         "postcss": "^8.5.8",
         "react": "^19.2.5",
         "react-dom": "^19.2.5",
-        "react-native": "^0.85.2",
-        "react-native-web": "^0.21.2",
         "sass": "^1.98.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
@@ -56,6 +55,7 @@
         "dev": "gulp dev & vite dev --watch",
         "build": "gulp build --gulpfile gulp.ts && vite build && tsc -p tsconfig.types.json",
         "prepack": "yarn build",
-        "test": "npx playwright test"
+        "test": "node ../../node_modules/vitest/vitest.mjs run",
+        "test:e2e": "playwright test"
     }
 }

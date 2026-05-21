@@ -1,4 +1,4 @@
-import { WPRead } from "../core/WPRead";
+import { WPRead } from "../core/WPRead.js";
 import {
     createPage,
     deletePage,
@@ -9,8 +9,8 @@ import {
     getPageBySlug,
     getPageByTag,
     updatePage
-} from "./routes";
-import type { WordPressPayload } from "../types/api";
+} from "./routes.js";
+import type { WordPressPayload } from "../types/api.js";
 
 export class Pages extends WPRead {
     getAll() {

@@ -1,5 +1,5 @@
-import { WPRead } from "../core/WPRead";
-import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, getUsersByCity, getUsersByCityState, updateUser } from "./routes";
+import { WPRead } from "../core/WPRead.js";
+import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, getUsersByCity, getUsersByCityState, updateUser } from "./routes.js";
 export class Users extends WPRead {
     getAll() {
         return this.read(getAllUsers);
