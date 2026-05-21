@@ -35,3 +35,6 @@ kiwipress-docker-compose.yml
 
 ./apps/*
 apps/*
+
+./kiwipresser/*
+kiwipresser/*
