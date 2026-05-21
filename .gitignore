@@ -22,3 +22,8 @@ node_modules
 *.pem
 sshkey
 *.pub
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
