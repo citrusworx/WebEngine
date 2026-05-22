@@ -1,253 +1,76 @@
 # WebEngine
 
-WebEngine is a kernel-based, config-driven orchestration engine for web applications. It manages your entire stack--from design to deployment--while giving developers and creators the freedom to use the tools they prefer.
+`@citrusworx/webengine` is the workspace orchestration package for the CitrusWorx stack.
 
-WebEngine does not lock you into a specific framework or language. It reads your configuration, builds a dependency graph, and orchestrates everything together--build pipeline, dev server, deployment, and telemetry--regardless of what's in your stack.
+This page reflects the current source in `engines/webengine/`, not older aspirational notes about a fully realized kernel/module runtime.
 
----
+## Current status
 
-## Philosophy
+WebEngine exists today as an early scaffold with a clear direction, but it is not yet the fully implemented kernel system previously described in this docs folder.
 
-Modern web development is fragmented. Developers spend more time wiring tools together than building their applications. WebEngine exists to solve that--providing structure, automation, and standards so your focus stays on what matters.
+What exists today:
 
-- Stack agnostic--use React, Next.js, Vue, PHP, Python, or WebEngine's own modules.
-- Config driven--your application's runtime is defined in `kiwi.config.toml`
-- Modular--every piece is optional and replaceable
-- Accessible--developers work in code, creators work in Sugar.
+- a published package surface at `@citrusworx/webengine`
+- a `WebEngine` class in `engines/webengine/src/index.ts`
+- constructor wiring for `Blueprint`, `Environment`, and `DeploymentManifest`
+- lifecycle-shaped methods for `init`, `buildEnvironment`, `buildApplication`, `secureEnvironment`, `deployApplication`, `monitorApplication`, `scaleApplication`, `killApplication`, `cleanupEnvironment`, and `teardown`
+- package dependencies on `@citrusworx/types`, `js-yaml`, `json5`, `smol-toml`, and `zod`
 
----
+What is still mostly scaffold/design:
 
-## How It Works
+- real config loading and validation in the current source entrypoint
+- actual provider orchestration across Juice, Sig.js, Nectarine, Grapevine, and related workspaces
+- a working kernel/module registry exposed from the current source tree
+- blueprint/module resolution beyond shared types and lifecycle placeholders
+- production deployment, telemetry, and dashboard workflows
 
-WebEngine searches upward from the current working directory for `kiwi.config.toml` and:
-
-1. Parses and validates the project config
-2. Resolves the list of kernel modules and computes their dependency order
-3. Runs `scaffold → bootstrap → health` for each module in dependency order
-4. Exposes a `KernelContext` for modules and blueprints to share handles and config
-5. Supports graceful shutdown in reverse dependency order
-
----
-
-## Configuration
-
-WebEngine uses two config files.
-
-### `kiwi.config.toml`
-
-The main project config. WebEngine walks upward from the working directory to find it.
-
-```toml
-version = "0.1"
-
-[kernel]
-modules = ["core", "web"]   # built-in: core, web, native, embedded
-
-[webengine]
-app_name  = "myapp"
-host      = "localhost"
-port      = 8080
-
-# optional
-description         = "My application"
-debug_mode          = false
-log_level           = "info"
-
-[webengine.database]
-url = "postgres://localhost/mydb"
-
-[webengine.security]
-enable_https = true
-cert_file    = "certs/server.crt"
-key_file     = "certs/server.key"
-
-[webengine.features]
-enable_caching     = true
-enable_compression = true
-
-[runtimes]
-# paths to per-runtime config files (optional -- defaults shown)
-web.path      = "webengine.config.json5"
-native.path   = "native.config.yaml"
-embedded.path = "embedded.config.yaml"
-```
-
-### `webengine.config.json5`
-
-The web runtime config. Read and validated by the `web` kernel module during bootstrap.
-
-```json5
-{
-    name: "myapp",
-    description: "My application",
-    version: "0.1.0",
-    network: {
-        host: "localhost",
-        port: 8080,
-        dns: {
-            enabled: false,
-            provider: "cloudflare",
-            domain: "example.com"
-        }
-    },
-    development: {},
-    staging: {},
-    deployment: {}
-}
-```
-
----
-
-## Kernel API
-
-The kernel is the core of WebEngine. It is fully implemented and used internally by the `WebEngine` class.
-
-### `WebEngine` class
+## Public API today
 
 ```ts
 import { WebEngine } from "@citrusworx/webengine";
+import type {
+  Blueprint,
+  DeploymentManifest,
+  Environment
+} from "@citrusworx/types";
 
-const engine = new WebEngine();
+const engine = new WebEngine({
+  blueprint,
+  environment,
+  deploymentManifest
+});
 
-// Start: finds kiwi.config.toml, runs full scaffold → bootstrap → health lifecycle
-await engine.start();
-
-// Access the live kernel context and health
-const ctx = engine.getKernelContext();
-engine.assertHealthy();  // throws if any module failed
-
-// Load a blueprint and resolve its modules
-engine.loadBlueprint({ name: "myapp", modules: ["core", "web"], ... });
-engine.resolveModules();
-
-// Deploy to an environment
-engine.deploy("production");
-
-// Graceful shutdown (reverse dependency order)
-await engine.shutdown();
+engine.init();
+await engine.buildEnvironment();
+await engine.buildApplication();
+await engine.deployApplication();
+await engine.teardown();
 ```
 
-### `KernelContext`
+## Reality check
 
-`KernelContext` is the shared runtime object passed to every kernel module. It holds the validated config, resolved paths, and a map of module handles for inter-module communication.
+The current `WebEngine` class is best understood as a lifecycle skeleton and integration point, not a finished runtime.
 
-```ts
-ctx.kiwi          // parsed kiwi.config.toml
-ctx.projectRoot   // directory containing kiwi.config.toml
-ctx.webRuntime    // parsed webengine.config.json5 (set by web module)
+That means:
 
-ctx.registerModuleHandle("mymodule", { ready: true });
-ctx.getModuleHandle("mymodule");
-```
+- the class shape is useful for aligning the long-term orchestration model
+- `@citrusworx/types` is already doing real work as the contract layer
+- the richer WebEngine vision is still ahead of the implementation in `src/`
 
-### Kernel module lifecycle
+## Relationship to the libraries
 
-Each kernel module implements up to four lifecycle hooks:
+WebEngine is meant to compose the library layer rather than replace it:
 
-| Hook | Required | Description |
-|---|---|---|
-| `scaffold(ctx)` | No | One-time filesystem or resource setup |
-| `bootstrap(ctx)` | Yes | Load config, register module handle |
-| `health(ctx)` | Yes | Return `{ ok: boolean, detail?: string }` |
-| `shutdown(ctx)` | No | Cleanup on graceful exit |
+- `@citrusworx/types` provides shared contracts
+- `@citrusworx/nectarine` is the backend/data layer
+- `@citrusworx/seltzer` is the HTTP/runtime layer
+- `@citrusworx/juiceui` and `@citrusworx/sigjs` cover UI/runtime concerns
+- `@citrusworx/grapevine` and `@citrusworx/dns` cover infrastructure and domain workflows
 
-Modules run in topological dependency order. `shutdown` runs in reverse order.
+That composition model is the direction. The code in `engines/webengine/src/index.ts` is the current implementation baseline.
 
-### Built-in kernel modules
+## Source of truth
 
-| ID | Dependencies | Description |
-|---|---|---|
-| `core` | — | Base infrastructure, always required |
-| `web` | `core` | Loads and validates `webengine.config.json5` |
-| `native` | — | Desktop/mobile runtime (YAML config) |
-| `embedded` | — | IoT/embedded runtime (YAML config) |
-
----
-
-## Modules
-
-WebEngine's native modules are independently usable outside of WebEngine. Each has its own config and can be swapped for any equivalent tool.
-
-| Module | Purpose | Config |
-|---|---|---|
-| Juice | UI component library | `juice.config.yaml` |
-| Sig.js | Signals-based DOM reactivity | TBD |
-| Nectarine | Backend models, schemas, SQL generation, and APIs | `nectarine.config.yaml` |
-| GrapeVine | Cloud infrastructure and deployment | `grapevine.config.yaml` |
-| KiwiPress | Headless WordPress client | `kiwipress.config.yaml` |
-
----
-
-## Schematics
-
-Schematics are application type templates that define the structure and standards for a specific kind of web application. A schematic gives your project its shape.
-
-Available schematics:
-- `default` -- general purpose web application
-- `kiwipress` -- headless and traditional WordPress
-- `pizzeria` -- restaurant and food service
-- `health-rx` -- health and pharmacy
-- `webstore` -- ecommerce
-- `api-app` -- API-first application
-- `convenience` -- convenience and retail
-
----
-
-## Blueprints
-
-Blueprints are installable business function modules. They declare what they need, what they expose, and register themselves with the kernel on startup. Blueprints are language-agnostic and communicate via the kernel API.
-
-The `Blueprint` type is defined and `loadBlueprint()` / `resolveModules()` are implemented. Full blueprint installation and inter-blueprint composition are planned.
-
-Available blueprints:
-- Email
-- CRM
-- ERM
-- Inventory
-- Warehouse
-- Logistics
-- Delivery
-- Online Marketing
-
-Blueprints compose together. A pizzeria schematic might use delivery, inventory, and online marketing blueprints. A health app might use ERM and CRM blueprints.
-
----
-
-## Tooling
-
-| Tooling | Description |
-|---|---|
-| WebEngine CLI | Command line interface for creating and managing projects |
-| WebEngine Dashboard | Web UI for managing deployed applications |
-| WebEngine Wizard | GUI app creation experience powered by Sugar |
-| Sugar | Visual and node-based editor for low and no-code environments |
-
----
-
-## Status
-
-WebEngine is in active development. The kernel lifecycle, config loading, and module system are implemented. Higher-level features (schematics, stack composition, telemetry, tooling) are in design.
-
-| Component | Status |
-|---|---|
-| WebEngine engine class | Early implementation -- skeleton with open design questions in source |
-| Kernel lifecycle (scaffold / bootstrap / health / shutdown) | Implemented |
-| Config loading (`kiwi.config.toml`) | Implemented |
-| `KernelContext` | Implemented |
-| Built-in modules (core, web, native, embedded) | Implemented |
-| Types library (`@citrusworx/types`) | Implemented |
-| Blueprint loading | Partially implemented |
-| Schematics | Design phase |
-| Stack composition (`[stack]` config) | Design phase |
-| Rendering modes (CSR / SSG / SSR / Edge) | Design phase |
-| Telemetry | Design phase |
-| Juice | Active development |
-| Sig.js | Active development |
-| Nectarine | Active development |
-| GrapeVine | Active development |
-| KiwiPress | Active development |
-| Sugar | Planned |
-| Dashboard | Planned |
-| Wizard | Planned |
-
----
+- Package: `engines/webengine/package.json`
+- Current source entrypoint: `engines/webengine/src/index.ts`
+- Published README: `engines/webengine/README.md`

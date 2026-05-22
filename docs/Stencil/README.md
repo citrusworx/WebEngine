@@ -1,10 +1,5 @@
-# Stencil (A Multi-language Templating Language)
+# Stencil
 
-```jsx
+This folder is a legacy name.
 
-    if sale.isActive:
-    <h1>{{ heading.primary }}</h1>
-
-    if sale.start:
-    <p> {{ sales.message["start"] }} </p>
-```
+The active documentation for the parser package now lives under [docs/stenzil](../stenzil/README.md).
