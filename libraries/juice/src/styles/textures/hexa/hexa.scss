@@ -6,7 +6,16 @@
 */
 
 @for $i from 1 through 40 {
-    $name: if($i < 10, "00#{$i}", if($i < 100, "0#{$i}", "#{$i}"));
+    $name: "";
+
+    @if $i < 10 {
+        $name: "00#{$i}";
+    } @else if $i < 100 {
+        $name: "0#{$i}";
+    } @else {
+        $name: "#{$i}";
+    }
+
     $variant: (($i - 1) % 6) + 1;
     $variant-name: "00#{$variant}";
 

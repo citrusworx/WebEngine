@@ -1,0 +1,48 @@
+name: Juice Package
+
+on:
+  pull_request:
+    paths:
+      - "libraries/juice/**"
+      - "libraries/sig/**"
+      - ".changeset/**"
+      - ".github/workflows/juice-package.yml"
+      - "package.json"
+      - "yarn.lock"
+  push:
+    branches:
+      - master
+    paths:
+      - "libraries/juice/**"
+      - "libraries/sig/**"
+      - ".changeset/**"
+      - ".github/workflows/juice-package.yml"
+      - "package.json"
+      - "yarn.lock"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Verify Juice package
+        run: yarn verify:juice
+
+      - name: Check changeset status
+        if: github.event_name == 'pull_request'
+        run: yarn changeset status

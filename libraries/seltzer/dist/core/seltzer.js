@@ -37,7 +37,9 @@ export class Seltzer {
             }
             return match?.handler(ctx);
         });
-        server.listen(port);
+        server.listen(port, () => {
+            console.log(`Seltzer server listening on port ${port}`);
+        });
     }
 }
 //# sourceMappingURL=seltzer.js.map

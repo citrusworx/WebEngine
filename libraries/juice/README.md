@@ -115,6 +115,32 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 </section>
 ```
 
+## Browser Support
+
+Juice currently targets modern evergreen browsers:
+
+- the last 2 Chrome versions
+- the last 2 Edge versions
+- the last 2 Firefox versions
+- the last 2 Safari major versions
+- iOS Safari `16.4+`
+
+The CSS build runs through `autoprefixer` against that package-level browserslist target, so supported-browser behavior is part of the build contract rather than an assumption.
+
+## Asset Policy
+
+Juice ships a large compiled stylesheet plus the icon assets it references.
+
+- `dist/index.css` is the main published stylesheet artifact
+- `dist/icons/` is intentionally published and contains the icon SVG payload used by the stylesheet
+- texture SVGs are inlined into the compiled CSS during build, so they do not ship as separate runtime files
+
+Current release policy:
+
+- keep `dist/index.css` under the current artifact budget
+- keep `dist/icons/` under a separate icon payload budget
+- avoid adding new runtime asset directories unless they are part of the published package contract
+
 ## Optional config
 
 Juice also includes an optional config surface at `juice.config.yaml`.
@@ -137,6 +163,18 @@ The build runs:
 
 - `gulp.ts` to compile `src/juice.scss` into `dist/index.css`
 - `vite` to build the JS entrypoint into `dist/index.js`
+
+## Release
+
+Before publishing a new Juice release, run:
+
+```bash
+yarn workspace @citrusworx/juiceui verify
+```
+
+That is the minimum publish gate for Juice right now. It rebuilds the package and reruns the package/runtime test suite so the published artifacts, accessibility runtime behavior, and package contract are all checked together.
+
+Release notes and versioning should continue to flow through Changesets. The package changelog is consumer-facing and should describe behavior, package contract changes, and dependency updates in plain language instead of internal-only notes.
 
 ## Docs
 

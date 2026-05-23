@@ -16,7 +16,8 @@
         "dev": "turbo run dev --parallel",
         "changeset": "changeset",
         "version-packages": "changeset version",
-        "release-packages": "changeset publish"
+        "release-packages": "changeset publish",
+        "verify:juice": "yarn workspace @citrusworx/juiceui verify"
     },
     "devDependencies": {
         "@changesets/cli": "2.29.6",

@@ -1,5 +1,16 @@
 # @citrusworx/kiwipress
 
+## 0.3.0
+
+### Minor Changes
+
+- Updates
+
+### Patch Changes
+
+- Updated dependencies
+  - @citrusworx/seltzer@0.2.0
+
 ## 0.2.1
 
 ### Patch Changes

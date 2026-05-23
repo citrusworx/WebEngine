@@ -1,3 +1,3 @@
-export declare const getAllCategories: import("libraries/seltzer/dist/index.js").Route<import("libraries/seltzer/dist/index.js").Endpoint>;
-export declare const getCategoryById: import("libraries/seltzer/dist/index.js").Route<import("libraries/seltzer/dist/index.js").Endpoint>;
-export declare const getCategoryBySlug: import("libraries/seltzer/dist/index.js").Route<import("libraries/seltzer/dist/index.js").Endpoint>;
+export declare const getAllCategories: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getCategoryById: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getCategoryBySlug: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;

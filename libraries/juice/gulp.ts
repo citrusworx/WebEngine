@@ -6,6 +6,7 @@ import * as dartSass from "sass";
 import gulpSass from "gulp-sass";
 import { dirname, resolve } from "node:path";
 import postcss from "gulp-postcss";
+import autoprefixer from "autoprefixer";
 
 const sass = gulpSass(dartSass);
 const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -48,7 +49,7 @@ const clean = async () => {
 const styles = () => {
     return gulp.src(resolve(ROOT_DIR, "src/juice.scss"))
         .pipe(sass().on("error", (err: any) => console.error("SASS ERROR:", err.message)))
-        .pipe(postcss([inlineSvgTextures()]))
+        .pipe(postcss([inlineSvgTextures(), autoprefixer()]))
         .pipe(rename("index.css"))
         .pipe(gulp.dest(DIST_ROOT));
 };

@@ -73,6 +73,7 @@ export const createNavigation = (
   const isMobile = () => window.innerWidth <= settings.mobileBreakpoint;
 
   let sidebarIdCounter = 0;
+  let lastActiveToggle: HTMLElement | null = null;
 
   const ensureSidebarId = (sidebar: HTMLElement) => {
     if (sidebar.id) return sidebar.id;
@@ -180,6 +181,7 @@ export const createNavigation = (
     sidebar.removeAttribute('hidden');
     sidebar.setAttribute('aria-hidden', 'false');
     resolvedToggle?.setAttribute('aria-expanded', 'true');
+    lastActiveToggle = resolvedToggle ?? null;
   };
 
   const closeSidebar = (toggle?: HTMLElement | null) => {
@@ -196,6 +198,10 @@ export const createNavigation = (
 
     sidebar.setAttribute('aria-hidden', String(isMobile()));
     resolvedToggle?.setAttribute('aria-expanded', 'false');
+
+    if (isMobile() && resolvedToggle) {
+      resolvedToggle.focus();
+    }
   };
 
   const toggleSidebar = (toggle?: HTMLElement | null) => {
@@ -265,10 +271,23 @@ export const createNavigation = (
 
   const handleRootKeydown = (event: Event) => {
     if (!(event instanceof KeyboardEvent)) return;
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-
     const target = event.target;
     if (!(target instanceof Element)) return;
+
+    if (event.key === 'Escape' && isMobile()) {
+      const openSidebars = getSidebars().filter((sidebar) => !sidebar.hasAttribute('hidden'));
+
+      if (openSidebars.length === 0) return;
+
+      event.preventDefault();
+      openSidebars.forEach((sidebar) => {
+        const toggle = resolveToggle(sidebar) ?? lastActiveToggle;
+        closeSidebar(toggle);
+      });
+      return;
+    }
+
+    if (event.key !== 'Enter' && event.key !== ' ') return;
 
     const toggle = target.closest(settings.toggleSelector);
     if (!(toggle instanceof HTMLElement) || isNativeInteractiveToggle(toggle)) {

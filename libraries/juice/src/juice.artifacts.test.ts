@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -12,6 +12,7 @@ function readPackageJson() {
         main?: string;
         types?: string;
         exports?: Record<string, { default?: string; types?: string } | string>;
+        browserslist?: string[];
     };
 }
 
@@ -38,6 +39,17 @@ describe("Juice build artifacts", () => {
 
         expect(cssStats.size).toBeLessThan(6_500_000);
     });
+
+    it("keeps the published icon payload under the current size budget", () => {
+        const iconFiles = readdirSync(join(DIST_DIR, "icons"), { recursive: true, withFileTypes: true });
+        const totalSize = iconFiles
+            .filter((entry) => entry.isFile())
+            .reduce((size, entry) => {
+                return size + statSync(join(entry.parentPath, entry.name)).size;
+            }, 0);
+
+        expect(totalSize).toBeLessThan(4_000_000);
+    });
 });
 
 describe("Juice package contract", () => {
@@ -63,6 +75,18 @@ describe("Juice package contract", () => {
                 expect(existsSync(join(PACKAGE_ROOT, target.types))).toBe(true);
             }
         }
+    });
+
+    it("declares an explicit browserslist support target", () => {
+        const pkg = readPackageJson();
+
+        expect(pkg.browserslist).toEqual([
+            "last 2 Chrome versions",
+            "last 2 Edge versions",
+            "last 2 Firefox versions",
+            "last 2 Safari major versions",
+            "iOS >= 16.4"
+        ]);
     });
 
     it("can be imported from the built entrypoint with the stable runtime symbols", async () => {

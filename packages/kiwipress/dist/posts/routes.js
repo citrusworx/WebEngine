@@ -1,5 +1,5 @@
 import { createAliasedQueryRoute, createWordPressRoute } from "../core/route-utils.js";
-const routes = {
+export const routes = {
     allPosts: {
         method: "GET",
         endpoint: "/posts"

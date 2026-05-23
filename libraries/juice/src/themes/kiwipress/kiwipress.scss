@@ -443,111 +443,6 @@
     border-bottom-color: var(--kw-accent);
 }
 
-/* Developers hub -------------------------------------------------------
-   Paints the structural primitives in libraries/juice/src/components/developers.
-   ====================================================================== */
-[theme="kiwipress"] [developers-hero] {
-    background: var(--kw-hero-background);
-}
-
-[theme="kiwipress"] [dev-hero-header] > [lede] {
-    color: var(--kw-text-soft);
-}
-
-[theme="kiwipress"] [dev-quickstart] {
-    background-color: var(--kw-page);
-}
-
-[theme="kiwipress"] [quickstart-card] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
-    box-shadow: 0 4px 24px var(--kw-shadow);
-}
-
-[theme="kiwipress"] [quickstart-body] > [eyebrow] {
-    color: var(--kw-accent);
-}
-
-[theme="kiwipress"] [quickstart-body] > p {
-    color: var(--kw-text-soft);
-}
-
-[theme="kiwipress"] [code-block] {
-    background-color: $black-900;
-    color: #{rgba($white-100, 0.92)};
-    border: 1px solid #{rgba($white-100, 0.08)};
-}
-
-[theme="kiwipress"] [code-block] > code {
-    color: inherit;
-}
-
-[theme="kiwipress"] [dev-categories] {
-    background-color: var(--kw-surface-muted);
-}
-
-[theme="kiwipress"] [category-card] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
-}
-
-[theme="kiwipress"] [category-card]:hover {
-    box-shadow: 0 8px 24px var(--kw-shadow);
-}
-
-[theme="kiwipress"] [category-card="content"]:hover     { border-color: var(--kw-tier-content); }
-[theme="kiwipress"] [category-card="application"]:hover { border-color: var(--kw-tier-application); }
-[theme="kiwipress"] [category-card="runtime"]:hover     { border-color: var(--kw-tier-runtime); }
-
-[theme="kiwipress"] [category-card="content"] [category-icon] {
-    background-color: var(--kw-tier-content-soft);
-    border-color: var(--kw-tier-content-tint);
-    color: var(--kw-tier-content-strong);
-}
-
-[theme="kiwipress"] [category-card="application"] [category-icon] {
-    background-color: var(--kw-tier-application-soft);
-    border-color: var(--kw-tier-application-tint);
-    color: var(--kw-tier-application-strong);
-}
-
-[theme="kiwipress"] [category-card="runtime"] [category-icon] {
-    background-color: var(--kw-tier-runtime-soft);
-    border-color: var(--kw-tier-runtime-tint);
-    color: var(--kw-tier-runtime-strong);
-}
-
-[theme="kiwipress"] [category-card] > p {
-    color: var(--kw-text-soft);
-}
-
-[theme="kiwipress"] [category-card="content"]     [category-cta] { color: var(--kw-tier-content-strong); }
-[theme="kiwipress"] [category-card="application"] [category-cta] { color: var(--kw-tier-application-strong); }
-[theme="kiwipress"] [category-card="runtime"]     [category-cta] { color: var(--kw-tier-runtime-strong); }
-
-[theme="kiwipress"] [dev-resources] {
-    background-color: var(--kw-page);
-}
-
-[theme="kiwipress"] [resource-tile] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
-    color: var(--kw-text);
-}
-
-[theme="kiwipress"] [resource-tile]:hover {
-    border-color: var(--kw-accent);
-    color: var(--kw-text);
-}
-
-[theme="kiwipress"] [resource-tile] > i {
-    color: var(--kw-accent);
-}
-
-[theme="kiwipress"] [resource-tile] p {
-    color: var(--kw-text-soft);
-}
-
 /* How It Works ---------------------------------------------------------
    Three-tier architecture explainer. Tier colors are content=blue,
    application=green, runtime=orange.
@@ -844,6 +739,10 @@
     background-color: $black-900;
     color: #{rgba($white-100, 0.92)};
     border: 1px solid $black-900;
+}
+
+[theme="kiwipress"] [code-block] > code {
+    color: inherit;
 }
 
 [theme="kiwipress"] [dev-install] {

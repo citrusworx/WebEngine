@@ -1,4 +1,5 @@
-import { Seltzer } from "@citrusworx/seltzer";
+import { Seltzer, client } from "@citrusworx/seltzer";
+import { posts } from "./routes/posts.js";
 // The server needs to be a sum of routes and handlers.
 // 
 // server.route({
@@ -27,5 +28,15 @@ server.route({
   path: '/users',
   handler: getUsersHandler(context)
 });
+
+client.get({
+    endpoint: 'GET',
+    path: '/posts',
+    options: {
+        baseUrl: 'http://localhost:3000'
+    }
+}).then((response) => {
+    console.log("Response from /posts:", response);
+})
 
 server.listen(3000);

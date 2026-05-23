@@ -5,7 +5,13 @@
 */
 
 @for $i from 1 through 12 {
-    $name: if($i < 10, "00#{$i}", "0#{$i}");
+    $name: "";
+
+    @if $i < 10 {
+        $name: "00#{$i}";
+    } @else {
+        $name: "0#{$i}";
+    }
 
     [texture="grid.pat-#{$name}"]::after {
         background-image: url('./grid/svg/grid-#{$name}.svg');

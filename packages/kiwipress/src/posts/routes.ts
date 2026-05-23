@@ -17,7 +17,7 @@ type CleanPostRoutes = {
     createPost: ApiDefinition;
 }
 
-const routes: CleanPostRoutes = {
+export const routes: CleanPostRoutes = {
     allPosts: {
         method: "GET",
         endpoint: "/posts"

@@ -1,4 +1,3 @@
-import { connect } from 'node:http2';
 import { Client } from 'pg';
 
 export class PgSql {
@@ -40,10 +39,12 @@ export class PgSql {
       await client.end();
   }
 
-  // Config-based query execution
+  /**  Config-based query execution
   // 
   // @param client - the database client to use for executing the query
   // @param config - the configuration object containing the SQL query and parameters
+  */
+
   async query(client: Client, config: { sql: string, params?: any[] }){
     if(!this.client){
       console.log("No client found. Please connect to the database first.");
