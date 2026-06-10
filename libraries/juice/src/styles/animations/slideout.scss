@@ -1,0 +1,75 @@
+[motion="slideOut.left"] {
+    animation: slideOutLeft 1.2s linear forwards;
+}
+
+[motion="slideOut.left::fast"] {
+    animation: slideOutLeft 0.4s linear forwards;
+}
+
+[motion="slideOut.right"] {
+    animation: slideOutRight 1.2s linear forwards;
+}
+
+[motion="slideOut.right::fast"] {
+    animation: slideOutRight 0.4s linear forwards;
+}
+
+[motion="slideOut.up"] {
+    animation: slideOutUp 1.2s linear forwards;
+}
+
+[motion="slideOut.up::fast"] {
+    animation: slideOutUp 0.4s linear forwards;
+}
+
+[motion="slideOut.down"] {
+    animation: slideOutDown 1.2s linear forwards;
+}
+
+[motion="slideOut.down::fast"] {
+    animation: slideOutDown 0.4s linear forwards;
+}
+
+@keyframes slideOutLeft {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-15vw);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(15vw);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutUp {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10vh);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutDown {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(10vh);
+        opacity: 0;
+    }
+}

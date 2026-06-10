@@ -1,0 +1,63 @@
+id: citrusmint
+name: Citrusmint
+selector: theme="citrusmint"
+version: 1
+summary: Fresh green wellness theme built on Juice green tokens.
+
+philosophy:
+  role: "Identity layer for calm, natural, citrus-forward interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: readable, friendly
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: bold, organic
+
+palette:
+  page:
+    base: freshgreen-100
+  text:
+    default: freshgreen-800
+    muted: freshgreen-600
+    heading: freshgreen-900
+  surfaces:
+    default: freshgreen-200
+    card: white-100
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+recommended_use_cases:
+  - wellness landing pages
+  - citrus and natural product brands
+  - light marketing sites
+
+authoring_rules:
+  - Set theme="citrusmint" on body or a root wrapper.
+  - Use Juice layout primitives for structure; do not redefine stack or gap in the theme.
+  - Prefer semantic HTML; avoid painting every div with a background.
+
+example:
+  root: '<body theme="citrusmint">'

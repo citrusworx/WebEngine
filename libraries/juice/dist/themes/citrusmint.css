@@ -1,0 +1,56 @@
+@charset "UTF-8";
+/*
+  Citrusmint — light wellness theme using fresh green tokens.
+  Structure follows the Juice theme contract (see docs/juice/juice-theme-authoring.md).
+*/
+[theme=citrusmint] {
+  --cm-page: hsl(121, 100%, 90%);
+  --cm-surface: hsl(0, 0%, 100%);
+  --cm-surface-muted: hsl(121, 100%, 80%);
+  --cm-border: rgba(0, 127.5, 2.125, 0.12);
+  --cm-text: hsl(121, 100%, 25%);
+  --cm-text-muted: hsl(121, 100%, 40%);
+  --cm-heading: hsl(121, 100%, 20%);
+  --cm-body-font: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --cm-heading-font: "Archivo Black", var(--cm-body-font);
+  background-color: var(--cm-page);
+  color: var(--cm-text);
+  font-family: var(--cm-body-font);
+}
+
+[theme=citrusmint] :where(main) {
+  background: transparent;
+  color: inherit;
+}
+
+[theme=citrusmint] :where(div) {
+  background-color: transparent;
+  color: inherit;
+}
+
+[theme=citrusmint] :where(section, article, aside, nav, header, footer, form) {
+  background-color: var(--cm-surface-muted);
+  color: var(--cm-text);
+  border: 1px solid var(--cm-border);
+}
+
+[theme=citrusmint] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--cm-heading);
+  font-family: var(--cm-heading-font);
+}
+
+[theme=citrusmint] :where(p, span, li, label) {
+  color: var(--cm-text-muted);
+  font-family: var(--cm-body-font);
+}
+
+[theme=citrusmint] :where(a) {
+  color: var(--cm-heading);
+}
+
+[theme=citrusmint] :where(button) {
+  background-color: var(--cm-heading);
+  color: var(--cm-surface);
+  border: 1px solid transparent;
+  font-family: var(--cm-body-font);
+}

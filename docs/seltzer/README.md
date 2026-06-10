@@ -1,5 +1,11 @@
 # Seltzer Design Overview
 
+## Study Guide
+
+For a structured Node.js learning path mapped to Seltzer's HTTP pipeline — courses, exercises, and implementation phases — see [Seltzer Study: Node.js Reading & Course List](./courses.md).
+
+---
+
 ## What Seltzer Is
 
 Seltzer is a **structured HTTP runtime** designed to turn raw HTTP requests into predictable application behavior.

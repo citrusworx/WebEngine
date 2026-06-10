@@ -52,8 +52,8 @@ They are small, composable controls that work across many element types.
 
 Examples:
 
-- `surfaceTone="soft"`
-- `surfaceTone="strong"`
+- `surfaceTone="soft"` (implemented; see [juice-surfaces.md](./juice-surfaces.md))
+- `surfaceTone="strong"` (planned, not yet in CSS)
 - `borderStrength="soft"`
 - `borderStrength="bold"`
 - `shadowTone="cool"`

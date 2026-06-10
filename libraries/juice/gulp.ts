@@ -13,6 +13,12 @@ const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
 const TEXTURE_SRC_ROOT = resolve(ROOT_DIR, "src/styles/textures");
 const DIST_ROOT = resolve(ROOT_DIR, "dist");
 
+const THEME_ENTRIES = [
+    { id: "aquaflux", src: "src/themes/aquaflux/aquaflux.scss" },
+    { id: "kiwipress", src: "src/themes/kiwipress/kiwipress.scss" },
+    { id: "citrusmint", src: "src/themes/citrusmint/citrusmint.scss" },
+] as const;
+
 const inlineSvgTextures = () => {
     return {
         postcssPlugin: "inline-svg-textures",
@@ -30,7 +36,7 @@ const inlineSvgTextures = () => {
                         .trim();
                     const encoded = svg
                         .replace(/"/g, "'")
-                        .replace(/[<>#%{}|\\^~\[\]`]/g, c => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+                        .replace(/[<>#%{}|\\^~\[\]`]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
                     return `url("data:image/svg+xml,${encoded}")`;
                 }
             );
@@ -40,31 +46,51 @@ const inlineSvgTextures = () => {
 
 (inlineSvgTextures as unknown as { postcss?: boolean }).postcss = true;
 
+const sassPipeline = () =>
+    sass().on("error", (err: { message: string }) => {
+        console.error("SASS ERROR:", err.message);
+    });
+
+const postcssPipeline = () => postcss([inlineSvgTextures(), autoprefixer()]);
 
 const clean = async () => {
     await fs.promises.rm(DIST_ROOT, { recursive: true, force: true });
     await fs.promises.mkdir(DIST_ROOT, { recursive: true });
+    await fs.promises.mkdir(resolve(DIST_ROOT, "themes"), { recursive: true });
 };
 
-const styles = () => {
-    return gulp.src(resolve(ROOT_DIR, "src/juice.scss"))
-        .pipe(sass().on("error", (err: any) => console.error("SASS ERROR:", err.message)))
-        .pipe(postcss([inlineSvgTextures(), autoprefixer()]))
+const stylesCore = () => {
+    return gulp
+        .src(resolve(ROOT_DIR, "src/juice.core.scss"))
+        .pipe(sassPipeline())
+        .pipe(postcssPipeline())
         .pipe(rename("index.css"))
         .pipe(gulp.dest(DIST_ROOT));
 };
 
-const icons = () => {
-    return gulp.src("./src/icons/**/*.svg")
-            .pipe(gulp.dest("./dist/icons"));
-}
+const buildThemeStyles =
+    (themeId: string, srcRelative: string) =>
+    () => {
+        return gulp
+            .src(resolve(ROOT_DIR, srcRelative))
+            .pipe(sassPipeline())
+            .pipe(postcssPipeline())
+            .pipe(rename(`${themeId}.css`))
+            .pipe(gulp.dest(resolve(DIST_ROOT, "themes")));
+    };
 
-const watch = () => {
-    gulp.watch("./src/**/*.scss", styles);
+const stylesThemes = gulp.parallel(...THEME_ENTRIES.map(({ id, src }) => buildThemeStyles(id, src)));
+
+const icons = () => {
+    return gulp.src("./src/icons/**/*.svg").pipe(gulp.dest("./dist/icons"));
+};
+
+const watchAll = () => {
+    gulp.watch("./src/**/*.scss", gulp.parallel(stylesCore, stylesThemes));
     gulp.watch("./src/icons/**/*.svg", icons);
-}
+};
 
 export { clean };
-export const build = gulp.series(clean, styles, icons);
-export const dev = gulp.series(styles, icons, watch);
+export const build = gulp.series(clean, stylesCore, stylesThemes, icons);
+export const dev = gulp.series(stylesCore, stylesThemes, icons, watchAll);
 export default build;

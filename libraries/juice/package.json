@@ -9,7 +9,34 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
-        "./styles": "./dist/index.css"
+        "./styles": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/index.css"
+        },
+        "./themes/aquaflux.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/aquaflux.css"
+        },
+        "./themes/kiwipress.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/kiwipress.css"
+        },
+        "./themes/citrusmint.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/citrusmint.css"
+        },
+        "./styles/themes/aquaflux": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/aquaflux.css"
+        },
+        "./styles/themes/kiwipress": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/kiwipress.css"
+        },
+        "./styles/themes/citrusmint": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/citrusmint.css"
+        }
     },
     "files": [
         "dist"
@@ -22,7 +49,10 @@
         "iOS >= 16.4"
     ],
     "sideEffects": [
-        "./dist/index.css"
+        "./dist/index.css",
+        "./dist/themes/aquaflux.css",
+        "./dist/themes/kiwipress.css",
+        "./dist/themes/citrusmint.css"
     ],
     "publishConfig": {
         "access": "public"

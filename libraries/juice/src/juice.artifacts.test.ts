@@ -16,8 +16,10 @@ function readPackageJson() {
     };
 }
 
+const BUNDLED_THEME_IDS = ["aquaflux", "kiwipress", "citrusmint"] as const;
+
 describe("Juice build artifacts", () => {
-    it("produces CSS output", () => {
+    it("produces core CSS output without bundled themes", () => {
         const cssPath = join(DIST_DIR, "index.css");
         const css = readFileSync(cssPath, "utf-8");
 
@@ -25,6 +27,18 @@ describe("Juice build artifacts", () => {
         expect(css).toContain("[icon=");
         expect(css).toContain("[stack]");
         expect(css.length).toBeGreaterThan(1000);
+        expect(css).not.toContain('[theme="aquaflux"]');
+        expect(css).not.toContain('[theme="kiwipress"]');
+        expect(css).not.toContain('[theme="citrusmint"]');
+    });
+
+    it("produces separate theme stylesheets", () => {
+        for (const id of BUNDLED_THEME_IDS) {
+            const themePath = join(DIST_DIR, "themes", `${id}.css`);
+            expect(existsSync(themePath)).toBe(true);
+            const themeCss = readFileSync(themePath, "utf-8");
+            expect(themeCss).toMatch(new RegExp(`\\[theme=["']?${id}["']?\\]`));
+        }
     });
 
     it("produces JS output", () => {
@@ -34,10 +48,17 @@ describe("Juice build artifacts", () => {
         expect(js).toContain("export");
     });
 
-    it("keeps the published CSS artifact under the current size budget", () => {
+    it("keeps the core CSS artifact under the size budget", () => {
         const cssStats = statSync(join(DIST_DIR, "index.css"));
 
-        expect(cssStats.size).toBeLessThan(6_500_000);
+        expect(cssStats.size).toBeLessThan(5_500_000);
+    });
+
+    it("keeps each theme stylesheet under the size budget", () => {
+        for (const id of BUNDLED_THEME_IDS) {
+            const themeStats = statSync(join(DIST_DIR, "themes", `${id}.css`));
+            expect(themeStats.size).toBeLessThan(500_000);
+        }
     });
 
     it("keeps the published icon payload under the current size budget", () => {

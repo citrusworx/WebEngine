@@ -4,80 +4,18 @@
 @forward './fade.scss';
 @forward './flash.scss';
 @forward './flicker.scss';
+@forward './gradial.scss';
 @forward './grow.scss';
 @forward './pulse.scss';
 @forward './slidein.scss';
+@forward './slideout.scss';
 @forward './spin.scss';
 @forward './tilt.scss';
 @forward './turn.scss';
 @forward './wiggle.scss';
-/* 
+@forward './_motion-reduced.scss';
 
-TODO:Bounce Out
-TODO:Bounce Out Left
-TODO:Bounce Out Right
-TODO:Fade In Down
-TODO:Fade In Up
-TODO:Fade Out Down
-TODO:Fade Out Up
-TODO:Flip
-TODO:Flip In X
-TODO:Flip In Y
-TODO:Flip Out X
-TODO:Flip Out Y
-TODO:Light Speed In
-TODO:Light Speed Out
-TODO:Roll In
-TODO:Roll Out
-TODO:Rotate In
-TODO:Rotate In Down Left
-TODO:Rotate In Down Right
-TODO:Rotate In Up Left
-TODO:Rotate In Up Right
-TODO:Rotate Out
-TODO:Rotate Out Down Left
-TODO:Rotate Out Down Right
-TODO:Rotate Out Up Left
-TODO:Rotate Out Up Right
-TODO:Slide Out Left
-TODO:Slide Out Right
-TODO:Slide Out Up
-TODO:Slide Out Down
-TODO:Zoom In
-TODO:Zoom In Down
-TODO:Zoom In Left
-TODO:Zoom In Right
-TODO:Zoom In Up
-TODO:Zoom Out
-TODO:Zoom Out Down
-TODO:Zoom Out Left
-TODO:Zoom Out Right
-TODO:Zoom Out Up
-
-berillium animations:
-TODO: Jelly
-TODO: Heartbeat
-TODO: Wobble
-TODO: Rubber Band
-TODO: Swing
-TODO: Hinge
-TODO: Skew
-TODO: Shake
-TODO: Fade out w/ Shrink
-TODO: Parallax Scroll
-TODO: Drift
-TODO: Starburst
-TODO: Glitch
-TODO: Ripple
-TODO: Flip Card
-TODO: Reveal
-TODO: Wave
-TODO: Float
-TODO: Earthquake
-TODO: 3D Rotate
-*/
-
-/* Transition Utilities */
+/* Transition utilities */
 .t-all { transition: all 0.3s ease; }
 .t-width { transition: width 0.3s ease; }
 .t-height { transition: height 0.3s ease; }
@@ -90,5 +28,5 @@ TODO: 3D Rotate
 }
 
 .sm-to-md.expand {
-    width: 30vw
+    width: 30vw;
 }

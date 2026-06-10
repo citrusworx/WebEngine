@@ -1,0 +1,19 @@
+# Draft theme — not bundled in dist/index.css. See docs/juice/juice-theme-authoring.md.
+id: blush
+name: Blush
+selector: theme="blush"
+version: 0
+status: draft
+summary: Placeholder palette and typography contract for a future blush theme.
+
+philosophy:
+  role: "Draft identity layer — SCSS implementation pending."
+  owns:
+    - typography tone
+    - color relationships
+  does_not_own:
+    - layout
+    - spacing
+
+palette:
+  notes: "Populate swatches before promoting out of _draft/"

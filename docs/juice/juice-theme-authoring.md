@@ -90,7 +90,27 @@ src/themes/
   aquaflux/
     aquaflux.scss
     aquaflux.yaml
+  kiwipress/
+    kiwipress.scss
+    kiwipress.yaml
+  citrusmint/
+    citrusmint.scss
+    citrusmint.yaml
+  _draft/
+    blush/
+      blush.yaml          # not imported in juice.scss until promoted
 ```
+
+**Published themes (Beta):** `aquaflux`, `kiwipress`, `citrusmint`. Each compiles to `dist/themes/<id>.css` and is imported separately from core:
+
+```ts
+import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/aquaflux";
+```
+
+Activate with `theme="<id>"` on `<body>` or a root wrapper.
+
+**Draft themes** live under `src/themes/_draft/` and are excluded from the default CSS bundle until they have both `<id>.scss` and `<id>.yaml` and are added to `juice.scss`.
 
 ---
 

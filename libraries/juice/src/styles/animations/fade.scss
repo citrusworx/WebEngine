@@ -27,11 +27,79 @@
     animation: fadeOut 1s linear forwards;
 }
 
+[motion="fade.in.down"] {
+    animation: fadeInDown 1s linear forwards;
+}
+
+[motion="fade.in.down::fast"] {
+    animation: fadeInDown 0.3s linear forwards;
+}
+
+[motion="fade.in.up"] {
+    animation: fadeInUp 1s linear forwards;
+}
+
+[motion="fade.in.up::fast"] {
+    animation: fadeInUp 0.3s linear forwards;
+}
+
+[motion="fade.out.down"] {
+    animation: fadeOutDown 1s linear forwards;
+}
+
+[motion="fade.out.up"] {
+    animation: fadeOutUp 1s linear forwards;
+}
+
 @keyframes fadeOut {
     0% {
         opacity: 100%;
     }
     100% {
         opacity: 0%;
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-1.5rem);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(1.5rem);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutDown {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(1.5rem);
+    }
+}
+
+@keyframes fadeOutUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-1.5rem);
     }
 }

@@ -7,7 +7,8 @@ Juice is an attribute-driven styling library for CitrusWorx apps. It packages th
 The production package surface is intentionally small:
 
 - `@citrusworx/juiceui`
-- `@citrusworx/juiceui/styles`
+- `@citrusworx/juiceui/styles` (core CSS only)
+- `@citrusworx/juiceui/styles/themes/<id>` (per-theme CSS)
 - the built artifacts in `dist/`
 
 These are the stable consumer-facing entrypoints for the package.
@@ -32,9 +33,40 @@ yarn add @citrusworx/juiceui
 
 ## Use the stylesheet
 
+Core utilities and components (no theme identity):
+
 ```ts
 import "@citrusworx/juiceui/styles";
 ```
+
+## Themes (Beta)
+
+**Breaking change:** `@citrusworx/juiceui/styles` is **core only**. Import a theme stylesheet explicitly:
+
+```ts
+import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/aquaflux";
+```
+
+```html
+<body theme="aquaflux">
+  <!-- or theme="kiwipress" | theme="citrusmint" -->
+</body>
+```
+
+Built files: `dist/index.css` (core), `dist/themes/<id>.css` (theme). Each theme is authored as `<themeId>.scss` + `<themeId>.yaml` under `src/themes/<themeId>/`. See [docs/juice/juice-theme-authoring.md](../../docs/juice/juice-theme-authoring.md).
+
+## Responsive behavior
+
+Built-in breakpoints, `row` collapse, and scaled spacing are documented in [docs/juice/juice-responsive-reference.md](../../docs/juice/juice-responsive-reference.md).
+
+## Surfaces
+
+Beta-stable: `surfaceTone="soft"`. See [docs/juice/juice-surfaces.md](../../docs/juice/juice-surfaces.md).
+
+## Motion (Beta)
+
+Use the `motion` attribute for animations (for example `motion="fade.in"`, `motion="spin::fast"`). See [docs/juice/juice-animations.md](../../docs/juice/juice-animations.md).
 
 ## Use the JS API
 
@@ -55,10 +87,11 @@ The top-level JS entrypoint is intentionally small. Those named exports are the 
 
 If you are hosting Juice assets yourself, the main built files are:
 
-- `dist/index.css`
+- `dist/index.css` (core)
+- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`
 - `dist/index.js`
 
-These can be served from a CDN or static asset host and loaded directly into a project.
+Load core plus at least one theme CSS file when using `theme="..."` on the root element.
 
 ## Example
 

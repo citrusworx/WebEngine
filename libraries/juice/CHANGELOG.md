@@ -1,5 +1,14 @@
 # @citrusworx/juiceui
 
+## Unreleased
+
+### Minor Changes
+
+- **Breaking:** `@citrusworx/juiceui/styles` now ships **core CSS only** (`dist/index.css`). Import theme styles separately via `@citrusworx/juiceui/styles/themes/<id>`.
+- Added modular theme builds: `dist/themes/aquaflux.css`, `kiwipress.css`, `citrusmint.css`.
+- Added motion wave 1: `fade.in.down/up`, `fade.out.down/up`, `slideOut.left/right/up/down` (P1).
+- Documented responsive defaults, `surfaceTone="soft"`, and expanded motion catalog.
+
 ## 0.1.1
 
 ### Patch Changes

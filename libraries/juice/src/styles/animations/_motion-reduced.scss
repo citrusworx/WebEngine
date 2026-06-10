@@ -1,0 +1,22 @@
+/* Disables motion animations when the user prefers reduced motion (Beta P0+P1). */
+
+@media (prefers-reduced-motion: reduce) {
+    [motion] {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+    }
+
+    .t-all,
+    .t-width,
+    .t-height,
+    .t-flex,
+    .t-bg {
+        transition: none !important;
+    }
+
+    .sm-to-md,
+    .sm-to-md.expand {
+        transition: none !important;
+    }
+}

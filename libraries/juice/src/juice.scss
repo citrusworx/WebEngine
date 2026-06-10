@@ -1,11 +1,2 @@
-@use './core/reset';
-@use './core/typography';
-@use './core/layout/layout.scss';
-@use './core/mixins';
-@use './core/utilities';
-@use './components/components.scss';
-@use './tokens/fonts/google.scss';
-@use './styles/styles.scss';
-@use './themes/citrusmint/theme.scss';
-@use './themes/kiwipress/kiwipress.scss';
-@use './themes/aquaflux/aquaflux.scss';
+// Core Juice stylesheet (no themes). Themes ship as separate CSS entrypoints.
+@use './juice.core.scss';

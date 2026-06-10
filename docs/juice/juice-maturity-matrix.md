@@ -36,7 +36,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Color tokens and swatches | Stable-ish | One of the strongest parts of the system. |
 | Typography utilities | Stable-ish | Readable and useful, with good practical value in page-building. |
 | Icon system | Stable-ish | Strong now that FontAwesome Free solid, regular, and brands are integrated and documented. |
-| Responsive core behavior | Emerging | Improving, but still an area where defaults and exceptions need more hardening. |
+| Responsive core behavior | Emerging | Built-in breakpoints, row collapse, and spacing scale documented in [juice-responsive-reference.md](./juice-responsive-reference.md). |
 | Card system | Emerging | Now has a meaningful structure, variants, and content regions, but is still maturing. |
 | Button system | Emerging | Useful and expressive, but still early compared to mature design-system button APIs. |
 | Form system | Emerging | The scoped field model is strong, but state semantics and composition patterns are still settling. |
@@ -46,7 +46,8 @@ The feature is more of a direction or configuration surface than a hardened part
 | Docs and onboarding | Emerging to Stable-ish | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
 | JS entrypoint | Early | Present, but still minimal compared with the styling layer. |
 | Public component exports | Early | Components exist in the style system more than in a hardened JS/component API. |
-| Themes | Early | Present in the tree, but still not one of the most mature public surfaces. |
+| Themes | Emerging | Bundled themes (`aquaflux`, `kiwipress`, `citrusmint`) follow the `<id>.scss` + `<id>.yaml` contract; KiwiPress is the richest reference. |
+| Motion (`motion` attribute) | Emerging | P0/P1 catalog documented in [juice-animations.md](./juice-animations.md); `prefers-reduced-motion` supported. |
 | Config-driven branding | Draft | Useful direction, but still not required and not yet a hardened contract. |
 | Generator/config pipeline | Draft | The config exists, but the workflow around it is still early and evolving. |
 
@@ -95,7 +96,7 @@ These can absolutely be valuable, but they should not yet be the center of the J
 
 If Juice is being described externally or internally, the most honest current positioning is:
 
-`Juice is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support.`
+`Juice Beta is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes.`
 
 That framing matches the strongest current reality.
 

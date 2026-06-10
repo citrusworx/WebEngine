@@ -183,6 +183,11 @@
     color: var(--aqua-text-muted);
 }
 
+[theme="aquaflux"][aqua-card] :where(strong, b),
+[theme="aquaflux"] [aqua-card] :where(strong, b) {
+    color: var(--aqua-heading);
+}
+
 [theme="aquaflux"][aqua-panel],
 [theme="aquaflux"] [aqua-panel] {
     background: var(--aqua-panel-background);
@@ -193,6 +198,16 @@
 
 [theme="aquaflux"][aqua-panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="aquaflux"] [aqua-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--aqua-heading);
+}
+
+[theme="aquaflux"][aqua-panel] :where(p, span, li, small),
+[theme="aquaflux"] [aqua-panel] :where(p, span, li, small) {
+    color: var(--aqua-text);
+}
+
+[theme="aquaflux"][aqua-panel] :where(strong, b),
+[theme="aquaflux"] [aqua-panel] :where(strong, b) {
     color: var(--aqua-heading);
 }
 
@@ -219,4 +234,20 @@
     background: #{$white-100};
     color: var(--aqua-heading);
     border-color: transparent;
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme="aquaflux"][aqua-hero] :where([aqua-card], [aqua-panel]),
+[theme="aquaflux"] [aqua-hero] :where([aqua-card], [aqua-panel]) {
+    color: var(--aqua-text);
+}
+
+[theme="aquaflux"][aqua-hero] :where([aqua-card], [aqua-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="aquaflux"] [aqua-hero] :where([aqua-card], [aqua-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--aqua-heading);
+}
+
+[theme="aquaflux"][aqua-hero] :where([aqua-card], [aqua-panel]) :where(p, span, li, small, a),
+[theme="aquaflux"] [aqua-hero] :where([aqua-card], [aqua-panel]) :where(p, span, li, small, a) {
+    color: var(--aqua-text-muted);
 }

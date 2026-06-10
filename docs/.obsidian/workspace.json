@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "juice/juice-navigation-patterns.md",
+                "file": "kiwipress/core-classes.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "juice-navigation-patterns"
+              "title": "core-classes"
             }
           }
         ]
@@ -185,6 +185,7 @@
   },
   "active": "99b52f32b2a83395",
   "lastOpenFiles": [
+    "juice/juice-navigation-patterns.md",
     "juice/juice-navigation-lesson.md",
     "juice/juice-naming.md",
     "juice/juice-getting-started.md",

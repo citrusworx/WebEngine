@@ -9,7 +9,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 | `libraries/types` | `@citrusworx/types` | Stable core types | Shared deployment, blueprint, project, environment, server, service, and domain types | [Types](./types/README.md) |
 | `libraries/sig` | `@citrusworx/sigjs` | Active alpha | Signals, effects, JSX runtime, JSX dev runtime, router, and tests | [Sig.js](./sigjs/README.md) |
 | `libraries/juice` | `@citrusworx/juiceui` | Active alpha | Published CSS build, token exports, navigation runtime, early components | [Juice](./juice/README.md) |
-| `libraries/seltzer` | `@citrusworx/seltzer` | Early implementation | Core server/client scaffolding and an evolving HTTP runtime design | [Seltzer](./seltzer/README.md) |
+| `libraries/seltzer` | `@citrusworx/seltzer` | Early implementation | Core server/client scaffolding and an evolving HTTP runtime design | [Seltzer](./seltzer/README.md) · [Study guide](./seltzer/courses.md) |
 | `libraries/nectarine` | `@citrusworx/nectarine` | Active alpha | Compiler plus PostgreSQL, MySQL, and MongoDB adapters with YAML-driven model assets | [Nectarine](./nectarine/README.md) |
 | `libraries/grapevine` | `@citrusworx/grapevine` | Active development | DigitalOcean provider surface for droplets, firewalls, VPC, SSH, monitoring, and related utilities | [Grapevine](./grapevine/README.md) |
 | `libraries/dns` | `@citrusworx/dns` | Early implementation | Core DNS/registrar abstractions and a ResellerClub adapter | [DNS](./dns/README.md) |
@@ -21,3 +21,4 @@ This docs folder tracks the current workspace reality first: what is published, 
 - The main source of truth is the workspace code under `libraries/` and `engines/`.
 - Some older docs describe planned kernel/module systems or broader product visions. Those are useful for direction, but this index describes what is actually present in the repo now.
 - Package-specific deep dives still live in their existing folders, especially for Juice, Sig.js, Nectarine, Grapevine, Seltzer, and KiwiPress.
+- Seltzer contributors: start with the [design overview](./seltzer/README.md), then follow the [Node study guide & course journey](./seltzer/courses.md) before extending the HTTP pipeline.

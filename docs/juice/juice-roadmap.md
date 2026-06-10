@@ -19,7 +19,6 @@ The weakest areas are still:
 
 * component maturity
 * icon contract stability
-* semantic layout behavior on standard HTML elements
 * polish and consistency in the runtime/component layer
 
 ---
@@ -125,6 +124,12 @@ The built-in navigation runtime shows that Juice can support framework-agnostic 
 
 That is a meaningful step forward, even though the runtime layer is still young.
 
+### 8. Section Layout Is Now Opt-In (Resolved)
+
+Plain semantic `<section>` no longer carries auto-responsive layout opinions.
+
+Previously a bare `<section>` behaved like a wrapping responsive flex container, which fought explicit layout primitives like `stack` and `row` (most visibly in the Facebook-style feed template). As of `e7a1584` (2026-05-16) that behavior is opt-in via `section[auto]`, and plain `<section>` is a neutral semantic block that themes can paint without fighting layout. No other semantic element (`article`, `aside`, `main`, `header`, `footer`, `nav`) carries bare layout opinions in core.
+
 ---
 
 ## What Is Still Holding Juice Back
@@ -157,25 +162,7 @@ What still needs clarification:
 
 This is now better than before, but it still needs formalization.
 
-### 3. Semantic Elements Carry Too Much Layout Assumption
-
-This is one of the most important findings from recent template work.
-
-In Juice today, elements like `section` are not neutral semantic elements. They carry built-in layout behavior.
-
-That created a real issue in the Facebook-style template:
-
-* the feed needed to be a `stack`
-* using `section` caused it to behave like a wrapping responsive container
-* the layout only became correct when the feed container was switched to a stacked element
-
-This reveals a framework-level problem:
-
-* some semantic HTML elements currently carry layout opinions that are too aggressive
-
-That should be revisited because it can produce surprising behavior and makes certain layouts harder than they need to be.
-
-### 4. Surface Language Is Still Early
+### 3. Surface Language Is Still Early
 
 Juice now has the beginning of surface utilities, but not yet a full surface system.
 
@@ -189,7 +176,7 @@ What is still missing:
 
 Right now, authors still need to hand-assemble too much of the visual character for cards, panels, and heroes.
 
-### 5. Templates Still Expose Proportional Weaknesses
+### 4. Templates Still Expose Proportional Weaknesses
 
 Juice can now express many aesthetics, but dense layouts still reveal weaknesses in:
 
@@ -231,22 +218,7 @@ That is still very good progress.
 
 ## Revised Priorities
 
-### Priority 1. Stabilize Semantic Layout Rules
-
-Before adding too many more patterns, Juice should revisit where layout behavior lives.
-
-This especially applies to:
-
-* `section`
-* other standard semantic HTML elements
-
-The goal should be:
-
-* semantic tags should not unexpectedly fight explicit layout primitives like `stack` and `row`
-
-This is now a top priority because recent template work exposed it as a real usability problem.
-
-### Priority 2. Expand the Surface System
+### Priority 1. Expand the Surface System
 
 Juice should build out the surface model that has already started.
 
@@ -260,7 +232,7 @@ Recommended next additions:
 
 This would make templates feel far more polished with less manual assembly.
 
-### Priority 3. Formalize the Theme Contract
+### Priority 2. Formalize the Theme Contract
 
 Themes are now real enough that they need a clearer contract.
 
@@ -274,7 +246,7 @@ A first-class theme system should define:
 
 Aquaflux is the first real example, but the system should become easier to repeat and document.
 
-### Priority 4. Finish the Typography Layer
+### Priority 3. Finish the Typography Layer
 
 Typography is in a much better place, but it still needs more systemization.
 
@@ -287,7 +259,7 @@ Likely next steps:
 
 Typography is no longer a weak point, but it still has room to become more deliberate.
 
-### Priority 5. Stabilize the Icon Contract
+### Priority 4. Stabilize the Icon Contract
 
 Juice should settle on one canonical icon authoring model.
 
@@ -299,7 +271,7 @@ The likely direction is:
 
 This will help templates and components feel more native to Juice.
 
-### Priority 6. Strengthen the Runtime and Component Layer
+### Priority 5. Strengthen the Runtime and Component Layer
 
 The browser behavior layer should keep growing, but carefully.
 
@@ -312,7 +284,7 @@ Short-term focus:
 
 Juice should avoid pretending the component layer is more mature than it is.
 
-### Priority 7. Keep Using Templates as Stress Tests
+### Priority 6. Keep Using Templates as Stress Tests
 
 Template work is now one of the most valuable tools in Juice development.
 
@@ -330,13 +302,12 @@ Templates are currently doing a better job than abstract planning at revealing w
 
 ## Recommended Build Order
 
-1. Revisit semantic element layout behavior, especially `section`.
-2. Expand `surfaceTone` and related surface utilities.
-3. Formalize the theme contract using Aquaflux as the reference pattern.
-4. Tighten typography and naming consistency.
-5. Stabilize the icon API.
-6. Improve runtime/component maturity.
-7. Continue template-driven stress testing after each improvement.
+1. Expand `surfaceTone` and related surface utilities.
+2. Formalize the theme contract using Aquaflux as the reference pattern.
+3. Tighten typography and naming consistency.
+4. Stabilize the icon API.
+5. Improve runtime/component maturity.
+6. Continue template-driven stress testing after each improvement.
 
 ---
 

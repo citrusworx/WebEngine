@@ -1,74 +1,51 @@
 
 [motion="bounce"] {
-    animation: bounce 1s linear forwards;
+    animation: bounce 1s ease-in-out infinite;
 }
 
 @keyframes bounce {
-    0%{
-        transform: translateY(1px);
-    }
-
-    25% {
-        transform: translateY(-1px);
+    0%,
+    100% {
+        transform: translateY(0);
     }
 
     50% {
-        transform: translateY(0.8px);
-    }
-
-    100% {
-        transform: translateY(-0.2px);
+        transform: translateY(-4px);
     }
 }
 
-[motion="bounce\:in"], [motion="bounce-in"], [motion="bounce.in"] {
-    animation: bounceIn 10s linear forwards;
+[motion="bounce\:in"],
+[motion="bounce-in"],
+[motion="bounce.in"] {
+    animation: bounceIn 0.8s ease-out forwards;
 }
 
 @keyframes bounceIn {
-    0%{
-        transform: translateY(1px);
-        transform: translateX(-100vw);
-    }
-
-    25% {
-        transform: translateY(-1px);
-        
-    }
-
-    50% {
-        transform: translateY(0.8px);
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
     }
 
     100% {
-        transform: translateY(-0.2px);
-        transform: translateX(0rem);
+        transform: translateX(0);
+        opacity: 1;
     }
 }
 
-[motion="bounce\:out"], [motion="bounce-out"], [motion="bounce.out"] {
-    animation: bounceIn 10s linear forwards;
+[motion="bounce\:out"],
+[motion="bounce-out"],
+[motion="bounce.out"] {
+    animation: bounceOut 0.6s ease-in forwards;
 }
 
-@keyframes bounceIn {
-    0%{
-        transform: translateY(1px);
-        transform: translateX(-75vw);
-    }
-
-    25% {
-        transform: translateY(-1px);
-        transform: translateX(-50vw);
-        
-    }
-
-    50% {
-        transform: translateY(0.8px);
-        transform: translateX(-25vw);
+@keyframes bounceOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
     }
 
     100% {
-        transform: translateY(-0.2px);
-        transform: translateX(0rem);
+        transform: translateX(-100%);
+        opacity: 0;
     }
 }

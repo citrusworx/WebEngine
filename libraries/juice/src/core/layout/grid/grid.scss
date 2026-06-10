@@ -1,4 +1,20 @@
 @use '../../mixins.scss' as *;
+@use '../../breakpoints/breakpoints.scss' as *;
+@use 'sass:map';
+
+@mixin adaptive-grid-cascade($selector, $tablet-cols, $mobile-cols: 1) {
+    [grid="#{$selector}"] {
+        @media (max-width: calc(map.get($breakpoints, lg) - 1px)) and (min-width: map.get($breakpoints, sm)) {
+            grid-template-columns: repeat($tablet-cols, 1fr);
+            grid-template-rows: auto;
+        }
+
+        @media (max-width: calc(map.get($breakpoints, sm) - 1px)) {
+            grid-template-columns: repeat($mobile-cols, 1fr);
+            grid-template-rows: auto;
+        }
+    }
+}
 
 @include grid-generator(2, 1);
 @include grid-generator(2, 2);
@@ -11,3 +27,13 @@
 @include col-span-generator();
 @include row-span-generator();
 @include gap-generator();
+
+/* Built-in responsive cascade for common authored grids. */
+@include adaptive-grid-cascade("2x1", 2, 1);
+@include adaptive-grid-cascade("2x2", 2, 1);
+@include adaptive-grid-cascade("3x1", 2, 1);
+@include adaptive-grid-cascade("3x2", 2, 1);
+@include adaptive-grid-cascade("3x3", 2, 1);
+@include adaptive-grid-cascade("4x1", 2, 1);
+@include adaptive-grid-cascade("4x3", 2, 1);
+@include adaptive-grid-cascade("4x4", 2, 1);

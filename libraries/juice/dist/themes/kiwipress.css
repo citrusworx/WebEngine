@@ -1,0 +1,1229 @@
+@charset "UTF-8";
+/*
+  KiwiPress is a Juice theme.
+  The theme paints Juice's component primitives — it does not define them.
+  Structure (hero, card, cta, panel, modal, badge, stat, workflow, search-panel,
+  tabs, plan, section-header) lives in src/components. The theme only owns:
+  - color relationships
+  - typography voice
+  - semantic element defaults
+*/
+[theme=kiwipress] {
+  /* Foundation */
+  --kw-page: hsl(0, 0%, 100%);
+  --kw-page-tint: hsl(152, 81%, 96%);
+  --kw-surface: hsl(0, 0%, 100%);
+  --kw-surface-muted: hsl(210, 20%, 98%);
+  --kw-surface-strong: rgba(255, 255, 255, 0.95);
+  --kw-surface-deep: hsl(0, 0%, 10%);
+  --kw-border: hsl(220, 13%, 91%);
+  --kw-border-strong: hsl(216, 12%, 84%);
+  --kw-shadow: rgba(25.5, 25.5, 25.5, 0.08);
+  --kw-shadow-strong: rgba(25.5, 25.5, 25.5, 0.12);
+  /* Typography */
+  --kw-text: hsl(215, 14%, 34%);
+  --kw-text-muted: hsl(220, 9%, 46%);
+  --kw-text-soft: hsl(218, 11%, 65%);
+  --kw-heading: hsl(0, 0%, 10%);
+  --kw-body-font: 'korolev-rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  --kw-heading-font: 'korolev-rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  /* Accent system */
+  --kw-accent: hsl(161, 94%, 30%);
+  --kw-accent-strong: hsl(163, 94%, 24%);
+  --kw-accent-soft: hsl(152, 81%, 96%);
+  --kw-accent-tint: hsl(149, 80%, 90%);
+  --kw-warm: hsl(38, 92%, 50%);
+  --kw-warm-soft: hsl(48, 100%, 96%);
+  --kw-warm-tint: hsl(48, 96%, 76%);
+  /* Tier coding — used for layered architecture diagrams */
+  --kw-tier-content: hsl(223, 73%, 40%);
+  --kw-tier-content-strong: hsl(223, 73%, 35%);
+  --kw-tier-content-soft: hsl(223, 73%, 75%);
+  --kw-tier-content-tint: hsl(223, 73%, 70%);
+  --kw-tier-application: hsl(161, 94%, 30%);
+  --kw-tier-application-strong: hsl(163, 94%, 24%);
+  --kw-tier-application-soft: hsl(152, 81%, 96%);
+  --kw-tier-application-tint: hsl(149, 80%, 90%);
+  --kw-tier-runtime: hsl(38, 92%, 50%);
+  --kw-tier-runtime-strong: hsl(32, 95%, 44%);
+  --kw-tier-runtime-soft: hsl(48, 100%, 96%);
+  --kw-tier-runtime-tint: hsl(48, 96%, 76%);
+  /* Surface recipes */
+  --kw-hero-background: linear-gradient(180deg, hsl(152, 81%, 96%) 0%, hsl(0, 0%, 100%) 100%);
+  --kw-cta-background: linear-gradient(135deg, hsl(161, 94%, 30%) 0%, hsl(163, 94%, 24%) 100%);
+  --kw-workflow-background: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(152, 81%, 96%) 100%);
+  --kw-pricing-background: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(210, 20%, 98%) 100%);
+  --kw-step-marker-background: linear-gradient(135deg, hsl(161, 94%, 30%) 0%, hsl(163, 94%, 24%) 100%);
+  background-color: var(--kw-page);
+  color: var(--kw-text);
+  font-family: var(--kw-body-font);
+}
+
+/* Theme root behavior */
+[theme=kiwipress] :where(main) {
+  background: transparent;
+  color: inherit;
+}
+
+[theme=kiwipress] :where(div) {
+  background-color: transparent;
+  color: inherit;
+}
+
+/* Semantic element defaults */
+[theme=kiwipress] :where(section, article, aside, header, form) {
+  background-color: var(--kw-surface);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] :where(nav) {
+  background-color: var(--kw-surface-strong);
+  border-bottom: 1px solid var(--kw-border);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+}
+
+[theme=kiwipress] :where(footer) {
+  background-color: var(--kw-surface-deep);
+  color: hsl(0, 0%, 100%);
+  border-top: 1px solid hsl(215, 14%, 34%);
+}
+
+/* Typography hierarchy */
+[theme=kiwipress] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--kw-heading);
+  font-family: var(--kw-heading-font);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+[theme=kiwipress] :where(p, span, li, label, dt, dd, blockquote) {
+  color: var(--kw-text);
+  font-family: var(--kw-body-font);
+  line-height: 1.6;
+}
+
+[theme=kiwipress] :where(small, figcaption) {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] :where(strong, b) {
+  color: var(--kw-heading);
+}
+
+/* Links */
+[theme=kiwipress] :where(a) {
+  color: var(--kw-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+[theme=kiwipress] :where(a:hover, a:focus-visible) {
+  color: var(--kw-accent);
+}
+
+/* Controls */
+[theme=kiwipress] :where(input, textarea, select) {
+  background-color: var(--kw-surface);
+  color: var(--kw-text);
+  border: 2px solid var(--kw-border);
+  border-radius: 8px;
+  font-family: var(--kw-body-font);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[theme=kiwipress] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+  outline: none;
+  border-color: var(--kw-accent);
+  box-shadow: 0 0 0 3px rgba(4.59, 148.41, 102.867, 0.1);
+}
+
+[theme=kiwipress] :where(input::placeholder, textarea::placeholder) {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] :where(button) {
+  background-color: var(--kw-accent);
+  color: hsl(0, 0%, 100%);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--kw-body-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+[theme=kiwipress] :where(button:hover, button:focus-visible) {
+  background-color: var(--kw-accent-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(4.59, 148.41, 102.867, 0.3);
+}
+
+[theme=kiwipress] :where(button[btn=secondary]) {
+  background-color: transparent;
+  color: var(--kw-text-muted);
+}
+
+[theme=kiwipress] :where(button[btn=secondary]:hover) {
+  background-color: var(--kw-surface-muted);
+  transform: none;
+  box-shadow: none;
+}
+
+[theme=kiwipress] :where(button[btn=outline]) {
+  background-color: transparent;
+  color: var(--kw-accent);
+  border: 2px solid var(--kw-accent);
+}
+
+[theme=kiwipress] :where(button[btn=outline]:hover) {
+  background-color: var(--kw-accent-soft);
+}
+
+[theme=kiwipress] :where(code, pre) {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-heading);
+  border: 1px solid var(--kw-border);
+  border-radius: 6px;
+}
+
+[theme=kiwipress] :where(hr) {
+  border: none;
+  border-top: 1px solid var(--kw-border);
+}
+
+/* Logo */
+[theme=kiwipress] [logo=text] {
+  color: var(--kw-accent);
+  font-weight: 700;
+}
+
+/* Badges */
+[theme=kiwipress] [badge] {
+  background-color: var(--kw-accent-tint);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [badge][warm] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-warm-tint);
+  color: var(--kw-warm);
+}
+
+[theme=kiwipress] [badge=ribbon] {
+  background-color: var(--kw-accent);
+  color: hsl(0, 0%, 100%);
+}
+
+/* Hero */
+[theme=kiwipress] [hero] {
+  background: var(--kw-hero-background);
+}
+
+/* Stat */
+[theme=kiwipress] [stat-value] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [stat-label] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [stats] {
+  border-top: 1px solid var(--kw-border);
+  padding-top: 2.5rem;
+}
+
+/* Feature card */
+[theme=kiwipress] [card=feature] {
+  background-color: var(--kw-surface-muted);
+  border-radius: 16px;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+[theme=kiwipress] [card=feature]:hover {
+  background-color: var(--kw-accent-soft);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [card=feature][warm]:hover {
+  background-color: var(--kw-warm-soft);
+}
+
+[theme=kiwipress] [card=feature] [icon] {
+  background-color: var(--kw-surface);
+  color: var(--kw-accent);
+  border-radius: 12px;
+}
+
+[theme=kiwipress] [card=feature][warm] [icon] {
+  color: var(--kw-warm);
+}
+
+/* Pricing card */
+[theme=kiwipress] [card=pricing] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+[theme=kiwipress] [card=pricing]:hover {
+  border-color: var(--kw-accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px var(--kw-shadow-strong);
+}
+
+[theme=kiwipress] [card=pricing][featured] {
+  border-color: var(--kw-accent);
+  box-shadow: 0 8px 24px rgba(4.59, 148.41, 102.867, 0.15);
+}
+
+[theme=kiwipress] [card=pricing][featured]:hover {
+  transform: scale(1.05) translateY(-4px);
+}
+
+/* Plan internals */
+[theme=kiwipress] [plan-header] {
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [plan-currency],
+[theme=kiwipress] [plan-period] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [plan-amount] {
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [plan-description] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [plan-features] li {
+  color: var(--kw-text-muted);
+}
+
+[theme=kiwipress] [plan-features] li svg {
+  color: var(--kw-accent);
+}
+
+/* Section paints */
+[theme=kiwipress] section[type=pricing] {
+  background: var(--kw-pricing-background);
+}
+
+[theme=kiwipress] section[type=workflow] {
+  background: var(--kw-workflow-background);
+}
+
+/* CTA */
+[theme=kiwipress] [cta] {
+  background: var(--kw-cta-background);
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [cta] :where(h1, h2, h3, h4, h5, h6) {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [cta] :where(p, span, li, small) {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[theme=kiwipress] [cta] :where(button) {
+  background-color: hsl(0, 0%, 100%);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [cta] :where(button:hover) {
+  background-color: var(--kw-accent-soft);
+}
+
+/* Workflow */
+[theme=kiwipress] [workflow-step] {
+  background-color: var(--kw-surface);
+  border: 2px solid var(--kw-border);
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+[theme=kiwipress] [workflow-step]:hover {
+  border-color: var(--kw-accent);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [workflow-step-marker] {
+  background: var(--kw-step-marker-background);
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [workflow-connector] {
+  background: linear-gradient(90deg, hsl(220, 13%, 91%) 0%, hsl(161, 94%, 30%) 50%, hsl(220, 13%, 91%) 100%);
+}
+
+[theme=kiwipress] [workflow-connector]::after {
+  color: var(--kw-accent);
+}
+
+/* Panel — used for supporting info cards (e.g. contact-info) */
+[theme=kiwipress] [panel] {
+  background-color: var(--kw-surface-muted);
+  border: 1px solid var(--kw-border);
+}
+
+[theme=kiwipress] [panel] [icon] {
+  background-color: var(--kw-accent-tint);
+  color: var(--kw-accent);
+  border-radius: 10px;
+}
+
+/* Search panel */
+[theme=kiwipress] [search-panel] {
+  background-color: var(--kw-surface-muted);
+  border: 1px solid var(--kw-border);
+}
+
+[theme=kiwipress] [search-input-group] {
+  background-color: var(--kw-surface);
+  border: 2px solid var(--kw-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[theme=kiwipress] [search-input-group]:focus-within {
+  border-color: var(--kw-accent);
+  box-shadow: 0 0 0 3px rgba(4.59, 148.41, 102.867, 0.1);
+}
+
+[theme=kiwipress] [search-result] {
+  background-color: var(--kw-surface);
+  border: 1px solid var(--kw-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+[theme=kiwipress] [search-result]:hover {
+  border-color: var(--kw-accent);
+  box-shadow: 0 2px 8px var(--kw-shadow);
+}
+
+/* Tabs */
+[theme=kiwipress] [tabs] {
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [tabs] > button,
+[theme=kiwipress] [tab] {
+  background-color: transparent;
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [tabs] > button:hover,
+[theme=kiwipress] [tab]:hover {
+  background-color: transparent;
+  color: var(--kw-heading);
+  transform: none;
+  box-shadow: none;
+}
+
+[theme=kiwipress] [tabs] > button[active],
+[theme=kiwipress] [tab][active] {
+  color: var(--kw-accent);
+  border-bottom-color: var(--kw-accent);
+}
+
+/* How It Works ---------------------------------------------------------
+   Three-tier architecture explainer. Tier colors are content=blue,
+   application=green, runtime=orange.
+   ====================================================================== */
+[theme=kiwipress] [architecture-hero] {
+  background: var(--kw-hero-background);
+}
+
+[theme=kiwipress] [arch-hero-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+/* Tier diagram (hero) */
+[theme=kiwipress] [tier-diagram] {
+  background-color: var(--kw-surface);
+  border: 1px solid var(--kw-border);
+  box-shadow: 0 4px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [tier-label] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [tier=content] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content);
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [tier=content] > strong {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [tier=application] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [tier=application] > strong {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [tier=runtime] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime);
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [tier=runtime] > strong {
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [tier-arrow] {
+  color: var(--kw-text-soft);
+}
+
+/* Centered section headers (shared) */
+[theme=kiwipress] [section-header][centered] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+/* Philosophy */
+[theme=kiwipress] [philosophy] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [philosophy-card] {
+  background-color: var(--kw-surface-muted);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [philosophy-card]:hover {
+  border-color: var(--kw-border-strong);
+}
+
+[theme=kiwipress] [philosophy-card][featured] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [philosophy-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [philosophy-badge=content] {
+  background-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [philosophy-badge=application] {
+  background-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [philosophy-badge=runtime] {
+  background-color: var(--kw-tier-runtime);
+}
+
+/* Four steps */
+[theme=kiwipress] [four-steps] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [step-row] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [step-marker] {
+  background: var(--kw-step-marker-background);
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [step-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [step-arrow] {
+  color: var(--kw-accent);
+}
+
+/* Architecture overview */
+[theme=kiwipress] [architecture-overview] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [arch-stack] {
+  background-color: var(--kw-surface-muted);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [arch-layer-label] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [arch-layer=content] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [arch-layer=content] > h3 {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [arch-layer=application] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [arch-layer=application] > h3 {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [arch-layer=runtime] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [arch-layer=runtime] > h3 {
+  color: var(--kw-tier-runtime-strong);
+}
+
+[theme=kiwipress] [arch-feature] {
+  background-color: var(--kw-surface);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [arch-divider]::before,
+[theme=kiwipress] [arch-divider]::after {
+  background-color: var(--kw-border);
+}
+
+[theme=kiwipress] [arch-divider] > span {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [arch-summary] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [arch-summary-item] > p {
+  color: var(--kw-text-soft);
+}
+
+/* Two Ways */
+[theme=kiwipress] [two-ways] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [two-way=plain] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [two-way=plain] > h3 {
+  color: var(--kw-tier-application-strong);
+}
+
+[theme=kiwipress] [two-way=developer] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [two-way=developer] > h3 {
+  color: var(--kw-tier-content-strong);
+}
+
+[theme=kiwipress] [two-way] > ul > li {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+/* Engineers (dark) */
+[theme=kiwipress] [engineers] {
+  background-color: hsl(0, 0%, 10%);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[theme=kiwipress] [engineers] [section-header] > h2 {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [engineers] [section-header] > [lede] {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[theme=kiwipress] [engineer-item] {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[theme=kiwipress] [engineer-item][featured] {
+  border-color: var(--kw-accent);
+  background-color: rgba(4.59, 148.41, 102.867, 0.08);
+}
+
+[theme=kiwipress] [engineer-item] h4 {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [engineer-item] p {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+[theme=kiwipress] [check-mark] {
+  background-color: var(--kw-accent);
+}
+
+/* Final CTA */
+[theme=kiwipress] [final-cta] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [final-cta-inner] {
+  background: var(--kw-cta-background);
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [final-cta-inner] > h2 {
+  color: hsl(0, 0%, 100%);
+}
+
+[theme=kiwipress] [final-cta-inner] > p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button) {
+  background-color: hsl(0, 0%, 100%);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button:hover) {
+  background-color: var(--kw-accent-soft);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button[btn=outline]) {
+  background-color: transparent;
+  color: hsl(0, 0%, 100%);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+[theme=kiwipress] [final-cta-inner] :where(button[btn=outline]:hover) {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: hsl(0, 0%, 100%);
+}
+
+/* Developer hub --------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/developers.
+   ====================================================================== */
+[theme=kiwipress] [developers-hero] {
+  background: var(--kw-hero-background);
+}
+
+[theme=kiwipress] [dev-hero-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [dev-quickstart] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [quickstart-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 4px 16px var(--kw-shadow);
+}
+
+[theme=kiwipress] [quickstart-body] > [eyebrow] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [quickstart-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [code-block] {
+  background-color: hsl(0, 0%, 10%);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid hsl(0, 0%, 10%);
+}
+
+[theme=kiwipress] [code-block] > code {
+  color: inherit;
+}
+
+[theme=kiwipress] [dev-install] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [install-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [install-card]:hover {
+  border-color: var(--kw-border-strong);
+}
+
+[theme=kiwipress] [install-icon] {
+  background-color: var(--kw-accent-soft);
+  border-color: var(--kw-accent-tint);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [install-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [install-footnote] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [install-footnote] > a {
+  color: var(--kw-accent);
+  font-weight: 500;
+}
+
+/* Categories */
+[theme=kiwipress] [dev-categories] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [category-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [category-card]:hover {
+  border-color: var(--kw-border-strong);
+  box-shadow: 0 8px 24px var(--kw-shadow);
+}
+
+[theme=kiwipress] [category-card=content]:hover {
+  border-color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application]:hover {
+  border-color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime]:hover {
+  border-color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [category-card=content] [category-icon] {
+  background-color: var(--kw-tier-content-soft);
+  border-color: var(--kw-tier-content-tint);
+  color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application] [category-icon] {
+  background-color: var(--kw-tier-application-soft);
+  border-color: var(--kw-tier-application-tint);
+  color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime] [category-icon] {
+  background-color: var(--kw-tier-runtime-soft);
+  border-color: var(--kw-tier-runtime-tint);
+  color: var(--kw-tier-runtime);
+}
+
+[theme=kiwipress] [category-card] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [category-card=content] [category-cta] {
+  color: var(--kw-tier-content);
+}
+
+[theme=kiwipress] [category-card=application] [category-cta] {
+  color: var(--kw-tier-application);
+}
+
+[theme=kiwipress] [category-card=runtime] [category-cta] {
+  color: var(--kw-tier-runtime);
+}
+
+/* Resources */
+[theme=kiwipress] [dev-resources] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [resource-tile] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [resource-tile]:hover {
+  border-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [resource-tile] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [resource-tile] p {
+  color: var(--kw-text-soft);
+}
+
+/* Login chrome ---------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/login.
+   ====================================================================== */
+[theme=kiwipress] [login-page] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [login-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 8px 32px var(--kw-shadow);
+}
+
+[theme=kiwipress] [login-brand] [logo=text] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [login-brand] [logo-suffix] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-field] > span {
+  color: var(--kw-text-muted);
+}
+
+[theme=kiwipress] [forgot-link] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [forgot-link]:hover {
+  color: var(--kw-accent-strong);
+}
+
+[theme=kiwipress] [login-divider] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-divider]::before,
+[theme=kiwipress] [login-divider]::after {
+  background-color: var(--kw-border);
+}
+
+[theme=kiwipress] [login-footer] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [login-footer] > a {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [login-footer] > a:hover {
+  color: var(--kw-accent-strong);
+}
+
+/* Dashboard chrome -----------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/dashboard.
+   ====================================================================== */
+[theme=kiwipress] [dashboard-shell] {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-text);
+}
+
+[theme=kiwipress] [dashboard-sidebar] {
+  background-color: var(--kw-surface);
+  border-right-color: var(--kw-border);
+}
+
+[theme=kiwipress] [sidebar-brand] {
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [sidebar-brand] [logo] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [sidebar-brand] [logo-suffix] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [sidebar-nav] {
+  background: transparent;
+  border-bottom: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+}
+
+[theme=kiwipress] [nav-divider] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [nav-link] {
+  color: var(--kw-text-muted);
+}
+
+[theme=kiwipress] [nav-link]:hover {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [nav-link][nav-link=active] {
+  background-color: var(--kw-accent-soft);
+  color: var(--kw-accent-strong);
+}
+
+[theme=kiwipress] [sidebar-footer] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [sidebar-footer] [version] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [sidebar-footer] [doc-link] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [sidebar-footer] [doc-link]:hover {
+  color: var(--kw-accent-strong);
+}
+
+[theme=kiwipress] [dashboard-main] {
+  background-color: var(--kw-surface-muted);
+}
+
+[theme=kiwipress] [page-header] > [lede] {
+  color: var(--kw-text-soft);
+}
+
+/* Wizard chrome --------------------------------------------------------
+   Paints the structural primitives in libraries/juice/src/components/wizard.
+   ====================================================================== */
+[theme=kiwipress] [wizard-shell] {
+  background-color: var(--kw-page);
+}
+
+[theme=kiwipress] [wizard-header] {
+  background-color: var(--kw-surface-strong);
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [wizard-header] [brand] [logo] {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [wizard-header] [brand] [badge] {
+  background-color: var(--kw-surface-muted);
+  color: var(--kw-text-muted);
+  border: 1px solid var(--kw-border);
+}
+
+[theme=kiwipress] [wizard-header] button {
+  background-color: transparent;
+  color: var(--kw-text-muted);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+[theme=kiwipress] [wizard-header] button:hover {
+  background-color: var(--kw-surface-muted);
+  transform: none;
+  box-shadow: none;
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [wizard-rail=left],
+[theme=kiwipress] [wizard-rail=right] {
+  background-color: var(--kw-surface-muted);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [step-tracker] [eyebrow] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [step-tracker] > header > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step][step=pending] [step-indicator] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step][step=active] [step-indicator] {
+  background-color: var(--kw-accent);
+  border-color: var(--kw-accent);
+  color: #ffffff;
+}
+
+[theme=kiwipress] [steps] > [step][step=completed] [step-indicator] {
+  background-color: var(--kw-accent-strong);
+  border-color: var(--kw-accent-strong);
+  color: #ffffff;
+}
+
+[theme=kiwipress] [steps] > [step][step=pending] [step-body] > h4 {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step][step=active] [step-body] > h4,
+[theme=kiwipress] [steps] > [step][step=completed] [step-body] > h4 {
+  color: var(--kw-heading);
+}
+
+[theme=kiwipress] [steps] > [step] [step-body] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [steps] > [step]:not(:last-child)::after {
+  background-color: var(--kw-border);
+}
+
+[theme=kiwipress] [steps] > [step][step=completed]:not(:last-child)::after {
+  background-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [order-summary] [eyebrow],
+[theme=kiwipress] [order-summary] > header > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [summary-card] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+  box-shadow: 0 1px 2px var(--kw-shadow);
+}
+
+[theme=kiwipress] [summary-mode] {
+  border-bottom-color: var(--kw-border);
+}
+
+[theme=kiwipress] [mode-row] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [mode-row] > div > p[subtle],
+[theme=kiwipress] [summary-items] > p[subtle],
+[theme=kiwipress] [line-item] [line-body] > p[subtle],
+[theme=kiwipress] [summary-card] > p[subtle] {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [line-item] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [summary-total] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [trust] {
+  border-top-color: var(--kw-border);
+}
+
+[theme=kiwipress] [trust] > li {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [trust] [dot] {
+  background-color: var(--kw-accent);
+}
+
+/* Welcome page features (wizard scope only — distinct from [card="feature"]) */
+[theme=kiwipress] [step-page=welcome] [feature] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [step-page=welcome] [feature]:hover {
+  border-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [step-page=welcome] [feature] [feature-icon] {
+  background-color: var(--kw-accent-soft);
+  border-color: var(--kw-accent-tint);
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [pill=accent] {
+  background-color: var(--kw-accent-soft);
+  color: var(--kw-accent);
+  border-color: var(--kw-accent-tint);
+}
+
+[theme=kiwipress] [placeholder] {
+  border-color: var(--kw-border-strong);
+  background-color: var(--kw-surface);
+}
+
+[theme=kiwipress] [placeholder] > p {
+  color: var(--kw-text-soft);
+}
+
+[theme=kiwipress] [selected-domain] {
+  background-color: var(--kw-surface);
+  border-color: var(--kw-border);
+}
+
+[theme=kiwipress] [selected-domain] > i {
+  color: var(--kw-accent);
+}
+
+[theme=kiwipress] [selected-domain] > [subtle] {
+  color: var(--kw-text-soft);
+}
+
+/* Modal */
+[theme=kiwipress] [modal-overlay] {
+  background-color: rgba(25.5, 25.5, 25.5, 0.75);
+  animation: kw-fadeIn 0.2s ease-out;
+}
+
+[theme=kiwipress] [modal] {
+  background-color: var(--kw-surface);
+  animation: kw-slideUp 0.3s ease-out;
+}
+
+[theme=kiwipress] [modal-close] {
+  background-color: var(--kw-surface);
+  box-shadow: 0 2px 8px var(--kw-shadow);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+[theme=kiwipress] [modal-close]:hover {
+  background-color: var(--kw-surface-muted);
+  transform: rotate(90deg);
+}
+
+/* =====================================================================
+   Animations (declared outside the theme scope so animation refs work)
+   ===================================================================== */
+@keyframes kw-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes kw-slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
