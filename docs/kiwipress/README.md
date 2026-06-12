@@ -14,7 +14,7 @@ KiwiPress reads configuration from environment variables or a constructor argume
 
 ### Environment variables
 
-Create a `.env` file at `packages/kiwipress/.env`:
+Load environment variables in your app, then construct KiwiPress normally. For local development, a `.env` file can still be used, but it should be loaded by the consuming app or test harness rather than by the published package itself:
 
 ```env
 WP_URL=https://your-wordpress-site.com

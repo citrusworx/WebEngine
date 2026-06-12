@@ -21,7 +21,7 @@ WPCore
 
 ### Responsibilities
 
-- Load and merge configuration from `.env` and constructor arguments
+- Load and merge configuration from `process.env` and constructor arguments
 - Validate that `WP_URL` is present
 - Generate authentication headers based on whichever auth strategy is configured
 - Interpolate `:param` placeholders in route paths with URL-encoded values
@@ -32,7 +32,7 @@ WPCore
 new WPCore(config?: Partial<WPCoreConfig>)
 ```
 
-Config passed to the constructor is merged on top of any values found in the `.env` file. Constructor values take priority.
+Config passed to the constructor is merged on top of any values found in `process.env`. Constructor values take priority.
 
 ### `WPCoreConfig`
 
