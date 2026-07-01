@@ -1,5 +1,26 @@
 // juice/jsx-runtime.ts
-import { effect } from "./signal.js";
+import { captureCleanupScope, effect } from "./signal.js";
+const nodeCleanups = new WeakMap();
+function attachCleanup(node, cleanup) {
+    if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+        node.childNodes.forEach(child => attachCleanup(child, cleanup));
+        return;
+    }
+    const cleanups = nodeCleanups.get(node) ?? new Set();
+    cleanups.add(cleanup);
+    nodeCleanups.set(node, cleanups);
+}
+export function disposeTree(node) {
+    node.childNodes.forEach(child => disposeTree(child));
+    const cleanups = nodeCleanups.get(node);
+    if (!cleanups) {
+        return;
+    }
+    nodeCleanups.delete(node);
+    for (const cleanup of cleanups) {
+        cleanup();
+    }
+}
 function appendChild(parent, child) {
     if (child == null)
         return;
@@ -55,7 +76,11 @@ function setProp(el, key, value) {
 }
 export function jsx(type, props) {
     if (typeof type === "function") {
-        return type(props);
+        const { value, dispose } = captureCleanupScope(() => type(props));
+        if (value instanceof Node) {
+            attachCleanup(value, dispose);
+        }
+        return value;
     }
     const el = document.createElement(type);
     if (props) {
@@ -67,6 +92,7 @@ export function jsx(type, props) {
     return el;
 }
 export function mount(node, target) {
+    [...target.childNodes].forEach(child => disposeTree(child));
     target.replaceChildren(node);
 }
 export const jsxs = jsx;

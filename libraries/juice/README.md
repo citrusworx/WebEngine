@@ -184,7 +184,26 @@ This is intended for describing project-level branding concerns like:
 - typography roles
 - experimental integration options
 
+Juice can also generate full theme artifacts from config.
+
+Library-owned themes can still come from `src/themes/<id>/<id>.config.yaml`.
+The generator writes those derived theme contracts into `src/.generated/themes/<id>/` and the build automatically compiles them into `dist/themes/<id>.css`.
+
+App-owned themes can be generated from an app config and committed or imported locally:
+
+```bash
+yarn workspace @citrusworx/juiceui generate:themes --config ../../apps/blackwatersound/front/juice.theme.yaml --css-out ../../apps/blackwatersound/front/src/generated/blackwatersound-theme.css
+```
+
+That lets an app keep its brand config while still relying on Juice for spacing, layout, surfaces, and responsive structure.
+
 Config is not required to use Juice. The most stable current entrypoint is still the compiled stylesheet plus the existing attribute system.
+
+Generate/discover themes directly with:
+
+```bash
+yarn workspace @citrusworx/juiceui generate:themes
+```
 
 ## Build
 

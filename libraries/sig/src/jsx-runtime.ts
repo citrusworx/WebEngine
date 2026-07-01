@@ -1,5 +1,5 @@
 // juice/jsx-runtime.ts
-import { effect } from "./signal.js";
+import { captureCleanupScope, effect } from "./signal.js";
 
 export type Child =
     | Node
@@ -9,6 +9,35 @@ export type Child =
     | undefined
     | (() => any)
     | Child[];
+
+type Cleanup = () => void;
+
+const nodeCleanups = new WeakMap<Node, Set<Cleanup>>();
+
+function attachCleanup(node: Node, cleanup: Cleanup): void {
+    if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+        node.childNodes.forEach(child => attachCleanup(child, cleanup));
+        return;
+    }
+
+    const cleanups = nodeCleanups.get(node) ?? new Set<Cleanup>();
+    cleanups.add(cleanup);
+    nodeCleanups.set(node, cleanups);
+}
+
+export function disposeTree(node: Node): void {
+    node.childNodes.forEach(child => disposeTree(child));
+
+    const cleanups = nodeCleanups.get(node);
+    if (!cleanups) {
+        return;
+    }
+
+    nodeCleanups.delete(node);
+    for (const cleanup of cleanups) {
+        cleanup();
+    }
+}
 
 function appendChild(parent: Node, child: Child): void {
     if (child == null) return;
@@ -74,7 +103,11 @@ function setProp(el: HTMLElement, key: string, value: any) {
 
 export function jsx(type: any, props: any) {
     if (typeof type === "function") {
-        return type(props);
+        const { value, dispose } = captureCleanupScope(() => type(props));
+        if (value instanceof Node) {
+            attachCleanup(value, dispose);
+        }
+        return value;
     }
 
     const el = document.createElement(type);
@@ -91,6 +124,7 @@ export function jsx(type: any, props: any) {
 }
 
 export function mount(node: Node, target: HTMLElement){
+    [...target.childNodes].forEach(child => disposeTree(child));
     target.replaceChildren(node);
 }
 

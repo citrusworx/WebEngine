@@ -6,18 +6,14 @@ import * as dartSass from "sass";
 import gulpSass from "gulp-sass";
 import { dirname, resolve } from "node:path";
 import postcss from "gulp-postcss";
+import postcssRuntime from "postcss";
 import autoprefixer from "autoprefixer";
+import { collectThemeEntries, generateThemeArtifacts } from "./src/tools/theme-generator/index.ts";
 
 const sass = gulpSass(dartSass);
 const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
 const TEXTURE_SRC_ROOT = resolve(ROOT_DIR, "src/styles/textures");
 const DIST_ROOT = resolve(ROOT_DIR, "dist");
-
-const THEME_ENTRIES = [
-    { id: "aquaflux", src: "src/themes/aquaflux/aquaflux.scss" },
-    { id: "kiwipress", src: "src/themes/kiwipress/kiwipress.scss" },
-    { id: "citrusmint", src: "src/themes/citrusmint/citrusmint.scss" },
-] as const;
 
 const inlineSvgTextures = () => {
     return {
@@ -68,29 +64,42 @@ const stylesCore = () => {
         .pipe(gulp.dest(DIST_ROOT));
 };
 
-const buildThemeStyles =
-    (themeId: string, srcRelative: string) =>
-    () => {
-        return gulp
-            .src(resolve(ROOT_DIR, srcRelative))
-            .pipe(sassPipeline())
-            .pipe(postcssPipeline())
-            .pipe(rename(`${themeId}.css`))
-            .pipe(gulp.dest(resolve(DIST_ROOT, "themes")));
-    };
+const generateThemes = async () => {
+    await generateThemeArtifacts();
+};
 
-const stylesThemes = gulp.parallel(...THEME_ENTRIES.map(({ id, src }) => buildThemeStyles(id, src)));
+const compileThemeStyles = async (themeId: string, srcRelative: string) => {
+    const sourcePath = resolve(ROOT_DIR, srcRelative);
+    const outputPath = resolve(DIST_ROOT, "themes", `${themeId}.css`);
+    const sassResult = await dartSass.compileAsync(sourcePath, {
+        loadPaths: [resolve(ROOT_DIR, "src")],
+    });
+    const postcssResult = await postcssRuntime([inlineSvgTextures(), autoprefixer()]).process(sassResult.css, {
+        from: sourcePath,
+        to: outputPath,
+    });
+
+    await fs.promises.writeFile(outputPath, postcssResult.css);
+};
+
+const stylesThemes = async () => {
+    const themeEntries = await collectThemeEntries();
+    await Promise.all(themeEntries.map(({ id, src }) => compileThemeStyles(id, src)));
+};
 
 const icons = () => {
     return gulp.src("./src/icons/**/*.svg").pipe(gulp.dest("./dist/icons"));
 };
 
 const watchAll = () => {
-    gulp.watch("./src/**/*.scss", gulp.parallel(stylesCore, stylesThemes));
+    gulp.watch(
+        ["./src/**/*.scss", "./src/themes/**/*.yaml", "./src/themes/**/*.config.yaml"],
+        gulp.series(generateThemes, gulp.parallel(stylesCore, stylesThemes))
+    );
     gulp.watch("./src/icons/**/*.svg", icons);
 };
 
 export { clean };
-export const build = gulp.series(clean, stylesCore, stylesThemes, icons);
-export const dev = gulp.series(stylesCore, stylesThemes, icons, watchAll);
+export const build = gulp.series(clean, generateThemes, stylesCore, stylesThemes, icons);
+export const dev = gulp.series(generateThemes, stylesCore, stylesThemes, icons, watchAll);
 export default build;

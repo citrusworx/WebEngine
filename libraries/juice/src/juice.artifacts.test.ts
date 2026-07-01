@@ -16,24 +16,34 @@ function readPackageJson() {
     };
 }
 
-const BUNDLED_THEME_IDS = ["aquaflux", "kiwipress", "citrusmint"] as const;
+function readBundledThemeIds() {
+    return readdirSync(join(DIST_DIR, "themes"))
+        .filter((file) => file.endsWith(".css"))
+        .map((file) => file.replace(/\.css$/, ""))
+        .sort();
+}
 
 describe("Juice build artifacts", () => {
     it("produces core CSS output without bundled themes", () => {
         const cssPath = join(DIST_DIR, "index.css");
         const css = readFileSync(cssPath, "utf-8");
+        const bundledThemeIds = readBundledThemeIds();
 
         expect(css).toContain("[bgColor=");
         expect(css).toContain("[icon=");
         expect(css).toContain("[stack]");
         expect(css.length).toBeGreaterThan(1000);
-        expect(css).not.toContain('[theme="aquaflux"]');
-        expect(css).not.toContain('[theme="kiwipress"]');
-        expect(css).not.toContain('[theme="citrusmint"]');
+        for (const id of bundledThemeIds) {
+            expect(css).not.toContain(`[theme="${id}"]`);
+        }
     });
 
     it("produces separate theme stylesheets", () => {
-        for (const id of BUNDLED_THEME_IDS) {
+        const bundledThemeIds = readBundledThemeIds();
+
+        expect(bundledThemeIds.length).toBeGreaterThan(0);
+
+        for (const id of bundledThemeIds) {
             const themePath = join(DIST_DIR, "themes", `${id}.css`);
             expect(existsSync(themePath)).toBe(true);
             const themeCss = readFileSync(themePath, "utf-8");
@@ -55,7 +65,7 @@ describe("Juice build artifacts", () => {
     });
 
     it("keeps each theme stylesheet under the size budget", () => {
-        for (const id of BUNDLED_THEME_IDS) {
+        for (const id of readBundledThemeIds()) {
             const themeStats = statSync(join(DIST_DIR, "themes", `${id}.css`));
             expect(themeStats.size).toBeLessThan(500_000);
         }
@@ -84,12 +94,20 @@ describe("Juice package contract", () => {
 
         for (const target of Object.values(pkg.exports ?? {})) {
             if (typeof target === "string") {
-                expect(existsSync(join(PACKAGE_ROOT, target))).toBe(true);
+                if (target.includes("*")) {
+                    expect(existsSync(join(PACKAGE_ROOT, target.split("*")[0]))).toBe(true);
+                } else {
+                    expect(existsSync(join(PACKAGE_ROOT, target))).toBe(true);
+                }
                 continue;
             }
 
             if (target.default) {
-                expect(existsSync(join(PACKAGE_ROOT, target.default))).toBe(true);
+                if (target.default.includes("*")) {
+                    expect(existsSync(join(PACKAGE_ROOT, target.default.split("*")[0]))).toBe(true);
+                } else {
+                    expect(existsSync(join(PACKAGE_ROOT, target.default))).toBe(true);
+                }
             }
 
             if (target.types) {

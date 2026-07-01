@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/juiceui",
-    "version": "0.1.1",
+    "version": "0.3.0",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -12,6 +12,10 @@
         "./styles": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/index.css"
+        },
+        "./themes/*.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/*.css"
         },
         "./themes/aquaflux.css": {
             "types": "./dist/themes/index.d.ts",
@@ -36,6 +40,10 @@
         "./styles/themes/citrusmint": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/citrusmint.css"
+        },
+        "./styles/themes/*": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/*.css"
         }
     },
     "files": [
@@ -50,6 +58,7 @@
     ],
     "sideEffects": [
         "./dist/index.css",
+        "./dist/themes/*.css",
         "./dist/themes/aquaflux.css",
         "./dist/themes/kiwipress.css",
         "./dist/themes/citrusmint.css"
@@ -89,6 +98,7 @@
         "vitest": "^4.1.2"
     },
     "scripts": {
+        "generate:themes": "ts-node --esm src/tools/theme-generator/cli.ts",
         "dev": "gulp dev & vite dev --watch",
         "build": "gulp build --gulpfile gulp.ts && vite build && tsc -p tsconfig.types.json",
         "prepack": "yarn build",

@@ -55,24 +55,85 @@
 // Attach signals to components so only THEY get updated and not the entire DOM
 
 
-type Subscriber = () => void;
+type Cleanup = () => void;
+type EffectCallback = () => void | Cleanup;
+
+type SubscriberSet = Set<ReactiveEffect>;
+
+interface ReactiveEffect {
+    addDependency(subscribers: SubscriberSet): void;
+    notify(): void;
+    dispose(): void;
+}
+
+interface CleanupScope {
+    cleanups: Set<Cleanup>;
+}
+
 let isBatching = false;
-const pendingSubscribers = new Set<Subscriber>();
-let currentSubscriber: Subscriber | null = null;
+const pendingSubscribers = new Set<ReactiveEffect>();
+let currentSubscriber: ReactiveEffect | null = null;
+let currentCleanupScope: CleanupScope | null = null;
+
+function runCleanup(cleanup?: Cleanup) {
+    cleanup?.();
+}
+
+function scheduleSubscriber(subscriber: ReactiveEffect) {
+    if (isBatching) {
+        pendingSubscribers.add(subscriber);
+        return;
+    }
+
+    subscriber.notify();
+}
+
+function registerCleanup(cleanup: Cleanup) {
+    currentCleanupScope?.cleanups.add(cleanup);
+}
+
+export function captureCleanupScope<T>(fn: () => T): { value: T; dispose: Cleanup } {
+    const parentScope = currentCleanupScope;
+    const scope: CleanupScope = { cleanups: new Set() };
+    currentCleanupScope = scope;
+
+    try {
+        const value = fn();
+        let disposed = false;
+
+        return {
+            value,
+            dispose: () => {
+                if (disposed) {
+                    return;
+                }
+
+                disposed = true;
+                for (const cleanup of scope.cleanups) {
+                    runCleanup(cleanup);
+                }
+                scope.cleanups.clear();
+            },
+        };
+    } finally {
+        currentCleanupScope = parentScope;
+    }
+}
 
 export function Signal<T>(value: T){
-    const subscribers = new Set<Subscriber>();
+    const subscribers: SubscriberSet = new Set();
 
     function getter(){
         if(currentSubscriber){
             subscribers.add(currentSubscriber);
+            currentSubscriber.addDependency(subscribers);
         }
         return value;
     }
 
     function setter(newValue: T){
         value = newValue;
-        subscribers.forEach(fn => fn());
+        [...subscribers].forEach(subscriber => scheduleSubscriber(subscriber));
     }
 
     return {
@@ -86,30 +147,52 @@ export function batch(fn: () => void){
     fn();
     isBatching = false;
 
-    pendingSubscribers.forEach(fn => fn());
+    pendingSubscribers.forEach(subscriber => subscriber.notify());
     pendingSubscribers.clear();
 }
 
 export function memo<T>(fn: () => T){
     let cachedValue: T | undefined;
     let isDirty = true;
-    const subscribers = new Set<Subscriber>();
+    const subscribers: SubscriberSet = new Set();
+    const dependencies = new Set<SubscriberSet>();
 
-    const invalidate: Subscriber = () => {
-        isDirty = true;
-        subscribers.forEach(fn => fn());
-    }
+    const invalidate: ReactiveEffect = {
+        addDependency(subscriberSet: SubscriberSet) {
+            dependencies.add(subscriberSet);
+        },
+        notify() {
+            isDirty = true;
+            [...subscribers].forEach(subscriber => scheduleSubscriber(subscriber));
+        },
+        dispose() {
+            for (const subscriberSet of dependencies) {
+                subscriberSet.delete(invalidate);
+            }
+            dependencies.clear();
+            subscribers.clear();
+        },
+    };
 
     function getter(){
         if(currentSubscriber){
             subscribers.add(currentSubscriber);
+            currentSubscriber.addDependency(subscribers);
         }
 
         if(isDirty){
+            for (const subscriberSet of dependencies) {
+                subscriberSet.delete(invalidate);
+            }
+            dependencies.clear();
+
             const prevSubscriber = currentSubscriber;
             currentSubscriber = invalidate;
-            cachedValue = fn();
-            currentSubscriber = prevSubscriber;
+            try {
+                cachedValue = fn();
+            } finally {
+                currentSubscriber = prevSubscriber;
+            }
             isDirty = false;
         }
         return cachedValue;
@@ -120,10 +203,65 @@ export function memo<T>(fn: () => T){
     };
 }
 
-export function effect(fn: Subscriber){
-    currentSubscriber = fn;
-    fn();
-    currentSubscriber = null;
+export function effect(fn: EffectCallback){
+    const dependencies = new Set<SubscriberSet>();
+    let cleanup: Cleanup | undefined;
+    let disposed = false;
 
-    return () => {}
+    const subscriber: ReactiveEffect = {
+        addDependency(subscribers: SubscriberSet) {
+            dependencies.add(subscribers);
+        },
+        notify() {
+            if (disposed) {
+                return;
+            }
+
+            run();
+        },
+        dispose() {
+            if (disposed) {
+                return;
+            }
+
+            disposed = true;
+            for (const subscribers of dependencies) {
+                subscribers.delete(subscriber);
+            }
+            dependencies.clear();
+            runCleanup(cleanup);
+            cleanup = undefined;
+            pendingSubscribers.delete(subscriber);
+        },
+    };
+
+    function run() {
+        for (const subscribers of dependencies) {
+            subscribers.delete(subscriber);
+        }
+        dependencies.clear();
+
+        runCleanup(cleanup);
+        cleanup = undefined;
+
+        const prevSubscriber = currentSubscriber;
+        currentSubscriber = subscriber;
+        let maybeCleanup: void | Cleanup;
+        try {
+            maybeCleanup = fn();
+        } finally {
+            currentSubscriber = prevSubscriber;
+        }
+
+        if (typeof maybeCleanup === "function") {
+            cleanup = maybeCleanup;
+        }
+    }
+
+    run();
+
+    const dispose = () => subscriber.dispose();
+    registerCleanup(dispose);
+
+    return dispose;
 }

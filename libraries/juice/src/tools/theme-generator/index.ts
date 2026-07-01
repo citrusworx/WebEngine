@@ -1,0 +1,491 @@
+import { promises as fs } from "node:fs";
+import { basename, dirname, extname, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { dump, load } from "js-yaml";
+
+type ThemeTypographyRole = {
+    family: string;
+    fallback?: string;
+    tone?: string;
+};
+
+type ThemeTypographyVariantMap = Record<string, ThemeTypographyRole>;
+
+type ThemePalette = {
+    page: {
+        background: string;
+        tint?: string;
+        deep?: string;
+    };
+    text: {
+        default: string;
+        muted: string;
+        soft?: string;
+        heading: string;
+        inverse?: string;
+    };
+    accents: {
+        primary: string;
+        primaryStrong?: string;
+        secondary?: string;
+        secondaryStrong?: string;
+        soft?: string;
+        tint?: string;
+        warm?: string;
+        warmSoft?: string;
+        warmTint?: string;
+    };
+    surfaces: {
+        default: string;
+        muted?: string;
+        strong?: string;
+        deep?: string;
+        border: string;
+        borderStrong?: string;
+        hero?: string;
+        cta?: string;
+        panel?: string;
+        shadow?: string;
+        shadowStrong?: string;
+    };
+};
+
+type NamedSurfaceConfig = {
+    name: string;
+    purpose?: string;
+    background?: string;
+    color?: string;
+    border?: string;
+    shadow?: string;
+};
+
+export type ThemeGeneratorConfig = {
+    id: string;
+    name: string;
+    selector?: string;
+    version?: number;
+    summary?: string;
+    philosophy?: Record<string, unknown>;
+    recommended_use_cases?: string[];
+    authoring_rules?: string[];
+    example?: Record<string, unknown>;
+    typography: {
+        body: ThemeTypographyRole;
+        heading: ThemeTypographyRole;
+        variants?: ThemeTypographyVariantMap;
+    };
+    palette: ThemePalette;
+    named_surfaces?: NamedSurfaceConfig[];
+};
+
+export type ThemeEntry = {
+    id: string;
+    src: string;
+};
+
+export type GenerateExternalThemeOptions = {
+    configPath: string;
+    cssOutPath: string;
+    yamlOutPath?: string;
+};
+
+const TOOLS_ROOT = dirname(fileURLToPath(import.meta.url));
+const SRC_ROOT = resolve(TOOLS_ROOT, "../..");
+const THEMES_ROOT = resolve(SRC_ROOT, "themes");
+const GENERATED_ROOT = resolve(SRC_ROOT, ".generated/themes");
+
+function toPosix(pathValue: string): string {
+    return pathValue.replace(/\\/g, "/");
+}
+
+function quoteFont(role: ThemeTypographyRole): string {
+    return role.fallback ? `${role.family}, ${role.fallback}` : role.family;
+}
+
+function toCssVarSegment(value: string): string {
+    return value
+        .trim()
+        .replace(/[^a-zA-Z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase();
+}
+
+function buildTypographyVariantVariables(config: ThemeGeneratorConfig): string {
+    return Object.entries(config.typography.variants ?? {})
+        .map(([name, role]) => `    --jx-font-${toCssVarSegment(name)}: ${quoteFont(role)};`)
+        .join("\n");
+}
+
+function stringifyConfig(config: ThemeGeneratorConfig): string {
+    return dump({
+        ...config,
+        selector: config.selector ?? `theme="${config.id}"`,
+        version: config.version ?? 1,
+    }, { lineWidth: 120 });
+}
+
+function buildNamedSurfaceRules(config: ThemeGeneratorConfig): string {
+    return (config.named_surfaces ?? []).map((surface) => {
+        const background = surface.background ?? "var(--jx-surface-muted)";
+        const color = surface.color ?? "var(--jx-heading)";
+        const border = surface.border ?? "var(--jx-border)";
+        const shadow = surface.shadow ?? "var(--jx-shadow)";
+
+        return `
+[theme="${config.id}"][surface="${surface.name}"],
+[theme="${config.id}"] [surface="${surface.name}"] {
+    background: ${background};
+    color: ${color};
+    border: 1px solid ${border};
+    box-shadow: ${shadow};
+}
+
+[theme="${config.id}"][surface="${surface.name}"] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="${config.id}"] [surface="${surface.name}"] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: ${color};
+}
+`.trim();
+    }).join("\n\n");
+}
+
+function buildThemeStylesheet(config: ThemeGeneratorConfig, sourceLabel: string): string {
+    const pageTint = config.palette.page.tint ?? config.palette.page.background;
+    const pageDeep = config.palette.page.deep ?? config.palette.surfaces.deep ?? config.palette.text.heading;
+    const textSoft = config.palette.text.soft ?? config.palette.text.muted;
+    const textInverse = config.palette.text.inverse ?? "rgba(255, 255, 255, 0.82)";
+    const surfaceMuted = config.palette.surfaces.muted ?? config.palette.surfaces.default;
+    const surfaceStrong = config.palette.surfaces.strong ?? config.palette.surfaces.default;
+    const surfaceDeep = config.palette.surfaces.deep ?? pageDeep;
+    const borderStrong = config.palette.surfaces.borderStrong ?? config.palette.surfaces.border;
+    const heroBackground = config.palette.surfaces.hero ?? config.palette.page.background;
+    const ctaBackground = config.palette.surfaces.cta ?? config.palette.accents.primary;
+    const panelBackground = config.palette.surfaces.panel ?? surfaceMuted;
+    const shadow = config.palette.surfaces.shadow ?? "0 18px 48px rgba(0, 0, 0, 0.08)";
+    const shadowStrong = config.palette.surfaces.shadowStrong ?? shadow;
+    const accentPrimaryStrong = config.palette.accents.primaryStrong ?? config.palette.accents.primary;
+    const accentSecondary = config.palette.accents.secondary ?? config.palette.accents.primary;
+    const accentSecondaryStrong = config.palette.accents.secondaryStrong ?? accentSecondary;
+    const accentSoft = config.palette.accents.soft ?? config.palette.accents.primary;
+    const accentTint = config.palette.accents.tint ?? accentSoft;
+    const warm = config.palette.accents.warm ?? accentSecondary;
+    const warmSoft = config.palette.accents.warmSoft ?? accentTint;
+    const warmTint = config.palette.accents.warmTint ?? warmSoft;
+    const namedSurfaces = buildNamedSurfaceRules(config);
+    const typographyVariantVariables = buildTypographyVariantVariables(config);
+
+    return `/*
+  Generated by Juice theme generator.
+  Source config: ${sourceLabel}
+*/
+
+[theme="${config.id}"] {
+    --jx-page: ${config.palette.page.background};
+    --jx-page-tint: ${pageTint};
+    --jx-page-deep: ${pageDeep};
+    --jx-surface: ${config.palette.surfaces.default};
+    --jx-surface-muted: ${surfaceMuted};
+    --jx-surface-strong: ${surfaceStrong};
+    --jx-surface-deep: ${surfaceDeep};
+    --jx-border: ${config.palette.surfaces.border};
+    --jx-border-strong: ${borderStrong};
+    --jx-shadow: ${shadow};
+    --jx-shadow-strong: ${shadowStrong};
+
+    --jx-text: ${config.palette.text.default};
+    --jx-text-muted: ${config.palette.text.muted};
+    --jx-text-soft: ${textSoft};
+    --jx-text-inverse: ${textInverse};
+    --jx-heading: ${config.palette.text.heading};
+
+    --jx-body-font: ${quoteFont(config.typography.body)};
+    --jx-heading-font: ${quoteFont(config.typography.heading)};
+${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
+
+    --jx-accent: ${config.palette.accents.primary};
+    --jx-accent-strong: ${accentPrimaryStrong};
+    --jx-accent-secondary: ${accentSecondary};
+    --jx-accent-secondary-strong: ${accentSecondaryStrong};
+    --jx-accent-soft: ${accentSoft};
+    --jx-accent-tint: ${accentTint};
+    --jx-warm: ${warm};
+    --jx-warm-soft: ${warmSoft};
+    --jx-warm-tint: ${warmTint};
+
+    --jx-hero-background: ${heroBackground};
+    --jx-cta-background: ${ctaBackground};
+    --jx-panel-background: ${panelBackground};
+
+    background:
+        radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
+        linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
+    color: var(--jx-text);
+    font-family: var(--jx-body-font);
+}
+
+[theme="${config.id}"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="${config.id}"] :where(section, article, aside, nav, header, footer, form) {
+    background: var(--jx-surface);
+    color: var(--jx-text);
+}
+
+[theme="${config.id}"] :where(nav) {
+    background: var(--jx-surface-strong);
+    border-bottom: 1px solid var(--jx-border);
+    backdrop-filter: blur(18px);
+}
+
+[theme="${config.id}"] :where(footer) {
+    background: var(--jx-surface-deep);
+    color: var(--jx-text-inverse);
+}
+
+[theme="${config.id}"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--jx-heading);
+    font-family: var(--jx-heading-font);
+    font-weight: 700;
+    line-height: 1.05;
+}
+
+[theme="${config.id}"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--jx-text);
+    font-family: var(--jx-body-font);
+    line-height: 1.65;
+}
+
+[theme="${config.id}"] :where(small, figcaption, [muted]) {
+    color: var(--jx-text-soft);
+}
+
+[theme="${config.id}"] :where(a) {
+    color: var(--jx-text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+[theme="${config.id}"] :where(a:hover, a:focus-visible) {
+    color: var(--jx-accent);
+}
+
+[theme="${config.id}"] :where(button, input, textarea, select) {
+    font-family: var(--jx-body-font);
+}
+
+[theme="${config.id}"] :where(button) {
+    background: var(--jx-accent);
+    color: var(--jx-text-inverse);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    box-shadow: var(--jx-shadow);
+}
+
+[theme="${config.id}"] :where(button:hover, button:focus-visible) {
+    background: var(--jx-accent-strong);
+}
+
+[theme="${config.id}"] :where(input, textarea, select) {
+    background: var(--jx-surface);
+    color: var(--jx-text);
+    border: 1px solid var(--jx-border);
+    border-radius: 0.75rem;
+}
+
+[theme="${config.id}"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid color-mix(in srgb, var(--jx-accent) 22%, transparent);
+    border-color: var(--jx-accent);
+}
+
+[theme="${config.id}"] :where([hero]) {
+    background: var(--jx-hero-background);
+    color: var(--jx-text-inverse);
+    border: 1px solid transparent;
+    box-shadow: var(--jx-shadow-strong);
+}
+
+[theme="${config.id}"] :where([hero]) :where(h1, h2, h3, h4, h5, h6, p, span, small, a) {
+    color: var(--jx-text-inverse);
+}
+
+[theme="${config.id}"] :where([card], [panel]) {
+    background: var(--jx-surface);
+    border: 1px solid var(--jx-border);
+    box-shadow: var(--jx-shadow);
+}
+
+[theme="${config.id}"] :where([panel]) {
+    background: var(--jx-panel-background);
+}
+
+[theme="${config.id}"] :where([cta]) {
+    background: var(--jx-cta-background);
+    color: var(--jx-text-inverse);
+    border: 1px solid transparent;
+    box-shadow: var(--jx-shadow-strong);
+}
+
+[theme="${config.id}"] :where([cta]) :where(h1, h2, h3, h4, h5, h6, p, span, small, a, button) {
+    color: var(--jx-text-inverse);
+}
+
+[theme="${config.id}"] :where([badge]) {
+    background: var(--jx-accent-tint);
+    color: var(--jx-accent);
+}
+
+[theme="${config.id}"] :where([badge][warm]) {
+    background: var(--jx-warm-soft);
+    color: var(--jx-warm);
+}
+
+[theme="${config.id}"] :where([stat]) {
+    background: var(--jx-surface);
+    border: 1px solid var(--jx-border);
+    box-shadow: var(--jx-shadow);
+}
+
+${namedSurfaces}
+`;
+}
+
+function isDirectoryEntry(name: string): boolean {
+    return !name.startsWith(".");
+}
+
+async function discoverThemeConfigPaths(): Promise<string[]> {
+    const entries = await fs.readdir(THEMES_ROOT, { withFileTypes: true });
+    const paths: string[] = [];
+
+    for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name === "_draft" || !isDirectoryEntry(entry.name)) {
+            continue;
+        }
+
+        const configPath = join(THEMES_ROOT, entry.name, `${entry.name}.config.yaml`);
+
+        try {
+            await fs.access(configPath);
+            paths.push(configPath);
+        } catch {
+            continue;
+        }
+    }
+
+    return paths;
+}
+
+function normalizeConfig(rawConfig: unknown, filePath: string): ThemeGeneratorConfig {
+    if (!rawConfig || typeof rawConfig !== "object") {
+        throw new Error(`Theme config at ${filePath} did not produce an object.`);
+    }
+
+    const config = rawConfig as Partial<ThemeGeneratorConfig>;
+
+    if (!config.id || !config.name || !config.typography || !config.palette) {
+        throw new Error(`Theme config at ${filePath} is missing required fields (id, name, typography, palette).`);
+    }
+
+    return {
+        ...config,
+        selector: config.selector ?? `theme="${config.id}"`,
+        version: config.version ?? 1,
+    } as ThemeGeneratorConfig;
+}
+
+async function readThemeConfig(configPath: string): Promise<ThemeGeneratorConfig> {
+    const source = await fs.readFile(configPath, "utf-8");
+    return normalizeConfig(load(source), configPath);
+}
+
+export async function generateThemeArtifacts(): Promise<ThemeEntry[]> {
+    await fs.mkdir(GENERATED_ROOT, { recursive: true });
+
+    const configPaths = await discoverThemeConfigPaths();
+    const generatedEntries: ThemeEntry[] = [];
+
+    for (const configPath of configPaths) {
+        const config = await readThemeConfig(configPath);
+        const outDir = join(GENERATED_ROOT, config.id);
+        const scssPath = join(outDir, `${config.id}.scss`);
+        const yamlPath = join(outDir, `${config.id}.yaml`);
+        const sourceLabel = toPosix(relative(SRC_ROOT, configPath));
+
+        await fs.mkdir(outDir, { recursive: true });
+        await fs.writeFile(scssPath, buildThemeStylesheet(config, sourceLabel), "utf-8");
+        await fs.writeFile(yamlPath, stringifyConfig(config), "utf-8");
+
+        generatedEntries.push({
+            id: config.id,
+            src: toPosix(relative(dirname(SRC_ROOT), scssPath)),
+        });
+    }
+
+    return generatedEntries;
+}
+
+export async function generateExternalThemeArtifacts(options: GenerateExternalThemeOptions): Promise<ThemeGeneratorConfig> {
+    const configPath = resolve(options.configPath);
+    const cssOutPath = resolve(options.cssOutPath);
+    const yamlOutPath = options.yamlOutPath ? resolve(options.yamlOutPath) : undefined;
+    const config = await readThemeConfig(configPath);
+    const sourceLabel = toPosix(options.configPath);
+
+    await fs.mkdir(dirname(cssOutPath), { recursive: true });
+    await fs.writeFile(cssOutPath, buildThemeStylesheet(config, sourceLabel), "utf-8");
+
+    if (yamlOutPath) {
+        await fs.mkdir(dirname(yamlOutPath), { recursive: true });
+        await fs.writeFile(yamlOutPath, stringifyConfig(config), "utf-8");
+    }
+
+    return config;
+}
+
+async function discoverScssThemeEntries(root: string): Promise<ThemeEntry[]> {
+    try {
+        const themes = await fs.readdir(root, { withFileTypes: true });
+        const entries: ThemeEntry[] = [];
+
+        for (const theme of themes) {
+            if (!theme.isDirectory() || theme.name === "_draft" || !isDirectoryEntry(theme.name)) {
+                continue;
+            }
+
+            const scssPath = join(root, theme.name, `${theme.name}.scss`);
+
+            try {
+                await fs.access(scssPath);
+                entries.push({
+                    id: basename(scssPath, extname(scssPath)),
+                    src: toPosix(relative(dirname(SRC_ROOT), scssPath)),
+                });
+            } catch {
+                continue;
+            }
+        }
+
+        return entries;
+    } catch {
+        return [];
+    }
+}
+
+export async function collectThemeEntries(): Promise<ThemeEntry[]> {
+    const manualEntries = await discoverScssThemeEntries(THEMES_ROOT);
+    const generatedEntries = await discoverScssThemeEntries(GENERATED_ROOT);
+    const entries = new Map<string, ThemeEntry>();
+
+    for (const entry of manualEntries) {
+        entries.set(entry.id, entry);
+    }
+
+    for (const entry of generatedEntries) {
+        if (!entries.has(entry.id)) {
+            entries.set(entry.id, entry);
+        }
+    }
+
+    return [...entries.values()].sort((a, b) => a.id.localeCompare(b.id));
+}

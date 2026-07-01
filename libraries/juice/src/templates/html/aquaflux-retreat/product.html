@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../../dist/index.css">
+    <link rel="stylesheet" href="../../../../dist/themes/aquaflux.css">
+    <title>AquaFlux Product Detail Template</title>
+</head>
+<body theme="aquaflux">
+    <main stack gap="2rem" paddingX="2rem" paddingY="2rem">
+        <header rounded="xl">
+            <div content stack gap="2rem" paddingX="3rem" paddingY="2.5rem">
+                <div row wrap space="between" centered gap="2rem">
+                    <div row centered gap="1rem">
+                        <div aqua-chip rounded="full" width="3.25rem" height="3.25rem" row centered>
+                            <i icon="clock" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                        </div>
+
+                        <div stack gap="0.25rem">
+                            <strong fontColor="blue-900">Open daily 9am to 9pm</strong>
+                            <p fontColor="blue-700">Pickup and local delivery available</p>
+                        </div>
+                    </div>
+
+                    <div stack gap="0.25rem" centered>
+                        <h1>Tidewell Lab</h1>
+                        <p fontColor="blue-700">Recovery skincare</p>
+                    </div>
+
+                    <div row centered gap="1rem">
+                        <div aqua-chip rounded="full" width="3.25rem" height="3.25rem" row centered>
+                            <i icon="phone" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                        </div>
+
+                        <div stack gap="0.25rem">
+                            <strong fontColor="blue-900">Call us: 123-456-78-90</strong>
+                            <p fontColor="blue-700">care@tidewelllab.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <nav aqua-panel rounded="full" paddingX="2rem" paddingY="1rem">
+                    <div row wrap centered gap="1.5rem">
+                        <a href="#description">Description</a>
+                        <a href="#ingredients">Ingredients</a>
+                        <a href="#reviews">Reviews</a>
+                        <a href="#related">Related products</a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <section rounded="xl">
+            <div content stack gap="2rem" paddingX="3rem" paddingY="3rem">
+                <div row wrap space="between" centered gap="1rem">
+                    <div row wrap centered gap="0.75rem">
+                        <a href="#top">Home</a>
+                        <span fontColor="blue-600">/</span>
+                        <a href="#related">Skincare</a>
+                        <span fontColor="blue-600">/</span>
+                        <span fontColor="blue-700">Tidewell Serum</span>
+                    </div>
+
+                    <div row wrap centered gap="1rem">
+                        <a href="#related" fontColor="blue-700">Previous</a>
+                        <span fontColor="blue-600">/</span>
+                        <a href="#related" fontColor="blue-700">Next</a>
+                    </div>
+                </div>
+
+                <div content grid="2x1" gap="3rem">
+                    <div stack gap="1rem">
+                        <div aqua-panel rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                            <div stack gap="1rem">
+                                <div row space="between" centered gap="1rem">
+                                    <div aqua-chip rounded="full" width="4.5rem" height="4.5rem" row centered>
+                                        <strong fontColor="blue-900">SALE</strong>
+                                    </div>
+
+                                    <i icon="magnifying-glass" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                                </div>
+
+                                <div grid="2x1" gap="1rem">
+                                    <div aqua-card rounded="xl" height="22rem">
+                                        <div stack gap="1rem" centered paddingX="1.5rem" paddingY="2rem">
+                                            <div aqua-chip rounded="full" width="6rem" height="6rem" row centered>
+                                                <i icon="bottle-droplet" lib="solid" iconSize="lg" iconcolor="blue-700"></i>
+                                            </div>
+                                            <strong fontColor="blue-900">Day bottle</strong>
+                                            <p fontColor="blue-700">Hydration support for AM routines</p>
+                                        </div>
+                                    </div>
+
+                                    <div aqua-card rounded="xl" height="22rem">
+                                        <div stack gap="1rem" centered paddingX="1.5rem" paddingY="2rem">
+                                            <div aqua-chip rounded="full" width="6rem" height="6rem" row centered>
+                                                <i icon="moon" lib="solid" iconSize="lg" iconcolor="purple-700"></i>
+                                            </div>
+                                            <strong fontColor="blue-900">Night bottle</strong>
+                                            <p fontColor="blue-700">Calm recovery for PM routines</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div grid="3x1" gap="1rem">
+                            <div aqua-card rounded="xl" paddingX="1rem" paddingY="1rem" height="7rem">
+                                <div stack gap="0.5rem" centered>
+                                    <i icon="droplet" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                                    <span fontColor="blue-800">Texture view</span>
+                                </div>
+                            </div>
+
+                            <div aqua-card rounded="xl" paddingX="1rem" paddingY="1rem" height="7rem">
+                                <div stack gap="0.5rem" centered>
+                                    <i icon="shield-heart" lib="solid" iconSize="sm" iconcolor="purple-700"></i>
+                                    <span fontColor="blue-800">Formula view</span>
+                                </div>
+                            </div>
+
+                            <div aqua-card rounded="xl" paddingX="1rem" paddingY="1rem" height="7rem">
+                                <div stack gap="0.5rem" centered>
+                                    <i icon="sparkles" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                                    <span fontColor="blue-800">Routine view</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside stack gap="1.5rem">
+                        <div stack gap="1rem">
+                            <p fontColor="blue-700">Recovery skincare</p>
+                            <h2>Tidewell Serum</h2>
+
+                            <div row wrap centered gap="1rem">
+                                <span fontColor="blue-600">$75.00</span>
+                                <strong fontColor="blue-900">$70.00</strong>
+                            </div>
+
+                            <p fontColor="blue-800">A calm, barrier-supporting serum designed for dehydration, stress, travel fatigue, and skin that needs a cleaner reset instead of another aggressive active.</p>
+                        </div>
+
+                        <div stack gap="1rem">
+                            <div row wrap centered gap="1rem">
+                                <div aqua-chip rounded="full" paddingX="1rem" paddingY="0.75rem">
+                                    <span fontColor="blue-800">1.7 fl oz</span>
+                                </div>
+
+                                <div aqua-chip rounded="full" paddingX="1rem" paddingY="0.75rem">
+                                    <span fontColor="blue-800">Fragrance-free</span>
+                                </div>
+
+                                <div aqua-chip rounded="full" paddingX="1rem" paddingY="0.75rem">
+                                    <span fontColor="blue-800">Dermatologist tested</span>
+                                </div>
+                            </div>
+
+                            <div aqua-spec rounded="xl" paddingX="1.75rem" paddingY="1.75rem">
+                                <div stack gap="1.25rem">
+                                    <div row wrap space="between" centered gap="1rem">
+                                        <div stack gap="0.25rem">
+                                            <span fontColor="blue-700">Rating</span>
+                                            <strong fontColor="blue-900">4.8 from 1,284 reviews</strong>
+                                        </div>
+
+                                        <div stack gap="0.25rem">
+                                            <span fontColor="blue-700">Availability</span>
+                                            <strong fontColor="blue-900">In stock</strong>
+                                        </div>
+                                    </div>
+
+                                    <div stack gap="0.75rem">
+                                        <strong fontColor="blue-900">Why customers buy</strong>
+                                        <p fontColor="blue-800">Deep hydration without heaviness, better comfort under moisturizer, and a smoother feel after travel or overuse of actives.</p>
+                                    </div>
+
+                                    <div row wrap centered gap="1rem">
+                                        <input type="text" value="1" paddingX="1rem" paddingY="1rem" rounded="lg" width="7rem">
+                                        <button paddingX="2rem" paddingY="1rem" rounded="lg">Add to cart</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div stack gap="0.5rem">
+                                <p fontColor="blue-700">Categories: Bath, Body, Hair</p>
+                                <p fontColor="blue-700">Tags: In-stock, Organic</p>
+                                <p fontColor="blue-700">Product ID: 1506</p>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section id="description" rounded="xl">
+            <div content stack gap="2rem" paddingX="3rem" paddingY="3rem">
+                <div row wrap centered gap="2.5rem">
+                    <a href="#description"><strong fontColor="blue-900">Description</strong></a>
+                    <a href="#reviews" fontColor="blue-700">Reviews (0)</a>
+                    <a href="#ingredients" fontColor="blue-700">Ingredients</a>
+                </div>
+
+                <div content grid="2x1" gap="3rem">
+                    <div stack gap="1rem">
+                        <p fontColor="blue-800">Tidewell Serum is built for a simpler, more mature kind of product page. The layout focuses on practical product detail: what it does, who it helps, how it fits into a routine, and why a customer should trust it enough to buy.</p>
+                        <p fontColor="blue-800">The formula combines niacinamide, panthenol, peptides, and lightweight hydrators to support moisture retention and visible calm without turning the page into a loud promotional campaign.</p>
+                    </div>
+
+                    <div stack gap="0.75rem">
+                        <div row centered gap="1rem">
+                            <i icon="check" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                            <span fontColor="blue-800">credit or debit card checkout</span>
+                        </div>
+
+                        <div row centered gap="1rem">
+                            <i icon="check" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                            <span fontColor="blue-800">tax-free shipping on qualifying bundles</span>
+                        </div>
+
+                        <div row centered gap="1rem">
+                            <i icon="check" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                            <span fontColor="blue-800">support team available seven days a week</span>
+                        </div>
+
+                        <div row centered gap="1rem">
+                            <i icon="check" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                            <span fontColor="blue-800">fast checkout and clean subscription options</span>
+                        </div>
+
+                        <div row centered gap="1rem">
+                            <i icon="check" lib="solid" iconSize="sm" iconcolor="blue-700"></i>
+                            <span fontColor="blue-800">tracking and follow-up care guidance included</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ingredients" rounded="xl">
+            <div content grid="2x1" gap="2rem" paddingX="3rem" paddingY="3rem">
+                <div aqua-panel rounded="xl" paddingX="2rem" paddingY="2rem">
+                    <div stack gap="1.25rem">
+                        <p>Ingredient overview</p>
+                        <h3>Simple formula framing works better than trying to make ingredients feel theatrical.</h3>
+                        <p>Tidewell Serum uses a small group of recognizable support ingredients so the page can explain the product clearly instead of hiding behind decorative storytelling.</p>
+
+                        <div stack gap="1rem">
+                            <div aqua-card rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                                <div row wrap space="between" centered gap="1rem">
+                                    <strong fontColor="blue-900">Niacinamide</strong>
+                                    <span fontColor="blue-700">tone and barrier support</span>
+                                </div>
+                            </div>
+
+                            <div aqua-card rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                                <div row wrap space="between" centered gap="1rem">
+                                    <strong fontColor="blue-900">Panthenol</strong>
+                                    <span fontColor="blue-700">comfort for stressed skin</span>
+                                </div>
+                            </div>
+
+                            <div aqua-card rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                                <div row wrap space="between" centered gap="1rem">
+                                    <strong fontColor="blue-900">Peptides</strong>
+                                    <span fontColor="blue-700">texture support over time</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside aqua-spec rounded="xl" paddingX="2rem" paddingY="2rem">
+                    <div stack gap="1.25rem">
+                        <p>Formula facts</p>
+                        <h3>Use the second column for actual product specifics.</h3>
+
+                        <div stack gap="1rem">
+                            <div row wrap space="between" centered gap="1rem">
+                                <span fontColor="blue-700">Texture</span>
+                                <strong fontColor="blue-900">Silky gel serum</strong>
+                            </div>
+
+                            <div row wrap space="between" centered gap="1rem">
+                                <span fontColor="blue-700">Finish</span>
+                                <strong fontColor="blue-900">Soft glow, no tack</strong>
+                            </div>
+
+                            <div row wrap space="between" centered gap="1rem">
+                                <span fontColor="blue-700">Routine step</span>
+                                <strong fontColor="blue-900">After cleanse, before cream</strong>
+                            </div>
+
+                            <div row wrap space="between" centered gap="1rem">
+                                <span fontColor="blue-700">Free from</span>
+                                <strong fontColor="blue-900">Fragrance and drying alcohol</strong>
+                            </div>
+
+                            <div row wrap space="between" centered gap="1rem">
+                                <span fontColor="blue-700">Packaging</span>
+                                <strong fontColor="blue-900">Airless pump bottle</strong>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section id="reviews" rounded="xl">
+            <div content stack gap="2rem" paddingX="3rem" paddingY="3rem">
+                <div stack gap="0.5rem">
+                    <p>Reviews</p>
+                    <h3>Keep the proof clean and restrained.</h3>
+                </div>
+
+                <div grid="3x1" gap="1.5rem">
+                    <article aqua-card rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                        <div stack gap="1rem">
+                            <strong fontColor="blue-900">Less tightness in three days</strong>
+                            <p fontColor="blue-800">I used this after a week of travel and my skin looked calmer fast. It layered well and never felt greasy.</p>
+                            <span fontColor="blue-700">Verified buyer</span>
+                        </div>
+                    </article>
+
+                    <article aqua-panel rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                        <div stack gap="1rem">
+                            <strong fontColor="blue-900">Works well under moisturizer</strong>
+                            <p fontColor="blue-800">This feels like a real daily product, not an extra step I regret adding. It makes my skin feel softer by morning.</p>
+                            <span fontColor="blue-700">Sensitive skin</span>
+                        </div>
+                    </article>
+
+                    <article aqua-card rounded="xl" paddingX="1.5rem" paddingY="1.5rem">
+                        <div stack gap="1rem">
+                            <strong fontColor="blue-900">Easy to come back to</strong>
+                            <p fontColor="blue-800">I repurchased because it fits with everything else I use and helps when my skin gets dry from actives.</p>
+                            <span fontColor="blue-700">Repeat customer</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="related" rounded="xl">
+            <div content stack gap="2rem" paddingX="3rem" paddingY="3rem">
+                <h3>Related products</h3>
+
+                <div grid="4x1" gap="1.5rem">
+                    <article aqua-card rounded="xl" paddingX="1.25rem" paddingY="1.25rem">
+                        <div stack gap="1rem">
+                            <div aqua-panel rounded="xl" height="12rem">
+                                <div stack gap="1rem" centered paddingX="1rem" paddingY="1rem">
+                                    <i icon="water" lib="solid" iconSize="lg" iconcolor="blue-700"></i>
+                                    <span fontColor="blue-700">Essence Mist</span>
+                                </div>
+                            </div>
+                            <strong fontColor="blue-900">Tidewell Essence Mist</strong>
+                            <span fontColor="blue-700">$32</span>
+                        </div>
+                    </article>
+
+                    <article aqua-card rounded="xl" paddingX="1.25rem" paddingY="1.25rem">
+                        <div stack gap="1rem">
+                            <div aqua-panel rounded="xl" height="12rem">
+                                <div stack gap="1rem" centered paddingX="1rem" paddingY="1rem">
+                                    <i icon="moon" lib="solid" iconSize="lg" iconcolor="purple-700"></i>
+                                    <span fontColor="blue-700">Barrier Cream</span>
+                                </div>
+                            </div>
+                            <strong fontColor="blue-900">Night Barrier Cream</strong>
+                            <span fontColor="blue-700">$64</span>
+                        </div>
+                    </article>
+
+                    <article aqua-card rounded="xl" paddingX="1.25rem" paddingY="1.25rem">
+                        <div stack gap="1rem">
+                            <div aqua-panel rounded="xl" height="12rem">
+                                <div stack gap="1rem" centered paddingX="1rem" paddingY="1rem">
+                                    <i icon="sun" lib="solid" iconSize="lg" iconcolor="yellow-700"></i>
+                                    <span fontColor="blue-700">Daily Veil SPF</span>
+                                </div>
+                            </div>
+                            <strong fontColor="blue-900">Daily Veil SPF</strong>
+                            <span fontColor="blue-700">$38</span>
+                        </div>
+                    </article>
+
+                    <article aqua-card rounded="xl" paddingX="1.25rem" paddingY="1.25rem">
+                        <div stack gap="1rem">
+                            <div aqua-panel rounded="xl" height="12rem">
+                                <div stack gap="1rem" centered paddingX="1rem" paddingY="1rem">
+                                    <i icon="sparkles" lib="solid" iconSize="lg" iconcolor="blue-700"></i>
+                                    <span fontColor="blue-700">Recovery Mask</span>
+                                </div>
+                            </div>
+                            <strong fontColor="blue-900">Weekend Recovery Mask</strong>
+                            <span fontColor="blue-700">$44</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

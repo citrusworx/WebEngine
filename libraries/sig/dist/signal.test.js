@@ -28,4 +28,29 @@ test("effect re-runs when signal change", () => {
     count.set(2);
     expect(runCount).toBe(3); // initial + 2 updates
 });
+test("effect cleanup runs before re-execution and on dispose", () => {
+    const count = Signal(0);
+    let cleanupCount = 0;
+    const dispose = effect(() => {
+        count.get();
+        return () => {
+            cleanupCount++;
+        };
+    });
+    count.set(1);
+    expect(cleanupCount).toBe(1);
+    dispose();
+    expect(cleanupCount).toBe(2);
+});
+test("disposed effects stop receiving signal updates", () => {
+    const count = Signal(0);
+    let runCount = 0;
+    const dispose = effect(() => {
+        count.get();
+        runCount++;
+    });
+    dispose();
+    count.set(1);
+    expect(runCount).toBe(1);
+});
 //# sourceMappingURL=signal.test.js.map

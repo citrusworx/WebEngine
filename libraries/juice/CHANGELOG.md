@@ -1,5 +1,11 @@
 # @citrusworx/juiceui
 
+## 0.3.0
+
+### Minor Changes
+
+- Updated Grid built-in responsiveness.
+
 ## Unreleased
 
 ### Minor Changes
