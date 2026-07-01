@@ -1,186 +1,172 @@
 # Juice Styles
 
-Juice uses HTML attributes as its primary styling API. Instead of piling utility classes onto an element, Juice lets markup describe intent with attributes like `font`, `fontColor`, `bgColor`, `grid`, `gap`, `padding`, `card`, and `icon`.
+Juice uses attributes as its primary styling API.
+
+The current public shape is best understood as three layers:
+
+- Juice attributes for structure and broad styling hooks
+- generated theme CSS for brand identity and semantic defaults
+- app selectors for small product-specific exceptions
 
 ## Core idea
 
-The stylesheet is built from selectors such as:
-
-```scss
-[font="lato"] { font-family: $lato; }
-[fontColor="green-700"] { color: $green-700; }
-[bgColor="green-500"] { background-color: $green-500; }
-[width="50%"] { width: 50%; }
-```
-
-That gives you HTML like this:
+Instead of stuffing a long class string onto every element, Juice keeps intent in markup:
 
 ```html
-<article stack gap="1" padding="2rem" bgColor="white-100">
-  <h2 font="playfair-display" fontColor="obsidian-900">Readable markup</h2>
-  <p font="lato" fontColor="gray-700">
-    Juice keeps visual intent close to the element.
-  </p>
-</article>
-```
-
-## Selector conventions
-
-Juice currently uses three kinds of selectors:
-
-- attributes for styling
-- classes for app-specific state or behavior
-- ids for unique elements
-
-## Typography selectors
-
-Examples:
-
-```html
-<h1 font="bebas-neue">Display</h1>
-<p font="lato">Body copy</p>
-<code font="source-code-pro">const juice = true;</code>
-<span font="korolev-rounded-bold">Brand text</span>
-<p fontSize="lg">Large copy</p>
-```
-
-Notes:
-
-- Google font selectors live in `src/styles/fonts/google.scss`
-- Adobe font selectors live in `src/styles/fonts/adobe.scss`
-- the current size presets come from `src/core/typography.scss`
-
-## Color selectors
-
-Text color uses `fontColor`:
-
-```html
-<p fontColor="obsidian-700">Text token</p>
-<div bgColor="green-500" fontColor="white-100">Background token</div>
-<div borderColor="green-700">Border token</div>
-<button hover="green-600" bgColor="green-500">Filled hover</button>
-```
-
-Notes:
-
-- `shadow="..."` sets `--shadow-color`
-- `depth="sm|md|lg|xl"` applies the actual box shadow
-- most color families expose `fontColor`, `bgColor`, `borderColor`, `hover`, and `shadow`
-
-## Gradient selectors
-
-Gradients are also attribute-driven:
-
-```html
-<section gradient="citrusmint-500" padding="2rem">
-  Gradient background
+<section stack gap="1rem" padding="2rem">
+  <article card stack gap="0.75rem">
+    <h2>Readable structure</h2>
+    <p>Juice keeps composition visible in the markup itself.</p>
+  </article>
 </section>
 ```
 
-Gradient selectors currently live under `src/styles/gradients`.
+## Current selector categories
 
-## Icon selectors
+Juice usage today usually falls into these groups:
 
-Juice icons are also attribute-driven. The `icon` attribute maps to FontAwesome Free SVG masks from the solid, regular, and brands sets.
+### Layout primitives
 
-Examples:
+- `stack`
+- `row`
+- `grid`
+- `gap`
+- spacing and sizing attributes
 
-```html
-<i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
-<i icon="calendar" width="1.25rem" height="1.25rem" iconcolor="obsidian-700"></i>
-<i icon="github" width="1.5rem" height="1.5rem" iconcolor="gray-900"></i>
-```
+### Structural surface hooks
 
-Important details:
+- `card`
+- `panel`
+- `hero`
+- `cta`
+- `badge`
+- `stat`
 
-- icons are tinted through the `iconcolor` attribute in Juice
-- the shared icon behavior lives in `src/styles/icons/icon.scss`
-- the current icon sources are `src/icons/fontawesome/web/svgs/{solid,regular,brands}`
+### Theme scoping
 
-For the set-by-set docs, see [Icons](./juice-icons.md).
+- `theme="..."`
+- `surface="..."`
 
-## Card selectors
+### App selectors
 
-Juice cards are structural selectors rather than visual skins. The card layer is meant to handle width, padding, content flow, and content regions while leaving theme styling to normal Juice attributes.
+- classes or attribute selectors that belong only to the product
 
-Examples:
+## Theme relationship
 
-```html
-<div card size="md" bgColor="white-100" shadow="gray-400" depth="sm">
-  <div header row space="between" centered>
-    <h3 font="korolev-rounded-bold">Card title</h3>
-    <i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
-  </div>
+Juice core does not try to fully brand every element by itself.
 
-  <div body stack gap="1rem">
-    <p font="korolev-rounded">Card content</p>
-  </div>
+A generated theme provides:
 
-  <div action center>
-    <button btn="outline" theme="citrusmint-300" scale="lg">Action</button>
-  </div>
-</div>
-```
+- CSS custom properties such as `--jx-page`, `--jx-text`, `--jx-heading`, `--jx-body-font`, and `--jx-heading-font`
+- optional typography variant properties such as `--jx-font-body-condensed` or `--jx-font-display-shadow`
+- semantic defaults for sections, articles, nav, footer, and controls
+- named surface recipes
 
-Important details:
+That means the most current Juice styling story is not "attributes only everywhere forever."
 
-- `card` enables the base card container behavior
-- variants such as `card="feature"`, `card="pricing"`, or `card="interactive"` adjust structure and behavior
-- `size`, `padding`, and `flow` refine the card's layout (scoped via `[card][size="md"]`)
-- `header`, `body`, `action`, `meta`, `media`, and `divider` are semantic region hooks — bare slot names whose meaning comes from the parent `[card]`
-- region selectors are scoped through the parent, e.g. `[card] [header]`
+It is:
 
-For the dedicated card guide, see [Cards](./juice-cards.md). For the naming rule that makes bare slot names work, see [Naming](./juice-naming.md).
+- attribute-first structure
+- theme-driven identity
+- light app-specific extension
 
-## Spacing selectors
-
-Juice generates numeric spacing attributes in `rem`, `px`, and `%` depending on the folder.
-
-Examples:
+## Example: hybrid usage
 
 ```html
-<div margin="2rem" padding="1rem">Box</div>
-<div margin-top="24px">Top margin</div>
-<div padding="10%">Percent padding</div>
+<body theme="blackwatersound">
+  <main stack gap="2rem">
+    <section hero surface="bw-stage" stack gap="1rem" padding="2rem">
+      <p kicker>Publishing</p>
+      <h1 display>Refactoring a storefront into a Juice-native app</h1>
+      <p copy="lead">Juice handles structure. The theme handles brand voice.</p>
+    </section>
+
+    <section product-grid grid>
+      <article product-card stack>
+        <div product-media></div>
+        <div product-body stack gap="0.75rem">
+          <h3 product-title>StinkRat</h3>
+          <p product-sub>Germanium Fuzz</p>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
 ```
 
-Important detail:
+In that example:
 
-- the generated directional selectors are hyphenated, such as `margin-top`, `margin-left`, and `margin-right`
-- these are literal HTML attributes, not React-style camelCase props
+- Juice contributes the structural composition model
+- the theme provides the page and surface identity
+- the app adds product-specific selectors like `[product-card]` and `[product-title]`
 
-## Sizing selectors
+## Typography today
 
-Width and height utilities are generated numerically from mixins.
+Juice themes define:
 
-Examples:
+- `--jx-body-font`
+- `--jx-heading-font`
+
+They may also define optional variant roles through `typography.variants`, which become:
+
+- `--jx-font-body-...`
+- `--jx-font-display-...`
+
+The app can then map those to product-specific selectors.
+
+This is how Blackwater Sound uses multiple Citrus Gothic and Noto Sans variants without asking Juice core to guess the exact product roles.
+
+## Named surfaces
+
+Named surfaces are the preferred way to expose branded surface recipes from a theme.
+
+Example:
 
 ```html
-<div width="50%" height="20rem"></div>
-<div width="80vw" height="100vh"></div>
+<section hero surface="bw-stage">...</section>
+<aside panel surface="bw-panel">...</aside>
 ```
+
+This keeps the structural vocabulary stable while letting the theme expose meaningful branded variants.
 
 ## Practical guidance
 
-Use Juice attributes for:
+Use Juice for:
 
-- typography
-- token-backed colors
+- page composition
 - spacing
-- size
-- layout primitives
-- icons
+- grid and row structure
+- default structural hooks
+- responsive behavior
 
-Keep regular classes for:
+Use the generated theme for:
 
-- JS state
-- component state names
-- app-specific styling outside the shared Juice system
+- palette
+- text and heading defaults
+- control tone
+- named surfaces
+- font-role variables
 
-## Known limitations
+Use app selectors for:
 
-The docs in this file reflect the selectors that exist today. A few things to keep in mind:
+- editorial art direction unique to the app
+- product-card presentation details
+- route-specific polish
+- temporary migration shims while moving away from class-heavy styling
 
-- selector names are not fully normalized yet, so use the names from source
-- some older docs used `textColor`; the current code uses `fontColor`
-- component-level APIs are still emerging, so most Juice usage today is at the token and utility-selector level
+## Common mistakes
+
+- treating Juice as if it must replace every piece of app CSS
+- pushing page-specific layout logic into the theme
+- inventing new top-level attributes for brand moments that should be `surface="..."`
+- assuming only library-owned themes are valid
+
+## Current recommendation
+
+If you are building a real CitrusWorx app, prefer:
+
+1. `@citrusworx/juiceui/styles`
+2. an app-generated theme CSS file
+3. a small app stylesheet for product-specific polish
+
+That is the current documented direction of the library.

@@ -6,6 +6,9 @@ Comprehensive guide to using Sig.js's built-in client-side router for single-pag
 
 The `SigRouter` class provides a lightweight, zero-dependency client-side router for building single-page applications. It automatically intercepts navigation, manages browser history, and renders components based on the current route.
 
+Route-owned Sig.js effects are cleaned up automatically when the router replaces the current view.
+For repeat visits, register component functions like `Home` instead of pre-rendered nodes like `<Home />`.
+
 ## Basic Setup
 
 ### Step 1: Create Routes
@@ -16,10 +19,11 @@ import { SigRouter } from "@citrusworx/sigjs/sig-router";
 const router = new SigRouter("#app");
 
 // Register routes
-router
-  .set("/", <Home />)
-  .set("/about", <About />)
-  .set("/contact", <Contact />);
+router.set({
+  "/": Home,
+  about: About,
+  contact: Contact,
+});
 
 // Start the router
 router.start();
@@ -83,19 +87,19 @@ The router maintains browser history automatically:
 
 ### Named Routes
 
-Use named routes for easier navigation:
+Object-style routes automatically create named routes for keys without a leading slash:
 
 ```typescript
 const router = new SigRouter("#app");
 
-router
-  .set("/", <Home />, "home")
-  .set("/user/:id", <UserProfile />, "user-profile")
-  .set("/admin", <AdminDashboard />, "admin");
+router.set({
+  "/": Home,
+  admin: AdminDashboard,
+});
 
 // Navigate by name
-const aboutPath = router.get("home");
-router.navigate(aboutPath);
+const adminPath = router.get("admin");
+router.navigate(adminPath!);
 ```
 
 ### Dynamic Routes
@@ -117,7 +121,7 @@ function UserPage() {
 }
 
 const router = new SigRouter("#app");
-router.set("/user/:id", <UserPage />);
+router.set("/user/:id", UserPage);
 router.start();
 ```
 
@@ -166,10 +170,11 @@ mount(app, document.body);
 
 // Setup router
 const router = new SigRouter("#app");
-router
-  .set("/", <Home />)
-  .set("/about", <About />)
-  .set("/contact", <Contact />);
+router.set({
+  "/": Home,
+  about: About,
+  contact: Contact,
+});
 
 router.start();
 ```
@@ -208,9 +213,10 @@ function Settings() {
 }
 
 const router = new SigRouter("#app");
-router
-  .set("/dashboard", <AppLayout><Dashboard /></AppLayout>)
-  .set("/settings", <AppLayout><Settings /></AppLayout>);
+router.set({
+  dashboard: () => <AppLayout><Dashboard /></AppLayout>,
+  settings: () => <AppLayout><Settings /></AppLayout>,
+});
 
 router.start();
 ```
@@ -294,7 +300,7 @@ function DataPage() {
 }
 
 const router = new SigRouter("#app");
-router.set("/data", <DataPage />);
+router.set("/data", DataPage);
 router.start();
 ```
 
@@ -403,11 +409,13 @@ function Search() {
 
 | Method | Purpose |
 |--------|---------|
+| `set({ routeName: view })` | Register multiple routes at once |
 | `set(path, component, name?)` | Register a route |
 | `get(name)` | Get path by route name |
 | `start()` | Enable routing and link interception |
 | `navigate(path)` | Navigate to a path |
 | `goBack()` | Navigate to previous page |
+| `stop()` | Disable routing listeners |
 | `has(path)` | Check if route is registered |
 
 ## Performance Tips
@@ -452,8 +460,10 @@ loadComponent("/path/to/Reports").then((Reports) => {
 
 ```typescript
 const router = new SigRouter("#app");
-router.set("/", <Home />);
-router.set("/about", <About />);
+router.set({
+  "/": Home,
+  about: About,
+});
 router.start(); // Required!
 ```
 

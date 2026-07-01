@@ -297,14 +297,18 @@ function LoginForm() {
 ```tsx
 // ❌ Wrong - routes defined but not started
 const router = new SigRouter("#app");
-router.set("/", <Home />);
-router.set("/about", <About />);
+router.set({
+  "/": Home,
+  about: About,
+});
 // Missing router.start()!
 
 // ✅ Correct
 const router = new SigRouter("#app");
-router.set("/", <Home />);
-router.set("/about", <About />);
+router.set({
+  "/": Home,
+  about: About,
+});
 router.start(); // Required!
 ```
 
@@ -353,7 +357,7 @@ router.start(); // Enables history interception
 
 ```tsx
 // Make sure paths match exactly
-router.set("/about", <About />); // Route registered
+router.set({ about: About }); // Route registered
 // <a href="/about">About</a> ✅ Works
 // <a href="/About">About</a> ❌ Doesn't work (case-sensitive)
 // <a href="/about/">About</a> ❌ Doesn't work (trailing slash)
@@ -395,7 +399,7 @@ function App() {
 
 // ✅ Correct - single router instance
 const router = new SigRouter("#app");
-router.set("/", <Home />);
+router.set({ "/": Home });
 router.start();
 
 function App() {

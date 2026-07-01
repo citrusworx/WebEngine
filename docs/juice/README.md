@@ -1,173 +1,115 @@
 # Juice
 
-Attribute-based UI for developers who want expressive markup without utility-class soup.
+Attribute-first UI for CitrusWorx apps.
 
-Juice is a UI system for building interfaces with HTML attributes instead of long class strings. It exists to make layout, styling, motion, and tokens readable in the markup itself while staying flexible enough to work in plain HTML or alongside frameworks like React and Vue.
+Juice is a styling library that keeps structure and visual intent in markup through attributes like `stack`, `row`, `grid`, `gap`, `padding`, `card`, `panel`, `hero`, and `surface`.
 
-It’s part of the CitrusWorx ecosystem, alongside projects like KiwiEngine and Citrode.
+The current model is:
 
-## Why Juice
+- Juice owns shared structure, spacing, responsive behavior, and primitive surface hooks
+- themes own brand identity, typography, color relationships, and semantic defaults
+- app CSS can still add small product-specific polish where needed
 
-Tailwind is fast, but it pushes design intent into dense class lists.
+Juice is strongest when you treat it as a shared structural language, not as a class utility clone and not as a heavyweight component runtime.
 
-```html
-<!-- Tailwind -->
-<section class="flex flex-col items-center justify-center gap-4 p-8 bg-gradient-to-r from-lime-200 to-green-400 rounded-xl shadow-md">
-  <h1 class="text-4xl font-bold text-green-950">Stewarded Infrastructure</h1>
-  <p class="max-w-2xl text-center text-green-900">Governed execution for modern platforms.</p>
-  <button class="rounded-lg border border-green-700 px-6 py-3 text-green-900 hover:bg-green-100">
-    Get Started
-  </button>
-</section>
-```
+## Core ideas
 
-```html
-<!-- Juice -->
-<section stack centered gap="2" padding="2rem" gradient="citrusmint-300" rounded="lg" shadow depth="md">
-  <h1 font="korolev-rounded-bold" fontSize="xxl" fontColor="green-950">
-    Stewarded Infrastructure
-  </h1>
-  <p width="50%" align="center" fontColor="green-900">
-    Governed execution for modern platforms.
-  </p>
-  <div center>
-    <button btn="outline" theme="citrusmint-300" scale="lg">Get Started</button>
-  </div>
-</section>
-```
+- Attribute-first composition instead of utility-class soup
+- CSS-first consumption with a small optional JS entrypoint
+- Themeable by config, with generated CSS contracts
+- Works well with Sig.js for behavior and local reactivity
+- Supports hybrid setups where Juice handles structure and the app adds brand-specific selectors
 
-## Features
+## Current setup shape
 
-- Attribute-based styling for layout, spacing, sizing, typography, color, and structure
-- Built-in flex, grid, content, container, and card patterns
-- Design tokens for colors, fonts, spacing, and themes
-- Responsive behavior baked into the system
-- Native motion attributes for quick animation effects
-- Optional GSAP adapter support for advanced animation workflows
-- Works in plain HTML, server-rendered apps, or frameworks like React and Vue
-- Can be used standalone or as part of the CitrusWorx stack
-
-## Quick Start
-
-```bash
-npm install @citrusworx/juiceui
-```
+Most apps should use Juice like this:
 
 ```ts
 import "@citrusworx/juiceui/styles";
+import "./generated/my-theme.css";
 ```
 
 ```html
-<main gradient="citrusmint-300" stack gap="2" padding="2rem">
-  <section card bgColor="white-100" rounded shadow depth="sm">
-    <h1 fontSize="xxl">Hello Juice</h1>
-    <p>Attribute-based UI, no class soup required.</p>
-  </section>
-</main>
+<body theme="my-theme">
+  <main stack gap="2rem">
+    <section hero surface="brand-stage" padding="2rem">
+      <h1>Brand headline</h1>
+      <p>Juice owns structure. The theme owns identity.</p>
+    </section>
+  </main>
+</body>
 ```
 
-## Example
+## Themes now
 
-```html
-<section content stack gap="2" padding="2rem">
-  <div center>
-    <h2 font="korolev-rounded-bold" fontSize="xl">
-      Start with your domain
-    </h2>
-  </div>
+Juice themes can come from two places:
 
-  <div card="cta" bgColor="white-100" rounded shadow depth="sm">
-    <div body stack gap="1">
-      <p align="center">
-        Search, register, or transfer your domain from one place.
-      </p>
+- library-owned themes inside `libraries/juice/src/themes/`
+- app-owned theme configs such as `apps/my-app/juice.theme.yaml`
 
-      <form type="search">
-        <div row gap="1" centered>
-          <div field width="40vw">
-            <input type="text" placeholder="Search for your domain" scale="lg" rounded />
-          </div>
-          <button btn="flat" theme="citrusmint-300">Search</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</section>
+The important current shift is that app-owned themes are first-class. An app can keep its own brand config, generate its own CSS and YAML artifacts, and still rely on Juice for the structural system.
+
+That is now the recommended direction for product-specific branding.
+
+## Theme generation
+
+Generate library themes:
+
+```bash
+yarn workspace @citrusworx/juiceui generate:themes
 ```
 
-## Animations
+Generate an app-owned theme:
 
-Juice supports native attribute-driven motion for fast UI feedback.
-
-```html
-<h1 motion="blink">Animated headline</h1>
-<div gradient="citrusmint-300" motion="flow"></div>
+```bash
+yarn workspace @citrusworx/juiceui generate:themes \
+  --config ../../apps/blackwatersound/front/juice.theme.yaml \
+  --css-out ../../apps/blackwatersound/front/src/generated/blackwatersound-theme.css \
+  --yaml-out ../../apps/blackwatersound/front/src/generated/blackwatersound-theme.yaml
 ```
 
-For more advanced animation control, Juice can also be paired with a GSAP adapter. Use the built-in motion attributes for the simple cases, then layer GSAP on top when you need orchestration, timelines, or app-driven transitions.
+That flow lets the app own:
 
-## Philosophy
+- theme identity
+- font pairings and variants
+- palette
+- named surfaces
 
-### Attributes over classes
+while Juice still owns:
 
-Juice keeps styling intent in readable markup.
+- layout primitives
+- spacing system
+- responsive composition
+- base surface hooks like `[card]`, `[panel]`, `[hero]`, and `[cta]`
 
-```html
-<div row gap="2" space="between" padding="1rem"></div>
-```
+## Hybrid styling
 
-### Expressive UI
+Juice is intentionally compatible with hybrid styling.
 
-The goal is not minimal syntax. The goal is clear syntax.
+Recommended split:
 
-### Scalable system
+- Juice attributes for layout, spacing, composition, and broad semantics
+- generated theme CSS for identity and defaults
+- app selectors for brand-specific art direction that should not become shared framework behavior
 
-Juice is designed to grow from prototypes to full applications through tokens, structure, and repeatable patterns.
+Blackwater Sound is the current practical example of this model.
 
-## Use Cases
+## Suggested reading order
 
-- Dashboards
-- Product apps
-- Marketing pages
-- Internal tools
-- Rapid prototyping
-- Design-system experimentation
+- [Getting Started](./juice-getting-started.md)
+- [Attributes](./juice-attributes.md)
+- [Layout](./juice-layout.md)
+- [Styles](./juice-styles.md)
+- [Theme Authoring](./juice-theme-authoring.md)
+- [Theme Manual](./juice-theme-manual.md)
+- [Best Practices](./juice-best-practices.md)
 
 ## Status
 
-Juice is currently in **ALPHA**.
+Juice is still evolving, but the current public direction is stable enough to describe clearly:
 
-The core direction is solid, but APIs and patterns may still evolve. Feedback, issues, and real-world usage are welcome.
-
-## Links
-
-- Docs:
-  - [Getting Started](./juice-getting-started.md)
-  - [Naming](./juice-naming.md)
-  - [Layers](./juice-layers.md)
-  - [Semantics](./juice-semantics.md)
-  - [Layout](./juice-layout.md)
-  - [Layout Flow](./juice-layout-flow.md)
-  - [Responsive Philosophy](./juice-responsive-philosophy.md)
-  - [Spacing](./juice-spacing.md)
-  - [Sizing](./juice-sizing.md)
-  - [Typography](./juice-typography.md)
-  - [Colors](./juice-colors.md)
-  - [Styles](./juice-styles.md)
-  - [Juice Beta](./juice-beta.md)
-  - [Responsive reference](./juice-responsive-reference.md)
-  - [Surfaces](./juice-surfaces.md)
-  - [Motion (Beta)](./juice-animations.md)
-  - [Motion roadmap](./juice-animations-roadmap.md)
-  - [Theme Authoring](./juice-theme-authoring.md)
-  - [Theme Manual](./juice-theme-manual.md)
-  - [Template Authoring](./juice-template-authoring.md)
-  - [Component Authoring](./juice-component-authoring.md)
-  - [Runtime Behavior](./juice-runtime-behavior.md)
-  - [Anti-Patterns](./juice-anti-patterns.md)
-  - [Surface Spec](./juice-surface-spec.md)
-  - [Token System](./juice-token-system.md)
-  - [Token Architecture](./juice-token-architecture.md)
-  - [Visual Design Language](./juice-visual-design-language.md)
-  - [Roadmap](./juice-roadmap.md)
-- Ecosystem: KiwiEngine and the broader CitrusWorx stack
+- core stylesheet import
+- attribute-first structure
+- explicit theme import
+- app-owned theme generation
+- hybrid app usage with small product CSS layers

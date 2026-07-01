@@ -64,7 +64,7 @@ Registers a function to automatically re-run whenever its signal dependencies ch
 #### Syntax
 
 ```typescript
-effect(fn: () => void): void
+effect(fn: () => void | (() => void)): () => void
 ```
 
 #### Parameters
@@ -73,7 +73,7 @@ effect(fn: () => void): void
 
 #### Description
 
-Executes the function immediately, tracking which signals are accessed. When any of those signals update, the effect automatically re-runs. Effects are the primary way to cause DOM updates in response to signal changes.
+Executes the function immediately, tracking which signals are accessed. When any of those signals update, the effect automatically re-runs. If the effect returns a function, that cleanup runs before the next execution and again when the returned disposer is called.
 
 #### Example
 
@@ -82,13 +82,17 @@ import { Signal, effect } from "@citrusworx/sigjs";
 
 const count = Signal(0);
 
-// Effect runs immediately
-effect(() => {
+const dispose = effect(() => {
   console.log("Count is:", count.get());
+
+  return () => {
+    console.log("Cleaning up previous run");
+  };
 });
 
 count.set(1); // Effect runs again, logs "Count is: 1"
 count.set(2); // Effect runs again, logs "Count is: 2"
+dispose(); // Stops future updates and runs the last cleanup
 ```
 
 #### Dependency Tracking
@@ -384,12 +388,14 @@ Parameters:
 Registers a route with a component.
 
 ```typescript
-set(path: string, component: Node | null, name?: string): this
+set(routes: Record<string, Node | (() => Node | null) | null>): this
+set(path: string, component: Node | (() => Node | null) | null, name?: string): this
 ```
 
 Parameters:
+- `routes` (Record<string, Node | (() => Node | null) | null>): Route map. Keys without a leading slash are normalized to `/${key}` and registered as named routes.
 - `path` (string): URL path (e.g., "/about")
-- `component` (Node | null): DOM node to render for this route
+- `component` (Node | (() => Node | null) | null): Route view. Prefer component functions like `About` or factories like `() => <Layout><About /></Layout>` so the router can create a fresh DOM tree on every visit.
 - `name` (string, optional): Named route for easier reference
 
 Returns: `this` for method chaining
@@ -398,10 +404,11 @@ Example:
 ```typescript
 const router = new SigRouter("#app");
 
-router
-  .set("/", <Home />)
-  .set("/about", <About />, "about")
-  .set("/contact", <Contact />, "contact");
+router.set({
+  "/": Home,
+  about: About,
+  contact: Contact,
+});
 ```
 
 ---
@@ -442,8 +449,10 @@ Description:
 Example:
 ```typescript
 const router = new SigRouter("#app");
-router.set("/", <Home />);
-router.set("/about", <About />);
+router.set({
+  "/": Home,
+  about: About,
+});
 router.start();
 ```
 
@@ -479,6 +488,21 @@ goBack(): void
 Example:
 ```typescript
 const backButton = <button onClick={() => router.goBack()}>Back</button>;
+```
+
+---
+
+##### stop
+
+Disable link interception and history listeners.
+
+```typescript
+stop(): void
+```
+
+Example:
+```typescript
+router.stop();
 ```
 
 ---

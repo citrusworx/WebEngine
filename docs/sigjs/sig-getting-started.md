@@ -240,9 +240,11 @@ import { SigRouter } from "@citrusworx/sigjs/sig-router";
 
 const router = new SigRouter("#app");
 
-router.set("/", <Home />);
-router.set("/about", <About />);
-router.set("/contact", <Contact />);
+router.set({
+  "/": Home,
+  about: About,
+  contact: Contact,
+});
 
 router.start();
 ```

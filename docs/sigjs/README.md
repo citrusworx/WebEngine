@@ -140,24 +140,29 @@ import { SigRouter } from "@citrusworx/sigjs";
 
 const router = new SigRouter("#root");
 
-router
-    .set("/", <Home />)
-    .set("/about", <About />, { name: "about" })
-    .set("/dashboard", <Dashboard />, { name: "dashboard" })
+router.set({
+    "/": Home,
+    about: About,
+    dashboard: Dashboard
+});
 
 router.start();
 ```
 
 ### Named Routes
 
-Register a name with a route to reference it without hardcoding paths:
+Object-style routes automatically register a named route for any key that does not start with `/`:
 
 ```tsx
-router.set("/about", <About />, { name: "about" })
+router.set({
+    about: About
+});
 
 // get the path by name
 router.get("about") // returns "/about"
 ```
+
+Pass component functions like `About` instead of pre-rendered nodes like `<About />` so the router can create a fresh view each time you navigate.
 
 ### Link Navigation
 
@@ -173,6 +178,7 @@ External links, `target="_blank"`, `download`, `mailto`, `tel`, and `ftp` are al
 
 ```tsx
     router.navigate("/about");
+    router.navigate(router.get("about")!);
     router.goBack();
 ```
 
@@ -221,8 +227,8 @@ Sig.js is in active development. The following are known gaps for future release
 
 |Feature|Status|
 |--|--|
-|Effect cleanup/dispose|Planned--v0.2|
-|Router cleanup on navigate|Planned--v0.2|
+|Effect cleanup/dispose|Available|
+|Router cleanup on navigate|Available|
 |Dynamic route params (`/user/:id`)|planned--v0.3|
 |Dervied signals (memo)|planned--v0.4|
 |Error boundaries|Planned|
