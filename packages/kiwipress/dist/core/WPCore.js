@@ -1,45 +1,7 @@
-function resolveEnvPath() {
-    try {
-        const nodeRequire = Function("return typeof require !== 'undefined' ? require : null;")();
-        if (nodeRequire && typeof process !== "undefined") {
-            const path = nodeRequire("node:path");
-            const fs = nodeRequire("node:fs");
-            const dirname = Function("return typeof __dirname !== 'undefined' ? __dirname : null;")();
-            const candidates = [];
-            if (dirname) {
-                candidates.push(path.resolve(dirname, "../../.env"));
-            }
-            candidates.push(path.resolve(process.cwd(), "packages/kiwipress/.env"), path.resolve(process.cwd(), "../../packages/kiwipress/.env"), path.resolve(process.cwd(), "../packages/kiwipress/.env"));
-            for (const candidate of candidates) {
-                if (fs.existsSync(candidate)) {
-                    return candidate;
-                }
-            }
-        }
-    }
-    catch {
-        // Ignore path resolution failures.
-    }
-    return null;
-}
 function loadNodeEnvConfig() {
     const maybeProcess = typeof process !== "undefined" ? process : undefined;
     if (!maybeProcess?.versions?.node) {
         return {};
-    }
-    try {
-        const envPath = resolveEnvPath();
-        const nodeRequire = Function("return typeof require !== 'undefined' ? require : null;")();
-        if (envPath && typeof maybeProcess.loadEnvFile === "function") {
-            maybeProcess.loadEnvFile(envPath);
-        }
-        if (nodeRequire && envPath) {
-            const dotenv = nodeRequire("dotenv");
-            dotenv.config({ path: envPath });
-        }
-    }
-    catch {
-        // Ignore env bootstrapping failures when running outside Node.
     }
     return {
         url: maybeProcess.env.WP_URL?.trim(),
@@ -90,7 +52,7 @@ export class WPCore {
             shouldAllowSelfSigned(url);
         const headers = overrides?.headers ?? {};
         if (!url) {
-            throw new Error("WPCore requires WP_URL to be defined in packages/kiwipress/.env.");
+            throw new Error("WPCore requires a WordPress URL via config.url or process.env.WP_URL.");
         }
         return {
             url: url.replace(/\/+$/, ""),

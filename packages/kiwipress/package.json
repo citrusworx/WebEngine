@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/kiwipress",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -22,7 +22,6 @@
         "prepack": "yarn build"
     },
     "devDependencies": {
-        "dotenv": "^17.4.2",
         "ts-node": "^10.9.2",
         "typescript": "^6.0.3",
         "zod": "^4.3.6"

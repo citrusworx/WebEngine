@@ -1,5 +1,11 @@
 # @citrusworx/kiwipress
 
+## 0.4.0
+
+### Minor Changes
+
+- Removed resolve() usage for better security
+
 ## 0.3.0
 
 ### Minor Changes
