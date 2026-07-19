@@ -1,0 +1,10 @@
+WaitlistEntry:
+  table: waitlist
+  description: Marketing and catalog waitlist signups
+  fields:
+    id: string PRIMARY KEY
+    name: string
+    email: string NOT NULL UNIQUE
+    source_app: enum(www, gear, software, courses, studio, songwriting, blog)
+    interest: string
+    created_at: timestamp DEFAULT NOW()

@@ -1,0 +1,43 @@
+---
+description: Blackwater Sound KiwiEngine authoring rules (Juice + Sig, no Tailwind)
+globs: apps/blackwatersound/**/*
+alwaysApply: false
+---
+
+# Blackwater Sound — KiwiEngine Rules
+
+## Read first
+
+- [THEME_MANUAL.md](../front/THEME_MANUAL.md) — styling bible
+- [SCREEN_MAP.md](../SCREEN_MAP.md) — screen inventory and parity status
+- [blackwater.app.yml](../front/src/blueprints/blackwater.app.yml) — scope boundaries
+- [sig-juice-integration.md](../../../docs/sigjs/sig-juice-integration.md) — reactivity patterns
+
+## Non-negotiable
+
+1. **Attribute-first, never Tailwind** — no `className` utility strings, no PostCSS/Tailwind deps
+2. **No 1:1 Figma class translation** — map layout intent to Juice attributes (`stack`, `surface="bw-stage"`, `kicker`, `product-card`)
+3. **Three-layer styling** — Juice attributes → `juice.theme.yaml` generated CSS → thin `src/styles/index.css` exceptions only
+4. **One screen per pass** — finish and verify one route before starting the next
+5. **Blueprints before handlers** — YAML in `src/blueprints/` and `back/src/schemas/` define contracts before UI/API wiring
+6. **Static seed fallback** — data services try API first, fall back to `catalog.ts` / seed JSON
+
+## Sig patterns
+
+- Use `Signal` + `Render` for route-driven or form state
+- Components return `HTMLElement` via Sig JSX (`jsxImportSource: @citrusworx/sigjs`)
+- Prefer `router.ts` + `Render` slot over heavy frameworks
+
+## Do not
+
+- Re-import code from `KiwiStage.zip` or `.mockups/` Tailwind exports
+- Add `style={{...}}` except truly dynamic values
+- Extend `index.css` for things that belong in `juice.theme.yaml`
+- Wire KiwiPress/Nectarine into a route that has not passed UI parity in SCREEN_MAP.md
+
+## Verify
+
+```bash
+yarn workspace @citrusworx/blackwater-sound build
+yarn workspace @citrusworx/blackwater-sound typecheck
+```

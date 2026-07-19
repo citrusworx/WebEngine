@@ -1,0 +1,39 @@
+version: "0.1"
+app: nectarine-fixture
+engine: KiwiEngine
+
+database:
+  default: postgres
+  postgres:
+    env:
+      user: PG_USER
+      password: PG_PASS
+      host: PG_HOST
+      port: PG_PORT
+      database: PG_DB
+  mysql:
+    env:
+      user: MS_USER
+      password: MS_PASS
+      host: MS_HOST
+      port: MS_PORT
+      database: MS_DB
+
+transport:
+  server: seltzer
+
+fallback:
+  seed: true
+
+apps:
+  - id: gear
+    subdomain: gear
+    purpose: hardware catalog
+    resources:
+      - product
+
+resources:
+  - name: product
+    schema: ./schemas/product/productSchema.yml
+    queries: ./schemas/product/productQueries.yml
+    api: ./schemas/product/productAPI.yml

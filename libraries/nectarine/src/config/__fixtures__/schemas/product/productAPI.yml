@@ -1,0 +1,7 @@
+product:
+  read:
+    allProducts:
+      api:
+        method: GET
+        endpoint: /api/products
+        query: allProducts

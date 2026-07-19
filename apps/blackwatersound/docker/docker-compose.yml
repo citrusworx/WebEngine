@@ -1,0 +1,253 @@
+name: blackwater-sound
+
+services:
+  traefik:
+    image: traefik:v3.6
+    container_name: bw-traefik
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+    networks:
+      - blackwater_net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`traefik.blackwatersound.local`)
+      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.service=api@internal
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: bw-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - blackwater_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mariadb:
+    image: mariadb:11
+    container_name: bw-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - blackwater_net
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p${WORDPRESS_DB_PASSWORD} || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    image: wordpress:6.7-php8.2-apache
+    container_name: bw-wordpress
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', '${WP_URL}');
+        define('WP_SITEURL', '${WP_URL}');
+    volumes:
+      - wp_data:/var/www/html
+    networks:
+      - blackwater_net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wp.rule=Host(`wp.blackwatersound.local`)
+      - traefik.http.routers.wp.entrypoints=web
+      - traefik.http.services.wp.loadbalancer.server.port=80
+
+  wp-bootstrap:
+    image: wordpress:cli-php8.2
+    container_name: bw-wp-bootstrap
+    user: "0:0"
+    depends_on:
+      wordpress:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_URL: ${WP_URL}
+    volumes:
+      - wp_data:/var/www/html
+      - wp_secrets:/secrets
+      - ./wordpress/seed-content.sh:/seed-content.sh:ro
+    networks:
+      - blackwater_net
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -eu
+        echo "Waiting for WordPress files..."
+        until [ -f /var/www/html/wp-config.php ]; do sleep 3; done
+        if ! wp --allow-root --path=/var/www/html core is-installed 2>/dev/null; then
+          wp --allow-root --path=/var/www/html core install \
+            --url="$${WP_URL}" \
+            --title="Blackwater Sound" \
+            --admin_user="$${WP_ADMIN_USER}" \
+            --admin_password="$${WP_ADMIN_PASSWORD}" \
+            --admin_email="$${WP_ADMIN_EMAIL}" \
+            --skip-email
+        fi
+        mkdir -p /secrets
+        chmod 777 /secrets
+        tr -d '\r' < /seed-content.sh > /tmp/seed-content.sh
+        sh /tmp/seed-content.sh
+    restart: "no"
+
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: bw-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    networks:
+      - blackwater_net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio.rule=Host(`minio.blackwatersound.local`)
+      - traefik.http.routers.minio.entrypoints=web
+      - traefik.http.services.minio.loadbalancer.server.port=9000
+      - traefik.http.routers.minio-console.rule=Host(`minio-console.blackwatersound.local`)
+      - traefik.http.routers.minio-console.entrypoints=web
+      - traefik.http.services.minio-console.loadbalancer.server.port=9001
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-01-17T23-25-50Z
+    container_name: bw-minio-init
+    depends_on:
+      - minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      S3_ENDPOINT: http://minio:9000
+    volumes:
+      - ./minio/init-buckets.sh:/init-buckets.sh:ro
+    networks:
+      - blackwater_net
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        tr -d '\r' < /init-buckets.sh > /tmp/init-buckets.sh
+        sh /tmp/init-buckets.sh
+    restart: "no"
+
+  back:
+    build:
+      context: ../../..
+      dockerfile: apps/blackwatersound/back/Dockerfile
+    container_name: bw-back
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      wp-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      PORT: ${PORT}
+      PG_USER: ${PG_USER}
+      PG_PASS: ${PG_PASS}
+      PG_HOST: ${PG_HOST}
+      PG_PORT: ${PG_PORT}
+      PG_DB: ${PG_DB}
+      NECTARINE_CONFIG: /repo/apps/blackwatersound/back/nectarine.config.yaml
+      RUNTIME_DATA_DIR: /repo/apps/blackwatersound/back/runtime
+      WP_URL: ${WP_URL}
+      WP_USERNAME: ${WP_USERNAME}
+      WP_APP_PASSWORD: ${WP_APP_PASSWORD}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET_MEDIA: ${S3_BUCKET_MEDIA}
+    volumes:
+      - back_runtime:/repo/apps/blackwatersound/back/runtime
+      - wp_secrets:/secrets:ro
+    networks:
+      - blackwater_net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=Host(`api.blackwatersound.local`)
+      - traefik.http.routers.api.entrypoints=web
+      - traefik.http.services.api.loadbalancer.server.port=3001
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  front:
+    build:
+      context: ../../..
+      dockerfile: apps/blackwatersound/front/Dockerfile
+      args:
+        VITE_API_BASE: ${VITE_API_BASE}
+    container_name: bw-front
+    restart: unless-stopped
+    depends_on:
+      back:
+        condition: service_healthy
+    networks:
+      - blackwater_net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.front.rule=Host(`www.blackwatersound.local`)
+      - traefik.http.routers.front.entrypoints=web
+      - traefik.http.services.front.loadbalancer.server.port=80
+
+networks:
+  blackwater_net:
+    name: blackwater_net
+
+volumes:
+  postgres_data:
+  mariadb_data:
+  wp_data:
+  wp_secrets:
+  minio_data:
+  back_runtime:

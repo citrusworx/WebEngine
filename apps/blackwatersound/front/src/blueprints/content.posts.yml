@@ -1,0 +1,26 @@
+entity: post
+source: kiwipress
+status: contract
+
+fields:
+  slug: string.required
+  title: string.required
+  excerpt: text.short
+  heroImage: asset.url
+  intro: text.array
+  sections:
+    type: array
+    items:
+      title: string
+      paragraphs: text.array
+
+api:
+  list: GET /api/posts
+  bySlug: GET /api/posts/:slug
+
+wordpress_mapping:
+  slug: slug
+  title: title.rendered
+  excerpt: excerpt.rendered
+  heroImage: featured_media_url
+  body: content.rendered

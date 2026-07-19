@@ -1,0 +1,24 @@
+Course:
+  table: courses
+  description: Course catalog for courses and songwriting apps
+  fields:
+    id: string PRIMARY KEY
+    slug: string UNIQUE NOT NULL
+    title: string NOT NULL
+    summary: text
+    description: text
+    level: enum(beginner, intermediate, advanced, all) DEFAULT 'all'
+    line: enum(courses, songwriting) NOT NULL
+    price: decimal(10, 2)
+    currency: string DEFAULT 'USD'
+    hero_image: string
+    status: enum(draft, published, archived) DEFAULT 'draft'
+    coach_id: string FOREIGN KEY REFERENCES coaches(id)
+    lesson_count: int DEFAULT 0
+    duration_minutes: int
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    lessons: Lesson[]
+    enrollments: Enrollment[]
+    coach: Coach

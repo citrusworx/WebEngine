@@ -1,0 +1,55 @@
+# Static routes so the stack works even if the Docker provider cannot talk to the daemon.
+http:
+  routers:
+    api:
+      rule: Host(`api.blackwatersound.local`)
+      entryPoints: [web]
+      service: api
+      priority: 10
+    front:
+      rule: Host(`www.blackwatersound.local`)
+      entryPoints: [web]
+      service: front
+      priority: 10
+    wp:
+      rule: Host(`wp.blackwatersound.local`)
+      entryPoints: [web]
+      service: wp
+      priority: 10
+    minio:
+      rule: Host(`minio.blackwatersound.local`)
+      entryPoints: [web]
+      service: minio
+      priority: 10
+    minio-console:
+      rule: Host(`minio-console.blackwatersound.local`)
+      entryPoints: [web]
+      service: minio-console
+      priority: 10
+    traefik-dash:
+      rule: Host(`traefik.blackwatersound.local`)
+      entryPoints: [web]
+      service: api@internal
+      priority: 10
+
+  services:
+    api:
+      loadBalancer:
+        servers:
+          - url: "http://bw-back:3001"
+    front:
+      loadBalancer:
+        servers:
+          - url: "http://bw-front:80"
+    wp:
+      loadBalancer:
+        servers:
+          - url: "http://bw-wordpress:80"
+    minio:
+      loadBalancer:
+        servers:
+          - url: "http://bw-minio:9000"
+    minio-console:
+      loadBalancer:
+        servers:
+          - url: "http://bw-minio:9001"

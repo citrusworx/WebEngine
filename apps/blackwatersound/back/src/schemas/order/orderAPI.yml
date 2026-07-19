@@ -1,0 +1,48 @@
+order:
+  read:
+    byClient:
+      api:
+        method: GET
+        endpoint: /api/clients/:clientId/orders
+        query: byClient
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/orders/:id
+        query: byId
+
+    byCatalog:
+      api:
+        method: GET
+        endpoint: /api/orders/catalog/:catalog
+        query: byCatalog
+
+  create:
+    newOrder:
+      api:
+        method: POST
+        endpoint: /api/orders
+        query: newOrder
+
+  update:
+    updateOrderStatus:
+      api:
+        method: PATCH
+        endpoint: /api/orders/:id/status
+        query: updateOrderStatus
+
+order_item:
+  read:
+    byOrder:
+      api:
+        method: GET
+        endpoint: /api/orders/:orderId/items
+        query: byOrder
+
+  create:
+    newItem:
+      api:
+        method: POST
+        endpoint: /api/orders/:orderId/items
+        query: newItem

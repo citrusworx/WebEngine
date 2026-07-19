@@ -1,0 +1,40 @@
+coach:
+  read:
+    allActive:
+      api:
+        method: GET
+        endpoint: /api/coaches
+        query: allActive
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/coaches/:id
+        query: byId
+
+    bySlug:
+      api:
+        method: GET
+        endpoint: /api/coaches/slug/:slug
+        query: bySlug
+
+  create:
+    newCoach:
+      api:
+        method: POST
+        endpoint: /api/coaches
+        query: newCoach
+
+  update:
+    updateCoach:
+      api:
+        method: PUT
+        endpoint: /api/coaches/:id
+        query: updateCoach
+
+  delete:
+    deleteCoach:
+      api:
+        method: DELETE
+        endpoint: /api/coaches/:id
+        query: deleteCoach

@@ -1,0 +1,61 @@
+app: blackwater-sound
+owner: Blackwater Sound
+engine: KiwiEngine
+stage: prototype-to-product
+
+# Apex/www = marketing landers. Each subdomain is a logical app.
+apps:
+  - id: www
+    subdomain: www
+    purpose: marketing landing pages and funnel CTAs
+  - id: courses
+    subdomain: courses
+    purpose: courses and coaching
+  - id: gear
+    subdomain: gear
+    purpose: guitars, cabs, pedals, related hardware
+  - id: software
+    subdomain: software
+    purpose: DAW, plugins, software products
+  - id: studio
+    subdomain: studio
+    purpose: recording, mixing, session ops
+  - id: songwriting
+    subdomain: songwriting
+    purpose: songwriting education and coaching
+  - id: blog
+    subdomain: blog
+    purpose: publishing and long-form content
+
+sections:
+  public:
+    - coming-soon
+    - products
+    - product-detail
+    - blog
+    - course-lesson
+  planned:
+    - studio
+    - label-portal
+    - lesson-book
+    - session-transfer
+    - mix-review
+    - commerce-admin
+
+integrations:
+  kiwiPress:
+    purpose: blog posts, lesson page bodies, announcements, long-form content
+    status: active
+  nectarine:
+    purpose: products, waitlist, orders, sessions, clients, courses, lessons, coaches, enrollments, bookings
+    config: ../../../back/nectarine.config.yaml
+    status: active
+  seltzer:
+    purpose: HTTP runtime and object-based route registration
+    status: planned
+  juice:
+    purpose: replace generated inline styles with durable design tokens and UI primitives
+    status: active
+  sugar:
+    purpose: future visual builder for landing pages and content sections
+    status: planned

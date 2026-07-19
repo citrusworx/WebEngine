@@ -1,0 +1,6 @@
+product:
+  read:
+    allProducts:
+      type: SELECT
+      table: products
+      fields: '*'

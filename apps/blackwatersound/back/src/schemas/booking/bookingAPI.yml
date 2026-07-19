@@ -1,0 +1,55 @@
+booking:
+  read:
+    byClient:
+      api:
+        method: GET
+        endpoint: /api/clients/:clientId/bookings
+        query: byClient
+
+    byCoach:
+      api:
+        method: GET
+        endpoint: /api/coaches/:coachId/bookings
+        query: byCoach
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/bookings/:id
+        query: byId
+
+    upcomingByLine:
+      api:
+        method: GET
+        endpoint: /api/bookings/line/:line
+        query: upcomingByLine
+
+  create:
+    newBooking:
+      api:
+        method: POST
+        endpoint: /api/bookings
+        query: newBooking
+        body:
+          client_id: string.required
+          coach_id: string
+          line: string.required
+          kind: string.required
+          starts_at: string.required
+          ends_at: string.required
+          title: string
+          notes: string
+
+  update:
+    updateBooking:
+      api:
+        method: PUT
+        endpoint: /api/bookings/:id
+        query: updateBooking
+
+  delete:
+    deleteBooking:
+      api:
+        method: DELETE
+        endpoint: /api/bookings/:id
+        query: deleteBooking

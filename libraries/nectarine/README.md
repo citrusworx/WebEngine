@@ -11,11 +11,19 @@ npm install @citrusworx/nectarine
 ## Usage
 
 ```ts
-import * as Nectarine from "@citrusworx/nectarine";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+
+// Vendor env key names come from YAML; values come from process.env
+const creds = config.resolveCredentials(); // null if PG_*/MS_*/MG_* incomplete
+const product = config.getResource("product"); // schema + queries + api objects
+const coursesApp = config.getAppBySubdomain("courses");
 ```
 
 Subpath exports are also available:
 
+- `@citrusworx/nectarine/config`
 - `@citrusworx/nectarine/compiler`
 - `@citrusworx/nectarine/adapters/mg`
 - `@citrusworx/nectarine/adapters/ms`

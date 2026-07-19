@@ -1,0 +1,46 @@
+product:
+  read:
+    allProducts:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: isActive = true
+      orderBy: catalog, category, name
+
+    productsByCatalog:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: catalog = $1 AND isActive = true
+      orderBy: category, name
+
+    productById:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: id = $1
+
+    productBySlug:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: slug = $1
+
+  create:
+    newProduct:
+      type: INSERT
+      table: products
+      fields: [id, catalog, name, slug, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive]
+
+  update:
+    updateProduct:
+      type: UPDATE
+      table: products
+      fields: [name, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive, updated_at]
+      where: id = $1
+
+  delete:
+    deleteProduct:
+      type: DELETE
+      table: products
+      where: id = $1

@@ -1,0 +1,38 @@
+client:
+  read:
+    allClients:
+      type: SELECT
+      table: clients
+      fields: '*'
+      orderBy: created_at DESC
+
+    byId:
+      type: SELECT
+      table: clients
+      fields: '*'
+      where: id = $1
+
+    byEmail:
+      type: SELECT
+      table: clients
+      fields: '*'
+      where: email = $1
+
+  create:
+    newClient:
+      type: INSERT
+      table: clients
+      fields: [id, email, display_name, phone, role, source_app, notes]
+
+  update:
+    updateClient:
+      type: UPDATE
+      table: clients
+      fields: [display_name, phone, role, source_app, notes, updated_at]
+      where: id = $1
+
+  delete:
+    deleteClient:
+      type: DELETE
+      table: clients
+      where: id = $1

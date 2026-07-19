@@ -1,0 +1,13 @@
+# Monorepo Docker build ignore (Blackwater Sound stack)
+
+**/.git
+**/.turbo
+**/node_modules
+**/dist
+**/.mockup-audit
+**/.cursor
+**/terminals
+**/*.log
+.mockups
+apps/**/front/dist
+apps/**/back/dist

@@ -1,0 +1,43 @@
+enrollment:
+  read:
+    byClient:
+      api:
+        method: GET
+        endpoint: /api/clients/:clientId/enrollments
+        query: byClient
+
+    byCourse:
+      api:
+        method: GET
+        endpoint: /api/courses/:courseId/enrollments
+        query: byCourse
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/enrollments/:id
+        query: byId
+
+  create:
+    enroll:
+      api:
+        method: POST
+        endpoint: /api/enrollments
+        query: enroll
+        body:
+          client_id: string.required
+          course_id: string.required
+
+  update:
+    updateEnrollment:
+      api:
+        method: PUT
+        endpoint: /api/enrollments/:id
+        query: updateEnrollment
+
+  delete:
+    deleteEnrollment:
+      api:
+        method: DELETE
+        endpoint: /api/enrollments/:id
+        query: deleteEnrollment

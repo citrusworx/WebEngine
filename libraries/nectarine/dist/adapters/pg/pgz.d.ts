@@ -6,6 +6,11 @@ export declare class PgSql {
     client(db: string): Promise<Client | undefined>;
     connect(db: string): Promise<Client | undefined>;
     disconnect(client: Client): Promise<void>;
+    /**  Config-based query execution
+    //
+    // @param client - the database client to use for executing the query
+    // @param config - the configuration object containing the SQL query and parameters
+    */
     query(client: Client, config: {
         sql: string;
         params?: any[];

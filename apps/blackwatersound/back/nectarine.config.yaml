@@ -1,0 +1,170 @@
+# Blackwater Sound — Nectarine root config
+# Code reads this file. Secrets stay in env; this file names the keys and apps.
+
+version: "0.1"
+app: blackwater-sound
+engine: KiwiEngine
+
+database:
+  default: postgres # postgres | mysql | mongodb
+  postgres:
+    env:
+      user: PG_USER
+      password: PG_PASS
+      host: PG_HOST
+      port: PG_PORT
+      database: PG_DB
+  mysql:
+    env:
+      user: MS_USER
+      password: MS_PASS
+      host: MS_HOST
+      port: MS_PORT
+      database: MS_DB
+  mongodb:
+    env:
+      user: MG_USER
+      password: MG_PASS
+      host: MG_HOST
+      port: MG_PORT
+      database: MG_DB
+
+transport:
+  server: seltzer
+  # Routes are object-based Route definitions registered from API YAML.
+  # Do not use Express route generation for Blackwater.
+
+fallback:
+  # When vendor DB env is incomplete, services use seed data.
+  seed: true
+
+# Logical apps = subdomains. Marketing www funnels into these.
+apps:
+  - id: www
+    subdomain: www
+    purpose: marketing landing pages and funnel CTAs
+    resources:
+      - waitlist
+
+  - id: courses
+    subdomain: courses
+    purpose: courses and coaching
+    resources:
+      - course
+      - lesson
+      - coach
+      - enrollment
+      - booking
+      - client
+
+  - id: gear
+    subdomain: gear
+    purpose: guitars, cabs, pedals, and related hardware
+    resources:
+      - product
+      - waitlist
+      - order
+      - client
+
+  - id: software
+    subdomain: software
+    purpose: DAW, plugins, and software products
+    resources:
+      - product
+      - waitlist
+      - order
+      - client
+
+  - id: studio
+    subdomain: studio
+    purpose: recording, mixing, session ops
+    resources:
+      - session
+      - mix_review
+      - client
+      - booking
+
+  - id: songwriting
+    subdomain: songwriting
+    purpose: songwriting education and coaching
+    resources:
+      - course
+      - lesson
+      - coach
+      - enrollment
+      - booking
+      - client
+
+  - id: blog
+    subdomain: blog
+    purpose: publishing and long-form content
+    # Content runtime is KiwiPress; Nectarine may later track metadata only.
+    integration: kiwipress
+    resources: []
+
+resources:
+  - name: product
+    schema: ./src/schemas/product/productSchema.yml
+    queries: ./src/schemas/product/productQueries.yml
+    api: ./src/schemas/product/productAPI.yml
+
+  - name: waitlist
+    schema: ./src/schemas/waitlist/waitlistSchema.yml
+    queries: ./src/schemas/waitlist/waitlistQueries.yml
+    api: ./src/schemas/waitlist/waitlistAPI.yml
+
+  - name: course
+    schema: ./src/schemas/course/courseSchema.yml
+    queries: ./src/schemas/course/courseQueries.yml
+    api: ./src/schemas/course/courseAPI.yml
+
+  - name: lesson
+    schema: ./src/schemas/lesson/lessonSchema.yml
+    queries: ./src/schemas/lesson/lessonQueries.yml
+    api: ./src/schemas/lesson/lessonAPI.yml
+
+  - name: coach
+    schema: ./src/schemas/coach/coachSchema.yml
+    queries: ./src/schemas/coach/coachQueries.yml
+    api: ./src/schemas/coach/coachAPI.yml
+
+  - name: enrollment
+    schema: ./src/schemas/enrollment/enrollmentSchema.yml
+    queries: ./src/schemas/enrollment/enrollmentQueries.yml
+    api: ./src/schemas/enrollment/enrollmentAPI.yml
+
+  - name: booking
+    schema: ./src/schemas/booking/bookingSchema.yml
+    queries: ./src/schemas/booking/bookingQueries.yml
+    api: ./src/schemas/booking/bookingAPI.yml
+
+  - name: client
+    schema: ./src/schemas/client/clientSchema.yml
+    queries: ./src/schemas/client/clientQueries.yml
+    api: ./src/schemas/client/clientAPI.yml
+
+  - name: order
+    schema: ./src/schemas/order/orderSchema.yml
+    queries: ./src/schemas/order/orderQueries.yml
+    api: ./src/schemas/order/orderAPI.yml
+
+  - name: session
+    schema: ./src/schemas/session/sessionSchema.yml
+    queries: ./src/schemas/session/sessionQueries.yml
+    api: ./src/schemas/session/sessionAPI.yml
+
+  - name: mix_review
+    schema: ./src/schemas/mix_review/mixReviewSchema.yml
+    queries: ./src/schemas/mix_review/mixReviewQueries.yml
+    api: ./src/schemas/mix_review/mixReviewAPI.yml
+
+integrations:
+  kiwipress:
+    purpose: blog posts, lesson page bodies, announcements
+    env:
+      url: WP_URL
+      username: WP_USERNAME
+      appPassword: WP_APP_PASSWORD
+      apiBase: WP_API_BASE
+    defaults:
+      apiBase: wp-json/wp/v2

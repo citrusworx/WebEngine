@@ -1,0 +1,40 @@
+mix_review:
+  read:
+    byClient:
+      api:
+        method: GET
+        endpoint: /api/clients/:clientId/mix-reviews
+        query: byClient
+
+    bySession:
+      api:
+        method: GET
+        endpoint: /api/sessions/:sessionId/mix-reviews
+        query: bySession
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/mix-reviews/:id
+        query: byId
+
+  create:
+    newMixReview:
+      api:
+        method: POST
+        endpoint: /api/mix-reviews
+        query: newMixReview
+
+  update:
+    updateMixReview:
+      api:
+        method: PUT
+        endpoint: /api/mix-reviews/:id
+        query: updateMixReview
+
+  delete:
+    deleteMixReview:
+      api:
+        method: DELETE
+        endpoint: /api/mix-reviews/:id
+        query: deleteMixReview

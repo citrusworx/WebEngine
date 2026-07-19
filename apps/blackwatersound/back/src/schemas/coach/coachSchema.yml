@@ -1,0 +1,17 @@
+Coach:
+  table: coaches
+  description: Instructors for courses and 1:1 coaching
+  fields:
+    id: string PRIMARY KEY
+    slug: string UNIQUE NOT NULL
+    display_name: string NOT NULL
+    bio: text
+    avatar_url: string
+    specialties: json
+    lines: json
+    is_active: boolean DEFAULT true
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    courses: Course[]
+    bookings: Booking[]

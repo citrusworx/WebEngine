@@ -1,0 +1,75 @@
+version: "0.1"
+provider: digitalocean
+region: nyc1
+
+project:
+  name: blackwater-sound
+  description: Blackwater Sound storefront, studio, and portal stack
+
+networking:
+  vpc: true
+  domain: blackwatersound.example.com
+  ssl: true
+
+services:
+  frontend:
+    type: static
+    entry: apps/blackwatersound/front
+    build: yarn workspace @citrusworx/blackwater-sound build
+    artifact: apps/blackwatersound/front/dist
+
+  backend:
+    type: app
+    size: basic-s
+    entry: apps/blackwatersound/back
+    build: yarn workspace @citrusworx/blackwater-sound-back build
+    start: yarn workspace @citrusworx/blackwater-sound-back start
+    port: 3001
+    healthcheck: /api/health
+
+  database:
+    type: postgres
+    version: "15"
+    name: blackwater_sound
+    purpose: products, waitlist, commerce
+    # Docker parity: apps/blackwatersound/docker/docker-compose.yml (postgres service)
+
+  wordpress:
+    type: wordpress
+    purpose: blog posts, lessons, announcements
+    external: true
+
+firewall:
+  inbound:
+    - protocol: tcp
+      ports: "80,443"
+      sources: ["0.0.0.0/0"]
+    - protocol: tcp
+      ports: "3001"
+      sources: ["10.0.0.0/8"]
+
+  outbound:
+    - protocol: tcp
+      ports: "all"
+      destinations: ["0.0.0.0/0"]
+
+monitoring:
+  enabled: true
+  alerts:
+    - cpu: 80
+    - memory: 90
+    - disk: 85
+
+env:
+  frontend:
+  backend:
+    PORT: "3001"
+    PG_USER: "${PG_USER}"
+    PG_PASS: "${PG_PASS}"
+    PG_HOST: "${PG_HOST}"
+    PG_PORT: "${PG_PORT}"
+    PG_DB: "${PG_DB}"
+    NECTARINE_CONFIG: "${NECTARINE_CONFIG}"
+    WP_URL: "${WP_URL}"
+    WP_USERNAME: "${WP_USERNAME}"
+    WP_APP_PASSWORD: "${WP_APP_PASSWORD}"

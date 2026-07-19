@@ -1,0 +1,47 @@
+booking:
+  read:
+    byClient:
+      type: SELECT
+      table: bookings
+      fields: '*'
+      where: client_id = $1
+      orderBy: starts_at DESC
+
+    byCoach:
+      type: SELECT
+      table: bookings
+      fields: '*'
+      where: coach_id = $1
+      orderBy: starts_at ASC
+
+    byId:
+      type: SELECT
+      table: bookings
+      fields: '*'
+      where: id = $1
+
+    upcomingByLine:
+      type: SELECT
+      table: bookings
+      fields: '*'
+      where: line = $1 AND status IN ('requested', 'confirmed')
+      orderBy: starts_at ASC
+
+  create:
+    newBooking:
+      type: INSERT
+      table: bookings
+      fields: [id, client_id, coach_id, line, kind, title, notes, starts_at, ends_at, status]
+
+  update:
+    updateBooking:
+      type: UPDATE
+      table: bookings
+      fields: [coach_id, title, notes, starts_at, ends_at, status, updated_at]
+      where: id = $1
+
+  delete:
+    deleteBooking:
+      type: DELETE
+      table: bookings
+      where: id = $1

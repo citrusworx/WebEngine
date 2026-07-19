@@ -1,0 +1,39 @@
+lesson:
+  read:
+    byCourse:
+      type: SELECT
+      table: lessons
+      fields: '*'
+      where: course_id = $1 AND status = 'published'
+      orderBy: position ASC
+
+    byId:
+      type: SELECT
+      table: lessons
+      fields: '*'
+      where: id = $1
+
+    bySlug:
+      type: SELECT
+      table: lessons
+      fields: '*'
+      where: course_id = $1 AND slug = $2
+
+  create:
+    newLesson:
+      type: INSERT
+      table: lessons
+      fields: [id, course_id, slug, title, summary, position, duration_minutes, content_ref, hero_image, status]
+
+  update:
+    updateLesson:
+      type: UPDATE
+      table: lessons
+      fields: [slug, title, summary, position, duration_minutes, content_ref, hero_image, status, updated_at]
+      where: id = $1
+
+  delete:
+    deleteLesson:
+      type: DELETE
+      table: lessons
+      where: id = $1

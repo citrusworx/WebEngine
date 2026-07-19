@@ -1,0 +1,40 @@
+enrollment:
+  read:
+    byClient:
+      type: SELECT
+      table: enrollments
+      fields: '*'
+      where: client_id = $1
+      orderBy: enrolled_at DESC
+
+    byCourse:
+      type: SELECT
+      table: enrollments
+      fields: '*'
+      where: course_id = $1
+      orderBy: enrolled_at DESC
+
+    byId:
+      type: SELECT
+      table: enrollments
+      fields: '*'
+      where: id = $1
+
+  create:
+    enroll:
+      type: INSERT
+      table: enrollments
+      fields: [id, client_id, course_id, status, progress_percent]
+
+  update:
+    updateEnrollment:
+      type: UPDATE
+      table: enrollments
+      fields: [status, progress_percent, completed_at, updated_at]
+      where: id = $1
+
+  delete:
+    deleteEnrollment:
+      type: DELETE
+      table: enrollments
+      where: id = $1

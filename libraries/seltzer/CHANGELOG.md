@@ -1,5 +1,12 @@
 # @citrusworx/seltzer
 
+## 0.3.0
+
+### Minor Changes
+
+- Server listen supports parametric routes, JSON body parsing, async handlers, CORS options, and `locals` for app context
+- Routes remain object-based via `.route({ method, path, handler })`
+
 ## 0.2.0
 
 ### Minor Changes

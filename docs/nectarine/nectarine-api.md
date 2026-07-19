@@ -327,13 +327,43 @@ orderBy: $query.sort
 
 ## Core Functions
 
-### loadSchema()
+### loadNectarineConfig()
 
-Load and parse a YAML schema file.
+Load a project `nectarine.config.yaml`, resolve resource paths, parse resource triads, and resolve vendor database credentials from env key names declared in YAML.
+
+This is the supported config entrypoint. Apps should not write their own YAML bootstrap helpers.
+
+**Signature**:
+```typescript
+function loadNectarineConfig(
+  configPath: string,
+  options?: {
+    env?: NodeJS.ProcessEnv;
+    loadResources?: boolean;
+  }
+): NectarineConfig
+```
+
+**Example**:
+```typescript
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const creds = config.resolveCredentials(); // uses PG_* / MS_* / MG_* from YAML
+const product = config.getResource("product");
+const app = config.getAppBySubdomain("courses");
+```
+
+Also available as `@citrusworx/nectarine/config`.
+
+### loadSchema() / loadYaml()
+
+Load and parse a single YAML file.
 
 **Signature**:
 ```typescript
 function loadSchema<T>(filepath: string): T
+function loadYaml<T>(filepath: string): T
 ```
 
 **Parameters**:

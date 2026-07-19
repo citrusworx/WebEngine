@@ -1,0 +1,39 @@
+coach:
+  read:
+    allActive:
+      type: SELECT
+      table: coaches
+      fields: '*'
+      where: is_active = true
+      orderBy: display_name
+
+    byId:
+      type: SELECT
+      table: coaches
+      fields: '*'
+      where: id = $1
+
+    bySlug:
+      type: SELECT
+      table: coaches
+      fields: '*'
+      where: slug = $1
+
+  create:
+    newCoach:
+      type: INSERT
+      table: coaches
+      fields: [id, slug, display_name, bio, avatar_url, specialties, lines, is_active]
+
+  update:
+    updateCoach:
+      type: UPDATE
+      table: coaches
+      fields: [slug, display_name, bio, avatar_url, specialties, lines, is_active, updated_at]
+      where: id = $1
+
+  delete:
+    deleteCoach:
+      type: DELETE
+      table: coaches
+      where: id = $1

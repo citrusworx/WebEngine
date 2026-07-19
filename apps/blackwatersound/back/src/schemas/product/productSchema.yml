@@ -1,0 +1,23 @@
+Product:
+  table: products
+  description: Catalog items for gear and software subdomain apps
+  fields:
+    id: string PRIMARY KEY
+    catalog: enum(gear, software) NOT NULL
+    name: string NOT NULL
+    slug: string UNIQUE NOT NULL
+    sub: string
+    price: string NOT NULL
+    originalPrice: string
+    img: string NOT NULL
+    accent: string NOT NULL
+    badge: string
+    category: enum(Guitars, Cabs, Pedals, Effects, Amplifiers, Studio, Lifestyle, Accessories, DAW, Plugins, Software) NOT NULL
+    tags: json
+    blurb: text NOT NULL
+    isNew: boolean DEFAULT false
+    isActive: boolean DEFAULT true
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    order_items: OrderItem[]

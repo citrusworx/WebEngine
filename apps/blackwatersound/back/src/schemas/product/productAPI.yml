@@ -1,0 +1,46 @@
+product:
+  read:
+    allProducts:
+      api:
+        method: GET
+        endpoint: /api/products
+        query: allProducts
+
+    productsByCatalog:
+      api:
+        method: GET
+        endpoint: /api/products/catalog/:catalog
+        query: productsByCatalog
+
+    productById:
+      api:
+        method: GET
+        endpoint: /api/products/:id
+        query: productById
+
+    productBySlug:
+      api:
+        method: GET
+        endpoint: /api/products/slug/:slug
+        query: productBySlug
+
+  create:
+    newProduct:
+      api:
+        method: POST
+        endpoint: /api/products
+        query: newProduct
+
+  update:
+    updateProduct:
+      api:
+        method: PUT
+        endpoint: /api/products/:id
+        query: updateProduct
+
+  delete:
+    deleteProduct:
+      api:
+        method: DELETE
+        endpoint: /api/products/:id
+        query: deleteProduct

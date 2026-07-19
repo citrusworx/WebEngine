@@ -18,6 +18,7 @@ __exportStar(require("./compiler/compiler"), exports);
 __exportStar(require("./adapters/mg/mgz"), exports);
 __exportStar(require("./adapters/ms/msqlz"), exports);
 __exportStar(require("./adapters/pg/pgz"), exports);
+__exportStar(require("./config/index"), exports);
 __exportStar(require("./util/util"), exports);
 __exportStar(require("./util/mgutil"), exports);
 __exportStar(require("./util/msqlUtil"), exports);

@@ -1,0 +1,20 @@
+waitlist:
+  read:
+    allEntries:
+      type: SELECT
+      table: waitlist
+      fields: '*'
+      orderBy: created_at DESC
+
+    entryByEmail:
+      type: SELECT
+      table: waitlist
+      fields: '*'
+      where: email = $1
+
+  create:
+    joinWaitlist:
+      type: INSERT
+      table: waitlist
+      fields: [id, name, email, source_app, interest]
+      returning: [id, email, created_at]
