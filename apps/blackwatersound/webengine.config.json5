@@ -1,0 +1,22 @@
+{
+  name: "blackwater-sound",
+  description: "Blackwater Sound web runtime (load-only WebEngine bridge)",
+  version: "0.2.1",
+  network: {
+    host: "localhost",
+    port: 5173,
+    dns: {
+      enabled: true,
+      provider: "local",
+      domain: "blackwatersound.local",
+    },
+  },
+  development: {
+    stack: "docker-compose",
+    compose_file: "docker/docker-compose.yml",
+  },
+  staging: {},
+  deployment: {
+    grapevine: "grapevine.config.yaml",
+  },
+}

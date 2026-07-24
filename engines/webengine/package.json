@@ -11,7 +11,9 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "kiwi.config.toml",
+        "webengine.config.json5"
     ],
     "publishConfig": {
         "access": "public"
@@ -19,7 +21,9 @@
     "scripts": {
         "build": "tsc -b",
         "dev": "tsc -w",
-        "prepack": "yarn build"
+        "prepack": "yarn build",
+        "test": "vitest run",
+        "typecheck": "tsc -b --pretty false"
     },
     "dependencies": {
         "@citrusworx/types": "^0.2.0",
@@ -31,6 +35,7 @@
     "devDependencies": {
         "@types/js-yaml": "^4.0.9",
         "@types/node": "^25.6.0",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "vitest": "^3.2.4"
     }
 }

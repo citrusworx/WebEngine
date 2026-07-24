@@ -9,13 +9,13 @@ export class KernelContext {
     nativeRuntime;
     /** Embedded IoT runtime (YAML). */
     embeddedRuntime;
+    handles = new Map();
     constructor(kiwi, 
     /** Directory containing kiwi.config.toml */
     projectRoot) {
         this.kiwi = kiwi;
         this.projectRoot = projectRoot;
     }
-    handles = new Map();
     registerModuleHandle(id, value) {
         this.handles.set(id, value);
     }

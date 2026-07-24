@@ -6,16 +6,16 @@ import { joinWaitlist } from "../services/waitlist";
 
 const sellingPoints = [
   {
-    title: "Boutique tone",
-    body: "Hand-wired fuzz, utility pedals, amps, and studio pieces shaped in a visual system that now matches the Kiwi stack."
+    title: "Boutique gear",
+    body: "Hand-wired fuzz, utility pedals, amps, and studio pieces selected for artists who care how the room sounds — not just how the rack looks."
   },
   {
-    title: "Kiwi-native frontend",
-    body: "This starter now leans on Juice attributes and Sig.js signals instead of Tailwind classes and inline style declarations."
+    title: "Studio & lessons",
+    body: "Book tracking time, mix reviews, and one-to-one lessons with coaches who still work on tape when the song asks for it."
   },
   {
-    title: "Ready for Sugar",
-    body: "Sections are cleaner, more modular, and easier to bridge into future KiwiPress, Nectarine, and Sugar flows."
+    title: "Publishing & releases",
+    body: "A small label desk for roster projects, release assets, and metadata — so songs leave the building with a plan."
   }
 ];
 
@@ -25,14 +25,14 @@ export function ComingSoon() {
       <section hero-section>
         <div shell hero-grid grid>
           <div hero-copy stack gap="1.25rem">
-            <p kicker>Blackwater Sound x Kiwi starter</p>
-            <h1 display>Built for tone. Rebuilt for Kiwi.</h1>
+            <p kicker>Blackwater Sound</p>
+            <h1 display>Loud boutique audio. Quiet enough to hear the take.</h1>
             <p copy="lead">
-              The original mockup looked the part, but it was still shipping React, Tailwind, and scattered inline styling. This pass moves the starter toward the real CitrusWorx frontend stack.
+              Retail, studio, lessons, and publishing under one roof — for artists, engineers, and labels who want gear that earns its keep and rooms that tell the truth.
             </p>
             <WaitlistForm
               onSubmit={joinWaitlist}
-              successBody="Next step is wiring this into Nectarine instead of leaving it as placeholder UI."
+              successBody="You're on the list. We'll write when the next drop, session block, or course opens."
             />
           </div>
 
@@ -41,9 +41,9 @@ export function ComingSoon() {
               <img src={GUITAR_IMG} alt="Blackwater Sound guitar hero" media-image />
             </div>
             <div card card-tone="dark" stack gap="0.75rem">
-              <p kicker>Frontend notes</p>
+              <p kicker>What we're opening</p>
               <p copy="sm inverse">
-                Juice handles the macro composition, while tiny app-owned CSS classes cover brand polish that should not live inside the design system itself.
+                Studio booking, lesson seats, and a curated storefront — with an artist hub for mixes, sessions, and release work.
               </p>
               <ColorBar />
             </div>
@@ -64,15 +64,16 @@ export function ComingSoon() {
 
       <section shell story-layout grid>
         <div stack gap="1rem">
-          <p kicker>Next slice</p>
-          <h2 heading>Studio, lessons, store, and publishing can now share one frontend language.</h2>
+          <p kicker>Four doors, one shop</p>
+          <h2 heading>Studio, lessons, store, and publishing — pick a door and walk in.</h2>
           <p copy>
-            The mockup still uses placeholder imagery and copy, but its structure is now much closer to how a real Kiwi Engine site should feel: declarative, reusable, and easier to extend without a thicket of one-off style objects.
+            Blackwater Sound is a boutique audio house: track and mix in the studio, learn with working coaches, shop pedals and instruments that made the cut, and publish when the song is ready.
           </p>
           <div row gap="0.75rem">
             <a href="/products" button-tone="ink">Browse the Store</a>
             <a href="/portal/studio" button-tone="ghost">Visit the Studio</a>
             <a href="/lesson" button-tone="ghost">Open a Lesson</a>
+            <a href="/blog" button-tone="ghost">Publishing</a>
           </div>
         </div>
         <div media-frame="wide">

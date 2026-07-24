@@ -2,32 +2,37 @@
 
 `@citrusworx/webengine` is the workspace orchestration package for the CitrusWorx stack.
 
-This page reflects the current source in `engines/webengine/`, not older aspirational notes about a fully realized kernel/module runtime.
+This page reflects the current source in `engines/webengine/src/`.
 
 ## Current status
 
-WebEngine exists today as an early scaffold with a clear direction, but it is not yet the fully implemented kernel system previously described in this docs folder.
+WebEngine is an early orchestration package with a working **kiwi config loader** and **kernel module lifecycle**, plus a lifecycle-shaped `WebEngine` class for longer-term deploy/monitor/teardown steps.
 
 What exists today:
 
 - a published package surface at `@citrusworx/webengine`
 - a `WebEngine` class in `engines/webengine/src/index.ts`
 - constructor wiring for `Blueprint`, `Environment`, and `DeploymentManifest`
-- lifecycle-shaped methods for `init`, `buildEnvironment`, `buildApplication`, `secureEnvironment`, `deployApplication`, `monitorApplication`, `scaleApplication`, `killApplication`, `cleanupEnvironment`, and `teardown`
-- package dependencies on `@citrusworx/types`, `js-yaml`, `json5`, `smol-toml`, and `zod`
+- real `parse()` for YAML / TOML / JSON (`js-yaml`, `smol-toml`)
+- `init()` that locates `kiwi.config.toml`, validates it, and runs the kernel lifecycle
+- kernel modules: `core`, `web`, `native`, `embedded` (topo-sorted scaffold → bootstrap → health)
+- sample configs: `engines/webengine/kiwi.config.toml` + `webengine.config.json5`
+- vitest coverage for config find/load, topo-sort, and lifecycle health
 
 What is still mostly scaffold/design:
 
-- real config loading and validation in the current source entrypoint
-- actual provider orchestration across Juice, Sig.js, Nectarine, Grapevine, and related workspaces
-- a working kernel/module registry exposed from the current source tree
-- blueprint/module resolution beyond shared types and lifecycle placeholders
+- Grapevine / provider orchestration in `buildEnvironment` and related lifecycle methods
+- dynamic module registration beyond the builtin registry
 - production deployment, telemetry, and dashboard workflows
 
 ## Public API today
 
 ```ts
-import { WebEngine } from "@citrusworx/webengine";
+import {
+  WebEngine,
+  runKernelLifecycle,
+  findKiwiConfigPath,
+} from "@citrusworx/webengine";
 import type {
   Blueprint,
   DeploymentManifest,
@@ -37,25 +42,45 @@ import type {
 const engine = new WebEngine({
   blueprint,
   environment,
-  deploymentManifest
+  deploymentManifest,
+  cwd: process.cwd(), // directory used to find kiwi.config.toml
 });
 
-engine.init();
-await engine.buildEnvironment();
-await engine.buildApplication();
-await engine.deployApplication();
-await engine.teardown();
+await engine.init();
+const health = engine.getHealthSummary();
+
+// Or call the kernel directly:
+const result = await runKernelLifecycle(process.cwd());
 ```
+
+## Config model
+
+WebEngine uses **`kiwi.config.toml`** as the project root config (not `webengine.toml`).
+
+Typical layout:
+
+```toml
+version = "0.1.0"
+
+[kernel]
+modules = ["core", "web"]
+
+[runtimes.web]
+path = "webengine.config.json5"
+
+[webengine]
+app_name = "my-app"
+host = "localhost"
+port = 8080
+```
+
+The web runtime module loads `webengine.config.json5` (JSON5 + Zod). Native/embedded modules load YAML runtime files when enabled.
 
 ## Reality check
 
-The current `WebEngine` class is best understood as a lifecycle skeleton and integration point, not a finished runtime.
-
-That means:
-
-- the class shape is useful for aligning the long-term orchestration model
-- `@citrusworx/types` is already doing real work as the contract layer
-- the richer WebEngine vision is still ahead of the implementation in `src/`
+- The kernel/config pipeline is real and builds from `src/`
+- Lifecycle methods beyond `init` / `parse` / `teardown` remain stubs awaiting Grapevine and app adapters
+- `@citrusworx/types` remains the shared contract layer for blueprints and deployments
 
 ## Relationship to the libraries
 
@@ -67,10 +92,10 @@ WebEngine is meant to compose the library layer rather than replace it:
 - `@citrusworx/juiceui` and `@citrusworx/sigjs` cover UI/runtime concerns
 - `@citrusworx/grapevine` and `@citrusworx/dns` cover infrastructure and domain workflows
 
-That composition model is the direction. The code in `engines/webengine/src/index.ts` is the current implementation baseline.
-
 ## Source of truth
 
 - Package: `engines/webengine/package.json`
-- Current source entrypoint: `engines/webengine/src/index.ts`
+- Entrypoint: `engines/webengine/src/index.ts`
+- Kernel: `engines/webengine/src/kernel/`
+- Config: `engines/webengine/src/config/`
 - Published README: `engines/webengine/README.md`

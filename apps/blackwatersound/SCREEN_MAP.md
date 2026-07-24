@@ -20,7 +20,7 @@ Implementation target: `apps/blackwatersound/front` (Juice + Sig).
 
 | Portal | Route | Component | KiwiStage hub reference | Parity |
 |--------|-------|-----------|-------------------------|--------|
-| Artist Hub | `/artist` | `routes/ArtistHub.tsx` | `ArtistHub` | done |
+| Artist Hub | `/artist` | `routes/ArtistHub.tsx` | `ArtistHub` | done (wired in `App.tsx`; hub chrome hides `SiteNav`) |
 | Hub — Dashboard | `/artist` (screen) | `components/hub/screens/HubDashboard.tsx` | `HubDashboard` | done |
 | Hub — Audience | `/artist` (screen) | `components/hub/screens/HubAudience.tsx` | `HubAudience` | done |
 | Hub — Similar Artists | `/artist` (screen) | `components/hub/screens/HubArtists.tsx` | `HubArtists` | done |

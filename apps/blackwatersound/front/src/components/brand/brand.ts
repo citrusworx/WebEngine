@@ -12,15 +12,16 @@ export const STRAP_IMG = "https://images.unsplash.com/photo-1755440322015-252e40
 export const BRAND_STRIPE_COLORS = ["orange", "lime", "cyan", "yellow", "red", "ink"] as const;
 
 export const PRIMARY_NAV = [
-  { href: "/", label: "Coming Soon" },
-  { href: "/products", label: "Products" },
-  { href: "/blog", label: "Blog" },
-  { href: "/lesson", label: "Course" },
-  { href: "/product", label: "StinkRat" },
+  { href: "/portal/studio", label: "Studio" },
+  { href: "/lesson", label: "Lessons" },
+  { href: "/products", label: "Store" },
+  { href: "/blog", label: "Publishing" },
+  { href: "/artist", label: "Artist Hub" },
 ] as const;
 
 export const FOOTER_NAV = [
-  { href: "/products", label: "Store" },
+  { href: "/portal/studio", label: "Studio" },
   { href: "/lesson", label: "Lessons" },
+  { href: "/products", label: "Store" },
   { href: "/blog", label: "Publishing" },
 ] as const;

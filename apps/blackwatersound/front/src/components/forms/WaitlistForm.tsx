@@ -7,7 +7,7 @@ export type WaitlistPayload = {
 };
 
 export function WaitlistForm(props: {
-  onSubmit: (payload: WaitlistPayload) => Promise<void> | void;
+  onSubmit: (payload: WaitlistPayload) => Promise<unknown> | unknown;
   successTitle?: string;
   successBody?: string;
 }) {

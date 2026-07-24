@@ -2,7 +2,7 @@ import { findKiwiConfigPath } from "../config/find-kiwi-config.js";
 import { loadKiwiConfigFromPath } from "../config/load-kiwi-config.js";
 import { createBuiltinRegistry } from "./registry.js";
 import { computeModuleClosure, topologicalSortModules } from "./toposort.js";
-import { KernelContext } from "./types.js";
+import { KernelContext, } from "./types.js";
 /**
  * Full lifecycle: load kiwi.config.toml → scaffold → bootstrap → health.
  */

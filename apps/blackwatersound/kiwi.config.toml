@@ -1,0 +1,15 @@
+version = "0.1.0"
+
+[kernel]
+modules = ["core", "web"]
+
+[runtimes.web]
+path = "webengine.config.json5"
+
+[webengine]
+app_name = "blackwater-sound"
+description = "Blackwater Sound boutique audio retail, studio, lessons, and publishing"
+host = "localhost"
+port = 5173
+debug_mode = true
+log_level = "info"

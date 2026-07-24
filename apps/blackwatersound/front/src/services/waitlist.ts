@@ -5,11 +5,34 @@ export type WaitlistPayload = {
   email: string;
 };
 
-export async function joinWaitlist(payload: WaitlistPayload): Promise<{ ok: boolean; duplicate?: boolean }> {
+export class WaitlistError extends Error {
+  constructor(
+    message: string,
+    readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = "WaitlistError";
+  }
+}
+
+/**
+ * Join the Blackwater Sound waitlist via the API.
+ * Failures surface to the form — no silent offline success.
+ */
+export async function joinWaitlist(
+  payload: WaitlistPayload,
+): Promise<{ ok: boolean; duplicate?: boolean }> {
   try {
-    return await api.post<{ ok: boolean; duplicate?: boolean }>("/api/waitlist", payload);
-  } catch {
-    // Offline dev fallback when API is not running yet.
-    return { ok: true };
+    return await api.post<{ ok: boolean; duplicate?: boolean }>(
+      "/api/waitlist",
+      payload,
+    );
+  } catch (error) {
+    const detail =
+      error instanceof Error ? error.message : "Waitlist request failed";
+    throw new WaitlistError(
+      `Could not join the waitlist. Is the API running? (${detail})`,
+      error,
+    );
   }
 }

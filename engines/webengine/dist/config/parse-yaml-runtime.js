@@ -13,7 +13,9 @@ export function parseYamlRuntimeDocument(raw, label) {
     }
     const result = yamlRuntimeConfigSchema.safeParse(data);
     if (!result.success) {
-        const msg = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+        const msg = result.error.issues
+            .map((i) => `${i.path.join(".")}: ${i.message}`)
+            .join("; ");
         throw new Error(`${label}: invalid structure — ${msg}`);
     }
     return result.data;

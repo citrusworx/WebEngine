@@ -1,260 +1,124 @@
+import yaml from "js-yaml";
+import { parse as parseToml } from "smol-toml";
+import { findKiwiConfigPath, loadKiwiConfigFromPath, } from "./config/index.js";
+import { runKernelLifecycle, shutdownKernel, } from "./kernel/index.js";
+export { KIWI_CONFIG_FILENAME, findKiwiConfigPath, kiwiConfigSchema, loadKiwiConfigFromPath, parseYamlRuntimeDocument, resolveRuntimeConfigPath, webRuntimeConfigSchema, yamlRuntimeConfigSchema, } from "./config/index.js";
+export { KernelContext, computeModuleClosure, createBuiltinRegistry, coreModule, embeddedRuntimeModule, nativeRuntimeModule, runKernelLifecycle, shutdownKernel, topologicalSortModules, webRuntimeModule, } from "./kernel/index.js";
 export class WebEngine {
     static instance;
     initialized = false;
     initializing = false;
     /**
-     * @property metadata - A static property to hold metadata about the WebEngine
-     *                      and its operations, which can be used for logging, debugging,
-     *                      or providing insights into the engine's behavior and performance.
+     * Metadata about the WebEngine and its operations for logging/debugging.
      */
     static metadata = {};
     blueprint;
     environment;
     deploymentManifest;
-    // Loads WebEngine with config for init consumption.
+    cwd;
+    kernelResult;
+    loadedKiwi;
     constructor(config) {
-        this.blueprint = config.blueprint; // What the app is, how it is structured, and its dependencies.
-        this.environment = config.environment; // Where the app runs, the infrastructure, resources, and constraints.
-        this.deploymentManifest = config.deploymentManifest; // The plan for deploying and managing the app, including steps and resources needed throughout the lifecycle.
+        this.blueprint = config.blueprint;
+        this.environment = config.environment;
+        this.deploymentManifest = config.deploymentManifest;
+        this.cwd = config.cwd ?? process.cwd();
     }
-    // Parse config
-    // WebEngine Runtime:
-    // 1. Parse the blueprint to understand the application architecture and dependencies.
-    // 2. Use the environment configuration to determine where and how to deploy the application.
-    // 3. Generate a deployment manifest that outlines the steps and resources needed to support the app lifecycle.
-    //
-    // WER acts as an orchestrator and manager of the lifecycle.
-    // Libraries are responsible for different parts of the app lifecycle
+    static getInstance() {
+        return WebEngine.instance;
+    }
+    getKernelContext() {
+        return this.kernelResult?.context;
+    }
+    getHealthSummary() {
+        return this.kernelResult?.healthSummary;
+    }
+    getKiwiConfig() {
+        return this.loadedKiwi?.config ?? this.kernelResult?.context.kiwi;
+    }
     /**
-    *  @method init
-    *  @method parse // A WebEngine utility method for different parsing needs across lifecycle stages.
-    *  @method buildEnvironment // ✅ Scaffold done
-    *  @method buildApplication // ✅ Scaffold done
-    *  @method secureEnvironment // ✅ Scaffold done
-    *  @method deployApplication // ✅ Scaffold done
-    *  @method monitorApplication // ✅ Scaffold done
-    *  @method scaleApplication // ✅ Scaffold done
-    *  @method killApplication // ✅ Scaffold done
-    *  @method cleanupEnvironment // ✅ Scaffold done
-    *  @method teardown // ✅ Scaffold done
-    */
-    /**
-     * A WebEngine utility method for different parsing needs across lifecycle stages. Utilize js-yaml and something for toml.
-     *  @param input - The data to be parsed, which can be in various formats such as YAML, TOML, or JSON.
-     *  @returns The parsed data in a structured format that can be used for further processing in the WebEngine lifecycle.
+     * Parse config payloads used across lifecycle stages.
      */
     parse(input, method) {
         if (method === "yaml") {
-            // Implementation for YAML parsing
+            return yaml.load(input);
         }
-        // Additional parsing logic for other formats
         if (method === "toml") {
-            // Implementation for TOML parsing
+            return parseToml(input);
         }
-        if (method === "json") {
-            // Implementation for JSON parsing
-            return JSON.parse(input);
-        }
-        return JSON.parse(input); // Default to JSON parsing if no method is specified
+        return JSON.parse(input);
     }
     /**
-     * @method init - Initializes the WebEngine, setting up necessary  configurations and preparing the environment for deployment.
-     *  ** @param config - An object containing the blueprint, environment, and deployment manifest.
-     *
-     * @description of config:
-     * - blueprint: A structured definition of the application's architecture, components, and dependencies.
-     * - environment: Configuration details about the deployment environment, including infrastructure, resources, and constraints.
-     * - deploymentManifest: A detailed plan outlining the steps and resources required to deploy and manage the application throughout its lifecycle.
-     *
-    */
-    init() {
+     * Initializes the WebEngine: loads kiwi.config.toml when present and runs
+     * the kernel lifecycle (scaffold → bootstrap → health).
+     */
+    async init() {
         this.initializing = true;
-        // Parse the blueprint to understand the application architecture and dependencies.
-        this.parse(this.blueprint.name, "yaml");
-        // Use the environment configuration to determine where and how to deploy the application.
-        // Generate a deployment manifest that outlines the steps and resources needed to support the app lifecycle.
-        this.initialized = true;
-        this.initializing = false;
-        return this;
+        try {
+            const configPath = findKiwiConfigPath(this.cwd);
+            if (configPath) {
+                this.loadedKiwi = await loadKiwiConfigFromPath(configPath);
+                this.kernelResult = await runKernelLifecycle(this.loadedKiwi.projectRoot);
+                WebEngine.metadata = {
+                    ...WebEngine.metadata,
+                    kiwiConfigPath: this.loadedKiwi.configPath,
+                    health: this.kernelResult.healthSummary,
+                    modules: this.kernelResult.sortedModuleIds,
+                };
+            }
+            else {
+                // Blueprint-only init: keep legacy path without requiring kiwi.config.toml.
+                WebEngine.metadata = {
+                    ...WebEngine.metadata,
+                    blueprint: this.blueprint.name,
+                    environment: this.environment,
+                    note: "kiwi.config.toml not found; kernel lifecycle skipped",
+                };
+            }
+            this.initialized = true;
+            WebEngine.instance = this;
+            return this;
+        }
+        finally {
+            this.initializing = false;
+        }
     }
-    /**
-     * @method buildEnvironment - Sets up the necessary infrastructure and resources based on the environment configuration to support the application deployment and operation.
-     *
-     * @description This method is responsible for provisioning the required infrastructure, such as virtual machines, containers,
-     * or serverless functions, and configuring them according to the specifications defined in the environment configuration.
-     * It ensures that the deployment environment is ready to host the application and meet its operational requirements.
-     *
-     * The implementation of this method would involve interacting with cloud providers, container orchestration platforms,
-     * or other infrastructure management tools to create and configure the necessary resources. HEAVY GRAPEVINE INTEGRATION HERE.
-     *
-     * @steps
-     *      1. Read the Environment Config (this.environment) to determine Provider.
-     *      2. Import necessary libraries for the identified provider (e.g., DigitalOcean, AWS, Azure).
-     *      3. Use the provider's API to provision the required infrastructure based on the specifications in the environment configuration.
-     *      4. Configure the provisioned resources according to the environment specifications, such as setting up networking, storage, and security groups.
-     *      5. Update the WebEngine metadata with information about the provisioned environment for future reference and monitoring.
-     *
-     * @returns A promise that resolves when the environment has been successfully built and is ready for application deployment.
-     */
     buildEnvironment() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for building the environment based on the configuration
-            // This would involve interacting with cloud providers or infrastructure management tools to provision and configure resources.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method buildApplication - Builds the application based on the blueprint and prepares it for deployment.
-     *
-     * @description This method is responsible for compiling the application code, resolving dependencies,
-     * and packaging the application in a format suitable for deployment. It ensures that the application
-     * is ready to be deployed to the target environment.
-     *
-     * @includes - Building Docker images, creating deployment artifacts, and preparing configuration files
-     * based on the app: section of blueprint specifications.
-     *
-     * @returns A promise that resolves when the application has been successfully built and is ready for deployment.
-     */
     buildApplication() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for building the application based on the blueprint specifications
-            // This would involve compiling code, resolving dependencies, and packaging the application for deployment.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method secureEnvironment - Implements security measures to protect the deployment environment and the application.
-     *
-     * @description This method is responsible for applying security best practices to the deployment
-     * environment, such as configuring firewalls, setting up access controls, and implementing monitoring and
-     * alerting for security incidents. It ensures that the environment is secure and compliant with relevant standards.
-     *
-     * @includes - Security section of the blueprint specs (Firewalls, VPCs, Access Controls, etc.)
-     *
-     * @returns A promise that resolves when the environment has been successfully secured.
-     */
     secureEnvironment() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for securing the environment based on the blueprint specifications
-            // This would involve configuring security measures such as firewalls, access controls, and monitoring.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method deployApplication - Deploys the built application to the provisioned environment and ensures it is running correctly.
-     *
-     * @description This method is responsible for deploying the built application to the provisioned environment and ensuring it is running correctly.
-     * It handles the deployment process, including uploading artifacts, configuring the environment, and verifying the application's status.
-     *
-     * @returns A promise that resolves when the application has been successfully deployed and is running correctly.
-     */
     deployApplication() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for deploying the application to the provisioned environment
-            // This would involve uploading artifacts, configuring the environment, and verifying the application's status.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method monitorApplication - Monitors the deployed application and the environment to ensure they are running smoothly and to detect any issues.
-     *
-     * @description This method is responsible for monitoring the deployed application and the environment to ensure they are running smoothly and to detect any issues.
-     * It involves setting up monitoring tools, collecting metrics, and implementing alerting mechanisms to proactively identify and address any problems that may arise during the application's operation.
-     *
-     * @returns A promise that resolves when the monitoring setup is complete and the application is being actively monitored.
-     */
     monitorApplication() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for monitoring the deployed application and environment
-            // This would involve setting up monitoring tools, collecting metrics, and implementing alerting mechanisms.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method scaleApplication - Scales the deployed application up or down based on demand and resource utilization.
-     *
-     * @description This method is responsible for scaling the deployed application up or down based on demand and resource utilization.
-     * It involves implementing auto-scaling policies, monitoring resource usage, and adjusting the application's resources accordingly to ensure optimal performance and cost-efficiency.
-     *
-     * @returns A promise that resolves when the scaling operation is complete and the application has been adjusted to meet demand.
-     */
     scaleApplication() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for scaling the deployed application based on demand and resource utilization
-            // This would involve implementing auto-scaling policies and adjusting resources accordingly.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method killApplication - Terminates the deployed application and releases any associated resources.
-     *
-     * @description This method is responsible for terminating the deployed application and releasing any associated resources.
-     *
-     *
-     * @returns A promise that resolves when the application has been terminated and resources have been released.
-     */
     killApplication() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for terminating the deployed application and releasing associated resources
-            // This would involve stopping the application and cleaning up any allocated resources.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method cleanupEnvironment - Cleans up the deployment environment by removing any resources that were provisioned for the application.
-     *
-     * @description This method is responsible for cleaning up the deployment environment by removing any resources that were provisioned for the application.
-     * It ensures that all resources are properly deprovisioned and that there are no lingering resources that could incur costs or cause security issues.
-     *
-     * @returns A promise that resolves when the environment has been successfully cleaned up and all resources have been deprovisioned.
-     *
-     *
-     *  @steps
-     *       1. Identify all resources that were provisioned for the application based on the environment configuration and deployment manifest.
-     *      2. Use the appropriate APIs to deprovision each resource, ensuring that they are properly cleaned up and that any associated costs are minimized.
-     *
-     * @returns A promise that resolves when the environment has been successfully cleaned up and all resources have been deprovisioned.
-     */
     cleanupEnvironment() {
-        // Dummy code
-        return new Promise((resolve, reject) => {
-            // Implementation for cleaning up the deployment environment by removing provisioned resources
-            // This would involve identifying and deprovisioning all resources associated with the application.
-            resolve();
-        });
+        return Promise.resolve();
     }
-    /**
-     * @method teardown - Performs a complete teardown of the WebEngine, including cleaning up the environment and any remaining resources.
-     *
-     * @description This method is responsible for performing a complete teardown of the WebEngine, including cleaning up the environment and any remaining resources. It ensures that all aspects of the WebEngine are properly shut down and that there are no lingering resources or configurations that could cause issues in the future.
-     *
-     * @returns A promise that resolves when the teardown process is complete and all resources have been properly cleaned up.
-     *
-     * @steps
-     *      1. Call the cleanupEnvironment method to ensure that all provisioned resources are deprovisioned and cleaned up.
-     *      2. Reset any internal state or configurations of the WebEngine to ensure it is in a clean state for future use.
-     *     3. Update the WebEngine metadata to reflect the teardown and any relevant information about the process.
-     *     4. Resolve the promise to indicate that the teardown process is complete.
-     * */
-    teardown() {
-        return new Promise((resolve, reject) => {
-            this.cleanupEnvironment()
-                .then(() => {
-                // Reset internal state or configurations if necessary
-                WebEngine.metadata = {};
-                resolve();
-            })
-                .catch((error) => {
-                reject(error);
-            });
-        });
+    async teardown() {
+        if (this.kernelResult) {
+            await shutdownKernel(this.kernelResult.modulesInOrder, this.kernelResult.context);
+        }
+        await this.cleanupEnvironment();
+        this.kernelResult = undefined;
+        this.loadedKiwi = undefined;
+        this.initialized = false;
+        WebEngine.metadata = {};
+        if (WebEngine.instance === this) {
+            WebEngine.instance = undefined;
+        }
     }
 }
 //# sourceMappingURL=index.js.map

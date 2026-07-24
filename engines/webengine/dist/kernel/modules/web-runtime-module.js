@@ -24,7 +24,9 @@ export const webRuntimeModule = {
         const parsed = JSON5.parse(raw);
         const result = webRuntimeConfigSchema.safeParse(parsed);
         if (!result.success) {
-            const msg = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+            const msg = result.error.issues
+                .map((i) => `${i.path.join(".")}: ${i.message}`)
+                .join("; ");
             throw new Error(`Invalid webengine.config.json5: ${msg}`);
         }
         ctx.webRuntime = result.data;

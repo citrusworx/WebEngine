@@ -13,9 +13,9 @@ Goal: make the prototype runnable inside the KiwiEngine monorepo without touchin
 ## Slice 2 — Make it a real Blackwater Sound site
 
 - [ ] Replace placeholder Unsplash images with owned product, studio, and artist photography.
-- [ ] Replace generated copy with Blackwater Sound positioning.
-- [ ] Turn the coming-soon form into a real waitlist capture flow.
-- [ ] Add Studio, Lessons, Store, and Publishing top-level navigation.
+- [x] Replace generated copy with Blackwater Sound positioning.
+- [x] Turn the coming-soon form into a real waitlist capture flow (API errors surface; no silent offline success).
+- [x] Add Studio, Lessons, Store, and Publishing top-level navigation.
 
 ## Slice 3 — Connect KiwiEngine modules
 

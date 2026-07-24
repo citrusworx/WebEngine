@@ -7,6 +7,7 @@ import { BlogPost } from "./routes/BlogPost";
 import { CourseLesson } from "./routes/CourseLesson";
 import { ProductPage } from "./routes/ProductPage";
 import { SigRouterShowcase } from "./routes/SigRouterShowcase";
+import { ArtistHub } from "./routes/ArtistHub";
 import { StudioPortal } from "./routes/portals/StudioPortal";
 import { LabelPortal } from "./routes/portals/LabelPortal";
 import { LearnerPortal } from "./routes/portals/LearnerPortal";
@@ -23,6 +24,8 @@ function renderRoute(path: string) {
       return <CourseLesson />;
     case "/product":
       return <ProductPage />;
+    case "/artist":
+      return <ArtistHub />;
     case "/portal/studio":
       return <StudioPortal />;
     case "/portal/label":
@@ -36,7 +39,7 @@ function renderRoute(path: string) {
 }
 
 function usesHubChrome(path: string) {
-  return path.startsWith("/portal/");
+  return path === "/artist" || path.startsWith("/portal/");
 }
 
 export function App() {
