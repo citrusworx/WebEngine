@@ -1,104 +1,33 @@
-//#region ../sig/dist/signal.js
-var e = !1, t = /* @__PURE__ */ new Set(), n = null, r = null;
-function i(e) {
-	e?.();
-}
-function a(n) {
-	if (e) {
-		t.add(n);
-		return;
-	}
-	n.notify();
-}
-function o(e) {
-	r?.cleanups.add(e);
-}
-function s(e) {
-	let t = r, n = { cleanups: /* @__PURE__ */ new Set() };
-	r = n;
-	try {
-		let t = e(), r = !1;
-		return {
-			value: t,
-			dispose: () => {
-				if (!r) {
-					r = !0;
-					for (let e of n.cleanups) i(e);
-					n.cleanups.clear();
-				}
-			}
-		};
-	} finally {
-		r = t;
-	}
-}
-function c(e) {
-	let t = /* @__PURE__ */ new Set();
+//#region ../../node_modules/@citrusworx/sigjs/dist/signal.js
+var e = null;
+function t(t) {
+	let n = /* @__PURE__ */ new Set();
 	function r() {
-		return n && (t.add(n), n.addDependency(t)), e;
+		return e && n.add(e), t;
 	}
-	function i(n) {
-		e = n, [...t].forEach((e) => a(e));
+	function i(e) {
+		t = e, n.forEach((e) => e());
 	}
 	return {
 		get: r,
 		set: i
 	};
 }
-function l(e) {
-	let r = /* @__PURE__ */ new Set(), a, s = !1, c = {
-		addDependency(e) {
-			r.add(e);
-		},
-		notify() {
-			s || l();
-		},
-		dispose() {
-			if (!s) {
-				s = !0;
-				for (let e of r) e.delete(c);
-				r.clear(), i(a), a = void 0, t.delete(c);
-			}
-		}
-	};
-	function l() {
-		for (let e of r) e.delete(c);
-		r.clear(), i(a), a = void 0;
-		let t = n;
-		n = c;
-		let o;
-		try {
-			o = e();
-		} finally {
-			n = t;
-		}
-		typeof o == "function" && (a = o);
-	}
-	l();
-	let u = () => c.dispose();
-	return o(u), u;
+function n(t) {
+	return e = t, t(), e = null, () => {};
 }
 //#endregion
-//#region ../sig/dist/jsx-runtime.js
-var u = /* @__PURE__ */ new WeakMap();
-function d(e, t) {
-	if (e.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-		e.childNodes.forEach((e) => d(e, t));
-		return;
-	}
-	let n = u.get(e) ?? /* @__PURE__ */ new Set();
-	n.add(t), u.set(e, n);
-}
-function f(e, t) {
+//#region ../../node_modules/@citrusworx/sigjs/dist/jsx-runtime.js
+function r(e, t) {
 	if (t != null) {
 		if (Array.isArray(t)) {
-			t.forEach((t) => f(e, t));
+			t.forEach((t) => r(e, t));
 			return;
 		}
 		if (typeof t == "function") {
-			let n = document.createTextNode("");
-			e.appendChild(n), l(() => {
-				n.textContent = String(t());
+			let r = document.createTextNode("");
+			e.appendChild(r), n(() => {
+				r.textContent = String(t());
 			});
 			return;
 		}
@@ -109,7 +38,7 @@ function f(e, t) {
 		e.appendChild(t);
 	}
 }
-function p(e, t, n) {
+function i(e, t, n) {
 	if (t !== "children") {
 		if (t === "ref" && typeof n == "function") {
 			n(e);
@@ -127,71 +56,68 @@ function p(e, t, n) {
 		n === !0 ? e.setAttribute(t, "") : n === !1 || n == null ? e.removeAttribute(t) : e.setAttribute(t, n);
 	}
 }
-function m(e, t) {
-	if (typeof e == "function") {
-		let { value: n, dispose: r } = s(() => e(t));
-		return n instanceof Node && d(n, r), n;
-	}
+function a(e, t) {
+	if (typeof e == "function") return e(t);
 	let n = document.createElement(e);
 	if (t) {
-		for (let e in t) p(n, e, t[e]);
-		f(n, t.children);
+		for (let e in t) i(n, e, t[e]);
+		r(n, t.children);
 	}
 	return n;
 }
-var h = m;
+var o = a;
 //#endregion
 //#region src/components/accordion/accordion.tsx
-function g(e) {
-	let t = c(e.defaultExpanded ?? !1), n = e.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", r = `${n}-trigger`, i = `${n}-panel`, a = null, o = null, s = (e) => {
-		a?.setAttribute("aria-expanded", String(e)), o && (o.hidden = !e, o.setAttribute("aria-hidden", String(!e)), o.setAttribute("content", e ? "active" : "hidden"));
+function s(e) {
+	let r = t(e.defaultExpanded ?? !1), i = e.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", s = `${i}-trigger`, c = `${i}-panel`, l = null, u = null, d = (e) => {
+		l?.setAttribute("aria-expanded", String(e)), u && (u.hidden = !e, u.setAttribute("aria-hidden", String(!e)), u.setAttribute("content", e ? "active" : "hidden"));
 	};
-	return l(() => {
-		s(t.get());
-	}), /* @__PURE__ */ h("section", {
+	return n(() => {
+		d(r.get());
+	}), /* @__PURE__ */ o("section", {
 		accordion: !0,
 		name: e.name,
-		children: [/* @__PURE__ */ m("button", {
+		children: [/* @__PURE__ */ a("button", {
 			...e.attributes ?? {},
 			ref: (e) => {
-				a = e, s(t.get());
+				l = e, d(r.get());
 			},
 			type: "button",
-			id: r,
+			id: s,
 			"accordion-item": !0,
-			"aria-expanded": String(t.get()),
-			"aria-controls": i,
-			onclick: () => t.set(!t.get()),
+			"aria-expanded": String(r.get()),
+			"aria-controls": c,
+			onclick: () => r.set(!r.get()),
 			children: e.title ?? e.name
-		}), /* @__PURE__ */ m("div", {
+		}), /* @__PURE__ */ a("div", {
 			ref: (e) => {
-				o = e, s(t.get());
+				u = e, d(r.get());
 			},
-			id: i,
+			id: c,
 			role: "region",
-			"aria-labelledby": r,
-			content: t.get() ? "active" : "hidden",
-			hidden: !t.get(),
-			"aria-hidden": String(!t.get()),
+			"aria-labelledby": s,
+			content: r.get() ? "active" : "hidden",
+			hidden: !r.get(),
+			"aria-hidden": String(!r.get()),
 			children: e.children
 		})]
 	});
 }
 //#endregion
 //#region src/js/src/nav/navigation.ts
-var _ = {
+var c = {
 	root: typeof document < "u" ? document : {},
 	navSelector: "nav[type=\"bar\"], nav[type=\"links\"]",
 	sidebarSelector: "nav[type=\"sidebar\"]",
 	toggleSelector: "nav[type=\"mobile\"]",
 	mobileBreakpoint: 960
-}, v = (e) => Array.from(e), y = "juice-sidebar", b = "Toggle navigation menu", x = (e, t) => {
+}, l = (e) => Array.from(e), u = "juice-sidebar", d = "Toggle navigation menu", f = (e, t) => {
 	if (t) {
 		e.removeAttribute("hidden");
 		return;
 	}
 	e.setAttribute("hidden", "true");
-}, S = (e) => e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement, C = (e = {}) => {
+}, p = (e) => e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement, m = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		openSidebar: () => {},
@@ -201,72 +127,72 @@ var _ = {
 		isMobile: () => !1
 	};
 	let t = {
-		..._,
+		...c,
 		...e
-	}, n = t.root ?? document, r = n, i = () => v(n.querySelectorAll(t.navSelector)), a = () => v(n.querySelectorAll(t.sidebarSelector)), o = () => v(n.querySelectorAll(t.toggleSelector)), s = () => window.innerWidth <= t.mobileBreakpoint, c = 0, l = null, u = (e) => {
+	}, n = t.root ?? document, r = n, i = () => l(n.querySelectorAll(t.navSelector)), a = () => l(n.querySelectorAll(t.sidebarSelector)), o = () => l(n.querySelectorAll(t.toggleSelector)), s = () => window.innerWidth <= t.mobileBreakpoint, m = 0, h = null, g = (e) => {
 		if (e.id) return e.id;
-		c += 1;
-		let t = `${y}-${c}`;
+		m += 1;
+		let t = `${u}-${m}`;
 		return e.id = t, t;
-	}, d = (e, t) => {
+	}, _ = (e, t) => {
 		if (!e) return;
 		let n = e.children.length > 0 || (e.textContent?.trim().length ?? 0) > 0;
-		t && e.setAttribute("aria-controls", u(t)), n ? e.removeAttribute("data-nav-toggle-icon") : e.setAttribute("data-nav-toggle-icon", "default"), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && (e.textContent?.trim() ?? "").length === 0 && e.setAttribute("aria-label", b), S(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0"));
-	}, f = (e) => {
+		t && e.setAttribute("aria-controls", g(t)), n ? e.removeAttribute("data-nav-toggle-icon") : e.setAttribute("data-nav-toggle-icon", "default"), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && (e.textContent?.trim() ?? "").length === 0 && e.setAttribute("aria-label", d), p(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0"));
+	}, v = (e) => {
 		let n = a();
 		if (n.length === 0) return null;
 		if (!e) return n[0] ?? null;
 		let r = e.parentElement;
 		if (r) {
-			let e = v(r.querySelectorAll(t.sidebarSelector))[0];
+			let e = l(r.querySelectorAll(t.sidebarSelector))[0];
 			if (e) return e;
 		}
 		let i = e;
 		for (; i;) {
-			let e = v(i.querySelectorAll(t.sidebarSelector))[0];
+			let e = l(i.querySelectorAll(t.sidebarSelector))[0];
 			if (e) return e;
 			i = i.parentElement;
 		}
 		return n[0] ?? null;
-	}, p = (e) => {
+	}, y = (e) => {
 		let n = o();
 		if (n.length === 0) return null;
 		if (!e) return n[0] ?? null;
 		let r = e.parentElement;
 		if (r) {
-			let e = v(r.querySelectorAll(t.toggleSelector))[0];
+			let e = l(r.querySelectorAll(t.toggleSelector))[0];
 			if (e) return e;
 		}
 		let i = e;
 		for (; i;) {
-			let e = v(i.querySelectorAll(t.toggleSelector))[0];
+			let e = l(i.querySelectorAll(t.toggleSelector))[0];
 			if (e) return e;
 			i = i.parentElement;
 		}
 		return n[0] ?? null;
-	}, m = (e) => {
-		let t = f(e), n = e ?? p(t);
-		t && (u(t), d(n, t), t.removeAttribute("hidden"), t.setAttribute("aria-hidden", "false"), n?.setAttribute("aria-expanded", "true"), l = n ?? null);
-	}, h = (e) => {
-		let t = f(e), n = e ?? p(t);
-		t && (u(t), d(n, t), s() && t.setAttribute("hidden", "true"), t.setAttribute("aria-hidden", String(s())), n?.setAttribute("aria-expanded", "false"), s() && n && n.focus());
-	}, g = (e) => {
-		let t = f(e);
+	}, b = (e) => {
+		let t = v(e), n = e ?? y(t);
+		t && (g(t), _(n, t), t.removeAttribute("hidden"), t.setAttribute("aria-hidden", "false"), n?.setAttribute("aria-expanded", "true"), h = n ?? null);
+	}, x = (e) => {
+		let t = v(e), n = e ?? y(t);
+		t && (g(t), _(n, t), s() && t.setAttribute("hidden", "true"), t.setAttribute("aria-hidden", String(s())), n?.setAttribute("aria-expanded", "false"), s() && n && n.focus());
+	}, S = (e) => {
+		let t = v(e);
 		if (t) {
 			if (!t.hasAttribute("hidden")) {
-				h(e);
+				x(e);
 				return;
 			}
-			m(e);
+			b(e);
 		}
 	}, C = () => {
 		let e = s(), t = i(), n = o(), r = a();
-		t.forEach((t) => x(t, !e)), n.forEach((t) => {
-			d(t, f(t)), x(t, e), e || t.setAttribute("aria-expanded", "false");
+		t.forEach((t) => f(t, !e)), n.forEach((t) => {
+			_(t, v(t)), f(t, e), e || t.setAttribute("aria-expanded", "false");
 		}), r.forEach((t) => {
-			u(t);
-			let n = p(t);
-			if (d(n, t), !e) {
+			g(t);
+			let n = y(t);
+			if (_(n, t), !e) {
 				t.removeAttribute("hidden"), t.setAttribute("aria-hidden", "false"), n?.setAttribute("aria-expanded", "false");
 				return;
 			}
@@ -280,7 +206,7 @@ var _ = {
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		let r = n.closest(t.toggleSelector);
-		r instanceof HTMLElement && g(r);
+		r instanceof HTMLElement && S(r);
 	}, E = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let n = e.target;
@@ -289,13 +215,13 @@ var _ = {
 			let t = a().filter((e) => !e.hasAttribute("hidden"));
 			if (t.length === 0) return;
 			e.preventDefault(), t.forEach((e) => {
-				h(p(e) ?? l);
+				x(y(e) ?? h);
 			});
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let r = n.closest(t.toggleSelector);
-		!(r instanceof HTMLElement) || S(r) || (e.preventDefault(), g(r));
+		!(r instanceof HTMLElement) || p(r) || (e.preventDefault(), S(r));
 	}, D = !1, O = () => {
 		D || (D = !0, requestAnimationFrame(() => {
 			D = !1, C();
@@ -310,21 +236,21 @@ var _ = {
 		destroy: () => {
 			window.removeEventListener("resize", w), r.removeEventListener("click", T), r.removeEventListener("keydown", E), k?.disconnect();
 		},
-		openSidebar: m,
-		closeSidebar: h,
-		toggleSidebar: g,
+		openSidebar: b,
+		closeSidebar: x,
+		toggleSidebar: S,
 		sync: C,
 		isMobile: s
 	};
-}, w = (e = {}) => C(e), T = null, E = () => typeof window > "u" || typeof document > "u" ? null : T ? (T.sync(), T) : (T = C(), T), D = () => {
-	T?.destroy(), T = null;
+}, h = (e = {}) => m(e), g = null, _ = () => typeof window > "u" || typeof document > "u" ? null : g ? (g.sync(), g) : (g = m(), g), v = () => {
+	g?.destroy(), g = null;
 };
 typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", () => {
-	E();
-}) : E());
+	_();
+}) : _());
 //#endregion
 //#region src/tokens/index.ts
-var O = {
+var y = {
 	colors: {
 		families: [
 			"black",
@@ -476,4 +402,4 @@ var O = {
 	themes: {}
 };
 //#endregion
-export { g as Accordion, C as createNavigation, w as initNavigation, E as startNavigationRuntime, D as stopNavigationRuntime, O as tokens };
+export { s as Accordion, m as createNavigation, h as initNavigation, _ as startNavigationRuntime, v as stopNavigationRuntime, y as tokens };

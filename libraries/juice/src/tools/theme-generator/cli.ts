@@ -4,6 +4,7 @@ type CliOptions = {
     configPath?: string;
     cssOutPath?: string;
     yamlOutPath?: string;
+    mdOutPath?: string;
 };
 
 function parseArgs(argv: string[]): CliOptions {
@@ -30,6 +31,12 @@ function parseArgs(argv: string[]): CliOptions {
             index += 1;
             continue;
         }
+
+        if (arg === "--md-out" && next) {
+            options.mdOutPath = next;
+            index += 1;
+            continue;
+        }
     }
 
     return options;
@@ -47,12 +54,16 @@ async function main() {
             configPath: options.configPath,
             cssOutPath: options.cssOutPath,
             yamlOutPath: options.yamlOutPath,
+            mdOutPath: options.mdOutPath,
         });
 
         console.log(`Generated external Juice theme "${config.id}" from ${options.configPath}`);
         console.log(`- css: ${options.cssOutPath}`);
         if (options.yamlOutPath) {
             console.log(`- yaml: ${options.yamlOutPath}`);
+        }
+        if (options.mdOutPath) {
+            console.log(`- md: ${options.mdOutPath}`);
         }
         return;
     }
