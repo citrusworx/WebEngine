@@ -707,12 +707,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/citrusworxapp@workspace:apps/citrusworx":
-  version: 0.0.0-use.local
-  resolution: "@citrusworx/citrusworxapp@workspace:apps/citrusworx"
-  languageName: unknown
-  linkType: soft
-
 "@citrusworx/dns@workspace:*, @citrusworx/dns@workspace:libraries/dns":
   version: 0.0.0-use.local
   resolution: "@citrusworx/dns@workspace:libraries/dns"
@@ -824,7 +818,6 @@ __metadata:
   dependencies:
     "@citrusworx/dns": "workspace:*"
     "@citrusworx/juiceui": "workspace:*"
-    "@citrusworx/seltzer": "workspace:*"
     "@citrusworx/sigjs": "workspace:*"
     "@types/node": "npm:^25.4.0"
     typescript: "npm:~5.9.3"
@@ -850,6 +843,8 @@ __metadata:
     typescript: "npm:^5.9.3"
     vitest: "npm:^4.1.4"
     zod: "npm:^4.3.6"
+  peerDependencies:
+    pg: ^8.0.0
   languageName: unknown
   linkType: soft
 
@@ -893,9 +888,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/sugar@workspace:tooling/Sugar":
+"@citrusworx/sugar@workspace:tooling/sugar":
   version: 0.0.0-use.local
-  resolution: "@citrusworx/sugar@workspace:tooling/Sugar"
+  resolution: "@citrusworx/sugar@workspace:tooling/sugar"
   dependencies:
     "@citrusworx/juiceui": "npm:^0.1.1"
     "@citrusworx/sigjs": "npm:^0.1.0"
