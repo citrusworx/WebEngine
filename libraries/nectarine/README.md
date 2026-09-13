@@ -165,6 +165,16 @@ const sql = compiler.buildQuery(gets, "UserById");
 // SELECT id FROM users WHERE id = $1
 ```
 
+## Try the example
+
+A runnable showcase loads the fixture `nectarine.config.yaml`, compiles canonical user CRUD YAML, and demonstrates the Postgres adapter in dry-run (no live database required):
+
+```bash
+yarn workspace @citrusworx/nectarine example
+```
+
+Set the YAML-declared `PG_*` env vars and `NECTARINE_EXAMPLE_LIVE=1` to optionally execute one query. See `examples/showcase.ts`.
+
 ## Development
 
 ```bash
