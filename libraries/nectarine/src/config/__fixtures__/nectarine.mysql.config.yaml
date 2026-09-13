@@ -1,0 +1,16 @@
+version: "0.1"
+app: nectarine-mysql-fixture
+engine: KiwiEngine
+
+database:
+  default: mysql
+  mysql:
+    env:
+      user: MS_USER
+      password: MS_PASS
+      host: MS_HOST
+      port: MS_PORT
+      database: MS_DB
+
+fallback:
+  seed: true
