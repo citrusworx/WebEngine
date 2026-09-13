@@ -63,6 +63,35 @@ await pg.disconnect();
 
 `query(sql, params?)` uses `$1`-style placeholders to match compiler output.
 
+## MySQL adapter
+
+`@citrusworx/nectarine/adapters/ms` follows the same config-driven pattern as Postgres. YAML declares the env key names; `NectarineConfig.resolveCredentials("mysql")` reads the values. The adapter does not read `process.env` itself. Install `mysql2` alongside this package (peer dependency).
+
+MySQL uses `?` placeholders, not `$1`. The compiler is still Postgres-first and emits `$1`; this adapter runs the SQL and params it is given and does not rewrite placeholders.
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMysqlAdapter, createMysqlAdapterFromConfig } from "@citrusworx/nectarine/adapters/ms";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+
+// Thin helper: null when vendor is not mysql or env values are missing
+const fromConfig = createMysqlAdapterFromConfig(config);
+
+const creds = config.resolveCredentials("mysql");
+if (!creds) {
+    throw new Error("MySQL env is incomplete");
+}
+
+const mysql = fromConfig ?? createMysqlAdapter(creds);
+
+await mysql.connect();
+const result = await mysql.query("SELECT id FROM users WHERE id = ?", [1]);
+await mysql.disconnect();
+```
+
+`query(sql, params?)` uses `?` placeholders. `connect()` creates a `mysql2` pool and checks out one connection so failures surface before the first query.
+
 ## Query compiler
 
 `CCompiler` turns the **canonical CRUD YAML** shape into parameterized SQL.

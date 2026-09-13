@@ -37,6 +37,7 @@
         "js-yaml": "^4.1.1"
     },
     "peerDependencies": {
+        "mysql2": "^3.0.0",
         "pg": "^8.0.0"
     },
     "files": [
@@ -54,6 +55,7 @@
         "express": "^5.2.1",
         "jest": "^30.3.0",
         "mongodb": "^7.1.0",
+        "mysql2": "^3.24.4",
         "pg": "^8.20.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
