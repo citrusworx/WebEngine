@@ -92,6 +92,38 @@ await mysql.disconnect();
 
 `query(sql, params?)` uses `?` placeholders. `connect()` creates a `mysql2` pool and checks out one connection so failures surface before the first query.
 
+## MongoDB adapter
+
+`@citrusworx/nectarine/adapters/mg` follows the same config-driven pattern as Postgres and MySQL. YAML declares the env key names; `NectarineConfig.resolveCredentials("mongodb")` reads the values. The adapter does not read `process.env` itself. Install `mongodb` alongside this package (peer dependency).
+
+Connect once, run collection helpers on the connected client, then disconnect. Helpers do **not** close the client after a single insert.
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMongoAdapter, createMongoAdapterFromConfig } from "@citrusworx/nectarine/adapters/mg";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+
+// Thin helper: null when vendor is not mongodb or env values are missing
+const fromConfig = createMongoAdapterFromConfig(config);
+
+const creds = config.resolveCredentials("mongodb");
+if (!creds) {
+    throw new Error("MongoDB env is incomplete");
+}
+
+const mg = fromConfig ?? createMongoAdapter(creds);
+
+await mg.connect();
+await mg.createCollection("users");
+await mg.insertOne("users", { email: "a@example.com" });
+await mg.insertMany("users", [{ email: "b@example.com" }, { email: "c@example.com" }]);
+const users = mg.collection("users");
+await mg.disconnect();
+```
+
+`connect()` constructs a `MongoClient` from the resolved credentials and opens it so failures surface before the first write. Use `mg.db()` / `mg.collection(name)` for driver operations beyond the built-in helpers.
+
 ## Query compiler
 
 `CCompiler` turns the **canonical CRUD YAML** shape into parameterized SQL.

@@ -37,6 +37,7 @@
         "js-yaml": "^4.1.1"
     },
     "peerDependencies": {
+        "mongodb": "^7.0.0",
         "mysql2": "^3.0.0",
         "pg": "^8.0.0"
     },

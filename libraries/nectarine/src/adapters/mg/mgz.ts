@@ -1,94 +1,201 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient } from "mongodb";
+import type {
+    Collection,
+    Db,
+    Document,
+    InsertManyResult,
+    InsertOneResult,
+    OptionalUnlessRequiredId,
+} from "mongodb";
+import type { NectarineConfig } from "../../config/NectarineConfig.js";
+import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
 
-interface dbName {
-    name: string;
+export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+
+/**
+ * MongoDB adapter for collection helpers on a connected client.
+ *
+ * Credentials are {@link DatabaseCredentials} from
+ * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
+ * this adapter receives the resolved values. It does not read `process.env`
+ * itself.
+ *
+ * Connect once, run collection helpers, then disconnect. Helpers do not
+ * close the client after a single operation.
+ *
+ * @example
+ * ```ts
+ * const creds = config.resolveCredentials("mongodb");
+ * if (!creds) throw new Error("MongoDB env is incomplete");
+ * const mg = createMongoAdapter(creds);
+ * await mg.connect();
+ * await mg.insertOne("users", { email: "a@example.com" });
+ * await mg.disconnect();
+ * ```
+ */
+export class Mngz {
+    private client: MongoClient | null = null;
+    private readonly credentials: DatabaseCredentials;
+    private readonly uri: string;
+
+    constructor(credentials: DatabaseCredentials) {
+        this.credentials = requireMongoCredentials(credentials);
+        this.uri = buildMongoUri(this.credentials);
+    }
+
+    static fromCredentials(credentials: DatabaseCredentials): Mngz {
+        return new Mngz(credentials);
+    }
+
+    get connected(): boolean {
+        return this.client !== null;
+    }
+
+    async connect(): Promise<MongoClient> {
+        if (this.client) {
+            return this.client;
+        }
+
+        const client = new MongoClient(this.uri);
+
+        try {
+            await client.connect();
+        } catch (error) {
+            await client.close().catch(() => undefined);
+            throw error;
+        }
+
+        this.client = client;
+        return client;
+    }
+
+    /**
+     * The connected driver's database for {@link DatabaseCredentials.database}.
+     */
+    db(): Db {
+        return this.requireClient().db(this.credentials.database);
+    }
+
+    /**
+     * A collection on the connected database. Does not create it.
+     */
+    collection<T extends Document = Document>(name: string): Collection<T> {
+        return this.db().collection<T>(requireCollectionName(name));
+    }
+
+    async createCollection<T extends Document = Document>(name: string): Promise<Collection<T>> {
+        return this.db().createCollection<T>(requireCollectionName(name));
+    }
+
+    async insertOne<T extends Document = Document>(
+        collection: string,
+        document: OptionalUnlessRequiredId<T>,
+    ): Promise<InsertOneResult<T>> {
+        if (document == null || typeof document !== "object" || Array.isArray(document)) {
+            throw new Error("MongoDB adapter insertOne() requires a document object");
+        }
+
+        return this.collection<T>(collection).insertOne(document);
+    }
+
+    async insertMany<T extends Document = Document>(
+        collection: string,
+        documents: ReadonlyArray<OptionalUnlessRequiredId<T>>,
+    ): Promise<InsertManyResult<T>> {
+        if (!Array.isArray(documents) || documents.length === 0) {
+            throw new Error("MongoDB adapter insertMany() requires a non-empty documents array");
+        }
+
+        return this.collection<T>(collection).insertMany([...documents]);
+    }
+
+    async disconnect(): Promise<void> {
+        const client = this.client;
+        if (!client) {
+            return;
+        }
+        this.client = null;
+        await client.close();
+    }
+
+    async end(): Promise<void> {
+        return this.disconnect();
+    }
+
+    private requireClient(): MongoClient {
+        if (!this.client) {
+            throw new Error(
+                "MongoDB adapter is not connected. Call connect() before using the client",
+            );
+        }
+        return this.client;
+    }
 }
 
-let mngzClient: MongoClient | null = null;
+export function createMongoAdapter(credentials: DatabaseCredentials): Mngz {
+    return Mngz.fromCredentials(credentials);
+}
 
-function buildMongoUri() {
-    const user = process.env.MG_USER;
-    const password = process.env.MG_PASS;
-    const host = process.env.MG_HOST;
-    const port = process.env.MG_PORT;
-    const database = process.env.MG_DB;
+/**
+ * Build a MongoDB adapter from a loaded config when the active vendor is
+ * mongodb and env values resolve. Returns `null` when the vendor is not
+ * mongodb or credentials are incomplete (same as `resolveCredentials()`).
+ */
+export function createMongoAdapterFromConfig(
+    config: NectarineConfig,
+    vendor?: DatabaseVendor,
+): Mngz | null {
+    if (config.getVendor(vendor) !== "mongodb") {
+        return null;
+    }
 
-    if (!user || !password || !host || !port || !database) {
+    const credentials = config.resolveCredentials("mongodb");
+    if (!credentials) {
+        return null;
+    }
+
+    return createMongoAdapter(credentials);
+}
+
+export function requireMongoCredentials(
+    credentials: Partial<DatabaseCredentials> | null | undefined,
+): DatabaseCredentials {
+    if (!credentials) {
+        throw new Error("MongoDB adapter requires DatabaseCredentials");
+    }
+
+    const user = credentials.user?.trim();
+    const password = credentials.password?.trim();
+    const host = credentials.host?.trim();
+    const database = credentials.database?.trim();
+    const port = Number(credentials.port);
+
+    if (!user || !password || !host || !database) {
         throw new Error(
-            "MongoDB adapter requires MG_USER, MG_PASS, MG_HOST, MG_PORT, and MG_DB",
+            "MongoDB adapter requires complete credentials: user, password, host, port, and database",
         );
     }
 
-    return `mongodb://${user}:${password}@${host}:${port}/${database}?authSource=admin`;
-}
-
-/** Lazy Mongo client — never construct at module import time. */
-export function getMngzClient(): MongoClient {
-    if (!mngzClient) {
-        mngzClient = new MongoClient(buildMongoUri());
+    if (!Number.isFinite(port)) {
+        throw new Error(
+            `MongoDB adapter port must be a finite number, got ${JSON.stringify(credentials.port)}`,
+        );
     }
-    return mngzClient;
+
+    return { user, password, host, port, database };
 }
 
-export async function connectMngz(): Promise<MongoClient> {
-    const client = getMngzClient();
-    await client.connect();
-    console.log("Connected to Mongo");
-    return client;
+export function buildMongoUri(credentials: DatabaseCredentials): string {
+    const complete = requireMongoCredentials(credentials);
+    const user = encodeURIComponent(complete.user);
+    const password = encodeURIComponent(complete.password);
+    return `mongodb://${user}:${password}@${complete.host}:${complete.port}/${complete.database}?authSource=admin`;
 }
 
-export async function closeMngz(client: MongoClient): Promise<void> {
-    await client.close();
-    if (mngzClient === client) {
-        mngzClient = null;
+function requireCollectionName(name: string): string {
+    const collection = name?.trim();
+    if (!collection) {
+        throw new Error("MongoDB adapter requires a collection name");
     }
-    console.log("Connection to database is terminated");
-}
-
-export async function Mngz(callback: (client: MongoClient) => Promise<void>): Promise<void> {
-    try {
-        const client = await connectMngz();
-        await callback(client);
-    } catch (error: any) {
-        console.error("ERROR", error.message, error.code, error.stack);
-    }
-}
-
-export async function createCollection(client: MongoClient, name: string): Promise<void> {
-    try {
-        const db: Db = client.db(process.env.MG_DB);
-        await db.createCollection<dbName>(name);
-        console.log("Created collection successfully");
-        await closeMngz(client);
-    } catch (error: any) {
-        console.error("ERROR", error.message, error.code);
-    }
-}
-
-export async function insertOne(
-    client: MongoClient,
-    collection: string,
-    document: any = {},
-): Promise<void> {
-    const db: Db = client.db(process.env.MG_DB);
-    const varCollection = db.collection(collection);
-    await varCollection.insertOne(document);
-    console.log("Document inserted successfully");
-    await closeMngz(client);
-}
-
-export async function insertMany(
-    client: MongoClient,
-    collection: string,
-    documents: any[] = [],
-): Promise<void> {
-    try {
-        const db: Db = client.db(process.env.MG_DB);
-        const varCollection = db.collection(collection);
-        await varCollection.insertMany(documents);
-        console.log("Documents inserted successfully");
-        await closeMngz(client);
-    } catch (error: any) {
-        console.error("ERROR", error.message, error.code);
-    }
+    return collection;
 }
