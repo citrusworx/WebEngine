@@ -715,6 +715,7 @@ __metadata:
     sshpk: "npm:^1.18.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.9.3"
+    vitest: "npm:^4.1.4"
     zod: "npm:^4.3.6"
   bin:
     grape: ./dist/bin/cli.js
