@@ -42,9 +42,10 @@ exports.parser = {
     /**
      * Compile a query object from {@link parser.genSQL} into SQL.
      * Delegates to the shared compiler so this is not a second code path.
+     * Pass `method` for DELETE (and to disambiguate incomplete shapes).
      */
-    buildSQL: (genSQL) => {
-        return (0, sql_js_1.compileQuery)(genSQL);
+    buildSQL: (genSQL, method) => {
+        return (0, sql_js_1.compileQuery)(genSQL, method);
     },
 };
 //# sourceMappingURL=util.js.map

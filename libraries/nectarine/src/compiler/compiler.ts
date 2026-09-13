@@ -1,8 +1,22 @@
 import { parser, type YAMLdata } from "../util/util.js";
-import { compileQuery, isRecord, QueryCompileError } from "./sql.js";
+import {
+    compileQuery,
+    isCleanedQueries,
+    isCrudMethod,
+    isRecord,
+    QueryCompileError,
+    type CleanedQueries,
+    type CrudMethod,
+} from "./sql.js";
 
-export type { OperatorToken, optokens } from "./sql.js";
-export { compileQuery, OP_TOKENS, QueryCompileError } from "./sql.js";
+export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
+export {
+    compileQuery,
+    CRUD_METHODS,
+    isCrudMethod,
+    OP_TOKENS,
+    QueryCompileError,
+} from "./sql.js";
 
 /**
  * Compiles Nectarine query YAML into parameterized SQL strings.
@@ -21,7 +35,8 @@ export { compileQuery, OP_TOKENS, QueryCompileError } from "./sql.js";
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
- * `user.get.UserById`.
+ * `user.get.UserById`. The returned bundle carries `method` so
+ * `buildQuery` can dispatch GET vs DELETE instead of guessing from keys.
  *
  * Not compiled: blog `queries:` maps and product `type: SELECT` fixtures.
  */
@@ -40,13 +55,12 @@ export class CCompiler {
      * @param type - resource key (`user`)
      * @param method - CRUD key (`get` | `create` | `update` | `delete`)
      */
-    clean_parse(
-        parsedConfig: YAMLdata,
-        type: string,
-        method: string,
-    ): Record<string, unknown> {
+    clean_parse(parsedConfig: YAMLdata, type: string, method: string): CleanedQueries {
         if (!isRecord(parsedConfig)) {
             throw new QueryCompileError("Parsed config must be an object");
+        }
+        if (!isCrudMethod(method)) {
+            throw new QueryCompileError(`Unknown CRUD method: ${method}`);
         }
 
         const resource = parsedConfig[type];
@@ -61,24 +75,52 @@ export class CCompiler {
             );
         }
 
-        return queries;
+        return { type, method, queries };
     }
 
     /**
      * Compile a named query from a cleaned method map into SQL.
      * `$1`-style placeholders are preserved; `{ fn: now }` becomes `NOW()`.
+     *
+     * `method` comes from {@link clean_parse}. A raw query map is accepted
+     * when `method` is passed as the third argument.
      */
-    buildQuery(cleanedConfig: Record<string, unknown>, query: string): string {
-        if (!isRecord(cleanedConfig)) {
-            throw new QueryCompileError("Cleaned config must be an object");
-        }
+    buildQuery(
+        cleanedConfig: CleanedQueries | Record<string, unknown>,
+        query: string,
+        method?: CrudMethod,
+    ): string {
+        const bundle = resolveCleanedQueries(cleanedConfig, method);
 
-        if (!Object.prototype.hasOwnProperty.call(cleanedConfig, query)) {
+        if (!Object.prototype.hasOwnProperty.call(bundle.queries, query)) {
             throw new QueryCompileError(`Query not found: ${query}`);
         }
 
-        return compileQuery(cleanedConfig[query]);
+        return compileQuery(bundle.queries[query], bundle.method);
     }
+}
+
+function resolveCleanedQueries(
+    cleanedConfig: CleanedQueries | Record<string, unknown>,
+    method?: CrudMethod,
+): CleanedQueries {
+    if (isCleanedQueries(cleanedConfig)) {
+        return method === undefined
+            ? cleanedConfig
+            : { ...cleanedConfig, method };
+    }
+
+    if (!isRecord(cleanedConfig)) {
+        throw new QueryCompileError("Cleaned config must be an object");
+    }
+
+    if (!isCrudMethod(method)) {
+        throw new QueryCompileError(
+            "CRUD method is required; use clean_parse() or pass method to buildQuery",
+        );
+    }
+
+    return { type: "", method, queries: cleanedConfig };
 }
 
 // const compiler = new CCompiler();

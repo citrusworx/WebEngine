@@ -9,8 +9,10 @@
  * are not compiled here.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueryCompileError = exports.OP_TOKENS = void 0;
+exports.QueryCompileError = exports.CRUD_METHODS = exports.OP_TOKENS = void 0;
 exports.isRecord = isRecord;
+exports.isCrudMethod = isCrudMethod;
+exports.isCleanedQueries = isCleanedQueries;
 exports.compileValue = compileValue;
 exports.compileQuery = compileQuery;
 exports.OP_TOKENS = {
@@ -21,6 +23,7 @@ exports.OP_TOKENS = {
     gte: ">=",
     neq: "!=",
 };
+exports.CRUD_METHODS = ["get", "create", "update", "delete"];
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const PLACEHOLDER = /^\$[1-9]\d*$/;
 const NOW_LITERAL = /^now\(\)$/i;
@@ -33,6 +36,15 @@ class QueryCompileError extends Error {
 exports.QueryCompileError = QueryCompileError;
 function isRecord(value) {
     return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function isCrudMethod(value) {
+    return typeof value === "string" && exports.CRUD_METHODS.includes(value);
+}
+function isCleanedQueries(value) {
+    return (isRecord(value) &&
+        typeof value.type === "string" &&
+        isCrudMethod(value.method) &&
+        isRecord(value.queries));
 }
 function assertIdentifier(name, label) {
     const parts = name.split(".");
@@ -61,12 +73,6 @@ function compileValue(value) {
             return "NOW()";
         }
         throw new QueryCompileError(`Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder or { fn: now }`);
-    }
-    if (typeof value === "number" && Number.isFinite(value)) {
-        return String(value);
-    }
-    if (typeof value === "boolean") {
-        return value ? "TRUE" : "FALSE";
     }
     throw new QueryCompileError(`Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder or { fn: now }`);
 }
@@ -180,26 +186,62 @@ function compileDelete(query) {
     }
     return `DELETE FROM ${query.from} WHERE ${compileWhere(query.where)}`;
 }
+function inferQueryKind(query) {
+    const hasInsert = "insert" in query;
+    const hasSelect = "select" in query;
+    const hasSet = "set" in query;
+    const markers = [hasInsert, hasSelect, hasSet].filter(Boolean).length;
+    if (markers > 1) {
+        throw new QueryCompileError("Ambiguous query shape; pass a CRUD method (get|create|update|delete)");
+    }
+    if (hasInsert) {
+        return "create";
+    }
+    if (hasSelect) {
+        return "get";
+    }
+    if (hasSet) {
+        return "update";
+    }
+    throw new QueryCompileError("Unsupported or ambiguous query shape; pass a CRUD method (get|create|update|delete)");
+}
+function compileByMethod(query, method) {
+    switch (method) {
+        case "get":
+            if (!("select" in query)) {
+                throw new QueryCompileError("GET query requires select");
+            }
+            return compileSelect(query);
+        case "create":
+            if (!("insert" in query)) {
+                throw new QueryCompileError("CREATE query requires insert");
+            }
+            return compileInsert(query);
+        case "update":
+            if (!("set" in query)) {
+                throw new QueryCompileError("UPDATE query requires set");
+            }
+            return compileUpdate(query);
+        case "delete":
+            if ("select" in query || "insert" in query || "set" in query) {
+                throw new QueryCompileError("DELETE query has conflicting keys");
+            }
+            return compileDelete(query);
+    }
+}
 /**
  * Compile a single query object (the value under `resource.method.QueryName`)
  * into a parameterized SQL string.
+ *
+ * Pass `method` from `clean_parse` / `buildQuery` so DELETE is not inferred
+ * from a bare `from` clause (a malformed GET missing `select`).
+ * Without `method`, only unambiguous `select` / `insert` / `set` shapes compile.
  */
-function compileQuery(query) {
+function compileQuery(query, method) {
     if (!isRecord(query)) {
         throw new QueryCompileError("Query must be an object");
     }
-    if ("insert" in query) {
-        return compileInsert(query);
-    }
-    if ("select" in query) {
-        return compileSelect(query);
-    }
-    if ("set" in query) {
-        return compileUpdate(query);
-    }
-    if ("from" in query) {
-        return compileDelete(query);
-    }
-    throw new QueryCompileError("Unsupported query shape");
+    const kind = method ?? inferQueryKind(query);
+    return compileByMethod(query, kind);
 }
 //# sourceMappingURL=sql.js.map

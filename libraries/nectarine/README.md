@@ -54,10 +54,10 @@ user:                 # type / resource
 | `update` | `table`, `set`, `values`, `where` | `UPDATE users SET name = $1, age = $2, updated_at = NOW() WHERE id = $3` |
 | `delete` | `from`, `where` | `DELETE FROM users WHERE id = $1` |
 
-- `$1`, `$2`, … are kept as bind placeholders — runtime values are not interpolated.
+- `$1`, `$2`, … are kept as bind placeholders — numbers, booleans, and other literals are rejected.
 - `{ fn: now }` (and the fragment `NOW()`) compile to vendor-neutral `NOW()`.
-- `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL(path, type, method, config)` — e.g. `clean_parse(parsed, "user", "get")`.
-- `parser.buildSQL(queryObject)` is a thin wrapper around the same compiler.
+- `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL(path, type, method, config)` — e.g. `clean_parse(parsed, "user", "get")`. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
+- `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler. `method` is required for DELETE.
 
 **Not compiled in this MVP:** the blog `queries:` map (`models/blog/post/sql.yml`) and the product fixture `type: SELECT` shape.
 

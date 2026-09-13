@@ -1,6 +1,7 @@
 import { type YAMLdata } from "../util/util.js";
-export type { OperatorToken, optokens } from "./sql.js";
-export { compileQuery, OP_TOKENS, QueryCompileError } from "./sql.js";
+import { type CleanedQueries, type CrudMethod } from "./sql.js";
+export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
+export { compileQuery, CRUD_METHODS, isCrudMethod, OP_TOKENS, QueryCompileError, } from "./sql.js";
 /**
  * Compiles Nectarine query YAML into parameterized SQL strings.
  *
@@ -18,7 +19,8 @@ export { compileQuery, OP_TOKENS, QueryCompileError } from "./sql.js";
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
- * `user.get.UserById`.
+ * `user.get.UserById`. The returned bundle carries `method` so
+ * `buildQuery` can dispatch GET vs DELETE instead of guessing from keys.
  *
  * Not compiled: blog `queries:` maps and product `type: SELECT` fixtures.
  */
@@ -34,10 +36,13 @@ export declare class CCompiler {
      * @param type - resource key (`user`)
      * @param method - CRUD key (`get` | `create` | `update` | `delete`)
      */
-    clean_parse(parsedConfig: YAMLdata, type: string, method: string): Record<string, unknown>;
+    clean_parse(parsedConfig: YAMLdata, type: string, method: string): CleanedQueries;
     /**
      * Compile a named query from a cleaned method map into SQL.
      * `$1`-style placeholders are preserved; `{ fn: now }` becomes `NOW()`.
+     *
+     * `method` comes from {@link clean_parse}. A raw query map is accepted
+     * when `method` is passed as the third argument.
      */
-    buildQuery(cleanedConfig: Record<string, unknown>, query: string): string;
+    buildQuery(cleanedConfig: CleanedQueries | Record<string, unknown>, query: string, method?: CrudMethod): string;
 }

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import jsyaml from "js-yaml";
-import { compileQuery } from "../compiler/sql.js";
+import { compileQuery, type CrudMethod } from "../compiler/sql.js";
 
 export interface YAMLdata {
   [key: string]: any;
@@ -62,8 +62,9 @@ export const parser = {
   /**
    * Compile a query object from {@link parser.genSQL} into SQL.
    * Delegates to the shared compiler so this is not a second code path.
+   * Pass `method` for DELETE (and to disambiguate incomplete shapes).
    */
-  buildSQL: (genSQL: Record<string, unknown>): string => {
-    return compileQuery(genSQL);
+  buildSQL: (genSQL: Record<string, unknown>, method?: CrudMethod): string => {
+    return compileQuery(genSQL, method);
   },
 }

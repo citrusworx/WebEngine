@@ -69,10 +69,10 @@ describe("CCompiler", () => {
             },
         };
 
-        expect(() => compiler.buildQuery(cleaned, "UserById")).toThrowError(
+        expect(() => compiler.buildQuery(cleaned, "UserById", "get")).toThrowError(
             QueryCompileError,
         );
-        expect(() => compiler.buildQuery(cleaned, "UserById")).toThrowError(
+        expect(() => compiler.buildQuery(cleaned, "UserById", "get")).toThrowError(
             /Unknown operator: like/,
         );
     });
@@ -95,10 +95,61 @@ describe("CCompiler", () => {
         const parsed = compiler.parse_config(userYml);
         const cleaned = compiler.clean_parse(parsed, "user", "get");
 
-        expect(cleaned).toHaveProperty("UserById");
-        expect(cleaned).toHaveProperty("AllUsers");
+        expect(cleaned.method).toBe("get");
+        expect(cleaned.queries).toHaveProperty("UserById");
+        expect(cleaned.queries).toHaveProperty("AllUsers");
         expect(() => compiler.clean_parse(parsed, "get", "user")).toThrowError(
-            /SQL configuration not found for type: get/,
+            /Unknown CRUD method: user|SQL configuration not found for type: get/,
+        );
+    });
+
+    it("throws on an incomplete GET shape instead of emitting DELETE", () => {
+        const compiler = new CCompiler();
+        const incomplete = {
+            from: "users",
+            where: { column: "id", operator: "eq", value: "$1" },
+        };
+
+        expect(() => compiler.buildQuery({ Broken: incomplete }, "Broken", "get")).toThrowError(
+            QueryCompileError,
+        );
+        expect(() => compiler.buildQuery({ Broken: incomplete }, "Broken", "get")).toThrowError(
+            /GET query requires select/,
+        );
+        expect(() => compileQuery(incomplete)).toThrowError(QueryCompileError);
+        expect(() => compileQuery(incomplete)).toThrowError(
+            /Unsupported or ambiguous query shape/,
+        );
+        expect(compileQuery(incomplete, "delete")).toBe(
+            "DELETE FROM users WHERE id = $1",
+        );
+    });
+
+    it("rejects number and boolean literals", () => {
+        const compiler = new CCompiler();
+        const withNumber = {
+            UserById: {
+                select: ["id"],
+                from: "users",
+                where: { column: "id", operator: "eq", value: 1 },
+            },
+        };
+        const withBoolean = {
+            UserById: {
+                select: ["id"],
+                from: "users",
+                where: { column: "id", operator: "eq", value: true },
+            },
+        };
+
+        expect(() => compiler.buildQuery(withNumber, "UserById", "get")).toThrowError(
+            QueryCompileError,
+        );
+        expect(() => compiler.buildQuery(withNumber, "UserById", "get")).toThrowError(
+            /Unsupported value 1/,
+        );
+        expect(() => compiler.buildQuery(withBoolean, "UserById", "get")).toThrowError(
+            /Unsupported value true/,
         );
     });
 
@@ -106,5 +157,9 @@ describe("CCompiler", () => {
         const query = parser.genSQL(userYml, "user", "get", "UserById");
         expect(parser.buildSQL(query)).toBe("SELECT id FROM users WHERE id = $1");
         expect(compileQuery(query)).toBe("SELECT id FROM users WHERE id = $1");
+
+        const del = parser.genSQL(userYml, "user", "delete", "User");
+        expect(parser.buildSQL(del, "delete")).toBe("DELETE FROM users WHERE id = $1");
+        expect(() => parser.buildSQL(del)).toThrowError(QueryCompileError);
     });
 });
