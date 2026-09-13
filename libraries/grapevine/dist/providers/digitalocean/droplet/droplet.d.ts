@@ -1,46 +1,33 @@
 export interface DropletBlueprint {
     blueprint: {
         name: string;
-        droplet: {
-            name: string;
-            region: string;
-            size: string;
-            image: string;
-            ssh_keys?: string[];
-            backups: boolean;
-            backup_policy?: {
-                name: string;
-            };
-            ipv6?: boolean;
-            monitoring?: boolean;
-            tags?: string[];
-            user_data?: string;
-            volumes?: string[];
-            vpc_uuid?: string;
-            with_droplet_agent?: boolean;
-        };
+        droplet: DropletSpec;
     };
+}
+export interface DropletSpec {
+    name: string;
+    region: string;
+    size: string;
+    image: string | number;
+    ssh_keys?: Array<string | number>;
+    backups?: boolean;
+    backup_policy?: {
+        name?: string;
+        plan?: string;
+        weekday?: string;
+        hour?: number;
+    };
+    ipv6?: boolean;
+    monitoring?: boolean;
+    tags?: string[];
+    user_data?: string;
+    volumes?: string[];
+    vpc_uuid?: string;
+    with_droplet_agent?: boolean;
 }
 export interface Droplet {
     name: string;
-    droplet: {
-        name: string;
-        region: string;
-        size: string;
-        image: string;
-        ssh_keys?: string[];
-        backups: boolean;
-        backup_policy?: {
-            name: string;
-        };
-        ipv6?: boolean;
-        monitoring?: boolean;
-        tags?: string[];
-        user_data?: string;
-        volumes?: string[];
-        vpc_uuid?: string;
-        with_droplet_agent?: boolean;
-    };
+    droplet: DropletSpec;
 }
 export interface DropletResource {
     id: number | undefined;
@@ -80,15 +67,15 @@ export interface AllDroplets {
 }
 export declare function deployByBlueprint(blueprint: string): Promise<DropletResource>;
 export declare function getDropletStatus(id: number): Promise<string>;
-export declare function listAllDroplets(): Promise<DropletResource[]>;
+export declare function listAllDroplets(query?: AllDroplets): Promise<DropletResource[]>;
 export declare function getDroplet(id: number): Promise<DropletResource>;
-export declare function createDroplet(droplet: Droplet): Promise<DropletResource>;
-export declare function createDroplets(droplets: Droplet[]): Promise<DropletResource[]>;
+export declare function createDroplet(droplet: Droplet | DropletSpec): Promise<DropletResource>;
+export declare function createDroplets(droplets: Array<Droplet | DropletSpec>): Promise<DropletResource[]>;
 export declare function deleteDropletsByTag(tag: string): Promise<{
-    message: string;
+    message?: string;
 }>;
 export declare function NukeDroplet(id: number): Promise<{
-    message: string;
+    message?: string;
 }>;
 export declare function NukeDropletLite(id: number, resources: {
     reserved_ips?: string[];
@@ -96,10 +83,10 @@ export declare function NukeDropletLite(id: number, resources: {
     snapshots?: string[];
     volume_snapshots?: string[];
 }): Promise<{
-    message: string;
+    message?: string;
 }>;
 export declare function deleteDroplet(id: number): Promise<{
-    message: string;
+    message?: string;
 }>;
 export declare function listBackups(id: number): Promise<object[]>;
 export declare function listBackupPolicy(id: number): Promise<object>;

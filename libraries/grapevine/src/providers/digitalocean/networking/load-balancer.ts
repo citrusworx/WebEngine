@@ -1,72 +1,106 @@
-import { parseYAML, client } from "../../../infrastructure/util/utilities.js";
+import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
 
-// Load Balancer Management
-//
-// 
-
-interface LoadBalancer {
-    droplet_ids: number[];
-    region: string;
-    created_at: string;
+export interface LoadBalancer {
+    droplet_ids?: number[];
+    region?: string;
+    created_at?: string;
     disable_lets_encrypt_dns_records?: boolean;
     domains?: object[];
     enable_backend_keepalive?: boolean;
-    forwarding_rules: object[];
-    health_check: object;
+    forwarding_rules?: object[];
+    health_check?: object;
     id?: string;
     name?: string;
     algorithm?: string;
     redirect_http_to_https?: boolean;
     tag?: string;
+    vpc_uuid?: string;
+    size?: string;
+    size_unit?: number;
+    type?: string;
+    project_id?: string;
 }
 
-export async function listAllLoadBalancers(){
-    const response = await client.get("/v2/load_balancers");
-    return response.data.load_balancers;
+export interface LoadBalancerResource extends LoadBalancer {
+    id: string;
+    status?: string;
+    ip?: string;
 }
 
-export async function getLoadBalancer(id: string){
-    const response = await client.get(`/v2/load_balancers/${id}`);
-    return response.data.load_balancer;
+export async function listAllLoadBalancers(): Promise<LoadBalancerResource[]> {
+    const response = await doRequest<{ load_balancers: LoadBalancerResource[] }>({
+        method: "GET",
+        url: "/load_balancers"
+    });
+    return response.load_balancers;
 }
 
-export async function createLoadBalancer(blueprint: LoadBalancer){
-    const response = await client.post("/v2/load_balancers", blueprint);
-    return response.data.load_balancer;
+export async function getLoadBalancer(id: string): Promise<LoadBalancerResource> {
+    const response = await doRequest<{ load_balancer: LoadBalancerResource }>({
+        method: "GET",
+        url: `/load_balancers/${id}`
+    });
+    return response.load_balancer;
 }
 
-export async function listLoadBalancer(id: string){
-    const response = await client.get(`/v2/load_balancers/${id}`);
-    return response.data.load_balancer;
+export async function createLoadBalancer(blueprint: LoadBalancer): Promise<LoadBalancerResource> {
+    const response = await doRequest<{ load_balancer: LoadBalancerResource }>({
+        method: "POST",
+        url: "/load_balancers",
+        data: cleanPayload(blueprint)
+    });
+    return response.load_balancer;
 }
 
-export async function updateLoadBalancer(id: string, blueprint: LoadBalancer){
-    const response = await client.put(`/v2/load_balancers/${id}`, blueprint);
-    return response.data.load_balancer;
+export async function listLoadBalancer(id: string): Promise<LoadBalancerResource> {
+    return getLoadBalancer(id);
 }
 
-export async function deleteLoadBalancer(id: string){
-    const response = await client.delete(`/v2/load_balancers/${id}`);
-    return response.data;
+export async function updateLoadBalancer(id: string, blueprint: LoadBalancer): Promise<LoadBalancerResource> {
+    const response = await doRequest<{ load_balancer: LoadBalancerResource }>({
+        method: "PUT",
+        url: `/load_balancers/${id}`,
+        data: cleanPayload(blueprint)
+    });
+    return response.load_balancer;
 }
 
-export async function addDropletsToLoadBalancer(droplet_ids: number[], id: string){
-    const response = await client.post(`/v2/load_balancers/${id}/droplets`, { droplet_ids });
-    return response.data;
+export async function deleteLoadBalancer(id: string): Promise<void> {
+    await doRequest<void>({
+        method: "DELETE",
+        url: `/load_balancers/${id}`
+    });
 }
 
-export async function addForwardingRulesToLoadBalancer(rules: object[], id: string){
-    const response = await client.post(`/v2/load_balancers/${id}/forwarding_rules`, { forwarding_rules: rules });
-    return response.data;
+export async function addDropletsToLoadBalancer(droplet_ids: number[], id: string): Promise<void> {
+    await doRequest<void>({
+        method: "POST",
+        url: `/load_balancers/${id}/droplets`,
+        data: { droplet_ids }
+    });
 }
 
-export async function removeDropletsFromLoadBalancer(droplet_ids: number[], id: string){
-    const response = await client.delete(`/v2/load_balancers/${id}/droplets`, { data: { droplet_ids } });
-    return response.data;
+export async function addForwardingRulesToLoadBalancer(rules: object[], id: string): Promise<void> {
+    await doRequest<void>({
+        method: "POST",
+        url: `/load_balancers/${id}/forwarding_rules`,
+        data: { forwarding_rules: rules }
+    });
 }
 
-export async function removeForwardingRulesFromLoadBalancer(rules: object[], id: string){
-    const response = await client.delete(`/v2/load_balancers/${id}/forwarding_rules`, { data: { forwarding_rules: rules } });
-    return response.data;
+export async function removeDropletsFromLoadBalancer(droplet_ids: number[], id: string): Promise<void> {
+    await doRequest<void>({
+        method: "DELETE",
+        url: `/load_balancers/${id}/droplets`,
+        data: { droplet_ids }
+    });
+}
+
+export async function removeForwardingRulesFromLoadBalancer(rules: object[], id: string): Promise<void> {
+    await doRequest<void>({
+        method: "DELETE",
+        url: `/load_balancers/${id}/forwarding_rules`,
+        data: { forwarding_rules: rules }
+    });
 }

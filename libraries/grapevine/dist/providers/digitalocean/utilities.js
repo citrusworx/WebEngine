@@ -4,7 +4,7 @@ export function cleanPayload(obj) {
         k,
         typeof v === "object" && !Array.isArray(v) && v !== null && Object.keys(v).length > 0 ? cleanPayload(v) : v
     ])
-        .filter(([_, v]) => v !== null &&
+        .filter(([, v]) => v !== null &&
         v !== undefined &&
         !(typeof v === "string" && v === "") &&
         !(Array.isArray(v) && v.length === 0) &&

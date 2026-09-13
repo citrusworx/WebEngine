@@ -1,151 +1,102 @@
-import axios from "axios";
 import { parseYAML } from "../../../infrastructure/util/utilities.js";
+import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
+function dropletPayload(spec) {
+    return cleanPayload(spec);
+}
 export async function deployByBlueprint(blueprint) {
     const manifest = parseYAML(blueprint);
-    const droplet = cleanPayload(manifest.blueprint.droplet);
-    console.log(JSON.stringify(droplet, null, 2));
-    try {
-        const response = await axios.post("https://api.digitalocean.com/v2/droplets", droplet, {
-            headers: {
-                Authorization: `Bearer ${process.env.DO_TOKEN}`,
-                "Content-Type": "application/json"
-            }
-        });
-        console.log(response);
-        return response.data.droplet;
-    }
-    catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log(error.response?.data);
-        }
-        throw error;
-    }
+    const response = await doRequest({
+        method: "POST",
+        url: "/droplets",
+        data: dropletPayload(manifest.blueprint.droplet)
+    });
+    return response.droplet;
 }
-// Returns the status of a particular droplet by ID
 export async function getDropletStatus(id) {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets/${id}`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
-    });
-    return response.data.droplet.status;
+    const droplet = await getDroplet(id);
+    return droplet.status;
 }
-// List all droplets
-export async function listAllDroplets() {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+export async function listAllDroplets(query = {}) {
+    const response = await doRequest({
+        method: "GET",
+        url: "/droplets",
+        params: cleanPayload(query)
     });
-    return response.data.droplets;
+    return response.droplets;
 }
-// Get single droplet
 export async function getDroplet(id) {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets/${id}`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    const response = await doRequest({
+        method: "GET",
+        url: `/droplets/${id}`
     });
-    return response.data.droplet;
+    return response.droplet;
 }
-// Create New Droplet
 export async function createDroplet(droplet) {
-    const response = await axios.post("https://api.digitalocean.com/v2/droplets", droplet.droplet, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`,
-            "Content-Type": "application/json"
-        }
+    const spec = "droplet" in droplet ? droplet.droplet : droplet;
+    const response = await doRequest({
+        method: "POST",
+        url: "/droplets",
+        data: dropletPayload(spec)
     });
-    return response.data.droplet;
+    return response.droplet;
 }
 export async function createDroplets(droplets) {
-    const promises = droplets.map(createDroplet);
-    return Promise.all(promises);
+    return Promise.all(droplets.map(createDroplet));
 }
-// Deleting Droplets
-// 
-// 
-// 
 export async function deleteDropletsByTag(tag) {
-    // Delete all droplets with a specific tag
-    const response = await axios.delete(`https://api.digitalocean.com/v2/droplets?tag_name=${tag}`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    return doRequest({
+        method: "DELETE",
+        url: "/droplets",
+        params: { tag_name: tag }
     });
-    return response.data;
 }
 export async function NukeDroplet(id) {
-    // Delete a droplet and all associated resources (volumes, snapshots, etc.)
-    const response = await axios.delete(`https://api.digitalocean.com/v2/droplets/${id}/destroy_with_associated_resources/dangerous`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`,
-            "X-Dangerous": "true"
-        }
+    return doRequest({
+        method: "DELETE",
+        url: `/droplets/${id}/destroy_with_associated_resources/dangerous`,
+        headers: { "X-Dangerous": "true" }
     });
-    return response.data;
 }
 export async function NukeDropletLite(id, resources) {
-    // Selectively delete a droplet and its associated resources
-    const response = await axios.delete(`https://api.digitalocean.com/v2/droplets/${id}/destroy_with_associated_resources/selective`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        },
+    return doRequest({
+        method: "DELETE",
+        url: `/droplets/${id}/destroy_with_associated_resources/selective`,
         data: resources
     });
-    return response.data;
 }
 export async function deleteDroplet(id) {
-    const response = await axios.delete(`https://api.digitalocean.com/v2/droplets/${id}`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    return doRequest({
+        method: "DELETE",
+        url: `/droplets/${id}`
     });
-    return response.data;
 }
-// Backups for Droplets
-// 
-// 
-// 
 export async function listBackups(id) {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets/${id}/backups`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    const response = await doRequest({
+        method: "GET",
+        url: `/droplets/${id}/backups`
     });
-    return response.data.backups;
+    return response.backups;
 }
 export async function listBackupPolicy(id) {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets/${id}/backups/policy`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    const response = await doRequest({
+        method: "GET",
+        url: `/droplets/${id}/backups/policy`
     });
-    return response.data.backup_policy;
+    return response.policy ?? response.backup_policy ?? {};
 }
-// Firewalls for Droplets
-// 
-// 
-// 
 export async function listFirewalls(id) {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets/${id}/firewalls`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    const response = await doRequest({
+        method: "GET",
+        url: `/droplets/${id}/firewalls`
     });
-    return response.data.firewalls;
+    return response.firewalls;
 }
-// Snapshots for Droplets
-// 
-// 
-// 
 export async function listSnapshots(id) {
-    const response = await axios.get(`https://api.digitalocean.com/v2/droplets/${id}/snapshots`, {
-        headers: {
-            Authorization: `Bearer ${process.env.DO_TOKEN}`
-        }
+    const response = await doRequest({
+        method: "GET",
+        url: `/droplets/${id}/snapshots`
     });
-    return response.data.snapshots;
+    return response.snapshots;
 }
 //# sourceMappingURL=droplet.js.map

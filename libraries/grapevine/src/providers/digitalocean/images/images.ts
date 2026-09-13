@@ -1,45 +1,88 @@
-import { parseYAML, client } from "../../../infrastructure/util/utilities.js";
+import { parseYAML } from "../../../infrastructure/util/utilities.js";
+import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
 
-// Images on DO
-interface Image {
-    id: number;
+export interface ImageSpec {
     name: string;
+    url?: string;
+    region?: string;
+    distribution?: string;
+    description?: string;
+    tags?: string[];
+}
+
+export interface ImageBlueprint {
+    name?: string;
     distribution?: string;
     blueprint: {
         name: string;
-        image: {
-            name: string;
-            distribution?: string;
-            description?: string;
-            region?: string;
-            tags?: string[];
-        }
-    }
+        image: ImageSpec;
+    };
 }
 
-export async function listAllImages(){
-    const response = await client.get("/v2/images")
-    return response.data.images
+export interface ImageResource {
+    id: number;
+    name: string;
+    type?: string;
+    distribution?: string;
+    slug?: string | null;
+    public?: boolean;
+    regions?: string[];
+    created_at?: string;
+    min_disk_size?: number;
+    size_gigabytes?: number;
+    description?: string;
+    tags?: string[];
+    status?: string;
 }
 
-export async function createCustomImage(schematic: string){
-    const blueprint: Image = parseYAML(schematic);
-    const payload = cleanPayload(blueprint.blueprint.image);
-    const response = await client.post("/v2/images", payload)
-    return response.data.image
+export async function listAllImages(
+    query: { type?: string; private?: boolean; tag_name?: string; per_page?: number; page?: number } = {}
+): Promise<ImageResource[]> {
+    const response = await doRequest<{ images: ImageResource[] }>({
+        method: "GET",
+        url: "/images",
+        params: cleanPayload(query)
+    });
+    return response.images;
 }
 
-export async function listExistingImage(imageId: string){
-    const response = await client.get(`/v2/images/${imageId}`)
-    return response.data.image
+export async function createCustomImage(schematic: string | ImageSpec): Promise<ImageResource> {
+    const payload =
+        typeof schematic === "string"
+            ? cleanPayload(parseYAML<ImageBlueprint>(schematic).blueprint.image)
+            : cleanPayload(schematic);
+    const response = await doRequest<{ image: ImageResource }>({
+        method: "POST",
+        url: "/images",
+        data: payload
+    });
+    return response.image;
 }
 
-export async function updateImage(imageId: string, blueprint: any){
-    const response = await client.put(`/v2/images/${imageId}`, blueprint)
-    return response.data.image
+export async function listExistingImage(imageId: string | number): Promise<ImageResource> {
+    const response = await doRequest<{ image: ImageResource }>({
+        method: "GET",
+        url: `/images/${imageId}`
+    });
+    return response.image;
 }
 
-export async function deleteImage(imageId: string){
-    await client.delete(`/v2/images/${imageId}`)
-} 
+export async function updateImage(
+    imageId: string | number,
+    blueprint: Partial<ImageSpec>
+): Promise<ImageResource> {
+    const response = await doRequest<{ image: ImageResource }>({
+        method: "PUT",
+        url: `/images/${imageId}`,
+        data: cleanPayload(blueprint)
+    });
+    return response.image;
+}
+
+export async function deleteImage(imageId: string | number): Promise<void> {
+    await doRequest<void>({
+        method: "DELETE",
+        url: `/images/${imageId}`
+    });
+}

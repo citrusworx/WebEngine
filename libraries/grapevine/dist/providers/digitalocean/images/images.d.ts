@@ -1,5 +1,42 @@
-export declare function listAllImages(): Promise<void>;
-export declare function createCustomImage(schematic: string): Promise<void>;
-export declare function listExistingImage(): Promise<void>;
-export declare function updateImage(): Promise<void>;
-export declare function deleteImage(image: string): Promise<void>;
+export interface ImageSpec {
+    name: string;
+    url?: string;
+    region?: string;
+    distribution?: string;
+    description?: string;
+    tags?: string[];
+}
+export interface ImageBlueprint {
+    name?: string;
+    distribution?: string;
+    blueprint: {
+        name: string;
+        image: ImageSpec;
+    };
+}
+export interface ImageResource {
+    id: number;
+    name: string;
+    type?: string;
+    distribution?: string;
+    slug?: string | null;
+    public?: boolean;
+    regions?: string[];
+    created_at?: string;
+    min_disk_size?: number;
+    size_gigabytes?: number;
+    description?: string;
+    tags?: string[];
+    status?: string;
+}
+export declare function listAllImages(query?: {
+    type?: string;
+    private?: boolean;
+    tag_name?: string;
+    per_page?: number;
+    page?: number;
+}): Promise<ImageResource[]>;
+export declare function createCustomImage(schematic: string | ImageSpec): Promise<ImageResource>;
+export declare function listExistingImage(imageId: string | number): Promise<ImageResource>;
+export declare function updateImage(imageId: string | number, blueprint: Partial<ImageSpec>): Promise<ImageResource>;
+export declare function deleteImage(imageId: string | number): Promise<void>;

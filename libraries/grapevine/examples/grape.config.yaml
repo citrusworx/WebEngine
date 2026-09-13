@@ -1,0 +1,44 @@
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - prod
+  ssh_keys:
+    - name: laptop
+      public_key: ssh-ed25519 AAAA...replace-me
+  vpcs:
+    - name: main
+      description: Application VPC
+      ip_range: 10.10.0.0/16
+  droplets:
+    - name: web-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: main
+      monitoring: true
+      tags: [prod]
+  firewalls:
+    - name: web
+      droplets: [web-01]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["203.0.113.10/32"]
+        - protocol: tcp
+          ports: "80,443"
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+  domains:
+    - name: example.com
+      records:
+        - type: A
+          name: www
+          data: 203.0.113.20

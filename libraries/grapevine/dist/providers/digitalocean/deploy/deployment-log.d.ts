@@ -1,7 +1,7 @@
-export interface DropletActions {
+export interface DropletActionsQuery {
     droplet_id: number;
-    per_page: number;
-    page: number;
+    per_page?: number;
+    page?: number;
 }
 export interface DropletAction {
     id: number;
@@ -13,6 +13,9 @@ export interface DropletAction {
     region: Record<string, unknown>;
     region_slug: string;
 }
-export declare function getDropletActions(droplet_id: number): Promise<DropletActions>;
+export declare function getDropletActions(droplet_id: number, query?: {
+    per_page?: number;
+    page?: number;
+}): Promise<DropletAction[]>;
 export declare function getAction(droplet_id: number, action_id: number): Promise<DropletAction>;
-export declare function logDropletActions(droplet_id: number): Promise<void>;
+export declare function logDropletActions(droplet_id: number, logPath?: string): Promise<DropletAction[]>;
