@@ -1,31 +1,83 @@
-import { client } from "../../../infrastructure/util/utilities.js";
-// Create a VPC
-// 
-// 
+import { doRequest } from "../client.js";
+import { cleanPayload } from "../utilities.js";
 export async function createVPC(blueprint) {
-    const response = await client.post("/vpcs", blueprint);
-    if (!response.data?.vpc) {
+    const response = await doRequest({
+        method: "POST",
+        url: "/vpcs",
+        data: cleanPayload(blueprint)
+    });
+    if (!response.vpc) {
         throw new Error("Failed to create VPC: Invalid response from API");
     }
-    return response.data.vpc;
+    return response.vpc;
 }
-export async function createPeering(vpc) { }
-// List VPC
-// 
-// 
-export async function listAllVPCs() { }
-export async function listExistingVPC() { }
-export async function listMemberResources(vpc) { }
-// Update VPC
-// 
-// 
-export async function updateVPC(vpc) { }
-export async function paritalUpdateVPC(vpc) { }
-export async function updateVPCPeering() { }
-// Delete a VPC
-// 
-// 
+export async function createPeering(vpc, peering) {
+    const response = await doRequest({
+        method: "POST",
+        url: `/vpcs/${vpc}/peerings`,
+        data: peering
+    });
+    return response.peering;
+}
+export async function listAllVPCs() {
+    const response = await doRequest({
+        method: "GET",
+        url: "/vpcs"
+    });
+    return response.vpcs;
+}
+export async function listExistingVPC(id) {
+    const response = await doRequest({
+        method: "GET",
+        url: `/vpcs/${id}`
+    });
+    return response.vpc;
+}
+export async function listMemberResources(vpc, query = {}) {
+    const response = await doRequest({
+        method: "GET",
+        url: `/vpcs/${vpc}/members`,
+        params: cleanPayload(query)
+    });
+    return response.members;
+}
+export async function listVPCPeerings(vpc) {
+    const response = await doRequest({
+        method: "GET",
+        url: `/vpcs/${vpc}/peerings`
+    });
+    return response.peerings;
+}
+export async function updateVPC(vpc, blueprint) {
+    const response = await doRequest({
+        method: "PUT",
+        url: `/vpcs/${vpc}`,
+        data: cleanPayload(blueprint)
+    });
+    return response.vpc;
+}
+export async function partialUpdateVPC(vpc, blueprint) {
+    const response = await doRequest({
+        method: "PATCH",
+        url: `/vpcs/${vpc}`,
+        data: cleanPayload(blueprint)
+    });
+    return response.vpc;
+}
+/** @deprecated Use partialUpdateVPC */
+export const paritalUpdateVPC = partialUpdateVPC;
+export async function updateVPCPeering(vpc, peeringId, body) {
+    const response = await doRequest({
+        method: "PATCH",
+        url: `/vpcs/${vpc}/peerings/${peeringId}`,
+        data: body
+    });
+    return response.peering;
+}
 export async function deleteVPC(id) {
-    await client.delete(`/vpcs/${id}`);
+    await doRequest({
+        method: "DELETE",
+        url: `/vpcs/${id}`
+    });
 }
 //# sourceMappingURL=vpc.js.map

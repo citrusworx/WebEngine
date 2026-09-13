@@ -1,1 +1,1 @@
-export declare function cleanPayload(obj: Record<string, any>): Record<string, any>;
+export declare function cleanPayload(obj: object): Record<string, unknown>;
