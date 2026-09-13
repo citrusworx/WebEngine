@@ -59,6 +59,7 @@
         "mysql2": "^3.24.4",
         "pg": "^8.20.0",
         "ts-node": "^10.9.2",
+        "tsx": "^4.23.13",
         "typescript": "^5.9.3",
         "vitest": "^4.1.4",
         "zod": "^4.3.6"
@@ -69,6 +70,7 @@
         "prepack": "yarn build",
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
-        "test:all": "playwright test && vitest run"
+        "test:all": "playwright test && vitest run",
+        "example": "tsx examples/showcase.ts"
     }
 }
