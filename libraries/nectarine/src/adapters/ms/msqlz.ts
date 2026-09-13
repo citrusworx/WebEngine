@@ -38,6 +38,7 @@ export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
  */
 export class MysqlSql {
     private pool: Pool | null = null;
+    private connecting: Promise<Pool> | null = null;
     private readonly credentials: DatabaseCredentials;
 
     constructor(credentials: DatabaseCredentials) {
@@ -60,7 +61,15 @@ export class MysqlSql {
         if (this.pool) {
             return this.pool;
         }
+        if (!this.connecting) {
+            this.connecting = this.openPool().finally(() => {
+                this.connecting = null;
+            });
+        }
+        return this.connecting;
+    }
 
+    private async openPool(): Promise<Pool> {
         const pool = createPool({
             user: this.credentials.user,
             password: this.credentials.password,
@@ -149,12 +158,12 @@ export function requireMysqlCredentials(
     }
 
     const user = credentials.user?.trim();
-    const password = credentials.password?.trim();
+    const password = credentials.password;
     const host = credentials.host?.trim();
     const database = credentials.database?.trim();
     const port = Number(credentials.port);
 
-    if (!user || !password || !host || !database) {
+    if (!user || password == null || password === "" || !host || !database) {
         throw new Error(
             "MySQL adapter requires complete credentials: user, password, host, port, and database",
         );

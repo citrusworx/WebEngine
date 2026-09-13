@@ -400,19 +400,19 @@ PG_PORT
 ### MySQL
 
 ```ts
-import { Mysql } from "@citrusworx/nectarine";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMysqlAdapter, createMysqlAdapterFromConfig } from "@citrusworx/nectarine/adapters/ms";
 
-const result = await Mysql(sql, [param]);
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const mysql = createMysqlAdapterFromConfig(config)
+    ?? createMysqlAdapter(config.resolveCredentials("mysql")!);
+
+await mysql.connect();
+const result = await mysql.query(sql, [param]); // `?` placeholders
+await mysql.disconnect();
 ```
 
-Environment variables:
-```
-MS_USER
-MS_HOST
-MS_PASS
-MS_DB
-MS_PORT
-```
+YAML declares the env **key names** (typically `MS_USER`, `MS_HOST`, `MS_PASS`, `MS_DB`, `MS_PORT`). `NectarineConfig.resolveCredentials("mysql")` reads the values; the adapter does not read `process.env` itself. MySQL uses `?` placeholders — the compiler is still Postgres-first (`$1`) and does not rewrite them.
 
 ### MongoDB
 

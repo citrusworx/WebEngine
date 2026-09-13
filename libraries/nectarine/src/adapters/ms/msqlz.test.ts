@@ -119,9 +119,12 @@ describe("MysqlSql", () => {
         expect(() => createMysqlAdapter({ ...creds, user: "" })).toThrowError(
             /complete credentials/,
         );
-        expect(() => createMysqlAdapter({ ...creds, password: "   " })).toThrowError(
+        expect(() => createMysqlAdapter({ ...creds, password: "" })).toThrowError(
             /complete credentials/,
         );
+        expect(
+            requireMysqlCredentials({ ...creds, password: "  secret  " }).password,
+        ).toBe("  secret  ");
         expect(() => createMysqlAdapter({ ...creds, host: "" })).toThrowError(
             /complete credentials/,
         );
@@ -175,6 +178,41 @@ describe("MysqlSql", () => {
         expect(first).toBe(second);
         expect(createPool).toHaveBeenCalledOnce();
         expect(mocks.getConnection).toHaveBeenCalledOnce();
+    });
+
+    it("connect() serializes overlapping callers onto one pool", async () => {
+        let releaseHold: ((connection: { release: typeof mocks.release }) => void) | undefined;
+        mocks.getConnection.mockImplementation(
+            () =>
+                new Promise((resolve) => {
+                    releaseHold = resolve;
+                }),
+        );
+
+        const adapter = createMysqlAdapter(creds);
+        const first = adapter.connect();
+        const second = adapter.connect();
+
+        expect(createPool).toHaveBeenCalledOnce();
+        expect(releaseHold).toBeTypeOf("function");
+        releaseHold!({ release: mocks.release });
+
+        const [a, b] = await Promise.all([first, second]);
+        expect(a).toBe(b);
+        expect(mocks.getConnection).toHaveBeenCalledOnce();
+        expect(adapter.connected).toBe(true);
+    });
+
+    it("preserves leading and trailing password whitespace", async () => {
+        const adapter = createMysqlAdapter({ ...creds, password: "  secret  " });
+        await adapter.connect();
+        expect(createPool).toHaveBeenCalledWith({
+            user: "bw",
+            password: "  secret  ",
+            host: "localhost",
+            port: 3306,
+            database: "blackwater",
+        });
     });
 
     it("connect() ends the pool when getConnection fails", async () => {

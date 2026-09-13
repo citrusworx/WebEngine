@@ -34,6 +34,7 @@ export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
  */
 export declare class MysqlSql {
     private pool;
+    private connecting;
     private readonly credentials;
     constructor(credentials: DatabaseCredentials);
     static fromCredentials(credentials: DatabaseCredentials): MysqlSql;
@@ -43,6 +44,7 @@ export declare class MysqlSql {
      * surface here instead of on the first query.
      */
     connect(): Promise<Pool>;
+    private openPool;
     /**
      * Run parameterized SQL (`?` placeholders) against the connected pool.
      */

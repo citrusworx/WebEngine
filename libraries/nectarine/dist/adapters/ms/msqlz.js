@@ -30,6 +30,7 @@ const promise_1 = require("mysql2/promise");
 class MysqlSql {
     constructor(credentials) {
         this.pool = null;
+        this.connecting = null;
         this.credentials = requireMysqlCredentials(credentials);
     }
     static fromCredentials(credentials) {
@@ -46,6 +47,14 @@ class MysqlSql {
         if (this.pool) {
             return this.pool;
         }
+        if (!this.connecting) {
+            this.connecting = this.openPool().finally(() => {
+                this.connecting = null;
+            });
+        }
+        return this.connecting;
+    }
+    async openPool() {
         const pool = (0, promise_1.createPool)({
             user: this.credentials.user,
             password: this.credentials.password,
@@ -113,11 +122,11 @@ function requireMysqlCredentials(credentials) {
         throw new Error("MySQL adapter requires DatabaseCredentials");
     }
     const user = credentials.user?.trim();
-    const password = credentials.password?.trim();
+    const password = credentials.password;
     const host = credentials.host?.trim();
     const database = credentials.database?.trim();
     const port = Number(credentials.port);
-    if (!user || !password || !host || !database) {
+    if (!user || password == null || password === "" || !host || !database) {
         throw new Error("MySQL adapter requires complete credentials: user, password, host, port, and database");
     }
     if (!Number.isFinite(port)) {
