@@ -36,6 +36,9 @@
     "dependencies": {
         "js-yaml": "^4.1.1"
     },
+    "peerDependencies": {
+        "pg": "^8.0.0"
+    },
     "files": [
         "dist"
     ],

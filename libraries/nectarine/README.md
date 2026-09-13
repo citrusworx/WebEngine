@@ -30,6 +30,39 @@ Subpath exports are also available:
 - `@citrusworx/nectarine/adapters/pg`
 - `@citrusworx/nectarine/util`
 
+## Postgres adapter
+
+`@citrusworx/nectarine/adapters/pg` takes **resolved credentials**, not hardcoded `process.env.PG_*` names. YAML declares the env key names; `NectarineConfig.resolveCredentials()` reads the values. Install `pg` alongside this package (peer dependency).
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapter, createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+import { CCompiler } from "@citrusworx/nectarine/compiler";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+
+// Thin helper: null when vendor is not postgres or env values are missing
+const fromConfig = createPgAdapterFromConfig(config);
+
+const creds = config.resolveCredentials("postgres");
+if (!creds) {
+    throw new Error("Postgres env is incomplete");
+}
+
+const pg = fromConfig ?? createPgAdapter(creds);
+const compiler = new CCompiler();
+const parsed = compiler.parse_config("./models/user/db/pg/user.yml");
+const gets = compiler.clean_parse(parsed, "user", "get");
+const sql = compiler.buildQuery(gets, "UserById");
+// SELECT id FROM users WHERE id = $1
+
+await pg.connect();
+const result = await pg.query(sql, [1]);
+await pg.disconnect();
+```
+
+`query(sql, params?)` uses `$1`-style placeholders to match compiler output.
+
 ## Query compiler
 
 `CCompiler` turns the **canonical CRUD YAML** shape into parameterized SQL.

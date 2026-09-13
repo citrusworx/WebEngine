@@ -1,20 +1,45 @@
-import { Client } from 'pg';
+import { Client } from "pg";
+import type { QueryResult, QueryResultRow } from "pg";
+import type { NectarineConfig } from "../../config/NectarineConfig.js";
+import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+/**
+ * Postgres adapter for parameterized SQL from the Nectarine compiler.
+ *
+ * Credentials are {@link DatabaseCredentials} from
+ * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
+ * this adapter receives the resolved values. It does not read `process.env`
+ * itself.
+ *
+ * @example
+ * ```ts
+ * const creds = config.resolveCredentials("postgres");
+ * if (!creds) throw new Error("Postgres env is incomplete");
+ * const pg = createPgAdapter(creds);
+ * await pg.connect();
+ * const result = await pg.query("SELECT id FROM users WHERE id = $1", [1]);
+ * await pg.end();
+ * ```
+ */
 export declare class PgSql {
-    private tables;
-    private dbs;
-    private readonly creds;
-    client(db: string): Promise<Client | undefined>;
-    connect(db: string): Promise<Client | undefined>;
-    disconnect(client: Client): Promise<void>;
-    /**  Config-based query execution
-    //
-    // @param client - the database client to use for executing the query
-    // @param config - the configuration object containing the SQL query and parameters
-    */
-    query(client: Client, config: {
-        sql: string;
-        params?: any[];
-    }): Promise<import("pg").QueryResult<any> | undefined>;
-    addTable(table: string): void;
-    addDb(db: string): void;
+    private connection;
+    private readonly credentials;
+    constructor(credentials: DatabaseCredentials);
+    static fromCredentials(credentials: DatabaseCredentials): PgSql;
+    get connected(): boolean;
+    connect(): Promise<Client>;
+    /**
+     * Run parameterized SQL (`$1`, `$2`, …) against the connected client.
+     */
+    query<T extends QueryResultRow = QueryResultRow>(sql: string, params?: readonly unknown[]): Promise<QueryResult<T>>;
+    disconnect(): Promise<void>;
+    end(): Promise<void>;
 }
+export declare function createPgAdapter(credentials: DatabaseCredentials): PgSql;
+/**
+ * Build a Postgres adapter from a loaded config when the active vendor is
+ * postgres and env values resolve. Returns `null` when the vendor is not
+ * postgres or credentials are incomplete (same as `resolveCredentials()`).
+ */
+export declare function createPgAdapterFromConfig(config: NectarineConfig, vendor?: DatabaseVendor): PgSql | null;
+export declare function requirePgCredentials(credentials: Partial<DatabaseCredentials> | null | undefined): DatabaseCredentials;

@@ -129,5 +129,5 @@ function resolveCleanedQueries(
 // const getUserById = compiler.buildQuery(clean, "UserById");
 // const getAllUsers = compiler.buildQuery(clean, "AllUsers");
 //
-// Pass the resulting SQL string into a DB adapter with bound parameters:
-//   pg.query(client, { sql: getUserById, params: [id] })
+// Pass the resulting SQL string into the Postgres adapter with bound parameters:
+//   await pg.query(getUserById, [id])
