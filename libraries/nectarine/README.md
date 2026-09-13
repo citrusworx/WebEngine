@@ -30,9 +30,51 @@ Subpath exports are also available:
 - `@citrusworx/nectarine/adapters/pg`
 - `@citrusworx/nectarine/util`
 
+## Query compiler
+
+`CCompiler` turns the **canonical CRUD YAML** shape into parameterized SQL.
+The source of truth is `models/user/db/pg/user.yml`:
+
+```yaml
+user:                 # type / resource
+  get:                # method
+    UserById:         # query name
+      select: ['id']
+      from: users
+      where:
+        column: id
+        operator: eq   # eq | neq | gt | lt | gte | lte
+        value: $1
+```
+
+| Method | YAML keys | Example SQL |
+|--------|-----------|-------------|
+| `get` | `select`, `from`, optional `where` | `SELECT id FROM users WHERE id = $1` |
+| `create` | `insert.into`, `insert.columns`, `insert.values` | `INSERT INTO users (email, password, name, created_at) VALUES ($1, $2, $3, NOW())` |
+| `update` | `table`, `set`, `values`, `where` | `UPDATE users SET name = $1, age = $2, updated_at = NOW() WHERE id = $3` |
+| `delete` | `from`, `where` | `DELETE FROM users WHERE id = $1` |
+
+- `$1`, `$2`, … are kept as bind placeholders — numbers, booleans, and other literals are rejected.
+- `{ fn: now }` (and the fragment `NOW()`) compile to vendor-neutral `NOW()`.
+- `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL(path, type, method, config)` — e.g. `clean_parse(parsed, "user", "get")`. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
+- `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler. `method` is required for DELETE.
+
+**Not compiled in this MVP:** the blog `queries:` map (`models/blog/post/sql.yml`) and the product fixture `type: SELECT` shape.
+
+```ts
+import { CCompiler } from "@citrusworx/nectarine/compiler";
+
+const compiler = new CCompiler();
+const parsed = compiler.parse_config("./models/user/db/pg/user.yml");
+const gets = compiler.clean_parse(parsed, "user", "get");
+const sql = compiler.buildQuery(gets, "UserById");
+// SELECT id FROM users WHERE id = $1
+```
+
 ## Development
 
 ```bash
 yarn workspace @citrusworx/nectarine build
 yarn workspace @citrusworx/nectarine test
+yarn workspace @citrusworx/nectarine typecheck
 ```

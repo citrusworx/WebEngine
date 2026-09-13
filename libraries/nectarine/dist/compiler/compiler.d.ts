@@ -1,13 +1,48 @@
-export type optokens = {
-    eq: "=";
-    gt: ">";
-    lt: "<";
-    lte: "<=";
-    gte: ">=";
-    neq: "!=";
-};
+import { type YAMLdata } from "../util/util.js";
+import { type CleanedQueries, type CrudMethod } from "./sql.js";
+export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
+export { compileQuery, CRUD_METHODS, isCrudMethod, OP_TOKENS, QueryCompileError, } from "./sql.js";
+/**
+ * Compiles Nectarine query YAML into parameterized SQL strings.
+ *
+ * Supported document shape (canonical, Postgres-first) — see
+ * `models/user/db/pg/user.yml`:
+ *
+ * ```yaml
+ * user:                    # type / resource
+ *   get:                   # method
+ *     UserById:            # query name
+ *       select: ['id']
+ *       from: users
+ *       where: { column: id, operator: eq, value: $1 }
+ * ```
+ *
+ * `clean_parse` takes `(parsed, type, method)` so it matches
+ * `parser.genSQL(path, type, method, config)` and the YAML path
+ * `user.get.UserById`. The returned bundle carries `method` so
+ * `buildQuery` can dispatch GET vs DELETE instead of guessing from keys.
+ *
+ * Not compiled: blog `queries:` maps and product `type: SELECT` fixtures.
+ */
 export declare class CCompiler {
-    parse_config(config: string): Record<string, string>;
-    clean_parse(parsedConfig: any, method: string, type: string): Record<string, string>;
-    buildQuery(cleanedConfig: Record<string, string>, query: string): void;
+    /**
+     * Parse a query YAML file (path) into an object.
+     */
+    parse_config(config: string): YAMLdata;
+    /**
+     * Narrow a parsed document to one resource + CRUD method.
+     *
+     * @param parsedConfig - object from {@link parse_config}
+     * @param type - resource key (`user`)
+     * @param method - CRUD key (`get` | `create` | `update` | `delete`)
+     */
+    clean_parse(parsedConfig: YAMLdata, type: string, method: string): CleanedQueries;
+    /**
+     * Compile a named query from a cleaned method map into SQL.
+     * `$1`-style placeholders are preserved; `{ fn: now }` becomes `NOW()`.
+     *
+     * `method` comes from {@link clean_parse}. A raw query map is accepted
+     * when `method` is passed as the third argument.
+     */
+    buildQuery(cleanedConfig: CleanedQueries | Record<string, unknown>, query: string, method?: CrudMethod): string;
 }

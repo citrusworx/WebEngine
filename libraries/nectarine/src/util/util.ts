@@ -1,5 +1,6 @@
-const jsyaml = require('js-yaml');
-const fs = require('fs');
+import fs from "node:fs";
+import jsyaml from "js-yaml";
+import { compileQuery, type CrudMethod } from "../compiler/sql.js";
 
 export interface YAMLdata {
   [key: string]: any;
@@ -10,7 +11,6 @@ export const parser = {
   yaml: (filepath: string): YAMLdata => {
     const file: string = fs.readFileSync(filepath, 'utf8');
     const yaml: YAMLdata = jsyaml.load(file) as YAMLdata;
-    console.log(yaml);
     return yaml;
   },
 
@@ -59,15 +59,12 @@ export const parser = {
       return obj;
   },
 
-  buildSQL: (genSQL: Record<string, any>) => {
-    // Take the genSQL object and parse through to make sure
-    // 1. Validate shape
-    // 2. Validate semantics (required keys exist, proper keys, operators are from DSL set)
-    // 3. Tokenize each part of the genSQL object
-    // 4. Normalize (convert YAML -> SQL)
-    // 5. Compile (Create SQL statement from tokens)
-
-    
-
-  }
+  /**
+   * Compile a query object from {@link parser.genSQL} into SQL.
+   * Delegates to the shared compiler so this is not a second code path.
+   * Pass `method` for DELETE (and to disambiguate incomplete shapes).
+   */
+  buildSQL: (genSQL: Record<string, unknown>, method?: CrudMethod): string => {
+    return compileQuery(genSQL, method);
+  },
 }
