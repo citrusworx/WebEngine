@@ -7,8 +7,6 @@ on:
       - "libraries/sig/**"
       - ".changeset/**"
       - ".github/workflows/juice-package.yml"
-      - "package.json"
-      - "yarn.lock"
   push:
     branches:
       - master
@@ -17,8 +15,6 @@ on:
       - "libraries/sig/**"
       - ".changeset/**"
       - ".github/workflows/juice-package.yml"
-      - "package.json"
-      - "yarn.lock"
 
 jobs:
   verify:
