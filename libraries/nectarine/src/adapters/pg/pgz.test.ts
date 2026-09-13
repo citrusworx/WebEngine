@@ -11,11 +11,13 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("pg", () => ({
-    Client: vi.fn().mockImplementation(() => ({
-        connect: mocks.connect,
-        query: mocks.query,
-        end: mocks.end,
-    })),
+    Client: vi.fn(function MockClient() {
+        return {
+            connect: mocks.connect,
+            query: mocks.query,
+            end: mocks.end,
+        };
+    }),
 }));
 
 import { Client } from "pg";
