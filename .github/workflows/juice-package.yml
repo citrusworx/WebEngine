@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # cache: yarn runs yarn before later steps; Corepack must already be active.
       - name: Enable Corepack
@@ -44,4 +46,4 @@ jobs:
 
       - name: Check changeset status
         if: github.event_name == 'pull_request'
-        run: yarn changeset status
+        run: yarn changeset status --since=origin/master
