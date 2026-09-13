@@ -128,6 +128,17 @@ blueprint:
 
 See `examples/grape.config.yaml` and `src/providers/digitalocean/droplet/create-single-droplet.yaml`. Convenience sections from earlier docs (`networking.vpc`, top-level `firewall`, `ssh`) are accepted and folded into `resources` before apply.
 
+## Downloadable blueprints
+
+Progressive DigitalOcean starters live in [`examples/blueprints/`](./examples/blueprints/). They are Grapevine-only (KiwiEngine is not required):
+
+1. `01-vpc-and-tag.yaml` — tag + VPC (no droplet cost)
+2. `02-droplet-in-vpc.yaml` — tag, generated SSH key, VPC, and a droplet
+3. `03-web-firewall.yaml` — firewall for an existing droplet (replace placeholders first)
+4. `04-full-web-stack.yaml` — one-shot tag + SSH + VPC + droplet + firewall
+
+Copy a file, set `DO_TOKEN`, then `grape validate -c …` / `grape apply -c …`. Details and placeholder rules are in [`examples/blueprints/README.md`](./examples/blueprints/README.md).
+
 ## Usage with Kiwi
 
 The Rust `kiwi` CLI does not reimplement DigitalOcean logic. It delegates to `grape` on `PATH`:
