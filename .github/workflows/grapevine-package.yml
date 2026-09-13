@@ -1,20 +1,16 @@
-name: Juice Package
+name: Grapevine Package
 
 on:
   pull_request:
     paths:
-      - "libraries/juice/**"
-      - "libraries/sig/**"
-      - ".changeset/**"
-      - ".github/workflows/juice-package.yml"
+      - "libraries/grapevine/**"
+      - ".github/workflows/grapevine-package.yml"
   push:
     branches:
       - master
     paths:
-      - "libraries/juice/**"
-      - "libraries/sig/**"
-      - ".changeset/**"
-      - ".github/workflows/juice-package.yml"
+      - "libraries/grapevine/**"
+      - ".github/workflows/grapevine-package.yml"
 
 jobs:
   verify:
@@ -38,9 +34,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Verify Juice package
-        run: yarn verify:juice
+      - name: Build Grapevine
+        run: yarn workspace @citrusworx/grapevine build
 
-      - name: Check changeset status
-        if: github.event_name == 'pull_request'
-        run: yarn changeset status
+      - name: Test Grapevine
+        run: yarn workspace @citrusworx/grapevine test
