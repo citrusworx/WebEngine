@@ -35,6 +35,7 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
  */
 export class Mngz {
     private client: MongoClient | null = null;
+    private connecting: Promise<MongoClient> | null = null;
     private readonly credentials: DatabaseCredentials;
     private readonly uri: string;
 
@@ -55,7 +56,19 @@ export class Mngz {
         if (this.client) {
             return this.client;
         }
+        if (this.connecting) {
+            return this.connecting;
+        }
 
+        this.connecting = this.openClient();
+        try {
+            return await this.connecting;
+        } finally {
+            this.connecting = null;
+        }
+    }
+
+    private async openClient(): Promise<MongoClient> {
         const client = new MongoClient(this.uri);
 
         try {
@@ -110,6 +123,10 @@ export class Mngz {
     }
 
     async disconnect(): Promise<void> {
+        if (this.connecting) {
+            await this.connecting.catch(() => undefined);
+        }
+
         const client = this.client;
         if (!client) {
             return;

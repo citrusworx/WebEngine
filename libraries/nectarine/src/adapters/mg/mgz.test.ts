@@ -240,6 +240,25 @@ describe("Mngz", () => {
         expect(mocks.connect).toHaveBeenCalledOnce();
     });
 
+    it("connect() shares one in-flight client", async () => {
+        let release!: (value: undefined) => void;
+        mocks.connect.mockImplementation(
+            () =>
+                new Promise((resolve) => {
+                    release = resolve;
+                }),
+        );
+
+        const adapter = createMongoAdapter(creds);
+        const first = adapter.connect();
+        const second = adapter.connect();
+        release(undefined);
+
+        expect(await first).toBe(await second);
+        expect(MongoClient).toHaveBeenCalledOnce();
+        expect(mocks.connect).toHaveBeenCalledOnce();
+    });
+
     it("connect() closes the client when connect fails", async () => {
         const failure = new Error("ECONNREFUSED");
         mocks.connect.mockRejectedValue(failure);

@@ -30,6 +30,7 @@ const mongodb_1 = require("mongodb");
 class Mngz {
     constructor(credentials) {
         this.client = null;
+        this.connecting = null;
         this.credentials = requireMongoCredentials(credentials);
         this.uri = buildMongoUri(this.credentials);
     }
@@ -43,6 +44,18 @@ class Mngz {
         if (this.client) {
             return this.client;
         }
+        if (this.connecting) {
+            return this.connecting;
+        }
+        this.connecting = this.openClient();
+        try {
+            return await this.connecting;
+        }
+        finally {
+            this.connecting = null;
+        }
+    }
+    async openClient() {
         const client = new mongodb_1.MongoClient(this.uri);
         try {
             await client.connect();
@@ -82,6 +95,9 @@ class Mngz {
         return this.collection(collection).insertMany([...documents]);
     }
     async disconnect() {
+        if (this.connecting) {
+            await this.connecting.catch(() => undefined);
+        }
         const client = this.client;
         if (!client) {
             return;

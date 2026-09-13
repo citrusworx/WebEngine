@@ -26,12 +26,14 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
  */
 export declare class Mngz {
     private client;
+    private connecting;
     private readonly credentials;
     private readonly uri;
     constructor(credentials: DatabaseCredentials);
     static fromCredentials(credentials: DatabaseCredentials): Mngz;
     get connected(): boolean;
     connect(): Promise<MongoClient>;
+    private openClient;
     /**
      * The connected driver's database for {@link DatabaseCredentials.database}.
      */

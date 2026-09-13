@@ -417,22 +417,22 @@ MS_PORT
 ### MongoDB
 
 ```ts
-import { Mngz } from "@citrusworx/nectarine";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMongoAdapter, createMongoAdapterFromConfig } from "@citrusworx/nectarine/adapters/mg";
 
-await Mngz(async (client) => {
-  const db = client.db(process.env.MG_DB);
-  const result = await db.collection(collection).find(query).toArray();
-});
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const creds = config.resolveCredentials("mongodb");
+if (!creds) {
+    throw new Error("MongoDB env is incomplete");
+}
+
+const mg = createMongoAdapterFromConfig(config) ?? createMongoAdapter(creds);
+await mg.connect();
+const result = await mg.collection("users").find(query).toArray();
+await mg.disconnect();
 ```
 
-Environment variables:
-```
-MG_USER
-MG_HOST
-MG_PASS
-MG_DB
-MG_PORT
-```
+YAML declares the env key names (typically `MG_USER`, `MG_HOST`, `MG_PASS`, `MG_DB`, `MG_PORT`). The adapter receives resolved credentials and does not read `process.env` itself.
 
 ---
 
