@@ -1,0 +1,31 @@
+# One apply: tag, generated SSH key, VPC, and a droplet on that VPC.
+# grape validate -c ./02-droplet-in-vpc.yaml
+# grape apply -c ./02-droplet-in-vpc.yaml
+#
+# generate: true creates a key pair and uploads the public key.
+# The private key is not persisted to disk yet — use public_key if you
+# already have a key you need to keep.
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - grapevine
+  ssh_keys:
+    - name: grapevine
+      generate: true
+  vpcs:
+    - name: grapevine
+      description: Grapevine starter VPC
+      ip_range: 10.120.0.0/16
+  droplets:
+    - name: grapevine-web-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: grapevine
+      monitoring: true
+      tags: [grapevine]
