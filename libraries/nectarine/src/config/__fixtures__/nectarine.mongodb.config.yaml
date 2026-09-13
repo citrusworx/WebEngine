@@ -1,0 +1,16 @@
+version: "0.1"
+app: nectarine-mongodb-fixture
+engine: KiwiEngine
+
+database:
+  default: mongodb
+  mongodb:
+    env:
+      user: MG_USER
+      password: MG_PASS
+      host: MG_HOST
+      port: MG_PORT
+      database: MG_DB
+
+fallback:
+  seed: true
