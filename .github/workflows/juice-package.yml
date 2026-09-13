@@ -5,7 +5,6 @@ on:
     paths:
       - "libraries/juice/**"
       - "libraries/sig/**"
-      - ".changeset/**"
       - ".github/workflows/juice-package.yml"
   push:
     branches:
@@ -13,7 +12,6 @@ on:
     paths:
       - "libraries/juice/**"
       - "libraries/sig/**"
-      - ".changeset/**"
       - ".github/workflows/juice-package.yml"
 
 jobs:

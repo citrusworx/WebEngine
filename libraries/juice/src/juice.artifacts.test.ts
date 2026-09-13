@@ -61,7 +61,7 @@ describe("Juice build artifacts", () => {
     it("keeps the core CSS artifact under the size budget", () => {
         const cssStats = statSync(join(DIST_DIR, "index.css"));
 
-        expect(cssStats.size).toBeLessThan(8_500_000);
+        expect(cssStats.size).toBeLessThan(5_500_000);
     });
 
     it("keeps each theme stylesheet under the size budget", () => {
