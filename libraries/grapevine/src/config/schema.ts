@@ -7,7 +7,7 @@ export const credentialsSchema = z.object({
     env: tokenEnv
 });
 
-export const dropletResourceSchema = z.object({
+export const dropletBlueprintSchema = z.object({
     name: z.string().min(1),
     region: z.string().min(1).optional(),
     size: z.string().min(1),
@@ -32,12 +32,25 @@ export const dropletResourceSchema = z.object({
     with_droplet_agent: z.boolean().optional()
 });
 
-export const vpcResourceSchema = z.object({
+export const dropletBlueprintDocumentSchema = z.object({
+    grapevine: z.string().optional(),
+    provider: z.string().optional(),
+    blueprint: z.object({
+        name: z.string().optional(),
+        droplet: dropletBlueprintSchema
+    })
+});
+
+export const dropletEntrySchema = z.union([dropletBlueprintSchema, dropletBlueprintDocumentSchema]);
+
+export const vpcBlueprintSchema = z.object({
     name: z.string().min(1),
     description: z.string().optional(),
     region: z.string().min(1).optional(),
     ip_range: z.string().optional()
 });
+
+export const vpcResourceSchema = vpcBlueprintSchema;
 
 const firewallSourceSchema = z.union([
     z.array(z.string()),
@@ -57,7 +70,7 @@ export const firewallRuleSchema = z.object({
     destinations: firewallSourceSchema.optional()
 });
 
-export const firewallResourceSchema = z.object({
+export const firewallBlueprintSchema = z.object({
     name: z.string().min(1),
     droplet_ids: z.array(z.number()).optional(),
     droplets: z.array(z.string()).optional(),
@@ -67,6 +80,8 @@ export const firewallResourceSchema = z.object({
     inbound: z.array(firewallRuleSchema).optional(),
     outbound: z.array(firewallRuleSchema).optional()
 });
+
+export const firewallResourceSchema = firewallBlueprintSchema;
 
 export const sshKeyResourceSchema = z.object({
     name: z.string().min(1),
@@ -105,7 +120,7 @@ export const tagResourceSchema = z.object({
         .optional()
 });
 
-export const loadBalancerResourceSchema = z.object({
+export const loadBalancerBlueprintSchema = z.object({
     name: z.string().min(1),
     region: z.string().optional(),
     droplet_ids: z.array(z.number()).optional(),
@@ -115,6 +130,8 @@ export const loadBalancerResourceSchema = z.object({
     vpc_uuid: z.string().optional(),
     redirect_http_to_https: z.boolean().optional()
 });
+
+export const loadBalancerResourceSchema = loadBalancerBlueprintSchema;
 
 export const alertPolicyResourceSchema = z.object({
     description: z.string().min(1),
@@ -148,8 +165,8 @@ export const resourcesSchema = z.object({
     tags: z.array(z.union([z.string(), tagResourceSchema])).optional(),
     ssh_keys: z.array(sshKeyResourceSchema).optional(),
     vpcs: z.array(vpcResourceSchema).optional(),
-    droplets: z.array(dropletResourceSchema).optional(),
-    firewalls: z.array(firewallResourceSchema).optional(),
+    droplets: z.array(dropletEntrySchema).optional(),
+    firewalls: z.array(firewallBlueprintSchema).optional(),
     domains: z.array(domainResourceSchema).optional(),
     load_balancers: z.array(loadBalancerResourceSchema).optional(),
     alert_policies: z.array(alertPolicyResourceSchema).optional(),
@@ -162,6 +179,14 @@ export const grapeConfigSchema = z.object({
     provider: z.literal("digitalocean"),
     credentials: credentialsSchema.optional().default({ source: "env", env: "DO_TOKEN" }),
     region: z.string().optional(),
+    blueprint: z
+        .object({
+            name: z.string().optional(),
+            droplet: dropletBlueprintSchema.optional(),
+            vpc: vpcBlueprintSchema.optional(),
+            firewall: firewallBlueprintSchema.optional()
+        })
+        .optional(),
     resources: resourcesSchema.optional().default({}),
     networking: z
         .object({
@@ -186,11 +211,59 @@ export const grapeConfigSchema = z.object({
 
 export type GrapeConfig = z.infer<typeof grapeConfigSchema>;
 export type GrapeResources = z.infer<typeof resourcesSchema>;
+export type GrapeDropletEntry = z.infer<typeof dropletEntrySchema>;
+export type DropletBlueprintConfig = z.infer<typeof dropletBlueprintSchema>;
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+    return value && typeof value === "object" && !Array.isArray(value)
+        ? (value as Record<string, unknown>)
+        : undefined;
+}
+
+/** Fold a classic `{ blueprint: { droplet | vpc | firewall } }` document into `resources`. */
+export function hoistBlueprintDocument(input: unknown): unknown {
+    const doc = asRecord(input);
+    const blueprint = asRecord(doc?.blueprint);
+    if (!doc || !blueprint) {
+        return input;
+    }
+
+    const resources = { ...asRecord(doc.resources) } as Record<string, unknown>;
+    const droplets = Array.isArray(resources.droplets) ? [...resources.droplets] : [];
+    const vpcs = Array.isArray(resources.vpcs) ? [...resources.vpcs] : [];
+    const firewalls = Array.isArray(resources.firewalls) ? [...resources.firewalls] : [];
+
+    if (blueprint.droplet) {
+        droplets.push({
+            blueprint: {
+                name: blueprint.name,
+                droplet: blueprint.droplet
+            }
+        });
+    }
+    if (blueprint.vpc) {
+        vpcs.push(blueprint.vpc);
+    }
+    if (blueprint.firewall) {
+        firewalls.push(blueprint.firewall);
+    }
+
+    return {
+        ...doc,
+        provider: doc.provider ?? "digitalocean",
+        resources: {
+            ...resources,
+            ...(droplets.length ? { droplets } : {}),
+            ...(vpcs.length ? { vpcs } : {}),
+            ...(firewalls.length ? { firewalls } : {})
+        }
+    };
+}
 
 export function validateGrapeConfig(input: unknown): GrapeConfig {
-    return grapeConfigSchema.parse(input);
+    return grapeConfigSchema.parse(hoistBlueprintDocument(input));
 }
 
 export function safeValidateGrapeConfig(input: unknown) {
-    return grapeConfigSchema.safeParse(input);
+    return grapeConfigSchema.safeParse(hoistBlueprintDocument(input));
 }

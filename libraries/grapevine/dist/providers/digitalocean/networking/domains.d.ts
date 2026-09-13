@@ -7,6 +7,7 @@ export interface DomainCreateRequest {
     name: string;
     ip_address?: string;
 }
+export type DomainBlueprint = DomainCreateRequest;
 export interface DomainRecord {
     id?: number;
     type: string;

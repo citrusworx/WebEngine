@@ -3,13 +3,6 @@ import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
 
 export interface DropletBlueprint {
-    blueprint: {
-        name: string;
-        droplet: DropletSpec;
-    };
-}
-
-export interface DropletSpec {
     name: string;
     region: string;
     size: string;
@@ -31,9 +24,46 @@ export interface DropletSpec {
     with_droplet_agent?: boolean;
 }
 
+/** YAML document: `{ blueprint: { name, droplet } }` */
+export interface DropletBlueprintDocument {
+    grapevine?: string;
+    provider?: string;
+    blueprint: {
+        name: string;
+        droplet: DropletBlueprint;
+    };
+}
+
 export interface Droplet {
     name: string;
-    droplet: DropletSpec;
+    droplet: DropletBlueprint;
+}
+
+export type DropletBlueprintInput = DropletBlueprint | Droplet | DropletBlueprintDocument;
+
+export function isDropletBlueprintDocument(value: unknown): value is DropletBlueprintDocument {
+    if (!value || typeof value !== "object" || !("blueprint" in value)) {
+        return false;
+    }
+    const blueprint = (value as DropletBlueprintDocument).blueprint;
+    return Boolean(blueprint && typeof blueprint === "object" && blueprint.droplet);
+}
+
+function isDropletWrap(value: DropletBlueprintInput): value is Droplet {
+    if (!("droplet" in value) || !value.droplet || typeof value.droplet !== "object") {
+        return false;
+    }
+    return "region" in value.droplet && "size" in value.droplet && "image" in value.droplet;
+}
+
+export function resolveDropletBlueprint(input: DropletBlueprintInput): DropletBlueprint {
+    if (isDropletBlueprintDocument(input)) {
+        return input.blueprint.droplet;
+    }
+    if (isDropletWrap(input)) {
+        return input.droplet;
+    }
+    return input;
 }
 
 export interface DropletResource {
@@ -75,16 +105,16 @@ export interface AllDroplets {
     type?: string;
 }
 
-function dropletPayload(spec: DropletSpec): Record<string, unknown> {
-    return cleanPayload(spec);
+function dropletPayload(blueprint: DropletBlueprint): Record<string, unknown> {
+    return cleanPayload(blueprint);
 }
 
 export async function deployByBlueprint(blueprint: string): Promise<DropletResource> {
-    const manifest = parseYAML<DropletBlueprint>(blueprint);
+    const manifest = parseYAML<DropletBlueprintDocument>(blueprint);
     const response = await doRequest<DropletCreateResponse>({
         method: "POST",
         url: "/droplets",
-        data: dropletPayload(manifest.blueprint.droplet)
+        data: dropletPayload(resolveDropletBlueprint(manifest))
     });
     return response.droplet;
 }
@@ -111,17 +141,16 @@ export async function getDroplet(id: number): Promise<DropletResource> {
     return response.droplet;
 }
 
-export async function createDroplet(droplet: Droplet | DropletSpec): Promise<DropletResource> {
-    const spec = "droplet" in droplet ? droplet.droplet : droplet;
+export async function createDroplet(droplet: DropletBlueprintInput): Promise<DropletResource> {
     const response = await doRequest<DropletCreateResponse>({
         method: "POST",
         url: "/droplets",
-        data: dropletPayload(spec)
+        data: dropletPayload(resolveDropletBlueprint(droplet))
     });
     return response.droplet;
 }
 
-export async function createDroplets(droplets: Array<Droplet | DropletSpec>): Promise<DropletResource[]> {
+export async function createDroplets(droplets: DropletBlueprintInput[]): Promise<DropletResource[]> {
     return Promise.all(droplets.map(createDroplet));
 }
 

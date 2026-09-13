@@ -1,6 +1,6 @@
 import { getDoToken } from "../providers/digitalocean/client.js";
 import { createApp, type AppSpec } from "../providers/digitalocean/apps/apps.js";
-import { createDroplet, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
+import { createDroplet, type DropletBlueprint, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
 import { createFireWall, type FireWall, type FirewallRule, type FirewallRuleSources } from "../providers/digitalocean/firewall/firewall.js";
 import { createAlertPolicy } from "../providers/digitalocean/monitoring/monitoring.js";
 import { createDomain, createDomainRecord } from "../providers/digitalocean/networking/domains.js";
@@ -8,7 +8,7 @@ import { createLoadBalancer } from "../providers/digitalocean/networking/load-ba
 import { createSSHKey, uploadSSHKey, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
-import type { GrapeConfig, GrapeResources } from "./schema.js";
+import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
 
 export interface ApplyResult {
     tags: string[];
@@ -68,6 +68,13 @@ function normalizeRules(rules?: Array<{
         sources: sourceFromList(rule.sources),
         destinations: sourceFromList(rule.destinations)
     }));
+}
+
+export function unwrapDropletEntry(entry: GrapeDropletEntry): DropletBlueprintConfig {
+    if ("blueprint" in entry && entry.blueprint?.droplet) {
+        return entry.blueprint.droplet;
+    }
+    return entry as DropletBlueprintConfig;
 }
 
 export function normalizeResources(config: GrapeConfig): GrapeResources {
@@ -193,24 +200,17 @@ export async function applyGrapeConfig(config: GrapeConfig): Promise<ApplyResult
         vpcIds.set(created.name, created.id);
     }
 
-    for (const droplet of resources.droplets ?? []) {
-        const vpcUuid = droplet.vpc_uuid ?? (droplet.vpc ? vpcIds.get(droplet.vpc) : undefined);
-        const created = await createDroplet({
-            name: droplet.name,
-            region: droplet.region ?? config.region ?? "",
-            size: droplet.size,
-            image: droplet.image,
-            ssh_keys: droplet.ssh_keys ?? (sshKeyIds.length ? sshKeyIds : undefined),
-            backups: droplet.backups,
-            backup_policy: droplet.backup_policy,
-            ipv6: droplet.ipv6,
-            monitoring: droplet.monitoring,
-            tags: droplet.tags,
-            user_data: droplet.user_data,
-            volumes: droplet.volumes,
-            vpc_uuid: vpcUuid,
-            with_droplet_agent: droplet.with_droplet_agent
-        });
+    for (const entry of resources.droplets ?? []) {
+        const grapeBlueprint = unwrapDropletEntry(entry);
+        const { vpc, ...fields } = grapeBlueprint;
+        const vpcUuid = fields.vpc_uuid ?? (vpc ? vpcIds.get(vpc) : undefined);
+        const blueprint: DropletBlueprint = {
+            ...fields,
+            region: fields.region ?? config.region ?? "",
+            ssh_keys: fields.ssh_keys ?? (sshKeyIds.length ? sshKeyIds : undefined),
+            vpc_uuid: vpcUuid
+        };
+        const created = await createDroplet(blueprint);
         result.droplets.push(created);
         if (created.id !== undefined) {
             dropletIds.set(created.name, created.id);

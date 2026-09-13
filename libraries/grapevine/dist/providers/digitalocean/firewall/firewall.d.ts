@@ -18,6 +18,8 @@ export interface FireWall {
     inbound_rules?: FirewallRule[];
     outbound_rules?: FirewallRule[];
 }
+export type FireWallBlueprint = FireWall;
+export type FirewallBlueprint = FireWall;
 export interface FireWallResponse {
     id: string;
     name: string;

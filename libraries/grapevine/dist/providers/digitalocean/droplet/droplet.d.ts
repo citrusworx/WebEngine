@@ -1,10 +1,4 @@
 export interface DropletBlueprint {
-    blueprint: {
-        name: string;
-        droplet: DropletSpec;
-    };
-}
-export interface DropletSpec {
     name: string;
     region: string;
     size: string;
@@ -25,10 +19,22 @@ export interface DropletSpec {
     vpc_uuid?: string;
     with_droplet_agent?: boolean;
 }
+/** YAML document: `{ blueprint: { name, droplet } }` */
+export interface DropletBlueprintDocument {
+    grapevine?: string;
+    provider?: string;
+    blueprint: {
+        name: string;
+        droplet: DropletBlueprint;
+    };
+}
 export interface Droplet {
     name: string;
-    droplet: DropletSpec;
+    droplet: DropletBlueprint;
 }
+export type DropletBlueprintInput = DropletBlueprint | Droplet | DropletBlueprintDocument;
+export declare function isDropletBlueprintDocument(value: unknown): value is DropletBlueprintDocument;
+export declare function resolveDropletBlueprint(input: DropletBlueprintInput): DropletBlueprint;
 export interface DropletResource {
     id: number | undefined;
     name: string;
@@ -69,8 +75,8 @@ export declare function deployByBlueprint(blueprint: string): Promise<DropletRes
 export declare function getDropletStatus(id: number): Promise<string>;
 export declare function listAllDroplets(query?: AllDroplets): Promise<DropletResource[]>;
 export declare function getDroplet(id: number): Promise<DropletResource>;
-export declare function createDroplet(droplet: Droplet | DropletSpec): Promise<DropletResource>;
-export declare function createDroplets(droplets: Array<Droplet | DropletSpec>): Promise<DropletResource[]>;
+export declare function createDroplet(droplet: DropletBlueprintInput): Promise<DropletResource>;
+export declare function createDroplets(droplets: DropletBlueprintInput[]): Promise<DropletResource[]>;
 export declare function deleteDropletsByTag(tag: string): Promise<{
     message?: string;
 }>;

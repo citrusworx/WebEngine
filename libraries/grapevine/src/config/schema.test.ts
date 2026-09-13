@@ -37,7 +37,8 @@ describe("grape config schema", () => {
         const parsed = validateGrapeConfig(validConfig);
         expect(parsed.provider).toBe("digitalocean");
         expect(parsed.credentials.env).toBe("DO_TOKEN");
-        expect(parsed.resources.droplets?.[0]?.name).toBe("web-01");
+        const droplet = parsed.resources.droplets?.[0];
+        expect(droplet && "name" in droplet ? droplet.name : undefined).toBe("web-01");
     });
 
     it("defaults credentials to env/DO_TOKEN", () => {
@@ -55,6 +56,23 @@ describe("grape config schema", () => {
             region: "us-east-1"
         });
         expect(result.success).toBe(false);
+    });
+
+    it("accepts a classic droplet blueprint document", () => {
+        const parsed = validateGrapeConfig({
+            grapevine: "1.0",
+            blueprint: {
+                name: "create-single-droplet",
+                droplet: {
+                    name: "web-01",
+                    region: "nyc3",
+                    size: "s-1vcpu-1gb",
+                    image: "ubuntu-24-04-x64"
+                }
+            }
+        });
+        const droplet = parsed.resources.droplets?.[0];
+        expect(droplet && "blueprint" in droplet ? droplet.blueprint.droplet.name : undefined).toBe("web-01");
     });
 
     it("rejects droplets missing required fields", () => {

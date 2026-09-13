@@ -1,4 +1,4 @@
-export interface ImageSpec {
+export interface ImageBlueprint {
     name: string;
     url?: string;
     region?: string;
@@ -6,12 +6,12 @@ export interface ImageSpec {
     description?: string;
     tags?: string[];
 }
-export interface ImageBlueprint {
+export interface ImageBlueprintDocument {
     name?: string;
     distribution?: string;
     blueprint: {
         name: string;
-        image: ImageSpec;
+        image: ImageBlueprint;
     };
 }
 export interface ImageResource {
@@ -36,7 +36,7 @@ export declare function listAllImages(query?: {
     per_page?: number;
     page?: number;
 }): Promise<ImageResource[]>;
-export declare function createCustomImage(schematic: string | ImageSpec): Promise<ImageResource>;
+export declare function createCustomImage(schematic: string | ImageBlueprint): Promise<ImageResource>;
 export declare function listExistingImage(imageId: string | number): Promise<ImageResource>;
-export declare function updateImage(imageId: string | number, blueprint: Partial<ImageSpec>): Promise<ImageResource>;
+export declare function updateImage(imageId: string | number, blueprint: Partial<ImageBlueprint>): Promise<ImageResource>;
 export declare function deleteImage(imageId: string | number): Promise<void>;

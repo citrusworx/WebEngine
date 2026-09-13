@@ -27,24 +27,30 @@ import {
   createVPC,
   createFireWall,
   createDroplet,
-  createDomain,
-  createTag
+  deployByBlueprint,
+  type DropletBlueprint,
+  type VPCBlueprint
 } from "@citrusworx/grapevine";
 
-const vpc = await createVPC({
+const vpcBlueprint: VPCBlueprint = {
   name: "production",
   description: "Main network",
   region: "nyc1",
   ip_range: "10.0.0.0/16"
-});
+};
+const vpc = await createVPC(vpcBlueprint);
 
-const droplet = await createDroplet({
+const dropletBlueprint: DropletBlueprint = {
   name: "web-01",
   region: "nyc1",
   size: "s-1vcpu-1gb",
   image: "ubuntu-24-04-x64",
   vpc_uuid: vpc.id
-});
+};
+const droplet = await createDroplet(dropletBlueprint);
+
+// Or a YAML blueprint document: { blueprint: { name, droplet } }
+await deployByBlueprint("./src/providers/digitalocean/droplet/create-single-droplet.yaml");
 ```
 
 Auth is always `Authorization: Bearer $DO_TOKEN` against `https://api.digitalocean.com/v2`. Requests go through a shared client that wraps DigitalOcean error payloads.
@@ -84,6 +90,7 @@ resources:
     - name: main
       ip_range: 10.10.0.0/16
   droplets:
+    # Flat DropletBlueprint fields, or a classic `{ blueprint: { name, droplet } }` document
     - name: web-01
       size: s-1vcpu-1gb
       image: ubuntu-24-04-x64
@@ -105,7 +112,21 @@ resources:
 
 `validate` only checks this schema. `apply` calls the DigitalOcean API in dependency order: tags → SSH keys → VPCs → droplets → firewalls → domains/records → load balancers → alert policies → apps.
 
-See `examples/grape.config.yaml` for a fuller sample. Convenience sections from earlier docs (`networking.vpc`, top-level `firewall`, `ssh`) are accepted and folded into `resources` before apply.
+A single-resource YAML blueprint is also valid:
+
+```yaml
+grapevine: "1.0"
+provider: digitalocean
+blueprint:
+  name: create-single-droplet
+  droplet:
+    name: web-01
+    region: nyc3
+    size: s-1vcpu-1gb
+    image: ubuntu-24-04-x64
+```
+
+See `examples/grape.config.yaml` and `src/providers/digitalocean/droplet/create-single-droplet.yaml`. Convenience sections from earlier docs (`networking.vpc`, top-level `firewall`, `ssh`) are accepted and folded into `resources` before apply.
 
 ## Usage with Kiwi
 

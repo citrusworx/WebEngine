@@ -18,6 +18,7 @@ export interface LoadBalancer {
     type?: string;
     project_id?: string;
 }
+export type LoadBalancerBlueprint = LoadBalancer;
 export interface LoadBalancerResource extends LoadBalancer {
     id: string;
     status?: string;

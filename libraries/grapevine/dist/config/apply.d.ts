@@ -1,7 +1,7 @@
 import { type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
 import { type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
-import type { GrapeConfig, GrapeResources } from "./schema.js";
+import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
 export interface ApplyResult {
     tags: string[];
     ssh_keys: SSHKeyResource[];
@@ -29,5 +29,6 @@ export interface ApplyResult {
     }>;
     warnings: string[];
 }
+export declare function unwrapDropletEntry(entry: GrapeDropletEntry): DropletBlueprintConfig;
 export declare function normalizeResources(config: GrapeConfig): GrapeResources;
 export declare function applyGrapeConfig(config: GrapeConfig): Promise<ApplyResult>;

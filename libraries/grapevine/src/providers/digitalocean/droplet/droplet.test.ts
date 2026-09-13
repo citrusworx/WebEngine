@@ -61,7 +61,7 @@ describe("Droplet", () => {
         expect(droplet.id).toBe(9);
     });
 
-    it("creates a droplet from a spec", async () => {
+    it("creates a droplet from a DropletBlueprint", async () => {
         mockedRequest.mockResolvedValue({
             droplet: { id: 42, status: "new", name: "web-01", memory: 1024, image: {}, size: {} },
             links: { actions: [] }
@@ -81,6 +81,36 @@ describe("Droplet", () => {
             data: {
                 name: "web-01",
                 region: "nyc1",
+                size: "s-1vcpu-1gb",
+                image: "ubuntu-24-04-x64"
+            }
+        });
+    });
+
+    it("creates a droplet from a blueprint document", async () => {
+        mockedRequest.mockResolvedValue({
+            droplet: { id: 43, status: "new", name: "web-01", memory: 1024, image: {}, size: {} },
+            links: { actions: [] }
+        });
+
+        await createDroplet({
+            blueprint: {
+                name: "create-single-droplet",
+                droplet: {
+                    name: "web-01",
+                    region: "nyc3",
+                    size: "s-1vcpu-1gb",
+                    image: "ubuntu-24-04-x64"
+                }
+            }
+        });
+
+        expect(mockedRequest).toHaveBeenCalledWith({
+            method: "POST",
+            url: "/droplets",
+            data: {
+                name: "web-01",
+                region: "nyc3",
                 size: "s-1vcpu-1gb",
                 image: "ubuntu-24-04-x64"
             }

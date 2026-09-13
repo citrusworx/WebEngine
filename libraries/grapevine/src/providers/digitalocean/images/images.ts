@@ -2,7 +2,7 @@ import { parseYAML } from "../../../infrastructure/util/utilities.js";
 import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
 
-export interface ImageSpec {
+export interface ImageBlueprint {
     name: string;
     url?: string;
     region?: string;
@@ -11,12 +11,12 @@ export interface ImageSpec {
     tags?: string[];
 }
 
-export interface ImageBlueprint {
+export interface ImageBlueprintDocument {
     name?: string;
     distribution?: string;
     blueprint: {
         name: string;
-        image: ImageSpec;
+        image: ImageBlueprint;
     };
 }
 
@@ -47,10 +47,10 @@ export async function listAllImages(
     return response.images;
 }
 
-export async function createCustomImage(schematic: string | ImageSpec): Promise<ImageResource> {
+export async function createCustomImage(schematic: string | ImageBlueprint): Promise<ImageResource> {
     const payload =
         typeof schematic === "string"
-            ? cleanPayload(parseYAML<ImageBlueprint>(schematic).blueprint.image)
+            ? cleanPayload(parseYAML<ImageBlueprintDocument>(schematic).blueprint.image)
             : cleanPayload(schematic);
     const response = await doRequest<{ image: ImageResource }>({
         method: "POST",
@@ -70,7 +70,7 @@ export async function listExistingImage(imageId: string | number): Promise<Image
 
 export async function updateImage(
     imageId: string | number,
-    blueprint: Partial<ImageSpec>
+    blueprint: Partial<ImageBlueprint>
 ): Promise<ImageResource> {
     const response = await doRequest<{ image: ImageResource }>({
         method: "PUT",

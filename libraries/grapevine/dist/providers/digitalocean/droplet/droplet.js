@@ -1,15 +1,37 @@
 import { parseYAML } from "../../../infrastructure/util/utilities.js";
 import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
-function dropletPayload(spec) {
-    return cleanPayload(spec);
+export function isDropletBlueprintDocument(value) {
+    if (!value || typeof value !== "object" || !("blueprint" in value)) {
+        return false;
+    }
+    const blueprint = value.blueprint;
+    return Boolean(blueprint && typeof blueprint === "object" && blueprint.droplet);
+}
+function isDropletWrap(value) {
+    if (!("droplet" in value) || !value.droplet || typeof value.droplet !== "object") {
+        return false;
+    }
+    return "region" in value.droplet && "size" in value.droplet && "image" in value.droplet;
+}
+export function resolveDropletBlueprint(input) {
+    if (isDropletBlueprintDocument(input)) {
+        return input.blueprint.droplet;
+    }
+    if (isDropletWrap(input)) {
+        return input.droplet;
+    }
+    return input;
+}
+function dropletPayload(blueprint) {
+    return cleanPayload(blueprint);
 }
 export async function deployByBlueprint(blueprint) {
     const manifest = parseYAML(blueprint);
     const response = await doRequest({
         method: "POST",
         url: "/droplets",
-        data: dropletPayload(manifest.blueprint.droplet)
+        data: dropletPayload(resolveDropletBlueprint(manifest))
     });
     return response.droplet;
 }
@@ -33,11 +55,10 @@ export async function getDroplet(id) {
     return response.droplet;
 }
 export async function createDroplet(droplet) {
-    const spec = "droplet" in droplet ? droplet.droplet : droplet;
     const response = await doRequest({
         method: "POST",
         url: "/droplets",
-        data: dropletPayload(spec)
+        data: dropletPayload(resolveDropletBlueprint(droplet))
     });
     return response.droplet;
 }

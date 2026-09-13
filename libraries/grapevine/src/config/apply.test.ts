@@ -140,6 +140,7 @@ describe("apply grape config", () => {
         expect(createDroplet).toHaveBeenCalledWith(
             expect.objectContaining({
                 name: "web-01",
+                region: "nyc1",
                 vpc_uuid: "vpc-1",
                 ssh_keys: [7]
             })
@@ -157,5 +158,30 @@ describe("apply grape config", () => {
         expect(createDomainRecord).toHaveBeenCalled();
         expect(result.droplets[0]?.id).toBe(99);
         expect(result.warnings).toEqual([]);
+    });
+
+    it("applies a classic DropletBlueprint document", async () => {
+        const { createDroplet } = await import("../providers/digitalocean/droplet/droplet.js");
+        await applyGrapeConfig(
+            validateGrapeConfig({
+                grapevine: "1.0",
+                provider: "digitalocean",
+                blueprint: {
+                    name: "create-single-droplet",
+                    droplet: {
+                        name: "from-blueprint",
+                        region: "nyc3",
+                        size: "s-1vcpu-1gb",
+                        image: "ubuntu-24-04-x64"
+                    }
+                }
+            })
+        );
+        expect(createDroplet).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: "from-blueprint",
+                region: "nyc3"
+            })
+        );
     });
 });

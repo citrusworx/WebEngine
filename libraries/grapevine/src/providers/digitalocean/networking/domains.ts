@@ -12,6 +12,8 @@ export interface DomainCreateRequest {
     ip_address?: string;
 }
 
+export type DomainBlueprint = DomainCreateRequest;
+
 export interface DomainRecord {
     id?: number;
     type: string;
