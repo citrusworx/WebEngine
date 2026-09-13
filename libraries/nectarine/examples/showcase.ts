@@ -55,15 +55,19 @@ async function main(): Promise<void> {
     }
 
     const fromConfig = createPgAdapterFromConfig(config);
-    const pg = fromConfig ?? (creds ? createPgAdapter(creds) : null);
+    const fromCreds = creds ? createPgAdapter(creds) : null;
+    const pg = fromConfig ?? fromCreds;
     const live = process.env.NECTARINE_EXAMPLE_LIVE === "1";
 
     if (live && pg) {
         console.log("Postgres adapter: live (NECTARINE_EXAMPLE_LIVE=1)");
-        await pg.connect();
         try {
+            await pg.connect();
             const result = await pg.query("SELECT 1 AS ok");
             console.log(`  SELECT 1 AS ok → ${JSON.stringify(result.rows)}`);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            console.log(`  live query failed: ${message}`);
         } finally {
             await pg.disconnect();
         }
@@ -78,10 +82,8 @@ async function main(): Promise<void> {
         console.log("Postgres adapter: dry-run (set NECTARINE_EXAMPLE_LIVE=1 to execute)");
     }
 
-    console.log(
-        `  createPgAdapterFromConfig: ${fromConfig ? "ready" : "null"}` +
-            (creds && !fromConfig ? "; createPgAdapter: ready" : ""),
-    );
+    console.log(`  createPgAdapterFromConfig: ${fromConfig ? "ready" : "null"}`);
+    console.log(`  createPgAdapter: ${fromCreds ? "ready" : "skipped (no credentials)"}`);
     const sample = compiled[0];
     console.log(`  would query: ${sample.sql}`);
     console.log(`  params: ${JSON.stringify(sample.params)}`);
