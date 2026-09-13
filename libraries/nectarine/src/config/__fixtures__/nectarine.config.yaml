@@ -18,6 +18,13 @@ database:
       host: MS_HOST
       port: MS_PORT
       database: MS_DB
+  mongodb:
+    env:
+      user: MG_USER
+      password: MG_PASS
+      host: MG_HOST
+      port: MG_PORT
+      database: MG_DB
 
 transport:
   server: seltzer
