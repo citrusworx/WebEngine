@@ -1,14 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parser = void 0;
-const jsyaml = require('js-yaml');
-const fs = require('fs');
+const node_fs_1 = __importDefault(require("node:fs"));
+const js_yaml_1 = __importDefault(require("js-yaml"));
+const sql_js_1 = require("../compiler/sql.js");
 exports.parser = {
     // Create parseYAML function that takes a filepath and returns the parsed YAML as an object
     yaml: (filepath) => {
-        const file = fs.readFileSync(filepath, 'utf8');
-        const yaml = jsyaml.load(file);
-        console.log(yaml);
+        const file = node_fs_1.default.readFileSync(filepath, 'utf8');
+        const yaml = js_yaml_1.default.load(file);
         return yaml;
     },
     // Create registerRoute function that takes a YAML string, method, and route, and returns the route configuration for that method and route
@@ -36,13 +39,12 @@ exports.parser = {
         }
         return obj;
     },
+    /**
+     * Compile a query object from {@link parser.genSQL} into SQL.
+     * Delegates to the shared compiler so this is not a second code path.
+     */
     buildSQL: (genSQL) => {
-        // Take the genSQL object and parse through to make sure
-        // 1. Validate shape
-        // 2. Validate semantics (required keys exist, proper keys, operators are from DSL set)
-        // 3. Tokenize each part of the genSQL object
-        // 4. Normalize (convert YAML -> SQL)
-        // 5. Compile (Create SQL statement from tokens)
-    }
+        return (0, sql_js_1.compileQuery)(genSQL);
+    },
 };
 //# sourceMappingURL=util.js.map

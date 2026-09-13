@@ -47,6 +47,18 @@ describe("CCompiler", () => {
         );
     });
 
+    it("compiles the remaining user.yml query names", () => {
+        expect(compileNamed("user", "get", "UsersByEmail")).toBe(
+            "SELECT email FROM users WHERE email = $1",
+        );
+        expect(compileNamed("user", "get", "UserLogin")).toBe(
+            "SELECT id, name, password FROM users WHERE email = $1",
+        );
+        expect(compileNamed("user", "update", "UserPassword")).toBe(
+            "UPDATE users SET password = $1, updated_at = NOW() WHERE email = $2",
+        );
+    });
+
     it("throws on an unknown operator", () => {
         const compiler = new CCompiler();
         const cleaned = {
