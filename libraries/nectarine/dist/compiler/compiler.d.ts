@@ -5,6 +5,7 @@ export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.
 export type { QueryType } from "./normalize.js";
 export type { CompiledTable, CompileSchemaOptions, DdlVendor } from "./ddl.js";
 export { compileQuery, CRUD_METHODS, isCrudMethod, OP_TOKENS, QueryCompileError, } from "./sql.js";
+export { quoteIdent, quoteIdentPath } from "./identifiers.js";
 export { compileSchema, compileSchemaPlan, compileSchemas, compileTable, DDL_VENDORS, schemaFieldEnumValues, SchemaCompileError, } from "./ddl.js";
 export { inferMethodFromType, METHOD_ALIASES, normalizeQuery, resolveCrudMethod, } from "./normalize.js";
 export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";

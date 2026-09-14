@@ -9,8 +9,13 @@ const schemaDir = path.join(packageRoot, "src/schemas");
 const compiler = new CCompiler();
 
 /**
- * Every Blackwater `*Schema.yml`. Compiled together so foreign keys
- * order table bootstrap correctly. App code does not own the SQL text.
+ * Intentional Phase 3 scope: every Blackwater `*Schema.yml`, not only the
+ * live product + waitlist pair. `migrate()` creates the full domain (course,
+ * order, booking, …) in FK order so named queries have tables. Product and
+ * waitlist remain the only live DML paths.
+ *
+ * Additive `{ additive: true }` is NOT a migrator: it emits
+ * `ADD COLUMN IF NOT EXISTS` only. No DROP, rename, or type change (not Flyway).
  */
 export const SCHEMA_FILES = [
   "client/clientSchema.yml",
@@ -52,7 +57,9 @@ export const waitlistSourceApps = schemaFieldEnumValues(
 
 /**
  * Compiler-assembled DDL. App helpers pass a name, never a SQL literal.
- * `bootstrap` is additive so existing live tables pick up new columns.
+ *
+ * `bootstrap` = whole-domain SCHEMA_FILES + additive ADD COLUMN (existing volumes).
+ * `liveBootstrap` = product + waitlist CREATE TABLE only (Docker init.sql lockstep).
  */
 export const namedDdlSql = {
   bootstrap: compileFiles(SCHEMA_FILES, true),

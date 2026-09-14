@@ -10,6 +10,7 @@
 
 import { isRecord, QueryCompileError } from "./errors.js";
 import { parseOrderByFragment, parseWhereFragment, whereNodeToYaml } from "./fragments.js";
+import { isSqlIdentifierPath, quoteIdentPath } from "./identifiers.js";
 import { inferMethodFromType, normalizeQuery } from "./normalize.js";
 import {
     BIND_CASTS,
@@ -45,7 +46,6 @@ export type CleanedQueries = {
     queries: Record<string, unknown>;
 };
 
-const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const NOW_LITERAL = /^now\(\)$/i;
 const ALLOWED_CASTS = new Set<string>(BIND_CASTS);
 
@@ -63,10 +63,13 @@ export function isCleanedQueries(value: unknown): value is CleanedQueries {
 }
 
 function assertIdentifier(name: string, label: string): void {
-    const parts = name.split(".");
-    if (parts.length === 0 || parts.some((part) => !IDENTIFIER.test(part))) {
+    if (!isSqlIdentifierPath(name)) {
         throw new QueryCompileError(`Invalid ${label}: ${name}`);
     }
+}
+
+function ident(name: string): string {
+    return quoteIdentPath(name);
 }
 
 function compileFunction(fn: unknown): string {
@@ -151,7 +154,7 @@ function normalizeColumns(columns: unknown, label: string, allowStar: boolean): 
             return ["*"];
         }
         assertIdentifier(trimmed, label);
-        return [trimmed];
+        return [ident(trimmed)];
     }
 
     if (!Array.isArray(columns) || columns.length === 0) {
@@ -169,7 +172,7 @@ function normalizeColumns(columns: unknown, label: string, allowStar: boolean): 
             return "*";
         }
         assertIdentifier(column, label);
-        return column;
+        return ident(column);
     });
 }
 
@@ -213,7 +216,7 @@ function compilePredicate(where: Record<string, unknown>): string {
         if (value !== undefined) {
             throw new QueryCompileError(`${operator} does not take a value`);
         }
-        return `${column} ${sqlOp}`;
+        return `${ident(column)} ${sqlOp}`;
     }
 
     if (value === undefined) {
@@ -221,10 +224,10 @@ function compilePredicate(where: Record<string, unknown>): string {
     }
 
     if (operator === "in" || operator === "not_in") {
-        return `${column} ${sqlOp} (${compileInList(value)})`;
+        return `${ident(column)} ${sqlOp} (${compileInList(value)})`;
     }
 
-    return `${column} ${sqlOp} ${compileValue(value)}`;
+    return `${ident(column)} ${sqlOp} ${compileValue(value)}`;
 }
 
 function compileWhere(where: unknown, parent?: "and" | "or"): string {
@@ -274,19 +277,19 @@ function compileOrderBy(orderBy: unknown): string {
         .map((term, index) => {
             if (typeof term === "string") {
                 assertIdentifier(term, "orderBy");
-                return term;
+                return ident(term);
             }
             if (!isRecord(term) || typeof term.column !== "string") {
                 throw new QueryCompileError(`orderBy[${index}] requires column`);
             }
             assertIdentifier(term.column, "orderBy");
             if (term.direction === undefined) {
-                return term.column;
+                return ident(term.column);
             }
             if (term.direction !== "ASC" && term.direction !== "DESC") {
                 throw new QueryCompileError(`Invalid orderBy direction: ${String(term.direction)}`);
             }
-            return `${term.column} ${term.direction}`;
+            return `${ident(term.column)} ${term.direction}`;
         })
         .join(", ");
 }
@@ -298,7 +301,7 @@ function compileSelect(query: Record<string, unknown>): string {
     assertIdentifier(query.from, "table");
 
     const fields = normalizeColumns(query.select, "select", true).join(", ");
-    let sql = `SELECT ${fields} FROM ${query.from}`;
+    let sql = `SELECT ${fields} FROM ${ident(query.from)}`;
 
     if (query.where !== undefined) {
         sql += ` WHERE ${compileWhere(query.where)}`;
@@ -332,7 +335,7 @@ function compileInsert(query: Record<string, unknown>): string {
     }
 
     const compiled = values.map((value) => compileValue(value));
-    let sql = `INSERT INTO ${into} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
+    let sql = `INSERT INTO ${ident(into)} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
 
     const returning = query.returning ?? query.insert.returning;
     if (returning !== undefined) {
@@ -365,7 +368,7 @@ function compileUpdate(query: Record<string, unknown>): string {
         (column, index) => `${column} = ${compileValue(values[index])}`,
     );
 
-    return `UPDATE ${query.table} SET ${assignments.join(", ")} WHERE ${compileWhere(query.where)}`;
+    return `UPDATE ${ident(query.table)} SET ${assignments.join(", ")} WHERE ${compileWhere(query.where)}`;
 }
 
 function compileDelete(query: Record<string, unknown>): string {
@@ -378,7 +381,7 @@ function compileDelete(query: Record<string, unknown>): string {
         throw new QueryCompileError("DELETE requires a where clause");
     }
 
-    return `DELETE FROM ${query.from} WHERE ${compileWhere(query.where)}`;
+    return `DELETE FROM ${ident(query.from)} WHERE ${compileWhere(query.where)}`;
 }
 
 function inferQueryKind(query: Record<string, unknown>): CrudMethod {

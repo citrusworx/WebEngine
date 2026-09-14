@@ -24,7 +24,9 @@ Adapter           →  query(sql, params)   // execute only
   cast; `{ value: $N, cast: jsonb }` is equivalent). YAML-authored constants
   (`true`, `42`, `'published'`) are allowed only as tagged `{ const: ... }`
   or via the closed `where` fragment grammar — never via string interpolation
-  of user input. Schema field tokens (`jsonb NOT NULL`, `enum(...)`,
+  of user input. Mixed-case identifiers (`isActive`, `originalPrice`) are
+  quoted (`"isActive"`) so Postgres does not fold them to lowercase.
+  Schema field tokens (`jsonb NOT NULL`, `enum(...)`,
   `DEFAULT NOW()`) become `CREATE TABLE` / `CREATE INDEX`.
 - **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
   compiler. They do not assemble statements.
