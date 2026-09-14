@@ -118,38 +118,35 @@ psql postgresql://myapp_user:password@localhost:5432/myapp
 
 ### Setup in Code
 
+Nectarine supplies the Postgres adapter and compiled queries. **Seltzer** hosts HTTP. There is no `generateRoutes` — register object-based routes on the host. Auto-wiring from `*API.yml` is the next engine step.
+
 ```typescript
-import { loadSchema, generateRoutes } from "@citrusworx/nectarine";
-import { PostgresAdapter } from "@citrusworx/nectarine/adapters/postgres";
-import express from "express";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapter, createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
-const app = express();
-app.use(express.json());
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const pg = createPgAdapterFromConfig(nectarine)
+  ?? createPgAdapter(nectarine.resolveCredentials("postgres")!);
 
-// Configure PostgreSQL adapter
-const pgAdapter = new PostgresAdapter({
-  user: process.env.PG_USER || "postgres",
-  host: process.env.PG_HOST || "localhost",
-  password: process.env.PG_PASS,
-  database: process.env.PG_DB || "myapp",
-  port: parseInt(process.env.PG_PORT || "5432"),
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+const app = Seltzer.init();
 
-// Load schemas
-const schema = loadSchema("schemas/user/userSchema.yml");
-const queries = loadSchema("schemas/user/userQueries.yml");
-const api = loadSchema("schemas/user/userAPI.yml");
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: async ({ json }) => {
+    await pg.connect();
+    // Compile named YAML queries with CCompiler; adapters only run (sql, params).
+    json({ ok: true });
+  },
+};
 
-// Generate routes
-const userRoutes = generateRoutes(schema, queries, api);
-app.use("/api", userRoutes);
-
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
-});
+app.route(listUsers);
+app.listen(3000);
 ```
+
+Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation for WebEngine / Blackwater.
 
 ### Connection Pooling
 

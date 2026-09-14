@@ -17,7 +17,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ Automatic index creation for PRIMARY/UNIQUE/FOREIGN keys
 
 ### Database Adapters
-- ✓ PostgreSQL adapter (with Zod validation)
+- ✓ PostgreSQL adapter
 - ✓ Basic MySQL support
 - ✓ MongoDB support (collections and aggregation)
 - ✓ Connection pooling (all adapters)
@@ -30,18 +30,18 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ Parameter binding ($1, $2 style)
 - ✓ WHERE clauses and conditions
 
-### API Generation
-- ✓ Automatic Express route generation
-- ✓ HTTP method mapping (GET, POST, PUT, PATCH, DELETE)
-- ✓ Path parameter extraction (:id, :name, etc.)
-- ✓ Query string parameter support
-- ✓ JSON request/response handling
+### API contracts
+- ✓ YAML API definitions (`*API.yml`) per resource
+- ✓ WebEngine / Blackwater hosts with Seltzer (`transport.server: seltzer`)
+- ✓ HTTP method mapping in API YAML (GET, POST, PUT, PATCH, DELETE)
+- ✓ Path parameter shapes (`:id`, `:name`, etc.)
+- 🔄 Seltzer route auto-wiring from API YAML (next engine step)
+- Express is **not** the generated or default server
 
 ### Validation
-- ✓ Zod schema integration
-- ✓ Automatic validation on all routes
-- ✓ Type-safe request handling
-- ✓ Error responses with validation details
+- Planned: Zod schema validation on the Seltzer-hosted path
+- Schema field types (required, unique, enums) are the intended source of those rules
+- Hosts register object-based Seltzer routes by hand until auto-wiring lands
 
 ### Schema Distribution
 - ✓ Pre-built schemas: User, Blog, CMS, Store, Banking
@@ -60,9 +60,9 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - Current: File-based loading
 - Planned: Runtime schema registry, schema versioning
 
-### Middleware System
-- Current: Basic support
-- Planned: Authorization middleware, request/response transformers
+### Host pipeline
+- Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers
+- Planned: Seltzer pipeline stages (parse, validate with Zod, authorize) plus auto-wiring from API YAML
 
 ### Relationship Loading
 - Current: Manual join definitions
@@ -179,11 +179,11 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 
 4. **No Authentication Out-of-Box**
    - No JWT/session handling (yet)
-   - **Workaround**: Use Express middleware
+   - **Workaround**: Guard Seltzer handlers (or a future pipeline stage) on the host
 
 5. **No Authorization Rules**
    - All routes accessible if specified
-   - **Workaround**: Add custom middleware before routes
+   - **Workaround**: Add checks in the Seltzer `Route` handler until host middleware/pipeline stages exist
 
 6. **Limited Aggregation**
    - Basic aggregations only
@@ -320,32 +320,22 @@ v0.0.1 (Current)
 ├─ Core schema system ✓
 ├─ PostgreSQL adapter ✓
 ├─ MongoDB adapter ✓
-├─ Basic query system ✓
-└─ Express route generation ✓
+├─ Basic query compiler ✓
+├─ nectarine.config.yaml ✓
+└─ Seltzer hosting (WebEngine / Blackwater) ✓
+   Route auto-wiring from API YAML → next engine step
 
-v0.1.0 (Q2 2024)
+v0.1.0
 ├─ MySQL full support
 ├─ Query optimization
 ├─ Relationship loader
 └─ Enhanced documentation
 
-v0.2.0 (Q3 2024)
-├─ GraphQL support
-├─ Caching layer
-├─ Hooks system
-└─ WebSocket support
-
-v0.5.0 (Q4 2024)
-├─ Authorization system
-├─ Audit logging
-├─ Multi-tenant support
-└─ API documentation
-
-v1.0.0 (Q1 2025)
-├─ Production-ready
-├─ Full feature parity with roadmap
-├─ Performance optimizations
-└─ Comprehensive documentation
+v0.2.0
+├─ Auto-wired Seltzer routes from API YAML
+├─ Zod validation on the hosted path
+├─ GraphQL support (later)
+└─ Caching layer
 ```
 
 ---
@@ -367,8 +357,9 @@ v1.0.0 (Q1 2025)
 - Initial alpha release
 - Basic schema definitions
 - PostgreSQL & MongoDB support
-- Automatic Express route generation
-- Zod validation integration
+- Config loader (`nectarine.config.yaml`, `transport.server: seltzer`)
+- Seltzer as the WebEngine / Blackwater HTTP transport (not Express)
+- Zod planned as validation on the hosted path
 
 ---
 

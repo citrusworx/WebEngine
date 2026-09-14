@@ -10,7 +10,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 | `libraries/sig` | `@citrusworx/sigjs` | Active alpha | Signals, effects, JSX runtime, JSX dev runtime, router, and tests | [Sig.js](./sigjs/README.md) |
 | `libraries/juice` | `@citrusworx/juiceui` | Beta | CSS-first attribute-driven styling/composition system, modular themes, app-owned theme generation, and lightweight runtime hooks | [Juice](./juice/README.md) |
 | `libraries/seltzer` | `@citrusworx/seltzer` | Early implementation | Core server/client scaffolding and an evolving HTTP runtime design | [Seltzer](./seltzer/README.md) · [Study guide](./seltzer/courses.md) |
-| `libraries/nectarine` | `@citrusworx/nectarine` | Active alpha | Compiler plus PostgreSQL, MySQL, and MongoDB adapters with YAML-driven model assets | [Nectarine](./nectarine/README.md) |
+| `libraries/nectarine` | `@citrusworx/nectarine` | Active alpha | Compiler plus PostgreSQL, MySQL, and MongoDB adapters; WebEngine/Blackwater hosts HTTP with Seltzer | [Nectarine](./nectarine/README.md) |
 | `libraries/grapevine` | `@citrusworx/grapevine` | Active development | DigitalOcean provider surface for droplets, firewalls, VPC, SSH, monitoring, and related utilities | [Grapevine](./grapevine/README.md) |
 | `libraries/dns` | `@citrusworx/dns` | Early implementation | Core DNS/registrar abstractions and a ResellerClub adapter | [DNS](./dns/README.md) |
 | `libraries/stenzil` | `@citrusworx/stenzil` | Early implementation | Lexer, parser, AST types, and examples for the Stenzil language | [Stenzil](./stenzil/README.md) |

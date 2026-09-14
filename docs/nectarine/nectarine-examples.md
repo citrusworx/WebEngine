@@ -232,27 +232,35 @@ comment:
 
 ### Usage Example
 
+Host with Seltzer. Nectarine loads the YAML triad; it does not spin up Express or export `generateRoutes`. Auto-wiring from `*API.yml` is the next engine step.
+
 ```typescript
-import express from "express";
-import { loadSchema, generateRoutes } from "@citrusworx/nectarine";
+import { loadNectarineConfig, loadSchema } from "@citrusworx/nectarine";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
-const app = express();
-app.use(express.json());
-
-// Load schemas
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
 const schema = loadSchema("schemas/blog/blogSchema.yml");
 const queries = loadSchema("schemas/blog/blogQueries.yml");
 const api = loadSchema("schemas/blog/blogAPI.yml");
 
-// Generate routes
-const routes = generateRoutes(schema, queries, api);
-app.use("/api", routes);
+const app = Seltzer.init();
 
-// Test API
-app.listen(3000, () => {
-  console.log("Blog API running on http://localhost:3000");
-  console.log("GET http://localhost:3000/api/posts");
-  console.log("POST http://localhost:3000/api/users");
+const listPosts: Route = {
+  method: "GET",
+  path: "/api/posts",
+  handler: ({ json }) => {
+    json({ schema, queries, api, app: nectarine.app });
+  },
+};
+
+app.route(listPosts);
+
+app.listen(3000, {
+  onListening: (port) => {
+    console.log(`Blog API on http://localhost:${port}`);
+    console.log(`GET http://localhost:${port}/api/posts`);
+  },
 });
 ```
 

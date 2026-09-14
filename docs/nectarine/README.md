@@ -1,8 +1,8 @@
 # Nectarine
 
-Nectarine is a config-driven backend library that empowers developers to define models, schemas, queries, and APIs through YAML — and have a fully functional backend generated from that definition.
+Nectarine is a config-driven backend library. Define models, schemas, queries, and APIs in YAML. Nectarine supplies the config loader, query compiler, and database adapters. **Seltzer** is the HTTP transport that hosts those contracts in WebEngine / Blackwater.
 
-Nectarine is a WebEngine native module but is fully independent. It can be used in any project.
+Nectarine is a WebEngine native library but is fully independent. It can be used in any project. It does not spin up a server.
 
 **Latest Version**: 0.0.1 (Alpha)
 
@@ -10,13 +10,14 @@ Nectarine is a WebEngine native module but is fully independent. It can be used 
 
 ## Philosophy
 
-Backend development is repetitive. Models, schemas, queries, and API routes follow predictable patterns that should not require writing the same boilerplate over and over. Nectarine lets you define your backend in YAML and handles the rest.
+Backend development is repetitive. Models, schemas, queries, and API routes follow predictable patterns that should not require writing the same boilerplate over and over. Nectarine lets you define data and query contracts in YAML; the host serves them with Seltzer.
 
 - **Config driven** — models, schemas, queries, and APIs defined in YAML
 - **Database agnostic** — PostgreSQL, MySQL, and MongoDB supported
-- **Transport agnostic** — defaults to Express + Zod + Axios, configurable
+- **Library first** — Nectarine supplies config, compiler, and adapters; it does not spin up a server
+- **Seltzer transport** — WebEngine / Blackwater hosts HTTP with Seltzer (`transport.server: seltzer`)
 - **GUI ready** — visual editor planned for no-code backend creation
-- **WebEngine integrated** — works seamlessly as a WebEngine backend module
+- **WebEngine integrated** — works as the WebEngine data/config library, hosted by Seltzer
 
 ---
 
@@ -24,21 +25,45 @@ Backend development is repetitive. Models, schemas, queries, and API routes foll
 
 ```bash
 # Install
-yarn add @citrusworx/nectarine
+yarn add @citrusworx/nectarine @citrusworx/seltzer
+```
 
-# Define schema (schemas/user/userSchema.yml)
-User:
-  table: users
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    username: VARCHAR(100) UNIQUE NOT NULL
-    email: VARCHAR(100) UNIQUE NOT NULL
-    password: VARCHAR(255) NOT NULL
+```yaml
+# nectarine.config.yaml
+version: "0.1"
+transport:
+  server: seltzer   # WebEngine / Blackwater default. Do not use Express route generation.
+database:
+  default: postgres
+resources:
+  - name: user
+    schema: ./schemas/user/userSchema.yml
+    queries: ./schemas/user/userQueries.yml
+    api: ./schemas/user/userAPI.yml
+```
 
-# Generate backend
-const userRoutes = generateRoutes(schema, queries, api);
-app.use("/api", userRoutes);
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const app = Seltzer.init();
+
+// Object-based Seltzer routes. Auto-wiring from *API.yml is the next engine step.
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: ({ json }) => {
+    json({ resource: nectarine.getResource("user").name });
+  },
+};
+
+app.route(listUsers);
+app.listen(3000);
+```
+
+```bash
 # Use API
 GET /api/users
 POST /api/users
@@ -76,7 +101,7 @@ POST /api/users
 
 ## How It Works
 
-Nectarine reads three YAML files per resource and generates a fully functional backend:
+Nectarine reads three YAML files per resource. The host serves HTTP with Seltzer:
 
 ```
 userSchema.yml    ← Model definitions and table structure
@@ -86,29 +111,31 @@ userAPI.yml       ← REST endpoint routing
 
 These three files define a complete backend resource. Nectarine:
 1. Parses the YAML schemas
-2. Generates database queries
-3. Wires up Express routes
-4. Validates data with Zod
-5. Exposes a REST API
+2. Compiles named database queries
+3. Supplies adapters (PostgreSQL, MySQL, MongoDB)
+
+The host (WebEngine / Blackwater) runs **Seltzer**:
+4. Registers object-based Seltzer routes (auto-wiring from API YAML is the next engine step)
+5. Will validate with Zod once that hosted path lands
 
 ---
 
 ## Installation
 
 ```bash
-yarn add @citrusworx/nectarine
+yarn add @citrusworx/nectarine @citrusworx/seltzer
 ```
 
 ---
 
 ## Core Features
 
-✓ **Schema-Driven**: Define backend in YAML, get API automatically
+✓ **Schema-Driven**: Define models, queries, and APIs in YAML
 ✓ **Database Support**: PostgreSQL, MySQL, MongoDB
-✓ **Type Safe**: Zod validation on all routes
-✓ **Express Native**: Generates Express routes
+✓ **Seltzer Hosted**: WebEngine / Blackwater serves HTTP with Seltzer
+✓ **Validation Intent**: Zod is the planned validation layer on the hosted path
 ✓ **Pre-built Schemas**: User, Blog, CMS, Store, Banking models included
-✓ **Query Builder**: SELECT, INSERT, UPDATE, DELETE operations
+✓ **Query Compiler**: SELECT, INSERT, UPDATE, DELETE from YAML tokens
 ✓ **Relationships**: Foreign keys and relationships supported
 ✓ **Flexible**: Extend and override as needed
 
@@ -144,12 +171,12 @@ Comment:
     author_id: int FOREIGN KEY REFERENCES users(id)
 ```
 
-Nectarine automatically generates:
+Those YAML files are the CRUD contracts. The compiler emits named queries; Seltzer hosts matching routes (auto-wiring from API YAML is next):
 - 3 CREATE operations (users, posts, comments)
 - 3 READ operations (get all, get by ID)
 - 3 UPDATE operations
 - 3 DELETE operations
-- Full CRUD API with validation
+- REST endpoints defined in API YAML; Zod validation planned on the hosted path
 
 **[See full blog example →](./nectarine-examples.md#simple-blog)**
 
@@ -169,9 +196,10 @@ Nectarine automatically generates:
 ## What's Included
 
 - Schema definition system
-- Query builder
-- Express route generation
-- Zod validation
+- Query compiler
+- `nectarine.config.yaml` loader
+- Seltzer as the WebEngine / Blackwater HTTP transport
+- Zod as planned route validation
 - PostgreSQL adapter
 - MongoDB adapter
 - MySQL adapter
@@ -207,7 +235,7 @@ Nectarine automatically generates:
 ## Requirements
 
 - Node.js 14+
-- Express.js
+- `@citrusworx/seltzer` when hosting as WebEngine / Blackwater
 - One of: PostgreSQL, MySQL, MongoDB
 
 ---
@@ -317,7 +345,7 @@ user:
 
 ## API Definition
 
-APIs define the REST endpoints for each resource. Nectarine generates the routes and wires them to the appropriate queries.
+APIs define REST endpoints for each resource. Hosts register matching object-based Seltzer `Route` definitions today. Auto-wiring those routes from `*API.yml` is the next engine step.
 
 ```yaml
 # userAPI.yml
@@ -437,16 +465,19 @@ YAML declares the env key names (typically `MG_USER`, `MG_HOST`, `MG_PASS`, `MG_
 
 ## Default Transport
 
-Nectarine's default transport stack is **Express + Zod + Axios**. This is configurable via `nectarine.config.yaml`.
+Nectarine does **not** spin up an HTTP server. It is a library: config, compiler, and adapters.
+
+WebEngine / Blackwater hosts with **Seltzer**. Blackwater's `nectarine.config.yaml` sets `transport.server: seltzer` and tells hosts not to use Express route generation.
 
 ```yaml
-# nectarine.config.yaml (design phase)
+# nectarine.config.yaml
 version: "0.1"
 
 transport:
-  server: express       # express | fastify | hono
-  validation: zod
-  client: axios
+  server: seltzer
+  # Object-based Seltzer Route definitions. Do not use Express route generation.
+  validation: zod       # planned on the hosted path
+  # client: axios       # optional; not part of the default stack
 
 database:
   default: postgres     # postgres | mysql | mongodb
@@ -458,18 +489,31 @@ resources:
     api: ./user/userAPI.yml
 ```
 
+Express may remain a historical or optional note. It is not what Nectarine does by default, and Nectarine does not generate or listen as an Express app. Route auto-wiring from `*API.yml` onto Seltzer is the next engine step.
+
 ---
 
 ## Usage with WebEngine
 
-When used as a WebEngine module, Nectarine is declared in `webengine.toml`:
+Nectarine is the WebEngine data/config library. The host process runs **Seltzer**; Nectarine does not start its own server.
 
-```toml
-[stack]
-backend = { lib = "nectarine", entry = "apps/server" }
+Blackwater's backend (`apps/blackwatersound/back`) is the current pattern:
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine/config";
+import { Seltzer } from "@citrusworx/seltzer";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const app = Seltzer.init();
+
+for (const route of routes) {
+  app.route(route);
+}
+
+app.listen(port, { locals, onListening });
 ```
 
-WebEngine starts Nectarine as part of the application stack, wires telemetry, and exposes Nectarine's API endpoints through the kernel.
+See [Seltzer](../seltzer/README.md) for the HTTP runtime.
 
 ---
 
@@ -486,10 +530,11 @@ v0.1  ← PostgreSQL, MySQL, MongoDB adapters       🔧 Active
        YAML-driven query generation
        YAML-driven API/route definition
        YAML-driven schema definition
-v0.2  ← nectarine.config.yaml
-       Express + Zod + Axios transport
-       Auto-generated routes from API YAML
-v0.3  ← Fastify + Hono transport options
+       nectarine.config.yaml (transport.server: seltzer)
+v0.2  ← Seltzer hosting as the WebEngine / Blackwater default
+       Auto-wired Seltzer routes from API YAML (next engine step)
+       Zod validation on the hosted path
+v0.3  ← Optional / historical alternate transports (e.g. Express)
        GraphQL support
 v0.4  ← GUI (powered by Sugar)
 v1.0  ← stable API
@@ -499,4 +544,4 @@ v1.0  ← stable API
 
 ## Status
 
-Nectarine is in active development. The database adapters and YAML definition system are functional. The config system and transport layer are in design phase.
+Nectarine is in active development. The database adapters, YAML definition system, and config loader are functional. WebEngine / Blackwater hosts with Seltzer. Route auto-wiring from API YAML is the next engine step.

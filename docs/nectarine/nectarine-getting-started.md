@@ -1,22 +1,22 @@
 # Nectarine Getting Started
 
-Quick introduction to Nectarine backend generation and schema-driven development.
+Quick introduction to Nectarine YAML contracts hosted with Seltzer.
 
 ## What is Nectarine?
 
-Nectarine is a config-driven backend library that empowers developers to define models, schemas, queries, and APIs through YAML — and have a fully functional backend generated from that definition.
+Nectarine is a config-driven backend library. Define models, schemas, queries, and APIs in YAML. Nectarine supplies the config loader, query compiler, and database adapters. WebEngine / Blackwater hosts HTTP with **Seltzer**.
 
 **Key Philosophy**:
 - Backend development should not require repetitive boilerplate
 - Models, schemas, queries, and APIs follow predictable patterns
-- Define your data model once, generate Express routes and database queries automatically
+- Define your data model once; compile named queries and host routes with Seltzer
 - Work with any database: PostgreSQL, MySQL, or MongoDB
-- Start building features, not infrastructure
+- Nectarine does not spin up a server — the host does
 
 ## Installation
 
 ```bash
-yarn add @citrusworx/nectarine
+yarn add @citrusworx/nectarine @citrusworx/seltzer
 ```
 
 ## Prerequisites
@@ -221,27 +221,36 @@ user:
         endpoint: /users/:id
 ```
 
-### Step 4: Generate Backend
+### Step 4: Host with Seltzer
+
+Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. There is no `generateRoutes` export yet — register object-based `Route` definitions on the host. Auto-wiring from `*API.yml` is the next engine step.
 
 ```typescript
-import { loadSchema, generateRoutes } from "@citrusworx/nectarine";
-import express from "express";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
-const app = express();
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const app = Seltzer.init();
 
-// Load schema
-const userSchema = loadSchema("schemas/user/userSchema.yml");
-const userQueries = loadSchema("schemas/user/userQueries.yml");
-const userAPI = loadSchema("schemas/user/userAPI.yml");
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: ({ json }) => {
+    json({ resource: nectarine.getResource("user").name });
+  },
+};
 
-// Generate and register routes
-const userRoutes = generateRoutes(userSchema, userQueries, userAPI);
-app.use("/api", userRoutes);
+app.route(listUsers);
 
-app.listen(3000, () => {
-  console.log("Backend running on http://localhost:3000");
+app.listen(3000, {
+  onListening: (port) => {
+    console.log(`Seltzer + Nectarine listening on http://localhost:${port}`);
+  },
 });
 ```
+
+Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation for WebEngine / Blackwater.
 
 ## Key Features
 
@@ -258,19 +267,19 @@ adapter: mysql
 adapter: mongodb
 ```
 
-### Type Safety with Zod
+### Type Safety with Zod (planned)
 
-Automatic validation on all routes:
+Zod is the intended validation layer on the Seltzer-hosted path. Schema field types (required, unique, enums) are the source of those rules. Route auto-wiring will apply them; today hosts register Seltzer routes by hand.
 
 ```typescript
-// Automatically generated from schema
+// Intended contract from schema YAML
 POST /users
 {
   "username": "john_doe",    // Required
   "email": "john@example.com", // Unique, required
   "password": "secure123"     // Required
 }
-// Returns 400 if validation fails
+// Hosts should reject invalid bodies; Zod wiring is the next validation step
 ```
 
 ### Relationships

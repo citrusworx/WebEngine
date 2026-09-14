@@ -1,6 +1,6 @@
 # Nectarine API Reference
 
-Complete API reference for Nectarine backend generation.
+Complete API reference for Nectarine config, schemas, queries, and host integration.
 
 ## Table of Contents
 
@@ -8,7 +8,7 @@ Complete API reference for Nectarine backend generation.
 - [Query Types](#query-types)
 - [API Routes](#api-routes)
 - [Field Types](#field-types)
-- [Core Functions](#core-functions)
+- [Core Functions](#core-functions) (`loadNectarineConfig`, hosting with Seltzer)
 - [TypeScript Types](#typescript-types)
 
 ---
@@ -380,36 +380,34 @@ const userQueries = loadSchema("schemas/user/userQueries.yml");
 const userAPI = loadSchema("schemas/user/userAPI.yml");
 ```
 
-### generateRoutes()
+### Hosting with Seltzer
 
-Generate Express routes from schemas.
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Register object-based `Route` definitions on the host. Auto-wiring those routes from `*API.yml` is the next engine step.
 
-**Signature**:
-```typescript
-function generateRoutes(
-  schema: SchemaDefinition,
-  queries: QueryDefinition,
-  api: APIDefinition
-): Express.Router
-```
-
-**Parameters**:
-- `schema` - Schema definitions
-- `queries` - Query definitions
-- `api` - API route definitions
-
-**Returns**: Express Router instance
+Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
 
 **Example**:
 ```typescript
-import { generateRoutes } from "@citrusworx/nectarine";
-import express from "express";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
-const app = express();
-const userRoutes = generateRoutes(userSchema, userQueries, userAPI);
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const app = Seltzer.init();
 
-app.use("/api", userRoutes);
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: ({ json }) => {
+    json({ resource: nectarine.getResource("user").name });
+  },
+};
+
+app.route(listUsers);
+app.listen(3000);
 ```
+
+See Blackwater (`apps/blackwatersound/back/src/server.ts`) for the current host pattern.
 
 ### compileSchema()
 
@@ -526,7 +524,7 @@ console.log("Tables dropped");
 
 ### validateData()
 
-Validate data against schema using Zod.
+Validate data against schema. **Zod** is the planned validator on the Seltzer-hosted path; this helper is the intended contract, not a finished generate-routes pipeline.
 
 **Signature**:
 ```typescript
@@ -656,7 +654,7 @@ interface RouteDefinition {
 
 ### Error Responses
 
-Nectarine returns standard HTTP status codes:
+Seltzer handlers should return standard HTTP status codes:
 
 | Code | Type | Example |
 |------|------|---------|

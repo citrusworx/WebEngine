@@ -122,35 +122,38 @@ mongosh -u admin -p admin_password
 
 ### Setup in Code
 
+Nectarine supplies the MongoDB adapter. **Seltzer** hosts HTTP. There is no `generateRoutes` — register object-based routes on the host. Auto-wiring from `*API.yml` is the next engine step.
+
 ```typescript
-import { loadSchema, generateRoutes } from "@citrusworx/nectarine";
-import { MongoAdapter } from "@citrusworx/nectarine/adapters/mongo";
-import express from "express";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMongoAdapter, createMongoAdapterFromConfig } from "@citrusworx/nectarine/adapters/mg";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
-const app = express();
-app.use(express.json());
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const creds = nectarine.resolveCredentials("mongodb");
+if (!creds) {
+  throw new Error("MongoDB env is incomplete");
+}
 
-// Configure MongoDB adapter
-const mongoAdapter = new MongoAdapter({
-  uri: process.env.MONGO_URI || "mongodb://localhost:27017",
-  database: process.env.MONGO_DB || "myapp",
-  maxPoolSize: 10,
-  serverSelectionTimeoutMS: 5000,
-});
+const mg = createMongoAdapterFromConfig(nectarine) ?? createMongoAdapter(creds);
+const app = Seltzer.init();
 
-// Load schemas
-const schema = loadSchema("schemas/user/userSchema.yml");
-const queries = loadSchema("schemas/user/queries.yml");
-const api = loadSchema("schemas/user/api.yml");
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: async ({ json }) => {
+    await mg.connect();
+    const users = await mg.collection("users").find({}).toArray();
+    json(users);
+  },
+};
 
-// Generate routes
-const userRoutes = generateRoutes(schema, queries, api);
-app.use("/api", userRoutes);
-
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
-});
+app.route(listUsers);
+app.listen(3000);
 ```
+
+Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation for WebEngine / Blackwater.
 
 ### Connection Pooling
 
@@ -408,7 +411,7 @@ user:
 - Use indexes on frequently queried fields
 - Use connection pooling
 - Set TTL indexes for temporary data
-- Validate data with schemas (Zod)
+- Validate data with schemas (Zod is the planned validator on the Seltzer-hosted path)
 - Use transactions for related operations
 - Organize documents logically
 - Monitor indexes with `db.collection.getIndexes()`
