@@ -78,5 +78,5 @@ That must pass before publishing. It typechecks, rebuilds `dist/` (`prepack` run
 
 - Do **not** run `npm publish` / `yarn npm publish` from CI in this repository until a documented workflow exists with a real org token.
 - `prepack` is the source of truth for `dist/`. Committed `dist/` is for workspace consumers; the packed tarball is always rebuilt.
-- Database drivers stay optional. Postgres consumers: `npm install @citrusworx/nectarine pg`. The MongoDB 7 peer wants Node 20.9+; the package `engines` floor is Node 18 for Postgres/MySQL.
+- Database drivers stay optional. Postgres consumers: `npm install @citrusworx/nectarine pg`. The MongoDB 7 peer wants Node 20.19+; the package `engines` floor is Node 18 for Postgres/MySQL.
 - Changesets `baseBranch` is `master`. On `cursor/blackwater-phase0-backend`, pass the PR base to `yarn changeset status --since=…` (the Nectarine Package workflow already does this).

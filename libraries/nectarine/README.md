@@ -51,7 +51,7 @@ Pick a client, then install **one** database driver for the adapter you use. Dri
 npm install @citrusworx/nectarine
 npm install pg          # PostgreSQL (typical WebEngine / Blackwater path)
 # npm install mysql2    # MySQL
-# npm install mongodb   # MongoDB (driver 7 wants Node 20.9+)
+# npm install mongodb   # MongoDB (driver 7 wants Node 20.19+)
 
 # yarn
 yarn add @citrusworx/nectarine
@@ -64,7 +64,7 @@ pnpm add pg
 
 Inside this monorepo, the workspace package is already linked; you do not `yarn add` it again. Contributors still run `yarn workspace @citrusworx/nectarine build` so `dist/` matches `src/`.
 
-Requires Node 18+. MongoDB adapter consumers should use Node 20.9+ (mongodb@7).
+Requires Node 18+. MongoDB adapter consumers should use Node 20.19+ (mongodb@7).
 
 ## Usage
 

@@ -242,7 +242,7 @@ Those YAML files are the CRUD contracts. The compiler emits named queries; Seltz
 
 ## Requirements
 
-- Node.js 18+ (MongoDB adapter: Node 20.9+ for `mongodb@7`)
+- Node.js 18+ (MongoDB adapter: Node 20.19+ for `mongodb@7`)
 - `@citrusworx/seltzer` when hosting as WebEngine / Blackwater
 - One of: PostgreSQL, MySQL, MongoDB
 
