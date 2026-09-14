@@ -1,404 +1,237 @@
-# Nectarine Getting Started
+# Getting Started With Nectarine
 
-Quick introduction to Nectarine backend generation and schema-driven development.
+Use Nectarine the way the library works today: load YAML, take a named object, run a statement on an adapter.
 
-## What is Nectarine?
-
-Nectarine is a config-driven backend library that empowers developers to define models, schemas, queries, and APIs through YAML — and have a fully functional backend generated from that definition.
-
-**Key Philosophy**:
-- Backend development should not require repetitive boilerplate
-- Models, schemas, queries, and APIs follow predictable patterns
-- Define your data model once, generate Express routes and database queries automatically
-- Work with any database: PostgreSQL, MySQL, or MongoDB
-- Start building features, not infrastructure
-
-## Installation
+## Install
 
 ```bash
 yarn add @citrusworx/nectarine
 ```
 
-## Prerequisites
-
-### Choose Your Database
-
-Nectarine works with:
-- **PostgreSQL** 12+ (recommended for production)
-- **MySQL** 5.7+ 
-- **MongoDB** 4.4+
-
-Install one and set connection environment variables.
-
-### Environment Setup
+Peer-ish runtime libraries the adapters import: `pg`, `mysql2`, `mongodb`, `js-yaml`. They are listed in the package’s own `devDependencies` today — if you consume Nectarine from an app, install the driver you actually call.
 
 ```bash
-# For PostgreSQL
+yarn add pg        # PostgreSQL
+# or
+yarn add mysql2    # MySQL
+# or
+yarn add mongodb   # MongoDB
+```
+
+## Pick one database and set env vars
+
+Names are what the source reads. Older docs used `MYSQL_*` / `MONGO_URI`; those are ignored.
+
+**PostgreSQL** (`libraries/nectarine/src/adapters/pg/pgz.ts`):
+
+```bash
 export PG_USER=postgres
 export PG_HOST=localhost
-export PG_PASS=password
+export PG_PASS=secret
 export PG_DB=myapp
 export PG_PORT=5432
-
-# For MySQL
-export MYSQL_USER=root
-export MYSQL_HOST=localhost
-export MYSQL_PASS=password
-export MYSQL_DB=myapp
-export MYSQL_PORT=3306
-
-# For MongoDB
-export MONGO_URI=mongodb://localhost:27017
-export MONGO_DB=myapp
 ```
 
-## Core Concepts
+**MySQL** (`adapters/ms/msqlz.ts`):
 
-### Schema Files
-
-Define your data model in YAML:
-
-```yaml
-# userSchema.yml
-User:
-  table: users
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    username: VARCHAR(50) UNIQUE NOT NULL
-    email: VARCHAR(100) UNIQUE NOT NULL
-    password: VARCHAR(255) NOT NULL
-    created_at: timestamp DEFAULT NOW()
-    role: enum(admin, author, user) DEFAULT 'user'
+```bash
+export MS_USER=root
+export MS_HOST=localhost
+export MS_PASS=secret
+export MS_DB=myapp
+export MS_PORT=3306
 ```
 
-### Query Definition
+**MongoDB** (`adapters/mg/mgz.ts`):
 
-Define database operations:
-
-```yaml
-# userQueries.yml
-queries:
-  getAllUsers:
-    type: SELECT
-    table: users
-  
-  getUserById:
-    type: SELECT
-    table: users
-    where: id = $1
-  
-  createUser:
-    type: INSERT
-    table: users
-    fields: [username, email, password]
+```bash
+export MG_USER=root
+export MG_HOST=localhost
+export MG_PASS=secret
+export MG_DB=myapp
+export MG_PORT=27017
 ```
 
-### API Routes
+Mongo URI is `mongodb://$MG_USER:$MG_PASS@$MG_HOST:$MG_PORT/$MG_DB?authSource=admin`.
 
-Map operations to HTTP endpoints:
+## Mental model
 
-```yaml
-# userAPI.yml
-routes:
-  getAllUsers:
-    path: /users
-    method: GET
-    query: getAllUsers
-  
-  getUserById:
-    path: /users/:id
-    method: GET
-    query: getUserById
-  
-  createUser:
-    path: /users
-    method: POST
-    query: createUser
+You are not calling `generateRoutes(schema, queries, api)`. That function does not exist.
+
+```text
+parser.yaml(path)                     → whole file
+parser.genSQL(path, type, method, id) → one query object
+parser.registerRoute(path, method, id)→ one API object
+PgSql | Mysql | Mngz                  → execute something you built
 ```
 
-## Your First Backend
+## First Postgres query from YAML
 
-### Step 1: Define Your Schema
-
-Create `schemas/user/userSchema.yml`:
+Use the checked-in user query file as a template (copy it into your app):
 
 ```yaml
-User:
-  table: users
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    username: VARCHAR(100) UNIQUE NOT NULL
-    email: VARCHAR(100) UNIQUE NOT NULL
-    password: VARCHAR(255) NOT NULL
-    created_at: timestamp DEFAULT NOW()
-    role: enum(admin, author, user) DEFAULT 'user'
-
-Post:
-  table: posts
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    title: VARCHAR(255) NOT NULL
-    content: text NOT NULL
-    author_id: int FOREIGN KEY REFERENCES users(id)
-    created_at: timestamp DEFAULT NOW()
-    updated_at: timestamp DEFAULT NOW()
-```
-
-### Step 2: Define Your Queries
-
-Create `schemas/user/userQueries.yml`:
-
-```yaml
+# queries/user.yml
 user:
-  read:
-    allUsers:
-      type: SELECT
-      fields: '*'
-    
-    userById:
-      type: SELECT
-      where: id = $1
-    
-    userByEmail:
-      type: SELECT
-      where: email = $1
-  
-  create:
-    newUser:
-      type: INSERT
-      fields: [username, email, password]
-  
-  update:
-    updateUser:
-      type: UPDATE
-      where: id = $1
-      fields: [username, email, role]
-  
-  delete:
-    deleteUser:
-      type: DELETE
-      where: id = $1
+  get:
+    UserById:
+      select: ['id', 'email']
+      from: users
+      where:
+        column: id
+        operator: eq
+        value: $1
 ```
 
-### Step 3: Define Your API
+`parser.genSQL` only retrieves that object. A minimal builder — the same idea as `pgz.example.ts` — looks like this:
 
-Create `schemas/user/userAPI.yml`:
+```ts
+import { parser, PgSql } from "@citrusworx/nectarine";
 
-```yaml
-user:
-  read:
-    allUsers:
-      api:
-        method: GET
-        endpoint: /users
-    
-    userById:
-      api:
-        method: GET
-        endpoint: /users/:id
-    
-    userByEmail:
-      api:
-        method: GET
-        endpoint: /users/search/:email
-  
-  create:
-    newUser:
-      api:
-        method: POST
-        endpoint: /users
-  
-  update:
-    updateUser:
-      api:
-        method: PUT
-        endpoint: /users/:id
-  
-  delete:
-    deleteUser:
-      api:
-        method: DELETE
-        endpoint: /users/:id
+type QuerySpec = {
+  type?: string;
+  select?: string | string[];
+  fields?: string | string[];
+  from?: string;
+  table?: string;
+  action?: string;
+  where?: { column: string; operator: string; value: string };
+  conditions?: { condition: string; column: string; operator: string; value: string };
+};
+
+const OPS: Record<string, string> = {
+  eq: "=",
+  gt: ">",
+  lt: "<",
+  lte: "<=",
+  gte: ">=",
+  neq: "!=",
+};
+
+function buildSelect(spec: QuerySpec): string {
+  const fields = Array.isArray(spec.select)
+    ? spec.select.join(", ")
+    : spec.select ?? spec.fields ?? "*";
+  const table = spec.from ?? spec.table;
+  const where = spec.where;
+  const op = where ? OPS[where.operator] ?? where.operator : "";
+  const clause = where
+    ? ` WHERE ${where.column} ${op} ${where.value}`
+    : "";
+  return `SELECT ${fields} FROM ${table}${clause}`;
+}
+
+async function main() {
+  const spec = parser.genSQL("./queries/user.yml", "user", "get", "UserById");
+  const sql = buildSelect(spec);
+
+  const pg = new PgSql();
+  pg.addDb(process.env.PG_DB!);
+  const client = await pg.connect(process.env.PG_DB!);
+  if (!client) throw new Error("No Postgres client");
+
+  try {
+    const result = await pg.query(client, { sql, params: [1] });
+    console.log(result?.rows);
+  } finally {
+    await pg.disconnect(client);
+  }
+}
+
+void main();
 ```
 
-### Step 4: Generate Backend
+That is the current “generated query” story: **YAML names the parts; you compile**.
 
-```typescript
-import { loadSchema, generateRoutes } from "@citrusworx/nectarine";
-import express from "express";
+## First MySQL query
 
-const app = express();
+```ts
+import { Mysql, closeSql } from "@citrusworx/nectarine";
 
-// Load schema
-const userSchema = loadSchema("schemas/user/userSchema.yml");
-const userQueries = loadSchema("schemas/user/userQueries.yml");
-const userAPI = loadSchema("schemas/user/userAPI.yml");
+const rows = await Mysql< { email: string } >(
+  "SELECT email FROM users WHERE id = ?",
+  [1],
+);
 
-// Generate and register routes
-const userRoutes = generateRoutes(userSchema, userQueries, userAPI);
-app.use("/api", userRoutes);
+console.log(rows);
+await closeSql();
+```
 
-app.listen(3000, () => {
-  console.log("Backend running on http://localhost:3000");
+See [MySQL](./nectarine-mysql.md) for the `?` YAML flavor and `mapInsert`.
+
+## First Mongo insert
+
+```ts
+import { Mngz, insertOne } from "@citrusworx/nectarine";
+
+await Mngz(async (client) => {
+  // insertOne closes the shared client when it returns
+  await insertOne(client, "users", { email: "dev@citrusworx.com" });
 });
 ```
 
-## Key Features
+See [MongoDB](./nectarine-mongodb.md) before using this in a long-running process — the helpers disconnect aggressively.
 
-### Database Agnostic
+## Reading an API file (optional)
 
-Same schema definitions work across databases:
+```ts
+import { parser } from "@citrusworx/nectarine";
 
-```yaml
-# PostgreSQL, MySQL, or MongoDB - just change adapter
-adapter: postgres
-# or
-adapter: mysql
-# or
-adapter: mongodb
+const allUsers = parser.registerRoute(
+  "./models/user/userAPI.yml",
+  "get",
+  "allUsers",
+);
+
+console.log(allUsers.api.method, allUsers.api.endpoint);
 ```
 
-### Type Safety with Zod
+Wire that to Seltzer yourself:
 
-Automatic validation on all routes:
+```ts
+import { Seltzer } from "@citrusworx/seltzer";
 
-```typescript
-// Automatically generated from schema
-POST /users
-{
-  "username": "john_doe",    // Required
-  "email": "john@example.com", // Unique, required
-  "password": "secure123"     // Required
+const app = Seltzer.init();
+app.route({
+  method: allUsers.api.method,
+  path: allUsers.api.endpoint,
+  handler: (ctx) => ctx.json({ users: [] }),
+});
+app.listen(3000);
+```
+
+Nectarine does not do this automatically.
+
+## Creating a table from schema YAML
+
+There is no migrator. `pgz.example.ts` joins `fields` into `CREATE TABLE`:
+
+```ts
+function buildCreateTableSQL(modelName: string, filepath: string): string {
+  const schema = parser.yaml(filepath);
+  const model = schema[modelName];
+  const columns = Object.entries(model.fields)
+    .map(([column, definition]) =>
+      typeof definition === "string"
+        ? `${column} ${definition}`
+        : `${column} ${definition.type}`,
+    )
+    .join(", ");
+  return `CREATE TABLE IF NOT EXISTS ${model.table} (${columns});`;
 }
-// Returns 400 if validation fails
 ```
 
-### Relationships
+Field values in the real `userSchema.yml` are a mix of strings and objects. Your builder must handle both. See [Schema Guide](./nectarine-schema-guide.md).
 
-Define and query relationships:
+## What not to start with
 
-```yaml
-Post:
-  table: posts
-  fields:
-    id: int PRIMARY KEY
-    title: string NOT NULL
-    author_id: int FOREIGN KEY REFERENCES users(id)
-    created_at: timestamp
+- `nectarine.config.yaml` — design only
+- `CCompiler.buildQuery` — empty method
+- Express + Zod “for free” — not in this package
+- GraphQL, auth, GUI
 
-# Query with joins
-getPostsWithAuthor:
-  type: SELECT
-  table: posts
-  join: users ON posts.author_id = users.id
-  fields: [posts.*, users.username]
-```
+## Where to go next
 
-### Enums
-
-Support for enum types:
-
-```yaml
-User:
-  fields:
-    role: enum(admin, author, user) DEFAULT 'user'
-
-# Valid values only
-POST /users { "role": "admin" }     ✓ OK
-POST /users { "role": "superuser" } ✗ Invalid
-```
-
-### Timestamps
-
-Automatic timestamp handling:
-
-```yaml
-created_at: timestamp DEFAULT NOW()
-updated_at: timestamp DEFAULT NOW() ON UPDATE NOW()
-
-# Automatically set on creation
-# Automatically updated on edits
-```
-
-## Next Steps
-
-1. **Read the API Reference** - [nectarine-api.md](./nectarine-api.md)
-2. **Learn Query Definition** - [Query DSL](./nectarine-query-dsl.md)
-3. **Explore Examples** - [nectarine-examples.md](./nectarine-examples.md)
-4. **Database Guides**:
-   - [PostgreSQL Guide](./nectarine-postgresql.md)
-   - MySQL — adapter is in the package; a dedicated guide is not written yet
-   - [MongoDB Guide](./nectarine-mongodb.md)
-5. **See all Schemas** - [Schema Guide](./nectarine-schema-guide.md)
-
-## Common Tasks
-
-### Connect to PostgreSQL
-
-```bash
-export PG_USER=postgres
-export PG_HOST=localhost
-export PG_PASS=mypassword
-export PG_DB=myapp
-export PG_PORT=5432
-```
-
-### Create Database
-
-```bash
-# PostgreSQL
-createdb myapp
-
-# MySQL
-mysql -u root -p
-CREATE DATABASE myapp;
-
-# MongoDB
-# Auto-created on first write
-```
-
-### Run Migrations
-
-```bash
-# Generate tables from schema
-yarn run migrate:up
-
-# Rollback changes
-yarn run migrate:down
-```
-
-### Test API
-
-```bash
-# Start server
-yarn dev
-
-# Test endpoint
-curl http://localhost:3000/api/users
-
-# Create user
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"username":"john","email":"john@example.com","password":"secret"}'
-```
-
-## Troubleshooting
-
-### "Cannot connect to database"
-
-- Verify database is running
-- Check connection environment variables
-- Ensure database exists
-- Check firewall/network access
-
-### "Type validation failed"
-
-- Check schema field types match data
-- Review Zod validation rules
-- See validation error message for details
-
-### "Query not found"
-
-- Verify query is defined in queries YAML
-- Check spelling matches exactly
-- Ensure file is loaded before use
+- [Query DSL](./nectarine-query-dsl.md)
+- [PostgreSQL](./nectarine-postgresql.md) / [MySQL](./nectarine-mysql.md) / [MongoDB](./nectarine-mongodb.md)
+- [Examples](./nectarine-examples.md)
+- [Status](./nectarine-status.md)

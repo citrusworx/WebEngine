@@ -1,497 +1,192 @@
-# Sig.js Router Guide
+# Sig.js Router
 
-Comprehensive guide to using Sig.js's built-in client-side router for single-page applications (SPAs).
+`SigRouter` is a small exact-path client router. It intercepts in-app `<a>` clicks, listens for `popstate`, and replaces one container's children.
 
-## Overview
+Implemented in `libraries/sig/src/sig-router.ts`. Import from `@citrusworx/sigjs` or `@citrusworx/sigjs/sig-router`.
 
-The `SigRouter` class provides a lightweight, zero-dependency client-side router for building single-page applications. It automatically intercepts navigation, manages browser history, and renders components based on the current route.
+## What it is for
 
-Route-owned Sig.js effects are cleaned up automatically when the router replaces the current view.
-For repeat visits, register component functions like `Home` instead of pre-rendered nodes like `<Home />`.
+- A static Juice (or HTML) shell with a changing `#view`
+- A few named pages (`/`, `/about`, `/contact`)
+- Cleaning up Sig effects when you leave a page
 
-## Basic Setup
+It is not a file-based router, not a param matcher, and not a data loader.
 
-### Step 1: Create Routes
-
-```tsx
-import { SigRouter } from "@citrusworx/sigjs/sig-router";
-
-const router = new SigRouter("#app");
-
-// Register routes
-router.set({
-  "/": Home,
-  about: About,
-  contact: Contact,
-});
-
-// Start the router
-router.start();
-```
-
-### Step 2: Add HTML Container
+## Minimal app
 
 ```html
-<!DOCTYPE html>
-<html>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="./main.tsx"></script>
-  </body>
-</html>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+  </nav>
+  <div id="root"></div>
+</body>
 ```
-
-### Step 3: Use Navigation Links
-
-The router automatically intercepts link clicks:
 
 ```tsx
-<nav>
-  <a href="/">Home</a>
-  <a href="/about">About</a>
-  <a href="/contact">Contact</a>
-</nav>
-```
-
-## Core Features
-
-### Automatic Link Interception
-
-Once `router.start()` is called, all internal links automatically navigate within the app:
-
-```tsx
-// These links trigger route changes without full page reload
-<a href="/">Home</a>
-<a href="/about">About</a>
-<a href="/services/web">Web Services</a>
-```
-
-Excluded links that cause full page load:
-- External URLs: `href="https://example.com"`
-- Downloads: `<a download>`
-- Email: `href="mailto:user@example.com"`
-- Tel: `href="tel:+1234567890"`
-- FTP: `href="ftp://..."`
-- Links with `target="_blank"`
-
-### Browser History Integration
-
-The router maintains browser history automatically:
-
-```tsx
-// Users can use back/forward buttons
-<button onClick={() => router.goBack()}>Back</button>
-
-// Browser back/forward buttons work automatically
-```
-
-### Named Routes
-
-Object-style routes automatically create named routes for keys without a leading slash:
-
-```typescript
-const router = new SigRouter("#app");
-
-router.set({
-  "/": Home,
-  admin: AdminDashboard,
-});
-
-// Navigate by name
-const adminPath = router.get("admin");
-router.navigate(adminPath!);
-```
-
-### Dynamic Routes
-
-Handle parameterized routes:
-
-```tsx
-import { Signal } from "@citrusworx/sigjs";
-
-function UserPage() {
-  const userId = new Signal(window.location.pathname.split("/")[2]);
-
-  return (
-    <div>
-      <h1>User {userId.get()}</h1>
-      <p>Profile content for user {userId.get()}</p>
-    </div>
-  );
-}
-
-const router = new SigRouter("#app");
-router.set("/user/:id", UserPage);
-router.start();
-```
-
-## Real-World Examples
-
-### Basic SPA Layout
-
-```tsx
-import { Signal, effect } from "@citrusworx/sigjs";
-import { SigRouter } from "@citrusworx/sigjs/sig-router";
-
-function Navigation() {
-  return (
-    <nav>
-      <a href="/">Home</a>
-      <a href="/about">About</a>
-      <a href="/contact">Contact</a>
-    </nav>
-  );
-}
+import { SigRouter } from "@citrusworx/sigjs";
 
 function Home() {
-  return <div><h1>Welcome Home</h1></div>;
+  return <h1>Home</h1>;
 }
 
 function About() {
-  return <div><h1>About Us</h1></div>;
+  return <h1>About</h1>;
 }
 
-function Contact() {
-  return <div><h1>Contact</h1></div>;
-}
+const router = new SigRouter("#root");
 
-function App() {
-  return (
-    <div>
-      <Navigation />
-      <main id="app"></main>
-    </div>
-  );
-}
-
-// Initialize app
-const app = <App />;
-mount(app, document.body);
-
-// Setup router
-const router = new SigRouter("#app");
 router.set({
   "/": Home,
   about: About,
-  contact: Contact,
 });
 
 router.start();
 ```
 
-### Multi-Section App with Shared Navigation
+`about` without a slash is stored as `/about` and registered under the name `"about"`.
+
+```ts
+router.get("about"); // "/about"
+router.navigate(router.get("about")!);
+```
+
+## Register views as functions
+
+Pass `Home`, not `<Home />`.
+
+On each navigation the router:
+
+1. `disposeTree`s the current children of the target (effect cleanups run)
+2. Calls the view function if the registered view is a function
+3. `replaceChildren` with that node
+
+A pre-created `Node` is reused. Effects attached when that node was first created will not re-run per visit, and they may already have been disposed.
 
 ```tsx
-function AppLayout(props: { children: Node }) {
-  const currentPath = Signal(window.location.pathname);
+// Fresh tree + cleanup each visit
+router.set("/about", About);
 
-  return (
-    <div class="app-layout">
+// Same node every time — avoid if About starts timers
+router.set("/about", <About />);
+```
+
+Layouts wrap in a factory:
+
+```tsx
+function withShell(page: () => Node) {
+  return () => (
+    <div>
       <header>
-        <a href="/">App Name</a>
-        <nav>
-          <a href="/dashboard" class={currentPath.get() === "/dashboard" ? "active" : ""}>
-            Dashboard
-          </a>
-          <a href="/settings" class={currentPath.get() === "/settings" ? "active" : ""}>
-            Settings
-          </a>
-        </nav>
+        <a href="/">App</a>
       </header>
-      <main>{props.children}</main>
-      <footer>© 2024</footer>
+      <main>{page()}</main>
     </div>
   );
 }
 
-function Dashboard() {
-  return <div><h1>Dashboard</h1></div>;
-}
-
-function Settings() {
-  return <div><h1>Settings</h1></div>;
-}
-
-const router = new SigRouter("#app");
 router.set({
-  dashboard: () => <AppLayout><Dashboard /></AppLayout>,
-  settings: () => <AppLayout><Settings /></AppLayout>,
+  "/": withShell(Home),
+  dashboard: withShell(Dashboard),
 });
-
-router.start();
 ```
 
-### Programmatic Navigation
+Put the router target on the region that should swap. Keep the nav **outside** `#root` if the nav should stay mounted.
+
+## Link interception
+
+After `start()`, a document-level click listener handles `<a href>`:
+
+| Left alone | Intercepted |
+|---|---|
+| `http:` / `https:` | `/about` |
+| `mailto:`, `tel:`, `ftp:` | `/` |
+| `download` | |
+| `target="_blank"` | |
+
+`navigate(path)` only succeeds if `has(path)` is true. Unknown paths do nothing (no 404 view).
+
+`goBack()` is `history.back()`. The `popstate` listener then renders `window.location.pathname`. If that path is unregistered, the target is emptied.
+
+## Programmatic navigation
 
 ```tsx
-function LoginForm() {
-  const email = Signal("");
-  const password = Signal("");
-
-  const handleSubmit = async (e: Event) => {
-    e.preventDefault();
-
-    const response = await fetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: email.get(),
-        password: password.get(),
-      }),
-    });
-
-    if (response.ok) {
-      // Navigate after successful login
-      router.navigate("/dashboard");
-    }
-  };
-
+function Login() {
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email.get()}
-        onInput={(e) => email.set((e.target as HTMLInputElement).value)}
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password.get()}
-        onInput={(e) => password.set((e.target as HTMLInputElement).value)}
-        placeholder="Password"
-      />
-      <button type="submit">Login</button>
-    </form>
+    <button
+      type="button"
+      onClick={() => router.navigate("/dashboard")}
+    >
+      Continue
+    </button>
   );
 }
 ```
 
-### Loading States with Router
+Guard it in your handler — the router does not have route hooks:
+
+```ts
+function goDashboard(isAuthed: boolean) {
+  router.navigate(isAuthed ? "/dashboard" : "/login");
+}
+```
+
+## Effects on a page
 
 ```tsx
-function DataPage() {
-  const data = Signal(null);
-  const loading = Signal(true);
-  const error = Signal(null);
+import { Signal, effect } from "@citrusworx/sigjs";
 
-  effect(async () => {
-    try {
-      const response = await fetch("/api/data");
-      const result = await response.json();
-      data.set(result);
-    } catch (err) {
-      error.set(err);
-    } finally {
-      loading.set(false);
-    }
+function About() {
+  const ticks = Signal(0);
+
+  effect(() => {
+    const id = setInterval(() => ticks.set(ticks.get() + 1), 1000);
+    return () => clearInterval(id);
   });
 
-  return (
-    <div>
-      {() => loading.get() && <p>Loading...</p>}
-      {() => error.get() && <p>Error: {error.get()}</p>}
-      {() => data.get() && (
-        <div>
-          <h1>{data.get().title}</h1>
-          <p>{data.get().description}</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const router = new SigRouter("#app");
-router.set("/data", DataPage);
-router.start();
-```
-
-## Advanced Patterns
-
-### Route Guards (Authentication)
-
-```typescript
-class ProtectedRouter extends SigRouter {
-  private isAuthenticated = Signal(false);
-
-  navigate(path: string) {
-    if (path === "/admin" && !this.isAuthenticated.get()) {
-      // Redirect to login
-      super.navigate("/login");
-      return;
-    }
-    super.navigate(path);
-  }
-
-  setAuthenticated(value: boolean) {
-    this.isAuthenticated.set(value);
-  }
+  return <p>Seconds: {() => String(ticks.get())}</p>;
 }
 ```
 
-### Lazy Loading Components
+Leaving `/about` disposes the interval because the effect was registered while `About()` ran.
+
+## What is not here
+
+**Parametric routes.** `router.set("/user/:id", UserPage)` registers the literal string `/user/:id`. A browser visit to `/user/42` will not match.
+
+If you need a segment today, register a concrete path or read `window.location.pathname` yourself after a known prefix:
 
 ```tsx
-async function loadComponent(path: string) {
-  const module = await import(path);
-  return module.default;
+function UserPage() {
+  const id = window.location.pathname.slice("/user/".length);
+  return <h1>User {id}</h1>;
 }
 
-const router = new SigRouter("#app");
-
-// Load components dynamically
-fetch("/api/routes").then((res) => res.json()).then((routes) => {
-  routes.forEach((route) => {
-    loadComponent(route.componentPath).then((component) => {
-      router.set(route.path, component);
-    });
-  });
-
-  router.start();
-});
+// Still must navigate to an exact registered path, or
+// extend the router — do not pretend :id works.
 ```
 
-### Breadcrumb Navigation
+**Query strings.** Ignored for matching. Read `window.location.search` in the view.
 
-```tsx
-function Breadcrumbs() {
-  const path = Signal(window.location.pathname);
+**Trailing slashes and case.** `/About` ≠ `/about`. `/about/` ≠ `/about`.
 
-  const breadcrumbs = () => {
-    const parts = path.get().split("/").filter(Boolean);
-    return parts.map((part, i) => {
-      const href = "/" + parts.slice(0, i + 1).join("/");
-      return { label: part, href };
-    });
-  };
+## Lifecycle
 
-  return (
-    <nav>
-      <a href="/">Home</a>
-      {() => breadcrumbs().map((crumb) => (
-        <>
-          {" / "}
-          <a href={crumb.href}>{crumb.label}</a>
-        </>
-      ))}
-    </nav>
-  );
-}
+```ts
+const router = new SigRouter("#root");
+router.set({ "/": Home, about: About });
+router.start();  // listeners + first render
+router.stop();   // remove listeners; does not unmount the current view
 ```
 
-### Query Parameters
-
-```tsx
-function Search() {
-  const query = Signal<string | null>(
-    new URLSearchParams(window.location.search).get("q")
-  );
-
-  const handleSearch = (q: string) => {
-    query.set(q);
-    const params = new URLSearchParams({ q });
-    window.history.pushState({}, "", `?${params}`);
-  };
-
-  return (
-    <div>
-      <input
-        type="text"
-        value={query.get() || ""}
-        onInput={(e) => handleSearch((e.target as HTMLInputElement).value)}
-        placeholder="Search..."
-      />
-      {() => query.get() && <p>Results for: {query.get()}</p>}
-    </div>
-  );
-}
-```
-
-## API Reference
-
-| Method | Purpose |
-|--------|---------|
-| `set({ routeName: view })` | Register multiple routes at once |
-| `set(path, component, name?)` | Register a route |
-| `get(name)` | Get path by route name |
-| `start()` | Enable routing and link interception |
-| `navigate(path)` | Navigate to a path |
-| `goBack()` | Navigate to previous page |
-| `stop()` | Disable routing listeners |
-| `has(path)` | Check if route is registered |
-
-## Performance Tips
-
-### Avoid Re-rendering Entire App
-
-```tsx
-// Good: Only the content changes
-<div>
-  <Navigation /> {/* Static */}
-  <main id="app"></main> {/* Changes per route */}
-</div>
-
-// Avoid: Re-renders everything including nav
-<div id="app">
-  {/* All content changes */}
-</div>
-```
-
-### Lazy Load Heavy Components
-
-```tsx
-const router = new SigRouter("#app");
-
-// Load on demand
-router.set("/admin", <AdminPanel />); // Loaded eagerly
-
-// Or async
-router.set("/reports", null); // Placeholder
-loadComponent("/path/to/Reports").then((Reports) => {
-  router.set("/reports", Reports);
-});
-```
+Calling `start()` again after it has already started just re-renders the current pathname.
 
 ## Troubleshooting
 
-### Links Not Working
+- **Clicks do nothing** — `start()` missing, or the href is not an exact registered path.
+- **Back button empty** — previous history entry is an unregistered path.
+- **Timers leak** — view was a prebuilt node, or the effect was created outside the component function.
+- **Nav disappears** — `#root` wraps the nav; move the target to an inner element.
 
-**Problem**: Clicking links doesn't navigate
-
-**Solution**: Ensure `router.start()` is called after routes are registered
-
-```typescript
-const router = new SigRouter("#app");
-router.set({
-  "/": Home,
-  about: About,
-});
-router.start(); // Required!
-```
-
-### Browser Back Button Issues
-
-**Problem**: Back button doesn't work properly
-
-**Solution**: Router must be started to handle history
-
-```typescript
-router.start(); // Enables history interception
-```
-
-### External Links Not Working
-
-**Problem**: Links to external sites reload the page
-
-**Solution**: This is expected behavior for external links. Use `target="_blank"` if needed
-
-```tsx
-<a href="https://example.com" target="_blank">External</a>
-```
-
-## Migration from Other Routers
-
-If migrating from another router, the main differences are:
-
-1. **Simple API**: Just `set()`, `navigate()`, `start()`
-2. **No route parameters**: Handle path parsing manually
-3. **Direct component mounting**: No route-specific wrappers
-4. **Browser-native history**: Uses `window.history.pushState`
+See [Troubleshooting](./sig-troubleshooting.md) for reactivity issues that show up after a route change.

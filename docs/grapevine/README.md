@@ -1,341 +1,259 @@
 # Grapevine
 
-Grapevine is a cloud infrastructure and deployment library. It provides a unified, config-driven interface for provisioning and managing cloud resources across providers — regardless of what is in your application stack.
+DigitalOcean provisioning from YAML or TypeScript.
 
-Grapevine is a WebEngine native module but is fully independent. It can be used in any project with any stack.
+Grapevine is the CitrusWorx infra library: describe droplets, VPCs, firewalls, SSH keys, domains, and a handful of related resources, then create them through the DigitalOcean API. A `grape` CLI loads a config file (or URL) and applies it in dependency order.
 
----
+The current model is:
 
-## Philosophy
+- **Provider is DigitalOcean.** The Zod schema’s `provider` field is the literal `"digitalocean"`.
+- **Two entry styles:** call exported functions (`createDroplet`, `createVPC`, …) or declare `resources` in a grape config and `applyGrapeConfig` / `grape apply`.
+- **Blueprints** are YAML documents that hoist into `resources` (a droplet/VPC/firewall under `blueprint:` is folded in).
+- **Credentials** come from an env var (`DO_TOKEN` by default).
 
-Infrastructure should not be tied to your application framework. A Next.js frontend with a PHP backend should be just as easy to deploy as a full WebEngine native stack. Grapevine reads your infrastructure config and handles provisioning, networking, and deployment — without caring what is running inside.
+Grapevine is strongest when you treat it as a typed DigitalOcean client plus an apply engine. It is not a multi-cloud layer, not Terraform, and not a GUI.
 
-- **Provider agnostic** — define infrastructure once, target any cloud
-- **Stack agnostic** — deploys any language or framework
-- **Config driven** — infrastructure defined in `grapevine.config.yaml`
-- **VPC first** — networking and security are first class concerns
-- **WebEngine integrated** — works seamlessly as a WebEngine infra module
+## Who it is for
 
----
+- People who want droplets / VPCs / firewalls in git without writing `curl` to `api.digitalocean.com`
+- App repos that already have `@citrusworx/grapevine` and a token
+- Operators following the downloadable starters in `libraries/grapevine/examples/blueprints/`
 
-## Installation
+It is not for AWS/GCP/Azure (those names are roadmap only). It does not deploy your Node app onto the droplet.
+
+## Why it exists
+
+Infrastructure in CitrusWorx should be a file, not a click-path that only one person remembers. Juice put structure in attributes; Nectarine put tables in YAML; Grapevine puts **machines and networks** in YAML.
+
+The alternative in this stack was “SSH into DigitalOcean’s dashboard and hope staging matches prod.” Grapevine exists so:
+
+- the same `resources:` document can be validated without calling the API (`grape validate`)
+- apply order is fixed (tags → SSH keys → VPCs → droplets → firewalls → domains → load balancers → alerts → apps)
+- TypeScript callers and YAML callers share one schema (`grapeConfigSchema`)
+
+Multi-cloud is a *possible* future if other adapters land. Shipping a fake `provider: aws` today would be a lie — the schema rejects it.
+
+## Current setup shape
 
 ```bash
 yarn add @citrusworx/grapevine
+export DO_TOKEN=dop_v1_...
 ```
-
----
-
-## Supported Providers
-
-| Provider | Status |
-|----------|--------|
-| DigitalOcean | Active development |
-| AWS | Planned |
-| Linode | Planned |
-| Azure | Planned |
-| GCP | Planned |
-
----
-
-## Documentation
-
-Complete guides and references for using GrapeVine:
-
-| Document | Purpose |
-|----------|---------|
-| [Getting Started](./grapevine-getting-started.md) | Quick introduction and first deployment |
-| [API Reference](./grapevine-api.md) | Complete API for all GrapeVine functions |
-| [Configuration Guide](./grapevine-config.md) | YAML configuration reference |
-| [DigitalOcean Guide](./grapevine-digitalocean.md) | DigitalOcean provider setup and guide |
-| [Examples](./grapevine-examples.md) | Real-world deployment examples |
-| [Project Status](./grapevine-status.md) | Roadmap, known limitations, comparison |
-
----
-
-## Configuration
-
-Grapevine infrastructure can be defined three ways:
-
-| Method | Context | Description |
-|--------|---------|-------------|
-| Hand-written | Any | Directly author `grapevine.config.yaml` |
-| grapeGUI | Development | Wizard-like local tool for defining infra visually |
-| WebEngine Dashboard | Post-deployment | Edit deployed infrastructure via the WebEngine UI |
-
-All three produce and consume the same `grapevine.config.yaml` — the source of truth regardless of how it was created.
-
-### grapeGUI
-
-grapeGUI is a local dev utility that provides a wizard-like experience for building your infrastructure config without writing YAML by hand. It reads and writes `grapevine.config.yaml` directly.
 
 ```bash
-yarn grapevine gui
+npx grape validate -c ./grape.config.yaml
+npx grape apply -c ./grape.config.yaml
 ```
 
-### Hand-written Config
+```ts
+import { loadGrapeConfig, applyGrapeConfig } from "@citrusworx/grapevine";
 
-Grapevine is configured via `grapevine.config.yaml` at your project root.
+const config = await loadGrapeConfig("./grape.config.yaml");
+const result = await applyGrapeConfig(config);
+console.log(result.droplets, result.warnings);
+```
+
+## What it can do
+
+### 1. Validate and apply a resource document
+
+Checked-in starter (`libraries/grapevine/examples/blueprints/01-vpc-and-tag.yaml`) — no droplet, no compute charge:
 
 ```yaml
 version: "0.1"
 provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
 region: nyc1
 
-networking:
-  vpc: true
-  domain: myapp.com
-  ssl: true
-
-services:
-  frontend:
-    type: app
-    size: basic-xxs
-    entry: apps/front
-  backend:
-    type: app
-    size: basic-xs
-    entry: apps/server
-  database:
-    type: postgres
-    version: "15"
-  cache:
-    type: redis
-
-firewall:
-  inbound:
-    - protocol: tcp
-      ports: "80"
-      sources: ["0.0.0.0/0"]
-    - protocol: tcp
-      ports: "443"
-      sources: ["0.0.0.0/0"]
-  outbound:
-    - protocol: tcp
-      ports: "all"
+resources:
+  tags:
+    - grapevine
+  vpcs:
+    - name: grapevine
+      description: Grapevine starter VPC
+      ip_range: 10.120.0.0/16
 ```
-
----
-
-## Quick Start
-
-### 1. Set up DigitalOcean token
 
 ```bash
-export DO_TOKEN=dop_v1_...  # Your DigitalOcean API token
+export DO_TOKEN=dop_v1_...
+grape validate -c ./01-vpc-and-tag.yaml
+grape apply -c ./01-vpc-and-tag.yaml
 ```
 
-### 2. Deploy infrastructure
+`validate` only runs Zod. `apply` calls DigitalOcean: `createTag` then `createVPC`.
 
-```typescript
+### 2. One apply: tag, SSH key, VPC, droplet
+
+From `02-droplet-in-vpc.yaml`:
+
+```yaml
+resources:
+  tags:
+    - grapevine
+  ssh_keys:
+    - name: grapevine
+      generate: true
+  vpcs:
+    - name: grapevine
+      description: Grapevine starter VPC
+      ip_range: 10.120.0.0/16
+  droplets:
+    - name: grapevine-web-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: grapevine
+      monitoring: true
+      tags: [grapevine]
+```
+
+`generate: true` creates a key pair and uploads the **public** key. The private key is **not** written to disk. Use `public_key:` if you need a key you already control.
+
+Droplet `vpc: grapevine` is resolved to the UUID of the VPC created earlier in the same apply.
+
+### 3. Call the DigitalOcean functions directly
+
+There is no `DigitalOcean.Droplet.create("server")` object API. Exports are functions:
+
+```ts
 import {
+  createSSHKey,
+  uploadSSHKey,
   createVPC,
+  createDroplet,
   createFireWall,
   deployByBlueprint,
-  createSSHKey,
-  uploadSSHKey
 } from "@citrusworx/grapevine";
 
-// Create SSH key
-const sshKey = createSSHKey("my-key");
-await uploadSSHKey({
-  name: sshKey.name,
-  public_key: sshKey.publicKey
+const key = createSSHKey("laptop");
+const uploaded = await uploadSSHKey({
+  name: key.name,
+  public_key: key.publicKey,
 });
 
-// Create network
 const vpc = await createVPC({
   name: "production",
+  description: "App VPC",
   region: "nyc1",
-  ip_range: "10.0.0.0/16"
+  ip_range: "10.0.0.0/16",
 });
 
-// Deploy droplet
-const droplet = await deployByBlueprint("./blueprint.yaml");
+const droplet = await createDroplet({
+  name: "web-01",
+  region: "nyc1",
+  size: "s-1vcpu-1gb",
+  image: "ubuntu-24-04-x64",
+  ssh_keys: [uploaded.id],
+  vpc_uuid: vpc.id,
+  monitoring: true,
+  tags: ["prod"],
+});
 
-console.log(`Deployed to ${droplet.networks.v4[0].ip_address}`);
+console.log(droplet.id, droplet.status);
 ```
 
----
+`deployByBlueprint(path)` reads a `{ blueprint: { droplet } }` YAML file and POSTs `/droplets`. Prefer `applyGrapeConfig` for multi-resource docs.
+
+### 4. Firewall rules with name or id references
+
+On apply, `firewalls[].droplets: [web-01]` looks up droplet ids created in the same run. `droplet_ids: [123]` is the numeric DigitalOcean id.
+
+```yaml
+resources:
+  firewalls:
+    - name: web
+      droplets: [web-01]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["203.0.113.10/32"]
+        - protocol: tcp
+          ports: "80,443"
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+```
+
+Sources that are plain CIDRs become `addresses`. Prefixes `tag:` and `droplet:` are also recognized when `apply` normalizes rules.
+
+### 5. CLI status
+
+```bash
+grape status                 # is DO_TOKEN set? live counts if it is
+grape status -c ./grape.config.yaml
+```
+
+Commands: `apply`, `validate`, `status`, `help`. There is no `grape gui`, no `grapevine init`.
+
+### 6. Other DigitalOcean surfaces (functions exist)
+
+Exported from the same package, used by apply when present in `resources`:
+
+| Resource | Apply field | Examples of functions |
+|---|---|---|
+| Tags | `resources.tags` | `createTag`, `tagResource` |
+| SSH | `resources.ssh_keys` | `createSSHKey`, `uploadSSHKey` |
+| VPCs | `resources.vpcs` | `createVPC`, `createPeering` |
+| Droplets | `resources.droplets` | `createDroplet`, `deployByBlueprint`, `NukeDroplet` |
+| Firewalls | `resources.firewalls` | `createFireWall`, `addRulesToFirewall` |
+| Domains | `resources.domains` | `createDomain`, `createDomainRecord` |
+| Load balancers | `resources.load_balancers` | `createLoadBalancer` |
+| Alert policies | `resources.alert_policies` | `createAlertPolicy` |
+| Apps | `resources.apps` | `createApp`, `createAppFromBlueprint` |
+
+Also exported, **not** driven by `applyGrapeConfig`: images, security scans, deployment-log helpers, `cleanPayload`, `parseYAML`.
+
+## Mental model
+
+```text
+grape.config.yaml
+        │
+ loadGrapeConfig / parseConfigText
+        │
+ grapeConfigSchema (provider: "digitalocean")
+        │
+ hoistBlueprintDocument + normalizeResources
+        │
+ applyGrapeConfig  →  DigitalOcean HTTP (doRequest)
+```
+
+Convenience fields `networking.vpc`, `networking.domain`, `firewall`, `ssh` are folded into `resources` during normalize. `services:` is **accepted by Zod and ignored at apply** (a warning is pushed). Put compute under `resources.droplets` or `resources.apps`.
+
+## What is not here
+
+| Claim | Reality |
+|---|---|
+| AWS / Linode / Azure / GCP | Not in the schema or `src/providers` |
+| grapeGUI / `yarn grapevine gui` | No such command |
+| WebEngine dashboard edits | Not in this package |
+| `DigitalOcean.VPC.create` class | Functions, not a namespace class |
+| Apply `services.frontend.type: app` | Warning only |
+| SSH into the box and run commands | Not implemented |
+| State file / update / destroy plan | Apply creates; deletes are explicit function calls |
+| Marketplace of blueprints | Examples folder only |
+
+## Suggested reading order
+
+1. [Getting Started](./grapevine-getting-started.md) — token, first validate/apply
+2. [Configuration](./grapevine-config.md) — schema fields that apply actually uses
+3. [DigitalOcean guide](./grapevine-digitalocean.md) — regions, droplets, firewalls, SSH
+4. [API Reference](./grapevine-api.md) — function list
+5. [Examples](./grapevine-examples.md) — starters + TypeScript
+6. [Status](./grapevine-status.md) — shipped vs planned
+7. In-repo blueprints: `libraries/grapevine/examples/blueprints/`
+
+Practical DigitalOcean notes also live under [infrastructure/digitalocean](./infrastructure/digitalocean/README.md).
 
 ## Status
 
-Grapevine is in active development as a WebEngine native module. The core API is functional and ready for deployment to DigitalOcean. See [grapevine-status.md](./grapevine-status.md) for roadmap and planned features.
-      destinations: ["0.0.0.0/0"]
-```
+**Active development** (`@citrusworx/grapevine` 0.2.1), DigitalOcean-only. The apply engine and CLI are real. Multi-cloud and GUIs are not.
 
----
+## Sibling packages
 
-## Usage with WebEngine
-
-When used as a WebEngine module, Grapevine reads both `webengine.toml` and `grapevine.config.yaml`. WebEngine passes the stack definition to Grapevine so it knows what to deploy.
-
-```toml
-# webengine.toml
-[stack]
-frontend = { lib = "next", entry = "apps/front" }
-backend = { lib = "php", entry = "apps/server" }
-infra = { lib = "grapevine" }
-```
-
-```yaml
-# grapevine.config.yaml
-provider: digitalocean
-region: nyc1
-
-networking:
-  vpc: true
-  domain: myapp.com
-  ssl: true
-```
-
-Grapevine provisions the environment defined in its config and deploys whatever WebEngine's stack defines — regardless of language or framework.
-
----
-
-## DigitalOcean Provider
-
-The DigitalOcean provider is the first supported cloud target. It covers the core primitives needed to deploy and manage a production web application.
-
-All values are defined in `grapevine.config.yaml` and referenced by Grapevine at runtime — nothing is hardcoded in application code.
-
-### Droplets
-
-Droplets are DigitalOcean's virtual machines. Grapevine provisions and manages droplets based on your service definitions in config.
-
-```yaml
-# grapevine.config.yaml
-services:
-  server:
-    type: droplet
-    size: s-1vcpu-1gb
-    image: ubuntu-22-04-x64
-    region: nyc1
-```
-
-```ts
-import { DigitalOcean } from "@citrusworx/grapevine";
-
-// Grapevine reads config — no hardcoded values
-const droplet = await DigitalOcean.Droplet.create("server");
-```
-
-### Firewall
-
-Manage inbound and outbound traffic rules defined in config.
-
-```yaml
-# grapevine.config.yaml
-firewall:
-  name: main
-  inbound:
-    - protocol: tcp
-      ports: "443"
-      sources: ["0.0.0.0/0"]
-  outbound:
-    - protocol: tcp
-      ports: "all"
-      destinations: ["0.0.0.0/0"]
-```
-
-```ts
-const firewall = await DigitalOcean.Firewall.create("main");
-```
-
-### VPC
-
-Virtual Private Cloud networking defined in config.
-
-```yaml
-# grapevine.config.yaml
-networking:
-  vpc:
-    name: main
-    region: nyc1
-    ipRange: "10.10.10.0/24"
-```
-
-```ts
-const vpc = await DigitalOcean.VPC.create("main");
-```
-
-### SSH
-
-SSH keys defined in config, credentials sourced from environment.
-
-```yaml
-# grapevine.config.yaml
-ssh:
-  name: main
-  publicKey: env.SSH_PUBLIC_KEY
-```
-
-```ts
-const key = await DigitalOcean.SSH.create("main");
-```
-
----
-
-## Deployment Flow
-
-When Grapevine deploys an application it follows this order:
-
-1. Provision VPC and networking
-2. Configure firewall rules
-3. Register SSH keys
-4. Provision compute resources (droplets, app platform)
-5. Provision databases and caches
-6. Configure domain and SSL
-7. Deploy application services
-
-This order ensures networking and security are in place before any compute resources are exposed.
-
----
-
-## Usage with Non-WebEngine Stacks
-
-Grapevine works independently of WebEngine. Any application can use it for infrastructure management by providing a `grapevine.config.yaml`:
-
-```yaml
-# React frontend + Python backend on DigitalOcean
-version: "0.1"
-provider: digitalocean
-region: sfo3
-
-services:
-  frontend:
-    type: app
-    runtime: static
-    entry: build/
-  backend:
-    type: app
-    runtime: python
-    entry: api/
-    version: "3.11"
-  database:
-    type: postgres
-    version: "15"
-
-networking:
-  vpc: true
-  domain: myapp.com
-  ssl: true
-```
-
----
-
-## Roadmap
-
-```
-v0.1  ← DigitalOcean provider (Droplets, Firewall, VPC, SSH)  🔧 Active
-v0.2  ← AWS + Linode providers
-v0.3  ← Azure provider
-v0.4  ← GCP provider
-v1.0  ← stable multi-cloud API
-```
-
----
-
-## Status
-
-Grapevine is in active development. The DigitalOcean provider is the current focus and is being developed against the CitrusWorx reference implementation.
+- [Nectarine](../nectarine/README.md) — data on a machine Grapevine created
+- [Seltzer](../seltzer/README.md) — HTTP process you still have to run
+- [Sig.js](../sigjs/README.md) / [Juice](../juice/README.md) — UI; no Grapevine dashboard
+- [Types](../types/README.md) — shared TS types used by some Grapevine payloads

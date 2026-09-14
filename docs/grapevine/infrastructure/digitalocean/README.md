@@ -1,77 +1,30 @@
-# Blueprint
+# DigitalOcean notes (Grapevine)
 
-GrapeVine is a modular, developer-friendly Infrastructure-as-Code (IaC) framework that lets developers and creators easily create, deploy, and manage their
-cloud environments--without writing a single line of infrastructure code.
+Practical DigitalOcean pages next to the Grapevine library. Grapevine’s product docs start at [../../README.md](../../README.md).
 
----
+## What this folder is
 
-## Why GrapeVine?
+Operator notes for droplets and blueprints on DigitalOcean. They should stay specific and checkable.
 
-Managing cloud infrastructure has historically meant choosing between complex, code-heavy tools built for platform engineers, or expensive managed services that
-lock you in. GrapeVine was built for everyone else--the developer who just wants their app running, the creator who wants their environment reproducible, and the
-team that wants a single source of truth for their infrastructure.
+- [digitalocean.md](./digitalocean.md) — account / API orientation
+- [create-droplet.md](./create-droplet.md) — creating a droplet
+- [blueprints.md](./blueprints.md) — blueprint files Grapevine can apply
 
-With GrapeVine, your infrastructure lives in a YAML blueprint. You describe what you want. GrapeVine handles the rest.
-
----
-
-## Core Philosophy
-
-### Blueprints as Single Source of Truth
-
-SSoT is a major philosophy of the WebEngine ecosystem and GrapeVine follows that philosophy. Your infrastructure is defined once, in a blueprint. No clicking through
-dashboards, no hunting through CLI history, no drift between environments. The blueprint *is* the environment.
-
-### No Code Required
-
-GrapeVine is designed to be approachable. If you can write YAML, you can provision infrastructure. Blueprints are human-readable, version-controllable, and shareable.
-
-### Provider Agnostic
-
-GrapeVine abstracts over cloud prodivers. Switch from DigitalOcean to AWS by changing one line in your config--your blueprint stays the same.
-
-### Modular by Design
-
-GrapeVine is built around discrete, single-resonsibility utilities. Each function does one thing well. There are no monolithic abstractions hiding complexity from you.
-
----
-
-## Getting Started
+## What Grapevine actually runs
 
 ```bash
-grapevine init --config
+export DO_TOKEN=dop_v1_...
+grape validate -c ./grape.config.yaml
+grape apply -c ./grape.config.yaml
 ```
 
-Point GrapeVine at a blueprint and it handles provisioning:
+There is no `grapevine init --config`, no provider switch CLI, and no blueprint marketplace in this repo. Starters live in `libraries/grapevine/examples/blueprints/`.
 
-```bash
-grapevine change --providerTo digitalocean --config path/to/config.yaml
-```
+`provider` is DigitalOcean only. Changing one YAML line to `aws` will fail schema validation.
 
-## Blueprint Marketplace
+## Related
 
-GrapeVine blueprints are designed to be shared. The marketplace features:
-- **Verified Blueprints** - reviewed, tested, and approved by the GrapeVine team.
-- **Community Blueprints** - contributed by the community, clearly marked and rated.
-
-Whether you want to share your blueprints openly or sell them, GrpaeVine supports both.
-
----
-
-## Supported Providers
-
-|Provider|Status
-|---|---|
-|DigitalOCean|Active|
-|AWS|Coming Soon|
-
-## Packages
-
-|Package|Description|
-|---|---|
-|`@citrusworx/grapevine`|Core IaC framework|
-|`@citrusworx/nectarine`|YAML-driven data engine|
-
-## License
-
-Part of the CitrusWorx ecosystem.
+- [Getting Started](../../grapevine-getting-started.md)
+- [Configuration](../../grapevine-config.md)
+- [DigitalOcean guide](../../grapevine-digitalocean.md)
+- [Status](../../grapevine-status.md)

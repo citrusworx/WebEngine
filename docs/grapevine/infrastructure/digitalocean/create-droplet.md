@@ -1,6 +1,8 @@
 # Creating A Droplet
 
-We have many options when it comes to creating a droplet with Digital Ocean.
+Prefer the exported `createDroplet` / `deployByBlueprint` / `grape apply` APIs documented in [grapevine-digitalocean.md](../../grapevine-digitalocean.md). The snippet below is a historical illustration of the DigitalOcean POST; current code goes through `doRequest` in `libraries/grapevine/src/providers/digitalocean/droplet/droplet.ts`.
+
+We have many options when it comes to creating a droplet with DigitalOcean.
 
 ```js
 export async function deployByBlueprint(blueprint: string): Promise<DropletResource>{

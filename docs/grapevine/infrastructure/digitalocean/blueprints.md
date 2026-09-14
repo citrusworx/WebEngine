@@ -1,96 +1,53 @@
 # Blueprints
 
-A GrapeVine blueprint is a YAML file that describes the infrastructure you want to provision. It is the single source of truth for your environment--
-readable, version-controllable, and provider-aware.
+A Grapevine blueprint is a YAML (or JSON) document that describes DigitalOcean resources. Apply it with `grape apply -c <path>` or `applyGrapeConfig`.
 
----
+The product schema lives in `libraries/grapevine/src/config/schema.ts`. Full field list: [grapevine-config.md](../../grapevine-config.md). Downloadable starters: `libraries/grapevine/examples/blueprints/`.
 
-## Blueprint Structure
+## Two shapes that work
 
-Every blueprint follows this top-level structure:
+**Resource document** (preferred):
 
 ```yaml
-grapevine: "1.0"
+version: "0.1"
 provider: digitalocean
-blueprint:
-    name: ":
-    #... Provider Specific resource config
+region: nyc1
+resources:
+  vpcs:
+    - name: grapevine
+      ip_range: 10.120.0.0/16
+  droplets:
+    - name: web-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: grapevine
 ```
 
-|Field|Required|Description|
-|--|--|--|
-|`grapevine`|✅|The GrapeVine spec version|
-|`provider`|✅|The target cloud provider (`digitalocean`, `aws`, etc.)|
-|`blueprint.name`|✅|A descriptive name for this blueprint|
-
----
-
-## Partial Blueprints
-
-You do not need to fill out every field. GrapeVine automatically strips empty strings, null values, and empty arrays before sending the payload to your provider.
-This means you can use a full blueprint template and only fill in what you need.
+**Hoisted `blueprint:`** (still valid — folded into `resources` before parse):
 
 ```yaml
-user_data: []
-vpc_uuid: ""
-volumes: []
-```
-
-## Example: Create A Single Droplet
-
-The following blueprint provisions a single DigitalOcean droplet:
-
-```yaml
-grapevine: "1.0"
 provider: digitalocean
 blueprint:
-  name: "create-single-droplet"
+  name: web
   droplet:
-    name: "test.com"
-    region: "nyc3"
-    size: "s-1vcpu-1gb"
-    image: "ubuntu-24-04-x64"
-    ssh_keys: []
-    backups: true
-    backup_policy:
-      plan: "weekly"
-      weekday: "SUN"
-      hour: 0
-    ipv6: false
-    monitoring: true
-    tags: ["testing"]
-    user_data: ""
-    volumes: []
-    vpc_uuid: ""
-    with_droplet_agent: false
+    name: web-01
+    region: nyc1
+    size: s-1vcpu-1gb
+    image: ubuntu-24-04-x64
 ```
 
----
+`provider` must be `digitalocean`. Other cloud names fail validation.
 
-## VSCode Support
+## Empty fields
 
-To prevent third-party YAML schema validators from flagging GrapeVine blueprints, add the following modeline to the top of your blueprint file:
+`cleanPayload` strips empty values before some API calls. You can omit optional keys instead of sending `""` / `[]`.
 
-```yaml
-# yaml-language-server: $schema=
-grapevine: "1.0"
-...
-```
+## Droplet-only helper
 
-This tells the YAML language server to skip external schema validation for this file. As GrpaeVine matures, a first-party JSON schema will be available
-for full intellisense support.
+`deployByBlueprint(path)` reads a `{ blueprint: { droplet } }` file and POSTs `/droplets`. For VPC + firewall + keys, use `applyGrapeConfig` / `grape apply`.
 
----
+## See also
 
-## Blueprint Marketplace
-
-Blueprints can be shared or sold through the GrapeVine marketplace.
-- **Verified** - are reviewed and approved by the GrapeVine team
-- **Community** - are contributed by the community and clearly labeled.
-
----
-
-## Supported Providers
-
-- DigitalOcean
-- AWS (*coming soon*)
+- [Getting Started](../../grapevine-getting-started.md)
+- [Examples](../../grapevine-examples.md)
+- [create-droplet.md](./create-droplet.md)

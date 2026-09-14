@@ -1,6 +1,6 @@
 # DigitalOcean Provider
 
-GrapeVine's DigitalOcean provider allows you to provision and manage DigitalOcean resources via YAML blueprints.
+Grapevine’s DigitalOcean provider provisions resources via YAML and the function APIs in `@citrusworx/grapevine`. Start with [Getting Started](../../grapevine-getting-started.md) and [grapevine-digitalocean.md](../../grapevine-digitalocean.md). This page is a field cheat sheet.
 
 ---
 

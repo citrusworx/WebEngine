@@ -1,6 +1,6 @@
 # `cleanPayload(obj)`
 
-A recursive utility that strips empty, null, and undefined values from a blueprint payload before it is sent to a cloud provider API.
+A recursive utility that strips empty, null, and undefined values from a payload before Grapevine sends it to the DigitalOcean API (`libraries/grapevine/src/providers/digitalocean/utilities.ts`).
 
 ---
 
