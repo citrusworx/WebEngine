@@ -159,6 +159,44 @@ describe("MysqlSql", () => {
         expect(result.rows).toEqual([{ id: 1 }]);
     });
 
+    it("query() rewrites compiler $1 SQL to ? and binds params", async () => {
+        mocks.execute.mockResolvedValue([[{ id: 1 }], []]);
+        const adapter = createMysqlAdapter(creds);
+        await adapter.connect();
+
+        const result = await adapter.query("SELECT id FROM users WHERE id = $1", [1]);
+
+        expect(mockPool().execute).toHaveBeenCalledWith(
+            "SELECT id FROM users WHERE id = ?",
+            [1],
+        );
+        expect(result.rows).toEqual([{ id: 1 }]);
+    });
+
+    it("query() maps $N::jsonb to CAST(? AS JSON) and stringifies objects", async () => {
+        const adapter = createMysqlAdapter(creds);
+        await adapter.connect();
+
+        await adapter.query("INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)", [
+            "sku-1",
+            { sku: "sku-1" },
+        ]);
+
+        expect(mockPool().execute).toHaveBeenCalledWith(
+            "INSERT INTO products (id, payload) VALUES (?, CAST(? AS JSON))",
+            ["sku-1", '{"sku":"sku-1"}'],
+        );
+    });
+
+    it("query() throws on unsupported casts before execute", async () => {
+        const adapter = createMysqlAdapter(creds);
+        await adapter.connect();
+        await expect(adapter.query("SELECT * FROM t WHERE id = $1::int", [1])).rejects.toThrowError(
+            /unsupported bind cast \$1::int/,
+        );
+        expect(mocks.execute).not.toHaveBeenCalled();
+    });
+
     it("query() throws when not connected", async () => {
         const adapter = createMysqlAdapter(creds);
         await expect(adapter.query("SELECT 1")).rejects.toThrowError(/not connected/);

@@ -29,7 +29,9 @@ Adapter           →  query(sql, params)   // execute only
   Schema field tokens (`jsonb NOT NULL`, `enum(...)`,
   `DEFAULT NOW()`) become `CREATE TABLE` / `CREATE INDEX`.
 - **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
-  compiler. They do not assemble statements.
+  compiler. They do not assemble statements. The MySQL adapter rewrites `$N`
+  (and allowlisted `$N::jsonb`) to `?` at the query boundary so compiled SQL
+  can run on MySQL; Postgres keeps `$1`.
 
 ## One phonics model, two YAML surfaces
 
@@ -289,6 +291,9 @@ values: [$1, $2::jsonb]
 ```sql
 INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)
 ```
+
+On MySQL, the adapter turns that bind into `CAST(? AS JSON)` (MySQL’s JSON
+type is the closest match to jsonb). `::text` is stripped to `?`.
 
 JSONB operators (`@>`, `?`, `->>`, …) are a later phonics item — not
 required for this phase. Blackwater’s live `products` table keeps
