@@ -291,5 +291,4 @@ Each attribute selector generates a single CSS rule:
      <span>Item 1</span>
      <span>Item 2</span>
    </div>
-   ```</content>
-<parameter name="filePath">D:\CitrusWorx\docs\juice\juice-spacing.md
+   ```

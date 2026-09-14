@@ -132,7 +132,7 @@ Skim once the `validate` stage exists. Seltzer executes HTTP; Nectarine defines 
 
 ## Hands-On Exercises
 
-Each exercise is ~1–2 hours. Write them in plain `node:http` + TypeScript — in a scratch file or [`libraries/seltzer/src/example.ts`](../../libraries/seltzer/src/example.ts). **Do not use AI for the core logic**; syntax lookup and TypeScript errors are fine.
+Each exercise is ~1–2 hours. Write them in plain `node:http` + TypeScript — in a scratch file or `libraries/seltzer/src/example.ts`. **Do not use AI for the core logic**; syntax lookup and TypeScript errors are fine.
 
 Numbered starter templates live in [`exercises/`](./exercises/).
 

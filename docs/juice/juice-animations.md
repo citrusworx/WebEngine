@@ -111,4 +111,4 @@ When the user prefers reduced motion, Juice disables **`motion`** animations and
 
 ## Class-based slide helpers (legacy)
 
-[slidein.scss](../../libraries/juice/src/styles/animations/slidein.scss) also defines classes `.slideInRight`, `.slideInOutLeft`, and `.slideInOutRight` without `motion` attributes. Prefer `motion="slideIn.left"` for new work.
+`libraries/juice/src/styles/animations/slidein.scss` also defines classes `.slideInRight`, `.slideInOutLeft`, and `.slideInOutRight` without `motion` attributes. Prefer `motion="slideIn.left"` for new work.

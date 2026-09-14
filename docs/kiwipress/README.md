@@ -262,4 +262,4 @@ KiwiPress is in active early development. The read-side API is stable. Write ope
 - `WPSync` — import, export, migration, and backup
 - Full response normalization
 
-See [ARCHITECTURE.md](../../packages/kiwipress/ARCHITECTURE.md) for design rationale and the planned implementation path.
+Design rationale and the planned implementation path live in the monorepo at `packages/kiwipress/ARCHITECTURE.md` (outside this vault).

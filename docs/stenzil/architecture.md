@@ -25,7 +25,7 @@ Stenzil is a **compiler**, not a runtime library. You write `.stzl` files once a
   └──────────┘  (planned)
 ```
 
-Each stage is a pure function that takes the output of the previous stage as input. The Lexer and Parser are fully implemented in `libraries/stenzil/src/`. Codegen is the next phase.
+Each stage is a pure function that takes the output of the previous stage as input. The Lexer and Parser are fully implemented in `libraries/stenzil/src/`. Codegen is the next phase. Source files cited below are monorepo paths, not links — they sit outside this vault.
 
 ---
 
@@ -70,7 +70,7 @@ The capital-letter rule distinguishes components from keywords: `[ComponentName]
 
 ## Phase 1 — The Lexer
 
-**File:** [libraries/stenzil/src/lexer.ts](../../libraries/stenzil/src/lexer.ts)
+**File:** `libraries/stenzil/src/lexer.ts`
 
 The lexer (tokenizer) is a single-pass state machine over the raw source string. It produces a flat `Token[]` — no nesting, no tree. The parser handles structure.
 
@@ -159,7 +159,7 @@ export type Token = {
 
 ## Phase 2 — The Parser
 
-**File:** [libraries/stenzil/src/parser.ts](../../libraries/stenzil/src/parser.ts)
+**File:** `libraries/stenzil/src/parser.ts`
 
 The parser is a **recursive descent parser**. It consumes the flat `Token[]` from the lexer and builds a typed AST.
 
@@ -229,7 +229,7 @@ The `elseifs` array collects zero or more branches. This models a chain of arbit
 
 ### The AST Node Union
 
-**File:** [libraries/stenzil/src/types.ts](../../libraries/stenzil/src/types.ts)
+**File:** `libraries/stenzil/src/types.ts`
 
 Every AST node is a tagged union — each type has a literal `type` field that discriminates it. This is the standard pattern for TypeScript ASTs because the compiler can narrow the union in a `switch` statement:
 
@@ -319,7 +319,7 @@ This means the output file is a single flat document — no runtime template inh
 
 ## The Public API
 
-**File:** [libraries/stenzil/src/index.ts](../../libraries/stenzil/src/index.ts)
+**File:** `libraries/stenzil/src/index.ts`
 
 ```typescript
 import { Stenzil } from "@citrusworx/stenzil";

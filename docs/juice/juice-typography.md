@@ -397,5 +397,4 @@ All fonts include fallback font stacks for better compatibility:
 ### Legacy Font Usage
 - **Direct font-family**: Replace with Juice font attributes
 - **Custom fonts**: Add to the token system following existing patterns
-- **Web fonts**: Ensure proper licensing and loading strategy</content>
-<parameter name="filePath">D:\CitrusWorx\docs\juice\juice-typography.md
+- **Web fonts**: Ensure proper licensing and loading strategy
