@@ -1,12 +1,13 @@
-import type { Route } from "@citrusworx/seltzer";
-import { getPool } from "../db/postgres.js";
+import type { ResponseData, Route } from "@citrusworx/seltzer";
+import { isDatabaseConnected } from "../db/postgres.js";
 import type { BlackwaterContext } from "../types/context.js";
 
 export const healthRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/health",
-  handler: ({ locals }) => {
+  handler: ({ locals }): ResponseData => {
     const { nectarine } = locals;
+    const databaseConnected = isDatabaseConnected();
 
     return {
       body: {
@@ -31,7 +32,8 @@ export const healthRoute: Route<BlackwaterContext> = {
           pages: Boolean(locals.pagesClient),
         },
         database: {
-          configured: Boolean(getPool()),
+          configured: databaseConnected,
+          seedFallback: !databaseConnected,
           products: locals.products.length,
         },
         catalog: {

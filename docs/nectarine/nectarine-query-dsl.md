@@ -77,7 +77,7 @@ surface so existing query files compile without a mechanical rewrite.
 
 Each resource currently uses three YAML files:
 
-- `*Schema.yml`: data model and table structure (future DDL owner)
+- `*Schema.yml`: data model compiled to `CREATE TABLE` / `CREATE INDEX` (`relationships:` is documentation, not FK DDL)
 - `*Queries.yml` or `user.yml`: query DSL
 - `*API.yml`: API endpoint definitions
 

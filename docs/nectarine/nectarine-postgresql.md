@@ -130,13 +130,18 @@ const nectarine = loadNectarineConfig("./nectarine.config.yaml");
 const pg = createPgAdapterFromConfig(nectarine)
   ?? createPgAdapter(nectarine.resolveCredentials("postgres")!);
 
+if (!pg) {
+  throw new Error("Postgres env is incomplete");
+}
+
+await pg.connect();
+
 const app = Seltzer.init();
 
 const listUsers: Route = {
   method: "GET",
   path: "/api/users",
   handler: async () => {
-    await pg.connect();
     // Compile named YAML queries with CCompiler; adapters only run (sql, params).
     return { body: { ok: true } };
   },
@@ -150,30 +155,24 @@ Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express r
 
 ### Connection Pooling
 
+`createPgAdapter` / `createPgAdapterFromConfig` use a `pg.Pool`. Do not open a second hand-rolled `Pool` in app code — that duplicates adapter concerns (credentials, idle-client `error` handling, shutdown).
+
 ```typescript
-import { Pool } from "pg";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
 
-// Create connection pool
-const pool = new Pool({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  password: process.env.PG_PASS,
-  database: process.env.PG_DB,
-  port: parseInt(process.env.PG_PORT),
-  max: 20,                    // Maximum connections
-  idleTimeoutMillis: 30000,   // Close idle connections
-  connectionTimeoutMillis: 2000,
-});
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const pg = createPgAdapterFromConfig(nectarine);
+if (!pg) {
+  throw new Error("Postgres env is incomplete");
+}
 
-// Test connection
-pool.query("SELECT NOW()", (err, res) => {
-  if (err) {
-    console.error("Connection failed:", err);
-  } else {
-    console.log("Connected at:", res.rows[0]);
-  }
-});
+await pg.connect(); // pool + checkout so connect failures surface here
+const result = await pg.query("SELECT id FROM users WHERE id = $1", [1]);
+await pg.disconnect();
 ```
+
+Blackwater production boot connects once, runs named DDL/DML, and closes the pool on failed boot and on `SIGTERM` / `SIGINT`. See [Production](./production.md).
 
 ## PostgreSQL-Specific Features
 

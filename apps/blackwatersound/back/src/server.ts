@@ -3,7 +3,9 @@ import { fileURLToPath } from "node:url";
 import { loadNectarineConfig } from "@citrusworx/nectarine/config";
 import { Seltzer } from "@citrusworx/seltzer";
 import { createAppContext } from "./context.js";
+import { closeDatabase, isDatabaseConnected } from "./db/postgres.js";
 import { routes } from "./routes/index.js";
+import type { AppLocals } from "./types/context.js";
 
 const port = Number(process.env.PORT ?? 3001);
 const corsOrigin = process.env.CORS_ORIGIN?.trim();
@@ -13,7 +15,15 @@ const configPath =
   path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../nectarine.config.yaml");
 
 const nectarine = loadNectarineConfig(configPath);
-const locals = await createAppContext(nectarine);
+
+let locals: AppLocals;
+try {
+  locals = await createAppContext(nectarine);
+} catch (error) {
+  const message = error instanceof Error ? error.stack ?? error.message : String(error);
+  console.error(`Blackwater Sound boot failed: ${message}`);
+  process.exit(1);
+}
 
 const app = Seltzer.init();
 
@@ -21,7 +31,7 @@ for (const route of routes) {
   app.route(route);
 }
 
-app.listen(port, {
+const server = app.listen(port, {
   locals,
   cors: corsOrigin
     ? {
@@ -35,7 +45,7 @@ app.listen(port, {
       },
   onListening: (listeningPort) => {
     const wpStatus = locals.wpUrl ? `KiwiPress → ${locals.wpUrl}` : "KiwiPress → seed fallback";
-    const dbStatus = nectarine.isDatabaseConfigured()
+    const dbStatus = isDatabaseConnected()
       ? `Nectarine DB → ${nectarine.getVendor()} (${nectarine.getEnvKeys().database})`
       : "Nectarine DB → seed fallback";
 
@@ -45,3 +55,20 @@ app.listen(port, {
     console.log(dbStatus);
   },
 });
+
+function shutdown(signal: string) {
+  console.log(`${signal}: shutting down Blackwater Sound API`);
+  server.close(() => {
+    void closeDatabase().finally(() => {
+      process.exit(0);
+    });
+  });
+
+  setTimeout(() => {
+    console.error("Shutdown timed out; exiting");
+    process.exit(1);
+  }, 10_000).unref();
+}
+
+process.once("SIGTERM", () => shutdown("SIGTERM"));
+process.once("SIGINT", () => shutdown("SIGINT"));

@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Pool } from "pg";
 import type { QueryResult, QueryResultRow } from "pg";
 import type { NectarineConfig } from "../../config/NectarineConfig.js";
 import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
@@ -8,6 +8,7 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
 /**
  * Postgres adapter for parameterized SQL from the Nectarine compiler.
  *
+ * Uses a `pg.Pool` so concurrent HTTP requests do not share a single client.
  * Credentials are {@link DatabaseCredentials} from
  * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
  * this adapter receives the resolved values. It does not read `process.env`
@@ -24,7 +25,8 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
  * ```
  */
 export class PgSql {
-    private connection: Client | null = null;
+    private pool: Pool | null = null;
+    private connecting: Promise<Pool> | null = null;
     private readonly credentials: DatabaseCredentials;
 
     constructor(credentials: DatabaseCredentials) {
@@ -36,57 +38,77 @@ export class PgSql {
     }
 
     get connected(): boolean {
-        return this.connection !== null;
+        return this.pool !== null;
     }
 
-    async connect(): Promise<Client> {
-        if (this.connection) {
-            return this.connection;
+    /**
+     * Create the connection pool and check out one client so failures
+     * surface here instead of on the first query.
+     */
+    async connect(): Promise<Pool> {
+        if (this.pool) {
+            return this.pool;
         }
+        if (!this.connecting) {
+            this.connecting = this.openPool().finally(() => {
+                this.connecting = null;
+            });
+        }
+        return this.connecting;
+    }
 
-        const client = new Client({
+    private async openPool(): Promise<Pool> {
+        const pool = new Pool({
             user: this.credentials.user,
             password: this.credentials.password,
             host: this.credentials.host,
             port: this.credentials.port,
             database: this.credentials.database,
+            max: 10,
+            idleTimeoutMillis: 30_000,
+            connectionTimeoutMillis: 5_000,
+        });
+
+        pool.on("error", (error) => {
+            console.error("Nectarine Postgres pool idle client error:", error);
         });
 
         try {
-            await client.connect();
+            const client = await pool.connect();
+            client.release();
         } catch (error) {
-            await client.end().catch(() => undefined);
+            await pool.end().catch(() => undefined);
             throw error;
         }
 
-        this.connection = client;
-        return client;
+        this.pool = pool;
+        return pool;
     }
 
     /**
-     * Run parameterized SQL (`$1`, `$2`, …) against the connected client.
+     * Run parameterized SQL (`$1`, `$2`, …) against the connected pool.
      */
     async query<T extends QueryResultRow = QueryResultRow>(
         sql: string,
         params: readonly unknown[] = [],
     ): Promise<QueryResult<T>> {
-        if (!this.connection) {
+        if (!this.pool) {
             throw new Error("Postgres adapter is not connected. Call connect() before query()");
         }
         if (typeof sql !== "string" || !sql.trim()) {
             throw new Error("Postgres adapter query() requires a SQL string");
         }
 
-        return this.connection.query<T>(sql, params as unknown[]);
+        return this.pool.query<T>(sql, params as unknown[]);
     }
 
     async disconnect(): Promise<void> {
-        const client = this.connection;
-        if (!client) {
+        const pool = this.pool;
+        if (!pool) {
             return;
         }
-        this.connection = null;
-        await client.end();
+        this.pool = null;
+        await pool.end();
     }
 
     async end(): Promise<void> {
@@ -127,12 +149,12 @@ export function requirePgCredentials(
     }
 
     const user = credentials.user?.trim();
-    const password = credentials.password?.trim();
+    const password = credentials.password;
     const host = credentials.host?.trim();
     const database = credentials.database?.trim();
     const port = Number(credentials.port);
 
-    if (!user || !password || !host || !database) {
+    if (!user || password == null || password === "" || !host || !database) {
         throw new Error(
             "Postgres adapter requires complete credentials: user, password, host, port, and database",
         );

@@ -1,4 +1,4 @@
-import type { DatabaseCredentials, DatabaseEnvKeys, DatabaseVendor, LoadedResource, LoadNectarineConfigOptions, NectarineAppDefinition, NectarineConfigFile, ResourceRef } from "./types.js";
+import type { CredentialStatus, DatabaseCredentials, DatabaseEnvKeys, DatabaseVendor, LoadedResource, LoadNectarineConfigOptions, NectarineAppDefinition, NectarineConfigFile, ResourceRef } from "./types.js";
 /**
  * Parsed, path-resolved Nectarine project config.
  * Created via {@link NectarineConfig.load} / {@link loadNectarineConfig}.
@@ -29,6 +29,15 @@ export declare class NectarineConfig {
      * Returns null when any required value is missing (seed/fallback path).
      */
     resolveCredentials(vendor?: DatabaseVendor, env?: NodeJS.ProcessEnv): DatabaseCredentials | null;
+    /**
+     * Report which YAML-declared env keys are present vs missing.
+     * Does not throw on incomplete env (port parse errors still throw).
+     */
+    credentialStatus(vendor?: DatabaseVendor, env?: NodeJS.ProcessEnv): CredentialStatus;
+    /**
+     * Resolve credentials or throw listing the missing YAML-declared env keys.
+     */
+    requireCredentials(vendor?: DatabaseVendor, env?: NodeJS.ProcessEnv): DatabaseCredentials;
     isDatabaseConfigured(vendor?: DatabaseVendor, env?: NodeJS.ProcessEnv): boolean;
     getResource(name: string): LoadedResource;
     hasResource(name: string): boolean;

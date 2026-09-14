@@ -2,6 +2,7 @@ export { loadNectarineConfig } from "./loadConfig.js";
 export { NectarineConfig } from "./NectarineConfig.js";
 export { loadSchema, loadYaml } from "./yaml.js";
 export type {
+    CredentialStatus,
     DatabaseCredentials,
     DatabaseEnvKeys,
     DatabaseVendor,

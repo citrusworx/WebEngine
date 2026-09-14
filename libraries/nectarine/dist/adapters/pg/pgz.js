@@ -8,6 +8,7 @@ const pg_1 = require("pg");
 /**
  * Postgres adapter for parameterized SQL from the Nectarine compiler.
  *
+ * Uses a `pg.Pool` so concurrent HTTP requests do not share a single client.
  * Credentials are {@link DatabaseCredentials} from
  * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
  * this adapter receives the resolved values. It does not read `process.env`
@@ -25,55 +26,75 @@ const pg_1 = require("pg");
  */
 class PgSql {
     constructor(credentials) {
-        this.connection = null;
+        this.pool = null;
+        this.connecting = null;
         this.credentials = requirePgCredentials(credentials);
     }
     static fromCredentials(credentials) {
         return new PgSql(credentials);
     }
     get connected() {
-        return this.connection !== null;
+        return this.pool !== null;
     }
+    /**
+     * Create the connection pool and check out one client so failures
+     * surface here instead of on the first query.
+     */
     async connect() {
-        if (this.connection) {
-            return this.connection;
+        if (this.pool) {
+            return this.pool;
         }
-        const client = new pg_1.Client({
+        if (!this.connecting) {
+            this.connecting = this.openPool().finally(() => {
+                this.connecting = null;
+            });
+        }
+        return this.connecting;
+    }
+    async openPool() {
+        const pool = new pg_1.Pool({
             user: this.credentials.user,
             password: this.credentials.password,
             host: this.credentials.host,
             port: this.credentials.port,
             database: this.credentials.database,
+            max: 10,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 5000,
+        });
+        pool.on("error", (error) => {
+            console.error("Nectarine Postgres pool idle client error:", error);
         });
         try {
-            await client.connect();
+            const client = await pool.connect();
+            client.release();
         }
         catch (error) {
-            await client.end().catch(() => undefined);
+            await pool.end().catch(() => undefined);
             throw error;
         }
-        this.connection = client;
-        return client;
+        this.pool = pool;
+        return pool;
     }
     /**
-     * Run parameterized SQL (`$1`, `$2`, …) against the connected client.
+     * Run parameterized SQL (`$1`, `$2`, …) against the connected pool.
      */
     async query(sql, params = []) {
-        if (!this.connection) {
+        if (!this.pool) {
             throw new Error("Postgres adapter is not connected. Call connect() before query()");
         }
         if (typeof sql !== "string" || !sql.trim()) {
             throw new Error("Postgres adapter query() requires a SQL string");
         }
-        return this.connection.query(sql, params);
+        return this.pool.query(sql, params);
     }
     async disconnect() {
-        const client = this.connection;
-        if (!client) {
+        const pool = this.pool;
+        if (!pool) {
             return;
         }
-        this.connection = null;
-        await client.end();
+        this.pool = null;
+        await pool.end();
     }
     async end() {
         return this.disconnect();
@@ -103,11 +124,11 @@ function requirePgCredentials(credentials) {
         throw new Error("Postgres adapter requires DatabaseCredentials");
     }
     const user = credentials.user?.trim();
-    const password = credentials.password?.trim();
+    const password = credentials.password;
     const host = credentials.host?.trim();
     const database = credentials.database?.trim();
     const port = Number(credentials.port);
-    if (!user || !password || !host || !database) {
+    if (!user || password == null || password === "" || !host || !database) {
         throw new Error("Postgres adapter requires complete credentials: user, password, host, port, and database");
     }
     if (!Number.isFinite(port)) {

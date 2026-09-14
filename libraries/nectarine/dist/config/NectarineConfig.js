@@ -128,6 +128,42 @@ class NectarineConfig {
         }
         return { user, password, host, port, database };
     }
+    /**
+     * Report which YAML-declared env keys are present vs missing.
+     * Does not throw on incomplete env (port parse errors still throw).
+     */
+    credentialStatus(vendor, env = this.env) {
+        const name = this.getVendor(vendor);
+        const keys = this.getEnvKeys(name);
+        const present = [];
+        const missing = [];
+        for (const envKey of Object.values(keys)) {
+            if (env[envKey]?.trim()) {
+                present.push(envKey);
+            }
+            else {
+                missing.push(envKey);
+            }
+        }
+        return {
+            vendor: name,
+            keys,
+            present,
+            missing,
+            credentials: missing.length === 0 ? this.resolveCredentials(name, env) : null,
+        };
+    }
+    /**
+     * Resolve credentials or throw listing the missing YAML-declared env keys.
+     */
+    requireCredentials(vendor, env = this.env) {
+        const credentials = this.resolveCredentials(vendor, env);
+        if (credentials) {
+            return credentials;
+        }
+        const status = this.credentialStatus(vendor, env);
+        throw new Error(`Nectarine ${status.vendor} env is incomplete. Missing: ${status.missing.join(", ") || "(unknown)"}. Set the env vars named in ${this.configPath} (database.${status.vendor}.env).`);
+    }
     isDatabaseConfigured(vendor, env = this.env) {
         return this.resolveCredentials(vendor, env) !== null;
     }
