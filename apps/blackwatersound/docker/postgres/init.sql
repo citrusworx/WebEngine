@@ -1,3 +1,4 @@
+-- PHASE 3 TODO: generate from *Schema.yml (same source as src/db/phase3-ddl.ts).
 CREATE TABLE IF NOT EXISTS products (
   id TEXT PRIMARY KEY,
   payload JSONB NOT NULL,

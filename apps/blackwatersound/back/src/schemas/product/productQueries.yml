@@ -26,11 +26,33 @@ product:
       fields: '*'
       where: slug = $1
 
+    # Live document store: products(id, payload JSONB). Phase 3 DDL aligns the relational shape.
+    allPayloads:
+      type: SELECT
+      table: products
+      fields: payload
+      orderBy: created_at ASC
+
+    payloadById:
+      type: SELECT
+      table: products
+      fields: payload
+      where: id = $1
+
   create:
     newProduct:
       type: INSERT
       table: products
       fields: [id, catalog, name, slug, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive]
+
+    # Document-store seed. Bind a validated JSON string as $2; compiler emits $2::jsonb.
+    seedPayload:
+      type: INSERT
+      table: products
+      fields: [id, payload]
+      values:
+        - $1
+        - { value: $2, cast: jsonb }
 
   update:
     updateProduct:

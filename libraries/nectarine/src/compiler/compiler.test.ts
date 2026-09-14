@@ -166,6 +166,39 @@ describe("CCompiler", () => {
         ).toThrowError(QueryCompileError);
     });
 
+    it("compiles a validated jsonb object bind cast", () => {
+        expect(
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", { value: "$2", cast: "jsonb" }],
+                },
+            }),
+        ).toBe("INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)");
+    });
+
+    it("rejects an unsafe or unknown object cast", () => {
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", { value: "$2", cast: "int" }],
+                },
+            }),
+        ).toThrowError(/Unsupported cast "int"/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", { value: "$2", cast: "jsonb; DROP TABLE products" }],
+                },
+            }),
+        ).toThrowError(/Unsupported cast/);
+    });
+
     it("rejects number and boolean literals", () => {
         const compiler = new CCompiler();
         const withNumber = {

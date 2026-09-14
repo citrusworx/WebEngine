@@ -20,9 +20,10 @@ Adapter           →  query(sql, params)   // execute only
   `SELECT` / `INSERT` / `UPDATE` / `DELETE`.
 - **Compiler** validates identifiers, operators, and values. Runtime values
   are `$1`-style placeholders (`$1::jsonb` is an allowlisted Postgres bind
-  cast). YAML-authored constants (`true`, `42`, `'published'`) are allowed
-  only as tagged `{ const: ... }` or via the closed `where` fragment
-  grammar — never via string interpolation of user input.
+  cast; `{ value: $N, cast: jsonb }` is equivalent). YAML-authored constants
+  (`true`, `42`, `'published'`) are allowed only as tagged `{ const: ... }`
+  or via the closed `where` fragment grammar — never via string interpolation
+  of user input.
 - **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
   compiler. They do not assemble statements.
 
@@ -201,6 +202,25 @@ waitlist:
 ```
 
 → `INSERT INTO waitlist (...) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, created_at`
+
+JSONB document insert (live Blackwater product store):
+
+```yaml
+product:
+  create:
+    seedPayload:
+      type: INSERT
+      table: products
+      fields: [id, payload]
+      values:
+        - $1
+        - { value: $2, cast: jsonb }
+```
+
+→ `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)`
+
+The app serializes a validated object (`JSON.stringify` after an object
+check) and binds it. The compiler is the only place `::jsonb` is emitted.
 
 ## `update`
 

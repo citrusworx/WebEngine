@@ -197,7 +197,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 
 **PostgreSQL**:
 - Array types partially supported
-- JSON querying requires manual queries
+- JSONB is first-class: named query YAML can select `payload` and bind `{ value: $N, cast: jsonb }`
 - Window functions need custom query definitions
 
 **MySQL**:

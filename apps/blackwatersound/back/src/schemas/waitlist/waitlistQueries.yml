@@ -4,7 +4,7 @@ waitlist:
       type: SELECT
       table: waitlist
       fields: '*'
-      orderBy: created_at DESC
+      orderBy: created_at ASC
 
     entryByEmail:
       type: SELECT
@@ -18,3 +18,9 @@ waitlist:
       table: waitlist
       fields: [id, name, email, source_app, interest]
       returning: [id, email, created_at]
+
+    # Live table is (id, name, email, created_at). Phase 3 DDL adds source_app / interest.
+    insertEntry:
+      type: INSERT
+      table: waitlist
+      fields: [id, name, email, created_at]
