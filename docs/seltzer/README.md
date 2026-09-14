@@ -283,16 +283,16 @@ This stage either enriches the context with route information or fails with a no
 
 This stage is where Seltzer begins to integrate with the broader KiwiEngine philosophy.
 
-If a route is associated with a contract, Seltzer can use that contract to validate things like:
+If a route is associated with a contract (`Route.contract`), Seltzer can use that contract to validate things like:
 
-* request body
+* request body (default: `.required` keys from YAML `body:` specs)
 * route params
 * query string
 * response shape later
 
 This stage makes contracts part of request execution rather than something manually bolted on later.
 
-Initially this may be light, but conceptually it is foundational.
+The default implementation is presence-only. Nectarine hangs richer checks with `replace("validate", …)`.
 
 ---
 

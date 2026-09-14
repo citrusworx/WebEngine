@@ -32,6 +32,9 @@ const DEFAULT_NOT_FOUND: ResponseData = {
  * Turn Nectarine `ApiOperation[]` (`listApiOperations`) into object-based
  * Seltzer `Route`s. Nectarine does not generate routes.
  *
+ * Copies `resource`, `name`, and `body` field specs onto `Route.contract`
+ * so the default `validate` stage can see `.required` keys.
+ *
  * Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call `execute`, and
  * return `ResponseData`. They never write `ctx.json`.
  */
@@ -57,6 +60,11 @@ export function generateRoutes<TContext extends RequestContext = RequestContext>
     return ordered.map((operation) => ({
         method: operation.method,
         path: operation.path,
+        contract: {
+            resource: operation.resource,
+            name: operation.name,
+            ...(operation.body ? { body: operation.body } : {}),
+        },
         handler: async (ctx: TContext): Promise<ResponseData> => {
             const args: ExecuteArgs<TContext> = {
                 resource: operation.resource,

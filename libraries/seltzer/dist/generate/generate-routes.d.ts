@@ -23,6 +23,9 @@ export type GenerateRoutesOptions<TContext extends RequestContext = RequestConte
  * Turn Nectarine `ApiOperation[]` (`listApiOperations`) into object-based
  * Seltzer `Route`s. Nectarine does not generate routes.
  *
+ * Copies `resource`, `name`, and `body` field specs onto `Route.contract`
+ * so the default `validate` stage can see `.required` keys.
+ *
  * Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call `execute`, and
  * return `ResponseData`. They never write `ctx.json`.
  */

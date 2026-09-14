@@ -274,3 +274,125 @@ describe("Seltzer#before", () => {
         expect(res.json).toEqual({ ok: true });
     });
 });
+
+describe("Seltzer validate", () => {
+    it("returns 400 when a required body field is missing and does not run handle", async () => {
+        let handled = false;
+        const app = Seltzer.init().route({
+            method: "POST",
+            path: "/api/waitlist",
+            contract: {
+                resource: "waitlist",
+                name: "joinWaitlist",
+                body: { name: "string", email: "string.required" },
+            },
+            handler: (): ResponseData => {
+                handled = true;
+                return { body: { ok: true } };
+            },
+        });
+
+        const base = await listen(app);
+        const res = await request(`${base}/api/waitlist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "Ada" }),
+        });
+
+        expect(handled).toBe(false);
+        expect(res.status).toBe(400);
+        expect(res.json).toEqual({ error: "Missing required field: email" });
+    });
+
+    it("runs handle when required body fields are present", async () => {
+        const app = Seltzer.init().route({
+            method: "POST",
+            path: "/api/waitlist",
+            contract: {
+                body: { email: "string.required" },
+            },
+            handler: (ctx): ResponseData => ({
+                body: { email: (ctx.body as { email: string }).email },
+            }),
+        });
+
+        const base = await listen(app);
+        const res = await request(`${base}/api/waitlist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "ada@example.com" }),
+        });
+
+        expect(res.status).toBe(200);
+        expect(res.json).toEqual({ email: "ada@example.com" });
+    });
+
+    it("leaves routes without body specs unchanged", async () => {
+        const app = Seltzer.init().route({
+            method: "POST",
+            path: "/items",
+            handler: (): ResponseData => ({ body: { ok: true } }),
+        });
+
+        const base = await listen(app);
+        const res = await request(`${base}/items`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+        });
+
+        expect(res.status).toBe(200);
+        expect(res.json).toEqual({ ok: true });
+    });
+});
+
+describe("Seltzer#replace", () => {
+    it("swaps builtin validate so a custom stage can short-circuit", async () => {
+        let handled = false;
+        const app = Seltzer.init()
+            .replace("validate", () => ({
+                status: 418,
+                body: { error: "nectarine" },
+            }))
+            .route({
+                method: "GET",
+                path: "/",
+                handler: (): ResponseData => {
+                    handled = true;
+                    return { body: { ok: true } };
+                },
+            });
+
+        const base = await listen(app);
+        const res = await request(`${base}/`);
+
+        expect(handled).toBe(false);
+        expect(res.status).toBe(418);
+        expect(res.json).toEqual({ error: "nectarine" });
+    });
+
+    it("keeps before() inserting ahead of the replaced builtin", async () => {
+        const ran: string[] = [];
+        const app = Seltzer.init()
+            .before("validate", () => {
+                ran.push("before");
+            })
+            .replace("validate", () => {
+                ran.push("replaced");
+            })
+            .route({
+                method: "GET",
+                path: "/",
+                handler: (): ResponseData => {
+                    ran.push("handle");
+                    return { body: { ok: true } };
+                },
+            });
+
+        const base = await listen(app);
+        const res = await request(`${base}/`);
+
+        expect(res.status).toBe(200);
+        expect(ran).toEqual(["before", "replaced", "handle"]);
+    });
+});

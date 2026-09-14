@@ -41,6 +41,14 @@ export class Seltzer {
         this.pipeline.before(name, stage);
         return this;
     }
+    /**
+     * Swap the builtin stage named `name`. `before` still inserts ahead of it.
+     * Nectarine uses this to hang full contract checks on `validate`.
+     */
+    replace(name, stage) {
+        this.pipeline.replace(name, stage);
+        return this;
+    }
     handler(config) {
         this.config = config;
         return this;
