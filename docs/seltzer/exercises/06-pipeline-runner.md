@@ -1,8 +1,10 @@
 # Exercise 6: Pipeline Runner
 
+**Contributor elective — not shipped.** There is no named pipeline in `libraries/seltzer/src`. App authors should not start here. Product path: [JSON API tutorial](../seltzer-api-tutorial.md). Design: [seltzer-design.md](../seltzer-design.md).
+
 **Goal:** Run named stages in order on a shared context object.
 
-**Proves you can build:** The pipeline skeleton for Seltzer.
+**Proves you can build:** The **design-doc** pipeline skeleton for Seltzer (not in source).
 
 ## Requirements
 

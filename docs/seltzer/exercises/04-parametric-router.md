@@ -1,8 +1,10 @@
 # Exercise 4: Parametric Router
 
+**Contributor elective — not shipped.** `@citrusworx/seltzer` 0.2.0 matches exact pathnames only. `/users/:id` in `.route({ path })` is the literal string `"/users/:id"`. Product path uses query strings (`/user?id=`) — [Routing](../seltzer-routing.md).
+
 **Goal:** Match dynamic path segments like `/users/:id`.
 
-**Proves you can build:** Seltzer's `route` stage with `ctx.params`.
+**Proves you can build:** Seltzer's **design-doc** `route` stage with `ctx.params` (not in source).
 
 ## Requirements
 

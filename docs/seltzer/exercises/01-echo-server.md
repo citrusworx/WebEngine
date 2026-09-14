@@ -1,5 +1,7 @@
 # Exercise 1: Echo Server
 
+**Contributor elective.** This is raw `node:http`, not a Seltzer API tutorial. App authors: [JSON API tutorial](../seltzer-api-tutorial.md).
+
 **Goal:** Prove you understand the basic `createServer` callback.
 
 **Proves you can build:** Basic `IncomingMessage` / `ServerResponse` handling.

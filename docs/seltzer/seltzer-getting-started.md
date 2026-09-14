@@ -1,6 +1,25 @@
 # Getting Started With Seltzer
 
-Build an HTTP surface with the API in `libraries/seltzer/src` — not the pipeline in the design doc.
+This is the best starting point if you want to use Seltzer the way the library works today.
+
+After this page, the [JSON API tutorial](./seltzer-api-tutorial.md) is the guided build — health, collection, POST body, query lookup, a copied Nectarine path, and `client.*` — analogous to [Sig’s page tutorial](../sigjs/sig-page-tutorial.md) and [Juice’s page tutorial](../juice/juice-page-tutorial.md).
+
+Build against the API in `libraries/seltzer/src`, not the pipeline in the [design doc](./seltzer-design.md).
+
+## What Seltzer is
+
+Seltzer is a small Node `http` listener plus a `fetch` client.
+
+It gives you:
+
+- `Seltzer.init()` — construct an instance
+- `.route({ method, path, handler })` — store an exact method + pathname
+- `.handler(config)` — stash options copied onto `ctx.options`
+- `.listen(port)` — `http.createServer`, first-match dispatch, JSON 404
+- `ctx.json(data, status?)` — write JSON and end
+- `client.get/post/put/patch/delete` — `fetch` + `res.json()`
+
+It is not Express. There is no `app.use`, no `:id` matcher, no body parser, and no pipeline insert API.
 
 ## Install
 
@@ -9,6 +28,8 @@ yarn add @citrusworx/seltzer
 ```
 
 Requires Node (20+ is a safe assumption for this monorepo). `listen` will throw outside Node.
+
+Package version today: **0.2.0**.
 
 ## Hello World
 
@@ -40,6 +61,18 @@ That runs `ts-node src/index.ts` per `package.json` — wire `src/example.ts` or
 
 `curl http://127.0.0.1:3000/missing` → `{"error":"Not Found"}` and 404.
 
+## The mental model
+
+1. Register **exact** `{ method, path }` pairs. First match wins.
+2. On each request, Seltzer builds `ctx = { req, res, options, json }`.
+3. Your handler **must write the response**. Usually `ctx.json`.
+4. Returning `{ status, body }` does nothing. `listen` ignores the return value.
+5. POST bodies are a Node stream. Read them yourself.
+
+```text
+request → pathname + method → first exact route → handler(ctx) → you end the response
+```
+
 ## The context object
 
 Handlers receive:
@@ -53,7 +86,7 @@ Handlers receive:
 }
 ```
 
-There is no `ctx.body`, `ctx.params`, `ctx.query`, or `ctx.headers` map. Use `ctx.req` / `new URL(ctx.req.url, …)`.
+There is no `ctx.body`, `ctx.params`, `ctx.query`, or `ctx.headers` map. Use `ctx.req` / `new URL(ctx.req.url, …)`. The type is inline in `listen`; it is not a named export.
 
 ## Query strings
 
@@ -100,6 +133,8 @@ app.route({
 
 If you never read `ctx.req` and never `end` the response, the connection hangs. Always `ctx.json` or `ctx.res.end`.
 
+`listen` does not `await` the handler. An async handler still works if it calls `ctx.json` after the `await` — the response is written when that happens. An uncaught rejection is not mapped to 500.
+
 ## Call it from the Seltzer client
 
 ```ts
@@ -115,14 +150,20 @@ const created = await client.post(
 );
 ```
 
+`endpoint` is required by the type and ignored by the client. The URL is `baseUrl + path`.
+
 ## What to ignore on day one
 
 - [Design overview](./seltzer-design.md) pipeline diagrams
 - [Courses](./courses.md) and [exercises](./exercises/README.md) — those teach you to *write* the missing stages
-- `:id` routes, `app.use`, hooks
+- `:id` routes, `app.use`, `pipeline.insert`, `ctx.params`, `ctx.body`
+- Returning `{ status, headers, body }` and expecting Seltzer to send it
 
 ## Where to go next
 
+- [JSON API tutorial](./seltzer-api-tutorial.md) — the guided product build
+- [Request and response](./seltzer-request-response.md)
+- [Routing](./seltzer-routing.md)
+- [Client](./seltzer-client.md)
 - [Examples](./seltzer-examples.md)
-- [Integration](./seltzer-integration.md)
 - [Status](./seltzer-status.md)

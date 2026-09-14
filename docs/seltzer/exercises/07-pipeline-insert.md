@@ -1,8 +1,10 @@
 # Exercise 7: Pipeline Insert
 
+**Contributor elective — not shipped.** There is no `pipeline.insert` / `before("handle")` on `Seltzer`. Product auth/CORS is a wrapper around `handler` — [Best practices](../seltzer-best-practices.md).
+
 **Goal:** Insert a custom stage before an existing named stage.
 
-**Proves you can build:** Seltzer's pipeline modification API.
+**Proves you can build:** Seltzer's **design-doc** pipeline modification API (not in source).
 
 ## Requirements
 
