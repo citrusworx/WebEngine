@@ -11,6 +11,14 @@ describe("parseWhereFragment", () => {
         });
     });
 
+    it("parses a $N::jsonb bind cast", () => {
+        expect(parseWhereFragment("payload = $1::jsonb")).toEqual({
+            column: "payload",
+            operator: "eq",
+            value: { kind: "placeholder", token: "$1::jsonb" },
+        });
+    });
+
     it("parses placeholders, AND, and quoted strings", () => {
         expect(parseWhereFragment("catalog = $1 AND status = 'published'")).toEqual({
             and: [
