@@ -214,7 +214,7 @@ product:
       fields: [id, payload]
       values:
         - $1
-        - { value: $2, cast: jsonb }
+        - { value: $2, cast: jsonb }   # equivalent: $2::jsonb
 ```
 
 → `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)`

@@ -191,7 +191,7 @@ product:
 - `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
 - `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `jsonb` / `json`), DDL.
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`), DDL.
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";
