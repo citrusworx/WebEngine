@@ -4,6 +4,10 @@ Exports from `@citrusworx/nectarine` (`libraries/nectarine/src/index.ts`).
 
 Subpaths: `./compiler`, `./adapters/pg`, `./adapters/ms`, `./adapters/mg`, `./util`.
 
+Package version: **0.1.0**. If a symbol is not on this page, it is not a public export — including `models`, `extendModels`, and the helpers inside `pgz.example.ts`.
+
+Related: [Status](./nectarine-status.md) · [Compiler](./nectarine-compiler.md) · [Tutorial](./nectarine-tutorial.md)
+
 ## parser
 
 ```ts
@@ -50,12 +54,16 @@ Declared. Body is empty. Returns `undefined`.
 import { CCompiler, type optokens } from "@citrusworx/nectarine";
 
 const compiler = new CCompiler();
-compiler.parse_config("./file.yml");           // parser.yaml
-compiler.clean_parse(parsed, "get", "user");  // parsed[method][type]
+compiler.parse_config("./file.yml");           // parser.yaml; argument is a filepath
+compiler.clean_parse(parsed, "get", "user");  // parsed[method][type] — opposite of genSQL
 compiler.buildQuery(cleaned, "UserById");     // no-op
 ```
 
-`parse_config` takes a **filepath** (despite the parameter name `config`), because it delegates to `parser.yaml`.
+`parse_config` takes a **filepath** (despite the parameter name `config`), because it delegates to `parser.yaml`. Return type `Record<string, string>` does not match the nested YAML tree at runtime.
+
+`optokens` is a type (`eq` → `"="`, …). There is no runtime object.
+
+See [Compiler](./nectarine-compiler.md).
 
 ## PgSql
 
@@ -78,7 +86,7 @@ await pg.disconnect(client);
 | `disconnect(client)` | `client.end()` |
 | `addDb` / `addTable` | register names in maps |
 
-Creds: `PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`. Missing env values become `undefined` on the `pg` Client.
+Creds: `PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`. Missing env values become `undefined` on the `pg` Client. `PG_DB` is not read inside the class — pass it to `addDb` / `connect`.
 
 ## Mysql
 
@@ -95,7 +103,9 @@ await closeSql();
 | `Mysql(query, values?)` | `pool.execute`; throws on error |
 | `closeSql()` | `pool.end()` |
 
-Env: `MS_HOST`, `MS_USER`, `MS_PASS`, `MS_DB`, `MS_PORT`. Placeholders are `?`.
+Env: `MS_HOST`, `MS_USER`, `MS_PASS`, `MS_DB`, `MS_PORT`. Placeholders are `?`. There are no `MS_*` functions.
+
+Install `mysql2` in the app; it is not declared on the published package.
 
 ## MySQL utils
 
@@ -107,7 +117,7 @@ import { mapInsert, mapGetter, getValues } from "@citrusworx/nectarine";
 - `mapGetter(action)` — same for `action.statement.values` (also `console.log`s)
 - `getValues(action)` — `action.statement.column.join(', ')`
 
-These do not validate or emit `INSERT …`.
+These do not validate or emit `INSERT …`. Input interfaces are not exported.
 
 ## MongoDB
 
@@ -128,7 +138,7 @@ import {
 | `mngzClient` | `new MongoClient(uri)` at import time |
 | `connectMngz()` | `connect()`, logs, returns client |
 | `closeMngz(client)` | closes **`mngzClient`**, not necessarily the argument |
-| `Mngz(callback)` | connect, `callback(client)`, log errors |
+| `Mngz(callback)` | connect, `callback(client)`, log errors, no rethrow, no close |
 | `createCollection(client, name)` | `createCollection` on `MG_DB`, then `closeMngz` |
 | `insertOne` / `insertMany` | write, log, `closeMngz` |
 
@@ -144,6 +154,6 @@ Calls `parser.yaml('sql.yml')` with no return. Treat as unfinished.
 
 ## Types
 
-`YAMLdata` is `{ [key: string]: any }`. `optokens` is the operator token map type. Adapter types are implicit.
+`YAMLdata` is `{ [key: string]: any }`. `optokens` is the operator token map type. Adapter types are implicit. `MapInsertface` / `MapGetterface` are module-private.
 
-There is no exported Zod schema for models, no `generateRoutes`, no `Nectarine` class.
+There is no exported Zod schema for models, no `generateRoutes`, no `Nectarine` class, no `buildSelectSQL`.

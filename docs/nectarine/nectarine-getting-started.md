@@ -1,6 +1,8 @@
 # Getting Started With Nectarine
 
-Use Nectarine the way the library works today: load YAML, take a named object, run a statement on an adapter.
+Use Nectarine the way the library works today: load YAML, take a named object, compile a statement in your app, run it on an adapter.
+
+The [tutorial](./nectarine-tutorial.md) stretches this into a user catalog with Seltzer. This page is the shortest path to a first query.
 
 ## Install
 
@@ -8,7 +10,7 @@ Use Nectarine the way the library works today: load YAML, take a named object, r
 yarn add @citrusworx/nectarine
 ```
 
-Peer-ish runtime libraries the adapters import: `pg`, `mysql2`, `mongodb`, `js-yaml`. They are listed in the package’s own `devDependencies` today — if you consume Nectarine from an app, install the driver you actually call.
+Peer-ish runtime libraries the adapters import: `pg`, `mysql2`, `mongodb`, `js-yaml`. They are listed in the package’s own `devDependencies` today (`mysql2` is used from source but not declared — install it if you call `Mysql`). If you consume Nectarine from an app, install the driver you actually call.
 
 ```bash
 yarn add pg        # PostgreSQL
@@ -52,7 +54,7 @@ export MG_DB=myapp
 export MG_PORT=27017
 ```
 
-Mongo URI is `mongodb://$MG_USER:$MG_PASS@$MG_HOST:$MG_PORT/$MG_DB?authSource=admin`.
+Mongo URI is `mongodb://$MG_USER:$MG_PASS@$MG_HOST:$MG_PORT/$MG_DB?authSource=admin`. Set env **before** the process imports MySQL or Mongo — those clients are created at module load.
 
 ## Mental model
 
@@ -62,8 +64,15 @@ You are not calling `generateRoutes(schema, queries, api)`. That function does n
 parser.yaml(path)                     → whole file
 parser.genSQL(path, type, method, id) → one query object
 parser.registerRoute(path, method, id)→ one API object
-PgSql | Mysql | Mngz                  → execute something you built
+your builder                          → SQL string
+PgSql | Mysql | Mngz                  → execute that string / document
 ```
+
+| You want… | Use |
+|---|---|
+| First Postgres SELECT from YAML | This page, then the [tutorial](./nectarine-tutorial.md) |
+| CREATE TABLE from schema objects | [Schema Guide](./nectarine-schema-guide.md) |
+| Why `buildSQL` is not in this list | [Compiler](./nectarine-compiler.md) |
 
 ## First Postgres query from YAML
 
@@ -82,20 +91,15 @@ user:
         value: $1
 ```
 
-`parser.genSQL` only retrieves that object. A minimal builder — the same idea as `pgz.example.ts` — looks like this:
+`parser.genSQL` only retrieves that object. A minimal builder — the same idea as the tutorial, **not** `pgz.example.ts` `buildSelectSQL` — looks like this:
 
 ```ts
 import { parser, PgSql } from "@citrusworx/nectarine";
 
 type QuerySpec = {
-  type?: string;
   select?: string | string[];
-  fields?: string | string[];
   from?: string;
-  table?: string;
-  action?: string;
   where?: { column: string; operator: string; value: string };
-  conditions?: { condition: string; column: string; operator: string; value: string };
 };
 
 const OPS: Record<string, string> = {
@@ -110,8 +114,8 @@ const OPS: Record<string, string> = {
 function buildSelect(spec: QuerySpec): string {
   const fields = Array.isArray(spec.select)
     ? spec.select.join(", ")
-    : spec.select ?? spec.fields ?? "*";
-  const table = spec.from ?? spec.table;
+    : spec.select ?? "*";
+  const table = spec.from;
   const where = spec.where;
   const op = where ? OPS[where.operator] ?? where.operator : "";
   const clause = where
@@ -131,7 +135,8 @@ async function main() {
 
   try {
     const result = await pg.query(client, { sql, params: [1] });
-    console.log(result?.rows);
+    if (!result) throw new Error("query failed — see stderr");
+    console.log(result.rows);
   } finally {
     await pg.disconnect(client);
   }
@@ -140,14 +145,16 @@ async function main() {
 void main();
 ```
 
-That is the current “generated query” story: **YAML names the parts; you compile**.
+That is the current “generated query” story: **YAML names the parts; you compile**. Prefer throwing on unknown `OPS[operator]` (the tutorial does) once you are past the first paste.
+
+`pgz.example.ts` walks a **different** object shape (`type` / `fields` / `table`). Copying those helpers onto `db/pg/user.yml` produces `undefined * FROM undefined`. Details in [PostgreSQL](./nectarine-postgresql.md).
 
 ## First MySQL query
 
 ```ts
 import { Mysql, closeSql } from "@citrusworx/nectarine";
 
-const rows = await Mysql< { email: string } >(
+const rows = await Mysql<{ email: string }>(
   "SELECT email FROM users WHERE id = ?",
   [1],
 );
@@ -156,7 +163,7 @@ console.log(rows);
 await closeSql();
 ```
 
-See [MySQL](./nectarine-mysql.md) for the `?` YAML flavor and `mapInsert`.
+See [MySQL](./nectarine-mysql.md) for the `?` YAML flavor and `mapInsert`. Do not close the pool per request in a server.
 
 ## First Mongo insert
 
@@ -173,11 +180,13 @@ See [MongoDB](./nectarine-mongodb.md) before using this in a long-running proces
 
 ## Reading an API file (optional)
 
+Flattened file (`doc.get.allUsers`):
+
 ```ts
 import { parser } from "@citrusworx/nectarine";
 
 const allUsers = parser.registerRoute(
-  "./models/user/userAPI.yml",
+  "./models/user/api.yml",
   "get",
   "allUsers",
 );
@@ -185,7 +194,14 @@ const allUsers = parser.registerRoute(
 console.log(allUsers.api.method, allUsers.api.endpoint);
 ```
 
-Wire that to Seltzer yourself:
+Nested fixture (`libraries/nectarine/models/user/userAPI.yml`) needs a walk:
+
+```ts
+const api = parser.yaml("./models/user/userAPI.yml");
+const allUsers = api.user.get.allUsers;
+```
+
+Wire that to Seltzer yourself. Seltzer matches **exact** paths — `/users/:id` will not match `/users/1`.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
@@ -199,11 +215,11 @@ app.route({
 app.listen(3000);
 ```
 
-Nectarine does not do this automatically.
+Nectarine does not do this automatically. The [tutorial](./nectarine-tutorial.md) puts a real `PgSql` query in the handler.
 
 ## Creating a table from schema YAML
 
-There is no migrator. `pgz.example.ts` joins `fields` into `CREATE TABLE`:
+There is no migrator. Walk `fields` and handle object vs string:
 
 ```ts
 function buildCreateTableSQL(modelName: string, filepath: string): string {
@@ -213,14 +229,14 @@ function buildCreateTableSQL(modelName: string, filepath: string): string {
     .map(([column, definition]) =>
       typeof definition === "string"
         ? `${column} ${definition}`
-        : `${column} ${definition.type}`,
+        : `${column} ${(definition as { type: string }).type}`,
     )
     .join(", ");
   return `CREATE TABLE IF NOT EXISTS ${model.table} (${columns});`;
 }
 ```
 
-Field values in the real `userSchema.yml` are a mix of strings and objects. Your builder must handle both. See [Schema Guide](./nectarine-schema-guide.md).
+Field values in the real `userSchema.yml` are a mix of strings and objects. A builder that always stringifies objects emits `[object Object]`. See [Schema Guide](./nectarine-schema-guide.md).
 
 ## What not to start with
 
@@ -228,10 +244,13 @@ Field values in the real `userSchema.yml` are a mix of strings and objects. Your
 - `CCompiler.buildQuery` — empty method
 - Express + Zod “for free” — not in this package
 - GraphQL, auth, GUI
+- `pgz.example.ts` as the compiler for `db/pg/user.yml`
 
 ## Where to go next
 
-- [Query DSL](./nectarine-query-dsl.md)
-- [PostgreSQL](./nectarine-postgresql.md) / [MySQL](./nectarine-mysql.md) / [MongoDB](./nectarine-mongodb.md)
-- [Examples](./nectarine-examples.md)
-- [Status](./nectarine-status.md)
+1. [Tutorial](./nectarine-tutorial.md) — schema → queries → hand-built SQL → PgSql → Seltzer
+2. [Schema Guide](./nectarine-schema-guide.md)
+3. [Query DSL](./nectarine-query-dsl.md)
+4. [PostgreSQL](./nectarine-postgresql.md) / [MySQL](./nectarine-mysql.md) / [MongoDB](./nectarine-mongodb.md)
+5. [Patterns](./nectarine-patterns.md) · [Anti-patterns](./nectarine-anti-patterns.md)
+6. [Status](./nectarine-status.md)

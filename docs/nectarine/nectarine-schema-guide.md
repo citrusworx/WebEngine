@@ -1,16 +1,57 @@
-# Nectarine Schema Guide
+# Schema Guide
 
-How model YAML is written in this repo, and what the code actually does with it.
+How model YAML actually works in `libraries/nectarine/models` and `parser.yaml`. This is the mental model for **tables as data** — not a Prisma schema, not a migrator, and not a type generator.
 
-## What a schema file is
+Related:
 
-A schema file is a map of **model name → table + fields**. Nectarine does not validate it. `parser.yaml` returns the object. Anything that emits `CREATE TABLE` is your (or `pgz.example.ts`’s) loop over `fields`.
+- [Tutorial](./nectarine-tutorial.md) — CREATE TABLE from a small, consistent schema
+- [Query DSL](./nectarine-query-dsl.md) — named queries live in a different file
+- [Compiler](./nectarine-compiler.md) — nothing here is compiled by the package
+
+## What a schema is
+
+A schema file is a map of **model name → table + fields**. Nectarine does not validate it. `parser.yaml` returns the object. Anything that emits `CREATE TABLE` is your loop over `fields` (the same idea as `pgz.example.ts` `buildCreateTableSQL`, which is not a package export).
+
+```ts
+import { parser } from "@citrusworx/nectarine";
+
+const schema = parser.yaml("./models/user/userSchema.yml");
+schema.User.table;   // "users"
+schema.User.fields;  // mixed objects and strings
+```
 
 There is no `relationships:` key consumed by the library. Foreign keys, if you want them, are field metadata you interpret yourself.
 
-## Two field styles in-tree
+## What a schema is not
 
-The user fixture mixes styles in one file (`libraries/nectarine/models/user/userSchema.yml`):
+- **Not a running database.** Loading YAML does not create tables.
+- **Not a TypeScript type.** `YAMLdata` is `{ [key: string]: any }`.
+- **Not an ORM model class.** There is no `User.find()`.
+- **Not Mongo validation.** `db/mg/schema.yaml` is a field note; `loadMongoConfig` does not read it.
+- **Not HTTP.** `*API.yml` lists methods and endpoints. See [API reference](./nectarine-api.md).
+
+## A compact picture
+
+```text
+schema.yml
+  ModelName
+    table: users
+    fields
+      id: { type, primaryKey, … }     ──► your DDL builder
+      email: { type, size, unique }
+      created_at: "timestamp …"       ──► string fragment, as-is
+
+query YAML (separate file)            ──► parser.genSQL
+API YAML (separate file)              ──► parser.yaml / registerRoute
+```
+
+Three files, three jobs. Mixing query nodes into a schema file does not make `genSQL` find them. `genSQL` takes a **path** and indexes `doc[resource][crud][name]`.
+
+## Two layouts in-tree
+
+### 1. Model-name keys (user fixture)
+
+`libraries/nectarine/models/user/userSchema.yml`:
 
 ```yaml
 User:
@@ -20,18 +61,56 @@ User:
       type: int
       primaryKey: true
       autoIncrement: true
-    username:
+    email:
       type: VARCHAR
-      length: 55
+      size: 100
       unique: true
       null: false
+```
+
+`schema.User.table` is the natural walk. The [tutorial](./nectarine-tutorial.md) uses this layout.
+
+The same file also defines `Post` and `Comment`. That is the “blog” model in this package — not a separate published schema.
+
+### 2. Root `model:` / `table:` / `fields:` (some blog fixtures)
+
+`libraries/nectarine/models/blog/author/schema.yml`:
+
+```yaml
+model: Author
+table: authors
+
+fields:
+  id:
+    type: uuid
+    primary: true
+    default: {fn: uuid_v4}
+  name:
+    type: string
+    required: true
+```
+
+A builder that does `schema[modelName].table` will miss this. Walk `schema.table` and `schema.fields`, or normalize after load. Nectarine will not.
+
+`relations` in that file (and in `comment/schema.yml`) is documentation. Nothing resolves `one-to-many`.
+
+## Two field styles (often in one file)
+
+The user fixture mixes styles:
+
+```yaml
+User:
+  table: users
+  fields:
+    id:
+      type: int
+      primaryKey: true
+      autoIncrement: true
     created_at: timestamp DEAFULT NOW()   # string form; typo is in the fixture
     role: enum(admin, author, user) DEFAULT 'user'
 ```
 
-Blog models under `libraries/nectarine/models/blog/*/schema.yml` follow the same idea.
-
-A builder that only does `Object.entries(fields).map(([k, v]) => `${k} ${v}`)` works for **string** values and stringifies objects to `[object Object]`. Handle objects:
+A builder that only does `Object.entries(fields).map(([k, v]) => \`${k} ${v}\`)` works for **string** values and stringifies objects to `[object Object]`. Handle both:
 
 ```ts
 function columnSql(name: string, definition: unknown): string {
@@ -67,19 +146,39 @@ Identity / `AUTO_INCREMENT` syntax is engine-specific. Nectarine will not pick i
 
 Useful keys appearing in fixtures:
 
-- `type` — `int`, `VARCHAR`, `string`, `text`, `timestamp`, or a raw SQL fragment
-- `length` / `size` — VARCHAR width (both appear)
-- `primaryKey`, `autoIncrement`, `unique`
-- `null: false` — meaning NOT NULL
-- `foreignKey: REFERENCES users(id)`
+| Key | Seen in | Meaning to *your* builder |
+|---|---|---|
+| `type` | user + blog | `int`, `VARCHAR`, `string`, `text`, `timestamp`, `uuid` |
+| `length` / `size` | user | VARCHAR width (both appear) |
+| `primaryKey` / `primary` | user vs author | same idea, different spelling |
+| `autoIncrement` | user | identity / auto increment |
+| `unique` | both | UNIQUE |
+| `null: false` | user | NOT NULL |
+| `required: true` | author | same idea as NOT NULL, different key |
+| `foreignKey` | user Post/Comment | raw `REFERENCES …` fragment |
+| `default` | author | `{ fn: uuid_v4 }` / `{ fn: now }` — unread by the library |
+| `enum(...)` string | user `role` | not a Nectarine type |
 
 String fields are “whatever you would type after the column name.”
 
-Enums are **not** a Nectarine type. `enum(admin, author, user)` is a string you must rewrite for Postgres (`TEXT CHECK (…)`) or MySQL (`ENUM(...)`).
+Enums are **not** a Nectarine type. `enum(admin, author, user)` is a string you must rewrite for Postgres (`TEXT CHECK (…)` ) or MySQL (`ENUM(...)`).
+
+`{ fn: now }` in schema defaults is the same story as in query YAML: YAML until your builder says `NOW()`.
 
 ## One table per model
 
 That is a convention, not an inheritance system. `Post.author_id` points at `users` by documentation, not by a loader.
+
+Keep one resource folder when you can:
+
+```text
+models/user/
+  schema.yml          # tables
+  queries.yml         # genSQL layout (or db/pg/user.yml)
+  api.yml             # method + endpoint
+  db/msql/user.yml    # only if you also speak MySQL
+  db/mg/schema.yaml   # field notes only
+```
 
 ## Mongo field lists
 
@@ -97,16 +196,24 @@ user:
     location: string
 ```
 
-Nothing in the adapter reads this file (`loadMongoConfig` looks at `sql.yml`). Treat it as a note to humans until a Mongo compiler exists.
-
-## API YAML is not a schema
-
-`userAPI.yml` lists HTTP methods and endpoints. It does not describe columns. See [API reference](./nectarine-api.md) for `registerRoute` limitations (no resource prefix).
+Nothing in the adapter reads this file. `loadMongoConfig` calls `parser.yaml('sql.yml')` with a hardcoded path and returns nothing. Treat Mongo YAML as a note to humans until a Mongo compiler exists.
 
 ## Practices
 
 - Keep one resource folder: schema + engine-specific query file + optional API file
 - Prefer one field style per file (object *or* SQL fragment)
+- Prefer one layout per tree (`User.table` *or* root `model:` / `table:`)
 - Do not invent `description` / `relationships` and expect the compiler to honor them
 - Version the YAML in git; there is no migration history in Nectarine
+- Copy fixtures into the app and fix typos (`DEAFULT`); do not import them as a published pack
 - Read [Query DSL](./nectarine-query-dsl.md) before adding `get` / `create` / `update` / `delete` nodes
+
+## Choosing the primitive
+
+| You want… | Put it in… |
+|---|---|
+| Columns and types | Schema YAML |
+| Named SELECT / INSERT intent | Query YAML (`genSQL` layout) |
+| HTTP method + path | API YAML |
+| Runtime values | Adapter `params` / `?` / document fields |
+| Engine-specific DDL | Your builder, not a Nectarine flag |
