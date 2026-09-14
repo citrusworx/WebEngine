@@ -2,77 +2,159 @@
 
 `@citrusworx/webengine` is the workspace orchestration package for the CitrusWorx stack.
 
-This page reflects the current source in `engines/webengine/`, not older aspirational notes about a fully realized kernel/module runtime.
+It is not a working kernel, not a CLI that scaffolds an app, and not the thing you ship a site through today. It is a `WebEngine` class that **stores** a `Blueprint`, an `Environment`, and a `DeploymentManifest`, then exposes lifecycle-shaped methods whose bodies are still stubs.
 
-If you want a reading path through the libraries that WebEngine is meant to compose, start with [Make A Web App With WebEngine](./make-a-web-app.md).
+This page is the engine **reality check**. If you want a reading path through the libraries WebEngine is *meant* to compose, start with [Make A Web App With WebEngine](./make-a-web-app.md). That hub is the course outline. This page is what `engines/webengine/src/index.ts` actually is.
 
-## Current status
+## Who this is for
 
-WebEngine exists today as an early scaffold with a clear direction, but it is not yet the fully implemented kernel system previously described in this docs folder.
+- Someone who heard "WebEngine" and needs to know what to use *instead* right now (the libraries)
+- Someone implementing future lifecycle methods and needing the intended order
+- Readers of the course hub who have reached **chapter 6** — contracts, then future glue
 
-What exists today:
+You do not need WebEngine to build a web app in this repo. You need Juice, Sig.js, Nectarine, and Seltzer. WebEngine is the intended glue around those libraries.
 
-- a published package surface at `@citrusworx/webengine`
-- a `WebEngine` class in `engines/webengine/src/index.ts`
-- constructor wiring for `Blueprint`, `Environment`, and `DeploymentManifest`
-- lifecycle-shaped methods for `init`, `buildEnvironment`, `buildApplication`, `secureEnvironment`, `deployApplication`, `monitorApplication`, `scaleApplication`, `killApplication`, `cleanupEnvironment`, and `teardown`
-- package dependencies on `@citrusworx/types`, `js-yaml`, `json5`, `smol-toml`, and `zod`
+## Why it exists
 
-What is still mostly scaffold/design:
+CitrusWorx is a stack of independent libraries on purpose. Juice should not talk to DigitalOcean. Nectarine should not own DNS. Grapevine should not parse a WordPress post.
 
-- real config loading and validation in the current source entrypoint
-- actual provider orchestration across Juice, Sig.js, Nectarine, Grapevine, and related workspaces
-- a working kernel/module registry exposed from the current source tree
-- blueprint/module resolution beyond shared types and lifecycle placeholders
-- production deployment, telemetry, and dashboard workflows
+Something still has to own **order**: build the environment, build the app, secure it, deploy it, watch it, scale it, kill it, clean it up. That something is WebEngine.
 
-## Public API today
+The philosophy is the same as Juice's attribute-first split:
+
+- **Libraries own capability** (style, signals, data, HTTP, cloud, domains)
+- **WebEngine owns sequence** (when those capabilities run, and with which contracts)
+- **Types own vocabulary** (`Blueprint` / `Environment` / `DeploymentManifest`)
+
+Until the methods do real work, the honest use of WebEngine is as a **lifecycle sketch** — a class whose method names document the intended runtime. The dangerous use is treating `engine.init()` as a bootstrap that loads `kiwi.config.toml` and starts a kernel. That code is not in `engines/webengine/src/`.
+
+## Mental model
+
+Three objects in, a sequence of named stages out:
+
+```
+constructor({ blueprint, environment, deploymentManifest })
+        │
+        ▼
+     init()          — flags + a parse call; not a kernel boot
+        │
+        ▼
+  buildEnvironment() → buildApplication() → secureEnvironment()
+        │
+        ▼
+  deployApplication() → monitorApplication() → scaleApplication()
+        │
+        ▼
+  killApplication() → cleanupEnvironment() → teardown()
+```
+
+Comments in the source say *what each stage is for* (Grapevine in `buildEnvironment`, Docker-ish artifacts in `buildApplication`, firewalls in `secureEnvironment`). The implementations `resolve()` immediately, except `teardown()`, which calls `cleanupEnvironment()` then clears a private static `metadata` object.
+
+There is no module registry, no provider map, and no config loader in `src/`.
+
+`dist/kernel/` and `dist/config/` (including `kiwi.config.toml` helpers and a Zod `kiwiConfigSchema`) are **compiled leftovers**. They are not produced by the current `src/index.ts`. Do not treat them as the public API. There is no `kiwi.config.toml` in this repository.
+
+## What it can do today
+
+Construct the class with the three Types contracts. Call `parse` for JSON. Inspect `initialized` / `initializing`. Call lifecycle methods that return resolved promises.
 
 ```ts
 import { WebEngine } from "@citrusworx/webengine";
-import type {
-  Blueprint,
-  DeploymentManifest,
-  Environment
-} from "@citrusworx/types";
+import { Environment } from "@citrusworx/types";
+import type { Blueprint, DeploymentManifest } from "@citrusworx/types";
+
+const blueprint: Blueprint = {
+  name: "catalog",
+  version: "0.1.0",
+  description: "Catalog app",
+  modules: ["nectarine"],
+  adapters: {},
+  services: ["api"]
+};
+
+const deploymentManifest: DeploymentManifest = {
+  id: "man-1",
+  createdAt: new Date(),
+  projectId: "proj-1",
+  blueprint,
+  environment: Environment.DEVELOPMENT,
+  modules: blueprint.modules,
+  services: blueprint.services,
+  infrastructure: { server: false, database: false }
+};
 
 const engine = new WebEngine({
   blueprint,
-  environment,
+  environment: Environment.DEVELOPMENT,
   deploymentManifest
 });
 
-engine.init();
+engine.parse<{ ok: boolean }>('{"ok":true}', "json"); // { ok: true }
+
 await engine.buildEnvironment();
 await engine.buildApplication();
 await engine.deployApplication();
 await engine.teardown();
 ```
 
-## Reality check
+That last block "succeeds" because the methods are empty promises. Nothing is provisioned.
 
-The current `WebEngine` class is best understood as a lifecycle skeleton and integration point, not a finished runtime.
+`init()` is **not** safe to call with a normal blueprint name. It runs `this.parse(this.blueprint.name, "yaml")`. YAML is unimplemented, so `parse` falls through to `JSON.parse`. `JSON.parse("catalog")` throws, and `initializing` stays `true`. See [Getting started](./webengine-getting-started.md).
 
-That means:
+Package dependencies include `js-yaml`, `json5`, `smol-toml`, and `zod`. **None of them are imported in `src/index.ts`.** `parse` uses `JSON.parse` only.
 
-- the class shape is useful for aligning the long-term orchestration model
-- `@citrusworx/types` is already doing real work as the contract layer
-- the richer WebEngine vision is still ahead of the implementation in `src/`
+## Status
 
-## Relationship to the libraries
+**Scaffold.**
 
-WebEngine is meant to compose the library layer rather than replace it:
+Shipped:
 
-- `@citrusworx/types` provides shared contracts
-- `@citrusworx/nectarine` is the backend/data layer
-- `@citrusworx/seltzer` is the HTTP/runtime layer
-- `@citrusworx/juiceui` and `@citrusworx/sigjs` cover UI/runtime concerns
-- `@citrusworx/grapevine` and `@citrusworx/dns` cover infrastructure and domain workflows
+- package `@citrusworx/webengine`
+- `WebEngine` class in `engines/webengine/src/index.ts`
+- constructor fields typed against `@citrusworx/types`
+- lifecycle method names and comments
+- `parse` for JSON
+- `teardown` → `cleanupEnvironment` → clear `WebEngine.metadata`
 
-That composition model is the direction. The code in `engines/webengine/src/index.ts` is the current implementation baseline.
+Still scaffold or leftover:
+
+- YAML / TOML / JSON5 parsing
+- Zod validation
+- `kiwi.config.toml` loading (not in `src/`; leftover `.d.ts` in `dist/config/`)
+- kernel, module registry, toposort (`dist/kernel/` leftovers only)
+- Grapevine / DNS / Juice / Sig.js / Nectarine / Seltzer orchestration
+- production deploy, telemetry, dashboard
+
+## Placement in the ecosystem
+
+WebEngine is meant to compose, not replace:
+
+| Package | Role |
+|---|---|
+| [Types](../types/README.md) | Contracts the constructor already stores |
+| [Juice](../juice/README.md) / [Sig.js](../sigjs/README.md) | UI — use them directly |
+| [Nectarine](../nectarine/README.md) / [Seltzer](../seltzer/README.md) | Data and HTTP — use them directly |
+| [Grapevine](../grapevine/README.md) / [DNS](../dns/README.md) | Infra — use them directly; comments point Grapevine at `buildEnvironment` |
+
+Course hub: [Make A Web App With WebEngine](./make-a-web-app.md). Do not wait for `engine.init()` to become an app.
+
+## Suggested reading order
+
+1. [Make A Web App With WebEngine](./make-a-web-app.md) — the course outline (libraries first)
+2. This README — engine reality
+3. [Getting started](./webengine-getting-started.md) — constructor, `parse`, `init`, stubs
+4. [Types](../types/README.md) — the objects the constructor takes
+
+## Sibling docs
+
+- [Types](../types/README.md)
+- [DNS](../dns/README.md) (elective infra)
+- [Stenzil](../stenzil/README.md) (advanced compiler elective)
+- [KiwiPress](../kiwipress/README.md) (optional WordPress track)
 
 ## Source of truth
 
 - Package: `engines/webengine/package.json`
-- Current source entrypoint: `engines/webengine/src/index.ts`
-- Published README: `engines/webengine/README.md`
+- Current source: `engines/webengine/src/index.ts` (the only file under `src/`)
+- Published package README: `engines/webengine/README.md`
+- Ignore `engines/webengine/dist/kernel/` and `dist/config/` as current API

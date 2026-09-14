@@ -1,5 +1,9 @@
 # Stenzil Study: Compiler Design Reading & Course List
 
+This list is an **advanced elective** for people extending the Stenzil compiler. It is not part of the [Make A Web App](../webengine/make-a-web-app.md) core path. You do not need these courses to ship Juice + Sig.js + Nectarine + Seltzer.
+
+Start with a parse you can run: [Getting started](./stenzil-getting-started.md). Then [Architecture](./architecture.md). Then the materials below.
+
 The core topics you need to understand deeply are:
 
 - **Lexical analysis** (tokenization, state machines, character scanning)
