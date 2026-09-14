@@ -28,7 +28,8 @@ const DEFAULT_NOT_FOUND: ResponseData = {
 };
 
 /**
- * Turn flattened `*API.yml` operations into object-based Seltzer `Route`s.
+ * Turn Nectarine `ApiOperation[]` (`listApiOperations`) into object-based
+ * Seltzer `Route`s. Nectarine does not generate routes.
  *
  * Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call `execute`, and
  * return `ResponseData`. They never write `ctx.json`.

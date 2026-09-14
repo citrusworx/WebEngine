@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import { Seltzer } from "../core/seltzer.js";
 import type { ResponseData } from "../core/response.js";
 import { generateRoutes } from "./generate-routes.js";
-import { listApiOperations } from "./list-api-operations.js";
 import type { ApiOperation } from "./types.js";
 
 const servers: http.Server[] = [];
@@ -52,37 +51,28 @@ const products = [
     { id: "daw", name: "DAW", catalog: "software", slug: "daw" },
 ];
 
-const productReadOps = listApiOperations({
-    product: {
-        read: {
-            allProducts: {
-                api: { method: "GET", endpoint: "/api/products", query: "allProducts" },
-            },
-            productsByCatalog: {
-                api: {
-                    method: "GET",
-                    endpoint: "/api/products/catalog/:catalog",
-                    query: "productsByCatalog",
-                },
-            },
-            productById: {
-                api: { method: "GET", endpoint: "/api/products/:id", query: "productById" },
-            },
-            productBySlug: {
-                api: {
-                    method: "GET",
-                    endpoint: "/api/products/slug/:slug",
-                    query: "productBySlug",
-                },
-            },
-        },
-        create: {
-            newProduct: {
-                api: { method: "POST", endpoint: "/api/products", query: "newProduct" },
-            },
-        },
-    },
-}).filter((operation) => operation.crud === "read");
+function readOp(
+    name: string,
+    path: string,
+    query: string,
+): ApiOperation {
+    return {
+        resource: "product",
+        crud: "read",
+        name,
+        method: "GET",
+        path,
+        query,
+    };
+}
+
+/** Nectarine `listApiOperations("product", api)` shape — YAML order for product reads. */
+const productReadOps: ApiOperation[] = [
+    readOp("allProducts", "/api/products", "allProducts"),
+    readOp("productsByCatalog", "/api/products/catalog/:catalog", "productsByCatalog"),
+    readOp("productById", "/api/products/:id", "productById"),
+    readOp("productBySlug", "/api/products/slug/:slug", "productBySlug"),
+];
 
 function executeProductRead({ query, params }: { query?: string; params: Record<string, string> }) {
     switch (query) {
@@ -111,30 +101,12 @@ describe("generateRoutes", () => {
         ]);
     });
 
-    it("registers catalog/slug ahead of :id even when YAML lists productById first", () => {
-        const hostile = listApiOperations({
-            product: {
-                read: {
-                    productById: {
-                        api: { method: "GET", endpoint: "/api/products/:id", query: "productById" },
-                    },
-                    productsByCatalog: {
-                        api: {
-                            method: "GET",
-                            endpoint: "/api/products/catalog/:catalog",
-                            query: "productsByCatalog",
-                        },
-                    },
-                    productBySlug: {
-                        api: {
-                            method: "GET",
-                            endpoint: "/api/products/slug/:slug",
-                            query: "productBySlug",
-                        },
-                    },
-                },
-            },
-        });
+    it("registers catalog/slug ahead of :id even when productById is listed first", () => {
+        const hostile: ApiOperation[] = [
+            readOp("productById", "/api/products/:id", "productById"),
+            readOp("productsByCatalog", "/api/products/catalog/:catalog", "productsByCatalog"),
+            readOp("productBySlug", "/api/products/slug/:slug", "productBySlug"),
+        ];
 
         expect(generateRoutes(hostile, { execute: executeProductRead }).map((route) => route.path)).toEqual([
             "/api/products/catalog/:catalog",
@@ -146,29 +118,11 @@ describe("generateRoutes", () => {
     it("does not treat catalog/slug segments as :id", async () => {
         const app = Seltzer.init();
         for (const route of generateRoutes(
-            listApiOperations({
-                product: {
-                    read: {
-                        productById: {
-                            api: { method: "GET", endpoint: "/api/products/:id", query: "productById" },
-                        },
-                        productsByCatalog: {
-                            api: {
-                                method: "GET",
-                                endpoint: "/api/products/catalog/:catalog",
-                                query: "productsByCatalog",
-                            },
-                        },
-                        productBySlug: {
-                            api: {
-                                method: "GET",
-                                endpoint: "/api/products/slug/:slug",
-                                query: "productBySlug",
-                            },
-                        },
-                    },
-                },
-            }),
+            [
+                readOp("productById", "/api/products/:id", "productById"),
+                readOp("productsByCatalog", "/api/products/catalog/:catalog", "productsByCatalog"),
+                readOp("productBySlug", "/api/products/slug/:slug", "productBySlug"),
+            ],
             { execute: executeProductRead },
         )) {
             app.route(route);

@@ -118,7 +118,7 @@ psql postgresql://myapp_user:password@localhost:5432/myapp
 
 ### Setup in Code
 
-Nectarine supplies the Postgres adapter and compiled queries. **Seltzer** hosts HTTP. Seltzer exports `generateRoutes`; Nectarine does not. Register remaining object-based routes on the host.
+Nectarine supplies the Postgres adapter and compiled queries. **Seltzer** hosts HTTP. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` builds `Route`s. Register remaining object-based routes on the host.
 
 ```typescript
 import { loadNectarineConfig } from "@citrusworx/nectarine";

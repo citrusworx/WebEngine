@@ -1,11 +1,11 @@
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-export const HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
-
 /**
- * Flattened `*API.yml` operation.
+ * Flattened `*API.yml` operation — same shape as
+ * `@citrusworx/nectarine/config` `ApiOperation`.
  *
- * YAML layout: `resource → crud → operationName → api: { method, endpoint, query?, body? }`.
+ * Flatten with Nectarine `listApiOperations` / `loadApiOperations`.
+ * This type is the input contract for {@link generateRoutes} only.
  */
 export type ApiOperation = {
     resource: string;

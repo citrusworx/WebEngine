@@ -431,22 +431,26 @@ Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express r
 **Example**:
 ```typescript
 import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";
-import { Seltzer } from "@citrusworx/seltzer";
-import type { Route } from "@citrusworx/seltzer";
+import { Seltzer, generateRoutes } from "@citrusworx/seltzer";
 
 const nectarine = loadNectarineConfig("./nectarine.config.yaml");
 const ops = listApiOperations("product", nectarine.getResource("product").api);
 const app = Seltzer.init();
 
-const listProducts: Route = {
-  method: "GET",
-  path: "/api/products",
-  handler: () => ({
-    body: { namedQuery: ops[0]?.query },
-  }),
-};
+for (const route of generateRoutes(
+  ops.filter((operation) => operation.crud === "read" && operation.method === "GET"),
+  {
+    execute: ({ query, params, ctx }) => {
+      if (query === "productById") {
+        return ctx.locals.products.find((item) => item.id === params.id) ?? null;
+      }
+      return ctx.locals.products;
+    },
+  },
+)) {
+  app.route(route);
+}
 
-app.route(listProducts);
 app.listen(3000);
 ```
 

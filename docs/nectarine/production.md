@@ -64,7 +64,7 @@ JSONB is first-class. It is not being dropped.
 
 Nectarine is a library. It does not listen on a port.
 
-Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds, then `Seltzer.init().listen()` (0.5 named pipeline + `ResponseData`). Product **read** routes are generated from `productAPI.yml` via Seltzer `listApiOperations` + `generateRoutes`. Live reads map API `query:` names (`allProducts`, `productById`) onto JSONB named queries (`allPayloads`, `payloadById`); catalog/slug filter those payloads. Health, waitlist, and KiwiPress content stay hand-written. Leftover `ctx.json` / writing helpers crash or 500.
+Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds, then `Seltzer.init().listen()` (0.5 named pipeline + `ResponseData`). Product **read** routes flatten `productAPI.yml` with Nectarine `listApiOperations` and map onto Seltzer `generateRoutes`. Live reads map API `query:` names (`allProducts`, `productById`) onto JSONB named queries (`allPayloads`, `payloadById`); catalog/slug filter those payloads. Health, waitlist, and KiwiPress content stay hand-written. Leftover `ctx.json` / writing helpers crash or 500.
 
 ## Non-goals (not in this production cut)
 

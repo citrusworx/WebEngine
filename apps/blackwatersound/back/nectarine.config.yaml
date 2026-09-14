@@ -31,7 +31,7 @@ database:
 
 transport:
   server: seltzer
-  # Product read routes are generated from productAPI.yml (Seltzer generateRoutes).
+  # Product reads: Nectarine listApiOperations → Seltzer generateRoutes.
   # Health, waitlist, and KiwiPress content stay hand-written. Do not use Express.
 
 fallback:

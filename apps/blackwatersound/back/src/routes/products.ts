@@ -1,7 +1,6 @@
-import type { NectarineConfig } from "@citrusworx/nectarine/config";
+import { listApiOperations, type NectarineConfig } from "@citrusworx/nectarine/config";
 import {
   generateRoutes,
-  listApiOperations,
   type ExecuteArgs,
   type ResponseData,
   type Route,
@@ -96,8 +95,8 @@ async function executeProductRead({
 
 /** Product GET ops from `productAPI.yml`. Create/update/delete stay unwired. */
 export function createProductReadRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
-  const operations = listApiOperations(nectarine.getResource("product").api).filter(
-    (operation) => operation.resource === "product" && operation.crud === "read" && operation.method === "GET",
+  const operations = listApiOperations("product", nectarine.getResource("product").api).filter(
+    (operation) => operation.crud === "read" && operation.method === "GET",
   );
 
   return generateRoutes(operations, {
