@@ -28,12 +28,12 @@ Read this before you treat any chapter as a finished product.
 - [Nectarine](../nectarine/README.md) — compiler plus PostgreSQL, MySQL, and MongoDB adapters
 - [Seltzer](../seltzer/README.md) — early HTTP runtime; design is ahead of the code
 - [Grapevine](../grapevine/README.md) — DigitalOcean provider surface
-- [DNS](../dns/README.md) — core abstractions and a ResellerClub adapter
+- [DNS](../dns/README.md) — core abstractions and a ResellerClub availability adapter ([getting started](../dns/dns-getting-started.md))
 - [Types](../types/README.md) — shared contracts (`Blueprint`, `Environment`, `DeploymentManifest`)
 
 **Still scaffold or not ready**
 
-- [WebEngine](./README.md) — a `WebEngine` class with lifecycle-shaped method stubs, not a working orchestrator
+- [WebEngine](./README.md) — a `WebEngine` class with lifecycle-shaped method stubs, not a working orchestrator ([getting started](./webengine-getting-started.md) for what `init` / `parse` actually do)
 - A single “make me an app” CLI path that wires the stack for you
 - Sugar — visual blueprint editor; do not plan coursework around it
 
@@ -94,14 +94,14 @@ Provision cloud resources and talk to a registrar. These are independent librari
 - [Configuration](../grapevine/grapevine-config.md)
 - [DigitalOcean](../grapevine/grapevine-digitalocean.md)
 - [Grapevine status](../grapevine/grapevine-status.md)
-- [DNS](../dns/README.md)
+- [DNS](../dns/README.md) — deploy appendix / elective; [getting started](../dns/dns-getting-started.md) if you have ResellerClub credentials
 
 ### 6. Types and WebEngine — contracts, then future glue
 
 Learn the shared types, then look at the engine as a lifecycle sketch — not a finished runtime.
 
-- [Types](../types/README.md)
-- [WebEngine reality check](./README.md)
+- [Types](../types/README.md) — [contracts](../types/types-contracts.md) · [examples](../types/types-examples.md)
+- [WebEngine reality check](./README.md) — [getting started](./webengine-getting-started.md) for constructor, `parse`, and lifecycle stubs
 
 ## The first end-to-end app
 
@@ -115,8 +115,8 @@ These are real docs, but they are not on the main path.
 
 | Track | What it is | Start |
 |---|---|---|
-| KiwiPress | Optional WordPress REST client on Seltzer + Nectarine | [KiwiPress](../kiwipress/README.md) · [Core classes](../kiwipress/core-classes.md) |
-| Stenzil | Advanced parser/compiler track, not required to ship a web app | [Stenzil](../stenzil/README.md) · [Architecture](../stenzil/architecture.md) · [Courses](../stenzil/courses.md) |
+| KiwiPress | Optional WordPress REST client on Seltzer — not the core course path | [KiwiPress](../kiwipress/README.md) · [Getting started](../kiwipress/kiwipress-getting-started.md) · [Core classes](../kiwipress/core-classes.md) |
+| Stenzil | Advanced elective compiler track, not required to ship a web app | [Stenzil](../stenzil/README.md) · [Getting started](../stenzil/stenzil-getting-started.md) · [Architecture](../stenzil/architecture.md) · [Courses](../stenzil/courses.md) |
 | Stencil folder | Legacy name only | [Redirect](../Stencil/README.md) |
 | Sugar | Visual editor under `tooling/sugar/` — not ready, not documented here | Do not promise it |
 

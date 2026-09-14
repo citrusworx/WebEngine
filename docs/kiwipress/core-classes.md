@@ -2,6 +2,8 @@
 
 The core classes form an inheritance spine that separates WordPress infrastructure, transport, and CRUD concerns into distinct layers. Domain objects like `Posts`, `Pages`, and `Users` sit at the top of this spine and inherit everything they need.
 
+This page is the practical spine reference. For what/why and first requests, use the [README](./README.md) and [Getting started](./kiwipress-getting-started.md). KiwiPress is an **optional WordPress track**, not a core [Make A Web App](../webengine/make-a-web-app.md) chapter.
+
 Source files cited below live in the WebEngine monorepo under `packages/kiwipress/`. They are not part of this docs vault, so they are listed as paths rather than links.
 
 ```
@@ -41,11 +43,12 @@ Config passed to the constructor is merged on top of any values found in `proces
 ```ts
 type WPCoreConfig = {
   url: string;                       // WordPress base URL (required)
-  apiBase: string;                   // API path prefix, default "wp-json/v2"
+  apiBase: string;                   // API path prefix, default "wp-json/wp/v2"
   username?: string;                 // Basic auth username
   appPassword?: string;              // Basic auth application password
   token?: string;                    // Bearer token
   apiKey?: string;                   // X-API-Key header value
+  allowSelfSigned?: boolean;         // TLS bypass for local HTTPS; see below
   headers?: Record<string, string>;  // Additional headers on every request
 };
 ```
@@ -71,7 +74,8 @@ type WPCoreConfig = {
 
 - `WPCore` is not directly useful on its own. Extend `WPRead` (or a CRUD class) to get a usable client.
 - `WP_URL` is the only truly required value. Without it the constructor throws.
-- `apiBase` defaults to `"wp-json/v2"`, but most WordPress installs use `"wp-json/wp/v2"` — set this explicitly.
+- `apiBase` defaults to `"wp-json/wp/v2"`. Set it explicitly if your site uses a different prefix.
+- `allowSelfSigned` defaults to `true` when the URL host is `localhost` or ends with `.local.citrusworx.test`. `WP_ALLOW_SELF_SIGNED` (`1` / `true` / `yes`) overrides on Node. `requestWordPress` only uses the undici TLS bypass when this flag is set **and** the request URL is `https://`.
 
 ---
 
@@ -107,6 +111,7 @@ type WPCoreConfig = {
 
 - `WPClient` is still an internal class. Prefer extending `WPRead` or a CRUD class rather than `WPClient` directly.
 - Auth headers are set once at construction time and baked into every request.
+- `allowSelfSigned` is forwarded into Seltzer handler options and into each `Endpoint`.
 
 ---
 

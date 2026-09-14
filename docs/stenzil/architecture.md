@@ -1,6 +1,8 @@
 # Stenzil Architecture: A Study Guide
 
-Stenzil is a **compiler**, not a runtime library. You write `.stzl` files once and the compiler transforms them into output for a specific target — PHP, Python, or JavaScript — depending on your project config. Understanding the compiler pipeline is the key to understanding everything else.
+This is the elective compiler deep-dive. For what/why and a first parse, start at the [README](./README.md) and [Getting started](./stenzil-getting-started.md). Stenzil is **not** on the core [Make A Web App](../webengine/make-a-web-app.md) path.
+
+Stenzil is a **compiler**, not a runtime library. The intended story is: you write `.stzl` files once and the compiler emits PHP, Python, or JavaScript for a configured target. Today only the lexer and parser are implemented — codegen is the next phase. Understanding the pipeline is still the key to everything else.
 
 ---
 
@@ -241,11 +243,11 @@ export type Node =
     | IfNode         // { type: "If"; condition; consequent; elseifs; alternate }
     | ForNode        // { type: "For"; item; collection; body }
     | ComponentNode  // { type: "Component"; name; props }
-    | IncludeNode    // { type: "Include"; file; data: IncludeBinding[] }
+    | IncludeNode    // { type: "Include"; file: string; data?: string }
     | ExtendsNode    // { type: "Extends"; layout: string }
-    | BlockNode      // { type: "Block"; name; blockType; children }
-    | SlotNode       // { type: "Slot"; name; position; slotType }
-    | FillNode;      // { type: "Fill"; name; children }
+    | BlockNode      // { type: "Block"; name: string; children: Node[] }
+    | SlotNode       // { type: "Slot"; name: string } — extra attrs such as position= are not stored
+    | FillNode;      // { type: "Fill"; name: string; children: Node[] }
 ```
 
 The codegen phase will `switch` on `node.type` to emit the right output for each language target. TypeScript will enforce exhaustiveness — if a new node type is added to the union without a case in codegen, the compiler produces an error.
@@ -349,5 +351,5 @@ Every `Token` carries `line` and `col`. Every `ParseError` can include the token
 **4. Unknown brackets pass through.**
 If `isBracketStart()` doesn't recognize a `[...]` sequence, it becomes a `Text` token. This means Stenzil templates can contain plain HTML brackets (CSS attribute selectors, etc.) without breaking the lexer.
 
-**5. Config-driven, not API-driven.**
-You do not call `Stenzil.compile({ target: "php" })` at runtime. The compilation target is set in the project config file, and the compiler CLI reads it. This keeps templates source-of-truth and the build process reproducible.
+**5. Config-driven, not API-driven (planned).**
+There is no `Stenzil.compile({ target: "php" })` today, and no compiler CLI. The intended direction is a project config table (sketched as `[stenzil]` in `kiwi.config.toml` below) so templates stay source-of-truth. WebEngine does not load that file yet — see [WebEngine getting started](../webengine/webengine-getting-started.md).
