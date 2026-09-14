@@ -3,7 +3,7 @@ import type { PipelineContext, PipelineEntry, Stage, StageName } from "./types.j
 export type { PipelineContext, PipelineEntry, Stage, StageName } from "./types.js";
 export { STAGE_NAMES } from "./types.js";
 export type { CompiledRoute } from "./router.js";
-export { compileRoute } from "./router.js";
+export { compileRoute, comparePathRank, matchRoute, rankPath } from "./router.js";
 export declare class Pipeline {
     private readonly entries;
     constructor(entries: PipelineEntry[]);

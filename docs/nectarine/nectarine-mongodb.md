@@ -122,7 +122,7 @@ mongosh -u admin -p admin_password
 
 ### Setup in Code
 
-Nectarine supplies the MongoDB adapter. **Seltzer** hosts HTTP. There is no `generateRoutes` — register object-based routes on the host. Auto-wiring from `*API.yml` is the next engine step.
+Nectarine supplies the MongoDB adapter. **Seltzer** hosts HTTP. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` builds `Route`s. Register remaining object-based routes on the host.
 
 ```typescript
 import { loadNectarineConfig } from "@citrusworx/nectarine";

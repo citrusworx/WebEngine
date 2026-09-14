@@ -223,7 +223,7 @@ user:
 
 ### Step 4: Host with Seltzer
 
-Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. There is no `generateRoutes` export yet — register object-based `Route` definitions on the host. Auto-wiring from `*API.yml` is the next engine step.
+Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. Flatten `*API.yml` with Nectarine `listApiOperations`, then Seltzer `generateRoutes` for product reads; remaining routes stay object-based `Route` definitions on the host.
 
 ```typescript
 import { loadNectarineConfig } from "@citrusworx/nectarine";

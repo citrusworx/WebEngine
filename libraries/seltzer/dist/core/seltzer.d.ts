@@ -1,12 +1,12 @@
 import http from "node:http";
-import { isResponseData, send, type ResponseData } from "./response.js";
+import { isExplicitResponse, isResponseData, response, send, type ResponseData } from "./response.js";
 import type { HandlerConfig, ListenOptions, RequestContext, Route } from "./types.js";
 import { type Stage, type StageName } from "../pipeline/index.js";
 export type { CorsOptions, Endpoint, ListenOptions, RequestContext, Route, } from "./types.js";
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData };
-export { isResponseData, send };
+export { isExplicitResponse, isResponseData, response, send };
 export declare class Seltzer {
     private routes;
     private config;

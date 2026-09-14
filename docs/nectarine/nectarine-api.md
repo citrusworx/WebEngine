@@ -424,29 +424,33 @@ const ops = listApiOperations("product", product.api);
 
 ### Hosting with Seltzer
 
-Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Register object-based `Route` definitions on the host. SeltzerBot should depend on `listApiOperations` (above) to read `*API.yml` — Nectarine only lists operations.
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s. Product reads use that path; other routes stay hand-registered.
 
 Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
 
 **Example**:
 ```typescript
 import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";
-import { Seltzer } from "@citrusworx/seltzer";
-import type { Route } from "@citrusworx/seltzer";
+import { Seltzer, generateRoutes } from "@citrusworx/seltzer";
 
 const nectarine = loadNectarineConfig("./nectarine.config.yaml");
 const ops = listApiOperations("product", nectarine.getResource("product").api);
 const app = Seltzer.init();
 
-const listProducts: Route = {
-  method: "GET",
-  path: "/api/products",
-  handler: () => ({
-    body: { namedQuery: ops[0]?.query },
-  }),
-};
+for (const route of generateRoutes(
+  ops.filter((operation) => operation.crud === "read" && operation.method === "GET"),
+  {
+    execute: ({ query, params, ctx }) => {
+      if (query === "productById") {
+        return ctx.locals.products.find((item) => item.id === params.id) ?? null;
+      }
+      return ctx.locals.products;
+    },
+  },
+)) {
+  app.route(route);
+}
 
-app.route(listProducts);
 app.listen(3000);
 ```
 

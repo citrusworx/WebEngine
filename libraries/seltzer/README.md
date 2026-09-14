@@ -88,6 +88,39 @@ app.route({
 
 Stages mutate the shared context in place. Return `void`/`undefined` to continue.
 
+## Generate routes from Nectarine `*API.yml`
+
+Seltzer maps flattened operations onto object-based `Route`s. Flatten with Nectarine — do not duplicate `listApiOperations` here.
+
+```ts
+import { listApiOperations } from "@citrusworx/nectarine/config";
+import { generateRoutes, type ResponseData } from "@citrusworx/seltzer";
+
+const operations = listApiOperations("product", product.api).filter(
+    (operation) => operation.crud === "read" && operation.method === "GET",
+);
+
+const routes = generateRoutes(operations, {
+    execute: ({ query, params, ctx }) => {
+        if (query === "productById") {
+            return ctx.locals.products.find((item) => item.id === params.id) ?? null;
+        }
+        return ctx.locals.products;
+    },
+    notFound: (): ResponseData => ({ status: 404, body: { error: "Product not found" } }),
+});
+```
+
+- YAML layout: `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`.
+- `query` is the named-query key, not the HTTP search string (`ctx.query`).
+- Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`. There is no writing `ctx.json`.
+- `execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ body }` / `{}` objects are treated as payloads.
+- `generateRoutes` registers static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
+- Uses the Seltzer 0.5 default pipeline (`parse` → `…` → `send`) and `ResponseData`. It does not replace `before()`.
+- Nectarine does not generate `Route`s. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`).
+
+Blackwater registers generated product **read** routes this way and keeps health, waitlist, and KiwiPress content hand-written.
+
 ## Development
 
 ```bash

@@ -53,6 +53,26 @@ export function isResponseData(value: unknown): value is ResponseData {
     return true;
 }
 
+const RESPONSE_BRAND = Symbol.for("@citrusworx/seltzer.ResponseData");
+
+/**
+ * Mark an object as an explicit transport result for `generateRoutes`.
+ * Unbranded `{ status?, headers?, body? }` payloads stay wrapped as `{ body }`.
+ */
+export function response(data: ResponseData): ResponseData {
+    const branded: ResponseData = { ...data };
+    Object.defineProperty(branded, RESPONSE_BRAND, {
+        value: true,
+        enumerable: false,
+    });
+    return branded;
+}
+
+/** True when `value` was produced by {@link response}. */
+export function isExplicitResponse(value: unknown): value is ResponseData {
+    return isResponseData(value) && RESPONSE_BRAND in (value as object);
+}
+
 function hasContentType(headers: Record<string, string>): boolean {
     return Object.keys(headers).some((key) => key.toLowerCase() === "content-type");
 }

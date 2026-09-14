@@ -1,8 +1,8 @@
 import http from "node:http";
-import { isResponseData, send } from "./response.js";
+import { isExplicitResponse, isResponseData, response, send } from "./response.js";
 import { compileRoute, createDefaultPipeline, } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
-export { isResponseData, send };
+export { isExplicitResponse, isResponseData, response, send };
 function applyCors(req, res, cors) {
     if (!cors) {
         return;
