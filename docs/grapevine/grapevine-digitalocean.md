@@ -1,457 +1,127 @@
-# GrapeVine DigitalOcean Guide
+# Grapevine + DigitalOcean
 
-Complete guide to using GrapeVine with DigitalOcean cloud infrastructure.
+DigitalOcean is the **only** provider in source. This page is the practical guide for tokens, droplets, networks, and the functions Grapevine wraps.
 
-## Overview
+## Account and token
 
-DigitalOcean is the primary cloud provider supported by GrapeVine. It offers:
-- Simple, predictable pricing
-- Developer-friendly API
-- Global data centers
-- Excellent documentation
-- Strong performance
+1. Sign up at [digitalocean.com](https://www.digitalocean.com)
+2. API → Tokens/Keys → generate a **read and write** personal access token
+3. `export DO_TOKEN=dop_v1_...`
 
-## Getting Started with DigitalOcean
-
-### 1. Create Account
-
-Visit https://www.digitalocean.com and sign up for an account.
-
-### 2. Generate API Token
-
-1. Log into DigitalOcean dashboard
-2. Navigate to **Account → Settings → API → Tokens/Keys**
-3. Click **Generate New Token**
-4. Name it (e.g., `grapevine-deploy`)
-5. Select scopes:
-   - ☑ Read & Write (required)
-   - ☑ For Applications (recommended)
-6. Copy the token immediately (won't show again!)
-
-### 3. Set Up Environment
+Verify outside Grapevine if you want:
 
 ```bash
-# Export token for GrapeVine
-export DO_TOKEN=dop_v1_xxxxxxxxxxxxx
-
-# Verify token works
-curl -X GET "https://api.digitalocean.com/v2/account" \
-  -H "Authorization: Bearer $DO_TOKEN"
+curl -s -H "Authorization: Bearer $DO_TOKEN" https://api.digitalocean.com/v2/account
 ```
 
-### 4. Configure for Deployment
+Grapevine’s `doRequest` uses the same header. Failures become `DigitalOceanError`.
 
-Add to your shell profile (`~/.bashrc`, `~/.zshrc`, or `.env`):
+## Regions
 
-```bash
-export DO_TOKEN=dop_v1_xxxxxxxxxxxxx
-export DO_REGION=nyc1  # Optional default region
-```
+Pass a slug DigitalOcean accepts (`nyc1`, `nyc3`, `sfo3`, `ams3`, `fra1`, `lon1`, `sgp1`, `blr1`, `tor1`, …). Grapevine does not validate slugs beyond “non-empty string.” Wrong slugs fail at the API.
 
-## DigitalOcean Regions
-
-GrapeVine supports all DigitalOcean regions:
-
-### North America
-
-| Code | Location | Latency from NYC |
-|------|----------|------------------|
-| `nyc1` | New York 1 | 0ms (reference) |
-| `nyc3` | New York 3 | ~3ms |
-| `sfo1` | San Francisco | ~50ms |
-| `sfo2` | San Francisco 2 | ~50ms |
-| `sfo3` | San Francisco 3 | ~50ms |
-| `tor1` | Toronto | ~10ms |
-
-### Europe
-
-| Code | Location | Latency from NYC |
-|------|----------|------------------|
-| `lon1` | London | ~60ms |
-| `ams3` | Amsterdam | ~85ms |
-| `fra1` | Frankfurt | ~95ms |
-
-### Asia-Pacific
-
-| Code | Location | Latency from NYC |
-|------|----------|------------------|
-| `blr1` | Bangalore | ~180ms |
-| `sgp1` | Singapore | ~180ms |
+Put `region` on the grape config and/or on each VPC/droplet/load balancer.
 
 ## Droplets
 
-Virtual machines in DigitalOcean.
+Required blueprint fields: `name`, `region`, `size`, `image`.
 
-### Droplet Sizes
+Common sizes: `s-1vcpu-1gb`, `s-2vcpu-2gb`, … — current catalog is DigitalOcean’s, not a Grapevine enum.
 
-**CPU Optimized** (for computing):
-- `c-2` - 2 vCPU, 4GB RAM
-- `c-4` - 4 vCPU, 8GB RAM
-- `c-8` - 8 vCPU, 16GB RAM
+Images: slugs like `ubuntu-24-04-x64` or a numeric snapshot id.
 
-**Memory Optimized** (for caching/databases):
-- `m-4gb` - 2 vCPU, 4GB RAM
-- `m-8gb` - 4 vCPU, 8GB RAM
-- `m-16gb` - 8 vCPU, 16GB RAM
+Optional fields Grapevine forwards: `ssh_keys`, `backups`, `backup_policy`, `ipv6`, `monitoring`, `tags`, `user_data`, `volumes`, `vpc_uuid`, `with_droplet_agent`.
 
-**General Purpose** (for apps):
-- `s-1vcpu-512mb-10gb` - 1 vCPU, 512MB RAM
-- `s-1vcpu-1gb` - 1 vCPU, 1GB RAM
-- `s-2vcpu-2gb` - 2 vCPU, 2GB RAM
-- `s-4vcpu-8gb` - 4 vCPU, 8GB RAM
-- `s-8vcpu-16gb` - 8 vCPU, 16GB RAM
+```ts
+import { createDroplet, getDropletStatus, listAllDroplets, deleteDroplet } from "@citrusworx/grapevine";
 
-### Available Images
-
-**Linux Distributions**:
-- `ubuntu-22-04-x64` - Ubuntu 22.04 LTS (recommended)
-- `ubuntu-20-04-x64` - Ubuntu 20.04 LTS
-- `debian-12-x64` - Debian 12
-- `centos-7-x64` - CentOS 7
-- `rocky-9-x64` - Rocky Linux 9
-- `fedora-39-x64` - Fedora 39
-
-**Marketplace Apps** (pre-configured):
-- WordPress, Docker, NodeJS, Ruby on Rails, etc.
-
-### Creating a Droplet
-
-```typescript
-import { deployByBlueprint } from "@citrusworx/grapevine";
-
-const dropletBlueprint = {
-  blueprint: {
-    name: "web-server",
-    droplet: {
-      name: "my-app-web-01",
-      region: "nyc1",
-      size: "s-2vcpu-2gb",
-      image: "ubuntu-22-04-x64",
-      backups: true,
-      monitoring: true,
-      ipv6: true,
-      tags: ["web", "production"],
-      ssh_keys: ["your-ssh-key-id"] // Optional, add if already uploaded
-    }
-  }
-};
-
-const droplet = await deployByBlueprint(dropletBlueprint);
-
-console.log(`Droplet created: ${droplet.name}`);
-console.log(`IP Address: ${droplet.networks.v4[0].ip_address}`);
-console.log(`Region: ${droplet.region.slug}`);
-```
-
-## VPCs (Virtual Private Clouds)
-
-Create isolated network environments.
-
-### Creating a VPC
-
-```typescript
-import { createVPC } from "@citrusworx/grapevine";
-
-const vpc = await createVPC({
-  name: "production",
-  description: "Production environment",
+const droplet = await createDroplet({
+  name: "web-01",
   region: "nyc1",
-  ip_range: "10.0.0.0/16" // 65,536 IP addresses
+  size: "s-1vcpu-1gb",
+  image: "ubuntu-24-04-x64",
 });
 
-console.log(`VPC created: ${vpc.id}`);
+await getDropletStatus(droplet.id!);
+await listAllDroplets();
+// await deleteDroplet(droplet.id!);
 ```
 
-### Common CIDR Ranges
+`user_data` is the supported “run something at boot” mechanism. There is no post-create SSH runner.
 
-| Range | Available IPs | Best For |
-|-------|--------------|----------|
-| `10.0.0.0/8` | 16,777,216 | Large deployments |
-| `10.0.0.0/16` | 65,536 | Medium deployments |
-| `10.0.0.0/24` | 256 | Small deployments |
-| `10.0.0.0/25` | 128 | Minimal setup |
-| `10.0.0.0/26` | 64 | Test environments |
+## VPC
 
-### VPC Subnets
+```ts
+import { createVPC, listAllVPCs, deleteVPC } from "@citrusworx/grapevine";
 
-Subdivide your VPC into subnets:
+const vpc = await createVPC({
+  name: "app",
+  description: "App network",
+  region: "nyc1",
+  ip_range: "10.10.0.0/16",
+});
+```
 
-- **Public subnet** (10.0.1.0/24) - Load balancers, Bastion host
-- **Private subnet** (10.0.2.0/24) - Apps, services
-- **Database subnet** (10.0.3.0/24) - Databases only
+On apply, droplet `vpc: app` maps to this VPC’s id. Peering helpers exist (`createPeering`) but apply does not create peerings from YAML.
 
-## Firewalls
+## Firewall
 
-Network security rule sets.
-
-### Creating a Firewall
-
-```typescript
+```ts
 import { createFireWall } from "@citrusworx/grapevine";
 
 await createFireWall({
-  name: "web-firewall",
-  tags: ["web"],
+  name: "web",
+  droplet_ids: [123],
   inbound_rules: [
-    // Allow HTTPS from anywhere
-    {
-      protocol: "tcp",
-      ports: "443",
-      sources: { addresses: ["0.0.0.0/0"] }
-    },
-    // Allow HTTP from anywhere
-    {
-      protocol: "tcp",
-      ports: "80",
-      sources: { addresses: ["0.0.0.0/0"] }
-    },
-    // Allow SSH from office only
-    {
-      protocol: "tcp",
-      ports: "22",
-      sources: { addresses: ["203.0.113.0/24"] }
-    }
+    { protocol: "tcp", ports: "443", sources: { addresses: ["0.0.0.0/0"] } },
   ],
   outbound_rules: [
-    // Allow all outbound
-    {
-      protocol: "tcp",
-      ports: "all",
-      destinations: { addresses: ["0.0.0.0/0"] }
-    }
-  ]
+    { protocol: "tcp", ports: "all", destinations: { addresses: ["0.0.0.0/0"] } },
+  ],
 });
 ```
 
-### Protocol Support
+Note the export spelling: `createFireWall`.
 
-| Protocol | Port | Use Case |
-|----------|------|----------|
-| tcp | 22 | SSH |
-| tcp | 80 | HTTP |
-| tcp | 443 | HTTPS |
-| tcp | 3306 | MySQL |
-| tcp | 5432 | PostgreSQL |
-| tcp | 6379 | Redis |
-| tcp | 27017 | MongoDB |
-| udp | 53 | DNS |
-| icmp | - | Ping |
+## SSH keys
 
-## SSH Keys
+```ts
+import { createSSHKey, uploadSSHKey, listSSHKeys } from "@citrusworx/grapevine";
 
-Securely authenticate with droplets.
-
-### Generating SSH Keys
-
-```typescript
-import { createSSHKey, uploadSSHKey } from "@citrusworx/grapevine";
-
-// Generate key pair
-const sshKey = createSSHKey("production-key");
-
-console.log("Public Key:", sshKey.publicKey);
-console.log("Fingerprint:", sshKey.fingerprint);
-
-// Save private key securely
-import fs from "fs";
-fs.writeFileSync("~/.ssh/production-key", sshKey.keys.privateKey, { mode: 0o600 });
+const generated = createSSHKey("ci");
+await uploadSSHKey({ name: generated.name, public_key: generated.publicKey });
+await listSSHKeys();
 ```
 
-### Uploading Keys to DigitalOcean
+Apply with `generate: true` uploads the public key only.
 
-```typescript
-import { uploadSSHKey } from "@citrusworx/grapevine";
+## Domains, LBs, apps, alerts
 
-const uploaded = await uploadSSHKey({
-  name: "production-key",
-  public_key: sshKey.publicKey
-});
+These are real DigitalOcean products and real Grapevine functions. Apply will create them if you declare `resources.domains` / `load_balancers` / `apps` / `alert_policies`. See [config](./grapevine-config.md) and [API](./grapevine-api.md).
 
-console.log("Key uploaded with ID:", uploaded.id);
-```
+App Platform `spec` is passed through; Grapevine does not compile a Juice/Sig app into an app spec for you.
 
-### Using Keys for SSH
+## Images and security
 
-```bash
-# Connect to droplet
-ssh -i ~/.ssh/production-key root@123.45.67.89
+`listAllImages`, Insight scans, etc. are exported and tested in places, but **not** part of `applyGrapeConfig`. Call them from TypeScript if you need them.
 
-# Alternative: add key to agent
-ssh-add ~/.ssh/production-key
-ssh root@123.45.67.89
-```
+## Limits and cost
 
-## Managed Databases
+DigitalOcean rate-limits API calls. Grapevine does not implement a client-side quota manager.
 
-DigitalOcean offers managed database services:
+Droplets and load balancers cost money. Start with `01-vpc-and-tag.yaml` when you are testing the CLI.
 
-| Database | Support | Status |
-|----------|---------|--------|
-| PostgreSQL | Planned | Coming soon |
-| MySQL | Planned | Coming soon |
-| MongoDB | Planned | Coming soon |
-| Redis | Planned | Coming soon |
+## Practices
 
-Currently, deploy databases on droplets using standard installation methods.
+- Validate before apply
+- Keep tokens in the environment, not in YAML
+- Prefer `public_key` you control over `generate: true` until private-key persistence exists
+- Name VPCs/droplets you will reference later in the same file (`vpc:`, `droplets:`)
+- Delete what you create; apply will not
+- Do not set `provider: aws`
 
-### PostgreSQL on Droplet
+## Related
 
-```bash
-# SSH into droplet
-ssh root@<droplet-ip>
-
-# Install PostgreSQL
-apt update && apt install -y postgresql postgresql-contrib
-
-# Service management
-systemctl start postgresql
-systemctl enable postgresql
-
-# Connect to database
-sudo -u postgres psql
-```
-
-## Backups & Snapshots
-
-### Automated Backups
-
-Enable automatic backups when creating droplets:
-
-```typescript
-const droplet = {
-  blueprint: {
-    name: "web-server",
-    droplet: {
-      name: "app-01",
-      // ... other config
-      backups: true,
-      backup_policy: {
-        name: "daily" // Daily backups at 24:00 UTC
-      }
-    }
-  }
-};
-```
-
-### Manual Snapshots
-
-```bash
-# From DigitalOcean dashboard:
-# 1. Select droplet
-# 2. Click "More" → "Take Snapshot"
-# 3. Enter snapshot name and save
-
-# Snapshots can be used to create new droplets
-```
-
-## Monitoring & Alerts
-
-### Enable Monitoring
-
-```typescript
-const droplet = {
-  blueprint: {
-    name: "monitored-server",
-    droplet: {
-      // ... config
-      monitoring: true
-    }
-  }
-};
-```
-
-### Metrics Available
-
-- CPU utilization
-- Memory usage
-- Disk I/O
-- Bandwidth usage
-- Requests (HTTP)
-
-### View Metrics
-
-In DigitalOcean dashboard:
-1. Select droplet
-2. Click "Monitoring" tab
-3. View real-time metrics
-
-## Pricing
-
-Current pricing (as of early 2024):
-
-| Size | vCPU | RAM | Storage | Monthly |
-|------|------|-----|---------|---------|
-| s-1vcpu-512mb-10gb | 1 | 512MB | 10GB | $4 |
-| s-1vcpu-1gb | 1 | 1GB | 25GB | $6 |
-| s-2vcpu-2gb | 2 | 2GB | 50GB | $12 |
-| s-4vcpu-8gb | 4 | 8GB | 160GB | $24 |
-| s-8vcpu-16gb | 8 | 16GB | 320GB | $48 |
-
-Additional costs:
-- Backups: 20% of droplet cost
-- Snapshots: $0.05 per GB per month
-- Data transfer: $0.01 per GB (outbound)
-
-## Best Practices
-
-### Security
-
-1. **Use VPC** - Isolate resources
-2. **Restrict SSH** - Only from known IPs
-3. **Enable firewalls** - Default deny, allow specific ports
-4. **Use SSH keys** - Never use passwords
-5. **Rotate keys** - Regularly regenerate keys
-6. **Monitor access** - Check audit logs
-
-### Performance
-
-1. **Choose right size** - Match workload to droplet size
-2. **Use SSDs** - All DigitalOcean droplets use SSDs
-3. **Enable backups** - Automatic protection
-4. **Monitor resources** - Watch CPU, memory, disk
-5. **Use appropriate region** - Choose nearest to users
-
-### Cost Optimization
-
-1. **Right-size droplets** - Don't over-provision
-2. **Delete unused resources** - Stop paying for unused machines
-3. **Use snapshots wisely** - Snapshots incur storage costs
-4. **Monitor bandwidth** - Outbound data is billable
-5. **Use smaller sizes in dev** - Save on dev/test costs
-
-## Troubleshooting
-
-### Can't SSH to Droplet
-
-```bash
-# Check if droplet is running
-# Verify security group/firewall allows port 22
-# Ensure you're using correct SSH key
-
-ssh -vvv -i ~/.ssh/key root@<ip>  # Verbose output
-```
-
-### Droplet Not Responding
-
-1. Check droplet status in dashboard
-2. Verify firewall rules allow health checks
-3. SSH in and check:
-   ```bash
-   top          # Check CPU/memory
-   df -h        # Check disk space
-   systemctl status <service>  # Check service status
-   ```
-
-### High Costs
-
-1. Check for unneeded snapshots
-2. Review outbound bandwidth usage
-3. Look for idle droplets
-4. Scale down if possible
-
-## Resources
-
-- [DigitalOcean API Docs](https://docs.digitalocean.com/reference/api/)
-- [DigitalOcean Community](https://www.digitalocean.com/community)
-- [Size Comparison Tool](https://www.digitalocean.com/pricing)
-- [Status Page](https://status.digitalocean.com)
+- [Getting Started](./grapevine-getting-started.md)
+- [infrastructure/digitalocean](./infrastructure/digitalocean/README.md) — extra DO how-tos in this docs tree
+- In-repo blueprints README

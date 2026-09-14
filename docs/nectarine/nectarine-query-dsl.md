@@ -2,7 +2,9 @@
 
 Current reference for Nectarine's YAML query DSL.
 
-This document describes the **current SQL-oriented DSL pattern** used by Nectarine for PostgreSQL query definitions. It is intended as a stable working reference while the compiler and validation layers are being built.
+This document describes the **PostgreSQL-oriented DSL** checked in under `libraries/nectarine/models/user/db/pg/user.yml` (and the blog copies). `parser.genSQL` returns these objects. `parser.buildSQL` and `CCompiler.buildQuery` do **not** compile them yet — you walk the object yourself (see [Getting Started](./nectarine-getting-started.md)).
+
+MySQL fixtures use a different, older shape (`type` / `action` / `updates` / `?`). See [MySQL](./nectarine-mysql.md). Mongo has no query DSL.
 
 ## Goals
 
@@ -230,7 +232,7 @@ values:
 
 ## Current Example
 
-This reflects the current working pattern in `libraries/nectarine/schemas/user/db/pg/user.yml`.
+This reflects `libraries/nectarine/models/user/db/pg/user.yml`. That file uses `{ fn: now }` in some `values` lists; the snippets below write `NOW()` as the intended SQL fragment. Either form is just YAML until a compiler exists.
 
 ```yaml
 user:

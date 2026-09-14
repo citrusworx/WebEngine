@@ -1,8 +1,12 @@
 # Seltzer Study: Node.js Reading & Course List
 
+**Contributor elective.** This is not the product getting-started path.
+
+If you want to run the HTTP surface that exists today, use the [product README](./README.md) and [Getting Started](./seltzer-getting-started.md). Come here when you intend to implement missing pipeline stages yourself.
+
 A structured path to write **Seltzer** yourself — from raw `node:http` through streams, routing, pipeline stages, and contract validation — without leaning on AI for whole features.
 
-Start with the [Seltzer Design Overview](./README.md) if you have not read it yet. This guide maps learning topics directly to Seltzer's HTTP pipeline, current implementation gaps, and hands-on exercises.
+Start with the [Seltzer Design Overview](./seltzer-design.md) if you have not read it yet. This guide maps learning topics directly to Seltzer's HTTP pipeline, current implementation gaps, and hands-on exercises.
 
 ---
 
@@ -27,7 +31,7 @@ The concepts you need to understand deeply:
 | Seltzer concern | Where it lives today | What you need to write by hand |
 |---|---|---|
 | Raw HTTP server | `libraries/seltzer/dist/core/seltzer.js` — `http.createServer`, `writeHead`, `end` | `IncomingMessage` / `ServerResponse` lifecycle |
-| Context normalization | Design in [README](./README.md) § Context Object | Build `ctx` from method, path, query, headers, body, params |
+| Context normalization | Design in [seltzer-design.md](./seltzer-design.md) § Context Object | Build `ctx` from method, path, query, headers, body, params |
 | Body parsing | Design § Parse Request (streams) | Collect stream chunks, parse JSON safely |
 | Routing | Current: exact match only; design: `:id` params | Parametric path matching, `ctx.params` |
 | Pipeline stages | Design § Pipeline Model (`parse → context → route → validate → handle → response → send`) | Named, ordered stage runner with insert/replace |
@@ -112,7 +116,7 @@ Use as reference, not a read-through. Skip Express-centric chapters.
 
 ## Architecture Reading
 
-### [Seltzer Design Overview](./README.md) § Why Pipelines Were Chosen Over Middleware
+### [Seltzer Design Overview](./seltzer-design.md) § Why Pipelines Were Chosen Over Middleware
 
 **Required reading.** Seltzer deliberately avoids middleware chains and hook systems. Understand the pipeline model before implementing stages.
 
@@ -206,7 +210,7 @@ Read `packages/kiwipress/src/core/WPClient.ts` and extend Seltzer client pattern
 
 ## Recommended Study Order
 
-1. **Seltzer design overview** ([README](./README.md)) — 1 hour; know the target pipeline
+1. **Seltzer design overview** ([seltzer-design.md](./seltzer-design.md)) — 1 hour; know the target pipeline
 2. **Exercise 1–2** + Node HTTP/stream docs — hands-on before any course
 3. **FEM: Complete Intro to Node.js v3** (HTTP + streams sections)
 4. **Exercise 3–5** — rebuild current Seltzer behavior yourself from scratch in a scratch file

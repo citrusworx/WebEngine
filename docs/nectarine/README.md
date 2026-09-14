@@ -1,503 +1,241 @@
 # Nectarine
 
-Nectarine is a config-driven backend library that empowers developers to define models, schemas, queries, and APIs through YAML — and have a fully functional backend generated from that definition.
+YAML-described data models and thin database adapters.
 
-Nectarine is a WebEngine native module but is fully independent. It can be used in any project.
+Nectarine is the CitrusWorx place to write *what the data looks like* and *which query you meant*, then run that against PostgreSQL, MySQL, or MongoDB. It is not, today, a one-command backend generator.
 
-**Latest Version**: 0.0.1 (Alpha)
+The current model is:
 
----
+- **YAML files** describe tables, query intent, and (as data) HTTP routes
+- **`parser`** loads those files and picks a named query or route object
+- **Adapters** open a client and execute SQL or Mongo operations you still assemble
+- **`CCompiler.buildQuery` and `parser.buildSQL`** are stubs — they do not emit SQL yet
 
-## Philosophy
+Nectarine is strongest when you treat YAML as the source of query *shape*, and the adapter as the socket. It is weakest when docs (including older ones) promised Express + Zod routes from those files. That pipeline is not in `libraries/nectarine/src`.
 
-Backend development is repetitive. Models, schemas, queries, and API routes follow predictable patterns that should not require writing the same boilerplate over and over. Nectarine lets you define your backend in YAML and handles the rest.
+## Who it is for
 
-- **Config driven** — models, schemas, queries, and APIs defined in YAML
-- **Database agnostic** — PostgreSQL, MySQL, and MongoDB supported
-- **Transport agnostic** — defaults to Express + Zod + Axios, configurable
-- **GUI ready** — visual editor planned for no-code backend creation
-- **WebEngine integrated** — works seamlessly as a WebEngine backend module
+- App authors who want models and query names in git-friendly YAML
+- Teams that already have (or will write) an HTTP layer — Seltzer, Express, or otherwise
+- Contributors extending the compiler so `genSQL` objects become real statements
 
----
+It is not a hosted BaaS, not Prisma, and not a GUI.
 
-## Quick Start
+## Why it exists
+
+Backend CRUD is repetitive, but the expensive part is not typing `SELECT`. It is keeping the *contract* — columns, filters, route names — from drifting across SQL strings, handlers, and clients.
+
+CitrusWorx wants that contract in config:
+
+- Juice / Sig.js should not invent table shapes
+- Seltzer should eventually validate against the same contract
+- Operators should be able to read a resource as three files, not a scavenger hunt through repositories
+
+Nectarine is that contract folder. The adapters exist so the same repo can talk to Postgres, MySQL, or Mongo without a second ORM. The compiler is the unfinished piece that would turn query YAML into SQL so app code stops concatenating strings.
+
+Until that compiler lands, the honest workflow is: **parse YAML → walk the object → build a string in your app (or copy the example helpers) → run it on an adapter**.
+
+## Current setup shape
+
+```ts
+import { parser, PgSql } from "@citrusworx/nectarine";
+```
 
 ```bash
-# Install
-yarn add @citrusworx/nectarine
+export PG_USER=postgres
+export PG_HOST=localhost
+export PG_PASS=secret
+export PG_DB=myapp
+export PG_PORT=5432
+```
 
-# Define schema (schemas/user/userSchema.yml)
+There is no `generateRoutes()`, no `Pgsql()` function, and no `nectarine.config.yaml` loader.
+
+## What it can do
+
+### 1. Load a model file
+
+Checked-in example: `libraries/nectarine/models/user/userSchema.yml`.
+
+```yaml
 User:
   table: users
   fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    username: VARCHAR(100) UNIQUE NOT NULL
-    email: VARCHAR(100) UNIQUE NOT NULL
-    password: VARCHAR(255) NOT NULL
-
-# Generate backend
-const userRoutes = generateRoutes(schema, queries, api);
-app.use("/api", userRoutes);
-
-# Use API
-GET /api/users
-POST /api/users
+    id:
+      type: int
+      primaryKey: true
+      autoIncrement: true
+    username:
+      type: VARCHAR
+      length: 55
+      unique: true
+      null: false
+    email:
+      type: VARCHAR
+      size: 100
+      unique: true
+      null: false
 ```
 
-**[→ Full Getting Started Guide](./nectarine-getting-started.md)**
+```ts
+import { parser } from "@citrusworx/nectarine";
 
----
-
-## Documentation
-
-| Guide | Topic |
-|-------|-------|
-| [Getting Started](./nectarine-getting-started.md) | Installation, setup, first backend |
-| [API Reference](./nectarine-api.md) | Complete API documentation |
-| [Schema Guide](./nectarine-schema-guide.md) | Schema definition and field types |
-| [Query DSL](./nectarine-query-dsl.md) | Current YAML query DSL shape and conventions |
-| [Examples](./nectarine-examples.md) | Real-world examples (blog, store, SaaS, CMS) |
-| [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
-| [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |
-| [Project Status](./nectarine-status.md) | Roadmap, limitations, comparison |
-
----
-
-## Supported Databases
-
-| Database | Status | Guide |
-|----------|--------|-------|
-| PostgreSQL | ✓ Active | [PostgreSQL Guide](./nectarine-postgresql.md) |
-| MySQL | ✓ Active | Coming soon |
-| MongoDB | ✓ Active | [MongoDB Guide](./nectarine-mongodb.md) |
-
----
-
-## How It Works
-
-Nectarine reads three YAML files per resource and generates a fully functional backend:
-
-```
-userSchema.yml    ← Model definitions and table structure
-userQueries.yml   ← Query definitions (SELECT, INSERT, UPDATE, DELETE)
-userAPI.yml       ← REST endpoint routing
+const schema = parser.yaml("./models/user/userSchema.yml");
+const table = schema.User.table; // "users"
 ```
 
-These three files define a complete backend resource. Nectarine:
-1. Parses the YAML schemas
-2. Generates database queries
-3. Wires up Express routes
-4. Validates data with Zod
-5. Exposes a REST API
+`parser.yaml` is a `js-yaml` + `readFileSync` wrapper. It logs the object to the console.
 
----
+### 2. Pick a named query object
 
-## Installation
-
-```bash
-yarn add @citrusworx/nectarine
-```
-
----
-
-## Core Features
-
-✓ **Schema-Driven**: Define backend in YAML, get API automatically
-✓ **Database Support**: PostgreSQL, MySQL, MongoDB
-✓ **Type Safe**: Zod validation on all routes
-✓ **Express Native**: Generates Express routes
-✓ **Pre-built Schemas**: User, Blog, CMS, Store, Banking models included
-✓ **Query Builder**: SELECT, INSERT, UPDATE, DELETE operations
-✓ **Relationships**: Foreign keys and relationships supported
-✓ **Flexible**: Extend and override as needed
-
----
-
-## Example: Blog Backend
-
-Define a blog with posts and comments:
+PostgreSQL-oriented DSL lives under `models/user/db/pg/user.yml`:
 
 ```yaml
-# userSchema.yml
-User:
-  table: users
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    username: VARCHAR(100) UNIQUE NOT NULL
-    email: VARCHAR(100) UNIQUE NOT NULL
-
-Post:
-  table: posts
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    title: VARCHAR(255) NOT NULL
-    content: text NOT NULL
-    author_id: int FOREIGN KEY REFERENCES users(id)
-
-Comment:
-  table: comments
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    content: text NOT NULL
-    post_id: int FOREIGN KEY REFERENCES posts(id)
-    author_id: int FOREIGN KEY REFERENCES users(id)
-```
-
-Nectarine automatically generates:
-- 3 CREATE operations (users, posts, comments)
-- 3 READ operations (get all, get by ID)
-- 3 UPDATE operations
-- 3 DELETE operations
-- Full CRUD API with validation
-
-**[See full blog example →](./nectarine-examples.md#simple-blog)**
-
----
-
-## Use Cases
-
-✓ **Rapid Prototyping**: Build backends in minutes, not days
-✓ **Startups**: Bootstrap quickly with minimal code
-✓ **GraphQL to REST**: Take GraphQL schema, generate REST API
-✓ **CMS Backends**: Content management with any database
-✓ **APIs**: Build CRUD APIs without repeating patterns
-✓ **Microservices**: Lightweight backends for microservice architecture
-
----
-
-## What's Included
-
-- Schema definition system
-- Query builder
-- Express route generation
-- Zod validation
-- PostgreSQL adapter
-- MongoDB adapter
-- MySQL adapter
-- Pre-built model schemas
-- Connection pooling
-
----
-
-## What's Planned
-
-- [ ] GraphQL support
-- [ ] Caching layer
-- [ ] Authorization system
-- [ ] Audit logging
-- [ ] Real-time updates
-- [ ] Multi-tenant support
-- [ ] CLI tools
-
-**[See full roadmap →](./nectarine-status.md#roadmap-summary)**
-
----
-
-## Next Steps
-
-1. **[Get Started](./nectarine-getting-started.md)** — Installation and first backend
-2. **[Learn the Concepts](./nectarine-schema-guide.md)** — Understand schemas
-3. **[See Examples](./nectarine-examples.md)** — Real-world backends
-4. **[Choose Your Database](./nectarine-postgresql.md)** — Setup guide
-5. **[Build Your Backend](./nectarine-getting-started.md)** — Create your first API
-
----
-
-## Requirements
-
-- Node.js 14+
-- Express.js
-- One of: PostgreSQL, MySQL, MongoDB
-
----
-
-## License
-
-MIT - Use freely in any project
-
----
-
-## Schema Definition
-
-Schemas define your models and database table structure.
-
-```yaml
-# userSchema.yml
-User:
-  table: users
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    username: VARCHAR(50) UNIQUE NOT NULL
-    email: VARCHAR(100) UNIQUE NOT NULL
-    password: VARCHAR(50) NOT NULL
-    created_at: timestamp DEFAULT NOW()
-    role: enum(admin, author, user) DEFAULT 'user'
-
-Post:
-  table: posts
-  fields:
-    id: int PRIMARY KEY AUTO_INCREMENT
-    title: string NOT NULL
-    content: text NOT NULL
-    author_id: int FOREIGN KEY REFERENCES users(id)
-    created_at: timestamp DEFAULT NOW()
-    updated_at: timestamp DEFAULT NOW()
-```
-
----
-
-## Query Definition
-
-Queries define the SQL or MongoDB operations for each resource. Nectarine generates the actual query statements from these definitions.
-
-```yaml
-# user.yml
 user:
   get:
-    AllUsers:
-      type: SELECT
-      table: users
-      action: FROM
-      fields: '*'
-
     UserById:
-      type: SELECT
-      table: users
-      fields: id
-      conditions:
-        condition: WHERE
+      select: ['id']
+      from: users
+      where:
         column: id
-        operator: '='
-        value: $1
-
-  create:
-    NewUser:
-      type: INSERT
-      action: INTO
-      table: users
-      updates:
-        column:
-          - email
-          - password
-          - name
-          - created_at
-        values:
-          - $1
-          - $2
-          - $3
-          - NOW()
-
-  update:
-    UserById:
-      type: UPDATE
-      table: users
-      updates:
-        column: name, age
-        value: $1, $2
-      conditions:
-        condition: WHERE
-        column: id
-        operator: '='
-        value: $3
-
-  delete:
-    User:
-      type: DELETE
-      action: FROM
-      table: users
-      conditions:
-        condition: WHERE
-        column: id
-        operator: '='
+        operator: eq
         value: $1
 ```
 
----
+```ts
+const spec = parser.genSQL("./models/user/db/pg/user.yml", "user", "get", "UserById");
+// spec.select, spec.from, spec.where — not a SQL string
+```
 
-## API Definition
+`parser.genSQL` returns that object. `parser.buildSQL(spec)` is empty.
 
-APIs define the REST endpoints for each resource. Nectarine generates the routes and wires them to the appropriate queries.
+The in-repo Postgres example (`libraries/nectarine/src/adapters/pg/pgz.example.ts`) walks a similar object and concatenates SQL. That helper is **not** exported from the package; it is the current reference implementation.
+
+### 3. Run SQL on PostgreSQL
+
+```ts
+import { PgSql } from "@citrusworx/nectarine";
+
+const pg = new PgSql();
+pg.addDb(process.env.PG_DB!);
+const client = await pg.connect(process.env.PG_DB!);
+
+if (!client) {
+  throw new Error("Postgres client missing — check PG_* env vars");
+}
+
+try {
+  const result = await pg.query(client, {
+    sql: "SELECT id FROM users WHERE id = $1",
+    params: [1],
+  });
+  console.log(result?.rows);
+} finally {
+  await pg.disconnect(client);
+}
+```
+
+`PgSql` is a class. Credentials come from `PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`. `addDb(name)` registers the database name used in `connect(name)`.
+
+### 4. Run SQL on MySQL
+
+MySQL is a **thin `mysql2` pool**, not a second compiler.
+
+```ts
+import { Mysql, closeSql } from "@citrusworx/nectarine";
+
+const rows = await Mysql(
+  "SELECT email FROM users WHERE email = ?",
+  ["dev@citrusworx.com"],
+);
+
+await closeSql();
+```
+
+Env vars are `MS_HOST`, `MS_USER`, `MS_PASS`, `MS_DB`, `MS_PORT` — not `MYSQL_*`.
+
+Query YAML under `models/user/db/msql/user.yml` uses `?` placeholders and a `type` / `action` / `updates` shape. `mapInsert` / `mapGetter` in `msqlUtil` only join value lists; they do not build full statements.
+
+### 5. Talk to MongoDB
+
+```ts
+import { Mngz, insertOne } from "@citrusworx/nectarine";
+
+await Mngz(async (client) => {
+  await insertOne(client, "users", {
+    email: "dev@citrusworx.com",
+    name: "Demo",
+  });
+});
+```
+
+URI is built from `MG_USER`, `MG_PASS`, `MG_HOST`, `MG_PORT`, `MG_DB`. Helpers: `connectMngz`, `closeMngz`, `createCollection`, `insertOne`, `insertMany`. There is no query DSL compiler for Mongo.
+
+`insertOne` / `insertMany` / `createCollection` close the shared client when they finish — treat them as short scripts, not as a long-lived pool.
+
+### 6. Read an API YAML (as data)
 
 ```yaml
-# userAPI.yml
+# models/user/userAPI.yml
 user:
   get:
     allUsers:
       api:
         method: GET
         endpoint: /users
-    usersById:
-      api:
-        method: GET
-        endpoint: /users/:id
-    usersByEmail:
-      api:
-        method: GET
-        endpoint: /users/:email
-
-  create:
-    user:
-      api:
-        method: POST
-        endpoint: /users
-
-  update:
-    user:
-      api:
-        method: PUT
-        endpoint: /users/:id
-
-  delete:
-    user:
-      api:
-        method: DELETE
-        endpoint: /users/:id
 ```
-
----
-
-## Database Adapters
-
-Nectarine includes adapters for each supported database. All connection details are sourced from environment variables. SQL statements are never hardcoded — they are built dynamically from the YAML query definitions at runtime.
-
-### Query Generation
-
-Nectarine reads a query definition from YAML and constructs the SQL statement dynamically:
 
 ```ts
-import { gensql } from "@citrusworx/nectarine";
-import { Pgsql } from "@citrusworx/nectarine";
-
-// Load query definition from YAML
-const getUserById = gensql("user.yml", "user", "get", "UserById");
-
-// Build SQL dynamically from the definition
-const sql = `${getUserById.type} ${getUserById.fields} ${getUserById.action} ${getUserById.table} ${getUserById.conditions.condition} ${getUserById.conditions.column} ${getUserById.conditions.operator} $1`;
-
-// Execute against the database
-const user = await Pgsql(sql, [id]);
+const route = parser.registerRoute("./models/user/userAPI.yml", "get", "allUsers");
+// { api: { method: "GET", endpoint: "/users" } }
 ```
 
-No SQL is written by hand. The query structure, fields, table, and conditions all come from the YAML definition.
+`registerRoute` requires the path to contain `api.yml` or end with `api.yaml`. It does **not** mount Express (or Seltzer) handlers.
 
-### PostgreSQL
+## Mental model
 
-```ts
-import { Pgsql } from "@citrusworx/nectarine";
-
-const result = await Pgsql(sql, [param]);
+```text
+*.yml  --parser.yaml / genSQL / registerRoute-->  plain objects
+                                                  |
+                         you (or a future compiler) build a statement
+                                                  |
+                     PgSql.query | Mysql | Mngz / insertOne
 ```
 
-Environment variables:
-```
-PG_USER
-PG_HOST
-PG_PASS
-PG_DB
-PG_PORT
-```
+Three file roles, when you follow the in-repo layout:
 
-### MySQL
+| File | Role today |
+|---|---|
+| `*Schema.yml` | Table / field documentation and CREATE TABLE input for *your* builder |
+| `db/pg/*.yml` or `db/msql/*.yml` | Named query objects (`genSQL`) |
+| `*API.yml` | Named `{ method, endpoint }` objects |
 
-```ts
-import { Mysql } from "@citrusworx/nectarine";
+The blog and user trees under `libraries/nectarine/models/` are fixtures, not a published schema pack.
 
-const result = await Mysql(sql, [param]);
-```
+## Suggested reading order
 
-Environment variables:
-```
-MS_USER
-MS_HOST
-MS_PASS
-MS_DB
-MS_PORT
-```
-
-### MongoDB
-
-```ts
-import { Mngz } from "@citrusworx/nectarine";
-
-await Mngz(async (client) => {
-  const db = client.db(process.env.MG_DB);
-  const result = await db.collection(collection).find(query).toArray();
-});
-```
-
-Environment variables:
-```
-MG_USER
-MG_HOST
-MG_PASS
-MG_DB
-MG_PORT
-```
-
----
-
-## Default Transport
-
-Nectarine's default transport stack is **Express + Zod + Axios**. This is configurable via `nectarine.config.yaml`.
-
-```yaml
-# nectarine.config.yaml (design phase)
-version: "0.1"
-
-transport:
-  server: express       # express | fastify | hono
-  validation: zod
-  client: axios
-
-database:
-  default: postgres     # postgres | mysql | mongodb
-
-resources:
-  - name: user
-    schema: ./user/userSchema.yml
-    queries: ./user/user.yml
-    api: ./user/userAPI.yml
-```
-
----
-
-## Usage with WebEngine
-
-When used as a WebEngine module, Nectarine is declared in `webengine.toml`:
-
-```toml
-[stack]
-backend = { lib = "nectarine", entry = "apps/server" }
-```
-
-WebEngine starts Nectarine as part of the application stack, wires telemetry, and exposes Nectarine's API endpoints through the kernel.
-
----
-
-## GUI
-
-A visual editor for Nectarine is planned — allowing developers and creators to define models, schemas, and APIs without writing YAML by hand. This will be powered by Sugar and integrated into the WebEngine Wizard.
-
----
-
-## Roadmap
-
-```
-v0.1  ← PostgreSQL, MySQL, MongoDB adapters       🔧 Active
-       YAML-driven query generation
-       YAML-driven API/route definition
-       YAML-driven schema definition
-v0.2  ← nectarine.config.yaml
-       Express + Zod + Axios transport
-       Auto-generated routes from API YAML
-v0.3  ← Fastify + Hono transport options
-       GraphQL support
-v0.4  ← GUI (powered by Sugar)
-v1.0  ← stable API
-```
-
----
+1. [Getting Started](./nectarine-getting-started.md) — env, parse, first adapter call
+2. [Schema Guide](./nectarine-schema-guide.md) — how model YAML is actually written
+3. [Query DSL](./nectarine-query-dsl.md) — Postgres-oriented intent shape
+4. [API Reference](./nectarine-api.md) — exports that exist
+5. [Examples](./nectarine-examples.md) — user + blog files, wired by hand
+6. Adapters: [PostgreSQL](./nectarine-postgresql.md) · [MySQL](./nectarine-mysql.md) · [MongoDB](./nectarine-mongodb.md)
+7. [Best practices](./nectarine-best-practices.md) — pitfalls that match this maturity
+8. [Status](./nectarine-status.md) — shipped vs aspirational
 
 ## Status
 
-Nectarine is in active development. The database adapters and YAML definition system are functional. The config system and transport layer are in design phase.
+**Early / Alpha** (`@citrusworx/nectarine` 0.1.0).
+
+Shipped: YAML load, named query/route lookup, `PgSql`, `Mysql` + pool, Mongo helpers, example model trees.
+
+Not shipped: SQL compiler, Express/Zod generation, `nectarine.config.yaml`, GraphQL, auth, GUI, connection-string helpers beyond env vars.
+
+MySQL and Mongo adapters **exist** and are usable as shown above. They are not “Active product databases” in the sense of a finished query compiler + guide-complete stack. Postgres is the furthest along because of `pgz.example.ts` and the `select` / `from` / `where` DSL.
+
+## Sibling packages
+
+- [Seltzer](../seltzer/README.md) — HTTP you can point at Nectarine objects (you wire it)
+- [Sig.js](../sigjs/README.md) — UI state; no Nectarine client
+- [Grapevine](../grapevine/README.md) — provision a VM; does not start Nectarine
+- [Juice](../juice/README.md) — styling only

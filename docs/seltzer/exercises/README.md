@@ -1,5 +1,7 @@
 # Seltzer Node Exercises
 
+**Contributor elective.** App authors should use [Getting Started](../seltzer-getting-started.md) instead.
+
 Hands-on checkpoints for the [Seltzer study guide](../courses.md). Complete these in order using plain `node:http` and TypeScript before extending `libraries/seltzer/src/`.
 
 Write your solution in each file's scratch block, or copy the template into `libraries/seltzer/src/example.ts` and run with:
