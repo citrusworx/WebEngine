@@ -438,11 +438,11 @@ const mysql = createMysqlAdapterFromConfig(config)
     ?? createMysqlAdapter(config.resolveCredentials("mysql")!);
 
 await mysql.connect();
-const result = await mysql.query(sql, [param]); // `?` placeholders
+const result = await mysql.query(sql, [param]); // compiler `$1` or MySQL `?`
 await mysql.disconnect();
 ```
 
-YAML declares the env **key names** (typically `MS_USER`, `MS_HOST`, `MS_PASS`, `MS_DB`, `MS_PORT`). `NectarineConfig.resolveCredentials("mysql")` reads the values; the adapter does not read `process.env` itself. MySQL uses `?` placeholders — the compiler is still Postgres-first (`$1`) and does not rewrite them.
+YAML declares the env **key names** (typically `MS_USER`, `MS_HOST`, `MS_PASS`, `MS_DB`, `MS_PORT`). `NectarineConfig.resolveCredentials("mysql")` reads the values; the adapter does not read `process.env` itself. The compiler is still Postgres-first (`$1`); the MySQL adapter rewrites `$1` / `$N::jsonb` to `?` / `CAST(? AS JSON)` at `query()` time.
 
 ### MongoDB
 

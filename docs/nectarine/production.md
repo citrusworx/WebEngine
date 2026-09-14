@@ -70,7 +70,7 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 
 - Seltzer route auto-wiring from `*API.yml`
 - `nectarine serve`
-- MySQL `$1` → `?` rewrite, Mongo as the Blackwater production path
+- Mongo as the Blackwater production path
 - Joins / `COUNT` / `EXISTS` / `ON CONFLICT` / JSONB operators (`@>`, `?`, `->>`)
 - Full Flyway-style migrator
 - npm publish / Changesets release automation for `@citrusworx/nectarine`

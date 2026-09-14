@@ -1,7 +1,10 @@
 import type { FieldPacket, Pool, QueryResult, RowDataPacket } from "mysql2/promise";
 import type { NectarineConfig } from "../../config/NectarineConfig.js";
 import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+import { rewriteMysqlPlaceholders } from "./placeholders.js";
 export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+export { rewriteMysqlPlaceholders };
+export type { MysqlRewriteResult } from "./placeholders.js";
 /**
  * Result of {@link MysqlSql.query}. `rows` is a `RowDataPacket[]` for SELECT
  * and a `ResultSetHeader` for INSERT/UPDATE/DELETE (mysql2 `execute` shape).
@@ -18,9 +21,10 @@ export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
  * this adapter receives the resolved values. It does not read `process.env`
  * itself.
  *
- * Placeholders are MySQL `?` (not Postgres `$1`). The Nectarine compiler is
- * Postgres-first and still emits `$1`; this adapter runs the SQL and params
- * it is given and does not rewrite placeholders.
+ * The Nectarine compiler is Postgres-first and emits `$1` / `$N::jsonb`.
+ * {@link MysqlSql.query} rewrites those binds to MySQL `?` (and
+ * `CAST(? AS JSON)` for json/jsonb) so compiled SQL can run here unchanged.
+ * SQL that already uses `?` is left as-is.
  *
  * @example
  * ```ts
@@ -28,7 +32,7 @@ export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
  * if (!creds) throw new Error("MySQL env is incomplete");
  * const mysql = createMysqlAdapter(creds);
  * await mysql.connect();
- * const result = await mysql.query("SELECT id FROM users WHERE id = ?", [1]);
+ * const result = await mysql.query("SELECT id FROM users WHERE id = $1", [1]);
  * await mysql.end();
  * ```
  */
@@ -46,7 +50,10 @@ export declare class MysqlSql {
     connect(): Promise<Pool>;
     private openPool;
     /**
-     * Run parameterized SQL (`?` placeholders) against the connected pool.
+     * Run parameterized SQL against the connected pool.
+     *
+     * Compiler `$1` / `$N::jsonb` binds are rewritten to MySQL `?` here.
+     * Existing `?` SQL is executed as given.
      */
     query<T extends QueryResult = RowDataPacket[]>(sql: string, params?: readonly unknown[]): Promise<MysqlQueryResult<T>>;
     disconnect(): Promise<void>;

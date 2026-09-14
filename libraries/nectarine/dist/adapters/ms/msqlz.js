@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MysqlSql = void 0;
+exports.MysqlSql = exports.rewriteMysqlPlaceholders = void 0;
 exports.createMysqlAdapter = createMysqlAdapter;
 exports.createMysqlAdapterFromConfig = createMysqlAdapterFromConfig;
 exports.requireMysqlCredentials = requireMysqlCredentials;
 const promise_1 = require("mysql2/promise");
+const placeholders_js_1 = require("./placeholders.js");
+Object.defineProperty(exports, "rewriteMysqlPlaceholders", { enumerable: true, get: function () { return placeholders_js_1.rewriteMysqlPlaceholders; } });
 /**
  * MySQL adapter for parameterized SQL.
  *
@@ -13,9 +15,10 @@ const promise_1 = require("mysql2/promise");
  * this adapter receives the resolved values. It does not read `process.env`
  * itself.
  *
- * Placeholders are MySQL `?` (not Postgres `$1`). The Nectarine compiler is
- * Postgres-first and still emits `$1`; this adapter runs the SQL and params
- * it is given and does not rewrite placeholders.
+ * The Nectarine compiler is Postgres-first and emits `$1` / `$N::jsonb`.
+ * {@link MysqlSql.query} rewrites those binds to MySQL `?` (and
+ * `CAST(? AS JSON)` for json/jsonb) so compiled SQL can run here unchanged.
+ * SQL that already uses `?` is left as-is.
  *
  * @example
  * ```ts
@@ -23,7 +26,7 @@ const promise_1 = require("mysql2/promise");
  * if (!creds) throw new Error("MySQL env is incomplete");
  * const mysql = createMysqlAdapter(creds);
  * await mysql.connect();
- * const result = await mysql.query("SELECT id FROM users WHERE id = ?", [1]);
+ * const result = await mysql.query("SELECT id FROM users WHERE id = $1", [1]);
  * await mysql.end();
  * ```
  */
@@ -74,7 +77,10 @@ class MysqlSql {
         return pool;
     }
     /**
-     * Run parameterized SQL (`?` placeholders) against the connected pool.
+     * Run parameterized SQL against the connected pool.
+     *
+     * Compiler `$1` / `$N::jsonb` binds are rewritten to MySQL `?` here.
+     * Existing `?` SQL is executed as given.
      */
     async query(sql, params = []) {
         if (!this.pool) {
@@ -83,7 +89,8 @@ class MysqlSql {
         if (typeof sql !== "string" || !sql.trim()) {
             throw new Error("MySQL adapter query() requires a SQL string");
         }
-        const [rows, fields] = await this.pool.execute(sql, params);
+        const rewritten = (0, placeholders_js_1.rewriteMysqlPlaceholders)(sql, params);
+        const [rows, fields] = await this.pool.execute(rewritten.sql, rewritten.params);
         return { rows, fields };
     }
     async disconnect() {

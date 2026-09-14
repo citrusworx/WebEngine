@@ -104,7 +104,7 @@ await pg.query(ddl);
 
 `@citrusworx/nectarine/adapters/ms` follows the same config-driven pattern as Postgres. YAML declares the env key names; `NectarineConfig.resolveCredentials("mysql")` reads the values. The adapter does not read `process.env` itself. Install `mysql2` alongside this package (peer dependency).
 
-MySQL uses `?` placeholders, not `$1`. The compiler is still Postgres-first and emits `$1`; this adapter runs the SQL and params it is given and does not rewrite placeholders.
+The compiler is still Postgres-first and emits `$1` / `$N::jsonb`. `query()` rewrites those binds at the adapter boundary to MySQL `?` (and `CAST(? AS JSON)` for `json` / `jsonb`; `::text` is stripped). Parameter order is preserved, including reused or out-of-order `$N`. SQL that already uses `?` is left as-is. Postgres still runs `$1` unchanged.
 
 ```ts
 import { loadNectarineConfig } from "@citrusworx/nectarine";
@@ -123,11 +123,11 @@ if (!creds) {
 const mysql = fromConfig ?? createMysqlAdapter(creds);
 
 await mysql.connect();
-const result = await mysql.query("SELECT id FROM users WHERE id = ?", [1]);
+const result = await mysql.query("SELECT id FROM users WHERE id = $1", [1]);
 await mysql.disconnect();
 ```
 
-`query(sql, params?)` uses `?` placeholders. `connect()` creates a `mysql2` pool and checks out one connection so failures surface before the first query.
+`query(sql, params?)` accepts compiler `$1` SQL or MySQL `?` SQL. `connect()` creates a `mysql2` pool and checks out one connection so failures surface before the first query.
 
 ## MongoDB adapter
 
