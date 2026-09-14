@@ -142,10 +142,10 @@ const app = Seltzer.init();
 const listUsers: Route = {
   method: "GET",
   path: "/api/users",
-  handler: async ({ json }) => {
+  handler: async () => {
     await mg.connect();
     const users = await mg.collection("users").find({}).toArray();
-    json(users);
+    return { body: users };
   },
 };
 

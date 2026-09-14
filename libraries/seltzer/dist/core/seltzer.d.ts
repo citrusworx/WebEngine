@@ -1,5 +1,8 @@
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { isResponseData, send, type ResponseData } from "./response.js";
+export type { ResponseData };
+export { isResponseData, send };
 export type Endpoint = {
     route?: Route;
     path: string;
@@ -25,12 +28,11 @@ export type RequestContext<TLocals = unknown> = {
         headers?: Record<string, string>;
         allowSelfSigned?: boolean;
     };
-    json: (data: unknown, status?: number) => void;
 };
 export type Route<TContext = RequestContext> = {
     method: string;
     path: string;
-    handler: (ctx: TContext) => unknown | Promise<unknown>;
+    handler: (ctx: TContext) => ResponseData | Promise<ResponseData>;
 };
 type HandlerConfig = {
     adapter: string;
@@ -61,4 +63,3 @@ export declare class Seltzer {
     listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
     private handleRequest;
 }
-export {};

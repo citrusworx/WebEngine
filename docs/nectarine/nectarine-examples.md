@@ -249,9 +249,9 @@ const app = Seltzer.init();
 const listPosts: Route = {
   method: "GET",
   path: "/api/posts",
-  handler: ({ json }) => {
-    json({ schema, queries, api, app: nectarine.app });
-  },
+  handler: () => ({
+    body: { schema, queries, api, app: nectarine.app },
+  }),
 };
 
 app.route(listPosts);

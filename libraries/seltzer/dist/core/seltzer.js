@@ -1,4 +1,6 @@
 import http from "node:http";
+import { isResponseData, send } from "./response.js";
+export { isResponseData, send };
 function escapeRegex(value) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -115,21 +117,14 @@ export class Seltzer {
     async handleRequest(req, res, locals, cors) {
         applyCors(req, res, cors);
         if (req.method === "OPTIONS") {
-            res.writeHead(204);
-            res.end();
+            send(res, { status: 204 });
             return;
         }
         const url = new URL(req.url || "/", `http://${req.headers.host ?? "localhost"}`);
         const method = req.method ?? "GET";
         const match = this.routes.find((route) => route.method === method && route.regex.test(url.pathname));
-        const json = (data, status = 200) => {
-            if (!res.headersSent) {
-                res.writeHead(status, { "Content-Type": "application/json" });
-            }
-            res.end(JSON.stringify(data));
-        };
         if (!match) {
-            json({ error: "Not Found" }, 404);
+            send(res, { status: 404, body: { error: "Not Found" } });
             return;
         }
         const paramMatch = url.pathname.match(match.regex);
@@ -144,7 +139,7 @@ export class Seltzer {
             }
         }
         catch {
-            json({ error: "Invalid JSON body" }, 400);
+            send(res, { status: 400, body: { error: "Invalid JSON body" } });
             return;
         }
         const ctx = {
@@ -158,18 +153,29 @@ export class Seltzer {
             headers: normalizeHeaders(req.headers),
             locals,
             options: this.config?.options,
-            json,
         };
         try {
-            await match.handler(ctx);
+            const result = await match.handler(ctx);
+            if (!isResponseData(result)) {
+                send(res, {
+                    status: 500,
+                    body: {
+                        error: "Internal Server Error",
+                        message: "Handler must return ResponseData ({ status?, headers?, body? }). Bare values are not wrapped.",
+                    },
+                });
+                return;
+            }
+            send(res, result);
         }
         catch (error) {
-            if (!res.headersSent) {
-                json({
+            send(res, {
+                status: 500,
+                body: {
                     error: "Internal Server Error",
                     message: error instanceof Error ? error.message : String(error),
-                }, 500);
-            }
+                },
+            });
         }
     }
 }

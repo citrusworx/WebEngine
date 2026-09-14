@@ -236,9 +236,9 @@ const app = Seltzer.init();
 const listUsers: Route = {
   method: "GET",
   path: "/api/users",
-  handler: ({ json }) => {
-    json({ resource: nectarine.getResource("user").name });
-  },
+  handler: () => ({
+    body: { resource: nectarine.getResource("user").name },
+  }),
 };
 
 app.route(listUsers);

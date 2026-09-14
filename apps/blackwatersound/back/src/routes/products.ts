@@ -5,22 +5,21 @@ import type { BlackwaterContext } from "../types/context.js";
 export const listProductsRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/products",
-  handler: ({ locals, json }) => {
-    json(locals.products);
-  },
+  handler: ({ locals }) => ({
+    body: locals.products,
+  }),
 };
 
 export const getProductRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/products/:id",
-  handler: ({ locals, params, json }) => {
+  handler: ({ locals, params }) => {
     const product = locals.products.find((item) => item.id === params.id);
 
     if (!product) {
-      json({ error: "Product not found" }, 404);
-      return;
+      return { status: 404, body: { error: "Product not found" } };
     }
 
-    json(product);
+    return { body: product };
   },
 };
