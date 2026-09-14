@@ -1,6 +1,8 @@
 export { loadNectarineConfig } from "./loadConfig.js";
 export { NectarineConfig } from "./NectarineConfig.js";
 export { loadSchema, loadYaml } from "./yaml.js";
+export { listApiOperations, loadApiOperations } from "./api.js";
+export type { ApiHttpMethod, ApiOperation } from "./api.js";
 export type {
     CredentialStatus,
     DatabaseCredentials,

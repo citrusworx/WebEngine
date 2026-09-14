@@ -35,7 +35,8 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ WebEngine / Blackwater hosts with Seltzer (`transport.server: seltzer`)
 - ✓ HTTP method mapping in API YAML (GET, POST, PUT, PATCH, DELETE)
 - ✓ Path parameter shapes (`:id`, `:name`, etc.)
-- 🔄 Seltzer route auto-wiring from API YAML (next engine step)
+- ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
+- 🔄 Seltzer route auto-wiring from those operations (SeltzerBot)
 - Express is **not** the generated or default server
 
 ### Validation
