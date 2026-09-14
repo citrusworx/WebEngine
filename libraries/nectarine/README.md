@@ -50,6 +50,14 @@ Subpath exports are also available:
 - `@citrusworx/nectarine/adapters/pg`
 - `@citrusworx/nectarine/util`
 
+## Transport
+
+Nectarine is **library-first**. It does not spin up an HTTP server and does not export `generateRoutes`.
+
+WebEngine / Blackwater hosts with **[Seltzer](../../docs/seltzer/README.md)**. Set `transport.server: seltzer` in `nectarine.config.yaml` (see `apps/blackwatersound/back/nectarine.config.yaml`). Register object-based Seltzer `Route` definitions on the host. Auto-wiring those routes from `*API.yml` is the next engine step.
+
+Express is not the default transport. Zod is the planned validation layer on the hosted path; an HTTP client such as Axios is optional and not part of the default stack.
+
 ## Postgres adapter
 
 `@citrusworx/nectarine/adapters/pg` takes **resolved credentials**, not hardcoded `process.env.PG_*` names. YAML declares the env key names; `NectarineConfig.resolveCredentials()` reads the values. Install `pg` alongside this package (peer dependency).
