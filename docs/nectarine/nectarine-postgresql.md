@@ -135,10 +135,10 @@ const app = Seltzer.init();
 const listUsers: Route = {
   method: "GET",
   path: "/api/users",
-  handler: async ({ json }) => {
+  handler: async () => {
     await pg.connect();
     // Compile named YAML queries with CCompiler; adapters only run (sql, params).
-    json({ ok: true });
+    return { body: { ok: true } };
   },
 };
 

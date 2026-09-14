@@ -1,5 +1,9 @@
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { isResponseData, send, type ResponseData } from "./response.js";
+
+export type { ResponseData };
+export { isResponseData, send };
 
 export type Endpoint = {
     route?: Route;
@@ -27,13 +31,12 @@ export type RequestContext<TLocals = unknown> = {
         headers?: Record<string, string>;
         allowSelfSigned?: boolean;
     };
-    json: (data: unknown, status?: number) => void;
 };
 
 export type Route<TContext = RequestContext> = {
     method: string;
     path: string;
-    handler: (ctx: TContext) => unknown | Promise<unknown>;
+    handler: (ctx: TContext) => ResponseData | Promise<ResponseData>;
 };
 
 type HandlerConfig = {
@@ -213,8 +216,7 @@ export class Seltzer {
         applyCors(req, res, cors);
 
         if (req.method === "OPTIONS") {
-            res.writeHead(204);
-            res.end();
+            send(res, { status: 204 });
             return;
         }
 
@@ -225,15 +227,8 @@ export class Seltzer {
             (route) => route.method === method && route.regex.test(url.pathname),
         );
 
-        const json = (data: unknown, status = 200) => {
-            if (!res.headersSent) {
-                res.writeHead(status, { "Content-Type": "application/json" });
-            }
-            res.end(JSON.stringify(data));
-        };
-
         if (!match) {
-            json({ error: "Not Found" }, 404);
+            send(res, { status: 404, body: { error: "Not Found" } });
             return;
         }
 
@@ -249,7 +244,7 @@ export class Seltzer {
                 body = await readBody(req);
             }
         } catch {
-            json({ error: "Invalid JSON body" }, 400);
+            send(res, { status: 400, body: { error: "Invalid JSON body" } });
             return;
         }
 
@@ -264,21 +259,32 @@ export class Seltzer {
             headers: normalizeHeaders(req.headers),
             locals,
             options: this.config?.options,
-            json,
         };
 
         try {
-            await match.handler(ctx);
-        } catch (error) {
-            if (!res.headersSent) {
-                json(
-                    {
+            const result = await match.handler(ctx);
+
+            if (!isResponseData(result)) {
+                send(res, {
+                    status: 500,
+                    body: {
                         error: "Internal Server Error",
-                        message: error instanceof Error ? error.message : String(error),
+                        message:
+                            "Handler must return ResponseData ({ status?, headers?, body? }). Bare values are not wrapped.",
                     },
-                    500,
-                );
+                });
+                return;
             }
+
+            send(res, result);
+        } catch (error) {
+            send(res, {
+                status: 500,
+                body: {
+                    error: "Internal Server Error",
+                    message: error instanceof Error ? error.message : String(error),
+                },
+            });
         }
     }
 }

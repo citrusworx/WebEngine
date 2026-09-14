@@ -1,5 +1,13 @@
 # @citrusworx/seltzer
 
+## 0.4.0
+
+### Minor Changes
+
+- **Breaking:** Handlers must return `ResponseData` (`{ status?, headers?, body? }` or a Promise of it). The runtime `send`s the HTTP response. Bare objects/strings/arrays are not wrapped — invalid returns are a 500.
+- **Breaking:** Removed the writing `ctx.json` helper from `RequestContext`. `req` / `res` remain on ctx for now, but normal responses should not touch `res`.
+- Internal 404/400/500 paths use the same `send` path. Object/array bodies default to JSON with status `200` when omitted.
+
 ## 0.3.0
 
 ### Minor Changes

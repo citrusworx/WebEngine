@@ -25,7 +25,7 @@ function asPage(value: unknown): WordPressPage | null {
 export const getPostBySlugRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/posts/:slug",
-  handler: async ({ locals, params, json }) => {
+  handler: async ({ locals, params }) => {
     const slug = params.slug || SEED_POST.slug;
 
     if (locals.postsClient) {
@@ -37,29 +37,30 @@ export const getPostBySlugRoute: Route<BlackwaterContext> = {
             ? await resolveFeaturedImage(post, locals.wpUrl, SEED_POST.heroImage)
             : SEED_POST.heroImage;
 
-          json({
-            slug: post.slug ?? slug,
-            title: stripHtml(post.title?.rendered ?? SEED_POST.title),
-            excerpt: stripHtml(post.excerpt?.rendered ?? SEED_POST.excerpt),
-            heroImage,
-            intro: SEED_POST.intro,
-            sections: SEED_POST.sections,
-          });
-          return;
+          return {
+            body: {
+              slug: post.slug ?? slug,
+              title: stripHtml(post.title?.rendered ?? SEED_POST.title),
+              excerpt: stripHtml(post.excerpt?.rendered ?? SEED_POST.excerpt),
+              heroImage,
+              intro: SEED_POST.intro,
+              sections: SEED_POST.sections,
+            },
+          };
         }
       } catch {
         // fall through to seed content
       }
     }
 
-    json({ ...SEED_POST, slug });
+    return { body: { ...SEED_POST, slug } };
   },
 };
 
 export const getLessonRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/lessons/:id",
-  handler: async ({ locals, params, json }) => {
+  handler: async ({ locals, params }) => {
     const id = params.id || SEED_LESSON.id;
 
     if (locals.pagesClient) {
@@ -71,21 +72,22 @@ export const getLessonRoute: Route<BlackwaterContext> = {
             ? await resolveFeaturedImage(page, locals.wpUrl, SEED_LESSON.heroImage)
             : SEED_LESSON.heroImage;
 
-          json({
-            ...SEED_LESSON,
-            id,
-            slug: page.slug ?? id,
-            title: stripHtml(page.title?.rendered ?? SEED_LESSON.title),
-            summary: stripHtml(page.excerpt?.rendered ?? SEED_LESSON.summary),
-            heroImage,
-          });
-          return;
+          return {
+            body: {
+              ...SEED_LESSON,
+              id,
+              slug: page.slug ?? id,
+              title: stripHtml(page.title?.rendered ?? SEED_LESSON.title),
+              summary: stripHtml(page.excerpt?.rendered ?? SEED_LESSON.summary),
+              heroImage,
+            },
+          };
         }
       } catch {
         // fall through to seed content
       }
     }
 
-    json({ ...SEED_LESSON, id });
+    return { body: { ...SEED_LESSON, id } };
   },
 };
