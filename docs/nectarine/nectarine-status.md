@@ -41,8 +41,11 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - Express is **not** the generated or default server
 
 ### Validation
-- Planned: Zod schema validation on the Seltzer-hosted path
-- Schema field types (required, unique, enums) are the intended source of those rules
+- ✓ Seltzer default `validate` stage: `.required` keys from `*API.yml` `body:` (`string.required`) on `ctx.body`; missing/empty → 400
+- ✓ `generateRoutes` copies `ApiOperation.body` (plus resource/name) onto `Route.contract`
+- ✓ Hosts/Nectarine swap that builtin with `Seltzer#replace("validate", …)` for richer contracts
+- Planned: Zod schema validation on the Seltzer-hosted path via `replace("validate", …)`
+- Schema field types (required, unique, enums) are the intended source of those richer rules
 - Hosts register remaining object-based Seltzer routes by hand; product and waitlist reads use `generateRoutes`
 
 ### Schema Distribution
@@ -63,8 +66,8 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - Planned: Runtime schema registry, schema versioning
 
 ### Host pipeline
-- Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers
-- Planned: Seltzer pipeline stages (parse, validate with Zod, authorize) plus auto-wiring from API YAML
+- Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers; Seltzer `validate` enforces `.required` body fields from `Route.contract`
+- Planned: Zod-backed `replace("validate", …)` plus authorize; remaining write ops auto-wired from API YAML
 
 ### Relationship Loading
 - Current: Manual join definitions

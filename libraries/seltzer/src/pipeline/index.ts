@@ -33,14 +33,28 @@ export class Pipeline {
         this.entries = [...entries];
     }
 
-    /** Insert `stage` immediately before the builtin stage named `name`. */
-    before(name: StageName, stage: Stage): this {
+    private builtinIndex(name: StageName): number {
         const index = this.entries.findIndex((entry) => entry.name === name && entry.builtin);
         if (index === -1) {
             throw new Error(`Unknown pipeline stage "${name}"`);
         }
 
-        this.entries.splice(index, 0, { name, stage });
+        return index;
+    }
+
+    /** Insert `stage` immediately before the builtin stage named `name`. */
+    before(name: StageName, stage: Stage): this {
+        this.entries.splice(this.builtinIndex(name), 0, { name, stage });
+        return this;
+    }
+
+    /**
+     * Swap the builtin stage named `name`. Inserted `before` stages are left in place.
+     * The replacement stays builtin so later `before(name, …)` still finds it.
+     */
+    replace(name: StageName, stage: Stage): this {
+        const index = this.builtinIndex(name);
+        this.entries[index] = { name, stage, builtin: true };
         return this;
     }
 

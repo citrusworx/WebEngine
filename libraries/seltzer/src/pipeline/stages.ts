@@ -81,8 +81,62 @@ export function createRouteStage(getRoutes: () => CompiledRoute[]): Stage {
     };
 }
 
-/** Stub for Nectarine contract validation. */
-export function validateStage(_ctx: PipelineContext): void {}
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** YAML convention: `string.required`, `int.required`, … */
+function isRequiredSpec(spec: string): boolean {
+    return spec.split(".").includes("required");
+}
+
+function isPresent(value: unknown): boolean {
+    if (value === undefined || value === null) {
+        return false;
+    }
+
+    if (typeof value === "string") {
+        return value.trim().length > 0;
+    }
+
+    return true;
+}
+
+/**
+ * Enforce `.required` keys from `ctx.route.contract.body` on `ctx.body`.
+ * No body specs → no-op (GET product/waitlist reads). Nectarine can
+ * `replace("validate", …)` for richer contracts.
+ */
+export function validateStage(ctx: PipelineContext): ResponseData | void {
+    const specs = ctx.route?.contract?.body;
+    if (!specs) {
+        return;
+    }
+
+    const required = Object.entries(specs)
+        .filter(([, spec]) => isRequiredSpec(spec))
+        .map(([field]) => field);
+
+    if (required.length === 0) {
+        return;
+    }
+
+    const payload = ctx.body;
+    if (!isPlainObject(payload)) {
+        return { status: 400, body: { error: "Request body must be an object" } };
+    }
+
+    const missing = required.filter((field) => !isPresent(payload[field]));
+    if (missing.length === 0) {
+        return;
+    }
+
+    const label = missing.length === 1 ? "field" : "fields";
+    return {
+        status: 400,
+        body: { error: `Missing required ${label}: ${missing.join(", ")}` },
+    };
+}
 
 export async function handleStage(ctx: PipelineContext): Promise<void> {
     if (!ctx.route) {

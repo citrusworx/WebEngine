@@ -102,6 +102,16 @@ export function createWaitlistReadRoutes(nectarine: NectarineConfig): Route<Blac
 export const joinWaitlistRoute: Route<BlackwaterContext> = {
   method: "POST",
   path: "/api/waitlist",
+  contract: {
+    resource: "waitlist",
+    name: "joinWaitlist",
+    body: {
+      name: "string",
+      email: "string.required",
+      source_app: "string",
+      interest: "string",
+    },
+  },
   handler: async ({ locals, body }): Promise<ResponseData> => {
     const payload = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
     const name = String(payload.name ?? "").trim();

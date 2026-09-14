@@ -126,7 +126,7 @@ Conceptual backing for named, ordered stages instead of free-form middleware.
 
 ### [Nectarine](../nectarine/README.md)
 
-Skim once the `validate` stage exists. Seltzer executes HTTP; Nectarine defines schemas and contracts. They integrate at the validation stage, not inside handlers.
+Skim once you have used `replace("validate", …)`. Seltzer executes HTTP and the default `validate` stage checks `.required` body fields; Nectarine defines schemas and richer contracts. They integrate at the validation stage, not inside handlers.
 
 ---
 
@@ -187,7 +187,7 @@ Each phase unlocks a concrete, commit-sized goal in Seltzer.
 
 ### Phase E — Contracts + polish (ongoing)
 
-Add `validate` stage stub; wire optional contract id on routes; tests with `node:test` + `http.request`.
+Add `validate` stage (`.required` body fields from `Route.contract`); `replace("validate", …)` for Nectarine; tests with `node:test` + `http.request`.
 
 ### Phase F — Consumer confidence
 

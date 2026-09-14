@@ -8,11 +8,12 @@
 
 1. Extend exercise 6's pipeline with a registry of named stages.
 2. Implement `before(name: StageName, stage: Stage)` to insert a stage immediately before `name`.
-3. Add an auth check stage before `handle` that:
+3. Implement `replace(name: StageName, stage: Stage)` to swap the builtin named `name`.
+4. Add an auth check stage before `handle` that:
    - Reads `Authorization` header from `ctx.headers`
    - Returns `{ status: 401, body: { error: "Unauthorized" } }` and short-circuits the pipeline if missing
    - Otherwise continues to `handle`
-4. Short-circuiting should skip remaining stages and go straight to `send`.
+5. Short-circuiting should skip remaining stages and go straight to `send`.
 
 ## Scratch
 
@@ -21,6 +22,10 @@ class Pipeline {
   private stages: Map<StageName, Stage[]> = new Map();
 
   before(name: StageName, stage: Stage) {
+    // Your implementation here
+  }
+
+  replace(name: StageName, stage: Stage) {
     // Your implementation here
   }
 
@@ -34,6 +39,7 @@ class Pipeline {
 
 - A protected route returns `401` without an `Authorization` header.
 - You can add a logging stage with one line: `pipeline.before("handle", logStage)`.
+- `pipeline.replace("validate", customValidate)` swaps the builtin validate stage.
 
 ## Next
 

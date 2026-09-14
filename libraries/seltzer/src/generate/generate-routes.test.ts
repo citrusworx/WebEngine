@@ -99,6 +99,12 @@ describe("generateRoutes", () => {
             ["GET", "/api/products"],
             ["GET", "/api/products/:id"],
         ]);
+        expect(routes.map((route) => route.contract)).toEqual([
+            { resource: "product", name: "productsByCatalog" },
+            { resource: "product", name: "productBySlug" },
+            { resource: "product", name: "allProducts" },
+            { resource: "product", name: "productById" },
+        ]);
     });
 
     it("registers catalog/slug ahead of :id even when productById is listed first", () => {
@@ -292,6 +298,83 @@ describe("generateRoutes", () => {
             },
         ]);
     });
+
+    it("copies operation.body onto Route.contract for validate", () => {
+        const operations: ApiOperation[] = [
+            {
+                resource: "waitlist",
+                crud: "create",
+                name: "joinWaitlist",
+                method: "POST",
+                path: "/api/waitlist",
+                query: "joinWaitlist",
+                body: {
+                    name: "string",
+                    email: "string.required",
+                    source_app: "string",
+                    interest: "string",
+                },
+            },
+        ];
+
+        const [route] = generateRoutes(operations, { execute: () => ({ ok: true }) });
+        expect(route.contract).toEqual({
+            resource: "waitlist",
+            name: "joinWaitlist",
+            body: {
+                name: "string",
+                email: "string.required",
+                source_app: "string",
+                interest: "string",
+            },
+        });
+    });
+
+    it("returns 400 when a generated write is missing a .required body field", async () => {
+        let executed = false;
+        const operations: ApiOperation[] = [
+            {
+                resource: "waitlist",
+                crud: "create",
+                name: "joinWaitlist",
+                method: "POST",
+                path: "/api/waitlist",
+                query: "joinWaitlist",
+                body: {
+                    name: "string",
+                    email: "string.required",
+                },
+            },
+        ];
+
+        const app = Seltzer.init();
+        for (const route of generateRoutes(operations, {
+            execute: () => {
+                executed = true;
+                return { ok: true };
+            },
+        })) {
+            app.route(route);
+        }
+
+        const base = await listen(app);
+        const missing = await fetch(`${base}/api/waitlist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "Ada" }),
+        });
+        const present = await fetch(`${base}/api/waitlist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "ada@example.com" }),
+        });
+
+        expect(missing.status).toBe(400);
+        expect(await missing.json()).toEqual({ error: "Missing required field: email" });
+        expect(present.status).toBe(200);
+        expect(await present.json()).toEqual({ ok: true });
+        expect(executed).toBe(true);
+    });
 });
 
 const waitlist = [
@@ -346,6 +429,10 @@ describe("generateRoutes waitlist reads", () => {
         expect(routes.map((route) => [route.method, route.path])).toEqual([
             ["GET", "/api/waitlist"],
             ["GET", "/api/waitlist/:email"],
+        ]);
+        expect(routes.map((route) => route.contract)).toEqual([
+            { resource: "waitlist", name: "allEntries" },
+            { resource: "waitlist", name: "entryByEmail" },
         ]);
     });
 

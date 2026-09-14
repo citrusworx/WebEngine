@@ -64,7 +64,7 @@ JSONB is first-class. It is not being dropped.
 
 Nectarine is a library. It does not listen on a port.
 
-Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds, then `Seltzer.init().listen()` (0.5 named pipeline + `ResponseData`). Product and waitlist **read** routes flatten `*API.yml` with Nectarine `listApiOperations` and map onto Seltzer `generateRoutes`. Live product reads map API `query:` names (`allProducts`, `productById`) onto JSONB named queries (`allPayloads`, `payloadById`); catalog/slug filter those payloads. Waitlist reads use `allEntries` / `entryByEmail`. Health, waitlist POST (`joinWaitlist`), and KiwiPress content stay hand-written. Leftover `ctx.json` / writing helpers crash or 500.
+Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds, then `Seltzer.init().listen()` (named pipeline + `ResponseData`). Product and waitlist **read** routes flatten `*API.yml` with Nectarine `listApiOperations` and map onto Seltzer `generateRoutes` (`Route.contract` carries resource/name/body specs). Live product reads map API `query:` names (`allProducts`, `productById`) onto JSONB named queries (`allPayloads`, `payloadById`); catalog/slug filter those payloads. Waitlist reads use `allEntries` / `entryByEmail`. Health, waitlist POST (`joinWaitlist`), and KiwiPress content stay hand-written. Seltzer `validate` enforces `.required` body fields when `contract.body` is set (joinWaitlist declares `email: string.required`); Nectarine can later `replace("validate", …)`. Leftover `ctx.json` / writing helpers crash or 500.
 
 ## Non-goals (not in this production cut)
 

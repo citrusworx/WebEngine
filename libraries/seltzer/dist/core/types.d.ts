@@ -26,10 +26,22 @@ export type RequestContext<TLocals = unknown> = {
         allowSelfSigned?: boolean;
     };
 };
+/**
+ * Optional contract metadata for the `validate` stage.
+ * `generateRoutes` copies `ApiOperation` `resource` / `name` / `body` here.
+ * Nectarine can later `replace("validate", …)` and read the same field.
+ */
+export type RouteContract = {
+    resource?: string;
+    name?: string;
+    /** YAML body field specs, e.g. `{ email: "string.required" }`. */
+    body?: Record<string, string>;
+};
 export type Route<TContext = RequestContext> = {
     method: string;
     path: string;
     handler: (ctx: TContext) => ResponseData | Promise<ResponseData>;
+    contract?: RouteContract;
 };
 export type HandlerConfig = {
     adapter: string;

@@ -42,4 +42,21 @@ describe("matchRoute", () => {
         expect(matchRoute(routes, "GET", "/items/new")?.path).toBe("/items/new");
         expect(matchRoute(routes, "GET", "/items/42")?.path).toBe("/items/:id");
     });
+
+    it("preserves Route.contract through compile and match", () => {
+        const contract = {
+            resource: "waitlist",
+            name: "joinWaitlist",
+            body: { email: "string.required" },
+        };
+        const compiled = compileRoute({
+            method: "POST",
+            path: "/api/waitlist",
+            handler: ok("join"),
+            contract,
+        });
+
+        expect(compiled.contract).toEqual(contract);
+        expect(matchRoute([compiled], "POST", "/api/waitlist")?.contract).toEqual(contract);
+    });
 });

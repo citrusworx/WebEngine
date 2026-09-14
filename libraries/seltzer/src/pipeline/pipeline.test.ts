@@ -128,5 +128,51 @@ describe("Pipeline", () => {
         expect(() => pipeline.before("parse", () => undefined)).toThrow(
             /Unknown pipeline stage "parse"/,
         );
+        expect(() => pipeline.replace("parse", () => undefined)).toThrow(
+            /Unknown pipeline stage "parse"/,
+        );
+    });
+
+    it("replace('validate') swaps the builtin while keeping before working", async () => {
+        const ran: string[] = [];
+        const pipeline = new Pipeline(
+            STAGE_NAMES.map((name) => ({
+                name,
+                builtin: true,
+                stage: () => {
+                    ran.push(name);
+                },
+            })),
+        );
+
+        pipeline.before("validate", () => {
+            ran.push("before-validate");
+        });
+        pipeline.replace("validate", () => {
+            ran.push("custom-validate");
+        });
+
+        expect(namesFrom(pipeline)).toEqual([
+            "parse*",
+            "context*",
+            "route*",
+            "validate",
+            "validate*",
+            "handle*",
+            "response*",
+            "send*",
+        ]);
+
+        await pipeline.run(fakeCtx());
+        expect(ran).toEqual([
+            "parse",
+            "context",
+            "route",
+            "before-validate",
+            "custom-validate",
+            "handle",
+            "response",
+            "send",
+        ]);
     });
 });
