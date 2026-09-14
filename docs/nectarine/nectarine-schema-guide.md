@@ -614,9 +614,9 @@ const schema = loadSchema("schemas/store/productSchema.yml");
 const sql = compileSchema(schema, "postgres");
 
 console.log(sql);
-// CREATE TABLE products (
-//   id SERIAL PRIMARY KEY,
-//   name VARCHAR(255) NOT NULL,
+// CREATE TABLE IF NOT EXISTS products (
+//   id TEXT PRIMARY KEY,
+//   name TEXT NOT NULL,
 //   ...
 // )
 ```

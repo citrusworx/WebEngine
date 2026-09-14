@@ -10,6 +10,8 @@ export const joinWaitlistRoute: Route<BlackwaterContext> = {
     const payload = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
     const name = String(payload.name ?? "").trim();
     const email = String(payload.email ?? "").trim().toLowerCase();
+    const sourceAppRaw = typeof payload.source_app === "string" ? payload.source_app.trim() : "";
+    const interestRaw = typeof payload.interest === "string" ? payload.interest.trim() : "";
 
     if (!email) {
       json({ error: "Email is required" }, 400);
@@ -25,6 +27,8 @@ export const joinWaitlistRoute: Route<BlackwaterContext> = {
       id: `wl_${Date.now()}`,
       name,
       email,
+      sourceApp: sourceAppRaw || undefined,
+      interest: interestRaw || undefined,
       createdAt: new Date().toISOString(),
     };
 

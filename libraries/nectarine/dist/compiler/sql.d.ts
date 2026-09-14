@@ -1,12 +1,13 @@
 /**
  * Shared YAML-query → SQL compiler.
  *
- * Canonical shape (Postgres-first MVP): `models/user/db/pg/user.yml`
+ * Canonical phonics shape (Postgres-first): `models/user/db/pg/user.yml`
  *   resource → get|create|update|delete → QueryName → clause object
  *
- * Alternate layouts (blog `queries:` map, product `type: SELECT` fixtures)
- * are not compiled here.
+ * Blackwater `type: SELECT` YAML is normalized onto this shape first
+ * (`normalizeQuery`). Blog `queries:` maps are not compiled here.
  */
+export { isRecord, QueryCompileError } from "./errors.js";
 export declare const OP_TOKENS: {
     readonly eq: "=";
     readonly gt: ">";
@@ -14,6 +15,10 @@ export declare const OP_TOKENS: {
     readonly lte: "<=";
     readonly gte: ">=";
     readonly neq: "!=";
+    readonly in: "IN";
+    readonly not_in: "NOT IN";
+    readonly is_null: "IS NULL";
+    readonly is_not_null: "IS NOT NULL";
 };
 export declare const CRUD_METHODS: readonly ["get", "create", "update", "delete"];
 export type OperatorToken = keyof typeof OP_TOKENS;
@@ -24,10 +29,6 @@ export type CleanedQueries = {
     method: CrudMethod;
     queries: Record<string, unknown>;
 };
-export declare class QueryCompileError extends Error {
-    constructor(message: string);
-}
-export declare function isRecord(value: unknown): value is Record<string, unknown>;
 export declare function isCrudMethod(value: unknown): value is CrudMethod;
 export declare function isCleanedQueries(value: unknown): value is CleanedQueries;
 export declare function compileValue(value: unknown): string;
@@ -37,6 +38,10 @@ export declare function compileValue(value: unknown): string;
  *
  * Pass `method` from `clean_parse` / `buildQuery` so DELETE is not inferred
  * from a bare `from` clause (a malformed GET missing `select`).
- * Without `method`, only unambiguous `select` / `insert` / `set` shapes compile.
+ * Without `method`, `type: SELECT|INSERT|UPDATE|DELETE` or an unambiguous
+ * `select` / `insert` / `set` shape is enough.
+ *
+ * Blackwater `type: SELECT` objects are normalized onto the canonical
+ * phonics shape before assembly.
  */
 export declare function compileQuery(query: unknown, method?: CrudMethod): string;

@@ -3,8 +3,11 @@ WaitlistEntry:
   description: Marketing and catalog waitlist signups
   fields:
     id: string PRIMARY KEY
-    name: string
+    name: string NOT NULL DEFAULT ''
     email: string NOT NULL UNIQUE
     source_app: enum(www, gear, software, courses, studio, songwriting, blog)
     interest: string
-    created_at: timestamp DEFAULT NOW()
+    created_at: timestamp NOT NULL DEFAULT NOW()
+  indexes:
+    waitlist_email_idx:
+      columns: [email]

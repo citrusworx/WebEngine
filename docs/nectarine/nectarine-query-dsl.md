@@ -9,21 +9,23 @@ Hard rule and Blackwater inventory: [No hard-coded SQL](./no-hardcoded-sql.md).
 ## Layers
 
 ```
-App code          →  named query only (resource + method + name + bind params)
-Compiler          →  SELECT | INSERT | UPDATE | DELETE from YAML tokens
+App code          →  named query or named DDL only
+Compiler          →  SELECT | INSERT | UPDATE | DELETE | CREATE TABLE from YAML tokens
 Adapter           →  query(sql, params)   // execute only
 ```
 
 - **App code** calls `CCompiler.buildQuery(...)` (or `parser.genSQL` +
-  `parser.buildSQL`) and passes the string plus bind values to an adapter.
+  `parser.buildSQL`) for DML, and `CCompiler.buildDdl` / `buildDdls` for
+  schema YAML. It passes the string plus bind values to an adapter.
   It does not concatenate SQL, interpolate request data, or hand-write
-  `SELECT` / `INSERT` / `UPDATE` / `DELETE`.
+  `SELECT` / `INSERT` / `UPDATE` / `DELETE` / `CREATE TABLE`.
 - **Compiler** validates identifiers, operators, and values. Runtime values
   are `$1`-style placeholders (`$1::jsonb` is an allowlisted Postgres bind
   cast; `{ value: $N, cast: jsonb }` is equivalent). YAML-authored constants
   (`true`, `42`, `'published'`) are allowed only as tagged `{ const: ... }`
   or via the closed `where` fragment grammar — never via string interpolation
-  of user input.
+  of user input. Schema field tokens (`jsonb NOT NULL`, `enum(...)`,
+  `DEFAULT NOW()`) become `CREATE TABLE` / `CREATE INDEX`.
 - **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
   compiler. They do not assemble statements.
 
@@ -287,9 +289,9 @@ INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)
 ```
 
 JSONB operators (`@>`, `?`, `->>`, …) are a later phonics item — not
-required for this phase. Blackwater’s live `products(id, payload JSONB)`
-table is a **document-store pattern**, not a reason to remove JSONB.
-Phase 3 can keep JSONB columns, use relational columns, or hybridize.
+required for this phase. Blackwater’s live `products` table keeps
+`payload JSONB` (document-store) plus a nullable catalog projection from
+`productSchema.yml`. That is a **hybrid**, not a reason to remove JSONB.
 
 ## Not yet compiled
 
@@ -297,7 +299,6 @@ Phase 3 can keep JSONB columns, use relational columns, or hybridize.
 - joins, `GROUP BY`, `LIMIT` / pagination
 - aggregates (`COUNT`), `EXISTS`, `ON CONFLICT`, column aliases
 - JSONB operators (`@>`, `?`, `->>`) — columns and `$N::jsonb` binds work today
-- DDL / `CREATE TABLE` (schema YAML — phase 3)
 
 ## Usage
 
@@ -312,4 +313,9 @@ const sql = compiler.buildQuery(reads, "productById");
 // SELECT * FROM products WHERE id = $1
 
 await pg.query(sql, [id]);
+
+const schema = compiler.parse_config("./schemas/product/productSchema.yml");
+const ddl = compiler.buildDdl(schema);
+// CREATE TABLE IF NOT EXISTS products ( ... payload JSONB NOT NULL ... )
+await pg.query(ddl);
 ```

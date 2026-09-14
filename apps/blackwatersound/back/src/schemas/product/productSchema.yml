@@ -1,23 +1,27 @@
 Product:
   table: products
-  description: Catalog items for gear and software subdomain apps
+  description: >
+    Catalog items for gear and software apps. Live store is the document-store
+    shape (id + payload JSONB). Relational fields are a nullable catalog
+    projection used by productQueries.yml — not a replacement for JSONB.
   fields:
     id: string PRIMARY KEY
-    catalog: enum(gear, software) NOT NULL
-    name: string NOT NULL
-    slug: string UNIQUE NOT NULL
+    payload: jsonb NOT NULL
+    catalog: enum(gear, software)
+    name: string
+    slug: string UNIQUE
     sub: string
-    price: string NOT NULL
+    price: string
     originalPrice: string
-    img: string NOT NULL
-    accent: string NOT NULL
+    img: string
+    accent: string
     badge: string
-    category: enum(Guitars, Cabs, Pedals, Effects, Amplifiers, Studio, Lifestyle, Accessories, DAW, Plugins, Software) NOT NULL
+    category: enum(Guitars, Cabs, Pedals, Effects, Amplifiers, Studio, Lifestyle, Accessories, DAW, Plugins, Software)
     tags: json
-    blurb: text NOT NULL
+    blurb: text
     isNew: boolean DEFAULT false
     isActive: boolean DEFAULT true
-    created_at: timestamp DEFAULT NOW()
-    updated_at: timestamp DEFAULT NOW()
+    created_at: timestamp NOT NULL DEFAULT NOW()
+    updated_at: timestamp NOT NULL DEFAULT NOW()
   relationships:
     order_items: OrderItem[]

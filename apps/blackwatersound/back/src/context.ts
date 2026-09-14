@@ -37,13 +37,13 @@ export async function createAppContext(nectarine: NectarineConfig): Promise<AppL
   configurePool(nectarine.resolveCredentials());
 
   const wpClients = createWordPressClients();
-  const waitlist = await loadWaitlist();
 
   if (getPool()) {
     await migrate();
     await seedProductsIfEmpty(SEED_PRODUCTS);
   }
 
+  const waitlist = await loadWaitlist();
   const products = getPool() ? await loadProductsFromDb() : [...SEED_PRODUCTS];
 
   return {

@@ -11,8 +11,14 @@ const blackwaterStore = path.resolve(
     "../../../../apps/blackwatersound/back/src/store",
 );
 
-const DML_LITERAL =
-    /(['"`])(?:(?!\1)[\s\S])*?\b(SELECT|INSERT|UPDATE|DELETE)\b(?:(?!\1)[\s\S])*?\1/;
+const SQL_LITERAL =
+    /(['"`])(?:(?!\1)[\s\S])*?\b(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b(?:(?!\1)[\s\S])*?\1/;
+
+function stripComments(src: string): string {
+    return src
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        .replace(/(^|[^:])\/\/.*$/gm, "$1");
+}
 
 function listTsFiles(dir: string): string[] {
     return fs
@@ -21,21 +27,18 @@ function listTsFiles(dir: string): string[] {
         .map((name) => path.join(dir, name));
 }
 
-describe("Blackwater data access has no hard-coded DML", () => {
-    it("db and store modules contain no SELECT/INSERT/UPDATE/DELETE string literals", () => {
+describe("Blackwater data access has no hard-coded SQL", () => {
+    it("db and store modules contain no DML or DDL string literals", () => {
         const files = [...listTsFiles(blackwaterDb), ...listTsFiles(blackwaterStore)];
         expect(files.length).toBeGreaterThan(2);
+        expect(files.some((file) => file.endsWith("named-ddl.ts"))).toBe(true);
+        expect(files.some((file) => file.endsWith("phase3-ddl.ts"))).toBe(false);
 
         for (const file of files) {
-            const src = fs.readFileSync(file, "utf8");
+            const src = stripComments(fs.readFileSync(file, "utf8"));
             const relative = path.relative(blackwaterDb, file);
-
-            if (relative === "phase3-ddl.ts") {
-                expect(src, relative).not.toMatch(/\b(SELECT|INSERT|UPDATE|DELETE)\b/);
-                continue;
-            }
-
-            expect(src, relative).not.toMatch(DML_LITERAL);
+            expect(src, relative).not.toMatch(SQL_LITERAL);
+            expect(src, relative).not.toMatch(/\bCREATE TABLE\b/);
         }
     });
 });

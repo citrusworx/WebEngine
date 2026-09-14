@@ -22,7 +22,7 @@ export const namedSql = {
   seedPayload: compileNamed("product/productQueries.yml", "product", "create", "seedPayload"),
   allEntries: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "allEntries"),
   entryByEmail: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "entryByEmail"),
-  insertEntry: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "create", "insertEntry"),
+  joinWaitlist: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "create", "joinWaitlist"),
 } as const;
 
 export type NamedQuery = keyof typeof namedSql;

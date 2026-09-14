@@ -1,5 +1,11 @@
 import { parser, type YAMLdata } from "../util/util.js";
 import {
+    compileSchema,
+    compileSchemas,
+    compileTable,
+    type DdlVendor,
+} from "./ddl.js";
+import {
     methodLookupKeys,
     resolveCrudMethod,
 } from "./normalize.js";
@@ -14,6 +20,7 @@ import {
 
 export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
 export type { QueryType } from "./normalize.js";
+export type { CompiledTable, DdlVendor } from "./ddl.js";
 export {
     compileQuery,
     CRUD_METHODS,
@@ -21,6 +28,14 @@ export {
     OP_TOKENS,
     QueryCompileError,
 } from "./sql.js";
+export {
+    compileSchema,
+    compileSchemaPlan,
+    compileSchemas,
+    compileTable,
+    DDL_VENDORS,
+    SchemaCompileError,
+} from "./ddl.js";
 export {
     inferMethodFromType,
     METHOD_ALIASES,
@@ -30,11 +45,11 @@ export {
 export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
 
 /**
- * Compiles Nectarine query YAML into parameterized SQL strings.
+ * Compiles Nectarine query YAML and schema YAML into SQL.
  *
- * App code calls named queries only. This compiler assembles SQL from YAML
- * tokens (phonics). Adapters execute the resulting `(sql, params)` — they
- * never build SQL.
+ * App code calls named queries and named DDL only. This compiler assembles
+ * DML and CREATE TABLE / INDEX statements from YAML tokens (phonics).
+ * Adapters execute the resulting text — they never build SQL.
  *
  * Canonical document shape (Postgres-first) — see `models/user/db/pg/user.yml`:
  *
@@ -119,6 +134,32 @@ export class CCompiler {
         }
 
         return compileQuery(bundle.queries[query], bundle.method);
+    }
+
+    /**
+     * Compile `*Schema.yml` tokens into CREATE TABLE / INDEX SQL.
+     * `schema` is a parsed document or a filesystem path.
+     */
+    buildDdl(schema: unknown, vendor: DdlVendor | "mongodb" | string = "postgres"): string {
+        return compileSchema(schema, vendor);
+    }
+
+    /**
+     * Compile several schema documents with shared foreign-key ordering.
+     */
+    buildDdls(schemas: unknown[], vendor: DdlVendor | "mongodb" | string = "postgres"): string {
+        return compileSchemas(schemas, vendor);
+    }
+
+    /**
+     * Compile one named model from a schema document.
+     */
+    buildTable(
+        schema: unknown,
+        modelName: string,
+        vendor: DdlVendor | "mongodb" | string = "postgres",
+    ): string {
+        return compileTable(schema, modelName, vendor);
     }
 }
 

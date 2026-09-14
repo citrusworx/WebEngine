@@ -416,25 +416,28 @@ Compile schema to database-specific SQL.
 **Signature**:
 ```typescript
 function compileSchema(
-  schema: SchemaDefinition,
-  driver: "postgres" | "mysql" | "mongodb"
+  schema: SchemaDefinition | string,
+  driver: "postgres" | "mysql"
 ): string
 ```
 
 **Parameters**:
-- `schema` - Schema definition
-- `driver` - Target database
+- `schema` - Parsed schema object or filesystem path to `*Schema.yml`
+- `driver` - Target database (`postgres` default). `mongodb` is rejected (not SQL CREATE TABLE).
 
-**Returns**: SQL or MongoDB schema
+**Returns**: `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` SQL
 
 **Example**:
 ```typescript
-import { compileSchema } from "@citrusworx/nectarine";
+import { compileSchema, loadSchema } from "@citrusworx/nectarine";
+import { CCompiler } from "@citrusworx/nectarine/compiler";
 
+const userSchema = loadSchema("schemas/user/userSchema.yml");
 const sql = compileSchema(userSchema, "postgres");
-console.log(sql); // CREATE TABLE users (...)
+console.log(sql); // CREATE TABLE IF NOT EXISTS users (...)
 
-const mongoSchema = compileSchema(userSchema, "mongodb");
+const compiler = new CCompiler();
+const ddl = compiler.buildDdl(compiler.parse_config("schemas/product/productSchema.yml"));
 ```
 
 ### extendSchema()
