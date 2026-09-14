@@ -2,6 +2,8 @@
 
 This is the best starting point if you want to use Sig.js the way the library works today.
 
+After this page, the [operator desk tutorial](./sig-page-tutorial.md) is the guided build — counter, disclosure, list, form, and a route — analogous to [Juice’s page tutorial](../juice/juice-page-tutorial.md).
+
 ## What Sig.js is
 
 Sig.js is a small signals runtime plus a JSX factory that creates real DOM nodes.
@@ -82,7 +84,7 @@ const count = Signal(0);      // correct
 
 ## When text is not enough
 
-Function children only update a text node (`String(child())`). For attributes, lists, or swapping structure, keep the element and write from an effect.
+Function children only update a text node (`String(child())`). For attributes, lists, or swapping structure, keep the element and write from an effect. The [JSX guide](./sig-jsx.md) is the full child model; the [tutorial](./sig-page-tutorial.md) uses both `hidden` and `replaceChildren`.
 
 ```tsx
 import { Signal, effect, mount } from "@citrusworx/sigjs";
@@ -272,10 +274,19 @@ Juice attributes (`stack`, `row`, `gap`, `card`, `padding`) are ordinary HTML at
 5. `SigRouter` when you have more than one view
 6. Juice only for structure and theme — not for state
 
+After the first page works, build the [operator desk tutorial](./sig-page-tutorial.md). That is the Juice-style guided path: a real page, not a bag of snippets.
+
 ## Where to go next
 
-- [API Reference](./sig-api.md)
+- [Page Tutorial](./sig-page-tutorial.md) — guided build: counter → disclosure → list → form → route
+- [Signals](./sig-signals.md) — `get` / `set` and when updates fire
+- [Effects](./sig-effects.md) — tracking, cleanup, `batch`, `memo`
+- [JSX and the DOM](./sig-jsx.md) — static first, text-only function children
+- [Patterns](./sig-patterns.md) — cookbook
+- [Best Practices](./sig-best-practices.md) · [Anti-Patterns](./sig-anti-patterns.md)
 - [Examples](./sig-examples.md)
+- [API Reference](./sig-api.md)
 - [Router Guide](./sig-router.md)
 - [Sig.js + Juice](./sig-juice-integration.md)
 - [Troubleshooting](./sig-troubleshooting.md)
+- [Status](./sig-status.md) · [Roadmap](./sig-roadmap.md)

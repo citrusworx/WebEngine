@@ -178,7 +178,9 @@ Juice lays out the chips and cards. Sig.js decides which cards exist.
 - Set `theme="…"` on `body` or the app root, not on every card
 - Let Juice own `stack` / `row` / `gap`; do not rebuild layout in JS on resize
 - Keep Sig effects at the leaves (one label, one list)
-- See [Juice best practices](../juice/juice-best-practices.md) for composition; see [Sig troubleshooting](./sig-troubleshooting.md) if a value changes and the DOM does not
+- See [Juice best practices](../juice/juice-best-practices.md) for composition; see [Sig best practices](./sig-best-practices.md) for the behavior half of the same split
+- See [Sig troubleshooting](./sig-troubleshooting.md) if a value changes and the DOM does not
+- The [page tutorial](./sig-page-tutorial.md) is a Juice hero + cards with a Sig tally, disclosure, queue, and route
 
 ## What this guide will not show
 

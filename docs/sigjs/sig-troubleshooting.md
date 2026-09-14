@@ -32,7 +32,7 @@ effect(() => {
 });
 ```
 
-Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `replaceChildren` in an effect. See [Examples](./sig-examples.md).
+Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `replaceChildren` in an effect. See [JSX and the DOM](./sig-jsx.md), [Patterns](./sig-patterns.md), and [Examples](./sig-examples.md).
 
 ### `className={() => …}` / `value={() => …}` / `disabled={() => …}` do nothing useful
 
@@ -159,6 +159,9 @@ Inspect the real DOM: function children are text nodes, not comment anchors.
 ## Help
 
 - [Getting Started](./sig-getting-started.md)
+- [Page Tutorial](./sig-page-tutorial.md)
+- [Signals](./sig-signals.md) · [Effects](./sig-effects.md) · [JSX](./sig-jsx.md)
+- [Anti-Patterns](./sig-anti-patterns.md) — the usual React / VDOM mistakes
 - [API](./sig-api.md)
 - [Examples](./sig-examples.md)
 - [Router](./sig-router.md)

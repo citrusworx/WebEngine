@@ -189,4 +189,4 @@ Calling `start()` again after it has already started just re-renders the current
 - **Timers leak** — view was a prebuilt node, or the effect was created outside the component function.
 - **Nav disappears** — `#root` wraps the nav; move the target to an inner element.
 
-See [Troubleshooting](./sig-troubleshooting.md) for reactivity issues that show up after a route change.
+See [Troubleshooting](./sig-troubleshooting.md) for reactivity issues that show up after a route change. The [page tutorial](./sig-page-tutorial.md) adds an About route with a timer that cleans up. [Anti-patterns](./sig-anti-patterns.md) covers prebuilt `<About />` nodes and `navigate("about")`.
