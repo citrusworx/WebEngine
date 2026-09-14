@@ -53,8 +53,8 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 ## What's In Development 🔄
 
 ### Query Compiler
-- Current: Direct SQL/MongoDB generation
-- Planned: Optimization layer, query planning
+- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized). Adapters execute `(sql, params)` only.
+- Planned: Optimization layer, query planning, DDL from schema YAML
 
 ### Schema Registry
 - Current: File-based loading

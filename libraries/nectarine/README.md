@@ -2,6 +2,19 @@
 
 Compiler and adapter utilities for CitrusWorx data and query tooling.
 
+## Hard rule: no hard-coded SQL
+
+Final app backend code **must not** embed SQL strings. Nectarine is phonics:
+
+1. **App code** calls a named query (`resource.method.QueryName`) and passes bind values.
+2. **Compiler** assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` from YAML tokens (canonical CRUD or Blackwater `type: SELECT`, normalized onto the same model).
+3. **Adapters** only execute `(sql, params)` produced by the compiler. They never build SQL.
+
+`where: isActive = true` in YAML is a closed fragment grammar, not raw SQL.
+Runtime values are `$N` placeholders — never string-interpolated.
+
+See [`docs/nectarine/no-hardcoded-sql.md`](../../docs/nectarine/no-hardcoded-sql.md) and [`docs/nectarine/nectarine-query-dsl.md`](../../docs/nectarine/nectarine-query-dsl.md).
+
 ## Install
 
 ```bash
@@ -126,34 +139,52 @@ await mg.disconnect();
 
 ## Query compiler
 
-`CCompiler` turns the **canonical CRUD YAML** shape into parameterized SQL.
-The source of truth is `models/user/db/pg/user.yml`:
+`CCompiler` turns YAML query tokens into parameterized SQL. There is one
+phonics model. Two surfaces compile to it:
+
+**Canonical** (`models/user/db/pg/user.yml`):
 
 ```yaml
 user:                 # type / resource
-  get:                # method
+  get:                # method (`read` is an alias)
     UserById:         # query name
       select: ['id']
       from: users
       where:
         column: id
-        operator: eq   # eq | neq | gt | lt | gte | lte
+        operator: eq   # eq | neq | gt | lt | gte | lte | in | not_in | is_null | is_not_null
         value: $1
+```
+
+**Blackwater** (`apps/blackwatersound/back/src/schemas/**/*Queries.yml`) is
+normalized first (`type: SELECT`, `table`, `fields`, fragment `where` /
+`orderBy`, implicit INSERT/UPDATE `$N` values, optional `returning`):
+
+```yaml
+product:
+  read:
+    allProducts:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: isActive = true
+      orderBy: catalog, category, name
 ```
 
 | Method | YAML keys | Example SQL |
 |--------|-----------|-------------|
-| `get` | `select`, `from`, optional `where` | `SELECT id FROM users WHERE id = $1` |
-| `create` | `insert.into`, `insert.columns`, `insert.values` | `INSERT INTO users (email, password, name, created_at) VALUES ($1, $2, $3, NOW())` |
-| `update` | `table`, `set`, `values`, `where` | `UPDATE users SET name = $1, age = $2, updated_at = NOW() WHERE id = $3` |
-| `delete` | `from`, `where` | `DELETE FROM users WHERE id = $1` |
+| `get` / `read` | `select`+`from` **or** `type: SELECT`+`table`+`fields`; optional `where`, `orderBy` | `SELECT * FROM products WHERE isActive = TRUE ORDER BY catalog, category, name` |
+| `create` | `insert.into/columns/values` **or** `type: INSERT`+`table`+`fields`; optional `returning` | `INSERT INTO waitlist (...) VALUES ($1, …) RETURNING id, email, created_at` |
+| `update` | `table`+`set`+`values`+`where` **or** `type: UPDATE`+`fields` (values default to `$1…$N`, WHERE `$1` remaps after SET) | `UPDATE products SET name = $1, … WHERE id = $14` |
+| `delete` | `from`+`where` **or** `type: DELETE`+`table`+`where` | `DELETE FROM products WHERE id = $1` |
 
-- `$1`, `$2`, … are kept as bind placeholders — numbers, booleans, and other literals are rejected.
+- `$1`, `$2`, … are bind placeholders. Raw numbers/booleans in canonical `value` are rejected; YAML constants use `{ const: true }` or the fragment grammar.
 - `{ fn: now }` (and the fragment `NOW()`) compile to vendor-neutral `NOW()`.
-- `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL(path, type, method, config)` — e.g. `clean_parse(parsed, "user", "get")`. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
-- `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler. `method` is required for DELETE.
+- Blackwater `where` / `orderBy` strings are a **closed grammar** (not raw SQL). Injection-shaped fragments fail compilation.
+- `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
+- `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled in this MVP:** the blog `queries:` map (`models/blog/post/sql.yml`) and the product fixture `type: SELECT` shape.
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, DDL.
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";
