@@ -1,11 +1,11 @@
 import { type YAMLdata } from "../util/util.js";
-import { type DdlVendor } from "./ddl.js";
+import { type CompileSchemaOptions, type DdlVendor } from "./ddl.js";
 import { type CleanedQueries } from "./sql.js";
 export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
 export type { QueryType } from "./normalize.js";
-export type { CompiledTable, DdlVendor } from "./ddl.js";
+export type { CompiledTable, CompileSchemaOptions, DdlVendor } from "./ddl.js";
 export { compileQuery, CRUD_METHODS, isCrudMethod, OP_TOKENS, QueryCompileError, } from "./sql.js";
-export { compileSchema, compileSchemaPlan, compileSchemas, compileTable, DDL_VENDORS, SchemaCompileError, } from "./ddl.js";
+export { compileSchema, compileSchemaPlan, compileSchemas, compileTable, DDL_VENDORS, schemaFieldEnumValues, SchemaCompileError, } from "./ddl.js";
 export { inferMethodFromType, METHOD_ALIASES, normalizeQuery, resolveCrudMethod, } from "./normalize.js";
 export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
 /**
@@ -59,13 +59,13 @@ export declare class CCompiler {
      * Compile `*Schema.yml` tokens into CREATE TABLE / INDEX SQL.
      * `schema` is a parsed document or a filesystem path.
      */
-    buildDdl(schema: unknown, vendor?: DdlVendor | "mongodb" | string): string;
+    buildDdl(schema: unknown, vendor?: DdlVendor | "mongodb" | string, options?: CompileSchemaOptions): string;
     /**
      * Compile several schema documents with shared foreign-key ordering.
      */
-    buildDdls(schemas: unknown[], vendor?: DdlVendor | "mongodb" | string): string;
+    buildDdls(schemas: unknown[], vendor?: DdlVendor | "mongodb" | string, options?: CompileSchemaOptions): string;
     /**
      * Compile one named model from a schema document.
      */
-    buildTable(schema: unknown, modelName: string, vendor?: DdlVendor | "mongodb" | string): string;
+    buildTable(schema: unknown, modelName: string, vendor?: DdlVendor | "mongodb" | string, options?: CompileSchemaOptions): string;
 }

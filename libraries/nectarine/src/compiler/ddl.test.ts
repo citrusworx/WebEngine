@@ -118,6 +118,53 @@ describe("schema DDL compiler", () => {
         expect(mysql).toContain("created_at DATETIME DEFAULT NOW()");
     });
 
+    it("emits Postgres IF NOT EXISTS indexes and MySQL CREATE INDEX without IF NOT EXISTS", () => {
+        const schema = {
+            WaitlistEntry: {
+                table: "waitlist",
+                fields: { id: "string PRIMARY KEY", email: "string NOT NULL UNIQUE" },
+                indexes: { waitlist_email_idx: { columns: ["email"] } },
+            },
+        };
+
+        expect(compileSchema(schema, "postgres")).toContain(
+            "CREATE INDEX IF NOT EXISTS waitlist_email_idx ON waitlist (email);",
+        );
+        expect(compileSchema(schema, "mysql")).toContain(
+            "CREATE INDEX waitlist_email_idx ON waitlist (email);",
+        );
+        expect(compileSchema(schema, "mysql")).not.toContain("IF NOT EXISTS waitlist_email_idx");
+    });
+
+    it("emits additive ADD COLUMN IF NOT EXISTS for existing Postgres tables", () => {
+        const schema = {
+            WaitlistEntry: {
+                table: "waitlist",
+                fields: {
+                    id: "string PRIMARY KEY",
+                    name: "string NOT NULL DEFAULT ''",
+                    source_app: "enum(www, gear, software)",
+                    interest: "string",
+                },
+            },
+        };
+
+        const created = compileSchema(schema, "postgres");
+        expect(created).not.toContain("ALTER TABLE");
+
+        const additive = compileSchema(schema, "postgres", { additive: true });
+        expect(additive).toContain(
+            "ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS name TEXT NOT NULL DEFAULT '';",
+        );
+        expect(additive).toContain(
+            "ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS source_app TEXT CHECK (source_app IN ('www', 'gear', 'software'));",
+        );
+        expect(additive).toContain(
+            "ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS interest TEXT;",
+        );
+        expect(additive).not.toContain("ADD COLUMN IF NOT EXISTS id ");
+    });
+
     it("exposes CCompiler.buildDdl / buildTable as the phonics entry", () => {
         const compiler = new CCompiler();
         const parsed = compiler.parse_config(fixtureProduct);

@@ -3,6 +3,7 @@ import {
     compileSchema,
     compileSchemas,
     compileTable,
+    type CompileSchemaOptions,
     type DdlVendor,
 } from "./ddl.js";
 import {
@@ -20,7 +21,7 @@ import {
 
 export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
 export type { QueryType } from "./normalize.js";
-export type { CompiledTable, DdlVendor } from "./ddl.js";
+export type { CompiledTable, CompileSchemaOptions, DdlVendor } from "./ddl.js";
 export {
     compileQuery,
     CRUD_METHODS,
@@ -34,6 +35,7 @@ export {
     compileSchemas,
     compileTable,
     DDL_VENDORS,
+    schemaFieldEnumValues,
     SchemaCompileError,
 } from "./ddl.js";
 export {
@@ -140,15 +142,23 @@ export class CCompiler {
      * Compile `*Schema.yml` tokens into CREATE TABLE / INDEX SQL.
      * `schema` is a parsed document or a filesystem path.
      */
-    buildDdl(schema: unknown, vendor: DdlVendor | "mongodb" | string = "postgres"): string {
-        return compileSchema(schema, vendor);
+    buildDdl(
+        schema: unknown,
+        vendor: DdlVendor | "mongodb" | string = "postgres",
+        options?: CompileSchemaOptions,
+    ): string {
+        return compileSchema(schema, vendor, options);
     }
 
     /**
      * Compile several schema documents with shared foreign-key ordering.
      */
-    buildDdls(schemas: unknown[], vendor: DdlVendor | "mongodb" | string = "postgres"): string {
-        return compileSchemas(schemas, vendor);
+    buildDdls(
+        schemas: unknown[],
+        vendor: DdlVendor | "mongodb" | string = "postgres",
+        options?: CompileSchemaOptions,
+    ): string {
+        return compileSchemas(schemas, vendor, options);
     }
 
     /**
@@ -158,8 +168,9 @@ export class CCompiler {
         schema: unknown,
         modelName: string,
         vendor: DdlVendor | "mongodb" | string = "postgres",
+        options?: CompileSchemaOptions,
     ): string {
-        return compileTable(schema, modelName, vendor);
+        return compileTable(schema, modelName, vendor, options);
     }
 }
 

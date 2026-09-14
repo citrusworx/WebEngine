@@ -66,8 +66,17 @@ type ModelSpec = {
 export type CompiledTable = {
     table: string;
     createTable: string;
+    addColumns: string[];
     indexes: string[];
     references: string[];
+};
+
+export type CompileSchemaOptions = {
+    /**
+     * Postgres only: also emit `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`
+     * so existing tables pick up new schema fields (bootstrap, not a migrator).
+     */
+    additive?: boolean;
 };
 
 function assertIdentifier(name: string, label: string): void {
@@ -585,10 +594,49 @@ function emitCreateTable(model: ModelSpec, vendor: DdlVendor): string {
     return `CREATE TABLE IF NOT EXISTS ${model.table} (\n${columns}\n);`;
 }
 
-function emitIndexes(model: ModelSpec): string[] {
+function emitAddColumn(field: FieldSpec, vendor: DdlVendor): string | undefined {
+    if (field.primaryKey || field.autoIncrement) {
+        return undefined;
+    }
+
+    const parts = [`${field.name} ${emitSqlType(field, vendor)}`];
+    if (field.notNull && field.default) {
+        parts.push("NOT NULL");
+    }
+    if (field.default) {
+        parts.push(`DEFAULT ${emitDefault(field.default)}`);
+    }
+    if (field.unique) {
+        parts.push("UNIQUE");
+    }
+    if (field.type.kind === "enum" && vendor === "postgres") {
+        const list = field.type.values.map(sqlString).join(", ");
+        parts.push(`CHECK (${field.name} IN (${list}))`);
+    }
+    if (field.references) {
+        parts.push(`REFERENCES ${field.references.table}(${field.references.column})`);
+    }
+    return parts.join(" ");
+}
+
+function emitAddColumns(model: ModelSpec, vendor: DdlVendor): string[] {
+    if (vendor !== "postgres") {
+        return [];
+    }
+    return model.fields.flatMap((field) => {
+        const definition = emitAddColumn(field, vendor);
+        if (!definition) {
+            return [];
+        }
+        return [`ALTER TABLE ${model.table} ADD COLUMN IF NOT EXISTS ${definition};`];
+    });
+}
+
+function emitIndexes(model: ModelSpec, vendor: DdlVendor): string[] {
     return model.indexes.map((index) => {
         const unique = index.unique ? "UNIQUE " : "";
-        return `CREATE ${unique}INDEX IF NOT EXISTS ${index.name} ON ${model.table} (${index.columns.join(", ")});`;
+        const ifNotExists = vendor === "postgres" ? "IF NOT EXISTS " : "";
+        return `CREATE ${unique}INDEX ${ifNotExists}${index.name} ON ${model.table} (${index.columns.join(", ")});`;
     });
 }
 
@@ -641,7 +689,8 @@ function planModels(models: ModelSpec[], vendor: DdlVendor): CompiledTable[] {
     return sortModels(models).map((model) => ({
         table: model.table,
         createTable: emitCreateTable(model, vendor),
-        indexes: emitIndexes(model),
+        addColumns: emitAddColumns(model, vendor),
+        indexes: emitIndexes(model, vendor),
         references: [
             ...new Set(
                 model.fields
@@ -652,10 +701,13 @@ function planModels(models: ModelSpec[], vendor: DdlVendor): CompiledTable[] {
     }));
 }
 
-function emitPlan(tables: CompiledTable[]): string {
+function emitPlan(tables: CompiledTable[], options: CompileSchemaOptions = {}): string {
     const statements: string[] = [];
     for (const table of tables) {
         statements.push(table.createTable);
+        if (options.additive) {
+            statements.push(...table.addColumns);
+        }
         statements.push(...table.indexes);
     }
     return statements.join("\n\n");
@@ -665,21 +717,29 @@ function emitPlan(tables: CompiledTable[]): string {
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
  * `schema` may be a parsed object or a filesystem path.
  */
-export function compileSchema(schema: unknown, vendor: string = "postgres"): string {
+export function compileSchema(
+    schema: unknown,
+    vendor: string = "postgres",
+    options: CompileSchemaOptions = {},
+): string {
     const dialect = resolveVendor(vendor);
-    return emitPlan(planModels(collectModels(loadSchemaDoc(schema)), dialect));
+    return emitPlan(planModels(collectModels(loadSchemaDoc(schema)), dialect), options);
 }
 
 /**
  * Compile several schema documents with shared foreign-key ordering.
  */
-export function compileSchemas(schemas: unknown[], vendor: string = "postgres"): string {
+export function compileSchemas(
+    schemas: unknown[],
+    vendor: string = "postgres",
+    options: CompileSchemaOptions = {},
+): string {
     if (!Array.isArray(schemas) || schemas.length === 0) {
         throw new SchemaCompileError("compileSchemas requires at least one schema document");
     }
     const dialect = resolveVendor(vendor);
     const models = schemas.flatMap((schema) => collectModels(loadSchemaDoc(schema)));
-    return emitPlan(planModels(models, dialect));
+    return emitPlan(planModels(models, dialect), options);
 }
 
 /**
@@ -689,6 +749,7 @@ export function compileTable(
     schema: unknown,
     modelName: string,
     vendor: string = "postgres",
+    options: CompileSchemaOptions = {},
 ): string {
     const dialect = resolveVendor(vendor);
     const models = collectModels(loadSchemaDoc(schema));
@@ -696,9 +757,25 @@ export function compileTable(
     if (!model) {
         throw new SchemaCompileError(`Model not found: ${modelName}`);
     }
-    return emitPlan(planModels([model], dialect));
+    return emitPlan(planModels([model], dialect), options);
 }
 
 export function compileSchemaPlan(schema: unknown, vendor: string = "postgres"): CompiledTable[] {
     return planModels(collectModels(loadSchemaDoc(schema)), resolveVendor(vendor));
+}
+
+/** Enum tokens from a schema field (for app-side allowlists, not SQL). */
+export function schemaFieldEnumValues(
+    schema: unknown,
+    modelName: string,
+    fieldName: string,
+): readonly string[] {
+    assertIdentifier(modelName, "model");
+    assertIdentifier(fieldName, "column");
+    const model = collectModels(loadSchemaDoc(schema)).find((entry) => entry.modelName === modelName);
+    const field = model?.fields.find((entry) => entry.name === fieldName);
+    if (!field || field.type.kind !== "enum") {
+        throw new SchemaCompileError(`Enum field not found: ${modelName}.${fieldName}`);
+    }
+    return field.type.values;
 }

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { CCompiler, compileSchema, compileSchemas, SchemaCompileError } from "./compiler.js";
+import { CCompiler, compileSchema, compileSchemas, schemaFieldEnumValues, SchemaCompileError } from "./compiler.js";
 
 const schemas = path.resolve(
     import.meta.dirname,
@@ -117,6 +117,25 @@ describe("Blackwater schema YAML DDL", () => {
         const initSql = stripSqlComments(fs.readFileSync(initSqlPath, "utf8"));
         expect(initSql).toBe(live);
         expect(initSql).toContain("payload JSONB NOT NULL");
+        expect(initSql).not.toContain("ALTER TABLE");
+    });
+
+    it("adds waitlist source_app / interest on existing tables via additive DDL", () => {
+        const compiler = new CCompiler();
+        const sql = compiler.buildDdl(
+            compiler.parse_config(path.join(schemas, "waitlist/waitlistSchema.yml")),
+            "postgres",
+            { additive: true },
+        );
+        expect(sql).toContain(
+            "ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS source_app TEXT CHECK (source_app IN",
+        );
+        expect(sql).toContain("ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS interest TEXT;");
+        expect(schemaFieldEnumValues(
+            compiler.parse_config(path.join(schemas, "waitlist/waitlistSchema.yml")),
+            "WaitlistEntry",
+            "source_app",
+        )).toEqual(["www", "gear", "software", "courses", "studio", "songwriting", "blog"]);
     });
 
     it("does not treat schema YAML as raw SQL scripts", () => {

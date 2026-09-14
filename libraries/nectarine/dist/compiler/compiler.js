@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.SchemaCompileError = exports.DDL_VENDORS = exports.compileTable = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
+exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.SchemaCompileError = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
 const util_js_1 = require("../util/util.js");
 const ddl_js_1 = require("./ddl.js");
 const normalize_js_1 = require("./normalize.js");
@@ -17,6 +17,7 @@ Object.defineProperty(exports, "compileSchemaPlan", { enumerable: true, get: fun
 Object.defineProperty(exports, "compileSchemas", { enumerable: true, get: function () { return ddl_js_2.compileSchemas; } });
 Object.defineProperty(exports, "compileTable", { enumerable: true, get: function () { return ddl_js_2.compileTable; } });
 Object.defineProperty(exports, "DDL_VENDORS", { enumerable: true, get: function () { return ddl_js_2.DDL_VENDORS; } });
+Object.defineProperty(exports, "schemaFieldEnumValues", { enumerable: true, get: function () { return ddl_js_2.schemaFieldEnumValues; } });
 Object.defineProperty(exports, "SchemaCompileError", { enumerable: true, get: function () { return ddl_js_2.SchemaCompileError; } });
 var normalize_js_2 = require("./normalize.js");
 Object.defineProperty(exports, "inferMethodFromType", { enumerable: true, get: function () { return normalize_js_2.inferMethodFromType; } });
@@ -106,20 +107,20 @@ class CCompiler {
      * Compile `*Schema.yml` tokens into CREATE TABLE / INDEX SQL.
      * `schema` is a parsed document or a filesystem path.
      */
-    buildDdl(schema, vendor = "postgres") {
-        return (0, ddl_js_1.compileSchema)(schema, vendor);
+    buildDdl(schema, vendor = "postgres", options) {
+        return (0, ddl_js_1.compileSchema)(schema, vendor, options);
     }
     /**
      * Compile several schema documents with shared foreign-key ordering.
      */
-    buildDdls(schemas, vendor = "postgres") {
-        return (0, ddl_js_1.compileSchemas)(schemas, vendor);
+    buildDdls(schemas, vendor = "postgres", options) {
+        return (0, ddl_js_1.compileSchemas)(schemas, vendor, options);
     }
     /**
      * Compile one named model from a schema document.
      */
-    buildTable(schema, modelName, vendor = "postgres") {
-        return (0, ddl_js_1.compileTable)(schema, modelName, vendor);
+    buildTable(schema, modelName, vendor = "postgres", options) {
+        return (0, ddl_js_1.compileTable)(schema, modelName, vendor, options);
     }
 }
 exports.CCompiler = CCompiler;

@@ -17,20 +17,30 @@ export type DdlVendor = (typeof DDL_VENDORS)[number];
 export type CompiledTable = {
     table: string;
     createTable: string;
+    addColumns: string[];
     indexes: string[];
     references: string[];
+};
+export type CompileSchemaOptions = {
+    /**
+     * Postgres only: also emit `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`
+     * so existing tables pick up new schema fields (bootstrap, not a migrator).
+     */
+    additive?: boolean;
 };
 /**
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
  * `schema` may be a parsed object or a filesystem path.
  */
-export declare function compileSchema(schema: unknown, vendor?: string): string;
+export declare function compileSchema(schema: unknown, vendor?: string, options?: CompileSchemaOptions): string;
 /**
  * Compile several schema documents with shared foreign-key ordering.
  */
-export declare function compileSchemas(schemas: unknown[], vendor?: string): string;
+export declare function compileSchemas(schemas: unknown[], vendor?: string, options?: CompileSchemaOptions): string;
 /**
  * Compile a single named model from a schema document.
  */
-export declare function compileTable(schema: unknown, modelName: string, vendor?: string): string;
+export declare function compileTable(schema: unknown, modelName: string, vendor?: string, options?: CompileSchemaOptions): string;
 export declare function compileSchemaPlan(schema: unknown, vendor?: string): CompiledTable[];
+/** Enum tokens from a schema field (for app-side allowlists, not SQL). */
+export declare function schemaFieldEnumValues(schema: unknown, modelName: string, fieldName: string): readonly string[];

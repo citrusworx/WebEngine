@@ -15,6 +15,7 @@ exports.compileSchema = compileSchema;
 exports.compileSchemas = compileSchemas;
 exports.compileTable = compileTable;
 exports.compileSchemaPlan = compileSchemaPlan;
+exports.schemaFieldEnumValues = schemaFieldEnumValues;
 const util_js_1 = require("../util/util.js");
 const errors_js_1 = require("./errors.js");
 class SchemaCompileError extends errors_js_1.QueryCompileError {
@@ -495,10 +496,46 @@ function emitCreateTable(model, vendor) {
     const columns = model.fields.map((field) => `  ${emitColumn(field, vendor)}`).join(",\n");
     return `CREATE TABLE IF NOT EXISTS ${model.table} (\n${columns}\n);`;
 }
-function emitIndexes(model) {
+function emitAddColumn(field, vendor) {
+    if (field.primaryKey || field.autoIncrement) {
+        return undefined;
+    }
+    const parts = [`${field.name} ${emitSqlType(field, vendor)}`];
+    if (field.notNull && field.default) {
+        parts.push("NOT NULL");
+    }
+    if (field.default) {
+        parts.push(`DEFAULT ${emitDefault(field.default)}`);
+    }
+    if (field.unique) {
+        parts.push("UNIQUE");
+    }
+    if (field.type.kind === "enum" && vendor === "postgres") {
+        const list = field.type.values.map(sqlString).join(", ");
+        parts.push(`CHECK (${field.name} IN (${list}))`);
+    }
+    if (field.references) {
+        parts.push(`REFERENCES ${field.references.table}(${field.references.column})`);
+    }
+    return parts.join(" ");
+}
+function emitAddColumns(model, vendor) {
+    if (vendor !== "postgres") {
+        return [];
+    }
+    return model.fields.flatMap((field) => {
+        const definition = emitAddColumn(field, vendor);
+        if (!definition) {
+            return [];
+        }
+        return [`ALTER TABLE ${model.table} ADD COLUMN IF NOT EXISTS ${definition};`];
+    });
+}
+function emitIndexes(model, vendor) {
     return model.indexes.map((index) => {
         const unique = index.unique ? "UNIQUE " : "";
-        return `CREATE ${unique}INDEX IF NOT EXISTS ${index.name} ON ${model.table} (${index.columns.join(", ")});`;
+        const ifNotExists = vendor === "postgres" ? "IF NOT EXISTS " : "";
+        return `CREATE ${unique}INDEX ${ifNotExists}${index.name} ON ${model.table} (${index.columns.join(", ")});`;
     });
 }
 function sortModels(models) {
@@ -542,7 +579,8 @@ function planModels(models, vendor) {
     return sortModels(models).map((model) => ({
         table: model.table,
         createTable: emitCreateTable(model, vendor),
-        indexes: emitIndexes(model),
+        addColumns: emitAddColumns(model, vendor),
+        indexes: emitIndexes(model, vendor),
         references: [
             ...new Set(model.fields
                 .map((field) => field.references?.table)
@@ -550,10 +588,13 @@ function planModels(models, vendor) {
         ],
     }));
 }
-function emitPlan(tables) {
+function emitPlan(tables, options = {}) {
     const statements = [];
     for (const table of tables) {
         statements.push(table.createTable);
+        if (options.additive) {
+            statements.push(...table.addColumns);
+        }
         statements.push(...table.indexes);
     }
     return statements.join("\n\n");
@@ -562,34 +603,45 @@ function emitPlan(tables) {
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
  * `schema` may be a parsed object or a filesystem path.
  */
-function compileSchema(schema, vendor = "postgres") {
+function compileSchema(schema, vendor = "postgres", options = {}) {
     const dialect = resolveVendor(vendor);
-    return emitPlan(planModels(collectModels(loadSchemaDoc(schema)), dialect));
+    return emitPlan(planModels(collectModels(loadSchemaDoc(schema)), dialect), options);
 }
 /**
  * Compile several schema documents with shared foreign-key ordering.
  */
-function compileSchemas(schemas, vendor = "postgres") {
+function compileSchemas(schemas, vendor = "postgres", options = {}) {
     if (!Array.isArray(schemas) || schemas.length === 0) {
         throw new SchemaCompileError("compileSchemas requires at least one schema document");
     }
     const dialect = resolveVendor(vendor);
     const models = schemas.flatMap((schema) => collectModels(loadSchemaDoc(schema)));
-    return emitPlan(planModels(models, dialect));
+    return emitPlan(planModels(models, dialect), options);
 }
 /**
  * Compile a single named model from a schema document.
  */
-function compileTable(schema, modelName, vendor = "postgres") {
+function compileTable(schema, modelName, vendor = "postgres", options = {}) {
     const dialect = resolveVendor(vendor);
     const models = collectModels(loadSchemaDoc(schema));
     const model = models.find((entry) => entry.modelName === modelName);
     if (!model) {
         throw new SchemaCompileError(`Model not found: ${modelName}`);
     }
-    return emitPlan(planModels([model], dialect));
+    return emitPlan(planModels([model], dialect), options);
 }
 function compileSchemaPlan(schema, vendor = "postgres") {
     return planModels(collectModels(loadSchemaDoc(schema)), resolveVendor(vendor));
+}
+/** Enum tokens from a schema field (for app-side allowlists, not SQL). */
+function schemaFieldEnumValues(schema, modelName, fieldName) {
+    assertIdentifier(modelName, "model");
+    assertIdentifier(fieldName, "column");
+    const model = collectModels(loadSchemaDoc(schema)).find((entry) => entry.modelName === modelName);
+    const field = model?.fields.find((entry) => entry.name === fieldName);
+    if (!field || field.type.kind !== "enum") {
+        throw new SchemaCompileError(`Enum field not found: ${modelName}.${fieldName}`);
+    }
+    return field.type.values;
 }
 //# sourceMappingURL=ddl.js.map

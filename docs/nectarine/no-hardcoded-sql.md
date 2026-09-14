@@ -73,7 +73,7 @@ but contains no SQL strings.
 
 | Location | Purpose | Named query / DDL | Status |
 |----------|---------|-------------------|--------|
-| `migrate()` | Bootstrap all Blackwater tables + `waitlist_email_idx` | `runNamedDdl("bootstrap")` → `src/db/named-ddl.ts` | **migrated** — compiled from every `*Schema.yml`. Live `products` keeps `payload JSONB`. Waitlist includes `source_app` / `interest`. Foreign keys are created in dependency order. |
+| `migrate()` | Bootstrap all Blackwater tables + `waitlist_email_idx`; additive `ADD COLUMN IF NOT EXISTS` for existing volumes | `runNamedDdl("bootstrap")` → `src/db/named-ddl.ts` | **migrated** — compiled from every `*Schema.yml` with `{ additive: true }`. Live `products` keeps `payload JSONB`. Waitlist includes `source_app` / `interest` on new and existing tables. Foreign keys are created in dependency order. |
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
@@ -85,9 +85,9 @@ but contains no SQL strings.
 
 | Location | Purpose | YAML that owns it | Status |
 |----------|---------|-------------------|---------|
-| `namedDdl("bootstrap")` | All resource `CREATE TABLE` / indexes, FK-ordered | every `*Schema.yml` | **migrated** — thin runner; no SQL text in the module |
-| `namedDdl("liveBootstrap")` | Product + waitlist only (same compiler) | `productSchema.yml`, `waitlistSchema.yml` | **migrated** — used to lock Docker init.sql in tests |
-| `docker/postgres/init.sql` | Out-of-band Docker first-boot copy of live bootstrap | same two schema files | **schema-owned** — not app backend; compiled from the same YAML. Recreate the volume to pick up changes (`IF NOT EXISTS` does not ALTER). |
+| `namedDdl("bootstrap")` | All resource `CREATE TABLE` / indexes plus Postgres `ADD COLUMN IF NOT EXISTS`, FK-ordered | every `*Schema.yml` | **migrated** — thin runner; `{ additive: true }`; no SQL text in the module |
+| `namedDdl("liveBootstrap")` | Product + waitlist CREATE TABLE / INDEX only | `productSchema.yml`, `waitlistSchema.yml` | **migrated** — used to lock Docker init.sql in tests |
+| `docker/postgres/init.sql` | Out-of-band Docker first-boot copy of live bootstrap | same two schema files | **schema-owned** — not app backend; compiled from the same YAML without additive ALTERs. App `migrate()` adds missing columns on existing volumes. |
 
 ### Query YAML already present (compiler-owned)
 
@@ -139,9 +139,10 @@ Those named queries can run against Postgres once a later phase writes data.
    query contracts. **JSONB is supported; we are not dropping it.**
    `products` keeps `payload JSONB` plus a nullable catalog projection.
    Waitlist columns include `source_app` / `interest`; `joinWaitlist`
-   replaced `insertEntry` on the live path. Docker `init.sql` is the
-   same compiler output for product + waitlist (out-of-band bootstrap).
-   `phase3-ddl.ts` retired.
+   replaced `insertEntry` on the live path. `migrate()` emits additive
+   `ADD COLUMN IF NOT EXISTS` so existing four-column waitlist tables
+   upgrade. Docker `init.sql` is first-boot CREATE TABLE from the same
+   schema YAML (no ALTER). `phase3-ddl.ts` retired.
 4. **Later** — Remaining compiler features only if a later phase needs
    them (`COUNT`, `EXISTS`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
    Seltzer route generation is a separate track. Do **not** invent

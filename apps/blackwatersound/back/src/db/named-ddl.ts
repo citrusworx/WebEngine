@@ -1,6 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { CCompiler, compileSchemas } from "@citrusworx/nectarine/compiler";
+import { CCompiler, compileSchemas, schemaFieldEnumValues } from "@citrusworx/nectarine/compiler";
 
 // src/db and dist/db both sit two levels below the package root.
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -26,7 +26,7 @@ export const SCHEMA_FILES = [
   "mix_review/mixReviewSchema.yml",
 ] as const;
 
-/** Docker first-boot tables only. Same compiler as migrate(). */
+/** Docker first-boot tables only (CREATE TABLE / INDEX, not additive ALTER). */
 export const LIVE_BOOTSTRAP_FILES = [
   "product/productSchema.yml",
   "waitlist/waitlistSchema.yml",
@@ -34,16 +34,28 @@ export const LIVE_BOOTSTRAP_FILES = [
 
 export type NamedDdl = "bootstrap" | "liveBootstrap";
 
-function compileFiles(files: readonly string[]): string {
+function compileFiles(files: readonly string[], additive = false): string {
   const docs = files.map((file) => compiler.parse_config(path.join(schemaDir, file)));
-  return compileSchemas(docs, "postgres");
+  return compileSchemas(docs, "postgres", { additive });
 }
+
+function waitlistSchema() {
+  return compiler.parse_config(path.join(schemaDir, "waitlist/waitlistSchema.yml"));
+}
+
+/** Schema-owned waitlist `source_app` tokens. Empty means omit the column. */
+export const waitlistSourceApps = schemaFieldEnumValues(
+  waitlistSchema(),
+  "WaitlistEntry",
+  "source_app",
+);
 
 /**
  * Compiler-assembled DDL. App helpers pass a name, never a SQL literal.
+ * `bootstrap` is additive so existing live tables pick up new columns.
  */
 export const namedDdlSql = {
-  bootstrap: compileFiles(SCHEMA_FILES),
+  bootstrap: compileFiles(SCHEMA_FILES, true),
   liveBootstrap: compileFiles(LIVE_BOOTSTRAP_FILES),
 } as const;
 
