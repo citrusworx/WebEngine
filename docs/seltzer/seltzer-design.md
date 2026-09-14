@@ -1,10 +1,12 @@
 # Seltzer Design Overview
 
-This is the **design target** for Seltzer: named pipelines, structured `ctx`, contract validation, parametric routes. Most of it is **not implemented** in `libraries/seltzer/src` yet.
+**Contributor elective — design target, not the shipped product.**
 
-If you want to *use* the package that exists today, start at the [product README](./README.md) and [Getting Started](./seltzer-getting-started.md).
+This document describes named pipelines, structured `ctx`, contract validation, and parametric routes. Most of it is **not implemented** in `libraries/seltzer/src` yet. Do not treat `ctx.params`, `ctx.body`, `pipeline.insert`, or handler `return { status, body }` as APIs you can import from `@citrusworx/seltzer` **0.2.0**.
 
-If you want to *implement* the pipeline, stay here, then use the [study guide](./courses.md) and [exercises](./exercises/README.md).
+**Product path (use the package):** [README](./README.md) → [Getting Started](./seltzer-getting-started.md) → [JSON API tutorial](./seltzer-api-tutorial.md) → [Status](./seltzer-status.md) / [Roadmap](./seltzer-roadmap.md).
+
+**Contributor path (implement the pipeline):** this page, then the [study guide](./courses.md) and [exercises](./exercises/README.md).
 
 ---
 

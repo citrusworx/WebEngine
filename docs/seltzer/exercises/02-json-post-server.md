@@ -1,8 +1,10 @@
 # Exercise 2: JSON POST Server
 
+**Contributor elective.** Product code does this **inside a `.route` handler** today — there is no shipped `parse` stage. App authors: [tutorial step 3](../seltzer-api-tutorial.md).
+
 **Goal:** Collect a request body from a stream and parse JSON.
 
-**Proves you can build:** The foundation for Seltzer's `parse` stage.
+**Proves you can build:** The foundation for Seltzer's **design-doc** `parse` stage (not in `libraries/seltzer/src` yet).
 
 ## Requirements
 

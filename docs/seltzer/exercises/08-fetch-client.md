@@ -1,8 +1,10 @@
 # Exercise 8: Fetch Client
 
+**Contributor elective — goes beyond shipped `client.*`.** Packaged `client.get/post/…` always `res.json()` and does **not** throw on `!response.ok`. Status checks and `undici` self-signed TLS live in KiwiPress, not in Seltzer. Product client: [seltzer-client.md](../seltzer-client.md).
+
 **Goal:** Build a small HTTP client with proper error handling.
 
-**Proves you can build:** Seltzer client patterns used by KiwiPress.
+**Proves you can build:** Stronger client patterns (KiwiPress-shaped), not the current `client` object.
 
 ## Requirements
 

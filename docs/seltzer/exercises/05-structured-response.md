@@ -1,8 +1,10 @@
 # Exercise 5: Structured Response
 
+**Contributor elective — not shipped.** Current `listen` **ignores** the handler return value. Returning `{ status, body }` will hang unless you also `ctx.json` / `res.end`. Product path: [Request and response](../seltzer-request-response.md).
+
 **Goal:** Handlers return data objects; the runtime writes the HTTP response.
 
-**Proves you can build:** Seltzer's `response` and `send` stages.
+**Proves you can build:** Seltzer's **design-doc** `response` and `send` stages (not in source).
 
 ## Requirements
 

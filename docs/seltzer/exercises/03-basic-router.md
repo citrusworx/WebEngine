@@ -1,5 +1,7 @@
 # Exercise 3: Basic Router
 
+**Contributor elective.** This rebuilds the matcher that **already shipped** in `Seltzer.listen`. App authors should call `.route()` / `.listen()` instead of reimplementing it — [Getting Started](../seltzer-getting-started.md).
+
 **Goal:** Register routes and match by method + exact path.
 
 **Proves you can build:** Current Seltzer v0.2 behavior.

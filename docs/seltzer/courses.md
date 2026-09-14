@@ -1,8 +1,10 @@
 # Seltzer Study: Node.js Reading & Course List
 
-**Contributor elective.** This is not the product getting-started path.
+**Contributor elective.** This is not the product getting-started path. App authors should not start here.
 
-If you want to run the HTTP surface that exists today, use the [product README](./README.md) and [Getting Started](./seltzer-getting-started.md). Come here when you intend to implement missing pipeline stages yourself.
+If you want to **run** the HTTP surface that exists today (`Seltzer.init` / `.route` / `.listen` / `ctx.json` / `client.*`), use the [product README](./README.md), [Getting Started](./seltzer-getting-started.md), and the [JSON API tutorial](./seltzer-api-tutorial.md).
+
+Come here when you intend to **implement** missing pipeline stages yourself. Exercises 4–7 describe the future matcher, structured returns, and named stages — they are not shipped.
 
 A structured path to write **Seltzer** yourself — from raw `node:http` through streams, routing, pipeline stages, and contract validation — without leaning on AI for whole features.
 
@@ -210,15 +212,18 @@ Read `packages/kiwipress/src/core/WPClient.ts` and extend Seltzer client pattern
 
 ## Recommended Study Order
 
+This order is for **implementers**. App authors stop at the [JSON API tutorial](./seltzer-api-tutorial.md).
+
 1. **Seltzer design overview** ([seltzer-design.md](./seltzer-design.md)) — 1 hour; know the target pipeline
-2. **Exercise 1–2** + Node HTTP/stream docs — hands-on before any course
+2. **Exercise 1–2** + Node HTTP/stream docs — hands-on before any course (body collection is also what product handlers do today)
 3. **FEM: Complete Intro to Node.js v3** (HTTP + streams sections)
-4. **Exercise 3–5** — rebuild current Seltzer behavior yourself from scratch in a scratch file
-5. **FEM: API Design in Node.js v4** (error/response shaping) — maps to structured handler returns
-6. **Exercise 6–7** — pipeline runner
-7. **TypeScript generics refresh** — type `Context`, `Route<T>`, stage signatures
-8. **Implement in `libraries/seltzer/src/`** — one stage per PR-sized chunk
-9. **Nectarine contract skim** — when `validate` stage lands
+4. **Exercise 3** — rebuild **current** Seltzer v0.2 matching from scratch
+5. **Exercise 4–5** — parametric routes and structured returns (**not shipped**; design target)
+6. **FEM: API Design in Node.js v4** (error/response shaping) — maps to structured handler returns
+7. **Exercise 6–7** — pipeline runner (**not shipped**)
+8. **TypeScript generics refresh** — type `Context`, `Route<T>`, stage signatures
+9. **Implement in `libraries/seltzer/src/`** — one stage per PR-sized chunk
+10. **Nectarine contract skim** — when `validate` stage lands
 
 ---
 
