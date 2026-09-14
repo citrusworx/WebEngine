@@ -38,8 +38,7 @@ export const joinWaitlistRoute: Route<BlackwaterContext> = {
     }
 
     if (!source.ok) {
-      json({ error: "source_app is invalid" }, 400);
-      return;
+      return { status: 400, body: { error: "source_app is invalid" } };
     }
 
     if (await hasWaitlistEmail(email)) {
