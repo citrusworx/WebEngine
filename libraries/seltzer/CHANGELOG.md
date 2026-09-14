@@ -12,6 +12,14 @@
 
 ### Minor Changes
 
+- 632d20f: `generateRoutes` maps Nectarine `ApiOperation[]` (from `listApiOperations`) onto object-based `Route`s. Handlers call host `execute` and return `ResponseData` (404 when a read finds nothing). Explicit transport results use `response(...)`. Static-prefix paths win over `:id`. Compatible with the Seltzer 0.5 pipeline.
+- 2150bb9: Named HTTP request pipeline (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) with `Seltzer#before(name, stage)` for inserting stages. `validate` is a no-op stub. Default listen/handle behavior is unchanged for `init().route().listen()`.
+- 12ec2bc: Handlers return ResponseData; the runtime sends the HTTP response. Removed the writing ctx.json helper from RequestContext (breaking).
+
+## 0.6.0
+
+### Minor Changes
+
 - `generateRoutes(operations, { execute })` maps Nectarine `ApiOperation[]` (`listApiOperations`) onto object-based `Route`s that return `ResponseData`. `null`/`undefined` from `execute` becomes 404. Explicit transport results use `response(...)`.
 - Generated routes and `matchRoute` prefer static prefixes over `:param` (so `/api/products/catalog/:catalog` wins over `/api/products/:id`). Compatible with the 0.5 named pipeline.
 

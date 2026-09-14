@@ -1,5 +1,22 @@
 # @citrusworx/kiwipress
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [a85ffb4]
+- Updated dependencies [ebe30a7]
+- Updated dependencies [d6c213e]
+- Updated dependencies [39b06f0]
+- Updated dependencies [da4d534]
+- Updated dependencies [ff777bb]
+- Updated dependencies [39c325b]
+- Updated dependencies [632d20f]
+- Updated dependencies [2150bb9]
+- Updated dependencies [12ec2bc]
+  - @citrusworx/nectarine@0.2.0
+  - @citrusworx/seltzer@0.6.0
+
 ## 0.4.0
 
 ### Minor Changes
