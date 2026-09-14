@@ -55,7 +55,8 @@ POST /api/users
 | [Getting Started](./nectarine-getting-started.md) | Installation, setup, first backend |
 | [API Reference](./nectarine-api.md) | Complete API documentation |
 | [Schema Guide](./nectarine-schema-guide.md) | Schema definition and field types |
-| [Query DSL](./nectarine-query-dsl.md) | Current YAML query DSL shape and conventions |
+| [Query DSL](./nectarine-query-dsl.md) | Phonics YAML query DSL (canonical + Blackwater) |
+| [No hard-coded SQL](./no-hardcoded-sql.md) | Hard rule, assembly model, Blackwater SQL inventory |
 | [Examples](./nectarine-examples.md) | Real-world examples (blog, store, SaaS, CMS) |
 | [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
 | [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |
@@ -362,23 +363,21 @@ Nectarine includes adapters for each supported database. All connection details 
 
 ### Query Generation
 
-Nectarine reads a query definition from YAML and constructs the SQL statement dynamically:
+Nectarine reads a query definition from YAML and the **compiler** assembles SQL. App code must not concatenate tokens into a statement.
 
 ```ts
-import { gensql } from "@citrusworx/nectarine";
-import { Pgsql } from "@citrusworx/nectarine";
+import { CCompiler } from "@citrusworx/nectarine/compiler";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
 
-// Load query definition from YAML
-const getUserById = gensql("user.yml", "user", "get", "UserById");
+const compiler = new CCompiler();
+const parsed = compiler.parse_config("user.yml");
+const sql = compiler.buildQuery(compiler.clean_parse(parsed, "user", "get"), "UserById");
+// SELECT id FROM users WHERE id = $1
 
-// Build SQL dynamically from the definition
-const sql = `${getUserById.type} ${getUserById.fields} ${getUserById.action} ${getUserById.table} ${getUserById.conditions.condition} ${getUserById.conditions.column} ${getUserById.conditions.operator} $1`;
-
-// Execute against the database
-const user = await Pgsql(sql, [id]);
+const user = await pg.query(sql, [id]);
 ```
 
-No SQL is written by hand. The query structure, fields, table, and conditions all come from the YAML definition.
+No SQL is written by hand. The query structure, fields, table, and conditions all come from the YAML definition. See [No hard-coded SQL](./no-hardcoded-sql.md).
 
 ### PostgreSQL
 

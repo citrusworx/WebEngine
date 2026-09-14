@@ -1,8 +1,11 @@
 import { parser, type YAMLdata } from "../util/util.js";
 import {
+    methodLookupKeys,
+    resolveCrudMethod,
+} from "./normalize.js";
+import {
     compileQuery,
     isCleanedQueries,
-    isCrudMethod,
     isRecord,
     QueryCompileError,
     type CleanedQueries,
@@ -10,6 +13,7 @@ import {
 } from "./sql.js";
 
 export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
+export type { QueryType } from "./normalize.js";
 export {
     compileQuery,
     CRUD_METHODS,
@@ -17,28 +21,38 @@ export {
     OP_TOKENS,
     QueryCompileError,
 } from "./sql.js";
+export {
+    inferMethodFromType,
+    METHOD_ALIASES,
+    normalizeQuery,
+    resolveCrudMethod,
+} from "./normalize.js";
+export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
 
 /**
  * Compiles Nectarine query YAML into parameterized SQL strings.
  *
- * Supported document shape (canonical, Postgres-first) — see
- * `models/user/db/pg/user.yml`:
+ * App code calls named queries only. This compiler assembles SQL from YAML
+ * tokens (phonics). Adapters execute the resulting `(sql, params)` — they
+ * never build SQL.
+ *
+ * Canonical document shape (Postgres-first) — see `models/user/db/pg/user.yml`:
  *
  * ```yaml
  * user:                    # type / resource
- *   get:                   # method
+ *   get:                   # method (`read` is an alias of `get`)
  *     UserById:            # query name
  *       select: ['id']
  *       from: users
  *       where: { column: id, operator: eq, value: $1 }
  * ```
  *
+ * Blackwater `type: SELECT` documents are accepted and normalized onto the
+ * same phonics model before assembly.
+ *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
- * `user.get.UserById`. The returned bundle carries `method` so
- * `buildQuery` can dispatch GET vs DELETE instead of guessing from keys.
- *
- * Not compiled: blog `queries:` maps and product `type: SELECT` fixtures.
+ * `user.get.UserById` / `product.read.allProducts`.
  */
 export class CCompiler {
     /**
@@ -52,14 +66,16 @@ export class CCompiler {
      * Narrow a parsed document to one resource + CRUD method.
      *
      * @param parsedConfig - object from {@link parse_config}
-     * @param type - resource key (`user`)
-     * @param method - CRUD key (`get` | `create` | `update` | `delete`)
+     * @param type - resource key (`user`, `product`)
+     * @param method - CRUD key (`get` | `read` | `create` | `update` | `delete`)
      */
     clean_parse(parsedConfig: YAMLdata, type: string, method: string): CleanedQueries {
         if (!isRecord(parsedConfig)) {
             throw new QueryCompileError("Parsed config must be an object");
         }
-        if (!isCrudMethod(method)) {
+
+        const crud = resolveCrudMethod(method);
+        if (!crud) {
             throw new QueryCompileError(`Unknown CRUD method: ${method}`);
         }
 
@@ -68,14 +84,14 @@ export class CCompiler {
             throw new QueryCompileError(`SQL configuration not found for type: ${type}`);
         }
 
-        const queries = resource[method];
-        if (!isRecord(queries)) {
+        const queries = lookupMethodQueries(resource, method);
+        if (!queries) {
             throw new QueryCompileError(
                 `SQL configuration not found for type: ${type}, method: ${method}`,
             );
         }
 
-        return { type, method, queries };
+        return { type, method: crud, queries };
     }
 
     /**
@@ -83,14 +99,19 @@ export class CCompiler {
      * `$1`-style placeholders are preserved; `{ fn: now }` becomes `NOW()`.
      *
      * `method` comes from {@link clean_parse}. A raw query map is accepted
-     * when `method` is passed as the third argument.
+     * when `method` is passed as the third argument (`read` aliases `get`).
      */
     buildQuery(
         cleanedConfig: CleanedQueries | Record<string, unknown>,
         query: string,
-        method?: CrudMethod,
+        method?: string,
     ): string {
-        const bundle = resolveCleanedQueries(cleanedConfig, method);
+        const resolved = method === undefined ? undefined : resolveCrudMethod(method);
+        if (method !== undefined && resolved === undefined) {
+            throw new QueryCompileError(`Unknown CRUD method: ${method}`);
+        }
+
+        const bundle = resolveCleanedQueries(cleanedConfig, resolved);
 
         if (!Object.prototype.hasOwnProperty.call(bundle.queries, query)) {
             throw new QueryCompileError(`Query not found: ${query}`);
@@ -98,6 +119,19 @@ export class CCompiler {
 
         return compileQuery(bundle.queries[query], bundle.method);
     }
+}
+
+function lookupMethodQueries(
+    resource: Record<string, unknown>,
+    method: string,
+): Record<string, unknown> | undefined {
+    for (const key of methodLookupKeys(method)) {
+        const queries = resource[key];
+        if (isRecord(queries)) {
+            return queries;
+        }
+    }
+    return undefined;
 }
 
 function resolveCleanedQueries(
@@ -114,7 +148,7 @@ function resolveCleanedQueries(
         throw new QueryCompileError("Cleaned config must be an object");
     }
 
-    if (!isCrudMethod(method)) {
+    if (method === undefined) {
         throw new QueryCompileError(
             "CRUD method is required; use clean_parse() or pass method to buildQuery",
         );
@@ -127,7 +161,6 @@ function resolveCleanedQueries(
 // const parse = compiler.parse_config("./models/user/db/pg/user.yml");
 // const clean = compiler.clean_parse(parse, "user", "get");
 // const getUserById = compiler.buildQuery(clean, "UserById");
-// const getAllUsers = compiler.buildQuery(clean, "AllUsers");
 //
 // Pass the resulting SQL string into the Postgres adapter with bound parameters:
 //   await pg.query(getUserById, [id])

@@ -1,12 +1,18 @@
 /**
  * Shared YAML-query → SQL compiler.
  *
- * Canonical shape (Postgres-first MVP): `models/user/db/pg/user.yml`
+ * Canonical phonics shape (Postgres-first): `models/user/db/pg/user.yml`
  *   resource → get|create|update|delete → QueryName → clause object
  *
- * Alternate layouts (blog `queries:` map, product `type: SELECT` fixtures)
- * are not compiled here.
+ * Blackwater `type: SELECT` YAML is normalized onto this shape first
+ * (`normalizeQuery`). Blog `queries:` maps are not compiled here.
  */
+
+import { isRecord, QueryCompileError } from "./errors.js";
+import { parseOrderByFragment, parseWhereFragment, whereNodeToYaml } from "./fragments.js";
+import { inferMethodFromType, normalizeQuery } from "./normalize.js";
+
+export { isRecord, QueryCompileError } from "./errors.js";
 
 export const OP_TOKENS = {
     eq: "=",
@@ -15,6 +21,10 @@ export const OP_TOKENS = {
     lte: "<=",
     gte: ">=",
     neq: "!=",
+    in: "IN",
+    not_in: "NOT IN",
+    is_null: "IS NULL",
+    is_not_null: "IS NOT NULL",
 } as const;
 
 export const CRUD_METHODS = ["get", "create", "update", "delete"] as const;
@@ -32,17 +42,6 @@ export type CleanedQueries = {
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const PLACEHOLDER = /^\$[1-9]\d*$/;
 const NOW_LITERAL = /^now\(\)$/i;
-
-export class QueryCompileError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "QueryCompileError";
-    }
-}
-
-export function isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export function isCrudMethod(value: unknown): value is CrudMethod {
     return typeof value === "string" && (CRUD_METHODS as readonly string[]).includes(value);
@@ -74,9 +73,30 @@ function compileFunction(fn: unknown): string {
     return "NOW()";
 }
 
+function compileConst(value: unknown): string {
+    if (value === null) {
+        return "NULL";
+    }
+    if (typeof value === "boolean") {
+        return value ? "TRUE" : "FALSE";
+    }
+    if (typeof value === "number" && Number.isFinite(value)) {
+        return String(value);
+    }
+    if (typeof value === "string") {
+        return `'${value.replace(/'/g, "''")}'`;
+    }
+    throw new QueryCompileError(
+        `Unsupported constant ${JSON.stringify(value)}; use a boolean, number, string, or null`,
+    );
+}
+
 export function compileValue(value: unknown): string {
     if (isRecord(value) && "fn" in value) {
         return compileFunction(value.fn);
+    }
+    if (isRecord(value) && "const" in value) {
+        return compileConst(value.const);
     }
 
     if (typeof value === "string") {
@@ -128,11 +148,26 @@ function normalizeColumns(columns: unknown, label: string, allowStar: boolean): 
     });
 }
 
-function compileWhere(where: unknown): string {
-    if (!isRecord(where)) {
-        throw new QueryCompileError("where must be an object");
+function compileInList(value: unknown): string {
+    if (isRecord(value) && "list" in value) {
+        if (!Array.isArray(value.list) || value.list.length === 0) {
+            throw new QueryCompileError("IN list cannot be empty");
+        }
+        return value.list.map((item) => compileValue(item)).join(", ");
     }
+    if (isRecord(value) && "const" in value && Array.isArray(value.const)) {
+        if (value.const.length === 0) {
+            throw new QueryCompileError("IN list cannot be empty");
+        }
+        return value.const.map((item) => compileConst(item)).join(", ");
+    }
+    if (Array.isArray(value) && value.length > 0) {
+        return value.map((item) => compileValue(item)).join(", ");
+    }
+    throw new QueryCompileError("IN / NOT IN requires a non-empty list");
+}
 
+function compilePredicate(where: Record<string, unknown>): string {
     const { column, operator, value } = where;
 
     if (typeof column !== "string") {
@@ -147,12 +182,88 @@ function compileWhere(where: unknown): string {
         throw new QueryCompileError(`Unknown operator: ${operator}`);
     }
 
+    const sqlOp = OP_TOKENS[operator as OperatorToken];
+
+    if (operator === "is_null" || operator === "is_not_null") {
+        if (value !== undefined) {
+            throw new QueryCompileError(`${operator} does not take a value`);
+        }
+        return `${column} ${sqlOp}`;
+    }
+
     if (value === undefined) {
         throw new QueryCompileError("where.value is required");
     }
 
-    const sqlOp = OP_TOKENS[operator as OperatorToken];
+    if (operator === "in" || operator === "not_in") {
+        return `${column} ${sqlOp} (${compileInList(value)})`;
+    }
+
     return `${column} ${sqlOp} ${compileValue(value)}`;
+}
+
+function compileWhere(where: unknown, parent?: "and" | "or"): string {
+    if (typeof where === "string") {
+        return compileWhere(whereNodeToYaml(parseWhereFragment(where)), parent);
+    }
+
+    if (Array.isArray(where)) {
+        if (where.length === 0) {
+            throw new QueryCompileError("where list cannot be empty");
+        }
+        const sql = where.map((item) => compileWhere(item, "and")).join(" AND ");
+        return parent === "or" ? `(${sql})` : sql;
+    }
+
+    if (!isRecord(where)) {
+        throw new QueryCompileError("where must be an object");
+    }
+
+    if ("and" in where) {
+        if (!Array.isArray(where.and) || where.and.length === 0) {
+            throw new QueryCompileError("where.and must be a non-empty array");
+        }
+        const sql = where.and.map((item) => compileWhere(item, "and")).join(" AND ");
+        return parent === "or" ? `(${sql})` : sql;
+    }
+
+    if ("or" in where) {
+        if (!Array.isArray(where.or) || where.or.length === 0) {
+            throw new QueryCompileError("where.or must be a non-empty array");
+        }
+        const sql = where.or.map((item) => compileWhere(item, "or")).join(" OR ");
+        return parent === "and" ? `(${sql})` : sql;
+    }
+
+    return compilePredicate(where);
+}
+
+function compileOrderBy(orderBy: unknown): string {
+    const terms = typeof orderBy === "string" ? parseOrderByFragment(orderBy) : orderBy;
+
+    if (!Array.isArray(terms) || terms.length === 0) {
+        throw new QueryCompileError("orderBy must be a non-empty list");
+    }
+
+    return terms
+        .map((term, index) => {
+            if (typeof term === "string") {
+                assertIdentifier(term, "orderBy");
+                return term;
+            }
+            if (!isRecord(term) || typeof term.column !== "string") {
+                throw new QueryCompileError(`orderBy[${index}] requires column`);
+            }
+            assertIdentifier(term.column, "orderBy");
+            if (term.direction === undefined) {
+                return term.column;
+            }
+            if (term.direction !== "ASC" && term.direction !== "DESC") {
+                throw new QueryCompileError(`Invalid orderBy direction: ${String(term.direction)}`);
+            }
+            return `${term.column} ${term.direction}`;
+        })
+        .join(", ");
 }
 
 function compileSelect(query: Record<string, unknown>): string {
@@ -166,6 +277,9 @@ function compileSelect(query: Record<string, unknown>): string {
 
     if (query.where !== undefined) {
         sql += ` WHERE ${compileWhere(query.where)}`;
+    }
+    if (query.orderBy !== undefined) {
+        sql += ` ORDER BY ${compileOrderBy(query.orderBy)}`;
     }
 
     return sql;
@@ -193,7 +307,14 @@ function compileInsert(query: Record<string, unknown>): string {
     }
 
     const compiled = values.map((value) => compileValue(value));
-    return `INSERT INTO ${into} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
+    let sql = `INSERT INTO ${into} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
+
+    const returning = query.returning ?? query.insert.returning;
+    if (returning !== undefined) {
+        sql += ` RETURNING ${normalizeColumns(returning, "returning", true).join(", ")}`;
+    }
+
+    return sql;
 }
 
 function compileUpdate(query: Record<string, unknown>): string {
@@ -292,13 +413,19 @@ function compileByMethod(query: Record<string, unknown>, method: CrudMethod): st
  *
  * Pass `method` from `clean_parse` / `buildQuery` so DELETE is not inferred
  * from a bare `from` clause (a malformed GET missing `select`).
- * Without `method`, only unambiguous `select` / `insert` / `set` shapes compile.
+ * Without `method`, `type: SELECT|INSERT|UPDATE|DELETE` or an unambiguous
+ * `select` / `insert` / `set` shape is enough.
+ *
+ * Blackwater `type: SELECT` objects are normalized onto the canonical
+ * phonics shape before assembly.
  */
 export function compileQuery(query: unknown, method?: CrudMethod): string {
     if (!isRecord(query)) {
         throw new QueryCompileError("Query must be an object");
     }
 
-    const kind = method ?? inferQueryKind(query);
-    return compileByMethod(query, kind);
+    const resolvedMethod = method ?? inferMethodFromType(query);
+    const normalized = normalizeQuery(query, resolvedMethod);
+    const kind = resolvedMethod ?? inferQueryKind(normalized);
+    return compileByMethod(normalized, kind);
 }
