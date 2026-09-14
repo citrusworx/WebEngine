@@ -35,12 +35,76 @@ export function compileRoute(route: Route): CompiledRoute {
     };
 }
 
+export type PathRank = {
+    staticCount: number;
+    paramCount: number;
+    segments: number;
+};
+
+/** Rank a route path so static prefixes beat `:param` segments. */
+export function rankPath(path: string): PathRank {
+    const segments = path.split("/").filter((segment) => segment.length > 0);
+    let staticCount = 0;
+    let paramCount = 0;
+
+    for (const segment of segments) {
+        if (segment.startsWith(":")) {
+            paramCount += 1;
+        } else {
+            staticCount += 1;
+        }
+    }
+
+    return { staticCount, paramCount, segments: segments.length };
+}
+
+/** More static segments first, then fewer params, then longer paths. */
+export function comparePathRank(a: PathRank, b: PathRank): number {
+    if (a.staticCount !== b.staticCount) {
+        return b.staticCount - a.staticCount;
+    }
+
+    if (a.paramCount !== b.paramCount) {
+        return a.paramCount - b.paramCount;
+    }
+
+    return b.segments - a.segments;
+}
+
+/**
+ * First-match is not enough: `/api/products/:id` must not steal
+ * `/api/products/catalog/:catalog` if a future matcher overlaps, and
+ * `/items/:id` must not steal `/items/new`. Prefer the most specific path.
+ */
 export function matchRoute(
     routes: CompiledRoute[],
     method: string,
     path: string,
 ): CompiledRoute | undefined {
-    return routes.find((route) => route.method === method && route.regex.test(path));
+    let best: CompiledRoute | undefined;
+    let bestRank: PathRank | undefined;
+    let bestIndex = -1;
+
+    for (let index = 0; index < routes.length; index += 1) {
+        const route = routes[index];
+        if (route.method !== method || !route.regex.test(path)) {
+            continue;
+        }
+
+        const rank = rankPath(route.path);
+        const better =
+            !best ||
+            comparePathRank(rank, bestRank!) < 0 ||
+            (comparePathRank(rank, bestRank!) === 0 && index < bestIndex);
+
+        if (better) {
+            best = route;
+            bestRank = rank;
+            bestIndex = index;
+        }
+    }
+
+    return best;
 }
 
 export function paramsFromMatch(route: CompiledRoute, path: string): Record<string, string> {

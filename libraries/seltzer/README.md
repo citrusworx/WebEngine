@@ -118,6 +118,8 @@ const routes = generateRoutes(operations, {
 - `query` is the named-query key, not the HTTP search string (`ctx.query`).
 - Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`. There is no writing `ctx.json`.
 - `execute` may return a payload (`{ body }`), `ResponseData` (sent as-is), or `null`/`undefined` (default 404).
+- `generateRoutes` registers static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
+- Uses the Seltzer 0.5 default pipeline (`parse` → `…` → `send`) and `ResponseData`. It does not replace `before()`.
 - `listApiOperations` sits next to this helper so Nectarine can absorb the flatten later without rewriting `generateRoutes`.
 
 Blackwater registers generated product **read** routes this way and keeps health, waitlist, and KiwiPress content hand-written.

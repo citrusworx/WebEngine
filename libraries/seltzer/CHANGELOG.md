@@ -6,6 +6,7 @@
 
 - `listApiOperations` flattens Nectarine `*API.yml` (`resource → crud → operation → api`) into `ApiOperation`s.
 - `generateRoutes(operations, { execute })` builds object-based `Route`s that return `ResponseData`. `null`/`undefined` from `execute` becomes 404.
+- Generated routes and `matchRoute` prefer static prefixes over `:param` (so `/api/products/catalog/:catalog` wins over `/api/products/:id`). Compatible with the 0.5 named pipeline.
 
 ## 0.5.0
 

@@ -1,5 +1,6 @@
 import { isResponseData, type ResponseData } from "../core/response.js";
 import type { RequestContext, Route } from "../core/types.js";
+import { comparePathRank, rankPath } from "../pipeline/router.js";
 import type { ApiOperation } from "./types.js";
 
 export type ExecuteArgs<TContext extends RequestContext = RequestContext> = {
@@ -38,7 +39,20 @@ export function generateRoutes<TContext extends RequestContext = RequestContext>
 ): Route<TContext>[] {
     const selected = options.filter ? operations.filter(options.filter) : [...operations];
 
-    return selected.map((operation) => ({
+    // Register static prefixes (`/catalog/:catalog`, `/slug/:slug`) before `:id`
+    // so first-match registration is safe; matchRoute also prefers specificity.
+    const ordered = selected
+        .map((operation, index) => ({ operation, index }))
+        .sort((left, right) => {
+            const byPath = comparePathRank(
+                rankPath(left.operation.path),
+                rankPath(right.operation.path),
+            );
+            return byPath !== 0 ? byPath : left.index - right.index;
+        })
+        .map(({ operation }) => operation);
+
+    return ordered.map((operation) => ({
         method: operation.method,
         path: operation.path,
         handler: async (ctx: TContext): Promise<ResponseData> => {

@@ -16,9 +16,16 @@ function stringField(product: ProductRecord, key: string): string | undefined {
 }
 
 /**
- * Live catalog is JSONB `payload` (allPayloads / payloadById), not the
- * relational allProducts / productById SQL (those columns stay NULL).
- * Empty DB falls back to boot-time `locals.products` (seed).
+ * `productAPI.yml` `query:` vs live SQL in `named-queries.ts`:
+ *
+ * | API `query:`        | Live named query | Why |
+ * | allProducts         | allPayloads      | Catalog lives in JSONB `payload`; relational columns are NULL |
+ * | productById         | payloadById      | same |
+ * | productsByCatalog   | (filter payload) | no JSONB catalog query; relational `productsByCatalog` is NULL |
+ * | productBySlug       | (filter payload) | no JSONB slug query; seed `id` used as slug fallback |
+ *
+ * When Postgres is unset (or the live catalog is empty), use boot-time
+ * `locals.products` / seed — the same fallback the hand routes used.
  */
 async function loadCatalog(ctx: BlackwaterContext): Promise<ProductRecord[]> {
   if (isDatabaseConnected()) {
@@ -81,8 +88,9 @@ async function executeProductRead({
       return (await loadCatalog(ctx)).filter((product) => stringField(product, "catalog") === catalog);
     }
     case "allProducts":
-    default:
       return loadCatalog(ctx);
+    default:
+      return null;
   }
 }
 

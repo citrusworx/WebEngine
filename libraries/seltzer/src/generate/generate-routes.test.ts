@@ -104,11 +104,89 @@ describe("generateRoutes", () => {
         const routes = generateRoutes(productReadOps, { execute: executeProductRead });
 
         expect(routes.map((route) => [route.method, route.path])).toEqual([
-            ["GET", "/api/products"],
             ["GET", "/api/products/catalog/:catalog"],
-            ["GET", "/api/products/:id"],
             ["GET", "/api/products/slug/:slug"],
+            ["GET", "/api/products"],
+            ["GET", "/api/products/:id"],
         ]);
+    });
+
+    it("registers catalog/slug ahead of :id even when YAML lists productById first", () => {
+        const hostile = listApiOperations({
+            product: {
+                read: {
+                    productById: {
+                        api: { method: "GET", endpoint: "/api/products/:id", query: "productById" },
+                    },
+                    productsByCatalog: {
+                        api: {
+                            method: "GET",
+                            endpoint: "/api/products/catalog/:catalog",
+                            query: "productsByCatalog",
+                        },
+                    },
+                    productBySlug: {
+                        api: {
+                            method: "GET",
+                            endpoint: "/api/products/slug/:slug",
+                            query: "productBySlug",
+                        },
+                    },
+                },
+            },
+        });
+
+        expect(generateRoutes(hostile, { execute: executeProductRead }).map((route) => route.path)).toEqual([
+            "/api/products/catalog/:catalog",
+            "/api/products/slug/:slug",
+            "/api/products/:id",
+        ]);
+    });
+
+    it("does not treat catalog/slug segments as :id", async () => {
+        const app = Seltzer.init();
+        for (const route of generateRoutes(
+            listApiOperations({
+                product: {
+                    read: {
+                        productById: {
+                            api: { method: "GET", endpoint: "/api/products/:id", query: "productById" },
+                        },
+                        productsByCatalog: {
+                            api: {
+                                method: "GET",
+                                endpoint: "/api/products/catalog/:catalog",
+                                query: "productsByCatalog",
+                            },
+                        },
+                        productBySlug: {
+                            api: {
+                                method: "GET",
+                                endpoint: "/api/products/slug/:slug",
+                                query: "productBySlug",
+                            },
+                        },
+                    },
+                },
+            }),
+            { execute: executeProductRead },
+        )) {
+            app.route(route);
+        }
+
+        const base = await listen(app);
+        await expect(request(`${base}/api/products/catalog/software`)).resolves.toEqual({
+            status: 200,
+            json: [products[1]],
+        });
+        await expect(request(`${base}/api/products/slug/stink-rat`)).resolves.toEqual({
+            status: 200,
+            json: products[0],
+        });
+        await expect(request(`${base}/api/products/stinkrat`)).resolves.toEqual({
+            status: 200,
+            json: products[0],
+        });
     });
 
     it("serves list/by-id/catalog/slug reads as ResponseData", async () => {

@@ -1,7 +1,7 @@
 import { isResponseData } from "../core/response.js";
 import { contextStage, createRouteStage, handleStage, parseStage, responseStage, sendStage, validateStage, } from "./stages.js";
 export { STAGE_NAMES } from "./types.js";
-export { compileRoute } from "./router.js";
+export { compileRoute, comparePathRank, matchRoute, rankPath } from "./router.js";
 function internalError(error) {
     return {
         status: 500,
