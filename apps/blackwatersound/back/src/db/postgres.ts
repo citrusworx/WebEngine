@@ -161,6 +161,12 @@ export async function loadWaitlistFromDb(): Promise<WaitlistEntry[]> {
   return result.rows.map(toWaitlistEntry);
 }
 
+export async function loadWaitlistByEmailFromDb(email: string): Promise<WaitlistEntry | null> {
+  const result = await runNamed<WaitlistRow>("entryByEmail", [email]);
+  const row = result?.rows[0];
+  return row ? toWaitlistEntry(row) : null;
+}
+
 export async function insertWaitlistEntry(entry: WaitlistEntry) {
   const result = await runNamed("joinWaitlist", [
     entry.id,
@@ -176,6 +182,5 @@ export async function insertWaitlistEntry(entry: WaitlistEntry) {
 }
 
 export async function waitlistEmailExists(email: string) {
-  const result = await runNamed<WaitlistRow>("entryByEmail", [email]);
-  return Boolean(result && result.rows.length > 0);
+  return Boolean(await loadWaitlistByEmailFromDb(email));
 }

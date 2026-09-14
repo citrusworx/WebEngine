@@ -293,3 +293,109 @@ describe("generateRoutes", () => {
         ]);
     });
 });
+
+const waitlist = [
+    { id: "wl_1", name: "Ada", email: "ada@example.com" },
+    { id: "wl_2", name: "Bob", email: "bob@example.com" },
+];
+
+function waitlistReadOp(name: string, path: string, query: string): ApiOperation {
+    return {
+        resource: "waitlist",
+        crud: "read",
+        name,
+        method: "GET",
+        path,
+        query,
+    };
+}
+
+/** Nectarine `listApiOperations("waitlist", api)` GET ops — YAML order. */
+const waitlistReadOps: ApiOperation[] = [
+    waitlistReadOp("allEntries", "/api/waitlist", "allEntries"),
+    waitlistReadOp("entryByEmail", "/api/waitlist/:email", "entryByEmail"),
+];
+
+function executeWaitlistRead({ query, params }: { query?: string; params: Record<string, string> }) {
+    switch (query) {
+        case "allEntries":
+            return waitlist;
+        case "entryByEmail":
+            return waitlist.find((entry) => entry.email === params.email) ?? null;
+        default:
+            return null;
+    }
+}
+
+describe("generateRoutes waitlist reads", () => {
+    it("returns GET list and by-email routes without inventing POST join", () => {
+        const joinWaitlist: ApiOperation = {
+            resource: "waitlist",
+            crud: "create",
+            name: "joinWaitlist",
+            method: "POST",
+            path: "/api/waitlist",
+            query: "joinWaitlist",
+        };
+
+        const routes = generateRoutes([...waitlistReadOps, joinWaitlist], {
+            execute: executeWaitlistRead,
+            filter: (operation) => operation.crud === "read" && operation.method === "GET",
+        });
+
+        expect(routes.map((route) => [route.method, route.path])).toEqual([
+            ["GET", "/api/waitlist"],
+            ["GET", "/api/waitlist/:email"],
+        ]);
+    });
+
+    it("serves allEntries and entryByEmail as ResponseData", async () => {
+        const app = Seltzer.init();
+        for (const route of generateRoutes(waitlistReadOps, {
+            execute: executeWaitlistRead,
+            notFound: (): ResponseData => ({ status: 404, body: { error: "Waitlist entry not found" } }),
+        })) {
+            app.route(route);
+        }
+
+        const base = await listen(app);
+        await expect(request(`${base}/api/waitlist`)).resolves.toEqual({
+            status: 200,
+            json: waitlist,
+        });
+        await expect(request(`${base}/api/waitlist/${encodeURIComponent("ada@example.com")}`)).resolves.toEqual({
+            status: 200,
+            json: waitlist[0],
+        });
+        await expect(request(`${base}/api/waitlist/${encodeURIComponent("missing@example.com")}`)).resolves.toEqual({
+            status: 404,
+            json: { error: "Waitlist entry not found" },
+        });
+    });
+
+    it("keeps a hand-written POST join beside generated GET routes", async () => {
+        const app = Seltzer.init();
+        for (const route of generateRoutes(waitlistReadOps, { execute: executeWaitlistRead })) {
+            app.route(route);
+        }
+        app.route({
+            method: "POST",
+            path: "/api/waitlist",
+            handler: async () => ({ body: { ok: true } }),
+        });
+
+        const base = await listen(app);
+        const res = await fetch(`${base}/api/waitlist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "ada@example.com" }),
+        });
+
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ ok: true });
+        await expect(request(`${base}/api/waitlist`)).resolves.toEqual({
+            status: 200,
+            json: waitlist,
+        });
+    });
+});

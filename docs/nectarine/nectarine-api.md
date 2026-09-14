@@ -424,7 +424,7 @@ const ops = listApiOperations("product", product.api);
 
 ### Hosting with Seltzer
 
-Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s. Product reads use that path; other routes stay hand-registered.
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s. Product and waitlist reads use that path; other routes stay hand-registered.
 
 Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
 

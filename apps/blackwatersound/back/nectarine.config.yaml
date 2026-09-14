@@ -31,8 +31,8 @@ database:
 
 transport:
   server: seltzer
-  # Product reads: Nectarine listApiOperations → Seltzer generateRoutes.
-  # Health, waitlist, and KiwiPress content stay hand-written. Do not use Express.
+  # Product + waitlist reads: Nectarine listApiOperations → Seltzer generateRoutes.
+  # Health, waitlist POST, and KiwiPress content stay hand-written. Do not use Express.
 
 fallback:
   # Local only: when vendor DB env is fully unset, services use seed data.
