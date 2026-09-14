@@ -119,7 +119,7 @@ const routes = generateRoutes(operations, {
 - Uses the Seltzer 0.5 default pipeline (`parse` → `…` → `send`) and `ResponseData`. It does not replace `before()`.
 - Nectarine does not generate `Route`s. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`).
 
-Blackwater registers generated product **read** routes this way and keeps health, waitlist, and KiwiPress content hand-written.
+Blackwater registers generated product and waitlist **read** routes this way and keeps health, waitlist POST, and KiwiPress content hand-written.
 
 ## Development
 

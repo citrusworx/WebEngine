@@ -108,11 +108,31 @@ describe("listApiOperations", () => {
         ]);
     });
 
-    it("includes optional body field types from waitlistAPI.yml", () => {
+    it("flattens waitlistAPI.yml reads and optional joinWaitlist body fields", () => {
         const operations = loadApiOperations(
             "waitlist",
             path.join(blackwaterSchemas, "waitlist/waitlistAPI.yml"),
         );
+
+        expect(operations.filter((entry) => entry.crud === "read")).toEqual([
+            op({
+                resource: "waitlist",
+                crud: "read",
+                name: "allEntries",
+                method: "GET",
+                path: "/api/waitlist",
+                query: "allEntries",
+            }),
+            op({
+                resource: "waitlist",
+                crud: "read",
+                name: "entryByEmail",
+                method: "GET",
+                path: "/api/waitlist/:email",
+                query: "entryByEmail",
+            }),
+        ]);
+
         const join = operations.find((entry) => entry.name === "joinWaitlist");
 
         expect(join).toEqual({

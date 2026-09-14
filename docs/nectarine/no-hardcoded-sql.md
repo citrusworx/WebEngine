@@ -86,8 +86,9 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
 | `loadWaitlistFromDb()` | List signups oldest-first | `waitlist.read.allEntries` | **migrated** — `SELECT * … ORDER BY created_at ASC`; `created_at` → `createdAt` in TS |
+| `loadWaitlistByEmailFromDb()` | Lookup signup by email | `waitlist.read.entryByEmail` | **migrated** — same named query as duplicate-email check; maps the first row |
 | `insertWaitlistEntry()` | Insert waitlist row | `waitlist.create.joinWaitlist` | **migrated** — columns `(id, name, email, source_app, interest)`. `insertEntry` remains in YAML as an unused alternate. |
-| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.entryByEmail` | **migrated** — `rows.length > 0` instead of `EXISTS` |
+| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.entryByEmail` | **migrated** — `loadWaitlistByEmailFromDb() != null` instead of `EXISTS` |
 
 ### `src/db/named-ddl.ts` / `docker/postgres/init.sql`
 

@@ -36,14 +36,14 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ HTTP method mapping in API YAML (GET, POST, PUT, PATCH, DELETE)
 - ✓ Path parameter shapes (`:id`, `:name`, etc.)
 - ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
-- ✓ Product-read Seltzer route auto-wiring from `productAPI.yml` (`generateRoutes` in Seltzer)
+- ✓ Product-read and waitlist-read Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
 - 🔄 Remaining resources / write ops still hand-registered
 - Express is **not** the generated or default server
 
 ### Validation
 - Planned: Zod schema validation on the Seltzer-hosted path
 - Schema field types (required, unique, enums) are the intended source of those rules
-- Hosts register remaining object-based Seltzer routes by hand; product reads use `generateRoutes`
+- Hosts register remaining object-based Seltzer routes by hand; product and waitlist reads use `generateRoutes`
 
 ### Schema Distribution
 - ✓ Pre-built schemas: User, Blog, CMS, Store, Banking

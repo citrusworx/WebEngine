@@ -233,7 +233,7 @@ user:
 
 ### Step 4: Host with Seltzer
 
-Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. Flatten `*API.yml` with Nectarine `listApiOperations`, then Seltzer `generateRoutes` for product reads; remaining routes stay object-based `Route` definitions on the host.
+Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. Flatten `*API.yml` with Nectarine `listApiOperations`, then Seltzer `generateRoutes` for product and waitlist reads; remaining routes stay object-based `Route` definitions on the host.
 
 ```typescript
 import { loadNectarineConfig } from "@citrusworx/nectarine";
