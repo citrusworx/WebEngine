@@ -2,6 +2,8 @@ import pg from "pg";
 import type { DatabaseCredentials } from "@citrusworx/nectarine/config";
 import type { ProductRecord } from "../data/seed-products.js";
 import type { WaitlistEntry } from "../types/context.js";
+import { bindJsonbDocument, namedQuery, type NamedQuery } from "./named-queries.js";
+import { phase3Ddl, type Phase3DdlName } from "./phase3-ddl.js";
 
 const { Pool } = pg;
 
@@ -31,98 +33,101 @@ export function getPool() {
   return pool;
 }
 
-export async function migrate() {
+/** Phase 3: replace with schema-YAML DDL. Single path for remaining bootstrap SQL. */
+async function runNamedDdl(name: Phase3DdlName) {
   const db = getPool();
   if (!db) {
     return;
   }
 
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS products (
-      id TEXT PRIMARY KEY,
-      payload JSONB NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
+  await db.query(phase3Ddl[name]);
+}
 
-    CREATE TABLE IF NOT EXISTS waitlist (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL DEFAULT '',
-      email TEXT NOT NULL UNIQUE,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
+/** Execute a compiler-owned named query. Equivalent to `adapter.query(sql, params)`. */
+async function runNamed<T extends pg.QueryResultRow>(
+  name: NamedQuery,
+  params: readonly unknown[] = [],
+) {
+  const db = getPool();
+  if (!db) {
+    return null;
+  }
 
-    CREATE INDEX IF NOT EXISTS waitlist_email_idx ON waitlist (email);
-  `);
+  return db.query<T>(namedQuery(name), params as unknown[]);
+}
+
+export async function migrate() {
+  await runNamedDdl("bootstrapLiveTables");
 }
 
 export async function loadProductsFromDb(): Promise<ProductRecord[]> {
-  const db = getPool();
-  if (!db) {
+  const result = await runNamed<{ payload: ProductRecord }>("allPayloads");
+  if (!result) {
     return [];
   }
-
-  const result = await db.query<{ payload: ProductRecord }>(
-    "SELECT payload FROM products ORDER BY created_at ASC",
-  );
 
   return result.rows.map((row) => row.payload);
 }
 
 export async function seedProductsIfEmpty(products: ProductRecord[]) {
-  const db = getPool();
-  if (!db || products.length === 0) {
+  if (!getPool() || products.length === 0) {
     return;
   }
 
-  const count = await db.query<{ count: string }>("SELECT COUNT(*)::text AS count FROM products");
-  if (Number(count.rows[0]?.count ?? 0) > 0) {
+  const existing = await loadProductsFromDb();
+  if (existing.length > 0) {
     return;
   }
 
   for (const product of products) {
-    await db.query(
-      "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING",
-      [product.id, JSON.stringify(product)],
-    );
+    const found = await runNamed<{ payload: ProductRecord }>("payloadById", [product.id]);
+    if (found && found.rows.length > 0) {
+      continue;
+    }
+
+    await runNamed("seedPayload", [product.id, bindJsonbDocument(product)]);
   }
+}
+
+type WaitlistRow = {
+  id: string;
+  name: string;
+  email: string;
+  created_at: Date | string;
+};
+
+function toWaitlistEntry(row: WaitlistRow): WaitlistEntry {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
+  };
 }
 
 export async function loadWaitlistFromDb(): Promise<WaitlistEntry[]> {
-  const db = getPool();
-  if (!db) {
+  const result = await runNamed<WaitlistRow>("allEntries");
+  if (!result) {
     return [];
   }
 
-  const result = await db.query<WaitlistEntry>(
-    'SELECT id, name, email, created_at AS "createdAt" FROM waitlist ORDER BY created_at ASC',
-  );
-
-  return result.rows;
+  return result.rows.map(toWaitlistEntry);
 }
 
 export async function insertWaitlistEntry(entry: WaitlistEntry) {
-  const db = getPool();
-  if (!db) {
+  const result = await runNamed("insertEntry", [
+    entry.id,
+    entry.name,
+    entry.email,
+    entry.createdAt,
+  ]);
+
+  if (!result) {
     throw new Error("Database is not configured");
   }
-
-  await db.query(
-    "INSERT INTO waitlist (id, name, email, created_at) VALUES ($1, $2, $3, $4)",
-    [entry.id, entry.name, entry.email, entry.createdAt],
-  );
 }
 
 export async function waitlistEmailExists(email: string) {
-  const db = getPool();
-  if (!db) {
-    return false;
-  }
-
-  const result = await db.query<{ exists: boolean }>(
-    "SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1) AS exists",
-    [email],
-  );
-
-  return Boolean(result.rows[0]?.exists);
+  const result = await runNamed<WaitlistRow>("entryByEmail", [email]);
+  return Boolean(result && result.rows.length > 0);
 }

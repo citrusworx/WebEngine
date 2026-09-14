@@ -174,12 +174,15 @@ priority: enum(high, medium, low)
 difficulty: enum(easy, medium, hard, expert)
 ```
 
-#### JSON Type (Advanced)
+#### JSON / JSONB (first-class)
+
+Postgres JSONB stays first-class. Named queries select the column and bind
+`{ value: $N, cast: jsonb }` — do not drop JSONB to keep SQL out of app code.
 
 ```yaml
 # Store structured data (PostgreSQL/MySQL compatible)
 metadata: json
-settings: json
+settings: jsonb
 tags: json
 ```
 

@@ -6,10 +6,14 @@ Nectarine’s hard rule for **final app backend code**:
 > assembles SQL phonics-style from those tokens. Adapters only execute
 > `(sql, params)`.
 
-This is **phase 1** of that enforcement: inventory today’s violations and
-teach the compiler Blackwater’s current query YAML. Phase 2+ removes the
-strings from `apps/blackwatersound/back`. Do not rewrite those files in
-this phase.
+**Phase 2** (this PR) enforces that rule for Blackwater DML:
+`apps/blackwatersound/back/src/db/postgres.ts` and stores call named
+compiled queries only. Remaining `CREATE TABLE` text lives in a marked
+phase-3 module.
+
+Postgres **JSONB is first-class**. The live `products(id, payload JSONB)`
+store stays; access is named YAML (`allPayloads`, `payloadById`,
+`seedPayload`) rather than a relational rewrite.
 
 ## Assembly model
 
@@ -22,9 +26,9 @@ buildQuery(name)  →    YAML tokens → parameterized SQL  →  query(sql, para
 
 | Layer | May contain SQL text? | Role |
 |-------|------------------------|------|
-| App routes / stores / `db/*.ts` | **No** (final state) | Call a named query, pass bind values |
+| App routes / stores / `db/*.ts` | **No** (DML) | Call a named query, pass bind values |
 | Query YAML | Tokens only — not raw SQL scripts | `select` / `type: SELECT`, structured or grammar-checked `where` |
-| Compiler | Assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` | Validates identifiers; emits `$N` placeholders |
+| Compiler | Assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` | Validates identifiers; emits `$N` placeholders; allowlisted `$N::jsonb` or `{ value: $N, cast: jsonb }` |
 | Adapter | Executes `(sql, params)` only | Never builds or concatenates SQL |
 
 See [Query DSL](./nectarine-query-dsl.md) and [`libraries/nectarine/README.md`](../../libraries/nectarine/README.md).
@@ -45,60 +49,59 @@ later. The Blackwater issue below is only the **document-store pattern**
 
 | Status | Meaning |
 |--------|---------|
-| **ready-to-migrate** | Compiler can emit this query from YAML today. Phase 2 can replace the string with a named call (after YAML/table alignment if noted). |
-| **blocked-on-compiler** | Needs a compiler feature this phase does not add (`COUNT`, `EXISTS`, `ON CONFLICT`, aliases, aggregates). `$N::jsonb` bind casts are already allowed. |
+| **migrated** | App calls a named compiled query. No DML literal in `db/*.ts` / stores. |
+| **ready-to-migrate** | Compiler can emit this query from YAML (unused live path). |
+| **blocked-on-compiler** | Needs a compiler feature not added (`COUNT`, `EXISTS`, `ON CONFLICT`, aliases, aggregates). `$N::jsonb` bind casts are already allowed. |
 | **needs-DDL** | Live table shape does not match `*Schema.yml` / `*Queries.yml`. Schema YAML should own `CREATE TABLE` once a DDL compiler exists. Resolution may be relational columns, JSONB columns for flexible fields, or hybrid — **not** “delete JSONB.” |
 
 ---
 
 ## Inventory: `apps/blackwatersound/back`
 
-The only TypeScript file with hard-coded SQL is `src/db/postgres.ts`.
-Routes (`src/routes/*.ts`) and the waitlist store call helpers; they do
-not embed SQL. Other apps under `apps/` do not depend on Nectarine and
-have no query SQL. `packages/kiwipress` depends on `@citrusworx/nectarine`
+DML helpers live in `src/db/postgres.ts` and call `runNamed` →
+`CCompiler.buildQuery`. Routes and `src/store/waitlist-store.ts` do not
+embed SQL. Other apps under `apps/` do not depend on Nectarine and have
+no query SQL. `packages/kiwipress` depends on `@citrusworx/nectarine`
 but contains no SQL strings.
 
 ### `src/db/postgres.ts`
 
+| Location | Purpose | Named query | Status |
+|----------|---------|-------------|--------|
+| `migrate()` | Bootstrap live tables + `waitlist_email_idx` | `runNamedDdl("bootstrapLiveTables")` → `src/db/phase3-ddl.ts` | **needs-DDL** — phase 3. Live `products` is the document-store shape (`id` + `payload JSONB`, kept). `productSchema.yml` already has `tags: json`. Aligning tables can keep JSONB columns. Waitlist YAML still has `source_app` / `interest` the live table lacks. |
+| `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
+| `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
+| `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
+| `loadWaitlistFromDb()` | List signups oldest-first | `waitlist.read.allEntries` | **migrated** — `SELECT * … ORDER BY created_at ASC`; `created_at` → `createdAt` in TS |
+| `insertWaitlistEntry()` | Insert live waitlist row | `waitlist.create.insertEntry` | **migrated** — live columns `(id, name, email, created_at)`. `joinWaitlist` stays for phase 3 (`source_app` / `interest`). |
+| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.entryByEmail` | **migrated** — `rows.length > 0` instead of `EXISTS` |
+
+### `src/db/phase3-ddl.ts` / `docker/postgres/init.sql`
+
 | Location | Purpose | YAML that should own it | Status |
 |----------|---------|-------------------------|--------|
-| `migrate()` ~L40–56 | `CREATE TABLE` products (**document-store**: `id` + `payload JSONB`) + waitlist + `waitlist_email_idx` | `schemas/product/productSchema.yml`, `schemas/waitlist/waitlistSchema.yml` (DDL from schema, not query YAML) | **needs-DDL** — live `products` is one JSONB blob; query YAML lists relational columns (`catalog`, `name`, `slug`, …). `productSchema.yml` already has `tags: json`. Aligning tables can keep JSONB columns. Waitlist YAML also has `source_app` / `interest` the live table lacks. |
-| `loadProductsFromDb()` ~L66 | `SELECT payload FROM products ORDER BY created_at ASC` | Not in `productQueries.yml` (that file selects relational `*` / `isActive`). Add a temporary named query **or** migrate after DDL. | **needs-DDL** (document-store vs query YAML). `ORDER BY` itself is **ready-to-migrate** once a matching named query exists. |
-| `seedProductsIfEmpty()` ~L78 | `SELECT COUNT(*)::text AS count FROM products` | No query YAML; would be e.g. `product.read.productCount` | **blocked-on-compiler** — aggregates, `::text` cast, `AS` alias |
-| `seedProductsIfEmpty()` ~L85 | `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING` | Not `product.create.newProduct` (relational columns, no upsert). `$2::jsonb` is a valid phonics bind cast. | **blocked-on-compiler** (`ON CONFLICT` only) and **needs-DDL** (document-store vs query YAML). JSONB binds stay. |
-| `loadWaitlistFromDb()` ~L98 | `SELECT id, name, email, created_at AS "createdAt" … ORDER BY created_at ASC` | Close to `waitlist.read.allEntries` (`SELECT * … ORDER BY created_at DESC`) | **blocked-on-compiler** for `AS "createdAt"`; column list + `ORDER BY` are **ready-to-migrate** if the app maps `created_at` in TS and YAML `orderBy` is aligned (`ASC` vs `DESC`) |
-| `insertWaitlistEntry()` ~L111 | `INSERT INTO waitlist (id, name, email, created_at)` | `waitlist.create.joinWaitlist` is `(id, name, email, source_app, interest) RETURNING …` | **needs-DDL** / YAML alignment — field lists differ. Compiler **can** compile `joinWaitlist` today. |
-| `waitlistEmailExists()` ~L123 | `SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1)` | Prefer `waitlist.read.entryByEmail` (already compilable) instead of `EXISTS` | **blocked-on-compiler** for `EXISTS`; **ready-to-migrate** if phase 2 uses `entryByEmail` and checks `rows.length` |
+| `phase3Ddl.bootstrapLiveTables` | Same `CREATE TABLE` / index as Docker init | `productSchema.yml`, `waitlistSchema.yml` | **needs-DDL** — only remaining SQL text in app data access; explicitly temporary. JSONB columns remain a supported shape. |
+| `docker/postgres/init.sql` | Bootstrap copy of the document-store tables | same | **needs-DDL** — not app backend; keep in lockstep with `phase3-ddl.ts` |
 
-### `docker/postgres/init.sql`
+### Query YAML already present (compiler-owned)
 
-| Location | Purpose | YAML that should own it | Status |
-|----------|---------|-------------------------|--------|
-| L1–15 | Same `CREATE TABLE` / index as `migrate()` | `productSchema.yml`, `waitlistSchema.yml` | **needs-DDL** — bootstrap copy of the document-store tables (JSONB columns remain a supported shape) |
+These files own CRUD SQL. Phase 2 calls the live-path names below.
+Relational names (`allProducts`, `newProduct`, `joinWaitlist`, …) still
+compile and wait for phase 3 tables.
 
-Docker init is not app backend code, but it must stay in lockstep with
-whatever schema YAML eventually emits.
-
-### Query YAML already present (no SQL in app — compiler-owned)
-
-These files are the intended owners of CRUD SQL. Phase 1 compiles this
-`type: SELECT` shape. Phase 2 should call them by name instead of
-hand-written strings.
-
-| File | Resource(s) | Notes |
-|------|-------------|--------|
-| `schemas/product/productQueries.yml` | `product` | `read` / create / update / delete; `where` fragments + `orderBy` |
-| `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `read` + `create` with `returning` |
-| `schemas/course/courseQueries.yml` | `course` | quoted `'published'` constants |
-| `schemas/booking/bookingQueries.yml` | `booking` | `IN ('requested', 'confirmed')` |
-| `schemas/order/orderQueries.yml` | `order`, `order_item` | |
-| `schemas/coach/coachQueries.yml` | `coach` | `is_active = true` |
-| `schemas/lesson/lessonQueries.yml` | `lesson` | AND + two placeholders (`$1`, `$2`) |
-| `schemas/session/sessionQueries.yml` | `session` | |
-| `schemas/mix_review/mixReviewQueries.yml` | `mix_review` | |
-| `schemas/enrollment/enrollmentQueries.yml` | `enrollment` | |
-| `schemas/client/clientQueries.yml` | `client` | |
+| File | Resource(s) | Live named queries (phase 2) | Notes |
+|------|-------------|------------------------------|-------|
+| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `seedPayload` | Hybrid: JSONB document queries plus existing relational CRUD |
+| `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `allEntries`, `entryByEmail`, `insertEntry` | `joinWaitlist` compiles; live table cannot run it yet |
+| `schemas/course/courseQueries.yml` | `course` | — | quoted `'published'` constants |
+| `schemas/booking/bookingQueries.yml` | `booking` | — | `IN ('requested', 'confirmed')` |
+| `schemas/order/orderQueries.yml` | `order`, `order_item` | — | |
+| `schemas/coach/coachQueries.yml` | `coach` | — | `is_active = true` |
+| `schemas/lesson/lessonQueries.yml` | `lesson` | — | AND + two placeholders (`$1`, `$2`) |
+| `schemas/session/sessionQueries.yml` | `session` | — | |
+| `schemas/mix_review/mixReviewQueries.yml` | `mix_review` | — | |
+| `schemas/enrollment/enrollmentQueries.yml` | `enrollment` | — | |
+| `schemas/client/clientQueries.yml` | `client` | — | |
 
 Tables for course / booking / order / coach / lesson / session /
 mix_review / enrollment / client are **not** created by `migrate()` —
@@ -113,24 +116,28 @@ mix_review / enrollment / client are **not** created by `migrate()` —
 | `libraries/nectarine/src/compiler/**` | Compiler **output** |
 | `libraries/nectarine/src/adapters/**/*.test.ts` | Adapter tests pass `(sql, params)` through |
 | `libraries/nectarine/examples/showcase.ts` `SELECT 1` | Optional live ping, not an app resource |
+| `src/db/phase3-ddl.ts` | Temporary DDL only; phase 3 |
 
 ---
 
 ## Phase plan (Nectarine SQL enforcement)
 
-1. **Phase 1 (this PR)** — Inventory, phonics rule, compiler (+ tests) for
-   Blackwater `type: SELECT` YAML. No rewrite of `postgres.ts` or routes.
-2. **Phase 2** — Blackwater data access calls named compiled queries only.
-   Delete SQL string literals from `db/postgres.ts`. Prefer existing YAML
-   (`entryByEmail`, `joinWaitlist`, …) over new compiler features when
-   possible.
+1. **Phase 1** — Inventory, phonics rule, compiler (+ tests) for
+   Blackwater `type: SELECT` YAML.
+2. **Phase 2 (this PR)** — Blackwater data access calls named compiled
+   queries only. DML literals removed from `db/postgres.ts`. JSONB
+   document store kept and wired through YAML. `COUNT` / `EXISTS` /
+   `ON CONFLICT` avoided. `$N::jsonb` (and `{ value: $N, cast: jsonb }`)
+   bind `seedPayload`.
 3. **Phase 3** — DDL from `*Schema.yml` so live tables match the query
    contracts. **JSONB is supported; we are not dropping it.** The
    document-store pattern (`products(id, payload JSONB)` vs relational
    columns in `productQueries.yml`) can resolve as relational columns,
    JSONB columns for flexible fields, or a hybrid — not “delete JSONB.”
-   Align waitlist columns. Docker `init.sql` comes from the same source.
-4. **Later** — Remaining compiler features only if phase 2 still needs
-   them (`COUNT`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
+   Align waitlist columns (`source_app` / `interest`) so `joinWaitlist`
+   can replace `insertEntry`. Docker `init.sql` comes from the same
+   source. Retire `phase3-ddl.ts`.
+4. **Later** — Remaining compiler features only if a later phase needs
+   them (`COUNT`, `EXISTS`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
    Seltzer route generation is a separate track. Do **not** invent
    `nectarine serve`.

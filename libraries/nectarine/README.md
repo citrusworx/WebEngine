@@ -10,6 +10,8 @@ Final app backend code **must not** embed SQL strings. Nectarine is phonics:
 2. **Compiler** assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` from YAML tokens (canonical CRUD or Blackwater `type: SELECT`, normalized onto the same model).
 3. **Adapters** only execute `(sql, params)` produced by the compiler. They never build SQL.
 
+Postgres **JSONB is first-class**. Document-store columns stay JSONB; named YAML selects `payload` and binds `{ value: $N, cast: jsonb }` (allow-listed). Do not drop JSONB to satisfy the no-SQL rule.
+
 `where: isActive = true` in YAML is a closed fragment grammar, not raw SQL.
 Runtime values are `$N` placeholders (`$1::jsonb` is an allowlisted bind
 cast) — never string-interpolated.
@@ -189,7 +191,7 @@ product:
 - `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
 - `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, DDL.
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`), DDL.
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";

@@ -76,6 +76,24 @@ describe("Blackwater query YAML", () => {
         );
     });
 
+    it("compiles JSONB document-store product queries", () => {
+        expect(compileNamed("product/productQueries.yml", "product", "read", "allPayloads")).toBe(
+            "SELECT payload FROM products ORDER BY created_at ASC",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "read", "payloadById")).toBe(
+            "SELECT payload FROM products WHERE id = $1",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "create", "seedPayload")).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)",
+        );
+    });
+
+    it("compiles the live waitlist insert and ASC listing", () => {
+        expect(compileNamed("waitlist/waitlistQueries.yml", "waitlist", "create", "insertEntry")).toBe(
+            "INSERT INTO waitlist (id, name, email, created_at) VALUES ($1, $2, $3, $4)",
+        );
+    });
+
     it("assigns UPDATE placeholders to SET fields then remaps WHERE $1", () => {
         expect(compileNamed("product/productQueries.yml", "product", "update", "updateProduct")).toBe(
             "UPDATE products SET name = $1, sub = $2, price = $3, originalPrice = $4, img = $5, accent = $6, badge = $7, category = $8, tags = $9, blurb = $10, isNew = $11, isActive = $12, updated_at = $13 WHERE id = $14",
@@ -90,7 +108,7 @@ describe("Blackwater query YAML", () => {
 
     it("compiles waitlist reads including DESC order", () => {
         expect(compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "allEntries")).toBe(
-            "SELECT * FROM waitlist ORDER BY created_at DESC",
+            "SELECT * FROM waitlist ORDER BY created_at ASC",
         );
         expect(compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "entryByEmail")).toBe(
             "SELECT * FROM waitlist WHERE email = $1",

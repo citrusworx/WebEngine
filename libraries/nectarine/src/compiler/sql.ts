@@ -11,7 +11,12 @@
 import { isRecord, QueryCompileError } from "./errors.js";
 import { parseOrderByFragment, parseWhereFragment, whereNodeToYaml } from "./fragments.js";
 import { inferMethodFromType, normalizeQuery } from "./normalize.js";
-import { normalizePlaceholder, PLACEHOLDER, TYPED_PLACEHOLDER } from "./placeholders.js";
+import {
+    BIND_CASTS,
+    normalizePlaceholder,
+    PLACEHOLDER,
+    TYPED_PLACEHOLDER,
+} from "./placeholders.js";
 
 export { isRecord, QueryCompileError } from "./errors.js";
 
@@ -42,6 +47,7 @@ export type CleanedQueries = {
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const NOW_LITERAL = /^now\(\)$/i;
+const ALLOWED_CASTS = new Set<string>(BIND_CASTS);
 
 export function isCrudMethod(value: unknown): value is CrudMethod {
     return typeof value === "string" && (CRUD_METHODS as readonly string[]).includes(value);
@@ -91,7 +97,26 @@ function compileConst(value: unknown): string {
     );
 }
 
+function compileTypedValue(value: Record<string, unknown>): string {
+    const cast = value.cast;
+    if (typeof cast !== "string" || !ALLOWED_CASTS.has(cast.toLowerCase())) {
+        throw new QueryCompileError(
+            `Unsupported cast ${JSON.stringify(cast)}; allowed: ${[...ALLOWED_CASTS].join(", ")}`,
+        );
+    }
+
+    const inner = value.value !== undefined ? value.value : value.placeholder;
+    if (inner === undefined) {
+        throw new QueryCompileError("cast requires value (a $N placeholder)");
+    }
+
+    return `${compileValue(inner)}::${cast.toLowerCase()}`;
+}
+
 export function compileValue(value: unknown): string {
+    if (isRecord(value) && "cast" in value) {
+        return compileTypedValue(value);
+    }
     if (isRecord(value) && "fn" in value) {
         return compileFunction(value.fn);
     }

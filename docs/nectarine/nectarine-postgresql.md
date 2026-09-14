@@ -9,7 +9,7 @@ Comprehensive guide to using Nectarine with PostgreSQL.
 - **Scalable**: Handles large datasets efficiently
 - **Open Source**: No licensing costs
 - **Strongly Typed**: Catches data errors
-- **Advanced Features**: JSON, arrays, full-text search
+- **Advanced Features**: JSON / **JSONB (first-class)**, arrays, full-text search
 
 ## Installation
 
@@ -207,9 +207,9 @@ is_active: boolean
 tags: text[]              # Array of text
 numbers: int[]            # Array of integers
 
-# JSON
+# JSON / JSONB (first-class — do not drop JSONB to avoid SQL in app code)
 metadata: json            # JSON data
-settings: jsonb           # Binary JSON (indexed)
+settings: jsonb           # Binary JSON (indexed); bind via { value: $N, cast: jsonb }
 
 # UUID
 id: uuid DEFAULT gen_random_uuid()
