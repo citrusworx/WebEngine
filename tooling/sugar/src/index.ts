@@ -12,12 +12,22 @@ import {
     portsByDirection
 } from "./graph/ports";
 import { validateGraph } from "./graph/validate";
+import {
+    applyViewportTransform,
+    clientToCanvas,
+    createViewport,
+    panViewport,
+    resetTransform,
+    screenToWorld,
+    syncCanvasSize
+} from "./graph/viewport";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 let activeTooltip: HTMLDivElement | null = null;
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const viewport = createViewport();
+syncCanvasSize(canvas);
+new ResizeObserver(() => syncCanvasSize(canvas)).observe(canvas);
 
 const NODE_COLORS: Record<NodeType, { header: string; border: string; port: string }> = {
     content:   { header: "#4caf50", border: "#388e3c", port: "#81c784" },
@@ -235,10 +245,23 @@ function drawEdge(edge: SugarEdge) {
 }
 
 function render() {
+    resetTransform(ctx);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    applyViewportTransform(ctx, viewport);
     edges.forEach(drawEdge);
     nodes.forEach(drawNode);
     requestAnimationFrame(render);
+}
+
+function pointerToWorld(e: PointerEvent): { x: number; y: number } {
+    const screen = clientToCanvas(canvas, e.clientX, e.clientY);
+    return screenToWorld(viewport, screen.x, screen.y);
+}
+
+function hideTooltip() {
+    if (!activeTooltip) return;
+    activeTooltip.style.display = "none";
+    activeTooltip = null;
 }
 
 function getNodeAtPosition(x: number, y: number): SugarNode | null {
@@ -252,53 +275,128 @@ function getNodeAtPosition(x: number, y: number): SugarNode | null {
 }
 
 let dragTarget: SugarNode | null = null;
-let offSetX = 0;
-let offSetY = 0;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+let isPanning = false;
+let lastPointerX = 0;
+let lastPointerY = 0;
+let spaceHeld = false;
 
-canvas.addEventListener("mousemove", (e) => {
-    if (dragTarget) {
-        dragTarget.x = e.offsetX - offSetX;
-        dragTarget.y = e.offsetY - offSetY;
+function isPanGesture(e: PointerEvent): boolean {
+    return e.button === 1 || (e.button === 0 && spaceHeld);
+}
+
+function endPointer(e: PointerEvent) {
+    if (dragTarget) dragTarget.isDragging = false;
+    dragTarget = null;
+    isPanning = false;
+    if (canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+    }
+    canvas.style.cursor = "grab";
+}
+
+canvas.addEventListener("mousedown", (e) => {
+    if (e.button === 1) e.preventDefault();
+});
+
+canvas.addEventListener("pointerdown", (e) => {
+    if (e.button === 1) e.preventDefault();
+    lastPointerX = e.clientX;
+    lastPointerY = e.clientY;
+
+    if (isPanGesture(e)) {
+        isPanning = true;
+        hideTooltip();
+        canvas.setPointerCapture(e.pointerId);
         canvas.style.cursor = "grabbing";
         return;
     }
 
-    const portHit = hitTestPort(nodes, e.offsetX, e.offsetY);
-    canvas.style.cursor = portHit ? "crosshair" : getNodeAtPosition(e.offsetX, e.offsetY) ? "grab" : "default";
+    if (e.button !== 0) return;
 
-    const node = getNodeAtPosition(e.offsetX, e.offsetY);
+    const world = pointerToWorld(e);
+    // Port hits are reserved for future wiring; do not start a node drag from a port.
+    if (hitTestPort(nodes, world.x, world.y)) return;
+
+    const node = getNodeAtPosition(world.x, world.y);
+    if (node) {
+        dragTarget = node;
+        node.isDragging = true;
+        dragOffsetX = world.x - node.x;
+        dragOffsetY = world.y - node.y;
+        canvas.setPointerCapture(e.pointerId);
+        canvas.style.cursor = "grabbing";
+        return;
+    }
+
+    isPanning = true;
+    hideTooltip();
+    canvas.setPointerCapture(e.pointerId);
+    canvas.style.cursor = "grabbing";
+});
+
+canvas.addEventListener("pointermove", (e) => {
+    if (isPanning) {
+        panViewport(viewport, e.clientX - lastPointerX, e.clientY - lastPointerY);
+        lastPointerX = e.clientX;
+        lastPointerY = e.clientY;
+        canvas.style.cursor = "grabbing";
+        return;
+    }
+
+    if (dragTarget) {
+        const world = pointerToWorld(e);
+        dragTarget.x = world.x - dragOffsetX;
+        dragTarget.y = world.y - dragOffsetY;
+        canvas.style.cursor = "grabbing";
+        return;
+    }
+
+    const world = pointerToWorld(e);
+    const portHit = hitTestPort(nodes, world.x, world.y);
+    const node = getNodeAtPosition(world.x, world.y);
+    canvas.style.cursor = portHit ? "crosshair" : "grab";
+
     if (node && node.tooltip) {
         node.tooltip.style.display = "block";
         node.tooltip.style.left = `${e.pageX + 10}px`;
         node.tooltip.style.top = `${e.pageY + 10}px`;
         activeTooltip = node.tooltip;
-    } else if (activeTooltip) {
-        activeTooltip.style.display = "none";
-        activeTooltip = null;
+    } else {
+        hideTooltip();
     }
 });
 
-canvas.addEventListener("mousedown", (e) => {
-    // Port hits are reserved for future wiring; do not start a node drag from a port.
-    if (hitTestPort(nodes, e.offsetX, e.offsetY)) return;
+canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointercancel", endPointer);
 
-    const node = getNodeAtPosition(e.offsetX, e.offsetY);
-    if (!node) return;
-    dragTarget = node;
-    node.isDragging = true;
-    offSetX = e.offsetX - node.x;
-    offSetY = e.offsetY - node.y;
+canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const scale = e.deltaMode === WheelEvent.DOM_DELTA_LINE
+        ? 16
+        : e.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? canvas.height
+            : 1;
+    viewport.x += e.deltaX * scale;
+    viewport.y += e.deltaY * scale;
+}, { passive: false });
+
+window.addEventListener("keydown", (e) => {
+    if (e.code !== "Space" || e.repeat) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    e.preventDefault();
+    spaceHeld = true;
+    if (!isPanning && !dragTarget) canvas.style.cursor = "grab";
 });
 
-canvas.addEventListener("mouseup", () => {
-    if (dragTarget) dragTarget.isDragging = false;
-    dragTarget = null;
+window.addEventListener("keyup", (e) => {
+    if (e.code !== "Space") return;
+    spaceHeld = false;
 });
 
-canvas.addEventListener("mouseleave", () => {
-    if (dragTarget) dragTarget.isDragging = false;
-    dragTarget = null;
-    canvas.style.cursor = "default";
+window.addEventListener("blur", () => {
+    spaceHeld = false;
 });
 
 render();
