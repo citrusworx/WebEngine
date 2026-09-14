@@ -2,6 +2,8 @@
 
 These match `libraries/grapevine/examples/` and the function exports. They create **real DigitalOcean resources** when applied.
 
+Named recipes (when to use which file) live in [Patterns](./grapevine-patterns.md). The guided apply is the [Tutorial](./grapevine-tutorial.md).
+
 ## Progressive YAML starters
 
 From `libraries/grapevine/examples/blueprints/`:
@@ -17,9 +19,10 @@ From `libraries/grapevine/examples/blueprints/`:
 export DO_TOKEN=dop_v1_...
 grape validate -c ./01-vpc-and-tag.yaml
 grape apply -c ./01-vpc-and-tag.yaml
+grape status
 ```
 
-Replace `REPLACE_DROPLET_ID` and `REPLACE_WITH_YOUR_IP` in 03/04 before apply. The schema wants numeric `droplet_ids`. See that folder’s README.
+Replace `REPLACE_DROPLET_ID` and `REPLACE_WITH_YOUR_IP` in 03/04 before apply. The schema wants numeric `droplet_ids`. See that folder’s README and [Blueprints](./grapevine-blueprints.md).
 
 ## Full resource example
 
@@ -88,7 +91,7 @@ export async function stack() {
     ],
   });
 
-  return { droplet, firewall, vpc };
+  return { droplet, firewall, vpc, privateKey: local.keys.privateKey };
 }
 ```
 
@@ -116,6 +119,19 @@ const config = validateGrapeConfig({
 
 const result = await applyGrapeConfig(config);
 console.log(result.vpcs[0]?.id);
+if (result.warnings.length) {
+  console.warn(result.warnings);
+}
+```
+
+## Load from disk or URL
+
+```ts
+import { loadGrapeConfig, applyGrapeConfig } from "@citrusworx/grapevine";
+
+const config = await loadGrapeConfig("./grape.config.yaml");
+// const config = await loadGrapeConfig("https://example.com/grape.config.yaml");
+const result = await applyGrapeConfig(config);
 ```
 
 ## Blueprint file → one droplet
@@ -139,6 +155,16 @@ const droplet = await deployByBlueprint("./web.yaml");
 
 Prefer `applyGrapeConfig` when you also need a VPC and firewall; `deployByBlueprint` is droplet-only.
 
+## Tear down
+
+```ts
+import { NukeDroplet, deleteFirewall, deleteVPC } from "@citrusworx/grapevine";
+
+await NukeDroplet(dropletId);
+await deleteFirewall(firewallId);
+await deleteVPC(vpcId);
+```
+
 ## What not to copy from older docs
 
 ```ts
@@ -146,10 +172,21 @@ Prefer `applyGrapeConfig` when you also need a VPC and firewall; `deployByBluepr
 import { DigitalOcean } from "@citrusworx/grapevine";
 DigitalOcean.Droplet.create("server");
 new GrapevineClient().listServices();
+```
 
-// Not applied
+```yaml
+# Not applied
 services:
   database:
     type: postgres
     version: "15"
 ```
+
+```bash
+# Not commands
+grape gui
+grape destroy -c ./grape.config.yaml
+grape apply --dry-run -c ./grape.config.yaml
+```
+
+WordPress files under `libraries/grapevine/src/blueprints/wordpress/` are not grape configs.

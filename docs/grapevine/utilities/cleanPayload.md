@@ -63,5 +63,7 @@ const clean = cleanPayload(raw);
 ## Notes
 
 - `false` and `0` are intentionally **not** stripped — these are valid configuration values
-- This function is used internally by `deployByBlueprint` before every API call
-- It is also exported for use in custom provider integrations or blueprint validation workflows
+- This function is used internally by `deployByBlueprint` before the droplet POST
+- It is also exported for callers who build their own payloads
+- `applyGrapeConfig` builds `create*` arguments itself; it does not run `cleanPayload` on the whole grape document
+- There is no second cloud provider to “integrate” yet — see [Status](../grapevine-status.md)
