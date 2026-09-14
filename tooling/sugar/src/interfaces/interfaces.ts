@@ -1,9 +1,18 @@
-import { NodeType } from "../types/types";
+import { NodeType, PortDirection } from "../types/types";
 
+/**
+ * A connection point on a node.
+ * `id` must be unique among ports on the same node.
+ */
 export interface Port {
     id: string;
     label: string;
-    type: "input" | "output";
+    direction: PortDirection;
+}
+
+export interface SugarField {
+    label: string;
+    value: string;
 }
 
 export interface SugarNode {
@@ -16,13 +25,15 @@ export interface SugarNode {
     type: NodeType;
     isDragging: boolean;
     ports: Port[];
-    fields?: { label: string; value: string }[];
-    tooltip?: HTMLDivElement // Optional tooltip property for nodes
+    fields?: SugarField[];
+    tooltip?: HTMLDivElement;
 }
 
+/** An edge always names concrete ports, never a node category. */
 export interface SugarEdge {
     id: string;
     fromNodeId: string;
-    fromPortType: "content" | "parameter" | "operation" | "event" | "variable" | "utility" | "custom";
+    fromPortId: string;
     toNodeId: string;
+    toPortId: string;
 }
