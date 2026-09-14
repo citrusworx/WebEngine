@@ -2,6 +2,8 @@
 
 Public surface of `@citrusworx/sigjs` as implemented in `libraries/sig/src`.
 
+This page is the compact contract. For the mental model, start with [Signals](./sig-signals.md), [Effects](./sig-effects.md), and [JSX and the DOM](./sig-jsx.md).
+
 Exports from the package root: `Signal`, `effect`, `batch`, `memo`, `captureCleanupScope`, `jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `SigRouter`, plus JSX types.
 
 Subpath exports:
@@ -258,3 +260,5 @@ router.stop();
 - Use `memo` for derived numbers/lists you read often
 - Register routes as functions; call `start()` after `set`
 - Do not invent `useEffect`, keyed list diffs, or reactive props — they are not here
+
+See [Best practices](./sig-best-practices.md) and [Anti-patterns](./sig-anti-patterns.md) for the same rules with examples. [Status](./sig-status.md) is the maturity matrix.
