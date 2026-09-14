@@ -1,6 +1,6 @@
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { isResponseData, send, type ResponseData } from "./response.js";
+import { isExplicitResponse, isResponseData, response, send, type ResponseData } from "./response.js";
 import type {
     CorsOptions,
     HandlerConfig,
@@ -27,7 +27,7 @@ export type {
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData };
-export { isResponseData, send };
+export { isExplicitResponse, isResponseData, response, send };
 
 function applyCors(
     req: IncomingMessage,

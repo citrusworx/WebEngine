@@ -1,5 +1,9 @@
+export type ProductCatalog = "gear" | "software";
+
 export type ProductRecord = {
   id: string;
+  /** YAML enum; seed hardware maps to `gear`. Optional on older JSONB payloads. */
+  catalog?: ProductCatalog;
   name: string;
   sub: string;
   price: string;
@@ -13,7 +17,7 @@ export type ProductRecord = {
   isNew?: boolean;
 };
 
-export const SEED_PRODUCTS: ProductRecord[] = [
+const SEED_ROWS: ProductRecord[] = [
   {
     id: "stinkrat",
     name: "StinkRat",
@@ -132,3 +136,9 @@ export const SEED_PRODUCTS: ProductRecord[] = [
     blurb: "Bridle leather ends, waxed cotton body, and a fit that feels broken in from day one."
   }
 ];
+
+/** Existing seed rows are hardware; map onto the `gear` catalog so `/api/products/catalog/:catalog` is usable. */
+export const SEED_PRODUCTS: ProductRecord[] = SEED_ROWS.map((product) => ({
+  ...product,
+  catalog: "gear",
+}));

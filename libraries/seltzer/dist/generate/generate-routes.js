@@ -1,4 +1,4 @@
-import { isResponseData } from "../core/response.js";
+import { isExplicitResponse } from "../core/response.js";
 import { comparePathRank, rankPath } from "../pipeline/router.js";
 const DEFAULT_NOT_FOUND = {
     status: 404,
@@ -35,7 +35,7 @@ export function generateRoutes(operations, options) {
                 operation,
             };
             const result = await options.execute(args);
-            if (isResponseData(result)) {
+            if (isExplicitResponse(result)) {
                 return result;
             }
             if (result === null || result === undefined) {

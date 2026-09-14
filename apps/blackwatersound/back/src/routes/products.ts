@@ -14,13 +14,17 @@ function stringField(product: ProductRecord, key: string): string | undefined {
   return typeof value === "string" && value ? value : undefined;
 }
 
+function catalogOf(product: ProductRecord): string {
+  return product.catalog === "software" ? "software" : "gear";
+}
+
 /**
  * `productAPI.yml` `query:` vs live SQL in `named-queries.ts`:
  *
  * | API `query:`        | Live named query | Why |
  * | allProducts         | allPayloads      | Catalog lives in JSONB `payload`; relational columns are NULL |
  * | productById         | payloadById      | same |
- * | productsByCatalog   | (filter payload) | no JSONB catalog query; relational `productsByCatalog` is NULL |
+ * | productsByCatalog   | (filter payload) | no JSONB catalog query; seed/hardware maps to `gear` |
  * | productBySlug       | (filter payload) | no JSONB slug query; seed `id` used as slug fallback |
  *
  * When Postgres is unset (or the live catalog is empty), use boot-time
@@ -46,11 +50,6 @@ async function findById(ctx: BlackwaterContext, id: string | undefined): Promise
     const fromDb = await loadProductByIdFromDb(id);
     if (fromDb) {
       return fromDb;
-    }
-
-    const live = await loadProductsFromDb();
-    if (live.length > 0) {
-      return null;
     }
   }
 
@@ -84,7 +83,7 @@ async function executeProductRead({
       if (!catalog) {
         return [];
       }
-      return (await loadCatalog(ctx)).filter((product) => stringField(product, "catalog") === catalog);
+      return (await loadCatalog(ctx)).filter((product) => catalogOf(product) === catalog);
     }
     case "allProducts":
       return loadCatalog(ctx);

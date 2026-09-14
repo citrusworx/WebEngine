@@ -114,7 +114,7 @@ const routes = generateRoutes(operations, {
 - YAML layout: `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`.
 - `query` is the named-query key, not the HTTP search string (`ctx.query`).
 - Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`. There is no writing `ctx.json`.
-- `execute` may return a payload (`{ body }`), `ResponseData` (sent as-is), or `null`/`undefined` (default 404).
+- `execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ body }` / `{}` objects are treated as payloads.
 - `generateRoutes` registers static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
 - Uses the Seltzer 0.5 default pipeline (`parse` → `…` → `send`) and `ResponseData`. It does not replace `before()`.
 - Nectarine does not generate `Route`s. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`).

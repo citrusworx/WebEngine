@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- `generateRoutes(operations, { execute })` maps Nectarine `ApiOperation[]` (`listApiOperations`) onto object-based `Route`s that return `ResponseData`. `null`/`undefined` from `execute` becomes 404.
+- `generateRoutes(operations, { execute })` maps Nectarine `ApiOperation[]` (`listApiOperations`) onto object-based `Route`s that return `ResponseData`. `null`/`undefined` from `execute` becomes 404. Explicit transport results use `response(...)`.
 - Generated routes and `matchRoute` prefer static prefixes over `:param` (so `/api/products/catalog/:catalog` wins over `/api/products/:id`). Compatible with the 0.5 named pipeline.
 
 ## 0.5.0

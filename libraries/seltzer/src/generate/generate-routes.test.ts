@@ -1,7 +1,7 @@
 import http from "node:http";
 import { afterEach, describe, expect, it } from "vitest";
 import { Seltzer } from "../core/seltzer.js";
-import type { ResponseData } from "../core/response.js";
+import { response, type ResponseData } from "../core/response.js";
 import { generateRoutes } from "./generate-routes.js";
 import type { ApiOperation } from "./types.js";
 
@@ -182,7 +182,7 @@ describe("generateRoutes", () => {
         });
     });
 
-    it("lets the host customize notFound and pass through ResponseData", async () => {
+    it("lets the host customize notFound and pass through branded ResponseData", async () => {
         const operations: ApiOperation[] = [
             {
                 resource: "product",
@@ -198,7 +198,7 @@ describe("generateRoutes", () => {
         for (const route of generateRoutes(operations, {
             execute: ({ params }): ResponseData | null => {
                 if (params.id === "teapot") {
-                    return { status: 418, body: { error: "teapot" } };
+                    return response({ status: 418, body: { error: "teapot" } });
                 }
                 return null;
             },
@@ -215,6 +215,32 @@ describe("generateRoutes", () => {
         await expect(request(`${base}/api/products/teapot`)).resolves.toEqual({
             status: 418,
             json: { error: "teapot" },
+        });
+    });
+
+    it("wraps unbranded ResponseData-shaped payloads as body", async () => {
+        const operations: ApiOperation[] = [
+            {
+                resource: "product",
+                crud: "read",
+                name: "allProducts",
+                method: "GET",
+                path: "/api/products",
+                query: "allProducts",
+            },
+        ];
+
+        const app = Seltzer.init();
+        for (const route of generateRoutes(operations, {
+            execute: () => ({ body: "copy" }),
+        })) {
+            app.route(route);
+        }
+
+        const base = await listen(app);
+        await expect(request(`${base}/api/products`)).resolves.toEqual({
+            status: 200,
+            json: { body: "copy" },
         });
     });
 

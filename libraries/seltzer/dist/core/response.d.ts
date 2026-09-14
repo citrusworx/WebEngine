@@ -11,5 +11,12 @@ export type ResponseData = {
  * are not wrapped — handlers must return `{ body: ... }`.
  */
 export declare function isResponseData(value: unknown): value is ResponseData;
+/**
+ * Mark an object as an explicit transport result for `generateRoutes`.
+ * Unbranded `{ status?, headers?, body? }` payloads stay wrapped as `{ body }`.
+ */
+export declare function response(data: ResponseData): ResponseData;
+/** True when `value` was produced by {@link response}. */
+export declare function isExplicitResponse(value: unknown): value is ResponseData;
 /** Apply ResponseData defaults and write the HTTP response. No-op if headers were already sent. */
 export declare function send(res: ServerResponse, data: ResponseData): void;

@@ -1,4 +1,4 @@
-import { isResponseData, type ResponseData } from "../core/response.js";
+import { isExplicitResponse, type ResponseData } from "../core/response.js";
 import type { RequestContext, Route } from "../core/types.js";
 import { comparePathRank, rankPath } from "../pipeline/router.js";
 import type { ApiOperation } from "./types.js";
@@ -14,8 +14,9 @@ export type ExecuteArgs<TContext extends RequestContext = RequestContext> = {
 
 export type GenerateRoutesOptions<TContext extends RequestContext = RequestContext> = {
     /**
-     * Host data access. Return a payload to wrap as `{ body }`, `ResponseData`
-     * to send as-is, or `null`/`undefined` for the default 404 on reads.
+     * Host data access. Return a payload to wrap as `{ body }`,
+     * `response({ status?, headers?, body? })` to send as-is, or
+     * `null`/`undefined` for the default 404 on reads.
      */
     execute: (args: ExecuteArgs<TContext>) => unknown | Promise<unknown>;
     notFound?: (args: ExecuteArgs<TContext>) => ResponseData;
@@ -68,7 +69,7 @@ export function generateRoutes<TContext extends RequestContext = RequestContext>
 
             const result = await options.execute(args);
 
-            if (isResponseData(result)) {
+            if (isExplicitResponse(result)) {
                 return result;
             }
 
