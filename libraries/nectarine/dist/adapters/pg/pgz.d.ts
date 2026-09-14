@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Pool } from "pg";
 import type { QueryResult, QueryResultRow } from "pg";
 import type { NectarineConfig } from "../../config/NectarineConfig.js";
 import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
@@ -6,6 +6,7 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
 /**
  * Postgres adapter for parameterized SQL from the Nectarine compiler.
  *
+ * Uses a `pg.Pool` so concurrent HTTP requests do not share a single client.
  * Credentials are {@link DatabaseCredentials} from
  * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
  * this adapter receives the resolved values. It does not read `process.env`
@@ -22,14 +23,20 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
  * ```
  */
 export declare class PgSql {
-    private connection;
+    private pool;
+    private connecting;
     private readonly credentials;
     constructor(credentials: DatabaseCredentials);
     static fromCredentials(credentials: DatabaseCredentials): PgSql;
     get connected(): boolean;
-    connect(): Promise<Client>;
     /**
-     * Run parameterized SQL (`$1`, `$2`, …) against the connected client.
+     * Create the connection pool and check out one client so failures
+     * surface here instead of on the first query.
+     */
+    connect(): Promise<Pool>;
+    private openPool;
+    /**
+     * Run parameterized SQL (`$1`, `$2`, …) against the connected pool.
      */
     query<T extends QueryResultRow = QueryResultRow>(sql: string, params?: readonly unknown[]): Promise<QueryResult<T>>;
     disconnect(): Promise<void>;

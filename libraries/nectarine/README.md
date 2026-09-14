@@ -22,7 +22,7 @@ does not fold them to lowercase. Runtime values are `$N` placeholders
 as a document-store column, with a nullable catalog projection from the
 same `productSchema.yml`.
 
-See [`docs/nectarine/no-hardcoded-sql.md`](../../docs/nectarine/no-hardcoded-sql.md) and [`docs/nectarine/nectarine-query-dsl.md`](../../docs/nectarine/nectarine-query-dsl.md).
+See [`docs/nectarine/no-hardcoded-sql.md`](../../docs/nectarine/no-hardcoded-sql.md), [`docs/nectarine/nectarine-query-dsl.md`](../../docs/nectarine/nectarine-query-dsl.md), and [`docs/nectarine/production.md`](../../docs/nectarine/production.md).
 
 ## Install
 
@@ -91,7 +91,7 @@ const result = await pg.query(sql, [1]);
 await pg.disconnect();
 ```
 
-`query(sql, params?)` uses `$1`-style placeholders to match compiler output.
+`query(sql, params?)` uses `$1`-style placeholders to match compiler output. `connect()` creates a `pg.Pool` (not a single `Client`) and checks out one connection so failures surface before the first query. Idle-client `error` events are logged; they do not crash the process. Call `disconnect()` / `end()` on shutdown.
 
 Schema YAML compiles the same way:
 
@@ -208,7 +208,7 @@ product:
 - `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
 - `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`), DDL.
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`.
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";

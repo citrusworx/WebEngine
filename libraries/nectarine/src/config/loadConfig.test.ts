@@ -62,5 +62,62 @@ describe("loadNectarineConfig", () => {
 
         expect(config.resolveCredentials()).toBeNull();
         expect(config.isDatabaseConfigured()).toBe(false);
+        expect(config.credentialStatus()).toEqual({
+            vendor: "postgres",
+            keys: {
+                user: "PG_USER",
+                password: "PG_PASS",
+                host: "PG_HOST",
+                port: "PG_PORT",
+                database: "PG_DB",
+            },
+            present: ["PG_USER"],
+            missing: ["PG_PASS", "PG_HOST", "PG_PORT", "PG_DB"],
+            credentials: null,
+        });
+        expect(() => config.requireCredentials()).toThrowError(
+            /Missing: PG_PASS, PG_HOST, PG_PORT, PG_DB/,
+        );
+    });
+
+    it("requireCredentials lists every missing key when env is empty", () => {
+        const config = loadNectarineConfig(fixtureConfig, {
+            env: {},
+            loadResources: false,
+        });
+
+        expect(config.credentialStatus().present).toEqual([]);
+        expect(config.credentialStatus().missing).toEqual([
+            "PG_USER",
+            "PG_PASS",
+            "PG_HOST",
+            "PG_PORT",
+            "PG_DB",
+        ]);
+        expect(() => config.requireCredentials()).toThrowError(
+            /Missing: PG_USER, PG_PASS, PG_HOST, PG_PORT, PG_DB/,
+        );
+    });
+
+    it("requireCredentials returns resolved values when env is complete", () => {
+        const config = loadNectarineConfig(fixtureConfig, {
+            env: {
+                PG_USER: "bw",
+                PG_PASS: "secret",
+                PG_HOST: "localhost",
+                PG_PORT: "5432",
+                PG_DB: "blackwater",
+            },
+            loadResources: false,
+        });
+
+        expect(config.requireCredentials()).toEqual({
+            user: "bw",
+            password: "secret",
+            host: "localhost",
+            port: 5432,
+            database: "blackwater",
+        });
+        expect(config.credentialStatus().missing).toEqual([]);
     });
 });

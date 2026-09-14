@@ -182,6 +182,7 @@ services:
       wp-bootstrap:
         condition: service_completed_successfully
     environment:
+      NODE_ENV: production
       PORT: ${PORT}
       PG_USER: ${PG_USER}
       PG_PASS: ${PG_PASS}

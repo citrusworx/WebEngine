@@ -18,6 +18,15 @@ export type DatabaseCredentials = {
     database: string;
 };
 
+/** Which YAML-declared env keys resolved, and which are still missing. */
+export type CredentialStatus = {
+    vendor: DatabaseVendor;
+    keys: DatabaseEnvKeys;
+    present: string[];
+    missing: string[];
+    credentials: DatabaseCredentials | null;
+};
+
 export type ResourceRef = {
     name: string;
     schema: string;

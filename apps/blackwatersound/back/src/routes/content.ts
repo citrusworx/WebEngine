@@ -1,4 +1,4 @@
-import type { Route } from "@citrusworx/seltzer";
+import type { ResponseData, Route } from "@citrusworx/seltzer";
 import { SEED_LESSON, SEED_POST } from "../context.js";
 import { resolveFeaturedImage } from "../lib/wordpress-media.js";
 import type { WordPressPage, WordPressPost } from "../types/wordpress.js";
@@ -25,7 +25,7 @@ function asPage(value: unknown): WordPressPage | null {
 export const getPostBySlugRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/posts/:slug",
-  handler: async ({ locals, params }) => {
+  handler: async ({ locals, params }): Promise<ResponseData> => {
     const slug = params.slug || SEED_POST.slug;
 
     if (locals.postsClient) {
@@ -60,7 +60,7 @@ export const getPostBySlugRoute: Route<BlackwaterContext> = {
 export const getLessonRoute: Route<BlackwaterContext> = {
   method: "GET",
   path: "/api/lessons/:id",
-  handler: async ({ locals, params }) => {
+  handler: async ({ locals, params }): Promise<ResponseData> => {
     const id = params.id || SEED_LESSON.id;
 
     if (locals.pagesClient) {

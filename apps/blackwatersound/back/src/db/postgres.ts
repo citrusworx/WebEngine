@@ -1,41 +1,59 @@
-import pg from "pg";
+import { createPgAdapter, type PgSql } from "@citrusworx/nectarine/adapters/pg";
 import type { DatabaseCredentials } from "@citrusworx/nectarine/config";
+import type { QueryResultRow } from "pg";
 import type { ProductRecord } from "../data/seed-products.js";
 import type { WaitlistEntry } from "../types/context.js";
 import { namedDdl, type NamedDdl } from "./named-ddl.js";
 import { bindJsonbDocument, namedQuery, type NamedQuery } from "./named-queries.js";
 
-const { Pool } = pg;
+let adapter: PgSql | null = null;
 
-let pool: pg.Pool | null = null;
-
-/** Configure pool from Nectarine-resolved vendor credentials (`PG_*` etc.). */
-export function configurePool(creds: DatabaseCredentials | null) {
+/** Configure the Nectarine Postgres adapter from resolved vendor credentials. */
+export function configureDatabase(creds: DatabaseCredentials | null) {
   if (!creds) {
-    pool = null;
+    adapter = null;
     return null;
   }
 
-  if (!pool) {
-    pool = new Pool({
-      user: creds.user,
-      password: creds.password,
-      host: creds.host,
-      port: creds.port,
-      database: creds.database,
-    });
+  if (!adapter) {
+    adapter = createPgAdapter(creds);
   }
 
-  return pool;
+  return adapter;
 }
 
-export function getPool() {
-  return pool;
+export function getAdapter() {
+  return adapter;
+}
+
+export function isDatabaseConnected() {
+  return adapter?.connected === true;
+}
+
+export async function connectDatabase() {
+  const db = getAdapter();
+  if (!db) {
+    return null;
+  }
+
+  await db.connect();
+  return db;
+}
+
+/** Close the pool. Safe to call when no adapter was configured or connect failed. */
+export async function closeDatabase() {
+  const db = adapter;
+  adapter = null;
+  if (!db) {
+    return;
+  }
+
+  await db.disconnect().catch(() => undefined);
 }
 
 /** Execute compiler-owned schema DDL. Equivalent to `adapter.query(sql)`. */
 async function runNamedDdl(name: NamedDdl) {
-  const db = getPool();
+  const db = getAdapter();
   if (!db) {
     return;
   }
@@ -44,33 +62,49 @@ async function runNamedDdl(name: NamedDdl) {
 }
 
 /** Execute a compiler-owned named query. Equivalent to `adapter.query(sql, params)`. */
-async function runNamed<T extends pg.QueryResultRow>(
+async function runNamed<T extends QueryResultRow>(
   name: NamedQuery,
   params: readonly unknown[] = [],
 ) {
-  const db = getPool();
+  const db = getAdapter();
   if (!db) {
     return null;
   }
 
-  return db.query<T>(namedQuery(name), params as unknown[]);
+  return db.query<T>(namedQuery(name), params);
 }
 
 export async function migrate() {
   await runNamedDdl("bootstrap");
 }
 
+function asProductRecord(payload: unknown): ProductRecord | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const row = payload as Record<string, unknown>;
+  if (typeof row.id !== "string" || typeof row.name !== "string") {
+    return null;
+  }
+
+  return payload as ProductRecord;
+}
+
 export async function loadProductsFromDb(): Promise<ProductRecord[]> {
-  const result = await runNamed<{ payload: ProductRecord }>("allPayloads");
+  const result = await runNamed<{ payload: unknown }>("allPayloads");
   if (!result) {
     return [];
   }
 
-  return result.rows.map((row) => row.payload);
+  return result.rows.flatMap((row) => {
+    const product = asProductRecord(row.payload);
+    return product ? [product] : [];
+  });
 }
 
 export async function seedProductsIfEmpty(products: ProductRecord[]) {
-  if (!getPool() || products.length === 0) {
+  if (!isDatabaseConnected() || products.length === 0) {
     return;
   }
 
@@ -80,7 +114,7 @@ export async function seedProductsIfEmpty(products: ProductRecord[]) {
   }
 
   for (const product of products) {
-    const found = await runNamed<{ payload: ProductRecord }>("payloadById", [product.id]);
+    const found = await runNamed<{ payload: unknown }>("payloadById", [product.id]);
     if (found && found.rows.length > 0) {
       continue;
     }

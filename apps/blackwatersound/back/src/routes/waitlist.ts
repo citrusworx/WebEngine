@@ -1,4 +1,4 @@
-import type { Route } from "@citrusworx/seltzer";
+import type { ResponseData, Route } from "@citrusworx/seltzer";
 import { waitlistSourceApps } from "../db/named-ddl.js";
 import { appendWaitlistEntry, hasWaitlistEmail } from "../store/waitlist-store.js";
 import type { BlackwaterContext } from "../types/context.js";
@@ -26,7 +26,7 @@ function parseSourceApp(value: unknown): { ok: true; sourceApp?: string } | { ok
 export const joinWaitlistRoute: Route<BlackwaterContext> = {
   method: "POST",
   path: "/api/waitlist",
-  handler: async ({ locals, body }) => {
+  handler: async ({ locals, body }): Promise<ResponseData> => {
     const payload = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
     const name = String(payload.name ?? "").trim();
     const email = String(payload.email ?? "").trim().toLowerCase();
@@ -54,8 +54,8 @@ export const joinWaitlistRoute: Route<BlackwaterContext> = {
       createdAt: new Date().toISOString(),
     };
 
-    locals.waitlist.push(entry);
     await appendWaitlistEntry(entry);
+    locals.waitlist.push(entry);
 
     return { body: { ok: true } };
   },

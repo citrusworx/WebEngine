@@ -6,6 +6,8 @@ Nectarine is a WebEngine native library but is fully independent. It can be used
 
 **Latest Version**: 0.0.1 (Alpha)
 
+Production deploy bar for Blackwater + Seltzer: [Production](./production.md).
+
 ---
 
 ## Philosophy
@@ -82,6 +84,7 @@ POST /api/users
 | [Schema Guide](./nectarine-schema-guide.md) | Schema definition and field types |
 | [Query DSL](./nectarine-query-dsl.md) | Phonics YAML query DSL (canonical + Blackwater) |
 | [No hard-coded SQL](./no-hardcoded-sql.md) | Hard rule, assembly model, Blackwater SQL inventory |
+| [Production](./production.md) | Deploy-today bar: env, migrate, JSONB seed, Seltzer host, non-goals |
 | [Examples](./nectarine-examples.md) | Real-world examples (blog, store, SaaS, CMS) |
 | [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
 | [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |

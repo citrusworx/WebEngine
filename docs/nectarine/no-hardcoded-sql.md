@@ -42,6 +42,7 @@ buildDdl(schema)  →    *Schema.yml → CREATE TABLE/INDEX →  query(sql)
 
 See [Query DSL](./nectarine-query-dsl.md), [Schema Guide](./nectarine-schema-guide.md),
 and [`libraries/nectarine/README.md`](../../libraries/nectarine/README.md).
+Deploy-today env, migrate, and seed rules: [Production](./production.md).
 
 `where: isActive = true` in YAML is **not** a raw SQL hole. It is parsed by a
 closed fragment grammar (identifiers, operators, `$N`, YAML constants,
@@ -70,11 +71,11 @@ later.
 ## Inventory: `apps/blackwatersound/back`
 
 DML helpers live in `src/db/postgres.ts` and call `runNamed` →
-`CCompiler.buildQuery`. DDL bootstrap calls `runNamedDdl` →
-`CCompiler.buildDdls`. Routes and `src/store/waitlist-store.ts` do not
-embed SQL. Other apps under `apps/` do not depend on Nectarine and have
-no query SQL. `packages/kiwipress` depends on `@citrusworx/nectarine`
-but contains no SQL strings.
+`CCompiler.buildQuery` on the Nectarine `createPgAdapter` pool. DDL bootstrap
+calls `runNamedDdl` → `CCompiler.buildDdls`. Routes and
+`src/store/waitlist-store.ts` do not embed SQL. Other apps under `apps/` do
+not depend on Nectarine and have no query SQL. `packages/kiwipress` depends
+on `@citrusworx/nectarine` but contains no SQL strings.
 
 ### `src/db/postgres.ts`
 

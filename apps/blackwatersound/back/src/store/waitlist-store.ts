@@ -3,8 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { WaitlistEntry } from "../types/context.js";
 import {
-  getPool,
   insertWaitlistEntry,
+  isDatabaseConnected,
   loadWaitlistFromDb,
   waitlistEmailExists,
 } from "../db/postgres.js";
@@ -14,7 +14,7 @@ const dataDir = process.env.RUNTIME_DATA_DIR?.trim() || defaultDir;
 const waitlistPath = path.join(dataDir, "waitlist.json");
 
 function useDatabase() {
-  return Boolean(getPool());
+  return isDatabaseConnected();
 }
 
 export async function loadWaitlist(): Promise<WaitlistEntry[]> {
