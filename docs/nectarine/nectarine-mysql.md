@@ -1,10 +1,18 @@
 # Nectarine + MySQL
 
-Early adapter. `libraries/nectarine/src/adapters/ms/msqlz.ts` is a module-level `mysql2` pool plus `Mysql()` / `closeSql()`. There is no class, no YAML compiler, and no getting-started stack beyond what this page shows.
+How `Mysql` actually works in `libraries/nectarine/src/adapters/ms/msqlz.ts`. Early adapter: a module-level `mysql2` pool plus `Mysql()` / `closeSql()`. There is no class, no YAML compiler, and no getting-started stack beyond what this page and the [tutorial](./nectarine-tutorial.md)’s Postgres path show.
+
+Related:
+
+- [Query DSL](./nectarine-query-dsl.md) — Postgres shape is different; do not mix
+- [Patterns](./nectarine-patterns.md) — `mapInsert` fragment
+- [Anti-patterns](./nectarine-anti-patterns.md) — `MYSQL_*`, closing the pool per request
 
 ## Status
 
 **Early / partial.** The function works. Product claims of “Active MySQL support” overstated it. Use this page, not a feature matrix, as the source of truth.
+
+There are **no** `MS_*` helper functions. `MS_*` is the **environment prefix**. Query fragments are `mapInsert`, `mapGetter`, and `getValues`.
 
 ## Env
 
@@ -18,7 +26,15 @@ export MS_DB=myapp
 export MS_PORT=3306
 ```
 
-The pool is created at import time with those values.
+The pool is created at **import time** with those values. Set env before the process loads the module.
+
+`mysql2` is `require`d from source and is **not** listed in the package’s `dependencies`. Install it in the app:
+
+```bash
+yarn add mysql2
+```
+
+The file also `require`s `dotenv` and `path` and never calls `dotenv.config()`. Unused. The JSDoc says “Postgres” — copy-paste in source, not a second PG adapter.
 
 ## Minimal query
 
@@ -38,7 +54,11 @@ try {
 
 `Mysql` is `pool.execute` and **throws** on error (unlike `PgSql.query`, which logs and returns `undefined`).
 
-`closeSql()` ends the pool. After that, further `Mysql` calls fail until process restart. In a long-running server, **do not** close the pool per request.
+`closeSql()` ends the pool. After that, further `Mysql` calls fail until process restart. In a long-running server, **do not** close the pool per request. Close on shutdown.
+
+`pool` is exported if you need the raw `mysql2` pool.
+
+Placeholders are `?`, not `$1`.
 
 ## YAML fixture
 
@@ -69,15 +89,38 @@ user:
 
 Load with `parser.genSQL(path, "user", "create", "new")`. `mapInsert` joins `updates.values` (objects become `?`). You still write `INSERT INTO table (cols) VALUES (…)`.
 
+```ts
+import { parser, Mysql, mapInsert, getValues } from "@citrusworx/nectarine";
+
+const spec = parser.genSQL("./db/msql/user.yml", "user", "create", "new");
+const columns = spec.updates.column.join(", ");
+const placeholders = mapInsert(spec);
+const sql = `${spec.type} ${spec.action} ${spec.table} (${columns}) ${spec.values} (${placeholders})`;
+// INSERT INTO users (email, password, name, created_at) VALUES (?, ?, ?, NOW())
+```
+
+`update` in that fixture is empty. `delete.user` has empty `type` / `action` / `table`. Do not call `mapInsert` on them.
+
 This is **not** the Postgres `select` / `from` / `where` DSL. Do not mix the two shapes in one file and expect one compiler.
+
+## `mapInsert` / `mapGetter` / `getValues`
+
+| Function | Reads | Returns |
+|---|---|---|
+| `mapInsert(action)` | `action.updates.values` | joined list; objects → `?` |
+| `mapGetter(action)` | `action.statement.values` | joined list; also `console.log`s |
+| `getValues(action)` | `action.statement.column` | joined column names |
+
+Interfaces for those objects are **module-private**. They are not exported. The functions do not emit `INSERT …` or `SELECT …`.
 
 ## Practices
 
 - Use `?` placeholders only
 - Share `pool` for the process; close on shutdown
 - Install `mysql2` in the consuming workspace
-- Ignore the file comment in `msqlz.ts` that says “Postgres” — it is a copy-paste error in source, not a second PG adapter
+- `try/catch` — this adapter throws
+- Ignore the file comment that says “Postgres”
 
 ## Not included
 
-Transactions helpers, migrations, JSON operators, full-text, or a MySQL-specific compiler.
+Transactions helpers, migrations, JSON operators, full-text, a MySQL-specific compiler, or `MS_*` query functions.

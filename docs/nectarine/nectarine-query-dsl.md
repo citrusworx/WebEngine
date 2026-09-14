@@ -1,64 +1,82 @@
-# Nectarine Query DSL
+# Query DSL
 
-Current reference for Nectarine's YAML query DSL.
+How query YAML is shaped in `libraries/nectarine/models/user/db/pg/user.yml`, and what `parser.genSQL` actually returns. This is the mental model for **intent as data** — not a SQL string, not Knex, and not a compiler output.
 
-This document describes the **PostgreSQL-oriented DSL** checked in under `libraries/nectarine/models/user/db/pg/user.yml` (and the blog copies). `parser.genSQL` returns these objects. `parser.buildSQL` and `CCompiler.buildQuery` do **not** compile them yet — you walk the object yourself (see [Getting Started](./nectarine-getting-started.md)).
+Related:
 
-MySQL fixtures use a different, older shape (`type` / `action` / `updates` / `?`). See [MySQL](./nectarine-mysql.md). Mongo has no query DSL.
+- [Tutorial](./nectarine-tutorial.md) — compile `select` / `from` / `where` in app code
+- [Compiler](./nectarine-compiler.md) — `buildSQL` / `buildQuery` are empty
+- [Schema Guide](./nectarine-schema-guide.md) — tables live in a different file
+- [MySQL](./nectarine-mysql.md) — older `type` / `action` / `updates` shape
 
-## Goals
+## What the DSL is
 
-- Keep SQL intent declarative and config-driven
-- Avoid handwritten SQL strings in app code
-- Preserve parameterized runtime values such as `$1`, `$2`, etc.
-- Give Nectarine a predictable structure that can be validated and compiled
+A query file is a nested map: **resource → CRUD verb → query name → intent object**.
 
-## Design Principles
+`parser.genSQL(path, type, method, config)` returns `doc[type][method][config]`. That is a plain object. It is not SQL.
+
+```ts
+import { parser } from "@citrusworx/nectarine";
+
+const spec = parser.genSQL(
+  "libraries/nectarine/models/user/db/pg/user.yml",
+  "user",
+  "get",
+  "UserById",
+);
+// { select: ["id"], from: "users", where: { column: "id", operator: "eq", value: "$1" } }
+```
+
+The Postgres-oriented keys (`select`, `from`, `where`, `insert`, `set`) are a **convention in fixtures**. The parser does not check them. A future `buildSQL` is supposed to. Today your app does.
+
+## What a query object is not
+
+- **Not a statement.** `typeof spec === "object"`.
+- **Not validated.** Unknown operators, missing `from`, and `select: 12` all load.
+- **Not compiled by `buildSQL()`.** That function’s body is comments.
+- **Not shared with MySQL helpers.** `mapInsert` wants `updates.values`, not `insert.columns`.
+- **Not Mongo.** There is no `genSQL` flavor for collections.
+
+## A compact picture
+
+```text
+user.yml
+  user
+    get
+      UserById { select, from, where }     ──► genSQL(..., "user", "get", "UserById")
+      AllUsers { select, from }
+    create
+      NewUser  { insert: { into, columns, values } }
+    update
+      UserById { table, set, values, where }
+    delete
+      User     { from, where }
+
+optokens type: eq gt lt lte gte neq        ──► documentation only
+your builder:  eq → =                      ──► the current compiler
+PgSql.query({ sql, params })               ──► the socket
+```
+
+## Design bets (still the right ones)
 
 - Query YAML describes **intent**, not full SQL text
-- Runtime values are represented as placeholders such as `$1`
-- Operators are normalized to DSL tokens such as `eq`, `gt`, `lte`
-- Query shapes should be consistent enough for `buildSQL()` to compile without special cases
+- Runtime values are placeholders (`$1`, `$2`) passed separately as params
+- Operators are tokens (`eq`, `gt`) so a compiler can refuse unknown ones
+- Shapes should be consistent enough that a real `buildSQL()` would not need per-query special cases
 
-## Resource Layout
+Those bets are why the [tutorial](./nectarine-tutorial.md) builder is small. They are not a claim that the package already compiles.
 
-Each resource currently uses three YAML files:
+## Resource layout
 
-- `userSchema.yml`: data model and table structure
-- `user.yml`: SQL/query DSL definitions
-- `userAPI.yml`: API endpoint definitions
+Each resource currently uses three YAML files when you follow the user bundle:
 
-## Current Query Shape
+- `userSchema.yml` — data model and table structure
+- `user.yml` (under `db/pg` or `db/msql`) — SQL / query DSL definitions
+- `userAPI.yml` — API endpoint definitions
 
-The current PostgreSQL DSL is organized by resource name, then CRUD operation, then query name.
+`genSQL` only needs the query file. It does not join schema or API files.
 
-```yaml
-user:
-  get:
-    UserById:
-      select: ['id']
-      from: users
-      where:
-        column: id
-        operator: eq
-        value: $1
-```
-
-Top-level pattern:
-
-```yaml
-resourceName:
-  get:
-    QueryName: ...
-  update:
-    QueryName: ...
-  create:
-    QueryName: ...
-  delete:
-    QueryName: ...
-```
-
-## `get` Queries
+## `get` queries
 
 Read queries use `select`, `from`, and optional `where`.
 
@@ -80,19 +98,25 @@ user:
 
 Current fields:
 
-- `select`: array of column names, or `['*']`
+- `select`: array of column names, or `['*']` (fixtures also use a `'*'` string in blog files)
 - `from`: table name
-- `where`: optional predicate object
+- `where`: optional single predicate object
 
 Current `where` fields:
 
 - `column`: column name
-- `operator`: normalized operator token
-- `value`: placeholder or literal value
+- `operator`: token from the table below
+- `value`: placeholder or literal
 
-## `update` Queries
+Compilation target for `UserByEmail`:
 
-Update queries currently separate assignment columns from predicate logic.
+```sql
+SELECT email FROM users WHERE email = $1
+```
+
+Pass `["ops@citrusworx.com"]` as `params`. Do not splice the email into the YAML.
+
+## `update` queries
 
 ```yaml
 user:
@@ -110,7 +134,7 @@ user:
 Current fields:
 
 - `table`: target table
-- `set`: array of columns to update
+- `set`: columns to update
 - `values`: values corresponding to `set`
 - `where`: predicate object
 
@@ -122,9 +146,9 @@ SET name = $1, age = $2, updated_at = NOW()
 WHERE id = $3
 ```
 
-## `create` Queries
+The checked-in file uses `{ fn: now }` in some `values` lists. That is YAML. Your builder maps it to `NOW()` or rejects it.
 
-Insert queries currently use an `insert` object.
+## `create` queries
 
 ```yaml
 user:
@@ -149,9 +173,7 @@ INSERT INTO users (email, password, name, created_at)
 VALUES ($1, $2, $3, NOW())
 ```
 
-## `delete` Queries
-
-Delete queries currently use `from` plus a required `where`.
+## `delete` queries
 
 ```yaml
 user:
@@ -171,12 +193,12 @@ DELETE FROM users
 WHERE id = $1
 ```
 
-## Operator Tokens
+A delete without `where` is not modeled here. Keep it that way until a compiler can refuse it.
 
-Current operator tokens:
+## Operator tokens
 
 | DSL token | SQL operator |
-|----------|--------------|
+|---|---|
 | `eq` | `=` |
 | `neq` | `!=` |
 | `gt` | `>` |
@@ -184,117 +206,86 @@ Current operator tokens:
 | `lt` | `<` |
 | `lte` | `<=` |
 
-These tokens should be translated by the compiler rather than written as raw SQL in YAML.
+These tokens should be translated by a compiler rather than written as raw SQL in YAML. The package exports `optokens` as a **TypeScript type** from the compiler module. Nothing in `src/` maps the tokens at runtime. Copy the table into an allow-list in your builder — see [Getting Started](./nectarine-getting-started.md) and the tutorial.
 
-## Values and Placeholders
+Unknown tokens should throw in *your* compiler. `genSQL` will still return them.
 
-Nectarine currently uses positional placeholders for runtime values:
+## Values and placeholders
 
-- `$1`
-- `$2`
-- `$3`
+Postgres-oriented files use positional placeholders:
 
-These are intended to be passed separately to the database adapter as query parameters.
+- `$1`, `$2`, `$3`
 
-Example:
+These are intended to be passed separately to `PgSql.query` as `params`.
 
-```yaml
-where:
-  column: email
-  operator: eq
-  value: $1
-```
+MySQL-oriented files use `?` instead. Do not feed `$1` to `Mysql()`.
 
-This should compile into SQL plus params, not string interpolation.
+## Allowed SQL-ish literals
 
-## Allowed SQL-ish Literals
+Fixtures also use function literals such as `NOW()` and objects such as `{ fn: now }`.
 
-The current DSL examples also use SQL function literals such as `NOW()`.
+Current expectation for a hand-built compiler:
 
-Example:
+- placeholders like `$1` stay in the string and match `params`
+- literals like `NOW()` are compiler-approved fragments
+- `{ fn: now }` is the same idea in object form — map it or reject it
 
-```yaml
-values: [$1, NOW()]
-```
+A future version may formalize functions. Do not document other `{ fn: … }` values as shipped.
 
-Current expectation:
+## Shapes `genSQL` cannot address
 
-- placeholders like `$1` are runtime parameters
-- literals like `NOW()` are compiler-approved SQL fragments
-
-This area is still evolving. A future version may formalize functions such as:
+`libraries/nectarine/models/blog/post/sql.yml` uses a top-level `queries:` map:
 
 ```yaml
-values:
-  - $1
-  - { fn: now }
+queries:
+  getPublishedPosts:
+    select: [id, title, slug, excerpt, created_at]
+    where:
+      column: status
+      operator: eq
+      value: 'published'
 ```
 
-## Current Example
+There is no `user.get.Name` nesting. `parser.genSQL(path, "queries", "getPublishedPosts", …)` will not find a CRUD layer that is not there. Load with `parser.yaml` and walk `doc.queries.getPublishedPosts`, or rewrite the file to the user-bundle layout.
 
-This reflects `libraries/nectarine/models/user/db/pg/user.yml`. That file uses `{ fn: now }` in some `values` lists; the snippets below write `NOW()` as the intended SQL fragment. Either form is just YAML until a compiler exists.
+Blog `user/sql.yml` is closer to the PG DSL but inconsistent (`insert` using `set`, `select: '*'` as a string). Treat fixtures as examples of *intent*, not as a schema pack.
+
+## MySQL is a different DSL
+
+`models/user/db/msql/user.yml`:
 
 ```yaml
 user:
-  get:
-    UserByAge:
-      select: ['id', 'name']
-      from: users
-      where:
-        column: age
-        operator: gt
-        value: $1
-
-    AllUsers:
-      select: ['*']
-      from: users
-
-    UserById:
-      select: ['id']
-      from: users
-      where:
-        column: id
-        operator: eq
-        value: $1
-
-  update:
-    UserById:
-      table: users
-      set: ['name', 'age', 'updated_at']
-      values: [$1, $2, NOW()]
-      where:
-        column: id
-        operator: eq
-        value: $3
-
   create:
-    NewUser:
-      insert:
-        into: users
-        columns: ['email', 'password', 'name', 'created_at']
-        values: [$1, $2, $3, NOW()]
-
-  delete:
-    User:
-      from: users
-      where:
-        column: id
-        operator: eq
-        value: $1
+    new:
+      type: INSERT
+      action: INTO
+      table: users
+      values: VALUES
+      updates:
+        column: [email, password, name, created_at]
+        values: ['?', '?', '?', NOW()]
 ```
 
-## Known Constraints
+`parser.genSQL(path, "user", "create", "new")` still works — it only indexes keys. `mapInsert(spec)` joins `updates.values`. You still write `INSERT INTO …`. Update and delete nodes in that fixture are empty. See [MySQL](./nectarine-mysql.md).
+
+## `pgz.example.ts` does not compile this DSL
+
+`buildSelectSQL` in `libraries/nectarine/src/adapters/pg/pgz.example.ts` expects `type`, `fields`, `table`, `action`, `conditions` — the MySQL-shaped keys. Calling it on a `UserById` node from `db/pg/user.yml` produces nonsense (`undefined * FROM undefined`).
+
+The getting-started / tutorial `buildSelect` is the builder that matches `select` / `from` / `where`. Copy that, not `buildSelectSQL`, unless you rewrite the YAML to the example’s shape.
+
+## Known constraints
 
 This document describes the **current** DSL, not the final one.
 
-Current limitations:
+- `where` models a single predicate object (no `AND` / `OR` trees)
+- joins are not modeled
+- grouping, ordering, limits, and pagination are not formalized (`orderBy` appears in the blog post file and is unread)
+- SQL functions are still raw fragments or `{ fn: now }`
+- there is no validation layer for identifiers
+- `CCompiler.clean_parse` indexes `[method][type]`, the **opposite** of `genSQL` — see [Compiler](./nectarine-compiler.md)
 
-- `where` currently models a single predicate object
-- joins are not yet modeled
-- grouping, ordering, limits, and pagination are not yet formalized here
-- SQL functions such as `NOW()` are still represented as raw fragments
-- there is not yet a strict validation layer enforcing identifier and shape safety
+## Next step for the code
 
-## Next Step
-
-The next engineering step is to lock this DSL into TypeScript types and compile it through `buildSQL()` rather than treating it as loose YAML objects.
+Lock this DSL into TypeScript types and compile it through `buildSQL()` / `buildQuery` rather than treating it as loose YAML objects. Until that lands, the docs stay with a hand-built compiler and [Status](./nectarine-status.md).
