@@ -34,13 +34,20 @@ closed fragment grammar (identifiers, operators, `$N`, YAML constants,
 `AND` / `OR`, `IN`, `IS NULL`). Comments, semicolons, function calls, and
 subqueries are rejected. Runtime values stay in adapter params.
 
+**JSONB is supported; we are not dropping it.** Postgres `json` / `jsonb`
+columns are first-class in schema YAML and query phonics (bind params,
+including `$N::jsonb`). Operators such as `@>`, `?`, and `->>` can come
+later. The Blackwater issue below is only the **document-store pattern**
+(`products(id, payload JSONB)` vs relational columns in
+`productQueries.yml`) — not JSONB as a type.
+
 ## Status legend
 
 | Status | Meaning |
 |--------|---------|
 | **ready-to-migrate** | Compiler can emit this query from YAML today. Phase 2 can replace the string with a named call (after YAML/table alignment if noted). |
-| **blocked-on-compiler** | Needs a compiler feature this phase does not add (`COUNT`, `EXISTS`, `ON CONFLICT`, casts, aliases, aggregates). |
-| **needs-DDL** | Live table shape does not match `*Schema.yml` / `*Queries.yml`. Schema YAML should own `CREATE TABLE` once a DDL compiler exists. |
+| **blocked-on-compiler** | Needs a compiler feature this phase does not add (`COUNT`, `EXISTS`, `ON CONFLICT`, aliases, aggregates). `$N::jsonb` bind casts are already allowed. |
+| **needs-DDL** | Live table shape does not match `*Schema.yml` / `*Queries.yml`. Schema YAML should own `CREATE TABLE` once a DDL compiler exists. Resolution may be relational columns, JSONB columns for flexible fields, or hybrid — **not** “delete JSONB.” |
 
 ---
 
@@ -56,10 +63,10 @@ but contains no SQL strings.
 
 | Location | Purpose | YAML that should own it | Status |
 |----------|---------|-------------------------|--------|
-| `migrate()` ~L40–56 | `CREATE TABLE` products (JSONB document store) + waitlist + `waitlist_email_idx` | `schemas/product/productSchema.yml`, `schemas/waitlist/waitlistSchema.yml` (DDL from schema, not query YAML) | **needs-DDL** — live `products` is `id + payload JSONB`; schema YAML is relational (`catalog`, `name`, `slug`, …). Waitlist YAML also has `source_app` / `interest` the live table lacks. |
-| `loadProductsFromDb()` ~L66 | `SELECT payload FROM products ORDER BY created_at ASC` | Not in `productQueries.yml` (that file selects relational `*` / `isActive`). Add a temporary named query **or** migrate after DDL. | **needs-DDL** (table mismatch). `ORDER BY` itself is **ready-to-migrate** once a matching named query exists. |
+| `migrate()` ~L40–56 | `CREATE TABLE` products (**document-store**: `id` + `payload JSONB`) + waitlist + `waitlist_email_idx` | `schemas/product/productSchema.yml`, `schemas/waitlist/waitlistSchema.yml` (DDL from schema, not query YAML) | **needs-DDL** — live `products` is one JSONB blob; query YAML lists relational columns (`catalog`, `name`, `slug`, …). `productSchema.yml` already has `tags: json`. Aligning tables can keep JSONB columns. Waitlist YAML also has `source_app` / `interest` the live table lacks. |
+| `loadProductsFromDb()` ~L66 | `SELECT payload FROM products ORDER BY created_at ASC` | Not in `productQueries.yml` (that file selects relational `*` / `isActive`). Add a temporary named query **or** migrate after DDL. | **needs-DDL** (document-store vs query YAML). `ORDER BY` itself is **ready-to-migrate** once a matching named query exists. |
 | `seedProductsIfEmpty()` ~L78 | `SELECT COUNT(*)::text AS count FROM products` | No query YAML; would be e.g. `product.read.productCount` | **blocked-on-compiler** — aggregates, `::text` cast, `AS` alias |
-| `seedProductsIfEmpty()` ~L85 | `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING` | Not `product.create.newProduct` (relational columns, no upsert) | **blocked-on-compiler** (`ON CONFLICT`, `::jsonb`) and **needs-DDL** |
+| `seedProductsIfEmpty()` ~L85 | `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING` | Not `product.create.newProduct` (relational columns, no upsert). `$2::jsonb` is a valid phonics bind cast. | **blocked-on-compiler** (`ON CONFLICT` only) and **needs-DDL** (document-store vs query YAML). JSONB binds stay. |
 | `loadWaitlistFromDb()` ~L98 | `SELECT id, name, email, created_at AS "createdAt" … ORDER BY created_at ASC` | Close to `waitlist.read.allEntries` (`SELECT * … ORDER BY created_at DESC`) | **blocked-on-compiler** for `AS "createdAt"`; column list + `ORDER BY` are **ready-to-migrate** if the app maps `created_at` in TS and YAML `orderBy` is aligned (`ASC` vs `DESC`) |
 | `insertWaitlistEntry()` ~L111 | `INSERT INTO waitlist (id, name, email, created_at)` | `waitlist.create.joinWaitlist` is `(id, name, email, source_app, interest) RETURNING …` | **needs-DDL** / YAML alignment — field lists differ. Compiler **can** compile `joinWaitlist` today. |
 | `waitlistEmailExists()` ~L123 | `SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1)` | Prefer `waitlist.read.entryByEmail` (already compilable) instead of `EXISTS` | **blocked-on-compiler** for `EXISTS`; **ready-to-migrate** if phase 2 uses `entryByEmail` and checks `rows.length` |
@@ -68,7 +75,7 @@ but contains no SQL strings.
 
 | Location | Purpose | YAML that should own it | Status |
 |----------|---------|-------------------------|--------|
-| L1–15 | Same `CREATE TABLE` / index as `migrate()` | `productSchema.yml`, `waitlistSchema.yml` | **needs-DDL** — bootstrap copy of the JSONB-era tables |
+| L1–15 | Same `CREATE TABLE` / index as `migrate()` | `productSchema.yml`, `waitlistSchema.yml` | **needs-DDL** — bootstrap copy of the document-store tables (JSONB columns remain a supported shape) |
 
 Docker init is not app backend code, but it must stay in lockstep with
 whatever schema YAML eventually emits.
@@ -117,9 +124,13 @@ mix_review / enrollment / client are **not** created by `migrate()` —
    Delete SQL string literals from `db/postgres.ts`. Prefer existing YAML
    (`entryByEmail`, `joinWaitlist`, …) over new compiler features when
    possible.
-3. **Phase 3** — DDL from `*Schema.yml`; replace the JSONB product store
-   and align waitlist columns with YAML. Docker `init.sql` comes from the
-   same source.
+3. **Phase 3** — DDL from `*Schema.yml` so live tables match the query
+   contracts. **JSONB is supported; we are not dropping it.** The
+   document-store pattern (`products(id, payload JSONB)` vs relational
+   columns in `productQueries.yml`) can resolve as relational columns,
+   JSONB columns for flexible fields, or a hybrid — not “delete JSONB.”
+   Align waitlist columns. Docker `init.sql` comes from the same source.
 4. **Later** — Remaining compiler features only if phase 2 still needs
-   them (`COUNT`, `ON CONFLICT`, casts). Seltzer route generation is a
-   separate track. Do **not** invent `nectarine serve`.
+   them (`COUNT`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
+   Seltzer route generation is a separate track. Do **not** invent
+   `nectarine serve`.

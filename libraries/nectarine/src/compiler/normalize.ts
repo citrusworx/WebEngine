@@ -20,6 +20,7 @@ import {
     whereNodeToYaml,
 } from "./fragments.js";
 import { isRecord, QueryCompileError } from "./errors.js";
+import { shiftPlaceholder } from "./placeholders.js";
 import type { CrudMethod } from "./sql.js";
 
 export const QUERY_TYPES = ["SELECT", "INSERT", "UPDATE", "DELETE"] as const;
@@ -41,8 +42,6 @@ const TYPE_TO_METHOD: Record<QueryType, CrudMethod> = {
     UPDATE: "update",
     DELETE: "delete",
 };
-
-const PLACEHOLDER = /^\$[1-9]\d*$/;
 
 export function isQueryType(value: unknown): value is QueryType {
     return typeof value === "string" && (QUERY_TYPES as readonly string[]).includes(value.toUpperCase());
@@ -91,8 +90,11 @@ function shiftPlaceholders(value: unknown, offset: number): unknown {
     if (offset === 0) {
         return value;
     }
-    if (typeof value === "string" && PLACEHOLDER.test(value)) {
-        return `$${Number(value.slice(1)) + offset}`;
+    if (typeof value === "string") {
+        const shifted = shiftPlaceholder(value, offset);
+        if (shifted !== undefined) {
+            return shifted;
+        }
     }
     if (Array.isArray(value)) {
         return value.map((item) => shiftPlaceholders(item, offset));
