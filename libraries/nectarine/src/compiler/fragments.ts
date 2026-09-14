@@ -13,6 +13,7 @@
  */
 
 import { QueryCompileError } from "./errors.js";
+import { PLACEHOLDER_SCAN } from "./placeholders.js";
 
 export const MAX_FRAGMENT_LENGTH = 1024;
 
@@ -94,7 +95,7 @@ function tokenize(input: string, label: string): Token[] {
         }
 
         if (ch === "$") {
-            const match = input.slice(i).match(/^\$[1-9]\d*/);
+            const match = input.slice(i).match(PLACEHOLDER_SCAN);
             if (!match) {
                 throw new QueryCompileError(`${label} fragment has an invalid placeholder at ${i}`);
             }

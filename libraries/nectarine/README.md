@@ -11,7 +11,12 @@ Final app backend code **must not** embed SQL strings. Nectarine is phonics:
 3. **Adapters** only execute `(sql, params)` produced by the compiler. They never build SQL.
 
 `where: isActive = true` in YAML is a closed fragment grammar, not raw SQL.
-Runtime values are `$N` placeholders — never string-interpolated.
+Runtime values are `$N` placeholders (`$1::jsonb` is an allowlisted bind
+cast) — never string-interpolated.
+
+**JSONB is supported; we are not dropping it.** Schema fields may be
+`json` / `jsonb`. The Blackwater `products(id, payload JSONB)` table is a
+document-store pattern to align with query YAML — not a plan to remove JSONB.
 
 See [`docs/nectarine/no-hardcoded-sql.md`](../../docs/nectarine/no-hardcoded-sql.md) and [`docs/nectarine/nectarine-query-dsl.md`](../../docs/nectarine/nectarine-query-dsl.md).
 

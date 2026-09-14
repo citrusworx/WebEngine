@@ -19,10 +19,10 @@ Adapter           →  query(sql, params)   // execute only
   It does not concatenate SQL, interpolate request data, or hand-write
   `SELECT` / `INSERT` / `UPDATE` / `DELETE`.
 - **Compiler** validates identifiers, operators, and values. Runtime values
-  are `$1`-style placeholders. YAML-authored constants (`true`, `42`,
-  `'published'`) are allowed only as tagged `{ const: ... }` or via the
-  closed `where` fragment grammar — never via string interpolation of
-  user input.
+  are `$1`-style placeholders (`$1::jsonb` is an allowlisted Postgres bind
+  cast). YAML-authored constants (`true`, `42`, `'published'`) are allowed
+  only as tagged `{ const: ... }` or via the closed `where` fragment
+  grammar — never via string interpolation of user input.
 - **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
   compiler. They do not assemble statements.
 
@@ -252,11 +252,31 @@ Blackwater uses `table` instead of `from`; the normalizer maps it.
 | `is_null` | `IS NULL` |
 | `is_not_null` | `IS NOT NULL` |
 
+## JSONB
+
+**JSONB is supported; we are not dropping it.** Schema fields may be
+`json` / `jsonb` (Blackwater already uses `tags: json`). Query values may
+bind JSON with `$1::jsonb` (allowlist: `jsonb`, `json`, `text`).
+
+```yaml
+values: [$1, $2::jsonb]
+```
+
+```sql
+INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)
+```
+
+JSONB operators (`@>`, `?`, `->>`, …) are a later phonics item — not
+required for this phase. Blackwater’s live `products(id, payload JSONB)`
+table is a **document-store pattern**, not a reason to remove JSONB.
+Phase 3 can keep JSONB columns, use relational columns, or hybridize.
+
 ## Not yet compiled
 
 - blog `queries:` maps (`models/blog/post/sql.yml`)
 - joins, `GROUP BY`, `LIMIT` / pagination
-- aggregates (`COUNT`), `EXISTS`, `ON CONFLICT`, type casts, column aliases
+- aggregates (`COUNT`), `EXISTS`, `ON CONFLICT`, column aliases
+- JSONB operators (`@>`, `?`, `->>`) — columns and `$N::jsonb` binds work today
 - DDL / `CREATE TABLE` (schema YAML — phase 3)
 
 ## Usage

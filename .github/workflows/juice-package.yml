@@ -5,7 +5,6 @@ on:
     paths:
       - "libraries/juice/**"
       - "libraries/sig/**"
-      - ".changeset/**"
       - ".github/workflows/juice-package.yml"
   push:
     branches:
@@ -13,7 +12,6 @@ on:
     paths:
       - "libraries/juice/**"
       - "libraries/sig/**"
-      - ".changeset/**"
       - ".github/workflows/juice-package.yml"
 
 jobs:
@@ -23,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # cache: yarn runs yarn before later steps; Corepack must already be active.
       - name: Enable Corepack
@@ -42,6 +42,17 @@ jobs:
       - name: Verify Juice package
         run: yarn verify:juice
 
+      # Only when Juice/Sig sources changed. A Nectarine-only changeset must
+      # not run (or fail) this check. Compare against the PR base, not master —
+      # this branch is often not based on master.
       - name: Check changeset status
         if: github.event_name == 'pull_request'
-        run: yarn changeset status
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          CHANGED="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD)"
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -Eq '^(libraries/juice/|libraries/sig/)'; then
+            yarn changeset status --since="origin/${{ github.base_ref }}"
+          else
+            echo "Skipping changeset status; this PR does not change Juice or Sig sources."
+          fi

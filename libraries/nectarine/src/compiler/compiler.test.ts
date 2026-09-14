@@ -125,6 +125,47 @@ describe("CCompiler", () => {
         );
     });
 
+    it("compiles a tightly allowlisted $N::jsonb bind cast", () => {
+        const compiler = new CCompiler();
+        const insert = {
+            NewPayload: {
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", "$2::jsonb"],
+                },
+            },
+        };
+
+        expect(compiler.buildQuery(insert, "NewPayload", "create")).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)",
+        );
+        expect(
+            compileQuery({
+                select: ["payload"],
+                from: "products",
+                where: { column: "payload", operator: "eq", value: "$1::JSONB" },
+            }),
+        ).toBe("SELECT payload FROM products WHERE payload = $1::jsonb");
+    });
+
+    it("rejects unbound casts and unknown cast types", () => {
+        expect(() =>
+            compileQuery({
+                select: ["payload"],
+                from: "products",
+                where: { column: "payload", operator: "eq", value: "$1::jsonb; DROP TABLE products" },
+            }),
+        ).toThrowError(QueryCompileError);
+        expect(() =>
+            compileQuery({
+                select: ["id"],
+                from: "products",
+                where: { column: "id", operator: "eq", value: "$1::int" },
+            }),
+        ).toThrowError(QueryCompileError);
+    });
+
     it("rejects number and boolean literals", () => {
         const compiler = new CCompiler();
         const withNumber = {

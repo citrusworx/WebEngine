@@ -11,6 +11,7 @@
 import { isRecord, QueryCompileError } from "./errors.js";
 import { parseOrderByFragment, parseWhereFragment, whereNodeToYaml } from "./fragments.js";
 import { inferMethodFromType, normalizeQuery } from "./normalize.js";
+import { normalizePlaceholder, PLACEHOLDER, TYPED_PLACEHOLDER } from "./placeholders.js";
 
 export { isRecord, QueryCompileError } from "./errors.js";
 
@@ -40,7 +41,6 @@ export type CleanedQueries = {
 };
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
-const PLACEHOLDER = /^\$[1-9]\d*$/;
 const NOW_LITERAL = /^now\(\)$/i;
 
 export function isCrudMethod(value: unknown): value is CrudMethod {
@@ -100,19 +100,19 @@ export function compileValue(value: unknown): string {
     }
 
     if (typeof value === "string") {
-        if (PLACEHOLDER.test(value)) {
-            return value;
+        if (PLACEHOLDER.test(value) || TYPED_PLACEHOLDER.test(value)) {
+            return normalizePlaceholder(value);
         }
         if (NOW_LITERAL.test(value)) {
             return "NOW()";
         }
         throw new QueryCompileError(
-            `Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder or { fn: now }`,
+            `Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder, $1::jsonb, or { fn: now }`,
         );
     }
 
     throw new QueryCompileError(
-        `Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder or { fn: now }`,
+        `Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder, $1::jsonb, or { fn: now }`,
     );
 }
 
