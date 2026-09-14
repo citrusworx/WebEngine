@@ -1,28 +1,34 @@
-import { heroNode, HeroNode } from "./nodes/HeroNode";
-import { Port, SugarNode, SugarEdge } from "./interfaces/interfaces";
+import { heroNode } from "./nodes/HeroNode";
+import { SugarNode, SugarEdge } from "./interfaces/interfaces";
 import { NodeType } from "./types/types";
 import { createTooltip } from "./util/utility";
+import {
+    NODE_HEADER_HEIGHT,
+    PORT_RADIUS,
+    definePort,
+    getPortAnchor,
+    getPortAnchorById,
+    hitTestPort,
+    portsByDirection
+} from "./graph/ports";
+import { validateGraph } from "./graph/validate";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 let activeTooltip: HTMLDivElement | null = null;
-canvas.width = window.innerWidth; // Extra space for dragging
+canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Node Types
-
-// Colors
 const NODE_COLORS: Record<NodeType, { header: string; border: string; port: string }> = {
     content:   { header: "#4caf50", border: "#388e3c", port: "#81c784" },
     parameter: { header: "#fbc02d", border: "#f9a825", port: "#ffe082" },
     operation: { header: "#5c6bc0", border: "#3949ab", port: "#9fa8da" },
-    event: { header: "#e64a19", border: "#d84315", port: "#ff8a65" },
-    variable: { header: "#0097a7", border: "#00796b", port: "#4dd0e1" },
-    utility: { header: "#7b1fa2", border: "#4a148c", port: "#ba68c8" },
-    custom: { header: "#616161", border: "#212121", port: "#bdbdbd" }
+    event:     { header: "#e64a19", border: "#d84315", port: "#ff8a65" },
+    variable:  { header: "#0097a7", border: "#00796b", port: "#4dd0e1" },
+    utility:   { header: "#7b1fa2", border: "#4a148c", port: "#ba68c8" },
+    custom:    { header: "#616161", border: "#212121", port: "#bdbdbd" }
 };
 
-// Nodes
 const nodes: SugarNode[] = [
     {
         id: "1",
@@ -31,7 +37,7 @@ const nodes: SugarNode[] = [
         label: "Danny Licks Buttsholes",
         type: "content",
         isDragging: false,
-        ports: [{ id: "out", label: "out", type: "output" }],
+        ports: [definePort("out", "out", "output")],
         tooltip: createTooltip("Fetches the current page content")
     },
     {
@@ -42,37 +48,37 @@ const nodes: SugarNode[] = [
         type: "operation",
         isDragging: false,
         ports: [
-            { id: "in", label: "in", type: "input" },
-            { id: "out", label: "out", type: "output" }
+            definePort("in", "in", "input"),
+            definePort("out", "out", "output")
         ],
         fields: [{ label: "id", value: "#main-title" }]
     },
     {
         id: "3",
         x: 560, y: 200,
-        width: 200, height: 70,
+        width: 200, height: 90,
         label: "Add Button",
         type: "content",
         isDragging: false,
-        fields:  [{ label: "text", value: "Click Me" }],
+        fields: [{ label: "text", value: "Click Me" }],
         ports: [
-            { id: "in", label: "request", type: "input" },
-            { id: "out", label: "out", type: "output" },
-            {id: "out", label: "response", type: "output" }
+            definePort("in", "request", "input"),
+            definePort("out", "out", "output"),
+            definePort("response", "response", "output")
         ]
     },
     {
         id: "4",
-        x: 820, y: 200,
-        width: 220, height: 90,
+        x: 820, y: 160,
+        width: 220, height: 110,
         label: "GET",
         type: "operation",
         isDragging: false,
         ports: [
-            { id: "in", label: "request", type: "input" },
-            { id: "params", label: "params", type: "input" },
-            { id: "out", label: "error", type: "output" },
-            { id: "out", label: "response", type: "output" }
+            definePort("in", "request", "input"),
+            definePort("params", "params", "input"),
+            definePort("error", "error", "output"),
+            definePort("response", "response", "output")
         ],
         fields: [{ label: "url", value: "https://api.example.com/doc" }]
     },
@@ -83,7 +89,7 @@ const nodes: SugarNode[] = [
         label: "Params",
         type: "parameter",
         isDragging: false,
-        ports: [{ id: "out", label: "out", type: "output" }],
+        ports: [definePort("out", "out", "output")],
         fields: [{ label: "value", value: "title" }]
     },
     {
@@ -93,7 +99,7 @@ const nodes: SugarNode[] = [
         label: "Log",
         type: "event",
         isDragging: false,
-        ports: [{ id: "in", label: "in", type: "input" }]
+        ports: [definePort("in", "in", "input")]
     },
     {
         ...heroNode
@@ -106,73 +112,55 @@ const nodes: SugarNode[] = [
         type: "variable",
         isDragging: false,
         ports: [
-            { id: "in", label: "in", type: "input" },
-            { id: "out", label: "out", type: "output" }
+            definePort("in", "in", "input"),
+            definePort("out", "out", "output")
         ],
         fields: [{ label: "custom-field", value: "Custom Value" }],
         tooltip: createTooltip("This is a custom node with user-defined behavior")
     }
 ];
 
-// Edges
 const edges: SugarEdge[] = [
-    { id: "e1", fromNodeId: "1", fromPortType: "content",   toNodeId: "2" },
-    { id: "e2", fromNodeId: "2", fromPortType: "operation", toNodeId: "3" },
-    { id: "e3", fromNodeId: "3", fromPortType: "content",   toNodeId: "4" },
-    { id: "e4", fromNodeId: "5", fromPortType: "parameter", toNodeId: "4" },
-    { id: "e5", fromNodeId: "2", fromPortType: "operation", toNodeId: "7" },
-    { id: "e6", fromNodeId: "4", fromPortType: "content",   toNodeId: "6" },
-    { id: "e7", fromNodeId: "7", fromPortType: "content",   toNodeId: "4" },
-    { id: "e8", fromNodeId: "4", fromPortType: "variable",  toNodeId: "8" }
+    { id: "e1", fromNodeId: "1", fromPortId: "out", toNodeId: "2", toPortId: "in" },
+    { id: "e2", fromNodeId: "2", fromPortId: "out", toNodeId: "3", toPortId: "in" },
+    { id: "e3", fromNodeId: "3", fromPortId: "out", toNodeId: "4", toPortId: "in" },
+    { id: "e4", fromNodeId: "5", fromPortId: "out", toNodeId: "4", toPortId: "params" },
+    { id: "e5", fromNodeId: "2", fromPortId: "out", toNodeId: "7", toPortId: "in" },
+    { id: "e6", fromNodeId: "4", fromPortId: "error", toNodeId: "6", toPortId: "in" },
+    { id: "e7", fromNodeId: "7", fromPortId: "out", toNodeId: "4", toPortId: "in" },
+    { id: "e8", fromNodeId: "4", fromPortId: "response", toNodeId: "8", toPortId: "in" }
 ];
 
-// Port positions
-function getOutputPort(node: SugarNode): { x: number; y: number } {
-    return { x: node.x + node.width, y: node.y + node.height / 2 };
-}
+validateGraph(nodes, edges);
 
-function getInputPort(node: SugarNode): { x: number; y: number } {
-    return { x: node.x, y: node.y + node.height / 2 };
-}
-
-function getParamsPort(node: SugarNode): { x: number; y: number } {
-    return { x: node.x, y: node.y + node.height * 0.75 };
-}
-
-// Draw node
 function drawNode(node: SugarNode) {
     const colors = NODE_COLORS[node.type];
     const radius = 8;
 
-    // Shadow
     ctx.shadowColor = "rgba(0,0,0,0.15)";
     ctx.shadowBlur = 12;
     ctx.shadowOffsetY = 4;
 
-    // Body
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
     ctx.roundRect(node.x, node.y, node.width, node.height, radius);
     ctx.fill();
     ctx.shadowColor = "transparent";
 
-    // Header
     ctx.fillStyle = colors.header;
     ctx.beginPath();
-    ctx.roundRect(node.x, node.y, node.width, 28, [radius, radius, 0, 0]);
+    ctx.roundRect(node.x, node.y, node.width, NODE_HEADER_HEIGHT, [radius, radius, 0, 0]);
     ctx.fill();
 
-    // Header label
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 12px IBM Plex Sans, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(node.label, node.x + node.width / 2, node.y + 14);
+    ctx.fillText(node.label, node.x + node.width / 2, node.y + NODE_HEADER_HEIGHT / 2);
 
-    // Fields
     if (node.fields) {
         node.fields.forEach((field, i) => {
-            const fieldY = node.y + 38 + i * 22;
+            const fieldY = node.y + NODE_HEADER_HEIGHT + 10 + i * 22;
             ctx.fillStyle = "#666666";
             ctx.font = "11px IBM Plex Mono, monospace";
             ctx.textAlign = "left";
@@ -183,64 +171,54 @@ function drawNode(node: SugarNode) {
         });
     }
 
-    // Border
     ctx.strokeStyle = colors.border;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(node.x, node.y, node.width, node.height, radius);
     ctx.stroke();
 
-    // Output port
-    const hasOutput = node.ports.find(p => p.type === "output");
-    if (hasOutput) {
-        const out = getOutputPort(node);
-        ctx.beginPath();
-        ctx.arc(out.x, out.y, 7, 0, Math.PI * 2);
-        ctx.fillStyle = colors.port;
-        ctx.fill();
-        ctx.strokeStyle = colors.border;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    }
+    const inputs = portsByDirection(node, "input");
+    const outputs = portsByDirection(node, "output");
 
-    // Input port
-    const hasInput = node.ports.find(p => p.id === "in");
-    if (hasInput) {
-        const inp = getInputPort(node);
+    for (const port of node.ports) {
+        const pos = getPortAnchor(node, port);
         ctx.beginPath();
-        ctx.arc(inp.x, inp.y, 7, 0, Math.PI * 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.fill();
-        ctx.strokeStyle = "#aaaaaa";
+        ctx.arc(pos.x, pos.y, PORT_RADIUS, 0, Math.PI * 2);
+        if (port.direction === "output") {
+            ctx.fillStyle = colors.port;
+            ctx.fill();
+            ctx.strokeStyle = colors.border;
+        } else {
+            ctx.fillStyle = "#ffffff";
+            ctx.fill();
+            ctx.strokeStyle = "#aaaaaa";
+        }
         ctx.lineWidth = 2;
         ctx.stroke();
-    }
 
-    // Params port
-    const hasParams = node.ports.find(p => p.id === "params");
-    if (hasParams) {
-        const par = getParamsPort(node);
-        ctx.beginPath();
-        ctx.arc(par.x, par.y, 7, 0, Math.PI * 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.fill();
-        ctx.strokeStyle = NODE_COLORS.parameter.border;
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        const siblings = port.direction === "output" ? outputs : inputs;
+        if (siblings.length > 1) {
+            ctx.fillStyle = "#888888";
+            ctx.font = "10px IBM Plex Sans, sans-serif";
+            ctx.textBaseline = "middle";
+            if (port.direction === "input") {
+                ctx.textAlign = "left";
+                ctx.fillText(port.label, pos.x + 12, pos.y);
+            } else {
+                ctx.textAlign = "right";
+                ctx.fillText(port.label, pos.x - 12, pos.y);
+            }
+        }
     }
 }
 
-// Draw edge
 function drawEdge(edge: SugarEdge) {
-    const fromNode = nodes.find(n => n.id === edge.fromNodeId);
-    const toNode = nodes.find(n => n.id === edge.toNodeId);
+    const fromNode = nodes.find((n) => n.id === edge.fromNodeId);
+    const toNode = nodes.find((n) => n.id === edge.toNodeId);
     if (!fromNode || !toNode) return;
 
-    const from = getOutputPort(fromNode);
-    const to = edge.fromPortType === "parameter"
-        ? getParamsPort(toNode)
-        : getInputPort(toNode);
-
+    const from = getPortAnchorById(fromNode, edge.fromPortId);
+    const to = getPortAnchorById(toNode, edge.toPortId);
     const cp = Math.abs(to.x - from.x) / 2;
 
     ctx.beginPath();
@@ -251,12 +229,11 @@ function drawEdge(edge: SugarEdge) {
         to.x, to.y
     );
 
-    ctx.strokeStyle = NODE_COLORS[edge.fromPortType].port;
+    ctx.strokeStyle = NODE_COLORS[fromNode.type].port;
     ctx.lineWidth = 2;
     ctx.stroke();
 }
 
-// Render
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     edges.forEach(drawEdge);
@@ -264,44 +241,47 @@ function render() {
     requestAnimationFrame(render);
 }
 
-// Hit detection
 function getNodeAtPosition(x: number, y: number): SugarNode | null {
-    return nodes.find(n =>
-        x >= n.x && x <= n.x + n.width &&
-        y >= n.y && y <= n.y + n.height
-    ) ?? null;
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        const n = nodes[i];
+        if (x >= n.x && x <= n.x + n.width && y >= n.y && y <= n.y + n.height) {
+            return n;
+        }
+    }
+    return null;
 }
 
-// Drag
 let dragTarget: SugarNode | null = null;
 let offSetX = 0;
 let offSetY = 0;
 
-// In index.ts — replace your existing mousemove listener with this
 canvas.addEventListener("mousemove", (e) => {
-    // Handle drag
     if (dragTarget) {
         dragTarget.x = e.offsetX - offSetX;
         dragTarget.y = e.offsetY - offSetY;
+        canvas.style.cursor = "grabbing";
         return;
     }
 
-    // Handle tooltip
+    const portHit = hitTestPort(nodes, e.offsetX, e.offsetY);
+    canvas.style.cursor = portHit ? "crosshair" : getNodeAtPosition(e.offsetX, e.offsetY) ? "grab" : "default";
+
     const node = getNodeAtPosition(e.offsetX, e.offsetY);
     if (node && node.tooltip) {
         node.tooltip.style.display = "block";
         node.tooltip.style.left = `${e.pageX + 10}px`;
         node.tooltip.style.top = `${e.pageY + 10}px`;
         activeTooltip = node.tooltip;
-    } else {
-        if (activeTooltip) {
-            activeTooltip.style.display = "none";
-            activeTooltip = null;
-        }
+    } else if (activeTooltip) {
+        activeTooltip.style.display = "none";
+        activeTooltip = null;
     }
 });
 
 canvas.addEventListener("mousedown", (e) => {
+    // Port hits are reserved for future wiring; do not start a node drag from a port.
+    if (hitTestPort(nodes, e.offsetX, e.offsetY)) return;
+
     const node = getNodeAtPosition(e.offsetX, e.offsetY);
     if (!node) return;
     dragTarget = node;
@@ -310,15 +290,15 @@ canvas.addEventListener("mousedown", (e) => {
     offSetY = e.offsetY - node.y;
 });
 
-canvas.addEventListener("mousemove", (e) => {
-    if (!dragTarget) return;
-    dragTarget.x = e.offsetX - offSetX;
-    dragTarget.y = e.offsetY - offSetY;
-});
-
 canvas.addEventListener("mouseup", () => {
     if (dragTarget) dragTarget.isDragging = false;
     dragTarget = null;
+});
+
+canvas.addEventListener("mouseleave", () => {
+    if (dragTarget) dragTarget.isDragging = false;
+    dragTarget = null;
+    canvas.style.cursor = "default";
 });
 
 render();
