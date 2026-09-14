@@ -43,16 +43,30 @@ jobs:
       - name: Verify Nectarine package
         run: yarn verify:nectarine
 
-      # Only when Nectarine sources changed. Compare against the PR base, not
-      # master — this branch is often not based on master.
+      # Changeset status is a *release* gate, not a verify gate. Juice skips
+      # this step unless library sources changed; we do the same, but also
+      # ignore non-publish Nectarine paths so README/docs/examples/tests-only
+      # PRs (see #31) do not fail. Compare against the PR base, not master —
+      # this branch is often not based on master.
+      #
+      # Require a changeset only for package.json, committed dist/, or src/
+      # excluding tests, specs, and fixtures. verify:nectarine still runs for
+      # any libraries/nectarine/** hit.
       - name: Check changeset status
         if: github.event_name == 'pull_request'
         run: |
           git fetch --no-tags origin "${{ github.base_ref }}"
           CHANGED="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD)"
           echo "$CHANGED"
-          if echo "$CHANGED" | grep -Eq '^libraries/nectarine/'; then
+          RELEASE_CHANGED="$(
+            echo "$CHANGED" | grep -E '^libraries/nectarine/(package\.json|dist/|src/)' \
+              | grep -Ev '/(__fixtures__|__tests__)/|\.(test|spec)\.[^/]+$' \
+              || true
+          )"
+          if [ -n "$RELEASE_CHANGED" ]; then
+            echo "Release-relevant Nectarine paths changed:"
+            echo "$RELEASE_CHANGED"
             yarn changeset status --since="origin/${{ github.base_ref }}"
           else
-            echo "Skipping changeset status; this PR does not change Nectarine sources."
+            echo "Skipping changeset status; no release-relevant Nectarine sources changed."
           fi
