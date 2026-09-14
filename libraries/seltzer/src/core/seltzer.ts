@@ -1,137 +1,33 @@
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { isResponseData, send, type ResponseData } from "./response.js";
+import type {
+    CorsOptions,
+    HandlerConfig,
+    ListenOptions,
+    RequestContext,
+    Route,
+} from "./types.js";
+import {
+    compileRoute,
+    createDefaultPipeline,
+    Pipeline,
+    type PipelineContext,
+    type Stage,
+    type StageName,
+} from "../pipeline/index.js";
 
+export type {
+    CorsOptions,
+    Endpoint,
+    ListenOptions,
+    RequestContext,
+    Route,
+} from "./types.js";
+export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
+export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData };
 export { isResponseData, send };
-
-export type Endpoint = {
-    route?: Route;
-    path: string;
-    endpoint: string;
-    options?: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
-};
-
-export type RequestContext<TLocals = unknown> = {
-    req: IncomingMessage;
-    res: ServerResponse;
-    method: string;
-    path: string;
-    query: Record<string, string>;
-    params: Record<string, string>;
-    body: unknown;
-    headers: Record<string, string>;
-    locals: TLocals;
-    options?: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
-};
-
-export type Route<TContext = RequestContext> = {
-    method: string;
-    path: string;
-    handler: (ctx: TContext) => ResponseData | Promise<ResponseData>;
-};
-
-type HandlerConfig = {
-    adapter: string;
-    options: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
-};
-
-export type CorsOptions = {
-    /** Exact allowed origin, or omit to reflect request Origin when present. */
-    origin?: string;
-    methods?: string[];
-    headers?: string[];
-};
-
-export type ListenOptions<TLocals = unknown> = {
-    locals?: TLocals;
-    cors?: CorsOptions;
-    onListening?: (port: number) => void;
-};
-
-type CompiledRoute = Route & {
-    keys: string[];
-    regex: RegExp;
-};
-
-function escapeRegex(value: string) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function compilePath(routePath: string) {
-    const keys: string[] = [];
-    const pattern = routePath
-        .split("/")
-        .map((segment) => {
-            if (segment.startsWith(":")) {
-                keys.push(segment.slice(1));
-                return "([^/]+)";
-            }
-            return escapeRegex(segment);
-        })
-        .join("/");
-
-    return {
-        keys,
-        regex: new RegExp(`^${pattern}$`),
-    };
-}
-
-function normalizeHeaders(headers: IncomingMessage["headers"]): Record<string, string> {
-    const result: Record<string, string> = {};
-    for (const [key, value] of Object.entries(headers)) {
-        if (typeof value === "string") {
-            result[key.toLowerCase()] = value;
-        } else if (Array.isArray(value)) {
-            result[key.toLowerCase()] = value.join(", ");
-        }
-    }
-    return result;
-}
-
-function queryFromUrl(url: URL): Record<string, string> {
-    const query: Record<string, string> = {};
-    url.searchParams.forEach((value, key) => {
-        query[key] = value;
-    });
-    return query;
-}
-
-async function readBody(req: IncomingMessage): Promise<unknown> {
-    const chunks: Buffer[] = [];
-    for await (const chunk of req) {
-        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    }
-
-    if (chunks.length === 0) {
-        return undefined;
-    }
-
-    const raw = Buffer.concat(chunks).toString("utf8");
-    const contentType = String(req.headers["content-type"] ?? "");
-
-    if (contentType.includes("application/json")) {
-        try {
-            return JSON.parse(raw) as unknown;
-        } catch {
-            throw new Error("Invalid JSON body");
-        }
-    }
-
-    return raw;
-}
 
 function applyCors(
     req: IncomingMessage,
@@ -164,8 +60,13 @@ function applyCors(
 }
 
 export class Seltzer {
-    private routes: CompiledRoute[] = [];
+    private routes: ReturnType<typeof compileRoute>[] = [];
     private config: HandlerConfig | null = null;
+    private readonly pipeline: Pipeline;
+
+    constructor() {
+        this.pipeline = createDefaultPipeline(() => this.routes);
+    }
 
     static init() {
         return new Seltzer();
@@ -173,10 +74,16 @@ export class Seltzer {
 
     /** Register a single object-based route. Do not model APIs as promise chains. */
     route<TContext extends RequestContext<any> = RequestContext>(route: Route<TContext>) {
-        this.routes.push({
-            ...(route as Route),
-            ...compilePath(route.path),
-        });
+        this.routes.push(compileRoute(route as Route));
+        return this;
+    }
+
+    /**
+     * Insert a stage immediately before the builtin stage named `name`.
+     * Returning `ResponseData` short-circuits remaining stages and jumps to `send`.
+     */
+    before(name: StageName, stage: Stage) {
+        this.pipeline.before(name, stage);
         return this;
     }
 
@@ -220,71 +127,19 @@ export class Seltzer {
             return;
         }
 
-        const url = new URL(req.url || "/", `http://${req.headers.host ?? "localhost"}`);
-        const method = req.method ?? "GET";
-
-        const match = this.routes.find(
-            (route) => route.method === method && route.regex.test(url.pathname),
-        );
-
-        if (!match) {
-            send(res, { status: 404, body: { error: "Not Found" } });
-            return;
-        }
-
-        const paramMatch = url.pathname.match(match.regex);
-        const params: Record<string, string> = {};
-        match.keys.forEach((key, index) => {
-            params[key] = decodeURIComponent(paramMatch?.[index + 1] ?? "");
-        });
-
-        let body: unknown;
-        try {
-            if (method !== "GET" && method !== "HEAD") {
-                body = await readBody(req);
-            }
-        } catch {
-            send(res, { status: 400, body: { error: "Invalid JSON body" } });
-            return;
-        }
-
-        const ctx: RequestContext<TLocals> = {
+        const ctx: PipelineContext<TLocals> = {
             req,
             res,
-            method,
-            path: url.pathname,
-            query: queryFromUrl(url),
-            params,
-            body,
-            headers: normalizeHeaders(req.headers),
+            method: req.method ?? "GET",
+            path: "",
+            query: {},
+            params: {},
+            body: undefined,
+            headers: {},
             locals,
             options: this.config?.options,
         };
 
-        try {
-            const result = await match.handler(ctx);
-
-            if (!isResponseData(result)) {
-                send(res, {
-                    status: 500,
-                    body: {
-                        error: "Internal Server Error",
-                        message:
-                            "Handler must return ResponseData ({ status?, headers?, body? }). Bare values are not wrapped.",
-                    },
-                });
-                return;
-            }
-
-            send(res, result);
-        } catch (error) {
-            send(res, {
-                status: 500,
-                body: {
-                    error: "Internal Server Error",
-                    message: error instanceof Error ? error.message : String(error),
-                },
-            });
-        }
+        await this.pipeline.run(ctx);
     }
 }
