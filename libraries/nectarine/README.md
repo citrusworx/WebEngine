@@ -6,19 +6,20 @@ Compiler and adapter utilities for CitrusWorx data and query tooling.
 
 Final app backend code **must not** embed SQL strings. Nectarine is phonics:
 
-1. **App code** calls a named query (`resource.method.QueryName`) and passes bind values.
-2. **Compiler** assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` from YAML tokens (canonical CRUD or Blackwater `type: SELECT`, normalized onto the same model).
+1. **App code** calls a named query (`resource.method.QueryName`) or named DDL and passes bind values.
+2. **Compiler** assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` from query YAML, and `CREATE TABLE` / `CREATE INDEX` from `*Schema.yml` (canonical CRUD or Blackwater `type: SELECT`, normalized onto the same DML model).
 3. **Adapters** only execute `(sql, params)` produced by the compiler. They never build SQL.
 
-Postgres **JSONB is first-class**. Document-store columns stay JSONB; named YAML selects `payload` and binds `{ value: $N, cast: jsonb }` (allow-listed). Do not drop JSONB to satisfy the no-SQL rule.
+Postgres **JSONB is first-class**. Document-store columns stay JSONB; named YAML selects `payload` and binds `{ value: $N, cast: jsonb }` (allow-listed). Schema fields may be `json` / `jsonb`. Do not drop JSONB to satisfy the no-SQL rule.
 
 `where: isActive = true` in YAML is a closed fragment grammar, not raw SQL.
 Runtime values are `$N` placeholders (`$1::jsonb` is an allowlisted bind
 cast) — never string-interpolated.
 
 **JSONB is supported; we are not dropping it.** Schema fields may be
-`json` / `jsonb`. The Blackwater `products(id, payload JSONB)` table is a
-document-store pattern to align with query YAML — not a plan to remove JSONB.
+`json` / `jsonb`. The Blackwater `products` table keeps `payload JSONB`
+as a document-store column, with a nullable catalog projection from the
+same `productSchema.yml`.
 
 See [`docs/nectarine/no-hardcoded-sql.md`](../../docs/nectarine/no-hardcoded-sql.md) and [`docs/nectarine/nectarine-query-dsl.md`](../../docs/nectarine/nectarine-query-dsl.md).
 
@@ -90,6 +91,13 @@ await pg.disconnect();
 ```
 
 `query(sql, params?)` uses `$1`-style placeholders to match compiler output.
+
+Schema YAML compiles the same way:
+
+```ts
+const ddl = compiler.buildDdl(compiler.parse_config("./schemas/product/productSchema.yml"));
+await pg.query(ddl);
+```
 
 ## MySQL adapter
 

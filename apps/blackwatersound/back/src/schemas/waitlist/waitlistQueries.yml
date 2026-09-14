@@ -19,7 +19,7 @@ waitlist:
       fields: [id, name, email, source_app, interest]
       returning: [id, email, created_at]
 
-    # Live table is (id, name, email, created_at). Phase 3 DDL adds source_app / interest.
+    # Alternate insert that sets created_at explicitly. Live path uses joinWaitlist.
     insertEntry:
       type: INSERT
       table: waitlist

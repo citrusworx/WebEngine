@@ -115,7 +115,11 @@ Created on first boot by `minio-init`:
 
 ## Postgres / Nectarine
 
-The API loads [nectarine.config.yaml](../back/nectarine.config.yaml) via `loadNectarineConfig` and connects with vendor env keys (`PG_*`). Schema is applied on back startup when those credentials resolve. Products seed from `SEED_PRODUCTS` once; waitlist entries persist in Postgres.
+The API loads [nectarine.config.yaml](../back/nectarine.config.yaml) via `loadNectarineConfig` and connects with vendor env keys (`PG_*`). On startup, `migrate()` runs **named compiled DDL** from Blackwater `*Schema.yml` (Nectarine `compileSchemas` with `{ additive: true }`). That includes `CREATE TABLE IF NOT EXISTS` plus Postgres `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` so existing volumes pick up new columns such as waitlist `source_app` / `interest`. App `src/` does not contain `CREATE TABLE` text.
+
+[postgres/init.sql](./postgres/init.sql) is **out-of-band Docker first-boot only** — the same compiler output for `productSchema.yml` + `waitlistSchema.yml` without the additive ALTERs. It is not app backend code.
+
+Products keep a first-class `payload JSONB` column. Waitlist includes `source_app` / `interest` so `joinWaitlist` matches the table. Products seed from `SEED_PRODUCTS` once; waitlist entries persist in Postgres.
 
 Compose Postgres matches [grapevine.config.yaml](../grapevine.config.yaml) `database.name: blackwater_sound`.
 

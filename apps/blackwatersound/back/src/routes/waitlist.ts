@@ -1,6 +1,26 @@
 import type { Route } from "@citrusworx/seltzer";
+import { waitlistSourceApps } from "../db/named-ddl.js";
 import { appendWaitlistEntry, hasWaitlistEmail } from "../store/waitlist-store.js";
 import type { BlackwaterContext } from "../types/context.js";
+
+const sourceApps = new Set(waitlistSourceApps);
+
+function parseSourceApp(value: unknown): { ok: true; sourceApp?: string } | { ok: false } {
+  if (value === undefined || value === null || value === "") {
+    return { ok: true };
+  }
+  if (typeof value !== "string") {
+    return { ok: false };
+  }
+  const sourceApp = value.trim().toLowerCase();
+  if (!sourceApp) {
+    return { ok: true };
+  }
+  if (!sourceApps.has(sourceApp)) {
+    return { ok: false };
+  }
+  return { ok: true, sourceApp };
+}
 
 // Nectarine contract: src/schemas/waitlist/waitlistAPI.yml
 export const joinWaitlistRoute: Route<BlackwaterContext> = {
@@ -10,9 +30,16 @@ export const joinWaitlistRoute: Route<BlackwaterContext> = {
     const payload = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
     const name = String(payload.name ?? "").trim();
     const email = String(payload.email ?? "").trim().toLowerCase();
+    const source = parseSourceApp(payload.source_app);
+    const interestRaw = typeof payload.interest === "string" ? payload.interest.trim() : "";
 
     if (!email) {
       json({ error: "Email is required" }, 400);
+      return;
+    }
+
+    if (!source.ok) {
+      json({ error: "source_app is invalid" }, 400);
       return;
     }
 
@@ -25,6 +52,8 @@ export const joinWaitlistRoute: Route<BlackwaterContext> = {
       id: `wl_${Date.now()}`,
       name,
       email,
+      sourceApp: source.sourceApp,
+      interest: interestRaw || undefined,
       createdAt: new Date().toISOString(),
     };
 

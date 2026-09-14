@@ -26,7 +26,7 @@ product:
       fields: '*'
       where: slug = $1
 
-    # Live document store: products(id, payload JSONB). Phase 3 DDL aligns the relational shape.
+    # Live document store: products(id, payload JSONB). Schema YAML owns that JSONB column.
     allPayloads:
       type: SELECT
       table: products

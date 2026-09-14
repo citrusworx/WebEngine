@@ -7,6 +7,8 @@ export type WaitlistEntry = {
   id: string;
   name: string;
   email: string;
+  sourceApp?: string;
+  interest?: string;
   createdAt: string;
 };
 

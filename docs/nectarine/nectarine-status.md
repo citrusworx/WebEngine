@@ -53,8 +53,8 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 ## What's In Development 🔄
 
 ### Query Compiler
-- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized). Adapters execute `(sql, params)` only. JSONB columns and `$N::jsonb` binds are supported; JSONB is not being dropped.
-- Planned: Optimization layer, query planning, DDL from schema YAML, JSONB operators (`@>`, `?`, `->>`)
+- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), plus schema YAML → `CREATE TABLE` / indexes. Adapters execute `(sql, params)` only. JSONB columns and `$N::jsonb` binds are supported; JSONB is not being dropped.
+- Planned: Optimization layer, query planning, JSONB operators (`@>`, `?`, `->>`)
 
 ### Schema Registry
 - Current: File-based loading
