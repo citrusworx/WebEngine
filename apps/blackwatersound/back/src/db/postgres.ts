@@ -103,6 +103,15 @@ export async function loadProductsFromDb(): Promise<ProductRecord[]> {
   });
 }
 
+export async function loadProductByIdFromDb(id: string): Promise<ProductRecord | null> {
+  const result = await runNamed<{ payload: unknown }>("payloadById", [id]);
+  if (!result || result.rows.length === 0) {
+    return null;
+  }
+
+  return asProductRecord(result.rows[0]?.payload);
+}
+
 export async function seedProductsIfEmpty(products: ProductRecord[]) {
   if (!isDatabaseConnected() || products.length === 0) {
     return;

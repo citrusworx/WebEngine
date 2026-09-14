@@ -70,7 +70,7 @@ const ops = listApiOperations("product", product.api);
 // ops[].method + ops[].path (from YAML `endpoint`) are ready for Seltzer Route wiring
 ```
 
-`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes — that stays with the host (SeltzerBot).
+`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes — Seltzer's `generateRoutes` maps `ApiOperation[]` onto `Route[]` (Blackwater product reads use this).
 
 Express is not the default transport. Zod is the planned validation layer on the hosted path; an HTTP client such as Axios is optional and not part of the default stack.
 

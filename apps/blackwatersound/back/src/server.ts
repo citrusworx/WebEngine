@@ -4,7 +4,7 @@ import { loadNectarineConfig } from "@citrusworx/nectarine/config";
 import { Seltzer } from "@citrusworx/seltzer";
 import { createAppContext } from "./context.js";
 import { closeDatabase, isDatabaseConnected } from "./db/postgres.js";
-import { routes } from "./routes/index.js";
+import { createRoutes } from "./routes/index.js";
 import type { AppLocals } from "./types/context.js";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -27,7 +27,7 @@ try {
 
 const app = Seltzer.init();
 
-for (const route of routes) {
+for (const route of createRoutes(nectarine)) {
   app.route(route);
 }
 

@@ -232,7 +232,7 @@ comment:
 
 ### Usage Example
 
-Host with Seltzer. Nectarine loads the YAML triad; it does not spin up Express or export `generateRoutes`. Auto-wiring from `*API.yml` is the next engine step.
+Host with Seltzer. Nectarine loads the YAML triad; it does not spin up Express or export `generateRoutes`. Seltzer's `generateRoutes` wires `*API.yml` operations to object-based `Route`s.
 
 ```typescript
 import { loadNectarineConfig, loadSchema } from "@citrusworx/nectarine";

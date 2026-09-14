@@ -1,5 +1,12 @@
 # @citrusworx/seltzer
 
+## 0.6.0
+
+### Minor Changes
+
+- `listApiOperations` flattens Nectarine `*API.yml` (`resource → crud → operation → api`) into `ApiOperation`s.
+- `generateRoutes(operations, { execute })` builds object-based `Route`s that return `ResponseData`. `null`/`undefined` from `execute` becomes 404.
+
 ## 0.5.0
 
 ### Minor Changes

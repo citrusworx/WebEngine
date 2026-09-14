@@ -88,6 +88,40 @@ app.route({
 
 Stages mutate the shared context in place. Return `void`/`undefined` to continue.
 
+## Generate routes from Nectarine `*API.yml`
+
+Seltzer owns the HTTP wiring. Flatten loaded YAML with `listApiOperations`, then `generateRoutes(operations, { execute })`.
+
+```ts
+import {
+    generateRoutes,
+    listApiOperations,
+    type ResponseData,
+} from "@citrusworx/seltzer";
+
+const operations = listApiOperations(product.api).filter(
+    (operation) => operation.crud === "read" && operation.method === "GET",
+);
+
+const routes = generateRoutes(operations, {
+    execute: ({ query, params, ctx }) => {
+        if (query === "productById") {
+            return ctx.locals.products.find((item) => item.id === params.id) ?? null;
+        }
+        return ctx.locals.products;
+    },
+    notFound: (): ResponseData => ({ status: 404, body: { error: "Product not found" } }),
+});
+```
+
+- YAML layout: `resource → crud → operationName → api: { method, endpoint, query?, body? }`.
+- `query` is the named-query key, not the HTTP search string (`ctx.query`).
+- Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`. There is no writing `ctx.json`.
+- `execute` may return a payload (`{ body }`), `ResponseData` (sent as-is), or `null`/`undefined` (default 404).
+- `listApiOperations` sits next to this helper so Nectarine can absorb the flatten later without rewriting `generateRoutes`.
+
+Blackwater registers generated product **read** routes this way and keeps health, waitlist, and KiwiPress content hand-written.
+
 ## Development
 
 ```bash
