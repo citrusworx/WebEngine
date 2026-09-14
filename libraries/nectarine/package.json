@@ -12,6 +12,10 @@
             "types": "./dist/config/index.d.ts",
             "default": "./dist/config/index.js"
         },
+        "./api": {
+            "types": "./dist/config/api.d.ts",
+            "default": "./dist/config/api.js"
+        },
         "./compiler": {
             "types": "./dist/compiler/compiler.d.ts",
             "default": "./dist/compiler/compiler.js"

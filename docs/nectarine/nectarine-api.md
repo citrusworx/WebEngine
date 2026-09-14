@@ -8,7 +8,7 @@ Complete API reference for Nectarine config, schemas, queries, and host integrat
 - [Query Types](#query-types)
 - [API Routes](#api-routes)
 - [Field Types](#field-types)
-- [Core Functions](#core-functions) (`loadNectarineConfig`, hosting with Seltzer)
+- [Core Functions](#core-functions) (`loadNectarineConfig`, `listApiOperations`, hosting with Seltzer)
 - [TypeScript Types](#typescript-types)
 
 ---
@@ -380,30 +380,73 @@ const userQueries = loadSchema("schemas/user/userQueries.yml");
 const userAPI = loadSchema("schemas/user/userAPI.yml");
 ```
 
+### listApiOperations() / loadApiOperations()
+
+Flatten a resource `*API.yml` into HTTP operations for Seltzer hosts / auto-wiring consumers. YAML `endpoint` maps to `ApiOperation.path`. Nectarine does **not** generate Seltzer `Route` objects — SeltzerBot owns that wiring.
+
+Also available as `@citrusworx/nectarine/config` and `@citrusworx/nectarine/api`.
+
+**Signature**:
+```typescript
+type ApiHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+type ApiOperation = {
+  resource: string;
+  crud: string;
+  name: string;
+  method: ApiHttpMethod;
+  path: string;
+  query?: string;
+  body?: Record<string, string>;
+};
+
+function listApiOperations(
+  resource: string,
+  api: Record<string, unknown>
+): ApiOperation[];
+
+function loadApiOperations(
+  resource: string,
+  apiPath: string
+): ApiOperation[];
+```
+
+**Example**:
+```typescript
+import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const product = nectarine.getResource("product");
+const ops = listApiOperations("product", product.api);
+// [{ resource: "product", crud: "read", name: "productById",
+//    method: "GET", path: "/api/products/:id", query: "productById" }, ...]
+```
+
 ### Hosting with Seltzer
 
-Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Register object-based `Route` definitions on the host. Auto-wiring those routes from `*API.yml` is the next engine step.
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Register object-based `Route` definitions on the host. SeltzerBot should depend on `listApiOperations` (above) to read `*API.yml` — Nectarine only lists operations.
 
 Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
 
 **Example**:
 ```typescript
-import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";
 import { Seltzer } from "@citrusworx/seltzer";
 import type { Route } from "@citrusworx/seltzer";
 
 const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const ops = listApiOperations("product", nectarine.getResource("product").api);
 const app = Seltzer.init();
 
-const listUsers: Route = {
+const listProducts: Route = {
   method: "GET",
-  path: "/api/users",
+  path: "/api/products",
   handler: () => ({
-    body: { resource: nectarine.getResource("user").name },
+    body: { namedQuery: ops[0]?.query },
   }),
 };
 
-app.route(listUsers);
+app.route(listProducts);
 app.listen(3000);
 ```
 
@@ -614,10 +657,30 @@ interface RouteDefinition {
   api: {
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
     endpoint: string;
+    query?: string;
+    body?: Record<string, string>;
     middleware?: string[];
     validation?: boolean;
   };
 }
+```
+
+### ApiOperation
+
+Flattened HTTP operation from `listApiOperations`. YAML `endpoint` is mapped to `path`.
+
+```typescript
+type ApiHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+type ApiOperation = {
+  resource: string;
+  crud: string;
+  name: string;
+  method: ApiHttpMethod;
+  path: string;
+  query?: string;
+  body?: Record<string, string>;
+};
 ```
 
 ---

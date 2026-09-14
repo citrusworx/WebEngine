@@ -46,6 +46,7 @@ const coursesApp = config.getAppBySubdomain("courses");
 Subpath exports are also available:
 
 - `@citrusworx/nectarine/config`
+- `@citrusworx/nectarine/api`
 - `@citrusworx/nectarine/compiler`
 - `@citrusworx/nectarine/adapters/mg`
 - `@citrusworx/nectarine/adapters/ms`
@@ -56,7 +57,20 @@ Subpath exports are also available:
 
 Nectarine is **library-first**. It does not spin up an HTTP server and does not export `generateRoutes`.
 
-WebEngine / Blackwater hosts with **[Seltzer](../../docs/seltzer/README.md)**. Set `transport.server: seltzer` in `nectarine.config.yaml` (see `apps/blackwatersound/back/nectarine.config.yaml`). Register object-based Seltzer `Route` definitions on the host. Auto-wiring those routes from `*API.yml` is the next engine step.
+WebEngine / Blackwater hosts with **[Seltzer](../../docs/seltzer/README.md)**. Set `transport.server: seltzer` in `nectarine.config.yaml` (see `apps/blackwatersound/back/nectarine.config.yaml`). Register object-based Seltzer `Route` definitions on the host.
+
+Seltzer hosts / auto-wiring consumers can flatten `*API.yml` without touching the compiler:
+
+```ts
+import { listApiOperations } from "@citrusworx/nectarine/config";
+// or: import { listApiOperations } from "@citrusworx/nectarine/api";
+
+const product = config.getResource("product");
+const ops = listApiOperations("product", product.api);
+// ops[].method + ops[].path (from YAML `endpoint`) are ready for Seltzer Route wiring
+```
+
+`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes — that stays with the host (SeltzerBot).
 
 Express is not the default transport. Zod is the planned validation layer on the hosted path; an HTTP client such as Axios is optional and not part of the default stack.
 
