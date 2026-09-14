@@ -15,8 +15,8 @@ The goal is to make them:
 
 This guide reflects the lessons learned while refactoring the strongest current Juice templates:
 
-* [Game Store Inspired Template](/d:/CitrusWorx/libraries/juice/src/templates/html/bigbox-retail/gamestore-inspired.html)
-* [cPanel Clone Template](/d:/CitrusWorx/libraries/juice/src/templates/html/cpanel-clone/index.html)
+* Game Store Inspired Template — `libraries/juice/src/templates/html/bigbox-retail/gamestore-inspired.html`
+* cPanel Clone Template — `libraries/juice/src/templates/html/cpanel-clone/index.html`
 
 These two templates exposed the most important layout truths in Juice so far.
 

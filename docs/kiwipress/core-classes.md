@@ -2,6 +2,8 @@
 
 The core classes form an inheritance spine that separates WordPress infrastructure, transport, and CRUD concerns into distinct layers. Domain objects like `Posts`, `Pages`, and `Users` sit at the top of this spine and inherit everything they need.
 
+Source files cited below live in the WebEngine monorepo under `packages/kiwipress/`. They are not part of this docs vault, so they are listed as paths rather than links.
+
 ```
 WPCore
   └── WPClient
@@ -15,7 +17,7 @@ WPCore
 
 ## WPCore
 
-**File:** [packages/kiwipress/src/core/WPCore.ts](../../packages/kiwipress/src/core/WPCore.ts)
+**File:** `packages/kiwipress/src/core/WPCore.ts`
 
 `WPCore` is the foundation of the entire class hierarchy. It has no knowledge of route execution or HTTP transport — its only job is to hold configuration and produce the shared infrastructure that every layer above it needs.
 
@@ -75,7 +77,7 @@ type WPCoreConfig = {
 
 ## WPClient
 
-**File:** [packages/kiwipress/src/core/WPClient.ts](../../packages/kiwipress/src/core/WPClient.ts)
+**File:** `packages/kiwipress/src/core/WPClient.ts`
 
 `WPClient` extends `WPCore` and adds the HTTP transport layer. It initialises a `Seltzer` instance and provides two internal execution methods that all upper layers call: `execute` for reads and `mutate` for writes.
 
@@ -110,7 +112,7 @@ type WPCoreConfig = {
 
 ## WPRead
 
-**File:** [packages/kiwipress/src/core/WPRead.ts](../../packages/kiwipress/src/core/WPRead.ts)
+**File:** `packages/kiwipress/src/core/WPRead.ts`
 
 `WPRead` extends `WPClient` and adds the protected `read` method. It is the base class for all current domain objects (`Posts`, `Pages`, `Users`, `Categories`, `Tags`, `Comments`).
 
@@ -150,7 +152,7 @@ class Posts extends WPRead {
 
 ## WPCreate
 
-**File:** [packages/kiwipress/src/core/WPCreate.ts](../../packages/kiwipress/src/core/WPCreate.ts)
+**File:** `packages/kiwipress/src/core/WPCreate.ts`
 
 `WPCreate` extends `WPClient` and adds a named `create` method for POST operations.
 
@@ -181,7 +183,7 @@ class Posts extends WPRead {
 
 ## WPUpdate
 
-**File:** [packages/kiwipress/src/core/WPUpdate.ts](../../packages/kiwipress/src/core/WPUpdate.ts)
+**File:** `packages/kiwipress/src/core/WPUpdate.ts`
 
 `WPUpdate` extends `WPClient` and adds a named `update` method for PUT/PATCH operations.
 
@@ -210,7 +212,7 @@ class Posts extends WPRead {
 
 ## WPDelete
 
-**File:** [packages/kiwipress/src/core/WPDelete.ts](../../packages/kiwipress/src/core/WPDelete.ts)
+**File:** `packages/kiwipress/src/core/WPDelete.ts`
 
 `WPDelete` extends `WPClient` and adds a named `delete` method for DELETE operations.
 
@@ -239,7 +241,7 @@ class Posts extends WPRead {
 
 ## Route utilities
 
-**File:** [packages/kiwipress/src/core/route-utils.ts](../../packages/kiwipress/src/core/route-utils.ts)
+**File:** `packages/kiwipress/src/core/route-utils.ts`
 
 `route-utils` is not a class — it is a set of factory functions used by each domain's `routes.ts` file to define `Route<Endpoint>` objects. These functions keep individual route files concise and push WordPress query translation concerns into one place.
 
@@ -296,7 +298,7 @@ Constructs a full WordPress query URL from the base URL on a context object:
 
 ## Types
 
-**File:** [packages/kiwipress/src/types/api.ts](../../packages/kiwipress/src/types/api.ts)
+**File:** `packages/kiwipress/src/types/api.ts`
 
 ```ts
 // Describes a raw route definition before it becomes a Route<Endpoint>

@@ -362,5 +362,4 @@ Each color generates multiple CSS selectors:
 - **Total colors**: ~300 unique color values (30+ color families/swatches × 9 shades)
 - **CSS selectors**: ~1,800 selectors generated (300 colors × 6 attributes)
 - **Build time**: Colors are processed at build time, no runtime overhead
-- **File size**: Optimized and compressed in final CSS output</content>
-<parameter name="filePath">D:\CitrusWorx\docs\juice\juice-colors.md
+- **File size**: Optimized and compressed in final CSS output

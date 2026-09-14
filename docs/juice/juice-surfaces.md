@@ -6,7 +6,7 @@ Surfaces describe **how a region looks** without replacing structural attributes
 
 ### `surfaceTone="soft"`
 
-Implemented in [`surface.scss`](../../libraries/juice/src/styles/surface/surface.scss).
+Implemented in `libraries/juice/src/styles/surface/surface.scss`.
 
 Frosted panel treatment:
 

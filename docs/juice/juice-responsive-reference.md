@@ -4,7 +4,7 @@ This document lists **built-in** responsive behavior in Juice. For authoring min
 
 ## Breakpoints
 
-Defined in [`breakpoints.scss`](../../libraries/juice/src/core/breakpoints/breakpoints.scss):
+Defined in `libraries/juice/src/core/breakpoints/breakpoints.scss`:
 
 | Name | Min width |
 |------|-----------|
@@ -21,7 +21,7 @@ Juice uses **max-width** bands for scaling utilities and a **min-width** rule fo
 
 ### `[row]` collapse
 
-From [`layout.scss`](../../libraries/juice/src/core/layout/layout.scss):
+From `libraries/juice/src/core/layout/layout.scss`:
 
 - **Below 768px (`md`)**: `[row]` and `[row][centered]` switch to `flex-direction: column` with wrap.
 
@@ -41,7 +41,7 @@ Opt-in responsive section: `display: flex`, column direction, `gap: 1rem`. Plain
 
 ## Spacing and sizing scale
 
-Padding, margin, gap, width, and height attributes generated with `responsive-attribute-generator` in [`mixins.scss`](../../libraries/juice/src/core/mixins.scss) scale **rem / vw / vh** values at smaller viewports:
+Padding, margin, gap, width, and height attributes generated with `responsive-attribute-generator` in `libraries/juice/src/core/mixins.scss` scale **rem / vw / vh** values at smaller viewports:
 
 | Band | Approximate viewport | Scale factor |
 |------|----------------------|--------------|

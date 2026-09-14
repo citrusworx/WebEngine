@@ -350,5 +350,4 @@ Use with Juice's grid system for responsive layouts:
   <div width="100%" height="200rem">Column 2</div>
   <div width="100%" height="200rem">Column 3</div>
 </section>
-```</content>
-<parameter name="filePath">D:\CitrusWorx\docs\juice\juice-sizing.md
+```

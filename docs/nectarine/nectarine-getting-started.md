@@ -323,13 +323,13 @@ updated_at: timestamp DEFAULT NOW() ON UPDATE NOW()
 ## Next Steps
 
 1. **Read the API Reference** - [nectarine-api.md](./nectarine-api.md)
-2. **Learn Query Definition** - [nectarine-queries.md](./nectarine-queries.md)
+2. **Learn Query Definition** - [Query DSL](./nectarine-query-dsl.md)
 3. **Explore Examples** - [nectarine-examples.md](./nectarine-examples.md)
 4. **Database Guides**:
    - [PostgreSQL Guide](./nectarine-postgresql.md)
-   - [MySQL Guide](./nectarine-mysql.md)
+   - MySQL — adapter is in the package; a dedicated guide is not written yet
    - [MongoDB Guide](./nectarine-mongodb.md)
-5. **See all Schemas** - [nectarine-schemas.md](./nectarine-schemas.md)
+5. **See all Schemas** - [Schema Guide](./nectarine-schema-guide.md)
 
 ## Common Tasks
 

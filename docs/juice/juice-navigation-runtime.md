@@ -1,6 +1,6 @@
 # Juice Navigation Runtime
 
-This document explains the current navigation runtime in [navigation.ts](/d:/CitrusWorx/libraries/juice/src/js/src/navigation.ts).
+This document explains the current navigation runtime in `libraries/juice/src/js/src/nav/navigation.ts` (monorepo path; outside this vault).
 
 The key idea is simple:
 

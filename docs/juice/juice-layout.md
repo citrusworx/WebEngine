@@ -4,7 +4,7 @@ Juice includes a small but useful layout layer in `src/core/layout`. This is whe
 
 For the higher-level construction guidance on how to compose full pages and application shells with Juice, also read:
 
-* [Juice Layout Flow](/d:/CitrusWorx/docs/juice/juice-layout-flow.md)
+* [Juice Layout Flow](./juice-layout-flow.md)
 
 This file explains the low-level primitives.
 The layout flow guide explains how to use them together while preserving Juice semantics.

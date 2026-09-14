@@ -4,6 +4,8 @@
 
 This page reflects the current source in `engines/webengine/`, not older aspirational notes about a fully realized kernel/module runtime.
 
+If you want a reading path through the libraries that WebEngine is meant to compose, start with [Make A Web App With WebEngine](./make-a-web-app.md).
+
 ## Current status
 
 WebEngine exists today as an early scaffold with a clear direction, but it is not yet the fully implemented kernel system previously described in this docs folder.
