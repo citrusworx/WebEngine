@@ -8,7 +8,6 @@ Complete API reference for GrapeVine infrastructure provisioning.
 - [VPCs](#vpcs)
 - [Firewalls](#firewalls)
 - [SSH Keys](#ssh-keys)
-- [Monitoring](#monitoring)
 - [Deploy Functions](#deploy-functions)
 
 ---
