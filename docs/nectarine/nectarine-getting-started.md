@@ -16,8 +16,18 @@ Nectarine is a config-driven backend library. Define models, schemas, queries, a
 ## Installation
 
 ```bash
-yarn add @citrusworx/nectarine @citrusworx/seltzer
+# npm
+npm install @citrusworx/nectarine
+npm install pg
+# npm install mysql2    # if you use the MySQL adapter
+# npm install mongodb   # if you use the MongoDB adapter
+npm install @citrusworx/seltzer   # when hosting HTTP in WebEngine / Blackwater
+
+# yarn
+yarn add @citrusworx/nectarine pg @citrusworx/seltzer
 ```
+
+`pg` / `mysql2` / `mongodb` are optional peer dependencies. Install the driver that matches your adapter import (`@citrusworx/nectarine/adapters/pg`, `/ms`, or `/mg`).
 
 ## Prerequisites
 

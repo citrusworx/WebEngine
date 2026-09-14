@@ -1,0 +1,58 @@
+# Path filter excludes .changeset/** so a Juice-only PR that adds a
+# changeset does not run Nectarine verify.
+name: Nectarine Package
+
+on:
+  pull_request:
+    paths:
+      - "libraries/nectarine/**"
+      - ".github/workflows/nectarine-package.yml"
+  push:
+    branches:
+      - master
+      - cursor/blackwater-phase0-backend
+    paths:
+      - "libraries/nectarine/**"
+      - ".github/workflows/nectarine-package.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # cache: yarn runs yarn before later steps; Corepack must already be active.
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.13.0 --activate
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Verify Nectarine package
+        run: yarn verify:nectarine
+
+      # Only when Nectarine sources changed. Compare against the PR base, not
+      # master — this branch is often not based on master.
+      - name: Check changeset status
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          CHANGED="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD)"
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -Eq '^libraries/nectarine/'; then
+            yarn changeset status --since="origin/${{ github.base_ref }}"
+          else
+            echo "Skipping changeset status; this PR does not change Nectarine sources."
+          fi
