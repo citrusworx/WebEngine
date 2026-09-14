@@ -2,7 +2,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { CCompiler } from "@citrusworx/nectarine/compiler";
 
-const schemaDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../schemas");
+// src/db and dist/db both sit two levels below the package root.
+const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const schemaDir = path.join(packageRoot, "src/schemas");
 
 const compiler = new CCompiler();
 
