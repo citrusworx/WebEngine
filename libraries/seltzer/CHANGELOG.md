@@ -1,5 +1,14 @@
 # @citrusworx/seltzer
 
+## 0.5.0
+
+### Minor Changes
+
+- Named HTTP request pipeline: `parse` → `context` → `route` → `validate` → `handle` → `response` → `send`.
+- New public API: `Seltzer#before(name, stage)` inserts a stage immediately before a named builtin stage. Returning `ResponseData` short-circuits to `send`.
+- `validate` is a named no-op stub (reserved for Nectarine).
+- Default `init().route().listen()` behavior matches 0.4.0 (params, body, ResponseData, CORS, OPTIONS 204, errors).
+
 ## 0.4.0
 
 ### Minor Changes
