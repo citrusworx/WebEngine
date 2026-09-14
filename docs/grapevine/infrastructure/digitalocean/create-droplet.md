@@ -1,6 +1,6 @@
 # Creating A Droplet
 
-Prefer the exported `createDroplet` / `deployByBlueprint` / `grape apply` APIs documented in [grapevine-digitalocean.md](../../grapevine-digitalocean.md). The snippet below is a historical illustration of the DigitalOcean POST; current code goes through `doRequest` in `libraries/grapevine/src/providers/digitalocean/droplet/droplet.ts`.
+Prefer the exported `createDroplet` / `deployByBlueprint` / `grape apply` APIs documented in [grapevine-digitalocean.md](../../grapevine-digitalocean.md) and the [Tutorial](../../grapevine-tutorial.md). The snippet below is a historical illustration of the DigitalOcean POST; current code goes through `doRequest` in `libraries/grapevine/src/providers/digitalocean/droplet/droplet.ts`. There is no `DigitalOcean.Droplet.create` class API.
 
 We have many options when it comes to creating a droplet with DigitalOcean.
 

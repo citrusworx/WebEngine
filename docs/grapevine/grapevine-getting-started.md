@@ -1,6 +1,22 @@
 # Getting Started With Grapevine
 
-Provision DigitalOcean resources with the CLI and TypeScript API that exist in `libraries/grapevine/src`.
+This is the best starting point if you want to use Grapevine the way the library works today.
+
+After this page, the [tutorial](./grapevine-tutorial.md) is the guided build — validate a free VPC, apply it, read `grape status`, then grow into a droplet and firewall using the in-repo blueprints — analogous to [Sig’s operator desk](../sigjs/sig-page-tutorial.md) and [Juice’s page tutorial](../juice/juice-page-tutorial.md).
+
+## What Grapevine is
+
+Grapevine is a DigitalOcean client plus an apply engine.
+
+It gives you:
+
+- `grapeConfigSchema` — Zod, `provider` must be `"digitalocean"`
+- `loadGrapeConfig(source)` — local path or HTTP(S) URL, YAML or JSON
+- `applyGrapeConfig(config)` — create resources in a fixed order
+- `grape` CLI — `validate`, `apply`, `status`, `help`
+- function exports — `createDroplet`, `createVPC`, `createFireWall`, …
+
+It is not Terraform. There is no state file, no plan, no destroy command, and no other cloud.
 
 ## Install
 
@@ -8,9 +24,11 @@ Provision DigitalOcean resources with the CLI and TypeScript API that exist in `
 yarn add @citrusworx/grapevine
 ```
 
-The package bins `grape` (`dist/bin/cli.js`). In the monorepo you can also run the workspace build and call `grape` from `node_modules/.bin`.
+The package bins `grape` (`dist/bin/cli.js`). In the monorepo you can also run the workspace build and call `grape` from `node_modules/.bin`. `npx grape` works after install.
 
-Node 20+ and a DigitalOcean personal access token are required for `apply` / live `status`.
+Package version today: **0.2.1**.
+
+Node 20+ and a DigitalOcean personal access token are required for `apply` and live `status`. `validate` needs neither a token nor network to DigitalOcean.
 
 ## Token
 
@@ -29,9 +47,21 @@ credentials:
   env: MY_DO_TOKEN
 ```
 
-`applyGrapeConfig` copies that value onto `process.env.DO_TOKEN` before API calls. `getDoToken()` throws if the var is missing.
+`applyGrapeConfig` copies that value onto `process.env.DO_TOKEN` before API calls so the shared HTTP client can read it. `getDoToken()` throws if the var is missing.
+
+`grape status` (without `-c`) always checks the literal env name `DO_TOKEN`, not `credentials.env`. If you renamed the variable, export `DO_TOKEN` as well, or only use `apply` / `validate`.
 
 There is no `DO_REGION` reader in the client. Put `region:` on the config or on each resource.
+
+## The mental model
+
+1. Write `provider: digitalocean` plus `resources` (or a hoistable `blueprint:`).
+2. `grape validate -c …` until Zod is quiet.
+3. `export DO_TOKEN` and `grape apply -c …` when you intend to create.
+4. `grape status` to see whether the token works and how many droplets/VPCs/firewalls/domains the **account** has.
+5. Use function APIs when you need a single droplet, a one-off firewall, or an explicit delete.
+
+Skip `services:`, grapeGUI, other-cloud providers, and WordPress YAML under `src/blueprints/`. They will not apply.
 
 ## First config (no droplet)
 
@@ -51,7 +81,7 @@ resources:
       ip_range: 10.120.0.0/16
 ```
 
-`provider` must be the string `digitalocean`. Anything else fails Zod.
+`provider` must be the string `digitalocean`. Anything else fails Zod. `credentials` defaults to `{ source: env, env: DO_TOKEN }` if omitted.
 
 ## Validate, then apply
 
@@ -67,6 +97,25 @@ grape validate -c https://example.com/grape.config.yaml
 ```
 
 `validate` prints resource counts after schema parse. `apply` prints the `ApplyResult` JSON (ids, names, `warnings`).
+
+Expected validate output shape:
+
+```text
+Valid grape config for provider digitalocean
+{
+  "tags": 1,
+  "ssh_keys": 0,
+  "vpcs": 1,
+  "droplets": 0,
+  "firewalls": 0,
+  "domains": 0,
+  "load_balancers": 0,
+  "alert_policies": 0,
+  "apps": 0
+}
+```
+
+Those counts come from `normalizeResources`, so a top-level `networking.vpc: true` shows up as a VPC here even though it was not written under `resources.vpcs`.
 
 ## First droplet
 
@@ -94,7 +143,7 @@ resources:
 
 This **creates a billed droplet**. Destroy it in the DigitalOcean UI or call `deleteDroplet` / `NukeDroplet` when you are done. Grapevine apply does not have a destroy plan.
 
-If you use `generate: true` instead of `public_key`, save the returned public key from the apply JSON if you care — the private key is not persisted.
+If you use `generate: true` instead of `public_key`, save anything you need from the apply JSON — the private key is not persisted. Prefer a key you already control until that write path exists.
 
 ## Same thing in TypeScript
 
@@ -122,26 +171,32 @@ if (result.warnings.length) {
 }
 ```
 
+`validateGrapeConfig` throws on Zod failure. `safeValidateGrapeConfig` returns the Zod safe-parse result.
+
 ## Check the token and account
 
 ```bash
 grape status
 ```
 
-If `DO_TOKEN` is set, this lists live counts of droplets, VPCs, firewalls, and domains. With `-c` it only summarizes the file.
+If `DO_TOKEN` is set, this lists live counts of droplets, VPCs, firewalls, and domains. With `-c` it only summarizes the file. Details: [Live status](./grapevine-live-status.md).
 
-## Mental model for day one
+## Kiwi is optional
 
-1. Write `provider: digitalocean` + `resources`
-2. `grape validate` until Zod is quiet
-3. `export DO_TOKEN` and `grape apply`
-4. Use function APIs when you need a single droplet or a one-off firewall
+The Rust `kiwi` CLI can delegate to `grape` on `PATH`:
 
-Skip `services:`, grapeGUI, and other-cloud providers. They will not apply.
+```bash
+kiwi --grape -c ./grape.config.yaml
+kiwi grape validate -c ./01-vpc-and-tag.yaml
+```
+
+KiwiEngine is **not required**. Grapevine is a standalone npm package. The `grape` help text mentions kiwi as an alternate entry; the grape binary itself is still `apply | validate | status`.
 
 ## Where to go next
 
+- [Tutorial](./grapevine-tutorial.md) — the guided DigitalOcean stack
 - [Configuration](./grapevine-config.md)
-- [DigitalOcean](./grapevine-digitalocean.md)
+- [Apply lifecycle](./grapevine-apply.md)
+- [Patterns](./grapevine-patterns.md)
 - [Examples](./grapevine-examples.md)
 - [API](./grapevine-api.md)

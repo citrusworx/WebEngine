@@ -2,6 +2,8 @@
 
 Public exports from `@citrusworx/grapevine` (`libraries/grapevine/src/index.ts`).
 
+This is the one-page surface. Behavior: [Apply lifecycle](./grapevine-apply.md), [DigitalOcean](./grapevine-digitalocean.md), [Configuration](./grapevine-config.md).
+
 ## Config
 
 ```ts
@@ -38,6 +40,8 @@ import {
 
 `ApplyResult` includes arrays of created tags, keys, VPCs, droplets, firewalls, domains, load balancers, alert policies, apps, plus `warnings: string[]`.
 
+`grapeConfigSchema` is the Zod object. `provider` is the literal `"digitalocean"`.
+
 ## YAML helpers
 
 ```ts
@@ -49,10 +53,18 @@ import { parseYAML, parseYAMLString } from "@citrusworx/grapevine";
 ## DigitalOcean client
 
 ```ts
-import { getDoToken, doRequest, DigitalOceanError, authHeaders, client } from "@citrusworx/grapevine";
+import {
+  getDoToken,
+  doRequest,
+  DigitalOceanError,
+  authHeaders,
+  client,
+  DO_API_BASE,
+  DEFAULT_TOKEN_ENV,
+} from "@citrusworx/grapevine";
 ```
 
-`doRequest` is the Axios wrapper all resource functions use. `getDoToken(envName?)` reads the env var (default `DO_TOKEN`).
+`doRequest` is the Axios wrapper all resource functions use. `getDoToken(envName?)` reads the env var (default `DO_TOKEN`). `client` is `{ get, post, put, patch, delete }`.
 
 ## Droplets
 
@@ -110,18 +122,25 @@ import {
 | Images | `listAllImages`, `createCustomImage`, `updateImage`, `deleteImage` |
 | Security | `createScan`, `listScans`, `getLatestScans`, `createSuppression`, … |
 | Actions | `getDropletActions`, `getAction`, `logDropletActions` |
+| Payload | `cleanPayload` |
 
 ## Not exported
 
-- A `DigitalOcean` namespace object
+- A `DigitalOcean` namespace object with `.Droplet.create`
 - `grapeGUI`
 - Config apply for `services`
 - Any AWS/GCP SDK
+- `parseCliArgs` / `runCli` from the package root (they live on the bin module)
 
 ## CLI (not an import)
 
-```ts
-import { parseCliArgs, runCli } from "@citrusworx/grapevine"; // not exported from package root
+Use the `grape` binary:
+
+```text
+grape apply    -c <path|url>
+grape validate -c <path|url>
+grape status   [-c <path|url>]
+grape help
 ```
 
-Use the `grape` binary. `parseCliArgs` / `runCli` live on the bin module.
+`kiwi --grape` is documented as a delegate to this binary, not a second implementation.

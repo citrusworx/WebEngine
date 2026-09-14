@@ -2,7 +2,7 @@
 
 A Grapevine blueprint is a YAML (or JSON) document that describes DigitalOcean resources. Apply it with `grape apply -c <path>` or `applyGrapeConfig`.
 
-The product schema lives in `libraries/grapevine/src/config/schema.ts`. Full field list: [grapevine-config.md](../../grapevine-config.md). Downloadable starters: `libraries/grapevine/examples/blueprints/`.
+The product schema lives in `libraries/grapevine/src/config/schema.ts`. Full field list: [grapevine-config.md](../../grapevine-config.md). Teaching page: [Blueprints](../../grapevine-blueprints.md). Downloadable starters: `libraries/grapevine/examples/blueprints/`. WordPress YAML under `src/blueprints/wordpress/` is **not** a grape config.
 
 ## Two shapes that work
 
@@ -49,5 +49,6 @@ blueprint:
 ## See also
 
 - [Getting Started](../../grapevine-getting-started.md)
+- [Tutorial](../../grapevine-tutorial.md)
 - [Examples](../../grapevine-examples.md)
 - [create-droplet.md](./create-droplet.md)

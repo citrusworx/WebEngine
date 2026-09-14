@@ -1,6 +1,10 @@
 # DigitalOcean Provider
 
-Grapevine’s DigitalOcean provider provisions resources via YAML and the function APIs in `@citrusworx/grapevine`. Start with [Getting Started](../../grapevine-getting-started.md) and [grapevine-digitalocean.md](../../grapevine-digitalocean.md). This page is a field cheat sheet.
+Grapevine’s DigitalOcean provider provisions resources via YAML and the function APIs in `@citrusworx/grapevine`. Start with [Getting Started](../../grapevine-getting-started.md), the [Tutorial](../../grapevine-tutorial.md), and [grapevine-digitalocean.md](../../grapevine-digitalocean.md). This page is a droplet-field cheat sheet for `deployByBlueprint` / hoistable `blueprint.droplet` documents.
+
+Region slugs and image slugs below are DigitalOcean’s catalog, not Grapevine enums. Wrong values fail at the API. Droplet `region` is optional in `grapeConfigSchema` because `applyGrapeConfig` fills `config.region`. `deployByBlueprint` still needs a region on the droplet object DigitalOcean will accept.
+
+`volumes` are existing volume **ids** forwarded on create. Grapevine does not `POST /volumes`. Prefer droplet `vpc` / `vpc_uuid` as documented in [Configuration](../../grapevine-config.md).
 
 ---
 

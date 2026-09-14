@@ -10,15 +10,23 @@ Operator notes for droplets and blueprints on DigitalOcean. They should stay spe
 - [create-droplet.md](./create-droplet.md) — creating a droplet
 - [blueprints.md](./blueprints.md) — blueprint files Grapevine can apply
 
+The teaching stack lives one level up:
+
+- [Tutorial](../../grapevine-tutorial.md)
+- [Blueprints](../../grapevine-blueprints.md)
+- [DigitalOcean guide](../../grapevine-digitalocean.md)
+- [Apply lifecycle](../../grapevine-apply.md)
+
 ## What Grapevine actually runs
 
 ```bash
 export DO_TOKEN=dop_v1_...
 grape validate -c ./grape.config.yaml
 grape apply -c ./grape.config.yaml
+grape status
 ```
 
-There is no `grapevine init --config`, no provider switch CLI, and no blueprint marketplace in this repo. Starters live in `libraries/grapevine/examples/blueprints/`.
+There is no `grapevine init --config`, no provider switch CLI, no `grape destroy`, and no blueprint marketplace in this repo. Starters live in `libraries/grapevine/examples/blueprints/`.
 
 `provider` is DigitalOcean only. Changing one YAML line to `aws` will fail schema validation.
 
@@ -26,5 +34,6 @@ There is no `grapevine init --config`, no provider switch CLI, and no blueprint 
 
 - [Getting Started](../../grapevine-getting-started.md)
 - [Configuration](../../grapevine-config.md)
-- [DigitalOcean guide](../../grapevine-digitalocean.md)
+- [Anti-Patterns](../../grapevine-anti-patterns.md)
 - [Status](../../grapevine-status.md)
+- [Roadmap](../../grapevine-roadmap.md)
