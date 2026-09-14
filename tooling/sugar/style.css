@@ -1,3 +1,10 @@
+html,
+body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
 #root {
     position: relative;
     z-index: 1;
@@ -26,6 +33,10 @@ canvas {
     position: absolute;
     top: 10vh;
     left: 20%;
-    overflow: scroll;
+    width: 80%;
+    height: 90vh;
+    display: block;
+    touch-action: none;
+    cursor: grab;
     z-index: 0;
 }
