@@ -45,6 +45,11 @@ describe("Blackwater schema YAML DDL", () => {
         expect(sql).toMatch(/^CREATE TABLE IF NOT EXISTS products \(/);
         expect(sql).toContain("id TEXT PRIMARY KEY");
         expect(sql).toContain("payload JSONB NOT NULL");
+        expect(sql).toContain('"originalPrice" TEXT');
+        expect(sql).toContain('"isNew" BOOLEAN DEFAULT FALSE');
+        expect(sql).toContain('"isActive" BOOLEAN DEFAULT TRUE');
+        expect(sql).not.toContain("originalprice");
+        expect(sql).not.toContain("isnew");
         expect(sql).toContain("tags JSON");
         expect(sql).toContain("created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()");
         expect(sql).toContain("updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()");

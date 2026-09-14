@@ -36,7 +36,7 @@ function compileNamed(file: string, type: string, method: string, query: string)
 describe("Blackwater query YAML", () => {
     it("compiles product.read.allProducts with a YAML boolean constant", () => {
         expect(compileNamed("product/productQueries.yml", "product", "read", "allProducts")).toBe(
-            "SELECT * FROM products WHERE isActive = TRUE ORDER BY catalog, category, name",
+            'SELECT * FROM products WHERE "isActive" = TRUE ORDER BY catalog, category, name',
         );
     });
 
@@ -51,7 +51,7 @@ describe("Blackwater query YAML", () => {
         expect(
             compileNamed("product/productQueries.yml", "product", "read", "productsByCatalog"),
         ).toBe(
-            "SELECT * FROM products WHERE catalog = $1 AND isActive = TRUE ORDER BY category, name",
+            "SELECT * FROM products WHERE catalog = $1 AND \"isActive\" = TRUE ORDER BY category, name",
         );
         expect(compileNamed("course/courseQueries.yml", "course", "read", "byLine")).toBe(
             "SELECT * FROM courses WHERE line = $1 AND status = 'published' ORDER BY title",
@@ -72,7 +72,7 @@ describe("Blackwater query YAML", () => {
             "INSERT INTO waitlist (id, name, email, source_app, interest) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, created_at",
         );
         expect(compileNamed("product/productQueries.yml", "product", "create", "newProduct")).toBe(
-            "INSERT INTO products (id, catalog, name, slug, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)",
+            'INSERT INTO products (id, catalog, name, slug, sub, price, "originalPrice", img, accent, badge, category, tags, blurb, "isNew", "isActive") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',
         );
     });
 
@@ -96,7 +96,7 @@ describe("Blackwater query YAML", () => {
 
     it("assigns UPDATE placeholders to SET fields then remaps WHERE $1", () => {
         expect(compileNamed("product/productQueries.yml", "product", "update", "updateProduct")).toBe(
-            "UPDATE products SET name = $1, sub = $2, price = $3, originalPrice = $4, img = $5, accent = $6, badge = $7, category = $8, tags = $9, blurb = $10, isNew = $11, isActive = $12, updated_at = $13 WHERE id = $14",
+            'UPDATE products SET name = $1, sub = $2, price = $3, "originalPrice" = $4, img = $5, accent = $6, badge = $7, category = $8, tags = $9, blurb = $10, "isNew" = $11, "isActive" = $12, updated_at = $13 WHERE id = $14',
         );
     });
 

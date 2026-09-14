@@ -1,7 +1,8 @@
 -- Out-of-band Docker first-boot only — not app backend code.
 -- Compiled from productSchema.yml + waitlistSchema.yml via Nectarine compileSchemas.
--- App migrate() runs the same compiler over all Blackwater *Schema.yml.
--- CREATE TABLE IF NOT EXISTS does not ALTER existing volumes; recreate to pick up changes.
+-- App migrate() runs the same compiler over all Blackwater *Schema.yml (additive).
+-- Mixed-case catalog columns are quoted so Postgres does not fold them.
+-- CREATE TABLE IF NOT EXISTS does not ALTER existing volumes; migrate() ADD COLUMN does.
 CREATE TABLE IF NOT EXISTS products (
   id TEXT PRIMARY KEY,
   payload JSONB NOT NULL,
@@ -10,15 +11,15 @@ CREATE TABLE IF NOT EXISTS products (
   slug TEXT UNIQUE,
   sub TEXT,
   price TEXT,
-  originalPrice TEXT,
+  "originalPrice" TEXT,
   img TEXT,
   accent TEXT,
   badge TEXT,
   category TEXT CHECK (category IN ('Guitars', 'Cabs', 'Pedals', 'Effects', 'Amplifiers', 'Studio', 'Lifestyle', 'Accessories', 'DAW', 'Plugins', 'Software')),
   tags JSON,
   blurb TEXT,
-  isNew BOOLEAN DEFAULT FALSE,
-  isActive BOOLEAN DEFAULT TRUE,
+  "isNew" BOOLEAN DEFAULT FALSE,
+  "isActive" BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

@@ -61,6 +61,42 @@ describe("schema DDL compiler", () => {
         );
     });
 
+    it("quotes mixed-case identifiers so Postgres does not fold them", () => {
+        const sql = compileSchema(
+            {
+                Product: {
+                    table: "products",
+                    fields: {
+                        id: "string PRIMARY KEY",
+                        originalPrice: "string",
+                        isNew: "boolean DEFAULT false",
+                        isActive: "boolean DEFAULT true",
+                    },
+                },
+            },
+            "postgres",
+        );
+
+        expect(sql).toContain('"originalPrice" TEXT');
+        expect(sql).toContain('"isNew" BOOLEAN DEFAULT FALSE');
+        expect(sql).toContain('"isActive" BOOLEAN DEFAULT TRUE');
+        expect(sql).not.toMatch(/(?:^|[^"])originalPrice TEXT/);
+        expect(sql).not.toContain("originalprice");
+        expect(sql).not.toContain("isnew");
+        expect(sql).not.toContain("isactive");
+
+        const mysql = compileSchema(
+            {
+                Product: {
+                    table: "products",
+                    fields: { isNew: "boolean" },
+                },
+            },
+            "mysql",
+        );
+        expect(mysql).toContain("`isNew` BOOLEAN");
+    });
+
     it("emits SERIAL PRIMARY KEY and inline REFERENCES, ordered by foreign keys", () => {
         const sql = compileSchemas(
             [

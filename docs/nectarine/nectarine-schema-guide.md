@@ -67,7 +67,7 @@ User:
 | `table` | String | ✓ | Database table name |
 | `description` | String | | Documentation for the model |
 | `fields` | Object | ✓ | Field definitions |
-| `relationships` | Object | | Related models |
+| `relationships` | Object | | Related models. **Not compiled to DDL.** Foreign keys come only from inline `FOREIGN KEY REFERENCES` on fields. |
 
 ---
 
@@ -420,6 +420,14 @@ Tag:
 
 ## Relationships
 
+`relationships:` on a model is documentation (and a hook for a later loader).
+The DDL compiler does **not** turn it into foreign keys or join tables.
+Emit `FOREIGN KEY REFERENCES table(column)` on the field that holds the key.
+
+Mixed-case field names (`originalPrice`, `isNew`) are emitted as quoted
+identifiers (`"originalPrice"`) so Postgres does not fold them to lowercase.
+All-lowercase names (`created_at`, `payload`) stay unquoted.
+
 ### One-to-Many
 
 One user has many posts:
@@ -491,8 +499,9 @@ Comment:
 # Table names: lowercase, plural
 users, posts, comments, categories
 
-# Column names: lowercase, snake_case
+# Column names: lowercase snake_case *or* quoted mixed-case from YAML
 user_id, post_title, created_at, is_active
+originalPrice  # emitted as "originalPrice" — casing preserved
 
 # Enum values: lowercase
 status: enum(active, inactive, pending)

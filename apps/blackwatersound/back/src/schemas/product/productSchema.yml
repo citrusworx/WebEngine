@@ -1,9 +1,19 @@
 Product:
   table: products
   description: >
-    Catalog items for gear and software apps. Live store is the document-store
-    shape (id + payload JSONB). Relational fields are a nullable catalog
-    projection used by productQueries.yml — not a replacement for JSONB.
+    Catalog items for gear and software apps.
+
+    Live writes use the document-store shape only: seed inserts (id, payload JSONB).
+    Relational catalog columns (catalog, name, slug, originalPrice, isNew, isActive, …)
+    are a nullable projection compiled from this file so productQueries.yml can
+    compile. They stay NULL until a later phase populates them. JSONB is not
+    being dropped.
+
+    Mixed-case field names are emitted as quoted identifiers ("originalPrice")
+    so Postgres does not fold them to lowercase.
+
+    relationships: is documentation / future wiring. Foreign keys in DDL come
+    only from inline FOREIGN KEY REFERENCES on fields.
   fields:
     id: string PRIMARY KEY
     payload: jsonb NOT NULL

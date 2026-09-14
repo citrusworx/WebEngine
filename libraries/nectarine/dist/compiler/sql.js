@@ -16,6 +16,7 @@ exports.compileValue = compileValue;
 exports.compileQuery = compileQuery;
 const errors_js_1 = require("./errors.js");
 const fragments_js_1 = require("./fragments.js");
+const identifiers_js_1 = require("./identifiers.js");
 const normalize_js_1 = require("./normalize.js");
 const placeholders_js_1 = require("./placeholders.js");
 var errors_js_2 = require("./errors.js");
@@ -34,7 +35,6 @@ exports.OP_TOKENS = {
     is_not_null: "IS NOT NULL",
 };
 exports.CRUD_METHODS = ["get", "create", "update", "delete"];
-const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const NOW_LITERAL = /^now\(\)$/i;
 const ALLOWED_CASTS = new Set(placeholders_js_1.BIND_CASTS);
 function isCrudMethod(value) {
@@ -47,10 +47,12 @@ function isCleanedQueries(value) {
         (0, errors_js_1.isRecord)(value.queries));
 }
 function assertIdentifier(name, label) {
-    const parts = name.split(".");
-    if (parts.length === 0 || parts.some((part) => !IDENTIFIER.test(part))) {
+    if (!(0, identifiers_js_1.isSqlIdentifierPath)(name)) {
         throw new errors_js_1.QueryCompileError(`Invalid ${label}: ${name}`);
     }
+}
+function ident(name) {
+    return (0, identifiers_js_1.quoteIdentPath)(name);
 }
 function compileFunction(fn) {
     if (typeof fn !== "string") {
@@ -118,7 +120,7 @@ function normalizeColumns(columns, label, allowStar) {
             return ["*"];
         }
         assertIdentifier(trimmed, label);
-        return [trimmed];
+        return [ident(trimmed)];
     }
     if (!Array.isArray(columns) || columns.length === 0) {
         throw new errors_js_1.QueryCompileError(`${label} must be a non-empty string or array`);
@@ -134,7 +136,7 @@ function normalizeColumns(columns, label, allowStar) {
             return "*";
         }
         assertIdentifier(column, label);
-        return column;
+        return ident(column);
     });
 }
 function compileInList(value) {
@@ -172,15 +174,15 @@ function compilePredicate(where) {
         if (value !== undefined) {
             throw new errors_js_1.QueryCompileError(`${operator} does not take a value`);
         }
-        return `${column} ${sqlOp}`;
+        return `${ident(column)} ${sqlOp}`;
     }
     if (value === undefined) {
         throw new errors_js_1.QueryCompileError("where.value is required");
     }
     if (operator === "in" || operator === "not_in") {
-        return `${column} ${sqlOp} (${compileInList(value)})`;
+        return `${ident(column)} ${sqlOp} (${compileInList(value)})`;
     }
-    return `${column} ${sqlOp} ${compileValue(value)}`;
+    return `${ident(column)} ${sqlOp} ${compileValue(value)}`;
 }
 function compileWhere(where, parent) {
     if (typeof where === "string") {
@@ -221,19 +223,19 @@ function compileOrderBy(orderBy) {
         .map((term, index) => {
         if (typeof term === "string") {
             assertIdentifier(term, "orderBy");
-            return term;
+            return ident(term);
         }
         if (!(0, errors_js_1.isRecord)(term) || typeof term.column !== "string") {
             throw new errors_js_1.QueryCompileError(`orderBy[${index}] requires column`);
         }
         assertIdentifier(term.column, "orderBy");
         if (term.direction === undefined) {
-            return term.column;
+            return ident(term.column);
         }
         if (term.direction !== "ASC" && term.direction !== "DESC") {
             throw new errors_js_1.QueryCompileError(`Invalid orderBy direction: ${String(term.direction)}`);
         }
-        return `${term.column} ${term.direction}`;
+        return `${ident(term.column)} ${term.direction}`;
     })
         .join(", ");
 }
@@ -243,7 +245,7 @@ function compileSelect(query) {
     }
     assertIdentifier(query.from, "table");
     const fields = normalizeColumns(query.select, "select", true).join(", ");
-    let sql = `SELECT ${fields} FROM ${query.from}`;
+    let sql = `SELECT ${fields} FROM ${ident(query.from)}`;
     if (query.where !== undefined) {
         sql += ` WHERE ${compileWhere(query.where)}`;
     }
@@ -269,7 +271,7 @@ function compileInsert(query) {
         throw new errors_js_1.QueryCompileError("INSERT columns and values must have the same length");
     }
     const compiled = values.map((value) => compileValue(value));
-    let sql = `INSERT INTO ${into} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
+    let sql = `INSERT INTO ${ident(into)} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
     const returning = query.returning ?? query.insert.returning;
     if (returning !== undefined) {
         sql += ` RETURNING ${normalizeColumns(returning, "returning", true).join(", ")}`;
@@ -293,7 +295,7 @@ function compileUpdate(query) {
         throw new errors_js_1.QueryCompileError("UPDATE requires a where clause");
     }
     const assignments = cols.map((column, index) => `${column} = ${compileValue(values[index])}`);
-    return `UPDATE ${query.table} SET ${assignments.join(", ")} WHERE ${compileWhere(query.where)}`;
+    return `UPDATE ${ident(query.table)} SET ${assignments.join(", ")} WHERE ${compileWhere(query.where)}`;
 }
 function compileDelete(query) {
     if (typeof query.from !== "string") {
@@ -303,7 +305,7 @@ function compileDelete(query) {
     if (query.where === undefined) {
         throw new errors_js_1.QueryCompileError("DELETE requires a where clause");
     }
-    return `DELETE FROM ${query.from} WHERE ${compileWhere(query.where)}`;
+    return `DELETE FROM ${ident(query.from)} WHERE ${compileWhere(query.where)}`;
 }
 function inferQueryKind(query) {
     const hasInsert = "insert" in query;

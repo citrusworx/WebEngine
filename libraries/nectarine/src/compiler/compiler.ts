@@ -29,6 +29,7 @@ export {
     OP_TOKENS,
     QueryCompileError,
 } from "./sql.js";
+export { quoteIdent, quoteIdentPath } from "./identifiers.js";
 export {
     compileSchema,
     compileSchemaPlan,

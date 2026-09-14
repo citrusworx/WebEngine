@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.SchemaCompileError = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
+exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.SchemaCompileError = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.quoteIdentPath = exports.quoteIdent = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
 const util_js_1 = require("../util/util.js");
 const ddl_js_1 = require("./ddl.js");
 const normalize_js_1 = require("./normalize.js");
@@ -11,6 +11,9 @@ Object.defineProperty(exports, "CRUD_METHODS", { enumerable: true, get: function
 Object.defineProperty(exports, "isCrudMethod", { enumerable: true, get: function () { return sql_js_2.isCrudMethod; } });
 Object.defineProperty(exports, "OP_TOKENS", { enumerable: true, get: function () { return sql_js_2.OP_TOKENS; } });
 Object.defineProperty(exports, "QueryCompileError", { enumerable: true, get: function () { return sql_js_2.QueryCompileError; } });
+var identifiers_js_1 = require("./identifiers.js");
+Object.defineProperty(exports, "quoteIdent", { enumerable: true, get: function () { return identifiers_js_1.quoteIdent; } });
+Object.defineProperty(exports, "quoteIdentPath", { enumerable: true, get: function () { return identifiers_js_1.quoteIdentPath; } });
 var ddl_js_2 = require("./ddl.js");
 Object.defineProperty(exports, "compileSchema", { enumerable: true, get: function () { return ddl_js_2.compileSchema; } });
 Object.defineProperty(exports, "compileSchemaPlan", { enumerable: true, get: function () { return ddl_js_2.compileSchemaPlan; } });

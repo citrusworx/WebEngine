@@ -11,6 +11,7 @@
 
 import { parser } from "../util/util.js";
 import { isRecord, QueryCompileError } from "./errors.js";
+import { quoteIdent } from "./identifiers.js";
 
 export class SchemaCompileError extends QueryCompileError {
     constructor(message: string) {
@@ -560,8 +561,13 @@ function emitSqlType(field: FieldSpec, vendor: DdlVendor): string {
     return sql;
 }
 
+function q(name: string, vendor: DdlVendor): string {
+    return quoteIdent(name, vendor);
+}
+
 function emitColumn(field: FieldSpec, vendor: DdlVendor): string {
-    const parts = [`${field.name} ${emitSqlType(field, vendor)}`];
+    const col = q(field.name, vendor);
+    const parts = [`${col} ${emitSqlType(field, vendor)}`];
 
     if (field.primaryKey) {
         parts.push("PRIMARY KEY");
@@ -580,10 +586,12 @@ function emitColumn(field: FieldSpec, vendor: DdlVendor): string {
     }
     if (field.type.kind === "enum" && vendor === "postgres") {
         const list = field.type.values.map(sqlString).join(", ");
-        parts.push(`CHECK (${field.name} IN (${list}))`);
+        parts.push(`CHECK (${col} IN (${list}))`);
     }
     if (field.references) {
-        parts.push(`REFERENCES ${field.references.table}(${field.references.column})`);
+        parts.push(
+            `REFERENCES ${q(field.references.table, vendor)}(${q(field.references.column, vendor)})`,
+        );
     }
 
     return parts.join(" ");
@@ -591,7 +599,7 @@ function emitColumn(field: FieldSpec, vendor: DdlVendor): string {
 
 function emitCreateTable(model: ModelSpec, vendor: DdlVendor): string {
     const columns = model.fields.map((field) => `  ${emitColumn(field, vendor)}`).join(",\n");
-    return `CREATE TABLE IF NOT EXISTS ${model.table} (\n${columns}\n);`;
+    return `CREATE TABLE IF NOT EXISTS ${q(model.table, vendor)} (\n${columns}\n);`;
 }
 
 function emitAddColumn(field: FieldSpec, vendor: DdlVendor): string | undefined {
@@ -599,7 +607,8 @@ function emitAddColumn(field: FieldSpec, vendor: DdlVendor): string | undefined 
         return undefined;
     }
 
-    const parts = [`${field.name} ${emitSqlType(field, vendor)}`];
+    const col = q(field.name, vendor);
+    const parts = [`${col} ${emitSqlType(field, vendor)}`];
     if (field.notNull && field.default) {
         parts.push("NOT NULL");
     }
@@ -611,10 +620,12 @@ function emitAddColumn(field: FieldSpec, vendor: DdlVendor): string | undefined 
     }
     if (field.type.kind === "enum" && vendor === "postgres") {
         const list = field.type.values.map(sqlString).join(", ");
-        parts.push(`CHECK (${field.name} IN (${list}))`);
+        parts.push(`CHECK (${col} IN (${list}))`);
     }
     if (field.references) {
-        parts.push(`REFERENCES ${field.references.table}(${field.references.column})`);
+        parts.push(
+            `REFERENCES ${q(field.references.table, vendor)}(${q(field.references.column, vendor)})`,
+        );
     }
     return parts.join(" ");
 }
@@ -628,7 +639,7 @@ function emitAddColumns(model: ModelSpec, vendor: DdlVendor): string[] {
         if (!definition) {
             return [];
         }
-        return [`ALTER TABLE ${model.table} ADD COLUMN IF NOT EXISTS ${definition};`];
+        return [`ALTER TABLE ${q(model.table, vendor)} ADD COLUMN IF NOT EXISTS ${definition};`];
     });
 }
 
@@ -636,7 +647,8 @@ function emitIndexes(model: ModelSpec, vendor: DdlVendor): string[] {
     return model.indexes.map((index) => {
         const unique = index.unique ? "UNIQUE " : "";
         const ifNotExists = vendor === "postgres" ? "IF NOT EXISTS " : "";
-        return `CREATE ${unique}INDEX ${ifNotExists}${index.name} ON ${model.table} (${index.columns.join(", ")});`;
+        const cols = index.columns.map((column) => q(column, vendor)).join(", ");
+        return `CREATE ${unique}INDEX ${ifNotExists}${q(index.name, vendor)} ON ${q(model.table, vendor)} (${cols});`;
     });
 }
 

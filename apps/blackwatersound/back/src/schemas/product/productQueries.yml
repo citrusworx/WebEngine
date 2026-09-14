@@ -1,5 +1,8 @@
 product:
   read:
+    # Live DML is JSONB payload only (allPayloads / payloadById / seedPayload).
+    # Relational names compile with quoted camelCase ("isActive") but catalog
+    # columns stay NULL until a later write path.
     allProducts:
       type: SELECT
       table: products

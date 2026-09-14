@@ -115,11 +115,11 @@ Created on first boot by `minio-init`:
 
 ## Postgres / Nectarine
 
-The API loads [nectarine.config.yaml](../back/nectarine.config.yaml) via `loadNectarineConfig` and connects with vendor env keys (`PG_*`). On startup, `migrate()` runs **named compiled DDL** from Blackwater `*Schema.yml` (Nectarine `compileSchemas` with `{ additive: true }`). That includes `CREATE TABLE IF NOT EXISTS` plus Postgres `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` so existing volumes pick up new columns such as waitlist `source_app` / `interest`. App `src/` does not contain `CREATE TABLE` text.
+The API loads [nectarine.config.yaml](../back/nectarine.config.yaml) via `loadNectarineConfig` and connects with vendor env keys (`PG_*`). On startup, `migrate()` runs **named compiled DDL** from **every** Blackwater `*Schema.yml` (intentional whole-domain bootstrap, not only product + waitlist). `{ additive: true }` emits Postgres `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` only — no DROP, rename, or type change. App `src/` does not contain `CREATE TABLE` text.
 
-[postgres/init.sql](./postgres/init.sql) is **out-of-band Docker first-boot only** — the same compiler output for `productSchema.yml` + `waitlistSchema.yml` without the additive ALTERs. It is not app backend code.
+[postgres/init.sql](./postgres/init.sql) is **out-of-band Docker first-boot only** — compiler output for `productSchema.yml` + `waitlistSchema.yml` without additive ALTERs. Mixed-case catalog columns are quoted (`"originalPrice"`).
 
-Products keep a first-class `payload JSONB` column. Waitlist includes `source_app` / `interest` so `joinWaitlist` matches the table. Products seed from `SEED_PRODUCTS` once; waitlist entries persist in Postgres.
+Products keep a first-class `payload JSONB` column; seed writes payload only (catalog columns stay NULL). Waitlist includes `source_app` / `interest` so `joinWaitlist` matches the table.
 
 Compose Postgres matches [grapevine.config.yaml](../grapevine.config.yaml) `database.name: blackwater_sound`.
 
