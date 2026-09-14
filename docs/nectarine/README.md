@@ -4,7 +4,7 @@ Nectarine is a config-driven backend library. Define models, schemas, queries, a
 
 Nectarine is a WebEngine native library but is fully independent. It can be used in any project. It does not spin up a server.
 
-**Latest Version**: 0.0.1 (Alpha)
+**Latest Version**: 0.1.0 on npm (pending Changesets target **0.2.0**)
 
 Production deploy bar for Blackwater + Seltzer: [Production](./production.md).
 
@@ -26,8 +26,13 @@ Backend development is repetitive. Models, schemas, queries, and API routes foll
 ## Quick Start
 
 ```bash
-# Install
-yarn add @citrusworx/nectarine @citrusworx/seltzer
+# npm (public package)
+npm install @citrusworx/nectarine
+npm install pg
+# plus @citrusworx/seltzer when hosting HTTP in WebEngine / Blackwater
+
+# yarn
+yarn add @citrusworx/nectarine pg
 ```
 
 ```yaml
@@ -237,7 +242,7 @@ Those YAML files are the CRUD contracts. The compiler emits named queries; Seltz
 
 ## Requirements
 
-- Node.js 14+
+- Node.js 18+ (MongoDB adapter: Node 20.9+ for `mongodb@7`)
 - `@citrusworx/seltzer` when hosting as WebEngine / Blackwater
 - One of: PostgreSQL, MySQL, MongoDB
 
@@ -413,9 +418,16 @@ No SQL is written by hand. The query structure, fields, table, and conditions al
 ### PostgreSQL
 
 ```ts
-import { Pgsql } from "@citrusworx/nectarine";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapter, createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
 
-const result = await Pgsql(sql, [param]);
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const pg = createPgAdapterFromConfig(config)
+    ?? createPgAdapter(config.resolveCredentials("postgres")!);
+
+await pg.connect();
+const result = await pg.query(sql, [param]);
+await pg.disconnect();
 ```
 
 Environment variables:

@@ -1,6 +1,33 @@
 {
     "name": "@citrusworx/nectarine",
     "version": "0.1.0",
+    "description": "YAML-driven query compiler and database adapters for CitrusWorx / WebEngine",
+    "license": "MIT",
+    "author": "CitrusWorx",
+    "homepage": "https://github.com/citrusworx/WebEngine/tree/master/libraries/nectarine",
+    "bugs": {
+        "url": "https://github.com/citrusworx/WebEngine/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/citrusworx/WebEngine.git",
+        "directory": "libraries/nectarine"
+    },
+    "keywords": [
+        "nectarine",
+        "yaml",
+        "sql",
+        "compiler",
+        "postgres",
+        "mysql",
+        "mongodb",
+        "citrusworx",
+        "webengine"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "sideEffects": false,
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
@@ -45,6 +72,17 @@
         "mysql2": "^3.0.0",
         "pg": "^8.0.0"
     },
+    "peerDependenciesMeta": {
+        "mongodb": {
+            "optional": true
+        },
+        "mysql2": {
+            "optional": true
+        },
+        "pg": {
+            "optional": true
+        }
+    },
     "files": [
         "dist"
     ],
@@ -75,6 +113,8 @@
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
         "test:all": "playwright test && vitest run",
-        "example": "tsx examples/showcase.ts"
+        "example": "tsx examples/showcase.ts",
+        "pack:check": "npm pack --dry-run",
+        "verify": "yarn typecheck && yarn build && yarn test && yarn pack:check"
     }
 }

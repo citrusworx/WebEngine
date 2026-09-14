@@ -2,6 +2,24 @@
 
 Compiler and adapter utilities for CitrusWorx data and query tooling.
 
+## Published surface
+
+Install from npm. The packed tarball is `dist/` (plus npm’s default `LICENSE` / `README.md`). `prepack` runs `yarn build`.
+
+Stable entrypoints:
+
+- `@citrusworx/nectarine` — config loader, compiler, YAML helpers (`loadNectarineConfig`, `CCompiler`, `listApiOperations`, …)
+- `@citrusworx/nectarine/config` and `@citrusworx/nectarine/api`
+- `@citrusworx/nectarine/compiler`
+- `@citrusworx/nectarine/adapters/pg` — requires peer `pg`
+- `@citrusworx/nectarine/adapters/ms` — requires peer `mysql2`
+- `@citrusworx/nectarine/adapters/mg` — requires peer `mongodb`
+- `@citrusworx/nectarine/util`
+
+Adapters are **not** re-exported from the package root. Import them from the adapter subpaths so a config/compiler-only install does not load `pg`, `mysql2`, or `mongodb`.
+
+Full guides live in the [WebEngine `docs/nectarine/` directory](https://github.com/citrusworx/WebEngine/tree/master/docs/nectarine). Relative doc links below resolve on GitHub, not on npmjs.com.
+
 ## Hard rule: no hard-coded SQL
 
 Final app backend code **must not** embed SQL strings. Nectarine is phonics:
@@ -26,9 +44,27 @@ See [`docs/nectarine/no-hardcoded-sql.md`](../../docs/nectarine/no-hardcoded-sql
 
 ## Install
 
+Pick a client, then install **one** database driver for the adapter you use. Drivers are optional peer dependencies.
+
 ```bash
+# npm
 npm install @citrusworx/nectarine
+npm install pg          # PostgreSQL (typical WebEngine / Blackwater path)
+# npm install mysql2    # MySQL
+# npm install mongodb   # MongoDB (driver 7 wants Node 20.9+)
+
+# yarn
+yarn add @citrusworx/nectarine
+yarn add pg
+
+# pnpm
+pnpm add @citrusworx/nectarine
+pnpm add pg
 ```
+
+Inside this monorepo, the workspace package is already linked; you do not `yarn add` it again. Contributors still run `yarn workspace @citrusworx/nectarine build` so `dist/` matches `src/`.
+
+Requires Node 18+. MongoDB adapter consumers should use Node 20.9+ (mongodb@7).
 
 ## Usage
 
@@ -250,4 +286,7 @@ Set the YAML-declared `PG_*` env vars and `NECTARINE_EXAMPLE_LIVE=1` to optional
 yarn workspace @citrusworx/nectarine build
 yarn workspace @citrusworx/nectarine test
 yarn workspace @citrusworx/nectarine typecheck
+yarn verify:nectarine
 ```
+
+`prepack` rebuilds `dist/` before `npm pack` / `yarn npm publish`. Release steps for npm: [docs/nectarine/release-checklist.md](../../docs/nectarine/release-checklist.md).

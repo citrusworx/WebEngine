@@ -73,6 +73,7 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 - Mongo as the Blackwater production path
 - Joins / `COUNT` / `EXISTS` / `ON CONFLICT` / JSONB operators (`@>`, `?`, `->>`)
 - Full Flyway-style migrator
-- npm publish / Changesets release automation for `@citrusworx/nectarine`
 
 Those remain follow-ups.
+
+`@citrusworx/nectarine` is publish-ready via the existing Changesets scripts (`yarn version-packages` then `yarn workspace @citrusworx/nectarine npm publish`). There is no npm-token CI job; see [Release checklist](./release-checklist.md).
