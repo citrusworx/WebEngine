@@ -76,8 +76,14 @@ export {
     pathBindValues,
     resolveResourceQueries,
     writeBindValues,
+    defaultNectarineHttpResources,
+    kernelContextOf,
+    nectarineAppResourceNames,
+    resolveSeltzerListenPort,
     runKernelLifecycle,
+    serveNectarineHttp,
     shutdownKernel,
+    startSeltzerFromKernel,
     topologicalSortModules,
     webRuntimeModule,
 } from "./kernel/index.js";
@@ -86,6 +92,7 @@ export type {
     CreateNectarineReadRoutesOptions,
     CreateNectarineRoutesOptions,
     CreateNectarineWriteRoutesOptions,
+    KernelHttpSource,
     NectarineKernelAdapter,
     NectarineModuleHandle,
     NectarineModuleOptions,
@@ -93,6 +100,8 @@ export type {
     NectarineRouteSource,
     ReadRouteExclude,
     RouteExclude,
+    SeltzerHttpHandle,
+    StartSeltzerFromKernelOptions,
 } from "./kernel/index.js";
 
 export interface WebEngineConfig {
