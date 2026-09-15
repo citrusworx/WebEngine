@@ -33,12 +33,12 @@ export interface NectarineModuleHandle {
      * Opt-in Nectarine → Seltzer GET reads. Uses `listApiOperations` plus
      * compiled `*Queries.yml` / adapter `query` unless the host passes
      * `execute`. HTTP listen stays in Seltzer — call this after bootstrap and
-     * `app.route(...)`.
+     * `app.route(...)`, or `startSeltzerFromKernel`.
      */
     createReadRoutes: <TContext extends RequestContext = RequestContext>(options: CreateNectarineReadRoutesOptions<TContext>) => Route<TContext>[];
     /**
      * Opt-in POST/PUT/PATCH/DELETE from YAML. Same compiled execute as reads;
-     * pass `execute` for JSONB / waitlist join. `exclude` skips specials.
+     * pass `execute` for JSONB catalog writes / waitlist join. `exclude` skips specials.
      */
     createWriteRoutes: <TContext extends RequestContext = RequestContext>(options: CreateNectarineWriteRoutesOptions<TContext>) => Route<TContext>[];
     /**

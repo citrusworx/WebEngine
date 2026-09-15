@@ -18,8 +18,9 @@ What exists today:
 - kernel modules: `core`, `web`, `native`, `embedded`, `nectarine` (topo-sorted scaffold → bootstrap → health)
 - Nectarine data module (`id: nectarine`) hosts `@citrusworx/nectarine` ≥0.3.0 as a library: load `nectarine.config.yaml`, resolve credentials, connect, `applyMigrations` (empty migrations dir is a no-op)
 - Nectarine → Seltzer route helper: `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` and handle `createReadRoutes` / `createWriteRoutes` / `createRoutes` (`listApiOperations` → `generateRoutes`; default execute is named YAML + adapter `query`; writes bind body + path)
+- Opt-in Seltzer listen after nectarine bootstrap: `startSeltzerFromKernel` / `serveNectarineHttp` (`Seltzer.init` + `createRoutes` + `listen`; kernel bootstrap still does not auto-listen)
 - sample configs: `engines/webengine/kiwi.config.toml` + `webengine.config.json5`
-- vitest coverage for config find/load, topo-sort, lifecycle health, Nectarine config load + migration no-op, and compiled read/write route generation
+- vitest coverage for config find/load, topo-sort, lifecycle health, Nectarine config load + migration no-op, compiled read/write route generation, and opt-in Seltzer listen smoke
 
 What is still mostly scaffold/design:
 
@@ -88,17 +89,25 @@ Enable `nectarine` in `kernel.modules` when the project has `nectarine.config.ya
 4. Connects and runs `applyMigrations` (schemas from `*Schema.yml`, versioned YAML from `<config dir>/migrations`; missing dir is a no-op)
 5. Registers a handle on `KernelContext` (`config`, `adapter` / `query`, `listApiOperations`, `createReadRoutes`, `createWriteRoutes`, `createRoutes`)
 
-Partial vendor env is a boot error. Fully unset env takes the host seed-fallback path when `fallback.seed: true` and the process is not production (or `ALLOW_SEED_FALLBACK=1`). HTTP stays in Seltzer. Opt in to generated reads after bootstrap:
+Partial vendor env is a boot error. Fully unset env takes the host seed-fallback path when `fallback.seed: true` and the process is not production (or `ALLOW_SEED_FALLBACK=1`). HTTP stays in Seltzer. Kernel bootstrap does **not** listen. After bootstrap, either call the opt-in helper or register routes yourself:
 
 ```ts
-import { Seltzer } from "@citrusworx/seltzer";
 import {
   NECTARINE_MODULE_ID,
   createNectarineReadRoutes,
   createNectarineWriteRoutes,
+  startSeltzerFromKernel,
   type NectarineModuleHandle,
 } from "@citrusworx/webengine";
+import { Seltzer } from "@citrusworx/seltzer";
 
+const http = await startSeltzerFromKernel(ctx, {
+  resources: ["course"],
+  cors: { origin: "http://localhost:5173" },
+  routes: [{ method: "GET", path: "/health", handler: () => ({ body: { ok: true } }) }],
+});
+
+// Or keep wiring Seltzer yourself:
 const handle = ctx.getModuleHandle<NectarineModuleHandle>(NECTARINE_MODULE_ID);
 const app = Seltzer.init();
 for (const route of handle.createRoutes({ resources: ["course"] })) {

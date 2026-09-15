@@ -65,7 +65,7 @@ export interface NectarineModuleHandle {
      * Opt-in Nectarine → Seltzer GET reads. Uses `listApiOperations` plus
      * compiled `*Queries.yml` / adapter `query` unless the host passes
      * `execute`. HTTP listen stays in Seltzer — call this after bootstrap and
-     * `app.route(...)`.
+     * `app.route(...)`, or `startSeltzerFromKernel`.
      */
     createReadRoutes: <TContext extends RequestContext = RequestContext>(
         options: CreateNectarineReadRoutesOptions<TContext>,

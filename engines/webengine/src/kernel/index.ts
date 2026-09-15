@@ -60,3 +60,14 @@ export {
     type ReadRouteExclude,
     type RouteExclude,
 } from "./modules/nectarine-routes.js";
+export {
+    defaultNectarineHttpResources,
+    kernelContextOf,
+    nectarineAppResourceNames,
+    resolveSeltzerListenPort,
+    serveNectarineHttp,
+    startSeltzerFromKernel,
+    type KernelHttpSource,
+    type SeltzerHttpHandle,
+    type StartSeltzerFromKernelOptions,
+} from "./modules/seltzer-http.js";
