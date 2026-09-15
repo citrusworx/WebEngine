@@ -24,6 +24,10 @@ function readThemeScss(id: string) {
     return readFileSync(join(SRC_ROOT, "themes", id, `${id}.scss`), "utf-8");
 }
 
+function readDraftThemeScss(id: string) {
+    return readFileSync(join(SRC_ROOT, "themes", "_draft", id, `${id}.scss`), "utf-8");
+}
+
 describe("Accordion theme role contract", () => {
     it("consumes shared --juice-accordion-* roles from component SCSS", () => {
         const scss = readFileSync(join(SRC_ROOT, "components/accordion/accordion.scss"), "utf-8");
@@ -106,5 +110,37 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("--cm-chevron: var(--cm-heading)");
         expect(scss).toContain("--cm-panel-rule: var(--cm-border)");
         expect(scss).toContain("--cm-focus-ring: var(--cm-heading)");
+    });
+
+    it("binds draft tide accordion roles onto --tide-* surfaces, not the CTA gradient", () => {
+        const scss = readDraftThemeScss("tide");
+        const rootBlock = scss.split(`[theme="tide"]`)[1] ?? "";
+
+        expect(rootBlock.length).toBeGreaterThan(0);
+
+        for (const role of ACCORDION_ROLES) {
+            expect(scss).toContain(`--tide-${role}:`);
+            expect(scss).toContain(`--juice-accordion-${role}: var(--tide-${role})`);
+        }
+
+        expect(scss).toContain("--tide-trigger: var(--tide-surface-strong)");
+        expect(scss).toContain("--tide-trigger-hover: var(--tide-surface-muted)");
+        expect(scss).toContain("--tide-trigger-open: var(--tide-highlight)");
+        expect(scss).toContain("--tide-chevron: var(--tide-accent)");
+        expect(scss).toContain("--tide-panel-rule: var(--tide-accent)");
+        expect(scss).toContain("--tide-focus-ring: var(--tide-accent)");
+        expect(scss).toContain(`:where([accordion])`);
+        expect(scss).toContain("button[accordion-item]");
+        expect(scss).not.toContain("--aqua-accent");
+        expect(scss).not.toContain("$blue-500");
+
+        const accordionItemBlocks = [...scss.matchAll(/button\[accordion-item\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(accordionItemBlocks.length).toBeGreaterThan(0);
+        for (const block of accordionItemBlocks) {
+            expect(block).not.toContain("--tide-button-background");
+        }
     });
 });

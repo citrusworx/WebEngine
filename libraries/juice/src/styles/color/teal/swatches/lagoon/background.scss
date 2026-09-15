@@ -1,0 +1,37 @@
+@use '../../../tokens/tokens.scss' as *;
+
+[bgColor="lagoon-100"]{
+    background-color: $lagoon-100;
+}
+
+[bgColor="lagoon-200"]{
+    background-color: $lagoon-200;
+}
+
+[bgColor="lagoon-300"]{
+    background-color: $lagoon-300;
+}
+
+[bgColor="lagoon-400"]{
+    background-color: $lagoon-400;
+}
+
+[bgColor="lagoon-500"]{
+    background-color: $lagoon-500;
+}
+
+[bgColor="lagoon-600"]{
+    background-color: $lagoon-600;
+}
+
+[bgColor="lagoon-700"]{
+    background-color: $lagoon-700;
+}
+
+[bgColor="lagoon-800"]{
+    background-color: $lagoon-800;
+}
+
+[bgColor="lagoon-900"]{
+    background-color: $lagoon-900;
+}

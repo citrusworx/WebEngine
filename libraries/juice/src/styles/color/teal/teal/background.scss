@@ -1,0 +1,37 @@
+@use '../../tokens/tokens.scss' as *;
+
+[bgColor="teal-100"]{
+    background-color: $teal-100;
+}
+
+[bgColor="teal-200"]{
+    background-color: $teal-200;
+}
+
+[bgColor="teal-300"]{
+    background-color: $teal-300;
+}
+
+[bgColor="teal-400"]{
+    background-color: $teal-400;
+}
+
+[bgColor="teal-500"]{
+    background-color: $teal-500;
+}
+
+[bgColor="teal-600"]{
+    background-color: $teal-600;
+}
+
+[bgColor="teal-700"]{
+    background-color: $teal-700;
+}
+
+[bgColor="teal-800"]{
+    background-color: $teal-800;
+}
+
+[bgColor="teal-900"]{
+    background-color: $teal-900;
+}

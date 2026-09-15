@@ -1,0 +1,37 @@
+@use '../../../tokens/tokens.scss' as *;
+
+[borderColor="lagoon-100"]{
+    border-color: $lagoon-100;
+}
+
+[borderColor="lagoon-200"]{
+    border-color: $lagoon-200;
+}
+
+[borderColor="lagoon-300"]{
+    border-color: $lagoon-300;
+}
+
+[borderColor="lagoon-400"]{
+    border-color: $lagoon-400;
+}
+
+[borderColor="lagoon-500"]{
+    border-color: $lagoon-500;
+}
+
+[borderColor="lagoon-600"]{
+    border-color: $lagoon-600;
+}
+
+[borderColor="lagoon-700"]{
+    border-color: $lagoon-700;
+}
+
+[borderColor="lagoon-800"]{
+    border-color: $lagoon-800;
+}
+
+[borderColor="lagoon-900"]{
+    border-color: $lagoon-900;
+}

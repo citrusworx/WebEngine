@@ -1,0 +1,95 @@
+@use '../../../tokens/tokens.scss' as *;
+
+// Standard Hover - changes background and border.
+
+[hover="lagoon-100"]:hover {
+    background-color: $lagoon-100;
+    border-color: $lagoon-100;
+}
+
+[hover="lagoon-200"]:hover {
+    background-color: $lagoon-200;
+    border-color: $lagoon-200;
+}
+
+[hover="lagoon-300"]:hover {
+    background-color: $lagoon-300;
+    border-color: $lagoon-300;
+}
+
+[hover="lagoon-400"]:hover {
+    background-color: $lagoon-400;
+    border-color: $lagoon-400;
+}
+
+[hover="lagoon-500"]:hover {
+    background-color: $lagoon-500;
+    border-color: $lagoon-500;
+}
+
+[hover="lagoon-600"]:hover {
+    background-color: $lagoon-600;
+    border-color: $lagoon-600;
+}
+
+[hover="lagoon-700"]:hover {
+    background-color: $lagoon-700;
+    border-color: $lagoon-700;
+}
+
+[hover="lagoon-800"]:hover {
+    background-color: $lagoon-800;
+    border-color: $lagoon-800;
+}
+
+[hover="lagoon-900"]:hover {
+    background-color: $lagoon-900;
+    border-color: $lagoon-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="lagoon-100"][outline]:hover {
+    color: $lagoon-100;
+    border-color: $lagoon-100;
+}
+
+[hover="lagoon-200"][outline]:hover {
+    color: $lagoon-200;
+    border-color: $lagoon-200;
+}
+
+[hover="lagoon-300"][outline]:hover {
+    color: $lagoon-300;
+    border-color: $lagoon-300;
+}
+
+[hover="lagoon-400"][outline]:hover {
+    color: $lagoon-400;
+    border-color: $lagoon-400;
+}
+
+[hover="lagoon-500"][outline]:hover {
+    color: $lagoon-500;
+    border-color: $lagoon-500;
+}
+
+[hover="lagoon-600"][outline]:hover {
+    color: $lagoon-600;
+    border-color: $lagoon-600;
+}
+
+[hover="lagoon-700"][outline]:hover {
+    color: $lagoon-700;
+    border-color: $lagoon-700;
+}
+
+[hover="lagoon-800"][outline]:hover {
+    color: $lagoon-800;
+    border-color: $lagoon-800;
+}
+
+[hover="lagoon-900"][outline]:hover {
+    color: $lagoon-900;
+    border-color: $lagoon-900;
+}

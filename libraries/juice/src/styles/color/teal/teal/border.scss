@@ -1,0 +1,37 @@
+@use '../../tokens/tokens.scss' as *;
+
+[borderColor="teal-100"]{
+    border-color: $teal-100;
+}
+
+[borderColor="teal-200"]{
+    border-color: $teal-200;
+}
+
+[borderColor="teal-300"]{
+    border-color: $teal-300;
+}
+
+[borderColor="teal-400"]{
+    border-color: $teal-400;
+}
+
+[borderColor="teal-500"]{
+    border-color: $teal-500;
+}
+
+[borderColor="teal-600"]{
+    border-color: $teal-600;
+}
+
+[borderColor="teal-700"]{
+    border-color: $teal-700;
+}
+
+[borderColor="teal-800"]{
+    border-color: $teal-800;
+}
+
+[borderColor="teal-900"]{
+    border-color: $teal-900;
+}

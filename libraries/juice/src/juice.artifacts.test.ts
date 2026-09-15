@@ -100,6 +100,22 @@ describe("Juice build artifacts", () => {
         expect(mintCss).toContain("button[accordion-item]");
     });
 
+    it("keeps draft tide CSS out of the stable theme export folder", () => {
+        const bundledThemeIds = readBundledThemeIds();
+        const draftPath = join(DIST_DIR, "themes", "_draft", "tide.css");
+
+        expect(bundledThemeIds).not.toContain("tide");
+        expect(bundledThemeIds).not.toContain("_draft");
+        expect(existsSync(draftPath)).toBe(true);
+
+        const draftCss = readFileSync(draftPath, "utf-8");
+        expect(draftCss).toMatch(/\[theme=["']?tide["']?\]/);
+        expect(draftCss).toContain("--tide-trigger: var(--tide-surface-strong)");
+        expect(draftCss).toContain("--juice-accordion-trigger: var(--tide-trigger)");
+        expect(draftCss).toContain("button[accordion-item]");
+        expect(draftCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
+    });
+
     it("produces JS output", () => {
         const jsPath = join(DIST_DIR, "index.js");
         const js = readFileSync(jsPath, "utf-8");
