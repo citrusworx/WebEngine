@@ -196,6 +196,7 @@ export async function loadWaitlistByEmailFromDb(email: string): Promise<Waitlist
   return row ? toWaitlistEntry(row) : null;
 }
 
+/** Insert a waitlist row. Host supplies generated `id` and allowlisted columns. */
 export async function insertWaitlistEntry(entry: WaitlistEntry) {
   const result = await runNamed("joinWaitlist", [
     entry.id,

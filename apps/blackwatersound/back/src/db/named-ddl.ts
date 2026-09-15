@@ -20,8 +20,9 @@ const compiler = new CCompiler();
  * drop / type-change migrations, additive ADD COLUMN, then indexes.
  *
  * Product and waitlist keep special-cased live DML (JSONB catalog writes,
- * waitlist insert). Other resources use compiled GET/writes when Postgres
- * is connected.
+ * waitlist join). Other resources use compiled GET/writes when Postgres
+ * is connected. Host execute is thin: named YAML for SQL, TypeScript for
+ * generated ids / duplicate UX / allowlist / file-store fallback.
  * `products.payload` JSONB is protected. Destructive ops are never inferred
  * from schema-diff; they must be explicit migration YAML with confirm gates.
  */

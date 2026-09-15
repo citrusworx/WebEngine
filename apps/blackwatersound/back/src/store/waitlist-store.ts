@@ -5,8 +5,8 @@ import type { WaitlistEntry } from "../types/context.js";
 import {
   insertWaitlistEntry,
   isDatabaseConnected,
+  loadWaitlistByEmailFromDb,
   loadWaitlistFromDb,
-  waitlistEmailExists,
 } from "../db/postgres.js";
 
 const defaultDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "../data/runtime");
@@ -55,11 +55,15 @@ export async function appendWaitlistEntry(entry: WaitlistEntry) {
   await saveWaitlist(entries);
 }
 
-export async function hasWaitlistEmail(email: string) {
+export async function findWaitlistByEmail(email: string): Promise<WaitlistEntry | null> {
   if (useDatabase()) {
-    return waitlistEmailExists(email);
+    return loadWaitlistByEmailFromDb(email);
   }
 
   const entries = await loadWaitlist();
-  return entries.some((item) => item.email === email);
+  return entries.find((item) => item.email === email) ?? null;
+}
+
+export async function hasWaitlistEmail(email: string) {
+  return Boolean(await findWaitlistByEmail(email));
 }

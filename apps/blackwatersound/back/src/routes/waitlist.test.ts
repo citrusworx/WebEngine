@@ -1,14 +1,15 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadNectarineConfig, type NectarineConfig } from "@citrusworx/nectarine/config";
-import { Seltzer } from "@citrusworx/seltzer";
+import { Seltzer, type ExecuteArgs } from "@citrusworx/seltzer";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { AppLocals } from "../types/context.js";
+import { insertWaitlistEntry } from "../db/postgres.js";
+import type { AppLocals, BlackwaterContext } from "../types/context.js";
 import { createRoutes } from "./index.js";
-import { createWaitlistRoutes } from "./waitlist.js";
+import { createWaitlistRoutes, executeWaitlist } from "./waitlist.js";
 
 const configPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -100,8 +101,21 @@ function post(url: string, body: unknown) {
   });
 }
 
+describe("waitlist named db helpers", () => {
+  it("refuses named writes without an adapter", async () => {
+    await expect(
+      insertWaitlistEntry({
+        id: "wl_1",
+        name: "Ada",
+        email: "ada@example.com",
+        createdAt: new Date().toISOString(),
+      }),
+    ).rejects.toThrow("Database is not configured");
+  });
+});
+
 describe("createWaitlistRoutes", () => {
-  it("registers GET reads and POST joinWaitlist from waitlistAPI.yml", () => {
+  it("registers GET reads and POST joinWaitlist from waitlistAPI.yml via createNectarineRoutes", () => {
     const routes = createWaitlistRoutes(loadConfig());
 
     expect(routes.map((route) => `${route.method} ${route.path}`)).toEqual([
@@ -119,6 +133,48 @@ describe("createWaitlistRoutes", () => {
         interest: "string",
       },
     });
+    expect(routes.every((route) => route.method === "GET")).toBe(false);
+  });
+});
+
+describe("executeWaitlist joinWaitlist", () => {
+  function joinArgs(nectarine: NectarineConfig, body: unknown): ExecuteArgs<BlackwaterContext> {
+    return {
+      resource: "waitlist",
+      query: "joinWaitlist",
+      params: {},
+      body,
+      ctx: { locals: locals(nectarine) } as BlackwaterContext,
+      operation: {
+        resource: "waitlist",
+        crud: "create",
+        name: "joinWaitlist",
+        method: "POST",
+        path: "/api/waitlist",
+        query: "joinWaitlist",
+      },
+    };
+  }
+
+  it("inserts, reports duplicate email, and rejects source_app outside the allowlist", async () => {
+    const nectarine = loadConfig();
+    const created = await executeWaitlist(
+      joinArgs(nectarine, {
+        name: "Ada",
+        email: "Ada@Example.com",
+        source_app: "WWW",
+        interest: "gear",
+      }),
+    );
+    expect(created).toEqual({ ok: true });
+
+    const duplicate = await executeWaitlist(joinArgs(nectarine, { email: "ada@example.com" }));
+    expect(duplicate).toEqual({ ok: true, duplicate: true });
+
+    const invalid = await executeWaitlist(
+      joinArgs(nectarine, { email: "other@example.com", source_app: "mobile" }),
+    );
+    expect(invalid).toMatchObject({ status: 400, body: { error: "source_app is invalid" } });
   });
 });
 
@@ -153,6 +209,17 @@ describe("POST /api/waitlist", () => {
 
     expect(created.status).toBe(200);
     expect(created.json).toEqual({ ok: true });
+
+    const stored = JSON.parse(await readFile(path.join(runtimeDir!, "waitlist.json"), "utf8")) as unknown[];
+    expect(stored).toEqual([
+      expect.objectContaining({
+        name: "Ada",
+        email: "ada@example.com",
+        sourceApp: "www",
+        interest: "gear",
+      }),
+    ]);
+    expect((stored[0] as { id: string }).id).toMatch(/^wl_/);
 
     const listed = await request(`${base}/api/waitlist`);
     expect(listed.status).toBe(200);

@@ -16,7 +16,7 @@ The join that shipped:
 4. Default `validate` enforces `.required` keys copied onto `Route.contract`
 5. Hosts that want Zod later call `app.replace("validate", …)`
 
-WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` wrap that path. Blackwater product JSONB catalog reads and waitlist GET + POST `joinWaitlist` are the current examples. Health and KiwiPress content stay hand-registered.
+WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` wrap that path. Blackwater product JSONB catalog and waitlist GET + POST `joinWaitlist` pass a host `execute` into `createNectarineRoutes`. Health and KiwiPress content stay hand-registered.
 
 ```ts
 import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";

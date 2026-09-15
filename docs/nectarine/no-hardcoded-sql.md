@@ -168,6 +168,10 @@ come only from inline `FOREIGN KEY REFERENCES` on fields.
    (`insertPayload`, `updatePayload`, `deleteProduct`) and a thin host
    `execute`. Catalog documents stay in `products.payload`; relational
    `newProduct` / `updateProduct` YAML still compile but are unused live.
+4b. **Phase 4b** — Waitlist POST `joinWaitlist` uses the same host-execute
+   contract: `createNectarineRoutes({ resources: ["waitlist"], execute })`.
+   Named YAML runs INSERT/SELECT; host keeps generated `id`, duplicate-email
+   UX, `source_app` allowlist, and JSON file-store fallback.
 5. **Later** — Remaining compiler features only if a later phase needs
    them (`COUNT`, `EXISTS`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
    Down migrations / silent schema-diff are not part of the migrator. Seltzer
