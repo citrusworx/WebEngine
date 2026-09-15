@@ -2,11 +2,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadNectarineConfig } from "@citrusworx/nectarine/config";
 import { describe, expect, it } from "vitest";
-import { compileResourceQuery, namedSql } from "./named-queries.js";
+import { compileResourceQuery, namedSql } from "./db/named-queries.js";
 
 const configPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../nectarine.config.yaml",
+  "../nectarine.config.yaml",
 );
 
 describe("compileResourceQuery", () => {
