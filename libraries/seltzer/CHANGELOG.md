@@ -1,20 +1,25 @@
 # @citrusworx/seltzer
 
+## 0.9.0
+
+### Minor Changes
+
+- 815b941: Standalone publish hygiene for à-la-carte consumers: npm `description` (small Node HTTP runtime), `engines.node` `>=18`, optional `undici` peer (`peerDependencies` + `peerDependenciesMeta`) for `allowSelfSigned`, and a README that leads with `init().route().listen()` and hand-built `ApiOperation[]` before Nectarine YAML.
+
+  `0.8.0` on npm shipped the solidified core (default `validate`, `replace()`, hardened outbound `client`) without this packaging/DX. **0.9.0** is the packaging/DX release so those bits land in the published tarball. No runtime behavior changes.
+
+## 0.8.0
+
+### Minor Changes
+
+- npm **0.8.0** is the solidified core that git labeled **0.7.0**: default `validate` for `.required` body fields, `Seltzer#replace()`, and hardened outbound `client` (`HttpError`, JSON parsing, optional `allowSelfSigned`). Packaging/DX hygiene (description, engines, optional `undici` peer, standalone README) did not make this tarball. Versions 0.3–0.7 were never published.
+
 ## 0.7.0
 
 ### Minor Changes
 
 - 5accf92: Harden outbound HTTP `client`: throw `HttpError` (status + body snippet) on non-2xx, parse JSON only for JSON successes, and support optional `allowSelfSigned` via undici Agent (KiwiPress pattern).
 - 7634d3a: Default `validate` stage enforces `.required` body fields from `Route.contract` (copied by `generateRoutes` from `ApiOperation.body`). `Seltzer#replace(name, stage)` swaps a builtin so Nectarine can hang full contract checks. `before` is unchanged.
-
-## 0.7.0
-
-### Minor Changes
-
-- Default `validate` stage enforces `.required` keys from `Route.contract.body` (YAML `email: string.required`) on `ctx.body`. Missing or empty → `{ status: 400, body: { error: … } }`. Routes without body specs stay a no-op.
-- `generateRoutes` copies `operation.resource`, `operation.name`, and `operation.body` onto `Route.contract` so `ctx.route` after the route stage carries what validate needs.
-- New public API: `Seltzer#replace(name, stage)` / `Pipeline#replace` swaps a builtin stage. `before` still inserts immediately before it. Nectarine hangs richer contracts with `replace("validate", …)`.
-- Harden outbound `client` (`GET`/`POST`/`PUT`/`PATCH`/`DELETE` on `Endpoint`): throw `HttpError` with status + body snippet on `!res.ok`; parse JSON only when Content-Type is JSON (or the body is JSON with no type); optional `allowSelfSigned` via undici `Agent`, same as KiwiPress `requestWordPress`.
 
 ## 0.6.0
 
@@ -23,13 +28,6 @@
 - 632d20f: `generateRoutes` maps Nectarine `ApiOperation[]` (from `listApiOperations`) onto object-based `Route`s. Handlers call host `execute` and return `ResponseData` (404 when a read finds nothing). Explicit transport results use `response(...)`. Static-prefix paths win over `:id`. Compatible with the Seltzer 0.5 pipeline.
 - 2150bb9: Named HTTP request pipeline (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) with `Seltzer#before(name, stage)` for inserting stages. `validate` is a no-op stub. Default listen/handle behavior is unchanged for `init().route().listen()`.
 - 12ec2bc: Handlers return ResponseData; the runtime sends the HTTP response. Removed the writing ctx.json helper from RequestContext (breaking).
-
-## 0.6.0
-
-### Minor Changes
-
-- `generateRoutes(operations, { execute })` maps Nectarine `ApiOperation[]` (`listApiOperations`) onto object-based `Route`s that return `ResponseData`. `null`/`undefined` from `execute` becomes 404. Explicit transport results use `response(...)`.
-- Generated routes and `matchRoute` prefer static prefixes over `:param` (so `/api/products/catalog/:catalog` wins over `/api/products/:id`). Compatible with the 0.5 named pipeline.
 
 ## 0.5.0
 

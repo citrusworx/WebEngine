@@ -157,7 +157,7 @@ describe("nectarine builtin module", () => {
         expect(adapter.connects).toBe(1);
         expect(handle?.connected).toBe(true);
         expect(handle?.seedFallback).toBe(false);
-        expect(handle?.query).toEqual(expect.any(Function));
+        expect(typeof handle?.query).toBe("function");
         expect(handle?.query).not.toBe(adapter.query);
         expect(handle?.migrations).toEqual({ applied: [], skipped: [] });
         expect(adapter.sqls.length).toBeGreaterThan(0);
@@ -224,6 +224,78 @@ describe("nectarine builtin module", () => {
             env: { NODE_ENV: "production" },
         });
         await expect(mod.bootstrap(ctx)).rejects.toThrow(/incomplete|Missing/i);
+    });
+
+    it("binds class-adapter query/withTransaction so applyMigrations keeps instance state", async () => {
+        const project = copyNectarineFixture();
+        const ctx = await contextFromFixture(project);
+
+        class ClassAdapter implements NectarineKernelAdapter {
+            connected = false;
+            sqls: string[] = [];
+            async connect() {
+                this.connected = true;
+            }
+            async disconnect() {
+                this.connected = false;
+            }
+            async query(sql: string) {
+                if (!this.connected) {
+                    throw new Error("adapter is not connected");
+                }
+                this.sqls.push(sql);
+                return { rows: [] };
+            }
+            async withTransaction<T>(
+                work: (
+                    query: (
+                        sql: string,
+                        params?: readonly unknown[],
+                    ) => Promise<unknown>,
+                ) => Promise<T>,
+            ): Promise<T> {
+                if (!this.connected) {
+                    throw new Error("adapter is not connected");
+                }
+                return work((sql, params) => this.query(sql, params));
+            }
+        }
+
+        const adapter = new ClassAdapter();
+        const mod = createNectarineModule({
+            env: completePgEnv,
+            adapter,
+        });
+
+        await mod.bootstrap(ctx);
+        const handle = ctx.getModuleHandle<NectarineModuleHandle>(
+            NECTARINE_MODULE_ID,
+        );
+        expect(adapter.sqls.length).toBeGreaterThan(0);
+        expect(handle?.migrations).toEqual({ applied: [], skipped: [] });
+        await handle!.query!("/* handle query ping */");
+        expect(adapter.sqls.at(-1)).toBe("/* handle query ping */");
+        await mod.shutdown?.(ctx);
+        expect(adapter.connected).toBe(false);
+    });
+
+    it("shuts down already-bootstrapped nectarine when a later module fails", async () => {
+        const project = copyNectarineFixture();
+        fs.rmSync(path.join(project, "webengine.config.json5"));
+        const originalShutdown = nectarineModule.shutdown;
+        let shutdowns = 0;
+        nectarineModule.shutdown = async (ctx) => {
+            shutdowns += 1;
+            await originalShutdown?.(ctx);
+        };
+        try {
+            await expect(runKernelLifecycle(project)).rejects.toThrow(
+                /Web runtime config not readable/,
+            );
+            expect(shutdowns).toBe(1);
+        } finally {
+            nectarineModule.shutdown = originalShutdown;
+        }
     });
 
     it("contains no hard-coded SQL", () => {

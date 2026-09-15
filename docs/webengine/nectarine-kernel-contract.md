@@ -100,7 +100,7 @@ Those remain later compiler/host work. They are not kernel invent-as-you-go.
 
 ## Version note
 
-`@citrusworx/nectarine@0.3.0` is published on npm and includes the full migrator (`applyMigrations`, `loadMigrationDocuments`, `compileMigration`, ledger, destructive gates). `@citrusworx/webengine` pins `@citrusworx/nectarine` ≥0.3.0 and `@citrusworx/seltzer` ≥0.7.0. The builtin `nectarine` kernel module calls the migrator APIs; `createNectarineReadRoutes` calls Seltzer `generateRoutes`.
+`@citrusworx/nectarine@0.3.0` is published on npm and includes the full migrator (`applyMigrations`, `loadMigrationDocuments`, `compileMigration`, ledger, destructive gates). `@citrusworx/webengine` pins `@citrusworx/nectarine` ≥0.3.0 and `@citrusworx/seltzer` ≥0.9.0. The builtin `nectarine` kernel module calls the migrator APIs; `createNectarineReadRoutes` calls Seltzer `generateRoutes`.
 
 ## Kernel checklist
 

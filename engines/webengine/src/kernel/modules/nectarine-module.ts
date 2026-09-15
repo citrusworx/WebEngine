@@ -182,28 +182,34 @@ async function createAdapterFromConfig(
     return createMongoAdapterFromConfig(config);
 }
 
+function bindQuery(
+    adapter: NectarineKernelAdapter,
+): NonNullable<NectarineKernelAdapter["query"]> | undefined {
+    if (typeof adapter.query !== "function") {
+        return undefined;
+    }
+    return adapter.query.bind(adapter);
+}
+
+/**
+ * `applyMigrations` calls `execute.query(...)` as a free function. Class
+ * adapters (`PgSql`, `MysqlSql`) keep pool state on `this`, so methods must
+ * stay bound to the instance.
+ */
 function asMigrationExecutor(
     adapter: NectarineKernelAdapter,
 ): MigrationExecutor | null {
-    if (typeof adapter.query !== "function") {
+    const query = bindQuery(adapter);
+    if (!query) {
         return null;
     }
     return {
-        query: (sql, params) => adapter.query!(sql, params),
+        query,
         withTransaction:
             typeof adapter.withTransaction === "function"
-                ? (work) => adapter.withTransaction!(work)
+                ? adapter.withTransaction.bind(adapter)
                 : undefined,
     };
-}
-
-function boundAdapterQuery(
-    adapter: NectarineKernelAdapter | null,
-): NectarineKernelAdapter["query"] {
-    if (!adapter || typeof adapter.query !== "function") {
-        return undefined;
-    }
-    return (sql, params) => adapter.query!(sql, params);
 }
 
 export function createNectarineModule(
@@ -277,7 +283,7 @@ export function createNectarineModule(
                 configPath,
                 vendor,
                 adapter,
-                query: boundAdapterQuery(adapter),
+                query: adapter ? bindQuery(adapter) : undefined,
                 migrations,
                 seedFallback,
                 connected,

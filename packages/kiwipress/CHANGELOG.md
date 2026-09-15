@@ -1,5 +1,12 @@
 # @citrusworx/kiwipress
 
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies [815b941]
+  - @citrusworx/seltzer@0.9.0
+
 ## 0.4.2
 
 ### Patch Changes
