@@ -736,7 +736,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
-    "@citrusworx/sigjs": "workspace:^"
+    "@citrusworx/sigjs": "npm:^0.2.0"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@types/gulp": "npm:^4.0.18"
@@ -843,7 +843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@citrusworx/sigjs@workspace:*, @citrusworx/sigjs@workspace:^, @citrusworx/sigjs@workspace:libraries/sig":
+"@citrusworx/sigjs@npm:^0.2.0, @citrusworx/sigjs@workspace:*, @citrusworx/sigjs@workspace:^, @citrusworx/sigjs@workspace:libraries/sig":
   version: 0.0.0-use.local
   resolution: "@citrusworx/sigjs@workspace:libraries/sig"
   dependencies:

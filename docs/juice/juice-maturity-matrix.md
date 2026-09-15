@@ -44,8 +44,8 @@ The feature is more of a direction or configuration surface than a hardened part
 | Page-level patterns | Emerging | Tutorials and patterns are now present, which makes Juice more teachable and reusable. |
 | Rules engine | Emerging | The philosophy is strong, but only lightly formalized in written protocol docs so far. |
 | Docs and onboarding | Emerging to Stable-ish | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
-| JS entrypoint | Early | Present, but still minimal compared with the styling layer. |
-| Public component exports | Early | Components exist in the style system more than in a hardened JS/component API. |
+| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts navigation, accordion, and tabs runtimes in the browser. Useful and documented, but still likely to evolve. |
+| Public component exports | Emerging | Ships the Sig `Accordion` factory plus create/init/start/stop helpers for navigation, accordion, and tabs. Markup plus auto-enhance is the contract, not a large JS component library. |
 | Themes | Emerging | Bundled themes (`aquaflux`, `kiwipress`, `citrusmint`) follow the `<id>.scss` + `<id>.yaml` contract; KiwiPress is the richest reference. |
 | Motion (`motion` attribute) | Emerging | P0/P1 catalog documented in [juice-animations.md](./juice-animations.md); `prefers-reduced-motion` supported. |
 | Config-driven branding | Draft | Useful direction, but still not required and not yet a hardened contract. |
@@ -73,6 +73,8 @@ These are already useful, but still need refinement before they feel fully settl
 - cards
 - forms
 - navigation
+- accordion and tabs auto-enhance runtimes
+- Sig Accordion factory
 - responsive defaults
 - page-level patterns
 - rules engine formalization
@@ -84,13 +86,12 @@ These areas are what will most directly move Juice from strong alpha to more mat
 
 These should be treated more carefully in positioning:
 
-- JS entrypoint
-- public component exports
-- themes
+- themes (usable, still settling)
 - config-driven branding
 - generator/config workflow
+- a large public JS component API beyond the shipped runtimes and Accordion factory
 
-These can absolutely be valuable, but they should not yet be the center of the Juice promise.
+The JS entrypoint is no longer a stub. Navigation, accordion, and tabs auto-enhance on import, and `Accordion()` is a real Sig factory. That layer is Emerging, not the center of the Juice promise.
 
 ## Recommended positioning right now
 
@@ -98,7 +99,7 @@ If Juice is being described externally or internally, the most honest current po
 
 `Juice Beta is a CSS-first, attribute-driven styling and composition system with strong layout, token, typography, icon, and page-structure support, a documented theme contract, and a supported subset of motion attributes.`
 
-That framing matches the strongest current reality.
+That framing matches the strongest current reality. The JS entry is an Emerging extra: importing it auto-enhances nav, accordion, and tabs. It is not a finished component runtime.
 
 Less accurate positioning right now would be:
 
@@ -134,6 +135,7 @@ If you are building with Juice today:
 
 - confidently use the CSS-first styling, layout, token, typography, and icon layers
 - use cards, forms, nav, and buttons with the understanding that they are still maturing
-- treat themes, config, and JS export surfaces as optional or evolving
+- use the shipped auto-enhance runtimes (navigation, accordion, tabs) and the Sig Accordion factory as Emerging — valid markup should work after importing the JS entry, but that surface is not Stable-ish
+- treat config-driven branding and generator workflow as draft
 
 That is the cleanest and most honest adoption model for the current state of the system.
