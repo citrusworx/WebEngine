@@ -1,3 +1,3 @@
-export declare const getAllCategories: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getCategoryById: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getCategoryBySlug: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getAllCategories: Route<Endpoint>;
+export declare const getCategoryById: Route<Endpoint>;
+export declare const getCategoryBySlug: Route<Endpoint>;

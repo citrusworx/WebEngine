@@ -30,7 +30,7 @@
         "zod": "^4.3.6"
     },
     "dependencies": {
-        "@citrusworx/nectarine": "^0.1.0",
+        "@citrusworx/nectarine": "^0.1.1",
         "@citrusworx/seltzer": "^0.2.0"
     }
 }

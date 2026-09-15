@@ -1,3 +1,3 @@
-export declare const getAllComments: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getCommentById: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getCommentsByPost: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getAllComments: Route<Endpoint>;
+export declare const getCommentById: Route<Endpoint>;
+export declare const getCommentsByPost: Route<Endpoint>;

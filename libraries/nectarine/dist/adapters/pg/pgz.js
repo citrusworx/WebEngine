@@ -39,10 +39,11 @@ class PgSql {
     async disconnect(client) {
         await client.end();
     }
-    // Config-based query execution
-    // 
+    /**  Config-based query execution
+    //
     // @param client - the database client to use for executing the query
     // @param config - the configuration object containing the SQL query and parameters
+    */
     async query(client, config) {
         if (!this.client) {
             console.log("No client found. Please connect to the database first.");

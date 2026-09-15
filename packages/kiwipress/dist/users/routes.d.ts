@@ -1,8 +1,8 @@
-export declare const getAllUsers: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getUserById: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getUserByEmail: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getUsersByCity: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const getUsersByCityState: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const createUser: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const updateUser: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
-export declare const deleteUser: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getAllUsers: Route<Endpoint>;
+export declare const getUserById: Route<Endpoint>;
+export declare const getUserByEmail: Route<Endpoint>;
+export declare const getUsersByCity: Route<Endpoint>;
+export declare const getUsersByCityState: Route<Endpoint>;
+export declare const createUser: Route<Endpoint>;
+export declare const updateUser: Route<Endpoint>;
+export declare const deleteUser: Route<Endpoint>;
