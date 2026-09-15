@@ -35,30 +35,39 @@ export async function runKernelLifecycle(
     const sortedIds = topologicalSortModules(closure, registry);
     const modulesInOrder = sortedIds.map((id) => registry.get(id)!);
 
-    for (const mod of modulesInOrder) {
-        await mod.scaffold?.(ctx);
-    }
-    for (const mod of modulesInOrder) {
-        await mod.bootstrap(ctx);
-    }
+    try {
+        for (const mod of modulesInOrder) {
+            await mod.scaffold?.(ctx);
+        }
+        for (const mod of modulesInOrder) {
+            await mod.bootstrap(ctx);
+        }
 
-    const modules = [];
-    for (const mod of modulesInOrder) {
-        const h = await mod.health(ctx);
-        modules.push({ id: mod.id, ok: h.ok, detail: h.detail });
+        const modules = [];
+        for (const mod of modulesInOrder) {
+            const h = await mod.health(ctx);
+            modules.push({ id: mod.id, ok: h.ok, detail: h.detail });
+        }
+
+        const healthSummary: HealthSummary = {
+            allOk: modules.every((m) => m.ok),
+            modules,
+        };
+
+        return {
+            context: ctx,
+            healthSummary,
+            sortedModuleIds: sortedIds,
+            modulesInOrder,
+        };
+    } catch (error) {
+        try {
+            await shutdownKernel(modulesInOrder, ctx);
+        } catch {
+            // Keep the original bootstrap/health error.
+        }
+        throw error;
     }
-
-    const healthSummary: HealthSummary = {
-        allOk: modules.every((m) => m.ok),
-        modules,
-    };
-
-    return {
-        context: ctx,
-        healthSummary,
-        sortedModuleIds: sortedIds,
-        modulesInOrder,
-    };
 }
 
 export async function shutdownKernel(
