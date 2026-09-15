@@ -25,6 +25,7 @@ const PLACEHOLDER_AT = /^\$([1-9]\d*)(?:::([A-Za-z_][A-Za-z0-9_]*))?/;
  * - `payload->>'catalog'` → `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog'))`
  * - `payload @> $1::jsonb` → `JSON_CONTAINS(payload, CAST(? AS JSON))`
  * - `payload @> '{"a":1}'` → `JSON_CONTAINS(payload, CAST('{"a":1}' AS JSON))`
+ *   (decoded then re-escaped for MySQL so `\\` is not eaten as an SQL escape)
  * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))`
  *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
@@ -183,9 +184,8 @@ function rewriteJsonbOperand(sql, start) {
         }
         const constant = readSqlString(sql, afterOp);
         if (constant) {
-            const quoted = sql.slice(afterOp, constant.end);
             return {
-                sql: `JSON_CONTAINS(${operand}, CAST(${quoted} AS JSON))`,
+                sql: `JSON_CONTAINS(${operand}, CAST(${mysqlStringLiteral(constant.value)} AS JSON))`,
                 end: constant.end,
             };
         }
@@ -201,9 +201,8 @@ function rewriteJsonbOperand(sql, start) {
         }
         const key = readSqlString(sql, afterOp);
         if (key) {
-            const quoted = sql.slice(afterOp, key.end);
             return {
-                sql: `JSON_CONTAINS_PATH(${operand}, 'one', CONCAT('$.', JSON_QUOTE(${quoted})))`,
+                sql: `JSON_CONTAINS_PATH(${operand}, 'one', CONCAT('$.', JSON_QUOTE(${mysqlStringLiteral(key.value)})))`,
                 end: key.end,
             };
         }
@@ -305,6 +304,10 @@ function skipSpaces(sql, start) {
         i += 1;
     }
     return i;
+}
+/** Postgres literals use `''` only. MySQL also treats `\` as an escape unless NO_BACKSLASH_ESCAPES. */
+function mysqlStringLiteral(value) {
+    return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "''")}'`;
 }
 function readPlaceholderToken(sql, start) {
     const match = sql.slice(start).match(/^\$[1-9]\d*(?:::(?:jsonb|json|text))?/i);

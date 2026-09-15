@@ -18,6 +18,7 @@ export type MysqlRewriteResult = {
  * - `payload->>'catalog'` → `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog'))`
  * - `payload @> $1::jsonb` → `JSON_CONTAINS(payload, CAST(? AS JSON))`
  * - `payload @> '{"a":1}'` → `JSON_CONTAINS(payload, CAST('{"a":1}' AS JSON))`
+ *   (decoded then re-escaped for MySQL so `\\` is not eaten as an SQL escape)
  * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))`
  *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
