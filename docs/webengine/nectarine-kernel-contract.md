@@ -80,19 +80,19 @@ Those remain later compiler/host work. They are not kernel invent-as-you-go.
 
 ## Version note
 
-npm is currently `@citrusworx/nectarine@0.2.0`. The full migrator (`applyMigrations`, `loadMigrationDocuments`, `compileMigration`, ledger, destructive gates) landed on `cursor/blackwater-phase0-backend` (PR #38). Kernel code should **expect those migrator APIs**. A 0.3.0 publish is pending Drew confirmation; do not wait on the npm bump to wire `applyMigrations`.
+`@citrusworx/nectarine@0.3.0` is published on npm and includes the full migrator (`applyMigrations`, `loadMigrationDocuments`, `compileMigration`, ledger, destructive gates). `@citrusworx/webengine` pins `@citrusworx/nectarine` ≥0.3.0 and the builtin `nectarine` kernel module calls those APIs.
 
 ## Kernel checklist
 
 When the kernel writes or hosts a Nectarine backend:
 
-- [ ] Load `nectarine.config.yaml` with `loadNectarineConfig`
-- [ ] Resolve credentials through `NectarineConfig`; pass them into adapters
-- [ ] Boot: connect → `applyMigrations` (empty migrations dir OK) → then listen
-- [ ] DML/DDL only via named YAML + compiler; adapter `query(sql, params)` only
-- [ ] Flatten `*API.yml` with `listApiOperations`; hand off to Seltzer `generateRoutes`
-- [ ] Seltzer `init` / `listen` / `validate`; no Express, no `nectarine serve`
-- [ ] Keep JSONB columns that the live store uses; protect them if the host needs to
-- [ ] Import adapters from `@citrusworx/nectarine/adapters/pg` (or `/ms`, `/mg`), not the package root
+- [x] Load `nectarine.config.yaml` with `loadNectarineConfig` (`nectarine` kernel module)
+- [x] Resolve credentials through `NectarineConfig`; pass them into adapters
+- [x] Boot: connect → `applyMigrations` (empty migrations dir OK) → then listen *(listen stays Seltzer; this module stops after migrate)*
+- [x] DML/DDL only via named YAML + compiler; adapter `query(sql, params)` only
+- [ ] Flatten `*API.yml` with `listApiOperations`; hand off to Seltzer `generateRoutes` *(module exports `listApiOperations` on the handle; hosts still call Seltzer `generateRoutes` — engine-side `createNectarineReadRoutes` is phase 2)*
+- [ ] Seltzer `init` / `listen` / `validate`; no Express, no `nectarine serve` *(HTTP remains Seltzer’s; out of scope for the data module)*
+- [x] Keep JSONB columns that the live store uses; protect them if the host needs to *(pass `protectedColumns` into `createNectarineModule`)*
+- [x] Import adapters from `@citrusworx/nectarine/adapters/pg` (or `/ms`, `/mg`), not the package root
 
 Deeper rules: [No hard-coded SQL](../nectarine/no-hardcoded-sql.md), [Production](../nectarine/production.md), [API](../nectarine/nectarine-api.md).

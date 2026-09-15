@@ -84,9 +84,11 @@ describe("loadKiwiConfigFromPath", () => {
 describe("toposort", () => {
     it("orders modules by dependencies", () => {
         const registry = createBuiltinRegistry();
+        expect(registry.has("nectarine")).toBe(true);
         const closure = computeModuleClosure(["web"], registry);
         const sorted = topologicalSortModules(closure, registry);
         expect(sorted.indexOf("core")).toBeLessThan(sorted.indexOf("web"));
+        expect(sorted).not.toContain("nectarine");
     });
 
     it("detects dependency cycles", () => {

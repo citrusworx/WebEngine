@@ -45,15 +45,25 @@ export type {
 } from "./kernel/index.js";
 export {
     KernelContext,
+    NECTARINE_MODULE_ID,
+    applyNectarineMigrations,
     computeModuleClosure,
     createBuiltinRegistry,
+    createNectarineModule,
     coreModule,
     embeddedRuntimeModule,
+    listNectarineApiOperations,
     nativeRuntimeModule,
+    nectarineModule,
     runKernelLifecycle,
     shutdownKernel,
     topologicalSortModules,
     webRuntimeModule,
+} from "./kernel/index.js";
+export type {
+    NectarineKernelAdapter,
+    NectarineModuleHandle,
+    NectarineModuleOptions,
 } from "./kernel/index.js";
 
 export interface WebEngineConfig {

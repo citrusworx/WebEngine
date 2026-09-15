@@ -4,7 +4,8 @@ import { KernelContext, type HealthSummary } from "./kernel/index.js";
 export type { KiwiConfig, LoadedKiwiConfig, WebRuntimeConfig, YamlRuntimeConfig, } from "./config/index.js";
 export { KIWI_CONFIG_FILENAME, findKiwiConfigPath, kiwiConfigSchema, loadKiwiConfigFromPath, parseYamlRuntimeDocument, resolveRuntimeConfigPath, webRuntimeConfigSchema, yamlRuntimeConfigSchema, } from "./config/index.js";
 export type { HealthResult, HealthSummary, KernelModule, KernelRunResult, ModuleHealth, } from "./kernel/index.js";
-export { KernelContext, computeModuleClosure, createBuiltinRegistry, coreModule, embeddedRuntimeModule, nativeRuntimeModule, runKernelLifecycle, shutdownKernel, topologicalSortModules, webRuntimeModule, } from "./kernel/index.js";
+export { KernelContext, NECTARINE_MODULE_ID, applyNectarineMigrations, computeModuleClosure, createBuiltinRegistry, createNectarineModule, coreModule, embeddedRuntimeModule, listNectarineApiOperations, nativeRuntimeModule, nectarineModule, runKernelLifecycle, shutdownKernel, topologicalSortModules, webRuntimeModule, } from "./kernel/index.js";
+export type { NectarineKernelAdapter, NectarineModuleHandle, NectarineModuleOptions, } from "./kernel/index.js";
 export interface WebEngineConfig {
     blueprint: Blueprint;
     environment: Environment;
