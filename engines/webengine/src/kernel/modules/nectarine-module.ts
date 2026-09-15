@@ -15,7 +15,11 @@ import type { RequestContext, Route } from "@citrusworx/seltzer";
 import type { KernelContext, KernelModule } from "../types.js";
 import {
     createNectarineHandleReadRoutes,
+    createNectarineHandleRoutes,
+    createNectarineHandleWriteRoutes,
     type CreateNectarineReadRoutesOptions,
+    type CreateNectarineRoutesOptions,
+    type CreateNectarineWriteRoutesOptions,
 } from "./nectarine-routes.js";
 
 export const NECTARINE_MODULE_ID = "nectarine";
@@ -52,18 +56,33 @@ export interface NectarineModuleHandle {
     connected: boolean;
     /**
      * Flatten loaded `*API.yml` into operations for Seltzer `generateRoutes`.
-     * Prefer {@link createReadRoutes} when the host wants `Route`s; this stays
-     * for hosts that compose `generateRoutes` themselves.
+     * Prefer {@link createReadRoutes} / {@link createWriteRoutes} when the host
+     * wants `Route`s; this stays for hosts that compose `generateRoutes`
+     * themselves.
      */
     listApiOperations: (resource?: string) => ApiOperation[];
     /**
-     * Opt-in Nectarine → Seltzer route generation. Uses `listApiOperations`
-     * plus compiled `*Queries.yml` / adapter `query` unless the host passes
+     * Opt-in Nectarine → Seltzer GET reads. Uses `listApiOperations` plus
+     * compiled `*Queries.yml` / adapter `query` unless the host passes
      * `execute`. HTTP listen stays in Seltzer — call this after bootstrap and
      * `app.route(...)`.
      */
     createReadRoutes: <TContext extends RequestContext = RequestContext>(
         options: CreateNectarineReadRoutesOptions<TContext>,
+    ) => Route<TContext>[];
+    /**
+     * Opt-in POST/PUT/PATCH/DELETE from YAML. Same compiled execute as reads;
+     * pass `execute` for JSONB / waitlist join. `exclude` skips specials.
+     */
+    createWriteRoutes: <TContext extends RequestContext = RequestContext>(
+        options: CreateNectarineWriteRoutesOptions<TContext>,
+    ) => Route<TContext>[];
+    /**
+     * Unified generator. Omit `methods` for every op on `resources`; pass
+     * `methods` / `include` / `exclude` to filter.
+     */
+    createRoutes: <TContext extends RequestContext = RequestContext>(
+        options: CreateNectarineRoutesOptions<TContext>,
     ) => Route<TContext>[];
 }
 
@@ -109,7 +128,7 @@ function hostAllowsSeedFallback(
 
 /**
  * Flatten one resource or every loaded resource's `*API.yml`.
- * Prefer {@link createNectarineReadRoutes} when the host wants Seltzer `Route`s.
+ * Prefer {@link createNectarineRoutes} when the host wants Seltzer `Route`s.
  */
 export function listNectarineApiOperations(
     config: NectarineConfig,
@@ -291,6 +310,10 @@ export function createNectarineModule(
                     listNectarineApiOperations(config, resource),
                 createReadRoutes: (options) =>
                     createNectarineHandleReadRoutes(handle, options),
+                createWriteRoutes: (options) =>
+                    createNectarineHandleWriteRoutes(handle, options),
+                createRoutes: (options) =>
+                    createNectarineHandleRoutes(handle, options),
             };
             ctx.registerModuleHandle(NECTARINE_MODULE_ID, handle);
         },

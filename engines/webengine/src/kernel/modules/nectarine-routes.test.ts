@@ -17,11 +17,18 @@ import {
     compileResourceQuery,
     createCompiledNectarineExecute,
     createNectarineReadRoutes,
+    createNectarineRoutes,
+    createNectarineWriteRoutes,
     createResourceReadRoutes,
+    createResourceWriteRoutes,
     isSingularRead,
+    isWriteOperation,
     listResourceReadOperations,
+    listResourceWriteOperations,
+    namedQuerySpec,
     pathBindValues,
     resolveResourceQueries,
+    writeBindValues,
 } from "./nectarine-routes.js";
 
 const nectarineFixturesRoot = path.join(
@@ -288,7 +295,12 @@ describe("createNectarineReadRoutes", () => {
     it("compiles sibling order_item from the order Queries.yml document", () => {
         const nectarine = loadFixtureConfig();
         const operations = listResourceReadOperations(nectarine, "order_item");
-        expect(operations.map((op) => op.name)).toEqual(["byOrder"]);
+        expect(operations.map((op) => op.name)).toEqual(["byOrder", "newItem"]);
+        expect(
+            listResourceWriteOperations(nectarine, "order_item").map(
+                (op) => `${op.method} ${op.name}`,
+            ),
+        ).toEqual(["POST newItem"]);
         expect(
             compileResourceQuery(
                 resolveResourceQueries(nectarine, "order_item"),
@@ -380,6 +392,319 @@ describe("compiled execute", () => {
     });
 });
 
+describe("createNectarineWriteRoutes", () => {
+    it("registers YAML writes and skips GET reads", () => {
+        const nectarine = loadFixtureConfig();
+        const routes = createNectarineWriteRoutes(nectarine, {
+            resources: ["course", "order", "order_item", "waitlist"],
+        });
+        const keys = routes.map((route) => `${route.method} ${route.path}`);
+        expect(keys).toEqual(
+            expect.arrayContaining([
+                "POST /api/courses",
+                "PUT /api/courses/:id",
+                "DELETE /api/courses/:id",
+                "POST /api/orders",
+                "PATCH /api/orders/:id/status",
+                "POST /api/orders/:orderId/items",
+                "POST /api/waitlist",
+            ]),
+        );
+        expect(keys.some((key) => key.startsWith("GET "))).toBe(false);
+        expect(
+            routes.find(
+                (route) =>
+                    route.method === "POST" && route.path === "/api/waitlist",
+            )?.contract?.name,
+        ).toBe("joinWaitlist");
+    });
+
+    it("honors exclude for JSONB / join specials", () => {
+        const nectarine = loadFixtureConfig();
+        const routes = createNectarineWriteRoutes(nectarine, {
+            resources: ["course", "waitlist"],
+            exclude: [{ resource: "waitlist", name: "joinWaitlist" }],
+        });
+        const keys = routes.map((route) => `${route.method} ${route.path}`);
+        expect(keys).toContain("POST /api/courses");
+        expect(keys).not.toContain("POST /api/waitlist");
+    });
+
+    it("createNectarineRoutes without methods includes reads and writes", () => {
+        const nectarine = loadFixtureConfig();
+        const routes = createNectarineRoutes(nectarine, {
+            resources: ["course"],
+        });
+        const keys = routes.map((route) => `${route.method} ${route.path}`);
+        expect(keys).toEqual(
+            expect.arrayContaining([
+                "GET /api/courses",
+                "POST /api/courses",
+                "PUT /api/courses/:id",
+                "DELETE /api/courses/:id",
+            ]),
+        );
+    });
+});
+
+describe("writeBindValues", () => {
+    it("binds create columns from body, including camelCase path params", () => {
+        const nectarine = loadFixtureConfig();
+        const item = listResourceWriteOperations(nectarine, "order_item")[0];
+        const spec = namedQuerySpec(
+            resolveResourceQueries(nectarine, "order_item"),
+            "order_item",
+            "create",
+            "newItem",
+        );
+        expect(
+            writeBindValues(
+                item,
+                { orderId: "ord-1" },
+                { id: "it-1", product_id: "p1", quantity: 2 },
+                spec,
+            ),
+        ).toEqual(["it-1", "ord-1", "p1", 2]);
+    });
+
+    it("binds update SET from body then path id (compiler remap)", () => {
+        const nectarine = loadFixtureConfig();
+        const update = listResourceWriteOperations(nectarine, "course").find(
+            (operation) => operation.name === "updateCourse",
+        );
+        const spec = namedQuerySpec(
+            resolveResourceQueries(nectarine, "course"),
+            "course",
+            "update",
+            "updateCourse",
+        );
+        expect(
+            writeBindValues(
+                update!,
+                { id: "c1" },
+                { slug: "fuzz", title: "Fuzz", line: "gear", status: "published" },
+                spec,
+            ),
+        ).toEqual(["fuzz", "Fuzz", "gear", "published", "c1"]);
+    });
+
+    it("leaves waitlist join id null when the host does not send one", () => {
+        const nectarine = loadFixtureConfig();
+        const join = listResourceWriteOperations(nectarine, "waitlist").find(
+            (operation) => operation.name === "joinWaitlist",
+        );
+        expect(isWriteOperation(join!)).toBe(true);
+        const spec = namedQuerySpec(
+            resolveResourceQueries(nectarine, "waitlist"),
+            "waitlist",
+            "create",
+            "joinWaitlist",
+        );
+        expect(
+            writeBindValues(
+                join!,
+                {},
+                { name: "Ada", email: "ada@example.com", source_app: "www" },
+                spec,
+            ),
+        ).toEqual([null, "Ada", "ada@example.com", "www", null]);
+    });
+});
+
+describe("compiled write execute", () => {
+    it("returns 404 without a database", async () => {
+        const nectarine = loadFixtureConfig();
+        const routes = createNectarineWriteRoutes(nectarine, {
+            resources: ["course"],
+            connected: false,
+        });
+        const create = routes.find(
+            (route) => route.method === "POST" && route.path === "/api/courses",
+        );
+        await expect(
+            create!.handler(
+                fakeCtx({}, { id: "c1", title: "Fuzz", slug: "fuzz" }),
+            ),
+        ).resolves.toEqual({
+            status: 404,
+            body: { error: "Not found" },
+        });
+    });
+
+    it("compiles YAML and runs adapter.query for POST/PUT/DELETE", async () => {
+        const nectarine = loadFixtureConfig();
+        const sqls: { sql: string; params?: readonly unknown[] }[] = [];
+        const routes = createNectarineWriteRoutes(nectarine, {
+            resources: ["course"],
+            query: async (sql, params) => {
+                sqls.push({ sql, params });
+                if (/^INSERT /i.test(sql)) {
+                    return {
+                        rows: [
+                            {
+                                id: params?.[0],
+                                slug: params?.[1],
+                                title: params?.[2],
+                                line: params?.[3],
+                                status: params?.[4],
+                            },
+                        ],
+                    };
+                }
+                return { rows: [], rowCount: 1 };
+            },
+            connected: true,
+        });
+
+        const create = routes.find(
+            (route) => route.method === "POST" && route.path === "/api/courses",
+        );
+        const update = routes.find(
+            (route) =>
+                route.method === "PUT" && route.path === "/api/courses/:id",
+        );
+        const remove = routes.find(
+            (route) =>
+                route.method === "DELETE" &&
+                route.path === "/api/courses/:id",
+        );
+
+        await expect(
+            create!.handler(
+                fakeCtx(
+                    {},
+                    {
+                        id: "c1",
+                        slug: "fuzz",
+                        title: "Fuzz",
+                        line: "gear",
+                        status: "published",
+                    },
+                ),
+            ),
+        ).resolves.toEqual({
+            body: {
+                id: "c1",
+                slug: "fuzz",
+                title: "Fuzz",
+                line: "gear",
+                status: "published",
+            },
+        });
+        await expect(
+            update!.handler(
+                fakeCtx(
+                    { id: "c1" },
+                    {
+                        slug: "fuzz",
+                        title: "Fuzz",
+                        line: "gear",
+                        status: "draft",
+                    },
+                ),
+            ),
+        ).resolves.toEqual({ body: { ok: true, rowCount: 1 } });
+        await expect(
+            remove!.handler(fakeCtx({ id: "c1" })),
+        ).resolves.toEqual({ body: { ok: true, rowCount: 1 } });
+
+        expect(sqls[0]).toEqual({
+            sql: "INSERT INTO courses (id, slug, title, line, status) VALUES ($1, $2, $3, $4, $5) RETURNING id, slug, title, line, status",
+            params: ["c1", "fuzz", "Fuzz", "gear", "published"],
+        });
+        expect(sqls[1]).toEqual({
+            sql: "UPDATE courses SET slug = $1, title = $2, line = $3, status = $4 WHERE id = $5",
+            params: ["fuzz", "Fuzz", "gear", "draft", "c1"],
+        });
+        expect(sqls[2]).toEqual({
+            sql: "DELETE FROM courses WHERE id = $1",
+            params: ["c1"],
+        });
+    });
+
+    it("compiles PATCH status and sibling order_item create", async () => {
+        const nectarine = loadFixtureConfig();
+        const sqls: { sql: string; params?: readonly unknown[] }[] = [];
+        const routes = createNectarineWriteRoutes(nectarine, {
+            resources: ["order", "order_item"],
+            query: async (sql, params) => {
+                sqls.push({ sql, params });
+                return { rows: [{ id: params?.[0] }], rowCount: 1 };
+            },
+            connected: true,
+        });
+
+        const patch = routes.find(
+            (route) =>
+                route.method === "PATCH" &&
+                route.path === "/api/orders/:id/status",
+        );
+        const item = routes.find(
+            (route) =>
+                route.method === "POST" &&
+                route.path === "/api/orders/:orderId/items",
+        );
+
+        await patch!.handler(fakeCtx({ id: "ord-1" }, { status: "paid" }));
+        await item!.handler(
+            fakeCtx(
+                { orderId: "ord-1" },
+                { id: "it-1", product_id: "p1", quantity: 2 },
+            ),
+        );
+
+        expect(sqls[0]).toEqual({
+            sql: "UPDATE orders SET status = $1 WHERE id = $2",
+            params: ["paid", "ord-1"],
+        });
+        expect(sqls[1]?.sql).toMatch(/^INSERT INTO order_items/);
+        expect(sqls[1]?.params).toEqual(["it-1", "ord-1", "p1", 2]);
+    });
+
+    it("createResourceWriteRoutes forwards a host execute", async () => {
+        const nectarine = loadFixtureConfig();
+        const routes = createResourceWriteRoutes(
+            nectarine,
+            "waitlist",
+            async () => ({ ok: true, duplicate: false }),
+        );
+        const join = routes.find(
+            (route) => route.method === "POST" && route.path === "/api/waitlist",
+        );
+        await expect(join!.handler(fakeCtx({}, { email: "a@b.c" }))).resolves.toEqual({
+            body: { ok: true, duplicate: false },
+        });
+    });
+
+    it("compiles write queries from YAML without host SQL", () => {
+        const nectarine = loadFixtureConfig();
+        expect(
+            compileResourceQuery(
+                resolveResourceQueries(nectarine, "course"),
+                "course",
+                "create",
+                "newCourse",
+            ),
+        ).toMatch(/^INSERT INTO courses /);
+        expect(
+            compileResourceQuery(
+                resolveResourceQueries(nectarine, "course"),
+                "course",
+                "update",
+                "updateCourse",
+            ),
+        ).toMatch(/^UPDATE courses SET /);
+        expect(
+            compileResourceQuery(
+                resolveResourceQueries(nectarine, "course"),
+                "course",
+                "delete",
+                "deleteCourse",
+            ),
+        ).toBe("DELETE FROM courses WHERE id = $1");
+    });
+});
+
 describe("kernel handle createReadRoutes", () => {
     it("is registered on the nectarine handle and uses adapter.query", async () => {
         const project = copyNectarineFixture();
@@ -446,6 +771,46 @@ describe("kernel handle createReadRoutes", () => {
         await expect(byId!.handler(fakeCtx({ id: "c1" }))).resolves.toEqual({
             body: { id: "c1", title: "Fuzz", status: "published" },
         });
+
+        await mod.shutdown?.(ctx);
+    });
+
+    it("registers createWriteRoutes and createRoutes on the handle", async () => {
+        const project = copyNectarineFixture();
+        const loaded = await loadKiwiConfigFromPath(
+            path.join(project, "kiwi.config.toml"),
+        );
+        const ctx = new KernelContext(loaded.config, loaded.projectRoot);
+        const adapter = createStubAdapter();
+        const mod = createNectarineModule({
+            env: completePgEnv,
+            adapter,
+        });
+        await mod.bootstrap(ctx);
+        const handle = ctx.getModuleHandle<NectarineModuleHandle>(
+            NECTARINE_MODULE_ID,
+        );
+        expect(handle?.createWriteRoutes).toEqual(expect.any(Function));
+        expect(handle?.createRoutes).toEqual(expect.any(Function));
+
+        const writes = handle!.createWriteRoutes({ resources: ["course"] });
+        expect(
+            writes.map((route) => `${route.method} ${route.path}`),
+        ).toEqual(
+            expect.arrayContaining([
+                "POST /api/courses",
+                "PUT /api/courses/:id",
+                "DELETE /api/courses/:id",
+            ]),
+        );
+        expect(
+            writes.some((route) => route.method === "GET"),
+        ).toBe(false);
+
+        const all = handle!.createRoutes({ resources: ["course"] });
+        expect(all.map((route) => route.method)).toEqual(
+            expect.arrayContaining(["GET", "POST", "PUT", "DELETE"]),
+        );
 
         await mod.shutdown?.(ctx);
     });

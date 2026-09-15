@@ -38,7 +38,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
 - ✓ Product-read and waitlist GET + POST (`joinWaitlist`) Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
 - ✓ Remaining Blackwater resource **reads** auto-wire via engine `createNectarineReadRoutes` (`@citrusworx/webengine`; lesson `byId` stays the hand KiwiPress route)
-- 🔄 Other write ops still unwired (product create/update/delete, remaining resource writes)
+- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; product JSONB catalog writes and waitlist `joinWaitlist` stay host `execute`
 - Express is **not** the generated or default server
 
 ### Validation
@@ -47,7 +47,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ Hosts/Nectarine swap that builtin with `Seltzer#replace("validate", …)` for richer contracts
 - Planned: Zod schema validation on the Seltzer-hosted path via `replace("validate", …)`
 - Schema field types (required, unique, enums) are the intended source of those richer rules
-- Hosts register health / KiwiPress content by hand; resource reads and waitlist POST (`joinWaitlist`) use `generateRoutes`
+- Hosts register health / KiwiPress content by hand; resource reads, YAML writes, and waitlist POST (`joinWaitlist`) use `generateRoutes`
 
 ### Schema Distribution
 - ✓ Pre-built schemas: User, Blog, CMS, Store, Banking
@@ -68,7 +68,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 
 ### Host pipeline
 - Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers; Seltzer `validate` enforces `.required` body fields from `Route.contract`
-- Planned: Zod-backed `replace("validate", …)` plus authorize; remaining write ops auto-wired from API YAML
+- Planned: Zod-backed `replace("validate", …)` plus authorize; product JSONB write path still host-owned
 
 ### Relationship Loading
 - Current: Manual join definitions

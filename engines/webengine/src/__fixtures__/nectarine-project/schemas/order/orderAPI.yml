@@ -12,6 +12,26 @@ order:
         endpoint: /api/orders/catalog/:catalog
         query: byCatalog
 
+  create:
+    newOrder:
+      api:
+        method: POST
+        endpoint: /api/orders
+        query: newOrder
+        body:
+          id: string.required
+          client_id: string.required
+          catalog: string
+
+  update:
+    updateOrderStatus:
+      api:
+        method: PATCH
+        endpoint: /api/orders/:id/status
+        query: updateOrderStatus
+        body:
+          status: string.required
+
 order_item:
   read:
     byOrder:
@@ -19,3 +39,14 @@ order_item:
         method: GET
         endpoint: /api/orders/:orderId/items
         query: byOrder
+
+  create:
+    newItem:
+      api:
+        method: POST
+        endpoint: /api/orders/:orderId/items
+        query: newItem
+        body:
+          id: string.required
+          product_id: string.required
+          quantity: string

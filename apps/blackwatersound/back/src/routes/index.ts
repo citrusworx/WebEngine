@@ -1,6 +1,6 @@
 import type { NectarineConfig } from "@citrusworx/nectarine/config";
 import type { Route } from "@citrusworx/seltzer";
-import { createNectarineReadRoutes } from "@citrusworx/webengine";
+import { createNectarineRoutes } from "@citrusworx/webengine";
 import type { BlackwaterContext } from "../types/context.js";
 import { isDatabaseConnected, runCompiledQuery } from "../db/postgres.js";
 import { getLessonRoute, getPostBySlugRoute } from "./content.js";
@@ -9,12 +9,11 @@ import { createProductReadRoutes } from "./products.js";
 import { createWaitlistRoutes } from "./waitlist.js";
 
 /**
- * Reads compiled from `*API.yml` via engine {@link createNectarineReadRoutes}.
- * Product + waitlist keep specialized execute (JSONB catalog / JSON store).
- * Waitlist also includes POST `joinWaitlist`. Lesson `byId` is excluded so the
- * hand KiwiPress `GET /api/lessons/:id` stays unique.
+ * Resource reads **and** YAML writes via engine {@link createNectarineRoutes}.
+ * Product + waitlist keep specialized execute (JSONB catalog / join allowlist).
+ * Lesson `byId` is excluded so the hand KiwiPress `GET /api/lessons/:id` stays unique.
  */
-export const GENERATED_READ_RESOURCES = [
+export const GENERATED_RESOURCES = [
   "course",
   "coach",
   "enrollment",
@@ -27,15 +26,22 @@ export const GENERATED_READ_RESOURCES = [
   "lesson",
 ] as const;
 
-/** Object-based Seltzer routes. Resource reads come from `*API.yml`. */
+/** @deprecated Use {@link GENERATED_RESOURCES}. */
+export const GENERATED_READ_RESOURCES = GENERATED_RESOURCES;
+
+function compiledQuery(sql: string, params?: readonly unknown[]) {
+  return runCompiledQuery(sql, params).then((result) => result ?? { rows: [] });
+}
+
+/** Object-based Seltzer routes. Resource CRUD comes from `*API.yml`. */
 export function createRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
   return [
     healthRoute,
     ...createProductReadRoutes(nectarine),
     ...createWaitlistRoutes(nectarine),
-    ...createNectarineReadRoutes(nectarine, {
-      resources: GENERATED_READ_RESOURCES,
-      query: async (sql, params) => (await runCompiledQuery(sql, params)) ?? { rows: [] },
+    ...createNectarineRoutes(nectarine, {
+      resources: GENERATED_RESOURCES,
+      query: compiledQuery,
       connected: () => isDatabaseConnected(),
       exclude: [{ resource: "lesson", name: "byId" }],
     }),

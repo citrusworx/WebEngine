@@ -923,7 +923,7 @@ __metadata:
   resolution: "@citrusworx/webengine@workspace:engines/webengine"
   dependencies:
     "@citrusworx/nectarine": "npm:^0.3.0"
-    "@citrusworx/seltzer": "npm:^0.9.0"
+    "@citrusworx/seltzer": "npm:^0.8.1"
     "@citrusworx/types": "npm:^0.2.0"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^25.6.0"

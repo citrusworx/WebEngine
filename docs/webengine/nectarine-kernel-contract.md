@@ -47,7 +47,7 @@ Blackwater reference: `migrate()` → `applyNamedMigrations` in `src/db/named-dd
 
 Nectarine flattens `*API.yml` into `ApiOperation[]` (`listApiOperations` / `loadApiOperations`). YAML `endpoint` maps to `ApiOperation.path`.
 
-**Seltzer** owns HTTP listen, routing, and the `validate` stage. `@citrusworx/webengine` `createNectarineReadRoutes(config, { resources, execute? })` maps those operations onto object-based `Route`s via Seltzer `generateRoutes` (`Route.contract` carries resource/name/body). Default `execute` compiles `operation.query` from `*Queries.yml` (CCompiler) and runs adapter `query(sql, params)`. Handlers return `ResponseData`. They do not write `ctx.json`.
+**Seltzer** owns HTTP listen, routing, and the `validate` stage. `@citrusworx/webengine` `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` map `listApiOperations` onto object-based `Route`s via Seltzer `generateRoutes` (`Route.contract` carries resource/name/body). Default `execute` compiles `operation.query` from `*Queries.yml` (CCompiler) and runs adapter `query(sql, params)`. Writes bind YAML columns from the request body and path (`order_id` ↔ `orderId`). Handlers return `ResponseData`. They do not write `ctx.json`.
 
 Nectarine does **not** generate `Route`s, listen on a port, or export `generateRoutes`. There is no `nectarine serve`. Do not invent Express.
 
@@ -62,7 +62,7 @@ import {
 
 const nectarine = ctx.getModuleHandle<NectarineModuleHandle>(NECTARINE_MODULE_ID);
 const app = Seltzer.init();
-for (const route of nectarine.createReadRoutes({
+for (const route of nectarine.createRoutes({
   resources: ["course", "order", "order_item"],
   exclude: [{ resource: "lesson", name: "byId" }],
 })) {
@@ -71,7 +71,7 @@ for (const route of nectarine.createReadRoutes({
 await app.listen(port);
 ```
 
-Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Health, KiwiPress, and other host-owned paths stay hand-registered. Blackwater `createRoutes` calls the same engine helper instead of a local copy.
+Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Health, KiwiPress, and other host-owned paths stay hand-registered. Blackwater `createRoutes` calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`); product writes stay unwired so the JSONB catalog is not flattened.
 
 ## Adapter surface
 
@@ -100,7 +100,7 @@ Those remain later compiler/host work. They are not kernel invent-as-you-go.
 
 ## Version note
 
-`@citrusworx/nectarine@0.3.0` is published on npm and includes the full migrator (`applyMigrations`, `loadMigrationDocuments`, `compileMigration`, ledger, destructive gates). `@citrusworx/webengine` pins `@citrusworx/nectarine` ≥0.3.0 and `@citrusworx/seltzer` ≥0.9.0. The builtin `nectarine` kernel module calls the migrator APIs; `createNectarineReadRoutes` calls Seltzer `generateRoutes`.
+`@citrusworx/nectarine@0.3.0` is published on npm and includes the full migrator (`applyMigrations`, `loadMigrationDocuments`, `compileMigration`, ledger, destructive gates). `@citrusworx/webengine` pins `@citrusworx/nectarine` ≥0.3.0 and `@citrusworx/seltzer` ≥0.8.1. The builtin `nectarine` kernel module calls the migrator APIs; `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call Seltzer `generateRoutes`.
 
 ## Kernel checklist
 
@@ -110,7 +110,7 @@ When the kernel writes or hosts a Nectarine backend:
 - [x] Resolve credentials through `NectarineConfig`; pass them into adapters
 - [x] Boot: connect → `applyMigrations` (empty migrations dir OK) → then listen *(listen stays Seltzer; this module stops after migrate)*
 - [x] DML/DDL only via named YAML + compiler; adapter `query(sql, params)` only
-- [x] Flatten `*API.yml` with `listApiOperations`; hand off to Seltzer `generateRoutes` *(engine `createNectarineReadRoutes` / handle `createReadRoutes`; hosts opt in — kernel does not listen)*
+- [x] Flatten `*API.yml` with `listApiOperations`; hand off to Seltzer `generateRoutes` *(engine `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` and handle `createReadRoutes` / `createWriteRoutes` / `createRoutes`; hosts opt in — kernel does not listen)*
 - [ ] Seltzer `init` / `listen` / `validate`; no Express, no `nectarine serve` *(HTTP remains Seltzer’s; out of scope for the data module)*
 - [x] Keep JSONB columns that the live store uses; protect them if the host needs to *(pass `protectedColumns` into `createNectarineModule`)*
 - [x] Import adapters from `@citrusworx/nectarine/adapters/pg` (or `/ms`, `/mg`), not the package root

@@ -314,5 +314,6 @@ describe("nectarine builtin module", () => {
         expect(moduleSrc).toContain("loadMigrationDocuments");
         expect(moduleSrc).toContain("createPgAdapterFromConfig");
         expect(moduleSrc).toContain("createReadRoutes");
+        expect(moduleSrc).toContain("createWriteRoutes");
     });
 });
