@@ -37,7 +37,8 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ Path parameter shapes (`:id`, `:name`, etc.)
 - ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
 - ✓ Product-read and waitlist-read Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
-- 🔄 Remaining resources / write ops still hand-registered
+- ✓ Remaining Blackwater resource **reads** auto-wire via `createNectarineReadRoutes` (lesson `byId` stays the hand KiwiPress route)
+- 🔄 Write ops still hand-registered (waitlist POST stays hand-written)
 - Express is **not** the generated or default server
 
 ### Validation
@@ -46,7 +47,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ Hosts/Nectarine swap that builtin with `Seltzer#replace("validate", …)` for richer contracts
 - Planned: Zod schema validation on the Seltzer-hosted path via `replace("validate", …)`
 - Schema field types (required, unique, enums) are the intended source of those richer rules
-- Hosts register remaining object-based Seltzer routes by hand; product and waitlist reads use `generateRoutes`
+- Hosts register health / waitlist POST / KiwiPress content by hand; resource reads use `generateRoutes`
 
 ### Schema Distribution
 - ✓ Pre-built schemas: User, Blog, CMS, Store, Banking

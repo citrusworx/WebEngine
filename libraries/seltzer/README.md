@@ -167,7 +167,7 @@ const routes = generateRoutes(operations, {
 - Uses the default pipeline (`parse` → `…` → `send`) and `ResponseData`. Hosts/Nectarine swap builtin `validate` with `replace("validate", …)`; `before()` still inserts ahead of it.
 - Nectarine does not generate `Route`s. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`).
 
-Blackwater registers generated product and waitlist **read** routes this way and keeps health, waitlist POST, and KiwiPress content hand-written.
+Blackwater registers generated resource **read** routes this way and keeps health, waitlist POST, and KiwiPress content (including `GET /api/lessons/:id`) hand-written.
 
 ## Development
 

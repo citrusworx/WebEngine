@@ -1,13 +1,9 @@
-import { listApiOperations, type NectarineConfig } from "@citrusworx/nectarine/config";
-import {
-  generateRoutes,
-  type ExecuteArgs,
-  type ResponseData,
-  type Route,
-} from "@citrusworx/seltzer";
+import type { NectarineConfig } from "@citrusworx/nectarine/config";
+import { type ExecuteArgs, type ResponseData, type Route } from "@citrusworx/seltzer";
 import type { ProductRecord } from "../data/seed-products.js";
 import { isDatabaseConnected, loadProductByIdFromDb, loadProductsFromDb } from "../db/postgres.js";
 import type { BlackwaterContext } from "../types/context.js";
+import { createResourceReadRoutes } from "./nectarine-reads.js";
 
 function stringField(product: ProductRecord, key: string): string | undefined {
   const value = (product as unknown as Record<string, unknown>)[key];
@@ -68,7 +64,7 @@ function findBySlug(products: ProductRecord[], slug: string | undefined): Produc
   );
 }
 
-async function executeProductRead({
+export async function executeProductRead({
   query,
   params,
   ctx,
@@ -94,12 +90,7 @@ async function executeProductRead({
 
 /** Product GET ops from `productAPI.yml`. Create/update/delete stay unwired. */
 export function createProductReadRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
-  const operations = listApiOperations("product", nectarine.getResource("product").api).filter(
-    (operation) => operation.crud === "read" && operation.method === "GET",
-  );
-
-  return generateRoutes(operations, {
-    execute: executeProductRead,
+  return createResourceReadRoutes(nectarine, "product", executeProductRead, {
     notFound: (): ResponseData => ({ status: 404, body: { error: "Product not found" } }),
   });
 }
