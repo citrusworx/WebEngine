@@ -346,13 +346,13 @@ var A = {
 	root: typeof document < "u" ? document : {},
 	accordionSelector: "[accordion]",
 	triggerSelector: "[accordion-item]"
-}, j = (e) => Array.from(e), M = "juice-accordion-trigger", N = "juice-accordion-panel", P = (e) => e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement, F = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", I = (e, t, n) => {
+}, j = (e) => Array.from(e), M = "juice-accordion-trigger", N = "juice-accordion-panel", P = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, F = /* @__PURE__ */ new WeakSet(), I = (e) => F.has(e) ? !1 : (F.add(e), !0), L = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", R = (e, t, n) => {
 	let r = String(n);
 	if (e.getAttribute("aria-expanded") !== r && e.setAttribute("aria-expanded", r), !t) return;
 	t.hidden !== !n && (t.hidden = !n);
 	let i = String(!n);
 	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
-}, L = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", R = (e = {}) => {
+}, z = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", B = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -390,7 +390,7 @@ var A = {
 		return o()[0] ?? null;
 	}, p = (e) => {
 		let t = e.getAttribute("name");
-		return t ? F(t) : null;
+		return t ? L(t) : null;
 	}, m = (e, t) => {
 		let n = u(e);
 		if (!n) return;
@@ -400,16 +400,16 @@ var A = {
 		let t = f(e);
 		if (!t) return;
 		let n = d(t);
-		m(t, n), I(t, n, !0), c = t;
+		m(t, n), R(t, n, !0), c = t;
 	}, g = (e) => {
 		let t = f(e);
 		if (!t) return;
 		let n = d(t);
-		m(t, n), I(t, n, !1), t === c && (c = o().find((e) => e !== t && L(e, d(e))) ?? null);
+		m(t, n), R(t, n, !1), t === c && (c = o().find((e) => e !== t && z(e, d(e))) ?? null);
 	}, _ = (e) => {
 		let t = f(e);
 		if (t) {
-			if (L(t, d(t))) {
+			if (z(t, d(t))) {
 				g(t);
 				return;
 			}
@@ -420,7 +420,7 @@ var A = {
 			a(e).forEach((e) => {
 				let t = d(e);
 				if (m(e, t), t) {
-					I(e, t, L(e, t));
+					R(e, t, z(e, t));
 					return;
 				}
 				e.hasAttribute("aria-expanded") || e.setAttribute("aria-expanded", "false");
@@ -430,23 +430,23 @@ var A = {
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		let r = n.closest(t.triggerSelector);
-		!(r instanceof HTMLElement) || !u(r) || _(r);
+		!(r instanceof HTMLElement) || !u(r) || I(e) && _(r);
 	}, b = (e) => {
 		let n = e.closest(t.triggerSelector);
-		return n instanceof HTMLElement && u(n) && L(n, d(n)) ? n : o().filter((e) => L(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && L(c, d(c)) ? c : null);
+		return n instanceof HTMLElement && u(n) && z(n, d(n)) ? n : o().filter((e) => z(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && z(c, d(c)) ? c : null);
 	}, x = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		if (e.key === "Escape") {
 			let t = b(n);
-			if (!t) return;
+			if (!t || !I(e)) return;
 			e.preventDefault(), g(t), t.focus();
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let r = n.closest(t.triggerSelector);
-		!(r instanceof HTMLElement) || !u(r) || P(r) || (e.preventDefault(), _(r));
+		!(r instanceof HTMLElement) || !u(r) || P(r) || I(e) && (e.preventDefault(), _(r));
 	}, S = !1, C = () => {
 		S || (S = !0, requestAnimationFrame(() => {
 			S = !1, v();
@@ -472,15 +472,17 @@ var A = {
 		collapse: g,
 		toggle: _
 	};
-}, z = (e = {}) => R(e), B = null, V = () => typeof window > "u" || typeof document > "u" ? null : B ? (B.sync(), B) : (B = R(), B), H = () => {
-	B?.destroy(), B = null;
+}, V = (e = {}) => B(e), H = null, U = !1, W = null, G = () => {
+	W &&= (document.removeEventListener("DOMContentLoaded", W), null);
+}, K = () => typeof window > "u" || typeof document > "u" ? null : (U = !1, G(), H ? (H.sync(), H) : (H = B(), H)), q = () => {
+	U = !0, G(), H?.destroy(), H = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", () => {
-	V();
-}) : V());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (W = () => {
+	W = null, U || K();
+}, document.addEventListener("DOMContentLoaded", W)) : K());
 //#endregion
 //#region src/tokens/index.ts
-var U = {
+var J = {
 	colors: {
 		families: [
 			"black",
@@ -648,4 +650,4 @@ var U = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, R as createAccordion, T as createNavigation, z as initAccordion, E as initNavigation, V as startAccordionRuntime, O as startNavigationRuntime, H as stopAccordionRuntime, k as stopNavigationRuntime, U as tokens };
+export { v as Accordion, B as createAccordion, T as createNavigation, V as initAccordion, E as initNavigation, K as startAccordionRuntime, O as startNavigationRuntime, q as stopAccordionRuntime, k as stopNavigationRuntime, J as tokens };

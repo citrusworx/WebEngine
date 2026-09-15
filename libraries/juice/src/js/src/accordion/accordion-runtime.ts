@@ -27,9 +27,19 @@ const asArray = <T extends Element>(nodes: NodeListOf<T>): T[] =>
 const TRIGGER_ID_PREFIX = 'juice-accordion-trigger';
 const PANEL_ID_PREFIX = 'juice-accordion-panel';
 
-const isNativeInteractiveTrigger = (element: HTMLElement) =>
-  element instanceof HTMLButtonElement ||
-  element instanceof HTMLAnchorElement;
+const isNativeInteractiveTrigger = (element: HTMLElement) => {
+  if (element instanceof HTMLButtonElement) return true;
+  if (element instanceof HTMLAnchorElement) return element.hasAttribute('href');
+  return false;
+};
+
+const handledEvents = new WeakSet<Event>();
+
+const claimEvent = (event: Event) => {
+  if (handledEvents.has(event)) return false;
+  handledEvents.add(event);
+  return true;
+};
 
 const slugFromName = (name: string) =>
   name
@@ -266,6 +276,7 @@ export const createAccordion = (
       return;
     }
 
+    if (!claimEvent(event)) return;
     toggle(trigger);
   };
 
@@ -304,7 +315,7 @@ export const createAccordion = (
 
     if (event.key === 'Escape') {
       const openTrigger = findOpenTriggerFromEvent(target);
-      if (!openTrigger) return;
+      if (!openTrigger || !claimEvent(event)) return;
 
       event.preventDefault();
       collapse(openTrigger);
@@ -323,6 +334,7 @@ export const createAccordion = (
       return;
     }
 
+    if (!claimEvent(event)) return;
     event.preventDefault();
     toggle(trigger);
   };
@@ -381,11 +393,22 @@ export const initAccordion = (
 ): AccordionController => createAccordion(options);
 
 let autoAccordionController: AccordionController | null = null;
+let autoStartSuspended = false;
+let bootOnReady: (() => void) | null = null;
+
+const cancelDeferredAutoStart = () => {
+  if (!bootOnReady) return;
+  document.removeEventListener('DOMContentLoaded', bootOnReady);
+  bootOnReady = null;
+};
 
 export const startAccordionRuntime = (): AccordionController | null => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return null;
   }
+
+  autoStartSuspended = false;
+  cancelDeferredAutoStart();
 
   if (autoAccordionController) {
     autoAccordionController.sync();
@@ -397,15 +420,21 @@ export const startAccordionRuntime = (): AccordionController | null => {
 };
 
 export const stopAccordionRuntime = () => {
+  autoStartSuspended = true;
+  cancelDeferredAutoStart();
   autoAccordionController?.destroy();
   autoAccordionController = null;
 };
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startAccordionRuntime();
-    });
+    bootOnReady = () => {
+      bootOnReady = null;
+      if (!autoStartSuspended) {
+        startAccordionRuntime();
+      }
+    };
+    document.addEventListener('DOMContentLoaded', bootOnReady);
   } else {
     startAccordionRuntime();
   }

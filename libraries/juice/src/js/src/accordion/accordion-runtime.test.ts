@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { Accordion } from '../../../components/accordion/accordion.js';
 import {
@@ -160,6 +160,32 @@ describe('createAccordion', () => {
     controller.destroy();
   });
 
+  it('treats href-less anchors as keyboard-operable triggers', () => {
+    document.body.innerHTML = `
+      <section accordion name="faq-anchor">
+        <a accordion-item>Open me</a>
+        <div hidden>Panel</div>
+      </section>
+    `;
+    stopAccordionRuntime();
+
+    const controller = createAccordion({ root: document.body });
+    const trigger = document.querySelector<HTMLElement>('[accordion-item]');
+    const panel = trigger?.nextElementSibling as HTMLElement | null;
+
+    expect(trigger?.getAttribute('role')).toBe('button');
+    expect(trigger?.getAttribute('tabindex')).toBe('0');
+
+    trigger?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Enter' })
+    );
+
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+    expect(panel?.hasAttribute('hidden')).toBe(false);
+
+    controller.destroy();
+  });
+
   it('closes the focused or last open item on Escape and returns focus', () => {
     document.body.innerHTML = faqMarkup;
     stopAccordionRuntime();
@@ -239,6 +265,22 @@ describe('createAccordion', () => {
 
     controller.destroy();
   });
+
+  it('toggles once when a manual controller coexists with the auto runtime', () => {
+    document.body.innerHTML = faqMarkup;
+    startAccordionRuntime();
+
+    const controller = createAccordion({ root: document.body });
+    const trigger = document.querySelector<HTMLElement>('[accordion-item]');
+    const panel = document.querySelector<HTMLElement>('[role="region"]');
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+    expect(panel?.hasAttribute('hidden')).toBe(false);
+
+    controller.destroy();
+  });
 });
 
 describe('startAccordionRuntime', () => {
@@ -256,5 +298,34 @@ describe('startAccordionRuntime', () => {
     trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(trigger?.getAttribute('aria-expanded')).toBe('true');
     expect(panel?.hasAttribute('hidden')).toBe(false);
+  });
+
+  it('does not auto-start on DOMContentLoaded after stopAccordionRuntime', async () => {
+    stopAccordionRuntime();
+    vi.resetModules();
+
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      get: () => 'loading',
+    });
+
+    const mod = await import('./accordion-runtime.js');
+    document.body.innerHTML = faqMarkup;
+    mod.stopAccordionRuntime();
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+
+    const trigger = document.querySelector<HTMLElement>('[accordion-item]');
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(trigger?.getAttribute('aria-expanded')).toBe('false');
+
+    mod.startAccordionRuntime();
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+    mod.stopAccordionRuntime();
+
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      get: () => 'complete',
+    });
   });
 });
