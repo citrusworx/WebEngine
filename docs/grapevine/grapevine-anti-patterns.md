@@ -187,25 +187,13 @@ Why it is bad:
 
 Better: `resources.droplets` or `resources.apps[].spec`. App Platform `spec.databases` is opaque passthrough, not Nectarine and not a first-class grape type.
 
-## 8. `generate: true` and then wondering why SSH fails
+## 8. Committing a generated SSH private key
 
-Bad:
+Bad: checking in `.grape/ssh/…` or pasting PEM into chat / apply logs.
 
-```yaml
-ssh_keys:
-  - name: grapevine
-    generate: true
-```
+`generate: true` writes an OpenSSH private key (mode `0600`) to `private_key_path` or `.grape/ssh/<name>`. Apply JSON reports the **path**, not the key. That file is as secret as `~/.ssh/id_rsa`.
 
-then `ssh root@droplet` with no private key on disk.
-
-Why it is bad:
-
-- only the public key is uploaded
-- the private key is dropped with the process
-- `ApplyResult.ssh_keys` has the DigitalOcean record, not PEM
-
-Better: `public_key: ssh-ed25519 …` from a keypair you keep, or `createSSHKey` in TypeScript and write `keys.privateKey` yourself.
+Better: keep `.grape/` gitignored, use `ssh -i <path>`, or upload `public_key` from a keypair you already keep outside the repo.
 
 ## 9. Leaving placeholders in `03` / `04`
 

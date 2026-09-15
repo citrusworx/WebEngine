@@ -84,4 +84,20 @@ describe("grape config schema", () => {
         });
         expect(result.success).toBe(false);
     });
+
+    it("accepts ssh_keys generate with optional private_key_path", () => {
+        const parsed = validateGrapeConfig({
+            provider: "digitalocean",
+            resources: {
+                ssh_keys: [
+                    { name: "grapevine", generate: true, private_key_path: ".grape/ssh/grapevine" }
+                ]
+            }
+        });
+        expect(parsed.resources.ssh_keys?.[0]).toMatchObject({
+            name: "grapevine",
+            generate: true,
+            private_key_path: ".grape/ssh/grapevine"
+        });
+    });
 });

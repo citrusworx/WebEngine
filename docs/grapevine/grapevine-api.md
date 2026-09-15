@@ -38,7 +38,7 @@ import {
 | `unwrapDropletEntry(entry)` | blueprint wrap → droplet fields |
 | `applyGrapeConfig(config)` | live creates; returns `ApplyResult` |
 
-`ApplyResult` includes arrays of created tags, keys, VPCs, droplets, firewalls, domains, load balancers, alert policies, apps, plus `warnings: string[]`.
+`ApplyResult` includes arrays of created tags, keys, VPCs, droplets, firewalls, domains, load balancers, alert policies, apps, plus `private_key_paths: string[]` and `warnings: string[]`. Generated SSH keys add `private_key_path` on the matching `ssh_keys` entry (path only, never key material).
 
 `grapeConfigSchema` is the Zod object. `provider` is the literal `"digitalocean"`.
 

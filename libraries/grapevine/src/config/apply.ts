@@ -9,10 +9,16 @@ import { createSSHKey, uploadSSHKey, type SSHKeyResource } from "../providers/di
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
+import { persistGeneratedPrivateKey, resolvePrivateKeyPath } from "./ssh-private-key.js";
+
+export interface AppliedSSHKey extends SSHKeyResource {
+    /** Absolute path of a generated private key. Never contains key material. */
+    private_key_path?: string;
+}
 
 export interface ApplyResult {
     tags: string[];
-    ssh_keys: SSHKeyResource[];
+    ssh_keys: AppliedSSHKey[];
     vpcs: VPCResponse[];
     droplets: DropletResource[];
     firewalls: Array<{ id: string; name: string }>;
@@ -20,6 +26,8 @@ export interface ApplyResult {
     load_balancers: Array<{ id: string; name?: string }>;
     alert_policies: Array<{ uuid: string; description: string }>;
     apps: Array<{ id: string; name: string }>;
+    /** Absolute paths of private keys written during this apply (generate: true). */
+    private_key_paths: string[];
     warnings: string[];
 }
 
@@ -160,6 +168,7 @@ export async function applyGrapeConfig(config: GrapeConfig): Promise<ApplyResult
         load_balancers: [],
         alert_policies: [],
         apps: [],
+        private_key_paths: [],
         warnings
     };
 
@@ -178,14 +187,22 @@ export async function applyGrapeConfig(config: GrapeConfig): Promise<ApplyResult
 
     for (const key of resources.ssh_keys ?? []) {
         let publicKey = key.public_key ?? key.publicKey;
+        let privateKeyPath: string | undefined;
         if (!publicKey && key.generate) {
-            publicKey = createSSHKey(key.name).publicKey;
+            const generated = createSSHKey(key.name);
+            publicKey = generated.publicKey;
+            privateKeyPath = persistGeneratedPrivateKey(
+                resolvePrivateKeyPath(key.name, key.private_key_path),
+                generated.keys.privateKey
+            );
+            result.private_key_paths.push(privateKeyPath);
+            warnings.push(`Generated SSH private key for "${key.name}" saved to ${privateKeyPath}`);
         }
         if (!publicKey) {
             throw new Error(`SSH key "${key.name}" is missing public_key (or set generate: true)`);
         }
         const uploaded = await uploadSSHKey({ name: key.name, public_key: publicKey });
-        result.ssh_keys.push(uploaded);
+        result.ssh_keys.push(privateKeyPath ? { ...uploaded, private_key_path: privateKeyPath } : uploaded);
         sshKeyIds.push(uploaded.id);
     }
 

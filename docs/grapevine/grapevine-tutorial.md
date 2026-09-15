@@ -156,9 +156,9 @@ If apply fails halfway (token scope, invalid `ip_range`), whatever succeeded rem
 
 `02-droplet-in-vpc.yaml` is the billed step. Read it before you apply it.
 
-The in-repo file uses `generate: true`. That is convenient for a smoke test and hostile to actually logging in: the private key is created in memory, the public key is uploaded, and the private key is discarded when the process exits.
+The in-repo file uses `generate: true`. Grapevine uploads the public key and writes the OpenSSH private key to `.grape/ssh/grapevine` (or `private_key_path`). Apply reports that path; it never prints the key. Connect with `ssh -i .grape/ssh/grapevine`. `.grape/` is local-only — do not commit it.
 
-For a stack you intend to SSH into, copy `02` and replace the key block:
+For a stack you intend to SSH into with a key you already keep, copy `02` and replace the key block:
 
 ```yaml
 version: "0.1"
@@ -409,7 +409,7 @@ grape status
 - **Apply is create-only.** The YAML is a request, not a desired-state document.
 - **Names resolve in one process.** `vpc: grapevine` and `droplets: [grapevine-web-01]` only see what this apply just created.
 - **Status is not drift.** File counts and account counts are different questions.
-- **The private key from `generate: true` is gone** unless you called `createSSHKey` yourself in TypeScript and saved `keys.privateKey`.
+- **The private key from `generate: true` is on disk** at `.grape/ssh/<name>` (or `private_key_path`). Apply JSON has the path, not the PEM. Use `ssh -i`.
 - **Deletes are extra.** `NukeDroplet`, `deleteFirewall`, `deleteVPC` exist. `grape destroy` does not.
 
 ## What this tutorial does not pretend

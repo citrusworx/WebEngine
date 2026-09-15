@@ -22,6 +22,7 @@ node_modules
 *.pem
 sshkey
 *.pub
+.grape/
 
 .vscode/*
 !.vscode/settings.json

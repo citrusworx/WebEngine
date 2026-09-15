@@ -85,9 +85,9 @@ resources:
 
 Apply uploads the public key, then attaches every uploaded key id to droplets that omitted `ssh_keys`. Prefer an explicit `ssh_keys: [uploaded-id]` in TypeScript once you have the id.
 
-Do not use `generate: true` here unless you only need DigitalOcean to store a public key you will never log in with.
+`generate: true` is fine when you will use the saved private key (`ssh -i`). Prefer `public_key` when you already have a workstation key.
 
-## Generated key for a throwaway smoke test
+## Generated key for a throwaway or first login
 
 Use this when matching `02-droplet-in-vpc.yaml` / `04-full-web-stack.yaml`.
 
@@ -95,9 +95,10 @@ Use this when matching `02-droplet-in-vpc.yaml` / `04-full-web-stack.yaml`.
 ssh_keys:
   - name: grapevine
     generate: true
+    # private_key_path: .grape/ssh/grapevine  # optional default
 ```
 
-Upload happens; private key does not hit disk. Fine for “did POST /droplets work?” Not fine for an on-call box.
+Upload happens; the OpenSSH private key is written to `.grape/ssh/grapevine` (mode `0600`). Apply reports the path. Do not commit `.grape/`.
 
 ## Web firewall on a droplet created in this apply
 

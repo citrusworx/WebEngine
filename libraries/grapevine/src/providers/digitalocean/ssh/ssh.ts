@@ -48,6 +48,13 @@ export function toOpenSSH(publickey: string): string {
     return key.toString("ssh");
 }
 
+/** Convert a PEM/PKCS8 (or already-OpenSSH) private key to OpenSSH format for `ssh -i`. */
+export function toOpenSSHPrivateKey(privateKey: string): string {
+    const key = sshpk.parsePrivateKey(privateKey, "auto");
+    const serialized = key.toString("openssh");
+    return serialized.endsWith("\n") ? serialized : `${serialized}\n`;
+}
+
 export async function uploadSSHKey(key: SSHKey): Promise<SSHKeyResource> {
     const response = await doRequest<{ ssh_key: SSHKeyResource }>({
         method: "POST",

@@ -75,6 +75,7 @@ resources:
       public_key: ssh-ed25519 …
       # publicKey: …              # alias
       # generate: true
+      # private_key_path: .grape/ssh/laptop  # optional; default .grape/ssh/<name>
   vpcs:
     - name: main
       description: Application VPC
@@ -152,7 +153,7 @@ A tag may be a string or `{ name, resources? }`. Apply always `createTag(name)`.
 
 Required: `name`. You must supply `public_key` / `publicKey` or `generate: true`. Missing both throws at apply, not at Zod (`public_key` is optional in the schema).
 
-`generate: true` calls `createSSHKey(name)` (RSA 4096) and uploads `publicKey`. The private key is not part of `ApplyResult`.
+`generate: true` calls `createSSHKey(name)` (RSA 4096), writes the OpenSSH private key to `private_key_path` or `.grape/ssh/<name>`, then uploads `publicKey`. The apply result reports the saved path (`ssh_keys[].private_key_path`, `private_key_paths`, and a warning). It never includes private key material.
 
 ### VPCs
 
