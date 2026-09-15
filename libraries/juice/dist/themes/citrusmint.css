@@ -13,6 +13,20 @@
   --cm-heading: hsl(121, 100%, 20%);
   --cm-body-font: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --cm-heading-font: "Archivo Black", var(--cm-body-font);
+  /* Accordion chrome roles — thinner --cm-* set, same names as other themes.
+     No accent token: heading / surface-muted stand in. */
+  --cm-trigger: var(--cm-surface);
+  --cm-trigger-hover: var(--cm-surface-muted);
+  --cm-trigger-open: var(--cm-surface-muted);
+  --cm-chevron: var(--cm-heading);
+  --cm-panel-rule: var(--cm-border);
+  --cm-focus-ring: var(--cm-heading);
+  --juice-accordion-trigger: var(--cm-trigger);
+  --juice-accordion-trigger-hover: var(--cm-trigger-hover);
+  --juice-accordion-trigger-open: var(--cm-trigger-open);
+  --juice-accordion-chevron: var(--cm-chevron);
+  --juice-accordion-panel-rule: var(--cm-panel-rule);
+  --juice-accordion-focus-ring: var(--cm-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -53,4 +67,43 @@
   color: var(--cm-surface);
   border: 1px solid transparent;
   font-family: var(--cm-body-font);
+}
+
+/* Accordion wrappers are structural, not default section surfaces.
+   Generic Citrusmint buttons use heading fill; triggers stay surfaces. */
+[theme=citrusmint] :where([accordion]) {
+  background: transparent;
+  border: none;
+}
+
+[theme=citrusmint] button[accordion-item] {
+  background-color: var(--juice-accordion-trigger);
+  color: var(--cm-heading);
+  border: 1px solid var(--cm-border);
+}
+
+[theme=citrusmint] button[accordion-item]::after {
+  border-color: var(--juice-accordion-chevron);
+}
+
+[theme=citrusmint] button[accordion-item]:hover {
+  background-color: var(--juice-accordion-trigger-hover);
+  color: var(--cm-heading);
+}
+
+[theme=citrusmint] button[accordion-item]:focus-visible {
+  outline: 2px solid var(--juice-accordion-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=citrusmint] button[accordion-item][aria-expanded=true] {
+  background-color: var(--juice-accordion-trigger-open);
+  color: var(--cm-heading);
+}
+
+[theme=citrusmint] [accordion] [role=region] {
+  color: var(--cm-text);
+  background-color: var(--cm-surface-muted);
+  border: 1px solid var(--juice-accordion-panel-rule);
+  border-radius: 0.75rem;
 }

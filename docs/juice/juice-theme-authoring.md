@@ -68,6 +68,7 @@ A healthy Juice theme should own:
 - default surface tone
 - form/control tone
 - named surfaces for authored brand moments
+- accordion chrome roles (`--juice-accordion-*`, bound from theme identity tokens)
 
 Themes should not own:
 
@@ -209,6 +210,23 @@ The generated stylesheet currently defines:
 - semantic defaults for elements like `section`, `article`, `nav`, `footer`, and `form`
 - base treatments for `[hero]`, `[card]`, `[panel]`, `[cta]`, `[badge]`, and `[stat]`
 - optional rules for `named_surfaces`
+
+## Accordion chrome roles
+
+Library themes bind a shared accordion contract so `[accordion-item]` paint is theme-agnostic in `accordion.scss`.
+
+Shared names (set on `[theme="..."]`):
+
+- `--juice-accordion-trigger` — idle trigger fill
+- `--juice-accordion-trigger-hover`
+- `--juice-accordion-trigger-open`
+- `--juice-accordion-chevron`
+- `--juice-accordion-panel-rule` — optional panel divider
+- `--juice-accordion-focus-ring`
+
+Each shipped theme also aliases the same roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …) and maps those onto existing surface/accent tokens. Do not invent a new hue family for accordion chrome. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress and Citrusmint override generic `button` CTA styles the same way.
+
+Accordion wrappers (`[accordion]`) are structural. Group FAQ stacks in a named surface or card/panel rather than relying on default `section` paint.
 
 ## Recommended authoring rules
 

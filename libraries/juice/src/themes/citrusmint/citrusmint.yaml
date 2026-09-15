@@ -58,6 +58,7 @@ authoring_rules:
   - Set theme="citrusmint" on body or a root wrapper.
   - Use Juice layout primitives for structure; do not redefine stack or gap in the theme.
   - Prefer semantic HTML; avoid painting every div with a background.
+  - Bind accordion chrome roles (`--cm-trigger` and `--juice-accordion-*`) from the existing `--cm-*` set (surface/heading/border fallbacks; no new accent).
 
 example:
   root: '<body theme="citrusmint">'

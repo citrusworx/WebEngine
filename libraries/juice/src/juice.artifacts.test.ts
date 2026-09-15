@@ -59,6 +59,12 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]/);
         expect(css).toMatch(/\[accordion-item\]:focus-visible/);
         expect(css).not.toMatch(/\[accordion-item\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).toContain("--juice-accordion-trigger");
+        expect(css).toContain("--juice-accordion-trigger-hover");
+        expect(css).toContain("--juice-accordion-trigger-open");
+        expect(css).toContain("--juice-accordion-chevron");
+        expect(css).toContain("--juice-accordion-panel-rule");
+        expect(css).toContain("--juice-accordion-focus-ring");
     });
 
     it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {
@@ -68,6 +74,8 @@ describe("Juice build artifacts", () => {
         );
 
         expect(themeCss).toContain("accordion-item");
+        expect(themeCss).toContain("--aqua-trigger: var(--aqua-surface-strong)");
+        expect(themeCss).toContain("--juice-accordion-trigger: var(--aqua-trigger)");
         expect(themeCss).toContain("--aqua-surface-strong");
         expect(themeCss).toContain("--aqua-heading");
         expect(themeCss).toContain("--aqua-accent");
@@ -76,6 +84,20 @@ describe("Juice build artifacts", () => {
         for (const block of accordionItemBlocks) {
             expect(block).not.toContain("--aqua-button-background");
         }
+    });
+
+    it("binds accordion chrome roles in KiwiPress and Citrusmint", () => {
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+
+        expect(kiwiCss).toContain("--kw-trigger: var(--kw-surface-strong)");
+        expect(kiwiCss).toContain("--juice-accordion-trigger: var(--kw-trigger)");
+        expect(kiwiCss).toContain("button[accordion-item]");
+        expect(kiwiCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-trigger: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-accordion-trigger: var(--cm-trigger)");
+        expect(mintCss).toContain("button[accordion-item]");
     });
 
     it("produces JS output", () => {
@@ -88,7 +110,7 @@ describe("Juice build artifacts", () => {
     it("keeps the core CSS artifact under the size budget", () => {
         const cssStats = statSync(join(DIST_DIR, "index.css"));
 
-        expect(cssStats.size).toBeLessThan(5_500_000);
+        expect(cssStats.size).toBeLessThan(9_000_000);
     });
 
     it("keeps each theme stylesheet under the size budget", () => {

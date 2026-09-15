@@ -130,7 +130,8 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - mobile nav toggles should expose an accessible name and control a sidebar with `aria-controls`
 - accordion triggers should use `aria-expanded` and `aria-controls`
 - accordion panels should be labeled regions when they contain meaningful content
-- group FAQ stacks in `[aqua-card]` or `[aqua-panel]` under `theme="aquaflux"` so triggers paint as surface controls, not primary CTA buttons
+- group FAQ stacks in a card/panel surface (`[aqua-card]` / `[aqua-panel]` under Aquaflux) so the accordion wrapper stays structural
+- accordion chrome colors come from `--juice-accordion-*` roles bound by the active theme (Aquaflux, KiwiPress, and Citrusmint all paint `[accordion-item]` as a surface control, not a CTA)
 - open/closed panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for accordion state (those clash with layout `[content]`)
 - optional `[motion="accordion"]` is height easing, not required for show/hide
 

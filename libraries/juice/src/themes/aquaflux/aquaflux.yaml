@@ -81,6 +81,7 @@ authoring_rules:
   - Use aqua-card and aqua-panel for supporting surfaces.
   - Use aqua-hero sparingly for the strongest section on the page.
   - Keep accent colors restrained and let surface contrast create hierarchy.
+  - Bind accordion chrome roles (`--aqua-trigger` and `--juice-accordion-*`) from existing surface/accent tokens so FAQ triggers stay surfaces, not CTA buttons.
 
 example:
   root: '<body theme="aquaflux">'

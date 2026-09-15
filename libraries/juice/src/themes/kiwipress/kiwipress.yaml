@@ -91,6 +91,7 @@ authoring_rules:
   - Use Juice layout primitives (stack, row, grid, gap, container, span) and semantic spacing tokens (snug, cozy, comfortable, roomy, expansive) for structure and spacing.
   - Reserve [featured] for one [card="pricing"] per group.
   - Use [warm] as the occasional marmalade accent against the kiwi base; do not co-equal them.
+  - Bind accordion chrome roles (`--kw-trigger` and `--juice-accordion-*`) from `--kw-*` surfaces/accents so `[accordion-item]` is not a kiwi CTA.
 
 example:
   root: '<body theme="kiwipress">'

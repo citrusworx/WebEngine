@@ -1,8 +1,29 @@
-// Accordion chrome is structural only. Themes paint color.
+// Accordion chrome is structural. Color comes from the shared role contract:
+//   --juice-accordion-trigger
+//   --juice-accordion-trigger-hover
+//   --juice-accordion-trigger-open
+//   --juice-accordion-chevron
+//   --juice-accordion-panel-rule
+//   --juice-accordion-focus-ring
+// Themes bind those names (and optional --aqua-* / --kw-* / --cm-* aliases)
+// from existing identity tokens. Do not hard-code a single theme's hues here.
+//
 // Open/closed panels use the native `hidden` attribute (display: none).
 // Optional height easing already lives on [motion="accordion"] in
 // src/styles/animations/ease.scss — apply that on a region when a runtime
 // animates height. Do not duplicate that transition here.
+
+@function -juice-accordion-role($name, $fallback) {
+    @return var(
+        --juice-accordion-#{$name},
+        var(--aqua-#{$name}, var(--kw-#{$name}, var(--cm-#{$name}, #{$fallback})))
+    );
+}
+
+$_juice-accordion-trigger-fill: -juice-accordion-role(trigger, transparent);
+$_juice-accordion-trigger-hover-fill: -juice-accordion-role(trigger-hover, $_juice-accordion-trigger-fill);
+$_juice-accordion-trigger-open-fill: -juice-accordion-role(trigger-open, $_juice-accordion-trigger-fill);
+
 
 [accordion] {
     display: flex;
@@ -55,6 +76,38 @@
 [accordion] [role="region"] {
     padding: 0.75rem 1.25rem 1rem;
     box-sizing: border-box;
+    // Optional panel divider. Themes bind --*-panel-rule; transparent is a no-op.
+    box-shadow: inset 0.2rem 0 0 -juice-accordion-role(panel-rule, transparent);
+}
+
+// Role paints are scoped under [accordion] so they beat generic theme
+// `button` CTA rules (`:where(button)` is 0-specificity) without the
+// component naming Aquaflux / KiwiPress / Citrusmint tokens.
+[accordion] [accordion-item] {
+    background-color: $_juice-accordion-trigger-fill;
+    background-image: none;
+    color: inherit;
+    transform: none;
+}
+
+[accordion] [accordion-item]::after {
+    border-color: -juice-accordion-role(chevron, currentColor);
+}
+
+[accordion] [accordion-item]:hover {
+    background-color: $_juice-accordion-trigger-hover-fill;
+    background-image: none;
+    transform: none;
+}
+
+[accordion] [accordion-item][aria-expanded="true"] {
+    background-color: $_juice-accordion-trigger-open-fill;
+    background-image: none;
+}
+
+[accordion] [accordion-item]:focus-visible {
+    outline: 2px solid -juice-accordion-role(focus-ring, currentColor);
+    outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

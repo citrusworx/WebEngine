@@ -167,6 +167,7 @@ Put these in the theme:
 - semantic defaults
 - default control tone
 - named surfaces
+- accordion chrome role bindings (`--juice-accordion-*`)
 
 ## What does not belong in the theme
 
