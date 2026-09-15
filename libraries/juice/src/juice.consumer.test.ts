@@ -19,21 +19,30 @@ describe("Juice consumer smoke", () => {
     it("lets a consumer mount and interact with the built Accordion export", async () => {
         const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
         const module = await import(entryUrl);
+        module.startAccordionRuntime();
         const accordion = module.Accordion({
             name: "Billing FAQ",
             attributes: {}
         }) as HTMLElement;
+
+        document.body.append(accordion);
 
         const button = accordion.querySelector("button");
         const panel = accordion.querySelector("div");
 
         expect(button?.getAttribute("aria-expanded")).toBe("false");
         expect(panel?.hasAttribute("hidden")).toBe(true);
+        expect(panel?.getAttribute("content")).toBeNull();
 
         button?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
         expect(button?.getAttribute("aria-expanded")).toBe("true");
         expect(panel?.getAttribute("aria-hidden")).toBe("false");
         expect(panel?.hasAttribute("hidden")).toBe(false);
+        expect(panel?.getAttribute("content")).toBeNull();
+
+        accordion.remove();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
     });
 });

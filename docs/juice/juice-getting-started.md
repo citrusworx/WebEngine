@@ -147,20 +147,24 @@ The current recommended pattern for real apps is hybrid:
 
 That is the model Blackwater Sound now demonstrates.
 
-## Use Sig.js for behavior
+## Built-in runtime vs Sig.js
 
-Juice does not try to own state.
+Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice markup:
 
-Use Sig.js when the UI needs:
+- navigation
+- accordion / disclosure
 
-- toggles
+Those features should work without app init. See [Accordion Runtime](./juice-accordion-runtime.md) and [Navigation Runtime](./juice-navigation-runtime.md).
+
+Use Sig.js for app-specific state:
+
 - counters
 - tabs
 - filters
 - route-aware UI
 - reactive updates after render
 
-Juice and Sig.js fit well together because one owns styling and the other owns behavior.
+Juice and Sig.js fit well together because Juice owns styling plus a few built-in interactions, and Sig.js owns application behavior.
 
 ## What to use first
 
@@ -169,7 +173,7 @@ Juice and Sig.js fit well together because one owns styling and the other owns b
 3. set `theme="..."` at the app root
 4. compose pages with `stack`, `row`, `grid`, `gap`, and semantic surface hooks
 5. add app CSS only where brand-specific polish is truly needed
-6. add Sig.js only where runtime behavior is needed
+6. add Sig.js only where app-specific runtime behavior is needed
 
 ## Best current advice
 

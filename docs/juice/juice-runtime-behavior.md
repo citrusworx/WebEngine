@@ -31,16 +31,18 @@ It should not require:
 * framework-specific adapters
 * custom user bootstrapping for basic behavior
 
-## Current Example
+## Current Examples
 
-The navigation runtime is the clearest current example.
+The navigation and accordion runtimes are the current examples.
 
-It works by:
+They work by:
 
-* watching for valid Juice nav markup
+* watching for valid Juice nav or `[accordion]` markup
 * booting automatically in the browser
 * responding to DOM changes
 * applying behavior without user init code
+
+See [Juice Navigation Runtime](./juice-navigation-runtime.md) and [Juice Accordion Runtime](./juice-accordion-runtime.md).
 
 ## Runtime Scope
 
@@ -58,13 +60,16 @@ It should not try to own:
 
 ## Good Runtime Features
 
-Future built-in runtime features could include:
+Shipped built-in runtime features include:
 
 * navigation
-* accordion behavior
+* accordion / disclosure behavior
+
+Future built-in runtime features could include:
+
 * tabs
 * drawers
-* disclosure patterns
+* additional disclosure patterns
 
 But each should follow the same rule:
 

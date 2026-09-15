@@ -164,6 +164,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initNavigation");
         expect(module).toHaveProperty("startNavigationRuntime");
         expect(module).toHaveProperty("stopNavigationRuntime");
+        expect(module).toHaveProperty("createAccordion");
+        expect(module).toHaveProperty("initAccordion");
+        expect(module).toHaveProperty("startAccordionRuntime");
+        expect(module).toHaveProperty("stopAccordionRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

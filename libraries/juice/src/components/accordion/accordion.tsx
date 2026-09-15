@@ -29,7 +29,6 @@ export function Accordion(props: AccordionProps) {
 
         panelRef.hidden = !expanded;
         panelRef.setAttribute("aria-hidden", String(!expanded));
-        panelRef.setAttribute("content", expanded ? "active" : "hidden");
     };
 
     effect(() => {
@@ -49,7 +48,6 @@ export function Accordion(props: AccordionProps) {
                 accordion-item
                 aria-expanded={String(isExpanded.get())}
                 aria-controls={panelId}
-                onclick={() => isExpanded.set(!isExpanded.get())}
             >
                 {props.title ?? props.name}
             </button>
@@ -62,7 +60,6 @@ export function Accordion(props: AccordionProps) {
                 id={panelId}
                 role="region"
                 aria-labelledby={buttonId}
-                content={isExpanded.get() ? "active" : "hidden"}
                 hidden={!isExpanded.get()}
                 aria-hidden={String(!isExpanded.get())}
             >
