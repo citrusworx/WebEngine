@@ -1,7 +1,8 @@
 import { Seltzer } from "@citrusworx/seltzer";
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import { WPCore, type RouteParams, type WPCoreConfig } from "./WPCore.js";
-import { requestWordPress } from "./route-utils.js";
+import { requestWordPress, requestWordPressPage } from "./route-utils.js";
+import { asCollection } from "./normalize.js";
 import type { WordPressPayload } from "../types/api.js";
 
 export class WPClient extends WPCore {
@@ -52,6 +53,36 @@ export class WPClient extends WPCore {
             headers,
             body: body ? JSON.stringify(body) : undefined
         });
+    }
+
+    async listAll(collection: string, query: Record<string, string> = {}): Promise<unknown[]> {
+        const items: unknown[] = [];
+        let page = 1;
+        let totalPages = 1;
+        const maxPages = 1000;
+
+        do {
+            const search = new URLSearchParams({
+                per_page: "100",
+                ...query,
+                page: String(page)
+            });
+            const result = await requestWordPressPage({
+                path: `/${collection}`,
+                endpoint: `${this.config.url}/${this.config.apiBase}/${collection}?${search.toString()}`,
+                options: {
+                    baseUrl: `${this.config.url}/${this.config.apiBase}`,
+                    headers: this.createAuthHeaders(),
+                    allowSelfSigned: this.config.allowSelfSigned
+                }
+            });
+
+            items.push(...asCollection(result.data));
+            totalPages = Math.min(result.totalPages, maxPages);
+            page += 1;
+        } while (page <= totalPages);
+
+        return items;
     }
 
     protected getApp(): Seltzer {

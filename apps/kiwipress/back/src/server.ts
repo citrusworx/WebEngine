@@ -1,42 +1,28 @@
-import { Seltzer, client } from "@citrusworx/seltzer";
-import { posts } from "./routes/posts.js";
-// The server needs to be a sum of routes and handlers.
-// 
-// server.route({
-//   method: 'GET',
-//   path: '/users',
-//   handler: getUsersHandler()
-// });
-//   
-// This calls the WP API to get the users and returns them as JSON.   
+import { Seltzer } from "@citrusworx/seltzer";
+import { KiwiPress, registerKiwiPressGateway } from "@citrusworx/kiwipress";
 
-// server.listen() starts the server and listens for incoming requests. It should be called after all routes and handlers have been defined.
+const port = Number(process.env.KIWIPRESS_API_PORT ?? 8787);
+const wordpressUrl = process.env.WP_URL?.trim();
 
-const server = new Seltzer();
+const kiwi = wordpressUrl
+    ? KiwiPress.connect({
+        url: wordpressUrl,
+        apiBase: process.env.WP_API?.trim() || "wp-json/wp/v2",
+        username: process.env.WP_USER,
+        appPassword: process.env.WP_APP_PASSWORD,
+        token: process.env.WP_TOKEN,
+        apiKey: process.env.WP_API_KEY
+    })
+    : KiwiPress.connect({
+        mode: "nectarine"
+    });
 
-function getUsersHandler(ctx: any): any {
-    // Implementation for handling user retrieval
-}
-const context = {
-    // This is where you can add any context that you want to be available in the handlers. For example, you can add a database connection or a logger.
-    };
-
-
-
-server.route({
-  method: 'GET',
-  path: '/users',
-  handler: getUsersHandler(context)
+const server = Seltzer.init();
+registerKiwiPressGateway(server, kiwi, {
+    token: process.env.KIWIPRESS_GATEWAY_TOKEN?.trim() || undefined
 });
+server.listen(port);
 
-client.get({
-    endpoint: 'GET',
-    path: '/posts',
-    options: {
-        baseUrl: 'http://localhost:3000'
-    }
-}).then((response) => {
-    console.log("Response from /posts:", response);
-})
-
-server.listen(3000);
+console.log(
+    `KiwiPress gateway listening on ${port} (${kiwi.mode}${wordpressUrl ? ` → ${wordpressUrl}` : ", native CMS only"})`
+);

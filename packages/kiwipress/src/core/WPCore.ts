@@ -1,3 +1,5 @@
+import { WPAuth } from "./WPAuth.js";
+
 export type WPCoreConfig = {
     url: string;
     apiBase: string;
@@ -40,25 +42,13 @@ function shouldAllowSelfSigned(url: string): boolean {
     }
 }
 
-function encodeBase64(value: string): string {
-    const maybeBuffer = typeof Buffer !== "undefined" ? Buffer : undefined;
-
-    if (maybeBuffer) {
-        return maybeBuffer.from(value).toString("base64");
-    }
-
-    if (typeof btoa !== "undefined") {
-        return btoa(value);
-    }
-
-    throw new Error("Unable to encode WordPress credentials.");
-}
-
 export class WPCore {
     protected readonly config: WPCoreConfig;
+    protected readonly auth: WPAuth;
 
     constructor(config?: Partial<WPCoreConfig>) {
         this.config = this.createConfig(config);
+        this.auth = WPAuth.fromConfig(this.config);
     }
 
     protected createConfig(overrides?: Partial<WPCoreConfig>): WPCoreConfig {
@@ -92,20 +82,7 @@ export class WPCore {
     }
 
     protected createAuthHeaders(): Record<string, string> {
-        const headers: Record<string, string> = {
-            ...this.config.headers
-        };
-
-        if (this.config.username && this.config.appPassword) {
-            headers.Authorization = `Basic ${encodeBase64(`${this.config.username}:${this.config.appPassword}`)}`;
-        } else if (this.config.token) {
-            headers.Authorization = `Bearer ${this.config.token}`;
-        }
-
-        if (this.config.apiKey) {
-            headers["X-API-Key"] = this.config.apiKey;
-        }
-        return headers;
+        return this.auth.headers();
     }
 
     protected interpolatePath(routePath: string, params: RouteParams = {}): string {

@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@citrusworx/dns": "workspace:*",
-    "@citrusworx/kiwipress": "workspace:*"
+    "@citrusworx/kiwipress": "workspace:*",
+    "@citrusworx/seltzer": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.4.0",

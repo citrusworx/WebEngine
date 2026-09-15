@@ -1,4 +1,4 @@
-export type NavId = "projects" | "blueprints" | "billing" | "activity" | "settings" | "account";
+export type NavId = "projects" | "content" | "blueprints" | "billing" | "activity" | "settings" | "account";
 
 type NavItem = {
     id: NavId;
@@ -9,6 +9,7 @@ type NavItem = {
 
 const PRIMARY_NAV: NavItem[] = [
     { id: "projects",   path: "/app/projects",   label: "Projects",   icon: "table-cells" },
+    { id: "content",    path: "/app/content",    label: "Content",    icon: "file-lines" },
     { id: "blueprints", path: "/app/blueprints", label: "Blueprints", icon: "layer-group" }
 ];
 

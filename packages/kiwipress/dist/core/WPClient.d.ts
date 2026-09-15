@@ -8,5 +8,6 @@ export declare class WPClient extends WPCore {
     protected buildEndpoint(route: Route<Endpoint>, params?: RouteParams): Endpoint;
     protected execute(route: Route<Endpoint>, params?: RouteParams): any;
     protected mutate(route: Route<Endpoint>, body?: WordPressPayload, params?: RouteParams): Promise<any>;
+    listAll(collection: string, query?: Record<string, string>): Promise<unknown[]>;
     protected getApp(): Seltzer;
 }

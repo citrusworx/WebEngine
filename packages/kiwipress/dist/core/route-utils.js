@@ -1,4 +1,4 @@
-export async function requestWordPress(ctx, init) {
+async function sendWordPressRequest(ctx, init) {
     const headers = {
         ...(ctx.options?.headers ?? {}),
         ...(init?.headers ?? {})
@@ -11,10 +11,9 @@ export async function requestWordPress(ctx, init) {
         ctx.options !== null &&
         "allowSelfSigned" in ctx.options &&
         Boolean(ctx.options.allowSelfSigned);
-    let response;
     if (allowSelfSigned && ctx.endpoint.startsWith("https://")) {
         const { Agent } = await import("undici");
-        response = await fetch(ctx.endpoint, {
+        return fetch(ctx.endpoint, {
             ...requestInit,
             dispatcher: new Agent({
                 connect: {
@@ -23,13 +22,27 @@ export async function requestWordPress(ctx, init) {
             })
         });
     }
-    else {
-        response = await fetch(ctx.endpoint, requestInit);
-    }
+    return fetch(ctx.endpoint, requestInit);
+}
+export async function requestWordPress(ctx, init) {
+    const response = await sendWordPressRequest(ctx, init);
     if (!response.ok) {
         throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);
     }
     return response.json();
+}
+export async function requestWordPressPage(ctx, init) {
+    const response = await sendWordPressRequest(ctx, init);
+    if (!response.ok) {
+        throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);
+    }
+    const total = Number(response.headers?.get?.("X-WP-Total") ?? "0") || 0;
+    const totalPages = Math.max(1, Number(response.headers?.get?.("X-WP-TotalPages") ?? "1") || 1);
+    return {
+        data: await response.json(),
+        total,
+        totalPages
+    };
 }
 export function createWordPressRoute(config, init) {
     return {

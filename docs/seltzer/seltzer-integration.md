@@ -140,14 +140,13 @@ Grapevine provisions DigitalOcean droplets and related resources. It does not in
 
 ## KiwiPress
 
-KiwiPress is a WordPress REST **client**. It calls `Seltzer.init().handler({ adapter: "node:http", options: { baseUrl, headers, allowSelfSigned } })` to store origin and auth headers. It builds `Endpoint` objects (including a full URL on `endpoint`) and then uses **its own** `fetch` (`requestWordPress` in `packages/kiwipress/src/core/route-utils.ts`), including `undici` when `allowSelfSigned` is set.
+KiwiPress is the WordPress on-ramp, not “Seltzer serving WordPress.”
 
-That is the important split:
+Outbound: it calls `Seltzer.init().handler({ adapter: "node:http", options: { baseUrl, headers, allowSelfSigned } })` to store origin and auth headers, then `fetch`es `ctx.endpoint` via `requestWordPress` (including `undici` when `allowSelfSigned` is set). Seltzer `client` is not used for those calls.
 
-- Seltzer `client` ignores `endpoint` and `allowSelfSigned`
-- KiwiPress does not use Seltzer `client` for those features
+Inbound: `registerKiwiPressGateway` attaches exact `/__kiwipress` routes onto a Seltzer listener. Item updates use `?id=` because Seltzer has no `:id` matcher.
 
-Do not document KiwiPress as “Seltzer serving WordPress.” It is Seltzer types plus a separate request helper.
+Transfer: `WPSync` moves WordPress JSON onto Nectarine-shaped records. See [KiwiPress](../kiwipress/README.md).
 
 ## Contributor electives
 

@@ -18,7 +18,7 @@ Related:
 | WebEngine | Early scaffold / config vocabulary |
 | Sig.js / Juice | Browser UI — no Nectarine client |
 
-Nothing in `libraries/seltzer` imports `@citrusworx/nectarine`. Nothing in `engines/webengine` does either. `packages/kiwipress` lists the dependency and does not import it. Integration is **you copying fields**.
+Nothing in `libraries/seltzer` imports `@citrusworx/nectarine`. Nothing in `engines/webengine` does either. `packages/kiwipress` imports Nectarine for API YAML walking and uses Nectarine models as the transfer destination. Direct Seltzer ↔ Nectarine wiring in an arbitrary app is still **you copying fields**.
 
 ## Seltzer: copy method and path
 
@@ -93,7 +93,16 @@ There is no Nectarine browser client. A Juice page that lists users `fetch`es a 
 
 ## KiwiPress
 
-`packages/kiwipress` declares `@citrusworx/nectarine` in `package.json`. There is no TypeScript import in that package today. Do not treat the dependency as a working integration.
+`packages/kiwipress` is the WordPress on-ramp into Nectarine / WebEngine.
+
+- WordPress domain objects still use static `routes.ts` files (query aliases are WordPress-specific).
+- `loadNectarineApi` / `loadNectarineApiFile` walk Nectarine API YAML into `{ method, endpoint }` records — the importer this page used to say was not shipped.
+- `WPSync.transfer()` maps WordPress JSON onto Nectarine-shaped `ContentRecord`s and stores them in `NectarineStore`.
+- `registerKiwiPressGateway` copies those concerns onto Seltzer exact paths under `/__kiwipress`.
+
+Do not treat KiwiPress as “Seltzer serving WordPress.” Outbound WP calls still use `requestWordPress`. Inbound app routes are Seltzer. Transfer is KiwiPress.
+
+See [KiwiPress](../kiwipress/README.md) and [Transfer](../kiwipress/kiwipress-transfer.md).
 
 ## What would be a real importer
 
@@ -104,4 +113,4 @@ Not shipped. If it is built, the honest shape is:
 3. `app.route` for each `{ method, endpoint }` that Seltzer can actually match
 4. a handler factory that looks up a `genSQL` name and runs **your** builder + adapter
 
-Until that exists, copy the tutorial’s two routes. Do not document `generateRoutes`.
+Until a generated `app.route` loop exists for *your* app, copy the tutorial’s two routes — or use KiwiPress `loadNectarineApi` + `registerKiwiPressGateway` for the WordPress on-ramp. Do not document a generic `generateRoutes` helper that does not exist on Nectarine itself.

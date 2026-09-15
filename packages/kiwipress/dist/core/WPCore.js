@@ -1,3 +1,4 @@
+import { WPAuth } from "./WPAuth.js";
 function loadNodeEnvConfig() {
     const maybeProcess = typeof process !== "undefined" ? process : undefined;
     if (!maybeProcess?.versions?.node) {
@@ -24,20 +25,12 @@ function shouldAllowSelfSigned(url) {
         return false;
     }
 }
-function encodeBase64(value) {
-    const maybeBuffer = typeof Buffer !== "undefined" ? Buffer : undefined;
-    if (maybeBuffer) {
-        return maybeBuffer.from(value).toString("base64");
-    }
-    if (typeof btoa !== "undefined") {
-        return btoa(value);
-    }
-    throw new Error("Unable to encode WordPress credentials.");
-}
 export class WPCore {
     config;
+    auth;
     constructor(config) {
         this.config = this.createConfig(config);
+        this.auth = WPAuth.fromConfig(this.config);
     }
     createConfig(overrides) {
         const envConfig = loadNodeEnvConfig();
@@ -66,19 +59,7 @@ export class WPCore {
         };
     }
     createAuthHeaders() {
-        const headers = {
-            ...this.config.headers
-        };
-        if (this.config.username && this.config.appPassword) {
-            headers.Authorization = `Basic ${encodeBase64(`${this.config.username}:${this.config.appPassword}`)}`;
-        }
-        else if (this.config.token) {
-            headers.Authorization = `Bearer ${this.config.token}`;
-        }
-        if (this.config.apiKey) {
-            headers["X-API-Key"] = this.config.apiKey;
-        }
-        return headers;
+        return this.auth.headers();
     }
     interpolatePath(routePath, params = {}) {
         return Object.entries(params).reduce((resolvedPath, [key, value]) => {

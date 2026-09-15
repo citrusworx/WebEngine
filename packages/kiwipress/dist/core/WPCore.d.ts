@@ -1,3 +1,4 @@
+import { WPAuth } from "./WPAuth.js";
 export type WPCoreConfig = {
     url: string;
     apiBase: string;
@@ -11,6 +12,7 @@ export type WPCoreConfig = {
 export type RouteParams = Record<string, string | number>;
 export declare class WPCore {
     protected readonly config: WPCoreConfig;
+    protected readonly auth: WPAuth;
     constructor(config?: Partial<WPCoreConfig>);
     protected createConfig(overrides?: Partial<WPCoreConfig>): WPCoreConfig;
     protected createAuthHeaders(): Record<string, string>;
