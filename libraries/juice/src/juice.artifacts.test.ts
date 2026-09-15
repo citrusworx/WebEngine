@@ -106,7 +106,9 @@ describe("Juice build artifacts", () => {
         expect(kiwiCss).toContain("[tab-panel]");
         expect(kiwiCss).toMatch(/\[tab\]\[active\]/);
         expect(kiwiCss).toMatch(/\[tab\]\[aria-selected=["']?true["']?\]/);
-        expect(kiwiCss).toContain("border-bottom-color: var(--kw-accent)");
+        expect(kiwiCss).toContain("border-bottom-color: var(--juice-tabs-indicator)");
+        expect(kiwiCss).toContain("--juice-tabs-trigger: var(--kw-tabs-trigger)");
+        expect(kiwiCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--kw-cta-background/);
     });
 
     it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {
@@ -142,6 +144,24 @@ describe("Juice build artifacts", () => {
         expect(mintCss).toContain("button[accordion-item]");
     });
 
+    it("binds tabs chrome roles in Aquaflux, KiwiPress, and Citrusmint", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-tabs-text: var(--aqua-text-muted)");
+        expect(aquaCss).toContain("--juice-tabs-trigger: var(--aqua-tabs-trigger)");
+        expect(aquaCss).toContain("button[tab]");
+        expect(aquaCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-tabs-text: var(--kw-text-soft)");
+        expect(kiwiCss).toContain("--juice-tabs-text-active: var(--kw-tabs-text-active)");
+
+        expect(mintCss).toContain("--cm-tabs-text: var(--cm-text-muted)");
+        expect(mintCss).toContain("--juice-tabs-trigger: var(--cm-tabs-trigger)");
+        expect(mintCss).toContain("button[tab]");
+    });
+
     it("keeps draft tide CSS out of the stable theme export folder", () => {
         const bundledThemeIds = readBundledThemeIds();
         const draftPath = join(DIST_DIR, "themes", "_draft", "tide.css");
@@ -165,6 +185,10 @@ describe("Juice build artifacts", () => {
         expect(draftCss).not.toContain("--tide-trigger-open: var(--tide-highlight)");
         expect(draftCss).not.toContain("--tide-accent: hsl(174, 65%, 54%)");
         expect(draftCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
+        expect(draftCss).toContain("--juice-tabs-trigger: var(--tide-tabs-trigger)");
+        expect(draftCss).toContain("--juice-tabs-panel: var(--tide-tabs-panel)");
+        expect(draftCss).toContain("button[tab]");
+        expect(draftCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
     });
 
     it("keeps draft theme paths out of the public package export map", () => {

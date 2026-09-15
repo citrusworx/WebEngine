@@ -232,6 +232,26 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-accordion-panel-rule: var(--jx-panel-rule);
     --juice-accordion-focus-ring: var(--jx-focus-ring);
 
+    /* Tabs chrome roles — surface/text controls, not the CTA fill. */
+    --jx-tabs-trigger: transparent;
+    --jx-tabs-trigger-hover: transparent;
+    --jx-tabs-trigger-active: transparent;
+    --jx-tabs-text: var(--jx-text-soft);
+    --jx-tabs-text-hover: var(--jx-heading);
+    --jx-tabs-text-active: var(--jx-accent);
+    --jx-tabs-indicator: var(--jx-accent);
+    --jx-tabs-list-rule: var(--jx-border);
+    --jx-tabs-focus-ring: var(--jx-accent);
+    --juice-tabs-trigger: var(--jx-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--jx-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--jx-tabs-trigger-active);
+    --juice-tabs-text: var(--jx-tabs-text);
+    --juice-tabs-text-hover: var(--jx-tabs-text-hover);
+    --juice-tabs-text-active: var(--jx-tabs-text-active);
+    --juice-tabs-indicator: var(--jx-tabs-indicator);
+    --juice-tabs-list-rule: var(--jx-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--jx-tabs-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -403,6 +423,58 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     background: var(--jx-surface-muted);
     border: 1px solid var(--juice-accordion-panel-rule);
     border-radius: 0.75rem;
+}
+
+[theme="${config.id}"] :where([tabs]) {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="${config.id}"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="${config.id}"] button[tab],
+[theme="${config.id}"] [tabs] > button,
+[theme="${config.id}"] [tabs-list] > button {
+    background: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[tab]:hover,
+[theme="${config.id}"] [tabs] > button:hover,
+[theme="${config.id}"] [tabs-list] > button:hover {
+    background: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[tab]:focus-visible,
+[theme="${config.id}"] [tabs] > button:focus-visible,
+[theme="${config.id}"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] button[tab][active],
+[theme="${config.id}"] button[tab][aria-selected="true"],
+[theme="${config.id}"] [tabs] > button[active],
+[theme="${config.id}"] [tabs] > button[aria-selected="true"],
+[theme="${config.id}"] [tabs-list] > button[active],
+[theme="${config.id}"] [tabs-list] > button[aria-selected="true"] {
+    background: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="${config.id}"] [tab-panel] {
+    color: var(--jx-text);
 }
 
 ${namedSurfaces}

@@ -69,3 +69,43 @@ describe("Juice theme generator accordion roles", () => {
         expect(css).toContain("--juice-accordion-trigger-open: var(--jx-trigger-open)");
     });
 });
+
+const TABS_ROLES = [
+    "trigger",
+    "trigger-hover",
+    "trigger-active",
+    "text",
+    "text-hover",
+    "text-active",
+    "indicator",
+    "list-rule",
+    "focus-ring",
+] as const;
+
+describe("Juice theme generator tabs roles", () => {
+    it("binds --juice-tabs-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-tabs-trigger: transparent");
+        expect(css).toContain("--jx-tabs-text: var(--jx-text-soft)");
+        expect(css).toContain("--jx-tabs-text-active: var(--jx-accent)");
+        expect(css).toContain("--jx-tabs-indicator: var(--jx-accent)");
+        expect(css).toContain("--jx-tabs-list-rule: var(--jx-border)");
+        expect(css).toContain("--jx-tabs-focus-ring: var(--jx-accent)");
+
+        for (const role of TABS_ROLES) {
+            expect(css).toContain(`--juice-tabs-${role}: var(--jx-tabs-${role})`);
+        }
+
+        const tabButtonBlocks = [...css.matchAll(/button\[tab\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(css).toContain(":where([tabs])");
+        expect(tabButtonBlocks.length).toBeGreaterThan(0);
+        for (const block of tabButtonBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+});
