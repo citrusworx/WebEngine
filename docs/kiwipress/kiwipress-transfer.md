@@ -1,12 +1,12 @@
 # Transferring WordPress into Nectarine
 
-KiwiPress is the on-ramp. This page is the off-ramp: moving WordPress content onto the CMS WebEngine actually wants to run.
+KiwiPress is a standalone on-ramp: moving WordPress content onto a Nectarine-shaped CMS **this library owns**. WebEngine is not required to run that CMS.
 
-WordPress stays available as a headless source until you call `transfer()`. After that, `KiwiPress` can read from `NectarineStore` instead of `wp-json`.
+WordPress stays available as a headless source until you call `transfer()`. After that, `KiwiPress` can read from `NectarineStore` instead of `wp-json`. Persist the store if you want it to survive restart.
 
 ## Why transfer
 
-WordPress is excellent at what editors already know. It is a weak long-term content model for WebEngine:
+WordPress is excellent at what editors already know. It is a weak long-term content model for an application CMS:
 
 - titles and bodies are `{ rendered, raw }` objects, not strings
 - status uses `publish` instead of `published`
@@ -15,7 +15,7 @@ WordPress is excellent at what editors already know. It is a weak long-term cont
 
 Nectarine models under `libraries/nectarine/models/blog/` are the destination shape: `title`, `content`, `slug`, `status: draft | published | archived`, `author_id`, timestamps.
 
-KiwiPress sits in the middle so you do not rewrite the editorial team on day one.
+KiwiPress sits in the middle so you do not rewrite the editorial team on day one. You can keep using KiwiPress in a project that never loads WebEngine.
 
 ## Normalize first
 
@@ -35,14 +35,16 @@ const nectarinePost = toNectarinePost(record);
 ## Transfer
 
 ```ts
-import { KiwiPress } from "@citrusworx/kiwipress";
+import { KiwiPress, createFilePersistence } from "@citrusworx/kiwipress";
 
 const kiwi = KiwiPress.connect({
   url: "https://example.com",
   username: "admin",
-  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx"
+  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx",
+  persistence: createFilePersistence("./data/kiwipress-cms.json")
 });
 
+await kiwi.ready();
 const preview = await kiwi.sync?.preview(["posts", "pages"]);
 const result = await kiwi.sync?.transfer(["posts", "pages", "users", "categories", "tags", "comments"]);
 
@@ -57,18 +59,39 @@ await native.native.posts.getBySlug("hello-world");
 1. pages every WordPress collection (`per_page=100`, `X-WP-TotalPages`) with `status=any` and `context=edit` where WordPress supports it
 2. normalizes every item onto `ContentRecord`
 3. upserts into the shared `NectarineStore`
-4. returns counts plus the records
+4. `flush()`es if `persistence` is configured
+5. returns counts plus the records
 
 `Posts.getAll()` still returns WordPress’s default first page. Transfer does not use that method — it uses `listAll()`, so drafts, private posts, and sites with more than ten items are included.
 
-The store is **in memory** in this release. Postgres / MySQL / Mongo persistence through Nectarine adapters is the next layer, not a hidden one.
+## Persistence
+
+Without `persistence`, the store is **in memory**. That is still the library default so KiwiPress stays a cheap import.
+
+Opt in with the `CmsPersistence` interface (`load` / `save`):
+
+| Helper | Backend | Extra runtime |
+|---|---|---|
+| `createFilePersistence(path)` | JSON file via Node `fs` | none |
+| `createPostgresPersistence({ database })` | Table `kiwipress_content` through Nectarine `PgSql` | `pg` (Nectarine's adapter imports it) |
+| `createPostgresPersistence({ executor })` | Same SQL, your client | tests / custom hosts |
+| `persistenceFromEnv()` | `KIWIPRESS_CMS_FILE`, else `KIWIPRESS_PG_DB` / `PG_DB` | — |
+
+`await kiwi.ready()` hydrates once. Native create/update/delete and `WPSync.transfer()` flush after they mutate. Nectarine `PgSql.query` swallows errors; KiwiPress throws if a query returns `undefined`. Snapshot save is delete-then-insert because `PgSql` has no transactions.
+
+The `apps/kiwipress` gateway defaults to `./data/kiwipress-cms.json` so the product app survives restart. The published library does not create that file unless you pass persistence.
+
+MySQL and Mongo adapters can wait. Do not pull WebEngine in to get a database.
 
 ## Native CMS without WordPress
 
 Greenfield projects can skip WordPress:
 
 ```ts
-const kiwi = KiwiPress.connect({ mode: "nectarine" });
+const kiwi = KiwiPress.connect({
+  mode: "nectarine",
+  persistence: createFilePersistence("./data/kiwipress-cms.json")
+});
 await kiwi.native.posts.create({
   title: "Written in Nectarine",
   content: "<p>No WordPress in this path.</p>",
@@ -100,7 +123,7 @@ Copy `method` + `endpoint` onto Seltzer routes. Seltzer still matches exact path
 | Method | Path | Role |
 |---|---|---|
 | GET | `/__kiwipress/health` | process check (`{ ok: true }`, unauthenticated) |
-| GET | `/__kiwipress/cms` | mode + native counts |
+| GET | `/__kiwipress/cms` | mode, persistence kind, native counts |
 | POST | `/__kiwipress/cms` | `{ mode: "wordpress" \| "nectarine" }` |
 | POST | `/__kiwipress/transfer` | run `WPSync.transfer` and `promote()` |
 | GET/POST/PATCH/DELETE | `/__kiwipress/content/posts` | WordPress or native; item id in `?id=` for PATCH/DELETE |
@@ -114,7 +137,7 @@ Seltzer `listen(port)` binds every interface. Content, transfer, and CMS routes 
 
 The frontend sends `VITE_KIWIPRESS_GATEWAY_TOKEN` when that env is set.
 
-The Vite app proxies `/__kiwipress` to port 8787. Set `WP_URL` on the backend to enable the WordPress entry. Without it, the gateway starts in `nectarine` mode only.
+The Vite app proxies `/__kiwipress` to port 8787. Set `WP_URL` on the backend to enable the WordPress entry. Without it, the gateway starts in `nectarine` mode only. Persistence defaults to a JSON file under `data/`; set `KIWIPRESS_CMS_FILE` or `PG_DB` to override.
 
 Dashboard **Content** is the UI for this: transfer panel plus the posts/pages manager.
 
@@ -123,6 +146,6 @@ Dashboard **Content** is the UI for this: transfer panel plus the posts/pages ma
 - media files and featured-image binaries (ids are stored, blobs are not)
 - plugin-owned types (WooCommerce, ACF field groups as first-class models)
 - comments/users write-back to WordPress after promote
-- durable database storage for `NectarineStore`
+- MySQL / Mongo persistence (file and Postgres are the ship set)
 
 Those belong on top of this contract, not instead of it.

@@ -1,6 +1,7 @@
 import { Categories } from "../categories/categories.js";
 import { Comments } from "../comments/comments.js";
 import { createNativeCms, type NativeCms } from "./native.js";
+import type { CmsPersistence } from "./persistence.js";
 import { NectarineStore } from "./store.js";
 import type { CmsMode } from "./types.js";
 import { Pages } from "../pages/pages.js";
@@ -14,6 +15,7 @@ import type { WPCoreConfig } from "../core/WPCore.js";
 export type KiwiPressConfig = Partial<WPCoreConfig> & {
     mode?: CmsMode;
     store?: NectarineStore;
+    persistence?: CmsPersistence;
 };
 
 export class KiwiPress {
@@ -30,6 +32,9 @@ export class KiwiPress {
         this.config = config;
         this.mode = config.mode ?? "wordpress";
         this.store = config.store ?? new NectarineStore();
+        if (config.persistence) {
+            this.store.usePersistence(config.persistence);
+        }
         this.native = createNativeCms(this.store);
         this.auth = WPAuth.fromConfig(config);
 
@@ -53,6 +58,19 @@ export class KiwiPress {
 
     static connect(config: KiwiPressConfig = {}): KiwiPress {
         return new KiwiPress(config);
+    }
+
+    async ready(): Promise<this> {
+        await this.store.hydrate();
+        return this;
+    }
+
+    persist(): Promise<void> {
+        return this.store.flush();
+    }
+
+    get persistence(): CmsPersistence | undefined {
+        return this.store.persistence;
     }
 
     get wordpress(): WordPressClients {

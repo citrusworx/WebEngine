@@ -99,4 +99,33 @@ describe("WPSync", () => {
         expect(store.list("posts").map((record) => record.slug)).toEqual(["one", "two"]);
         expect(store.list("posts").map((record) => record.status)).toEqual(["draft", "archived"]);
     });
+
+    it("flushes transferred records when the store has persistence", async () => {
+        const fetchMock = vi.fn().mockResolvedValue(wpPage([
+            {
+                id: 3,
+                slug: "saved",
+                status: "publish",
+                title: { rendered: "Saved" },
+                content: { rendered: "<p>Keep me</p>" }
+            }
+        ]));
+        vi.stubGlobal("fetch", fetchMock);
+
+        let saved = 0;
+        const store = new NectarineStore();
+        store.usePersistence({
+            async load() {
+                return null;
+            },
+            async save() {
+                saved += 1;
+            }
+        });
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+        await sync.transfer(["posts"]);
+
+        expect(saved).toBe(1);
+        expect(store.list("posts")[0]?.slug).toBe("saved");
+    });
 });

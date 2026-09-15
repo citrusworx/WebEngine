@@ -104,7 +104,9 @@ function registerCollectionRoutes(
                     const payload = (await readJson(ctx.req)) as WordPressPayload;
 
                     if (kiwi.mode === "nectarine") {
-                        ctx.json(await kiwi.native[kind].create(payload));
+                        const created = await kiwi.native[kind].create(payload);
+                        await kiwi.persist();
+                        ctx.json(created);
                         return;
                     }
 
@@ -135,7 +137,9 @@ function registerCollectionRoutes(
                     const payload = (await readJson(ctx.req)) as WordPressPayload;
 
                     if (kiwi.mode === "nectarine") {
-                        ctx.json(await kiwi.native[kind].update(id, payload));
+                        const updated = await kiwi.native[kind].update(id, payload);
+                        await kiwi.persist();
+                        ctx.json(updated);
                         return;
                     }
 
@@ -160,7 +164,9 @@ function registerCollectionRoutes(
                     }
 
                     if (kiwi.mode === "nectarine") {
-                        ctx.json({ deleted: await kiwi.native[kind].delete(id) });
+                        const deleted = await kiwi.native[kind].delete(id);
+                        await kiwi.persist();
+                        ctx.json({ deleted });
                         return;
                     }
 
@@ -190,20 +196,29 @@ export function registerKiwiPressGateway(
         method: "GET",
         path: "/__kiwipress/cms",
         handler: guard(options, (ctx: GatewayContext) => {
-            ctx.json({
-                mode: kiwi.mode,
-                entry: "wordpress",
-                destination: "nectarine",
-                auth: kiwi.auth.strategy(),
-                native: {
-                    posts: kiwi.store.list("posts").length,
-                    pages: kiwi.store.list("pages").length,
-                    users: kiwi.store.list("users").length,
-                    categories: kiwi.store.list("categories").length,
-                    tags: kiwi.store.list("tags").length,
-                    comments: kiwi.store.list("comments").length
+            void (async () => {
+                try {
+                    await kiwi.ready();
+                    ctx.json({
+                        mode: kiwi.mode,
+                        entry: "wordpress",
+                        destination: "nectarine",
+                        standalone: true,
+                        persistence: kiwi.store.persistenceKind,
+                        auth: kiwi.auth.strategy(),
+                        native: {
+                            posts: kiwi.store.list("posts").length,
+                            pages: kiwi.store.list("pages").length,
+                            users: kiwi.store.list("users").length,
+                            categories: kiwi.store.list("categories").length,
+                            tags: kiwi.store.list("tags").length,
+                            comments: kiwi.store.list("comments").length
+                        }
+                    });
+                } catch (error) {
+                    sendError(ctx, error);
                 }
-            });
+            })();
         })
     });
 
@@ -245,6 +260,7 @@ export function registerKiwiPressGateway(
                     const body = (await readJson(ctx.req)) as { collections?: CmsCollection[] };
                     const result = await kiwi.sync.transfer(body.collections);
                     kiwi.promote();
+                    await kiwi.persist();
                     ctx.json(result);
                 } catch (error) {
                     sendError(ctx, error);

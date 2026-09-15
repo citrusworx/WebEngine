@@ -1,23 +1,54 @@
-const COLLECTIONS = [
-    "posts",
-    "pages",
-    "users",
-    "categories",
-    "tags",
-    "comments"
-];
+import { CMS_COLLECTIONS } from "./types.js";
+import { emptySnapshot } from "./persistence.js";
 function emptyBuckets() {
-    return {
-        posts: [],
-        pages: [],
-        users: [],
-        categories: [],
-        tags: [],
-        comments: []
-    };
+    return emptySnapshot();
 }
 export class NectarineStore {
     records = emptyBuckets();
+    adapter;
+    hydrated = false;
+    hydrating;
+    flushQueue = Promise.resolve();
+    usePersistence(persistence) {
+        if (this.adapter === persistence) {
+            return this;
+        }
+        this.adapter = persistence;
+        this.hydrated = false;
+        this.hydrating = undefined;
+        return this;
+    }
+    get persistence() {
+        return this.adapter;
+    }
+    get persistenceKind() {
+        return this.adapter?.kind ?? "memory";
+    }
+    async hydrate() {
+        if (!this.adapter || this.hydrated) {
+            return;
+        }
+        if (!this.hydrating) {
+            this.hydrating = (async () => {
+                const snapshot = await this.adapter.load();
+                if (snapshot) {
+                    this.replace(snapshot);
+                }
+                this.hydrated = true;
+            })().finally(() => {
+                this.hydrating = undefined;
+            });
+        }
+        await this.hydrating;
+    }
+    async flush() {
+        if (!this.adapter) {
+            return;
+        }
+        const run = this.flushQueue.then(() => this.adapter.save(this.snapshot()));
+        this.flushQueue = run.then(() => undefined, () => undefined);
+        await run;
+    }
     list(collection) {
         return [...this.records[collection]];
     }
@@ -63,7 +94,7 @@ export class NectarineStore {
         };
     }
     replace(snapshot) {
-        for (const collection of COLLECTIONS) {
+        for (const collection of CMS_COLLECTIONS) {
             this.records[collection] = [...(snapshot[collection] ?? [])];
         }
     }

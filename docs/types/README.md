@@ -157,7 +157,7 @@ On the [Make A Web App](../webengine/make-a-web-app.md) path, Types is **chapter
 - [WebEngine](../webengine/README.md)
 - [DNS](../dns/README.md)
 - [Grapevine](../grapevine/README.md)
-- [KiwiPress](../kiwipress/README.md) (optional WordPress track; `adapters.cms: "kiwipress"` names that package)
+- [KiwiPress](../kiwipress/README.md) (standalone CMS library; `adapters.cms: "kiwipress"` is Types vocabulary for a future kernel, not a KiwiPress import)
 
 ## Source of truth
 

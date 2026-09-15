@@ -43,11 +43,11 @@ const STEPS = [
     },
     {
         title: "Transfer to Nectarine",
-        body: "When you are ready, WPSync maps posts, pages, users, and taxonomies onto Nectarine models — the CMS WebEngine actually runs."
+        body: "When you are ready, WPSync maps posts, pages, users, and taxonomies onto Nectarine models — a CMS KiwiPress runs on its own."
     },
     {
         title: "Publish as Application",
-        body: "Web Engine renders the composed experience at runtime. Modern, interactive, and no longer coupled to WordPress."
+        body: "Publish the native CMS from this library — or let WebEngine orchestrate it later."
     }
 ];
 
@@ -71,14 +71,14 @@ const ARCH_LAYERS: ArchLayer[] = [
         tier: "application",
         label: "APPLICATION LAYER",
         title: "KiwiPress",
-                        features: ["CRUD operations", "Content normalization", "WPSync transfer", "Nectarine CMS models"],
+        features: ["CRUD operations", "Content normalization", "WPSync transfer", "Nectarine CMS models"],
         divider: "COMPOSITION LAYER"
     },
     {
         tier: "runtime",
         label: "RUNTIME LAYER",
-        title: "Web Engine / Kiwi Engine",
-        features: ["Application rendering", "Interactive behaviors", "State management", "Component composition"]
+        title: "KiwiPress / your host",
+        features: ["Application rendering", "Interactive behaviors", "State management", "Optional WebEngine later"]
     }
 ];
 
@@ -91,16 +91,16 @@ const ARCH_SUMMARY = [
 
 const PLAIN_ENGLISH = [
     { lead: "WordPress stores the content,",         rest: "like your company blog posts, marketing pages, and team bios." },
-    { lead: "KiwiPress is the entry point,",         rest: "a headless client that later transfers that content into our CMS." },
+    { lead: "KiwiPress is the CMS library,",         rest: "a headless WordPress client that later transfers that content into our native CMS." },
     { lead: "Nectarine is the destination CMS,",     rest: "typed models that are more expressive than WordPress posts and pages." },
-    { lead: "Web Engine makes it a product,",        rest: "with interactive features, modern UX, and application-level workflows." }
+    { lead: "Your app hosts it,",                    rest: "KiwiPress runs standalone; WebEngine can orchestrate it later if you want that kernel." }
 ];
 
 const DEVELOPER_TERMS = [
     { lead: "WordPress acts as the system of record,",          rest: "until you transfer; then Nectarine models are the content of record." },
     { lead: "KiwiPress is the CMS adapter and publishing bridge,", rest: "WPAuth, domain objects, response normalization, and WPSync." },
-    { lead: "Nectarine owns the destination schema,",            rest: "YAML models for posts, pages, users, and taxonomies WebEngine can persist." },
-    { lead: "Web Engine provides the runtime layer,",            rest: "managing rendering, state, routing, and application behavior independently of WordPress." }
+    { lead: "Nectarine owns the destination schema,",            rest: "YAML models for posts, pages, users, and taxonomies KiwiPress can persist." },
+    { lead: "Web Engine is optional orchestration,",            rest: "not a hard dependency — KiwiPress does not import the kernel." }
 ];
 
 const ENGINEERING = [
@@ -128,7 +128,7 @@ export function HowItWorks() {
                     <header arch-hero-header>
                         <h1>See How KiwiPress Works</h1>
                         <p lede>
-                            WordPress is the on-ramp. KiwiPress normalizes that content and transfers it into a Nectarine CMS that WebEngine can run — more expressive, modern, and yours.
+                            WordPress is the on-ramp. KiwiPress normalizes that content and transfers it into a Nectarine CMS you can run in any Node app — more expressive, modern, and yours.
                         </p>
                         <div arch-hero-actions row gap="cozy">
                             <button scale="lg" type="button" onclick={startBuilding}>Start Building</button>
@@ -309,8 +309,8 @@ export function HowItWorks() {
             <section final-cta paddingY="roomy">
                 <div container narrow>
                     <div final-cta-inner>
-                        <h2>Start on WordPress. Graduate to WebEngine.</h2>
-                        <p>KiwiPress is the entry point: keep WordPress as long as you need it, then transfer into a Nectarine CMS that is more expressive, modern, and easy to use.</p>
+                        <h2>Start on WordPress. Keep KiwiPress yours.</h2>
+                        <p>KiwiPress is a standalone library: keep WordPress as long as you need it, then transfer into a Nectarine CMS that is more expressive, modern, and easy to use — with or without WebEngine.</p>
                         <div row gap="cozy">
                             <button scale="lg" type="button" onclick={getKiwipress}>Get KiwiPress</button>
                             <button btn="outline" scale="lg" type="button" onclick={contact}>Talk to Us</button>

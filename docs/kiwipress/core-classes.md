@@ -2,7 +2,7 @@
 
 The core classes form an inheritance spine that separates WordPress infrastructure, transport, and CRUD concerns into distinct layers. Domain objects like `Posts`, `Pages`, and `Users` sit at the top of this spine and inherit everything they need.
 
-This page is the practical spine reference. For what/why and first requests, use the [README](./README.md) and [Getting started](./kiwipress-getting-started.md). For WordPress → Nectarine, use [Transfer](./kiwipress-transfer.md). KiwiPress is the **WordPress on-ramp** into [Make A Web App](../webengine/make-a-web-app.md), not a core chapter.
+This page is the practical spine reference. For what/why and first requests, use the [README](./README.md) and [Getting started](./kiwipress-getting-started.md). For WordPress → Nectarine, use [Transfer](./kiwipress-transfer.md). KiwiPress is a **standalone CMS library** (and a WordPress elective in [Make A Web App](../webengine/make-a-web-app.md)), not a core chapter and not a WebEngine import.
 
 ```
 WPCore + WPAuth
@@ -15,7 +15,8 @@ WPCore + WPAuth
 KiwiPress.connect()
   ├── wordpress.*   (Posts, Pages, …)
   ├── sync          (WPSync → NectarineStore)
-  └── native.*      (NativeCollection)
+  ├── native.*      (NativeCollection)
+  └── persistence   (optional file / Nectarine PgSql)
 ```
 
 Source files cited below live in the WebEngine monorepo under `packages/kiwipress/`. They are not part of this docs vault, so they are listed as paths rather than links.
@@ -371,7 +372,7 @@ type WordPressPayload = Record<string, unknown>;
 
 **File:** `packages/kiwipress/src/core/WPSync.ts`
 
-`WPSync` reads WordPress collections through domain objects and upserts `ContentRecord`s into a `NectarineStore`.
+`WPSync` reads WordPress collections through domain objects and upserts `ContentRecord`s into a `NectarineStore`, then flushes if persistence is configured.
 
 ```ts
 await kiwi.sync?.preview(["posts"]);
@@ -387,15 +388,17 @@ See [Transfer](./kiwipress-transfer.md).
 **File:** `packages/kiwipress/src/cms/KiwiPress.ts`
 
 ```ts
-const kiwi = KiwiPress.connect({ url, username, appPassword });
+const kiwi = KiwiPress.connect({ url, username, appPassword, persistence });
+await kiwi.ready();       // hydrate from persistence if configured
 kiwi.mode;                // "wordpress" | "nectarine"
 kiwi.wordpress.posts;     // existing Posts client
 kiwi.native.posts;        // NativeCollection on NectarineStore
 kiwi.promote();           // in-place switch to nectarine
 kiwi.toNectarine();       // new instance sharing the store
+await kiwi.persist();     // flush the store
 ```
 
-`mode: "nectarine"` does not require `url`. Native collections then are the CMS.
+`mode: "nectarine"` does not require `url`. Native collections then are the CMS. `persistence` is opt-in; omit it for in-memory.
 
 ---
 
@@ -407,11 +410,27 @@ kiwi.toNectarine();       // new instance sharing the store
 
 ---
 
+## Persistence
+
+**Files:** `packages/kiwipress/src/cms/persistence.ts`, `file-persistence.ts`, `postgres-persistence.ts`
+
+```ts
+import { createFilePersistence, createPostgresPersistence } from "@citrusworx/kiwipress";
+
+createFilePersistence("./data/kiwipress-cms.json");
+createPostgresPersistence({ database: "kiwipress" }); // Nectarine PgSql; needs pg at runtime
+createPostgresPersistence({ executor });              // tests / custom SQL
+```
+
+`NectarineStore.hydrate()` / `flush()` back this. KiwiPress does not import WebEngine to persist.
+
+---
+
 ## Gateway
 
 **File:** `packages/kiwipress/src/gateway/register.ts`
 
-`registerKiwiPressGateway(app, kiwi, options?)` attaches exact Seltzer routes under `/__kiwipress`. Item writes use `?id=`. Used by `apps/kiwipress/back`.
+`registerKiwiPressGateway(app, kiwi, options?)` attaches exact Seltzer routes under `/__kiwipress`. Item writes use `?id=`. Used by `apps/kiwipress/back`. GET `/__kiwipress/cms` reports `persistence` (`memory` | `file` | `postgres` | `custom`).
 
 `options.token` (`KIWIPRESS_GATEWAY_TOKEN`) is required for any non-loopback caller. `/__kiwipress/health` stays a public liveness probe and only returns `{ ok: true }`.
 

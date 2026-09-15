@@ -26,16 +26,20 @@ export class NativeCollection {
         this.store = store;
         this.collection = collection;
     }
-    getAll() {
-        return Promise.resolve(this.store.list(this.collection));
+    async getAll() {
+        await this.store.hydrate();
+        return this.store.list(this.collection);
     }
-    getById(id) {
-        return Promise.resolve(this.store.get(this.collection, id));
+    async getById(id) {
+        await this.store.hydrate();
+        return this.store.get(this.collection, id);
     }
-    getBySlug(slug) {
-        return Promise.resolve(this.store.findBySlug(this.collection, slug));
+    async getBySlug(slug) {
+        await this.store.hydrate();
+        return this.store.findBySlug(this.collection, slug);
     }
-    create(data) {
+    async create(data) {
+        await this.store.hydrate();
         const title = typeof data.title === "string" ? data.title : "Untitled";
         const id = typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : crypto.randomUUID();
         const record = {
@@ -55,9 +59,12 @@ export class NativeCollection {
             },
             meta: {}
         };
-        return Promise.resolve(this.store.upsert(record));
+        const created = this.store.upsert(record);
+        await this.store.flush();
+        return created;
     }
-    update(id, data) {
+    async update(id, data) {
+        await this.store.hydrate();
         const existing = this.store.get(this.collection, id);
         if (!existing) {
             throw new Error(`Nectarine ${this.collection} ${id} was not found.`);
@@ -70,10 +77,15 @@ export class NativeCollection {
             status: asStatus(data.status, existing.status),
             updatedAt: new Date().toISOString()
         };
-        return Promise.resolve(this.store.upsert(next));
+        const updated = this.store.upsert(next);
+        await this.store.flush();
+        return updated;
     }
-    delete(id) {
-        return Promise.resolve(this.store.remove(this.collection, id));
+    async delete(id) {
+        await this.store.hydrate();
+        const removed = this.store.remove(this.collection, id);
+        await this.store.flush();
+        return removed;
     }
 }
 export function createNativeCms(store) {

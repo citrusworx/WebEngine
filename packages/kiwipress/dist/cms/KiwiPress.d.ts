@@ -1,4 +1,5 @@
 import { type NativeCms } from "./native.js";
+import type { CmsPersistence } from "./persistence.js";
 import { NectarineStore } from "./store.js";
 import type { CmsMode } from "./types.js";
 import { WPAuth } from "../core/WPAuth.js";
@@ -7,6 +8,7 @@ import type { WPCoreConfig } from "../core/WPCore.js";
 export type KiwiPressConfig = Partial<WPCoreConfig> & {
     mode?: CmsMode;
     store?: NectarineStore;
+    persistence?: CmsPersistence;
 };
 export declare class KiwiPress {
     readonly auth: WPAuth;
@@ -18,6 +20,9 @@ export declare class KiwiPress {
     private readonly wp?;
     constructor(config?: KiwiPressConfig);
     static connect(config?: KiwiPressConfig): KiwiPress;
+    ready(): Promise<this>;
+    persist(): Promise<void>;
+    get persistence(): CmsPersistence | undefined;
     get wordpress(): WordPressClients;
     toNectarine(store?: NectarineStore): KiwiPress;
     promote(): this;

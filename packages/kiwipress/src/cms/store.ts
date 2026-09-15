@@ -1,27 +1,69 @@
-import type { CmsCollection, ContentRecord } from "./types.js";
+import { CMS_COLLECTIONS, type CmsCollection, type CmsSnapshot, type ContentRecord } from "./types.js";
+import type { CmsPersistence, CmsPersistenceKind } from "./persistence.js";
+import { emptySnapshot } from "./persistence.js";
 
-const COLLECTIONS: CmsCollection[] = [
-    "posts",
-    "pages",
-    "users",
-    "categories",
-    "tags",
-    "comments"
-];
-
-function emptyBuckets(): Record<CmsCollection, ContentRecord[]> {
-    return {
-        posts: [],
-        pages: [],
-        users: [],
-        categories: [],
-        tags: [],
-        comments: []
-    };
+function emptyBuckets(): CmsSnapshot {
+    return emptySnapshot();
 }
 
 export class NectarineStore {
-    private records: Record<CmsCollection, ContentRecord[]> = emptyBuckets();
+    private records: CmsSnapshot = emptyBuckets();
+    private adapter?: CmsPersistence;
+    private hydrated = false;
+    private hydrating?: Promise<void>;
+    private flushQueue: Promise<void> = Promise.resolve();
+
+    usePersistence(persistence: CmsPersistence): this {
+        if (this.adapter === persistence) {
+            return this;
+        }
+
+        this.adapter = persistence;
+        this.hydrated = false;
+        this.hydrating = undefined;
+        return this;
+    }
+
+    get persistence(): CmsPersistence | undefined {
+        return this.adapter;
+    }
+
+    get persistenceKind(): CmsPersistenceKind {
+        return this.adapter?.kind ?? "memory";
+    }
+
+    async hydrate(): Promise<void> {
+        if (!this.adapter || this.hydrated) {
+            return;
+        }
+
+        if (!this.hydrating) {
+            this.hydrating = (async () => {
+                const snapshot = await this.adapter!.load();
+                if (snapshot) {
+                    this.replace(snapshot);
+                }
+                this.hydrated = true;
+            })().finally(() => {
+                this.hydrating = undefined;
+            });
+        }
+
+        await this.hydrating;
+    }
+
+    async flush(): Promise<void> {
+        if (!this.adapter) {
+            return;
+        }
+
+        const run = this.flushQueue.then(() => this.adapter!.save(this.snapshot()));
+        this.flushQueue = run.then(
+            () => undefined,
+            () => undefined
+        );
+        await run;
+    }
 
     list(collection: CmsCollection): ContentRecord[] {
         return [...this.records[collection]];
@@ -63,7 +105,7 @@ export class NectarineStore {
         return this.records[collection].length !== before;
     }
 
-    snapshot(): Record<CmsCollection, ContentRecord[]> {
+    snapshot(): CmsSnapshot {
         return {
             posts: this.list("posts"),
             pages: this.list("pages"),
@@ -74,8 +116,8 @@ export class NectarineStore {
         };
     }
 
-    replace(snapshot: Partial<Record<CmsCollection, ContentRecord[]>>): void {
-        for (const collection of COLLECTIONS) {
+    replace(snapshot: Partial<CmsSnapshot>): void {
+        for (const collection of CMS_COLLECTIONS) {
             this.records[collection] = [...(snapshot[collection] ?? [])];
         }
     }

@@ -5,6 +5,7 @@ type CmsStatus = {
     mode?: string;
     entry?: string;
     destination?: string;
+    persistence?: string;
     native?: Record<string, number>;
     error?: string;
 };
@@ -92,6 +93,7 @@ export function TransferPanel() {
                 {transferError ? <p>{transferError}</p> : null}
                 <p>
                     Entry: {current.entry ?? "wordpress"} → destination: {current.destination ?? "nectarine"}
+                    {" "}({current.persistence ?? "memory"})
                 </p>
                 <ul>
                     {Object.entries(counts).map(([collection, count]) => (
@@ -111,11 +113,11 @@ export function TransferPanel() {
             }}
         >
             <div card-header stack gap="0.5rem">
-                <p>WebEngine on-ramp</p>
+                <p>Standalone CMS</p>
                 <h2>Transfer to Nectarine</h2>
                 <p>
                     Start on WordPress Headless. Move posts, pages, users, and taxonomies into the native
-                    Nectarine-shaped CMS KiwiPress carries into WebEngine.
+                    Nectarine-shaped CMS this library owns — persist it here, reuse it in other projects.
                 </p>
             </div>
             <div card-body stack gap="1rem">

@@ -2,16 +2,16 @@
 
 ## Purpose
 
-KiwiPress is the WordPress entry point into the WebEngine ecosystem.
+KiwiPress is a standalone WordPress application layer and a Nectarine-shaped CMS. Other projects can depend on `@citrusworx/kiwipress` without WebEngine.
 
-People start with WordPress Headless because they already have content, editors, and plugins. KiwiPress talks to that install through a structured application layer. When they are ready, `WPSync` transfers that content into a Nectarine-shaped CMS — more expressive, modern, and easy to use — which WebEngine can run without WordPress.
+People often start with WordPress Headless because they already have content, editors, and plugins. KiwiPress talks to that install through domain objects. When they are ready, `WPSync` transfers that content into a native CMS (`NectarineStore` / `NativeCollection`). That store is KiwiPress's — persist it with a file or with Nectarine's Postgres adapter. WebEngine may orchestrate those modules later. It is not hardwired in.
 
 KiwiPress is built on:
 
 - `Seltzer` for route registration, endpoint execution, and request lifecycle
-- `Nectarine` for model and API configuration (YAML contracts and the destination schema)
+- `Nectarine` for model/API YAML and optional SQL adapters
 
-KiwiPress is not a bag of REST helpers. It is a WordPress application layer with a documented exit into WebEngine.
+KiwiPress is not a bag of REST helpers. It is not a WebEngine plugin. Each of those libraries stays usable on its own.
 
 ## Current Status
 
@@ -28,12 +28,13 @@ Shipped:
 - `loadNectarineApi` for nested or flat Nectarine API YAML
 - `WPSync` transfer from WordPress collections into a `NectarineStore`
 - `KiwiPress.connect()` facade with `wordpress` (entry) and `nectarine` (destination) modes
+- opt-in `CmsPersistence` (`createFilePersistence`, `createPostgresPersistence` via Nectarine `PgSql`)
 - `registerKiwiPressGateway` for the `apps/kiwipress` Seltzer proxy
 - live app at `apps/kiwipress` (marketing, wizard, dashboard Content + transfer)
 
 Not finished yet:
 
-- persisting the Nectarine store through `PgSql` / MySQL / Mongo
+- MySQL / Mongo persistence adapters
 - a full visual CMS UI (Echo)
 - media and custom post type domain objects
 - plugin adapters (WooCommerce, BuddyPress, MemberPress)
@@ -41,19 +42,21 @@ Not finished yet:
 ## The on-ramp
 
 ```
-WordPress (headless REST)
+WordPress (headless REST)          optional — skip with mode: "nectarine"
         │  KiwiPress domain objects
         ▼
  ContentRecord (normalized)
         │  WPSync.transfer()
         ▼
- NectarineStore / Nectarine models
-        │  WebEngine runtime
+ NectarineStore / NativeCollection
+        │  CmsPersistence (file or Nectarine PgSql)
         ▼
- Native CMS the user actually wants
+ Durable native CMS in this process — or any host that imports the library
 ```
 
-WordPress is the default `cms` adapter (`Blueprint.adapters.cms = "kiwipress"`). Nectarine is the destination. Transfer is explicit: nothing overwrites WordPress until `sync.transfer()` runs.
+WordPress is the usual entry, not a required runtime. Transfer is explicit: nothing overwrites WordPress until `sync.transfer()` runs. Persistence is also explicit: without `persistence`, the store stays in memory.
+
+`Blueprint.adapters.cms = "kiwipress"` is Types / WebEngine vocabulary for a future kernel. KiwiPress does not import it.
 
 ## Stack Roles
 
@@ -65,9 +68,9 @@ Does not own WordPress business rules.
 
 ### `Nectarine`
 
-Owns parsing config files such as `userAPI.yml` and `models/blog/post/schema.yml`.
+Owns parsing config files such as `userAPI.yml` and `models/blog/post/schema.yml`, plus thin DB sockets (`PgSql`, MySQL, Mongo).
 
-Does not own route execution or WordPress runtime behavior.
+Does not own route execution or WordPress runtime behavior. KiwiPress may use `PgSql` as a persistence backend; that does not make Nectarine a CMS host.
 
 ### `KiwiPress`
 
@@ -78,7 +81,11 @@ Owns:
 - auth header workflow (`WPAuth`)
 - sync and transfer workflow (`WPSync`)
 - composition of Seltzer and Nectarine
-- the native CMS store that transfer fills
+- the native CMS store and its persistence interface
+
+### `WebEngine`
+
+Future orchestrator. Not a dependency of this package. Do not import `@citrusworx/webengine` from KiwiPress.
 
 ## Core Design
 
@@ -92,6 +99,7 @@ KiwiPress is split into these object areas:
 - `WPDelete`
 - `WPSync`
 - `NectarineStore` / `NativeCollection`
+- `CmsPersistence`
 
 The implemented spine is:
 
@@ -99,7 +107,7 @@ The implemented spine is:
 - `WPClient`
 - `WPRead` and write wrappers
 - domain objects on `WPRead`
-- `KiwiPress` facade + `WPSync` + native store
+- `KiwiPress` facade + `WPSync` + native store + opt-in persistence
 
 ## Class Responsibilities
 
@@ -127,13 +135,18 @@ CRUD execution boundaries on top of `WPClient`. Domain objects currently extend 
 Operational data movement from WordPress into Nectarine-shaped records.
 
 - `preview()` — counts without writing
-- `transfer()` — normalize and upsert into `NectarineStore`
-
-This is the transfer users take when they leave WordPress for WebEngine.
+- `transfer()` — normalize, upsert into `NectarineStore`, then `flush()` if persistence is configured
 
 ### Native CMS
 
-`NectarineStore` holds `ContentRecord`s keyed by collection. `NativeCollection` exposes the same get/create/update/delete verbs against that store. Persistence adapters (Postgres via Nectarine) are the next layer, not this one.
+`NectarineStore` holds `ContentRecord`s keyed by collection. `NativeCollection` exposes get/create/update/delete against that store and flushes after mutations.
+
+`CmsPersistence` is a two-method interface (`load` / `save`). Implementations:
+
+- `createFilePersistence(path)` — JSON on disk, Node `fs` only
+- `createPostgresPersistence({ database, executor? })` — Nectarine `PgSql` by default; inject `SqlExecutor` in tests so `pg` is not loaded until you opt in
+
+`KiwiPress.connect({ persistence })` then `await kiwi.ready()` hydrates once. Default remains in-memory.
 
 ## Route Layer
 
@@ -143,18 +156,19 @@ Inbound app routes live in `registerKiwiPressGateway`. Seltzer matches exact pat
 
 ## Config-Driven Routing
 
-`loadNectarineApi` walks Nectarine API YAML — nested (`user.get.allUsers.api`) or flat (`get.allUsers.api`) — into `{ method, endpoint }` records. That is the real importer the Nectarine integration docs asked for.
+`loadNectarineApi` walks Nectarine API YAML — nested (`user.get.allUsers.api`) or flat (`get.allUsers.api`) — into `{ method, endpoint }` records.
 
 The live WordPress client still uses static `routes.ts` files because WordPress query aliases are not in those YAML files. Native CMS paths follow the Nectarine contracts.
 
 ## Direction of Dependency
 
-1. `Nectarine` provides configuration and the destination schema
+1. `Nectarine` provides configuration, destination schema, and optional SQL adapters
 2. `Seltzer` provides execution primitives
-3. `KiwiPress` composes both into WordPress services and the transfer into native CMS
+3. `KiwiPress` composes both into WordPress services and a native CMS
 
 `Seltzer` should not depend on `KiwiPress`.
 `Nectarine` should not depend on `KiwiPress`.
+`KiwiPress` should not depend on `WebEngine`.
 
 ## Near-Term Implementation Path
 
@@ -162,15 +176,17 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 2. Keep read/write domain objects honest
 3. Normalize WordPress JSON → `ContentRecord`
 4. Transfer through `WPSync` into `NectarineStore`
-5. Persist that store with Nectarine DB adapters
+5. Persist that store with file or Nectarine Postgres adapters
 6. Grow the Echo UI on top of native collections
 7. Keep route handlers thin throughout
+8. Let WebEngine orchestrate only when a host app asks it to
 
 ## Current Exported Surface
 
 - `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`
 - `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
+- `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
 - `normalizeWordPressItem`, `toNectarinePost`, `loadNectarineApi`
 - `registerKiwiPressGateway`
 
@@ -182,6 +198,7 @@ KiwiPress is not intended to be:
 - a route-handler-heavy architecture
 - a place where WordPress logic leaks into Seltzer
 - a forever-WordPress product — WordPress is the entry, not the destination
+- a WebEngine module that cannot run outside the kernel
 
 ## Summary
 
@@ -189,4 +206,4 @@ WordPress behavior lives in KiwiPress objects, not in Seltzer and not directly i
 
 The defining product principle is:
 
-Start on WordPress Headless. Transfer into a Nectarine CMS. Run it on WebEngine.
+Start on WordPress Headless if you have it. Transfer into a Nectarine CMS. Run that CMS as this library — in this app, another Node project, or later under WebEngine.

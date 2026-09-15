@@ -1,6 +1,6 @@
 # Getting Started With KiwiPress
 
-This is the usable WordPress REST client path — the **entry point** into WebEngine. It is an **optional track** for people who already have WordPress content. The destination CMS path is [Transfer](./kiwipress-transfer.md).
+This is the usable WordPress REST client path — a **standalone library**, not a WebEngine module. Use it in any Node project that can reach a WordPress REST API. The destination CMS path is [Transfer](./kiwipress-transfer.md).
 
 You need a WordPress site with the REST API reachable (typically `/wp-json/wp/v2`) and, for writes, credentials.
 
@@ -106,25 +106,29 @@ await posts.delete(draft.id);
 
 Bodies are `WordPressPayload` (`Record<string, unknown>`). There is no generated post schema. WordPress decides which fields it accepts.
 
-`packages/kiwipress/src/example.ts` is this create-then-`getBySlug` flow against `http://localhost:8080`, then a `KiwiPress.connect().sync.transfer(["posts"])` into the native store.
+`packages/kiwipress/src/example.ts` is this create-then-`getBySlug` flow against `http://localhost:8080`, then a `KiwiPress.connect().sync.transfer(["posts"])` into a file-backed native store.
 
 ## Transfer into Nectarine
 
-WordPress is the on-ramp. When you want the CMS WebEngine runs:
+WordPress is the on-ramp. When you want the native CMS this library owns:
 
 ```ts
-import { KiwiPress } from "@citrusworx/kiwipress";
+import { KiwiPress, createFilePersistence } from "@citrusworx/kiwipress";
 
 const kiwi = KiwiPress.connect({
   url: "https://example.com",
   username: "admin",
-  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx"
+  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx",
+  persistence: createFilePersistence("./data/kiwipress-cms.json")
 });
 
+await kiwi.ready();
 await kiwi.sync?.transfer(["posts", "pages"]);
 const native = kiwi.toNectarine();
 await native.native.posts.getAll();
 ```
+
+Pass `persistence` only when you want the store to survive process restart. Default is in-memory. Postgres uses Nectarine `PgSql` (`createPostgresPersistence({ database })` or `PG_DB`); inject an `SqlExecutor` in tests so `pg` is not loaded at import time.
 
 Full walkthrough: [Transfer](./kiwipress-transfer.md).
 
@@ -194,4 +198,4 @@ That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.t
 - [Core classes](./core-classes.md)
 - [Seltzer](../seltzer/README.md)
 - [Nectarine](../nectarine/README.md)
-- [Make A Web App](../webengine/make-a-web-app.md) electives table
+- [Make A Web App](../webengine/make-a-web-app.md) electives table (WebEngine is one possible host)
