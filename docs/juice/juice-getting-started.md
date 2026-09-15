@@ -153,13 +153,13 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 
 - navigation
 - accordion / disclosure
+- tabs
 
-Those features should work without app init. See [Accordion Runtime](./juice-accordion-runtime.md) and [Navigation Runtime](./juice-navigation-runtime.md).
+Those features should work without app init. See [Accordion Runtime](./juice-accordion-runtime.md), [Tabs Runtime](./juice-tabs-runtime.md), and [Navigation Runtime](./juice-navigation-runtime.md).
 
 Use Sig.js for app-specific state:
 
 - counters
-- tabs
 - filters
 - route-aware UI
 - reactive updates after render

@@ -226,6 +226,24 @@ Boolean attributes that mark structural state. Themes decide their visual treatm
 - `fixed`
   Boolean modifier
 
+### Accordion
+
+- `accordion` — widget root; required for the disclosure runtime
+- `accordion-item` — trigger inside an `[accordion]` root
+
+See [Accordion Runtime](./juice-accordion-runtime.md). Theme paint uses `--juice-accordion-*` roles.
+
+### Tabs
+
+- `tabs` — widget root; required for the tabs runtime
+- `tabs-list` — horizontal tab strip (`role="tablist"`)
+- `tab` — tab trigger (`role="tab"`); may also be a direct-child `button`
+- `tab-panel` — panel paired with a trigger (`role="tabpanel"`)
+- `active` — selected trigger (dual-written with `aria-selected="true"`)
+- `name` — optional root label used for the tablist accessible name and generated ids
+
+See [Tabs Runtime](./juice-tabs-runtime.md). Theme paint uses `--juice-tabs-*` roles (`trigger`, `trigger-hover`, `trigger-active`, `text`, `text-hover`, `text-active`, `indicator`, `list-rule`, `focus-ring`, plus optional `panel` / `panel-rule`).
+
 ## Usage Examples
 
 ```html
