@@ -1,6 +1,6 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { CCompiler, compileSchema, compileSchemas, compileTable, SchemaCompileError } from "./compiler.js";
+import { CCompiler, compileSchema, compileSchemas, compileSchemasPlan, compileSqlType, compileTable, schemaPlanStatements, SchemaCompileError } from "./compiler.js";
 
 const fixtureProduct = path.resolve(
     import.meta.dirname,
@@ -199,6 +199,29 @@ describe("schema DDL compiler", () => {
             "ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS interest TEXT;",
         );
         expect(additive).not.toContain("ADD COLUMN IF NOT EXISTS id ");
+    });
+
+    it("maps type tokens through compileSqlType and compileSchemasPlan", () => {
+        expect(compileSqlType("jsonb")).toBe("JSONB");
+        expect(compileSqlType("jsonb", "mysql")).toBe("JSON");
+        expect(compileSqlType("varchar(40)")).toBe("VARCHAR(40)");
+
+        const plan = compileSchemasPlan(
+            [
+                {
+                    Product: {
+                        table: "products",
+                        fields: { id: "string PRIMARY KEY", payload: "jsonb NOT NULL" },
+                    },
+                },
+            ],
+            "postgres",
+        );
+        expect(plan).toHaveLength(1);
+        expect(plan[0]?.createTable).toContain("payload JSONB NOT NULL");
+        expect(schemaPlanStatements(plan, "additive")).toEqual([
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS payload JSONB;",
+        ]);
     });
 
     it("exposes CCompiler.buildDdl / buildTable as the phonics entry", () => {

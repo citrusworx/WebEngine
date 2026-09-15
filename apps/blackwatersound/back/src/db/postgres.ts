@@ -3,8 +3,8 @@ import type { DatabaseCredentials } from "@citrusworx/nectarine/config";
 import type { QueryResultRow } from "pg";
 import type { ProductRecord } from "../data/seed-products.js";
 import type { WaitlistEntry } from "../types/context.js";
-import { namedDdl, type NamedDdl } from "./named-ddl.js";
-import { bindJsonbDocument, namedQuery, type NamedQuery } from "./named-queries.js";
+import { namedQuery, bindJsonbDocument, type NamedQuery } from "./named-queries.js";
+import { applyNamedMigrations } from "./named-ddl.js";
 
 let adapter: PgSql | null = null;
 
@@ -51,14 +51,13 @@ export async function closeDatabase() {
   await db.disconnect().catch(() => undefined);
 }
 
-/** Execute compiler-owned schema DDL. Equivalent to `adapter.query(sql)`. */
-async function runNamedDdl(name: NamedDdl) {
+export async function migrate() {
   const db = getAdapter();
   if (!db) {
     return;
   }
 
-  await db.query(namedDdl(name));
+  await applyNamedMigrations(db);
 }
 
 /** Execute compiler-owned SQL. Equivalent to `adapter.query(sql, params)`. */
@@ -80,10 +79,6 @@ async function runNamed<T extends QueryResultRow>(
   params: readonly unknown[] = [],
 ) {
   return runCompiledQuery<T>(namedQuery(name), params);
-}
-
-export async function migrate() {
-  await runNamedDdl("bootstrap");
 }
 
 function asProductRecord(payload: unknown): ProductRecord | null {

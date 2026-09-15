@@ -47,6 +47,10 @@
             "types": "./dist/compiler/compiler.d.ts",
             "default": "./dist/compiler/compiler.js"
         },
+        "./migrate": {
+            "types": "./dist/migrate/index.d.ts",
+            "default": "./dist/migrate/index.js"
+        },
         "./adapters/mg": {
             "types": "./dist/adapters/mg/mgz.d.ts",
             "default": "./dist/adapters/mg/mgz.js"

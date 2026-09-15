@@ -11,10 +11,13 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DDL_VENDORS = exports.SchemaCompileError = void 0;
+exports.schemaPlanStatements = schemaPlanStatements;
 exports.compileSchema = compileSchema;
 exports.compileSchemas = compileSchemas;
 exports.compileTable = compileTable;
 exports.compileSchemaPlan = compileSchemaPlan;
+exports.compileSchemasPlan = compileSchemasPlan;
+exports.compileSqlType = compileSqlType;
 exports.schemaFieldEnumValues = schemaFieldEnumValues;
 const util_js_1 = require("../util/util.js");
 const errors_js_1 = require("./errors.js");
@@ -595,16 +598,28 @@ function planModels(models, vendor) {
         ],
     }));
 }
-function emitPlan(tables, options = {}) {
+/**
+ * Flatten a compiled schema plan into executable statements.
+ * `create` = CREATE TABLE (no additive ALTER). `additive` = ADD COLUMN only.
+ * `indexes` = CREATE INDEX. `all` matches {@link compileSchemas} with options.
+ */
+function schemaPlanStatements(tables, phase, options = {}) {
     const statements = [];
     for (const table of tables) {
-        statements.push(table.createTable);
-        if (options.additive) {
+        if (phase === "create" || phase === "all") {
+            statements.push(table.createTable);
+        }
+        if (phase === "additive" || (phase === "all" && options.additive)) {
             statements.push(...table.addColumns);
         }
-        statements.push(...table.indexes);
+        if (phase === "indexes" || phase === "all") {
+            statements.push(...table.indexes);
+        }
     }
-    return statements.join("\n\n");
+    return statements;
+}
+function emitPlan(tables, options = {}) {
+    return schemaPlanStatements(tables, "all", options).join("\n\n");
 }
 /**
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
@@ -639,6 +654,40 @@ function compileTable(schema, modelName, vendor = "postgres", options = {}) {
 }
 function compileSchemaPlan(schema, vendor = "postgres") {
     return planModels(collectModels(loadSchemaDoc(schema)), resolveVendor(vendor));
+}
+/**
+ * Compile several schema documents to a shared foreign-key-ordered plan.
+ */
+function compileSchemasPlan(schemas, vendor = "postgres") {
+    if (!Array.isArray(schemas) || schemas.length === 0) {
+        throw new SchemaCompileError("compileSchemasPlan requires at least one schema document");
+    }
+    const dialect = resolveVendor(vendor);
+    const models = schemas.flatMap((schema) => collectModels(loadSchemaDoc(schema)));
+    return planModels(models, dialect);
+}
+/**
+ * Map a schema field type token (`jsonb`, `varchar(100)`, `enum(a, b)`) to vendor SQL.
+ * Used by type-change migrations; does not accept raw SQL.
+ */
+function compileSqlType(typeSpec, vendor = "postgres") {
+    if (typeof typeSpec !== "string" || typeSpec.trim() === "") {
+        throw new SchemaCompileError("Type token is required");
+    }
+    const dialect = resolveVendor(vendor);
+    const { type, rest } = parseColumnType(typeSpec);
+    if (rest.length > 0) {
+        throw new SchemaCompileError(`Unexpected tokens in type: ${rest}`);
+    }
+    const field = {
+        name: "column",
+        type,
+        primaryKey: false,
+        autoIncrement: false,
+        unique: false,
+        notNull: false,
+    };
+    return emitSqlType(field, dialect);
 }
 /** Enum tokens from a schema field (for app-side allowlists, not SQL). */
 function schemaFieldEnumValues(schema, modelName, fieldName) {

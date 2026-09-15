@@ -328,6 +328,43 @@ POST /users {"username": "john", "email": "john@example.com"}
 
 ---
 
+## Schema migrations
+
+`*Schema.yml` is the current CREATE TABLE shape. Additive `ADD COLUMN IF NOT EXISTS` covers new fields. Rename, drop, and type change are **explicit versioned YAML**, compiled by Nectarine — not raw SQL in the app, and not a silent diff against the live database (that would DROP columns without a gate).
+
+```yaml
+# 001_rename_nickname.yml
+version: "001_rename_nickname"
+description: Rename users.nickname to handle
+operations:
+  - renameColumn:
+      table: users
+      from: nickname
+      to: handle
+```
+
+```yaml
+# 002_drop_legacy_flag.yml
+version: "002_drop_legacy_flag"
+destructive: true
+operations:
+  - dropColumn:
+      table: users
+      column: legacy_flag
+      confirm: dropColumn
+  - changeType:
+      table: products
+      column: tags
+      type: jsonb
+      confirm: changeType
+```
+
+`dropColumn` and `changeType` require both `destructive: true` and a matching `confirm:` token. Postgres `changeType` uses `USING CAST(column AS <type>)` so spaced types (`float` → `DOUBLE PRECISION`) compile. Versions use a zero-padded prefix (`001_…`) so apply order is lexicographic. Indexes from current `*Schema.yml` are created **after** pending renames. See [Production](./production.md) and `applyMigrations` in the [API reference](./nectarine-api.md).
+
+Do not drop or demote Postgres JSONB columns such as Blackwater `products.payload`.
+
+---
+
 ## Complete Example: Blog Schema
 
 ```yaml

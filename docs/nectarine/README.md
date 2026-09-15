@@ -143,7 +143,7 @@ yarn add @citrusworx/nectarine @citrusworx/seltzer
 ✓ **Seltzer Hosted**: WebEngine / Blackwater serves HTTP with Seltzer
 ✓ **Validation Intent**: Zod is the planned validation layer on the hosted path
 ✓ **Pre-built Schemas**: User, Blog, CMS, Store, Banking models included
-✓ **Query Compiler**: SELECT, INSERT, UPDATE, DELETE from query YAML; CREATE TABLE from schema YAML
+✓ **Query Compiler**: SELECT, INSERT, UPDATE, DELETE from query YAML; CREATE TABLE from schema YAML; versioned ALTER from migration YAML
 ✓ **Relationships**: Foreign keys and relationships supported
 ✓ **Flexible**: Extend and override as needed
 

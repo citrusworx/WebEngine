@@ -8,9 +8,10 @@ Install from npm. The packed tarball is `dist/` (plus npm’s default `LICENSE` 
 
 Stable entrypoints:
 
-- `@citrusworx/nectarine` — config loader, compiler, YAML helpers (`loadNectarineConfig`, `CCompiler`, `listApiOperations`, …)
+- `@citrusworx/nectarine` — config loader, compiler, YAML helpers (`loadNectarineConfig`, `CCompiler`, `listApiOperations`, `applyMigrations`, …)
 - `@citrusworx/nectarine/config` and `@citrusworx/nectarine/api`
 - `@citrusworx/nectarine/compiler`
+- `@citrusworx/nectarine/migrate` — versioned YAML migrator (`applyMigrations`, `compileMigration`, ledger)
 - `@citrusworx/nectarine/adapters/pg` — requires peer `pg`
 - `@citrusworx/nectarine/adapters/ms` — requires peer `mysql2`
 - `@citrusworx/nectarine/adapters/mg` — requires peer `mongodb`
@@ -24,8 +25,8 @@ Full guides live in the [WebEngine `docs/nectarine/` directory](https://github.c
 
 Final app backend code **must not** embed SQL strings. Nectarine is phonics:
 
-1. **App code** calls a named query (`resource.method.QueryName`) or named DDL and passes bind values.
-2. **Compiler** assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` from query YAML, and `CREATE TABLE` / `CREATE INDEX` from `*Schema.yml` (canonical CRUD or Blackwater `type: SELECT`, normalized onto the same DML model).
+1. **App code** calls a named query (`resource.method.QueryName`) or named DDL / `applyMigrations` and passes bind values.
+2. **Compiler** assembles `SELECT` / `INSERT` / `UPDATE` / `DELETE` from query YAML, `CREATE TABLE` / `CREATE INDEX` from `*Schema.yml`, and gated `ALTER` from versioned migration YAML (canonical CRUD or Blackwater `type: SELECT`, normalized onto the same DML model).
 3. **Adapters** only execute `(sql, params)` produced by the compiler. They never build SQL.
 
 Postgres **JSONB is first-class**. Document-store columns stay JSONB; named YAML selects `payload` and binds `{ value: $N, cast: jsonb }` (allow-listed). Schema fields may be `json` / `jsonb`. Do not drop JSONB to satisfy the no-SQL rule.
@@ -84,6 +85,7 @@ Subpath exports are also available:
 - `@citrusworx/nectarine/config`
 - `@citrusworx/nectarine/api`
 - `@citrusworx/nectarine/compiler`
+- `@citrusworx/nectarine/migrate`
 - `@citrusworx/nectarine/adapters/mg`
 - `@citrusworx/nectarine/adapters/ms`
 - `@citrusworx/nectarine/adapters/pg`
@@ -148,6 +150,20 @@ Schema YAML compiles the same way:
 ```ts
 const ddl = compiler.buildDdl(compiler.parse_config("./schemas/product/productSchema.yml"));
 await pg.query(ddl);
+```
+
+Versioned schema evolution uses `applyMigrations` (ledger + YAML ops). Additive `ADD COLUMN IF NOT EXISTS` still runs for new fields after pending renames/drops:
+
+```ts
+import { applyMigrations, loadMigrationDocuments } from "@citrusworx/nectarine/migrate";
+
+await applyMigrations({
+    execute: pg,
+    vendor: "postgres",
+    schemas: [compiler.parse_config("./schemas/product/productSchema.yml")],
+    migrations: loadMigrationDocuments("./db/migrations"),
+    protectedColumns: [{ table: "products", column: "payload" }],
+});
 ```
 
 ## MySQL adapter
@@ -258,7 +274,7 @@ product:
 - `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
 - `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`.
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`. Versioned migration YAML compiles to gated `ALTER` (`renameColumn`, `dropColumn`, `changeType`).
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";

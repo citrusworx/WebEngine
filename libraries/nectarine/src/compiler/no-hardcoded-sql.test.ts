@@ -34,6 +34,16 @@ describe("Blackwater data access has no hard-coded SQL", () => {
         expect(files.some((file) => file.endsWith("named-ddl.ts"))).toBe(true);
         expect(files.some((file) => file.endsWith("phase3-ddl.ts"))).toBe(false);
 
+        const namedDdlSrc = fs.readFileSync(path.join(blackwaterDb, "named-ddl.ts"), "utf8");
+        expect(namedDdlSrc).toContain("applyMigrations");
+        expect(namedDdlSrc).toContain("loadMigrationDocuments");
+        expect(namedDdlSrc).toContain('table: "products"');
+        expect(namedDdlSrc).toContain('column: "payload"');
+
+        const postgresSrc = fs.readFileSync(path.join(blackwaterDb, "postgres.ts"), "utf8");
+        expect(postgresSrc).toContain("applyNamedMigrations");
+        expect(postgresSrc).not.toContain("runNamedDdl");
+
         for (const file of files) {
             const src = stripComments(fs.readFileSync(file, "utf8"));
             const relative = path.relative(blackwaterDb, file);

@@ -39,6 +39,12 @@ export declare class PgSql {
      * Run parameterized SQL (`$1`, `$2`, …) against the connected pool.
      */
     query<T extends QueryResultRow = QueryResultRow>(sql: string, params?: readonly unknown[]): Promise<QueryResult<T>>;
+    /**
+     * Pin one pooled client for `work`. The migrator sends BEGIN/COMMIT through
+     * this query callback so a multi-op migration and its ledger insert share
+     * a transaction (`pool.query()` would use a different client per call).
+     */
+    withTransaction<T>(work: (query: <R extends QueryResultRow = QueryResultRow>(sql: string, params?: readonly unknown[]) => Promise<QueryResult<R>>) => Promise<T>): Promise<T>;
     disconnect(): Promise<void>;
     end(): Promise<void>;
 }

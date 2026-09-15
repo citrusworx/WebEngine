@@ -1,22 +1,28 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { CCompiler, compileSchemas, schemaFieldEnumValues } from "@citrusworx/nectarine/compiler";
+import {
+  applyMigrations,
+  loadMigrationDocuments,
+  type MigrationExecutor,
+} from "@citrusworx/nectarine/migrate";
 
 // src/db and dist/db both sit two levels below the package root.
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const schemaDir = path.join(packageRoot, "src/schemas");
+const migrationsDir = path.join(packageRoot, "src/db/migrations");
 
 const compiler = new CCompiler();
 
 /**
- * Intentional Phase 3 scope: every Blackwater `*Schema.yml`, not only the
- * live product + waitlist pair. `migrate()` creates the full domain (course,
- * order, booking, …) in FK order so named queries have tables. Product and
- * waitlist keep special-cased live DML (JSONB catalog, waitlist insert).
- * Other resources use compiled GET reads when Postgres is connected.
+ * Whole-domain `*Schema.yml` plus optional versioned YAML in `db/migrations`.
+ * `migrate()` uses {@link applyNamedMigrations}: CREATE TABLE, pending rename /
+ * drop / type-change migrations, additive ADD COLUMN, then indexes.
  *
- * Additive `{ additive: true }` is NOT a migrator: it emits
- * `ADD COLUMN IF NOT EXISTS` only. No DROP, rename, or type change (not Flyway).
+ * Product and waitlist keep special-cased live DML (JSONB catalog, waitlist
+ * insert). Other resources use compiled GET reads when Postgres is connected.
+ * `products.payload` JSONB is protected. Destructive ops are never inferred
+ * from schema-diff; they must be explicit migration YAML with confirm gates.
  */
 export const SCHEMA_FILES = [
   "client/clientSchema.yml",
@@ -40,9 +46,12 @@ export const LIVE_BOOTSTRAP_FILES = [
 
 export type NamedDdl = "bootstrap" | "liveBootstrap";
 
+function schemaDocs(files: readonly string[]) {
+  return files.map((file) => compiler.parse_config(path.join(schemaDir, file)));
+}
+
 function compileFiles(files: readonly string[], additive = false): string {
-  const docs = files.map((file) => compiler.parse_config(path.join(schemaDir, file)));
-  return compileSchemas(docs, "postgres", { additive });
+  return compileSchemas(schemaDocs(files), "postgres", { additive });
 }
 
 function waitlistSchema() {
@@ -60,6 +69,7 @@ export const waitlistSourceApps = schemaFieldEnumValues(
  * Compiler-assembled DDL. App helpers pass a name, never a SQL literal.
  *
  * `bootstrap` = whole-domain SCHEMA_FILES + additive ADD COLUMN (existing volumes).
+ * Prefer {@link applyNamedMigrations} at boot — it also applies versioned YAML.
  * `liveBootstrap` = product + waitlist CREATE TABLE only (Docker init.sql lockstep).
  */
 export const namedDdlSql = {
@@ -69,4 +79,20 @@ export const namedDdlSql = {
 
 export function namedDdl(name: NamedDdl): string {
   return namedDdlSql[name];
+}
+
+const PROTECTED_COLUMNS = [{ table: "products", column: "payload" }] as const;
+
+/**
+ * Library migrator: ledger + current schemas + pending `src/db/migrations/*.yml`.
+ * Adapter only executes compiler SQL.
+ */
+export async function applyNamedMigrations(execute: MigrationExecutor) {
+  return applyMigrations({
+    execute,
+    vendor: "postgres",
+    schemas: schemaDocs(SCHEMA_FILES),
+    migrations: loadMigrationDocuments(migrationsDir),
+    protectedColumns: PROTECTED_COLUMNS,
+  });
 }

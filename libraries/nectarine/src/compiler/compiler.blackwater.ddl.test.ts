@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CCompiler, compileSchema, compileSchemas, schemaFieldEnumValues, SchemaCompileError } from "./compiler.js";
+import { applyMigrations } from "../migrate/index.js";
 
 const schemas = path.resolve(
     import.meta.dirname,
@@ -152,5 +153,39 @@ describe("Blackwater schema YAML DDL", () => {
                 },
             }),
         ).toThrowError(SchemaCompileError);
+    });
+
+    it("runs Blackwater schemas through applyMigrations without dropping payload JSONB", async () => {
+        const compiler = new CCompiler();
+        const docs = BLACKWATER_SCHEMA_FILES.map((file) =>
+            compiler.parse_config(path.join(schemas, file)),
+        );
+        const executed: string[] = [];
+        const result = await applyMigrations({
+            execute: {
+                query: async (sql: string) => {
+                    executed.push(sql);
+                    if (sql.includes("information_schema.columns")) {
+                        return { rows: [] };
+                    }
+                    if (sql.includes("nectarine_schema_migrations") && sql.startsWith("SELECT")) {
+                        return { rows: [] };
+                    }
+                    return { rows: [] };
+                },
+            },
+            vendor: "postgres",
+            schemas: docs,
+            migrations: [],
+            protectedColumns: [{ table: "products", column: "payload" }],
+        });
+
+        expect(result.applied).toEqual([]);
+        expect(executed.some((sql) => sql.includes("CREATE TABLE IF NOT EXISTS products"))).toBe(true);
+        expect(executed.some((sql) => sql.includes("payload JSONB NOT NULL"))).toBe(true);
+        expect(executed.some((sql) => /DROP COLUMN payload/i.test(sql))).toBe(false);
+        expect(executed.some((sql) => sql.includes("CREATE TABLE IF NOT EXISTS waitlist"))).toBe(true);
+        expect(executed.some((sql) => sql.includes("ADD COLUMN IF NOT EXISTS"))).toBe(true);
+        expect(executed.some((sql) => sql.includes("nectarine_schema_migrations"))).toBe(true);
     });
 });

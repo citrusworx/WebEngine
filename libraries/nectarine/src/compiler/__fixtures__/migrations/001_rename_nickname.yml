@@ -1,0 +1,7 @@
+version: "001_rename_nickname"
+description: Rename users.nickname to handle
+operations:
+  - renameColumn:
+      table: users
+      from: nickname
+      to: handle

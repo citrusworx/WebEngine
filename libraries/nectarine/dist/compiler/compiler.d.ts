@@ -1,19 +1,22 @@
 import { type YAMLdata } from "../util/util.js";
 import { type CompileSchemaOptions, type DdlVendor } from "./ddl.js";
+import { type CompiledMigration } from "./migration.js";
 import { type CleanedQueries } from "./sql.js";
 export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
 export type { QueryType } from "./normalize.js";
 export type { CompiledTable, CompileSchemaOptions, DdlVendor } from "./ddl.js";
+export type { CompiledChangeType, CompiledDropColumn, CompiledMigration, CompiledMigrationOp, CompiledRenameColumn, } from "./migration.js";
 export { compileQuery, CRUD_METHODS, isCrudMethod, OP_TOKENS, QueryCompileError, } from "./sql.js";
 export { quoteIdent, quoteIdentPath } from "./identifiers.js";
-export { compileSchema, compileSchemaPlan, compileSchemas, compileTable, DDL_VENDORS, schemaFieldEnumValues, SchemaCompileError, } from "./ddl.js";
+export { compileSchema, compileSchemaPlan, compileSchemas, compileSchemasPlan, compileSqlType, compileTable, DDL_VENDORS, schemaFieldEnumValues, schemaPlanStatements, SchemaCompileError, } from "./ddl.js";
+export { compileMigration, compileMigrations, MigrationCompileError, MIGRATION_VERSION, } from "./migration.js";
 export { inferMethodFromType, METHOD_ALIASES, normalizeQuery, resolveCrudMethod, } from "./normalize.js";
 export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
 /**
  * Compiles Nectarine query YAML and schema YAML into SQL.
  *
  * App code calls named queries and named DDL only. This compiler assembles
- * DML and CREATE TABLE / INDEX statements from YAML tokens (phonics).
+ * DML, CREATE TABLE / INDEX, and versioned ALTER statements from YAML tokens (phonics).
  * Adapters execute the resulting text — they never build SQL.
  *
  * Canonical document shape (Postgres-first) — see `models/user/db/pg/user.yml`:
@@ -69,4 +72,12 @@ export declare class CCompiler {
      * Compile one named model from a schema document.
      */
     buildTable(schema: unknown, modelName: string, vendor?: DdlVendor | "mongodb" | string, options?: CompileSchemaOptions): string;
+    /**
+     * Compile a versioned migration YAML document into ALTER statements.
+     */
+    buildMigration(migration: unknown, vendor?: DdlVendor | "mongodb" | string): CompiledMigration;
+    /**
+     * Compile several versioned migration documents (unique versions, sorted).
+     */
+    buildMigrations(migrations: unknown[], vendor?: DdlVendor | "mongodb" | string): CompiledMigration[];
 }

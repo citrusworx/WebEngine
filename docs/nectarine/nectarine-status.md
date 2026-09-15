@@ -59,7 +59,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 ## What's In Development 🔄
 
 ### Query Compiler
-- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), plus schema YAML → `CREATE TABLE` / indexes. Adapters execute `(sql, params)` only. JSONB columns and `$N::jsonb` binds are supported; JSONB is not being dropped.
+- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), schema YAML → `CREATE TABLE` / indexes, versioned migration YAML → gated `ALTER`. Adapters execute `(sql, params)` only. JSONB columns and `$N::jsonb` binds are supported; JSONB is not being dropped.
 - Planned: Optimization layer, query planning, JSONB operators (`@>`, `?`, `->>`)
 
 ### Schema Registry
@@ -195,9 +195,9 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
    - Basic aggregations only
    - **Workaround**: Use raw MongoDB/SQL for complex queries
 
-7. **No Migration History**
-   - Migrations are schema snapshots
-   - **Workaround**: Version control your schema files
+7. **No down migrations**
+   - The migrator is forward-only (ledger + versioned YAML). No `migrateDown` / Flyway rollback.
+   - **Workaround**: Write a new versioned migration that restores the previous shape (and gate destructive ops)
 
 ### Database-Specific Limitations
 
