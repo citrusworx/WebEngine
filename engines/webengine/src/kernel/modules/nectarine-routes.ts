@@ -51,12 +51,15 @@ export type NectarineRouteSource = {
     config: NectarineConfig;
     query?: NectarineQueryFn;
     connected?: boolean;
+    /** When set, compiled execute calls `adapter.query` as a method (`this` stays the adapter). */
+    adapter?: { query?: NectarineQueryFn } | null;
 };
 
 const PATH_PARAM = /:([A-Za-z_][A-Za-z0-9_]*)/g;
 
 const compiler = new CCompiler();
-const compileCache = new Map<string, string>();
+const pathCompileCache = new Map<string, string>();
+const documentCompileCache = new WeakMap<object, Map<string, string>>();
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -203,27 +206,47 @@ export function compileResourceQuery(
     method: string,
     name: string,
 ): string {
-    const cacheKey =
-        typeof source === "string"
-            ? `${source}::${resource}::${method}::${name}`
-            : `loaded::${resource}::${method}::${name}`;
+    const coordKey = `${resource}::${method}::${name}`;
 
-    const cached = compileCache.get(cacheKey);
+    if (typeof source === "string") {
+        const cacheKey = `${source}::${coordKey}`;
+        const cached = pathCompileCache.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
+        const parsed = compiler.parse_config(source);
+        if (!isQueryDocument(parsed)) {
+            throw new Error(
+                `Nectarine queries for "${resource}" must be an object`,
+            );
+        }
+        const sql = compiler.buildQuery(
+            compiler.clean_parse(parsed, resource, method),
+            name,
+        );
+        pathCompileCache.set(cacheKey, sql);
+        return sql;
+    }
+
+    if (!isQueryDocument(source)) {
+        throw new Error(`Nectarine queries for "${resource}" must be an object`);
+    }
+
+    let docCache = documentCompileCache.get(source);
+    if (!docCache) {
+        docCache = new Map();
+        documentCompileCache.set(source, docCache);
+    }
+    const cached = docCache.get(coordKey);
     if (cached) {
         return cached;
     }
 
-    const parsed =
-        typeof source === "string" ? compiler.parse_config(source) : source;
-    if (!isQueryDocument(parsed)) {
-        throw new Error(`Nectarine queries for "${resource}" must be an object`);
-    }
-
     const sql = compiler.buildQuery(
-        compiler.clean_parse(parsed, resource, method),
+        compiler.clean_parse(source, resource, method),
         name,
     );
-    compileCache.set(cacheKey, sql);
+    docCache.set(coordKey, sql);
     return sql;
 }
 
@@ -282,6 +305,20 @@ export function createCompiledNectarineExecute<
 
         return rows;
     };
+}
+
+function queryFromSource(
+    source: NectarineRouteSource,
+    override?: NectarineQueryFn,
+): NectarineQueryFn | undefined {
+    if (override) {
+        return override;
+    }
+    const adapter = source.adapter;
+    if (adapter && typeof adapter.query === "function") {
+        return (sql, params) => adapter.query!(sql, params);
+    }
+    return source.query;
 }
 
 function selectOperations(
@@ -348,7 +385,7 @@ export function createNectarineHandleReadRoutes<
 ): Route<TContext>[] {
     return createNectarineReadRoutes(source.config, {
         ...options,
-        query: options.query ?? source.query,
+        query: queryFromSource(source, options.query),
         connected:
             options.connected ??
             (source.connected !== undefined

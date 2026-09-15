@@ -32,6 +32,10 @@ export type NectarineRouteSource = {
     config: NectarineConfig;
     query?: NectarineQueryFn;
     connected?: boolean;
+    /** When set, compiled execute calls `adapter.query` as a method (`this` stays the adapter). */
+    adapter?: {
+        query?: NectarineQueryFn;
+    } | null;
 };
 /** Unique lookups return one row (404 on miss). Collection reads return `[]`. */
 export declare function isSingularRead(name: string): boolean;

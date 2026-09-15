@@ -101,6 +101,53 @@ function createStubAdapter(): NectarineKernelAdapter & {
     };
 }
 
+/** Class adapter: query/withTransaction read `this.pool` like PgSql / MySQL. */
+class ReceiverAdapter implements NectarineKernelAdapter {
+    pool: { connected: boolean } | null = { connected: true };
+    sqls: { sql: string; params?: readonly unknown[] }[] = [];
+
+    async connect() {
+        this.pool = { connected: true };
+    }
+
+    async disconnect() {
+        this.pool = null;
+    }
+
+    async query(sql: string, params?: readonly unknown[]) {
+        if (!this.pool) {
+            throw new Error(
+                "Postgres adapter is not connected. Call connect() before query()",
+            );
+        }
+        this.sqls.push({ sql, params });
+        if (/FROM courses\b/i.test(sql) && sql.includes("WHERE id = $1")) {
+            return {
+                rows: [
+                    { id: params?.[0], title: "Fuzz", status: "published" },
+                ],
+            };
+        }
+        return { rows: [] };
+    }
+
+    async withTransaction<T>(
+        work: (
+            query: (
+                sql: string,
+                params?: readonly unknown[],
+            ) => Promise<unknown>,
+        ) => Promise<T>,
+    ): Promise<T> {
+        if (!this.pool) {
+            throw new Error(
+                "Postgres adapter is not connected. Call connect() before withTransaction()",
+            );
+        }
+        return work((sql, params) => this.query(sql, params));
+    }
+}
+
 function fakeCtx(
     params: Record<string, string> = {},
     body: unknown = undefined,
@@ -369,6 +416,77 @@ describe("kernel handle createReadRoutes", () => {
         ).toBe(true);
 
         await mod.shutdown?.(ctx);
+    });
+
+    it("keeps class adapter.query bound so compiled reads see this.pool", async () => {
+        const project = copyNectarineFixture();
+        const loaded = await loadKiwiConfigFromPath(
+            path.join(project, "kiwi.config.toml"),
+        );
+        const ctx = new KernelContext(loaded.config, loaded.projectRoot);
+        const adapter = new ReceiverAdapter();
+        const mod = createNectarineModule({
+            env: completePgEnv,
+            adapter,
+        });
+        await mod.bootstrap(ctx);
+        const handle = ctx.getModuleHandle<NectarineModuleHandle>(
+            NECTARINE_MODULE_ID,
+        );
+
+        await expect(
+            handle!.query!("SELECT 1", []),
+        ).resolves.toEqual({ rows: [] });
+
+        const routes = handle!.createReadRoutes({ resources: ["course"] });
+        const byId = routes.find(
+            (route) =>
+                route.method === "GET" && route.path === "/api/courses/:id",
+        );
+        await expect(byId!.handler(fakeCtx({ id: "c1" }))).resolves.toEqual({
+            body: { id: "c1", title: "Fuzz", status: "published" },
+        });
+
+        await mod.shutdown?.(ctx);
+    });
+});
+
+describe("compileResourceQuery cache", () => {
+    it("does not reuse SQL across distinct loaded query documents", () => {
+        const courses = {
+            course: {
+                read: {
+                    byId: {
+                        type: "SELECT",
+                        table: "courses",
+                        fields: "*",
+                        where: "id = $1",
+                    },
+                },
+            },
+        };
+        const other = {
+            course: {
+                read: {
+                    byId: {
+                        type: "SELECT",
+                        table: "other_courses",
+                        fields: "*",
+                        where: "id = $1",
+                    },
+                },
+            },
+        };
+
+        expect(compileResourceQuery(courses, "course", "read", "byId")).toBe(
+            "SELECT * FROM courses WHERE id = $1",
+        );
+        expect(compileResourceQuery(other, "course", "read", "byId")).toBe(
+            "SELECT * FROM other_courses WHERE id = $1",
+        );
+        expect(compileResourceQuery(courses, "course", "read", "byId")).toBe(
+            "SELECT * FROM courses WHERE id = $1",
+        );
     });
 });
 

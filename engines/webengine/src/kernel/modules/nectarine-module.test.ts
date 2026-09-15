@@ -157,7 +157,8 @@ describe("nectarine builtin module", () => {
         expect(adapter.connects).toBe(1);
         expect(handle?.connected).toBe(true);
         expect(handle?.seedFallback).toBe(false);
-        expect(handle?.query).toBe(adapter.query);
+        expect(handle?.query).toEqual(expect.any(Function));
+        expect(handle?.query).not.toBe(adapter.query);
         expect(handle?.migrations).toEqual({ applied: [], skipped: [] });
         expect(adapter.sqls.length).toBeGreaterThan(0);
 

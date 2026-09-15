@@ -2,7 +2,8 @@ import { CCompiler, listApiOperations, } from "@citrusworx/nectarine";
 import { generateRoutes, } from "@citrusworx/seltzer";
 const PATH_PARAM = /:([A-Za-z_][A-Za-z0-9_]*)/g;
 const compiler = new CCompiler();
-const compileCache = new Map();
+const pathCompileCache = new Map();
+const documentCompileCache = new WeakMap();
 function isRecord(value) {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -101,19 +102,35 @@ export function resolveResourceQueries(nectarine, resourceName) {
  * YAML tokens → CCompiler → SQL. Hosts must not embed SQL in TypeScript.
  */
 export function compileResourceQuery(source, resource, method, name) {
-    const cacheKey = typeof source === "string"
-        ? `${source}::${resource}::${method}::${name}`
-        : `loaded::${resource}::${method}::${name}`;
-    const cached = compileCache.get(cacheKey);
+    const coordKey = `${resource}::${method}::${name}`;
+    if (typeof source === "string") {
+        const cacheKey = `${source}::${coordKey}`;
+        const cached = pathCompileCache.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
+        const parsed = compiler.parse_config(source);
+        if (!isQueryDocument(parsed)) {
+            throw new Error(`Nectarine queries for "${resource}" must be an object`);
+        }
+        const sql = compiler.buildQuery(compiler.clean_parse(parsed, resource, method), name);
+        pathCompileCache.set(cacheKey, sql);
+        return sql;
+    }
+    if (!isQueryDocument(source)) {
+        throw new Error(`Nectarine queries for "${resource}" must be an object`);
+    }
+    let docCache = documentCompileCache.get(source);
+    if (!docCache) {
+        docCache = new Map();
+        documentCompileCache.set(source, docCache);
+    }
+    const cached = docCache.get(coordKey);
     if (cached) {
         return cached;
     }
-    const parsed = typeof source === "string" ? compiler.parse_config(source) : source;
-    if (!isQueryDocument(parsed)) {
-        throw new Error(`Nectarine queries for "${resource}" must be an object`);
-    }
-    const sql = compiler.buildQuery(compiler.clean_parse(parsed, resource, method), name);
-    compileCache.set(cacheKey, sql);
+    const sql = compiler.buildQuery(compiler.clean_parse(source, resource, method), name);
+    docCache.set(coordKey, sql);
     return sql;
 }
 /**
@@ -146,6 +163,16 @@ export function createCompiledNectarineExecute(options) {
         }
         return rows;
     };
+}
+function queryFromSource(source, override) {
+    if (override) {
+        return override;
+    }
+    const adapter = source.adapter;
+    if (adapter && typeof adapter.query === "function") {
+        return (sql, params) => adapter.query(sql, params);
+    }
+    return source.query;
 }
 function selectOperations(nectarine, resources) {
     return resources.flatMap((resourceName) => listResourceReadOperations(nectarine, resourceName));
@@ -191,7 +218,7 @@ export function createNectarineReadRoutes(nectarine, options) {
 export function createNectarineHandleReadRoutes(source, options) {
     return createNectarineReadRoutes(source.config, {
         ...options,
-        query: options.query ?? source.query,
+        query: queryFromSource(source, options.query),
         connected: options.connected ??
             (source.connected !== undefined
                 ? () => source.connected === true

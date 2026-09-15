@@ -68,9 +68,17 @@ function asMigrationExecutor(adapter) {
         return null;
     }
     return {
-        query: adapter.query,
-        withTransaction: adapter.withTransaction,
+        query: (sql, params) => adapter.query(sql, params),
+        withTransaction: typeof adapter.withTransaction === "function"
+            ? (work) => adapter.withTransaction(work)
+            : undefined,
     };
+}
+function boundAdapterQuery(adapter) {
+    if (!adapter || typeof adapter.query !== "function") {
+        return undefined;
+    }
+    return (sql, params) => adapter.query(sql, params);
 }
 export function createNectarineModule(options = {}) {
     return {
@@ -134,7 +142,7 @@ export function createNectarineModule(options = {}) {
                 configPath,
                 vendor,
                 adapter,
-                query: adapter?.query,
+                query: boundAdapterQuery(adapter),
                 migrations,
                 seedFallback,
                 connected,
