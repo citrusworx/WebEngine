@@ -38,7 +38,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
 - ✓ Product-read and waitlist GET + POST (`joinWaitlist`) Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
 - ✓ Remaining Blackwater resource **reads** auto-wire via engine `createNectarineReadRoutes` (`@citrusworx/webengine`; lesson `byId` stays the hand KiwiPress route)
-- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; product JSONB catalog writes (`insertPayload` / `updatePayload` / `deleteProduct`) and waitlist `joinWaitlist` stay host `execute`
+- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; product JSONB catalog writes (`insertPayload` / `updatePayload` / `deleteProduct`) and waitlist `joinWaitlist` stay host `execute` on the same helper (`createNectarineRoutes` + named YAML)
 - Express is **not** the generated or default server
 
 ### Validation

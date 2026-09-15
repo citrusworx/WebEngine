@@ -10,8 +10,8 @@ import { createWaitlistRoutes } from "./waitlist.js";
 
 /**
  * Resource reads **and** YAML writes via engine {@link createNectarineRoutes}.
- * Product keeps specialized execute so JSONB `payload` is not flattened;
- * waitlist `joinWaitlist` keeps its allowlist execute.
+ * Product and waitlist pass a host `execute` (JSONB catalog document / join
+ * id + duplicate UX + `source_app` allowlist + file-store fallback).
  * Lesson `byId` is excluded so the hand KiwiPress `GET /api/lessons/:id` stays unique.
  */
 export const GENERATED_RESOURCES = [

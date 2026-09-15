@@ -5,13 +5,17 @@ import {
   type ResponseData,
   type Route,
 } from "@citrusworx/seltzer";
-import { createResourceReadRoutes } from "@citrusworx/webengine";
+import { createNectarineRoutes } from "@citrusworx/webengine";
 import { waitlistSourceApps } from "../db/named-ddl.js";
 import { isDatabaseConnected, loadWaitlistByEmailFromDb, loadWaitlistFromDb } from "../db/postgres.js";
 import { appendWaitlistEntry, hasWaitlistEmail } from "../store/waitlist-store.js";
 import type { BlackwaterContext, WaitlistEntry } from "../types/context.js";
 
 const sourceApps = new Set(waitlistSourceApps);
+
+function payloadRecord(body: unknown): Record<string, unknown> {
+  return body && typeof body === "object" && !Array.isArray(body) ? (body as Record<string, unknown>) : {};
+}
 
 function parseSourceApp(value: unknown): { ok: true; sourceApp?: string } | { ok: false } {
   if (value === undefined || value === null || value === "") {
@@ -30,27 +34,37 @@ function parseSourceApp(value: unknown): { ok: true; sourceApp?: string } | { ok
   return { ok: true, sourceApp };
 }
 
-function payloadRecord(body: unknown): Record<string, unknown> {
-  return body && typeof body === "object" && !Array.isArray(body) ? (body as Record<string, unknown>) : {};
-}
-
-/**
- * `waitlistAPI.yml` `query:` vs live SQL in `named-queries.ts`:
- *
- * | API `query:`   | Live named query | Why |
- * | allEntries     | allEntries       | `SELECT * … ORDER BY created_at ASC` |
- * | entryByEmail   | entryByEmail     | `SELECT * … WHERE email = $1` |
- * | joinWaitlist   | joinWaitlist     | `INSERT … (id, name, email, source_app, interest)` |
- *
- * When Postgres is unset, use boot-time `locals.waitlist` (JSON file store).
- * An empty waitlist is valid — do not treat `[]` as a miss.
- * Required body fields (`email: string.required`) are enforced by Seltzer `validate`.
- */
 function normalizeEmail(email: string | undefined): string | undefined {
   const normalized = email?.trim().toLowerCase();
   return normalized || undefined;
 }
 
+function generateWaitlistId(): string {
+  return `wl_${Date.now()}`;
+}
+
+/**
+ * Host execute for waitlist. SQL stays in `waitlistQueries.yml`.
+ *
+ * Same contract as product JSONB writes: engine {@link createNectarineRoutes}
+ * plus a thin `execute`. Default compiled writes cannot run this POST — the
+ * INSERT needs a generated `id` that is not in the HTTP body, and the compiler
+ * has no `ON CONFLICT`.
+ *
+ * Host-only:
+ * - generated `id`
+ * - duplicate-email UX `{ ok: true, duplicate: true }`
+ * - `source_app` allowlist from schema enum
+ * - JSON file-store fallback when Postgres is unset
+ *
+ * | API `query:` | Live named query | Why |
+ * | allEntries   | allEntries       | `SELECT * … ORDER BY created_at ASC` |
+ * | entryByEmail | entryByEmail     | `SELECT * … WHERE email = $1` |
+ * | joinWaitlist | joinWaitlist     | `INSERT … (id, name, email, source_app, interest)` |
+ *
+ * An empty waitlist is valid — do not treat `[]` as a miss.
+ * Required body fields (`email: string.required`) are enforced by Seltzer `validate`.
+ */
 async function loadEntries(ctx: BlackwaterContext): Promise<WaitlistEntry[]> {
   if (isDatabaseConnected()) {
     return loadWaitlistFromDb();
@@ -78,10 +92,7 @@ async function findByEmail(
   return ctx.locals.waitlist.find((entry) => entry.email === normalized) ?? null;
 }
 
-async function joinWaitlist({
-  body,
-  ctx,
-}: ExecuteArgs<BlackwaterContext>): Promise<unknown> {
+async function joinWaitlist({ body, ctx }: ExecuteArgs<BlackwaterContext>): Promise<unknown> {
   const payload = payloadRecord(body);
   const name = String(payload.name ?? "").trim();
   const email = String(payload.email ?? "").trim().toLowerCase();
@@ -97,7 +108,7 @@ async function joinWaitlist({
   }
 
   const entry: WaitlistEntry = {
-    id: `wl_${Date.now()}`,
+    id: generateWaitlistId(),
     name,
     email,
     sourceApp: source.sourceApp,
@@ -124,11 +135,13 @@ export async function executeWaitlist(args: ExecuteArgs<BlackwaterContext>): Pro
   }
 }
 
-/** Waitlist GET reads + POST `joinWaitlist` from `waitlistAPI.yml`. */
+const waitlistNotFound = (): ResponseData => ({ status: 404, body: { error: "Waitlist entry not found" } });
+
+/** Waitlist GET + POST `joinWaitlist` from `waitlistAPI.yml`. */
 export function createWaitlistRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
-  return createResourceReadRoutes(nectarine, "waitlist", executeWaitlist, {
-    notFound: (): ResponseData => ({ status: 404, body: { error: "Waitlist entry not found" } }),
-    include: (operation) =>
-      operation.method === "POST" && operation.crud === "create" && operation.name === "joinWaitlist",
+  return createNectarineRoutes(nectarine, {
+    resources: ["waitlist"],
+    execute: executeWaitlist,
+    notFound: waitlistNotFound,
   });
 }

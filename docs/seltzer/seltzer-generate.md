@@ -149,7 +149,7 @@ const routes = generateRoutes(operations, {
 
 Do **not** reimplement YAML walking in Seltzer docs or apps. Nectarine owns flatten; Seltzer owns `Route[]`.
 
-WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call this path. Blackwater product reads and waitlist GET + POST `joinWaitlist` are the current host pattern. Health and KiwiPress content stay hand-registered.
+WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call this path. Blackwater product JSONB catalog and waitlist GET + POST `joinWaitlist` pass a host `execute` into `createNectarineRoutes`. Health and KiwiPress content stay hand-registered.
 
 ## Mixing generated and hand-written routes
 

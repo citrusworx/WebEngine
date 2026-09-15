@@ -14,6 +14,8 @@ waitlist:
 
   create:
     joinWaitlist:
+      # Host execute generates `id`, checks duplicate email + source_app, then
+      # binds these columns. Live path when Postgres is connected.
       type: INSERT
       table: waitlist
       fields: [id, name, email, source_app, interest]

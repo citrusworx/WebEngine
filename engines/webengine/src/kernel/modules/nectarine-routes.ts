@@ -50,7 +50,8 @@ export type CreateNectarineRoutesOptions<
     connected?: boolean | (() => boolean);
     exclude?: RouteExclude;
     /**
-     * Extra ops beyond `methods` (waitlist `joinWaitlist` on the read helper).
+     * Extra ops beyond `methods`. Prefer {@link createNectarineRoutes} with
+     * a host `execute` for specialized resources (waitlist join / JSONB).
      */
     include?: (operation: ApiOperation) => boolean;
     /**
@@ -712,8 +713,10 @@ export function createNectarineRoutes<
 }
 
 /**
- * GET reads from `*API.yml`. `include` can add a non-GET op such as waitlist
- * `joinWaitlist`; those typically need a custom `execute`.
+ * GET reads from `*API.yml`. `include` can add a non-GET op (e.g. a host
+ * that only wants GET + one extra write). Specialized resources such as
+ * Blackwater waitlist `joinWaitlist` prefer {@link createNectarineRoutes}
+ * with a host `execute` instead.
  */
 export function createNectarineReadRoutes<
     TContext extends RequestContext = RequestContext,

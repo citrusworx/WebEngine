@@ -71,7 +71,17 @@ for (const route of nectarine.createRoutes({
 await app.listen(port);
 ```
 
-Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Health, KiwiPress, and other host-owned paths stay hand-registered. Blackwater `createRoutes` calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`); product writes use the same helper with a host `execute` so JSONB `payload` is not flattened onto relational columns.
+Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Both use the same helper:
+
+```ts
+createNectarineRoutes(nectarine, {
+  resources: ["waitlist"], // or ["product"]
+  execute: executeWaitlist, // host: generated id, duplicate UX, allowlist, file-store
+  notFound: () => ({ status: 404, body: { error: "Waitlist entry not found" } }),
+});
+```
+
+SQL stays in `*Queries.yml`. Host execute stays thin. Health, KiwiPress, and other host-owned paths stay hand-registered. Blackwater `createRoutes` calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`); product writes use the same helper with a host `execute` so JSONB `payload` is not flattened onto relational columns.
 
 ## Adapter surface
 
