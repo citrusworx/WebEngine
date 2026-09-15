@@ -119,6 +119,7 @@ describe("createWaitlistRoutes", () => {
     const routes = createWaitlistRoutes(loadConfig());
 
     expect(routes.map((route) => `${route.method} ${route.path}`)).toEqual([
+      "GET /api/waitlist/count",
       "GET /api/waitlist",
       "POST /api/waitlist",
       "GET /api/waitlist/:email",
@@ -196,6 +197,10 @@ describe("POST /api/waitlist", () => {
     expect(missing).toEqual({ status: 400, json: { error: "Missing required field: email" } });
     expect(blank).toEqual({ status: 400, json: { error: "Missing required field: email" } });
     await expect(request(`${base}/api/waitlist`)).resolves.toEqual({ status: 200, json: [] });
+    await expect(request(`${base}/api/waitlist/count`)).resolves.toEqual({
+      status: 200,
+      json: { count: 0 },
+    });
   });
 
   it("appends to the file store, lists the entry, and reports duplicate email", async () => {
@@ -231,6 +236,11 @@ describe("POST /api/waitlist", () => {
         interest: "gear",
       }),
     ]);
+
+    await expect(request(`${base}/api/waitlist/count`)).resolves.toEqual({
+      status: 200,
+      json: { count: 1 },
+    });
 
     const byEmail = await request(`${base}/api/waitlist/${encodeURIComponent("ada@example.com")}`);
     expect(byEmail.status).toBe(200);

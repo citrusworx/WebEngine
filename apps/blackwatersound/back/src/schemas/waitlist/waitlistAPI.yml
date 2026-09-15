@@ -6,6 +6,12 @@ waitlist:
         endpoint: /api/waitlist
         query: allEntries
 
+    countEntries:
+      api:
+        method: GET
+        endpoint: /api/waitlist/count
+        query: countEntries
+
     entryByEmail:
       api:
         method: GET

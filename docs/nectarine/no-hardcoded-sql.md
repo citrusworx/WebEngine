@@ -84,15 +84,21 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 |----------|---------|-------------------|--------|
 | `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist); versioned YAML for rename/drop/type change; additive `ADD COLUMN IF NOT EXISTS` after migrations; indexes last | `applyNamedMigrations` → `src/db/named-ddl.ts` | **migrated** — ledger `nectarine_schema_migrations`; destructive ops require `destructive: true` + `confirm`. Live `products` keeps `payload JSONB` (protected). Waitlist includes `source_app` / `interest` on new and existing tables. |
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
-| `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — `countPayloads` (`COUNT(*)`) compiles; live path still loads payloads |
+| `loadProductsByCatalogFromDb()` | Filter catalog documents | `product.read.payloadsByCatalog` | **migrated** — `payload->>'catalog' = $1`; GET `/api/products/catalog/:catalog` |
+| `loadProductBySlugFromDb()` | Lookup by payload slug | `product.read.payloadsBySlug` | **migrated** — `payload->>'slug' = $1`; GET `/api/products/slug/:slug` falls back to `payloadById` |
+| `loadProductsContainingFromDb()` | JSONB containment | `product.read.payloadsContaining` | **migrated** — `payload @> $1::jsonb`; GET `/api/products/containing?contains=` |
+| `loadProductsWithKeyFromDb()` | JSONB key exists | `product.read.payloadsWithKey` | **migrated** — `payload ? $1`; GET `/api/products/key/:key` |
+| `countPayloadsFromDb()` | Payload row total | `product.read.countPayloads` | **migrated** — `COUNT(*)`; seed skip + GET `/api/products/count` |
+| `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.countPayloads` | **migrated** — `COUNT(*)`; does not load payloads to check emptiness |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
 | `insertProductPayload()` | HTTP create catalog document | `product.create.insertPayload` | **migrated** — `INSERT (id, payload) … $2::jsonb RETURNING payload` |
 | `updateProductPayload()` | HTTP replace catalog document | `product.update.updatePayload` | **migrated** — `SET payload = $1::jsonb, updated_at = NOW()`; host merges first (no JSONB `||`) |
 | `deleteProductFromDb()` | HTTP delete catalog row | `product.delete.deleteProduct` | **migrated** — `DELETE … WHERE id = $1`; `payload` column stays protected |
 | `loadWaitlistFromDb()` | List signups oldest-first | `waitlist.read.allEntries` | **migrated** — `SELECT * … ORDER BY created_at ASC`; `created_at` → `createdAt` in TS |
-| `loadWaitlistByEmailFromDb()` | Lookup signup by email | `waitlist.read.entryByEmail` | **migrated** — same named query as duplicate-email check; maps the first row |
+| `loadWaitlistByEmailFromDb()` | Lookup signup by email | `waitlist.read.entryByEmail` | **migrated** — maps the first row for GET `/api/waitlist/:email` |
+| `countWaitlistFromDb()` | Waitlist row total | `waitlist.read.countEntries` | **migrated** — `COUNT(*)`; GET `/api/waitlist/count` |
 | `insertWaitlistEntry()` | Insert waitlist row | `waitlist.create.joinWaitlist` | **migrated** — columns `(id, name, email, source_app, interest)`. `insertEntry` remains in YAML as an unused alternate. |
-| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.entryByEmail` | **migrated** — `loadWaitlistByEmailFromDb() != null`. `emailExists` (`EXISTS`) compiles; live path not rewired |
+| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.emailExists` | **migrated** — `EXISTS`; joinWaitlist duplicate UX does not load the row |
 
 ### `src/db/named-ddl.ts` / `docker/postgres/init.sql`
 
@@ -111,8 +117,8 @@ the live table keeps `payload JSONB` and nullable catalog columns.
 
 | File | Resource(s) | Live named queries | Notes |
 |------|-------------|--------------------|-------|
-| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `seedPayload`, `insertPayload`, `updatePayload`, `deleteProduct` | Hybrid: live DML is JSONB `payload` only. Relational CRUD compiles (`originalPrice` / `isNew` / `isActive` quoted) but catalog columns stay NULL. HTTP writes use host `execute` + these JSONB names. Compiler-ready: `payloadsByCatalog` / `payloadsBySlug` (`->>`), `payloadsContaining` (`@>`), `payloadsWithKey` (`?`), `countPayloads`. |
-| `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `allEntries`, `entryByEmail`, `joinWaitlist` | `insertEntry` compiles; unused live path. Compiler-ready: `emailExists`, `countEntries` |
+| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `payloadsByCatalog`, `payloadsBySlug`, `payloadsContaining`, `payloadsWithKey`, `countPayloads`, `seedPayload`, `insertPayload`, `updatePayload`, `deleteProduct` | Hybrid: live DML is JSONB `payload` only. Relational CRUD compiles (`originalPrice` / `isNew` / `isActive` quoted) but catalog columns stay NULL. HTTP reads/writes use host `execute` + these JSONB names. |
+| `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `allEntries`, `entryByEmail`, `emailExists`, `countEntries`, `joinWaitlist` | `insertEntry` compiles; unused live path. Duplicate email uses `emailExists`. |
 | `schemas/course/courseQueries.yml` | `course` | — | tables created by `migrate()`; quoted `'published'` constants |
 | `schemas/booking/bookingQueries.yml` | `booking` | — | `IN ('requested', 'confirmed')` |
 | `schemas/order/orderQueries.yml` | `order`, `order_item` | — | |

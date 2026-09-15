@@ -43,7 +43,7 @@ product:
       where: id = $1
 
     # JSONB path — catalog/slug live inside payload, not flattened columns.
-    # Host execute still filters in TS; these names compile for a later wire-up.
+    # Host execute runs these on GET catalog/slug when Postgres is connected.
     payloadsByCatalog:
       type: SELECT
       table: products

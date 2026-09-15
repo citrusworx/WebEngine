@@ -20,12 +20,19 @@ function compileNamed(file: string, resource: string, method: string, name: stri
 export const namedSql = {
   allPayloads: compileNamed("product/productQueries.yml", "product", "read", "allPayloads"),
   payloadById: compileNamed("product/productQueries.yml", "product", "read", "payloadById"),
+  payloadsByCatalog: compileNamed("product/productQueries.yml", "product", "read", "payloadsByCatalog"),
+  payloadsBySlug: compileNamed("product/productQueries.yml", "product", "read", "payloadsBySlug"),
+  payloadsContaining: compileNamed("product/productQueries.yml", "product", "read", "payloadsContaining"),
+  payloadsWithKey: compileNamed("product/productQueries.yml", "product", "read", "payloadsWithKey"),
+  countPayloads: compileNamed("product/productQueries.yml", "product", "read", "countPayloads"),
   seedPayload: compileNamed("product/productQueries.yml", "product", "create", "seedPayload"),
   insertPayload: compileNamed("product/productQueries.yml", "product", "create", "insertPayload"),
   updatePayload: compileNamed("product/productQueries.yml", "product", "update", "updatePayload"),
   deleteProduct: compileNamed("product/productQueries.yml", "product", "delete", "deleteProduct"),
   allEntries: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "allEntries"),
   entryByEmail: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "entryByEmail"),
+  emailExists: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "emailExists"),
+  countEntries: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "countEntries"),
   joinWaitlist: compileNamed("waitlist/waitlistQueries.yml", "waitlist", "create", "joinWaitlist"),
 } as const;
 
