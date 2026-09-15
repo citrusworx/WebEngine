@@ -51,6 +51,33 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("includes accordion structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[accordion]");
+        expect(css).toContain("[accordion-item]");
+        expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]/);
+        expect(css).toMatch(/\[accordion-item\]:focus-visible/);
+        expect(css).not.toMatch(/\[accordion-item\][^{]*\{[^}]*--aqua-button-background/);
+    });
+
+    it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {
+        const themeCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const accordionItemBlocks = [...themeCss.matchAll(/button\[accordion-item\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(themeCss).toContain("accordion-item");
+        expect(themeCss).toContain("--aqua-surface-strong");
+        expect(themeCss).toContain("--aqua-heading");
+        expect(themeCss).toContain("--aqua-accent");
+        expect(themeCss).toContain("--aqua-highlight");
+        expect(accordionItemBlocks.length).toBeGreaterThan(0);
+        for (const block of accordionItemBlocks) {
+            expect(block).not.toContain("--aqua-button-background");
+        }
+    });
+
     it("produces JS output", () => {
         const jsPath = join(DIST_DIR, "index.js");
         const js = readFileSync(jsPath, "utf-8");

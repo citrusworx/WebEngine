@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../../dist/index.css">
+    <link rel="stylesheet" href="../../../../dist/themes/aquaflux.css">
+    <title>Aquaflux FAQ accordion</title>
+</head>
+<body theme="aquaflux">
+    <main stack gap="2rem" paddingX="2rem" paddingY="2rem">
+        <header stack gap="0.75rem">
+            <p>Billing &amp; account FAQ</p>
+            <h1>Answers to common billing questions</h1>
+            <p>Grouped in aqua-card. Nearby CTA button is the primary action; accordion triggers should stay surface controls.</p>
+            <div>
+                <button type="button">Update payment method</button>
+            </div>
+        </header>
+
+        <article aqua-card stack gap="0.5rem" padding="0.75rem" rounded="lg">
+            <section accordion name="faq-billing">
+                <button
+                    type="button"
+                    id="faq-billing-trigger"
+                    accordion-item
+                    aria-expanded="true"
+                    aria-controls="faq-billing-panel"
+                >
+                    How do I update billing?
+                </button>
+                <div id="faq-billing-panel" role="region" aria-labelledby="faq-billing-trigger">
+                    Open Settings → Billing, then choose Edit payment method. Changes apply to the next invoice.
+                </div>
+            </section>
+
+            <section accordion name="faq-seats">
+                <button
+                    type="button"
+                    id="faq-seats-trigger"
+                    accordion-item
+                    aria-expanded="false"
+                    aria-controls="faq-seats-panel"
+                >
+                    Can I add seats mid-cycle?
+                </button>
+                <div id="faq-seats-panel" role="region" aria-labelledby="faq-seats-trigger" hidden>
+                    Yes. New seats are prorated for the rest of the current billing period.
+                </div>
+            </section>
+
+            <section accordion name="faq-cancel">
+                <button
+                    type="button"
+                    id="faq-cancel-trigger"
+                    accordion-item
+                    aria-expanded="false"
+                    aria-controls="faq-cancel-panel"
+                >
+                    What happens if I cancel?
+                </button>
+                <div id="faq-cancel-panel" role="region" aria-labelledby="faq-cancel-trigger" hidden>
+                    Access continues through the end of the paid term. You can resubscribe from Billing at any time.
+                </div>
+            </section>
+        </article>
+
+        <aside aqua-panel stack gap="0.5rem" padding="0.75rem" rounded="lg">
+            <section accordion name="faq-invoices">
+                <button
+                    type="button"
+                    id="faq-invoices-trigger"
+                    accordion-item
+                    aria-expanded="false"
+                    aria-controls="faq-invoices-panel"
+                >
+                    Where can I find invoices?
+                </button>
+                <div id="faq-invoices-panel" role="region" aria-labelledby="faq-invoices-trigger" hidden>
+                    Invoices live under Settings → Billing → History. Receipts can be downloaded as PDF.
+                </div>
+            </section>
+        </aside>
+    </main>
+
+    <script>
+        document.querySelectorAll("button[accordion-item]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const expanded = button.getAttribute("aria-expanded") === "true";
+                const panel = document.getElementById(button.getAttribute("aria-controls"));
+                button.setAttribute("aria-expanded", String(!expanded));
+                if (panel) {
+                    panel.hidden = expanded;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

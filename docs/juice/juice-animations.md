@@ -60,7 +60,7 @@ See [Juice styles](./juice-styles.md) for gradient attributes.
 | `spin::slow` | Slow spin |
 | `pulse` | Scale pulse |
 | `grow` | Grow emphasis |
-| `accordion` | Accordion panel easing |
+| `accordion` | Accordion panel height easing (opt-in on a region; show/hide still uses native `hidden`) |
 | `blink` | Default blink |
 | `blink:slow` | Slow blink |
 | `blink:fast` | Fast blink |

@@ -124,28 +124,32 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - mobile nav toggles should expose an accessible name and control a sidebar with `aria-controls`
 - accordion triggers should use `aria-expanded` and `aria-controls`
 - accordion panels should be labeled regions when they contain meaningful content
+- group FAQ stacks in `[aqua-card]` or `[aqua-panel]` under `theme="aquaflux"` so triggers paint as surface controls, not primary CTA buttons
+- open/closed panels use the native `hidden` attribute; optional `[motion="accordion"]` is height easing for a later runtime, not required for show/hide
 
 ```html
-<section accordion name="faq-account">
-  <button
-    id="faq-account-trigger"
-    type="button"
-    accordion-item
-    aria-expanded="false"
-    aria-controls="faq-account-panel"
-  >
-    How do I update billing?
-  </button>
+<article aqua-card stack gap="0.5rem" padding="0.75rem">
+  <section accordion name="faq-account">
+    <button
+      id="faq-account-trigger"
+      type="button"
+      accordion-item
+      aria-expanded="false"
+      aria-controls="faq-account-panel"
+    >
+      How do I update billing?
+    </button>
 
-  <div
-    id="faq-account-panel"
-    role="region"
-    aria-labelledby="faq-account-trigger"
-    hidden
-  >
-    Update billing from the account dashboard.
-  </div>
-</section>
+    <div
+      id="faq-account-panel"
+      role="region"
+      aria-labelledby="faq-account-trigger"
+      hidden
+    >
+      Update billing from the account dashboard.
+    </div>
+  </section>
+</article>
 ```
 
 ## Browser Support

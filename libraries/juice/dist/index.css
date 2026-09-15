@@ -96477,6 +96477,64 @@ section[auto] > * {
   float: left;
 }
 
+[accordion] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[accordion-item] {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0.875rem 1.25rem;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+}
+
+[accordion-item]::after {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: 1rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease;
+}
+
+[accordion-item][aria-expanded=true]::after {
+  transform: rotate(45deg);
+}
+
+[accordion-item]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+[accordion] [role=region] {
+  padding: 0.75rem 1.25rem 1rem;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [accordion-item]::after {
+    transition: none;
+  }
+}
 [badge] {
   display: inline-flex;
   align-items: center;

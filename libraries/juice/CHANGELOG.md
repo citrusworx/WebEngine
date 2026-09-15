@@ -14,6 +14,7 @@
 - Added modular theme builds: `dist/themes/aquaflux.css`, `kiwipress.css`, `citrusmint.css`.
 - Added motion wave 1: `fade.in.down/up`, `fade.out.down/up`, `slideOut.left/right/up/down` (P1).
 - Documented responsive defaults, `surfaceTone="soft"`, and expanded motion catalog.
+- Added accordion layout chrome (`[accordion]`, `[accordion-item]`) and Aquaflux surface styling so FAQ triggers read as stacked controls, not primary CTA buttons.
 
 ## 0.1.1
 
