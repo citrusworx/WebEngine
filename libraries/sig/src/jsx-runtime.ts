@@ -50,9 +50,10 @@ function appendChild(parent: Node, child: Child): void {
         const textNode = document.createTextNode("");
         parent.appendChild(textNode);
 
-        effect(() => {
+        const dispose = effect(() => {
             textNode.textContent = String(child());
         });
+        attachCleanup(textNode, dispose);
         return;
     }
 
@@ -64,29 +65,31 @@ function appendChild(parent: Node, child: Child): void {
   parent.appendChild(child); // Now guaranteed Node
 }
 
-function setProp(el: HTMLElement, key: string, value: any) {
-    if (key === "children") return;
-
-    if(key ==="ref" && typeof value === "function"){
-        value(el);
-        return;
-    }
-    
-    if (key.startsWith("on") && typeof value === "function") {
-        const event = key.slice(2).toLowerCase();
-        el.addEventListener(event, value);
-    return;
-    }
-
-    // DOM properties that must be assigned directly
-    if (
+function isDomPropertyKey(el: HTMLElement, key: string): boolean {
+    return (
         key in el &&
         key !== "animate" &&
         key !== "animation" &&
         key !== "motion" &&
         !key.startsWith("data-") &&
         !key.startsWith("aria-")
-    ) {
+    );
+}
+
+function applyPropValue(el: HTMLElement, key: string, value: any) {
+    if (key === "class") {
+        if (value === false || value == null) {
+            el.removeAttribute("class");
+            el.className = "";
+            return;
+        }
+
+        el.className = String(value === true ? "" : value);
+        return;
+    }
+
+    // DOM properties that must be assigned directly
+    if (isDomPropertyKey(el, key)) {
         (el as any)[key] = value;
         return;
     }
@@ -96,8 +99,34 @@ function setProp(el: HTMLElement, key: string, value: any) {
     } else if (value === false || value == null) {
         el.removeAttribute(key);
     } else {
-        el.setAttribute(key, value);
+        el.setAttribute(key, String(value));
     }
+}
+
+function setProp(el: HTMLElement, key: string, value: any) {
+    if (key === "children") return;
+
+    if (key === "ref" && typeof value === "function") {
+        value(el);
+        return;
+    }
+
+    if (key.startsWith("on") && typeof value === "function") {
+        const event = key.slice(2).toLowerCase();
+        el.addEventListener(event, value);
+        return;
+    }
+
+    // Function-valued host props (not ref / on*) are reactive getters.
+    if (typeof value === "function") {
+        const dispose = effect(() => {
+            applyPropValue(el, key, value());
+        });
+        attachCleanup(el, dispose);
+        return;
+    }
+
+    applyPropValue(el, key, value);
 }
 
 export function jsx(type: any, props: any) {

@@ -51,7 +51,7 @@ That points the JSX transform at `@citrusworx/sigjs/jsx-runtime` (and the dev ru
 3. Subscribe with either:
    - a **function child** for live text: `{() => String(count.get())}`
    - an **effect** that writes to an element you already created
-4. Do not expect `{() => <div />}` or `className={() => …}` to be reactive. They are not.
+4. Do not expect `{() => <div />}` to mount an element. Function children are text. Function-valued **props** (`className={() => …}`) are live.
 
 ## First reactive page
 
@@ -248,7 +248,7 @@ router.set({
 router.start();
 ```
 
-You can also import `SigRouter` from `@citrusworx/sigjs/sig-router`. Paths are exact. `/about` and `/about/` are different. There is no `:id` matching. `navigate("about")` normalizes to `/about`. Register `"*"` if you want an unknown-path view.
+You can also import `SigRouter` from `@citrusworx/sigjs/sig-router`. Exact paths win, then `:param` segments, then `"*"`. `/about` and `/about/` are different. `navigate("about")` normalizes to `/about`. Register `"*"` if you want an unknown-path view.
 
 ## Pair with Juice when you need styling
 
@@ -269,7 +269,7 @@ Juice attributes (`stack`, `row`, `gap`, `card`, `padding`) are ordinary HTML at
 
 1. Install `@citrusworx/sigjs` and set `jsxImportSource`
 2. `Signal` + function-child text for the smallest demo
-3. `effect` when you need attributes, timers, or fetch
+3. `effect` when you need lists, timers, fetch, or several writes on one node
 4. `batch` / `memo` when updates or derivations get noisy
 5. `SigRouter` when you have more than one view
 6. Juice only for structure and theme — not for state

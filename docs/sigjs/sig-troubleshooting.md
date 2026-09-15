@@ -34,16 +34,17 @@ effect(() => {
 
 Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `replaceChildren` in an effect. See [JSX and the DOM](./sig-jsx.md), [Patterns](./sig-patterns.md), and [Examples](./sig-examples.md).
 
-### `className={() => …}` / `value={() => …}` / `disabled={() => …}` do nothing useful
+### `className={flag.get()}` / `value={name.get()}` / `disabled={!ready.get()}` stay frozen
 
-**Cause:** only `ref` and `on*` treat functions specially. Other function props are assigned as values.
+**Cause:** `get()` ran at create time. The assigned value is a snapshot.
 
 ```tsx
-const input = <input /> as HTMLInputElement;
-effect(() => {
-  input.disabled = !ready.get();
-});
+<div className={() => (on.get() ? "on" : "off")} />
+<input value={() => name.get()} />
+<button disabled={() => !ready.get()} />
 ```
+
+`ref` + `effect` is still valid when one subscription should write several properties. `ref` and `on*` functions are not reactive getters.
 
 ### The effect never re-runs
 

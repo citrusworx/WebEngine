@@ -735,7 +735,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
-    "@citrusworx/sigjs": "npm:^0.1.0"
+    "@citrusworx/sigjs": "workspace:^"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@types/gulp": "npm:^4.0.18"
@@ -862,7 +862,7 @@ __metadata:
   resolution: "@citrusworx/sugar@workspace:tooling/sugar"
   dependencies:
     "@citrusworx/juiceui": "npm:^0.1.1"
-    "@citrusworx/sigjs": "npm:^0.1.0"
+    "@citrusworx/sigjs": "workspace:^"
     json5: "npm:^2.2.3"
     typescript: "npm:^6.0.2"
     vite: "npm:^8.0.0"

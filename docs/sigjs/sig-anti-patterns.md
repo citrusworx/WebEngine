@@ -61,26 +61,32 @@ Better:
 <p>Count: {() => String(count.get())}</p>
 ```
 
-Same bug with attributes: `disabled={busy.get()}` is the first boolean, forever.
+Same bug with attributes: `disabled={busy.get()}` is the first boolean, forever. Use `disabled={() => busy.get()}` or an effect.
 
-## 3. Expecting reactive attributes
+## 3. Passing a snapshot where you wanted a live prop
 
 Bad:
+
+```tsx
+<div className={on.get() ? "on" : "off"} />
+<input value={name.get()} />
+<button disabled={!ready.get()} />
+```
+
+Why it is bad:
+
+- `get()` ran while building the tree
+- the value is assigned once; later `set`s do not write the DOM
+
+Better — function-valued props:
 
 ```tsx
 <div className={() => (on.get() ? "on" : "off")} />
 <input value={() => name.get()} />
 <button disabled={() => !ready.get()} />
-<section padding={() => space.get()} />
 ```
 
-Why it is bad:
-
-- only `ref` and `on*` treat functions specially
-- every other function prop is assigned as a value
-- `className` becomes a function object; Juice never sees a live `padding`
-
-Better:
+Better — one effect for several writes:
 
 ```tsx
 const el = <div className="off" /> as HTMLDivElement;
@@ -88,6 +94,8 @@ effect(() => {
   el.className = on.get() ? "on" : "off";
 });
 ```
+
+`ref` and `on*` stay callbacks / listeners. Passing a function there does **not** subscribe to signals; close over signals and read them inside the handler or inside an effect.
 
 ## 4. Returning elements from a function child
 
@@ -267,12 +275,10 @@ Why it is bad:
 - Juice already expresses `stack` / `row` / `gap`
 - resize and density become JS layout instead of markup
 
-Better: static Juice attributes. If product state must change a Juice attribute, `setAttribute` from the effect — do not rebuild flexbox in JS.
+Better: static Juice attributes, or a function-valued Juice attribute when product state should change it.
 
-```ts
-effect(() => {
-  el.setAttribute("gap", density.get() === "tight" ? "0.5rem" : "2rem");
-});
+```tsx
+<section gap={() => (density.get() === "tight" ? "0.5rem" : "2rem")} />
 ```
 
 ## 12. Conditional `get()` and a “dead” effect
@@ -324,7 +330,7 @@ These are not Sig.js:
 - keyed `<For>`, `<Show>`, `<Switch>`
 - reactive `style={{}}` objects as live bindings
 - `peek`, `untrack` (there is no peek; read outside an effect instead)
-- `/user/:id` route params
+- splat routes (`/files/*`)
 - SSR / `hydrate`
 - Juice `<Button>` as a Sig import
 
@@ -337,10 +343,10 @@ The most common Sig.js failures come from:
 - React / VDOM habits
 - reading signals once at create time
 - function children used as element factories
-- reactive attributes that are not implemented
+- snapshot props (`className={flag.get()}`)
 - in-place mutation
 - resources that outlive the view
 - nested `batch`
-- exact-path router mismatches
+- router mismatches (no `"*"`, or navigating a path that is neither exact nor parametric)
 
 Most of the time, the fix is to simplify: static markup, a signal, and one small write. Trust the split. Juice already owns structure. Sig.js only needs to move the values.

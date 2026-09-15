@@ -30,9 +30,10 @@ function appendChild(parent, child) {
     if (typeof child === "function") {
         const textNode = document.createTextNode("");
         parent.appendChild(textNode);
-        effect(() => {
+        const dispose = effect(() => {
             textNode.textContent = String(child());
         });
+        attachCleanup(textNode, dispose);
         return;
     }
     if (typeof child === "string" || typeof child === "number") {
@@ -40,6 +41,39 @@ function appendChild(parent, child) {
         return;
     }
     parent.appendChild(child); // Now guaranteed Node
+}
+function isDomPropertyKey(el, key) {
+    return (key in el &&
+        key !== "animate" &&
+        key !== "animation" &&
+        key !== "motion" &&
+        !key.startsWith("data-") &&
+        !key.startsWith("aria-"));
+}
+function applyPropValue(el, key, value) {
+    if (key === "class") {
+        if (value === false || value == null) {
+            el.removeAttribute("class");
+            el.className = "";
+            return;
+        }
+        el.className = String(value === true ? "" : value);
+        return;
+    }
+    // DOM properties that must be assigned directly
+    if (isDomPropertyKey(el, key)) {
+        el[key] = value;
+        return;
+    }
+    if (value === true) {
+        el.setAttribute(key, "");
+    }
+    else if (value === false || value == null) {
+        el.removeAttribute(key);
+    }
+    else {
+        el.setAttribute(key, String(value));
+    }
 }
 function setProp(el, key, value) {
     if (key === "children")
@@ -53,25 +87,15 @@ function setProp(el, key, value) {
         el.addEventListener(event, value);
         return;
     }
-    // DOM properties that must be assigned directly
-    if (key in el &&
-        key !== "animate" &&
-        key !== "animation" &&
-        key !== "motion" &&
-        !key.startsWith("data-") &&
-        !key.startsWith("aria-")) {
-        el[key] = value;
+    // Function-valued host props (not ref / on*) are reactive getters.
+    if (typeof value === "function") {
+        const dispose = effect(() => {
+            applyPropValue(el, key, value());
+        });
+        attachCleanup(el, dispose);
         return;
     }
-    if (value === true) {
-        el.setAttribute(key, "");
-    }
-    else if (value === false || value == null) {
-        el.removeAttribute(key);
-    }
-    else {
-        el.setAttribute(key, value);
-    }
+    applyPropValue(el, key, value);
 }
 export function jsx(type, props) {
     if (typeof type === "function") {

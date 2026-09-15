@@ -1,6 +1,7 @@
-type RouteFactory = () => Node | null;
-type RouteView = Node | RouteFactory | null;
-type RouteMap = Record<string, RouteView>;
+export type RouteParams = Record<string, string>;
+export type RouteFactory = (params: RouteParams) => Node | null;
+export type RouteView = Node | RouteFactory | null;
+export type RouteMap = Record<string, RouteView>;
 export declare class SigRouter {
     private routes;
     private namedRoutes;
@@ -24,4 +25,3 @@ export declare class SigRouter {
     has(path: string): boolean;
     private attachNavigationListeners;
 }
-export {};

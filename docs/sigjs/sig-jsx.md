@@ -91,31 +91,54 @@ Live **structure** is not a child function. It is an effect you write against a 
 
 `Fragment` uses the same `appendChild`, so function children inside `<>…</>` are still text nodes.
 
-## Props are assigned once
+## Props: static values vs reactive getters
 
-`setProp` runs at create time:
+`setProp` runs at create time. The rule is small:
 
 | Kind | Behavior |
 |---|---|
 | `children` | ignored here; appended separately |
-| `ref` (function) | called with the element after create |
-| `on*` (function) | `addEventListener(name.toLowerCase(), fn)` — `onClick` → `click` |
+| `ref` (function) | called with the element after create — **not** a reactive getter |
+| `on*` (function) | `addEventListener(name.toLowerCase(), fn)` — `onClick` → `click` — **not** a reactive getter |
+| Any other **function** | wrapped in `effect`; the function is called again when signals it reads change; the **result** is assigned |
 | Known DOM properties | assigned (`el[key] = value`), except `animate` / `animation` / `motion`, `data-*`, `aria-*` |
 | `true` | `setAttribute(key, "")` |
 | `false` / `null` / `undefined` | `removeAttribute` |
 | other | `setAttribute(key, value)` |
 
-Function values that are **not** `ref` or `on*` are assigned as-is. They are **not** subscribed.
+Non-function values are assigned **once**. Function-valued host props (except `ref` and `on*`) are reactive getters. The same property-vs-attribute rule applies to the getter’s return value.
 
 ```tsx
-// Stores a function on className. The CSS class is not "active".
 <div className={() => (on.get() ? "active" : "")} />
-
-// Stores a function on the Juice attribute. Juice cannot see a gap.
-<section padding={() => size.get()} />
+<input value={() => name.get()} />
+<input type="checkbox" checked={() => on.get()} />
+<section padding={() => size.get()} hidden={() => !open.get()} />
 ```
 
-Live attributes are an effect:
+That is the intended live-attribute path for a single binding. `class` is treated as the HTML class attribute (`className` stays the DOM property). `textContent` is a DOM property, so `textContent={() => …}` works — do not mix it with JSX children on the same node.
+
+Cleanup is attached to the element, so `disposeTree` (and the router) unsubscribes the effect.
+
+### Assign-once exceptions
+
+These stay callbacks / listeners, even though they are functions:
+
+- **`ref`** — called once with the element
+- **`on*`** — registered once with `addEventListener`
+
+A snapshot is also assign-once:
+
+```tsx
+// First boolean, forever — get() ran while building the tree
+<button disabled={busy.get()} />
+
+// Live
+<button disabled={() => busy.get()} />
+```
+
+### `ref` + `effect` is still supported
+
+Use it when one effect should write several properties, or when you already hold the node for a list / conditional:
 
 ```tsx
 const el = <div className="off" /> as HTMLDivElement;
@@ -124,24 +147,6 @@ effect(() => {
   el.className = on.get() ? "on" : "off";
 });
 ```
-
-### Why Juice attributes work
-
-`stack`, `gap`, `padding`, `card`, `surface`, `hero`, `panel`, `muted` are not DOM properties, so they take the `setAttribute` path. Juice CSS then matches `[stack]`, `[gap="2rem"]`, `[card]`.
-
-That assignment happens **once**. To change a Juice attribute later, `setAttribute` / `removeAttribute` from an effect. Do not pass a function into the JSX attribute.
-
-Boolean Juice flags (`stack`, `card`, `muted`) should be `true` so they become `setAttribute(key, "")`.
-
-## Events
-
-`onClick`, `onInput`, `onKeyDown`, `onSubmit`, `onclick` — any `on*` function — become `addEventListener`. The prefix is sliced and lowercased: `onClick` → `click`, `onKeyDown` → `keydown`.
-
-A non-function `onClick` is ignored (it falls through; if `onClick` is not a DOM property it may even land as an attribute named `onClick`). Pass a function.
-
-There is no event pooling and no synthetic event. You get the browser’s `Event`. Cast `e.target` when you need `.value`.
-
-## `ref`
 
 ```tsx
 <input
@@ -153,7 +158,29 @@ There is no event pooling and no synthetic event. You get the browser’s `Event
 />
 ```
 
-`ref` is called once. It is not called again on signal change. Put the `effect` inside (or close over the element) so something actually subscribes.
+There is no live `style={{ color: … }}` object binder. Pass a static string, or write `el.style.*` from an effect.
+
+### Why Juice attributes work
+
+`stack`, `gap`, `padding`, `card`, `surface`, `hero`, `panel`, `muted` are not DOM properties, so they take the `setAttribute` path. Juice CSS then matches `[stack]`, `[gap="2rem"]`, `[card]`.
+
+Static Juice flags (`stack`, `card`, `muted`) should be `true` so they become `setAttribute(key, "")`. Function-valued Juice attributes subscribe:
+
+```tsx
+<section card padding={() => (dense.get() ? "0.5rem" : "1.25rem")} />
+```
+
+## Events
+
+`onClick`, `onInput`, `onKeyDown`, `onSubmit`, `onclick` — any `on*` function — become `addEventListener`. The prefix is sliced and lowercased: `onClick` → `click`, `onKeyDown` → `keydown`.
+
+A non-function `onClick` is ignored (it falls through; if `onClick` is not a DOM property it may even land as an attribute named `onClick`). Pass a function.
+
+There is no event pooling and no synthetic event. You get the browser’s `Event`. Cast `e.target` when you need `.value`.
+
+## `ref`
+
+`ref` is called once. It is not a reactive getter. Put an `effect` inside (or close over the element) when one subscription should write several properties. For a single live attribute, a function-valued prop is enough.
 
 ## Components
 
@@ -259,7 +286,7 @@ function disposeTree(node: Node): void
 
 Walks the node, runs attached cleanups, recurses. `SigRouter` and `mount` call this for you.
 
-Cleanup is stored on a `WeakMap<Node, Set<Cleanup>>`. Function components attach their scope disposer to the returned node. Host-only trees with function children may not attach those text effects — wrap the app in a function component so dispose can see them. See [Effects — cleanup scopes](./sig-effects.md#cleanup-scopes-and-component-functions).
+Cleanup is stored on a `WeakMap<Node, Set<Cleanup>>`. Function components attach their scope disposer to the returned node. Function-child text effects and function-valued prop effects also attach to the host node, so `disposeTree` can stop them without a component wrapper. A function-component root is still the clearer app shape. See [Effects — cleanup scopes](./sig-effects.md#cleanup-scopes-and-component-functions).
 
 ## `Fragment`
 
@@ -281,6 +308,7 @@ function Title() {
 Sig.js does not re-render a component function when a signal changes.
 
 - A function child updates **one text node**.
+- A function-valued prop updates **one property or attribute**.
 - An `effect` runs your callback; you decide which properties to write.
 - A list example that calls `replaceChildren` rebuilds those children. That is your code, not a reconciler.
 
@@ -290,7 +318,7 @@ If the page “re-renders,” you wrote an effect that rebuilt it. That is allow
 
 - Treat JSX as `document.createElement` plus a few helpers
 - Use function children only for text
-- Hold elements for attributes, lists, and conditionals
+- Use function-valued props for live attributes (`className`, `value`, `checked`, Juice flags)
+- Hold elements for lists, conditionals, and multi-property writes
 - Put the app in a function component so `disposeTree` can find effects
-- Let Juice attributes ride along as static HTML attributes
-- Do not invent reactive props, keyed lists, or `{condition && <X />}` element swapping
+- Do not invent keyed lists or `{condition && <X />}` element swapping

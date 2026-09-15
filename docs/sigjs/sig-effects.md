@@ -135,7 +135,7 @@ Every `effect` registered while `type(props)` runs has its disposer added to tha
 
 Practical rule: **create effects inside the component function** that returns the tree. Then leaving a route, or `mount`ing over the same target, will stop timers and abort fetches.
 
-Function-child effects created on a **host** element that is *not* under a component (`mount(<div>{() => n.get()}</div>, root)`) do not join a cleanup scope. Prefer a function component as the mount root so dispose can find them.
+Function-child and function-valued-prop effects also attach their disposer to the host node, so `disposeTree` can stop them even without a component wrapper. Effects you call yourself still need a function-component root (or an explicit disposer) to be found. Prefer a function component as the mount root.
 
 `captureCleanupScope` is exported. You almost never need to call it yourself; the JSX runtime already does.
 
@@ -155,7 +155,7 @@ effect(() => {
 });
 ```
 
-That is how live attributes work. `className={() => …}` is not subscribed — see [JSX](./sig-jsx.md).
+That is how multi-property live attributes work. A single binding can be a function-valued prop: `className={() => …}`. See [JSX](./sig-jsx.md).
 
 Keep effects **small**. One list container, one button, one fetch. A single effect that rewrites the entire page on every keystroke is how you accidentally rebuild a virtual-DOM tree by hand.
 

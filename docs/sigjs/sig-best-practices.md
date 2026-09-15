@@ -71,9 +71,23 @@ Good:
 
 The runtime already creates the effect and the text node. You do not need a second `effect` that assigns `textContent` for that case.
 
-## Let effects own everything that is not text
+## Let function-valued props own a single live attribute
 
-Attributes, `hidden`, `disabled`, `className`, lists, fetch, timers — hold the node, write from an `effect`.
+`className`, `value`, `checked`, `hidden`, `disabled`, and Juice attributes can take a getter:
+
+```tsx
+<button
+  type="button"
+  disabled={() => busy.get()}
+  className={() => (busy.get() ? "busy" : "")}
+>
+  Save
+</button>
+```
+
+## Let effects own lists, resources, and multi-property writes
+
+Lists, fetch, timers, and several properties on one node — hold the node, write from an `effect`.
 
 Good:
 
@@ -208,7 +222,7 @@ Juice already collapses rows. Do not re-implement responsive layout in Sig. Chan
 mount(<App />, document.getElementById("root")!);
 ```
 
-Host-only trees (`mount(<div>{() => n.get()}</div>, root)`) may not attach function-child effects to `disposeTree`. A component root does, because `captureCleanupScope` wraps the factory. See [Effects](./sig-effects.md#cleanup-scopes-and-component-functions).
+Function-child text effects and function-valued props attach their disposers to the host node, so `disposeTree` can stop them on a host-only tree. A function-component root is still the clearer app shape, because effects you call yourself during the factory are registered on that scope. See [Effects](./sig-effects.md#cleanup-scopes-and-component-functions).
 
 ## Register routes as functions, after `set`, then `start`
 
@@ -222,7 +236,7 @@ router.start();
 ```
 
 - Functions, not `<Home />`
-- Exact paths (`/about` ≠ `/about/`). `navigate("about")` is fine — it normalizes
+- Exact paths win; `:param` segments next; `"*"` last. `/about` ≠ `/about/`. `navigate("about")` is fine — it normalizes
 - Register `"*"` if you want a missing-path view
 - Nav outside the target
 - One router at the app edge
@@ -232,7 +246,7 @@ router.start();
 When wrapping Sig for an app, ask:
 
 1. Is this still a signal, an effect, or a DOM write?
-2. Am I hiding a React-shaped API (`useState`, reactive `className`) that the runtime does not have?
+2. Am I hiding a React-shaped API (`useState`, keyed lists) that the runtime does not have?
 3. Will the wrapper still dispose when the view unmounts?
 
 If the wrapper pretends Sig is React, the next author will write `{() => items.map(<li />)}` and wonder why the list is a string.
@@ -244,7 +258,8 @@ Sig.js works best when:
 - markup controls structure
 - signals control values
 - function children control live text
-- effects control writes and resources
+- function-valued props control live attributes
+- effects control lists, resources, and multi-property writes
 - the router controls which tree is alive
 - Juice controls how it looks
 
