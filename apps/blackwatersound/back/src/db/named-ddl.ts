@@ -16,8 +16,8 @@ const compiler = new CCompiler();
 
 /**
  * Whole-domain `*Schema.yml` plus optional versioned YAML in `db/migrations`.
- * `migrate()` uses {@link applyNamedMigrations}: CREATE TABLE / INDEX, then
- * pending rename / drop / type-change migrations, then additive ADD COLUMN.
+ * `migrate()` uses {@link applyNamedMigrations}: CREATE TABLE, pending rename /
+ * drop / type-change migrations, additive ADD COLUMN, then indexes.
  *
  * Product and waitlist keep special-cased live DML (JSONB catalog, waitlist
  * insert). Other resources use compiled GET reads when Postgres is connected.

@@ -4,12 +4,15 @@
  *
  * Order (greenfield and existing volumes):
  * 1. Ledger table (`nectarine_schema_migrations`)
- * 2. `CREATE TABLE IF NOT EXISTS` / indexes from current `*Schema.yml`
+ * 2. `CREATE TABLE IF NOT EXISTS` from current `*Schema.yml`
  * 3. Pending versioned migrations (rename / drop / type change) with skip-if-already-there
  * 4. Additive `ADD COLUMN IF NOT EXISTS` (Postgres) for genuinely new columns
+ * 5. `CREATE INDEX` from current schema (after rename, so existing volumes do
+ *    not index a column that still has the old name)
  *
- * Additive ALTER runs *after* renames so a schema that already uses the new
- * column name does not ADD the new name beside the old one.
+ * Each pending migration’s ops + ledger insert run in one transaction
+ * (Postgres `BEGIN`/`COMMIT` on a pinned connection via `withTransaction`).
+ * MySQL DDL implicit-commits, so a later op cannot undo an earlier ALTER.
  *
  * Not Flyway: no down migrations, no raw SQL scripts, no silent schema-diff.
  */
@@ -62,13 +65,42 @@ function protectedTarget(op) {
             return { table: op.table, column: op.column };
     }
 }
-async function applyOperation(execute, tableSchema, op, version) {
+function txBegin(vendor) {
+    return vendor === "mysql" ? "START TRANSACTION" : "BEGIN";
+}
+/**
+ * Wrap one migration’s ops + ledger insert.
+ *
+ * Postgres: real transactional DDL when `execute.withTransaction` pins a client.
+ * MySQL: `START TRANSACTION` is still issued, but DDL implicit-commits, so a
+ * failed later op cannot roll back an earlier ALTER.
+ */
+async function runInTransaction(execute, vendor, work) {
+    const run = async (query) => {
+        await query(txBegin(vendor));
+        try {
+            const result = await work(query);
+            await query("COMMIT");
+            return result;
+        }
+        catch (error) {
+            await query("ROLLBACK").catch(() => undefined);
+            throw error;
+        }
+    };
+    if (execute.withTransaction) {
+        return execute.withTransaction(run);
+    }
+    return run((sql, params) => execute.query(sql, params));
+}
+async function applyOperation(query, tableSchema, op, version) {
+    const execute = { query };
     switch (op.kind) {
         case "renameColumn": {
             const fromExists = await columnExists(execute, tableSchema, op.table, op.from);
             const toExists = await columnExists(execute, tableSchema, op.table, op.to);
             if (fromExists && !toExists) {
-                await execute.query(op.sql);
+                await query(op.sql);
                 return "ran";
             }
             if (!fromExists && toExists) {
@@ -84,7 +116,7 @@ async function applyOperation(execute, tableSchema, op, version) {
             if (!exists) {
                 return "skipped";
             }
-            await execute.query(op.sql);
+            await query(op.sql);
             return "ran";
         }
         case "changeType": {
@@ -92,8 +124,19 @@ async function applyOperation(execute, tableSchema, op, version) {
             if (!exists) {
                 throw new MigrationRunError(`Migration ${version}: cannot change type of ${op.table}.${op.column}; column does not exist`);
             }
-            await execute.query(op.sql);
+            await query(op.sql);
             return "ran";
+        }
+    }
+}
+function assertUnprotected(migration, protectedColumns) {
+    for (const op of migration.operations) {
+        const target = protectedTarget(op);
+        if (isProtected(protectedColumns, target.table, target.column)) {
+            throw new MigrationRunError(`Migration ${migration.version}: ${op.kind} on ${target.table}.${target.column} is protected`);
+        }
+        if (op.kind === "renameColumn" && isProtected(protectedColumns, op.table, op.to)) {
+            throw new MigrationRunError(`Migration ${migration.version}: rename onto protected ${op.table}.${op.to} is not allowed`);
         }
     }
 }
@@ -111,14 +154,9 @@ async function applyMigrations(options) {
     const schemas = options.schemas ?? [];
     const compiled = (0, migration_js_1.compileMigrations)(options.migrations ?? [], vendor);
     await execute.query((0, ledger_js_1.ledgerCreateTableSql)(vendor));
-    if (schemas.length > 0) {
-        const plan = (0, ddl_js_1.compileSchemasPlan)(schemas, vendor);
-        for (const sql of (0, ddl_js_1.schemaPlanStatements)(plan, "create")) {
-            await execute.query(sql);
-        }
-        for (const sql of (0, ddl_js_1.schemaPlanStatements)(plan, "indexes")) {
-            await execute.query(sql);
-        }
+    const plan = schemas.length > 0 ? (0, ddl_js_1.compileSchemasPlan)(schemas, vendor) : [];
+    for (const sql of (0, ddl_js_1.schemaPlanStatements)(plan, "create")) {
+        await execute.query(sql);
     }
     const listed = resultRows(await execute.query(ledger_js_1.ledgerListSql));
     const appliedByVersion = new Map();
@@ -141,24 +179,22 @@ async function applyMigrations(options) {
             skipped.push(migration.version);
             continue;
         }
-        for (const op of migration.operations) {
-            const target = protectedTarget(op);
-            if (isProtected(protectedColumns, target.table, target.column)) {
-                throw new MigrationRunError(`Migration ${migration.version}: ${op.kind} on ${target.table}.${target.column} is protected`);
+        assertUnprotected(migration, protectedColumns);
+        await runInTransaction(execute, vendor, async (query) => {
+            for (const op of migration.operations) {
+                await applyOperation(query, tableSchema, op, migration.version);
             }
-            if (op.kind === "renameColumn" && isProtected(protectedColumns, op.table, op.to)) {
-                throw new MigrationRunError(`Migration ${migration.version}: rename onto protected ${op.table}.${op.to} is not allowed`);
-            }
-            await applyOperation(execute, tableSchema, op, migration.version);
-        }
-        await execute.query(ledger_js_1.ledgerInsertSql, [migration.version, migration.checksum]);
+            await query(ledger_js_1.ledgerInsertSql, [migration.version, migration.checksum]);
+        });
         applied.push(migration.version);
     }
-    if (schemas.length > 0 && vendor === "postgres") {
-        const plan = (0, ddl_js_1.compileSchemasPlan)(schemas, vendor);
+    if (vendor === "postgres") {
         for (const sql of (0, ddl_js_1.schemaPlanStatements)(plan, "additive")) {
             await execute.query(sql);
         }
+    }
+    for (const sql of (0, ddl_js_1.schemaPlanStatements)(plan, "indexes")) {
+        await execute.query(sql);
     }
     return { applied, skipped };
 }

@@ -76,6 +76,17 @@ function requireString(record, key, label) {
 function q(name, vendor) {
     return (0, identifiers_js_1.quoteIdent)(name, vendor);
 }
+/**
+ * `USING col::DOUBLE PRECISION` is invalid Postgres. CAST(col AS <compiled type>)
+ * accepts spaced types (`DOUBLE PRECISION`) and sized types (`VARCHAR(40)`).
+ * Reject anything that looks like a statement separator — types come only from
+ * {@link compileSqlType}.
+ */
+function assertSafeSqlType(sqlType, version) {
+    if (/[;']|--|\/\*/.test(sqlType)) {
+        throw new MigrationCompileError(`Migration ${version}: compiled type is not a safe CAST target: ${sqlType}`);
+    }
+}
 function checksumOf(version, operations) {
     const canonical = {
         version,
@@ -163,10 +174,11 @@ function compileChangeType(spec, vendor, version) {
         throw new MigrationCompileError(`Migration ${version}: changeType.using must be column (a typed cast of the same column, not raw SQL)`);
     }
     const sqlType = (0, ddl_js_1.compileSqlType)(type, vendor);
+    assertSafeSqlType(sqlType, version);
     const col = q(column, vendor);
     const sql = vendor === "mysql"
         ? `ALTER TABLE ${q(table, vendor)} MODIFY COLUMN ${col} ${sqlType};`
-        : `ALTER TABLE ${q(table, vendor)} ALTER COLUMN ${col} TYPE ${sqlType} USING ${col}::${sqlType};`;
+        : `ALTER TABLE ${q(table, vendor)} ALTER COLUMN ${col} TYPE ${sqlType} USING CAST(${col} AS ${sqlType});`;
     return {
         kind: "changeType",
         table,

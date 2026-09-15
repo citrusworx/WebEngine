@@ -67,8 +67,30 @@ describe("migration YAML compiler", () => {
 
         expect(compiled.operations[0]?.sql).toBe("ALTER TABLE users DROP COLUMN legacy_flag;");
         expect(compiled.operations[1]?.sql).toBe(
-            "ALTER TABLE products ALTER COLUMN tags TYPE JSONB USING tags::JSONB;",
+            "ALTER TABLE products ALTER COLUMN tags TYPE JSONB USING CAST(tags AS JSONB);",
         );
+    });
+
+    it("uses CAST for spaced Postgres types such as DOUBLE PRECISION", () => {
+        const compiled = compileMigration({
+            version: "005_score_float",
+            destructive: true,
+            operations: [
+                {
+                    changeType: {
+                        table: "products",
+                        column: "score",
+                        type: "float",
+                        confirm: "changeType",
+                    },
+                },
+            ],
+        });
+        expect(compiled.operations[0]?.sqlType).toBe("DOUBLE PRECISION");
+        expect(compiled.operations[0]?.sql).toBe(
+            "ALTER TABLE products ALTER COLUMN score TYPE DOUBLE PRECISION USING CAST(score AS DOUBLE PRECISION);",
+        );
+        expect(compiled.operations[0]?.sql).not.toContain("::DOUBLE PRECISION");
     });
 
     it("emits MySQL RENAME / DROP / MODIFY without breaking shared APIs", () => {

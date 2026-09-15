@@ -88,6 +88,28 @@ class PgSql {
         }
         return this.pool.query(sql, params);
     }
+    /**
+     * Pin one pooled client for `work`. The migrator sends BEGIN/COMMIT through
+     * this query callback so a multi-op migration and its ledger insert share
+     * a transaction (`pool.query()` would use a different client per call).
+     */
+    async withTransaction(work) {
+        if (!this.pool) {
+            throw new Error("Postgres adapter is not connected. Call connect() before withTransaction()");
+        }
+        const client = await this.pool.connect();
+        try {
+            return await work((sql, params = []) => {
+                if (typeof sql !== "string" || !sql.trim()) {
+                    throw new Error("Postgres adapter query() requires a SQL string");
+                }
+                return client.query(sql, params);
+            });
+        }
+        finally {
+            client.release();
+        }
+    }
     async disconnect() {
         const pool = this.pool;
         if (!pool) {

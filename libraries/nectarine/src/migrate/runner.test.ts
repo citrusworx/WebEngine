@@ -39,12 +39,39 @@ type LedgerRow = { version: string; checksum: string };
 function createFakeExecutor(opts?: {
     columns?: Record<string, string[]>;
     ledger?: LedgerRow[];
+    failOn?: (sql: string) => boolean;
 }) {
     const columns = new Map<string, Set<string>>(
         Object.entries(opts?.columns ?? {}).map(([table, cols]) => [table, new Set(cols)]),
     );
     const ledger: LedgerRow[] = [...(opts?.ledger ?? [])];
     const executed: { sql: string; params: readonly unknown[] }[] = [];
+
+    const query = async (sql: string, params: readonly unknown[] = []) => {
+        executed.push({ sql, params });
+        if (opts?.failOn?.(sql)) {
+            throw new Error(`forced failure: ${sql}`);
+        }
+        const trimmed = sql.trim();
+
+        if (trimmed.includes("information_schema.columns")) {
+            const table = String(params[1]);
+            const column = String(params[2]);
+            const has = columns.get(table)?.has(column) === true;
+            return { rows: has ? [{ column_name: column }] : [] };
+        }
+
+        if (trimmed.startsWith("SELECT") && trimmed.includes(LEDGER_TABLE)) {
+            return { rows: ledger.map((row) => ({ ...row })) };
+        }
+
+        if (trimmed.startsWith("INSERT") && trimmed.includes(LEDGER_TABLE)) {
+            ledger.push({ version: String(params[0]), checksum: String(params[1]) });
+            return { rows: [] };
+        }
+
+        return { rows: [] };
+    };
 
     return {
         columns,
@@ -53,28 +80,8 @@ function createFakeExecutor(opts?: {
         sqls() {
             return executed.map((entry) => entry.sql);
         },
-        query: async (sql: string, params: readonly unknown[] = []) => {
-            executed.push({ sql, params });
-            const trimmed = sql.trim();
-
-            if (trimmed.includes("information_schema.columns")) {
-                const table = String(params[1]);
-                const column = String(params[2]);
-                const has = columns.get(table)?.has(column) === true;
-                return { rows: has ? [{ column_name: column }] : [] };
-            }
-
-            if (trimmed.startsWith("SELECT") && trimmed.includes(LEDGER_TABLE)) {
-                return { rows: ledger.map((row) => ({ ...row })) };
-            }
-
-            if (trimmed.startsWith("INSERT") && trimmed.includes(LEDGER_TABLE)) {
-                ledger.push({ version: String(params[0]), checksum: String(params[1]) });
-                return { rows: [] };
-            }
-
-            return { rows: [] };
-        },
+        query,
+        withTransaction: async <T>(work: (q: typeof query) => Promise<T>) => work(query),
     };
 }
 
@@ -103,6 +110,8 @@ describe("applyMigrations runner", () => {
         expect(exec.sqls()).toContain("CREATE TABLE IF NOT EXISTS products (\n  id TEXT PRIMARY KEY,\n  payload JSONB NOT NULL,\n  tags JSONB\n);");
         expect(exec.sqls()).toContain("ALTER TABLE users RENAME COLUMN nickname TO handle;");
         expect(exec.sqls()).toContain("ALTER TABLE users DROP COLUMN legacy_flag;");
+        expect(exec.sqls()).toContain("BEGIN");
+        expect(exec.sqls()).toContain("COMMIT");
         expect(exec.sqls().some((sql) => sql.includes("ADD COLUMN IF NOT EXISTS"))).toBe(true);
         expect(exec.ledger.map((row) => row.version)).toEqual([
             "001_rename_nickname",
@@ -229,8 +238,79 @@ describe("applyMigrations runner", () => {
 
         expect(result.applied).toEqual(["004_tags_jsonb"]);
         expect(exec.sqls()).toContain(
-            "ALTER TABLE products ALTER COLUMN tags TYPE JSONB USING tags::JSONB;",
+            "ALTER TABLE products ALTER COLUMN tags TYPE JSONB USING CAST(tags AS JSONB);",
         );
+    });
+
+    it("rolls back a multi-op migration if a later op fails before the ledger insert", async () => {
+        const exec = createFakeExecutor({
+            columns: { users: ["id", "nickname", "legacy_flag"] },
+            failOn: (sql) => sql.includes("DROP COLUMN legacy_flag"),
+        });
+
+        await expect(
+            applyMigrations({
+                execute: exec,
+                schemas: [usersSchema],
+                migrations: [
+                    {
+                        version: "006_rename_then_drop",
+                        destructive: true,
+                        operations: [
+                            { renameColumn: { table: "users", from: "nickname", to: "handle" } },
+                            {
+                                dropColumn: {
+                                    table: "users",
+                                    column: "legacy_flag",
+                                    confirm: "dropColumn",
+                                },
+                            },
+                        ],
+                    },
+                ],
+            }),
+        ).rejects.toThrow(/forced failure/);
+
+        expect(exec.sqls()).toContain("BEGIN");
+        expect(exec.sqls()).toContain("ROLLBACK");
+        expect(exec.sqls()).not.toContain("COMMIT");
+        expect(exec.ledger).toEqual([]);
+    });
+
+    it("creates indexes after rename so existing volumes do not index the new name too early", async () => {
+        const schema = {
+            User: {
+                table: "users",
+                fields: { id: "string PRIMARY KEY", handle: "string" },
+                indexes: { users_handle_idx: { columns: ["handle"] } },
+            },
+        };
+        const exec = createFakeExecutor({
+            columns: { users: ["id", "nickname"] },
+        });
+
+        await applyMigrations({
+            execute: exec,
+            schemas: [schema],
+            migrations: [
+                {
+                    version: "001_rename_nickname",
+                    operations: [
+                        { renameColumn: { table: "users", from: "nickname", to: "handle" } },
+                    ],
+                },
+            ],
+        });
+
+        const sqls = exec.sqls();
+        const createAt = sqls.findIndex((sql) => sql.startsWith("CREATE TABLE IF NOT EXISTS users"));
+        const renameAt = sqls.findIndex((sql) => sql.includes("RENAME COLUMN nickname TO handle"));
+        const indexAt = sqls.findIndex((sql) => sql.includes("CREATE INDEX"));
+        expect(createAt).toBeGreaterThanOrEqual(0);
+        expect(renameAt).toBeGreaterThan(createAt);
+        expect(indexAt).toBeGreaterThan(renameAt);
+        expect(sqls[indexAt]).toContain("users_handle_idx");
+        expect(sqls[indexAt]).toContain("(handle)");
     });
 
     it("loadMigrationDocuments returns [] for a missing directory and reads YAML files", () => {

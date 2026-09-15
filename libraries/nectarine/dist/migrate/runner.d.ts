@@ -3,12 +3,15 @@
  *
  * Order (greenfield and existing volumes):
  * 1. Ledger table (`nectarine_schema_migrations`)
- * 2. `CREATE TABLE IF NOT EXISTS` / indexes from current `*Schema.yml`
+ * 2. `CREATE TABLE IF NOT EXISTS` from current `*Schema.yml`
  * 3. Pending versioned migrations (rename / drop / type change) with skip-if-already-there
  * 4. Additive `ADD COLUMN IF NOT EXISTS` (Postgres) for genuinely new columns
+ * 5. `CREATE INDEX` from current schema (after rename, so existing volumes do
+ *    not index a column that still has the old name)
  *
- * Additive ALTER runs *after* renames so a schema that already uses the new
- * column name does not ADD the new name beside the old one.
+ * Each pending migration’s ops + ledger insert run in one transaction
+ * (Postgres `BEGIN`/`COMMIT` on a pinned connection via `withTransaction`).
+ * MySQL DDL implicit-commits, so a later op cannot undo an earlier ALTER.
  *
  * Not Flyway: no down migrations, no raw SQL scripts, no silent schema-diff.
  */
@@ -17,8 +20,15 @@ import { MigrationCompileError, type CompiledMigration, type CompiledMigrationOp
 export declare class MigrationRunError extends Error {
     constructor(message: string);
 }
+export type MigrationQuery = (sql: string, params?: readonly unknown[]) => Promise<unknown>;
 export type MigrationExecutor = {
-    query: (sql: string, params?: readonly unknown[]) => Promise<unknown>;
+    query: MigrationQuery;
+    /**
+     * Run `work` on one connection. Required for real Postgres atomicity when
+     * `query()` is a pool (`pg.Pool.query` would otherwise BEGIN on one client
+     * and ALTER on another). The Postgres adapter implements this.
+     */
+    withTransaction?: <T>(work: (query: MigrationQuery) => Promise<T>) => Promise<T>;
 };
 export type ProtectedColumn = {
     table: string;

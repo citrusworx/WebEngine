@@ -3,6 +3,7 @@ export {
     MigrationRunError,
     type ApplyMigrationsOptions,
     type MigrationExecutor,
+    type MigrationQuery,
     type MigrationRunResult,
     type ProtectedColumn,
 } from "./runner.js";

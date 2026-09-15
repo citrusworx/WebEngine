@@ -6,7 +6,7 @@ What is **production-ready today** for deploying Blackwater Sound’s backend wi
 
 - **Config:** `loadNectarineConfig` reads `nectarine.config.yaml`. Env *key names* come from YAML; secrets come from the environment (`PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`, `PG_DB`).
 - **Named DML:** product + waitlist live paths call compiler-owned queries (`allPayloads`, `seedPayload`, `joinWaitlist`, …). App code does not embed SQL.
-- **Schema-YAML DDL:** `migrate()` runs Nectarine `applyMigrations`: ledger table, `CREATE TABLE` / `CREATE INDEX` from every Blackwater `*Schema.yml`, pending versioned migration YAML (rename / drop / type change), then additive `ADD COLUMN IF NOT EXISTS`.
+- **Schema-YAML DDL:** `migrate()` runs Nectarine `applyMigrations`: ledger table, `CREATE TABLE` from every Blackwater `*Schema.yml`, pending versioned migration YAML (rename / drop / type change, each in a Postgres transaction), additive `ADD COLUMN IF NOT EXISTS`, then `CREATE INDEX`.
 - **HTTP:** Seltzer 0.4 hosts object-based `Route` handlers. Handlers return `ResponseData` (`{ status?, headers?, body? }`). There is no writing `ctx.json`.
 - **Postgres:** Blackwater uses Nectarine `createPgAdapter` (`pg.Pool`, idle-client error handler, `connect()` / `disconnect()`). Boot connects before migrate. Failed boot closes the pool. `SIGTERM` / `SIGINT` drain the HTTP server then the pool.
 
@@ -49,14 +49,16 @@ Boot logs a warning. `/api/health` reports `database.configured: false` and `dat
 Boot order:
 
 1. Create `nectarine_schema_migrations` (compiler-owned ledger)
-2. `CREATE TABLE IF NOT EXISTS` / indexes from every `*Schema.yml` (greenfield and existing volumes)
-3. Pending YAML migrations in version order, recorded in the ledger
+2. `CREATE TABLE IF NOT EXISTS` from every `*Schema.yml` (greenfield and existing volumes)
+3. Pending YAML migrations in version order, each in a Postgres transaction (`BEGIN` / ops / ledger insert / `COMMIT`; `ROLLBACK` on failure). MySQL DDL implicit-commits, so a later op cannot undo an earlier ALTER.
 4. Postgres `ADD COLUMN IF NOT EXISTS` for genuinely new fields
+5. `CREATE INDEX` from current schema **after** rename, so an existing volume does not `CREATE INDEX (new_name)` while the column is still called `old_name`. Postgres `RENAME COLUMN` updates indexes already on that column.
 
 Rename/drop/type-change rules:
 
 - Tokens only (`renameColumn`, `dropColumn`, `changeType`) — no raw SQL scripts in app code
 - `dropColumn` and `changeType` require `destructive: true` **and** `confirm: dropColumn` / `confirm: changeType`
+- Postgres `changeType` emits `USING CAST(column AS <compiled type>)` so spaced types such as `DOUBLE PRECISION` are valid (not `col::DOUBLE PRECISION`)
 - Already-applied versions are skipped; checksum drift of an edited applied migration fails boot
 - Greenfield skip: rename is a no-op when the new column already exists; drop is a no-op when the column is gone
 - Blackwater protects `products.payload` JSONB — a migration that renames, drops, or retypes it is refused

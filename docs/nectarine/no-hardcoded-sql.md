@@ -82,7 +82,7 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 
 | Location | Purpose | Named query / DDL | Status |
 |----------|---------|-------------------|--------|
-| `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist) + `waitlist_email_idx`; versioned YAML for rename/drop/type change; additive `ADD COLUMN IF NOT EXISTS` after migrations | `applyNamedMigrations` → `src/db/named-ddl.ts` | **migrated** — ledger `nectarine_schema_migrations`; destructive ops require `destructive: true` + `confirm`. Live `products` keeps `payload JSONB` (protected). Waitlist includes `source_app` / `interest` on new and existing tables. |
+| `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist); versioned YAML for rename/drop/type change; additive `ADD COLUMN IF NOT EXISTS` after migrations; indexes last | `applyNamedMigrations` → `src/db/named-ddl.ts` | **migrated** — ledger `nectarine_schema_migrations`; destructive ops require `destructive: true` + `confirm`. Live `products` keeps `payload JSONB` (protected). Waitlist includes `source_app` / `interest` on new and existing tables. |
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
@@ -95,8 +95,8 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 
 | Location | Purpose | YAML that owns it | Status |
 |----------|---------|-------------------|---------|
-| `namedDdl("bootstrap")` | All resource `CREATE TABLE` / indexes plus Postgres `ADD COLUMN IF NOT EXISTS`, FK-ordered | every `*Schema.yml` | **migrated** — combined SQL still compiled; boot uses `applyNamedMigrations` so versioned YAML can rename before additive ADD COLUMN |
-| `applyNamedMigrations` | Ledger + CREATE TABLE + pending `src/db/migrations/*.yml` + additive ADD COLUMN | `*Schema.yml` + migration YAML | **migrated** — thin runner; no SQL text in the module |
+| `namedDdl("bootstrap")` | All resource `CREATE TABLE` / indexes plus Postgres `ADD COLUMN IF NOT EXISTS`, FK-ordered | every `*Schema.yml` | **migrated** — combined SQL still compiled; boot uses `applyNamedMigrations` so versioned YAML can rename before additive ADD COLUMN and indexes |
+| `applyNamedMigrations` | Ledger + CREATE TABLE + pending `src/db/migrations/*.yml` + additive ADD COLUMN + indexes | `*Schema.yml` + migration YAML | **migrated** — thin runner; no SQL text in the module |
 | `namedDdl("liveBootstrap")` | Product + waitlist CREATE TABLE / INDEX only | `productSchema.yml`, `waitlistSchema.yml` | **migrated** — used to lock Docker init.sql in tests |
 | `docker/postgres/init.sql` | Out-of-band Docker first-boot copy of live bootstrap | same two schema files | **schema-owned** — not app backend; compiled from the same YAML without additive ALTERs. App `migrate()` adds missing columns on existing volumes. |
 

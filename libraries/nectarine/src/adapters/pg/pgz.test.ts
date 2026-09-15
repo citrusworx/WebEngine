@@ -179,6 +179,42 @@ describe("PgSql", () => {
         await expect(adapter.query("   ")).rejects.toThrowError(/SQL string/);
     });
 
+    it("withTransaction pins one client so BEGIN and later queries share a connection", async () => {
+        const clientQuery = vi.fn().mockResolvedValue({ rows: [] });
+        mocks.poolConnect.mockResolvedValue({ query: clientQuery, release: mocks.release });
+        const adapter = createPgAdapter(creds);
+        await adapter.connect();
+        mocks.poolConnect.mockClear();
+        mocks.release.mockClear();
+        mocks.poolConnect.mockResolvedValue({ query: clientQuery, release: mocks.release });
+
+        await adapter.withTransaction(async (query) => {
+            await query("BEGIN");
+            await query("SELECT 1", [1]);
+        });
+
+        expect(clientQuery).toHaveBeenCalledWith("BEGIN", []);
+        expect(clientQuery).toHaveBeenCalledWith("SELECT 1", [1]);
+        expect(mocks.release).toHaveBeenCalledOnce();
+        expect(mockPool().query).not.toHaveBeenCalled();
+    });
+
+    it("withTransaction releases the client when work throws", async () => {
+        const clientQuery = vi.fn().mockResolvedValue({ rows: [] });
+        mocks.poolConnect.mockResolvedValue({ query: clientQuery, release: mocks.release });
+        const adapter = createPgAdapter(creds);
+        await adapter.connect();
+        mocks.release.mockClear();
+        mocks.poolConnect.mockResolvedValue({ query: clientQuery, release: mocks.release });
+
+        await expect(
+            adapter.withTransaction(async () => {
+                throw new Error("boom");
+            }),
+        ).rejects.toThrow(/boom/);
+        expect(mocks.release).toHaveBeenCalledOnce();
+    });
+
     it("connect() is idempotent", async () => {
         const adapter = createPgAdapter(creds);
         const first = await adapter.connect();

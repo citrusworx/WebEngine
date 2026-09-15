@@ -359,7 +359,7 @@ operations:
       confirm: changeType
 ```
 
-`dropColumn` and `changeType` require both `destructive: true` and a matching `confirm:` token. Versions use a zero-padded prefix (`001_…`) so apply order is lexicographic. See [Production](./production.md) and `applyMigrations` in the [API reference](./nectarine-api.md).
+`dropColumn` and `changeType` require both `destructive: true` and a matching `confirm:` token. Postgres `changeType` uses `USING CAST(column AS <type>)` so spaced types (`float` → `DOUBLE PRECISION`) compile. Versions use a zero-padded prefix (`001_…`) so apply order is lexicographic. Indexes from current `*Schema.yml` are created **after** pending renames. See [Production](./production.md) and `applyMigrations` in the [API reference](./nectarine-api.md).
 
 Do not drop or demote Postgres JSONB columns such as Blackwater `products.payload`.
 

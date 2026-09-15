@@ -489,9 +489,11 @@ const ddl = compiler.buildDdl(compiler.parse_config("schemas/product/productSche
 
 ### applyMigrations()
 
-Apply current schema YAML plus pending versioned migration YAML through an adapter `query()`. Creates `nectarine_schema_migrations`, `CREATE TABLE IF NOT EXISTS` / indexes, applies rename / drop / type-change ops, then Postgres additive `ADD COLUMN IF NOT EXISTS`.
+Apply current schema YAML plus pending versioned migration YAML through an adapter `query()`. Creates `nectarine_schema_migrations`, `CREATE TABLE IF NOT EXISTS`, applies rename / drop / type-change ops (each pending migration in a Postgres transaction), then additive `ADD COLUMN IF NOT EXISTS`, then `CREATE INDEX`.
 
-Not Flyway: no down migrations, no raw SQL scripts, no silent schema-diff. Destructive ops require `destructive: true` and `confirm: dropColumn` / `confirm: changeType`.
+Not Flyway: no down migrations, no raw SQL scripts, no silent schema-diff. Destructive ops require `destructive: true` and `confirm: dropColumn` / `confirm: changeType`. Postgres `changeType` uses `USING CAST(column AS <compiled type>)`.
+
+Pass a Postgres adapter (`createPgAdapter`) as `execute` so `withTransaction` pins one pool client — `BEGIN`/`COMMIT` are otherwise not atomic on `pg.Pool.query()`. MySQL DDL implicit-commits; wrapping `START TRANSACTION` cannot roll back an earlier `ALTER`.
 
 **Signature**:
 ```typescript

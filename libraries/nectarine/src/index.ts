@@ -10,6 +10,7 @@ export {
 export type {
     ApplyMigrationsOptions,
     MigrationExecutor,
+    MigrationQuery,
     MigrationRunResult,
     ProtectedColumn,
 } from "./migrate/index.js";

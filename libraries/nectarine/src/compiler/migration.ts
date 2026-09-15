@@ -120,6 +120,20 @@ function q(name: string, vendor: DdlVendor): string {
     return quoteIdent(name, vendor);
 }
 
+/**
+ * `USING col::DOUBLE PRECISION` is invalid Postgres. CAST(col AS <compiled type>)
+ * accepts spaced types (`DOUBLE PRECISION`) and sized types (`VARCHAR(40)`).
+ * Reject anything that looks like a statement separator — types come only from
+ * {@link compileSqlType}.
+ */
+function assertSafeSqlType(sqlType: string, version: string): void {
+    if (/[;']|--|\/\*/.test(sqlType)) {
+        throw new MigrationCompileError(
+            `Migration ${version}: compiled type is not a safe CAST target: ${sqlType}`,
+        );
+    }
+}
+
 function checksumOf(version: string, operations: CompiledMigrationOp[]): string {
     const canonical = {
         version,
@@ -228,11 +242,12 @@ function compileChangeType(
     }
 
     const sqlType = compileSqlType(type, vendor);
+    assertSafeSqlType(sqlType, version);
     const col = q(column, vendor);
     const sql =
         vendor === "mysql"
             ? `ALTER TABLE ${q(table, vendor)} MODIFY COLUMN ${col} ${sqlType};`
-            : `ALTER TABLE ${q(table, vendor)} ALTER COLUMN ${col} TYPE ${sqlType} USING ${col}::${sqlType};`;
+            : `ALTER TABLE ${q(table, vendor)} ALTER COLUMN ${col} TYPE ${sqlType} USING CAST(${col} AS ${sqlType});`;
 
     return {
         kind: "changeType",
