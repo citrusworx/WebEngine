@@ -12,9 +12,9 @@ Nectarine’s hard rule for **final app backend code**:
 versioned files in `src/db/migrations/`. Hand-written `phase3-ddl.ts` is
 retired. DML stays on named compiled queries (`runNamed`).
 
-Postgres **JSONB is first-class**. Live product **writes** still insert
-`payload` only (`seedPayload`). Catalog columns on `products` are a
-nullable projection and stay NULL until a later phase. JSONB is not
+Postgres **JSONB is first-class**. Live product **writes** insert or replace
+`payload` only (`seedPayload`, `insertPayload`, `updatePayload`). Catalog
+columns on `products` are a nullable projection and stay NULL. JSONB is not
 being dropped.
 
 **Identifiers:** mixed-case YAML names (`originalPrice`, `isNew`,
@@ -86,6 +86,9 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
+| `insertProductPayload()` | HTTP create catalog document | `product.create.insertPayload` | **migrated** — `INSERT (id, payload) … $2::jsonb RETURNING payload` |
+| `updateProductPayload()` | HTTP replace catalog document | `product.update.updatePayload` | **migrated** — `SET payload = $1::jsonb, updated_at = NOW()`; host merges first (no JSONB `||`) |
+| `deleteProductFromDb()` | HTTP delete catalog row | `product.delete.deleteProduct` | **migrated** — `DELETE … WHERE id = $1`; `payload` column stays protected |
 | `loadWaitlistFromDb()` | List signups oldest-first | `waitlist.read.allEntries` | **migrated** — `SELECT * … ORDER BY created_at ASC`; `created_at` → `createdAt` in TS |
 | `loadWaitlistByEmailFromDb()` | Lookup signup by email | `waitlist.read.entryByEmail` | **migrated** — same named query as duplicate-email check; maps the first row |
 | `insertWaitlistEntry()` | Insert waitlist row | `waitlist.create.joinWaitlist` | **migrated** — columns `(id, name, email, source_app, interest)`. `insertEntry` remains in YAML as an unused alternate. |
@@ -108,7 +111,7 @@ the live table keeps `payload JSONB` and nullable catalog columns.
 
 | File | Resource(s) | Live named queries | Notes |
 |------|-------------|--------------------|-------|
-| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `seedPayload` | Hybrid: live DML is JSONB `payload` only. Relational CRUD compiles (`originalPrice` / `isNew` / `isActive` quoted) but catalog columns stay NULL until a later write path. |
+| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `seedPayload`, `insertPayload`, `updatePayload`, `deleteProduct` | Hybrid: live DML is JSONB `payload` only. Relational CRUD compiles (`originalPrice` / `isNew` / `isActive` quoted) but catalog columns stay NULL. HTTP writes use host `execute` + these JSONB names. |
 | `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `allEntries`, `entryByEmail`, `joinWaitlist` | `insertEntry` compiles; unused live path |
 | `schemas/course/courseQueries.yml` | `course` | — | tables created by `migrate()`; quoted `'published'` constants |
 | `schemas/booking/bookingQueries.yml` | `booking` | — | `IN ('requested', 'confirmed')` |
@@ -124,7 +127,7 @@ the live table keeps `payload JSONB` and nullable catalog columns.
 coach / lesson / session / mix_review / enrollment / client) from their
 `*Schema.yml` files. That whole-domain bootstrap is intentional Phase 3
 scope. Those named queries can run against Postgres once a later phase
-writes data. Live product seed still writes JSONB `payload` only.
+writes data. Live product HTTP writes still write JSONB `payload` only.
 
 `relationships:` blocks in schema YAML are documentation. DDL foreign keys
 come only from inline `FOREIGN KEY REFERENCES` on fields.
@@ -161,7 +164,11 @@ come only from inline `FOREIGN KEY REFERENCES` on fields.
    additive `ADD COLUMN IF NOT EXISTS`. Mixed-case identifiers are quoted.
    Docker `init.sql` is first-boot CREATE TABLE from product + waitlist
    YAML (no ALTER). `phase3-ddl.ts` retired.
-4. **Later** — Remaining compiler features only if a later phase needs
+4. **Phase 4a** — Product HTTP create/update/delete via JSONB named queries
+   (`insertPayload`, `updatePayload`, `deleteProduct`) and a thin host
+   `execute`. Catalog documents stay in `products.payload`; relational
+   `newProduct` / `updateProduct` YAML still compile but are unused live.
+5. **Later** — Remaining compiler features only if a later phase needs
    them (`COUNT`, `EXISTS`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
    Down migrations / silent schema-diff are not part of the migrator. Seltzer
    route generation is a separate track. Do **not** invent `nectarine serve`.

@@ -86,6 +86,12 @@ describe("Blackwater query YAML", () => {
         expect(compileNamed("product/productQueries.yml", "product", "create", "seedPayload")).toBe(
             "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)",
         );
+        expect(compileNamed("product/productQueries.yml", "product", "create", "insertPayload")).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "update", "updatePayload")).toBe(
+            "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
+        );
     });
 
     it("compiles the live waitlist insert and ASC listing", () => {

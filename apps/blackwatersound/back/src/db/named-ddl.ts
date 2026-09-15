@@ -19,8 +19,9 @@ const compiler = new CCompiler();
  * `migrate()` uses {@link applyNamedMigrations}: CREATE TABLE, pending rename /
  * drop / type-change migrations, additive ADD COLUMN, then indexes.
  *
- * Product and waitlist keep special-cased live DML (JSONB catalog, waitlist
- * insert). Other resources use compiled GET reads when Postgres is connected.
+ * Product and waitlist keep special-cased live DML (JSONB catalog writes,
+ * waitlist insert). Other resources use compiled GET/writes when Postgres
+ * is connected.
  * `products.payload` JSONB is protected. Destructive ops are never inferred
  * from schema-diff; they must be explicit migration YAML with confirm gates.
  */

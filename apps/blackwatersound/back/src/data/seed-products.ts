@@ -17,6 +17,20 @@ export type ProductRecord = {
   isNew?: boolean;
 };
 
+/** Accept a JSONB catalog document. `id` and `name` are required; extra keys stay. */
+export function asProductRecord(payload: unknown): ProductRecord | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const row = payload as Record<string, unknown>;
+  if (typeof row.id !== "string" || !row.id.trim() || typeof row.name !== "string" || !row.name.trim()) {
+    return null;
+  }
+
+  return payload as ProductRecord;
+}
+
 const SEED_ROWS: ProductRecord[] = [
   {
     id: "stinkrat",

@@ -51,8 +51,8 @@ export type {
 /**
  * Blackwater compiled execute: engine helper + this host's Postgres adapter.
  * Prefer passing `query` / `connected` into {@link createNectarineRoutes}
- * at the call site (see `routes/index.ts`). Product JSONB and waitlist join
- * keep their own `execute` callbacks.
+ * at the call site (see `routes/index.ts`). Product JSONB catalog writes and
+ * waitlist join keep their own `execute` callbacks.
  */
 export function executeCompiledRead(
   args: ExecuteArgs<BlackwaterContext>,

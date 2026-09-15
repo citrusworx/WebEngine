@@ -3,11 +3,11 @@ Product:
   description: >
     Catalog items for gear and software apps.
 
-    Live writes use the document-store shape only: seed inserts (id, payload JSONB).
-    Relational catalog columns (catalog, name, slug, originalPrice, isNew, isActive, …)
-    are a nullable projection compiled from this file so productQueries.yml can
-    compile. They stay NULL until a later phase populates them. JSONB is not
-    being dropped.
+    Live writes use the document-store shape only: seed and HTTP create/update
+    write (id, payload JSONB). Relational catalog columns (catalog, name, slug,
+    originalPrice, isNew, isActive, …) are a nullable projection compiled from
+    this file so productQueries.yml can compile. They stay NULL; JSONB is not
+    being dropped. `payload` is a protected column.
 
     Mixed-case field names are emitted as quoted identifiers ("originalPrice")
     so Postgres does not fold them to lowercase.

@@ -118,7 +118,7 @@ const writes = createNectarineWriteRoutes(config, {
 });
 ```
 
-Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. Pass `execute` for host-specific reads and writes (Blackwater product JSONB / waitlist join). See [Nectarine kernel contract](./nectarine-kernel-contract.md).
+Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. Pass `execute` for host-specific reads and writes (Blackwater product JSONB catalog / waitlist join). See [Nectarine kernel contract](./nectarine-kernel-contract.md).
 
 ## Reality check
 

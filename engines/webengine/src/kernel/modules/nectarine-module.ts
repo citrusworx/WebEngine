@@ -72,7 +72,7 @@ export interface NectarineModuleHandle {
     ) => Route<TContext>[];
     /**
      * Opt-in POST/PUT/PATCH/DELETE from YAML. Same compiled execute as reads;
-     * pass `execute` for JSONB / waitlist join. `exclude` skips specials.
+     * pass `execute` for JSONB catalog writes / waitlist join. `exclude` skips specials.
      */
     createWriteRoutes: <TContext extends RequestContext = RequestContext>(
         options: CreateNectarineWriteRoutesOptions<TContext>,
