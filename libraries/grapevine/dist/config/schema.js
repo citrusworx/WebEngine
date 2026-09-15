@@ -75,7 +75,13 @@ export const sshKeyResourceSchema = z.object({
     name: z.string().min(1),
     public_key: z.string().optional(),
     publicKey: z.string().optional(),
-    generate: z.boolean().optional()
+    generate: z.boolean().optional(),
+    /**
+     * Destination for a generated private key (OpenSSH format, mode 0600).
+     * Absolute, or relative to process cwd. Used only with `generate: true`.
+     * Defaults to `.grape/ssh/<name>` (local-only; do not commit).
+     */
+    private_key_path: z.string().min(1).optional()
 });
 export const domainRecordSchema = z.object({
     type: z.string().min(1),

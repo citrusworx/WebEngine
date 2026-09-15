@@ -18,6 +18,7 @@ vi.mock("../config/apply.js", async () => {
             load_balancers: [],
             alert_policies: [],
             apps: [],
+            private_key_paths: [],
             warnings: []
         }))
     };

@@ -92,6 +92,7 @@ This is the path to use for any droplet you will log into.
 ssh_keys:
   - name: grapevine
     generate: true
+    # private_key_path: .grape/ssh/grapevine  # optional default
 ```
 
 Apply calls `createSSHKey(name)`:
@@ -99,9 +100,10 @@ Apply calls `createSSHKey(name)`:
 - RSA 4096 via `generateKeyPairSync`
 - public key converted to OpenSSH with `sshpk`
 - SHA256 fingerprint locally
+- private key converted to OpenSSH and written (mode `0600`) to `private_key_path` or `.grape/ssh/<name>`
 - **only** `publicKey` is passed to `uploadSSHKey`
 
-The private key stays in the local object and is dropped. It is not in `ApplyResult`. Blueprints `02` and `04` use this for a smoke test, not for an operator workstation.
+The apply result includes the saved path, never the key bytes. `.grape/` is local-only — do not commit it. Connect with `ssh -i <path>`. Blueprints `02` and `04` use this default.
 
 If you generate from TypeScript yourself, you can keep it:
 

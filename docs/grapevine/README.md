@@ -132,7 +132,7 @@ resources:
       tags: [grapevine]
 ```
 
-`generate: true` creates an RSA 4096 key pair in process and uploads the **public** key. The private key is **not** written to disk. Use `public_key:` if you need a key you already control.
+`generate: true` creates an RSA 4096 key pair in process, uploads the **public** key, and writes the OpenSSH **private** key (mode `0600`) to `private_key_path` or `.grape/ssh/<name>` under the process cwd. Apply reports the saved path; it never prints key material. `.grape/` is local-only — do not commit it. Use `public_key:` if you already control a keypair.
 
 Droplet `vpc: grapevine` is resolved to the UUID of the VPC created earlier in the **same** apply. Names from a previous apply are not in that map.
 

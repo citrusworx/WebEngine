@@ -18,7 +18,6 @@ The weakest areas are still:
 
 - apply is create-only (no idempotency, no rollback, no plan)
 - `grape status` is not drift
-- generated SSH private keys are dropped
 - several schema fields (`services`, `monitoring`, ssl/cdn) look like product and do not provision
 - tests beyond mocked HTTP
 
@@ -32,7 +31,7 @@ Active development is the honest label. The DigitalOcean create path is real eno
 
 The schema’s `provider` field is a literal. Tests reject `aws`. There is one provider directory. That loop is small, tested, and the identity of the library.
 
-What that means for the roadmap: Grapevine does not need a fake multi-cloud interface. It needs better *edges* (idempotency, receipts, SSH persistence) around this one adapter. A second provider is a later folder under `providers/`, not a YAML string.
+What that means for the roadmap: Grapevine does not need a fake multi-cloud interface. It needs better *edges* (idempotency, receipts) around this one adapter. A second provider is a later folder under `providers/`, not a YAML string.
 
 ### 2. Validate and apply are different jobs
 
@@ -68,11 +67,9 @@ Re-apply as converge is the first habit from Terraform. Duplicate creates and pa
 
 Until there is either skip-if-exists (opt-in, tested) or even stronger teaching (tutorial + anti-patterns — this docs pass), this will keep generating extra droplets.
 
-### 2. Generated SSH keys are hostile to humans
+### 2. Generated SSH keys need an operator habit
 
-`generate: true` is convenient in `02` / `04` and then the private key is gone. Authors who SSH in think Grapevine is broken.
-
-A write path (or refusing `generate` without `private_key_out:`) is a small, high-value fix if apply is being touched.
+`generate: true` writes the private key to `.grape/ssh/<name>` (or `private_key_path`) and reports the path. Authors who SSH without `-i` still fail. The remaining work is teaching, not missing writes.
 
 ### 3. `grape status` looks like drift
 
@@ -139,12 +136,7 @@ Do not add a hidden state file in `~/.grapevine` unless it is versioned, documen
 
 ### Priority 3. Persist or refuse generated SSH keys
 
-Useful increments, if they are built:
-
-- `generate: true` requires `private_key_out: ./id_grapevine` (gitignored path)
-- or drop `generate` from apply and keep it as a TypeScript-only helper
-
-Do not document a write path until it exists.
+Shipped: `generate: true` writes an OpenSSH private key to `private_key_path` or `.grape/ssh/<name>` (mode `0600`), reports the path, and never prints key material. Remaining: keep `.grape/` gitignored and teach `ssh -i`.
 
 ### Priority 4. Decide the story for status
 

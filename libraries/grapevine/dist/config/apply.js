@@ -8,6 +8,7 @@ import { createLoadBalancer } from "../providers/digitalocean/networking/load-ba
 import { createSSHKey, uploadSSHKey } from "../providers/digitalocean/ssh/ssh.js";
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC } from "../providers/digitalocean/vpc/vpc.js";
+import { persistGeneratedPrivateKey, resolvePrivateKeyPath } from "./ssh-private-key.js";
 function sourceFromList(values) {
     if (!values) {
         return undefined;
@@ -125,6 +126,7 @@ export async function applyGrapeConfig(config) {
         load_balancers: [],
         alert_policies: [],
         apps: [],
+        private_key_paths: [],
         warnings
     };
     const vpcIds = new Map();
@@ -140,14 +142,19 @@ export async function applyGrapeConfig(config) {
     }
     for (const key of resources.ssh_keys ?? []) {
         let publicKey = key.public_key ?? key.publicKey;
+        let privateKeyPath;
         if (!publicKey && key.generate) {
-            publicKey = createSSHKey(key.name).publicKey;
+            const generated = createSSHKey(key.name);
+            publicKey = generated.publicKey;
+            privateKeyPath = persistGeneratedPrivateKey(resolvePrivateKeyPath(key.name, key.private_key_path), generated.keys.privateKey);
+            result.private_key_paths.push(privateKeyPath);
+            warnings.push(`Generated SSH private key for "${key.name}" saved to ${privateKeyPath}`);
         }
         if (!publicKey) {
             throw new Error(`SSH key "${key.name}" is missing public_key (or set generate: true)`);
         }
         const uploaded = await uploadSSHKey({ name: key.name, public_key: publicKey });
-        result.ssh_keys.push(uploaded);
+        result.ssh_keys.push(privateKeyPath ? { ...uploaded, private_key_path: privateKeyPath } : uploaded);
         sshKeyIds.push(uploaded.id);
     }
     for (const vpc of resources.vpcs ?? []) {

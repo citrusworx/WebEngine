@@ -85,7 +85,7 @@ The YAML names the variable. The shell holds the value.
 
 If you rename the variable, remember `grape status` still looks at `DO_TOKEN`. Apply will copy the custom name onto `DO_TOKEN` for the HTTP client.
 
-Never commit `dop_v1_…` or a private key. Prefer `public_key` you already have over `generate: true` until Grapevine persists private keys.
+Never commit `dop_v1_…` or a private key (including `.grape/ssh/`). Prefer `public_key` you already have when the workstation already has a key; `generate: true` writes a new private key next to the apply cwd.
 
 ## Name things you will reference
 

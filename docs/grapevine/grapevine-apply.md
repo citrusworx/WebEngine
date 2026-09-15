@@ -78,11 +78,11 @@ String tags have no attachment step. Object tags can attach **existing** Digital
 For each key:
 
 1. `public_key ?? publicKey`
-2. else if `generate`, `createSSHKey(name).publicKey`
+2. else if `generate`, `createSSHKey(name)`, persist the private key, use `publicKey`
 3. else throw `SSH key "<name>" is missing public_key (or set generate: true)`
 4. `uploadSSHKey({ name, public_key })`
 
-The uploaded resource (id, fingerprint, public_key, name) is pushed to `result.ssh_keys`. The local private key from `generate` is not.
+When `generate` is true, the OpenSSH private key is written (mode `0600`) to `private_key_path` or `.grape/ssh/<name>` under the process cwd **before** upload. Existing files are refused. The uploaded resource (id, fingerprint, public_key, name) is pushed to `result.ssh_keys` with `private_key_path` set. The absolute path is also appended to `result.private_key_paths` and a warning. Key material is never added to `ApplyResult`.
 
 ### VPCs
 
@@ -135,7 +135,7 @@ Then `createFireWall` (capital W — that is the export).
 ```ts
 interface ApplyResult {
   tags: string[];
-  ssh_keys: SSHKeyResource[];
+  ssh_keys: AppliedSSHKey[]; // SSHKeyResource + optional private_key_path
   vpcs: VPCResponse[];
   droplets: DropletResource[];
   firewalls: Array<{ id: string; name: string }>;
@@ -143,6 +143,7 @@ interface ApplyResult {
   load_balancers: Array<{ id: string; name?: string }>;
   alert_policies: Array<{ uuid: string; description: string }>;
   apps: Array<{ id: string; name: string }>;
+  private_key_paths: string[];
   warnings: string[];
 }
 ```

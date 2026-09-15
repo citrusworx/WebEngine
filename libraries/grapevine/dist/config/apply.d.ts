@@ -2,9 +2,13 @@ import { type DropletResource } from "../providers/digitalocean/droplet/droplet.
 import { type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
+export interface AppliedSSHKey extends SSHKeyResource {
+    /** Absolute path of a generated private key. Never contains key material. */
+    private_key_path?: string;
+}
 export interface ApplyResult {
     tags: string[];
-    ssh_keys: SSHKeyResource[];
+    ssh_keys: AppliedSSHKey[];
     vpcs: VPCResponse[];
     droplets: DropletResource[];
     firewalls: Array<{
@@ -27,6 +31,8 @@ export interface ApplyResult {
         id: string;
         name: string;
     }>;
+    /** Absolute paths of private keys written during this apply (generate: true). */
+    private_key_paths: string[];
     warnings: string[];
 }
 export declare function unwrapDropletEntry(entry: GrapeDropletEntry): DropletBlueprintConfig;

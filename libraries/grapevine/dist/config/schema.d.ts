@@ -295,6 +295,7 @@ export declare const sshKeyResourceSchema: z.ZodObject<{
     public_key: z.ZodOptional<z.ZodString>;
     publicKey: z.ZodOptional<z.ZodString>;
     generate: z.ZodOptional<z.ZodBoolean>;
+    private_key_path: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const domainRecordSchema: z.ZodObject<{
     type: z.ZodString;
@@ -392,6 +393,7 @@ export declare const resourcesSchema: z.ZodObject<{
         public_key: z.ZodOptional<z.ZodString>;
         publicKey: z.ZodOptional<z.ZodString>;
         generate: z.ZodOptional<z.ZodBoolean>;
+        private_key_path: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>>;
     vpcs: z.ZodOptional<z.ZodArray<z.ZodObject<{
         name: z.ZodString;
@@ -714,6 +716,7 @@ export declare const grapeConfigSchema: z.ZodObject<{
             public_key: z.ZodOptional<z.ZodString>;
             publicKey: z.ZodOptional<z.ZodString>;
             generate: z.ZodOptional<z.ZodBoolean>;
+            private_key_path: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>>;
         vpcs: z.ZodOptional<z.ZodArray<z.ZodObject<{
             name: z.ZodString;
@@ -999,6 +1002,7 @@ export declare const grapeConfigSchema: z.ZodObject<{
         public_key: z.ZodOptional<z.ZodString>;
         publicKey: z.ZodOptional<z.ZodString>;
         generate: z.ZodOptional<z.ZodBoolean>;
+        private_key_path: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
     monitoring: z.ZodOptional<z.ZodObject<{
         enabled: z.ZodOptional<z.ZodBoolean>;
@@ -1033,6 +1037,7 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
             public_key?: string | undefined;
             publicKey?: string | undefined;
             generate?: boolean | undefined;
+            private_key_path?: string | undefined;
         }[] | undefined;
         vpcs?: {
             name: string;
@@ -1426,6 +1431,7 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
         public_key?: string | undefined;
         publicKey?: string | undefined;
         generate?: boolean | undefined;
+        private_key_path?: string | undefined;
     } | undefined;
     monitoring?: {
         enabled?: boolean | undefined;

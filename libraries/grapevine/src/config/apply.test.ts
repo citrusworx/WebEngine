@@ -1,4 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { generateKeyPairSync } from "node:crypto";
+import { mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import sshpk from "sshpk";
 import { applyGrapeConfig, normalizeResources } from "./apply.js";
 import { validateGrapeConfig } from "./schema.js";
 
@@ -11,15 +16,19 @@ vi.mock("../providers/digitalocean/tags/tags.js", () => ({
     tagResource: vi.fn()
 }));
 
-vi.mock("../providers/digitalocean/ssh/ssh.js", () => ({
-    createSSHKey: vi.fn(),
-    uploadSSHKey: vi.fn(async (key: { name: string }) => ({
-        id: 7,
-        name: key.name,
-        fingerprint: "fp",
-        public_key: "ssh-rsa AAAA"
-    }))
-}));
+vi.mock("../providers/digitalocean/ssh/ssh.js", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../providers/digitalocean/ssh/ssh.js")>();
+    return {
+        ...actual,
+        createSSHKey: vi.fn(),
+        uploadSSHKey: vi.fn(async (key: { name: string }) => ({
+            id: 7,
+            name: key.name,
+            fingerprint: "fp",
+            public_key: "ssh-rsa AAAA"
+        }))
+    };
+});
 
 vi.mock("../providers/digitalocean/vpc/vpc.js", () => ({
     createVPC: vi.fn(async (vpc: { name: string }) => ({
@@ -72,10 +81,32 @@ vi.mock("../providers/digitalocean/apps/apps.js", () => ({
     createApp: vi.fn()
 }));
 
+function generatedKeyPair(name: string) {
+    const { publicKey, privateKey } = generateKeyPairSync("rsa", {
+        modulusLength: 2048,
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" }
+    });
+    return {
+        name,
+        publicKey: sshpk.parseKey(publicKey, "pem").toString("ssh"),
+        keys: { publicKey, privateKey },
+        fingerprint: "SHA256:test"
+    };
+}
+
 describe("apply grape config", () => {
+    const tempDirs: string[] = [];
+
     beforeEach(() => {
         vi.clearAllMocks();
         process.env.DO_TOKEN = "fake-token";
+    });
+
+    afterEach(() => {
+        for (const dir of tempDirs.splice(0)) {
+            rmSync(dir, { recursive: true, force: true });
+        }
     });
 
     it("normalizes convenience networking and firewall sections", () => {
@@ -183,5 +214,105 @@ describe("apply grape config", () => {
                 region: "nyc3"
             })
         );
+    });
+
+    it("writes a generated private key, reports the path, and omits key material from apply output", async () => {
+        const { createSSHKey, uploadSSHKey } = await import("../providers/digitalocean/ssh/ssh.js");
+        const { createDroplet } = await import("../providers/digitalocean/droplet/droplet.js");
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-apply-ssh-"));
+        tempDirs.push(dir);
+        const keyPath = path.join(dir, "id_grapevine");
+        const generated = generatedKeyPair("grapevine");
+        vi.mocked(createSSHKey).mockReturnValue(generated);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc1",
+                resources: {
+                    ssh_keys: [{ name: "grapevine", generate: true, private_key_path: keyPath }],
+                    droplets: [
+                        {
+                            name: "web-01",
+                            size: "s-1vcpu-1gb",
+                            image: "ubuntu-24-04-x64"
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(uploadSSHKey).toHaveBeenCalledWith({
+            name: "grapevine",
+            public_key: generated.publicKey
+        });
+        expect(createDroplet).toHaveBeenCalledWith(
+            expect.objectContaining({
+                ssh_keys: [7]
+            })
+        );
+        expect(result.ssh_keys[0]?.private_key_path).toBe(keyPath);
+        expect(result.private_key_paths).toEqual([keyPath]);
+        expect(result.warnings).toEqual([`Generated SSH private key for "grapevine" saved to ${keyPath}`]);
+        expect(statSync(keyPath).mode & 0o777).toBe(0o600);
+        expect(readFileSync(keyPath, "utf8")).toMatch(/^-----BEGIN OPENSSH PRIVATE KEY-----/);
+
+        const serialized = JSON.stringify(result);
+        expect(serialized).toContain(keyPath);
+        expect(serialized).not.toContain(generated.keys.privateKey);
+        expect(serialized).not.toContain("BEGIN PRIVATE KEY");
+        expect(serialized).not.toContain("BEGIN OPENSSH PRIVATE KEY");
+        expect(serialized).not.toMatch(/-----BEGIN[A-Z ]*PRIVATE/);
+    });
+
+    it("defaults generated private keys to .grape/ssh/<name> under cwd", async () => {
+        const { createSSHKey } = await import("../providers/digitalocean/ssh/ssh.js");
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-apply-default-ssh-"));
+        tempDirs.push(dir);
+        const generated = generatedKeyPair("grapevine");
+        vi.mocked(createSSHKey).mockReturnValue(generated);
+        const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(dir);
+
+        try {
+            const result = await applyGrapeConfig(
+                validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc1",
+                    resources: {
+                        ssh_keys: [{ name: "grapevine", generate: true }]
+                    }
+                })
+            );
+            const expected = path.join(dir, ".grape", "ssh", "grapevine");
+            expect(result.private_key_paths).toEqual([expected]);
+            expect(statSync(expected).mode & 0o777).toBe(0o600);
+        } finally {
+            cwdSpy.mockRestore();
+        }
+    });
+
+    it("does not write a private key when uploading an existing public_key", async () => {
+        const { createSSHKey } = await import("../providers/digitalocean/ssh/ssh.js");
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-apply-existing-ssh-"));
+        tempDirs.push(dir);
+        const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(dir);
+
+        try {
+            const result = await applyGrapeConfig(
+                validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc1",
+                    resources: {
+                        ssh_keys: [{ name: "laptop", public_key: "ssh-ed25519 AAAA" }]
+                    }
+                })
+            );
+            expect(createSSHKey).not.toHaveBeenCalled();
+            expect(result.private_key_paths).toEqual([]);
+            expect(result.ssh_keys[0]?.private_key_path).toBeUndefined();
+            expect(result.warnings).toEqual([]);
+        } finally {
+            cwdSpy.mockRestore();
+        }
     });
 });

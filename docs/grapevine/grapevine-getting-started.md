@@ -143,7 +143,7 @@ resources:
 
 This **creates a billed droplet**. Destroy it in the DigitalOcean UI or call `deleteDroplet` / `NukeDroplet` when you are done. Grapevine apply does not have a destroy plan.
 
-If you use `generate: true` instead of `public_key`, save anything you need from the apply JSON — the private key is not persisted. Prefer a key you already control until that write path exists.
+If you use `generate: true` instead of `public_key`, the private key is written to `.grape/ssh/<name>` (or `private_key_path`). Apply JSON reports that path only. Prefer a key you already control when the workstation already has one.
 
 ## Same thing in TypeScript
 

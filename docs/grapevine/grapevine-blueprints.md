@@ -148,7 +148,7 @@ Headless WordPress next to it is the same kind of sketch.
 
 ## SSH keys in `02` and `04`
 
-Both create an account SSH key with `generate: true`. Grapevine uploads the public key; **the matching private key is not persisted to disk**. Use an existing key (`public_key: ssh-ed25519 …`) if you need a key you already control. See [Secrets and env](./grapevine-secrets.md).
+Both create an account SSH key with `generate: true`. Grapevine uploads the public key and writes the matching OpenSSH private key to `private_key_path` or `.grape/ssh/<name>`. Apply reports the path, not the key. `.grape/` is local-only. Use an existing key (`public_key: ssh-ed25519 …`) if you already control a keypair. See [Secrets and env](./grapevine-secrets.md).
 
 ## Authoring a new blueprint
 

@@ -45,7 +45,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `grape status` | Early | Token + counts. **Not drift.** |
 | App Platform / LB / alerts / domains in apply | Early | Create loops exist; little teaching or tests vs droplets/VPC/firewall. |
 | Images / Insight security | Early | Exported, not applied. |
-| `generate: true` SSH | Early | Public upload only; private key dropped. |
+| `generate: true` SSH | Emerging | Writes OpenSSH private key to `.grape/ssh/<name>` (or `private_key_path`); apply reports the path. |
 | Docs as product surface | Emerging to Stable-ish | Tutorial, topics, patterns, anti-patterns now exist next to the API. |
 | Idempotent apply / state | Draft | Not implemented. |
 | Drift / reconcile | Draft | Not implemented. |
@@ -121,7 +121,6 @@ These form the strongest case for Grapevine as a typed DO client plus a create e
 
 These are already useful, but still need refinement before they feel fully settled:
 
-- SSH `generate: true` persistence
 - CLI apply (receipts, partial failure, duplicate creates)
 - applying domains / LBs / apps with the same teaching depth as droplets
 - documentation as a product surface

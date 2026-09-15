@@ -46,4 +46,6 @@ Do not commit real IPs, droplet ids, or VPC UUIDs.
 
 ## SSH keys (`generate: true`)
 
-Blueprints `02` and `04` create an account SSH key with `generate: true`. Grapevine uploads the public key; **the matching private key is not persisted to disk yet**. Use an existing key (`public_key: ssh-ed25519 …`) if you need a key you already control.
+Blueprints `02` and `04` create an account SSH key with `generate: true`. Grapevine uploads the public key and writes the matching OpenSSH private key (mode `0600`) to `private_key_path`, or to `.grape/ssh/<name>` under the process cwd when that field is omitted. Apply JSON reports the saved path (`private_key_path` / `private_key_paths` / a warning) and never includes key material.
+
+`.grape/` is local-only — do not commit it. Connect with `ssh -i <saved-path>`. Use an existing key (`public_key: ssh-ed25519 …`) if you already control a keypair.

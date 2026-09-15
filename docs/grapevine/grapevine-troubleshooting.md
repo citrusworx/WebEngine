@@ -78,9 +78,9 @@ Fix: add one of those fields. Validate will not catch this.
 
 ### Cannot SSH after `generate: true`
 
-Cause: private key was never written.
+Cause: the private key was written under `.grape/ssh/<name>` (or `private_key_path`) and was not passed to `ssh -i`.
 
-Fix: use `public_key` you control, or generate in TypeScript and save `keys.privateKey`.
+Fix: `ssh -i <saved-path> root@<ip>`, using the path from apply JSON (`private_key_path` / `private_key_paths` / warnings). If you already control a key, set `public_key` instead of `generate`.
 
 ### Droplet not on the VPC I named
 

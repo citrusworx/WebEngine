@@ -85,7 +85,9 @@ resources:
   ssh_keys:
     - name: laptop
       public_key: ssh-ed25519 AAAA...
-    # or: generate: true  (creates a local key pair and uploads the public key)
+    # or: generate: true  (creates a key pair, uploads the public key,
+    # and writes an OpenSSH private key to private_key_path or .grape/ssh/<name>)
+    #   private_key_path: .grape/ssh/grapevine   # optional; relative to cwd
   vpcs:
     - name: main
       ip_range: 10.10.0.0/16
@@ -127,6 +129,8 @@ blueprint:
 ```
 
 See `examples/grape.config.yaml` and `src/providers/digitalocean/droplet/create-single-droplet.yaml`. Convenience sections from earlier docs (`networking.vpc`, top-level `firewall`, `ssh`) are accepted and folded into `resources` before apply.
+
+When `generate: true`, Grapevine writes the **private** key (OpenSSH format, mode `0600` on POSIX) and reports the absolute path on `ApplyResult.ssh_keys[].private_key_path`, `private_key_paths`, and a warning. Apply JSON never includes key material. Default path is `.grape/ssh/<name>` under the process cwd (create parent dirs as needed). That directory is local-only — do not commit it. Connect with `ssh -i <path>`.
 
 ## Downloadable blueprints
 

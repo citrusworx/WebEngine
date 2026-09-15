@@ -134,9 +134,9 @@ await uploadSSHKey({ name: generated.name, public_key: generated.publicKey });
 await listSSHKeys();
 ```
 
-`createSSHKey` is **local**. It does not call DigitalOcean. Keep `generated.keys.privateKey` if you need to log in.
+`createSSHKey` is **local**. It does not call DigitalOcean. Keep `generated.keys.privateKey` if you need to log in from TypeScript.
 
-Apply with `generate: true` uploads the public key only.
+Apply with `generate: true` uploads the public key and writes the OpenSSH private key to `private_key_path` or `.grape/ssh/<name>`.
 
 ## Domains, LBs, apps, alerts
 

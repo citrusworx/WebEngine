@@ -3,8 +3,10 @@
 #
 # Replace REPLACE_WITH_YOUR_IP with your public IPv4 before apply (SSH /32).
 #
-# generate: true uploads a new public key. The private key is not persisted
-# to disk yet — set public_key instead if you already have a key to keep.
+# generate: true uploads a new public key and writes the OpenSSH private key
+# (mode 0600) to private_key_path or .grape/ssh/<name>. Apply reports the
+# path only — never the key material. .grape/ is local-only; do not commit it.
+# Prefer public_key if you already have a key to keep.
 #
 # grape validate -c ./04-full-web-stack.yaml
 # grape apply -c ./04-full-web-stack.yaml
@@ -21,6 +23,7 @@ resources:
   ssh_keys:
     - name: grapevine
       generate: true
+      # private_key_path: .grape/ssh/grapevine  # default; absolute or cwd-relative
   vpcs:
     - name: grapevine
       description: Grapevine starter VPC
