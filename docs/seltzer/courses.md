@@ -1,8 +1,14 @@
 # Seltzer Study: Node.js Reading & Course List
 
+**Contributor elective.** This is not the product getting-started path. App authors should not start here.
+
+If you want to **run** the HTTP surface that exists today (`Seltzer.init` / `.route` / `.listen` / `ResponseData` / `before` / `generateRoutes` / `client.*`), use the [product README](./README.md), [Getting Started](./seltzer-getting-started.md), and the [JSON API tutorial](./seltzer-api-tutorial.md).
+
+Come here when you intend to **rebuild** the shipped pipeline from `node:http` so you can extend `libraries/seltzer/src` without cargo-culting it. The exercises reconstruct 0.8.x behavior. They are not “implement the missing stage.”
+
 A structured path to write **Seltzer** yourself — from raw `node:http` through streams, routing, pipeline stages, and contract validation — without leaning on AI for whole features.
 
-Start with the [Seltzer Design Overview](./README.md) if you have not read it yet. This guide maps learning topics directly to Seltzer's HTTP pipeline, current implementation gaps, and hands-on exercises.
+Start with the [Seltzer Design Overview](./seltzer-design.md) if you have not read it yet. This guide maps learning topics directly to Seltzer's HTTP pipeline and hands-on exercises.
 
 ---
 
@@ -10,31 +16,32 @@ Start with the [Seltzer Design Overview](./README.md) if you have not read it ye
 
 The concepts you need to understand deeply:
 
-- **Node runtime basics** — ESM (`"type": "module"`), `node:` imports, monorepo `yarn workspace`, `node:test`
+- **Node runtime basics** — ESM (`"type": "module"`), `node:` imports, monorepo `yarn workspace`, Vitest
 - **HTTP protocol** — methods, status codes, headers, content negotiation, statelessness
 - **`node:http`** — `createServer`, request/response objects, when the connection closes
-- **Streams** — `data` / `end` / `error` on request bodies; why bodies are not ready synchronously
+- **Streams** — `for await` of `IncomingMessage`; why bodies are not ready synchronously
 - **URL handling** — `new URL()`, `URLSearchParams`, decoding path segments
-- **Routing** — exact vs parametric routes; extracting `:id` without a framework
-- **Async server handlers** — returning Promises from handlers; central error → 500 mapping
-- **Pipeline design** — ordered named stages vs middleware chains (see design doc § Why Pipelines)
-- **Validation / contracts** — runtime checks at a dedicated stage (preview Nectarine integration)
-- **HTTP client** — `fetch`, non-2xx handling, TLS edge cases (see KiwiPress `undici` pattern)
+- **Routing** — exact vs parametric routes; ranking static prefixes over `:id`
+- **Async server handlers** — returning Promises; central error → 500 mapping
+- **Pipeline design** — ordered named stages vs middleware chains (see [design](./seltzer-design.md) § Why Pipelines)
+- **Validation / contracts** — `.required` at `validate`; `replace` for richer checks
+- **HTTP client** — `fetch`, `HttpError` on non-2xx, optional `undici` TLS
 - **TypeScript for libraries** — generics for context types, narrow exports, declaration files
 
 ### Seltzer topic map
 
-| Seltzer concern | Where it lives today | What you need to write by hand |
+| Seltzer concern | Where it lives today | What the exercises rebuild |
 |---|---|---|
-| Raw HTTP server | `libraries/seltzer/dist/core/seltzer.js` — `http.createServer`, `writeHead`, `end` | `IncomingMessage` / `ServerResponse` lifecycle |
-| Context normalization | Design in [README](./README.md) § Context Object | Build `ctx` from method, path, query, headers, body, params |
-| Body parsing | Design § Parse Request (streams) | Collect stream chunks, parse JSON safely |
-| Routing | Current: exact match only; design: `:id` params | Parametric path matching, `ctx.params` |
-| Pipeline stages | Design § Pipeline Model (`parse → context → route → validate → handle → response → send`) | Named, ordered stage runner with insert/replace |
-| Structured responses | Design § Structured Response Model | Handlers return `{ status, headers, body }`; runtime sends |
-| HTTP client | `libraries/seltzer/src/core/client/client.ts` (`HttpError`, JSON vs text, optional undici TLS) + `packages/kiwipress/src/core/route-utils.ts` | `fetch`, `!res.ok` handling, optional `undici` Agent for TLS |
-| Contracts | Planned; ties to Nectarine | Validation at a pipeline stage, not ad hoc in handlers |
-| Library authoring | `libraries/seltzer/package.json` — ESM + TypeScript | Generics (`Route<TContext>`), `.js` import extensions, `node:` prefix |
+| Raw HTTP server | `src/core/seltzer.ts` — `http.createServer`, pipeline `run` | `IncomingMessage` / `ServerResponse` lifecycle |
+| Context normalization | `pipeline/stages.ts` `contextStage` | `ctx.method` / `path` / `query` / `headers` |
+| Body parsing | `parseStage` | Collect stream chunks, JSON 400 |
+| Routing | `pipeline/router.ts` | Parametric path matching, rank, `ctx.params` |
+| Pipeline stages | `pipeline/index.ts` (`parse` → `send`) | Named runner with `before` / `replace` |
+| Structured responses | `core/response.ts` | Handlers return `{ status, headers, body }`; `send` |
+| HTTP client | `src/core/client/client.ts` | `fetch`, `HttpError`, optional undici Agent |
+| Contracts | `validateStage` + `Route.contract` | Presence checks; Nectarine `replace` later |
+| `generateRoutes` | `src/generate/` | Host `execute` + `response()` brand |
+| Library authoring | `package.json` — ESM + TypeScript | Generics (`Route<TContext>`), `.js` import extensions, `node:` prefix |
 
 ---
 
@@ -81,7 +88,7 @@ Primary reference for `parse` and `send` stages. Read `http.createServer`, `Inco
 
 ### [Node.js Stream module](https://nodejs.org/api/stream.html)
 
-Required reading before implementing body parsing. Request bodies arrive as streams — they are not ready synchronously inside the server callback.
+Required reading before reimplementing body parsing. Request bodies arrive as streams — they are not ready synchronously inside the server callback.
 
 ### [MDN: HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP)
 
@@ -112,9 +119,13 @@ Use as reference, not a read-through. Skip Express-centric chapters.
 
 ## Architecture Reading
 
-### [Seltzer Design Overview](./README.md) § Why Pipelines Were Chosen Over Middleware
+### [Seltzer Design Overview](./seltzer-design.md) § Why Pipelines Were Chosen Over Middleware
 
-**Required reading.** Seltzer deliberately avoids middleware chains and hook systems. Understand the pipeline model before implementing stages.
+**Required reading.** Seltzer deliberately avoids middleware chains and hook systems. Understand the pipeline model before reimplementing stages.
+
+### [Pipeline](./seltzer-pipeline.md)
+
+**Shipped behavior.** Read this before treating exercises as a product tutorial.
 
 ### [Pipeline pattern](https://martinfowler.com/articles/collection-pipeline/) — Martin Fowler
 
@@ -126,7 +137,7 @@ Conceptual backing for named, ordered stages instead of free-form middleware.
 
 ### [Nectarine](../nectarine/README.md)
 
-Skim once you have used `replace("validate", …)`. Seltzer executes HTTP and the default `validate` stage checks `.required` body fields; Nectarine defines schemas and richer contracts. They integrate at the validation stage, not inside handlers.
+Skim once you have used `replace("validate", …)` or `generateRoutes`. Seltzer executes HTTP and the default `validate` stage checks `.required` body fields; Nectarine defines schemas and flattens `ApiOperation[]`. They integrate at generate + validate, not inside every handler.
 
 ---
 
@@ -136,85 +147,86 @@ Each exercise is ~1–2 hours. Write them in plain `node:http` + TypeScript — 
 
 Numbered starter templates live in [`exercises/`](./exercises/).
 
-| # | Exercise | Proves you can build |
+| # | Exercise | Proves you can rebuild |
 |---|---|---|
 | 1 | Echo server: log method, path, headers; return plain text | Basic `createServer` callback |
-| 2 | JSON POST server: stream-collect body → `JSON.parse` → echo object | **Parse stage** foundation |
-| 3 | Router: register `{ method, path, handler }`, 404 fallback | Current Seltzer v0.2 behavior |
-| 4 | Parametric router: `/users/:id` → `{ id: "42" }` | **Route stage** upgrade |
-| 5 | Handler returns `{ status, body }`; runtime calls `writeHead`/`end` | **Response + send stages** |
-| 6 | Five named functions run in order on a shared `ctx` | **Pipeline runner** skeleton |
-| 7 | Insert custom stage before `handle` (e.g. auth header check) | Pipeline modification API |
-| 8 | `fetch` client with status check + JSON parse | Seltzer client + KiwiPress patterns |
+| 2 | JSON POST server: stream-collect body → `JSON.parse` → echo object | Shipped **`parse` stage** |
+| 3 | Router: register `{ method, path, handler }`, 404 fallback | Exact-match subset of `route` |
+| 4 | Parametric router: `/users/:id` → `{ id: "42" }`; static prefix wins | Shipped **`route` stage** |
+| 5 | Handler returns `{ status, body }`; runtime calls `writeHead`/`end` | Shipped **`response` + `send`** |
+| 6 | Named stages run in order on a shared `ctx` | Shipped **pipeline runner** |
+| 7 | `before("handle")` + `replace("validate")` + short-circuit to `send` | Shipped **pipeline modification API** |
+| 8 | `fetch` client with `HttpError` + JSON vs text | Shipped **`client`** |
 
-After exercise 6, refactor incrementally into `libraries/seltzer/src/` modules:
+After exercise 6, compare your runner to `libraries/seltzer/src/pipeline/` instead of inventing a new layout:
 
 - `pipeline/stages.ts` — stage implementations
-- `pipeline/index.ts` — runner + insert/replace API
+- `pipeline/index.ts` — runner + `before` / `replace`
 - `pipeline/router.ts` — matching + params
-- `types/context.ts`, `types/request.ts`, `types/response.ts`
-- `contracts/` — validation hook surface
+- `core/response.ts` — `ResponseData` + `send`
+- `generate/` — `ApiOperation` → `Route` (optional extra)
 
 ---
 
 ## Course Journey Phases
 
-Each phase unlocks a concrete, commit-sized goal in Seltzer.
+Each phase unlocks a concrete, commit-sized *understanding* of code that already exists.
 
-### Phase A — Speak HTTP (1–2 weeks)
+### Phase A — Speak HTTP
 
 **Exercises:** 1–3
 
-**Outcome:** You can explain every line in current `Seltzer.listen()` (`libraries/seltzer/dist/core/seltzer.js`).
+**Outcome:** You can explain every line in `Seltzer.listen()` and the default pipeline construction.
 
-### Phase B — Own the body (1 week)
+### Phase B — Own the body
 
 **Exercises:** 2 + Node stream docs
 
-**Outcome:** Implement `parse` stage with JSON + raw fallback (per design doc).
+**Outcome:** You could reimplement `parseStage` (JSON + raw; 400 on bad JSON).
 
-### Phase C — Context + routing (1 week)
+### Phase C — Context + routing
 
 **Exercises:** 3–4
 
-**Outcome:** `ctx` type populated; dynamic segments in `ctx.params`.
+**Outcome:** `ctx` type populated; dynamic segments in `ctx.params`; static prefixes ranked.
 
-### Phase D — Pipeline engine (2 weeks)
+### Phase D — Pipeline engine
 
 **Exercises:** 5–7 + pipeline reading
 
-**Outcome:** Replace monolithic server callback with stage runner; API to `before("handle", fn)`.
+**Outcome:** You could reimplement the stage runner and `before("handle", fn)`.
 
-### Phase E — Contracts + polish (ongoing)
+### Phase E — Contracts + generate
 
-Add `validate` stage (`.required` body fields from `Route.contract`); `replace("validate", …)` for Nectarine; tests with `node:test` + `http.request`.
+Read `validateStage` and `generateRoutes`. Add tests the way `*.test.ts` does (`listen(0)`, `fetch`, `close`).
 
 ### Phase F — Consumer confidence
 
-Read `packages/kiwipress/src/core/WPClient.ts` and extend Seltzer client patterns (errors, TLS) using Phase A fundamentals.
+Read `client.ts` and extend Seltzer client patterns (errors, TLS) using Phase A fundamentals.
 
 ---
 
 ## When You're Stuck
 
-- **Read the Node docs for the exact API** (`req.on("data")`, `res.writeHead`) before asking AI to write a stage
+- **Read the Node docs for the exact API** (`for await` of `req`, `res.writeHead`) before asking AI to write a stage
 - **Trace one request on paper** — method, path, which stage mutates what on `ctx`
-- **Compare to current dist** — `libraries/seltzer/dist/core/seltzer.js` is only ~45 lines; use as a baseline, not the ceiling
+- **Compare to current src** — `libraries/seltzer/src/pipeline/` is the ceiling, not a future
 - **Allowed AI use** — syntax lookup, TypeScript errors, test scaffolding; **not** whole pipeline implementations
 
 ---
 
 ## Recommended Study Order
 
-1. **Seltzer design overview** ([README](./README.md)) — 1 hour; know the target pipeline
-2. **Exercise 1–2** + Node HTTP/stream docs — hands-on before any course
-3. **FEM: Complete Intro to Node.js v3** (HTTP + streams sections)
-4. **Exercise 3–5** — rebuild current Seltzer behavior yourself from scratch in a scratch file
-5. **FEM: API Design in Node.js v4** (error/response shaping) — maps to structured handler returns
-6. **Exercise 6–7** — pipeline runner
-7. **TypeScript generics refresh** — type `Context`, `Route<T>`, stage signatures
-8. **Implement in `libraries/seltzer/src/`** — one stage per PR-sized chunk
-9. **Nectarine contract skim** — when `validate` stage lands
+1. **Product README** ([README](./README.md)) — know what already ships
+2. **Design overview** ([seltzer-design.md](./seltzer-design.md)) — why pipelines
+3. **Exercise 1–2** + Node HTTP/stream docs
+4. **FEM: Complete Intro to Node.js v3** (HTTP + streams sections)
+5. **Exercise 3–5** — rebuild shipped matching + `ResponseData`
+6. **FEM: API Design in Node.js v4** (error/response shaping)
+7. **Exercise 6–7** — pipeline runner
+8. **TypeScript generics refresh** — type `RequestContext`, `Route<T>`, `Stage`
+9. **Read `libraries/seltzer/src/`** — one module at a time against your scratch code
+10. **Nectarine `listApiOperations` skim** — when you care about `generateRoutes`
 
 ---
 
@@ -223,7 +235,7 @@ Read `packages/kiwipress/src/core/WPClient.ts` and extend Seltzer client pattern
 You are ready to extend Seltzer without AI scaffolding when you can:
 
 1. Implement a new pipeline stage (e.g. logging, auth) and register it with `before("handle", ...)`
-2. Explain why request bodies require stream handling
-3. Add a parametric route and populate `ctx.params` without copying from AI output
+2. Explain why request bodies require stream handling and why invalid JSON is 400
+3. Add a parametric route and populate `ctx.params`, including why `/items/new` beats `/items/:id`
 4. Return structured data from a handler and let the runtime serialize the HTTP response
-5. Extend the Seltzer client the way KiwiPress extends HTTP calls (status checks, TLS)
+5. Extend the Seltzer client the way 0.8.x does (`HttpError`, JSON vs text, optional TLS)
