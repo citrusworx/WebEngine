@@ -32,9 +32,9 @@ database:
 transport:
   server: seltzer
   # Resource reads: Nectarine listApiOperations → Seltzer generateRoutes
-  # (createNectarineReadRoutes). Health, waitlist POST, KiwiPress
-  # GET /api/posts/:slug, and hand GET /api/lessons/:id stay hand-written.
-  # Lesson byId is excluded from generated routes. Do not use Express.
+  # via @citrusworx/webengine createNectarineReadRoutes. Health, waitlist POST
+  # execute, KiwiPress GET /api/posts/:slug, and hand GET /api/lessons/:id stay
+  # host-owned. Lesson byId is excluded from generated routes. Do not use Express.
 
 fallback:
   # Local only: when vendor DB env is fully unset, services use seed data.

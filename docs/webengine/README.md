@@ -17,8 +17,9 @@ What exists today:
 - `init()` that locates `kiwi.config.toml`, validates it, and runs the kernel lifecycle
 - kernel modules: `core`, `web`, `native`, `embedded`, `nectarine` (topo-sorted scaffold → bootstrap → health)
 - Nectarine data module (`id: nectarine`) hosts `@citrusworx/nectarine` ≥0.3.0 as a library: load `nectarine.config.yaml`, resolve credentials, connect, `applyMigrations` (empty migrations dir is a no-op)
+- Nectarine → Seltzer route helper: `createNectarineReadRoutes` / handle `createReadRoutes` (`listApiOperations` → `generateRoutes`; default execute is named YAML + adapter `query`)
 - sample configs: `engines/webengine/kiwi.config.toml` + `webengine.config.json5`
-- vitest coverage for config find/load, topo-sort, lifecycle health, and Nectarine config load + migration no-op
+- vitest coverage for config find/load, topo-sort, lifecycle health, Nectarine config load + migration no-op, and compiled read-route generation
 
 What is still mostly scaffold/design:
 
@@ -85,9 +86,33 @@ Enable `nectarine` in `kernel.modules` when the project has `nectarine.config.ya
 2. Resolves credentials through `NectarineConfig` (YAML names env keys; adapters never read `process.env`)
 3. Creates a vendor adapter via `createPgAdapterFromConfig` / MySQL / Mongo factories
 4. Connects and runs `applyMigrations` (schemas from `*Schema.yml`, versioned YAML from `<config dir>/migrations`; missing dir is a no-op)
-5. Registers a handle on `KernelContext` (`config`, `adapter` / `query`, `listApiOperations`)
+5. Registers a handle on `KernelContext` (`config`, `adapter` / `query`, `listApiOperations`, `createReadRoutes`)
 
-Partial vendor env is a boot error. Fully unset env takes the host seed-fallback path when `fallback.seed: true` and the process is not production (or `ALLOW_SEED_FALLBACK=1`). HTTP stays in Seltzer: call `handle.listApiOperations()` then `generateRoutes`. See [Nectarine kernel contract](./nectarine-kernel-contract.md).
+Partial vendor env is a boot error. Fully unset env takes the host seed-fallback path when `fallback.seed: true` and the process is not production (or `ALLOW_SEED_FALLBACK=1`). HTTP stays in Seltzer. Opt in to generated reads after bootstrap:
+
+```ts
+import { Seltzer } from "@citrusworx/seltzer";
+import {
+  NECTARINE_MODULE_ID,
+  createNectarineReadRoutes,
+  type NectarineModuleHandle,
+} from "@citrusworx/webengine";
+
+const handle = ctx.getModuleHandle<NectarineModuleHandle>(NECTARINE_MODULE_ID);
+const app = Seltzer.init();
+for (const route of handle.createReadRoutes({ resources: ["course"] })) {
+  app.route(route);
+}
+
+// No kernel required — pass a loaded NectarineConfig:
+const routes = createNectarineReadRoutes(config, {
+  resources: ["course"],
+  query: handle.query,
+  connected: () => handle.connected,
+});
+```
+
+Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. Pass `execute` for host-specific reads (Blackwater product JSONB / waitlist join). See [Nectarine kernel contract](./nectarine-kernel-contract.md).
 
 ## Reality check
 

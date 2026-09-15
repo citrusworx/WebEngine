@@ -29,3 +29,19 @@ export {
     type NectarineModuleHandle,
     type NectarineModuleOptions,
 } from "./modules/nectarine-module.js";
+export {
+    compileResourceQuery,
+    createCompiledNectarineExecute,
+    createNectarineHandleReadRoutes,
+    createNectarineReadRoutes,
+    createResourceReadRoutes,
+    isSingularRead,
+    listResourceReadOperations,
+    pathBindValues,
+    resolveResourceQueries,
+    type CompiledNectarineExecuteOptions,
+    type CreateNectarineReadRoutesOptions,
+    type NectarineQueryFn,
+    type NectarineRouteSource,
+    type ReadRouteExclude,
+} from "./modules/nectarine-routes.js";

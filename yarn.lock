@@ -701,6 +701,7 @@ __metadata:
     "@citrusworx/kiwipress": "workspace:*"
     "@citrusworx/nectarine": "workspace:*"
     "@citrusworx/seltzer": "workspace:*"
+    "@citrusworx/webengine": "workspace:*"
     "@types/node": "npm:^25.4.0"
     "@types/pg": "npm:^8.15.2"
     pg: "npm:^8.16.0"
@@ -906,7 +907,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/seltzer@npm:^0.6.0, @citrusworx/seltzer@workspace:*, @citrusworx/seltzer@workspace:libraries/seltzer":
+"@citrusworx/seltzer@npm:^0.6.0, @citrusworx/seltzer@npm:^0.7.0, @citrusworx/seltzer@workspace:*, @citrusworx/seltzer@workspace:libraries/seltzer":
   version: 0.0.0-use.local
   resolution: "@citrusworx/seltzer@workspace:libraries/seltzer"
   dependencies:
@@ -963,11 +964,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/webengine@workspace:engines/webengine":
+"@citrusworx/webengine@workspace:*, @citrusworx/webengine@workspace:engines/webengine":
   version: 0.0.0-use.local
   resolution: "@citrusworx/webengine@workspace:engines/webengine"
   dependencies:
     "@citrusworx/nectarine": "npm:^0.3.0"
+    "@citrusworx/seltzer": "npm:^0.7.0"
     "@citrusworx/types": "npm:^0.2.0"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^25.6.0"

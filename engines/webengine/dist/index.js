@@ -3,7 +3,7 @@ import { parse as parseToml } from "smol-toml";
 import { findKiwiConfigPath, loadKiwiConfigFromPath, } from "./config/index.js";
 import { runKernelLifecycle, shutdownKernel, } from "./kernel/index.js";
 export { KIWI_CONFIG_FILENAME, findKiwiConfigPath, kiwiConfigSchema, loadKiwiConfigFromPath, parseYamlRuntimeDocument, resolveRuntimeConfigPath, webRuntimeConfigSchema, yamlRuntimeConfigSchema, } from "./config/index.js";
-export { KernelContext, NECTARINE_MODULE_ID, applyNectarineMigrations, computeModuleClosure, createBuiltinRegistry, createNectarineModule, coreModule, embeddedRuntimeModule, listNectarineApiOperations, nativeRuntimeModule, nectarineModule, runKernelLifecycle, shutdownKernel, topologicalSortModules, webRuntimeModule, } from "./kernel/index.js";
+export { KernelContext, NECTARINE_MODULE_ID, applyNectarineMigrations, compileResourceQuery, computeModuleClosure, createBuiltinRegistry, createCompiledNectarineExecute, createNectarineHandleReadRoutes, createNectarineModule, createNectarineReadRoutes, createResourceReadRoutes, coreModule, embeddedRuntimeModule, isSingularRead, listNectarineApiOperations, listResourceReadOperations, nativeRuntimeModule, nectarineModule, pathBindValues, resolveResourceQueries, runKernelLifecycle, shutdownKernel, topologicalSortModules, webRuntimeModule, } from "./kernel/index.js";
 export class WebEngine {
     static instance;
     initialized = false;

@@ -1,17 +1,15 @@
 import type { NectarineConfig } from "@citrusworx/nectarine/config";
 import type { Route } from "@citrusworx/seltzer";
+import { createNectarineReadRoutes } from "@citrusworx/webengine";
 import type { BlackwaterContext } from "../types/context.js";
+import { isDatabaseConnected, runCompiledQuery } from "../db/postgres.js";
 import { getLessonRoute, getPostBySlugRoute } from "./content.js";
 import { healthRoute } from "./health.js";
-import {
-  createNectarineReadRoutes,
-  executeCompiledRead,
-} from "./nectarine-reads.js";
 import { createProductReadRoutes } from "./products.js";
 import { createWaitlistRoutes } from "./waitlist.js";
 
 /**
- * Reads compiled from `*API.yml` via {@link createNectarineReadRoutes}.
+ * Reads compiled from `*API.yml` via engine {@link createNectarineReadRoutes}.
  * Product + waitlist keep specialized execute (JSONB catalog / JSON store).
  * Waitlist also includes POST `joinWaitlist`. Lesson `byId` is excluded so the
  * hand KiwiPress `GET /api/lessons/:id` stays unique.
@@ -37,7 +35,8 @@ export function createRoutes(nectarine: NectarineConfig): Route<BlackwaterContex
     ...createWaitlistRoutes(nectarine),
     ...createNectarineReadRoutes(nectarine, {
       resources: GENERATED_READ_RESOURCES,
-      execute: executeCompiledRead,
+      query: async (sql, params) => (await runCompiledQuery(sql, params)) ?? { rows: [] },
+      connected: () => isDatabaseConnected(),
       exclude: [{ resource: "lesson", name: "byId" }],
     }),
     getPostBySlugRoute,

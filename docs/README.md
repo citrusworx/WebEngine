@@ -14,7 +14,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 | `libraries/grapevine` | `@citrusworx/grapevine` | Active development | DigitalOcean provider surface for droplets, firewalls, VPC, SSH, monitoring, and related utilities | [Grapevine](./grapevine/README.md) |
 | `libraries/dns` | `@citrusworx/dns` | Early implementation | Core DNS/registrar abstractions and a ResellerClub adapter | [DNS](./dns/README.md) |
 | `libraries/stenzil` | `@citrusworx/stenzil` | Early implementation | Lexer, parser, AST types, and examples for the Stenzil language | [Stenzil](./stenzil/README.md) |
-| `engines/webengine` | `@citrusworx/webengine` | Early scaffold + working kiwi kernel | `WebEngine` lifecycle class, `kiwi.config.toml` loader, builtin modules (`core`/`web`/`native`/`embedded`), vitest coverage | [WebEngine](./webengine/README.md) |
+| `engines/webengine` | `@citrusworx/webengine` | Early scaffold + working kiwi kernel | `WebEngine` lifecycle class, `kiwi.config.toml` loader, builtin modules (`core`/`web`/`native`/`embedded`/`nectarine`), Nectarine→Seltzer read routes, vitest coverage | [WebEngine](./webengine/README.md) |
 
 ## Notes
 

@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import { applyMigrations, listApiOperations, loadMigrationDocuments, loadNectarineConfig, } from "@citrusworx/nectarine";
+import { createNectarineHandleReadRoutes, } from "./nectarine-routes.js";
 export const NECTARINE_MODULE_ID = "nectarine";
 function resolveConfigPath(projectRoot, options, env) {
     const fromOption = options.configPath;
@@ -18,7 +19,7 @@ function hostAllowsSeedFallback(config, env) {
 }
 /**
  * Flatten one resource or every loaded resource's `*API.yml`.
- * Hosts hand the result to Seltzer `generateRoutes`.
+ * Prefer {@link createNectarineReadRoutes} when the host wants Seltzer `Route`s.
  */
 export function listNectarineApiOperations(config, resource) {
     if (resource) {
@@ -138,6 +139,7 @@ export function createNectarineModule(options = {}) {
                 seedFallback,
                 connected,
                 listApiOperations: (resource) => listNectarineApiOperations(config, resource),
+                createReadRoutes: (options) => createNectarineHandleReadRoutes(handle, options),
             };
             ctx.registerModuleHandle(NECTARINE_MODULE_ID, handle);
         },

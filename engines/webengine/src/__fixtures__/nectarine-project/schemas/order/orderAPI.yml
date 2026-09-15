@@ -1,0 +1,21 @@
+order:
+  read:
+    byId:
+      api:
+        method: GET
+        endpoint: /api/orders/:id
+        query: byId
+
+    byCatalog:
+      api:
+        method: GET
+        endpoint: /api/orders/catalog/:catalog
+        query: byCatalog
+
+order_item:
+  read:
+    byOrder:
+      api:
+        method: GET
+        endpoint: /api/orders/:orderId/items
+        query: byOrder

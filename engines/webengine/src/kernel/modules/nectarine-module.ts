@@ -11,7 +11,12 @@ import {
     type NectarineConfig,
     type ProtectedColumn,
 } from "@citrusworx/nectarine";
+import type { RequestContext, Route } from "@citrusworx/seltzer";
 import type { KernelContext, KernelModule } from "../types.js";
+import {
+    createNectarineHandleReadRoutes,
+    type CreateNectarineReadRoutesOptions,
+} from "./nectarine-routes.js";
 
 export const NECTARINE_MODULE_ID = "nectarine";
 
@@ -47,14 +52,19 @@ export interface NectarineModuleHandle {
     connected: boolean;
     /**
      * Flatten loaded `*API.yml` into operations for Seltzer `generateRoutes`.
-     * HTTP listen/routing stays in Seltzer — the kernel does not generate Route[]s.
-     *
-     * TODO(phase 2): optionally lift Blackwater `createNectarineReadRoutes`
-     * (listApiOperations → generateRoutes) into the engine once that wiring
-     * is a clean host-agnostic helper. Until then, hosts call this and pass
-     * the result to `@citrusworx/seltzer` `generateRoutes`.
+     * Prefer {@link createReadRoutes} when the host wants `Route`s; this stays
+     * for hosts that compose `generateRoutes` themselves.
      */
     listApiOperations: (resource?: string) => ApiOperation[];
+    /**
+     * Opt-in Nectarine → Seltzer route generation. Uses `listApiOperations`
+     * plus compiled `*Queries.yml` / adapter `query` unless the host passes
+     * `execute`. HTTP listen stays in Seltzer — call this after bootstrap and
+     * `app.route(...)`.
+     */
+    createReadRoutes: <TContext extends RequestContext = RequestContext>(
+        options: CreateNectarineReadRoutesOptions<TContext>,
+    ) => Route<TContext>[];
 }
 
 export interface NectarineModuleOptions {
@@ -99,7 +109,7 @@ function hostAllowsSeedFallback(
 
 /**
  * Flatten one resource or every loaded resource's `*API.yml`.
- * Hosts hand the result to Seltzer `generateRoutes`.
+ * Prefer {@link createNectarineReadRoutes} when the host wants Seltzer `Route`s.
  */
 export function listNectarineApiOperations(
     config: NectarineConfig,
@@ -261,6 +271,8 @@ export function createNectarineModule(
                 connected,
                 listApiOperations: (resource) =>
                     listNectarineApiOperations(config, resource),
+                createReadRoutes: (options) =>
+                    createNectarineHandleReadRoutes(handle, options),
             };
             ctx.registerModuleHandle(NECTARINE_MODULE_ID, handle);
         },

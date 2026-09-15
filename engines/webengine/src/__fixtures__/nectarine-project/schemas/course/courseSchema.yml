@@ -1,0 +1,8 @@
+Course:
+  table: courses
+  fields:
+    id: string PRIMARY KEY
+    slug: string
+    title: string
+    line: string
+    status: string

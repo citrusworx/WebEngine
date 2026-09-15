@@ -1,0 +1,6 @@
+Order:
+  table: orders
+  fields:
+    id: string PRIMARY KEY
+    catalog: string
+    client_id: string
