@@ -420,18 +420,22 @@
   box-shadow: 0 2px 8px var(--kw-shadow);
 }
 
-/* Tabs */
-[theme=kiwipress] [tabs] {
+/* Tabs — paint [active] and aria-selected together. Strip chrome lives on
+   [tabs-list] or legacy strip-only [tabs]; [tabs] itself is a column widget. */
+[theme=kiwipress] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme=kiwipress] [tabs-list] {
   border-bottom-color: var(--kw-border);
 }
 
 [theme=kiwipress] [tabs] > button,
+[theme=kiwipress] [tabs-list] > button,
 [theme=kiwipress] [tab] {
   background-color: transparent;
   color: var(--kw-text-soft);
 }
 
 [theme=kiwipress] [tabs] > button:hover,
+[theme=kiwipress] [tabs-list] > button:hover,
 [theme=kiwipress] [tab]:hover {
   background-color: transparent;
   color: var(--kw-heading);
@@ -440,9 +444,17 @@
 }
 
 [theme=kiwipress] [tabs] > button[active],
-[theme=kiwipress] [tab][active] {
+[theme=kiwipress] [tabs] > button[aria-selected=true],
+[theme=kiwipress] [tabs-list] > button[active],
+[theme=kiwipress] [tabs-list] > button[aria-selected=true],
+[theme=kiwipress] [tab][active],
+[theme=kiwipress] [tab][aria-selected=true] {
   color: var(--kw-accent);
   border-bottom-color: var(--kw-accent);
+}
+
+[theme=kiwipress] [tab-panel] {
+  color: var(--kw-text);
 }
 
 /* How It Works ---------------------------------------------------------

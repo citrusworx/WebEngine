@@ -1,19 +1,165 @@
+// Tabs chrome is structural. Color comes from the shared role contract:
+//   --juice-tabs-trigger
+//   --juice-tabs-trigger-hover
+//   --juice-tabs-trigger-active
+//   --juice-tabs-text
+//   --juice-tabs-text-hover
+//   --juice-tabs-text-active
+//   --juice-tabs-indicator
+//   --juice-tabs-list-rule
+//   --juice-tabs-focus-ring
+// Optional hooks (transparent / no-op unless a theme binds them):
+//   --juice-tabs-panel
+//   --juice-tabs-panel-rule
+// Themes bind those names (and optional --aqua-tabs-* / --kw-tabs-* /
+// --cm-tabs-* / --jx-tabs-* aliases) from existing identity tokens.
+// Do not hard-code a single theme's hues here.
+//
+// [tabs] is a column widget root. Strip chrome lives on [tabs-list], or on
+// legacy strip-only [tabs] markup that has no list and no panels.
+// Selection paint uses Juice [active] and ARIA aria-selected together.
+// Visible vs hidden panels use the native `hidden` attribute (display: none).
+// Do not use content="active" or content="hidden" for panel state — those
+// clash with layout [content].
+
+@function -juice-tabs-role($name, $fallback) {
+    @return var(
+        --juice-tabs-#{$name},
+        var(--aqua-tabs-#{$name}, var(--kw-tabs-#{$name}, var(--cm-tabs-#{$name}, var(--jx-tabs-#{$name}, #{$fallback}))))
+    );
+}
+
+$_juice-tabs-trigger-fill: -juice-tabs-role(trigger, transparent);
+$_juice-tabs-trigger-hover-fill: -juice-tabs-role(trigger-hover, $_juice-tabs-trigger-fill);
+$_juice-tabs-trigger-active-fill: -juice-tabs-role(trigger-active, $_juice-tabs-trigger-fill);
+$_juice-tabs-text: -juice-tabs-role(text, inherit);
+$_juice-tabs-text-hover: -juice-tabs-role(text-hover, $_juice-tabs-text);
+$_juice-tabs-text-active: -juice-tabs-role(text-active, currentColor);
+$_juice-tabs-indicator: -juice-tabs-role(indicator, currentColor);
+$_juice-tabs-list-rule: -juice-tabs-role(list-rule, transparent);
+$_juice-tabs-panel-fill: -juice-tabs-role(panel, transparent);
+$_juice-tabs-panel-rule: -juice-tabs-role(panel-rule, transparent);
+
 [tabs] {
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+[tabs-list] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
     gap: 0.5rem;
-    border-bottom: 1px solid transparent;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid $_juice-tabs-list-rule;
     padding-bottom: 2px;
 }
 
+// Legacy strip-only markup: [tabs] > button / [tab] with no list or panels.
+[tabs]:not(:has([tabs-list], [tab-panel])) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+    border-bottom: 1px solid $_juice-tabs-list-rule;
+    padding-bottom: 2px;
+}
+
+// Legacy mixed markup: direct triggers plus [tab-panel], no [tabs-list].
+// Triggers share the first wrap row; panels take the next full row.
+[tabs]:not(:has(> [tabs-list])):has(> [tab-panel]) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    column-gap: 0.5rem;
+    row-gap: 0;
+}
+
 [tabs] > button,
+[tabs] > [tab],
+[tabs-list] > button,
+[tabs-list] > [tab],
 [tab] {
     padding: 0.5rem 1rem;
-    background: transparent;
+    background-color: $_juice-tabs-trigger-fill;
+    background-image: none;
+    color: $_juice-tabs-text;
     border: none;
     border-bottom: 2px solid transparent;
     border-radius: 0;
+    font: inherit;
     font-weight: 500;
+    line-height: 1.35;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
+    box-sizing: border-box;
+    transform: none;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
     margin-bottom: -2px;
+}
+
+[tabs] > button:hover,
+[tabs] > [tab]:hover,
+[tabs-list] > button:hover,
+[tabs-list] > [tab]:hover,
+[tab]:hover {
+    background-color: $_juice-tabs-trigger-hover-fill;
+    background-image: none;
+    color: $_juice-tabs-text-hover;
+    transform: none;
+    box-shadow: none;
+}
+
+[tabs] > button[active],
+[tabs] > button[aria-selected="true"],
+[tabs] > [tab][active],
+[tabs] > [tab][aria-selected="true"],
+[tabs-list] > button[active],
+[tabs-list] > button[aria-selected="true"],
+[tabs-list] > [tab][active],
+[tabs-list] > [tab][aria-selected="true"],
+[tab][active],
+[tab][aria-selected="true"] {
+    background-color: $_juice-tabs-trigger-active-fill;
+    background-image: none;
+    color: $_juice-tabs-text-active;
+    border-bottom-color: $_juice-tabs-indicator;
+}
+
+[tabs] > button:focus-visible,
+[tabs] > [tab]:focus-visible,
+[tabs-list] > button:focus-visible,
+[tabs-list] > [tab]:focus-visible,
+[tab]:focus-visible {
+    outline: 2px solid -juice-tabs-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[tab-panel] {
+    display: block;
+    flex: 1 1 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 0.25rem 0.25rem;
+    background-color: $_juice-tabs-panel-fill;
+    box-shadow: inset 0 1px 0 $_juice-tabs-panel-rule;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [tabs] > button,
+    [tabs] > [tab],
+    [tabs-list] > button,
+    [tabs-list] > [tab],
+    [tab] {
+        transition: none;
+    }
 }

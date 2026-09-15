@@ -98737,24 +98737,124 @@ nav[type=actions] a:hover {
 }
 [tabs] {
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+[tabs-list] {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
   gap: 0.5rem;
-  border-bottom: 1px solid transparent;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--juice-tabs-list-rule, var(--aqua-tabs-list-rule, var(--kw-tabs-list-rule, var(--cm-tabs-list-rule, var(--jx-tabs-list-rule, transparent)))));
   padding-bottom: 2px;
 }
 
+[tabs]:not(:has([tabs-list], [tab-panel])) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--juice-tabs-list-rule, var(--aqua-tabs-list-rule, var(--kw-tabs-list-rule, var(--cm-tabs-list-rule, var(--jx-tabs-list-rule, transparent)))));
+  padding-bottom: 2px;
+}
+
+[tabs]:not(:has(> [tabs-list])):has(> [tab-panel]) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  column-gap: 0.5rem;
+  row-gap: 0;
+}
+
 [tabs] > button,
+[tabs] > [tab],
+[tabs-list] > button,
+[tabs-list] > [tab],
 [tab] {
   padding: 0.5rem 1rem;
-  background: transparent;
+  background-color: var(--juice-tabs-trigger, var(--aqua-tabs-trigger, var(--kw-tabs-trigger, var(--cm-tabs-trigger, var(--jx-tabs-trigger, transparent)))));
+  background-image: none;
+  color: var(--juice-tabs-text, var(--aqua-tabs-text, var(--kw-tabs-text, var(--cm-tabs-text, var(--jx-tabs-text, inherit)))));
   border: none;
   border-bottom: 2px solid transparent;
   border-radius: 0;
+  font: inherit;
   font-weight: 500;
+  line-height: 1.35;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+  transform: none;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
   margin-bottom: -2px;
 }
 
+[tabs] > button:hover,
+[tabs] > [tab]:hover,
+[tabs-list] > button:hover,
+[tabs-list] > [tab]:hover,
+[tab]:hover {
+  background-color: var(--juice-tabs-trigger-hover, var(--aqua-tabs-trigger-hover, var(--kw-tabs-trigger-hover, var(--cm-tabs-trigger-hover, var(--jx-tabs-trigger-hover, var(--juice-tabs-trigger, var(--aqua-tabs-trigger, var(--kw-tabs-trigger, var(--cm-tabs-trigger, var(--jx-tabs-trigger, transparent))))))))));
+  background-image: none;
+  color: var(--juice-tabs-text-hover, var(--aqua-tabs-text-hover, var(--kw-tabs-text-hover, var(--cm-tabs-text-hover, var(--jx-tabs-text-hover, var(--juice-tabs-text, var(--aqua-tabs-text, var(--kw-tabs-text, var(--cm-tabs-text, var(--jx-tabs-text, inherit))))))))));
+  transform: none;
+  box-shadow: none;
+}
+
+[tabs] > button[active],
+[tabs] > button[aria-selected=true],
+[tabs] > [tab][active],
+[tabs] > [tab][aria-selected=true],
+[tabs-list] > button[active],
+[tabs-list] > button[aria-selected=true],
+[tabs-list] > [tab][active],
+[tabs-list] > [tab][aria-selected=true],
+[tab][active],
+[tab][aria-selected=true] {
+  background-color: var(--juice-tabs-trigger-active, var(--aqua-tabs-trigger-active, var(--kw-tabs-trigger-active, var(--cm-tabs-trigger-active, var(--jx-tabs-trigger-active, var(--juice-tabs-trigger, var(--aqua-tabs-trigger, var(--kw-tabs-trigger, var(--cm-tabs-trigger, var(--jx-tabs-trigger, transparent))))))))));
+  background-image: none;
+  color: var(--juice-tabs-text-active, var(--aqua-tabs-text-active, var(--kw-tabs-text-active, var(--cm-tabs-text-active, var(--jx-tabs-text-active, currentColor)))));
+  border-bottom-color: var(--juice-tabs-indicator, var(--aqua-tabs-indicator, var(--kw-tabs-indicator, var(--cm-tabs-indicator, var(--jx-tabs-indicator, currentColor)))));
+}
+
+[tabs] > button:focus-visible,
+[tabs] > [tab]:focus-visible,
+[tabs-list] > button:focus-visible,
+[tabs-list] > [tab]:focus-visible,
+[tab]:focus-visible {
+  outline: 2px solid var(--juice-tabs-focus-ring, var(--aqua-tabs-focus-ring, var(--kw-tabs-focus-ring, var(--cm-tabs-focus-ring, var(--jx-tabs-focus-ring, currentColor)))));
+  outline-offset: 2px;
+}
+
+[tab-panel] {
+  display: block;
+  flex: 1 1 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 0.25rem 0.25rem;
+  background-color: var(--juice-tabs-panel, var(--aqua-tabs-panel, var(--kw-tabs-panel, var(--cm-tabs-panel, var(--jx-tabs-panel, transparent)))));
+  box-shadow: inset 0 1px 0 var(--juice-tabs-panel-rule, var(--aqua-tabs-panel-rule, var(--kw-tabs-panel-rule, var(--cm-tabs-panel-rule, var(--jx-tabs-panel-rule, transparent)))));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [tabs] > button,
+  [tabs] > [tab],
+  [tabs-list] > button,
+  [tabs-list] > [tab],
+  [tab] {
+    transition: none;
+  }
+}
 /* =====================================================================
    Wizard — multi-step onboarding chrome
    Owns: shell, header, rails, step tracker, order summary, step pages,
