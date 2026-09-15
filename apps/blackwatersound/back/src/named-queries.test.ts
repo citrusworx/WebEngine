@@ -41,5 +41,8 @@ describe("compileResourceQuery", () => {
     expect(namedSql.payloadById).toBe("SELECT payload FROM products WHERE id = $1");
     expect(namedSql.allEntries).toBe("SELECT * FROM waitlist ORDER BY created_at ASC");
     expect(namedSql.entryByEmail).toBe("SELECT * FROM waitlist WHERE email = $1");
+    expect(namedSql.joinWaitlist).toBe(
+      "INSERT INTO waitlist (id, name, email, source_app, interest) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, created_at",
+    );
   });
 });

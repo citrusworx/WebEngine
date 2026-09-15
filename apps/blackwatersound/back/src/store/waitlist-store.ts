@@ -10,8 +10,11 @@ import {
 } from "../db/postgres.js";
 
 const defaultDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "../data/runtime");
-const dataDir = process.env.RUNTIME_DATA_DIR?.trim() || defaultDir;
-const waitlistPath = path.join(dataDir, "waitlist.json");
+
+function waitlistPath() {
+  const dataDir = process.env.RUNTIME_DATA_DIR?.trim() || defaultDir;
+  return path.join(dataDir, "waitlist.json");
+}
 
 function useDatabase() {
   return isDatabaseConnected();
@@ -23,7 +26,7 @@ export async function loadWaitlist(): Promise<WaitlistEntry[]> {
   }
 
   try {
-    const raw = await readFile(waitlistPath, "utf8");
+    const raw = await readFile(waitlistPath(), "utf8");
     const parsed = JSON.parse(raw) as WaitlistEntry[];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -36,8 +39,9 @@ export async function saveWaitlist(entries: WaitlistEntry[]) {
     return;
   }
 
-  await mkdir(dataDir, { recursive: true });
-  await writeFile(waitlistPath, `${JSON.stringify(entries, null, 2)}\n`, "utf8");
+  const file = waitlistPath();
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeFile(file, `${JSON.stringify(entries, null, 2)}\n`, "utf8");
 }
 
 export async function appendWaitlistEntry(entry: WaitlistEntry) {
