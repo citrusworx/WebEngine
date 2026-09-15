@@ -378,13 +378,7 @@ CREATE DATABASE myapp;
 
 ### Run Migrations
 
-```bash
-# Generate tables from schema
-yarn run migrate:up
-
-# Rollback changes
-yarn run migrate:down
-```
+At process boot the host calls Nectarine `applyMigrations` (Blackwater: `migrate()`). That creates tables from `*Schema.yml`, applies pending versioned YAML in `db/migrations/`, then additive `ADD COLUMN IF NOT EXISTS`. There is no `migrate:down`.
 
 ### Test API
 

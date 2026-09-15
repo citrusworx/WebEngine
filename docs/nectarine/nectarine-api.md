@@ -8,7 +8,7 @@ Complete API reference for Nectarine config, schemas, queries, and host integrat
 - [Query Types](#query-types)
 - [API Routes](#api-routes)
 - [Field Types](#field-types)
-- [Core Functions](#core-functions) (`loadNectarineConfig`, `listApiOperations`, hosting with Seltzer)
+- [Core Functions](#core-functions) (`loadNectarineConfig`, `listApiOperations`, `applyMigrations`, hosting with Seltzer)
 - [TypeScript Types](#typescript-types)
 
 ---
@@ -472,7 +472,7 @@ function compileSchema(
 - `schema` - Parsed schema object or filesystem path to `*Schema.yml`
 - `driver` - Target database (`postgres` default). `mongodb` is rejected (not SQL CREATE TABLE).
 
-**Returns**: `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` SQL
+**Returns**: `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` SQL. Pass `{ additive: true }` on Postgres for `ADD COLUMN IF NOT EXISTS`. Rename / drop / type change use `applyMigrations`, not this helper.
 
 **Example**:
 ```typescript
@@ -486,6 +486,45 @@ console.log(sql); // CREATE TABLE IF NOT EXISTS users (...)
 const compiler = new CCompiler();
 const ddl = compiler.buildDdl(compiler.parse_config("schemas/product/productSchema.yml"));
 ```
+
+### applyMigrations()
+
+Apply current schema YAML plus pending versioned migration YAML through an adapter `query()`. Creates `nectarine_schema_migrations`, `CREATE TABLE IF NOT EXISTS` / indexes, applies rename / drop / type-change ops, then Postgres additive `ADD COLUMN IF NOT EXISTS`.
+
+Not Flyway: no down migrations, no raw SQL scripts, no silent schema-diff. Destructive ops require `destructive: true` and `confirm: dropColumn` / `confirm: changeType`.
+
+**Signature**:
+```typescript
+async function applyMigrations(options: {
+  execute: { query: (sql: string, params?: readonly unknown[]) => Promise<unknown> };
+  vendor?: "postgres" | "mysql";
+  schemas?: unknown[];
+  migrations?: unknown[];
+  tableSchema?: string;
+  protectedColumns?: ReadonlyArray<{ table: string; column: string }>;
+}): Promise<{ applied: string[]; skipped: string[] }>
+```
+
+**Example**:
+```typescript
+import { applyMigrations, compileMigration, loadMigrationDocuments } from "@citrusworx/nectarine/migrate";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+
+const pg = createPgAdapterFromConfig(config)!;
+await pg.connect();
+
+await applyMigrations({
+  execute: pg,
+  vendor: "postgres",
+  schemas: [userSchema],
+  migrations: loadMigrationDocuments("./db/migrations"),
+  protectedColumns: [{ table: "products", column: "payload" }],
+});
+```
+
+`compileMigration(doc)` compiles one YAML document to ALTER statements (for tests or inspection). `CCompiler.buildMigration` is the same entry.
+
+There is no `migrateDown`. Restore a previous shape with a new forward migration.
 
 ### extendSchema()
 
@@ -520,56 +559,6 @@ const extended = extendSchema(base, {
     }
   }
 });
-```
-
-### migrateUp()
-
-Apply schema migrations to database.
-
-**Signature**:
-```typescript
-async function migrateUp(
-  schema: SchemaDefinition,
-  driver: "postgres" | "mysql" | "mongodb"
-): Promise<void>
-```
-
-**Parameters**:
-- `schema` - Schema to apply
-- `driver` - Database type
-
-**Returns**: Promise resolving when complete
-
-**Example**:
-```typescript
-import { migrateUp } from "@citrusworx/nectarine";
-
-await migrateUp(userSchema, "postgres");
-console.log("Tables created");
-```
-
-### migrateDown()
-
-Rollback schema migrations.
-
-**Signature**:
-```typescript
-async function migrateDown(
-  schema: SchemaDefinition,
-  driver: "postgres" | "mysql" | "mongodb"
-): Promise<void>
-```
-
-**Parameters**:
-- `schema` - Schema to rollback
-- `driver` - Database type
-
-**Example**:
-```typescript
-import { migrateDown } from "@citrusworx/nectarine";
-
-await migrateDown(userSchema, "postgres");
-console.log("Tables dropped");
 ```
 
 ### validateData()

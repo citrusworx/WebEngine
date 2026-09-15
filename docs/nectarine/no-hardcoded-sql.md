@@ -7,11 +7,10 @@ Nectarine’s hard rule for **final app backend code**:
 > execute `(sql, params)`.
 
 **Phase 3** enforces that rule for Blackwater **DDL**:
-`migrate()` calls `runNamedDdl("bootstrap")` → `src/db/named-ddl.ts` →
-`compileSchemas` over **every** Blackwater `*Schema.yml` (intentional
-whole-domain bootstrap: course, order, booking, … — not only live
-product + waitlist). Hand-written `phase3-ddl.ts` is retired. DML stays
-on named compiled queries (`runNamed`).
+`migrate()` calls `applyNamedMigrations` → `src/db/named-ddl.ts` → Nectarine
+`applyMigrations` over **every** Blackwater `*Schema.yml` plus optional
+versioned files in `src/db/migrations/`. Hand-written `phase3-ddl.ts` is
+retired. DML stays on named compiled queries (`runNamed`).
 
 Postgres **JSONB is first-class**. Live product **writes** still insert
 `payload` only (`seedPayload`). Catalog columns on `products` are a
@@ -29,6 +28,7 @@ App                    Compiler                         Adapter
 ───                    ────────                         ───────
 buildQuery(name)  →    query YAML → parameterized SQL  →  query(sql, params)
 buildDdl(schema)  →    *Schema.yml → CREATE TABLE/INDEX →  query(sql)
+applyMigrations   →    migration YAML → ALTER + ledger →  query(sql, params)
                        (never string-interpolate values)
 ```
 
@@ -37,7 +37,8 @@ buildDdl(schema)  →    *Schema.yml → CREATE TABLE/INDEX →  query(sql)
 | App routes / stores / `db/*.ts` | **No** | Call a named query or named DDL, pass bind values |
 | Query YAML | Tokens only — not raw SQL scripts | `select` / `type: SELECT`, structured or grammar-checked `where` |
 | Schema YAML | Tokens only — not raw SQL scripts | `table`, `fields`, constraints, optional `indexes` |
-| Compiler | Assembles DML and `CREATE TABLE` / `CREATE INDEX` | Validates identifiers; quotes mixed-case names (`"originalPrice"`); DML emits `$N` (allowlisted `$N::jsonb`); DDL maps types (`jsonb` → `JSONB`). `relationships:` is not DDL. |
+| Migration YAML | Tokens only — not raw SQL scripts | `renameColumn` / `dropColumn` / `changeType`; destructive ops gated |
+| Compiler | Assembles DML, `CREATE TABLE` / `CREATE INDEX`, and versioned `ALTER` | Validates identifiers; quotes mixed-case names (`"originalPrice"`); DML emits `$N` (allowlisted `$N::jsonb`); DDL maps types (`jsonb` → `JSONB`). `relationships:` is not DDL. |
 | Adapter | Executes `(sql, params)` only | Never builds or concatenates SQL |
 
 See [Query DSL](./nectarine-query-dsl.md), [Schema Guide](./nectarine-schema-guide.md),
@@ -72,16 +73,16 @@ later.
 
 DML helpers live in `src/db/postgres.ts` and call `runNamed` →
 `CCompiler.buildQuery` on the Nectarine `createPgAdapter` pool. DDL bootstrap
-calls `runNamedDdl` → `CCompiler.buildDdls`. Routes and
-`src/store/waitlist-store.ts` do not embed SQL. Other apps under `apps/` do
-not depend on Nectarine and have no query SQL. `packages/kiwipress` depends
+and versioned migrations call `applyNamedMigrations` → Nectarine `applyMigrations`.
+Routes and `src/store/waitlist-store.ts` do not embed SQL. Other apps under `apps/`
+do not depend on Nectarine and have no query SQL. `packages/kiwipress` depends
 on `@citrusworx/nectarine` but contains no SQL strings.
 
 ### `src/db/postgres.ts`
 
 | Location | Purpose | Named query / DDL | Status |
 |----------|---------|-------------------|--------|
-| `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist) + `waitlist_email_idx`; additive `ADD COLUMN IF NOT EXISTS` for existing volumes | `runNamedDdl("bootstrap")` → `src/db/named-ddl.ts` | **migrated** — `{ additive: true }` is ADD COLUMN only (no DROP / rename / type change; not Flyway). Live `products` keeps `payload JSONB`. Waitlist includes `source_app` / `interest` on new and existing tables. |
+| `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist) + `waitlist_email_idx`; versioned YAML for rename/drop/type change; additive `ADD COLUMN IF NOT EXISTS` after migrations | `applyNamedMigrations` → `src/db/named-ddl.ts` | **migrated** — ledger `nectarine_schema_migrations`; destructive ops require `destructive: true` + `confirm`. Live `products` keeps `payload JSONB` (protected). Waitlist includes `source_app` / `interest` on new and existing tables. |
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
@@ -94,7 +95,8 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 
 | Location | Purpose | YAML that owns it | Status |
 |----------|---------|-------------------|---------|
-| `namedDdl("bootstrap")` | All resource `CREATE TABLE` / indexes plus Postgres `ADD COLUMN IF NOT EXISTS`, FK-ordered | every `*Schema.yml` | **migrated** — thin runner; `{ additive: true }`; no SQL text in the module |
+| `namedDdl("bootstrap")` | All resource `CREATE TABLE` / indexes plus Postgres `ADD COLUMN IF NOT EXISTS`, FK-ordered | every `*Schema.yml` | **migrated** — combined SQL still compiled; boot uses `applyNamedMigrations` so versioned YAML can rename before additive ADD COLUMN |
+| `applyNamedMigrations` | Ledger + CREATE TABLE + pending `src/db/migrations/*.yml` + additive ADD COLUMN | `*Schema.yml` + migration YAML | **migrated** — thin runner; no SQL text in the module |
 | `namedDdl("liveBootstrap")` | Product + waitlist CREATE TABLE / INDEX only | `productSchema.yml`, `waitlistSchema.yml` | **migrated** — used to lock Docker init.sql in tests |
 | `docker/postgres/init.sql` | Out-of-band Docker first-boot copy of live bootstrap | same two schema files | **schema-owned** — not app backend; compiled from the same YAML without additive ALTERs. App `migrate()` adds missing columns on existing volumes. |
 
@@ -155,11 +157,11 @@ come only from inline `FOREIGN KEY REFERENCES` on fields.
    (seed still writes payload only). Waitlist columns include
    `source_app` / `interest`; `joinWaitlist` replaced `insertEntry` on
    the live path. `migrate()` bootstraps **every** resource schema
-   (intentional) and emits additive `ADD COLUMN IF NOT EXISTS` only —
-   not a Flyway-style migrator. Mixed-case identifiers are quoted.
+   (intentional) and applies versioned rename/drop/type-change YAML plus
+   additive `ADD COLUMN IF NOT EXISTS`. Mixed-case identifiers are quoted.
    Docker `init.sql` is first-boot CREATE TABLE from product + waitlist
    YAML (no ALTER). `phase3-ddl.ts` retired.
 4. **Later** — Remaining compiler features only if a later phase needs
    them (`COUNT`, `EXISTS`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
-   Seltzer route generation is a separate track. Do **not** invent
-   `nectarine serve`.
+   Down migrations / silent schema-diff are not part of the migrator. Seltzer
+   route generation is a separate track. Do **not** invent `nectarine serve`.

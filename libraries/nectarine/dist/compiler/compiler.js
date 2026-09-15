@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.SchemaCompileError = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.quoteIdentPath = exports.quoteIdent = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
+exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.MIGRATION_VERSION = exports.MigrationCompileError = exports.compileMigrations = exports.compileMigration = exports.SchemaCompileError = exports.schemaPlanStatements = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSqlType = exports.compileSchemasPlan = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.quoteIdentPath = exports.quoteIdent = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
 const util_js_1 = require("../util/util.js");
 const ddl_js_1 = require("./ddl.js");
+const migration_js_1 = require("./migration.js");
 const normalize_js_1 = require("./normalize.js");
 const sql_js_1 = require("./sql.js");
 var sql_js_2 = require("./sql.js");
@@ -18,10 +19,18 @@ var ddl_js_2 = require("./ddl.js");
 Object.defineProperty(exports, "compileSchema", { enumerable: true, get: function () { return ddl_js_2.compileSchema; } });
 Object.defineProperty(exports, "compileSchemaPlan", { enumerable: true, get: function () { return ddl_js_2.compileSchemaPlan; } });
 Object.defineProperty(exports, "compileSchemas", { enumerable: true, get: function () { return ddl_js_2.compileSchemas; } });
+Object.defineProperty(exports, "compileSchemasPlan", { enumerable: true, get: function () { return ddl_js_2.compileSchemasPlan; } });
+Object.defineProperty(exports, "compileSqlType", { enumerable: true, get: function () { return ddl_js_2.compileSqlType; } });
 Object.defineProperty(exports, "compileTable", { enumerable: true, get: function () { return ddl_js_2.compileTable; } });
 Object.defineProperty(exports, "DDL_VENDORS", { enumerable: true, get: function () { return ddl_js_2.DDL_VENDORS; } });
 Object.defineProperty(exports, "schemaFieldEnumValues", { enumerable: true, get: function () { return ddl_js_2.schemaFieldEnumValues; } });
+Object.defineProperty(exports, "schemaPlanStatements", { enumerable: true, get: function () { return ddl_js_2.schemaPlanStatements; } });
 Object.defineProperty(exports, "SchemaCompileError", { enumerable: true, get: function () { return ddl_js_2.SchemaCompileError; } });
+var migration_js_2 = require("./migration.js");
+Object.defineProperty(exports, "compileMigration", { enumerable: true, get: function () { return migration_js_2.compileMigration; } });
+Object.defineProperty(exports, "compileMigrations", { enumerable: true, get: function () { return migration_js_2.compileMigrations; } });
+Object.defineProperty(exports, "MigrationCompileError", { enumerable: true, get: function () { return migration_js_2.MigrationCompileError; } });
+Object.defineProperty(exports, "MIGRATION_VERSION", { enumerable: true, get: function () { return migration_js_2.MIGRATION_VERSION; } });
 var normalize_js_2 = require("./normalize.js");
 Object.defineProperty(exports, "inferMethodFromType", { enumerable: true, get: function () { return normalize_js_2.inferMethodFromType; } });
 Object.defineProperty(exports, "METHOD_ALIASES", { enumerable: true, get: function () { return normalize_js_2.METHOD_ALIASES; } });
@@ -34,7 +43,7 @@ Object.defineProperty(exports, "parseWhereFragment", { enumerable: true, get: fu
  * Compiles Nectarine query YAML and schema YAML into SQL.
  *
  * App code calls named queries and named DDL only. This compiler assembles
- * DML and CREATE TABLE / INDEX statements from YAML tokens (phonics).
+ * DML, CREATE TABLE / INDEX, and versioned ALTER statements from YAML tokens (phonics).
  * Adapters execute the resulting text — they never build SQL.
  *
  * Canonical document shape (Postgres-first) — see `models/user/db/pg/user.yml`:
@@ -124,6 +133,18 @@ class CCompiler {
      */
     buildTable(schema, modelName, vendor = "postgres", options) {
         return (0, ddl_js_1.compileTable)(schema, modelName, vendor, options);
+    }
+    /**
+     * Compile a versioned migration YAML document into ALTER statements.
+     */
+    buildMigration(migration, vendor = "postgres") {
+        return (0, migration_js_1.compileMigration)(migration, vendor);
+    }
+    /**
+     * Compile several versioned migration documents (unique versions, sorted).
+     */
+    buildMigrations(migrations, vendor = "postgres") {
+        return (0, migration_js_1.compileMigrations)(migrations, vendor);
     }
 }
 exports.CCompiler = CCompiler;

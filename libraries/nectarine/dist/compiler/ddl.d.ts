@@ -24,10 +24,18 @@ export type CompiledTable = {
 export type CompileSchemaOptions = {
     /**
      * Postgres only: also emit `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`
-     * so existing tables pick up new schema fields (bootstrap, not a migrator).
+     * so existing tables pick up new schema fields. Rename, drop, and type
+     * changes are versioned migration YAML (`compileMigration` / `applyMigrations`),
+     * not silent schema-diff.
      */
     additive?: boolean;
 };
+/**
+ * Flatten a compiled schema plan into executable statements.
+ * `create` = CREATE TABLE (no additive ALTER). `additive` = ADD COLUMN only.
+ * `indexes` = CREATE INDEX. `all` matches {@link compileSchemas} with options.
+ */
+export declare function schemaPlanStatements(tables: CompiledTable[], phase: "create" | "additive" | "indexes" | "all", options?: CompileSchemaOptions): string[];
 /**
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
  * `schema` may be a parsed object or a filesystem path.
@@ -42,5 +50,14 @@ export declare function compileSchemas(schemas: unknown[], vendor?: string, opti
  */
 export declare function compileTable(schema: unknown, modelName: string, vendor?: string, options?: CompileSchemaOptions): string;
 export declare function compileSchemaPlan(schema: unknown, vendor?: string): CompiledTable[];
+/**
+ * Compile several schema documents to a shared foreign-key-ordered plan.
+ */
+export declare function compileSchemasPlan(schemas: unknown[], vendor?: string): CompiledTable[];
+/**
+ * Map a schema field type token (`jsonb`, `varchar(100)`, `enum(a, b)`) to vendor SQL.
+ * Used by type-change migrations; does not accept raw SQL.
+ */
+export declare function compileSqlType(typeSpec: string, vendor?: string): string;
 /** Enum tokens from a schema field (for app-side allowlists, not SQL). */
 export declare function schemaFieldEnumValues(schema: unknown, modelName: string, fieldName: string): readonly string[];

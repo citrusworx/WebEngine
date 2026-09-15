@@ -81,6 +81,7 @@ describe("Nectarine package contract", () => {
         expect(indexJs).not.toMatch(/adapters\/(?:pg|ms|mg)/);
         expect(indexJs).toContain("./compiler/compiler");
         expect(indexJs).toContain("./config/index");
+        expect(indexJs).toContain("./migrate/index");
     });
 
     it("exports config and compiler from the built root entry, not adapters", async () => {
@@ -90,6 +91,8 @@ describe("Nectarine package contract", () => {
         expect(module.loadNectarineConfig).toEqual(expect.any(Function));
         expect(module.listApiOperations).toEqual(expect.any(Function));
         expect(module.CCompiler).toEqual(expect.any(Function));
+        expect(module.applyMigrations).toEqual(expect.any(Function));
+        expect(module.compileMigration).toEqual(expect.any(Function));
         expect(module.createPgAdapter).toBeUndefined();
         expect(module.createMysqlAdapter).toBeUndefined();
         expect(module.createMongoAdapter).toBeUndefined();

@@ -343,24 +343,30 @@ async function transferMoney(fromUserId, toUserId, amount) {
 
 ### Migrations
 
-```bash
-# Create migration file
-cat > migrations/001_create_users.sql << 'EOF'
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(100) UNIQUE NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-EOF
+Do not check in raw `CREATE TABLE` scripts for app backends. Current table shape lives in `*Schema.yml`. Rename / drop / type change are versioned YAML compiled by Nectarine:
 
-# Run migration
-psql -U postgres -d myapp -f migrations/001_create_users.sql
-
-# With Nectarine
-yarn run migrate:up
-yarn run migrate:down
+```yaml
+# db/migrations/001_rename_nickname.yml
+version: "001_rename_nickname"
+operations:
+  - renameColumn:
+      table: users
+      from: nickname
+      to: handle
 ```
+
+```ts
+import { applyMigrations, loadMigrationDocuments } from "@citrusworx/nectarine/migrate";
+
+await applyMigrations({
+  execute: pg,
+  vendor: "postgres",
+  schemas: [userSchema],
+  migrations: loadMigrationDocuments("./db/migrations"),
+});
+```
+
+There is no `migrate:down`. Destructive ops need `destructive: true` and a `confirm:` token. See [Production](./production.md).
 
 ### Backup and Restore
 
