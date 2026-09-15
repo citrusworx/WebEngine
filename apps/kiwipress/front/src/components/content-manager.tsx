@@ -98,166 +98,14 @@ export function ContentManager() {
         }
     }
 
-    async function loadContent(kind: ContentKind) {
-        currentKind.set(kind);
-        managerStatus.set(`Loading ${kind}...`);
-        managerError.set("");
-
-        try {
-            const response = await gatewayFetch(`/__kiwipress/content/${kind}`);
-            const payload = await response.json();
-
-            if (!response.ok) {
-                throw new Error(payload?.error ?? `Unable to load ${kind}.`);
-            }
-
-            const normalized = Array.isArray(payload)
-                ? payload.map((item) => normalizeItem(kind, item))
-                : [];
-
-            items.set(normalized);
-            selectedId.set(normalized[0]?.id ?? null);
-            managerStatus.set(`${kind} loaded.`);
-        } catch (caughtError) {
-            const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
-            items.set([]);
-            selectedId.set(null);
-            managerError.set(message);
-            managerStatus.set(`${kind} load failed.`);
-        }
-    }
-
-    async function saveSelected(event: Event) {
-        event.preventDefault();
-
-        const selected = getSelectedItem();
-
-        if (!selected || !titleInput || !statusSelect || !contentArea) {
-            saveStatus.set("Pick an item to edit.");
-            return;
-        }
-
-        saveStatus.set(`Saving ${selected.kind.slice(0, -1)} #${selected.id}...`);
-        managerError.set("");
-
-        try {
-            const payload = {
-                title: titleInput.value,
-                status: statusSelect.value,
-                content: contentArea.value
-            };
-
-            const response = await gatewayFetch(`/__kiwipress/content/${selected.kind}?id=${encodeURIComponent(selected.id)}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result?.error ?? `Unable to save ${selected.kind}.`);
-            }
-
-            const normalized = normalizeItem(selected.kind, result);
-
-            items.set(
-                items.get().map((item) => {
-                    return item.id === normalized.id ? normalized : item;
-                })
-            );
-
-            selectedId.set(normalized.id);
-            saveStatus.set(`${selected.kind.slice(0, -1)} #${selected.id} saved.`);
-        } catch (caughtError) {
-            const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
-            managerError.set(message);
-            saveStatus.set("Save failed.");
-        }
-    }
-
-    async function deleteItem(item: ManagedContentItem) {
-        const confirmed = window.confirm(`Delete ${item.kind.slice(0, -1)} "${item.title}"?`);
-
-        if (!confirmed) {
-            return;
-        }
-
-        saveStatus.set(`Deleting ${item.kind.slice(0, -1)} #${item.id}...`);
-        managerError.set("");
-
-        try {
-            const response = await gatewayFetch(`/__kiwipress/content/${item.kind}?id=${encodeURIComponent(item.id)}`, {
-                method: "DELETE"
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result?.error ?? `Unable to delete ${item.kind}.`);
-            }
-
-            const remaining = items.get().filter((entry) => entry.id !== item.id);
-            items.set(remaining);
-
-            if (selectedId.get() === item.id) {
-                selectedId.set(remaining[0]?.id ?? null);
-            }
-
-            saveStatus.set(`${item.kind.slice(0, -1)} #${item.id} deleted.`);
-        } catch (caughtError) {
-            const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
-            managerError.set(message);
-            saveStatus.set("Delete failed.");
-        }
-    }
-
-    effect(() => {
-        const status = managerStatus.get();
-
-        if (managerStatusNode) {
-            managerStatusNode.textContent = status;
-        }
-    });
-
-    effect(() => {
-        const status = saveStatus.get();
-
-        if (saveStatusNode) {
-            saveStatusNode.textContent = status;
-        }
-    });
-
-    effect(() => {
-        const message = managerError.get();
-
-        if (!errorNode) {
-            return;
-        }
-
-        if (!message) {
-            errorNode.replaceChildren();
-            return;
-        }
-
-        errorNode.replaceChildren(
-            <div stack gap="0.5rem" bgColor="red-100" rounded="md" paddingX="1rem" paddingY="1rem">
-                <h3 fontColor="red-700">Manager Failure</h3>
-                <pre>{message}</pre>
-            </div>
-        );
-    });
-
-    effect(() => {
-        const allItems = items.get();
-        const current = currentKind.get();
-        const selected = selectedId.get();
-
+    function paintList() {
         if (!listNode) {
             return;
         }
+
+        const allItems = items.get();
+        const current = currentKind.get();
+        const selected = selectedId.get();
 
         if (allItems.length === 0) {
             listNode.replaceChildren(
@@ -320,6 +168,179 @@ export function ContentManager() {
                 {children}
             </div>
         );
+    }
+
+    function paintManagerStatus() {
+        if (managerStatusNode) {
+            managerStatusNode.textContent = managerStatus.get();
+        }
+    }
+
+    async function loadContent(kind: ContentKind) {
+        currentKind.set(kind);
+        managerStatus.set(`Loading ${kind}...`);
+        managerError.set("");
+        paintManagerStatus();
+
+        try {
+            const response = await gatewayFetch(`/__kiwipress/content/${kind}`);
+            const payload = await response.json();
+
+            if (!response.ok) {
+                throw new Error(payload?.error ?? `Unable to load ${kind}.`);
+            }
+
+            const normalized = Array.isArray(payload)
+                ? payload.map((item) => normalizeItem(kind, item))
+                : [];
+
+            items.set(normalized);
+            selectedId.set(normalized[0]?.id ?? null);
+            managerStatus.set(`${kind} loaded.`);
+            paintManagerStatus();
+            paintList();
+            syncEditorFields(getSelectedItem());
+        } catch (caughtError) {
+            const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
+            items.set([]);
+            selectedId.set(null);
+            managerError.set(message);
+            managerStatus.set(`${kind} load failed.`);
+            paintManagerStatus();
+            paintList();
+        }
+    }
+
+    async function saveSelected(event: Event) {
+        event.preventDefault();
+
+        const selected = getSelectedItem();
+
+        if (!selected || !titleInput || !statusSelect || !contentArea) {
+            saveStatus.set("Pick an item to edit.");
+            return;
+        }
+
+        saveStatus.set(`Saving ${selected.kind.slice(0, -1)} #${selected.id}...`);
+        managerError.set("");
+
+        try {
+            const payload = {
+                title: titleInput.value,
+                status: statusSelect.value,
+                content: contentArea.value
+            };
+
+            const response = await gatewayFetch(`/__kiwipress/content/${selected.kind}?id=${encodeURIComponent(selected.id)}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result?.error ?? `Unable to save ${selected.kind}.`);
+            }
+
+            const normalized = normalizeItem(selected.kind, result);
+
+            items.set(
+                items.get().map((item) => {
+                    return item.id === normalized.id ? normalized : item;
+                })
+            );
+
+            selectedId.set(normalized.id);
+            saveStatus.set(`${selected.kind.slice(0, -1)} #${selected.id} saved.`);
+            paintList();
+        } catch (caughtError) {
+            const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
+            managerError.set(message);
+            saveStatus.set("Save failed.");
+        }
+    }
+
+    async function deleteItem(item: ManagedContentItem) {
+        const confirmed = window.confirm(`Delete ${item.kind.slice(0, -1)} "${item.title}"?`);
+
+        if (!confirmed) {
+            return;
+        }
+
+        saveStatus.set(`Deleting ${item.kind.slice(0, -1)} #${item.id}...`);
+        managerError.set("");
+
+        try {
+            const response = await gatewayFetch(`/__kiwipress/content/${item.kind}?id=${encodeURIComponent(item.id)}`, {
+                method: "DELETE"
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result?.error ?? `Unable to delete ${item.kind}.`);
+            }
+
+            const remaining = items.get().filter((entry) => entry.id !== item.id);
+            items.set(remaining);
+
+            if (selectedId.get() === item.id) {
+                selectedId.set(remaining[0]?.id ?? null);
+            }
+
+            saveStatus.set(`${item.kind.slice(0, -1)} #${item.id} deleted.`);
+            paintList();
+        } catch (caughtError) {
+            const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
+            managerError.set(message);
+            saveStatus.set("Delete failed.");
+        }
+    }
+
+    effect(() => {
+        const status = managerStatus.get();
+
+        if (managerStatusNode) {
+            managerStatusNode.textContent = status;
+        }
+    });
+
+    effect(() => {
+        const status = saveStatus.get();
+
+        if (saveStatusNode) {
+            saveStatusNode.textContent = status;
+        }
+    });
+
+    effect(() => {
+        const message = managerError.get();
+
+        if (!errorNode) {
+            return;
+        }
+
+        if (!message) {
+            errorNode.replaceChildren();
+            return;
+        }
+
+        errorNode.replaceChildren(
+            <div stack gap="0.5rem" bgColor="red-100" rounded="md" paddingX="1rem" paddingY="1rem">
+                <h3 fontColor="red-700">Manager Failure</h3>
+                <pre>{message}</pre>
+            </div>
+        );
+    });
+
+    effect(() => {
+        items.get();
+        currentKind.get();
+        selectedId.get();
+        paintList();
     });
 
     effect(() => {
@@ -336,12 +357,6 @@ export function ContentManager() {
             rounded="lg"
             shadow
             depth="lg"
-            ref={() => {
-                if (!initialized) {
-                    initialized = true;
-                    void loadContent("posts");
-                }
-            }}
         >
             <div card-header stack gap="0.5rem">
                 <p fontColor="freshgreen-600">Manage Content</p>
@@ -387,6 +402,7 @@ export function ContentManager() {
 
                 <code ref={(node: HTMLElement) => {
                     managerStatusNode = node;
+                    paintManagerStatus();
                 }}
                 >
                     {managerStatus.get()}
@@ -396,6 +412,11 @@ export function ContentManager() {
                     <div stack gap="1rem" width="100%">
                         <div ref={(node: HTMLElement) => {
                             listNode = node;
+                            paintList();
+                            if (!initialized) {
+                                initialized = true;
+                                void loadContent("posts");
+                            }
                         }}
                         />
                         <div ref={(node: HTMLElement) => {

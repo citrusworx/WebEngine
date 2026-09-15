@@ -22,62 +22,15 @@ export function TransferPanel() {
     const status = Signal("Idle");
     let statusNode: HTMLElement | null = null;
     let summaryNode: HTMLElement | null = null;
+    let requested = false;
 
-    async function loadCms() {
-        status.set("Loading CMS status...");
-        try {
-            const response = await gatewayFetch("/__kiwipress/cms");
-            const payload = await response.json() as CmsStatus;
-            if (!response.ok) {
-                throw new Error(payload.error ?? "Unable to load CMS status.");
-            }
-            cms.set(payload);
-            status.set(`Mode: ${payload.mode ?? "unknown"}`);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            cms.set({ error: message });
-            status.set("CMS status failed.");
-        }
-    }
-
-    async function runTransfer() {
-        status.set("Transferring WordPress → Nectarine...");
-        try {
-            const response = await gatewayFetch("/__kiwipress/transfer", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ collections: ["posts", "pages", "users", "categories", "tags", "comments"] })
-            });
-            const payload = await response.json() as TransferResult;
-            if (!response.ok) {
-                throw new Error(payload.error ?? "Transfer failed.");
-            }
-            transfer.set(payload);
-            await loadCms();
-            status.set("Transferred. Reading from the Nectarine CMS now.");
-        } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            transfer.set({ error: message });
-            status.set("Transfer failed.");
-        }
-    }
-
-    async function useWordpress() {
-        await gatewayFetch("/__kiwipress/cms", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mode: "wordpress" })
-        });
-        await loadCms();
-    }
-
-    effect(() => {
+    function paintStatus() {
         if (statusNode) {
             statusNode.textContent = status.get();
         }
-    });
+    }
 
-    effect(() => {
+    function paintSummary() {
         if (!summaryNode) {
             return;
         }
@@ -102,16 +55,84 @@ export function TransferPanel() {
                 </ul>
             </div>
         );
+    }
+
+    async function loadCms() {
+        status.set("Loading CMS status...");
+        paintStatus();
+        try {
+            const response = await gatewayFetch("/__kiwipress/cms");
+            const payload = await response.json() as CmsStatus;
+            if (!response.ok) {
+                throw new Error(payload.error ?? "Unable to load CMS status.");
+            }
+            cms.set(payload);
+            status.set(`Mode: ${payload.mode ?? "unknown"}`);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            cms.set({ error: message });
+            status.set("CMS status failed.");
+        }
+        paintStatus();
+        paintSummary();
+    }
+
+    async function runTransfer() {
+        status.set("Transferring WordPress → Nectarine...");
+        paintStatus();
+        try {
+            const response = await gatewayFetch("/__kiwipress/transfer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ collections: ["posts", "pages", "users", "categories", "tags", "comments"] })
+            });
+            const payload = await response.json() as TransferResult;
+            if (!response.ok) {
+                throw new Error(payload.error ?? "Transfer failed.");
+            }
+            transfer.set(payload);
+            await loadCms();
+            status.set("Transferred. Reading from the Nectarine CMS now.");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            transfer.set({ error: message });
+            status.set("Transfer failed.");
+        }
+        paintStatus();
+        paintSummary();
+    }
+
+    async function useWordpress() {
+        await gatewayFetch("/__kiwipress/cms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: "wordpress" })
+        });
+        await loadCms();
+    }
+
+    function bindPanel() {
+        if (requested || !statusNode || !summaryNode) {
+            return;
+        }
+
+        requested = true;
+        void loadCms();
+    }
+
+    effect(() => {
+        status.get();
+        paintStatus();
+    });
+
+    effect(() => {
+        cms.get();
+        transfer.get();
+        paintSummary();
     });
 
     return (
-        <div
-            card
-            card-padding="lg"
-            ref={() => {
-                void loadCms();
-            }}
-        >
+        <div card card-padding="lg">
             <div card-header stack gap="0.5rem">
                 <p>Standalone CMS</p>
                 <h2>Transfer to Nectarine</h2>
@@ -126,8 +147,16 @@ export function TransferPanel() {
                     <button type="button" onclick={() => { void runTransfer(); }}>Transfer from WordPress</button>
                     <button btn="outline" type="button" onclick={() => { void useWordpress(); }}>Use WordPress</button>
                 </div>
-                <code ref={(node: HTMLElement) => { statusNode = node; }}>{status.get()}</code>
-                <div ref={(node: HTMLElement) => { summaryNode = node; }} />
+                <code ref={(node: HTMLElement) => {
+                    statusNode = node;
+                    paintStatus();
+                    bindPanel();
+                }}>{status.get()}</code>
+                <div ref={(node: HTMLElement) => {
+                    summaryNode = node;
+                    paintSummary();
+                    bindPanel();
+                }} />
             </div>
         </div>
     );
