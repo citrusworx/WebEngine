@@ -7,6 +7,7 @@
 - Default `validate` stage enforces `.required` keys from `Route.contract.body` (YAML `email: string.required`) on `ctx.body`. Missing or empty → `{ status: 400, body: { error: … } }`. Routes without body specs stay a no-op.
 - `generateRoutes` copies `operation.resource`, `operation.name`, and `operation.body` onto `Route.contract` so `ctx.route` after the route stage carries what validate needs.
 - New public API: `Seltzer#replace(name, stage)` / `Pipeline#replace` swaps a builtin stage. `before` still inserts immediately before it. Nectarine hangs richer contracts with `replace("validate", …)`.
+- Harden outbound `client` (`GET`/`POST`/`PUT`/`PATCH`/`DELETE` on `Endpoint`): throw `HttpError` with status + body snippet on `!res.ok`; parse JSON only when Content-Type is JSON (or the body is JSON with no type); optional `allowSelfSigned` via undici `Agent`, same as KiwiPress `requestWordPress`.
 
 ## 0.6.0
 

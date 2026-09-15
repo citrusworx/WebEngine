@@ -49,6 +49,37 @@ app.listen(3000);
 
 `status` defaults to `200`. Object and array bodies are JSON-serialized with `Content-Type: application/json` unless you set that header yourself.
 
+## Outbound HTTP `client`
+
+Hosts (KiwiPress-style outbound calls) can use `client` instead of raw `fetch`. Methods take an `Endpoint` (`path`, optional `options.baseUrl`, `options.headers`, `options.allowSelfSigned`):
+
+```ts
+import { client, HttpError } from "@citrusworx/seltzer";
+
+const posts = await client.get({
+    path: "/posts",
+    endpoint: "/posts",
+    options: {
+        baseUrl: "https://example.com/wp-json/wp/v2",
+        headers: { Authorization: "Bearer …" },
+    },
+});
+
+await client.post(
+    { path: "/posts", endpoint: "/posts", options: { baseUrl } },
+    { title: "Hello" },
+);
+```
+
+`GET` / `POST` / `PUT` / `PATCH` / `DELETE` share one request path:
+
+- URL is `baseUrl + path` when `baseUrl` is set, otherwise `path`.
+- Non-2xx responses throw `HttpError` (`status`, `statusText`, full `body`, message includes a short body snippet) instead of calling `.json()` on the error payload.
+- Successful `application/json` (or `+json`) bodies are parsed. Other Content-Types are returned as text. No Content-Type still parses JSON when the body is JSON.
+- `204` / `205` and empty bodies resolve to `undefined`.
+
+`allowSelfSigned: true` on an `https://` URL uses the same Node pattern as KiwiPress `requestWordPress`: a dynamic `undici` `Agent({ connect: { rejectUnauthorized: false } })`. Install `undici` in the host if you need that path. HTTP URLs ignore the flag. Prefer a trusted certificate or `NODE_EXTRA_CA_CERTS` when you can.
+
 ## Pipeline stages
 
 | Stage | Responsibility |

@@ -32,7 +32,7 @@ The concepts you need to understand deeply:
 | Routing | Current: exact match only; design: `:id` params | Parametric path matching, `ctx.params` |
 | Pipeline stages | Design § Pipeline Model (`parse → context → route → validate → handle → response → send`) | Named, ordered stage runner with insert/replace |
 | Structured responses | Design § Structured Response Model | Handlers return `{ status, headers, body }`; runtime sends |
-| HTTP client | `libraries/seltzer/dist/core/client/client.js` + `packages/kiwipress/src/core/route-utils.ts` | `fetch`, error handling, optional `undici` Agent for TLS |
+| HTTP client | `libraries/seltzer/src/core/client/client.ts` (`HttpError`, JSON vs text, optional undici TLS) + `packages/kiwipress/src/core/route-utils.ts` | `fetch`, `!res.ok` handling, optional `undici` Agent for TLS |
 | Contracts | Planned; ties to Nectarine | Validation at a pipeline stage, not ad hoc in handlers |
 | Library authoring | `libraries/seltzer/package.json` — ESM + TypeScript | Generics (`Route<TContext>`), `.js` import extensions, `node:` prefix |
 
