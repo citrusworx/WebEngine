@@ -8,7 +8,8 @@
  * (`normalizeQuery`). Blog `queries:` maps are not compiled here.
  *
  * Also compiled: `COUNT(*)` (`{ fn: count }` / `count: true`),
- * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`.
+ * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`,
+ * INSERT `onConflict` (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`).
  */
 
 import { isRecord, QueryCompileError } from "./errors.js";
@@ -486,6 +487,104 @@ function compileExists(query: Record<string, unknown>): string {
     return `${sql})`;
 }
 
+const ON_CONFLICT_KEYS = new Set(["target", "do", "action", "set"]);
+
+const ON_CONFLICT_DO = {
+    nothing: "nothing",
+    update: "update",
+    do_nothing: "nothing",
+    do_update: "update",
+} as const;
+
+type OnConflictDo = "nothing" | "update";
+
+function normalizeOnConflictTarget(target: unknown): string[] {
+    const raw = typeof target === "string"
+        ? target.split(",").map((part) => part.trim()).filter(Boolean)
+        : target;
+
+    if (!Array.isArray(raw) || raw.length === 0) {
+        throw new QueryCompileError(
+            "onConflict.target must be a column or a non-empty list of columns",
+        );
+    }
+
+    return raw.map((column, index) => {
+        if (typeof column !== "string") {
+            throw new QueryCompileError(`onConflict.target[${index}] must be a string`);
+        }
+        assertIdentifier(column, "onConflict.target");
+        return ident(column);
+    });
+}
+
+function resolveOnConflictDo(onConflict: Record<string, unknown>): OnConflictDo {
+    const tokens: string[] = [];
+
+    if (onConflict.do !== undefined) {
+        if (typeof onConflict.do !== "string") {
+            throw new QueryCompileError("onConflict.do must be nothing or update");
+        }
+        tokens.push(onConflict.do.toLowerCase());
+    }
+    if (onConflict.action !== undefined) {
+        if (typeof onConflict.action !== "string") {
+            throw new QueryCompileError("onConflict.action must be do_nothing or do_update");
+        }
+        tokens.push(onConflict.action.toLowerCase());
+    }
+
+    if (tokens.length === 0) {
+        throw new QueryCompileError(
+            "onConflict requires do (nothing|update) or action (do_nothing|do_update)",
+        );
+    }
+
+    const resolved = tokens.map((token) => {
+        if (!(token in ON_CONFLICT_DO)) {
+            throw new QueryCompileError(`Unknown onConflict action: ${token}`);
+        }
+        return ON_CONFLICT_DO[token as keyof typeof ON_CONFLICT_DO];
+    });
+
+    if (resolved.some((item) => item !== resolved[0])) {
+        throw new QueryCompileError("onConflict.do and onConflict.action must agree");
+    }
+
+    return resolved[0] ?? "nothing";
+}
+
+/**
+ * Postgres `ON CONFLICT (cols) DO NOTHING` or
+ * `DO UPDATE SET col = EXCLUDED.col` (allowlisted columns only).
+ * No `ON CONSTRAINT`, no DO UPDATE WHERE, no expressions in SET.
+ */
+function compileOnConflict(onConflict: unknown): string {
+    if (!isRecord(onConflict)) {
+        throw new QueryCompileError("onConflict must be an object");
+    }
+
+    for (const key of Object.keys(onConflict)) {
+        if (!ON_CONFLICT_KEYS.has(key)) {
+            throw new QueryCompileError(`Unknown onConflict key: ${key}`);
+        }
+    }
+
+    const targets = normalizeOnConflictTarget(onConflict.target);
+    const action = resolveOnConflictDo(onConflict);
+
+    if (action === "nothing") {
+        if (onConflict.set !== undefined) {
+            throw new QueryCompileError("onConflict do nothing cannot include set");
+        }
+        return `ON CONFLICT (${targets.join(", ")}) DO NOTHING`;
+    }
+
+    const setCols = normalizeColumns(onConflict.set, "onConflict.set", false);
+    const assignments = setCols.map((column) => `${column} = EXCLUDED.${column}`);
+    return `ON CONFLICT (${targets.join(", ")}) DO UPDATE SET ${assignments.join(", ")}`;
+}
+
 function compileInsert(query: Record<string, unknown>): string {
     if (!isRecord(query.insert)) {
         throw new QueryCompileError("INSERT requires an insert object");
@@ -509,6 +608,11 @@ function compileInsert(query: Record<string, unknown>): string {
 
     const compiled = values.map((value) => compileValue(value));
     let sql = `INSERT INTO ${ident(into)} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
+
+    const onConflict = query.onConflict ?? query.insert.onConflict;
+    if (onConflict !== undefined) {
+        sql += ` ${compileOnConflict(onConflict)}`;
+    }
 
     const returning = query.returning ?? query.insert.returning;
     if (returning !== undefined) {
@@ -584,7 +688,17 @@ function inferQueryKind(query: Record<string, unknown>): CrudMethod {
     );
 }
 
+function rejectOnConflictUnlessInsert(query: Record<string, unknown>, method: CrudMethod): void {
+    if (method === "create") {
+        return;
+    }
+    if ("onConflict" in query) {
+        throw new QueryCompileError("onConflict is only valid on INSERT");
+    }
+}
+
 function compileByMethod(query: Record<string, unknown>, method: CrudMethod): string {
+    rejectOnConflictUnlessInsert(query, method);
     switch (method) {
         case "get":
             if (query.exists === true || isRecord(query.exists)) {
@@ -622,7 +736,7 @@ function compileByMethod(query: Record<string, unknown>, method: CrudMethod): st
  * `select` / `insert` / `set` shape is enough.
  *
  * Blackwater `type: SELECT` objects are normalized onto the canonical
- * phonics shape before assembly.
+ * phonics shape before assembly. INSERT may include `onConflict`.
  */
 export function compileQuery(query: unknown, method?: CrudMethod): string {
     if (!isRecord(query)) {

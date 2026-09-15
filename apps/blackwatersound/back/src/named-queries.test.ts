@@ -52,6 +52,9 @@ describe("compileResourceQuery", () => {
       "SELECT payload FROM products WHERE payload ? $1 ORDER BY created_at ASC",
     );
     expect(namedSql.countPayloads).toBe("SELECT COUNT(*) FROM products");
+    expect(namedSql.seedPayload).toBe(
+      "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING",
+    );
     expect(namedSql.insertPayload).toBe(
       "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
     );

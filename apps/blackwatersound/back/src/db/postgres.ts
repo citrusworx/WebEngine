@@ -160,12 +160,8 @@ export async function seedProductsIfEmpty(products: ProductRecord[]) {
     return;
   }
 
+  // seedPayload YAML emits ON CONFLICT (id) DO NOTHING — no payloadById probe.
   for (const product of products) {
-    const found = await runNamed<{ payload: unknown }>("payloadById", [product.id]);
-    if (found && found.rows.length > 0) {
-      continue;
-    }
-
     await runNamed("seedPayload", [product.id, bindJsonbDocument(product)]);
   }
 }

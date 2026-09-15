@@ -84,7 +84,7 @@ describe("Blackwater query YAML", () => {
             "SELECT payload FROM products WHERE id = $1",
         );
         expect(compileNamed("product/productQueries.yml", "product", "create", "seedPayload")).toBe(
-            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)",
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING",
         );
         expect(compileNamed("product/productQueries.yml", "product", "create", "insertPayload")).toBe(
             "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",

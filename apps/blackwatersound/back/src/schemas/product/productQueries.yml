@@ -86,6 +86,7 @@ product:
       fields: [id, catalog, name, slug, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive]
 
     # Document-store seed. Bind a validated JSON string as $2; compiler emits $2::jsonb.
+    # ON CONFLICT DO NOTHING replaces a host payloadById-then-insert race check.
     seedPayload:
       type: INSERT
       table: products
@@ -93,6 +94,9 @@ product:
       values:
         - $1
         - { value: $2, cast: jsonb }
+      onConflict:
+        target: id
+        do: nothing
 
     # Live HTTP create. Same JSONB insert as seedPayload, plus RETURNING payload
     # so the host can unwrap the catalog document (body is the document, not

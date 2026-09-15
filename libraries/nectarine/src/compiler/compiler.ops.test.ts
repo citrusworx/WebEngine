@@ -259,3 +259,213 @@ describe("compiler ops: JSONB", () => {
         expect(sql).not.toContain("'; DROP");
     });
 });
+
+describe("compiler ops: ON CONFLICT", () => {
+    it("compiles canonical DO NOTHING", () => {
+        expect(
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", { value: "$2", cast: "jsonb" }],
+                    onConflict: { target: ["id"], do: "nothing" },
+                },
+            }),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING",
+        );
+    });
+
+    it("compiles canonical DO UPDATE SET EXCLUDED", () => {
+        expect(
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", "$2::jsonb"],
+                    onConflict: { target: ["id"], do: "update", set: ["payload"] },
+                },
+            }),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload",
+        );
+    });
+
+    it("accepts query-root onConflict, action aliases, and string targets", () => {
+        expect(
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", "$2::jsonb"],
+                },
+                onConflict: { target: "id", action: "do_nothing" },
+                returning: ["payload"],
+            }),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING RETURNING payload",
+        );
+        expect(
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", "$2::jsonb"],
+                    onConflict: {
+                        target: ["id", "catalog"],
+                        action: "do_update",
+                        set: ["payload"],
+                    },
+                },
+            }),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id, catalog) DO UPDATE SET payload = EXCLUDED.payload",
+        );
+    });
+
+    it("compiles Blackwater type: INSERT onConflict", () => {
+        expect(
+            compileQuery({
+                type: "INSERT",
+                table: "products",
+                fields: ["id", "payload"],
+                values: ["$1", { value: "$2", cast: "jsonb" }],
+                onConflict: { target: "id", do: "nothing" },
+            }),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING",
+        );
+        expect(
+            compileQuery({
+                type: "INSERT",
+                table: "products",
+                fields: ["id", "payload"],
+                values: ["$1", "$2::jsonb"],
+                onConflict: { target: ["id"], do: "update", set: ["payload"] },
+                returning: ["payload"],
+            }),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload RETURNING payload",
+        );
+    });
+
+    it("quotes mixed-case conflict and EXCLUDED columns", () => {
+        expect(
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "originalPrice"],
+                    values: ["$1", "$2"],
+                    onConflict: { target: ["id"], do: "update", set: ["originalPrice"] },
+                },
+            }),
+        ).toBe(
+            'INSERT INTO products (id, "originalPrice") VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET "originalPrice" = EXCLUDED."originalPrice"',
+        );
+    });
+
+    it("rejects incomplete or open-ended onConflict YAML", () => {
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id"],
+                    values: ["$1"],
+                    onConflict: { do: "nothing" },
+                },
+            }),
+        ).toThrowError(/onConflict.target/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id"],
+                    values: ["$1"],
+                    onConflict: { target: ["id"], do: "ignore" },
+                },
+            }),
+        ).toThrowError(/Unknown onConflict action: ignore/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", "$2"],
+                    onConflict: { target: ["id"], do: "nothing", set: ["payload"] },
+                },
+            }),
+        ).toThrowError(/cannot include set/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id", "payload"],
+                    values: ["$1", "$2"],
+                    onConflict: { target: ["id"], do: "update" },
+                },
+            }),
+        ).toThrowError(/onConflict.set/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id"],
+                    values: ["$1"],
+                    onConflict: { target: ["id"], do: "nothing", constraint: "products_pkey" },
+                },
+            }),
+        ).toThrowError(/Unknown onConflict key: constraint/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id"],
+                    values: ["$1"],
+                    onConflict: { target: ["id"], do: "update", set: ["payload"], where: "id = $1" },
+                },
+            }),
+        ).toThrowError(/Unknown onConflict key: where/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id"],
+                    values: ["$1"],
+                    onConflict: { target: "id); DROP TABLE products; --", do: "nothing" },
+                },
+            }),
+        ).toThrowError(/Invalid onConflict.target/);
+        expect(() =>
+            compileQuery({
+                type: "SELECT",
+                table: "products",
+                fields: "payload",
+                onConflict: { target: "id", do: "nothing" },
+            }),
+        ).toThrowError(/only valid on INSERT/);
+        expect(() =>
+            compileQuery({
+                insert: {
+                    into: "products",
+                    columns: ["id"],
+                    values: ["$1"],
+                    onConflict: { target: ["id"], do: "nothing", action: "do_update" },
+                },
+            }),
+        ).toThrowError(/must agree/);
+    });
+
+    it("does not splice caller values into ON CONFLICT SQL", () => {
+        const sql = compileQuery({
+            insert: {
+                into: "products",
+                columns: ["id", "payload"],
+                values: ["$1", "$2::jsonb"],
+                onConflict: { target: ["id"], do: "update", set: ["payload"] },
+            },
+        });
+        expect(sql).not.toContain("fuzzface");
+        expect(sql).not.toContain("'; DROP");
+        expect(sql).toMatch(/EXCLUDED\.payload$/);
+    });
+});

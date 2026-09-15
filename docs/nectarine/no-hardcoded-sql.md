@@ -64,7 +64,7 @@ including `$N::jsonb`). Operators `@>`, `?`, and `->>` are compiler phonics
 |--------|---------|
 | **migrated** | App calls a named compiled query or named compiled DDL. No SQL literal in `db/*.ts` / stores. |
 | **ready-to-migrate** | Compiler can emit this query from YAML (unused live path). |
-| **blocked-on-compiler** | Needs a compiler feature not added (`ON CONFLICT`, joins, `GROUP BY`, `LIMIT`). `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` compile from YAML. |
+| **blocked-on-compiler** | Needs a compiler feature not added (joins, `GROUP BY`, `LIMIT`). `COUNT`, `EXISTS`, JSONB `@>` / `?` / `->>`, and INSERT `ON CONFLICT` compile from YAML. |
 | **schema-owned** | Table shape comes from `*Schema.yml` via the DDL compiler. JSONB columns stay where the live store uses them. |
 
 ---
@@ -90,7 +90,7 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 | `loadProductsWithKeyFromDb()` | JSONB key exists | `product.read.payloadsWithKey` | **migrated** — `payload ? $1`; GET `/api/products/key/:key` |
 | `countPayloadsFromDb()` | Payload row total | `product.read.countPayloads` | **migrated** — `COUNT(*)`; seed skip + GET `/api/products/count` |
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.countPayloads` | **migrated** — `COUNT(*)`; does not load payloads to check emptiness |
-| `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
+| `seedProductsIfEmpty()` | Insert JSONB payload | `product.create.seedPayload` | **migrated** — `ON CONFLICT (id) DO NOTHING`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
 | `insertProductPayload()` | HTTP create catalog document | `product.create.insertPayload` | **migrated** — `INSERT (id, payload) … $2::jsonb RETURNING payload` |
 | `updateProductPayload()` | HTTP replace catalog document | `product.update.updatePayload` | **migrated** — `SET payload = $1::jsonb, updated_at = NOW()`; host merges first (no JSONB `||`) |
 | `deleteProductFromDb()` | HTTP delete catalog row | `product.delete.deleteProduct` | **migrated** — `DELETE … WHERE id = $1`; `payload` column stays protected |
@@ -158,7 +158,7 @@ come only from inline `FOREIGN KEY REFERENCES` on fields.
 2. **Phase 2** — Blackwater data access calls named compiled
    queries only. DML literals removed from `db/postgres.ts`. JSONB
    document store kept and wired through YAML. `COUNT` / `EXISTS` /
-   `ON CONFLICT` avoided. `$N::jsonb` (and `{ value: $N, cast: jsonb }`)
+   `ON CONFLICT` avoided at the time. `$N::jsonb` (and `{ value: $N, cast: jsonb }`)
    bind `seedPayload`.
 3. **Phase 3** — DDL from `*Schema.yml`. Live tables match the
    query contracts. **JSONB is supported; we are not dropping it.**
@@ -179,7 +179,9 @@ come only from inline `FOREIGN KEY REFERENCES` on fields.
    Named YAML runs INSERT/SELECT; host keeps generated `id`, duplicate-email
    UX, `source_app` allowlist, and JSON file-store fallback.
 5. **Later** — Remaining compiler features only if a later phase needs
-   them (joins, `ON CONFLICT`, `GROUP BY`, `LIMIT`, JSONB `||` / `jsonb_set`).
-   `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` ship as compiler phonics.
-   Down migrations / silent schema-diff are not part of the migrator. Seltzer
-   route generation is a separate track. Do **not** invent `nectarine serve`.
+   them (joins, `GROUP BY`, `LIMIT`, JSONB `||` / `jsonb_set`).
+   `COUNT`, `EXISTS`, JSONB `@>` / `?` / `->>`, and INSERT `ON CONFLICT`
+   (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`) ship as compiler
+   phonics. Down migrations / silent schema-diff are not part of the migrator.
+   Seltzer route generation is a separate track. Do **not** invent
+   `nectarine serve`.
