@@ -1,9 +1,9 @@
 import type { NectarineConfig } from "@citrusworx/nectarine/config";
 import { type ExecuteArgs, type ResponseData, type Route } from "@citrusworx/seltzer";
+import { createResourceReadRoutes } from "@citrusworx/webengine";
 import type { ProductRecord } from "../data/seed-products.js";
 import { isDatabaseConnected, loadProductByIdFromDb, loadProductsFromDb } from "../db/postgres.js";
 import type { BlackwaterContext } from "../types/context.js";
-import { createResourceReadRoutes } from "./nectarine-reads.js";
 
 function stringField(product: ProductRecord, key: string): string | undefined {
   const value = (product as unknown as Record<string, unknown>)[key];

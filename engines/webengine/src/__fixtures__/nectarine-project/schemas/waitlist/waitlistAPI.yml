@@ -1,0 +1,25 @@
+waitlist:
+  read:
+    allEntries:
+      api:
+        method: GET
+        endpoint: /api/waitlist
+        query: allEntries
+
+    entryByEmail:
+      api:
+        method: GET
+        endpoint: /api/waitlist/:email
+        query: entryByEmail
+
+  create:
+    joinWaitlist:
+      api:
+        method: POST
+        endpoint: /api/waitlist
+        query: joinWaitlist
+        body:
+          name: string
+          email: string.required
+          source_app: string
+          interest: string

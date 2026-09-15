@@ -1,0 +1,22 @@
+order:
+  read:
+    byId:
+      type: SELECT
+      table: orders
+      fields: '*'
+      where: id = $1
+
+    byCatalog:
+      type: SELECT
+      table: orders
+      fields: '*'
+      where: catalog = $1
+      orderBy: created_at DESC
+
+order_item:
+  read:
+    byOrder:
+      type: SELECT
+      table: order_items
+      fields: '*'
+      where: order_id = $1

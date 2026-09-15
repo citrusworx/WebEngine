@@ -158,6 +158,7 @@ describe("nectarine builtin module", () => {
         expect(handle?.connected).toBe(true);
         expect(handle?.seedFallback).toBe(false);
         expect(typeof handle?.query).toBe("function");
+        expect(handle?.query).not.toBe(adapter.query);
         expect(handle?.migrations).toEqual({ applied: [], skipped: [] });
         expect(adapter.sqls.length).toBeGreaterThan(0);
 
@@ -298,18 +299,20 @@ describe("nectarine builtin module", () => {
     });
 
     it("contains no hard-coded SQL", () => {
-        const src = fs.readFileSync(
-            path.join(
-                path.dirname(fileURLToPath(import.meta.url)),
-                "nectarine-module.ts",
-            ),
+        const dir = path.dirname(fileURLToPath(import.meta.url));
+        for (const file of ["nectarine-module.ts", "nectarine-routes.ts"]) {
+            const src = fs.readFileSync(path.join(dir, file), "utf8");
+            expect(src, file).not.toMatch(/\bSELECT\b/);
+            expect(src, file).not.toMatch(/\bCREATE TABLE\b/);
+            expect(src, file).not.toMatch(/\bINSERT INTO\b/);
+        }
+        const moduleSrc = fs.readFileSync(
+            path.join(dir, "nectarine-module.ts"),
             "utf8",
         );
-        expect(src).toContain("applyMigrations");
-        expect(src).toContain("loadMigrationDocuments");
-        expect(src).toContain("createPgAdapterFromConfig");
-        expect(src).not.toMatch(/\bSELECT\b/);
-        expect(src).not.toMatch(/\bCREATE TABLE\b/);
-        expect(src).not.toMatch(/\bINSERT INTO\b/);
+        expect(moduleSrc).toContain("applyMigrations");
+        expect(moduleSrc).toContain("loadMigrationDocuments");
+        expect(moduleSrc).toContain("createPgAdapterFromConfig");
+        expect(moduleSrc).toContain("createReadRoutes");
     });
 });

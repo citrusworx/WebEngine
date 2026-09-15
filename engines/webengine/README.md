@@ -25,7 +25,7 @@ await engine.init();
 console.log(engine.getHealthSummary());
 ```
 
-`init()` looks upward for `kiwi.config.toml`, validates it, and runs builtin kernel modules (`core`, `web`, `nectarine`, …). Opt in to Nectarine with `kernel.modules = ["core", "web", "nectarine"]` and a project `nectarine.config.yaml`. See [docs/webengine/README.md](../../docs/webengine/README.md) and [the Nectarine kernel contract](../../docs/webengine/nectarine-kernel-contract.md).
+`init()` looks upward for `kiwi.config.toml`, validates it, and runs builtin kernel modules (`core`, `web`, `nectarine`, …). Opt in to Nectarine with `kernel.modules = ["core", "web", "nectarine"]` and a project `nectarine.config.yaml`. After bootstrap, call `handle.createReadRoutes({ resources })` (or `createNectarineReadRoutes`) and register the returned Seltzer `Route`s — the kernel does not listen. See [docs/webengine/README.md](../../docs/webengine/README.md) and [the Nectarine kernel contract](../../docs/webengine/nectarine-kernel-contract.md).
 
 ## Development
 

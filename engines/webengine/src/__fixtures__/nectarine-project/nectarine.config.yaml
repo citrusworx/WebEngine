@@ -37,3 +37,18 @@ resources:
     schema: ./schemas/product/productSchema.yml
     queries: ./schemas/product/productQueries.yml
     api: ./schemas/product/productAPI.yml
+
+  - name: course
+    schema: ./schemas/course/courseSchema.yml
+    queries: ./schemas/course/courseQueries.yml
+    api: ./schemas/course/courseAPI.yml
+
+  - name: waitlist
+    schema: ./schemas/waitlist/waitlistSchema.yml
+    queries: ./schemas/waitlist/waitlistQueries.yml
+    api: ./schemas/waitlist/waitlistAPI.yml
+
+  - name: order
+    schema: ./schemas/order/orderSchema.yml
+    queries: ./schemas/order/orderQueries.yml
+    api: ./schemas/order/orderAPI.yml

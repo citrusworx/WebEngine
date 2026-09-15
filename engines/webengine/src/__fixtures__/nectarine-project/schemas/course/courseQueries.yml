@@ -1,0 +1,20 @@
+course:
+  read:
+    allPublished:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: status = 'published'
+      orderBy: title
+
+    byId:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: id = $1
+
+    bySlug:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: slug = $1

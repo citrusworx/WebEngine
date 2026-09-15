@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import { applyMigrations, listApiOperations, loadMigrationDocuments, loadNectarineConfig, } from "@citrusworx/nectarine";
+import { createNectarineHandleReadRoutes, } from "./nectarine-routes.js";
 export const NECTARINE_MODULE_ID = "nectarine";
 function resolveConfigPath(projectRoot, options, env) {
     const fromOption = options.configPath;
@@ -18,7 +19,7 @@ function hostAllowsSeedFallback(config, env) {
 }
 /**
  * Flatten one resource or every loaded resource's `*API.yml`.
- * Hosts hand the result to Seltzer `generateRoutes`.
+ * Prefer {@link createNectarineReadRoutes} when the host wants Seltzer `Route`s.
  */
 export function listNectarineApiOperations(config, resource) {
     if (resource) {
@@ -62,28 +63,22 @@ async function createAdapterFromConfig(config) {
     const { createMongoAdapterFromConfig } = await import("@citrusworx/nectarine/adapters/mg");
     return createMongoAdapterFromConfig(config);
 }
-function bindQuery(adapter) {
-    if (typeof adapter.query !== "function") {
-        return undefined;
-    }
-    return adapter.query.bind(adapter);
-}
-/**
- * `applyMigrations` calls `execute.query(...)` as a free function. Class
- * adapters (`PgSql`, `MysqlSql`) keep pool state on `this`, so methods must
- * stay bound to the instance.
- */
 function asMigrationExecutor(adapter) {
-    const query = bindQuery(adapter);
-    if (!query) {
+    if (typeof adapter.query !== "function") {
         return null;
     }
     return {
-        query,
+        query: (sql, params) => adapter.query(sql, params),
         withTransaction: typeof adapter.withTransaction === "function"
-            ? adapter.withTransaction.bind(adapter)
+            ? (work) => adapter.withTransaction(work)
             : undefined,
     };
+}
+function boundAdapterQuery(adapter) {
+    if (!adapter || typeof adapter.query !== "function") {
+        return undefined;
+    }
+    return (sql, params) => adapter.query(sql, params);
 }
 export function createNectarineModule(options = {}) {
     return {
@@ -147,11 +142,12 @@ export function createNectarineModule(options = {}) {
                 configPath,
                 vendor,
                 adapter,
-                query: adapter ? bindQuery(adapter) : undefined,
+                query: boundAdapterQuery(adapter),
                 migrations,
                 seedFallback,
                 connected,
                 listApiOperations: (resource) => listNectarineApiOperations(config, resource),
+                createReadRoutes: (options) => createNectarineHandleReadRoutes(handle, options),
             };
             ctx.registerModuleHandle(NECTARINE_MODULE_ID, handle);
         },

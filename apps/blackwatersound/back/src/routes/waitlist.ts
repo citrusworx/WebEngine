@@ -5,11 +5,11 @@ import {
   type ResponseData,
   type Route,
 } from "@citrusworx/seltzer";
+import { createResourceReadRoutes } from "@citrusworx/webengine";
 import { waitlistSourceApps } from "../db/named-ddl.js";
 import { isDatabaseConnected, loadWaitlistByEmailFromDb, loadWaitlistFromDb } from "../db/postgres.js";
 import { appendWaitlistEntry, hasWaitlistEmail } from "../store/waitlist-store.js";
 import type { BlackwaterContext, WaitlistEntry } from "../types/context.js";
-import { createResourceReadRoutes } from "./nectarine-reads.js";
 
 const sourceApps = new Set(waitlistSourceApps);
 

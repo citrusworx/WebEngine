@@ -1,0 +1,13 @@
+waitlist:
+  read:
+    allEntries:
+      type: SELECT
+      table: waitlist
+      fields: '*'
+      orderBy: created_at ASC
+
+    entryByEmail:
+      type: SELECT
+      table: waitlist
+      fields: '*'
+      where: email = $1
