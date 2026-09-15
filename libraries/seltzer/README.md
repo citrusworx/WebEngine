@@ -1,21 +1,20 @@
 # @citrusworx/seltzer
 
-An execution environment library for the CitrusWorx ecosystem.
+Small Node HTTP runtime: object routes, `ResponseData` handlers, and a named request pipeline. Built on Node’s `http` module. No Express. WebEngine and Nectarine are optional, not required.
 
-Handlers return `ResponseData`. The runtime writes the HTTP response — there is no writing `ctx.json` helper. Bare objects, arrays, and strings are not wrapped; return `{ body: ... }`.
-
-Each request runs through a named pipeline:
-
-`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`
-
-`validate` enforces `.required` keys from `Route.contract.body` (YAML `email: string.required`) on `ctx.body`. Routes without body specs are unchanged. Insert custom stages with `before(name, stage)`. Swap a builtin — including `validate` for Nectarine contracts — with `replace(name, stage)`. Returning `ResponseData` from a stage skips the rest of the pipeline and jumps to `send`.
-
-Apps that only use `init().route().listen()` keep the same behavior as 0.4.0 unless a route declares `contract.body`.
+Requires Node 18+.
 
 ## Install
 
 ```bash
 npm install @citrusworx/seltzer
+```
+
+`undici` is an optional peer dependency. Install it only if you set `allowSelfSigned: true` on an outbound `https://` `client` call. Everyday `init().route().listen()` does not need it.
+
+```bash
+# only for allowSelfSigned on https
+npm install undici
 ```
 
 ## Usage
@@ -47,11 +46,70 @@ app.route({
 app.listen(3000);
 ```
 
+Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime writes the HTTP response. There is no writing `ctx.json` helper. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`.
+
 `status` defaults to `200`. Object and array bodies are JSON-serialized with `Content-Type: application/json` unless you set that header yourself.
+
+`listen` accepts optional `locals` (available on `ctx.locals`) and `cors`. CORS headers and `OPTIONS` 204 run before the pipeline.
+
+## Pipeline
+
+Each request runs through a named pipeline:
+
+`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`
+
+| Stage | Responsibility |
+| --- | --- |
+| `parse` | Read the body (JSON or raw). Invalid JSON → 400. GET/HEAD skip the body. |
+| `context` | Set `method`, `path`, `query`, and `headers` on ctx. |
+| `route` | Match a registered route and fill `params`. No match → 404. |
+| `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
+| `handle` | Call the matched handler. Handlers must return `ResponseData`. |
+| `response` | Reject non-`ResponseData` handler results with 500. |
+| `send` | Write the HTTP response via `send()`. |
+
+`before(name, stage)` inserts immediately before a named builtin. `replace(name, stage)` swaps that builtin. Returning `ResponseData` from a stage skips the rest of the pipeline and jumps to `send`. Stages mutate the shared context in place; return `void`/`undefined` to continue.
+
+```ts
+import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData, Stage } from "@citrusworx/seltzer";
+
+const requireAuth: Stage = (ctx) => {
+    if (!ctx.headers.authorization) {
+        return { status: 401, body: { error: "Unauthorized" } };
+    }
+};
+
+const app = Seltzer.init().before("handle", requireAuth);
+// Optional: app.replace("validate", customValidate);
+
+app.route({
+    method: "GET",
+    path: "/secret",
+    handler: (): ResponseData => ({ body: { ok: true } }),
+});
+```
+
+Hand-written routes can declare the same field specs the default validator understands (`email: string.required` means “present and non-empty”):
+
+```ts
+app.route({
+    method: "POST",
+    path: "/api/waitlist",
+    contract: {
+        resource: "waitlist",
+        name: "joinWaitlist",
+        body: { name: "string", email: "string.required" },
+    },
+    handler: (): ResponseData => ({ status: 201, body: { ok: true } }),
+});
+```
+
+`init().route().listen()` matches 0.4.0 behavior unless a route declares `contract.body` with `.required` keys.
 
 ## Outbound HTTP `client`
 
-Hosts (KiwiPress-style outbound calls) can use `client` instead of raw `fetch`. Methods take an `Endpoint` (`path`, optional `options.baseUrl`, `options.headers`, `options.allowSelfSigned`):
+`client` is a small `fetch` wrapper for host-to-host calls. Methods take an `Endpoint` (`path`, optional `options.baseUrl`, `options.headers`, `options.allowSelfSigned`):
 
 ```ts
 import { client, HttpError } from "@citrusworx/seltzer";
@@ -74,74 +132,82 @@ await client.post(
 `GET` / `POST` / `PUT` / `PATCH` / `DELETE` share one request path:
 
 - URL is `baseUrl + path` when `baseUrl` is set, otherwise `path`.
-- Non-2xx responses throw `HttpError` (`status`, `statusText`, full `body`, message includes a short body snippet) instead of calling `.json()` on the error payload.
+- Non-2xx responses throw `HttpError` (`status`, `statusText`, full `body`; the message includes a short body snippet).
 - Successful `application/json` (or `+json`) bodies are parsed. Other Content-Types are returned as text. No Content-Type still parses JSON when the body is JSON.
 - `204` / `205` and empty bodies resolve to `undefined`.
 
-`allowSelfSigned: true` on an `https://` URL uses the same Node pattern as KiwiPress `requestWordPress`: a dynamic `undici` `Agent({ connect: { rejectUnauthorized: false } })`. Install `undici` in the host if you need that path. HTTP URLs ignore the flag. Prefer a trusted certificate or `NODE_EXTRA_CA_CERTS` when you can.
+`allowSelfSigned: true` on an `https://` URL dynamically imports `undici` and uses `Agent({ connect: { rejectUnauthorized: false } })`. That is the only path that needs the optional `undici` peer. HTTP URLs ignore the flag. Prefer a trusted certificate or `NODE_EXTRA_CA_CERTS` when you can.
 
-## Pipeline stages
+## Generate routes from `ApiOperation[]`
 
-| Stage | Responsibility |
-| --- | --- |
-| `parse` | Read the body (JSON or raw). Invalid JSON → 400. GET/HEAD skip the body. |
-| `context` | Set `method`, `path`, `query`, and `headers` on ctx. |
-| `route` | Match a registered route and fill `params`. No match → 404. |
-| `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
-| `handle` | Call the matched handler. Handlers must return `ResponseData`. |
-| `response` | Reject non-`ResponseData` handler results with 500. |
-| `send` | Write the HTTP response via `send()`. |
-
-CORS headers and `OPTIONS` 204 are applied before the pipeline, same as 0.4.0.
-
-### Inserting or replacing a stage
-
-`before(name, stage)` inserts immediately before the named builtin stage. `replace(name, stage)` swaps that builtin (Nectarine hangs full contract checks with `replace("validate", …)`). Auth-style early exits return `ResponseData`:
+`generateRoutes(operations, { execute })` maps a flat operation list onto object-based `Route`s. You can build that list by hand — no YAML compiler required.
 
 ```ts
-import { Seltzer } from "@citrusworx/seltzer";
-import type { ResponseData, Stage } from "@citrusworx/seltzer";
+import { Seltzer, generateRoutes, type ApiOperation, type ResponseData } from "@citrusworx/seltzer";
 
-const requireAuth: Stage = (ctx) => {
-    if (!ctx.headers.authorization) {
-        return { status: 401, body: { error: "Unauthorized" } };
-    }
-};
-
-const app = Seltzer.init().before("handle", requireAuth);
-// Nectarine: app.replace("validate", nectarineValidate);
-
-app.route({
-    method: "GET",
-    path: "/secret",
-    handler: (): ResponseData => ({ body: { ok: true } }),
-});
-```
-
-Hand routes can declare the same YAML field specs the default validator understands:
-
-```ts
-app.route({
-    method: "POST",
-    path: "/api/waitlist",
-    contract: {
+const operations: ApiOperation[] = [
+    {
+        resource: "product",
+        crud: "read",
+        name: "allProducts",
+        method: "GET",
+        path: "/api/products",
+        query: "allProducts",
+    },
+    {
+        resource: "product",
+        crud: "read",
+        name: "productById",
+        method: "GET",
+        path: "/api/products/:id",
+        query: "productById",
+    },
+    {
         resource: "waitlist",
+        crud: "create",
         name: "joinWaitlist",
+        method: "POST",
+        path: "/api/waitlist",
+        query: "joinWaitlist",
         body: { name: "string", email: "string.required" },
     },
-    handler: (): ResponseData => ({ status: 201, body: { ok: true } }),
-});
+];
+
+const app = Seltzer.init();
+const products = [
+    { id: "stinkrat", name: "StinkRat" },
+    { id: "daw", name: "DAW" },
+];
+
+for (const route of generateRoutes(operations, {
+    execute: ({ query, params, body }) => {
+        if (query === "productById") {
+            return products.find((item) => item.id === params.id) ?? null;
+        }
+        if (query === "joinWaitlist") {
+            return { ok: true, email: (body as { email?: string }).email };
+        }
+        return products;
+    },
+    notFound: (): ResponseData => ({ status: 404, body: { error: "Not found" } }),
+})) {
+    app.route(route);
+}
 ```
 
-Stages mutate the shared context in place. Return `void`/`undefined` to continue.
+- `query` is a named-query key passed to `execute`, not the HTTP search string (`ctx.query`).
+- `generateRoutes` copies `resource`, `name`, and `body` field specs onto `Route.contract`. The default `validate` stage enforces `.required` keys; reads with no body specs stay a no-op.
+- Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`.
+- `execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ body }` / `{}` objects are treated as payloads.
+- Static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) register before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
 
-## Generate routes from Nectarine `*API.yml`
+### Optional: flatten from Nectarine YAML
 
-Seltzer maps flattened operations onto object-based `Route`s. Flatten with Nectarine — do not duplicate `listApiOperations` here.
+If you already use Nectarine `*API.yml`, flatten with `listApiOperations` and pass the same `ApiOperation[]` into `generateRoutes`. Do not duplicate that flatten here.
 
 ```ts
 import { listApiOperations } from "@citrusworx/nectarine/config";
-import { generateRoutes, type ResponseData } from "@citrusworx/seltzer";
+import { generateRoutes } from "@citrusworx/seltzer";
 
 const operations = listApiOperations("product", product.api).filter(
     (operation) => operation.crud === "read" && operation.method === "GET",
@@ -154,20 +220,10 @@ const routes = generateRoutes(operations, {
         }
         return ctx.locals.products;
     },
-    notFound: (): ResponseData => ({ status: 404, body: { error: "Product not found" } }),
 });
 ```
 
-- YAML layout: `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`.
-- `query` is the named-query key, not the HTTP search string (`ctx.query`).
-- `generateRoutes` copies `resource`, `name`, and `body` field specs onto `Route.contract`. The default `validate` stage enforces `.required` keys; GET reads with no body specs stay no-op.
-- Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`. There is no writing `ctx.json`.
-- `execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ body }` / `{}` objects are treated as payloads.
-- `generateRoutes` registers static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
-- Uses the default pipeline (`parse` → `…` → `send`) and `ResponseData`. Hosts/Nectarine swap builtin `validate` with `replace("validate", …)`; `before()` still inserts ahead of it.
-- Nectarine does not generate `Route`s. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`).
-
-Blackwater registers generated resource **read** routes this way, plus waitlist POST `joinWaitlist`, and keeps health and KiwiPress content (including `GET /api/lessons/:id`) hand-written.
+YAML layout is `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`). Nectarine does not generate `Route`s; hosts that want richer contracts can `replace("validate", …)`.
 
 ## Development
 

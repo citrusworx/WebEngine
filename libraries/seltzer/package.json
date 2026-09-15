@@ -1,8 +1,11 @@
 {
     "name": "@citrusworx/seltzer",
     "version": "0.7.0",
-    "description": "An execution environment library",
+    "description": "Small Node HTTP runtime: object routes, ResponseData handlers, and a named request pipeline",
     "type": "module",
+    "engines": {
+        "node": ">=18"
+    },
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
@@ -16,6 +19,14 @@
     ],
     "publishConfig": {
         "access": "public"
+    },
+    "peerDependencies": {
+        "undici": ">=5"
+    },
+    "peerDependenciesMeta": {
+        "undici": {
+            "optional": true
+        }
     },
     "scripts": {
         "build": "tsc",
