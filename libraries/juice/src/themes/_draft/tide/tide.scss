@@ -89,6 +89,28 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
     --juice-accordion-chevron-size: 0.7rem;
     --juice-accordion-chevron-weight: 2.5px;
 
+    /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+    --tide-tabs-trigger: transparent;
+    --tide-tabs-trigger-hover: transparent;
+    --tide-tabs-trigger-active: transparent;
+    --tide-tabs-text: var(--tide-text-muted);
+    --tide-tabs-text-hover: var(--tide-heading);
+    --tide-tabs-text-active: var(--tide-accent);
+    --tide-tabs-indicator: var(--tide-accent);
+    --tide-tabs-list-rule: var(--tide-border);
+    --tide-tabs-focus-ring: var(--tide-accent);
+    --tide-tabs-panel: var(--tide-panel-well);
+    --juice-tabs-trigger: var(--tide-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--tide-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--tide-tabs-trigger-active);
+    --juice-tabs-text: var(--tide-tabs-text);
+    --juice-tabs-text-hover: var(--tide-tabs-text-hover);
+    --juice-tabs-text-active: var(--tide-tabs-text-active);
+    --juice-tabs-indicator: var(--tide-tabs-indicator);
+    --juice-tabs-list-rule: var(--tide-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--tide-tabs-focus-ring);
+    --juice-tabs-panel: var(--tide-tabs-panel);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
@@ -268,4 +290,64 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
     box-shadow: inset 0 1px 0 #{color.change($black-900, $alpha: 0.4)};
     margin: 0 0.45rem 0.08rem;
     padding: 0.85rem 1.05rem;
+}
+
+/* Tabs wrappers are structural. Generic Tide buttons use --tide-button-background;
+   tab triggers stay surface/text controls. */
+[theme="tide"] :where([tabs]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+[theme="tide"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="tide"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="tide"] button[tab],
+[theme="tide"] [tabs] > button,
+[theme="tide"] [tabs-list] > button {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+[theme="tide"] button[tab]:hover,
+[theme="tide"] [tabs] > button:hover,
+[theme="tide"] [tabs-list] > button:hover {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+}
+
+[theme="tide"] button[tab]:focus-visible,
+[theme="tide"] [tabs] > button:focus-visible,
+[theme="tide"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="tide"] button[tab][active],
+[theme="tide"] button[tab][aria-selected="true"],
+[theme="tide"] [tabs] > button[active],
+[theme="tide"] [tabs] > button[aria-selected="true"],
+[theme="tide"] [tabs-list] > button[active],
+[theme="tide"] [tabs-list] > button[aria-selected="true"] {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="tide"] [tab-panel] {
+    color: var(--tide-text-muted);
+    background-color: var(--juice-tabs-panel);
 }
