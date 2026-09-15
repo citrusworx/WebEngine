@@ -5,7 +5,7 @@
 //   --juice-accordion-chevron
 //   --juice-accordion-panel-rule
 //   --juice-accordion-focus-ring
-// Themes bind those names (and optional --aqua-* / --kw-* / --cm-* aliases)
+// Themes bind those names (and optional --aqua-* / --kw-* / --cm-* / --jx-* aliases)
 // from existing identity tokens. Do not hard-code a single theme's hues here.
 //
 // Open/closed panels use the native `hidden` attribute (display: none).
@@ -16,7 +16,7 @@
 @function -juice-accordion-role($name, $fallback) {
     @return var(
         --juice-accordion-#{$name},
-        var(--aqua-#{$name}, var(--kw-#{$name}, var(--cm-#{$name}, #{$fallback})))
+        var(--aqua-#{$name}, var(--kw-#{$name}, var(--cm-#{$name}, var(--jx-#{$name}, #{$fallback}))))
     );
 }
 

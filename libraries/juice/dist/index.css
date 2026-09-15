@@ -96528,33 +96528,33 @@ section[auto] > * {
 [accordion] [role=region] {
   padding: 0.75rem 1.25rem 1rem;
   box-sizing: border-box;
-  box-shadow: inset 0.2rem 0 0 var(--juice-accordion-panel-rule, var(--aqua-panel-rule, var(--kw-panel-rule, var(--cm-panel-rule, transparent))));
+  box-shadow: inset 0.2rem 0 0 var(--juice-accordion-panel-rule, var(--aqua-panel-rule, var(--kw-panel-rule, var(--cm-panel-rule, var(--jx-panel-rule, transparent)))));
 }
 
 [accordion] [accordion-item] {
-  background-color: var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, transparent))));
+  background-color: var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, var(--jx-trigger, transparent)))));
   background-image: none;
   color: inherit;
   transform: none;
 }
 
 [accordion] [accordion-item]::after {
-  border-color: var(--juice-accordion-chevron, var(--aqua-chevron, var(--kw-chevron, var(--cm-chevron, currentColor))));
+  border-color: var(--juice-accordion-chevron, var(--aqua-chevron, var(--kw-chevron, var(--cm-chevron, var(--jx-chevron, currentColor)))));
 }
 
 [accordion] [accordion-item]:hover {
-  background-color: var(--juice-accordion-trigger-hover, var(--aqua-trigger-hover, var(--kw-trigger-hover, var(--cm-trigger-hover, var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, transparent))))))));
+  background-color: var(--juice-accordion-trigger-hover, var(--aqua-trigger-hover, var(--kw-trigger-hover, var(--cm-trigger-hover, var(--jx-trigger-hover, var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, var(--jx-trigger, transparent))))))))));
   background-image: none;
   transform: none;
 }
 
 [accordion] [accordion-item][aria-expanded=true] {
-  background-color: var(--juice-accordion-trigger-open, var(--aqua-trigger-open, var(--kw-trigger-open, var(--cm-trigger-open, var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, transparent))))))));
+  background-color: var(--juice-accordion-trigger-open, var(--aqua-trigger-open, var(--kw-trigger-open, var(--cm-trigger-open, var(--jx-trigger-open, var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, var(--jx-trigger, transparent))))))))));
   background-image: none;
 }
 
 [accordion] [accordion-item]:focus-visible {
-  outline: 2px solid var(--juice-accordion-focus-ring, var(--aqua-focus-ring, var(--kw-focus-ring, var(--cm-focus-ring, currentColor))));
+  outline: 2px solid var(--juice-accordion-focus-ring, var(--aqua-focus-ring, var(--kw-focus-ring, var(--cm-focus-ring, var(--jx-focus-ring, currentColor)))));
   outline-offset: 2px;
 }
 

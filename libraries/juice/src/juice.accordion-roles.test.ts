@@ -35,6 +35,7 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("--aqua-#{$name}");
         expect(scss).toContain("--kw-#{$name}");
         expect(scss).toContain("--cm-#{$name}");
+        expect(scss).toContain("--jx-#{$name}");
         expect(scss).not.toContain("--aqua-button-background");
         expect(scss).not.toContain("--aqua-surface-strong");
         expect(scss).not.toContain("--kw-cta-background");

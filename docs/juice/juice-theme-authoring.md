@@ -209,6 +209,7 @@ The generated stylesheet currently defines:
 - optional typography variant variables
 - semantic defaults for elements like `section`, `article`, `nav`, `footer`, and `form`
 - base treatments for `[hero]`, `[card]`, `[panel]`, `[cta]`, `[badge]`, and `[stat]`
+- accordion chrome role bindings (`--jx-trigger` / `--juice-accordion-*`) and surface-control paint for `[accordion-item]`
 - optional rules for `named_surfaces`
 
 ## Accordion chrome roles
@@ -224,7 +225,7 @@ Shared names (set on `[theme="..."]`):
 - `--juice-accordion-panel-rule` — optional panel divider
 - `--juice-accordion-focus-ring`
 
-Each shipped theme also aliases the same roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …) and maps those onto existing surface/accent tokens. Do not invent a new hue family for accordion chrome. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress and Citrusmint override generic `button` CTA styles the same way.
+Each shipped library theme also aliases the same roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …). App-owned generated themes use `--jx-trigger` and bind `--juice-accordion-*` from existing `--jx-*` surface/accent tokens. Do not invent a new hue family for accordion chrome. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress, Citrusmint, and generated themes override generic `button` CTA styles the same way.
 
 Accordion wrappers (`[accordion]`) are structural. Group FAQ stacks in a named surface or card/panel rather than relying on default `section` paint.
 
