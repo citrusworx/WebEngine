@@ -68,6 +68,13 @@ describe("Juice build artifacts", () => {
         expect(css).toContain("--juice-accordion-chevron");
         expect(css).toContain("--juice-accordion-panel-rule");
         expect(css).toContain("--juice-accordion-focus-ring");
+        expect(css).toContain("--juice-accordion-item-border,");
+        expect(css).toContain("--juice-accordion-item-border-open,");
+        expect(css).toContain("--juice-accordion-trigger-accent,");
+        expect(css).toContain("--juice-accordion-panel,");
+        expect(css).toContain("--juice-accordion-open-glow,");
+        expect(css).toContain("--juice-accordion-chevron-size");
+        expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]::before/);
     });
 
     it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {
@@ -113,9 +120,18 @@ describe("Juice build artifacts", () => {
 
         const draftCss = readFileSync(draftPath, "utf-8");
         expect(draftCss).toMatch(/\[theme=["']?tide["']?\]/);
-        expect(draftCss).toContain("--tide-trigger: var(--tide-surface-strong)");
+        expect(draftCss).toContain("--tide-measure:");
+        expect(draftCss).toContain("45rem");
         expect(draftCss).toContain("--juice-accordion-trigger: var(--tide-trigger)");
+        expect(draftCss).toContain("--juice-accordion-trigger-accent: var(--tide-trigger-accent)");
+        expect(draftCss).toContain("--juice-accordion-item-border: var(--tide-item-border)");
+        expect(draftCss).toContain("--juice-accordion-panel: var(--tide-panel-well)");
+        expect(draftCss).toContain("--juice-accordion-chevron-size:");
         expect(draftCss).toContain("button[accordion-item]");
+        expect(draftCss).toContain("[accordion]:has(>");
+        expect(draftCss).toContain("--tide-line-glow:");
+        expect(draftCss).not.toContain("--tide-trigger-open: var(--tide-highlight)");
+        expect(draftCss).not.toContain("--tide-accent: hsl(174, 65%, 54%)");
         expect(draftCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
     });
 

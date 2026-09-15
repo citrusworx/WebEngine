@@ -2,6 +2,7 @@
 @use '../../../tokens/color/gray/gray.scss' as *;
 @use '../../../tokens/color/teal/teal.scss' as *;
 @use '../../../tokens/color/white/white.scss' as *;
+@use 'sass:color';
 
 /*
     Tide (draft) — dark product / SaaS FAQ identity.
@@ -9,58 +10,86 @@
     Not bundled as a stable theme export. Gulp writes dist/themes/_draft/tide.css.
 */
 
+$_tide-measure: 45rem;
+$_tide-page-deep: color.mix($black-900, $lagoon-900, 84%);
+$_tide-page-floor: color.mix($black-900, $lagoon-900, 76%);
+$_tide-accent: color.mix($lagoon-400, $teal-600, 72%);
+$_tide-line: color.mix($lagoon-500, $lagoon-700, 64%);
+$_tide-open-wash: color.change($lagoon-500, $alpha: 0.12);
+$_tide-open-glow: 0 0 20px -8px #{color.change($lagoon-400, $alpha: 0.32)};
+$_tide-line-glow: 0 0 10px -2px #{color.change($lagoon-400, $alpha: 0.26)};
+$_tide-panel-well: color.change($black-900, $alpha: 0.62);
+$_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
+
 [theme="tide"] {
-    /* Foundation */
-    --tide-page: #{$teal-900};
-    --tide-page-tint: #{$teal-800};
-    --tide-page-deep: #{$black-900};
-    --tide-surface: #{rgba($teal-900, 0.72)};
-    --tide-surface-strong: #{rgba($black-900, 0.78)};
-    --tide-surface-muted: #{rgba($teal-800, 0.62)};
+    /* Compact FAQ column — mock card is ~720px centered, not full-bleed. */
+    --tide-measure: #{$_tide-measure};
+
+    /* Foundation — near-black page (black/lagoon steps), not a mid-teal wash. */
+    --tide-page: #{$black-900};
+    --tide-page-tint: #{$lagoon-800};
+    --tide-page-deep: #{$_tide-page-deep};
+    --tide-surface: #{color.change($black-900, $alpha: 0.62)};
+    --tide-surface-strong: #{color.change($black-900, $alpha: 0.78)};
+    --tide-surface-muted: #{color.change($lagoon-800, $alpha: 0.32)};
     --tide-surface-deep: #{$black-800};
-    --tide-border: #{rgba($teal-400, 0.28)};
-    --tide-border-strong: #{rgba($teal-500, 0.42)};
-    --tide-shadow: #{rgba($black-900, 0.48)};
+    --tide-border: #{color.change($_tide-line, $alpha: 0.5)};
+    --tide-border-strong: #{color.change($_tide-line, $alpha: 0.58)};
+    --tide-line-glow: #{$_tide-line-glow};
+    --tide-shadow: #{color.change($black-900, $alpha: 0.52)};
 
     /* Typography */
     --tide-text: #{$white-200};
-    --tide-text-muted: #{rgba($teal-200, 0.82)};
+    --tide-text-muted: #{color.change($lagoon-200, $alpha: 0.78)};
     --tide-heading: #{$white-100};
     --tide-body-font: "Inter", sans-serif;
     --tide-heading-font: "Inter", sans-serif;
 
-    /* Accent system — teal-500 ≈ the FAQ mock cyan (#3dd6c6). */
-    --tide-accent: #{$teal-500};
+    /* Accent — cooler/deeper than teal-500. Lagoon hue 180, not Aquaflux blue. */
+    --tide-accent: #{$_tide-accent};
     --tide-accent-soft: #{$lagoon-400};
-    --tide-accent-strong: #{$teal-300};
-    --tide-highlight: #{$teal-700};
+    --tide-accent-strong: #{$lagoon-300};
+    --tide-highlight: #{$lagoon-700};
 
     /* Surface recipes */
     --tide-page-background:
-        radial-gradient(circle at 18% 12%, #{rgba($teal-500, 0.22)}, transparent 34%),
-        radial-gradient(circle at 82% 78%, #{rgba($lagoon-500, 0.16)}, transparent 36%),
-        linear-gradient(180deg, #{$black-900} 0%, #{$teal-900} 100%);
-    --tide-button-background: linear-gradient(135deg, #{$teal-500}, #{$lagoon-600});
+        radial-gradient(ellipse 64% 42% at 50% -6%, #{color.change($lagoon-400, $alpha: 0.18)}, transparent 56%),
+        radial-gradient(circle at 84% 90%, #{color.change($lagoon-500, $alpha: 0.08)}, transparent 34%),
+        linear-gradient(180deg, #{$black-900} 0%, #{$_tide-page-floor} 100%);
+    --tide-button-background: linear-gradient(135deg, #{$lagoon-400}, #{$lagoon-600});
     --tide-card-background:
-        linear-gradient(180deg, #{rgba($teal-800, 0.42)} 0%, #{rgba($black-900, 0.62)} 100%);
+        linear-gradient(180deg, #{color.change($lagoon-800, $alpha: 0.22)} 0%, #{color.change($black-900, $alpha: 0.76)} 100%);
     --tide-panel-background:
-        linear-gradient(180deg, #{rgba($teal-800, 0.28)} 0%, #{rgba($black-800, 0.55)} 100%);
+        linear-gradient(180deg, #{color.change($lagoon-800, $alpha: 0.16)} 0%, #{color.change($black-800, $alpha: 0.64)} 100%);
 
     /* Accordion chrome roles — same names as Aquaflux / KiwiPress / Citrusmint.
        Bound from Tide surface/accent tokens; triggers are surfaces, not CTAs. */
-    --tide-trigger: var(--tide-surface-strong);
+    --tide-trigger: #{$_tide-trigger-fill};
     --tide-trigger-hover: var(--tide-surface-muted);
-    --tide-trigger-open: var(--tide-highlight);
+    --tide-trigger-open: #{$_tide-open-wash};
     --tide-chevron: var(--tide-accent);
-    --tide-panel-rule: var(--tide-accent);
+    --tide-panel-rule: transparent;
     --tide-focus-ring: var(--tide-accent);
+    --tide-item-border: var(--tide-border);
+    --tide-item-border-open: var(--tide-border);
+    --tide-trigger-accent: var(--tide-accent);
+    --tide-panel-well: #{$_tide-panel-well};
+    --tide-open-glow: #{$_tide-line-glow}, #{$_tide-open-glow};
     --juice-accordion-trigger: var(--tide-trigger);
     --juice-accordion-trigger-hover: var(--tide-trigger-hover);
     --juice-accordion-trigger-open: var(--tide-trigger-open);
     --juice-accordion-chevron: var(--tide-chevron);
     --juice-accordion-panel-rule: var(--tide-panel-rule);
     --juice-accordion-focus-ring: var(--tide-focus-ring);
+    --juice-accordion-item-border: var(--tide-item-border);
+    --juice-accordion-item-border-open: var(--tide-item-border-open);
+    --juice-accordion-trigger-accent: var(--tide-trigger-accent);
+    --juice-accordion-panel: var(--tide-panel-well);
+    --juice-accordion-open-glow: var(--tide-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
+    min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
     color: var(--tide-text);
@@ -70,6 +99,10 @@
 [theme="tide"] :where(main) {
     background: transparent;
     color: inherit;
+    min-height: 100vh;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
 }
 
 [theme="tide"] :where(div) {
@@ -77,12 +110,24 @@
     color: inherit;
 }
 
-[theme="tide"] :where(section, article, aside, nav, header, footer, form) {
+[theme="tide"] :where(section, article, aside, nav, footer, form) {
     background-color: var(--tide-surface);
     color: var(--tide-text);
     border: 1px solid var(--tide-border);
-    box-shadow: 0 24px 60px -36px var(--tide-shadow);
+    box-shadow: var(--tide-line-glow), 0 24px 60px -36px var(--tide-shadow);
     backdrop-filter: blur(16px);
+}
+
+/* Page intro is type, not a competing glass surface. */
+[theme="tide"] :where(header) {
+    width: min(var(--tide-measure), 100%);
+    max-width: var(--tide-measure);
+    background: transparent;
+    background-image: none;
+    color: var(--tide-text);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
 }
 
 [theme="tide"] :where(nav[type="bar"], nav[type="sidebar"]) {
@@ -112,11 +157,15 @@
 
 [theme="tide"][tide-card],
 [theme="tide"] [tide-card] {
+    width: min(var(--tide-measure), 100%);
+    max-width: var(--tide-measure);
+    box-sizing: border-box;
     background: var(--tide-card-background);
     color: var(--tide-text);
-    border: 1px solid var(--tide-border-strong);
-    box-shadow: 0 28px 70px -42px var(--tide-shadow);
+    border: 1px solid var(--tide-border);
+    box-shadow: var(--tide-line-glow), 0 28px 70px -42px var(--tide-shadow);
     backdrop-filter: blur(18px);
+    border-radius: 1.15rem;
 }
 
 [theme="tide"][tide-card] :where(h1, h2, h3, h4, h5, h6),
@@ -134,12 +183,21 @@
     background: var(--tide-panel-background);
     color: var(--tide-text);
     border: 1px solid var(--tide-border);
-    box-shadow: 0 22px 56px -40px var(--tide-shadow);
+    box-shadow: var(--tide-line-glow), 0 22px 56px -40px var(--tide-shadow);
 }
 
 [theme="tide"][tide-panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="tide"] [tide-panel] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--tide-heading);
+}
+
+[theme="tide"] [hero-eyebrow] {
+    color: var(--tide-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+    font-weight: 600;
+    justify-content: center;
 }
 
 /* Accordion wrappers are structural, not default section surfaces.
@@ -151,6 +209,19 @@
     border: none;
     box-shadow: none;
     backdrop-filter: none;
+    gap: 0.65rem;
+}
+
+/* Open pair reads as one tile: soft accent wash, same 1px line as idle pills.
+   Left accent stays on the header via --juice-accordion-trigger-accent. */
+[theme="tide"] [accordion]:has(> [accordion-item][aria-expanded="true"]) {
+    background-color: var(--juice-accordion-trigger-open);
+    background-image: none;
+    border: 1px solid var(--juice-accordion-item-border-open);
+    border-radius: 0.95rem;
+    box-shadow: var(--juice-accordion-open-glow);
+    padding: 0.1rem 0.12rem 0.55rem;
+    gap: 0.45rem;
 }
 
 /* Generic Tide buttons use --tide-button-background (CTA gradient).
@@ -159,8 +230,9 @@
     background-image: none;
     background-color: var(--juice-accordion-trigger);
     color: var(--tide-heading);
-    border: 1px solid var(--tide-border);
-    box-shadow: none;
+    border: 1px solid var(--juice-accordion-item-border);
+    box-shadow: var(--tide-line-glow);
+    padding-left: 1.2rem;
 }
 
 [theme="tide"] button[accordion-item]::after {
@@ -180,17 +252,20 @@
 }
 
 [theme="tide"] button[accordion-item][aria-expanded="true"] {
-    background-color: var(--juice-accordion-trigger-open);
+    background-color: transparent;
     background-image: none;
     color: var(--tide-heading);
-    border-color: var(--tide-border-strong);
-    box-shadow: inset 0.2rem 0 0 var(--juice-accordion-panel-rule);
+    border-color: transparent;
+    box-shadow: none;
+    padding-left: 1.35rem;
 }
 
 [theme="tide"] [accordion] [role="region"] {
     color: var(--tide-text-muted);
-    background-color: var(--tide-surface-muted);
-    border: 1px solid var(--juice-accordion-panel-rule);
-    border-radius: 0.75rem;
-    box-shadow: none;
+    background-color: var(--juice-accordion-panel);
+    border: 1px solid var(--tide-border);
+    border-radius: 0.7rem;
+    box-shadow: inset 0 1px 0 #{color.change($black-900, $alpha: 0.4)};
+    margin: 0 0.45rem 0.08rem;
+    padding: 0.85rem 1.05rem;
 }
