@@ -85,7 +85,7 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 | `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist); versioned YAML for rename/drop/type change; additive `ADD COLUMN IF NOT EXISTS` after migrations; indexes last | `applyNamedMigrations` → `src/db/named-ddl.ts` | **migrated** — ledger `nectarine_schema_migrations`; destructive ops require `destructive: true` + `confirm`. Live `products` keeps `payload JSONB` (protected). Waitlist includes `source_app` / `interest` on new and existing tables. |
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
 | `loadProductsByCatalogFromDb()` | Filter catalog documents | `product.read.payloadsByCatalog` | **migrated** — `payload->>'catalog' = $1`; GET `/api/products/catalog/:catalog` |
-| `loadProductBySlugFromDb()` | Lookup by payload slug | `product.read.payloadsBySlug` | **migrated** — `payload->>'slug' = $1`; GET `/api/products/slug/:slug` falls back to `payloadById` |
+| `loadProductBySlugFromDb()` | Lookup by payload slug | `product.read.payloadsBySlug` | **migrated** — `payload->>'slug' = $1 ORDER BY created_at ASC`; GET `/api/products/slug/:slug` falls back to `payloadById` |
 | `loadProductsContainingFromDb()` | JSONB containment | `product.read.payloadsContaining` | **migrated** — `payload @> $1::jsonb`; GET `/api/products/containing?contains=` |
 | `loadProductsWithKeyFromDb()` | JSONB key exists | `product.read.payloadsWithKey` | **migrated** — `payload ? $1`; GET `/api/products/key/:key` |
 | `countPayloadsFromDb()` | Payload row total | `product.read.countPayloads` | **migrated** — `COUNT(*)`; seed skip + GET `/api/products/count` |

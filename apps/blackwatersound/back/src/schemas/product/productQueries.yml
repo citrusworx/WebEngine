@@ -56,18 +56,23 @@ product:
       table: products
       fields: payload
       where: payload->>'slug' = $1
+      # Duplicate slugs are allowed (only id/name required). Oldest row wins,
+      # matching the previous allPayloads + created_at ASC then first match.
+      orderBy: created_at ASC
 
     payloadsContaining:
       type: SELECT
       table: products
       fields: payload
       where: payload @> $1::jsonb
+      orderBy: created_at ASC
 
     payloadsWithKey:
       type: SELECT
       table: products
       fields: payload
       where: payload ? $1
+      orderBy: created_at ASC
 
     countPayloads:
       type: SELECT

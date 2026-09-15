@@ -135,10 +135,31 @@ function productHasKey(product: ProductRecord, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(product, key);
 }
 
-function documentContains(product: ProductRecord, fragment: Record<string, unknown>): boolean {
-  const record = product as unknown as Record<string, unknown>;
-  return Object.entries(fragment).every(([key, value]) =>
-    JSON.stringify(record[key]) === JSON.stringify(value),
+/**
+ * Postgres `jsonb @>` for the seed/memory fallback: nested objects match a
+ * subset of keys, arrays match if every needle element is contained in the
+ * haystack, and key order does not matter.
+ */
+export function jsonbContains(haystack: unknown, needle: unknown): boolean {
+  if (needle === null || typeof needle !== "object") {
+    return Object.is(haystack, needle);
+  }
+
+  if (Array.isArray(needle)) {
+    if (!Array.isArray(haystack)) {
+      return false;
+    }
+    return needle.every((item) => haystack.some((candidate) => jsonbContains(candidate, item)));
+  }
+
+  if (haystack === null || typeof haystack !== "object" || Array.isArray(haystack)) {
+    return false;
+  }
+
+  const document = haystack as Record<string, unknown>;
+  return Object.entries(needle as Record<string, unknown>).every(
+    ([key, value]) =>
+      Object.prototype.hasOwnProperty.call(document, key) && jsonbContains(document[key], value),
   );
 }
 
@@ -214,7 +235,7 @@ async function executeProductRead({
       if (await dbHasPayloads()) {
         return loadProductsContainingFromDb(parsed.fragment);
       }
-      return ctx.locals.products.filter((product) => documentContains(product, parsed.fragment));
+      return ctx.locals.products.filter((product) => jsonbContains(product, parsed.fragment));
     }
     case "countPayloads": {
       if (isDatabaseConnected()) {

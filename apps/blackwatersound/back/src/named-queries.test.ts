@@ -42,9 +42,15 @@ describe("compileResourceQuery", () => {
     expect(namedSql.payloadsByCatalog).toBe(
       "SELECT payload FROM products WHERE payload->>'catalog' = $1 ORDER BY created_at ASC",
     );
-    expect(namedSql.payloadsBySlug).toBe("SELECT payload FROM products WHERE payload->>'slug' = $1");
-    expect(namedSql.payloadsContaining).toBe("SELECT payload FROM products WHERE payload @> $1::jsonb");
-    expect(namedSql.payloadsWithKey).toBe("SELECT payload FROM products WHERE payload ? $1");
+    expect(namedSql.payloadsBySlug).toBe(
+      "SELECT payload FROM products WHERE payload->>'slug' = $1 ORDER BY created_at ASC",
+    );
+    expect(namedSql.payloadsContaining).toBe(
+      "SELECT payload FROM products WHERE payload @> $1::jsonb ORDER BY created_at ASC",
+    );
+    expect(namedSql.payloadsWithKey).toBe(
+      "SELECT payload FROM products WHERE payload ? $1 ORDER BY created_at ASC",
+    );
     expect(namedSql.countPayloads).toBe("SELECT COUNT(*) FROM products");
     expect(namedSql.insertPayload).toBe(
       "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
