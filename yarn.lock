@@ -914,6 +914,11 @@ __metadata:
     ts-node: "npm:^10.9.1"
     typescript: "npm:^6.0.2"
     vitest: "npm:^4.1.4"
+  peerDependencies:
+    undici: ">=5"
+  peerDependenciesMeta:
+    undici:
+      optional: true
   languageName: unknown
   linkType: soft
 
