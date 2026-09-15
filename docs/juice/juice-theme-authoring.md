@@ -209,6 +209,7 @@ The generated stylesheet currently defines:
 - optional typography variant variables
 - semantic defaults for elements like `section`, `article`, `nav`, `footer`, and `form`
 - base treatments for `[hero]`, `[card]`, `[panel]`, `[cta]`, `[badge]`, and `[stat]`
+- accordion chrome role bindings (`--jx-trigger` / `--juice-accordion-*`) and surface-control paint for `[accordion-item]`
 - optional rules for `named_surfaces`
 
 ## Accordion chrome roles
@@ -233,7 +234,7 @@ Optional hooks. Core `accordion.scss` consumes them with transparent / no-op fal
 - `--juice-accordion-open-glow` — soft open-state shadow
 - `--juice-accordion-chevron-size` / `--juice-accordion-chevron-weight` — CSS chevron silhouette
 
-Each shipped theme also aliases the same required roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …) and maps those onto existing surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress and Citrusmint override generic `button` CTA styles the same way.
+Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …). App-owned generated themes use `--jx-trigger` and bind `--juice-accordion-*` from existing `--jx-*` surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress, Citrusmint, and generated themes override generic `button` CTA styles the same way.
 
 Draft **Tide** (`src/themes/_draft/tide/`) follows the same role contract with `--tide-*` aliases and binds the optional border / accent / panel / glow hooks for dark FAQ pill chrome. Chrome pigments lean on **lagoon** (hue 180) mixed with teal steps so borders and chevrons read cooler and deeper than `teal-500`, without using Aquaflux blue/purple. The FAQ column uses `--tide-measure: 45rem` (~720px) on `[tide-card]` and the page header. It is a dark product theme that consumes the teal token family. Gulp compiles it to `dist/themes/_draft/tide.css` so `theme="tide"` can paint from a **local Juice build**. Package `exports` block `@citrusworx/juiceui/themes/_draft/*` (and the `styles/themes/_draft` alias); the `_draft` folder is also omitted from the published tarball. YAML-only drafts (for example blush) still do not emit CSS.
 
