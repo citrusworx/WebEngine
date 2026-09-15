@@ -48,4 +48,42 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
     });
+
+    it("lets a consumer mount and interact with the built tabs runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopTabsRuntime();
+        document.body.innerHTML = `
+            <div tabs name="settings">
+                <div tabs-list>
+                    <button type="button" tab>Account</button>
+                    <button type="button" tab>Billing</button>
+                </div>
+                <div tab-panel>Account panel</div>
+                <div tab-panel hidden>Billing panel</div>
+            </div>
+        `;
+
+        const controller = module.createTabs({ root: document.body });
+        const triggers = document.querySelectorAll("[tab]");
+        const panels = document.querySelectorAll("[tab-panel]");
+
+        expect(triggers[0]?.getAttribute("aria-selected")).toBe("true");
+        expect(panels[1]?.hasAttribute("hidden")).toBe(true);
+        expect(panels[0]?.getAttribute("content")).toBeNull();
+
+        triggers[1]?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(triggers[1]?.getAttribute("aria-selected")).toBe("true");
+        expect(triggers[1]?.hasAttribute("active")).toBe(true);
+        expect(panels[1]?.hasAttribute("hidden")).toBe(false);
+        expect(panels[0]?.hasAttribute("hidden")).toBe(true);
+        expect(panels[1]?.getAttribute("content")).toBeNull();
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
 });
