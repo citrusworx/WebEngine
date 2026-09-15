@@ -1,6 +1,7 @@
 import { mount } from "@citrusworx/sigjs";
 import "@citrusworx/juiceui";
 import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/kiwipress";
 import { App } from "./App";
 import { router } from "./router";
 import { Home } from "./pages/home/Home";
