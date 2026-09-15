@@ -18,8 +18,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@citrusworx/juiceui": "^0.1.1",
-        "@citrusworx/sigjs": "^0.1.0"
+        "@citrusworx/juiceui": "^0.3.0",
+        "@citrusworx/sigjs": "^0.2.0"
     },
     "devDependencies": {
         "json5": "^2.2.3",
