@@ -75,6 +75,25 @@
   --juice-accordion-chevron: var(--aqua-chevron);
   --juice-accordion-panel-rule: var(--aqua-panel-rule);
   --juice-accordion-focus-ring: var(--aqua-focus-ring);
+  /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+  --aqua-tabs-trigger: transparent;
+  --aqua-tabs-trigger-hover: transparent;
+  --aqua-tabs-trigger-active: transparent;
+  --aqua-tabs-text: var(--aqua-text-muted);
+  --aqua-tabs-text-hover: var(--aqua-heading);
+  --aqua-tabs-text-active: var(--aqua-accent);
+  --aqua-tabs-indicator: var(--aqua-accent);
+  --aqua-tabs-list-rule: var(--aqua-border);
+  --aqua-tabs-focus-ring: var(--aqua-accent);
+  --juice-tabs-trigger: var(--aqua-tabs-trigger);
+  --juice-tabs-trigger-hover: var(--aqua-tabs-trigger-hover);
+  --juice-tabs-trigger-active: var(--aqua-tabs-trigger-active);
+  --juice-tabs-text: var(--aqua-tabs-text);
+  --juice-tabs-text-hover: var(--aqua-tabs-text-hover);
+  --juice-tabs-text-active: var(--aqua-tabs-text-active);
+  --juice-tabs-indicator: var(--aqua-tabs-indicator);
+  --juice-tabs-list-rule: var(--aqua-tabs-list-rule);
+  --juice-tabs-focus-ring: var(--aqua-tabs-focus-ring);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -382,4 +401,67 @@
   border-radius: 0.75rem;
   /* Slice A framed the panel; skip the shared inset rule. */
   box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Aquaflux buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme=aquaflux] :where([tabs]) {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+}
+
+[theme=aquaflux] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme=aquaflux] [tabs-list] {
+  border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme=aquaflux] button[tab],
+[theme=aquaflux] [tabs] > button,
+[theme=aquaflux] [tabs-list] > button {
+  background-image: none;
+  background-color: var(--juice-tabs-trigger);
+  color: var(--juice-tabs-text);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] button[tab]:hover,
+[theme=aquaflux] [tabs] > button:hover,
+[theme=aquaflux] [tabs-list] > button:hover {
+  background-image: none;
+  background-color: var(--juice-tabs-trigger-hover);
+  color: var(--juice-tabs-text-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] button[tab]:focus-visible,
+[theme=aquaflux] [tabs] > button:focus-visible,
+[theme=aquaflux] [tabs-list] > button:focus-visible {
+  outline: 2px solid var(--juice-tabs-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=aquaflux] button[tab][active],
+[theme=aquaflux] button[tab][aria-selected=true],
+[theme=aquaflux] [tabs] > button[active],
+[theme=aquaflux] [tabs] > button[aria-selected=true],
+[theme=aquaflux] [tabs-list] > button[active],
+[theme=aquaflux] [tabs-list] > button[aria-selected=true] {
+  background-image: none;
+  background-color: var(--juice-tabs-trigger-active);
+  color: var(--juice-tabs-text-active);
+  border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme=aquaflux] [tab-panel] {
+  color: var(--aqua-text);
 }

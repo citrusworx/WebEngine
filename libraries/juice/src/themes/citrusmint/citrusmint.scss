@@ -32,6 +32,27 @@
     --juice-accordion-panel-rule: var(--cm-panel-rule);
     --juice-accordion-focus-ring: var(--cm-focus-ring);
 
+    /* Tabs chrome roles — surface/text controls, not heading-fill CTAs.
+       No accent token: heading stands in. */
+    --cm-tabs-trigger: transparent;
+    --cm-tabs-trigger-hover: transparent;
+    --cm-tabs-trigger-active: transparent;
+    --cm-tabs-text: var(--cm-text-muted);
+    --cm-tabs-text-hover: var(--cm-heading);
+    --cm-tabs-text-active: var(--cm-heading);
+    --cm-tabs-indicator: var(--cm-heading);
+    --cm-tabs-list-rule: var(--cm-border);
+    --cm-tabs-focus-ring: var(--cm-heading);
+    --juice-tabs-trigger: var(--cm-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--cm-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--cm-tabs-trigger-active);
+    --juice-tabs-text: var(--cm-tabs-text);
+    --juice-tabs-text-hover: var(--cm-tabs-text-hover);
+    --juice-tabs-text-active: var(--cm-tabs-text-active);
+    --juice-tabs-indicator: var(--cm-tabs-indicator);
+    --juice-tabs-list-rule: var(--cm-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--cm-tabs-focus-ring);
+
     background-color: var(--cm-page);
     color: var(--cm-text);
     font-family: var(--cm-body-font);
@@ -111,4 +132,55 @@
     background-color: var(--cm-surface-muted);
     border: 1px solid var(--juice-accordion-panel-rule);
     border-radius: 0.75rem;
+}
+
+/* Tabs wrappers are structural. Generic Citrusmint buttons use heading fill;
+   tab triggers stay surface/text controls. */
+[theme="citrusmint"] :where([tabs]) {
+    background: transparent;
+    border: none;
+}
+
+[theme="citrusmint"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="citrusmint"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="citrusmint"] button[tab],
+[theme="citrusmint"] [tabs] > button,
+[theme="citrusmint"] [tabs-list] > button {
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+}
+
+[theme="citrusmint"] button[tab]:hover,
+[theme="citrusmint"] [tabs] > button:hover,
+[theme="citrusmint"] [tabs-list] > button:hover {
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+}
+
+[theme="citrusmint"] button[tab]:focus-visible,
+[theme="citrusmint"] [tabs] > button:focus-visible,
+[theme="citrusmint"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="citrusmint"] button[tab][active],
+[theme="citrusmint"] button[tab][aria-selected="true"],
+[theme="citrusmint"] [tabs] > button[active],
+[theme="citrusmint"] [tabs] > button[aria-selected="true"],
+[theme="citrusmint"] [tabs-list] > button[active],
+[theme="citrusmint"] [tabs-list] > button[aria-selected="true"] {
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="citrusmint"] [tab-panel] {
+    color: var(--cm-text);
 }
