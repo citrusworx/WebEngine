@@ -15,18 +15,12 @@ const migrationsDir = path.join(packageRoot, "src/db/migrations");
 const compiler = new CCompiler();
 
 /**
-<<<<<<< HEAD
- * Intentional Phase 3 scope: every Blackwater `*Schema.yml`, not only the
- * live product + waitlist pair. `migrate()` creates the full domain (course,
- * order, booking, …) in FK order so named queries have tables. Product and
- * waitlist keep special-cased live DML (JSONB catalog, waitlist insert).
- * Other resources use compiled GET reads when Postgres is connected.
-=======
  * Whole-domain `*Schema.yml` plus optional versioned YAML in `db/migrations`.
  * `migrate()` uses {@link applyNamedMigrations}: CREATE TABLE / INDEX, then
  * pending rename / drop / type-change migrations, then additive ADD COLUMN.
->>>>>>> 31cb999 (feat(nectarine): YAML-driven full migrator with ledger)
  *
+ * Product and waitlist keep special-cased live DML (JSONB catalog, waitlist
+ * insert). Other resources use compiled GET reads when Postgres is connected.
  * `products.payload` JSONB is protected. Destructive ops are never inferred
  * from schema-diff; they must be explicit migration YAML with confirm gates.
  */
