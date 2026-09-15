@@ -1,0 +1,189 @@
+@charset "UTF-8";
+/*
+    Tide (draft) — dark product / SaaS FAQ identity.
+    Teal family + black/gray/white tokens. Not Aquaflux (blue/purple hospitality).
+    Not bundled as a stable theme export. Gulp writes dist/themes/_draft/tide.css.
+*/
+[theme=tide] {
+  /* Foundation */
+  --tide-page: hsl(174, 48%, 14%);
+  --tide-page-tint: hsl(174, 52%, 22%);
+  --tide-page-deep: hsl(0, 0%, 10%);
+  --tide-surface: rgba(18.564, 52.836, 49.4088, 0.72);
+  --tide-surface-strong: rgba(25.5, 25.5, 25.5, 0.78);
+  --tide-surface-muted: rgba(26.928, 85.272, 79.4376, 0.62);
+  --tide-surface-deep: hsl(0, 0%, 15%);
+  --tide-border: rgba(96.084, 220.116, 207.7128, 0.28);
+  --tide-border-strong: rgba(61.455, 213.945, 198.696, 0.42);
+  --tide-shadow: rgba(25.5, 25.5, 25.5, 0.48);
+  /* Typography */
+  --tide-text: hsl(0, 0%, 95%);
+  --tide-text-muted: rgba(190.536, 237.864, 233.1312, 0.82);
+  --tide-heading: hsl(0, 0%, 100%);
+  --tide-body-font: "Inter", sans-serif;
+  --tide-heading-font: "Inter", sans-serif;
+  /* Accent system — teal-500 ≈ the FAQ mock cyan (#3dd6c6). */
+  --tide-accent: hsl(174, 65%, 54%);
+  --tide-accent-soft: hsl(180, 66%, 56%);
+  --tide-accent-strong: hsl(174, 62%, 72%);
+  --tide-highlight: hsl(174, 58%, 32%);
+  /* Surface recipes */
+  --tide-page-background:
+      radial-gradient(circle at 18% 12%, rgba(61.455, 213.945, 198.696, 0.22), transparent 34%),
+      radial-gradient(circle at 82% 78%, rgba(42.228, 192.372, 192.372, 0.16), transparent 36%),
+      linear-gradient(180deg, hsl(0, 0%, 10%) 0%, hsl(174, 48%, 14%) 100%);
+  --tide-button-background: linear-gradient(135deg, hsl(174, 65%, 54%), hsl(180, 62%, 36%));
+  --tide-card-background:
+      linear-gradient(180deg, rgba(26.928, 85.272, 79.4376, 0.42) 0%, rgba(25.5, 25.5, 25.5, 0.62) 100%);
+  --tide-panel-background:
+      linear-gradient(180deg, rgba(26.928, 85.272, 79.4376, 0.28) 0%, rgba(38.25, 38.25, 38.25, 0.55) 100%);
+  /* Accordion chrome roles — same names as Aquaflux / KiwiPress / Citrusmint.
+     Bound from Tide surface/accent tokens; triggers are surfaces, not CTAs. */
+  --tide-trigger: var(--tide-surface-strong);
+  --tide-trigger-hover: var(--tide-surface-muted);
+  --tide-trigger-open: var(--tide-highlight);
+  --tide-chevron: var(--tide-accent);
+  --tide-panel-rule: var(--tide-accent);
+  --tide-focus-ring: var(--tide-accent);
+  --juice-accordion-trigger: var(--tide-trigger);
+  --juice-accordion-trigger-hover: var(--tide-trigger-hover);
+  --juice-accordion-trigger-open: var(--tide-trigger-open);
+  --juice-accordion-chevron: var(--tide-chevron);
+  --juice-accordion-panel-rule: var(--tide-panel-rule);
+  --juice-accordion-focus-ring: var(--tide-focus-ring);
+  background-color: var(--tide-page);
+  background-image: var(--tide-page-background);
+  color: var(--tide-text);
+  font-family: var(--tide-body-font);
+}
+
+[theme=tide] :where(main) {
+  background: transparent;
+  color: inherit;
+}
+
+[theme=tide] :where(div) {
+  background-color: transparent;
+  color: inherit;
+}
+
+[theme=tide] :where(section, article, aside, nav, header, footer, form) {
+  background-color: var(--tide-surface);
+  color: var(--tide-text);
+  border: 1px solid var(--tide-border);
+  box-shadow: 0 24px 60px -36px var(--tide-shadow);
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+}
+
+[theme=tide] :where(nav[type=bar], nav[type=sidebar]) {
+  background-color: var(--tide-surface-strong);
+}
+
+[theme=tide] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--tide-heading);
+  font-family: var(--tide-heading-font);
+}
+
+[theme=tide] :where(p, span, li, label, small) {
+  color: var(--tide-text-muted);
+  font-family: var(--tide-body-font);
+}
+
+[theme=tide] :where(a) {
+  color: var(--tide-accent-strong);
+}
+
+[theme=tide] :where(button) {
+  background: var(--tide-button-background);
+  color: var(--tide-heading);
+  border: 1px solid transparent;
+  font-family: var(--tide-body-font);
+}
+
+[theme=tide][tide-card],
+[theme=tide] [tide-card] {
+  background: var(--tide-card-background);
+  color: var(--tide-text);
+  border: 1px solid var(--tide-border-strong);
+  box-shadow: 0 28px 70px -42px var(--tide-shadow);
+  -webkit-backdrop-filter: blur(18px);
+          backdrop-filter: blur(18px);
+}
+
+[theme=tide][tide-card] :where(h1, h2, h3, h4, h5, h6),
+[theme=tide] [tide-card] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--tide-heading);
+}
+
+[theme=tide][tide-card] :where(p, span, li, small),
+[theme=tide] [tide-card] :where(p, span, li, small) {
+  color: var(--tide-text-muted);
+}
+
+[theme=tide][tide-panel],
+[theme=tide] [tide-panel] {
+  background: var(--tide-panel-background);
+  color: var(--tide-text);
+  border: 1px solid var(--tide-border);
+  box-shadow: 0 22px 56px -40px var(--tide-shadow);
+}
+
+[theme=tide][tide-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme=tide] [tide-panel] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--tide-heading);
+}
+
+/* Accordion wrappers are structural, not default section surfaces.
+   Group FAQ stacks in [tide-card] / [tide-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme=tide] :where([accordion]) {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+}
+
+/* Generic Tide buttons use --tide-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions. */
+[theme=tide] button[accordion-item] {
+  background-image: none;
+  background-color: var(--juice-accordion-trigger);
+  color: var(--tide-heading);
+  border: 1px solid var(--tide-border);
+  box-shadow: none;
+}
+
+[theme=tide] button[accordion-item]::after {
+  border-color: var(--juice-accordion-chevron);
+}
+
+[theme=tide] button[accordion-item]:hover {
+  border-color: var(--tide-border-strong);
+  background-color: var(--juice-accordion-trigger-hover);
+  color: var(--tide-heading);
+  background-image: none;
+}
+
+[theme=tide] button[accordion-item]:focus-visible {
+  outline: 2px solid var(--juice-accordion-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=tide] button[accordion-item][aria-expanded=true] {
+  background-color: var(--juice-accordion-trigger-open);
+  background-image: none;
+  color: var(--tide-heading);
+  border-color: var(--tide-border-strong);
+  box-shadow: inset 0.2rem 0 0 var(--juice-accordion-panel-rule);
+}
+
+[theme=tide] [accordion] [role=region] {
+  color: var(--tide-text-muted);
+  background-color: var(--tide-surface-muted);
+  border: 1px solid var(--juice-accordion-panel-rule);
+  border-radius: 0.75rem;
+  box-shadow: none;
+}

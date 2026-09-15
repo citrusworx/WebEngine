@@ -108595,6 +108595,602 @@ Creating Gradient Animations
   color: hsl(5, 100%, 15%);
 }
 
+[bgColor=teal-100] {
+  background-color: hsl(174, 55%, 94%);
+}
+
+[bgColor=teal-200] {
+  background-color: hsl(174, 58%, 84%);
+}
+
+[bgColor=teal-300] {
+  background-color: hsl(174, 62%, 72%);
+}
+
+[bgColor=teal-400] {
+  background-color: hsl(174, 64%, 62%);
+}
+
+[bgColor=teal-500] {
+  background-color: hsl(174, 65%, 54%);
+}
+
+[bgColor=teal-600] {
+  background-color: hsl(174, 62%, 42%);
+}
+
+[bgColor=teal-700] {
+  background-color: hsl(174, 58%, 32%);
+}
+
+[bgColor=teal-800] {
+  background-color: hsl(174, 52%, 22%);
+}
+
+[bgColor=teal-900] {
+  background-color: hsl(174, 48%, 14%);
+}
+
+[borderColor=teal-100] {
+  border-color: hsl(174, 55%, 94%);
+}
+
+[borderColor=teal-200] {
+  border-color: hsl(174, 58%, 84%);
+}
+
+[borderColor=teal-300] {
+  border-color: hsl(174, 62%, 72%);
+}
+
+[borderColor=teal-400] {
+  border-color: hsl(174, 64%, 62%);
+}
+
+[borderColor=teal-500] {
+  border-color: hsl(174, 65%, 54%);
+}
+
+[borderColor=teal-600] {
+  border-color: hsl(174, 62%, 42%);
+}
+
+[borderColor=teal-700] {
+  border-color: hsl(174, 58%, 32%);
+}
+
+[borderColor=teal-800] {
+  border-color: hsl(174, 52%, 22%);
+}
+
+[borderColor=teal-900] {
+  border-color: hsl(174, 48%, 14%);
+}
+
+[hover=teal-100]:hover {
+  background-color: hsl(174, 55%, 94%);
+  border-color: hsl(174, 55%, 94%);
+}
+
+[hover=teal-200]:hover {
+  background-color: hsl(174, 58%, 84%);
+  border-color: hsl(174, 58%, 84%);
+}
+
+[hover=teal-300]:hover {
+  background-color: hsl(174, 62%, 72%);
+  border-color: hsl(174, 62%, 72%);
+}
+
+[hover=teal-400]:hover {
+  background-color: hsl(174, 64%, 62%);
+  border-color: hsl(174, 64%, 62%);
+}
+
+[hover=teal-500]:hover {
+  background-color: hsl(174, 65%, 54%);
+  border-color: hsl(174, 65%, 54%);
+}
+
+[hover=teal-600]:hover {
+  background-color: hsl(174, 62%, 42%);
+  border-color: hsl(174, 62%, 42%);
+}
+
+[hover=teal-700]:hover {
+  background-color: hsl(174, 58%, 32%);
+  border-color: hsl(174, 58%, 32%);
+}
+
+[hover=teal-800]:hover {
+  background-color: hsl(174, 52%, 22%);
+  border-color: hsl(174, 52%, 22%);
+}
+
+[hover=teal-900]:hover {
+  background-color: hsl(174, 48%, 14%);
+  border-color: hsl(174, 48%, 14%);
+}
+
+[hover=teal-100][outline]:hover {
+  color: hsl(174, 55%, 94%);
+  border-color: hsl(174, 55%, 94%);
+}
+
+[hover=teal-200][outline]:hover {
+  color: hsl(174, 58%, 84%);
+  border-color: hsl(174, 58%, 84%);
+}
+
+[hover=teal-300][outline]:hover {
+  color: hsl(174, 62%, 72%);
+  border-color: hsl(174, 62%, 72%);
+}
+
+[hover=teal-400][outline]:hover {
+  color: hsl(174, 64%, 62%);
+  border-color: hsl(174, 64%, 62%);
+}
+
+[hover=teal-500][outline]:hover {
+  color: hsl(174, 65%, 54%);
+  border-color: hsl(174, 65%, 54%);
+}
+
+[hover=teal-600][outline]:hover {
+  color: hsl(174, 62%, 42%);
+  border-color: hsl(174, 62%, 42%);
+}
+
+[hover=teal-700][outline]:hover {
+  color: hsl(174, 58%, 32%);
+  border-color: hsl(174, 58%, 32%);
+}
+
+[hover=teal-800][outline]:hover {
+  color: hsl(174, 52%, 22%);
+  border-color: hsl(174, 52%, 22%);
+}
+
+[hover=teal-900][outline]:hover {
+  color: hsl(174, 48%, 14%);
+  border-color: hsl(174, 48%, 14%);
+}
+
+/* Icon */
+[iconcolor=teal-100] {
+  display: inline-block;
+  color: hsl(174, 55%, 94%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-200] {
+  display: inline-block;
+  color: hsl(174, 58%, 84%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-300] {
+  display: inline-block;
+  color: hsl(174, 62%, 72%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-400] {
+  display: inline-block;
+  color: hsl(174, 64%, 62%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-500] {
+  display: inline-block;
+  color: hsl(174, 65%, 54%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-600] {
+  display: inline-block;
+  color: hsl(174, 62%, 42%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-700] {
+  display: inline-block;
+  color: hsl(174, 58%, 32%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-800] {
+  display: inline-block;
+  color: hsl(174, 52%, 22%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=teal-900] {
+  display: inline-block;
+  color: hsl(174, 48%, 14%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[shadow=teal-100] {
+  --shadow-color: hsl(174, 55%, 94%);
+}
+
+[shadow=teal-200] {
+  --shadow-color: hsl(174, 58%, 84%);
+}
+
+[shadow=teal-300] {
+  --shadow-color: hsl(174, 62%, 72%);
+}
+
+[shadow=teal-400] {
+  --shadow-color: hsl(174, 64%, 62%);
+}
+
+[shadow=teal-500] {
+  --shadow-color: hsl(174, 65%, 54%);
+}
+
+[shadow=teal-600] {
+  --shadow-color: hsl(174, 62%, 42%);
+}
+
+[shadow=teal-700] {
+  --shadow-color: hsl(174, 58%, 32%);
+}
+
+[shadow=teal-800] {
+  --shadow-color: hsl(174, 52%, 22%);
+}
+
+[shadow=teal-900] {
+  --shadow-color: hsl(174, 48%, 14%);
+}
+
+[fontColor=teal-100] {
+  color: hsl(174, 55%, 94%);
+}
+
+[fontColor=teal-200] {
+  color: hsl(174, 58%, 84%);
+}
+
+[fontColor=teal-300] {
+  color: hsl(174, 62%, 72%);
+}
+
+[fontColor=teal-400] {
+  color: hsl(174, 64%, 62%);
+}
+
+[fontColor=teal-500] {
+  color: hsl(174, 65%, 54%);
+}
+
+[fontColor=teal-600] {
+  color: hsl(174, 62%, 42%);
+}
+
+[fontColor=teal-700] {
+  color: hsl(174, 58%, 32%);
+}
+
+[fontColor=teal-800] {
+  color: hsl(174, 52%, 22%);
+}
+
+[fontColor=teal-900] {
+  color: hsl(174, 48%, 14%);
+}
+
+[bgColor=lagoon-100] {
+  background-color: hsl(180, 70%, 90%);
+}
+
+[bgColor=lagoon-200] {
+  background-color: hsl(180, 70%, 78%);
+}
+
+[bgColor=lagoon-300] {
+  background-color: hsl(180, 68%, 66%);
+}
+
+[bgColor=lagoon-400] {
+  background-color: hsl(180, 66%, 56%);
+}
+
+[bgColor=lagoon-500] {
+  background-color: hsl(180, 64%, 46%);
+}
+
+[bgColor=lagoon-600] {
+  background-color: hsl(180, 62%, 36%);
+}
+
+[bgColor=lagoon-700] {
+  background-color: hsl(180, 58%, 28%);
+}
+
+[bgColor=lagoon-800] {
+  background-color: hsl(180, 54%, 20%);
+}
+
+[bgColor=lagoon-900] {
+  background-color: hsl(180, 50%, 13%);
+}
+
+[borderColor=lagoon-100] {
+  border-color: hsl(180, 70%, 90%);
+}
+
+[borderColor=lagoon-200] {
+  border-color: hsl(180, 70%, 78%);
+}
+
+[borderColor=lagoon-300] {
+  border-color: hsl(180, 68%, 66%);
+}
+
+[borderColor=lagoon-400] {
+  border-color: hsl(180, 66%, 56%);
+}
+
+[borderColor=lagoon-500] {
+  border-color: hsl(180, 64%, 46%);
+}
+
+[borderColor=lagoon-600] {
+  border-color: hsl(180, 62%, 36%);
+}
+
+[borderColor=lagoon-700] {
+  border-color: hsl(180, 58%, 28%);
+}
+
+[borderColor=lagoon-800] {
+  border-color: hsl(180, 54%, 20%);
+}
+
+[borderColor=lagoon-900] {
+  border-color: hsl(180, 50%, 13%);
+}
+
+[hover=lagoon-100]:hover {
+  background-color: hsl(180, 70%, 90%);
+  border-color: hsl(180, 70%, 90%);
+}
+
+[hover=lagoon-200]:hover {
+  background-color: hsl(180, 70%, 78%);
+  border-color: hsl(180, 70%, 78%);
+}
+
+[hover=lagoon-300]:hover {
+  background-color: hsl(180, 68%, 66%);
+  border-color: hsl(180, 68%, 66%);
+}
+
+[hover=lagoon-400]:hover {
+  background-color: hsl(180, 66%, 56%);
+  border-color: hsl(180, 66%, 56%);
+}
+
+[hover=lagoon-500]:hover {
+  background-color: hsl(180, 64%, 46%);
+  border-color: hsl(180, 64%, 46%);
+}
+
+[hover=lagoon-600]:hover {
+  background-color: hsl(180, 62%, 36%);
+  border-color: hsl(180, 62%, 36%);
+}
+
+[hover=lagoon-700]:hover {
+  background-color: hsl(180, 58%, 28%);
+  border-color: hsl(180, 58%, 28%);
+}
+
+[hover=lagoon-800]:hover {
+  background-color: hsl(180, 54%, 20%);
+  border-color: hsl(180, 54%, 20%);
+}
+
+[hover=lagoon-900]:hover {
+  background-color: hsl(180, 50%, 13%);
+  border-color: hsl(180, 50%, 13%);
+}
+
+[hover=lagoon-100][outline]:hover {
+  color: hsl(180, 70%, 90%);
+  border-color: hsl(180, 70%, 90%);
+}
+
+[hover=lagoon-200][outline]:hover {
+  color: hsl(180, 70%, 78%);
+  border-color: hsl(180, 70%, 78%);
+}
+
+[hover=lagoon-300][outline]:hover {
+  color: hsl(180, 68%, 66%);
+  border-color: hsl(180, 68%, 66%);
+}
+
+[hover=lagoon-400][outline]:hover {
+  color: hsl(180, 66%, 56%);
+  border-color: hsl(180, 66%, 56%);
+}
+
+[hover=lagoon-500][outline]:hover {
+  color: hsl(180, 64%, 46%);
+  border-color: hsl(180, 64%, 46%);
+}
+
+[hover=lagoon-600][outline]:hover {
+  color: hsl(180, 62%, 36%);
+  border-color: hsl(180, 62%, 36%);
+}
+
+[hover=lagoon-700][outline]:hover {
+  color: hsl(180, 58%, 28%);
+  border-color: hsl(180, 58%, 28%);
+}
+
+[hover=lagoon-800][outline]:hover {
+  color: hsl(180, 54%, 20%);
+  border-color: hsl(180, 54%, 20%);
+}
+
+[hover=lagoon-900][outline]:hover {
+  color: hsl(180, 50%, 13%);
+  border-color: hsl(180, 50%, 13%);
+}
+
+/* Icon */
+[iconcolor=lagoon-100] {
+  display: inline-block;
+  color: hsl(180, 70%, 90%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-200] {
+  display: inline-block;
+  color: hsl(180, 70%, 78%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-300] {
+  display: inline-block;
+  color: hsl(180, 68%, 66%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-400] {
+  display: inline-block;
+  color: hsl(180, 66%, 56%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-500] {
+  display: inline-block;
+  color: hsl(180, 64%, 46%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-600] {
+  display: inline-block;
+  color: hsl(180, 62%, 36%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-700] {
+  display: inline-block;
+  color: hsl(180, 58%, 28%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-800] {
+  display: inline-block;
+  color: hsl(180, 54%, 20%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[iconcolor=lagoon-900] {
+  display: inline-block;
+  color: hsl(180, 50%, 13%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+[shadow=lagoon-100] {
+  --shadow-color: hsl(180, 70%, 90%);
+}
+
+[shadow=lagoon-200] {
+  --shadow-color: hsl(180, 70%, 78%);
+}
+
+[shadow=lagoon-300] {
+  --shadow-color: hsl(180, 68%, 66%);
+}
+
+[shadow=lagoon-400] {
+  --shadow-color: hsl(180, 66%, 56%);
+}
+
+[shadow=lagoon-500] {
+  --shadow-color: hsl(180, 64%, 46%);
+}
+
+[shadow=lagoon-600] {
+  --shadow-color: hsl(180, 62%, 36%);
+}
+
+[shadow=lagoon-700] {
+  --shadow-color: hsl(180, 58%, 28%);
+}
+
+[shadow=lagoon-800] {
+  --shadow-color: hsl(180, 54%, 20%);
+}
+
+[shadow=lagoon-900] {
+  --shadow-color: hsl(180, 50%, 13%);
+}
+
+[fontColor=lagoon-100] {
+  color: hsl(180, 70%, 90%);
+}
+
+[fontColor=lagoon-200] {
+  color: hsl(180, 70%, 78%);
+}
+
+[fontColor=lagoon-300] {
+  color: hsl(180, 68%, 66%);
+}
+
+[fontColor=lagoon-400] {
+  color: hsl(180, 66%, 56%);
+}
+
+[fontColor=lagoon-500] {
+  color: hsl(180, 64%, 46%);
+}
+
+[fontColor=lagoon-600] {
+  color: hsl(180, 62%, 36%);
+}
+
+[fontColor=lagoon-700] {
+  color: hsl(180, 58%, 28%);
+}
+
+[fontColor=lagoon-800] {
+  color: hsl(180, 54%, 20%);
+}
+
+[fontColor=lagoon-900] {
+  color: hsl(180, 50%, 13%);
+}
+
 [bgColor=white-100] {
   background-color: hsl(0, 0%, 100%);
 }
