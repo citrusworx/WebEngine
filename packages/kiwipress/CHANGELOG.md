@@ -5,7 +5,7 @@
 ### Patch Changes
 
 - Updated dependencies [815b941]
-  - @citrusworx/seltzer@0.9.0
+  - @citrusworx/seltzer@0.8.1
 
 ## 0.4.2
 

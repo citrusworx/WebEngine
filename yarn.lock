@@ -794,7 +794,7 @@ __metadata:
   resolution: "@citrusworx/kiwipress@workspace:packages/kiwipress"
   dependencies:
     "@citrusworx/nectarine": "npm:^0.3.0"
-    "@citrusworx/seltzer": "npm:^0.9.0"
+    "@citrusworx/seltzer": "npm:^0.8.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^6.0.3"
     zod: "npm:^4.3.6"
@@ -860,7 +860,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/seltzer@npm:^0.9.0, @citrusworx/seltzer@workspace:*, @citrusworx/seltzer@workspace:libraries/seltzer":
+"@citrusworx/seltzer@npm:^0.8.1, @citrusworx/seltzer@workspace:*, @citrusworx/seltzer@workspace:libraries/seltzer":
   version: 0.0.0-use.local
   resolution: "@citrusworx/seltzer@workspace:libraries/seltzer"
   dependencies:
