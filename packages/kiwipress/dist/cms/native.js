@@ -37,8 +37,9 @@ export class NativeCollection {
     }
     create(data) {
         const title = typeof data.title === "string" ? data.title : "Untitled";
+        const id = typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : crypto.randomUUID();
         const record = {
-            id: typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : crypto.randomUUID(),
+            id,
             collection: this.collection,
             title,
             content: typeof data.content === "string" ? data.content : "",
@@ -50,7 +51,7 @@ export class NativeCollection {
             updatedAt: new Date().toISOString(),
             source: {
                 cms: "nectarine",
-                id: typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : title
+                id
             },
             meta: {}
         };

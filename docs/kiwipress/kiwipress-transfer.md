@@ -101,8 +101,8 @@ Copy `method` + `endpoint` onto Seltzer routes. Seltzer still matches exact path
 | GET | `/__kiwipress/cms` | mode + native counts |
 | POST | `/__kiwipress/cms` | `{ mode: "wordpress" \| "nectarine" }` |
 | POST | `/__kiwipress/transfer` | run `WPSync.transfer` and `promote()` |
-| GET/PATCH/DELETE | `/__kiwipress/content/posts` | WordPress or native, item id in `?id=` |
-| GET/PATCH/DELETE | `/__kiwipress/content/pages` | same |
+| GET/POST/PATCH/DELETE | `/__kiwipress/content/posts` | WordPress or native; item id in `?id=` for PATCH/DELETE |
+| GET/POST/PATCH/DELETE | `/__kiwipress/content/pages` | same |
 
 The Vite app proxies `/__kiwipress` to port 8787. Set `WP_URL` on the backend to enable the WordPress entry. Without it, the gateway starts in `nectarine` mode only.
 

@@ -50,6 +50,27 @@ function registerCollectionRoutes(app, kiwi, kind) {
         }
     });
     app.route({
+        method: "POST",
+        path: `/__kiwipress/content/${kind}`,
+        handler: (ctx) => {
+            void (async () => {
+                try {
+                    const payload = (await readJson(ctx.req));
+                    if (kiwi.mode === "nectarine") {
+                        ctx.json(await kiwi.native[kind].create(payload));
+                        return;
+                    }
+                    ctx.json(kind === "posts"
+                        ? await kiwi.wordpress.posts.create(payload)
+                        : await kiwi.wordpress.pages.create(payload));
+                }
+                catch (error) {
+                    sendError(ctx, error);
+                }
+            })();
+        }
+    });
+    app.route({
         method: "PATCH",
         path: `/__kiwipress/content/${kind}`,
         handler: (ctx) => {
