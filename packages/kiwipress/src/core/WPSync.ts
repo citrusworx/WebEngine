@@ -56,6 +56,7 @@ export class WPSync {
     }
 
     async transfer(collections: CmsCollection[] = DEFAULT_COLLECTIONS): Promise<TransferResult> {
+        await this.store.hydrate();
         const counts = emptyCounts();
         const records = [];
 
@@ -67,6 +68,8 @@ export class WPSync {
                 records.push(this.store.upsert(item));
             }
         }
+
+        await this.store.flush();
 
         return {
             mode: "nectarine",

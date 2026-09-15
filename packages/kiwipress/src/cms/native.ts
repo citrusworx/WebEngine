@@ -35,19 +35,23 @@ export class NativeCollection {
         private readonly collection: CmsCollection
     ) {}
 
-    getAll(): Promise<ContentRecord[]> {
-        return Promise.resolve(this.store.list(this.collection));
+    async getAll(): Promise<ContentRecord[]> {
+        await this.store.hydrate();
+        return this.store.list(this.collection);
     }
 
-    getById(id: string | number): Promise<ContentRecord | undefined> {
-        return Promise.resolve(this.store.get(this.collection, id));
+    async getById(id: string | number): Promise<ContentRecord | undefined> {
+        await this.store.hydrate();
+        return this.store.get(this.collection, id);
     }
 
-    getBySlug(slug: string): Promise<ContentRecord | undefined> {
-        return Promise.resolve(this.store.findBySlug(this.collection, slug));
+    async getBySlug(slug: string): Promise<ContentRecord | undefined> {
+        await this.store.hydrate();
+        return this.store.findBySlug(this.collection, slug);
     }
 
-    create(data: WordPressPayload | Partial<ContentRecord>): Promise<ContentRecord> {
+    async create(data: WordPressPayload | Partial<ContentRecord>): Promise<ContentRecord> {
+        await this.store.hydrate();
         const title = typeof data.title === "string" ? data.title : "Untitled";
         const id = typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : crypto.randomUUID();
         const record: ContentRecord = {
@@ -68,10 +72,13 @@ export class NativeCollection {
             meta: {}
         };
 
-        return Promise.resolve(this.store.upsert(record));
+        const created = this.store.upsert(record);
+        await this.store.flush();
+        return created;
     }
 
-    update(id: string | number, data: WordPressPayload | Partial<ContentRecord>): Promise<ContentRecord> {
+    async update(id: string | number, data: WordPressPayload | Partial<ContentRecord>): Promise<ContentRecord> {
+        await this.store.hydrate();
         const existing = this.store.get(this.collection, id);
 
         if (!existing) {
@@ -87,11 +94,16 @@ export class NativeCollection {
             updatedAt: new Date().toISOString()
         };
 
-        return Promise.resolve(this.store.upsert(next));
+        const updated = this.store.upsert(next);
+        await this.store.flush();
+        return updated;
     }
 
-    delete(id: string | number): Promise<boolean> {
-        return Promise.resolve(this.store.remove(this.collection, id));
+    async delete(id: string | number): Promise<boolean> {
+        await this.store.hydrate();
+        const removed = this.store.remove(this.collection, id);
+        await this.store.flush();
+        return removed;
     }
 }
 

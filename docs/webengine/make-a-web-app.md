@@ -115,9 +115,9 @@ These are real docs, but they are not on the main path.
 
 | Track | What it is | Start |
 |---|---|---|
-| KiwiPress | WordPress on-ramp into WebEngine: headless client, then transfer into a Nectarine CMS | [KiwiPress](../kiwipress/README.md) · [Getting started](../kiwipress/kiwipress-getting-started.md) · [Transfer](../kiwipress/kiwipress-transfer.md) · [Core classes](../kiwipress/core-classes.md) |
+| KiwiPress | Standalone WordPress client and Nectarine-shaped CMS. WebEngine may orchestrate it later; the library does not require the kernel. | [KiwiPress](../kiwipress/README.md) · [Getting started](../kiwipress/kiwipress-getting-started.md) · [Transfer](../kiwipress/kiwipress-transfer.md) · [Core classes](../kiwipress/core-classes.md) |
 | Stenzil | Advanced elective compiler track, not required to ship a web app | [Stenzil](../stenzil/README.md) · [Getting started](../stenzil/stenzil-getting-started.md) · [Architecture](../stenzil/architecture.md) · [Courses](../stenzil/courses.md) |
 | Stencil folder | Legacy name only | [Redirect](../Stencil/README.md) |
 | Sugar | Visual editor under `tooling/sugar/` — not ready, not documented here | Do not promise it |
 
-KiwiPress is the WordPress entry point into the stack, not a core library. Use it when you have WordPress content you want to bring onto Nectarine / WebEngine.
+KiwiPress is the WordPress elective and a standalone CMS library, not a core WebEngine module. Use it when you have WordPress content — or a native Nectarine store — you want to run in any Node project.

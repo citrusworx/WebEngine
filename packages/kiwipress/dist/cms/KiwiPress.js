@@ -20,6 +20,9 @@ export class KiwiPress {
         this.config = config;
         this.mode = config.mode ?? "wordpress";
         this.store = config.store ?? new NectarineStore();
+        if (config.persistence) {
+            this.store.usePersistence(config.persistence);
+        }
         this.native = createNativeCms(this.store);
         this.auth = WPAuth.fromConfig(config);
         const url = config.url?.trim() || (typeof process !== "undefined" ? process.env.WP_URL?.trim() : "");
@@ -41,6 +44,16 @@ export class KiwiPress {
     }
     static connect(config = {}) {
         return new KiwiPress(config);
+    }
+    async ready() {
+        await this.store.hydrate();
+        return this;
+    }
+    persist() {
+        return this.store.flush();
+    }
+    get persistence() {
+        return this.store.persistence;
     }
     get wordpress() {
         if (!this.wp) {

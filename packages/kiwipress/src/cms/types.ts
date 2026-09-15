@@ -1,6 +1,15 @@
 export type CmsMode = "wordpress" | "nectarine";
 
-export type CmsCollection = "posts" | "pages" | "users" | "categories" | "tags" | "comments";
+export const CMS_COLLECTIONS = [
+    "posts",
+    "pages",
+    "users",
+    "categories",
+    "tags",
+    "comments"
+] as const;
+
+export type CmsCollection = (typeof CMS_COLLECTIONS)[number];
 
 export type ContentStatus =
     | "draft"
@@ -42,6 +51,8 @@ export type NectarinePost = {
     created_at?: string;
     updated_at?: string;
 };
+
+export type CmsSnapshot = Record<CmsCollection, ContentRecord[]>;
 
 export type TransferCounts = Record<CmsCollection, number>;
 

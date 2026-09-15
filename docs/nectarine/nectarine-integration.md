@@ -18,7 +18,7 @@ Related:
 | WebEngine | Early scaffold / config vocabulary |
 | Sig.js / Juice | Browser UI — no Nectarine client |
 
-Nothing in `libraries/seltzer` imports `@citrusworx/nectarine`. Nothing in `engines/webengine` does either. `packages/kiwipress` imports Nectarine for API YAML walking and uses Nectarine models as the transfer destination. Direct Seltzer ↔ Nectarine wiring in an arbitrary app is still **you copying fields**.
+Nothing in `libraries/seltzer` imports `@citrusworx/nectarine`. Nothing in `engines/webengine` does either. `packages/kiwipress` imports Nectarine for API YAML walking, uses Nectarine models as the transfer destination, and may persist through Nectarine `PgSql`. Direct Seltzer ↔ Nectarine wiring in an arbitrary app is still **you copying fields**.
 
 ## Seltzer: copy method and path
 
@@ -93,14 +93,15 @@ There is no Nectarine browser client. A Juice page that lists users `fetch`es a 
 
 ## KiwiPress
 
-`packages/kiwipress` is the WordPress on-ramp into Nectarine / WebEngine.
+`packages/kiwipress` is a standalone WordPress client and Nectarine-shaped CMS. It imports Nectarine for API YAML and optional `PgSql` persistence. It does not import WebEngine.
 
 - WordPress domain objects still use static `routes.ts` files (query aliases are WordPress-specific).
 - `loadNectarineApi` / `loadNectarineApiFile` walk Nectarine API YAML into `{ method, endpoint }` records — the importer this page used to say was not shipped.
 - `WPSync.transfer()` maps WordPress JSON onto Nectarine-shaped `ContentRecord`s and stores them in `NectarineStore`.
+- `createFilePersistence` / `createPostgresPersistence` persist that store without a kernel.
 - `registerKiwiPressGateway` copies those concerns onto Seltzer exact paths under `/__kiwipress`.
 
-Do not treat KiwiPress as “Seltzer serving WordPress.” Outbound WP calls still use `requestWordPress`. Inbound app routes are Seltzer. Transfer is KiwiPress.
+Do not treat KiwiPress as “Seltzer serving WordPress” or “WebEngine's CMS.” Outbound WP calls still use `requestWordPress`. Inbound app routes are Seltzer. Transfer and persistence are KiwiPress.
 
 See [KiwiPress](../kiwipress/README.md) and [Transfer](../kiwipress/kiwipress-transfer.md).
 

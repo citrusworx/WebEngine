@@ -50,4 +50,46 @@ describe("KiwiPress CMS modes", () => {
             status: "published"
         });
     });
+
+    it("hydrates persisted native records on ready()", async () => {
+        const store = new NectarineStore();
+        let snapshot = store.snapshot();
+        store.usePersistence({
+            kind: "custom",
+            async load() {
+                return snapshot;
+            },
+            async save(next) {
+                snapshot = next;
+            }
+        });
+        store.upsert({
+            id: "kept",
+            collection: "posts",
+            title: "Kept",
+            content: "",
+            slug: "kept",
+            status: "published",
+            source: { cms: "nectarine", id: "kept" },
+            meta: {}
+        });
+        await store.flush();
+
+        const kiwi = KiwiPress.connect({
+            mode: "nectarine",
+            store: new NectarineStore(),
+            persistence: {
+                kind: "custom",
+                async load() {
+                    return snapshot;
+                },
+                async save(next) {
+                    snapshot = next;
+                }
+            }
+        });
+
+        await kiwi.ready();
+        expect(await kiwi.native.posts.getBySlug("kept")).toMatchObject({ title: "Kept" });
+    });
 });
