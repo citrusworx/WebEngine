@@ -217,6 +217,18 @@ describe("rewriteMysqlPlaceholders", () => {
             params: [],
         });
 
+        const backslash = compileQuery({
+            type: "SELECT",
+            table: "products",
+            fields: "payload",
+            where: "payload @> '{\"path\":\"C:\\\\tmp\"}'",
+        });
+        expect(backslash).toContain("'{\"path\":\"C:\\\\tmp\"}'");
+        expect(rewriteMysqlPlaceholders(backslash)).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS(payload, CAST('{\"path\":\"C:\\\\\\\\tmp\"}' AS JSON))",
+            params: [],
+        });
+
         const hasKey = compileQuery({
             select: ["payload"],
             from: "products",
