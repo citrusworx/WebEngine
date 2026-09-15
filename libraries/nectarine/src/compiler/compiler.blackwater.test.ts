@@ -96,13 +96,13 @@ describe("Blackwater query YAML", () => {
             "SELECT payload FROM products WHERE payload->>'catalog' = $1 ORDER BY created_at ASC",
         );
         expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsBySlug")).toBe(
-            "SELECT payload FROM products WHERE payload->>'slug' = $1",
+            "SELECT payload FROM products WHERE payload->>'slug' = $1 ORDER BY created_at ASC",
         );
         expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsContaining")).toBe(
-            "SELECT payload FROM products WHERE payload @> $1::jsonb",
+            "SELECT payload FROM products WHERE payload @> $1::jsonb ORDER BY created_at ASC",
         );
         expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsWithKey")).toBe(
-            "SELECT payload FROM products WHERE payload ? $1",
+            "SELECT payload FROM products WHERE payload ? $1 ORDER BY created_at ASC",
         );
         expect(compileNamed("product/productQueries.yml", "product", "read", "countPayloads")).toBe(
             "SELECT COUNT(*) FROM products",

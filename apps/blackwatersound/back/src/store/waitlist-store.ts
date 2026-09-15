@@ -7,6 +7,7 @@ import {
   isDatabaseConnected,
   loadWaitlistByEmailFromDb,
   loadWaitlistFromDb,
+  waitlistEmailExists,
 } from "../db/postgres.js";
 
 const defaultDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "../data/runtime");
@@ -65,5 +66,9 @@ export async function findWaitlistByEmail(email: string): Promise<WaitlistEntry 
 }
 
 export async function hasWaitlistEmail(email: string) {
+  if (useDatabase()) {
+    return waitlistEmailExists(email);
+  }
+
   return Boolean(await findWaitlistByEmail(email));
 }

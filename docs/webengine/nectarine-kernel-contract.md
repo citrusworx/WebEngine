@@ -108,10 +108,10 @@ Adapters execute compiler SQL. They never build or concatenate it.
 
 `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` are **compiler phonics** in
 `@citrusworx/nectarine` (YAML tokens → SQL). They are not host-invented SQL.
-Joins and `ON CONFLICT` remain later compiler work. Host execute for product
-JSONB / waitlist `joinWaitlist` is unchanged in this increment — named queries
-such as `payloadsByCatalog` / `emailExists` / `countPayloads` compile and wait
-to be wired.
+Joins and `ON CONFLICT` remain later compiler work. Blackwater host execute
+runs the named queries (`payloadsByCatalog`, `payloadsBySlug`,
+`payloadsContaining`, `payloadsWithKey`, `countPayloads`, `emailExists`,
+`countEntries`) through `createNectarineRoutes` + thin `execute`.
 
 Those remaining items are not kernel invent-as-you-go.
 

@@ -163,6 +163,7 @@ describe("createNectarineReadRoutes", () => {
     });
 
     expect(routes.map((route) => `${route.method} ${route.path}`)).toEqual([
+      "GET /api/waitlist/count",
       "GET /api/waitlist",
       "POST /api/waitlist",
       "GET /api/waitlist/:email",
@@ -293,10 +294,12 @@ describe("createRoutes", () => {
       "GET /api/posts/:slug",
       "GET /api/lessons/:id",
       "GET /api/products",
+      "GET /api/products/count",
       "POST /api/products",
       "PUT /api/products/:id",
       "DELETE /api/products/:id",
       "GET /api/waitlist",
+      "GET /api/waitlist/count",
       "GET /api/courses",
       "POST /api/courses",
       "PUT /api/courses/:id",

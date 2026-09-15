@@ -7,7 +7,12 @@ import {
 } from "@citrusworx/seltzer";
 import { createNectarineRoutes } from "@citrusworx/webengine";
 import { waitlistSourceApps } from "../db/named-ddl.js";
-import { isDatabaseConnected, loadWaitlistByEmailFromDb, loadWaitlistFromDb } from "../db/postgres.js";
+import {
+  countWaitlistFromDb,
+  isDatabaseConnected,
+  loadWaitlistByEmailFromDb,
+  loadWaitlistFromDb,
+} from "../db/postgres.js";
 import { appendWaitlistEntry, hasWaitlistEmail } from "../store/waitlist-store.js";
 import type { BlackwaterContext, WaitlistEntry } from "../types/context.js";
 
@@ -57,10 +62,11 @@ function generateWaitlistId(): string {
  * - `source_app` allowlist from schema enum
  * - JSON file-store fallback when Postgres is unset
  *
- * | API `query:` | Live named query | Why |
- * | allEntries   | allEntries       | `SELECT * … ORDER BY created_at ASC` |
- * | entryByEmail | entryByEmail     | `SELECT * … WHERE email = $1` |
- * | joinWaitlist | joinWaitlist     | `INSERT … (id, name, email, source_app, interest)` |
+ * | API `query:`    | Live named query | Why |
+ * | allEntries      | allEntries       | `SELECT * … ORDER BY created_at ASC` |
+ * | countEntries    | countEntries     | `COUNT(*)` — list total without loading rows |
+ * | entryByEmail    | entryByEmail     | `SELECT * … WHERE email = $1` |
+ * | joinWaitlist    | joinWaitlist     | `INSERT …`; duplicate email uses `emailExists` |
  *
  * An empty waitlist is valid — do not treat `[]` as a miss.
  * Required body fields (`email: string.required`) are enforced by Seltzer `validate`.
@@ -126,6 +132,11 @@ export async function executeWaitlist(args: ExecuteArgs<BlackwaterContext>): Pro
   switch (args.query) {
     case "allEntries":
       return loadEntries(args.ctx);
+    case "countEntries":
+      if (isDatabaseConnected()) {
+        return { count: await countWaitlistFromDb() };
+      }
+      return { count: (await loadEntries(args.ctx)).length };
     case "entryByEmail":
       return findByEmail(args.ctx, args.params.email);
     case "joinWaitlist":

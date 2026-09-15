@@ -12,7 +12,7 @@ waitlist:
       fields: '*'
       where: email = $1
 
-    # Duplicate-email check. Live path still uses entryByEmail + row presence.
+    # Duplicate-email check. Live joinWaitlist uses this instead of loading the row.
     emailExists:
       type: SELECT
       table: waitlist

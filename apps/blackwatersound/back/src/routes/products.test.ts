@@ -12,7 +12,7 @@ import {
 } from "../db/postgres.js";
 import type { AppLocals } from "../types/context.js";
 import { createRoutes } from "./index.js";
-import { createProductReadRoutes, createProductRoutes } from "./products.js";
+import { createProductReadRoutes, createProductRoutes, jsonbContains } from "./products.js";
 
 const configPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -124,6 +124,9 @@ describe("createProductRoutes", () => {
     expect(routes.map((route) => `${route.method} ${route.path}`)).toEqual(
       expect.arrayContaining([
         "GET /api/products",
+        "GET /api/products/count",
+        "GET /api/products/key/:key",
+        "GET /api/products/containing",
         "GET /api/products/catalog/:catalog",
         "GET /api/products/:id",
         "GET /api/products/slug/:slug",
@@ -183,6 +186,24 @@ describe("product JSONB writes", () => {
       status: 200,
       json: [stored],
     });
+    await expect(request(`${base}/api/products/slug/${SAMPLE.id}`)).resolves.toEqual({
+      status: 200,
+      json: stored,
+    });
+    await expect(request(`${base}/api/products/count`)).resolves.toEqual({
+      status: 200,
+      json: { count: 1 },
+    });
+    await expect(request(`${base}/api/products/key/catalog`)).resolves.toEqual({
+      status: 200,
+      json: [stored],
+    });
+    await expect(
+      request(`${base}/api/products/containing?contains=${encodeURIComponent(JSON.stringify({ catalog: "gear" }))}`),
+    ).resolves.toEqual({
+      status: 200,
+      json: [stored],
+    });
 
     const duplicate = await json("POST", `${base}/api/products`, SAMPLE);
     expect(duplicate).toEqual({ status: 409, json: { error: "Product already exists" } });
@@ -233,5 +254,42 @@ describe("product JSONB writes", () => {
       status: 404,
       json: { error: "Product not found" },
     });
+  });
+
+  it("does not treat /count or /containing as :id", async () => {
+    const base = await start();
+    await expect(request(`${base}/api/products/count`)).resolves.toEqual({
+      status: 200,
+      json: { count: 0 },
+    });
+    await expect(request(`${base}/api/products/containing`)).resolves.toEqual({
+      status: 200,
+      json: [],
+    });
+    const bad = await request(`${base}/api/products/containing?contains=not-json`);
+    expect(bad).toEqual({ status: 400, json: { error: "contains must be JSON" } });
+  });
+
+  it("matches nested JSONB containment on the seed fallback", async () => {
+    const stored = { ...SAMPLE, extra: { a: 1, b: 2 } };
+    const base = await start([stored]);
+    const contains = (fragment: unknown) =>
+      request(`${base}/api/products/containing?contains=${encodeURIComponent(JSON.stringify(fragment))}`);
+
+    await expect(contains({ extra: { a: 1 } })).resolves.toEqual({ status: 200, json: [stored] });
+    await expect(contains({ extra: { b: 2, a: 1 } })).resolves.toEqual({ status: 200, json: [stored] });
+    await expect(contains({ extra: { a: 1, c: 3 } })).resolves.toEqual({ status: 200, json: [] });
+  });
+});
+
+describe("jsonbContains", () => {
+  it("matches Postgres jsonb @> nested objects, arrays, and key order", () => {
+    expect(jsonbContains({ extra: { a: 1, b: 2 } }, { extra: { a: 1 } })).toBe(true);
+    expect(jsonbContains({ extra: { a: 1, b: 2 } }, { extra: { b: 2, a: 1 } })).toBe(true);
+    expect(jsonbContains({ extra: { a: 1, b: 2 } }, { extra: { a: 1, c: 3 } })).toBe(false);
+    expect(jsonbContains({ tags: ["Fuzz", "Germanium"] }, { tags: ["Germanium"] })).toBe(true);
+    expect(jsonbContains({ tags: ["Fuzz"] }, { tags: ["Germanium"] })).toBe(false);
+    expect(jsonbContains({ n: 1 }, { n: 1 })).toBe(true);
+    expect(jsonbContains({ n: 1 }, { n: "1" })).toBe(false);
   });
 });

@@ -85,8 +85,7 @@ function rowsAffected(result: { rowCount?: number | null } | null): number {
   return result?.rowCount ?? 0;
 }
 
-export async function loadProductsFromDb(): Promise<ProductRecord[]> {
-  const result = await runNamed<{ payload: unknown }>("allPayloads");
+function unwrapPayloads(result: { rows: Array<{ payload: unknown }> } | null): ProductRecord[] {
   if (!result) {
     return [];
   }
@@ -97,13 +96,59 @@ export async function loadProductsFromDb(): Promise<ProductRecord[]> {
   });
 }
 
-export async function loadProductByIdFromDb(id: string): Promise<ProductRecord | null> {
-  const result = await runNamed<{ payload: unknown }>("payloadById", [id]);
-  if (!result || result.rows.length === 0) {
-    return null;
+function firstValue(row: Record<string, unknown> | undefined): unknown {
+  if (!row) {
+    return undefined;
   }
+  const values = Object.values(row);
+  return values.length > 0 ? values[0] : undefined;
+}
 
-  return asProductRecord(result.rows[0]?.payload);
+/** pg `COUNT(*)` is int8 (string). */
+function readCount(result: { rows: Record<string, unknown>[] } | null): number {
+  const raw = result?.rows[0]?.count ?? firstValue(result?.rows[0]);
+  const count = typeof raw === "number" ? raw : Number(raw);
+  return Number.isFinite(count) ? count : 0;
+}
+
+/** pg `EXISTS(...)` is boolean; some drivers stringify it. */
+function readExists(result: { rows: Record<string, unknown>[] } | null): boolean {
+  const raw = result?.rows[0]?.exists ?? firstValue(result?.rows[0]);
+  return raw === true || raw === "t" || raw === "true";
+}
+
+export async function loadProductsFromDb(): Promise<ProductRecord[]> {
+  return unwrapPayloads(await runNamed<{ payload: unknown }>("allPayloads"));
+}
+
+export async function loadProductByIdFromDb(id: string): Promise<ProductRecord | null> {
+  const products = unwrapPayloads(await runNamed<{ payload: unknown }>("payloadById", [id]));
+  return products[0] ?? null;
+}
+
+export async function loadProductsByCatalogFromDb(catalog: string): Promise<ProductRecord[]> {
+  return unwrapPayloads(await runNamed<{ payload: unknown }>("payloadsByCatalog", [catalog]));
+}
+
+export async function loadProductBySlugFromDb(slug: string): Promise<ProductRecord | null> {
+  const products = unwrapPayloads(await runNamed<{ payload: unknown }>("payloadsBySlug", [slug]));
+  return products[0] ?? null;
+}
+
+export async function loadProductsContainingFromDb(
+  fragment: Record<string, unknown>,
+): Promise<ProductRecord[]> {
+  return unwrapPayloads(
+    await runNamed<{ payload: unknown }>("payloadsContaining", [bindJsonbDocument(fragment)]),
+  );
+}
+
+export async function loadProductsWithKeyFromDb(key: string): Promise<ProductRecord[]> {
+  return unwrapPayloads(await runNamed<{ payload: unknown }>("payloadsWithKey", [key]));
+}
+
+export async function countPayloadsFromDb(): Promise<number> {
+  return readCount(await runNamed("countPayloads"));
 }
 
 export async function seedProductsIfEmpty(products: ProductRecord[]) {
@@ -111,8 +156,7 @@ export async function seedProductsIfEmpty(products: ProductRecord[]) {
     return;
   }
 
-  const existing = await loadProductsFromDb();
-  if (existing.length > 0) {
+  if ((await countPayloadsFromDb()) > 0) {
     return;
   }
 
@@ -211,6 +255,10 @@ export async function insertWaitlistEntry(entry: WaitlistEntry) {
   }
 }
 
+export async function countWaitlistFromDb(): Promise<number> {
+  return readCount(await runNamed("countEntries"));
+}
+
 export async function waitlistEmailExists(email: string) {
-  return Boolean(await loadWaitlistByEmailFromDb(email));
+  return readExists(await runNamed("emailExists", [email]));
 }

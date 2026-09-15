@@ -398,8 +398,9 @@ operator is not mistaken for a `?` placeholder.
 
 Blackwater’s live `products` table keeps `payload JSONB` (document-store)
 plus a nullable catalog projection from `productSchema.yml`. That is a
-**hybrid**, not a reason to remove JSONB. Host execute may still filter
-catalog/slug in TypeScript until those named queries are wired.
+**hybrid**, not a reason to remove JSONB. Host execute runs catalog/slug
+named queries (`payloadsByCatalog`, `payloadsBySlug`) when Postgres is
+connected; seed/memory still maps a missing catalog to `gear`.
 
 ## Not yet compiled
 

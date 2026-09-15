@@ -6,11 +6,29 @@ product:
         endpoint: /api/products
         query: allProducts
 
+    countPayloads:
+      api:
+        method: GET
+        endpoint: /api/products/count
+        query: countPayloads
+
+    payloadsWithKey:
+      api:
+        method: GET
+        endpoint: /api/products/key/:key
+        query: payloadsWithKey
+
+    payloadsContaining:
+      api:
+        method: GET
+        endpoint: /api/products/containing
+        query: payloadsContaining
+
     productsByCatalog:
       api:
         method: GET
         endpoint: /api/products/catalog/:catalog
-        query: productsByCatalog
+        query: payloadsByCatalog
 
     productById:
       api:
@@ -22,7 +40,7 @@ product:
       api:
         method: GET
         endpoint: /api/products/slug/:slug
-        query: productBySlug
+        query: payloadsBySlug
 
   create:
     newProduct:
