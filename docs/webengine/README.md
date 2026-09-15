@@ -10,7 +10,7 @@ This page is the engine **reality check**. If you want a reading path through th
 
 - Someone who heard "WebEngine" and needs to know what to use *instead* right now (the libraries)
 - Someone implementing future lifecycle methods and needing the intended order
-- Readers of the course hub who have reached **chapter 6** — contracts, then future glue
+- Readers of the course hub who have reached **chapter 6** â€” contracts, then future glue
 
 You do not need WebEngine to build a web app in this repo. You need Juice, Sig.js, Nectarine, and Seltzer. WebEngine is the intended glue around those libraries.
 
@@ -26,7 +26,7 @@ The philosophy is the same as Juice's attribute-first split:
 - **WebEngine owns sequence** (when those capabilities run, and with which contracts)
 - **Types own vocabulary** (`Blueprint` / `Environment` / `DeploymentManifest`)
 
-Until the methods do real work, the honest use of WebEngine is as a **lifecycle sketch** — a class whose method names document the intended runtime. The dangerous use is treating `engine.init()` as a bootstrap that loads `kiwi.config.toml` and starts a kernel. That code is not in `engines/webengine/src/`.
+Until the methods do real work, the honest use of WebEngine is as a **lifecycle sketch** â€” a class whose method names document the intended runtime. The dangerous use is treating `engine.init()` as a bootstrap that loads `kiwi.config.toml` and starts a kernel. That code is not in `engines/webengine/src/`.
 
 ## Mental model
 
@@ -34,18 +34,18 @@ Three objects in, a sequence of named stages out:
 
 ```
 constructor({ blueprint, environment, deploymentManifest })
-        │
-        ▼
-     init()          — flags + a parse call; not a kernel boot
-        │
-        ▼
-  buildEnvironment() → buildApplication() → secureEnvironment()
-        │
-        ▼
-  deployApplication() → monitorApplication() → scaleApplication()
-        │
-        ▼
-  killApplication() → cleanupEnvironment() → teardown()
+        â”‚
+        â–¼
+     init()          â€” flags + a parse call; not a kernel boot
+        â”‚
+        â–¼
+  buildEnvironment() â†’ buildApplication() â†’ secureEnvironment()
+        â”‚
+        â–¼
+  deployApplication() â†’ monitorApplication() â†’ scaleApplication()
+        â”‚
+        â–¼
+  killApplication() â†’ cleanupEnvironment() â†’ teardown()
 ```
 
 Comments in the source say *what each stage is for* (Grapevine in `buildEnvironment`, Docker-ish artifacts in `buildApplication`, firewalls in `secureEnvironment`). The implementations `resolve()` immediately, except `teardown()`, which calls `cleanupEnvironment()` then clears a private static `metadata` object.
@@ -114,7 +114,7 @@ Shipped:
 - constructor fields typed against `@citrusworx/types`
 - lifecycle method names and comments
 - `parse` for JSON
-- `teardown` → `cleanupEnvironment` → clear `WebEngine.metadata`
+- `teardown` â†’ `cleanupEnvironment` â†’ clear `WebEngine.metadata`
 
 Still scaffold or leftover:
 
@@ -132,18 +132,18 @@ WebEngine is meant to compose, not replace:
 | Package | Role |
 |---|---|
 | [Types](../types/README.md) | Contracts the constructor already stores |
-| [Juice](../juice/README.md) / [Sig.js](../sigjs/README.md) | UI — use them directly |
-| [Nectarine](../nectarine/README.md) / [Seltzer](../seltzer/README.md) | Data and HTTP — use them directly |
-| [Grapevine](../grapevine/README.md) / [DNS](../dns/README.md) | Infra — use them directly; comments point Grapevine at `buildEnvironment` |
+| [Juice](../juice/README.md) / [Sig.js](../sigjs/README.md) | UI â€” use them directly |
+| [Nectarine](../nectarine/README.md) / [Seltzer](../seltzer/README.md) | Data and HTTP â€” use them directly |
+| [Grapevine](../grapevine/README.md) / [DNS](../dns/README.md) | Infra â€” use them directly; comments point Grapevine at `buildEnvironment` |
 
 Course hub: [Make A Web App With WebEngine](./make-a-web-app.md). Do not wait for `engine.init()` to become an app.
 
 ## Suggested reading order
 
-1. [Make A Web App With WebEngine](./make-a-web-app.md) — the course outline (libraries first)
-2. This README — engine reality
-3. [Getting started](./webengine-getting-started.md) — constructor, `parse`, `init`, stubs
-4. [Types](../types/README.md) — the objects the constructor takes
+1. [Make A Web App With WebEngine](./make-a-web-app.md) â€” the course outline (libraries first)
+2. This README â€” engine reality
+3. [Getting started](./webengine-getting-started.md) â€” constructor, `parse`, `init`, stubs
+4. [Types](../types/README.md) â€” the objects the constructor takes
 
 ## Sibling docs
 
@@ -158,3 +158,7 @@ Course hub: [Make A Web App With WebEngine](./make-a-web-app.md). Do not wait fo
 - Current source: `engines/webengine/src/index.ts` (the only file under `src/`)
 - Published package README: `engines/webengine/README.md`
 - Ignore `engines/webengine/dist/kernel/` and `dist/config/` as current API
+
+## Related
+
+- [Library release gates](./library-release-gates.md) — what Juice, Sig, Seltzer, Nectarine, and Grapevine must clear before kernel scaffolding
