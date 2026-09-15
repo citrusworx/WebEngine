@@ -13,6 +13,9 @@
     "src/index.ts",
     "src/components/**/*.ts",
     "src/components/**/*.tsx",
+    "src/js/juice.ts",
+    "src/js/src/nav/navigation.ts",
+    "src/js/src/accordion/accordion-runtime.ts",
     "src/tokens/**/*.ts",
     "src/themes/**/*.ts",
     "src/jsx.d.ts"
@@ -21,6 +24,7 @@
     "dist",
     "node_modules",
     "src/native/**/*",
-    "src/js/**/*"
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
   ]
 }
