@@ -1,4 +1,3 @@
-// juice/jsx-runtime.ts
 import { captureCleanupScope, effect } from "./signal.js";
 
 export type Child =

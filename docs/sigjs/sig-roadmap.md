@@ -18,9 +18,8 @@ The weakest areas are still:
 
 - reactive JSX beyond text children
 - list / conditional primitives
-- router expressiveness (params, unknown paths)
-- `batch` nesting
-- tests beyond the signal and router unit files
+- router expressiveness (params)
+- tests beyond the current signal, JSX, and router files
 
 Alpha is the honest label. The core is real enough to teach in depth; it is not frozen.
 
@@ -32,7 +31,7 @@ Alpha is the honest label. The core is real enough to teach in depth; it is not 
 
 `Signal(value)` returns `{ get, set }`. Tracking is `currentSubscriber`. Notification is a subscriber set. That loop is small, tested, and the identity of the library.
 
-What that means for the roadmap: Sig.js does not need a new state primitive. It needs better *edges* (equality, peek if we ever want it, nested batch) around this one.
+What that means for the roadmap: Sig.js does not need a new state primitive. It needs better *edges* (equality, peek if we ever want it) around this one.
 
 ### 2. Effects own side effects, including cleanup
 
@@ -68,29 +67,23 @@ Function children as **text only** is correct and documented, and it is still th
 
 Until there is either a tiny list helper or even stronger teaching (tutorial + anti-patterns — this docs pass), this will keep generating support questions.
 
-### 2. `batch` is a boolean
+### 2. `batch` nesting is done; equality on `set` is not
 
-Nested `batch` flushes early. App code that wraps library code that also batches will notify too soon.
+`batch` is a depth counter with `try` / `finally`. Nested calls and throws are tested.
 
-A depth counter is a small, high-value fix if the core is being touched.
-
-### 3. The router does not normalize `navigate`
-
-`set` / `has` normalize a leading slash. `navigate` does not. `navigate("about")` is a silent no-op. Unknown paths empty the target with no 404 view.
-
-That is teachable. It is also easy to make less sharp without inventing param routes.
-
-### 4. Tests do not cover the JSX runtime
-
-`signal.test.ts` and `router.test.ts` are real. There is no Playwright coverage in this package for function children, `setProp`, `mount` dispose, or Juice attributes on Sig elements.
-
-Docs can be honest without those tests. A 1.0 claim cannot.
-
-### 5. No equality check on `set`
-
-`count.set(1); count.set(1)` notifies twice. That is simple and sometimes useful. It is noisy for derived stores and for controlled inputs that write the same string.
+`count.set(1); count.set(1)` still notifies twice. That is simple and sometimes useful. It is noisy for derived stores and for controlled inputs that write the same string.
 
 An opt-in compare, or a documented “check before set” practice (already in the form pattern), is enough. A deep equality rabbit hole is not.
+
+### 3. The router normalizes `navigate`; params are still absent
+
+`set` / `has` / `navigate` share `normalizePath`. `navigate("about")` hits `/about`. Register `"*"` for unknown paths. Without it, `navigate` to a missing path is a silent no-op and `popstate` empties the target.
+
+That is teachable. Parametric routes are still not shipped.
+
+### 4. JSX-runtime tests exist but are still thin
+
+`signal.test.ts`, `jsx.test.ts`, and `router.test.ts` cover the child text model, `mount` / `disposeTree`, `navigate` normalize, and `"*"` fallback. They do not cover every `setProp` branch or Juice attributes on Sig elements.
 
 ---
 
@@ -127,12 +120,11 @@ The next work that helps the most is not a new primitive. It is:
 
 This docs set is that work. Keep it aligned with `libraries/sig/src` when the code moves.
 
-### Priority 2. Harden the edges of `batch` and `set`
+### Priority 2. Harden the edges of `set`
 
 If the core is opened:
 
-1. nested-safe `batch` (depth counter)
-2. decide whether `set` should skip identical values (and document either choice)
+1. decide whether `set` should skip identical values (and document either choice)
 
 Do not add `peek` unless a real effect-tracking bug requires it. Reading outside an effect is already untracked.
 
@@ -140,9 +132,10 @@ Do not add `peek` unless a real effect-tracking bug requires it. Reading outside
 
 Useful increments, if they are built:
 
-- `navigate` uses the same `normalizePath` as `set` / `has`
-- an optional fallback view for unknown paths
-- parametric routes **after** exact-path behavior is boring and tested
+- parametric routes **after** exact-path behavior stays boring and tested
+- a named 404 helper if `"*"` is too easy to miss
+
+`navigate` normalization and an optional `"*"` fallback are already in source.
 
 Param routes are the most requested missing piece. They are also the easiest to fake in docs. Do not document them until they exist.
 
@@ -174,10 +167,9 @@ Sig.js should not grow a theme, a `<Button>`, or a layout system. If a pattern n
 ## Recommended build order
 
 1. Keep docs and examples locked to source (ongoing).
-2. Nested-safe `batch` and `navigate` normalization.
-3. JSX-runtime tests for the child and prop model.
-4. Optional unknown-route fallback.
-5. Only then: param routes or an explicit list helper — not both at once.
+2. Nested-safe `batch`, `navigate` normalization, `"*"` fallback, and JSX-runtime tests (landed).
+3. Broader JSX / `setProp` tests if the child model is still surprising people.
+4. Only then: param routes or an explicit list helper — not both at once.
 
 ---
 
@@ -209,9 +201,8 @@ The next stage is not inventing Sig.js from scratch.
 
 The next stage is refinement:
 
-- make batching and navigation less sharp
-- test the JSX runtime
 - decide lists/attributes explicitly
 - keep the static-first promise
+- parametric routes only after exact-path behavior stays boring
 
 That is a strong place to be. Until those land, the docs stay with [Status](./sig-status.md) and the APIs in `libraries/sig/src`.

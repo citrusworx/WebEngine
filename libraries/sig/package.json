@@ -23,7 +23,10 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.js",
+    "!dist/**/*.test.d.ts",
+    "!dist/**/*.test.js.map"
   ],
   "publishConfig": {
     "access": "public"
@@ -35,6 +38,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
+    "jsdom": "^29.0.1",
     "typescript": "^5.9.3"
   }
 }

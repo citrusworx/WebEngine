@@ -70,7 +70,7 @@ interface CleanupScope {
     cleanups: Set<Cleanup>;
 }
 
-let isBatching = false;
+let batchDepth = 0;
 const pendingSubscribers = new Set<ReactiveEffect>();
 let currentSubscriber: ReactiveEffect | null = null;
 let currentCleanupScope: CleanupScope | null = null;
@@ -80,12 +80,20 @@ function runCleanup(cleanup?: Cleanup) {
 }
 
 function scheduleSubscriber(subscriber: ReactiveEffect) {
-    if (isBatching) {
+    if (batchDepth > 0) {
         pendingSubscribers.add(subscriber);
         return;
     }
 
     subscriber.notify();
+}
+
+function flushPendingSubscribers() {
+    const queued = [...pendingSubscribers];
+    pendingSubscribers.clear();
+    for (const subscriber of queued) {
+        subscriber.notify();
+    }
 }
 
 function registerCleanup(cleanup: Cleanup) {
@@ -143,12 +151,15 @@ export function Signal<T>(value: T){
 }
 
 export function batch(fn: () => void){
-    isBatching = true;
-    fn();
-    isBatching = false;
-
-    pendingSubscribers.forEach(subscriber => subscriber.notify());
-    pendingSubscribers.clear();
+    batchDepth += 1;
+    try {
+        fn();
+    } finally {
+        batchDepth -= 1;
+        if (batchDepth === 0) {
+            flushPendingSubscribers();
+        }
+    }
 }
 
 export function memo<T>(fn: () => T){

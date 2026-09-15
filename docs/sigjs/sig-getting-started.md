@@ -248,7 +248,7 @@ router.set({
 router.start();
 ```
 
-You can also import `SigRouter` from `@citrusworx/sigjs/sig-router`. Paths are exact. `/about` and `/about/` are different. There is no `:id` matching.
+You can also import `SigRouter` from `@citrusworx/sigjs/sig-router`. Paths are exact. `/about` and `/about/` are different. There is no `:id` matching. `navigate("about")` normalizes to `/about`. Register `"*"` if you want an unknown-path view.
 
 ## Pair with Juice when you need styling
 

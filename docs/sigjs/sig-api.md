@@ -66,7 +66,7 @@ Effects created while a component function runs are registered on a cleanup scop
 function batch(fn: () => void): void
 ```
 
-While `fn` runs, subscriber notifications are queued. After `fn` returns, each pending subscriber is notified once.
+While `fn` runs, subscriber notifications are queued. After the **outermost** `fn` returns, each pending subscriber is notified once. Nesting is a depth counter: inner `batch` calls do not flush early. `try` / `finally` keeps the depth honest if `fn` throws; successful `set`s from that batch still flush.
 
 ```ts
 import { Signal, batch, effect } from "@citrusworx/sigjs";
@@ -88,7 +88,7 @@ batch(() => {
 // runs === 2  (initial + one batched notify)
 ```
 
-Nested `batch` is not a counter: the flag is a boolean. Do not nest batches.
+Nested `batch` is safe. Flattening related writes into one outer `batch` is still the clearer style.
 
 ## memo
 
@@ -216,6 +216,7 @@ type RouteView = Node | (() => Node | null) | null;
 
 - Paths are exact strings. `/about` ≠ `/about/`.
 - A map key without a leading `/` is stored as `/${key}` and registered as a **name**.
+- `"*"` is a fallback view for unknown paths. It is stored as the literal key `*`, not `/*`.
 - There is no parametric matcher. `set("/user/:id", …)` registers the literal path `/user/:id`.
 
 ### Views
@@ -227,11 +228,12 @@ On render, the router `disposeTree`s the target's current children, then `replac
 ### Navigation
 
 - `start()` attaches a document click listener and a `popstate` listener, then renders `window.location.pathname`.
-- `navigate(path)` no-ops if the path is not registered. On success it `pushState`s and renders.
+- `navigate(path)` normalizes a leading slash the same way as `set` / `has`. `navigate("about")` hits `/about`.
+- If the path is not registered, `navigate` uses the `"*"` fallback when one exists. Without a match or fallback it no-ops (no `pushState`).
 - Intercepted clicks: internal `href`s. Passed through: `http(s)`, `mailto`, `tel`, `ftp`, `download`, `target="_blank"`.
 - `stop()` removes listeners.
 - `get(name)` returns the path for a named route, or the path itself if it is registered.
-- `has(path)` normalizes a leading slash.
+- `has(path)` normalizes a leading slash. `has("*")` is true only if a fallback was registered; unknown concrete paths stay `false`.
 
 ```ts
 import { SigRouter } from "@citrusworx/sigjs";

@@ -43,18 +43,23 @@ export class SigRouter {
     }
 
     private normalizePath(path: string): string {
-        if (path === "/") {
+        if (path === "/" || path === "*") {
             return path;
         }
 
         return path.startsWith("/") ? path : `/${path}`;
     }
 
+    private resolveRoute(path: string): Route | undefined {
+        const normalizedPath = this.normalizePath(path);
+        return this.routes.get(normalizedPath) ?? this.routes.get("*");
+    }
+
     private register(path: string, view: RouteView, name?: string) {
         const normalizedPath = this.normalizePath(path);
 
         this.routes.set(normalizedPath, { path: normalizedPath, view, name });
-        if (name) {
+        if (name && normalizedPath !== "*") {
             this.namedRoutes.set(name, normalizedPath);
         }
     }
@@ -88,7 +93,7 @@ export class SigRouter {
     }
 
     private render(path: string){
-        const route = this.routes.get(path);
+        const route = this.resolveRoute(path);
         const target = document.querySelector(this.target);
         if(!target) return;
 
@@ -116,16 +121,17 @@ export class SigRouter {
         }
 
         this.started = true;
-        this.globalanchorintercept();
+        this.attachNavigationListeners();
         this.render(window.location.pathname);
     }
     
     navigate(path: string){
-        const route = this.routes.get(path);
+        const normalizedPath = this.normalizePath(path);
+        const route = this.resolveRoute(normalizedPath);
         if(!route) return;
 
-        window.history.pushState({}, "", path);
-        this.render(path);
+        window.history.pushState({}, "", normalizedPath);
+        this.render(normalizedPath);
     }
 
     goBack(){
@@ -146,7 +152,7 @@ export class SigRouter {
         return this.routes.has(this.normalizePath(path))
     }
 
-    private globalanchorintercept(){
+    private attachNavigationListeners(){
         document.addEventListener("click", this.onDocumentClick);
         window.addEventListener("popstate", this.onPopState);
     }

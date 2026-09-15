@@ -183,27 +183,11 @@ items.set([...items.get(), next]);
 job.set({ ...job.get(), title: "Hold" });
 ```
 
-## 8. Nesting `batch`
+## 8. Treating nested `batch` as a second flush
 
-Bad:
+This used to be a real bug: `batch` was a boolean, so an inner call flushed early. It is now a depth counter.
 
-```ts
-batch(() => {
-  a.set(1);
-  batch(() => {
-    b.set(2);
-  });
-  c.set(3);
-});
-```
-
-Why it is bad:
-
-- `isBatching` is a boolean
-- the inner `batch` flushes the queue and turns batching off
-- `c.set(3)` notifies immediately; `a` may already have flushed
-
-Better: one `batch` around all related writes.
+You can nest safely. Prefer one outer `batch` around related writes anyway — it is easier to read than `batch` inside `batch`.
 
 ## 9. Starting resources outside the view function
 
@@ -311,7 +295,7 @@ Why it is surprising:
 
 This is valid tracking — not a bug — but it is a frequent source of “my effect never re-runs.” Read every signal you care about unconditionally, or split effects.
 
-## 13. Two routers, or `navigate` with the wrong string
+## 13. Two routers, or navigating a path you never registered
 
 Bad:
 
@@ -319,16 +303,16 @@ Bad:
 const router = new SigRouter("#root");
 router.set({ about: About });
 router.start();
-router.navigate("about"); // looks up "about", not "/about"
+router.navigate("/missing"); // no-op unless you registered "*"
 ```
 
-Why it is bad:
+Why it is surprising:
 
-- `navigate` does not normalize
-- `has` and `set` do
-- the call no-ops; no 404 view is rendered
+- `navigate` and `has` both normalize a leading slash (`navigate("about")` hits `/about`)
+- an unknown path with no `"*"` fallback does not `pushState` and does not render a 404
+- `popstate` to an unknown path empties the target unless `"*"` is set
 
-Better: `router.navigate("/about")` or `router.navigate(router.get("about")!)`.
+Better: `router.navigate("/about")` or `router.navigate(router.get("about")!)`, and `router.set("*", NotFound)` if you want a missing-path view.
 
 Creating a `SigRouter` inside a component that you somehow run more than once (you should not) will double-intercept clicks. Construct one at the app edge.
 
