@@ -21,6 +21,8 @@ export type CreateNectarineReadRoutesOptions<TContext extends BlackwaterContext 
   resources: readonly string[];
   execute: (args: ExecuteArgs<TContext>) => unknown | Promise<unknown>;
   exclude?: ReadRouteExclude;
+  /** Extra ops beyond GET reads (waitlist `joinWaitlist` POST). */
+  include?: (operation: ApiOperation) => boolean;
   notFound?: (args: ExecuteArgs<TContext>) => ResponseData;
 };
 
@@ -70,10 +72,11 @@ function isGetRead(operation: ApiOperation): boolean {
 }
 
 /**
- * Flatten GET reads from one or more `*API.yml` documents.
+ * Flatten operations from one or more `*API.yml` documents (`listApiOperations`).
  *
- * Sibling keys in the same file (e.g. `order_item` inside `orderAPI.yml`)
- * resolve through the loaded parent resource.
+ * Includes create/update when present (waitlist `joinWaitlist`). Sibling keys
+ * in the same file (e.g. `order_item` inside `orderAPI.yml`) resolve through
+ * the loaded parent resource. Callers filter to GET reads unless they `include`.
  */
 export function listResourceReadOperations(
   nectarine: NectarineConfig,
@@ -162,11 +165,13 @@ export async function executeCompiledRead({
 }
 
 /**
- * Register GET reads from `listApiOperations` → Seltzer `generateRoutes`.
+ * Register routes from `listApiOperations` → Seltzer `generateRoutes`.
  *
- * Product and waitlist keep their specialized execute callbacks; other
- * resources use {@link executeCompiledRead}. Exclude colliding hand routes
- * (lesson `byId` vs KiwiPress `GET /api/lessons/:id`).
+ * Default filter is GET reads. Product and waitlist keep specialized execute
+ * (JSONB catalog / JSON waitlist + join). Other resources use
+ * {@link executeCompiledRead}. Exclude colliding hand routes (lesson `byId`
+ * vs KiwiPress `GET /api/lessons/:id`). Pass `include` for a create op such
+ * as waitlist `joinWaitlist`.
  */
 export function createNectarineReadRoutes<TContext extends BlackwaterContext = BlackwaterContext>(
   nectarine: NectarineConfig,
@@ -179,7 +184,9 @@ export function createNectarineReadRoutes<TContext extends BlackwaterContext = B
   return generateRoutes(operations, {
     execute: options.execute,
     notFound: options.notFound,
-    filter: (operation) => isGetRead(operation) && !matchesExclude(operation, options.exclude),
+    filter: (operation) =>
+      (isGetRead(operation) || Boolean(options.include?.(operation))) &&
+      !matchesExclude(operation, options.exclude),
   });
 }
 

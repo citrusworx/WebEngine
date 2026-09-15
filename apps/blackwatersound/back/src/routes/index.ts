@@ -8,12 +8,13 @@ import {
   executeCompiledRead,
 } from "./nectarine-reads.js";
 import { createProductReadRoutes } from "./products.js";
-import { createWaitlistReadRoutes, joinWaitlistRoute } from "./waitlist.js";
+import { createWaitlistRoutes } from "./waitlist.js";
 
 /**
  * Reads compiled from `*API.yml` via {@link createNectarineReadRoutes}.
  * Product + waitlist keep specialized execute (JSONB catalog / JSON store).
- * Lesson `byId` is excluded so the hand KiwiPress `GET /api/lessons/:id` stays unique.
+ * Waitlist also includes POST `joinWaitlist`. Lesson `byId` is excluded so the
+ * hand KiwiPress `GET /api/lessons/:id` stays unique.
  */
 export const GENERATED_READ_RESOURCES = [
   "course",
@@ -33,13 +34,12 @@ export function createRoutes(nectarine: NectarineConfig): Route<BlackwaterContex
   return [
     healthRoute,
     ...createProductReadRoutes(nectarine),
-    ...createWaitlistReadRoutes(nectarine),
+    ...createWaitlistRoutes(nectarine),
     ...createNectarineReadRoutes(nectarine, {
       resources: GENERATED_READ_RESOURCES,
       execute: executeCompiledRead,
       exclude: [{ resource: "lesson", name: "byId" }],
     }),
-    joinWaitlistRoute,
     getPostBySlugRoute,
     getLessonRoute,
   ];

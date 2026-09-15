@@ -151,6 +151,34 @@ describe("createNectarineReadRoutes", () => {
     );
   });
 
+  it("includes waitlist POST joinWaitlist when asked, with YAML body contract", () => {
+    const nectarine = loadConfig();
+    const routes = createNectarineReadRoutes(nectarine, {
+      resources: ["waitlist"],
+      execute: executeCompiledRead,
+      include: (operation) =>
+        operation.method === "POST" && operation.crud === "create" && operation.name === "joinWaitlist",
+    });
+
+    expect(routes.map((route) => `${route.method} ${route.path}`)).toEqual([
+      "GET /api/waitlist",
+      "POST /api/waitlist",
+      "GET /api/waitlist/:email",
+    ]);
+
+    const join = routes.find((route) => route.method === "POST" && route.path === "/api/waitlist");
+    expect(join?.contract).toEqual({
+      resource: "waitlist",
+      name: "joinWaitlist",
+      body: {
+        name: "string",
+        email: "string.required",
+        source_app: "string",
+        interest: "string",
+      },
+    });
+  });
+
   it("compiles every generated read query from Queries.yml", () => {
     const nectarine = loadConfig();
 
@@ -202,12 +230,13 @@ describe("createNectarineReadRoutes", () => {
 });
 
 describe("createRoutes", () => {
-  it("keeps hand-written health, waitlist POST, KiwiPress post, and lesson-by-id", () => {
+  it("keeps hand-written health and KiwiPress; waitlist POST is generated once", () => {
     const nectarine = loadConfig();
     const routes = createRoutes(nectarine);
     const keys = routes.map((route) => `${route.method} ${route.path}`);
 
     expect(keys.filter((key) => key === "GET /api/lessons/:id")).toHaveLength(1);
+    expect(keys.filter((key) => key === "POST /api/waitlist")).toHaveLength(1);
     expect(keys).toEqual(expect.arrayContaining([
       "GET /api/health",
       "POST /api/waitlist",
@@ -220,6 +249,24 @@ describe("createRoutes", () => {
 
     const lessonById = routes.find((route) => route.method === "GET" && route.path === "/api/lessons/:id");
     expect(lessonById?.contract).toBeUndefined();
+
+    const health = routes.find((route) => route.method === "GET" && route.path === "/api/health");
+    expect(health?.contract).toBeUndefined();
+
+    const post = routes.find((route) => route.method === "GET" && route.path === "/api/posts/:slug");
+    expect(post?.contract).toBeUndefined();
+
+    const join = routes.find((route) => route.method === "POST" && route.path === "/api/waitlist");
+    expect(join?.contract).toEqual({
+      resource: "waitlist",
+      name: "joinWaitlist",
+      body: {
+        name: "string",
+        email: "string.required",
+        source_app: "string",
+        interest: "string",
+      },
+    });
   });
 
   it("serves empty collections and 404 unique misses without a database", async () => {

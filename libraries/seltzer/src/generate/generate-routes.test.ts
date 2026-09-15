@@ -436,6 +436,46 @@ describe("generateRoutes waitlist reads", () => {
         ]);
     });
 
+    it("generates POST joinWaitlist with body contract when create is included", () => {
+        const joinWaitlist: ApiOperation = {
+            resource: "waitlist",
+            crud: "create",
+            name: "joinWaitlist",
+            method: "POST",
+            path: "/api/waitlist",
+            query: "joinWaitlist",
+            body: {
+                name: "string",
+                email: "string.required",
+                source_app: "string",
+                interest: "string",
+            },
+        };
+
+        const routes = generateRoutes([...waitlistReadOps, joinWaitlist], {
+            execute: executeWaitlistRead,
+            filter: (operation) =>
+                operation.method === "GET" ||
+                (operation.method === "POST" && operation.name === "joinWaitlist"),
+        });
+
+        expect(routes.map((route) => [route.method, route.path])).toEqual([
+            ["GET", "/api/waitlist"],
+            ["POST", "/api/waitlist"],
+            ["GET", "/api/waitlist/:email"],
+        ]);
+        expect(routes.find((route) => route.method === "POST")?.contract).toEqual({
+            resource: "waitlist",
+            name: "joinWaitlist",
+            body: {
+                name: "string",
+                email: "string.required",
+                source_app: "string",
+                interest: "string",
+            },
+        });
+    });
+
     it("serves allEntries and entryByEmail as ResponseData", async () => {
         const app = Seltzer.init();
         for (const route of generateRoutes(waitlistReadOps, {
