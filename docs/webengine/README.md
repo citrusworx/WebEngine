@@ -87,7 +87,7 @@ The web runtime module loads `webengine.config.json5` (JSON5 + Zod). Native/embe
 WebEngine is meant to compose the library layer rather than replace it:
 
 - `@citrusworx/types` provides shared contracts
-- `@citrusworx/nectarine` is the backend/data layer
+- `@citrusworx/nectarine` is the backend/data layer ([kernel contract](./nectarine-kernel-contract.md))
 - `@citrusworx/seltzer` is the HTTP/runtime layer
 - `@citrusworx/juiceui` and `@citrusworx/sigjs` cover UI/runtime concerns
 - `@citrusworx/grapevine` and `@citrusworx/dns` cover infrastructure and domain workflows
