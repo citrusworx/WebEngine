@@ -11,3 +11,10 @@ waitlist:
       table: waitlist
       fields: '*'
       where: email = $1
+
+  create:
+    joinWaitlist:
+      type: INSERT
+      table: waitlist
+      fields: [id, name, email, source_app, interest]
+      returning: [id, email, created_at]

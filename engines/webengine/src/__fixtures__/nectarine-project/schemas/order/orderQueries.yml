@@ -13,6 +13,20 @@ order:
       where: catalog = $1
       orderBy: created_at DESC
 
+  create:
+    newOrder:
+      type: INSERT
+      table: orders
+      fields: [id, client_id, catalog]
+      returning: [id, client_id, catalog]
+
+  update:
+    updateOrderStatus:
+      type: UPDATE
+      table: orders
+      fields: [status]
+      where: id = $1
+
 order_item:
   read:
     byOrder:
@@ -20,3 +34,10 @@ order_item:
       table: order_items
       fields: '*'
       where: order_id = $1
+
+  create:
+    newItem:
+      type: INSERT
+      table: order_items
+      fields: [id, order_id, product_id, quantity]
+      returning: [id, order_id, product_id, quantity]

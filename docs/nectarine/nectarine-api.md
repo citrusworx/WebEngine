@@ -424,7 +424,7 @@ const ops = listApiOperations("product", product.api);
 
 ### Hosting with Seltzer
 
-Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s (copying `body` field specs onto `Route.contract`). Product reads and waitlist GET + POST `joinWaitlist` use that path; health and KiwiPress content stay hand-registered. Default Seltzer `validate` enforces `.required` keys; Nectarine can later `replace("validate", …)` for Zod.
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s (copying `body` field specs onto `Route.contract`). Engine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call that path. Product JSONB catalog writes and waitlist `joinWaitlist` keep a host `execute`; health and KiwiPress content stay hand-registered. Default Seltzer `validate` enforces `.required` keys; Nectarine can later `replace("validate", …)` for Zod.
 
 Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
 

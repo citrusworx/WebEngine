@@ -14,7 +14,7 @@ function compileNamed(file: string, resource: string, method: string, name: stri
 
 /**
  * Compiler-assembled statements used by the special-cased product JSONB and
- * waitlist write paths. Other resource reads compile on demand via
+ * waitlist write paths. Other resource reads and YAML writes compile on demand via
  * {@link compileResourceQuery}.
  */
 export const namedSql = {

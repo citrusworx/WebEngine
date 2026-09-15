@@ -17,11 +17,21 @@ export type NectarineQueryFn = (
     params?: readonly unknown[],
 ) => Promise<unknown>;
 
-export type ReadRouteExclude =
+export type RouteExclude =
     | ((operation: ApiOperation) => boolean)
     | ReadonlyArray<{ resource: string; name: string }>;
 
-export type CreateNectarineReadRoutesOptions<
+export type ReadRouteExclude = RouteExclude;
+
+export const NECTARINE_READ_METHODS = ["GET"] as const;
+export const NECTARINE_WRITE_METHODS = [
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+] as const;
+
+export type CreateNectarineRoutesOptions<
     TContext extends RequestContext = RequestContext,
 > = {
     resources: readonly string[];
@@ -34,14 +44,31 @@ export type CreateNectarineReadRoutesOptions<
     query?: NectarineQueryFn;
     /**
      * When false, compiled reads skip the adapter (collections `[]`, unique
-     * lookups `null` → 404). Defaults to “query function is present”.
+     * lookups `null` → 404). Writes without a database also return `null`
+     * (404). Defaults to “query function is present”.
      */
     connected?: boolean | (() => boolean);
-    exclude?: ReadRouteExclude;
-    /** Extra ops beyond GET reads (waitlist `joinWaitlist` POST). */
+    exclude?: RouteExclude;
+    /**
+     * Extra ops beyond `methods` (waitlist `joinWaitlist` on the read helper).
+     */
     include?: (operation: ApiOperation) => boolean;
+    /**
+     * HTTP methods to generate. Omit for every op on `resources`.
+     * {@link createNectarineReadRoutes} defaults to GET;
+     * {@link createNectarineWriteRoutes} defaults to POST/PUT/PATCH/DELETE.
+     */
+    methods?: readonly ApiOperation["method"][];
     notFound?: (args: ExecuteArgs<TContext>) => ResponseData;
 };
+
+export type CreateNectarineReadRoutesOptions<
+    TContext extends RequestContext = RequestContext,
+> = CreateNectarineRoutesOptions<TContext>;
+
+export type CreateNectarineWriteRoutesOptions<
+    TContext extends RequestContext = RequestContext,
+> = CreateNectarineRoutesOptions<TContext>;
 
 /**
  * Config + optional adapter surface used to fill compiled-execute defaults.
@@ -56,6 +83,7 @@ export type NectarineRouteSource = {
 };
 
 const PATH_PARAM = /:([A-Za-z_][A-Za-z0-9_]*)/g;
+const PLACEHOLDER_VALUE = /^\$\d+(::[A-Za-z_][A-Za-z0-9_]*)?$/;
 
 const compiler = new CCompiler();
 const pathCompileCache = new Map<string, string>();
@@ -71,7 +99,7 @@ function isQueryDocument(value: unknown): value is Record<string, unknown> {
 
 function matchesExclude(
     operation: ApiOperation,
-    exclude?: ReadRouteExclude,
+    exclude?: RouteExclude,
 ): boolean {
     if (!exclude) {
         return false;
@@ -86,10 +114,9 @@ function matchesExclude(
     );
 }
 
-function isGetRead(operation: ApiOperation): boolean {
-    return (
-        operation.method === "GET" &&
-        (operation.crud === "read" || operation.crud === "get")
+export function isWriteOperation(operation: ApiOperation): boolean {
+    return (NECTARINE_WRITE_METHODS as readonly string[]).includes(
+        operation.method,
     );
 }
 
@@ -114,6 +141,13 @@ function rowsFromQueryResult(result: unknown): Record<string, unknown>[] {
         return result.rows.filter(isRecord);
     }
     return [];
+}
+
+function rowCountFromQueryResult(result: unknown): number | undefined {
+    if (isRecord(result) && typeof result.rowCount === "number") {
+        return result.rowCount;
+    }
+    return undefined;
 }
 
 function normalizeRow(row: Record<string, unknown>): Record<string, unknown> {
@@ -147,14 +181,244 @@ export function pathBindValues(
     return values;
 }
 
+function toCamel(value: string): string {
+    return value.replace(/_([a-z])/g, (_, letter: string) =>
+        letter.toUpperCase(),
+    );
+}
+
+function toSnake(value: string): string {
+    return value.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+}
+
+function columnKeys(column: string): string[] {
+    const keys = [column, toCamel(column), toSnake(column)];
+    return [...new Set(keys)];
+}
+
+function lookupBind(
+    column: string,
+    params: Record<string, string>,
+    body: Record<string, unknown> | undefined,
+): unknown {
+    for (const key of columnKeys(column)) {
+        const raw = params[key];
+        if (typeof raw === "string" && raw.trim()) {
+            return raw.trim();
+        }
+    }
+    if (body) {
+        for (const key of columnKeys(column)) {
+            if (
+                Object.prototype.hasOwnProperty.call(body, key) &&
+                body[key] !== undefined
+            ) {
+                return body[key];
+            }
+        }
+    }
+    return null;
+}
+
+function stringList(value: unknown): string[] | undefined {
+    if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed || trimmed === "*") {
+            return undefined;
+        }
+        const parts = trimmed
+            .split(",")
+            .map((part) => part.trim())
+            .filter(Boolean);
+        return parts.length > 0 ? parts : undefined;
+    }
+    if (!Array.isArray(value) || value.length === 0) {
+        return undefined;
+    }
+    const parts = value.filter(
+        (item): item is string => typeof item === "string" && item !== "*",
+    );
+    return parts.length > 0 ? parts : undefined;
+}
+
+function isPlaceholderValue(value: unknown): boolean {
+    if (typeof value === "string") {
+        return PLACEHOLDER_VALUE.test(value.trim());
+    }
+    if (!isRecord(value)) {
+        return false;
+    }
+    if (typeof value.placeholder === "string") {
+        return true;
+    }
+    if (typeof value.value === "string") {
+        return PLACEHOLDER_VALUE.test(value.value.trim());
+    }
+    return false;
+}
+
+function methodAliases(method: string): string[] {
+    if (method === "read" || method === "get") {
+        return method === "read" ? ["read", "get"] : ["get", "read"];
+    }
+    return [method];
+}
+
+export function namedQuerySpec(
+    queries: Record<string, unknown>,
+    resource: string,
+    method: string,
+    name: string,
+): Record<string, unknown> | undefined {
+    const resourceBlock = queries[resource];
+    if (!isRecord(resourceBlock)) {
+        return undefined;
+    }
+    for (const alias of methodAliases(method)) {
+        const block = resourceBlock[alias];
+        if (isRecord(block) && isRecord(block[name])) {
+            return block[name];
+        }
+    }
+    return undefined;
+}
+
+function insertColumns(spec: Record<string, unknown>): string[] | undefined {
+    const nested = isRecord(spec.insert) ? spec.insert : undefined;
+    return (
+        stringList(spec.fields) ??
+        stringList(spec.columns) ??
+        (nested ? stringList(nested.columns) : undefined)
+    );
+}
+
+function insertValues(spec: Record<string, unknown>): unknown[] | undefined {
+    if (Array.isArray(spec.values)) {
+        return spec.values;
+    }
+    const nested = isRecord(spec.insert) ? spec.insert : undefined;
+    return nested && Array.isArray(nested.values) ? nested.values : undefined;
+}
+
+function updateSetColumns(spec: Record<string, unknown>): string[] | undefined {
+    return stringList(spec.set) ?? stringList(spec.fields);
+}
+
+/**
+ * Bind values for create/update/delete: YAML field order, then path params
+ * for update WHERE (compiler remaps `$1` after SET). Column names match
+ * request body or path params (`order_id` / `orderId`). Missing values are
+ * `null` — hosts that generate ids (waitlist join) pass `execute`.
+ */
+export function writeBindValues(
+    operation: ApiOperation,
+    params: Record<string, string>,
+    body: unknown,
+    querySpec?: Record<string, unknown>,
+): unknown[] | null {
+    if (operation.method === "DELETE" || operation.crud === "delete") {
+        return pathBindValues(operation.path, params);
+    }
+
+    const bodyRecord = isRecord(body) ? body : undefined;
+    const isUpdate =
+        operation.method === "PUT" ||
+        operation.method === "PATCH" ||
+        operation.crud === "update";
+
+    if (isUpdate) {
+        const pathBinds = pathBindValues(operation.path, params);
+        if (pathBinds === null) {
+            return null;
+        }
+        const setCols = querySpec ? updateSetColumns(querySpec) : undefined;
+        if (setCols?.length) {
+            return [
+                ...setCols.map((column) =>
+                    lookupBind(column, {}, bodyRecord),
+                ),
+                ...pathBinds,
+            ];
+        }
+        const fromBody = operation.body
+            ? Object.keys(operation.body).map(
+                  (key) => lookupBind(key, {}, bodyRecord),
+              )
+            : [];
+        return [...fromBody, ...pathBinds];
+    }
+
+    const columns = querySpec ? insertColumns(querySpec) : undefined;
+    const values = querySpec ? insertValues(querySpec) : undefined;
+    if (columns?.length) {
+        if (Array.isArray(values) && values.length === columns.length) {
+            const binds: unknown[] = [];
+            for (let index = 0; index < columns.length; index += 1) {
+                if (isPlaceholderValue(values[index])) {
+                    binds.push(
+                        lookupBind(columns[index], params, bodyRecord),
+                    );
+                }
+            }
+            return binds;
+        }
+        return columns.map((column) =>
+            lookupBind(column, params, bodyRecord),
+        );
+    }
+
+    const fromBody = operation.body
+        ? Object.keys(operation.body).map((key) =>
+              lookupBind(key, params, bodyRecord),
+          )
+        : [];
+    const pathBinds = pathBindValues(operation.path, params);
+    if (pathBinds === null) {
+        return null;
+    }
+    return [...fromBody, ...pathBinds];
+}
+
+function compilerMethod(operation: ApiOperation): string {
+    if (operation.crud) {
+        return operation.crud;
+    }
+    switch (operation.method) {
+        case "POST":
+            return "create";
+        case "PUT":
+        case "PATCH":
+            return "update";
+        case "DELETE":
+            return "delete";
+        default:
+            return "read";
+    }
+}
+
+function mutationResult(result: unknown): Record<string, unknown> | Record<string, unknown>[] | null {
+    const rows = rowsFromQueryResult(result).map((row) => normalizeRow(row));
+    if (rows.length === 1) {
+        return rows[0];
+    }
+    if (rows.length > 1) {
+        return rows;
+    }
+    const rowCount = rowCountFromQueryResult(result);
+    if (typeof rowCount === "number" && rowCount > 0) {
+        return { ok: true, rowCount };
+    }
+    return null;
+}
+
 /**
  * Flatten operations from one or more `*API.yml` documents (`listApiOperations`).
  *
  * Sibling keys in the same file (e.g. `order_item` inside `orderAPI.yml`)
  * resolve through the loaded parent resource. Callers filter to GET reads
- * unless they `include`.
+ * unless they `include` or use {@link createNectarineWriteRoutes}.
  */
-export function listResourceReadOperations(
+export function listResourceOperations(
     nectarine: NectarineConfig,
     resourceName: string,
 ): ApiOperation[] {
@@ -173,6 +437,23 @@ export function listResourceReadOperations(
     }
 
     return [];
+}
+
+/** Flatten `*API.yml` for one resource (same as {@link listResourceOperations}). */
+export function listResourceReadOperations(
+    nectarine: NectarineConfig,
+    resourceName: string,
+): ApiOperation[] {
+    return listResourceOperations(nectarine, resourceName);
+}
+
+export function listResourceWriteOperations(
+    nectarine: NectarineConfig,
+    resourceName: string,
+): ApiOperation[] {
+    return listResourceOperations(nectarine, resourceName).filter(
+        isWriteOperation,
+    );
 }
 
 export function resolveResourceQueries(
@@ -257,11 +538,15 @@ export type CompiledNectarineExecuteOptions = {
 };
 
 /**
- * Execute a GET using CCompiler + the resource `*Queries.yml` + `operation.query`.
+ * Execute via CCompiler + the resource `*Queries.yml` + `operation.query`.
  *
- * Connected adapter: bind path params in path order (`$1`, `$2`, …).
- * No database: collections return `[]`, unique lookups return `null` (404).
- * Seed fallback and JSONB catalog mapping stay in host execute callbacks.
+ * Reads: bind path params in path order. No database → collections `[]`,
+ * unique lookups `null` (404).
+ *
+ * Writes: bind YAML columns from body / path (`order_id` ↔ `orderId`).
+ * No database or zero affected rows → `null` (404). JSONB catalog mapping
+ * and waitlist join (generated id, allowlist, duplicates) stay in host
+ * `execute` callbacks.
  */
 export function createCompiledNectarineExecute<
     TContext extends RequestContext = RequestContext,
@@ -272,32 +557,54 @@ export function createCompiledNectarineExecute<
 ) => Promise<
     Record<string, unknown> | Record<string, unknown>[] | null
 > {
-    return async ({ resource, query, params, operation }) => {
-        if (!query) {
-            return isSingularRead(operation.name) ? null : [];
-        }
+    return async ({ resource, query, params, body, operation }) => {
+        const write = isWriteOperation(operation);
 
-        const binds = pathBindValues(operation.path, params);
-        if (binds === null) {
-            return isSingularRead(operation.name) ? null : [];
+        if (!query) {
+            return write || isSingularRead(operation.name) ? null : [];
         }
 
         if (!adapterConnected(options.connected, options.query)) {
-            return isSingularRead(operation.name) ? null : [];
+            return write || isSingularRead(operation.name) ? null : [];
         }
 
         if (typeof options.query !== "function") {
-            return isSingularRead(operation.name) ? null : [];
+            return write || isSingularRead(operation.name) ? null : [];
+        }
+
+        const method = compilerMethod(operation);
+        let binds: unknown[] | null;
+        if (write) {
+            const spec = namedQuerySpec(
+                resolveResourceQueries(options.config, resource),
+                resource,
+                method,
+                query,
+            );
+            binds = writeBindValues(operation, params, body, spec);
+        } else {
+            binds = pathBindValues(operation.path, params);
+        }
+
+        if (binds === null) {
+            return write || isSingularRead(operation.name) ? null : [];
         }
 
         const sql = compileResourceQuery(
             resolveResourceQueries(options.config, resource),
             resource,
-            "read",
+            method,
             query,
         );
         const result = await options.query(sql, binds);
-        const rows = rowsFromQueryResult(result).map((row) => normalizeRow(row));
+
+        if (write) {
+            return mutationResult(result);
+        }
+
+        const rows = rowsFromQueryResult(result).map((row) =>
+            normalizeRow(row),
+        );
 
         if (isSingularRead(operation.name)) {
             return rows[0] ?? null;
@@ -321,39 +628,72 @@ function queryFromSource(
     return source.query;
 }
 
+function withSourceDefaults<TContext extends RequestContext>(
+    source: NectarineRouteSource,
+    options: CreateNectarineRoutesOptions<TContext>,
+): CreateNectarineRoutesOptions<TContext> {
+    return {
+        ...options,
+        query: queryFromSource(source, options.query),
+        connected:
+            options.connected ??
+            (source.connected !== undefined
+                ? () => source.connected === true
+                : undefined),
+    };
+}
+
 function selectOperations(
     nectarine: NectarineConfig,
     resources: readonly string[],
 ): ApiOperation[] {
     return resources.flatMap((resourceName) =>
-        listResourceReadOperations(nectarine, resourceName),
+        listResourceOperations(nectarine, resourceName),
     );
+}
+
+function operationAllowed(
+    operation: ApiOperation,
+    options: Pick<
+        CreateNectarineRoutesOptions,
+        "exclude" | "include" | "methods"
+    >,
+): boolean {
+    if (matchesExclude(operation, options.exclude)) {
+        return false;
+    }
+    if (options.include?.(operation)) {
+        return true;
+    }
+    if (!options.methods || options.methods.length === 0) {
+        return true;
+    }
+    return options.methods.includes(operation.method);
 }
 
 /**
  * Map loaded `*API.yml` operations onto Seltzer `Route`s via `generateRoutes`.
  *
- * Hosts opt in after kernel bootstrap (HTTP listen stays in Seltzer — the
- * kernel does not register routes itself):
+ * `methods` filters HTTP verbs. Omit it to take every op on `resources`
+ * (reads + writes). Hosts opt in after kernel bootstrap (HTTP listen stays
+ * in Seltzer — the kernel does not register routes itself):
  *
  * ```ts
  * const nectarine = ctx.getModuleHandle<NectarineModuleHandle>("nectarine");
- * for (const route of nectarine.createReadRoutes({ resources: ["course"] })) {
+ * for (const route of nectarine.createWriteRoutes({ resources: ["course"] })) {
  *   app.route(route);
  * }
  * ```
  *
- * Or call this helper with a `NectarineConfig` (no kernel required). Default
- * `execute` compiles `operation.query` from `*Queries.yml` and runs adapter
- * `query(sql, params)`. Pass `execute` to specialize (Blackwater product JSONB
- * / waitlist join). `include` can add a non-GET op such as waitlist
- * `joinWaitlist`; those typically need a custom `execute`.
+ * Default `execute` compiles `operation.query` from `*Queries.yml` and runs
+ * adapter `query(sql, params)`. Pass `execute` to specialize (Blackwater
+ * product JSONB / waitlist join).
  */
-export function createNectarineReadRoutes<
+export function createNectarineRoutes<
     TContext extends RequestContext = RequestContext,
 >(
     nectarine: NectarineConfig,
-    options: CreateNectarineReadRoutesOptions<TContext>,
+    options: CreateNectarineRoutesOptions<TContext>,
 ): Route<TContext>[] {
     const operations = selectOperations(nectarine, options.resources);
     const execute =
@@ -367,34 +707,80 @@ export function createNectarineReadRoutes<
     return generateRoutes(operations, {
         execute,
         notFound: options.notFound,
-        filter: (operation) =>
-            (isGetRead(operation) || Boolean(options.include?.(operation))) &&
-            !matchesExclude(operation, options.exclude),
+        filter: (operation) => operationAllowed(operation, options),
     });
 }
 
 /**
- * Same as {@link createNectarineReadRoutes}, filling `query` / `connected`
+ * GET reads from `*API.yml`. `include` can add a non-GET op such as waitlist
+ * `joinWaitlist`; those typically need a custom `execute`.
+ */
+export function createNectarineReadRoutes<
+    TContext extends RequestContext = RequestContext,
+>(
+    nectarine: NectarineConfig,
+    options: CreateNectarineReadRoutesOptions<TContext>,
+): Route<TContext>[] {
+    return createNectarineRoutes(nectarine, {
+        ...options,
+        methods: options.methods ?? NECTARINE_READ_METHODS,
+    });
+}
+
+/**
+ * POST/PUT/PATCH/DELETE as defined in YAML. Default execute is compiled
+ * named queries. Exclude JSONB / join specials, or pass `execute`.
+ */
+export function createNectarineWriteRoutes<
+    TContext extends RequestContext = RequestContext,
+>(
+    nectarine: NectarineConfig,
+    options: CreateNectarineWriteRoutesOptions<TContext>,
+): Route<TContext>[] {
+    return createNectarineRoutes(nectarine, {
+        ...options,
+        methods: options.methods ?? NECTARINE_WRITE_METHODS,
+    });
+}
+
+/**
+ * Same as {@link createNectarineRoutes}, filling `query` / `connected`
  * from a kernel handle when the caller omits them.
  */
+export function createNectarineHandleRoutes<
+    TContext extends RequestContext = RequestContext,
+>(
+    source: NectarineRouteSource,
+    options: CreateNectarineRoutesOptions<TContext>,
+): Route<TContext>[] {
+    return createNectarineRoutes(source.config, withSourceDefaults(source, options));
+}
+
 export function createNectarineHandleReadRoutes<
     TContext extends RequestContext = RequestContext,
 >(
     source: NectarineRouteSource,
     options: CreateNectarineReadRoutesOptions<TContext>,
 ): Route<TContext>[] {
-    return createNectarineReadRoutes(source.config, {
-        ...options,
-        query: queryFromSource(source, options.query),
-        connected:
-            options.connected ??
-            (source.connected !== undefined
-                ? () => source.connected === true
-                : undefined),
-    });
+    return createNectarineReadRoutes(
+        source.config,
+        withSourceDefaults(source, options),
+    );
 }
 
-/** Thin wrapper for one resource. */
+export function createNectarineHandleWriteRoutes<
+    TContext extends RequestContext = RequestContext,
+>(
+    source: NectarineRouteSource,
+    options: CreateNectarineWriteRoutesOptions<TContext>,
+): Route<TContext>[] {
+    return createNectarineWriteRoutes(
+        source.config,
+        withSourceDefaults(source, options),
+    );
+}
+
+/** Thin wrapper for one resource (GET by default). */
 export function createResourceReadRoutes<
     TContext extends RequestContext = RequestContext,
 >(
@@ -407,6 +793,25 @@ export function createResourceReadRoutes<
     > = {},
 ): Route<TContext>[] {
     return createNectarineReadRoutes(nectarine, {
+        ...options,
+        resources: [resourceName],
+        execute,
+    });
+}
+
+/** Thin wrapper for one resource (POST/PUT/PATCH/DELETE by default). */
+export function createResourceWriteRoutes<
+    TContext extends RequestContext = RequestContext,
+>(
+    nectarine: NectarineConfig,
+    resourceName: string,
+    execute: CreateNectarineWriteRoutesOptions<TContext>["execute"],
+    options: Omit<
+        CreateNectarineWriteRoutesOptions<TContext>,
+        "resources" | "execute"
+    > = {},
+): Route<TContext>[] {
+    return createNectarineWriteRoutes(nectarine, {
         ...options,
         resources: [resourceName],
         execute,

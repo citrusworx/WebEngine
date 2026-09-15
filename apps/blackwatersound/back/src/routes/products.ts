@@ -88,7 +88,7 @@ export async function executeProductRead({
   }
 }
 
-/** Product GET ops from `productAPI.yml`. Create/update/delete stay unwired. */
+/** Product GET ops from `productAPI.yml`. Create/update/delete stay unwired (JSONB). */
 export function createProductReadRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
   return createResourceReadRoutes(nectarine, "product", executeProductRead, {
     notFound: (): ResponseData => ({ status: 404, body: { error: "Product not found" } }),

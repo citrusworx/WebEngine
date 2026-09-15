@@ -8,12 +8,14 @@ import { SEED_LESSON, SEED_POST } from "../data/seed-content.js";
 import { SEED_PRODUCTS } from "../data/seed-products.js";
 import { compileResourceQuery } from "../db/named-queries.js";
 import type { AppLocals } from "../types/context.js";
-import { createRoutes, GENERATED_READ_RESOURCES } from "./index.js";
+import { createRoutes, GENERATED_READ_RESOURCES, GENERATED_RESOURCES } from "./index.js";
 import {
   createNectarineReadRoutes,
+  createNectarineWriteRoutes,
   executeCompiledRead,
   isSingularRead,
   listResourceReadOperations,
+  listResourceWriteOperations,
   pathBindValues,
   resolveResourceQueries,
 } from "./nectarine-reads.js";
@@ -204,6 +206,50 @@ describe("createNectarineReadRoutes", () => {
     }
   });
 
+  it("compiles every generated write query from Queries.yml", () => {
+    const nectarine = loadConfig();
+    let count = 0;
+
+    for (const resource of GENERATED_RESOURCES) {
+      const operations = listResourceWriteOperations(nectarine, resource);
+      expect(operations.length, resource).toBeGreaterThan(0);
+
+      for (const operation of operations) {
+        expect(operation.query, `${resource}.${operation.name}`).toBeTruthy();
+        const sql = compileResourceQuery(
+          resolveResourceQueries(nectarine, resource),
+          resource,
+          operation.crud,
+          operation.query as string,
+        );
+        expect(sql, `${resource}.${operation.name}`).toMatch(/^(INSERT|UPDATE|DELETE) /);
+        count += 1;
+      }
+    }
+
+    expect(count).toBeGreaterThan(20);
+  });
+
+  it("createNectarineWriteRoutes registers YAML writes and skips GET", () => {
+    const nectarine = loadConfig();
+    const routes = createNectarineWriteRoutes(nectarine, {
+      resources: GENERATED_RESOURCES,
+      execute: executeCompiledRead,
+    });
+    const keys = routes.map((route) => `${route.method} ${route.path}`);
+    expect(keys).toEqual(expect.arrayContaining([
+      "POST /api/courses",
+      "PUT /api/courses/:id",
+      "DELETE /api/courses/:id",
+      "PATCH /api/orders/:id/status",
+      "POST /api/orders/:orderId/items",
+      "POST /api/enrollments",
+    ]));
+    expect(keys.some((key) => key.startsWith("GET "))).toBe(false);
+    expect(keys).not.toContain("POST /api/products");
+    expect(keys).not.toContain("POST /api/waitlist");
+  });
+
   it("ranks static prefixes ahead of :id", () => {
     const nectarine = loadConfig();
     const routes = createNectarineReadRoutes(nectarine, {
@@ -237,6 +283,7 @@ describe("createRoutes", () => {
 
     expect(keys.filter((key) => key === "GET /api/lessons/:id")).toHaveLength(1);
     expect(keys.filter((key) => key === "POST /api/waitlist")).toHaveLength(1);
+    expect(keys.filter((key) => key === "POST /api/courses")).toHaveLength(1);
     expect(keys).toEqual(expect.arrayContaining([
       "GET /api/health",
       "POST /api/waitlist",
@@ -245,7 +292,18 @@ describe("createRoutes", () => {
       "GET /api/products",
       "GET /api/waitlist",
       "GET /api/courses",
+      "POST /api/courses",
+      "PUT /api/courses/:id",
+      "DELETE /api/courses/:id",
+      "POST /api/bookings",
+      "PATCH /api/orders/:id/status",
+      "POST /api/orders/:orderId/items",
+      "POST /api/enrollments",
+      "POST /api/clients",
     ]));
+    expect(keys).not.toContain("POST /api/products");
+    expect(keys).not.toContain("PUT /api/products/:id");
+    expect(keys).not.toContain("DELETE /api/products/:id");
 
     const lessonById = routes.find((route) => route.method === "GET" && route.path === "/api/lessons/:id");
     expect(lessonById?.contract).toBeUndefined();
@@ -295,6 +353,14 @@ describe("createRoutes", () => {
       status: 404,
       json: { error: "Not found" },
     });
+
+    const created = await fetch(`${base}/api/courses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: "c1", title: "Fuzz" }),
+    });
+    expect(created.status).toBe(404);
+    await expect(created.json()).resolves.toEqual({ error: "Not found" });
   });
 
   it("does not steal the hand lesson-by-id or product seed fallback", async () => {

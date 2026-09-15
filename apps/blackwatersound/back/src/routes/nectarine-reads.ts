@@ -2,13 +2,23 @@ import {
   compileResourceQuery,
   createCompiledNectarineExecute,
   createNectarineReadRoutes,
+  createNectarineRoutes,
+  createNectarineWriteRoutes,
   createResourceReadRoutes,
+  createResourceWriteRoutes,
   isSingularRead,
+  isWriteOperation,
+  listResourceOperations,
   listResourceReadOperations,
+  listResourceWriteOperations,
   pathBindValues,
   resolveResourceQueries,
+  writeBindValues,
   type CreateNectarineReadRoutesOptions,
+  type CreateNectarineRoutesOptions,
+  type CreateNectarineWriteRoutesOptions,
   type ReadRouteExclude,
+  type RouteExclude,
 } from "@citrusworx/webengine";
 import type { ExecuteArgs } from "@citrusworx/seltzer";
 import { isDatabaseConnected, runCompiledQuery } from "../db/postgres.js";
@@ -17,18 +27,32 @@ import type { BlackwaterContext } from "../types/context.js";
 export {
   compileResourceQuery,
   createNectarineReadRoutes,
+  createNectarineRoutes,
+  createNectarineWriteRoutes,
   createResourceReadRoutes,
+  createResourceWriteRoutes,
   isSingularRead,
+  isWriteOperation,
+  listResourceOperations,
   listResourceReadOperations,
+  listResourceWriteOperations,
   pathBindValues,
   resolveResourceQueries,
+  writeBindValues,
 };
-export type { CreateNectarineReadRoutesOptions, ReadRouteExclude };
+export type {
+  CreateNectarineReadRoutesOptions,
+  CreateNectarineRoutesOptions,
+  CreateNectarineWriteRoutesOptions,
+  ReadRouteExclude,
+  RouteExclude,
+};
 
 /**
- * Blackwater compiled-read execute: engine helper + this host's Postgres adapter.
- * Prefer passing `query` / `connected` into {@link createNectarineReadRoutes}
- * at the call site (see `routes/index.ts`).
+ * Blackwater compiled execute: engine helper + this host's Postgres adapter.
+ * Prefer passing `query` / `connected` into {@link createNectarineRoutes}
+ * at the call site (see `routes/index.ts`). Product JSONB and waitlist join
+ * keep their own `execute` callbacks.
  */
 export function executeCompiledRead(
   args: ExecuteArgs<BlackwaterContext>,
@@ -39,3 +63,5 @@ export function executeCompiledRead(
     connected: () => isDatabaseConnected(),
   })(args);
 }
+
+export const executeCompiled = executeCompiledRead;

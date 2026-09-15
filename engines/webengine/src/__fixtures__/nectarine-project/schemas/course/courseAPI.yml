@@ -24,3 +24,28 @@ course:
         method: POST
         endpoint: /api/courses
         query: newCourse
+        body:
+          id: string.required
+          slug: string
+          title: string.required
+          line: string
+          status: string
+
+  update:
+    updateCourse:
+      api:
+        method: PUT
+        endpoint: /api/courses/:id
+        query: updateCourse
+        body:
+          slug: string
+          title: string
+          line: string
+          status: string
+
+  delete:
+    deleteCourse:
+      api:
+        method: DELETE
+        endpoint: /api/courses/:id
+        query: deleteCourse
