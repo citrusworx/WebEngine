@@ -29,7 +29,7 @@ export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
  * {@link MysqlSql.query} rewrites those binds to MySQL `?` (and
  * `CAST(? AS JSON)` for json/jsonb) so compiled SQL can run here unchanged.
  * JSONB `@>` / `?` / `->>` become MySQL `JSON_CONTAINS` / `JSON_CONTAINS_PATH`
- * / `JSON_EXTRACT`. SQL that already uses `?` is left as-is.
+ * / `JSON_EXTRACT` (`JSON_QUOTE` wraps bound `has_key` names as one path segment).
  *
  * @example
  * ```ts

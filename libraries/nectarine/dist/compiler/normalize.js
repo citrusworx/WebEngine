@@ -182,16 +182,15 @@ function normalizeSelect(query) {
         if (query.fields !== undefined) {
             throw new errors_js_1.QueryCompileError("count: true cannot include fields");
         }
+        if (query.orderBy !== undefined) {
+            throw new errors_js_1.QueryCompileError("COUNT cannot include orderBy (GROUP BY is not compiled)");
+        }
         const normalized = {
             select: [{ fn: "count" }],
             from: query.from ?? table,
         };
         if (query.where !== undefined) {
             normalized.where = normalizeWhere(query.where);
-        }
-        const orderBy = normalizeOrderBy(query.orderBy);
-        if (orderBy !== undefined) {
-            normalized.orderBy = orderBy;
         }
         return normalized;
     }

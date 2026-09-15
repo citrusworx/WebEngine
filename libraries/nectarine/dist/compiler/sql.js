@@ -241,6 +241,16 @@ function compileSelectList(select) {
     }
     return items.map((item) => item.sql).join(", ");
 }
+function isCountSelect(select) {
+    if ((0, errors_js_1.isRecord)(select) && typeof select.fn === "string" && select.fn.toLowerCase() === "count") {
+        return true;
+    }
+    return (Array.isArray(select) &&
+        select.length === 1 &&
+        (0, errors_js_1.isRecord)(select[0]) &&
+        typeof select[0].fn === "string" &&
+        select[0].fn.toLowerCase() === "count");
+}
 function compileInList(value) {
     if ((0, errors_js_1.isRecord)(value) && "list" in value) {
         if (!Array.isArray(value.list) || value.list.length === 0) {
@@ -355,6 +365,9 @@ function compileSelect(query) {
         sql += ` WHERE ${compileWhere(query.where)}`;
     }
     if (query.orderBy !== undefined) {
+        if (isCountSelect(query.select)) {
+            throw new errors_js_1.QueryCompileError("COUNT cannot include orderBy (GROUP BY is not compiled)");
+        }
         sql += ` ORDER BY ${compileOrderBy(query.orderBy)}`;
     }
     return sql;
