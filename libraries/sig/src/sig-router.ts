@@ -1,14 +1,80 @@
 import { disposeTree } from "./jsx-runtime.js";
 
+export type RouteParams = Record<string, string>;
+export type RouteFactory = (params: RouteParams) => Node | null;
+export type RouteView = Node | RouteFactory | null;
+export type RouteMap = Record<string, RouteView>;
+
 interface Route {
     path: string;
     view: RouteView;
     name?: string;
 }
 
-type RouteFactory = () => Node | null;
-type RouteView = Node | RouteFactory | null;
-type RouteMap = Record<string, RouteView>;
+interface ResolvedRoute {
+    route: Route;
+    params: RouteParams;
+}
+
+function splitPath(path: string): string[] {
+    if (path === "/" || path === "*") {
+        return [];
+    }
+
+    const parts = path.split("/");
+    if (parts[0] === "") {
+        parts.shift();
+    }
+
+    return parts;
+}
+
+function decodeSegment(segment: string): string {
+    try {
+        return decodeURIComponent(segment);
+    } catch {
+        return segment;
+    }
+}
+
+function isParamSegment(segment: string): boolean {
+    return segment.startsWith(":") && segment.length > 1;
+}
+
+function isParamPattern(path: string): boolean {
+    return splitPath(path).some(isParamSegment);
+}
+
+function matchParamPattern(pattern: string, path: string): RouteParams | null {
+    const patternSegments = splitPath(pattern);
+    const pathSegments = splitPath(path);
+
+    if (patternSegments.length !== pathSegments.length) {
+        return null;
+    }
+
+    const params: RouteParams = {};
+
+    for (let i = 0; i < patternSegments.length; i++) {
+        const patternSegment = patternSegments[i]!;
+        const pathSegment = pathSegments[i]!;
+
+        if (isParamSegment(patternSegment)) {
+            if (!pathSegment) {
+                return null;
+            }
+
+            params[patternSegment.slice(1)] = decodeSegment(pathSegment);
+            continue;
+        }
+
+        if (patternSegment !== pathSegment) {
+            return null;
+        }
+    }
+
+    return params;
+}
 
 export class SigRouter {
     private routes: Map<string, Route> = new Map();
@@ -50,9 +116,30 @@ export class SigRouter {
         return path.startsWith("/") ? path : `/${path}`;
     }
 
-    private resolveRoute(path: string): Route | undefined {
+    private resolveRoute(path: string): ResolvedRoute | undefined {
         const normalizedPath = this.normalizePath(path);
-        return this.routes.get(normalizedPath) ?? this.routes.get("*");
+        const exact = this.routes.get(normalizedPath);
+        if (exact) {
+            return { route: exact, params: {} };
+        }
+
+        for (const route of this.routes.values()) {
+            if (route.path === "*" || !isParamPattern(route.path)) {
+                continue;
+            }
+
+            const params = matchParamPattern(route.path, normalizedPath);
+            if (params) {
+                return { route, params };
+            }
+        }
+
+        const fallback = this.routes.get("*");
+        if (fallback) {
+            return { route: fallback, params: {} };
+        }
+
+        return undefined;
     }
 
     private register(path: string, view: RouteView, name?: string) {
@@ -64,9 +151,9 @@ export class SigRouter {
         }
     }
 
-    private resolveView(view: RouteView): Node | null {
+    private resolveView(view: RouteView, params: RouteParams): Node | null {
         if (typeof view === "function") {
-            return view();
+            return view(params);
         }
 
         return view;
@@ -93,18 +180,18 @@ export class SigRouter {
     }
 
     private render(path: string){
-        const route = this.resolveRoute(path);
+        const resolved = this.resolveRoute(path);
         const target = document.querySelector(this.target);
         if(!target) return;
 
         [...target.childNodes].forEach(node => disposeTree(node));
 
-        if(!route) {
+        if(!resolved) {
             target.replaceChildren();
             return;
         }
 
-        const nextView = this.resolveView(route.view);
+        const nextView = this.resolveView(resolved.route.view, resolved.params);
         if (!nextView) {
             target.replaceChildren();
             return;
@@ -127,8 +214,8 @@ export class SigRouter {
     
     navigate(path: string){
         const normalizedPath = this.normalizePath(path);
-        const route = this.resolveRoute(normalizedPath);
-        if(!route) return;
+        const resolved = this.resolveRoute(normalizedPath);
+        if(!resolved) return;
 
         window.history.pushState({}, "", normalizedPath);
         this.render(normalizedPath);

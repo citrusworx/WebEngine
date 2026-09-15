@@ -7,7 +7,8 @@ Each pattern follows the same general rules:
 - Juice (or HTML) owns structure
 - signals own values
 - function children own live text
-- effects own attributes, lists, and resources
+- function-valued props own live attributes
+- effects own lists, resources, and multi-property writes
 - app code owns behavior
 
 Related:
@@ -505,7 +506,7 @@ function UserCard() {
 
 Two effects keep loading UI out of the fetch effect. The first owns the request; the second owns the text.
 
-## Exact-path views
+## Router views
 
 Use this for a static shell with a changing `#view`. Register functions so cleanup runs per visit.
 
@@ -547,7 +548,7 @@ router.set({
 router.start();
 ```
 
-Keep the nav outside `#view`. There is no `/user/:id`. See [Router](./sig-router.md).
+Keep the nav outside `#view`. Use `/user/:id` when a segment is part of the URL; exact paths still win over param patterns. See [Router](./sig-router.md).
 
 ## Lifted state across views
 
@@ -573,7 +574,8 @@ If `Desk` created `operatorName` internally, leaving and returning would reset i
 - Prefer `batch` when one gesture writes several signals.
 - Prefer `memo` when several readers share one derivation.
 - Prefer Juice attributes for layout (`stack`, `row`, `gap`, `card`) instead of rebuilding layout in an effect on resize.
-- Avoid `{() => items.map(<li />)}` and `className={() => …}` — they are not this runtime.
+- Avoid `{() => items.map(<li />)}` — function children are text, not lists.
+- Prefer `className={() => …}` (or an effect) over `className={flag.get()}`.
 
 ## How to adapt these
 

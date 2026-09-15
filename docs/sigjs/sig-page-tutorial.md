@@ -386,7 +386,7 @@ router.set({
 router.start();
 ```
 
-`about` without a slash is stored as `/about` and named `"about"`. Paths are exact: `/about` ≠ `/about/`. There is no `:id` matcher.
+`about` without a slash is stored as `/about` and named `"about"`. Paths are exact unless a segment starts with `:`: `/about` ≠ `/about/`. `/user/:id` receives `{ id }` in the view function.
 
 Do not write `router.set({ about: <About /> })`. That builds the tree once. After the first visit, `disposeTree` runs those effects and they will not come back.
 
@@ -594,13 +594,12 @@ router.start();
 - Live **text** uses function children. Live **structure** uses an effect that writes to a node you already hold.
 - `batch` is how add-job stays one paint. `memo` is how the greeting stays cheap.
 - `About`'s interval dies when you click Desk, because the view is a function and the effect was registered while it ran.
-- Juice attributes are static. To change `padding` later you would `setAttribute` from an effect, not pass a function into JSX.
+- Juice attributes can be static or function-valued. `padding={space.get()}` is a snapshot; `padding={() => space.get()}` is live.
 
 ## What this tutorial does not pretend
 
 - There is no `useState`, `useEffect`, or keyed `<For>` / `.map()` in JSX.
-- There is no `/desk/:id` route. Register exact paths.
-- There is no reactive `className={() => …}`.
+- Function children are still text, not elements.
 - There is no Sig `<Button>` or Juice `<Button>` to import. HTML plus attributes is the composition.
 
 ## Next steps

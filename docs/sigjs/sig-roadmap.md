@@ -10,15 +10,14 @@ It is a small, implemented runtime with five visible layers:
 - a JSX factory that creates real DOM in `jsx-runtime.ts`
 - cleanup scopes so views can die cleanly
 - `mount` / `disposeTree`
-- `SigRouter` for exact-path client navigation
+- `SigRouter` for exact-path and `:param` client navigation
 
-The strongest part of Sig.js today is still the static-first model: build the tree once, subscribe at the leaves. The next strongest areas are effect cleanup and Juice composition (attributes survive `setProp`).
+The strongest part of Sig.js today is still the static-first model: build the tree once, subscribe at the leaves. The next strongest areas are effect cleanup, function-valued props, and Juice composition (attributes survive `setProp`).
 
 The weakest areas are still:
 
-- reactive JSX beyond text children
 - list / conditional primitives
-- router expressiveness (params)
+- live `style` object bindings
 - tests beyond the current signal, JSX, and router files
 
 Alpha is the honest label. The core is real enough to teach in depth; it is not frozen.
@@ -41,15 +40,15 @@ That is enough to build timers, fetch-with-abort, and disclosures without a seco
 
 ### 3. JSX is a factory, not a compiler
 
-There is no reactive transform. Function children are text. Attributes are assigned once. That limitation is currently a feature: the runtime stays readable.
+There is no reactive transform. Function children are text. Function-valued **props** (except `ref` and `on*`) are reactive getters. That split is the current feature: the runtime stays readable.
 
-The roadmap should not “fix” this by pretending a VDOM exists. If reactive attributes land, they should be an explicit helper or a documented `ref` + `effect` convention — not silent magic that still stringifies element children.
+The roadmap should not “fix” this by pretending a VDOM exists. Function children that return elements still stringify. Lists still need `replaceChildren`.
 
 ### 4. The router is useful for a handful of pages
 
-Exact paths, named routes, click interception, `popstate`, and view dispose are implemented. That is a real SPA kernel for Juice shells.
+Exact paths, `:param` segments, named routes, click interception, `popstate`, `"*"`, and view dispose are implemented. That is a real SPA kernel for Juice shells.
 
-It is not file-based routing, not a data loader, and not `/user/:id`.
+It is not file-based routing and not a data loader. There are no splat segments (`/files/*`).
 
 ### 5. Juice composition is real
 
@@ -75,15 +74,15 @@ Until there is either a tiny list helper or even stronger teaching (tutorial + a
 
 An opt-in compare, or a documented “check before set” practice (already in the form pattern), is enough. A deep equality rabbit hole is not.
 
-### 3. The router normalizes `navigate`; params are still absent
+### 3. The router matches params; splat routes are still absent
 
-`set` / `has` / `navigate` share `normalizePath`. `navigate("about")` hits `/about`. Register `"*"` for unknown paths. Without it, `navigate` to a missing path is a silent no-op and `popstate` empties the target.
+`set` / `has` / `navigate` share `normalizePath`. `navigate("about")` hits `/about`. `/user/:id` passes `{ id }` to the view function. Exact routes win over param patterns. Register `"*"` for unknown paths. Without it, `navigate` to a missing path is a silent no-op and `popstate` empties the target.
 
-That is teachable. Parametric routes are still not shipped.
+That is teachable. Splat routes and a helper that fills named param URLs are still not shipped.
 
 ### 4. JSX-runtime tests exist but are still thin
 
-`signal.test.ts`, `jsx.test.ts`, and `router.test.ts` cover the child text model, `mount` / `disposeTree`, `navigate` normalize, and `"*"` fallback. They do not cover every `setProp` branch or Juice attributes on Sig elements.
+`signal.test.ts`, `jsx.test.ts`, and `router.test.ts` cover the child text model, reactive props, `mount` / `disposeTree`, `navigate` normalize, `"*"` fallback, and `:param` matching. They do not cover every `setProp` branch.
 
 ---
 
@@ -93,10 +92,11 @@ If Sig.js is viewed as a UI system, its current maturity looks roughly like this
 
 - Signals and effects: strong
 - JSX as DOM factory: strong, with a sharp child model
+- Function-valued props: present and tested
 - Cleanup / dispose: solid
-- Router: useful and narrow
+- Router: exact + `:param` + `"*"`, still small
 - Docs as product surface: much stronger after the tutorial and topic pages
-- Reactive attributes / list components: not started
+- List / conditional components: not started
 - Production-hardened SPA framework: not the goal yet
 
 In practical terms:
@@ -132,31 +132,33 @@ Do not add `peek` unless a real effect-tracking bug requires it. Reading outside
 
 Useful increments, if they are built:
 
-- parametric routes **after** exact-path behavior stays boring and tested
+- a helper that fills named param URLs (`get("user")` still returns `/user/:id`)
+- splat segments if a real app needs them
 - a named 404 helper if `"*"` is too easy to miss
 
-`navigate` normalization and an optional `"*"` fallback are already in source.
+Exact paths, `:param` matching, `navigate` normalization, and an optional `"*"` fallback are already in source.
 
-Param routes are the most requested missing piece. They are also the easiest to fake in docs. Do not document them until they exist.
+### Priority 4. Decide the story for lists
 
-### Priority 4. Decide the story for lists and attributes
+Function-valued props landed as a small coherent rule. Lists and conditionals did not.
 
 Two honest options:
 
-1. **Never** add reactive attributes or list helpers. Double down on `ref` + `effect` + `replaceChildren`. The docs already teach this.
-2. Add a very small, explicit helper (`bindText` is already a function child; a `bindList(el, signal, renderRow)` would be new code).
+1. **Never** add list helpers. Double down on `replaceChildren`. The docs already teach this.
+2. Add a very small, explicit helper (`bindList(el, signal, renderRow)` would be new code).
 
-What would be a mistake: JSX that *looks* like Solid/React (`className={() =>}`, `{condition && <X />}`) but still stringifies.
+What would be a mistake: `{condition && <X />}` or `{() => items.map(<li />)}` that still stringifies.
 
 ### Priority 5. Test the runtime you document
 
-Highest value tests:
+Highest value tests that already exist:
 
 - function child updates a text node and only that node
 - function child stringifies an element
-- `className={() =>}` does not subscribe
+- `className={() =>}` / `value={() =>}` / boolean props subscribe
 - `mount` disposes effects from a function component
-- router factory views re-run after `disposeTree` (already partially covered)
+- router factory views re-run after `disposeTree`
+- param match, exact-over-param, `"*"` fallback
 
 ### Priority 6. Stay complementary to Juice
 
@@ -168,8 +170,8 @@ Sig.js should not grow a theme, a `<Button>`, or a layout system. If a pattern n
 
 1. Keep docs and examples locked to source (ongoing).
 2. Nested-safe `batch`, `navigate` normalization, `"*"` fallback, and JSX-runtime tests (landed).
-3. Broader JSX / `setProp` tests if the child model is still surprising people.
-4. Only then: param routes or an explicit list helper — not both at once.
+3. Function-valued props and parametric routes (landed).
+4. An explicit list helper only if `replaceChildren` keeps generating support questions.
 
 ---
 
@@ -177,7 +179,7 @@ Sig.js should not grow a theme, a `<Button>`, or a layout system. If a pattern n
 
 - SSR before the client child model is widely understood
 - a hook compatibility layer
-- inventing reactive props in documentation
+- inventing list reconciler APIs in documentation
 - merging Juice and Sig into one “UI framework” package
 - a compiler
 
@@ -201,8 +203,8 @@ The next stage is not inventing Sig.js from scratch.
 
 The next stage is refinement:
 
-- decide lists/attributes explicitly
+- decide lists explicitly
 - keep the static-first promise
-- parametric routes only after exact-path behavior stays boring
+- keep param matching boring (exact wins, first registered pattern, `"*"` last)
 
 That is a strong place to be. Until those land, the docs stay with [Status](./sig-status.md) and the APIs in `libraries/sig/src`.

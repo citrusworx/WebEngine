@@ -38,7 +38,7 @@ mount(<Counter />, document.getElementById("root")!);
 
 ## Disclosure with attributes
 
-`hidden` and `aria-expanded` are not reactive JSX. Hold the nodes; write them from an effect. This is the same shape Juice's accordion uses.
+`hidden={() => !open.get()}` is a live boolean prop. This example still uses an effect because it also writes `aria-expanded` on a second node — the same shape Juice's accordion uses.
 
 ```tsx
 import { Signal, effect, mount } from "@citrusworx/sigjs";
@@ -457,7 +457,7 @@ Patterns that look familiar from other libraries but **do not work here**:
 // These are not Sig.js APIs / behaviors
 const count = new Signal(0);
 {() => items.get().map((item) => <li>{item}</li>)}
-className={() => (on.get() ? "on" : "off")}
+className={on.get() ? "on" : "off"}  // snapshot, not live
 useEffect(() => { … }, []);
 ```
 

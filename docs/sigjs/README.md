@@ -8,7 +8,7 @@ The current model is:
 
 - **Signals** own values. `get()` reads; `set()` notifies subscribers.
 - **Effects** own side effects. An effect that reads a signal re-runs when that signal changes.
-- **JSX** creates real `HTMLElement`s once. Reactivity is opt-in: a function child becomes a live text node, or you hold an element and update it from an effect.
+- **JSX** creates real `HTMLElement`s once. Reactivity is opt-in: a function child becomes a live text node, a function-valued prop becomes a live attribute, or you hold an element and update it from an effect.
 - **Juice** owns structure and style. Sig.js owns behavior.
 
 Sig.js is strongest when you treat most of the page as static markup and apply reactivity only where something actually changes.
@@ -90,7 +90,7 @@ The button and the wrapping `div` are created once. Only the text node after `Co
 
 ### 2. An effect that owns one element
 
-When you need more than text — `textContent`, `className`, `disabled`, `hidden`, a list rewrite — capture the element and update it from an `effect`.
+When you need more than one live attribute — `textContent` plus `className` plus `aria-*`, a list rewrite — capture the element and update it from an `effect`. A single `className={() => …}` or `disabled={() => …}` can stay in JSX.
 
 ```tsx
 import { Signal, effect, mount } from "@citrusworx/sigjs";
@@ -300,7 +300,7 @@ function StatusLine() {
 
 ### 9. Client-side routes
 
-`SigRouter` matches **exact paths**. Keys without a leading slash become named routes (`about` → `/about`). Prefer component functions so each visit builds a fresh tree; the router disposes the previous view's effects.
+`SigRouter` matches **exact paths** first, then `:param` segments, then optional `"*"`. Keys without a leading slash become named routes (`about` → `/about`). Prefer component functions so each visit builds a fresh tree; the router disposes the previous view's effects.
 
 ```tsx
 import { SigRouter } from "@citrusworx/sigjs";
@@ -311,6 +311,7 @@ router.set({
   "/": Home,
   about: About,
   contact: Contact,
+  "/user/:id": UserPage,
 });
 
 router.start();
@@ -323,7 +324,7 @@ router.start();
 </nav>
 ```
 
-There is no `/user/:id` matcher yet. Parse `window.location.pathname` yourself if you need a segment. `navigate("about")` normalizes to `/about`, same as `set` / `has`. Register `"*"` if you want an unknown-path view; without it, `navigate` to a missing path is a no-op and `popstate` empties the target.
+A view function receives params as its first argument: `function UserPage(params: { id: string })`. `navigate("about")` normalizes to `/about`, same as `set` / `has`. Register `"*"` if you want an unknown-path view; without it, `navigate` to a missing path is a no-op and `popstate` empties the target.
 
 ## Mental model
 
@@ -331,15 +332,16 @@ There is no `/user/:id` matcher yet. Parse `window.location.pathname` yourself i
 |---|---|
 | A reactive value | `Signal(initial)` |
 | Live **text** in JSX | `{() => String(signal.get())}` |
-| Live attributes, lists, or structure | Hold the element; update it in `effect` |
-| Show / hide existing structure | `hidden` (or similar) from an effect |
+| Live **attributes** in JSX | `className={() => …}`, `value={() => …}`, `checked={() => …}` |
+| Several writes, or lists / structure | Hold the element; update it in `effect` |
+| Show / hide existing structure | `hidden={() => …}` or `hidden` from an effect |
 | Swap list children | `replaceChildren` from an effect |
 | Several writes, one notification | `batch(() => { … })` |
 | A cached derivation | `memo(() => …)` |
 | To put a tree on the page | `mount(node, target)` |
 | SPA navigation | `new SigRouter("#root")` |
 
-Function children are **text only**. The runtime does `textNode.textContent = String(child())`. Returning an element from a function child stringifies it; it does not swap subtrees. Attributes such as `className={() => …}` or `value={() => …}` are **not** reactive — `setProp` assigns the function once. Use an effect for those.
+Function children are **text only**. The runtime does `textNode.textContent = String(child())`. Returning an element from a function child stringifies it; it does not swap subtrees. Function-valued **props** (except `ref` and `on*`) are live getters. `disabled={busy.get()}` is still a snapshot.
 
 Component functions run **once** per mount (or per router visit). They are factories for DOM, not render functions. That is why `{count.get()}` without a function wrapper is a static snapshot.
 
@@ -387,9 +389,9 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 5. [JSX and the DOM](./sig-jsx.md) — static first, function children, lists, conditionals
 6. [Patterns](./sig-patterns.md) — truthful cookbook for common UI
 7. [Best Practices](./sig-best-practices.md) — how to compose Sig so it stays small
-8. [Anti-Patterns](./sig-anti-patterns.md) — React habits, reactive attributes, VDOM assumptions
+8. [Anti-Patterns](./sig-anti-patterns.md) — React habits, snapshot props, VDOM assumptions
 9. [Examples](./sig-examples.md) — longer showcases (forms, lists, fetch, router)
-10. [Router Guide](./sig-router.md) — exact paths, named routes, cleanup
+10. [Router Guide](./sig-router.md) — exact paths, `:param` routes, named routes, cleanup
 11. [Sig.js + Juice](./sig-juice-integration.md) — behavior vs structure
 12. [API Reference](./sig-api.md) — the public surface, one page
 13. [Troubleshooting](./sig-troubleshooting.md) — the usual “why didn’t it update?” cases
@@ -401,15 +403,14 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 **Alpha** (`@citrusworx/sigjs` 0.2.0). Core reactivity is implemented and tested. The public direction is stable enough to describe clearly:
 
 - `Signal`, `effect` (with cleanup / dispose), `batch`, `memo`
-- JSX runtime (direct DOM, function-child text, `ref`, `on*` events)
+- JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
 - `mount` and tree dispose
-- `SigRouter` — exact paths, named routes, link interception, view cleanup
+- `SigRouter` — exact paths, `:param` segments, named routes, link interception, view cleanup
 
 Not shipped:
 
-- Dynamic route params (`/user/:id`)
-- Reactive attribute bindings in JSX
 - Function children that return elements or lists
+- Live `style={{}}` object bindings
 - SSR / hydration
 - Error boundaries
 

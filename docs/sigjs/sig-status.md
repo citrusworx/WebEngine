@@ -4,7 +4,7 @@ Honest snapshot of `@citrusworx/sigjs` **0.2.0** against `libraries/sig/src`.
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 
-**Alpha.** The reactivity core, JSX factory, and exact-path router are implemented and covered by Playwright tests. The API is small enough to describe, but this is pre-1.0: names and behavior can still move.
+**Alpha.** The reactivity core, JSX factory, and client router are implemented and covered by Playwright tests. The API is small enough to describe, but this is pre-1.0: names and behavior can still move.
 
 Workspace index calls this **Active alpha**. That matches the code better than “beta” or “production ready.”
 
@@ -37,16 +37,15 @@ The feature is more of a direction than a hardened part of the runtime.
 | Cleanup scopes on function components | Stable-ish | `captureCleanupScope` + `disposeTree`. This is how the router stops timers. |
 | Function-child **text** | Stable-ish | `String(child())` on a text node. Easy to misuse; behavior is consistent. |
 | JSX → real DOM | Stable-ish | `createElement`, `on*`, `ref`, known properties vs attributes. No VDOM. |
+| Function-valued host props | Emerging | Getters via `effect` (not `ref` / `on*`). `className` / `value` / booleans / attributes. |
 | `mount` / `disposeTree` | Stable-ish | Replace a target’s children; walk cleanups. |
 | `Fragment` | Stable-ish | `DocumentFragment`. Same child model as host elements. |
 | `batch` | Stable-ish | Depth counter, `try` / `finally`. Nested calls and throws are covered by tests. |
 | `memo` | Emerging | Lazy `{ get }` cache. No public dispose. Useful, still a small surface. |
-| `SigRouter` exact paths | Emerging | Named routes, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. No params. |
+| `SigRouter` exact + param paths | Emerging | Named routes, `:id` params, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. |
 | Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
 | Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys. Not a typed Juice plugin. |
 | List / conditional helpers | Draft | `replaceChildren` is the current instruction, not a `<For>` / `<Show>` primitive. |
-| Reactive attribute bindings | Draft | Explicitly not implemented. `ref` + `effect` is the workaround. |
-| Parametric routes | Draft | Literal paths only. `/user/:id` would register that string. |
 | SSR / hydration | Draft | Client DOM only. |
 | Error boundaries | Draft | Uncaught. |
 | DevTools | Draft | None. |
@@ -62,10 +61,11 @@ The feature is more of a direction than a hardened part of the runtime.
 | `captureCleanupScope` | `signal.ts` | Used by JSX components |
 | JSX → real DOM | `jsx-runtime.ts` | No VDOM |
 | Function-child **text** | `jsx-runtime.ts` | `String(child())` |
-| `ref`, `on*` events | `jsx-runtime.ts` | |
+| Function-valued host props | `jsx-runtime.ts` | `effect` + `disposeTree` cleanup |
+| `ref`, `on*` events | `jsx-runtime.ts` | Assign-once callbacks / listeners |
 | `mount` / `disposeTree` | `jsx-runtime.ts` | |
 | `Fragment` | `jsx-runtime.ts` | `DocumentFragment` |
-| `SigRouter` exact paths | `sig-router.ts` | Named routes, click + popstate, normalized `navigate` |
+| `SigRouter` paths | `sig-router.ts` | Exact, `:param` segments, named routes, click + popstate, normalized `navigate` |
 | `"*"` unknown-route fallback | `sig-router.ts` | Optional; without it `navigate` no-ops and `popstate` empties |
 | View dispose on navigate | `sig-router.ts` | `disposeTree` |
 | Package exports | `package.json` | root, jsx-runtime, jsx-dev-runtime, sig-router |
@@ -76,9 +76,8 @@ The feature is more of a direction than a hardened part of the runtime.
 |---|---|
 | `new Signal(0)` | Not a constructor |
 | `useEffect` / hooks | Not present |
-| Reactive `className={() =>}` / `value={() =>}` | Assigned once, not subscribed |
 | Function children that return elements or mapped lists | Become `String(…)` text |
-| `/user/:id` route params | Literal path only |
+| Live `style={{ color }}` object binder | Not implemented; write `el.style` from an effect |
 | SSR / hydration | Client DOM only |
 | Error boundaries | Uncaught |
 | DevTools | None |
@@ -94,8 +93,10 @@ These are the parts of Sig.js that are already carrying real value:
 - signals as `{ get, set }` boxes
 - effects with cleanup
 - function-child live text
+- function-valued live attributes
 - JSX that is actual DOM
 - disposing a view when the router leaves it
+- exact and parametric client routes
 
 These form the strongest case for Sig.js as a small behavior layer on Juice pages.
 
@@ -104,9 +105,9 @@ These form the strongest case for Sig.js as a small behavior layer on Juice page
 These are already useful, but still need refinement before they feel fully settled:
 
 - `memo` (lifecycle)
-- `SigRouter` (params; `"*"` is the current unknown-path hook)
+- `SigRouter` (first-registered param matches; no splat segments)
 - documentation as a product surface
-- Juice composition conventions (when to `setAttribute` a Juice flag)
+- Juice composition conventions (static flags vs function-valued attributes)
 
 These areas are what will most directly move Sig.js from strong alpha toward a calmer 1.0 story.
 
@@ -114,9 +115,9 @@ These areas are what will most directly move Sig.js from strong alpha toward a c
 
 These should be treated more carefully in positioning:
 
-- reactive JSX attributes
 - list / conditional components
-- parametric routes
+- live `style` object bindings
+- splat routes (`/files/*`)
 - SSR
 - error boundaries
 - DevTools
@@ -128,6 +129,7 @@ These can absolutely be valuable later. They should not yet be the center of the
 Sig.js does not re-render a component function when a signal changes.
 
 - A function child updates **one text node**.
+- A function-valued prop updates **one property or attribute**.
 - An `effect` runs your callback; you decide which properties to write.
 - A list example that calls `replaceChildren` rebuilds those children. That is your code, not a reconciler.
 
@@ -136,8 +138,8 @@ If you put `{count.get()}` in JSX without a function wrapper, you get a static t
 ## Tests
 
 - `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo`
-- `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, `mount` / `disposeTree`
-- `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate
+- `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, reactive `className` / `value` / booleans, `ref` + effect, `mount` / `disposeTree`
+- `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate, param match, exact-over-param
 
 DOM tests install a jsdom document from `libraries/sig/jsdom-register.ts` (not published).
 
@@ -157,13 +159,13 @@ Coverage is real and still narrow. Docs examples were checked against source, no
 
 If Sig.js is being described externally or internally, the most honest current positioning is:
 
-> Sig.js Alpha is a small signals runtime plus a JSX factory that creates real DOM nodes. It is built for static-first Juice (or HTML) pages that need surgical updates: live text, effects, exact-path routing. It is not a virtual-DOM framework, not React, and not a component library.
+> Sig.js Alpha is a small signals runtime plus a JSX factory that creates real DOM nodes. It is built for static-first Juice (or HTML) pages that need surgical updates: live text, live attributes, effects, and a small client router (exact + `:param` paths). It is not a virtual-DOM framework, not React, and not a component library.
 
 That framing matches the strongest current reality.
 
 Less accurate positioning right now would be:
 
-- fine-grained reactive JSX (attributes, element children, lists)
+- fine-grained reactive JSX for **structure** (element children, lists)
 - a production-hardened SPA framework
 - a meta-framework with SSR
 - a form / fetch / data library
@@ -172,10 +174,10 @@ Less accurate positioning right now would be:
 
 If you are building with Sig.js today:
 
-- confidently use `Signal`, function-child text, `effect` + cleanup, `mount`
+- confidently use `Signal`, function-child text, function-valued props, `effect` + cleanup, `mount`
 - use `batch` (including nested) and `memo`
-- use `SigRouter` for a handful of exact pages; register `"*"` if you want a missing-path view
-- treat parametric routes, reactive props, and list components as things you write yourself or live without
+- use `SigRouter` for exact pages and `/user/:id`-style params; register `"*"` if you want a missing-path view
+- treat list components and live `style` objects as things you write yourself or live without
 
 That is the cleanest adoption model for the current state of the system.
 

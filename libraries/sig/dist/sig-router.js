@@ -1,4 +1,51 @@
 import { disposeTree } from "./jsx-runtime.js";
+function splitPath(path) {
+    if (path === "/" || path === "*") {
+        return [];
+    }
+    const parts = path.split("/");
+    if (parts[0] === "") {
+        parts.shift();
+    }
+    return parts;
+}
+function decodeSegment(segment) {
+    try {
+        return decodeURIComponent(segment);
+    }
+    catch {
+        return segment;
+    }
+}
+function isParamSegment(segment) {
+    return segment.startsWith(":") && segment.length > 1;
+}
+function isParamPattern(path) {
+    return splitPath(path).some(isParamSegment);
+}
+function matchParamPattern(pattern, path) {
+    const patternSegments = splitPath(pattern);
+    const pathSegments = splitPath(path);
+    if (patternSegments.length !== pathSegments.length) {
+        return null;
+    }
+    const params = {};
+    for (let i = 0; i < patternSegments.length; i++) {
+        const patternSegment = patternSegments[i];
+        const pathSegment = pathSegments[i];
+        if (isParamSegment(patternSegment)) {
+            if (!pathSegment) {
+                return null;
+            }
+            params[patternSegment.slice(1)] = decodeSegment(pathSegment);
+            continue;
+        }
+        if (patternSegment !== pathSegment) {
+            return null;
+        }
+    }
+    return params;
+}
 export class SigRouter {
     routes = new Map();
     namedRoutes = new Map();
@@ -40,7 +87,24 @@ export class SigRouter {
     }
     resolveRoute(path) {
         const normalizedPath = this.normalizePath(path);
-        return this.routes.get(normalizedPath) ?? this.routes.get("*");
+        const exact = this.routes.get(normalizedPath);
+        if (exact) {
+            return { route: exact, params: {} };
+        }
+        for (const route of this.routes.values()) {
+            if (route.path === "*" || !isParamPattern(route.path)) {
+                continue;
+            }
+            const params = matchParamPattern(route.path, normalizedPath);
+            if (params) {
+                return { route, params };
+            }
+        }
+        const fallback = this.routes.get("*");
+        if (fallback) {
+            return { route: fallback, params: {} };
+        }
+        return undefined;
     }
     register(path, view, name) {
         const normalizedPath = this.normalizePath(path);
@@ -49,9 +113,9 @@ export class SigRouter {
             this.namedRoutes.set(name, normalizedPath);
         }
     }
-    resolveView(view) {
+    resolveView(view, params) {
         if (typeof view === "function") {
-            return view();
+            return view(params);
         }
         return view;
     }
@@ -70,16 +134,16 @@ export class SigRouter {
         return this.namedRoutes.get(name) ?? this.routes.get(this.normalizePath(name))?.path;
     }
     render(path) {
-        const route = this.resolveRoute(path);
+        const resolved = this.resolveRoute(path);
         const target = document.querySelector(this.target);
         if (!target)
             return;
         [...target.childNodes].forEach(node => disposeTree(node));
-        if (!route) {
+        if (!resolved) {
             target.replaceChildren();
             return;
         }
-        const nextView = this.resolveView(route.view);
+        const nextView = this.resolveView(resolved.route.view, resolved.params);
         if (!nextView) {
             target.replaceChildren();
             return;
@@ -97,8 +161,8 @@ export class SigRouter {
     }
     navigate(path) {
         const normalizedPath = this.normalizePath(path);
-        const route = this.resolveRoute(normalizedPath);
-        if (!route)
+        const resolved = this.resolveRoute(normalizedPath);
+        if (!resolved)
             return;
         window.history.pushState({}, "", normalizedPath);
         this.render(normalizedPath);

@@ -49,17 +49,20 @@ The stylesheet path is `@citrusworx/juiceui/styles`, not a `dist/juice.css` file
 
 Sig's `setProp` treats unknown keys as attributes. Juice's `stack`, `gap`, `padding`, `card`, and `surface` are not DOM properties, so they land on the element as attributes. Juice CSS then matches `[stack]`, `[gap="2rem"]`, and so on.
 
-That assignment happens **once**, at create time. A function in an attribute is not a live Juice binding.
+Static Juice flags (`stack`, `card`) should still be `true`. Function-valued Juice attributes subscribe:
 
 ```tsx
 // Static Juice — correct
 <section card padding="1.25rem" stack gap="1rem">…</section>
 
-// Not reactive — the function is stored, not subscribed
+// Live Juice attribute
 <section padding={() => size.get()}>…</section>
+
+// Snapshot — first value, forever
+<section padding={size.get()}>…</section>
 ```
 
-To change a Juice attribute later, hold the element and `setAttribute` from an `effect`.
+`ref` + `effect` + `setAttribute` is still valid when several attributes should move together.
 
 ## Showcase: Juice page, Sig counter
 

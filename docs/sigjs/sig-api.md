@@ -140,14 +140,19 @@ Tag names become `document.createElement(type)`. Function types are called as co
 | Kind | Behavior |
 |---|---|
 | `children` | Appended; see Child |
-| `ref` (function) | Called with the element after create |
-| `on*` (function) | `addEventListener(name.toLowerCase(), fn)` — `onClick` → `click` |
+| `ref` (function) | Called with the element after create. Not a reactive getter. |
+| `on*` (function) | `addEventListener(name.toLowerCase(), fn)` — `onClick` → `click`. Not a reactive getter. |
+| Any other function | Subscribed via `effect`. The function is a getter; its **result** is assigned with the same property/attribute rule as a static value. Cleanup is attached to the element. |
 | Known DOM properties | Assigned (`el[key] = value`) |
 | `true` | `setAttribute(key, "")` |
 | `false` / `null` / `undefined` | `removeAttribute` |
 | other | `setAttribute(key, value)` |
 
-Function values that are **not** `ref` or `on*` are assigned as-is. They are **not** subscribed. `className={() => "active"}` stores a function on `className`. Use an effect to update attributes.
+`className={() => on.get() ? "on" : "off"}`, `value={() => name.get()}`, `checked={() => on.get()}`, and Juice attributes like `padding={() => size.get()}` are live. `class` updates the HTML class attribute.
+
+Non-function values are assigned once. `disabled={busy.get()}` is a snapshot; `disabled={() => busy.get()}` is live.
+
+`ref` + `effect` remains a supported pattern for multi-property writes. There is no live `style={{}}` object binder.
 
 Juice attributes (`stack`, `gap`, `padding`, `card`, `surface`) are unknown DOM properties, so they become attributes. That is why Juice markup works on Sig-created elements.
 
@@ -209,15 +214,18 @@ class SigRouter {
   has(path: string): boolean;
 }
 
-type RouteView = Node | (() => Node | null) | null;
+type RouteParams = Record<string, string>;
+type RouteFactory = (params: RouteParams) => Node | null;
+type RouteView = Node | RouteFactory | null;
 ```
 
 ### Path rules
 
-- Paths are exact strings. `/about` ≠ `/about/`.
+- Paths are exact strings unless a segment starts with `:`. `/about` ≠ `/about/`.
 - A map key without a leading `/` is stored as `/${key}` and registered as a **name**.
+- `"/user/:id"` is a param pattern. The view function receives `{ id: "…" }`. Exact routes win over param patterns. First registered param match wins among patterns. `"*"` is last.
 - `"*"` is a fallback view for unknown paths. It is stored as the literal key `*`, not `/*`.
-- There is no parametric matcher. `set("/user/:id", …)` registers the literal path `/user/:id`.
+- `has(path)` is registration-only. `has("/user/:id")` is true after `set`; `has("/user/42")` is not.
 
 ### Views
 
@@ -229,7 +237,7 @@ On render, the router `disposeTree`s the target's current children, then `replac
 
 - `start()` attaches a document click listener and a `popstate` listener, then renders `window.location.pathname`.
 - `navigate(path)` normalizes a leading slash the same way as `set` / `has`. `navigate("about")` hits `/about`.
-- If the path is not registered, `navigate` uses the `"*"` fallback when one exists. Without a match or fallback it no-ops (no `pushState`).
+- If the path is not registered, `navigate` tries a param pattern, then the `"*"` fallback when one exists. Without a match or fallback it no-ops (no `pushState`).
 - Intercepted clicks: internal `href`s. Passed through: `http(s)`, `mailto`, `tel`, `ftp`, `download`, `target="_blank"`.
 - `stop()` removes listeners.
 - `get(name)` returns the path for a named route, or the path itself if it is registered.
@@ -243,6 +251,7 @@ const router = new SigRouter("#root");
 router.set({
   "/": Home,
   about: About,
+  "/user/:id": UserPage,
 });
 
 router.get("about"); // "/about"
@@ -257,10 +266,10 @@ router.stop();
 
 - Use `Signal(value)`, never `new Signal(value)`
 - Keep effects small: one element or one subscription
-- Use function children only for text
+- Use function children for live text; function-valued props for live attributes
 - Use `batch` when several signals should notify together
 - Use `memo` for derived numbers/lists you read often
 - Register routes as functions; call `start()` after `set`
-- Do not invent `useEffect`, keyed list diffs, or reactive props — they are not here
+- Do not invent `useEffect` or keyed list diffs — they are not here
 
 See [Best practices](./sig-best-practices.md) and [Anti-patterns](./sig-anti-patterns.md) for the same rules with examples. [Status](./sig-status.md) is the maturity matrix.
