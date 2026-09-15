@@ -95,3 +95,5 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 Those remain follow-ups.
 
 `@citrusworx/nectarine` is publish-ready via the existing Changesets scripts (`yarn version-packages` then `yarn workspace @citrusworx/nectarine npm publish`). There is no npm-token CI job; see [Release checklist](./release-checklist.md).
+
+See also: [Nectarine ↔ WebEngine kernel contract](../webengine/nectarine-kernel-contract.md).
