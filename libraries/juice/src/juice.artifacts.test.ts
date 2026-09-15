@@ -16,6 +16,8 @@ function readPackageJson() {
         exports?: Record<string, PackageExportTarget>;
         files?: string[];
         browserslist?: string[];
+        sideEffects?: string[] | boolean;
+        dependencies?: Record<string, string>;
     };
 }
 
@@ -290,6 +292,29 @@ describe("Juice package contract", () => {
             "last 2 Safari major versions",
             "iOS >= 16.4"
         ]);
+    });
+
+    it("marks the JS entry as side-effectful so auto-start runtimes survive tree-shaking", () => {
+        const pkg = readPackageJson();
+
+        expect(pkg.sideEffects).toEqual([
+            "./dist/index.js",
+            "./dist/index.css",
+            "./dist/themes/*.css",
+            "./dist/themes/aquaflux.css",
+            "./dist/themes/kiwipress.css",
+            "./dist/themes/citrusmint.css"
+        ]);
+        expect(readFileSync(join(DIST_DIR, "index.js"), "utf-8")).toContain("DOMContentLoaded");
+    });
+
+    it("declares a published semver range for @citrusworx/sigjs", () => {
+        const pkg = readPackageJson();
+        const range = pkg.dependencies?.["@citrusworx/sigjs"];
+
+        expect(range).toBeDefined();
+        expect(range).not.toMatch(/^workspace:/);
+        expect(range).toMatch(/^[~^]?\d+\.\d+\.\d+/);
     });
 
     it("can be imported from the built entrypoint with the stable runtime symbols", async () => {

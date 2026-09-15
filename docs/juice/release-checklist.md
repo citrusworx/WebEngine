@@ -41,3 +41,5 @@ That must pass before publishing.
 - Do not publish Juice from a dirty worktree.
 - Do not bypass `verify` for “docs-only” changes if the package version is changing.
 - If browser targets or shipped asset directories change, update the README and artifact tests in the same change.
+- `sideEffects` must include `./dist/index.js` as well as the CSS entries. The JS entry auto-starts navigation, accordion, and tabs; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
+- Keep `@citrusworx/sigjs` on a published caret range (currently `^0.2.0`), not `workspace:^`. This repo publishes with `changeset publish`, which uses `npm publish` and does not rewrite Yarn workspace protocol. Yarn still resolves `^0.2.0` to the local `libraries/sig` workspace during development.
