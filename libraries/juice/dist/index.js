@@ -1,10 +1,10 @@
 //#region ../sig/dist/signal.js
-var e = !1, t = /* @__PURE__ */ new Set(), n = null, r = null;
+var e = 0, t = /* @__PURE__ */ new Set(), n = null, r = null;
 function i(e) {
 	e?.();
 }
 function a(n) {
-	if (e) {
+	if (e > 0) {
 		t.add(n);
 		return;
 	}
@@ -97,9 +97,9 @@ function f(e, t) {
 		}
 		if (typeof t == "function") {
 			let n = document.createTextNode("");
-			e.appendChild(n), l(() => {
+			e.appendChild(n), d(n, l(() => {
 				n.textContent = String(t());
-			});
+			}));
 			return;
 		}
 		if (typeof t == "string" || typeof t == "number") {
@@ -109,7 +109,25 @@ function f(e, t) {
 		e.appendChild(t);
 	}
 }
-function p(e, t, n) {
+function p(e, t) {
+	return t in e && t !== "animate" && t !== "animation" && t !== "motion" && !t.startsWith("data-") && !t.startsWith("aria-");
+}
+function m(e, t, n) {
+	if (t === "class") {
+		if (n === !1 || n == null) {
+			e.removeAttribute("class"), e.className = "";
+			return;
+		}
+		e.className = String(n === !0 ? "" : n);
+		return;
+	}
+	if (p(e, t)) {
+		e[t] = n;
+		return;
+	}
+	n === !0 ? e.setAttribute(t, "") : n === !1 || n == null ? e.removeAttribute(t) : e.setAttribute(t, String(n));
+}
+function h(e, t, n) {
 	if (t !== "children") {
 		if (t === "ref" && typeof n == "function") {
 			n(e);
@@ -120,38 +138,40 @@ function p(e, t, n) {
 			e.addEventListener(r, n);
 			return;
 		}
-		if (t in e && t !== "animate" && t !== "animation" && t !== "motion" && !t.startsWith("data-") && !t.startsWith("aria-")) {
-			e[t] = n;
+		if (typeof n == "function") {
+			d(e, l(() => {
+				m(e, t, n());
+			}));
 			return;
 		}
-		n === !0 ? e.setAttribute(t, "") : n === !1 || n == null ? e.removeAttribute(t) : e.setAttribute(t, n);
+		m(e, t, n);
 	}
 }
-function m(e, t) {
+function g(e, t) {
 	if (typeof e == "function") {
 		let { value: n, dispose: r } = s(() => e(t));
 		return n instanceof Node && d(n, r), n;
 	}
 	let n = document.createElement(e);
 	if (t) {
-		for (let e in t) p(n, e, t[e]);
+		for (let e in t) h(n, e, t[e]);
 		f(n, t.children);
 	}
 	return n;
 }
-var h = m;
+var _ = g;
 //#endregion
 //#region src/components/accordion/accordion.tsx
-function g(e) {
+function v(e) {
 	let t = c(e.defaultExpanded ?? !1), n = e.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", r = `${n}-trigger`, i = `${n}-panel`, a = null, o = null, s = (e) => {
-		a?.setAttribute("aria-expanded", String(e)), o && (o.hidden = !e, o.setAttribute("aria-hidden", String(!e)), o.setAttribute("content", e ? "active" : "hidden"));
+		a?.setAttribute("aria-expanded", String(e)), o && (o.hidden = !e, o.setAttribute("aria-hidden", String(!e)));
 	};
 	return l(() => {
 		s(t.get());
-	}), /* @__PURE__ */ h("section", {
+	}), /* @__PURE__ */ _("section", {
 		accordion: !0,
 		name: e.name,
-		children: [/* @__PURE__ */ m("button", {
+		children: [/* @__PURE__ */ g("button", {
 			...e.attributes ?? {},
 			ref: (e) => {
 				a = e, s(t.get());
@@ -161,16 +181,14 @@ function g(e) {
 			"accordion-item": !0,
 			"aria-expanded": String(t.get()),
 			"aria-controls": i,
-			onclick: () => t.set(!t.get()),
 			children: e.title ?? e.name
-		}), /* @__PURE__ */ m("div", {
+		}), /* @__PURE__ */ g("div", {
 			ref: (e) => {
 				o = e, s(t.get());
 			},
 			id: i,
 			role: "region",
 			"aria-labelledby": r,
-			content: t.get() ? "active" : "hidden",
 			hidden: !t.get(),
 			"aria-hidden": String(!t.get()),
 			children: e.children
@@ -179,19 +197,19 @@ function g(e) {
 }
 //#endregion
 //#region src/js/src/nav/navigation.ts
-var _ = {
+var y = {
 	root: typeof document < "u" ? document : {},
 	navSelector: "nav[type=\"bar\"], nav[type=\"links\"]",
 	sidebarSelector: "nav[type=\"sidebar\"]",
 	toggleSelector: "nav[type=\"mobile\"]",
 	mobileBreakpoint: 960
-}, v = (e) => Array.from(e), y = "juice-sidebar", b = "Toggle navigation menu", x = (e, t) => {
+}, b = (e) => Array.from(e), x = "juice-sidebar", S = "Toggle navigation menu", C = (e, t) => {
 	if (t) {
 		e.removeAttribute("hidden");
 		return;
 	}
 	e.setAttribute("hidden", "true");
-}, S = (e) => e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement, C = (e = {}) => {
+}, w = (e) => e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement, T = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		openSidebar: () => {},
@@ -201,29 +219,29 @@ var _ = {
 		isMobile: () => !1
 	};
 	let t = {
-		..._,
+		...y,
 		...e
-	}, n = t.root ?? document, r = n, i = () => v(n.querySelectorAll(t.navSelector)), a = () => v(n.querySelectorAll(t.sidebarSelector)), o = () => v(n.querySelectorAll(t.toggleSelector)), s = () => window.innerWidth <= t.mobileBreakpoint, c = 0, l = null, u = (e) => {
+	}, n = t.root ?? document, r = n, i = () => b(n.querySelectorAll(t.navSelector)), a = () => b(n.querySelectorAll(t.sidebarSelector)), o = () => b(n.querySelectorAll(t.toggleSelector)), s = () => window.innerWidth <= t.mobileBreakpoint, c = 0, l = null, u = (e) => {
 		if (e.id) return e.id;
 		c += 1;
-		let t = `${y}-${c}`;
+		let t = `${x}-${c}`;
 		return e.id = t, t;
 	}, d = (e, t) => {
 		if (!e) return;
 		let n = e.children.length > 0 || (e.textContent?.trim().length ?? 0) > 0;
-		t && e.setAttribute("aria-controls", u(t)), n ? e.removeAttribute("data-nav-toggle-icon") : e.setAttribute("data-nav-toggle-icon", "default"), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && (e.textContent?.trim() ?? "").length === 0 && e.setAttribute("aria-label", b), S(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0"));
+		t && e.setAttribute("aria-controls", u(t)), n ? e.removeAttribute("data-nav-toggle-icon") : e.setAttribute("data-nav-toggle-icon", "default"), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && (e.textContent?.trim() ?? "").length === 0 && e.setAttribute("aria-label", S), w(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0"));
 	}, f = (e) => {
 		let n = a();
 		if (n.length === 0) return null;
 		if (!e) return n[0] ?? null;
 		let r = e.parentElement;
 		if (r) {
-			let e = v(r.querySelectorAll(t.sidebarSelector))[0];
+			let e = b(r.querySelectorAll(t.sidebarSelector))[0];
 			if (e) return e;
 		}
 		let i = e;
 		for (; i;) {
-			let e = v(i.querySelectorAll(t.sidebarSelector))[0];
+			let e = b(i.querySelectorAll(t.sidebarSelector))[0];
 			if (e) return e;
 			i = i.parentElement;
 		}
@@ -234,12 +252,12 @@ var _ = {
 		if (!e) return n[0] ?? null;
 		let r = e.parentElement;
 		if (r) {
-			let e = v(r.querySelectorAll(t.toggleSelector))[0];
+			let e = b(r.querySelectorAll(t.toggleSelector))[0];
 			if (e) return e;
 		}
 		let i = e;
 		for (; i;) {
-			let e = v(i.querySelectorAll(t.toggleSelector))[0];
+			let e = b(i.querySelectorAll(t.toggleSelector))[0];
 			if (e) return e;
 			i = i.parentElement;
 		}
@@ -259,10 +277,10 @@ var _ = {
 			}
 			m(e);
 		}
-	}, C = () => {
+	}, _ = () => {
 		let e = s(), t = i(), n = o(), r = a();
-		t.forEach((t) => x(t, !e)), n.forEach((t) => {
-			d(t, f(t)), x(t, e), e || t.setAttribute("aria-expanded", "false");
+		t.forEach((t) => C(t, !e)), n.forEach((t) => {
+			d(t, f(t)), C(t, e), e || t.setAttribute("aria-expanded", "false");
 		}), r.forEach((t) => {
 			u(t);
 			let n = p(t);
@@ -276,7 +294,7 @@ var _ = {
 			}
 			t.setAttribute("hidden", "true"), t.setAttribute("aria-hidden", "true"), n?.setAttribute("aria-expanded", "false");
 		});
-	}, w = () => C(), T = (e) => {
+	}, v = () => _(), T = (e) => {
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		let r = n.closest(t.toggleSelector);
@@ -295,36 +313,174 @@ var _ = {
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let r = n.closest(t.toggleSelector);
-		!(r instanceof HTMLElement) || S(r) || (e.preventDefault(), g(r));
+		!(r instanceof HTMLElement) || w(r) || (e.preventDefault(), g(r));
 	}, D = !1, O = () => {
 		D || (D = !0, requestAnimationFrame(() => {
-			D = !1, C();
+			D = !1, _();
 		}));
 	}, k = typeof MutationObserver < "u" ? new MutationObserver(() => O()) : null;
-	return window.addEventListener("resize", w), r.addEventListener("click", T), r.addEventListener("keydown", E), k && n instanceof Node && k.observe(n, {
+	return window.addEventListener("resize", v), r.addEventListener("click", T), r.addEventListener("keydown", E), k && n instanceof Node && k.observe(n, {
 		childList: !0,
 		subtree: !0,
 		attributes: !0,
 		attributeFilter: ["hidden", "type"]
-	}), C(), {
+	}), _(), {
 		destroy: () => {
-			window.removeEventListener("resize", w), r.removeEventListener("click", T), r.removeEventListener("keydown", E), k?.disconnect();
+			window.removeEventListener("resize", v), r.removeEventListener("click", T), r.removeEventListener("keydown", E), k?.disconnect();
 		},
 		openSidebar: m,
 		closeSidebar: h,
 		toggleSidebar: g,
-		sync: C,
+		sync: _,
 		isMobile: s
 	};
-}, w = (e = {}) => C(e), T = null, E = () => typeof window > "u" || typeof document > "u" ? null : T ? (T.sync(), T) : (T = C(), T), D = () => {
-	T?.destroy(), T = null;
+}, E = (e = {}) => T(e), D = null, O = () => typeof window > "u" || typeof document > "u" ? null : D ? (D.sync(), D) : (D = T(), D), k = () => {
+	D?.destroy(), D = null;
 };
 typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", () => {
-	E();
-}) : E());
+	O();
+}) : O());
+//#endregion
+//#region src/js/src/accordion/accordion-runtime.ts
+var A = {
+	root: typeof document < "u" ? document : {},
+	accordionSelector: "[accordion]",
+	triggerSelector: "[accordion-item]"
+}, j = (e) => Array.from(e), M = "juice-accordion-trigger", N = "juice-accordion-panel", P = (e) => e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement, F = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", I = (e, t, n) => {
+	let r = String(n);
+	if (e.getAttribute("aria-expanded") !== r && e.setAttribute("aria-expanded", r), !t) return;
+	t.hidden !== !n && (t.hidden = !n);
+	let i = String(!n);
+	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
+}, L = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", R = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		expand: () => {},
+		collapse: () => {},
+		toggle: () => {}
+	};
+	let t = {
+		...A,
+		...e
+	}, n = t.root ?? document, r = n, i = () => j(n.querySelectorAll(t.accordionSelector)), a = (e) => j(e.querySelectorAll(t.triggerSelector)).filter((n) => n.closest(t.accordionSelector) === e), o = () => i().flatMap((e) => a(e)), s = 0, c = null, l = (e) => (s += 1, `${e}-${s}`), u = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.accordionSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, d = (e) => {
+		let n = u(e);
+		if (!n) return null;
+		let r = e.getAttribute("aria-controls");
+		if (r) {
+			let e = typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(r) : r, t = n.querySelector(`#${e}`);
+			if (t) return t;
+		}
+		let i = e.nextElementSibling;
+		for (; i;) {
+			if (i instanceof HTMLElement && !i.matches(t.triggerSelector) && !i.matches(t.accordionSelector)) return i;
+			i = i.nextElementSibling;
+		}
+		return null;
+	}, f = (e) => {
+		if (e) {
+			if (e.matches(t.triggerSelector) && u(e)) return e;
+			let n = e.closest(t.triggerSelector);
+			if (n instanceof HTMLElement && u(n)) return n;
+		}
+		return o()[0] ?? null;
+	}, p = (e) => {
+		let t = e.getAttribute("name");
+		return t ? F(t) : null;
+	}, m = (e, t) => {
+		let n = u(e);
+		if (!n) return;
+		let r = a(n), i = Math.max(0, r.indexOf(e)), o = p(n), s = r.length > 1 ? `-${i + 1}` : "";
+		e.id ||= o ? `${o}-trigger${s}` : l(M), P(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(N), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+	}, h = (e) => {
+		let t = f(e);
+		if (!t) return;
+		let n = d(t);
+		m(t, n), I(t, n, !0), c = t;
+	}, g = (e) => {
+		let t = f(e);
+		if (!t) return;
+		let n = d(t);
+		m(t, n), I(t, n, !1), t === c && (c = o().find((e) => e !== t && L(e, d(e))) ?? null);
+	}, _ = (e) => {
+		let t = f(e);
+		if (t) {
+			if (L(t, d(t))) {
+				g(t);
+				return;
+			}
+			h(t);
+		}
+	}, v = () => {
+		i().forEach((e) => {
+			a(e).forEach((e) => {
+				let t = d(e);
+				if (m(e, t), t) {
+					I(e, t, L(e, t));
+					return;
+				}
+				e.hasAttribute("aria-expanded") || e.setAttribute("aria-expanded", "false");
+			});
+		});
+	}, y = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = n.closest(t.triggerSelector);
+		!(r instanceof HTMLElement) || !u(r) || _(r);
+	}, b = (e) => {
+		let n = e.closest(t.triggerSelector);
+		return n instanceof HTMLElement && u(n) && L(n, d(n)) ? n : o().filter((e) => L(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && L(c, d(c)) ? c : null);
+	}, x = (e) => {
+		if (!(e instanceof KeyboardEvent)) return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		if (e.key === "Escape") {
+			let t = b(n);
+			if (!t) return;
+			e.preventDefault(), g(t), t.focus();
+			return;
+		}
+		if (e.key !== "Enter" && e.key !== " ") return;
+		let r = n.closest(t.triggerSelector);
+		!(r instanceof HTMLElement) || !u(r) || P(r) || (e.preventDefault(), _(r));
+	}, S = !1, C = () => {
+		S || (S = !0, requestAnimationFrame(() => {
+			S = !1, v();
+		}));
+	}, w = typeof MutationObserver < "u" ? new MutationObserver(() => C()) : null;
+	return r.addEventListener("click", y), r.addEventListener("keydown", x), w && n instanceof Node && w.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"aria-expanded",
+			"aria-controls",
+			"accordion",
+			"accordion-item"
+		]
+	}), v(), {
+		destroy: () => {
+			r.removeEventListener("click", y), r.removeEventListener("keydown", x), w?.disconnect();
+		},
+		sync: v,
+		expand: h,
+		collapse: g,
+		toggle: _
+	};
+}, z = (e = {}) => R(e), B = null, V = () => typeof window > "u" || typeof document > "u" ? null : B ? (B.sync(), B) : (B = R(), B), H = () => {
+	B?.destroy(), B = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", () => {
+	V();
+}) : V());
 //#endregion
 //#region src/tokens/index.ts
-var O = {
+var U = {
 	colors: {
 		families: [
 			"black",
@@ -476,4 +632,4 @@ var O = {
 	themes: {}
 };
 //#endregion
-export { g as Accordion, C as createNavigation, w as initNavigation, E as startNavigationRuntime, D as stopNavigationRuntime, O as tokens };
+export { v as Accordion, R as createAccordion, T as createNavigation, z as initAccordion, E as initNavigation, V as startAccordionRuntime, O as startNavigationRuntime, H as stopAccordionRuntime, k as stopNavigationRuntime, U as tokens };
