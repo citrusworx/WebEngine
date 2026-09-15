@@ -28,6 +28,6 @@
     },
     "dependencies": {
         "@citrusworx/nectarine": "^0.3.0",
-        "@citrusworx/seltzer": "^0.9.0"
+        "@citrusworx/seltzer": "^0.8.1"
     }
 }

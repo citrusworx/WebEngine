@@ -1,12 +1,10 @@
 # @citrusworx/seltzer
 
-## 0.9.0
+## 0.8.1
 
-### Minor Changes
+### Patch Changes
 
-- 815b941: Standalone publish hygiene for à-la-carte consumers: npm `description` (small Node HTTP runtime), `engines.node` `>=18`, optional `undici` peer (`peerDependencies` + `peerDependenciesMeta`) for `allowSelfSigned`, and a README that leads with `init().route().listen()` and hand-built `ApiOperation[]` before Nectarine YAML.
-
-  `0.8.0` on npm shipped the solidified core (default `validate`, `replace()`, hardened outbound `client`) without this packaging/DX. **0.9.0** is the packaging/DX release so those bits land in the published tarball. No runtime behavior changes.
+- 815b941: Standalone packaging hygiene for à-la-carte consumers: npm description (small Node HTTP runtime), `engines.node` `>=18`, optional `undici` peer, and a README that leads with `init().route().listen()`. npm **0.8.0** shipped the HTTP core without that polish; **0.8.1** is the packaging/DX fix. No runtime behavior changes.
 
 ## 0.8.0
 
