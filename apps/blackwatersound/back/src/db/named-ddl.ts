@@ -12,7 +12,8 @@ const compiler = new CCompiler();
  * Intentional Phase 3 scope: every Blackwater `*Schema.yml`, not only the
  * live product + waitlist pair. `migrate()` creates the full domain (course,
  * order, booking, …) in FK order so named queries have tables. Product and
- * waitlist remain the only live DML paths.
+ * waitlist keep special-cased live DML (JSONB catalog, waitlist insert).
+ * Other resources use compiled GET reads when Postgres is connected.
  *
  * Additive `{ additive: true }` is NOT a migrator: it emits
  * `ADD COLUMN IF NOT EXISTS` only. No DROP, rename, or type change (not Flyway).

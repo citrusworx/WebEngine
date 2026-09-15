@@ -1,14 +1,10 @@
-import { listApiOperations, type NectarineConfig } from "@citrusworx/nectarine/config";
-import {
-  generateRoutes,
-  type ExecuteArgs,
-  type ResponseData,
-  type Route,
-} from "@citrusworx/seltzer";
+import type { NectarineConfig } from "@citrusworx/nectarine/config";
+import { type ExecuteArgs, type ResponseData, type Route } from "@citrusworx/seltzer";
 import { waitlistSourceApps } from "../db/named-ddl.js";
 import { isDatabaseConnected, loadWaitlistByEmailFromDb, loadWaitlistFromDb } from "../db/postgres.js";
 import { appendWaitlistEntry, hasWaitlistEmail } from "../store/waitlist-store.js";
 import type { BlackwaterContext, WaitlistEntry } from "../types/context.js";
+import { createResourceReadRoutes } from "./nectarine-reads.js";
 
 const sourceApps = new Set(waitlistSourceApps);
 
@@ -71,7 +67,7 @@ async function findByEmail(
   return ctx.locals.waitlist.find((entry) => entry.email === normalized) ?? null;
 }
 
-async function executeWaitlistRead({
+export async function executeWaitlistRead({
   query,
   params,
   ctx,
@@ -88,12 +84,7 @@ async function executeWaitlistRead({
 
 /** Waitlist GET ops from `waitlistAPI.yml`. `joinWaitlist` POST stays hand-written. */
 export function createWaitlistReadRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
-  const operations = listApiOperations("waitlist", nectarine.getResource("waitlist").api).filter(
-    (operation) => operation.crud === "read" && operation.method === "GET",
-  );
-
-  return generateRoutes(operations, {
-    execute: executeWaitlistRead,
+  return createResourceReadRoutes(nectarine, "waitlist", executeWaitlistRead, {
     notFound: (): ResponseData => ({ status: 404, body: { error: "Waitlist entry not found" } }),
   });
 }

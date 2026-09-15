@@ -61,9 +61,9 @@ async function runNamedDdl(name: NamedDdl) {
   await db.query(namedDdl(name));
 }
 
-/** Execute a compiler-owned named query. Equivalent to `adapter.query(sql, params)`. */
-async function runNamed<T extends QueryResultRow>(
-  name: NamedQuery,
+/** Execute compiler-owned SQL. Equivalent to `adapter.query(sql, params)`. */
+export async function runCompiledQuery<T extends QueryResultRow>(
+  sql: string,
   params: readonly unknown[] = [],
 ) {
   const db = getAdapter();
@@ -71,7 +71,15 @@ async function runNamed<T extends QueryResultRow>(
     return null;
   }
 
-  return db.query<T>(namedQuery(name), params);
+  return db.query<T>(sql, params);
+}
+
+/** Execute a compiler-owned named query. Equivalent to `adapter.query(sql, params)`. */
+async function runNamed<T extends QueryResultRow>(
+  name: NamedQuery,
+  params: readonly unknown[] = [],
+) {
+  return runCompiledQuery<T>(namedQuery(name), params);
 }
 
 export async function migrate() {
