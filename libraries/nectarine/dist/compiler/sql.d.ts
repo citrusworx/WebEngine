@@ -8,7 +8,8 @@
  * (`normalizeQuery`). Blog `queries:` maps are not compiled here.
  *
  * Also compiled: `COUNT(*)` (`{ fn: count }` / `count: true`),
- * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`.
+ * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`,
+ * INSERT `onConflict` (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`).
  */
 export { isRecord, QueryCompileError } from "./errors.js";
 export declare const OP_TOKENS: {
@@ -49,6 +50,6 @@ export declare function compileValue(value: unknown): string;
  * `select` / `insert` / `set` shape is enough.
  *
  * Blackwater `type: SELECT` objects are normalized onto the canonical
- * phonics shape before assembly.
+ * phonics shape before assembly. INSERT may include `onConflict`.
  */
 export declare function compileQuery(query: unknown, method?: CrudMethod): string;

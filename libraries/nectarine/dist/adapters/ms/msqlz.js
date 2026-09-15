@@ -20,6 +20,7 @@ Object.defineProperty(exports, "rewriteMysqlPlaceholders", { enumerable: true, g
  * `CAST(? AS JSON)` for json/jsonb) so compiled SQL can run here unchanged.
  * JSONB `@>` / `?` / `->>` become MySQL `JSON_CONTAINS` / `JSON_CONTAINS_PATH`
  * / `JSON_EXTRACT` (`JSON_QUOTE` wraps bound `has_key` names as one path segment).
+ * `ON CONFLICT` is Postgres-only and is rejected at this boundary.
  *
  * @example
  * ```ts
