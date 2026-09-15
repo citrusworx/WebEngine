@@ -77,6 +77,38 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]::before/);
     });
 
+    it("includes tabs structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[tabs]");
+        expect(css).toContain("[tabs-list]");
+        expect(css).toContain("[tab-panel]");
+        expect(css).toContain("flex-direction: column");
+        expect(css).toMatch(/\[tab\]\[active\]/);
+        expect(css).toMatch(/\[tab\]\[aria-selected=["']?true["']?\]/);
+        expect(css).toContain("--juice-tabs-trigger");
+        expect(css).toContain("--juice-tabs-trigger-hover");
+        expect(css).toContain("--juice-tabs-trigger-active");
+        expect(css).toContain("--juice-tabs-text");
+        expect(css).toContain("--juice-tabs-indicator");
+        expect(css).toContain("--juice-tabs-list-rule");
+        expect(css).toContain("--juice-tabs-focus-ring");
+        expect(css).toContain("--juice-tabs-panel,");
+        expect(css).toContain("--juice-tabs-panel-rule,");
+        expect(css).not.toMatch(/\[tab-panel\][^{]*\{[^}]*content:\s*["']active["']/);
+        expect(css).not.toMatch(/\[tab-panel\][^{]*\{[^}]*content:\s*["']hidden["']/);
+    });
+
+    it("keeps KiwiPress tab selectors in parity with [active] and aria-selected", () => {
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+
+        expect(kiwiCss).toContain("[tabs-list]");
+        expect(kiwiCss).toContain("[tab-panel]");
+        expect(kiwiCss).toMatch(/\[tab\]\[active\]/);
+        expect(kiwiCss).toMatch(/\[tab\]\[aria-selected=["']?true["']?\]/);
+        expect(kiwiCss).toContain("border-bottom-color: var(--kw-accent)");
+    });
+
     it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {
         const themeCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const accordionItemBlocks = [...themeCss.matchAll(/button\[accordion-item\][^{]*\{[^}]+\}/g)].map(
