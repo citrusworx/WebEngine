@@ -248,7 +248,8 @@ user:                 # type / resource
 
 **Blackwater** (`apps/blackwatersound/back/src/schemas/**/*Queries.yml`) is
 normalized first (`type: SELECT`, `table`, `fields`, fragment `where` /
-`orderBy`, implicit INSERT/UPDATE `$N` values, optional `returning`):
+`orderBy`, implicit INSERT/UPDATE `$N` values, optional `returning` /
+`onConflict`):
 
 ```yaml
 product:
@@ -264,18 +265,19 @@ product:
 | Method | YAML keys | Example SQL |
 |--------|-----------|-------------|
 | `get` / `read` | `select`+`from` **or** `type: SELECT`+`table`+`fields`; optional `where`, `orderBy`; `count: true` / `exists: true` | `SELECT * FROM products WHERE isActive = TRUE ORDER BY catalog, category, name` |
-| `create` | `insert.into/columns/values` **or** `type: INSERT`+`table`+`fields`; optional `returning` | `INSERT INTO waitlist (...) VALUES ($1, …) RETURNING id, email, created_at` |
+| `create` | `insert.into/columns/values` **or** `type: INSERT`+`table`+`fields`; optional `returning`, optional `onConflict` | `INSERT INTO waitlist (...) VALUES ($1, …) RETURNING id, email, created_at` |
 | `update` | `table`+`set`+`values`+`where` **or** `type: UPDATE`+`fields` (values default to `$1…$N`, WHERE `$1` remaps after SET) | `UPDATE products SET name = $1, … WHERE id = $14` |
 | `delete` | `from`+`where` **or** `type: DELETE`+`table`+`where` | `DELETE FROM products WHERE id = $1` |
 
 - `$1`, `$2`, … are bind placeholders. Raw numbers/booleans in canonical `value` are rejected; YAML constants use `{ const: true }` or the fragment grammar.
 - `{ fn: now }` (and the fragment `NOW()`) compile to vendor-neutral `NOW()`. `{ fn: count }` / Blackwater `count: true` emit `COUNT(*)`. `exists: true` emits `SELECT EXISTS(SELECT 1 FROM …)`.
+- INSERT `onConflict` emits Postgres `ON CONFLICT (cols) DO NOTHING` or `DO UPDATE SET col = EXCLUDED.col`. MySQL rejects that SQL at `query()`.
 - JSONB `contains` (`@>`), `has_key` (`?`), and `path` (`->>`) filter document columns without flattening them.
 - Blackwater `where` / `orderBy` strings are a **closed grammar** (not raw SQL). Injection-shaped fragments fail compilation.
 - `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
 - `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, `GROUP BY`, `LIMIT`, `ON CONFLICT`, JSONB `||` / `jsonb_set`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`. Versioned migration YAML compiles to gated `ALTER` (`renameColumn`, `dropColumn`, `changeType`).
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, `GROUP BY`, `LIMIT`, JSONB `||` / `jsonb_set`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`), MySQL `ON DUPLICATE KEY UPDATE` (`ON CONFLICT` is Postgres-only). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`. Versioned migration YAML compiles to gated `ALTER` (`renameColumn`, `dropColumn`, `changeType`).
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";

@@ -32,12 +32,16 @@ export type MysqlRewriteResult = {
  *   (decoded then re-escaped for MySQL so `\\` is not eaten as an SQL escape)
  * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))`
  *
+ * `ON CONFLICT` is Postgres-only in this version: this rewrite throws instead
+ * of emitting `ON DUPLICATE KEY UPDATE`.
+ *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
  */
 export function rewriteMysqlPlaceholders(
     sql: string,
     params: readonly unknown[] = [],
 ): MysqlRewriteResult {
+    rejectMysqlOnConflict(sql);
     const rewritten = rewriteMysqlJsonbOperators(sql);
     let i = 0;
     let sawNumbered = false;
@@ -122,6 +126,47 @@ export function rewriteMysqlPlaceholders(
     }
 
     return { sql: out, params: bound };
+}
+
+/**
+ * Postgres `ON CONFLICT` is not rewritten to `ON DUPLICATE KEY UPDATE`.
+ * v1 keeps the subset Postgres-only so MySQL cannot silently change upsert
+ * semantics (or ignore non-duplicate errors via `INSERT IGNORE`).
+ */
+export function rejectMysqlOnConflict(sql: string): void {
+    let i = 0;
+    while (i < sql.length) {
+        const ch = sql[i];
+        if (ch === undefined) {
+            break;
+        }
+
+        if (ch === "'" || ch === '"' || ch === "`") {
+            i = skipQuoted(sql, i, ch);
+            continue;
+        }
+
+        if (ch === "-" && sql[i + 1] === "-") {
+            i = skipLineComment(sql, i);
+            continue;
+        }
+
+        if (ch === "/" && sql[i + 1] === "*") {
+            i = skipBlockComment(sql, i);
+            continue;
+        }
+
+        if (isIdentBoundary(sql, i)) {
+            const match = sql.slice(i).match(/^ON\s+CONFLICT\b/i);
+            if (match) {
+                throw new Error(
+                    "MySQL adapter does not support ON CONFLICT; that phonics is Postgres-only in this Nectarine version",
+                );
+            }
+        }
+
+        i += 1;
+    }
 }
 
 /**

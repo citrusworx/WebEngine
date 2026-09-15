@@ -32,6 +32,7 @@ Adapter           →  query(sql, params)   // execute only
   compiler. They do not assemble statements. The MySQL adapter rewrites `$N`
   (and allowlisted `$N::jsonb`) to `?` at the query boundary, and JSONB `@>` /
   `?` / `->>` to MySQL JSON functions; Postgres keeps `$1` and the operators.
+  `ON CONFLICT` is Postgres-only in this version (MySQL throws at `query()`).
 
 ## One phonics model, two YAML surfaces
 
@@ -40,7 +41,7 @@ The **canonical** clause object is what `compileQuery` assembles:
 | Method | YAML keys | Example SQL |
 |--------|-----------|-------------|
 | `get` (`read` is an alias) | `select`, `from`, optional `where`, optional `orderBy`; or `count: true` / `exists: true` | `SELECT id FROM users WHERE id = $1` |
-| `create` | `insert.into`, `insert.columns`, `insert.values`, optional `returning` | `INSERT INTO users (...) VALUES ($1, $2, $3, NOW())` |
+| `create` | `insert.into`, `insert.columns`, `insert.values`, optional `returning`, optional `onConflict` | `INSERT INTO users (...) VALUES ($1, $2, $3, NOW())` |
 | `update` | `table`, `set`, `values`, `where` | `UPDATE users SET name = $1 WHERE id = $2` |
 | `delete` | `from`, `where` | `DELETE FROM users WHERE id = $1` |
 
@@ -222,13 +223,67 @@ product:
       values:
         - $1
         - { value: $2, cast: jsonb }   # equivalent: $2::jsonb
+      onConflict:
+        target: id
+        do: nothing
 ```
 
-→ `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)`
+→ `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING`
 
 The app serializes a validated object (`JSON.stringify` after an object
 check) and binds it. The compiler is the only place `::jsonb` is emitted.
 HTTP create uses the same bind (`insertPayload`) with `RETURNING payload`.
+
+## `ON CONFLICT`
+
+INSERT-only. Postgres `ON CONFLICT (cols) DO NOTHING` or
+`DO UPDATE SET col = EXCLUDED.col`. Conflict target is one or more
+allowlisted columns (not `ON CONSTRAINT`). `DO UPDATE` SET is an
+allowlisted column list that copies `EXCLUDED.column` — no expressions,
+no extra `$N` binds, no `WHERE`.
+
+Canonical:
+
+```yaml
+product:
+  create:
+    seedPayload:
+      insert:
+        into: products
+        columns: [id, payload]
+        values: [$1, { value: $2, cast: jsonb }]
+        onConflict:
+          target: [id]
+          do: nothing
+```
+
+→ `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING`
+
+```yaml
+onConflict:
+  target: [id]
+  do: update
+  set: [payload]
+```
+
+→ `… ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload`
+
+Blackwater (`type: INSERT`) uses the same `onConflict` object. `target`
+may be a column name or a list. `action: do_nothing` / `do_update` is an
+alias of `do: nothing` / `update`. Optional `returning` still follows the
+conflict clause.
+
+Live Blackwater seed (`product.create.seedPayload`) uses `DO NOTHING` so
+the host does not `payloadById` before insert. HTTP `insertPayload` stays
+a plain INSERT so duplicates still fail.
+
+**MySQL:** this phonics is Postgres-only in v1. The MySQL adapter rejects
+`ON CONFLICT` at `query()` rather than rewriting to `ON DUPLICATE KEY UPDATE`
+(semantics differ; `INSERT IGNORE` would hide non-duplicate errors). Mongo
+does not execute SQL DML.
+
+Not compiled: `ON CONSTRAINT`, `DO UPDATE WHERE`, `EXCLUDED` expressions
+other than `EXCLUDED.column`, `jsonb_set` inside SET.
 
 ## `update`
 
@@ -405,9 +460,10 @@ connected; seed/memory still maps a missing catalog to `gear`.
 ## Not yet compiled
 
 - blog `queries:` maps (`models/blog/post/sql.yml`)
-- joins, `GROUP BY`, `LIMIT` / pagination, `ON CONFLICT`
+- joins, `GROUP BY`, `LIMIT` / pagination
 - general aggregates beyond `COUNT`, `EXISTS` as a WHERE subquery
 - JSONB `||` / `jsonb_set` (host merges documents, then binds `$N::jsonb`)
+- MySQL `ON DUPLICATE KEY UPDATE` (Postgres `ON CONFLICT` is compiled; MySQL rejects it)
 
 ## Usage
 

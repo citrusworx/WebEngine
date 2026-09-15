@@ -261,4 +261,34 @@ describe("rewriteMysqlPlaceholders", () => {
             params: ["a@example.com"],
         });
     });
+
+    it("rejects Postgres ON CONFLICT instead of rewriting to ON DUPLICATE KEY", () => {
+        const doNothing = compileQuery({
+            insert: {
+                into: "products",
+                columns: ["id", "payload"],
+                values: ["$1", "$2::jsonb"],
+                onConflict: { target: ["id"], do: "nothing" },
+            },
+        });
+        expect(doNothing).toContain("ON CONFLICT");
+        expect(() => rewriteMysqlPlaceholders(doNothing, ["sku-1", "{}"])).toThrowError(
+            /does not support ON CONFLICT/,
+        );
+
+        const doUpdate = compileQuery({
+            insert: {
+                into: "products",
+                columns: ["id", "payload"],
+                values: ["$1", "$2::jsonb"],
+                onConflict: { target: ["id"], do: "update", set: ["payload"] },
+            },
+        });
+        expect(() => rewriteMysqlPlaceholders(doUpdate, ["sku-1", "{}"])).toThrowError(
+            /Postgres-only/,
+        );
+        expect(() =>
+            rewriteMysqlPlaceholders("INSERT INTO t (id) VALUES ('ON CONFLICT')", []),
+        ).not.toThrow();
+    });
 });

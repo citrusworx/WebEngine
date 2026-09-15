@@ -62,18 +62,18 @@ describe("named COUNT / EXISTS / JSONB host helpers", () => {
     expect(state.queries).toEqual([{ sql: namedSql.countPayloads, params: [] }]);
   });
 
-  it("seeds with payloadById + seedPayload when countPayloads is zero", async () => {
+  it("seeds with seedPayload ON CONFLICT when countPayloads is zero", async () => {
     const { seedProductsIfEmpty } = await import("./postgres.js");
-    state.responses = [{ rows: [{ count: "0" }] }, { rows: [] }, { rows: [] }];
+    state.responses = [{ rows: [{ count: "0" }] }, { rows: [] }];
 
     await seedProductsIfEmpty([sample as never]);
 
     expect(state.queries.map((entry) => entry.sql)).toEqual([
       namedSql.countPayloads,
-      namedSql.payloadById,
       namedSql.seedPayload,
     ]);
-    expect(state.queries[2]?.params?.[0]).toBe(sample.id);
+    expect(namedSql.seedPayload).toContain("ON CONFLICT (id) DO NOTHING");
+    expect(state.queries[1]?.params?.[0]).toBe(sample.id);
   });
 
   it("loads catalog/slug/contains/has_key via compiled JSONB names", async () => {

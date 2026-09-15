@@ -102,16 +102,17 @@ Adapters execute compiler SQL. They never build or concatenate it.
 
 ## Out of scope for this contract
 
-- Joins / `ON CONFLICT` / `GROUP BY` / `LIMIT` / JSONB `||` / `jsonb_set`
+- Joins / `GROUP BY` / `LIMIT` / JSONB `||` / `jsonb_set`
 - Flyway-style down migrations, raw SQL migration scripts, silent schema-diff DROP
 - Inventing Express route generation or `nectarine serve`
 
-`COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` are **compiler phonics** in
-`@citrusworx/nectarine` (YAML tokens → SQL). They are not host-invented SQL.
-Joins and `ON CONFLICT` remain later compiler work. Blackwater host execute
-runs the named queries (`payloadsByCatalog`, `payloadsBySlug`,
-`payloadsContaining`, `payloadsWithKey`, `countPayloads`, `emailExists`,
-`countEntries`) through `createNectarineRoutes` + thin `execute`.
+`COUNT`, `EXISTS`, JSONB `@>` / `?` / `->>`, and INSERT `ON CONFLICT` are
+**compiler phonics** in `@citrusworx/nectarine` (YAML tokens → SQL). They are
+not host-invented SQL. Joins, `GROUP BY`, and `LIMIT` remain later compiler
+work. Blackwater host execute runs the named queries (`payloadsByCatalog`,
+`payloadsBySlug`, `payloadsContaining`, `payloadsWithKey`, `countPayloads`,
+`emailExists`, `countEntries`, `seedPayload`) through `createNectarineRoutes`
++ thin `execute`.
 
 Those remaining items are not kernel invent-as-you-go.
 

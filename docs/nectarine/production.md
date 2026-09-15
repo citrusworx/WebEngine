@@ -75,7 +75,7 @@ Live catalog reads **`products.payload` JSONB**, not the nullable relational cat
 - Empty table → seed copies `SEED_PRODUCTS` into `payload`
 - Rows already present → seed is skipped, even if catalog columns are null
 - Rows whose `payload` is not a product object are ignored at read time; if that leaves the catalog empty, the API serves in-memory `SEED_PRODUCTS` and does **not** insert duplicates
-- HTTP create/update/delete use named JSONB queries (`insertPayload`, `updatePayload`, `deleteProduct`) plus a thin host `execute` that serializes the catalog document and merges on PUT (the compiler does not emit JSONB `||`)
+- Seed inserts use named `seedPayload` (`ON CONFLICT (id) DO NOTHING`); HTTP create/update/delete use named JSONB queries (`insertPayload`, `updatePayload`, `deleteProduct`) plus a thin host `execute` that serializes the catalog document and merges on PUT (the compiler does not emit JSONB `||`)
 
 JSONB is first-class. It is not being dropped.
 
@@ -89,10 +89,14 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 
 - `nectarine serve`
 - Mongo as the Blackwater production path
-- Joins / `ON CONFLICT` / `GROUP BY` / `LIMIT` / JSONB `||` / `jsonb_set`
+- Joins / `GROUP BY` / `LIMIT` / JSONB `||` / `jsonb_set`
 - Full Flyway-style migrator with down migrations, raw SQL scripts, or silent schema-diff DROP
 
-`COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` compile from named YAML (Postgres-first; MySQL rewrites JSONB operators at `query()`). They are not host SQL. Joins and `ON CONFLICT` remain follow-ups.
+`COUNT`, `EXISTS`, JSONB `@>` / `?` / `->>`, and INSERT `ON CONFLICT`
+(`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`) compile from named YAML
+(Postgres-first; MySQL rewrites JSONB operators at `query()` and rejects
+`ON CONFLICT`). They are not host SQL. Joins, `GROUP BY`, and `LIMIT` remain
+follow-ups.
 
 `@citrusworx/nectarine` is publish-ready via the existing Changesets scripts (`yarn version-packages` then `yarn workspace @citrusworx/nectarine npm publish`). There is no npm-token CI job; see [Release checklist](./release-checklist.md).
 
