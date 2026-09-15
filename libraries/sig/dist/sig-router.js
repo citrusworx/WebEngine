@@ -1,4 +1,51 @@
 import { disposeTree } from "./jsx-runtime.js";
+function splitPath(path) {
+    if (path === "/" || path === "*") {
+        return [];
+    }
+    const parts = path.split("/");
+    if (parts[0] === "") {
+        parts.shift();
+    }
+    return parts;
+}
+function decodeSegment(segment) {
+    try {
+        return decodeURIComponent(segment);
+    }
+    catch {
+        return segment;
+    }
+}
+function isParamSegment(segment) {
+    return segment.startsWith(":") && segment.length > 1;
+}
+function isParamPattern(path) {
+    return splitPath(path).some(isParamSegment);
+}
+function matchParamPattern(pattern, path) {
+    const patternSegments = splitPath(pattern);
+    const pathSegments = splitPath(path);
+    if (patternSegments.length !== pathSegments.length) {
+        return null;
+    }
+    const params = {};
+    for (let i = 0; i < patternSegments.length; i++) {
+        const patternSegment = patternSegments[i];
+        const pathSegment = pathSegments[i];
+        if (isParamSegment(patternSegment)) {
+            if (!pathSegment) {
+                return null;
+            }
+            params[patternSegment.slice(1)] = decodeSegment(pathSegment);
+            continue;
+        }
+        if (patternSegment !== pathSegment) {
+            return null;
+        }
+    }
+    return params;
+}
 export class SigRouter {
     routes = new Map();
     namedRoutes = new Map();
@@ -33,21 +80,42 @@ export class SigRouter {
         this.target = target;
     }
     normalizePath(path) {
-        if (path === "/") {
+        if (path === "/" || path === "*") {
             return path;
         }
         return path.startsWith("/") ? path : `/${path}`;
     }
+    resolveRoute(path) {
+        const normalizedPath = this.normalizePath(path);
+        const exact = this.routes.get(normalizedPath);
+        if (exact) {
+            return { route: exact, params: {} };
+        }
+        for (const route of this.routes.values()) {
+            if (route.path === "*" || !isParamPattern(route.path)) {
+                continue;
+            }
+            const params = matchParamPattern(route.path, normalizedPath);
+            if (params) {
+                return { route, params };
+            }
+        }
+        const fallback = this.routes.get("*");
+        if (fallback) {
+            return { route: fallback, params: {} };
+        }
+        return undefined;
+    }
     register(path, view, name) {
         const normalizedPath = this.normalizePath(path);
         this.routes.set(normalizedPath, { path: normalizedPath, view, name });
-        if (name) {
+        if (name && normalizedPath !== "*") {
             this.namedRoutes.set(name, normalizedPath);
         }
     }
-    resolveView(view) {
+    resolveView(view, params) {
         if (typeof view === "function") {
-            return view();
+            return view(params);
         }
         return view;
     }
@@ -66,16 +134,16 @@ export class SigRouter {
         return this.namedRoutes.get(name) ?? this.routes.get(this.normalizePath(name))?.path;
     }
     render(path) {
-        const route = this.routes.get(path);
+        const resolved = this.resolveRoute(path);
         const target = document.querySelector(this.target);
         if (!target)
             return;
         [...target.childNodes].forEach(node => disposeTree(node));
-        if (!route) {
+        if (!resolved) {
             target.replaceChildren();
             return;
         }
-        const nextView = this.resolveView(route.view);
+        const nextView = this.resolveView(resolved.route.view, resolved.params);
         if (!nextView) {
             target.replaceChildren();
             return;
@@ -88,15 +156,16 @@ export class SigRouter {
             return;
         }
         this.started = true;
-        this.globalanchorintercept();
+        this.attachNavigationListeners();
         this.render(window.location.pathname);
     }
     navigate(path) {
-        const route = this.routes.get(path);
-        if (!route)
+        const normalizedPath = this.normalizePath(path);
+        const resolved = this.resolveRoute(normalizedPath);
+        if (!resolved)
             return;
-        window.history.pushState({}, "", path);
-        this.render(path);
+        window.history.pushState({}, "", normalizedPath);
+        this.render(normalizedPath);
     }
     goBack() {
         window.history.back();
@@ -112,7 +181,7 @@ export class SigRouter {
     has(path) {
         return this.routes.has(this.normalizePath(path));
     }
-    globalanchorintercept() {
+    attachNavigationListeners() {
         document.addEventListener("click", this.onDocumentClick);
         window.addEventListener("popstate", this.onPopState);
     }

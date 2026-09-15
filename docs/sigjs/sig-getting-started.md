@@ -1,56 +1,75 @@
-# Sig.js Getting Started Guide
+# Sig.js Getting Started
 
-This guide will help you get up and running with Sig.js, a lightweight signals-based DOM reactivity library.
+Install `@citrusworx/sigjs` in any TypeScript or JavaScript app. The rest of the WebEngine monorepo is not required.
 
-## What is Sig.js?
-
-Sig.js is a minimal, modern approach to DOM reactivity that uses **signals** (reactive values) and **effects** (tracking functions) to update the DOM. Unlike traditional frameworks, Sig.js:
-
-- Keeps HTML static by default
-- Updates only the specific DOM elements that need to change
-- Avoids virtual DOM overhead
-- Requires no compiler or build-time transforms
-- Provides a simple, TypeScript-first API
-
-## Installation
-
-Install Sig.js via yarn:
+## Install
 
 ```bash
-yarn add @citrusworx/sigjs
+npm install @citrusworx/sigjs
 ```
 
-## Basic Setup
+## JSX config
 
-### Step 1: Configure TypeScript for JSX
-
-Update your `tsconfig.json` to use Sig.js's JSX runtime:
+Sig.js ships its own JSX runtime. Point the transform at the package:
 
 ```json
 {
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "@citrusworx/sigjs",
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler"
   }
 }
 ```
 
-### Step 2: Create Your First Component
+### Vite
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  esbuild: {
+    jsx: "automatic",
+    jsxImportSource: "@citrusworx/sigjs",
+  },
+});
+```
+
+```html
+<!doctype html>
+<html>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+A complete Vite counter is in [`libraries/sig/examples/counter`](../../libraries/sig/examples/counter).
+
+### Plain `tsc`
+
+Use the same `compilerOptions` with `"moduleResolution": "nodenext"` if you want Node-style package exports. `tsc` emits imports of `@citrusworx/sigjs`; you still need a bundler or import-map tool to resolve those in the browser. Serving `dist/` as static files without a bundler will not resolve npm subpaths.
+
+## First component
 
 ```tsx
-// main.tsx
-import { Signal, effect, mount } from "@citrusworx/sigjs";
+// src/main.tsx
+import { Signal, mount } from "@citrusworx/sigjs";
 
 function Counter() {
   const count = Signal(0);
 
   return (
     <div>
-      <h1>Counter: {count.get()}</h1>
-      <button onClick={() => count.set(count.get() + 1)}>
+      <h1>Count: {() => count.get()}</h1>
+      <button
+        className={() => (count.get() % 2 === 0 ? "even" : "odd")}
+        onClick={() => count.set(count.get() + 1)}
+      >
         Increment
       </button>
     </div>
@@ -60,250 +79,69 @@ function Counter() {
 mount(<Counter />, document.getElementById("root")!);
 ```
 
-### Step 3: Add Reactivity
+`{() => count.get()}` is a **function child**: the runtime keeps a text node in sync. `className={() => ...}` is a **function prop**: the runtime re-applies the property when the signal changes. `onClick` is an event listener, not a reactive getter.
 
-To make elements update automatically when signals change, use the `effect` function:
+`{count.get()}` without a function is a one-shot read when the element is created. It will not update later.
 
-```tsx
-function Counter() {
-  const count = Signal(0);
+## Signals and effects
 
-  return (
-    <div>
-      <h1 ref={(el) => {
-        effect(() => {
-          el.textContent = `Counter: ${count.get()}`;
-        });
-      }}></h1>
-      <button onClick={() => count.set(count.get() + 1)}>
-        Increment
-      </button>
-    </div>
-  );
-}
-```
+```ts
+import { Signal, effect, batch, memo } from "@citrusworx/sigjs";
 
-Or use a functional child for simpler cases:
-
-```tsx
-function Counter() {
-  const count = Signal(0);
-
-  return (
-    <div>
-      <h1>Counter: {() => count.get()}</h1>
-      <button onClick={() => count.set(count.get() + 1)}>
-        Increment
-      </button>
-    </div>
-  );
-}
-```
-
-## Key Concepts
-
-### Signals
-
-A **signal** is a reactive value that tracks who depends on it. When the value changes, all dependents are notified.
-
-```typescript
-import { Signal } from "@citrusworx/sigjs";
-
-const name = Signal("Alice");
-console.log(name.get()); // "Alice"
-name.set("Bob");          // Notifies subscribers
-```
-
-### Effects
-
-An **effect** is a function that automatically re-runs when its signal dependencies change.
-
-```typescript
-import { Signal, effect } from "@citrusworx/sigjs";
-
-const count = Signal(5);
+const name = Signal("Ada");
 
 effect(() => {
-  console.log("Count is now:", count.get());
+  console.log("hello", name.get());
 });
 
-count.set(10); // Effect runs again, logs "Count is now: 10"
+name.set("Lovelace");
+
+batch(() => {
+  name.set("Alan");
+  name.set("Turing");
+});
+
+const greeting = memo(() => `Hello, ${name.get()}`);
+greeting.get();
 ```
 
-### Component Primitives
+`effect` runs immediately and re-runs when any `get()` inside it changes. Return a cleanup function from the callback if you set up timers or listeners. Call the disposer that `effect` returns to stop it.
 
-Components in Sig.js are plain functions that return DOM elements:
+`batch` flushes subscribers once, including nested `batch()` calls (they flush when the outer call finishes).
+
+## Components
+
+Components are ordinary functions that return a `Node`:
 
 ```tsx
 function Greeting(props: { name: string }) {
-  return <div>Hello, {props.name}!</div>;
+  return <p>Hello, {props.name}</p>;
 }
 ```
 
-They can use signals, effects, and return JSX:
+Keep signals inside the component that owns them. Effects created during render are disposed when `mount` or `SigRouter` replaces that tree.
 
-```tsx
-function Timer() {
-  const seconds = Signal(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      seconds.set(seconds.get() + 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return <div>Elapsed: {() => seconds.get()}s</div>;
-}
-```
-
-## Common Patterns
-
-### Updating DOM on Signal Change
-
-Use functional children or effects with refs:
-
-```tsx
-// Functional child
-<p>{() => `Count: ${count.get()}`}</p>
-
-// Or with ref
-<p ref={(el) => {
-  effect(() => {
-    el.textContent = `Count: ${count.get()}`;
-  });
-}}></p>
-```
-
-### Two-Way Binding
-
-Bind input values to signals:
-
-```tsx
-function Form() {
-  const email = Signal("");
-
-  return (
-    <div>
-      <input
-        type="email"
-        value={email.get()}
-        onInput={(e) => email.set((e.target as HTMLInputElement).value)}
-      />
-      <p>You entered: {() => email.get()}</p>
-    </div>
-  );
-}
-```
-
-### Conditional Rendering
-
-Signals work great with functional children:
-
-```tsx
-function UserGreeting(props: { isLoggedIn: Signal<boolean> }) {
-  return (
-    <div>
-      {() => props.isLoggedIn.get() ? (
-        <button>Logout</button>
-      ) : (
-        <button>Login</button>
-      )}
-    </div>
-  );
-}
-```
-
-### Lists and Collections
-
-```tsx
-function TodoList() {
-  const todos = Signal([]);
-
-  return (
-    <ul>
-      {() => todos.get().map((todo) => (
-        <li key={todo.id}>{todo.text}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-## Using the Router
-
-Sig.js includes a simple client-side router for single-page applications:
+## Router (optional)
 
 ```tsx
 import { SigRouter } from "@citrusworx/sigjs/sig-router";
 
-const router = new SigRouter("#app");
+const router = new SigRouter("#root");
 
 router.set({
   "/": Home,
+  "/user/:id": (params) => <p>User {params.id}</p>,
   about: About,
-  contact: Contact,
+  "*": () => <p>Not found</p>,
 });
 
 router.start();
 ```
 
-For more details, see the [Router Guide](./sig-router.md).
+Exact paths win, then `:param` routes, then `*`. See the [Router Guide](./sig-router.md).
 
-## Performance Considerations
+## Next
 
-### Optimal Signal Usage
-
-1. **Keep signals close to where they're used**: Define signals in the component that owns them
-2. **Use effects for side effects**: DOM updates, API calls, etc.
-3. **Batch updates**: Use `batch()` for multiple signal updates that should trigger effects once
-
-### Avoiding Over-Reactivity
-
-```tsx
-// Good: Effect only runs when count changes
-effect(() => {
-  console.log(count.get());
-});
-
-// Avoid: Effect runs for every render
-const logger = () => console.log(count.get());
-```
-
-## Debugging
-
-### Check Signal Values
-
-```typescript
-const count = Signal(0);
-console.log(count.get()); // See current value
-```
-
-### Trace Effects
-
-```typescript
-effect(() => {
-  console.log("Effect running, count =", count.get());
-  // ... DOM update logic ...
-});
-```
-
-### Inspect Effect Dependencies
-
-Effects automatically track signal access:
-
-```typescript
-effect(() => {
-  // This effect depends on both signals
-  const total = count.get() + multiplier.get();
-  console.log("Total:", total);
-});
-```
-
-## Next Steps
-
-- Explore the [API Reference](./sig-api.md) for complete documentation
-- Read the [Router Guide](./sig-router.md) for client-side routing
-- Check out [Examples](./sig-examples.md) for real-world patterns
-- Review the [Project Status](./sig-status.md) to see what's coming next
+- [API Reference](./sig-api.md)
+- [Examples](./sig-examples.md)
+- [Troubleshooting](./sig-troubleshooting.md)

@@ -1,19 +1,15 @@
-# Sig.js + Juice Integration Guide
+# Sig.js + Juice (optional)
 
-Building complete applications with Sig.js reactivity and Juice styling.
+Juice is **not required** to use `@citrusworx/sigjs`. The default path is vanilla DOM + Vite or `tsc` — see [Getting Started](./sig-getting-started.md) and [`libraries/sig/README.md`](../../libraries/sig/README.md).
+
+This page is only for projects that already use Juice for styling. Sig.js does not import Juice.
 
 ## Overview
 
-Sig.js and Juice are complementary libraries:
+- **Sig.js**: signals, JSX-to-DOM, client router
+- **Juice**: attribute-driven stylesheet (optional peer)
 
-- **Juice**: Static, attribute-driven styling system
-- **Sig.js**: Reactive state management and DOM updates
-
-Together they enable building complete applications with:
-- Beautiful, consistent styling from Juice
-- Dynamic, reactive UIs from Sig.js
-- No virtual DOM or frameworks overhead
-- Direct control over DOM updates
+You can compose them because both talk to real DOM nodes. Install each package separately.
 
 ## Basic Setup
 

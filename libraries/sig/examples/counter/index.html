@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sigjs counter</title>
+    <style>
+      :root {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        color: #14201b;
+        background: #f4f1ea;
+      }
+      body {
+        margin: 0;
+      }
+      nav {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: #1f3b34;
+      }
+      nav a {
+        color: #e8f0ec;
+        text-decoration: none;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      main {
+        padding: 1.5rem 1.25rem;
+        max-width: 40rem;
+      }
+      button {
+        margin-right: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid #1f3b34;
+        background: #fff;
+        cursor: pointer;
+      }
+      button.hot {
+        background: #c97848;
+        color: #fff;
+        border-color: #c97848;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/">Counter</a>
+      <a href="/about">About</a>
+      <a href="/user/42">User 42</a>
+      <a href="/missing">Missing</a>
+    </nav>
+    <main id="root"></main>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
