@@ -1,0 +1,17 @@
+# Tag + VPC only. No droplet — no compute charge.
+# grape validate -c ./01-vpc-and-tag.yaml
+# grape apply -c ./01-vpc-and-tag.yaml
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - grapevine
+  vpcs:
+    - name: grapevine
+      description: Grapevine starter VPC
+      ip_range: 10.120.0.0/16

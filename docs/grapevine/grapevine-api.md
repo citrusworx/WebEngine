@@ -130,16 +130,19 @@ import {
 - `grapeGUI`
 - Config apply for `services`
 - Any AWS/GCP SDK
-- `parseCliArgs` / `runCli` from the package root (they live on the bin module)
+- `runCli` from the package root (it lives on the bin module)
 
 ## CLI (not an import)
 
 Use the `grape` binary:
 
 ```text
-grape apply    -c <path|url>
 grape validate -c <path|url>
-grape status   [-c <path|url>]
+grape plan     -c <path|url>
+grape apply    -c <path|url> [--dry-run] [--json]
+grape destroy  [-c <path|url>] [--tag <tag>] [--yes] [--dry-run]
+grape status   [-c <path|url>] [--json]
+grape init     [blueprint] [--list] [--force]
 grape help
 ```
 

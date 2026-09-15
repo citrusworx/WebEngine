@@ -21,12 +21,15 @@ The teaching stack lives one level up:
 
 ```bash
 export DO_TOKEN=dop_v1_...
+grape init --list
 grape validate -c ./grape.config.yaml
+grape plan -c ./grape.config.yaml
 grape apply -c ./grape.config.yaml
 grape status
+grape destroy -c ./grape.config.yaml --yes
 ```
 
-There is no `grapevine init --config`, no provider switch CLI, no `grape destroy`, and no blueprint marketplace in this repo. Starters live in `libraries/grapevine/examples/blueprints/`.
+`grape init` copies packaged starters from `libraries/grapevine/examples/blueprints/`. There is no provider switch CLI.
 
 `provider` is DigitalOcean only. Changing one YAML line to `aws` will fail schema validation.
 

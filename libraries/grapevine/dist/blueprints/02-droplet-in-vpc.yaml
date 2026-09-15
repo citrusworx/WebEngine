@@ -1,0 +1,34 @@
+# One apply: tag, generated SSH key, VPC, and a droplet on that VPC.
+# grape validate -c ./02-droplet-in-vpc.yaml
+# grape apply -c ./02-droplet-in-vpc.yaml
+#
+# generate: true creates a key pair, uploads the public key, and writes the
+# OpenSSH private key (mode 0600) to private_key_path or, if omitted,
+# .grape/ssh/<name> under the process cwd. Apply reports the saved path;
+# it never prints key material. .grape/ is local-only — do not commit it.
+# ssh -i .grape/ssh/grapevine root@<droplet-ip>
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - grapevine
+  ssh_keys:
+    - name: grapevine
+      generate: true
+      # private_key_path: .grape/ssh/grapevine  # default; absolute or cwd-relative
+  vpcs:
+    - name: grapevine
+      description: Grapevine starter VPC
+      ip_range: 10.120.0.0/16
+  droplets:
+    - name: grapevine-web-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: grapevine
+      monitoring: true
+      tags: [grapevine]

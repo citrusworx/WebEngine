@@ -291,13 +291,16 @@ The loader does not require YAML:
 ## CLI
 
 ```text
-grape apply    -c <path|url>
 grape validate -c <path|url>
-grape status   [-c <path|url>]
+grape plan     -c <path|url>
+grape apply    -c <path|url> [--dry-run] [--json]
+grape destroy  [-c <path|url>] [--tag <tag>] [--yes]
+grape status   [-c <path|url>] [--json]
+grape init     [blueprint] [--list] [--force]
 grape help
 ```
 
-`kiwi --grape -c ./grape.config.yaml` is mentioned in the CLI help as an alternate entry; the grape binary itself is `apply|validate|status`.
+`kiwi --grape -c ./grape.config.yaml` delegates to `grape apply`. Extra flags live on the `grape` binary.
 
 ## Related
 

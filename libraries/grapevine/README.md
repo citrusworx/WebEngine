@@ -57,17 +57,58 @@ Auth is always `Authorization: Bearer $DO_TOKEN` against `https://api.digitaloce
 
 ## Standalone `grape` CLI
 
-`grape` loads a YAML or JSON config from a **local path or HTTP(S) URL**, validates it, and optionally applies it.
+`grape` loads a YAML or JSON config from a **local path or HTTP(S) URL**, validates it, and optionally applies or tears it down.
 
 ```bash
+grape help
 grape validate -c ./grape.config.yaml
+grape plan -c ./grape.config.yaml
+grape apply --dry-run -c ./grape.config.yaml
 grape apply -c ./grape.config.yaml
 grape apply -c https://example.com/grape.config.yaml
 grape status
-grape help
+grape status -c ./grape.config.yaml
+grape init --list
+grape init 02
+grape destroy -c ./grape.config.yaml --yes
+grape destroy --tag grapevine-smoke --yes
 ```
 
-`-c` / `--config` is required for `apply` and `validate`.
+Common flags:
+
+| Flag | Meaning |
+| --- | --- |
+| `-c, --config <path\|url>` | Local YAML/JSON file or HTTP(S) URL (required for `validate`, `plan`, `apply`) |
+| `--json` | Machine-readable JSON instead of tables / labeled lines |
+| `-y, --yes` | Skip confirmation for `destroy` |
+| `--dry-run` | Show what would happen without mutating DigitalOcean (`apply`, `destroy`) |
+
+Human output is the default. Unknown options and validation failures exit non-zero. Every command has `--help`.
+
+`kiwi --grape -c ./grape.config.yaml` still shells out to `grape apply -c …` when `grape` is on `PATH`. Extra flags (`--json`, `--dry-run`, `plan`, `destroy`, `init`) live on the `grape` binary.
+
+### Commands
+
+**`grape validate -c …`** — schema-check only. Prints provider, region, and declared resource names. `--json` includes counts.
+
+**`grape plan -c …`** (same as **`grape apply --dry-run`**) — load and validate, then print the resource graph that *would* be created (counts, names, types, regions). No DigitalOcean API calls.
+
+**`grape apply -c …`** — create resources in dependency order. Prints a labeled receipt. When `generate: true` writes a private key, the absolute path is listed under **Private keys written** (and `private_key_paths` in `--json`). Key material is never printed. `--yes` is accepted but unused unless a future apply step needs confirmation.
+
+**`grape destroy`** — teardown. Requires `-c` and/or `--tag`. Destructive: in a TTY you must confirm, otherwise pass `--yes`. `--dry-run` lists matches without deleting.
+
+v1 matching is conservative:
+
+- From `-c`: unique live names for apps, alert policies, load balancers, firewalls, domains, droplets, SSH keys, non-default VPCs, and tags declared in the config. Duplicate names are skipped with a warning.
+- From `--tag`: droplets with that tag, plus firewalls that are clearly attached (firewall has the tag, or every `droplet_ids` entry is in the tagged set). Mixed attachments are skipped.
+- Order: apps → alert policies → load balancers → firewalls → domains → droplets → SSH keys → VPCs → tags.
+- Default VPCs and ambiguous matches are never deleted. Local `.grape/ssh` private key files are not removed. Droplet delete is asynchronous at DigitalOcean; a VPC or tag may still be busy on the first pass — re-run destroy after droplets finish.
+
+**`grape status`** — live account view (droplets with id/status/region/public+private IPs/tags, VPCs, firewalls with droplet counts, domains). With `-c`, also summarizes the config and notes name overlap with live resources. `--json` dumps the structured inventory.
+
+**`grape init [blueprint]`** — copy a packaged starter to `./grape.config.yaml`. No argument or `--list` lists `01`–`04`. `--force` overwrites. Blueprints ship in the npm package (`examples/blueprints` and `dist/blueprints`).
+
+**`grape help`** — top-level command list.
 
 ### Config schema
 
@@ -141,7 +182,16 @@ Progressive DigitalOcean starters live in [`examples/blueprints/`](./examples/bl
 3. `03-web-firewall.yaml` — firewall for an existing droplet (replace placeholders first)
 4. `04-full-web-stack.yaml` — one-shot tag + SSH + VPC + droplet + firewall
 
-Copy a file, set `DO_TOKEN`, then `grape validate -c …` / `grape apply -c …`. Details and placeholder rules are in [`examples/blueprints/README.md`](./examples/blueprints/README.md).
+Scaffold one into the current directory (no KiwiEngine required):
+
+```bash
+grape init --list
+grape init 01          # writes ./grape.config.yaml
+grape validate -c ./grape.config.yaml
+grape plan -c ./grape.config.yaml
+```
+
+Or copy a file from this folder, set `DO_TOKEN`, then `grape validate` / `grape apply`. Details and placeholder rules are in [`examples/blueprints/README.md`](./examples/blueprints/README.md).
 
 ## Usage with Kiwi
 
@@ -152,6 +202,8 @@ kiwi --grape -c ./grape.config.yaml
 kiwi grape -c ./grape.config.yaml
 kiwi grape validate -c https://example.com/grape.config.yaml
 ```
+
+`kiwi grape <action>` always forwards `grape <action> -c <config>`. Flags such as `--json`, `--dry-run`, `init`, and `destroy --tag` are on the `grape` binary.
 
 Install `@citrusworx/grapevine` so `grape` is available, then run those commands from the same environment.
 

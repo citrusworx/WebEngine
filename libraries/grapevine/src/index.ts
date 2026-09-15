@@ -16,3 +16,18 @@ export {
     type ApplyResult,
     type AppliedSSHKey
 } from "./config/apply.js";
+export {
+    planGrapeConfig,
+    countNormalized,
+    type GrapePlan,
+    type PlannedResource,
+    type ResourceCounts
+} from "./config/plan.js";
+export {
+    destroyGrapeResources,
+    planDestroy,
+    DESTROY_ORDER,
+    type DestroyResult,
+    type DestroyPlan,
+    type DestroyTarget
+} from "./config/destroy.js";

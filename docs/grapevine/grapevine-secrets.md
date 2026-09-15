@@ -43,9 +43,9 @@ export MY_DO_TOKEN=dop_v1_...
 
 The HTTP client always reads `DO_TOKEN` via `authHeaders()`. The copy exists so a renamed variable still works for apply.
 
-### `grape status` does not follow `credentials.env`
+### `grape status` and `credentials.env`
 
-The CLI status command checks the literal `"DO_TOKEN"` even when `-c` points at a file that names `MY_DO_TOKEN`. If you renamed the variable:
+Without `-c`, status checks the literal `"DO_TOKEN"`. With `-c`, it uses `credentials.env` from that config. If you renamed the variable and run `grape status` with no config:
 
 - `grape apply -c` works
 - `grape status` may print `DO_TOKEN is not set` and skip live counts
