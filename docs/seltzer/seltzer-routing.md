@@ -1,131 +1,86 @@
 # Seltzer Routing
 
-Exact method + pathname matching as implemented in `Seltzer.listen`.
+Method + path matching as implemented in `pipeline/router.ts` and the `route` pipeline stage.
 
-This is not Express routing. It is not the parametric matcher in [exercise 4](./exercises/04-parametric-router.md). If you need `/users/:id`, you do not have it.
+This is not Express routing. Parametric `:id` **is** shipped. Static prefixes are preferred over params.
 
 ## The matcher
 
-```ts
-const url = new URL(req.url || "/", `http://${req.headers.host}`);
-const match = this.routes.find(
-  (route) => route.method === req.method && route.path === url.pathname,
-);
-```
+Each `.route()` call runs `compileRoute`: the path is split on `/`, `:name` segments become `([^/]+)` capture groups, and static segments are regex-escaped. Matching is `route.method === method` plus `regex.test(path)`.
 
-That is the entire router.
+If several compiled routes match, `matchRoute` picks the **most specific** path, not merely the first registration:
 
-| Compared | Source | Notes |
-|---|---|---|
-| Method | `req.method` | Typically `"GET"`, `"POST"`, … Node’s uppercase tokens |
-| Path | `url.pathname` | No query, no hash |
-| Equality | `===` | No prefix, no glob, no `:param` |
-| Winner | `Array.find` | **First registered** route that matches |
+1. more static segments win
+2. then fewer param segments
+3. then longer paths
+4. then earlier registration if rank ties
 
-If nothing matches, `ctx.json({ error: "Not Found" }, 404)`.
+That is why `/items/new` wins over `/items/:id`, and `/api/products/catalog/:catalog` wins over `/api/products/:id`, even when `:id` was registered first.
+
+If nothing matches, the `route` stage returns `{ status: 404, body: { error: "Not Found" } }` and the pipeline jumps to `send`.
 
 ## Registering routes
 
 ```ts
 app.route({
   method: "GET",
-  path: "/notes",
-  handler: (ctx) => ctx.json([]),
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => ({ body: { id: ctx.params.id } }),
 });
 ```
 
-`.route` pushes and returns `this`, so you can chain. There is no `.get` / `.post` sugar. There is no router tree. Order is insertion order.
+`.route` compiles, pushes, and returns `this`. There is no `.get` / `.post` sugar. `method` and `path` are plain strings. `"get"` will not match Node’s `"GET"`.
 
-`method` and `path` are plain strings. `"get"` will not match Node’s `"GET"`. `"/Notes"` will not match `"/notes"`.
+`ctx.params` values are `decodeURIComponent`d. `/notes/%31` on `/notes/:id` yields `{ id: "1" }`.
 
 ## Pathname details
 
-`new URL(req.url || "/", \`http://${host}\`)` is used only to split pathname from search.
+The `context` stage builds `new URL(req.url || "/", \`http://${host}\`)` and sets `ctx.path` to `url.pathname`. Query is `ctx.query`, not part of the match.
 
-| Request URL | `pathname` | Matches a route registered as |
+| Request URL | `ctx.path` | Matches |
 |---|---|---|
 | `/notes` | `/notes` | `/notes` |
-| `/notes?limit=10` | `/notes` | `/notes` |
+| `/notes?limit=10` | `/notes` | `/notes` (`ctx.query.limit === "10"`) |
 | `/notes/` | `/notes/` | `/notes/` only |
-| `/notes/1` | `/notes/1` | `/notes/1` only |
-| `/notes/:id` | `/notes/:id` | `/notes/:id` (literal colon) |
+| `/notes/1` | `/notes/1` | `/notes/:id` → `{ id: "1" }` |
+| `/notes/:id` | `/notes/:id` | only a route whose path is the literal `/notes/:id` |
 | `/` | `/` | `/` |
 
-There is no trailing-slash redirect. There is no case folding. There is no decode step beyond what `URL` already does for percent-encoding (`/notes/%31` is pathname `/notes/1`).
+There is no trailing-slash redirect. There is no case folding.
 
-## First match wins
+## Static prefix vs `:id`
 
 ```ts
 app.route({
   method: "GET",
-  path: "/health",
-  handler: (ctx) => ctx.json({ from: "first" }),
+  path: "/items/:id",
+  handler: (): ResponseData => ({ body: { route: "param" } }),
 });
 
 app.route({
   method: "GET",
-  path: "/health",
-  handler: (ctx) => ctx.json({ from: "second" }),
+  path: "/items/new",
+  handler: (): ResponseData => ({ body: { route: "static" } }),
 });
 ```
 
-Every `GET /health` hits the first handler. The second is dead code. Seltzer does not warn.
+`GET /items/new` hits the static handler. `GET /items/42` hits `:id`. Registration order does not matter for that pair.
 
-Register specific concrete paths **before** a catch-all only if you invent a catch-all yourself (you cannot: there is no `*` matcher). With the shipped matcher, overlapping routes are always a mistake.
+`generateRoutes` also **sorts** operations so `/catalog/:catalog` and `/slug/:slug` register before `:id`. The matcher would still prefer them; the sort keeps first-match mental models safe.
+
+## Duplicate exact routes
+
+Two identical `GET /health` registrations: rank ties, so **earlier** registration wins. Seltzer does not warn. The second is dead code.
 
 ## Method mismatch is a 404
 
-`GET /notes` and `POST /notes` are different routes. A GET-only collection will 404 a POST rather than 405.
+`GET /notes` and `POST /notes` are different routes. A GET-only collection will 404 a POST rather than 405. Register both methods explicitly.
 
-```ts
-app.route({
-  method: "GET",
-  path: "/notes",
-  handler: (ctx) => ctx.json([...notes.values()]),
-});
-
-app.route({
-  method: "POST",
-  path: "/notes",
-  handler: async (ctx) => {
-    /* create */
-  },
-});
-```
-
-If you want 405, check `ctx.req.method` inside one handler — but then you would have to match on a path regardless of method, which this matcher cannot do. Two routes is the honest shape.
-
-## What to do instead of `:id`
-
-**Query string** (recommended for product code):
-
-```ts
-app.route({
-  method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    // …
-  },
-});
-```
-
-**Concrete paths** for fixtures or tiny static sets:
-
-```ts
-app.route({
-  method: "GET",
-  path: "/notes/1",
-  handler: (ctx) => ctx.json(notes.get("1") ?? { error: "Not Found" }),
-});
-```
-
-**Manual prefix parse** is a trap if you still register `/notes`. The matcher will never give you `/notes/42` on a `/notes` route. You would need a different matcher. That matcher is the parametric exercise, not this package.
+`OPTIONS` never reaches the matcher when `listen` is used: CORS/`OPTIONS` 204 runs first.
 
 ## Nectarine YAML and this matcher
 
-`libraries/nectarine/models/user/userAPI.yml` contains both exact and parametric endpoints:
+`*API.yml` may list both exact and parametric endpoints. **Register them.** `/users/:id` matches `/users/42`. That was a 0.2.0 myth.
 
 ```yaml
 allUsers:    { method: GET,  endpoint: /users }
@@ -133,32 +88,33 @@ usersById:   { method: GET,  endpoint: /users/:id }
 create.user: { method: POST, endpoint: /users }
 ```
 
-Copy `/users` GET and POST. Skip `/users/:id`, `/users/:email`, `/users/:city`, `/users/:state/:city` until parametric matching exists — or rewrite those lookups as `/user?id=` in **your** routes, keeping the YAML as documentation of a future contract.
+Flatten with Nectarine `listApiOperations` (it maps `endpoint` → `ApiOperation.path`) and pass the list to `generateRoutes`. Do not rewrite lookups as `?id=` unless you prefer query strings.
 
-Walking YAML and registering every `endpoint` blindly will add literal `"/users/:id"` routes that never match real traffic.
+Walking YAML and registering every `endpoint` as a **literal** without compiling params would be wrong — `.route()` compiles `:id` for you.
 
 ## Host, port, and origin
 
-The matcher does not look at host. `http://127.0.0.1:3000/health` and `http://localhost:3000/health` hit the same route if they share a process. Virtual hosts are your `ctx.req.headers.host` check.
+The matcher does not look at host. Virtual hosts are your `ctx.headers.host` check.
 
-`listen(port)` binds the default host for `server.listen(port)`. There is no `listen({ host, port })` overload.
+`listen(port)` binds the default host for `server.listen(port)`. There is no `listen({ host, port })` overload. It **does** return the `http.Server`.
 
 ## No middleware, no router groups, no unroute
 
-There is no `app.use`, no mounted sub-app, no `Router()`, and no way to remove a route. Grouping is functions you call that `app.route` themselves:
+There is no `app.use`, no mounted sub-app, no `Router()`, and no way to remove a route. Grouping is functions that call `app.route`:
 
 ```ts
 function mountNotes(app: Seltzer) {
   app.route({ method: "GET", path: "/notes", handler: listNotes });
   app.route({ method: "POST", path: "/notes", handler: createNote });
+  app.route({ method: "GET", path: "/notes/:id", handler: getNote });
 }
 ```
 
-That is app structure, not a Seltzer API.
+Cross-cutting auth is `before("handle", …)`, not a sub-router. See [Pipeline](./seltzer-pipeline.md).
 
 ## Related
 
 - [Request and response](./seltzer-request-response.md)
+- [Generate routes](./seltzer-generate.md)
 - [JSON API tutorial](./seltzer-api-tutorial.md)
-- [Anti-patterns](./seltzer-anti-patterns.md) — treating `:id` as shipped
-- [Design](./seltzer-design.md) — intended `route` stage
+- [Anti-patterns](./seltzer-anti-patterns.md)

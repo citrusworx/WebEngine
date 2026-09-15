@@ -1,0 +1,32 @@
+Order:
+  table: orders
+  description: Commerce orders for gear and software apps
+  fields:
+    id: string PRIMARY KEY
+    client_id: string FOREIGN KEY REFERENCES clients(id) NOT NULL
+    catalog: enum(gear, software) NOT NULL
+    status: enum(pending, paid, fulfilled, cancelled, refunded) DEFAULT 'pending'
+    subtotal: decimal(12, 2) NOT NULL
+    tax: decimal(10, 2) DEFAULT 0
+    shipping: decimal(10, 2) DEFAULT 0
+    total: decimal(12, 2) NOT NULL
+    currency: string DEFAULT 'USD'
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    client: Client
+    items: OrderItem[]
+
+OrderItem:
+  table: order_items
+  description: Line items on an order
+  fields:
+    id: string PRIMARY KEY
+    order_id: string FOREIGN KEY REFERENCES orders(id) NOT NULL
+    product_id: string FOREIGN KEY REFERENCES products(id) NOT NULL
+    quantity: int NOT NULL DEFAULT 1
+    unit_price: decimal(10, 2) NOT NULL
+    created_at: timestamp DEFAULT NOW()
+  relationships:
+    order: Order
+    product: Product

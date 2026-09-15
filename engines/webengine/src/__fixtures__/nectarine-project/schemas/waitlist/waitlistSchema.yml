@@ -1,0 +1,6 @@
+Waitlist:
+  table: waitlist
+  fields:
+    id: string PRIMARY KEY
+    email: string
+    name: string

@@ -1,0 +1,18 @@
+Client:
+  table: clients
+  description: Shared customer/learner profile across Blackwater apps
+  fields:
+    id: string PRIMARY KEY
+    email: string UNIQUE NOT NULL
+    display_name: string
+    phone: string
+    role: enum(learner, artist, customer, admin) DEFAULT 'learner'
+    source_app: enum(www, gear, software, courses, studio, songwriting, blog)
+    notes: text
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    enrollments: Enrollment[]
+    bookings: Booking[]
+    orders: Order[]
+    sessions: Session[]

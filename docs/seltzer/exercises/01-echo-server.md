@@ -4,7 +4,7 @@
 
 **Goal:** Prove you understand the basic `createServer` callback.
 
-**Proves you can build:** Basic `IncomingMessage` / `ServerResponse` handling.
+**Proves you can rebuild:** The `node:http` callback under `Seltzer.listen` (before the pipeline runs).
 
 ## Requirements
 

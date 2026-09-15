@@ -1,0 +1,19 @@
+Lesson:
+  table: lessons
+  description: Ordered units within a course; long-form body may live in KiwiPress
+  fields:
+    id: string PRIMARY KEY
+    course_id: string FOREIGN KEY REFERENCES courses(id) NOT NULL
+    slug: string NOT NULL
+    title: string NOT NULL
+    summary: text
+    position: int NOT NULL DEFAULT 0
+    duration_minutes: int
+    # Optional WordPress page slug/id for rich lesson body
+    content_ref: string
+    hero_image: string
+    status: enum(draft, published, archived) DEFAULT 'draft'
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    course: Course

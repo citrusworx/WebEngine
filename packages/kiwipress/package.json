@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/kiwipress",
-    "version": "0.4.0",
+    "version": "0.4.3",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -19,18 +19,15 @@
     "scripts": {
         "build": "tsc -p tsconfig.json",
         "dev": "tsc -w -p tsconfig.json",
-        "prepack": "yarn build",
-        "test": "vitest run",
-        "test:watch": "vitest"
+        "prepack": "yarn build"
     },
     "devDependencies": {
         "ts-node": "^10.9.2",
         "typescript": "^6.0.3",
-        "vitest": "^4.1.4",
         "zod": "^4.3.6"
     },
     "dependencies": {
-        "@citrusworx/nectarine": "^0.1.1",
-        "@citrusworx/seltzer": "^0.2.0"
+        "@citrusworx/nectarine": "^0.3.0",
+        "@citrusworx/seltzer": "^0.8.1"
     }
 }

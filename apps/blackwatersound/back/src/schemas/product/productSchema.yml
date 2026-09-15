@@ -1,0 +1,37 @@
+Product:
+  table: products
+  description: >
+    Catalog items for gear and software apps.
+
+    Live writes use the document-store shape only: seed and HTTP create/update
+    write (id, payload JSONB). Relational catalog columns (catalog, name, slug,
+    originalPrice, isNew, isActive, …) are a nullable projection compiled from
+    this file so productQueries.yml can compile. They stay NULL; JSONB is not
+    being dropped. `payload` is a protected column.
+
+    Mixed-case field names are emitted as quoted identifiers ("originalPrice")
+    so Postgres does not fold them to lowercase.
+
+    relationships: is documentation / future wiring. Foreign keys in DDL come
+    only from inline FOREIGN KEY REFERENCES on fields.
+  fields:
+    id: string PRIMARY KEY
+    payload: jsonb NOT NULL
+    catalog: enum(gear, software)
+    name: string
+    slug: string UNIQUE
+    sub: string
+    price: string
+    originalPrice: string
+    img: string
+    accent: string
+    badge: string
+    category: enum(Guitars, Cabs, Pedals, Effects, Amplifiers, Studio, Lifestyle, Accessories, DAW, Plugins, Software)
+    tags: json
+    blurb: text
+    isNew: boolean DEFAULT false
+    isActive: boolean DEFAULT true
+    created_at: timestamp NOT NULL DEFAULT NOW()
+    updated_at: timestamp NOT NULL DEFAULT NOW()
+  relationships:
+    order_items: OrderItem[]

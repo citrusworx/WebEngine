@@ -1,0 +1,48 @@
+order:
+  read:
+    byClient:
+      type: SELECT
+      table: orders
+      fields: '*'
+      where: client_id = $1
+      orderBy: created_at DESC
+
+    byId:
+      type: SELECT
+      table: orders
+      fields: '*'
+      where: id = $1
+
+    byCatalog:
+      type: SELECT
+      table: orders
+      fields: '*'
+      where: catalog = $1
+      orderBy: created_at DESC
+
+  create:
+    newOrder:
+      type: INSERT
+      table: orders
+      fields: [id, client_id, catalog, status, subtotal, tax, shipping, total, currency]
+
+  update:
+    updateOrderStatus:
+      type: UPDATE
+      table: orders
+      fields: [status, updated_at]
+      where: id = $1
+
+order_item:
+  read:
+    byOrder:
+      type: SELECT
+      table: order_items
+      fields: '*'
+      where: order_id = $1
+
+  create:
+    newItem:
+      type: INSERT
+      table: order_items
+      fields: [id, order_id, product_id, quantity, unit_price]

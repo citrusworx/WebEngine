@@ -1,0 +1,17 @@
+MixReview:
+  table: mix_reviews
+  description: Mix review requests and feedback for studio clients
+  fields:
+    id: string PRIMARY KEY
+    session_id: string FOREIGN KEY REFERENCES sessions(id)
+    client_id: string FOREIGN KEY REFERENCES clients(id) NOT NULL
+    title: string NOT NULL
+    track_url: string
+    notes: text
+    feedback: text
+    status: enum(submitted, in_review, returned, closed) DEFAULT 'submitted'
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    session: Session
+    client: Client

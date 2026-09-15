@@ -1,5 +1,56 @@
 # @citrusworx/seltzer
 
+## 0.8.1
+
+### Patch Changes
+
+- 815b941: Standalone packaging hygiene for à-la-carte consumers: npm description (small Node HTTP runtime), `engines.node` `>=18`, optional `undici` peer, and a README that leads with `init().route().listen()`. npm **0.8.0** shipped the HTTP core without that polish; **0.8.1** is the packaging/DX fix. No runtime behavior changes.
+
+## 0.8.0
+
+### Minor Changes
+
+- npm **0.8.0** is the solidified core that git labeled **0.7.0**: default `validate` for `.required` body fields, `Seltzer#replace()`, and hardened outbound `client` (`HttpError`, JSON parsing, optional `allowSelfSigned`). Packaging/DX hygiene (description, engines, optional `undici` peer, standalone README) did not make this tarball. Versions 0.3–0.7 were never published.
+
+## 0.7.0
+
+### Minor Changes
+
+- 5accf92: Harden outbound HTTP `client`: throw `HttpError` (status + body snippet) on non-2xx, parse JSON only for JSON successes, and support optional `allowSelfSigned` via undici Agent (KiwiPress pattern).
+- 7634d3a: Default `validate` stage enforces `.required` body fields from `Route.contract` (copied by `generateRoutes` from `ApiOperation.body`). `Seltzer#replace(name, stage)` swaps a builtin so Nectarine can hang full contract checks. `before` is unchanged.
+
+## 0.6.0
+
+### Minor Changes
+
+- 632d20f: `generateRoutes` maps Nectarine `ApiOperation[]` (from `listApiOperations`) onto object-based `Route`s. Handlers call host `execute` and return `ResponseData` (404 when a read finds nothing). Explicit transport results use `response(...)`. Static-prefix paths win over `:id`. Compatible with the Seltzer 0.5 pipeline.
+- 2150bb9: Named HTTP request pipeline (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) with `Seltzer#before(name, stage)` for inserting stages. `validate` is a no-op stub. Default listen/handle behavior is unchanged for `init().route().listen()`.
+- 12ec2bc: Handlers return ResponseData; the runtime sends the HTTP response. Removed the writing ctx.json helper from RequestContext (breaking).
+
+## 0.5.0
+
+### Minor Changes
+
+- Named HTTP request pipeline: `parse` → `context` → `route` → `validate` → `handle` → `response` → `send`.
+- New public API: `Seltzer#before(name, stage)` inserts a stage immediately before a named builtin stage. Returning `ResponseData` short-circuits to `send`.
+- `validate` is a named no-op stub (reserved for Nectarine).
+- Default `init().route().listen()` behavior matches 0.4.0 (params, body, ResponseData, CORS, OPTIONS 204, errors).
+
+## 0.4.0
+
+### Minor Changes
+
+- **Breaking:** Handlers must return `ResponseData` (`{ status?, headers?, body? }` or a Promise of it). The runtime `send`s the HTTP response. Bare objects/strings/arrays are not wrapped — invalid returns are a 500.
+- **Breaking:** Removed the writing `ctx.json` helper from `RequestContext`. `req` / `res` remain on ctx for now, but normal responses should not touch `res`.
+- Internal 404/400/500 paths use the same `send` path. Object/array bodies default to JSON with status `200` when omitted.
+
+## 0.3.0
+
+### Minor Changes
+
+- Server listen supports parametric routes, JSON body parsing, async handlers, CORS options, and `locals` for app context
+- Routes remain object-based via `.route({ method, path, handler })`
+
 ## 0.2.0
 
 ### Minor Changes

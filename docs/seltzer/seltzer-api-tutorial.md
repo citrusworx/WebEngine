@@ -1,17 +1,17 @@
 # Seltzer Tutorial — Building a Notes JSON API
 
-This tutorial walks through building a small JSON API with Seltzer the way the library works today.
+This tutorial walks through building a small JSON API with Seltzer **0.8.1**.
 
 The goal is to show how Seltzer should be composed in real server code:
 
 - `Seltzer.init` / `.route` / `.listen` own the process
-- exact paths own matching
-- `ctx.json` owns JSON responses
-- **you** own the body stream, query strings, and validation
-- `client.*` owns outbound calls
-- Nectarine YAML owns method/path *names* you copy — it does not generate handlers
+- handlers **return `ResponseData`**; the runtime `send`s
+- `ctx.body` / `ctx.params` / `ctx.query` are filled by the pipeline
+- `before` / `contract` own cross-cutting checks
+- `generateRoutes` owns YAML-shaped operation lists
+- `client.*` owns outbound calls and throws `HttpError` on non-2xx
 
-If you have already read [Getting Started](./seltzer-getting-started.md), this is the same kind of guided build as the [Juice page tutorial](../juice/juice-page-tutorial.md) and the [Sig.js operator desk](../sigjs/sig-page-tutorial.md) — except the artifact is an HTTP surface, not a page.
+If you have already read [Getting Started](./seltzer-getting-started.md), this is the same kind of guided build as the [Juice page tutorial](../juice/juice-page-tutorial.md) — except the artifact is an HTTP surface, not a page.
 
 ## What we are building
 
@@ -19,14 +19,14 @@ A **notes API**: a small in-memory JSON service with
 
 1. a process that listens and answers `GET /health`
 2. a collection `GET /notes`
-3. `POST /notes` that reads the request stream
-4. a lookup `GET /note?id=` (query, not `/notes/:id`)
-5. a second collection whose `{ method, path }` is **copied** from Nectarine’s user YAML
+3. `POST /notes` that uses `ctx.body` (and optional `.required` validation)
+4. a lookup `GET /notes/:id`
+5. routes **generated** from an `ApiOperation[]` list (the Nectarine shape)
 6. a few `client.*` calls against that listener
 
-By the end you will have used every public primitive that is worth teaching: `Seltzer.init`, `.route`, `.listen`, `ctx.json`, `ctx.req` / `ctx.res`, and `client.get` / `client.post`.
+By the end you will have used the public primitives worth teaching: `Seltzer.init`, `.route`, `.listen`, `ResponseData`, `ctx.body` / `ctx.params`, `generateRoutes`, and `client.get` / `client.post`.
 
-This is **not** the design-doc pipeline. There is no `parse` stage, no `:id` matcher, and no `return { status, body }`. Those live in [Design](./seltzer-design.md) and the [exercises](./exercises/README.md).
+This **is** the shipped pipeline. There is no `ctx.json`. `/notes/:id` is a real matcher.
 
 ## Setup
 
@@ -40,9 +40,7 @@ A single TypeScript file is enough. In this workspace you can copy into `librari
 yarn workspace @citrusworx/seltzer dev
 ```
 
-That script runs `ts-node src/index.ts`. Point the entry at your file if it is not already what starts.
-
-Keep Node 20+ in mind. `listen` throws outside Node.
+Keep Node 18+ in mind. `listen` throws outside Node.
 
 ## Step 1: Listen with a health route
 
@@ -50,13 +48,14 @@ Start with a process that answers one GET. Nothing is stored yet.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 const app = Seltzer.init();
 
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true }),
+  handler: (): ResponseData => ({ body: { ok: true } }),
 });
 
 app.listen(3000);
@@ -65,9 +64,9 @@ app.listen(3000);
 Why this works:
 
 - `Seltzer.init()` is `new Seltzer()`. There is no config file.
-- `.route` pushes `{ method, path, handler }` onto an array.
-- `.listen(3000)` calls `http.createServer`. On each request it takes `url.pathname` and finds the first route where `route.method === req.method && route.path === pathname`.
-- `ctx.json` writes `Content-Type: application/json` and ends the response.
+- `.route` compiles `{ method, path, handler }` (parametric regex included).
+- `.listen(3000)` calls `http.createServer`. Each request runs the pipeline.
+- `{ body: { ok: true } }` is `ResponseData`. `send` JSON-encodes it at status 200.
 
 Try it:
 
@@ -82,14 +81,17 @@ curl -X POST http://127.0.0.1:3000/health
 # {"error":"Not Found"}   (method must match too)
 ```
 
-The health handler does not need the body. It also does not need query strings. `/health?ready=1` still matches `/health` because matching ignores the search string.
+`/health?ready=1` still matches `/health` because matching uses pathname. The search string is on `ctx.query`.
+
+`listen` returns the `http.Server`. Hold it if you need `close()` in tests.
 
 ## Step 2: List an in-memory collection
 
-A JSON API needs a resource. Put notes in a `Map`. Register **exact** `GET /notes`.
+A JSON API needs a resource. Put notes in a `Map`. Register `GET /notes`.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 type Note = { id: string; text: string };
 
@@ -102,73 +104,60 @@ const app = Seltzer.init();
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true, notes: notes.size }),
+  handler: (): ResponseData => ({ body: { ok: true, notes: notes.size } }),
 });
 
 app.route({
   method: "GET",
   path: "/notes",
-  handler: (ctx) => ctx.json([...notes.values()]),
+  handler: (): ResponseData => ({ body: [...notes.values()] }),
 });
 
-app.listen(3000);
+app.listen(3000, { locals: { notes } });
 ```
 
 Why this works:
 
 - The collection lives in process memory. Seltzer does not persist anything.
-- `[...notes.values()]` is a plain array. `ctx.json` stringifies it.
+- `[...notes.values()]` is an array. Returning `{ body: array }` JSON-encodes that array.
+- Returning the array **bare** (`handler: () => [...notes.values()]`) is a 500. Bare values are not wrapped.
 - `GET /notes/` is a **different** path. Trailing slashes are not normalized.
-- `GET /notes/1` is also a different path. It will 404 until you register it, and `/notes/:id` would register the literal string `"/notes/:id"`, which no browser will request.
 
 ```bash
 curl http://127.0.0.1:3000/notes
 # [{"id":"1","text":"Review the deploy window"}]
 ```
 
-## Step 3: Create with POST — read the stream
+`listen({ locals })` puts that object on `ctx.locals` for every handler. The Map above is closed over instead; both are valid.
 
-Seltzer does not parse JSON bodies. Collect chunks from `ctx.req`, then `JSON.parse`.
+## Step 3: Create with POST — `ctx.body`
+
+The `parse` stage reads JSON when `Content-Type` includes `application/json`. Invalid JSON is 400 `{ error: "Invalid JSON body" }` and the handler never runs.
 
 ```ts
-async function readJson(req: import("node:http").IncomingMessage): Promise<unknown> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) {
-    chunks.push(chunk as Buffer);
-  }
-  const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : null;
-}
-
 let nextId = 2;
 
 app.route({
   method: "POST",
   path: "/notes",
-  handler: async (ctx) => {
-    try {
-      const body = (await readJson(ctx.req)) as { text?: string };
-      if (!body?.text?.trim()) {
-        return ctx.json({ error: "text required" }, 400);
-      }
-      const note: Note = { id: String(nextId++), text: body.text.trim() };
-      notes.set(note.id, note);
-      return ctx.json(note, 201);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
-    }
+  contract: {
+    body: { text: "string.required" },
+  },
+  handler: (ctx): ResponseData => {
+    const body = ctx.body as { text: string };
+    const note: Note = { id: String(nextId++), text: body.text.trim() };
+    notes.set(note.id, note);
+    return { status: 201, body: note };
   },
 });
 ```
 
 Why this works:
 
-- Node gives you a readable stream, not `req.body`.
-- `for await` of `IncomingMessage` is the supported way to collect it.
-- `ctx.json(note, 201)` sets the status. The default is 200.
-- Validation is your `if`. There is no schema stage.
-
-`listen` does **not** await this handler. That is fine here: after `await readJson`, you still call `ctx.json`, which ends the socket. If you `throw` after the await, Node gets an unhandled rejection — there is no central 500 mapper.
+- `ctx.body` is already an object. No stream loop in the handler.
+- `contract.body.text: "string.required"` is presence-only: missing, `null`, or whitespace → 400 `{ error: "Missing required field: text" }` before `handle`.
+- `{ status: 201, body: note }` is `ResponseData`. Extra headers go on `headers`.
+- Type checks (string vs number) are **not** in default `validate`. Use `replace("validate", …)` for Zod later.
 
 Try it:
 
@@ -187,135 +176,128 @@ curl -X POST http://127.0.0.1:3000/notes \
   -H "Content-Type: application/json" \
   -d '{oops'
 
-# {"error":"invalid json"}   (status 400)
+# {"error":"Invalid JSON body"}   (status 400)
 ```
 
-If you omit `ctx.json` after reading the body, curl will hang. Ending the response is the handler’s job.
+Missing field:
 
-## Step 4: Look up one note with a query string
+```bash
+curl -X POST http://127.0.0.1:3000/notes \
+  -H "Content-Type: application/json" \
+  -d '{"text":""}'
 
-Do not register `/notes/:id`. Use a second exact path and read `searchParams`.
+# {"error":"Missing required field: text"}
+```
+
+## Step 4: Look up one note with `/notes/:id`
+
+Parametric matching is shipped. Static `/notes` and parametric `/notes/:id` coexist. `/notes/new` would need its own static route if you add one — static siblings win over `:id`.
 
 ```ts
 app.route({
   method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    if (!id) return ctx.json({ error: "id required" }, 400);
-    const note = notes.get(id);
-    return note ? ctx.json(note) : ctx.json({ error: "Not Found" }, 404);
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => {
+    const note = notes.get(ctx.params.id);
+    return note
+      ? { body: note }
+      : { status: 404, body: { error: "Not Found" } };
   },
 });
 ```
 
 Why this works:
 
-- Matching already parsed a `URL` for `pathname`. Handlers that need the query parse it again. That duplication is the current API, not a bug in your app.
-- `/note?id=1` matches path `/note`.
-- A handler can send 404 for a missing *record*. That is different from Seltzer’s unmatched-route 404.
+- `ctx.params.id` is the captured segment (percent-decoded).
+- A handler can send 404 for a missing *record*. That is different from the unmatched-route 404 `{ error: "Not Found" }` (capital N in “Found” on the builtin).
 
 ```bash
-curl http://127.0.0.1:3000/note?id=1
+curl http://127.0.0.1:3000/notes/1
 # {"id":"1","text":"Review the deploy window"}
 
-curl http://127.0.0.1:3000/note
-# {"error":"id required"}
+curl http://127.0.0.1:3000/notes/missing
+# {"error":"Not Found"}
 ```
 
-A concrete path is also honest, for fixtures:
+Query filters stay on the collection route via `ctx.query`:
 
 ```ts
 app.route({
   method: "GET",
-  path: "/notes/1",
-  handler: (ctx) => {
-    const note = notes.get("1");
-    return note ? ctx.json(note) : ctx.json({ error: "Not Found" }, 404);
+  path: "/notes",
+  handler: (ctx): ResponseData => {
+    const q = ctx.query.q?.toLowerCase();
+    const all = [...notes.values()];
+    const items = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
+    return { body: items };
   },
 });
 ```
 
-That only ever serves id `"1"`. Prefer the query form for a real collection.
+## Step 5: Generate routes from `ApiOperation[]`
 
-## Step 5: Copy a Nectarine method/path object
-
-Nectarine’s checked-in user API file lists HTTP pairs. Seltzer does not import that file as routes. You copy the **exact** ones.
-
-From `libraries/nectarine/models/user/userAPI.yml`:
-
-```yaml
-user:
-  get:
-    allUsers:
-      api:
-        method: GET
-        endpoint: /users
-  create:
-    user:
-      api:
-        method: POST
-        endpoint: /users
-```
-
-Those two are exact paths. The same file also has `GET /users/:id`. **Do not register that string** expecting `/users/42` to match. Skip parametric YAML until the matcher exists.
-
-Copy by hand:
+Nectarine YAML lists operations. Nectarine **does not** emit `Route`s. Seltzer `generateRoutes` does. You can build the same list by hand — no YAML required.
 
 ```ts
-const allUsers = { method: "GET", endpoint: "/users" as const };
-const createUser = { method: "POST", endpoint: "/users" as const };
+import { generateRoutes, type ApiOperation } from "@citrusworx/seltzer";
 
-type User = { id: string; email: string };
-const users = new Map<string, User>();
+const operations: ApiOperation[] = [
+  {
+    resource: "note",
+    crud: "read",
+    name: "allNotes",
+    method: "GET",
+    path: "/api/notes",
+    query: "allNotes",
+  },
+  {
+    resource: "note",
+    crud: "read",
+    name: "noteById",
+    method: "GET",
+    path: "/api/notes/:id",
+    query: "noteById",
+  },
+];
 
-app.route({
-  method: allUsers.method,
-  path: allUsers.endpoint,
-  handler: (ctx) => ctx.json([...users.values()]),
-});
-
-app.route({
-  method: createUser.method,
-  path: createUser.endpoint,
-  handler: async (ctx) => {
-    try {
-      const body = (await readJson(ctx.req)) as { email?: string };
-      if (!body?.email) return ctx.json({ error: "email required" }, 400);
-      const user = { id: String(users.size + 1), email: body.email };
-      users.set(user.id, user);
-      return ctx.json(user, 201);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
+for (const route of generateRoutes(operations, {
+  execute: ({ query, params }) => {
+    if (query === "noteById") {
+      return notes.get(params.id) ?? null;
     }
+    return [...notes.values()];
   },
-});
+})) {
+  app.route(route);
+}
 ```
 
-Or load the YAML and walk the object (still no codegen):
+Why this works:
+
+- `query` on `ApiOperation` is a **named-query key** passed to `execute`, not `ctx.query`.
+- `null` / `undefined` from `execute` becomes 404 `{ error: "Not found" }` (customize with `notFound`).
+- Payloads are wrapped as `{ body: result }`. To send a custom status, return `response({ status: 418, body: … })` from `execute`.
+- `generateRoutes` copies `resource` / `name` / `body` onto `Route.contract`. Writes with `.required` keys get default `validate`.
+
+If you already load Nectarine YAML:
 
 ```ts
-import { parser } from "@citrusworx/nectarine";
+import { listApiOperations } from "@citrusworx/nectarine/config";
+import { generateRoutes } from "@citrusworx/seltzer";
 
-const spec = parser.yaml("libraries/nectarine/models/user/userAPI.yml");
-const getAll = spec.user.get.allUsers.api as { method: string; endpoint: string };
-
-app.route({
-  method: getAll.method,
-  path: getAll.endpoint,
-  handler: (ctx) => ctx.json([...users.values()]),
-});
+const operations = listApiOperations("product", product.api).filter(
+  (operation) => operation.crud === "read" && operation.method === "GET",
+);
 ```
 
-`parser.registerRoute(file, "get", "allUsers")` looks up `doc.get.allUsers`, **not** `doc.user.get.allUsers`. The checked-in file will miss. Walk `parser.yaml` or copy the pair. Nectarine still does not run SQL for you — if you want rows, call a Nectarine adapter **inside** the handler. See [Integration](./seltzer-integration.md).
+Do not duplicate that flatten in Seltzer. See [Generate routes](./seltzer-generate.md) and [Integration](./seltzer-integration.md).
 
 ## Step 6: Call it with `client.*`
 
-The Seltzer client is a thin `fetch` wrapper. It always parses JSON.
+The Seltzer client is a thin `fetch` wrapper. Non-2xx throws `HttpError`.
 
 ```ts
-import { client, type Endpoint } from "@citrusworx/seltzer";
+import { client, HttpError, type Endpoint } from "@citrusworx/seltzer";
 
 const notesApi: Endpoint = {
   path: "/notes",
@@ -323,9 +305,15 @@ const notesApi: Endpoint = {
   options: { baseUrl: "http://127.0.0.1:3000" },
 };
 
-const created = await client.post(notesApi, { text: "Operator desk queue" });
-const list = await client.get(notesApi);
-console.log(created, list);
+try {
+  const created = await client.post(notesApi, { text: "Operator desk queue" });
+  const list = await client.get(notesApi);
+  console.log(created, list);
+} catch (err) {
+  if (err instanceof HttpError) {
+    console.error(err.status, err.body);
+  }
+}
 ```
 
 Why this works:
@@ -333,42 +321,29 @@ Why this works:
 - URL = `options.baseUrl` + `path` → `http://127.0.0.1:3000/notes`.
 - `endpoint` is required by the type and unused by the client.
 - `POST` sets `Content-Type: application/json` and `JSON.stringify`s the body.
-- `GET` sends no body.
+- A 400 `{ error: "Missing required field: text" }` **throws** (`HttpError`), unlike 0.2.0 which parsed it as success JSON.
 
-Caveats that bite in this tutorial:
+Caveats:
 
-- `client` does not check `response.ok`. A 400 `{ error: "text required" }` still returns as JSON.
-- Empty or non-JSON bodies throw (`res.json()`).
-- Concatenate carefully: `baseUrl: "http://127.0.0.1:3000/"` + `path: "/notes"` becomes `http://127.0.0.1:3000//notes`. Prefer no trailing slash on `baseUrl`.
+- Concatenate carefully: `baseUrl` with a trailing slash plus `path` with a leading slash becomes `//notes`.
+- Successful `text/plain` comes back as a string, not JSON.
+- `allowSelfSigned` only applies to `https://` and needs the optional `undici` peer.
 
-A Sig.js page would call the same URL with `fetch` or `client.get` inside an `effect`. Juice styles that page. Neither library starts this Node process. A minimal fetch from the operator desk:
+A Sig.js page would call the same URL with `fetch` inside an `effect`. Juice styles that page. Neither library starts this Node process. CORS is `listen({ cors })`:
 
 ```ts
-import { Signal, effect } from "@citrusworx/sigjs";
-import { client } from "@citrusworx/seltzer";
-
-const label = Signal("…");
-
-effect(() => {
-  client
-    .get({
-      path: "/health",
-      endpoint: "/health",
-      options: { baseUrl: "http://127.0.0.1:3000" },
-    })
-    .then((data: { ok?: boolean }) => label.set(data.ok ? "up" : "down"))
-    .catch((err: unknown) => label.set(String(err)));
+app.listen(3000, {
+  cors: { origin: "http://localhost:5173" },
 });
 ```
 
-CORS is not configured by Seltzer. A page on another origin needs you to set headers on `ctx.res` yourself.
-
 ## The finished server
 
-Putting the notes half together (skip the optional `/notes/1` fixture):
+Hand-written notes half (skip the optional `/api/notes` generated pair):
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 type Note = { id: string; text: string };
 
@@ -377,93 +352,81 @@ const notes = new Map<string, Note>([
 ]);
 let nextId = 2;
 
-async function readJson(req: import("node:http").IncomingMessage): Promise<unknown> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) {
-    chunks.push(chunk as Buffer);
-  }
-  const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : null;
-}
-
 const app = Seltzer.init();
 
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true, notes: notes.size }),
+  handler: (): ResponseData => ({ body: { ok: true, notes: notes.size } }),
 });
 
 app.route({
   method: "GET",
   path: "/notes",
-  handler: (ctx) => ctx.json([...notes.values()]),
+  handler: (ctx): ResponseData => {
+    const q = ctx.query.q?.toLowerCase();
+    const all = [...notes.values()];
+    const items = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
+    return { body: items };
+  },
 });
 
 app.route({
   method: "POST",
   path: "/notes",
-  handler: async (ctx) => {
-    try {
-      const body = (await readJson(ctx.req)) as { text?: string };
-      if (!body?.text?.trim()) {
-        return ctx.json({ error: "text required" }, 400);
-      }
-      const note: Note = { id: String(nextId++), text: body.text.trim() };
-      notes.set(note.id, note);
-      return ctx.json(note, 201);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
-    }
+  contract: { body: { text: "string.required" } },
+  handler: (ctx): ResponseData => {
+    const body = ctx.body as { text: string };
+    const note: Note = { id: String(nextId++), text: body.text.trim() };
+    notes.set(note.id, note);
+    return { status: 201, body: note };
   },
 });
 
 app.route({
   method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    if (!id) return ctx.json({ error: "id required" }, 400);
-    const note = notes.get(id);
-    return note ? ctx.json(note) : ctx.json({ error: "Not Found" }, 404);
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => {
+    const note = notes.get(ctx.params.id);
+    return note ? { body: note } : { status: 404, body: { error: "Not Found" } };
   },
 });
 
-app.listen(3000);
+app.listen(3000, {
+  cors: { origin: "http://localhost:5173" },
+});
 ```
 
 ## What you practiced
 
 | Step | Primitive |
 |---|---|
-| Health | `init` + `route` + `listen` + `ctx.json` |
-| List | exact `GET` path, in-memory data |
-| Create | stream body, status `201` / `400` |
-| Lookup | `searchParams`, not `:id` |
-| Nectarine | copy `{ method, endpoint }` for `/users` |
-| Client | `Endpoint` + `client.get/post` |
+| Health | `init` + `route` + `listen` + `{ body }` |
+| List | exact `GET` path, `ctx.query` |
+| Create | `ctx.body`, `contract.body`, status `201` / `400` |
+| Lookup | `/notes/:id` → `ctx.params` |
+| Generate | `ApiOperation[]` + `execute` |
+| Client | `Endpoint` + `client.get/post` + `HttpError` |
 
 ## What this tutorial refused to invent
 
 ```ts
 // Not APIs
 app.use(json());
-app.route({ path: "/notes/:id", … });
-ctx.params.id;
-ctx.body;
-ctx.query.id;
-return { status: 200, body: notes };
-app.pipeline.insert("auth").before("handle");
+ctx.json({ ok: true });
+handler: () => ({ ok: true });           // 500 — not ResponseData
+app.pipeline.insert("auth").before("handle"); // the method is app.before("handle", fn)
 ```
 
-If you want those, you are on the [contributor path](./seltzer-design.md), not the product path.
+`before("handle", fn)` **is** shipped. `ctx.json` is gone.
 
 ## Where to go next
 
-- [Request and response](./seltzer-request-response.md) — `ctx` in detail
-- [Routing](./seltzer-routing.md) — first-wins, trailing slashes, method mismatch
-- [Client](./seltzer-client.md) — PUT/PATCH/DELETE, ignored fields
-- [Patterns](./seltzer-patterns.md) — health, collections, errors, CORS headers
-- [Anti-patterns](./seltzer-anti-patterns.md) — Express habits that hang or 404
-- [Integration](./seltzer-integration.md) — Nectarine adapters inside handlers, Sig fetch
+- [Request and response](./seltzer-request-response.md) — `ResponseData` in detail
+- [Routing](./seltzer-routing.md) — static-prefix preference, trailing slashes
+- [Pipeline](./seltzer-pipeline.md) — stages, `before`, `replace`
+- [Generate routes](./seltzer-generate.md)
+- [Client](./seltzer-client.md)
+- [Patterns](./seltzer-patterns.md)
+- [Anti-patterns](./seltzer-anti-patterns.md)
+- [Integration](./seltzer-integration.md)

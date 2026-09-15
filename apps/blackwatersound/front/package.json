@@ -1,0 +1,19 @@
+{
+  "name": "@citrusworx/blackwater-sound",
+  "private": true,
+  "version": "0.2.1",
+  "type": "module",
+  "scripts": {
+    "generate:theme": "yarn workspace @citrusworx/juiceui generate:themes --config ../../apps/blackwatersound/front/juice.theme.yaml --css-out ../../apps/blackwatersound/front/src/generated/blackwatersound-theme.css --yaml-out ../../apps/blackwatersound/front/src/generated/blackwatersound-theme.yaml --md-out ../../apps/blackwatersound/front/src/generated/blackwatersound-theme-reference.md",
+    "dev": "yarn generate:theme && vite",
+    "build": "yarn generate:theme && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@citrusworx/juiceui": "^0.3.0",
+    "@citrusworx/sigjs": "^0.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0"
+  }
+}

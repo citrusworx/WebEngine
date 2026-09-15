@@ -1,0 +1,121 @@
+id: blackwatersound
+name: Blackwater Sound
+summary: Loud boutique audio retail and publishing theme built for warm paper surfaces, punchy accent color, and editorial display typography.
+
+philosophy:
+  intent: "Identity layer for music retail, publishing, and lesson-driven storefronts that want editorial energy without abandoning Juice structure."
+  owns:
+    - typography voice
+    - page atmosphere
+    - semantic element defaults
+    - paint for Juice primitives
+  does_not_own:
+    - layout
+    - spacing
+    - structural attributes
+    - responsiveness
+
+typography:
+  body:
+    family: '"noto-sans"'
+    fallback: 'sans-serif'
+    tone: readable, grounded, contemporary
+  heading:
+    family: '"citrus-gothic"'
+    fallback: 'sans-serif'
+    tone: loud, branded, poster-like
+  variants:
+    body_semicondensed:
+      family: '"noto-sans-semicondensed"'
+      fallback: 'sans-serif'
+      tone: tighter editorial reading and metadata
+    body_condensed:
+      family: '"noto-sans-condensed"'
+      fallback: 'sans-serif'
+      tone: compact ui and controls
+    body_extracondensed:
+      family: '"noto-sans-extracondensed"'
+      fallback: 'sans-serif'
+      tone: compressed labels and counters
+    display_inline:
+      family: '"citrus-gothic-inline"'
+      fallback: 'sans-serif'
+      tone: decorative inline marquee display
+    display_rough:
+      family: '"citrus-gothic-rough"'
+      fallback: 'sans-serif'
+      tone: textured lesson and editorial display
+    display_shadow:
+      family: '"citrus-gothic-shadow"'
+      fallback: 'sans-serif'
+      tone: dramatic poster-style hero display
+    display_solid:
+      family: '"citrus-gothic-solid"'
+      fallback: 'sans-serif'
+      tone: dense high-impact display and pricing
+
+palette:
+  page:
+    background: '#f4f0e8'
+    tint: '#fbf8f3'
+    deep: '#211c1b'
+  text:
+    default: '#211c1b'
+    muted: '#6f6660'
+    soft: '#8f857e'
+    heading: '#211c1b'
+    inverse: 'rgba(255, 255, 255, 0.88)'
+  accents:
+    primary: '#ff7716'
+    primaryStrong: '#df6208'
+    secondary: '#16dcff'
+    secondaryStrong: '#08b8d7'
+    soft: 'rgba(255, 119, 22, 0.12)'
+    tint: 'rgba(255, 119, 22, 0.22)'
+    warm: '#fff048'
+    warmSoft: 'rgba(255, 240, 72, 0.2)'
+    warmTint: 'rgba(255, 240, 72, 0.36)'
+  surfaces:
+    default: '#fffdf8'
+    muted: 'rgba(255, 255, 255, 0.58)'
+    strong: 'rgba(255, 253, 248, 0.9)'
+    deep: '#2f2b2a'
+    border: 'rgba(33, 28, 27, 0.12)'
+    borderStrong: 'rgba(33, 28, 27, 0.2)'
+    hero: 'linear-gradient(180deg, rgba(21, 18, 17, 0.18) 0%, rgba(21, 18, 17, 0.58) 100%)'
+    cta: 'linear-gradient(135deg, #ff7716 0%, #16dcff 100%)'
+    panel: 'rgba(255, 255, 255, 0.64)'
+    shadow: '0 18px 48px rgba(22, 16, 14, 0.08)'
+    shadowStrong: '0 24px 70px rgba(22, 16, 14, 0.16)'
+
+named_surfaces:
+  - name: bw-stage
+    purpose: High-contrast marquee surface for store and publishing hero blocks.
+    background: 'linear-gradient(135deg, rgba(33, 28, 27, 0.92) 0%, rgba(47, 43, 42, 0.88) 100%)'
+    color: 'rgba(255, 255, 255, 0.92)'
+    border: 'rgba(255, 255, 255, 0.12)'
+    shadow: '0 24px 70px rgba(22, 16, 14, 0.18)'
+  - name: bw-panel
+    purpose: Warm paper panel for supporting notes and metadata.
+    background: 'rgba(255, 255, 255, 0.74)'
+    color: '#211c1b'
+    border: 'rgba(33, 28, 27, 0.1)'
+
+recommended_use_cases:
+  - boutique music storefronts
+  - editorial product launches
+  - lesson and publishing hybrids
+  - brand-heavy catalog landing pages
+
+authoring_rules:
+  - Use Juice layout attributes for structure before adding app CSS.
+  - Prefer semantic HTML and Juice primitives like [hero], [card], [panel], [cta], and [badge].
+  - Treat custom classes as migration shims, not the primary styling API.
+  - Use [surface="bw-stage"] for the loudest marquee moments and [surface="bw-panel"] for quieter editorial support blocks.
+
+example:
+  root: '<body theme="blackwatersound">'
+  surfaces:
+    - '<section hero surface="bw-stage">...</section>'
+    - '<article card>...</article>'
+    - '<aside panel surface="bw-panel">...</aside>'

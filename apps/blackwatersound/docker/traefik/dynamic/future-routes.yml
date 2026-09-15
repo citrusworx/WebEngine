@@ -1,0 +1,111 @@
+# Future Blackwater Sound subdomains — uncomment dedicated services when apps exist.
+# Names align with nectarine.config.yaml / blackwater.app.yml apps.
+#
+# http:
+#   routers:
+#     courses:
+#       rule: Host(`courses.blackwatersound.local`)
+#       entryPoints: [web]
+#       service: courses-service
+#     gear:
+#       rule: Host(`gear.blackwatersound.local`)
+#       entryPoints: [web]
+#       service: gear-service
+#     software:
+#       rule: Host(`software.blackwatersound.local`)
+#       entryPoints: [web]
+#       service: software-service
+#     studio:
+#       rule: Host(`studio.blackwatersound.local`)
+#       entryPoints: [web]
+#       service: studio-service
+#     songwriting:
+#       rule: Host(`songwriting.blackwatersound.local`)
+#       entryPoints: [web]
+#       service: songwriting-service
+#     blog:
+#       rule: Host(`blog.blackwatersound.local`)
+#       entryPoints: [web]
+#       service: blog-service
+#   services:
+#     courses-service:
+#       loadBalancer:
+#         servers:
+#           - url: "http://courses:3000"
+#     gear-service:
+#       loadBalancer:
+#         servers:
+#           - url: "http://gear:3000"
+#     software-service:
+#       loadBalancer:
+#         servers:
+#           - url: "http://software:3000"
+#     studio-service:
+#       loadBalancer:
+#         servers:
+#           - url: "http://studio:3000"
+#     songwriting-service:
+#       loadBalancer:
+#         servers:
+#           - url: "http://songwriting:3000"
+#     blog-service:
+#       loadBalancer:
+#         servers:
+#           - url: "http://blog:3000"
+
+http:
+  routers:
+    courses-redirect:
+      rule: Host(`courses.blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [redirect-to-www]
+      service: noop@internal
+      priority: 1
+    gear-redirect:
+      rule: Host(`gear.blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [redirect-to-www]
+      service: noop@internal
+      priority: 1
+    software-redirect:
+      rule: Host(`software.blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [redirect-to-www]
+      service: noop@internal
+      priority: 1
+    studio-redirect:
+      rule: Host(`studio.blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [redirect-to-www]
+      service: noop@internal
+      priority: 1
+    songwriting-redirect:
+      rule: Host(`songwriting.blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [redirect-to-www]
+      service: noop@internal
+      priority: 1
+    blog-redirect:
+      rule: Host(`blog.blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [redirect-to-www]
+      service: noop@internal
+      priority: 1
+    apex-redirect:
+      rule: Host(`blackwatersound.local`)
+      entryPoints: [web]
+      middlewares: [apex-to-www]
+      service: noop@internal
+      priority: 1
+
+  middlewares:
+    redirect-to-www:
+      redirectRegex:
+        regex: "^http://(?:courses|gear|software|studio|songwriting|blog)\\.blackwatersound\\.local(.*)"
+        replacement: "http://www.blackwatersound.local$1"
+        permanent: false
+    apex-to-www:
+      redirectRegex:
+        regex: "^http://blackwatersound\\.local(.*)"
+        replacement: "http://www.blackwatersound.local$1"
+        permanent: false

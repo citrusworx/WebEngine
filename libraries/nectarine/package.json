@@ -1,6 +1,33 @@
 {
     "name": "@citrusworx/nectarine",
-    "version": "0.1.1",
+    "version": "0.3.0",
+    "description": "YAML-driven query compiler and database adapters for CitrusWorx / WebEngine",
+    "license": "MIT",
+    "author": "CitrusWorx",
+    "homepage": "https://github.com/citrusworx/WebEngine/tree/master/libraries/nectarine",
+    "bugs": {
+        "url": "https://github.com/citrusworx/WebEngine/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/citrusworx/WebEngine.git",
+        "directory": "libraries/nectarine"
+    },
+    "keywords": [
+        "nectarine",
+        "yaml",
+        "sql",
+        "compiler",
+        "postgres",
+        "mysql",
+        "mongodb",
+        "citrusworx",
+        "webengine"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "sideEffects": false,
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
@@ -8,9 +35,21 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
+        "./config": {
+            "types": "./dist/config/index.d.ts",
+            "default": "./dist/config/index.js"
+        },
+        "./api": {
+            "types": "./dist/config/api.d.ts",
+            "default": "./dist/config/api.js"
+        },
         "./compiler": {
             "types": "./dist/compiler/compiler.d.ts",
             "default": "./dist/compiler/compiler.js"
+        },
+        "./migrate": {
+            "types": "./dist/migrate/index.d.ts",
+            "default": "./dist/migrate/index.js"
         },
         "./adapters/mg": {
             "types": "./dist/adapters/mg/mgz.d.ts",
@@ -29,6 +68,25 @@
             "default": "./dist/util/util.js"
         }
     },
+    "dependencies": {
+        "js-yaml": "^4.1.1"
+    },
+    "peerDependencies": {
+        "mongodb": "^7.0.0",
+        "mysql2": "^3.0.0",
+        "pg": "^8.0.0"
+    },
+    "peerDependenciesMeta": {
+        "mongodb": {
+            "optional": true
+        },
+        "mysql2": {
+            "optional": true
+        },
+        "pg": {
+            "optional": true
+        }
+    },
     "files": [
         "dist"
     ],
@@ -43,10 +101,11 @@
         "eslint": "^10.0.3",
         "express": "^5.2.1",
         "jest": "^30.3.0",
-        "js-yaml": "^4.1.1",
         "mongodb": "^7.1.0",
+        "mysql2": "^3.24.4",
         "pg": "^8.20.0",
         "ts-node": "^10.9.2",
+        "tsx": "^4.23.13",
         "typescript": "^5.9.3",
         "vitest": "^4.1.4",
         "zod": "^4.3.6"
@@ -55,6 +114,11 @@
         "build": "tsc",
         "dev": "tsc --watch",
         "prepack": "yarn build",
-        "test": "playwright test && vitest run"
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "test:all": "playwright test && vitest run",
+        "example": "tsx examples/showcase.ts",
+        "pack:check": "npm pack --dry-run",
+        "verify": "yarn typecheck && yarn build && yarn test && yarn pack:check"
     }
 }

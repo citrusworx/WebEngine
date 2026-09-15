@@ -1,0 +1,19 @@
+Booking:
+  table: bookings
+  description: One-to-one coaching or studio session bookings
+  fields:
+    id: string PRIMARY KEY
+    client_id: string FOREIGN KEY REFERENCES clients(id) NOT NULL
+    coach_id: string FOREIGN KEY REFERENCES coaches(id)
+    line: enum(courses, songwriting, studio) NOT NULL
+    kind: enum(coaching, lesson_book, mix_review_call, studio_block) NOT NULL
+    title: string
+    notes: text
+    starts_at: timestamp NOT NULL
+    ends_at: timestamp NOT NULL
+    status: enum(requested, confirmed, completed, cancelled) DEFAULT 'requested'
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    client: Client
+    coach: Coach

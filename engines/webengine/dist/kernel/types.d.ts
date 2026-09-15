@@ -22,10 +22,10 @@ export declare class KernelContext {
     nativeRuntime?: YamlRuntimeConfig;
     /** Embedded IoT runtime (YAML). */
     embeddedRuntime?: YamlRuntimeConfig;
+    private readonly handles;
     constructor(kiwi: KiwiConfig, 
     /** Directory containing kiwi.config.toml */
     projectRoot: string);
-    private readonly handles;
     registerModuleHandle(id: string, value: unknown): void;
     getModuleHandle<T>(id: string): T | undefined;
 }

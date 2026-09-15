@@ -1,0 +1,18 @@
+Session:
+  table: sessions
+  description: Studio recording/mixing session records
+  fields:
+    id: string PRIMARY KEY
+    client_id: string FOREIGN KEY REFERENCES clients(id) NOT NULL
+    title: string NOT NULL
+    kind: enum(tracking, overdub, mixing, mastering, transfer) NOT NULL
+    status: enum(scheduled, in_progress, delivered, archived) DEFAULT 'scheduled'
+    starts_at: timestamp
+    ends_at: timestamp
+    notes: text
+    transfer_ref: string
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    client: Client
+    mix_reviews: MixReview[]

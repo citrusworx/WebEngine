@@ -1,0 +1,40 @@
+waitlist:
+  read:
+    allEntries:
+      type: SELECT
+      table: waitlist
+      fields: '*'
+      orderBy: created_at ASC
+
+    entryByEmail:
+      type: SELECT
+      table: waitlist
+      fields: '*'
+      where: email = $1
+
+    # Duplicate-email check. Live joinWaitlist uses this instead of loading the row.
+    emailExists:
+      type: SELECT
+      table: waitlist
+      exists: true
+      where: email = $1
+
+    countEntries:
+      type: SELECT
+      table: waitlist
+      count: true
+
+  create:
+    joinWaitlist:
+      # Host execute generates `id`, checks duplicate email + source_app, then
+      # binds these columns. Live path when Postgres is connected.
+      type: INSERT
+      table: waitlist
+      fields: [id, name, email, source_app, interest]
+      returning: [id, email, created_at]
+
+    # Alternate insert that sets created_at explicitly. Live path uses joinWaitlist.
+    insertEntry:
+      type: INSERT
+      table: waitlist
+      fields: [id, name, email, created_at]

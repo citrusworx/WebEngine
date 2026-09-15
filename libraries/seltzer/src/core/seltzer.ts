@@ -1,41 +1,99 @@
 import http from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { isExplicitResponse, isResponseData, response, send, type ResponseData } from "./response.js";
+import type {
+    CorsOptions,
+    HandlerConfig,
+    ListenOptions,
+    RequestContext,
+    Route,
+} from "./types.js";
+import {
+    compileRoute,
+    createDefaultPipeline,
+    Pipeline,
+    type PipelineContext,
+    type Stage,
+    type StageName,
+} from "../pipeline/index.js";
 
-export type Endpoint = {
-    route?: Route;
-    path: string;
-    endpoint: string;
-    options?: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
-};
+export type {
+    CorsOptions,
+    Endpoint,
+    ListenOptions,
+    RequestContext,
+    Route,
+    RouteContract,
+} from "./types.js";
+export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
+export { STAGE_NAMES } from "../pipeline/index.js";
+export type { ResponseData };
+export { isExplicitResponse, isResponseData, response, send };
 
-export type Route<TContext = any> = {
-    method: string;
-    path: string;
-    handler: (ctx: TContext) => any;
-};
+function applyCors(
+    req: IncomingMessage,
+    res: ServerResponse,
+    cors: CorsOptions | undefined,
+) {
+    if (!cors) {
+        return;
+    }
 
-type HandlerConfig = {
-    adapter: string;
-    options: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
-};
+    const requestOrigin = req.headers.origin;
+    if (!requestOrigin) {
+        return;
+    }
+
+    if (cors.origin && requestOrigin !== cors.origin) {
+        return;
+    }
+
+    res.setHeader("Access-Control-Allow-Origin", cors.origin ?? requestOrigin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        (cors.methods ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]).join(","),
+    );
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        (cors.headers ?? ["Content-Type"]).join(","),
+    );
+}
 
 export class Seltzer {
-    private routes: Route[] = [];
+    private routes: ReturnType<typeof compileRoute>[] = [];
     private config: HandlerConfig | null = null;
+    private readonly pipeline: Pipeline;
+
+    constructor() {
+        this.pipeline = createDefaultPipeline(() => this.routes);
+    }
 
     static init() {
         return new Seltzer();
     }
 
-    route(route: Route){
-        this.routes.push(route);
+    /** Register a single object-based route. Do not model APIs as promise chains. */
+    route<TContext extends RequestContext<any> = RequestContext>(route: Route<TContext>) {
+        this.routes.push(compileRoute(route as Route));
+        return this;
+    }
+
+    /**
+     * Insert a stage immediately before the builtin stage named `name`.
+     * Returning `ResponseData` short-circuits remaining stages and jumps to `send`.
+     */
+    before(name: StageName, stage: Stage) {
+        this.pipeline.before(name, stage);
+        return this;
+    }
+
+    /**
+     * Swap the builtin stage named `name`. `before` still inserts ahead of it.
+     * Nectarine uses this to hang full contract checks on `validate`.
+     */
+    replace(name: StageName, stage: Stage) {
+        this.pipeline.replace(name, stage);
         return this;
     }
 
@@ -44,35 +102,54 @@ export class Seltzer {
         return this;
     }
 
-    listen(port: number){
+    listen<TLocals = unknown>(port: number, options: ListenOptions<TLocals> = {}) {
         if (typeof process === "undefined" || !process.versions?.node) {
             throw new Error("Seltzer.listen requires a Node.js runtime.");
         }
 
-        // Server
-        const server = http.createServer(
-            (req: any, res: any) => {
-                const url = new URL(req.url || "/", `http://${req.headers.host}`);
-            const match = this.routes.find(
-                (route) => route.method === req.method && route.path === url.pathname
-            );
-            const ctx = {
-                req,
-                res,
-                options: this.config?.options,
-                json(data: unknown, status = 200){
-                    res.writeHead(status, {"Content-Type": "application/json"});
-                    res.end(JSON.stringify(data));
-                }
-            }
+        const locals = (options.locals ?? {}) as TLocals;
 
-            if(!match){
-                return ctx.json({ error: "Not Found"}, 404);
-            }
-            return match?.handler(ctx)
+        const server = http.createServer((req, res) => {
+            void this.handleRequest(req, res, locals, options.cors);
         });
+
         server.listen(port, () => {
-            console.log(`Seltzer server listening on port ${port}`);
+            if (options.onListening) {
+                options.onListening(port);
+            } else {
+                console.log(`Seltzer server listening on port ${port}`);
+            }
         });
+
+        return server;
+    }
+
+    private async handleRequest<TLocals>(
+        req: IncomingMessage,
+        res: ServerResponse,
+        locals: TLocals,
+        cors: CorsOptions | undefined,
+    ) {
+        applyCors(req, res, cors);
+
+        if (req.method === "OPTIONS") {
+            send(res, { status: 204 });
+            return;
+        }
+
+        const ctx: PipelineContext<TLocals> = {
+            req,
+            res,
+            method: req.method ?? "GET",
+            path: "",
+            query: {},
+            params: {},
+            body: undefined,
+            headers: {},
+            locals,
+            options: this.config?.options,
+        };
+
+        await this.pipeline.run(ctx);
     }
 }

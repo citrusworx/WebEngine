@@ -1,18 +1,18 @@
 # Seltzer Status
 
-Honest snapshot of `@citrusworx/seltzer` **0.2.0** against `libraries/seltzer/src`.
+Honest snapshot of `@citrusworx/seltzer` **0.8.1** against `libraries/seltzer/src` on `cursor/blackwater-phase0-backend`.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
-**Early implementation.** The workspace index is right. The long [design overview](./seltzer-design.md) is easy to read as a finished runtime; it is not.
+**0.8.x is the HTTP core.** 0.8.0 is the solidified runtime git labeled 0.7.0 (default `validate`, `replace`, hardened `client`). 0.8.1 is packaging/DX only (description, `engines.node` `>=18`, optional `undici` peer, standalone README). Versions 0.3–0.7 were never published. **0.2.0 remains what `origin/master` still documents** — do not mix those APIs.
 
-Related: [Roadmap](./seltzer-roadmap.md) for direction. [API](./seltzer-api.md) for the surface as it exists. [JSON API tutorial](./seltzer-api-tutorial.md) for the product path.
+Related: [Roadmap](./seltzer-roadmap.md). [API](./seltzer-api.md). [JSON API tutorial](./seltzer-api-tutorial.md).
 
 ## Maturity levels
 
 ### `Stable-ish`
 
-The feature is usable today, central to the Seltzer experience, and unlikely to change dramatically in basic concept. Early still means the package version can move; the *idea* is settled.
+The feature is usable today, central to the Seltzer experience, and unlikely to change dramatically in basic concept. Pre-1.0 still means the package version can move; the *idea* is settled.
 
 ### `Emerging`
 
@@ -24,153 +24,120 @@ The feature exists, but it is still exploratory, incomplete, or not yet somethin
 
 ### `Draft`
 
-The feature is more of a direction than a hardened part of the runtime. Design-doc stages live here until they have source.
+The feature is more of a direction than a hardened part of the runtime.
 
 ## Matrix
 
 | Area | Maturity | Notes |
 |---|---|---|
-| `Seltzer.init()` / `.route()` / `.listen()` | Stable-ish | This is the identity of the package. Tiny, readable, Node `http`. |
-| Exact method + pathname match | Stable-ish | `===` on `req.method` and `url.pathname`. First win. No glob. |
-| JSON 404 fallback | Stable-ish | `{ error: "Not Found" }`. Not customizable. |
-| `ctx.json` | Stable-ish | Immediate `writeHead` + `stringify` + `end`. JSON only. |
-| Node `req` / `res` on `ctx` | Stable-ish | Escape hatch for anything `json` cannot do. |
-| Docs as product surface | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now sit next to the kernel. |
-| `client.*` | Emerging | Works for JSON round-trips. No status check, ignores `endpoint` / `allowSelfSigned`. |
-| `.handler()` options | Early | Stored and copied to `ctx.options`. `adapter` unused. KiwiPress uses the bag for outbound config. |
-| Body parsing | Draft | You read the stream. Design: `parse` stage. |
-| Query / headers helpers | Draft | `ctx.req` only. |
-| Parametric routes | Draft | Literal paths only. `/users/:id` registers that string. |
-| Structured handler returns | Draft | Return value discarded. |
-| Named pipeline insert | Draft | No `pipeline` object. |
-| CORS / HTTPS listen / timeouts | Draft | Platform or handler code. |
-| Tests | Draft | No suite in `libraries/seltzer`. |
-| Nectarine contract stage | Draft | Copy YAML by hand. |
+| `Seltzer.init()` / `.route()` / `.listen()` | Stable-ish | Identity of the package. Node `http`. `listen` returns `Server`. |
+| Named pipeline | Stable-ish | `parse` → `send`. `before` / `replace`. Mutation in place. |
+| Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. |
+| JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. |
+| `ResponseData` + `send` | Stable-ish | Bare values are 500. No `ctx.json`. |
+| Default `validate` (`.required`) | Emerging | Presence-only. Zod is `replace("validate")`. |
+| `generateRoutes` | Emerging | Host `execute` + `response()` brand. |
+| CORS / OPTIONS 204 | Stable-ish | On `listen`, before the pipeline. |
+| `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
+| `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client. |
+| HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
+| Full contract / response-shape validation | Draft | Reserved for Nectarine via `replace`. |
 
 ## What is shipped
 
 | Area | Source | Notes |
 |---|---|---|
 | `Seltzer.init()` | `core/seltzer.ts` | `new Seltzer()` |
-| `.route()` | same | push + chain |
+| `.route()` | same | `compileRoute` |
+| `.before()` / `.replace()` | same + `pipeline/index.ts` | |
 | `.handler()` | same | stores config |
-| `.listen(port)` | same | `http.createServer` |
-| Exact method + pathname | `listen` | first match |
-| `ctx.json` | inline in `listen` | JSON only |
-| JSON 404 | same | `{ error: "Not Found" }` |
-| `client.get/post/put/patch/delete` | `core/client/client.ts` | always `res.json()` |
-| Types `Route`, `Endpoint` | `seltzer.ts` | |
+| `.listen(port, options?)` | same | returns `http.Server` |
+| Stages | `pipeline/stages.ts` | parse…send |
+| Matcher | `pipeline/router.ts` | rank + params |
+| `ResponseData` / `send` / `response()` | `core/response.ts` | |
+| `generateRoutes` | `generate/generate-routes.ts` | |
+| `client` / `HttpError` | `core/client/client.ts` | |
 | Example server | `src/example.ts` | GET `/` |
 
 `src/core/server/server.ts` is a leftover hello-world `createServer`. It is **not** used by `Seltzer.listen`.
 
-## What the design doc describes that is not in source
+## Myths that closed (0.2.0 docs → 0.8.1)
 
-| Design | Code |
+| Old claim | Now |
 |---|---|
-| Parse body stage | You read the stream |
-| Structured `ctx` (query, headers map, params, body) | `{ req, res, options, json }` |
-| `/users/:id` | Exact strings only |
-| Validate / contracts | None |
-| Handler returns `{ status, headers, body }` | Handler must write (typically `ctx.json`) |
-| Format + send stages | `ctx.json` writes immediately |
-| Named pipeline insert/replace | None |
-| Streams / files as first-class responses | Use `ctx.res` yourself |
-| Await + 500 mapping for async handlers | Unhandled if you throw |
+| No body parser | `parse` JSON / raw; 400 on bad JSON |
+| No `:id` | Parametric compile + `ctx.params` |
+| No pipeline | Named stages + `before` / `replace` |
+| Handler return discarded | Must return `ResponseData`; runtime sends |
+| Use `ctx.json` | Removed (breaking in 0.4.0) |
+| Pipeline is a design elective | Shipped core |
+| Nectarine is copy-only | `listApiOperations` + `generateRoutes` |
+| No CORS | `listen({ cors })` + OPTIONS 204 |
+| `client` always `res.json()`, no `ok` check | `HttpError`; JSON or text |
+| `allowSelfSigned` unused | undici Agent on https |
+| No tests | Vitest suite |
+| `listen` returns `void` | Returns `http.Server` |
 
 ## Strongest areas
 
-These are the parts of Seltzer that already carry real value:
+- `init` → `route` → `listen` with `ResponseData`
+- named pipeline you can insert/replace without `next()`
+- parametric routes with static-prefix preference
+- `generateRoutes` as the Nectarine join
+- `client` that fails loudly on 4xx/5xx
 
-- `init` → `route` → `listen` as a process you can hold in your head
-- exact-path JSON GET/POST
-- `ctx.json` as the default write
-- `client.*` for same-shape JSON calls
-- copy-wiring Nectarine `{ method, endpoint }` for exact paths
-
-These form the strongest case for Seltzer as the ecosystem’s HTTP vocabulary, even while the pipeline is future work.
+These form the case for Seltzer as the ecosystem’s HTTP engine, not a thin `createServer` wrapper.
 
 ## Most promising emerging areas
 
-- `client` honesty (status, URL joining, which `Endpoint` fields count)
-- `.handler()` actually meaning something inbound
-- returning the `http.Server` from `listen` so tests can `close`
-- awaiting handlers and mapping throws to 500
-
-These are small, high-value increments that do not require inventing Express.
+- richer `validate` (Zod) via `replace` without changing handler signatures
+- `generateRoutes` covering more write operations in hosts
+- slash-safe client URL join
+- typed `client` generics
 
 ## Early or draft areas
 
-Treat these as design, not product:
+- HTTPS `listen`
+- `after` / remove stage
+- form-urlencoded / multipart
+- first-class file/stream responses beyond string/Buffer bodies
+- custom 404 envelope for hand-written unmatched routes (generated routes already take `notFound`)
 
-- body parser stage
-- parametric routes
-- structured returns + send stage
-- named pipeline
-- Nectarine validation stage
-- CORS / HTTPS helpers
-
-They can be valuable later. They should not be the center of the Seltzer promise, and they should not appear in app-author tutorials as if they shipped.
-
-## Client honesty
-
-- URL = `baseUrl + path` or `path`
-- `Endpoint.endpoint` and `Endpoint.route` unused
-- No timeout, retry, or non-2xx handling
-- `allowSelfSigned` unused
+They can be valuable later. They should not appear as if they shipped.
 
 ## Tests
 
-The package scripts are `build` and `typecheck`. There is no Seltzer test suite in `libraries/seltzer`.
-
 ```bash
+yarn workspace @citrusworx/seltzer test
 yarn workspace @citrusworx/seltzer build
 yarn workspace @citrusworx/seltzer typecheck
 ```
 
-Docs examples were checked against source, not executed as a live server from this docs pass.
-
-## Integration (what is real)
-
-**Nectarine.** Copy `{ method, endpoint }` or walk `parser.yaml`. No importer. Skip `:id` YAML. Adapters run inside handlers. See [Integration](./seltzer-integration.md).
-
-**Sig.js / Juice.** `fetch` the JSON. CORS is your headers. Seltzer does not start the UI.
-
-**Grapevine.** Provisions machines. Does not spawn `listen`.
-
-**KiwiPress.** Uses `Seltzer.init().handler()` for option storage and its own `fetch`, including `undici` for self-signed TLS.
-
 ## Recommended positioning right now
 
-If Seltzer is being described externally or internally, the most honest current positioning is:
+> Seltzer 0.8.x is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields, and maps Nectarine `ApiOperation[]` through `generateRoutes`. It is not Express, and it is not the 0.2.0 `ctx.json` listener still described on master.
 
-> Seltzer Early is a tiny Node `http` listener plus a JSON `fetch` client. You register exact method/path handlers, write with `ctx.json`, and parse bodies yourself. It is the CitrusWorx HTTP vocabulary — not Express, not a pipeline runtime, and not a Nectarine codegen backend.
-
-That framing matches the strongest current reality.
-
-Less accurate positioning right now would be:
+Less accurate positioning:
 
 - a middleware framework
-- a finished request pipeline with named stages
-- automatic routes from YAML
-- parametric REST on `:id` segments
+- an unimplemented design essay
+- automatic SQL from YAML (that is Nectarine’s compiler + host `execute`)
 
 ## Practical interpretation
 
 If you are building with Seltzer today:
 
-- confidently use `init`, `route`, `listen`, `ctx.json`, exact paths
-- read streams and query strings in the handler
-- copy Nectarine exact-path pairs
-- use `client.*` when JSON-in / JSON-out is enough
-- treat parametric routes, pipeline insert, and structured returns as things you write yourself (electives) or live without
-
-That is the cleanest adoption model for the current state of the system.
+- return `{ body }` (and `status` / `headers` when needed)
+- use `ctx.params` / `ctx.body` / `ctx.query`
+- generate routes from operations; replace `validate` when contracts grow
+- catch `HttpError` on `client.*`
+- treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 
 ## Suggested reading
 
-- [README](./README.md) — model and showcase
-- [JSON API tutorial](./seltzer-api-tutorial.md) — guided build
+- [README](./README.md)
+- [JSON API tutorial](./seltzer-api-tutorial.md)
 - [Getting Started](./seltzer-getting-started.md)
 - [Roadmap](./seltzer-roadmap.md)
 - [Troubleshooting](./seltzer-troubleshooting.md)

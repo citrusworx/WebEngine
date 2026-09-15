@@ -1,0 +1,8 @@
+version: "002_drop_legacy_flag"
+description: Drop unused users.legacy_flag
+destructive: true
+operations:
+  - dropColumn:
+      table: users
+      column: legacy_flag
+      confirm: dropColumn

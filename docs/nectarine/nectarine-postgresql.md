@@ -1,116 +1,558 @@
-# Nectarine + PostgreSQL
+# Nectarine PostgreSQL Guide
 
-How `PgSql` actually works in `libraries/nectarine/src/adapters/pg/pgz.ts`. Postgres is the adapter with a real class and an in-repo query-builder *idea*. The database itself is ordinary PostgreSQL; Nectarine does not install or migrate it.
+Comprehensive guide to using Nectarine with PostgreSQL.
 
-Related:
+## Why PostgreSQL?
 
-- [Tutorial](./nectarine-tutorial.md) — lifecycle + YAML → SQL → `query`
-- [Query DSL](./nectarine-query-dsl.md) — `select` / `from` / `where`
-- [Compiler](./nectarine-compiler.md) — do not use `buildQuery` here
+- **ACID Compliant**: Reliable transactions
+- **Powerful Query Language**: Rich SQL features
+- **Scalable**: Handles large datasets efficiently
+- **Open Source**: No licensing costs
+- **Strongly Typed**: Catches data errors
+- **Advanced Features**: JSON / **JSONB (first-class)**, arrays, full-text search
 
-## Why this adapter first
+## Installation
 
-- Query YAML under `models/**/db/pg` uses `$1` placeholders, which `pg` understands
-- `PgSql.query` forwards `{ sql, params }` to `client.query`
-- The tutorial / getting-started builder concatenates the PG DSL into SQL you can run
-
-It is still a thin wrapper: one `Client` per `connect`, no pool, no transactions API, errors logged and swallowed.
-
-## Env
+### MacOS
 
 ```bash
-export PG_USER=postgres
-export PG_HOST=localhost
-export PG_PASS=secret
-export PG_DB=myapp
-export PG_PORT=5432
+# Using Homebrew
+brew install postgresql@15
+
+# Start PostgreSQL service
+brew services start postgresql@15
+
+# Verify installation
+psql --version
 ```
 
-`PG_DB` is not read inside `PgSql` automatically. You `addDb(process.env.PG_DB!)` and `connect` with the same key. The map stores name → name.
-
-Credentials are read in the constructor (`process.env.PG_*!`). Missing values become `undefined` on the `pg` Client and fail at `connect`.
-
-## Install Postgres (host)
-
-Use whatever you already run — Homebrew, apt, Docker. Nectarine only needs a reachable server and those variables.
+### Linux (Ubuntu/Debian)
 
 ```bash
-# example — not required by the library
-docker run --name nectarine-pg -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=myapp -p 5432:5432 -d postgres:16
+# Install
+sudo apt-get update
+sudo apt-get install postgresql postgresql-contrib
+
+# Start service
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Verify
+psql --version
 ```
 
-Install `pg` in the consuming app:
+### Windows
+
+1. Download installer from [postgresql.org](https://www.postgresql.org/download/windows/)
+2. Run installer
+3. Choose default settings
+4. Remember the password for `postgres` user
+5. Verify: Open Command Prompt and run `psql --version`
+
+## Configuration
+
+### Environment Variables
 
 ```bash
-yarn add pg
+# Connection settings
+export PG_USER=postgres          # Default superuser
+export PG_HOST=localhost         # Connection host
+export PG_PORT=5432             # Default PostgreSQL port
+export PG_PASS=your_password    # Your password
+export PG_DB=myapp              # Database name
 ```
 
-## Client lifecycle
+### Connection String
+
+```
+postgresql://username:password@host:port/database
+postgresql://postgres:password@localhost:5432/myapp
+```
+
+## Setup
+
+### Create Database
+
+```bash
+# Using psql command
+createdb myapp
+
+# Or with psql
+psql -U postgres
+CREATE DATABASE myapp;
+
+# Verify
+\l
+```
+
+### Create User (Optional but Recommended)
+
+```bash
+# Connect as superuser
+psql -U postgres
+
+# Create new role
+CREATE ROLE myapp_user WITH LOGIN PASSWORD 'secure_password';
+
+# Grant privileges
+GRANT ALL PRIVILEGES ON DATABASE myapp TO myapp_user;
+
+# Exit
+\q
+```
+
+### Connect
+
+```bash
+# As default user
+psql -U postgres -d myapp
+
+# As specific user
+psql -U myapp_user -d myapp -h localhost
+
+# Using connection string
+psql postgresql://myapp_user:password@localhost:5432/myapp
+```
+
+## Using PostgreSQL with Nectarine
+
+### Setup in Code
+
+Nectarine supplies the Postgres adapter and compiled queries. **Seltzer** hosts HTTP. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` builds `Route`s. Register remaining object-based routes on the host.
+
+```typescript
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapter, createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const pg = createPgAdapterFromConfig(nectarine)
+  ?? createPgAdapter(nectarine.resolveCredentials("postgres")!);
+
+if (!pg) {
+  throw new Error("Postgres env is incomplete");
+}
+
+await pg.connect();
+
+const app = Seltzer.init();
+
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: async () => {
+    // Compile named YAML queries with CCompiler; adapters only run (sql, params).
+    return { body: { ok: true } };
+  },
+};
+
+app.route(listUsers);
+app.listen(3000);
+```
+
+Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation for WebEngine / Blackwater.
+
+### Connection Pooling
+
+`createPgAdapter` / `createPgAdapterFromConfig` use a `pg.Pool`. Do not open a second hand-rolled `Pool` in app code — that duplicates adapter concerns (credentials, idle-client `error` handling, shutdown).
+
+```typescript
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const pg = createPgAdapterFromConfig(nectarine);
+if (!pg) {
+  throw new Error("Postgres env is incomplete");
+}
+
+await pg.connect(); // pool + checkout so connect failures surface here
+const result = await pg.query("SELECT id FROM users WHERE id = $1", [1]);
+await pg.disconnect();
+```
+
+Blackwater production boot connects once, runs named DDL/DML, and closes the pool on failed boot and on `SIGTERM` / `SIGINT`. See [Production](./production.md).
+
+## PostgreSQL-Specific Features
+
+### Data Types
+
+Nectarine supports all PostgreSQL types:
+
+```yaml
+# Numeric
+years_experience: int
+price: decimal(10, 2)
+rating: float
+
+# Text
+name: VARCHAR(100)
+bio: text
+code: char(10)
+
+# Date/Time
+birth_date: date
+start_time: time
+created_at: timestamp
+
+# Boolean
+is_active: boolean
+
+# Array
+tags: text[]              # Array of text
+numbers: int[]            # Array of integers
+
+# JSON / JSONB (first-class — do not drop JSONB to avoid SQL in app code)
+metadata: json            # JSON data
+settings: jsonb           # Binary JSON (indexed); bind via { value: $N, cast: jsonb }
+
+# UUID
+id: uuid DEFAULT gen_random_uuid()
+
+# Enum
+status: enum(active, inactive)
+role: enum(admin, user, guest)
+```
+
+### Advanced Queries
+
+#### Full-Text Search
+
+```yaml
+# Schema
+Post:
+  fields:
+    title: VARCHAR(255)
+    content: text
+    search_vector: tsvector
+
+# Query
+searchPosts:
+  type: SELECT
+  table: posts
+  where: search_vector @@ plainto_tsquery('english', $1)
+  orderBy: ts_rank(search_vector, plainto_tsquery('english', $1)) DESC
+```
+
+#### JSON Querying
+
+JSONB stays a document column. Filter with phonics — do not flatten into
+relational fields.
+
+```yaml
+# Schema
+User:
+  fields:
+    preferences: jsonb
+
+# Fragment (Blackwater) or structured path / contains / has_key
+darkModeUsers:
+  type: SELECT
+  table: users
+  where: preferences->>'theme' = $1
+
+# Containment: preferences @> $1::jsonb
+byPreference:
+  type: SELECT
+  table: users
+  where:
+    column: preferences
+    operator: contains
+    value: $1::jsonb
+```
+
+#### Array Operations
+
+```yaml
+# Schema
+Post:
+  fields:
+    tags: text[]
+
+# Query - posts with specific tag
+byTag:
+  type: SELECT
+  table: posts
+  where: $1 = ANY(tags)
+
+# Query - posts with multiple tags
+byTags:
+  type: SELECT
+  table: posts
+  where: tags @> $1::text[]  # tags contains array
+```
+
+#### Window Functions
+
+```yaml
+# Rank posts by views
+rankedPosts:
+  type: SELECT
+  table: posts
+  fields: |
+    title,
+    views,
+    ROW_NUMBER() OVER (ORDER BY views DESC) as rank
+  orderBy: rank
+```
+
+### Indexes
+
+```yaml
+# Nectarine automatically indexes:
+# - PRIMARY KEY
+# - UNIQUE fields
+# - FOREIGN KEY fields
+
+# For other fields, add manually in PostgreSQL:
+
+User:
+  fields:
+    email: VARCHAR(100) UNIQUE          # AUTO-indexed
+    created_at: timestamp               # Consider indexing
+    status: enum(active, inactive)      # Consider indexing
+
+# In PostgreSQL:
+CREATE INDEX idx_users_created_at ON users(created_at DESC);
+CREATE INDEX idx_users_status ON users(status) WHERE is_active = true;
+```
+
+### Transactions
+
+```typescript
+import { Pool } from "pg";
+
+const pool = new Pool();
+
+async function transferMoney(fromUserId, toUserId, amount) {
+  const client = await pool.connect();
+  
+  try {
+    await client.query("BEGIN");
+    
+    // Debit from_user
+    await client.query(
+      "UPDATE users SET balance = balance - $1 WHERE id = $2",
+      [amount, fromUserId]
+    );
+    
+    // Credit to_user
+    await client.query(
+      "UPDATE users SET balance = balance + $1 WHERE id = $2",
+      [amount, toUserId]
+    );
+    
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+```
+
+### Migrations
+
+Do not check in raw `CREATE TABLE` scripts for app backends. Current table shape lives in `*Schema.yml`. Rename / drop / type change are versioned YAML compiled by Nectarine:
+
+```yaml
+# db/migrations/001_rename_nickname.yml
+version: "001_rename_nickname"
+operations:
+  - renameColumn:
+      table: users
+      from: nickname
+      to: handle
+```
 
 ```ts
-import { PgSql } from "@citrusworx/nectarine";
+import { applyMigrations, loadMigrationDocuments } from "@citrusworx/nectarine/migrate";
 
-const pg = new PgSql();
-pg.addDb("myapp");
-
-const client = await pg.connect("myapp");
-if (!client) {
-  throw new Error("connect() returned undefined — check PG_* and addDb");
-}
-
-try {
-  const result = await pg.query(client, {
-    sql: "SELECT now() AS ts",
-  });
-  console.log(result?.rows);
-} finally {
-  await pg.disconnect(client);
-}
+await applyMigrations({
+  execute: pg,
+  vendor: "postgres",
+  schemas: [userSchema],
+  migrations: loadMigrationDocuments("./db/migrations"),
+});
 ```
 
-| Method | Role |
-|---|---|
-| `client(db)` | `new Client({ …creds, database: this.dbs.get(db) })` |
-| `connect(db)` | `client` + `connect()` |
-| `query(client, { sql, params? })` | `client.query`; logs errors, returns `undefined` on failure |
-| `disconnect(client)` | `client.end()` |
-| `addDb` / `addTable` | register names in maps |
+There is no `migrate:down`. Destructive ops need `destructive: true` and a `confirm:` token. See [Production](./production.md).
 
-`query` swallows errors (`console.error`) and returns `undefined`. Check the return value; do not assume `rows`.
+### Backup and Restore
 
-The `if (!this.client)` guard inside `query` tests the **method**, which is always truthy. It does not detect a missing argument. Passing a bad client still falls into the `try/catch`.
+```bash
+# Backup database
+pg_dump -U postgres myapp > backup.sql
 
-`addTable` is stored and never read. Registering tables does not create them.
+# Backup to compressed format (faster)
+pg_dump -U postgres -F c myapp > backup.dump
 
-## From YAML to SQL
+# Restore from SQL
+psql -U postgres -d myapp < backup.sql
 
-See [Getting Started](./nectarine-getting-started.md) and [Query DSL](./nectarine-query-dsl.md). Compile `select` / `from` / `where` in the app.
+# Restore from dump
+pg_restore -U postgres -d myapp backup.dump
 
-`libraries/nectarine/src/adapters/pg/pgz.example.ts` is the current **reference idea** (connect, CREATE, SELECT, INSERT, disconnect). It is **not** exported. Two honest limits:
+# Backup specific schema
+pg_dump -U postgres -n public myapp > schema_backup.sql
+```
 
-1. Paths inside it point at `apps/citrode/.../schema.yml` and `libraries/nectarine/schemas/...` — those paths are stale. Real fixtures live under `libraries/nectarine/models/`.
-2. `buildSelectSQL` / `buildInsertSQL` expect MySQL-shaped keys (`type`, `fields`, `table`, `updates`). They do **not** compile `db/pg/user.yml`. Use the tutorial builder for that file.
+## Performance Tuning
 
-## Pooling and transactions
+### Query Optimization
 
-For pooling, use `pg.Pool` in your app. Nectarine does not export one.
+```yaml
+# BAD: Selects all columns (slow)
+getAllUsers:
+  type: SELECT
+  table: users
+  fields: '*'
 
-There is no `begin` / `commit` helper. Use `client.query("BEGIN")` on a client you already connected, or skip Nectarine’s class and use `pg` directly for that unit of work.
+# GOOD: Select only needed columns
+getActiveUsers:
+  type: SELECT
+  table: users
+  fields: [id, username, email]
+  where: is_active = true
 
-Do not keep a global `Client` across serverless invocations without reconnect logic. `disconnect` ends the connection.
+# GOOD: Add LIMIT for large datasets
+recentUsers:
+  type: SELECT
+  table: users
+  fields: [id, username, created_at]
+  orderBy: created_at DESC
+  limit: 100
+```
 
-## Practices
+### Connection Pool Size
 
-- Parameterize (`$1`) — do not interpolate user input into `sql`
-- Disconnect in `finally`
-- Treat `undefined` from `query` as failure
-- Call `addDb` with the same string you pass to `connect`
-- For production traffic, prefer `pg.Pool` over per-request `PgSql` clients
+```typescript
+// Tune based on your app
+const pool = new Pool({
+  max: 20,        // Production: 20-40
+  // Not too high (wastes memory)
+  // Not too low (connection wait)
+  idleTimeoutMillis: 30000,
+});
+```
 
-## Limitations
+### Enable Query Logging
 
-- No `LISTEN` / notifications helper
-- No JSONB query DSL
-- No migration runner
-- `creds.port` is a string from the env; `pg` accepts it
-- No connection-string URL (`postgres://…`) — env fields only
+```typescript
+// Log slow queries
+import { Pool } from "pg";
+
+const pool = new Pool();
+const originalQuery = pool.query;
+
+pool.query = async function(...args) {
+  const start = Date.now();
+  const result = await originalQuery.apply(this, args);
+  const duration = Date.now() - start;
+  
+  if (duration > 1000) {
+    console.warn("Slow query detected:", {
+      query: args[0],
+      duration: `${duration}ms`
+    });
+  }
+  
+  return result;
+};
+```
+
+### Vacuum and Analyze
+
+```bash
+# Clean up dead rows
+psql -U postgres -d myapp -c "VACUUM;"
+
+# Update statistics for query planner
+psql -U postgres -d myapp -c "ANALYZE;"
+
+# Combined (full maintenance)
+psql -U postgres -d myapp -c "VACUUM ANALYZE;"
+```
+
+## Common Issues
+
+### Connection Refused
+
+```bash
+# Verify PostgreSQL is running
+pg_isready -U postgres
+
+# Start service
+brew services start postgresql  # macOS
+sudo systemctl start postgresql  # Linux
+
+# Check port
+netstat -an | grep 5432
+```
+
+### Authentication Failed
+
+```bash
+# Check PostgreSQL is listening on network
+grep listen_addresses /usr/local/var/postgres/postgresql.conf
+
+# Should be: listen_addresses = '*'
+
+# Check pg_hba.conf for authentication method
+# For local connections, use: local all postgres trust
+
+# Restart PostgreSQL after changes
+```
+
+### Out of Memory
+
+```typescript
+// Too many large queries in pool
+const pool = new Pool({
+  max: 5,  // Reduce connection count
+  idleTimeoutMillis: 10000,  // Close idle connections faster
+});
+```
+
+### Disk Space
+
+```bash
+# Check database size
+psql -U postgres -c "SELECT pg_size_pretty(pg_database_size('myapp'));"
+
+# Check table sizes
+psql -U postgres -d myapp -c "\dt+"
+
+# Clean up logs/backups
+rm -f pg_log/*.log
+rm -f backups/old_*.dump
+```
+
+## Best Practices
+
+✓ **Do**:
+- Use connection pooling
+- Create appropriate indexes
+- Add LIMIT to queries
+- Use prepared statements (Nectarine does this)
+- Regular backups
+- Monitor slow queries
+- Use transactions for related operations
+- Set appropriate data types
+
+✗ **Don't**:
+- Connect to PostgreSQL without pooling
+- SELECT * in production
+- Store passwords in code
+- Skip backups
+- Run expensive queries without LIMIT
+- Use VARCHAR(5000) for usernames
+
+## Resources
+
+- [PostgreSQL Official Docs](https://www.postgresql.org/docs/)
+- [PostgreSQL Query Performance](https://www.postgresql.org/docs/current/sql-explain.html)
+- [Connection Pooling](https://www.postgresql.org/docs/current/warm-standby.html)
+- [pg NPM Package](https://node-postgres.com/)

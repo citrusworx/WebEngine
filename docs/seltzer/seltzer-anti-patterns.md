@@ -4,7 +4,7 @@
 
 This document collects the most common ways to fight Seltzer instead of working with it.
 
-These are useful because most hangs, surprise 404s, and “I returned JSON but curl got nothing” failures come from a few repeated mistakes — usually Express, Koa, or design-doc habits brought into a tiny `listen` callback.
+These are useful because most 500s, surprise 404s, and leftover 0.2.0 habits come from a few repeated mistakes — usually Express, Koa, or **master-branch docs** brought into a 0.8.x listener.
 
 ## 1. Treating Seltzer like Express
 
@@ -18,8 +18,8 @@ app.post("/notes/:id", update);
 
 Why it is bad:
 
-- `use`, `get`, and `:id` are not in `@citrusworx/seltzer`
-- there is no middleware stack and no parametric compiler
+- `use` and `get` are not in `@citrusworx/seltzer`
+- there is no middleware stack
 
 Better:
 
@@ -27,138 +27,126 @@ Better:
 const app = Seltzer.init();
 app.route({ method: "GET", path: "/notes", handler: list });
 app.route({ method: "POST", path: "/notes", handler: create });
+app.route({ method: "GET", path: "/notes/:id", handler: getOne });
 app.listen(3000);
 ```
 
-`.route` + exact path is the whole inbound API.
+`.route` + the named pipeline is the inbound API. `:id` **is** valid.
 
-## 2. Expecting `/users/:id` to match `/users/42`
-
-Bad:
-
-```ts
-app.route({
-  method: "GET",
-  path: "/users/:id",
-  handler: (ctx) => ctx.json({ id: ctx.params.id }),
-});
-```
-
-Why it is bad:
-
-- the matcher is `path === url.pathname`
-- `/users/:id` only matches the literal pathname `/users/:id`
-- `ctx.params` does not exist
-
-Better — query:
-
-```ts
-app.route({
-  method: "GET",
-  path: "/user",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    return ctx.json({ id });
-  },
-});
-```
-
-Parametric routing is [exercise 4](./exercises/04-parametric-router.md), a contributor elective.
-
-## 3. Returning `{ status, body }` and not writing
+## 2. Calling `ctx.json`
 
 Bad:
-
-```ts
-handler: () => ({ status: 200, body: { ok: true } }),
-```
-
-Why it is bad:
-
-- `listen` does `return match.handler(ctx)` and ignores the value
-- the socket never gets `end`
-- curl hangs
-
-Better:
 
 ```ts
 handler: (ctx) => ctx.json({ ok: true }),
 ```
 
-Structured returns are [exercise 5](./exercises/05-structured-response.md) / the design doc, not 0.2.0.
+Why it is bad:
 
-## 4. Assuming a body parser
+- `ctx.json` was removed in 0.4.0
+- TypeScript will not see it on `RequestContext`
+
+Better:
+
+```ts
+handler: (): ResponseData => ({ body: { ok: true } }),
+```
+
+## 3. Returning a bare payload
 
 Bad:
 
 ```ts
-handler: (ctx) => ctx.json({ email: ctx.body.email }),
+handler: () => ({ ok: true }),
+handler: () => [...notes.values()],
+handler: () => "ok",
 ```
 
 Why it is bad:
 
-- there is no `ctx.body`
-- the design-doc `parse` stage is not in `seltzer.ts`
+- `isResponseData` requires a plain object whose keys are only `status` / `headers` / `body`
+- the `response` stage turns anything else into 500 `{ error: "Internal Server Error", message: "Handler must return ResponseData…" }`
 
-Better: `for await` of `ctx.req`, then `JSON.parse`, then validate. See the [tutorial](./seltzer-api-tutorial.md) step 3.
+Better:
 
-## 5. Leaving a branch without `end`
+```ts
+handler: (): ResponseData => ({ body: { ok: true } }),
+```
+
+This is the opposite of the 0.2.0 anti-pattern (returning `ResponseData` and hanging). **Returns are required now.** Hanging because the return was ignored is closed.
+
+## 4. Collecting the JSON body by hand
 
 Bad:
 
 ```ts
 handler: async (ctx) => {
-  const body = await readJson(ctx.req);
-  if (!body?.text) return;
-  return ctx.json({ ok: true });
+  const chunks: Buffer[] = [];
+  for await (const chunk of ctx.req) chunks.push(chunk as Buffer);
+  const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  return { body };
 },
 ```
 
 Why it is bad:
 
-- the `if` returns `undefined`
-- Seltzer will not send 400 for you
+- `parse` already ran. `ctx.req` is consumed.
+- Invalid JSON is already a 400 from the runtime.
 
-Better: `return ctx.json({ error: "text required" }, 400)` on every failure path.
+Better: read `ctx.body`. Declare `.required` keys on `contract`.
 
-## 6. Relying on `listen` to catch async errors
+## 5. Using query-string ids because “`:id` is not shipped”
 
 Bad:
 
 ```ts
-handler: async (ctx) => {
-  const rows = await db.query("not-sql");
-  return ctx.json(rows);
-},
+app.route({
+  method: "GET",
+  path: "/note",
+  handler: (ctx) => {
+    const id = new URL(ctx.req.url || "/", "http://localhost").searchParams.get("id");
+    return { body: { id } };
+  },
+});
 ```
 
 Why it is bad:
 
-- the Promise is not awaited by the server
-- a rejection is unhandled, not status 500
+- 0.2.0 docs taught this as the product path
+- `/notes/:id` and `ctx.params.id` exist
+- `ctx.query` exists when you actually want a query
 
-Better: `try/catch` in the handler and `ctx.json({ error: "failed" }, 500)`.
+Better:
 
-## 7. Double `writeHead`
+```ts
+app.route({
+  method: "GET",
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => ({ body: { id: ctx.params.id } }),
+});
+```
+
+Query filters (`?q=`) still belong on `ctx.query`.
+
+## 6. Writing `res` and then returning `ResponseData`
 
 Bad:
 
 ```ts
 handler: (ctx) => {
   ctx.res.writeHead(200, { "X-Note": "a" });
-  ctx.json({ ok: true });
+  return { body: { ok: true } };
 },
 ```
 
 Why it is bad:
 
-- `json` also calls `writeHead`
-- Node throws; the client may see a broken response
+- `send` no-ops when headers are already sent
+- the JSON body never goes out
 
-Better: either extra headers on `res.writeHead` + `res.end(JSON.stringify(…))`, or `ctx.json` alone.
+Better: put headers on `ResponseData.headers`.
 
-## 8. Assuming `client` throws on 404
+## 7. Assuming `client` still succeeds on 404 JSON
 
 Bad:
 
@@ -168,18 +156,17 @@ const note = await client.get({
   endpoint: "/missing",
   options: { baseUrl: "http://127.0.0.1:3000" },
 });
-console.log(note.id);
+console.log((note as { error?: string }).error);
 ```
 
 Why it is bad:
 
-- Seltzer’s 404 body is JSON `{ error: "Not Found" }`
-- `client.get` always `res.json()`
-- `note.id` is `undefined`; no throw
+- 0.8.x throws `HttpError` on non-2xx
+- the 0.2.0 “always `res.json()`, never throw” story is closed
 
-Better: inspect the payload, or use `fetch` and check `response.ok`. Status-throwing clients are [exercise 8](./exercises/08-fetch-client.md), not `client.*`.
+Better: `try/catch` and `instanceof HttpError`.
 
-## 9. Double slashes and ignored `endpoint`
+## 8. Double slashes and ignored `endpoint`
 
 Bad:
 
@@ -194,45 +181,30 @@ client.get({
 Why it is bad:
 
 - the client concatenates `baseUrl + path` → `http://127.0.0.1:3000//notes`
-- `endpoint` is never read (KiwiPress reads it in *its* helper, not here)
+- `endpoint` is never read (KiwiPress may read it in *its* helper, not here)
 
 Better: `baseUrl` without a trailing slash, or put the full URL in `path` and omit `baseUrl`.
 
-## 10. Starting with pipeline exercises as an app author
+## 9. Starting with pipeline exercises as an app author
 
 Bad: open [exercise 6](./exercises/06-pipeline-runner.md) because you wanted `POST /notes`.
 
 Why it is bad:
 
-- exercises 4–7 describe the **future** pipeline
-- they are labeled contributor electives for a reason
-- you will implement APIs that are not in the package you import
+- exercises rebuild internals you already import
+- `ctx.body` is on the package
 
-Better: [Getting Started](./seltzer-getting-started.md) → [tutorial](./seltzer-api-tutorial.md) → [patterns](./seltzer-patterns.md). Use the design doc when you intend to change `libraries/seltzer/src`.
+Better: [Getting Started](./seltzer-getting-started.md) → [tutorial](./seltzer-api-tutorial.md) → [pipeline](./seltzer-pipeline.md) as a product topic.
 
-## 11. Registering every Nectarine endpoint blindly
+## 10. Skipping `:id` YAML because 0.2.0 said to
 
-Bad:
+Bad: copy only exact `/users` pairs and rewrite lookups as `?id=` “until parametric routing exists.”
 
-```ts
-for (const node of Object.values(api.user.get)) {
-  app.route({
-    method: node.api.method,
-    path: node.api.endpoint,
-    handler: stub,
-  });
-}
-```
+Why it is bad: parametric routing exists. `generateRoutes` sorts static prefixes so `/catalog/:catalog` is not stolen by `/products/:id`.
 
-Why it is bad:
+Better: flatten with `listApiOperations` and generate.
 
-- `usersById` is `/users/:id`
-- that route never matches `/users/42`
-- you think Nectarine “generated” a REST API
-
-Better: copy exact paths (`/users` GET/POST). Rewrite lookups as query routes. Call adapters inside handlers.
-
-## 12. Calling `pipeline.insert` / `app.hook`
+## 11. Calling `pipeline.insert` / `app.hook`
 
 Bad:
 
@@ -242,25 +214,35 @@ app.pipeline.insert("auth").before("handle");
 
 Why it is bad:
 
-- there is no `pipeline` property
-- named stages are a design target
+- there is no `pipeline` property on the instance
+- the method is `app.before("handle", stage)`
 
-Better: a wrapper function around `handler` (see [Best practices](./seltzer-best-practices.md)) or inlined header checks.
+Better: [Pipeline](./seltzer-pipeline.md).
 
-## 13. Expecting Grapevine or WebEngine to start `listen`
+## 12. Expecting Grapevine or a config file to start `listen`
 
-Bad: `grape apply` or `webengine.toml` as the way a Seltzer process appears.
+Bad: `grape apply` as the way a Seltzer process appears.
+
+Better: run a Node entry that calls `app.listen`. Provision the VM separately. WebEngine hosts that already wire Nectarine→Seltzer are a different (engine) path — see [Integration](./seltzer-integration.md).
+
+## 13. Using leftover `server.ts` as the runtime
+
+`libraries/seltzer/src/core/server/server.ts` is a hello-world `createServer`. It is **not** imported by `Seltzer.listen`. Building apps on that file is a different program.
+
+## 14. Treating `execute`’s `{ status, body }` as a transport result
+
+Bad:
+
+```ts
+execute: () => ({ status: 418, body: { error: "teapot" } }),
+```
 
 Why it is bad:
 
-- Grapevine `services:` is warning-only
-- WebEngine does not read Seltzer config
+- unbranded objects are wrapped as `{ body: { status, body } }`
+- HTTP status stays 200
 
-Better: run a Node entry that calls `app.listen`. Provision the VM separately.
-
-## 14. Using leftover `server.ts` as the runtime
-
-`libraries/seltzer/src/core/server/server.ts` is a hello-world `createServer`. It is **not** imported by `Seltzer.listen`. Building apps on that file is a different program.
+Better: `return response({ status: 418, body: { error: "teapot" } })`.
 
 ## Related
 

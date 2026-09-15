@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;700;800;900&family=Noto+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Outfit:wght@400;500;600&display=swap');
+
+/*
+  Blackwater Sound loads these Typekit display families in index.html:
+  - "citrus-gothic"
+  - "citrus-gothic-inline"
+  - "citrus-gothic-rough"
+  - "citrus-gothic-shadow"
+  - "citrus-gothic-solid"
+
+  Blackwater Sound also loads these Typekit text families:
+  - "noto-sans"
+  - "noto-sans-extracondensed"
+  - "noto-sans-condensed"
+  - "noto-sans-semicondensed"
+
+  They currently ship as regular/italic at weight 400, so app styling should not depend on heavy numeric weights
+  for the Citrus Gothic family.
+
+  The Google fonts here support the body and utility typography used elsewhere in the app.
+*/

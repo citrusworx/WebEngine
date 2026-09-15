@@ -1,6 +1,7 @@
 {
   "name": "@citrusworx/sigjs",
   "version": "0.2.0",
+  "description": "Standalone signals, JSX-to-DOM runtime, and client router for TypeScript and JavaScript. No framework required.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -35,7 +36,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "prepack": "yarn build",
-    "test": "playwright test"
+    "test": "yarn run --top-level playwright test --config ../../playwright.config.ts --project=sigjs"
   },
   "devDependencies": {
     "jsdom": "^29.0.1",

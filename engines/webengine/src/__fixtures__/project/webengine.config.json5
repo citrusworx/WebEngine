@@ -1,0 +1,15 @@
+{
+  name: "fixture-app",
+  description: "WebEngine fixture web runtime",
+  version: "0.0.1",
+  network: {
+    host: "127.0.0.1",
+    port: 9090,
+    dns: {
+      enabled: false,
+    },
+  },
+  development: {},
+  staging: {},
+  deployment: {},
+}

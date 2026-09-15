@@ -1,0 +1,40 @@
+session:
+  read:
+    byClient:
+      api:
+        method: GET
+        endpoint: /api/clients/:clientId/sessions
+        query: byClient
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/sessions/:id
+        query: byId
+
+    byStatus:
+      api:
+        method: GET
+        endpoint: /api/sessions/status/:status
+        query: byStatus
+
+  create:
+    newSession:
+      api:
+        method: POST
+        endpoint: /api/sessions
+        query: newSession
+
+  update:
+    updateSession:
+      api:
+        method: PUT
+        endpoint: /api/sessions/:id
+        query: updateSession
+
+  delete:
+    deleteSession:
+      api:
+        method: DELETE
+        endpoint: /api/sessions/:id
+        query: deleteSession

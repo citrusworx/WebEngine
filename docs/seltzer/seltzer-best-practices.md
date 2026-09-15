@@ -6,120 +6,86 @@ This guide focuses on how to compose Seltzer well in real app code. The goal is 
 
 Use Seltzer to express:
 
-- which exact method + path is live
-- JSON (or raw) bytes on the way out
-- a `fetch` shape for callers in Node
+- which method + path is live (including `:id`)
+- `ResponseData` on the way out
+- named pipeline stages for parse / match / validate / send
+- a `fetch` shape for callers in Node (`client.*` + `HttpError`)
 
-Use the platform for:
+Use `before` / `replace` for:
 
-- body streams
-- query strings
-- headers
-- TLS, process management, CORS
+- auth, logging, tracing
+- richer contract checks than `.required`
 
 Use Nectarine for:
 
-- YAML method/path *names* you copy
-- adapters you call **inside** handlers
+- YAML `ApiOperation` lists you flatten
+- adapters you call **inside** `execute` or a hand-written handler
 
 Use Sig.js / Juice for:
 
 - the page that consumes the JSON
 
-Seltzer is strongest when it is the thin listener on top of Node `http` you could already read without a framework.
+Seltzer is strongest when handlers describe *what* happened and the runtime owns *how* that becomes HTTP.
 
-## End every request
+## Return `ResponseData` on every branch
 
-A matched handler that never `end`s hangs the client. Unmatched routes are the only path Seltzer finishes for you.
-
-Good:
-
-```ts
-handler: (ctx) => ctx.json({ ok: true }),
-```
+A matched handler that returns a bare object is a 500, not a hang. Still: every success and failure path should be explicit `{ status?, headers?, body? }`.
 
 Good:
 
 ```ts
-handler: (ctx) => {
-  ctx.res.writeHead(200, { "Content-Type": "text/plain" });
-  ctx.res.end("ok\n");
+handler: (ctx): ResponseData => {
+  const note = notes.get(ctx.params.id);
+  if (!note) return { status: 404, body: { error: "Not Found" } };
+  return { body: note };
 },
 ```
 
 Less ideal:
 
 ```ts
-handler: async (ctx) => {
-  const body = await readJson(ctx.req);
-  if (!body) return; // hung
-},
+handler: () => ({ ok: true }), // 500 — extra key, not ResponseData
 ```
 
-Every branch — validation failure, not found, success — should `json` or `end`.
+## Do not touch `res` for JSON
 
-## Treat `ctx.json` as a write, not as a return protocol
-
-`return ctx.json(data)` is a readable habit. The `return` is for you, not for Seltzer. Do not also `return { status: 200, body: data }` expecting a send stage.
+`req` / `res` remain on ctx. Normal JSON should not `writeHead`. Extra headers belong on `ResponseData.headers` so `send` owns the socket.
 
 Good:
 
 ```ts
-if (!note) return ctx.json({ error: "Not Found" }, 404);
-return ctx.json(note);
+return { status: 201, headers: { "X-Created": "1" }, body: note };
 ```
 
-## Keep routes exact and boring
+## Keep routes honest
 
-Register the pathname you will actually request. Prefer `/notes` + `/note?id=` over hoping `/notes/:id` works.
+Register the pathname you will actually request. `/notes/:id` matches `/notes/42`. Prefer that over leftover 0.2.0 query-string stand-ins unless the query *is* the API.
 
-Good:
-
-```ts
-app.route({ method: "GET", path: "/notes", handler: listNotes });
-app.route({ method: "GET", path: "/note", handler: getNote });
-```
-
-Avoid registering YAML parametric strings “for later.” They sit in the array matching nothing.
-
-## Share a `readJson` helper
-
-Body collection is application code. One helper is enough for the whole process.
-
-Good: a module-level `readJson` used by POST/PUT/PATCH.
-
-Less ideal: a new `for await` loop inlined in every handler, each with a slightly different error path.
-
-## Catch async failures at the handler
-
-`listen` does not await and does not map errors to 500.
-
-Good:
-
-```ts
-handler: async (ctx) => {
-  try {
-    return ctx.json(await load());
-  } catch (err) {
-    console.error(err);
-    return ctx.json({ error: "failed" }, 500);
-  }
-},
-```
-
-## Register GET and POST as two routes
-
-Do not invent `app.use("/notes", notesRouter)`. Two `.route` calls are the public API.
+Register static siblings (`/notes/new`) when they would otherwise be eaten by `:id` — the matcher prefers them, but only if they exist.
 
 Keep method strings uppercase to match Node.
 
-## Copy Nectarine pairs; run adapters yourself
+## Let `parse` and `validate` work
 
-Good: `path: spec.endpoint` where `spec` is `{ method: "GET", endpoint: "/users" }`, then `PgSql` inside the handler.
+Send `Content-Type: application/json` for JSON POSTs. Declare `.required` keys on `contract.body` (or on `ApiOperation.body` for generated routes) instead of repeating `if (!body?.email)` in every write handler.
 
-Less ideal: assuming `parser.registerRoute` mounted something, or calling empty `buildSQL` and sending `undefined` to the driver.
+Type/format checks still belong in `replace("validate", …)` or the handler — default validate is presence-only.
 
-Skip `:id` endpoints until matching exists.
+## Put auth on the pipeline, not in every handler
+
+Good: `app.before("handle", requireAuth)` with a `ResponseData` 401.
+
+Less ideal: copy-pasted `Authorization` checks that miss a new route.
+
+If some routes are public, branch in the stage on `ctx.path` / `ctx.route`, or use two `Seltzer` instances.
+
+## Flatten with Nectarine; generate with Seltzer
+
+Good: `listApiOperations` → `generateRoutes` → `app.route`.
+
+Less ideal: assuming Nectarine mounted handlers, or copying `{ method, endpoint }` by hand for every `:id` path now that parametric matching exists.
+
+Keep `execute` as data access. Use `response()` only for explicit transport results (non-200 that is not the default wrap).
 
 ## Give `client` a slash-safe `baseUrl`
 
@@ -127,26 +93,13 @@ Good: `baseUrl: "http://127.0.0.1:3000"` + `path: "/notes"`.
 
 Bad: trailing slash on `baseUrl` plus leading slash on `path` (`//notes`).
 
-Do not assume `client` throws on 404 JSON. Check `error` in the payload, or use `fetch`.
+Catch `HttpError` for 4xx/5xx. Do not treat `{ error: "Not Found" }` as a successful `get` result — that was 0.2.0.
 
-## Keep CORS and auth in the handler (or a function the handler calls)
+## Use `listen` options instead of reinventing CORS
 
-There is no middleware pipeline. A function `jsonWithCors(ctx, data, status)` is a best practice. `app.use(cors())` is an anti-pattern because it is not an API.
+Good: `listen(port, { cors, locals, onListening })`.
 
-Same for auth: check `ctx.req.headers.authorization` at the start of handlers that need it, or wrap those handlers:
-
-```ts
-function requireToken(handler: Route["handler"]): Route["handler"] {
-  return (ctx) => {
-    if (ctx.req.headers.authorization !== "Bearer demo") {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
-    return handler(ctx);
-  };
-}
-```
-
-That wrapper is yours. It is not `pipeline.insert`.
+Less ideal: per-route `OPTIONS` handlers and manual `Access-Control-*` headers on every `ResponseData`.
 
 ## Let Juice/Sig own the browser
 
@@ -154,16 +107,17 @@ Do not generate HTML in Seltzer unless you truly need a text route. The product 
 
 ## Do not start with the exercises
 
-[Courses](./courses.md) and [exercises](./exercises/README.md) teach you to **implement** parse/route/pipeline stages. App authors should start at [Getting Started](./seltzer-getting-started.md) and the [tutorial](./seltzer-api-tutorial.md).
+[Courses](./courses.md) and [exercises](./exercises/README.md) rebuild shipped stages from `node:http`. App authors should start at [Getting Started](./seltzer-getting-started.md) and the [tutorial](./seltzer-api-tutorial.md).
 
 If you only need `listen(3000)`, exercise 06 is the wrong tab.
 
 ## Stay complementary to Nectarine
 
-Seltzer should not grow a YAML compiler, a query DSL, or `generateRoutes`. If a pattern needs a contract, the answer is a Nectarine file you copy from plus adapter code in the handler.
+Seltzer should not grow a YAML compiler or a query DSL. `generateRoutes` is the join. If a pattern needs a richer contract, `replace("validate", …)` — do not fold Zod into every handler.
 
 ## Related
 
 - [Patterns](./seltzer-patterns.md)
 - [Anti-patterns](./seltzer-anti-patterns.md)
+- [Pipeline](./seltzer-pipeline.md)
 - [Roadmap](./seltzer-roadmap.md)

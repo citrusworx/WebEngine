@@ -1,168 +1,131 @@
 # Seltzer Request and Response
 
-How a request becomes bytes on the wire in `@citrusworx/seltzer` **0.2.0**.
+How a request becomes bytes on the wire in `@citrusworx/seltzer` **0.8.1**.
 
-This page is the request/response mental model. Routing is [Routing](./seltzer-routing.md). Outbound calls are [Client](./seltzer-client.md).
+This page is the request/response mental model. Routing is [Routing](./seltzer-routing.md). Stages are [Pipeline](./seltzer-pipeline.md). Outbound calls are [Client](./seltzer-client.md).
 
-Every behavior here is from `libraries/seltzer/src/core/seltzer.ts` (`listen`). There is no separate context module.
+Every behavior here is from `libraries/seltzer/src/core/seltzer.ts`, `core/response.ts`, and `pipeline/stages.ts`.
 
 ## What `listen` actually does
 
-On each incoming request, `listen` builds a `URL`, finds a route, builds `ctx`, and either 404s or calls the handler.
+On each incoming request, `listen` applies CORS, answers `OPTIONS` with 204, builds a `PipelineContext`, and `await`s `pipeline.run(ctx)`.
 
 ```ts
-const url = new URL(req.url || "/", `http://${req.headers.host}`);
-const match = this.routes.find(
-  (route) => route.method === req.method && route.path === url.pathname,
-);
-const ctx = {
+applyCors(req, res, cors);
+
+if (req.method === "OPTIONS") {
+  send(res, { status: 204 });
+  return;
+}
+
+const ctx: PipelineContext = {
   req,
   res,
+  method: req.method ?? "GET",
+  path: "",
+  query: {},
+  params: {},
+  body: undefined,
+  headers: {},
+  locals,
   options: this.config?.options,
-  json(data: unknown, status = 200) {
-    res.writeHead(status, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(data));
-  },
 };
 
-if (!match) {
-  return ctx.json({ error: "Not Found" }, 404);
-}
-return match?.handler(ctx);
+await this.pipeline.run(ctx);
 ```
 
-Read that last line twice. The handler’s **return value is discarded**. `return ctx.json(…)` works because `json` writes as a side effect, not because Seltzer inspects the return.
+Read that last line twice. The pipeline **awaits** stages and the handler. Thrown errors become JSON 500. The handler’s return value is **not** discarded — `handle` assigns it to `ctx.response`, `response` checks the shape, `send` writes the socket.
+
+There is no `ctx.json`. That helper was removed in 0.4.0 (breaking).
 
 ## The context object
 
-`ctx` is not an exported type. `Route<TContext>` is generic and defaults to `any`. In practice `listen` always passes:
+`RequestContext` is exported from the package root.
 
 | Field | What it is |
 |---|---|
-| `req` | Node `IncomingMessage` — method, url, headers, readable body |
-| `res` | Node `ServerResponse` — `writeHead`, `end`, `write` |
-| `options` | `this.config?.options` from `.handler()`, or `undefined` |
-| `json` | helper: JSON `writeHead` + `end` |
+| `req` | Node `IncomingMessage` — escape hatch |
+| `res` | Node `ServerResponse` — escape hatch; normal responses should not touch it |
+| `method` | Set in `context` from `req.method` |
+| `path` | URL pathname (`/notes/1`, no query) |
+| `query` | `Record<string, string>` from `URLSearchParams` |
+| `params` | Captured `:id` segments after `route` matches |
+| `body` | Parsed JSON object, raw string, or `undefined` (GET/HEAD skip the body) |
+| `headers` | Lowercased string map |
+| `locals` | From `listen({ locals })` |
+| `options` | From `.handler(config)` if set |
 
-There is no `ctx.body`, `ctx.params`, `ctx.query`, `ctx.headers` map, `ctx.state`, or `ctx.send`.
+Pipeline-only fields on `PipelineContext`:
 
-The design doc describes a normalized context built by a `context` stage. That stage is not in source. Today the “structured” part is `json`. The rest is Node.
+| Field | What it is |
+|---|---|
+| `route` | Matched `Route` (includes `contract`) |
+| `response` | `ResponseData` accumulated toward `send` |
 
-## `ctx.json`
+## `ResponseData`
 
 ```ts
-json(data: unknown, status = 200): void
+type ResponseData = {
+  status?: number;
+  headers?: Record<string, string>;
+  body?: unknown;
+};
 ```
 
-- Always `Content-Type: application/json`
-- Always `JSON.stringify(data)`
-- Always `res.end`
-- Default status `200`
+Handlers must return this shape (or a Promise of it). `isResponseData` is true only for **plain objects whose keys are a subset of** `status`, `headers`, and `body`. Extra keys fail. Arrays, strings, and `{ ok: true }` fail.
 
 ```ts
-ctx.json({ ok: true });
-ctx.json({ error: "email required" }, 400);
-ctx.json({ id: "1" }, 201);
-ctx.json(null);           // body is the four characters `null`
-ctx.json(undefined);      // body is empty: JSON.stringify(undefined) is undefined
+return { body: { ok: true } };
+return { status: 201, headers: { "X-Created": "1" }, body: note };
+return { status: 204 }; // no body
 ```
 
-`JSON.stringify` throws on circular structures. That throw is not caught by `listen`.
+`status` defaults to `200` in `send`. Object, array, `null`, number, and boolean bodies are `JSON.stringify`d with `Content-Type: application/json` unless you already set that header (any casing). Strings are written as-is (no automatic content type). `Buffer` / `Uint8Array` are written as-is.
 
-Headers besides content type: not a `json` feature. Set them on `ctx.res` before you write, or skip `json` and write yourself. You cannot both `writeHead` extra headers and then call `json`, which also `writeHead`s.
+## `response()` branding
 
-## Raw `ctx.res`
-
-When JSON is the wrong answer:
+`generateRoutes` treats `execute` results as payloads unless they were produced by `response()`:
 
 ```ts
-app.route({
-  method: "GET",
-  path: "/robots.txt",
-  handler: (ctx) => {
-    ctx.res.writeHead(200, { "Content-Type": "text/plain" });
-    ctx.res.end("User-agent: *\nDisallow:\n");
-  },
-});
-```
+import { response } from "@citrusworx/seltzer";
 
-Streaming a file, SSE, or a redirect is the same idea: you own `ServerResponse`. Seltzer will not format `{ status, headers, body }` for you. That is [exercise 5](./exercises/05-structured-response.md), a design target.
-
-## Request URL, query, and headers
-
-`req.url` is the path + search (`/note?id=1`). Matching already constructed a `URL` for `pathname`, but that object is **not** passed to the handler.
-
-```ts
-app.route({
-  method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    const host = ctx.req.headers.host;
-    const accept = ctx.req.headers.accept;
-    return ctx.json({ id, host, accept });
-  },
-});
-```
-
-Headers are Node’s `IncomingHttpHeaders` (lowercase keys, `string | string[] | undefined`). There is no helper to pick the first value.
-
-## Request body
-
-Bodies are streams. They are not ready when the handler starts.
-
-Collect:
-
-```ts
-async function readText(req: import("node:http").IncomingMessage): Promise<string> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) {
-    chunks.push(chunk as Buffer);
+execute: ({ params }) => {
+  if (params.id === "teapot") {
+    return response({ status: 418, body: { error: "teapot" } });
   }
-  return Buffer.concat(chunks).toString("utf8");
-}
+  return products.find((item) => item.id === params.id) ?? null;
+};
 ```
 
-Then parse:
+An unbranded `{ body: "copy" }` from `execute` is wrapped again as `{ body: { body: "copy" } }`. Hand-written handlers do **not** need `response()` — they already return `ResponseData`.
+
+## `send`
 
 ```ts
-const raw = await readText(ctx.req);
-let body: unknown = null;
-try {
-  body = raw ? JSON.parse(raw) : null;
-} catch {
-  return ctx.json({ error: "invalid json" }, 400);
-}
+function send(res: ServerResponse, data: ResponseData): void
 ```
 
-GET handlers usually should not read the body. POST/PUT/PATCH handlers that never read it and never `end` will hang if a client is still sending, and will hang if you forget `ctx.json` even after the client finishes.
+Applies defaults and `writeHead` + `end`. No-op if `res.headersSent`. Builtin 404/400/500 paths use the same function.
 
-There is no size limit, no `Content-Type` check, and no `application/x-www-form-urlencoded` parser. Add those in the handler if you need them.
+## Request body (`parse`)
+
+| Method | Body |
+|---|---|
+| GET / HEAD | skipped (`ctx.body` stays `undefined`) |
+| others, empty | `undefined` |
+| others, `Content-Type` includes `application/json` | `JSON.parse`; failure → 400 `{ error: "Invalid JSON body" }` |
+| others, other content types | UTF-8 string |
+
+There is no size limit and no `application/x-www-form-urlencoded` parser. Add those with `before("validate", …)` or in the handler if you need them.
 
 ## Async handlers
 
-`handler` is typed `(ctx) => any`. Async functions return a Promise. `listen` does not `await` it and does not `.catch` it.
+`handler` is `(ctx) => ResponseData | Promise<ResponseData>`. The pipeline awaits it.
 
-What that means:
+- `throw new Error("boom")` becomes `{ error: "Internal Server Error", message: "boom" }` at 500.
+- Returning a non-`ResponseData` value becomes 500 with a message that handlers must return `{ status?, headers?, body? }`.
 
-- Calling `ctx.json` after `await` still sends the response. The socket does not care that `listen` moved on.
-- `throw new Error("boom")` inside an async handler is an unhandled rejection, not `{ error: "Internal" }` with status 500.
-- Returning a Promise of `{ status, body }` is still discarded.
-
-Wrap work you care about:
-
-```ts
-handler: async (ctx) => {
-  try {
-    const row = await lookup();
-    return ctx.json(row);
-  } catch (err) {
-    console.error(err);
-    return ctx.json({ error: "failed" }, 500);
-  }
-};
-```
+You can still `try/catch` in the handler to send a domain-specific 400 instead of a 500.
 
 ## `.handler()` options on `ctx`
 
@@ -177,33 +140,28 @@ app.handler({
 });
 ```
 
-`ctx.options` is that `options` object. `adapter` is stored on the instance and never read by `listen`. `allowSelfSigned` is never applied to the server (the server is plain `http`).
-
-KiwiPress uses `.handler()` to remember a WordPress `baseUrl` for **outbound** calls. Inbound handlers still see the same `options` blob if you set it.
+`ctx.options` is that `options` object. `adapter` is stored on the instance and never read by `listen`. `allowSelfSigned` is never applied to the **inbound** server (plain `http`). The outbound `client` reads the same option shape when you pass an `Endpoint`.
 
 ## What must happen before the request is done
 
-Someone has to:
+The pipeline always reaches builtin `send` unless a previous `send` already wrote headers. Handlers should return `ResponseData` on every branch. Returning `undefined` fails `isResponseData` and becomes 500.
 
-1. `writeHead` (or rely on `json` to do it)
-2. `end` the response
+Do not `writeHead` yourself and then return `{ body }` — `send` is a no-op once headers are sent, and the JSON never goes out.
 
-Seltzer does step 1–2 for unmatched routes. For matched routes, **only your handler** does. Double-`end` throws. `json` after you already ended throws.
+## 0.2.0 vs 0.8.1
 
-## Design-doc context vs this page
-
-| Design (`seltzer-design.md`) | Shipped |
+| 0.2.0 (`master` docs) | 0.8.1 |
 |---|---|
-| `ctx.method`, `ctx.path`, `ctx.query`, `ctx.headers` | `ctx.req.*` |
-| `ctx.body` after a parse stage | You read the stream |
-| `ctx.params` from `/users/:id` | Not implemented |
-| Handler returns `{ status, headers, body }` | Handler writes |
-| Format + send stages | `ctx.json` writes immediately |
-
-Keep this page open while you write handlers. Open the design doc when you implement stages.
+| `ctx.json(data, status?)` writes immediately | gone |
+| Handler return discarded; curl hangs | return `ResponseData`; runtime sends |
+| You read the body stream | `ctx.body` |
+| `ctx.req.url` for query | `ctx.query` |
+| Async throw is unhandled | JSON 500 |
+| `listen` returns `void` | returns `http.Server` |
 
 ## Related
 
+- [Pipeline](./seltzer-pipeline.md)
 - [Routing](./seltzer-routing.md)
 - [JSON API tutorial](./seltzer-api-tutorial.md)
-- [Troubleshooting](./seltzer-troubleshooting.md) — hangs and double-writes
+- [Troubleshooting](./seltzer-troubleshooting.md)

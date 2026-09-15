@@ -1,6 +1,6 @@
 # Seltzer Examples
 
-Longer showcases against `Seltzer` and `client` as exported today. These are the same primitives as the [tutorial](./seltzer-api-tutorial.md), written as copyable slices rather than a guided build.
+Longer showcases against `Seltzer` and `client` as exported in **0.8.1**. These are the same primitives as the [tutorial](./seltzer-api-tutorial.md), written as copyable slices rather than a guided build.
 
 For smaller recipes see [Patterns](./seltzer-patterns.md).
 
@@ -8,132 +8,102 @@ For smaller recipes see [Patterns](./seltzer-patterns.md).
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 const app = Seltzer.init();
 
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true, uptime: process.uptime() }),
+  handler: (): ResponseData => ({
+    body: { ok: true, uptime: process.uptime() },
+  }),
 });
 
 app.listen(3000);
 ```
 
-## Notes collection (exact paths + query lookup)
+## Notes collection (`:id` + JSON body)
 
-In-memory resource with list, create, and `?id=` lookup. This is the shape the tutorial builds.
+In-memory resource with list, create, and by-id lookup.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 type Note = { id: string; text: string };
 const notes = new Map<string, Note>();
-
-async function readJson(req: import("node:http").IncomingMessage) {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk as Buffer);
-  const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : null;
-}
-
-function queryId(req: import("node:http").IncomingMessage) {
-  const url = new URL(req.url || "/", `http://${req.headers.host}`);
-  return url.searchParams.get("id");
-}
 
 const app = Seltzer.init();
 
 app.route({
   method: "GET",
   path: "/notes",
-  handler: (ctx) => ctx.json([...notes.values()]),
+  handler: (ctx): ResponseData => {
+    const q = ctx.query.q?.toLowerCase();
+    const all = [...notes.values()];
+    const items = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
+    return { body: items };
+  },
 });
 
 app.route({
   method: "POST",
   path: "/notes",
-  handler: async (ctx) => {
-    try {
-      const body = (await readJson(ctx.req)) as { text?: string };
-      if (!body?.text) return ctx.json({ error: "text required" }, 400);
-      const note = { id: String(notes.size + 1), text: body.text };
-      notes.set(note.id, note);
-      return ctx.json(note, 201);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
-    }
+  contract: { body: { text: "string.required" } },
+  handler: (ctx): ResponseData => {
+    const body = ctx.body as { text: string };
+    const note = { id: String(notes.size + 1), text: body.text };
+    notes.set(note.id, note);
+    return { status: 201, body: note };
   },
 });
 
 app.route({
   method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const id = queryId(ctx.req);
-    if (!id) return ctx.json({ error: "id required" }, 400);
-    const note = notes.get(id);
-    return note ? ctx.json(note) : ctx.json({ error: "Not Found" }, 404);
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => {
+    const note = notes.get(ctx.params.id);
+    return note ? { body: note } : { status: 404, body: { error: "Not Found" } };
   },
 });
 
-app.listen(3000);
+app.listen(3000, {
+  cors: { origin: "http://localhost:5173" },
+});
 ```
 
-`/notes/:id` is not a matcher. A concrete `/notes/1` route only ever serves `"1"`. Prefer `/note?id=`.
-
-## Users collection with the same helper
+## Auth stage
 
 ```ts
-type User = { id: string; email: string };
-const users = new Map<string, User>();
+import type { Stage } from "@citrusworx/seltzer";
 
-app.route({
-  method: "GET",
-  path: "/users",
-  handler: (ctx) => ctx.json([...users.values()]),
-});
+const requireAuth: Stage = (ctx) => {
+  if (!ctx.headers.authorization) {
+    return { status: 401, body: { error: "Unauthorized" } };
+  }
+};
 
-app.route({
-  method: "POST",
-  path: "/users",
-  handler: async (ctx) => {
-    const body = (await readJson(ctx.req)) as { email?: string };
-    if (!body?.email) return ctx.json({ error: "email required" }, 400);
-    const user = { id: String(users.size + 1), email: body.email };
-    users.set(user.id, user);
-    return ctx.json(user, 201);
-  },
-});
-
-app.route({
-  method: "GET",
-  path: "/user",
-  handler: (ctx) => {
-    const id = queryId(ctx.req);
-    const user = id ? users.get(id) : undefined;
-    return user ? ctx.json(user) : ctx.json({ error: "Not Found" }, 404);
-  },
-});
+const app = Seltzer.init().before("handle", requireAuth);
 ```
 
-## Text response (bypass `ctx.json`)
+## Text response
 
 ```ts
 app.route({
   method: "GET",
   path: "/robots.txt",
-  handler: (ctx) => {
-    ctx.res.writeHead(200, { "Content-Type": "text/plain" });
-    ctx.res.end("User-agent: *\nDisallow:\n");
-  },
+  handler: (): ResponseData => ({
+    headers: { "Content-Type": "text/plain" },
+    body: "User-agent: *\nDisallow:\n",
+  }),
 });
 ```
 
 ## Client against that server
 
 ```ts
-import { client, type Endpoint } from "@citrusworx/seltzer";
+import { client, HttpError, type Endpoint } from "@citrusworx/seltzer";
 
 const notesApi: Endpoint = {
   path: "/notes",
@@ -144,50 +114,81 @@ const notesApi: Endpoint = {
   },
 };
 
-await client.post(notesApi, { text: "Review the deploy window" });
-const all = await client.get(notesApi);
-console.log(all);
+try {
+  await client.post(notesApi, { text: "Review the deploy window" });
+  const all = await client.get(notesApi);
+  console.log(all);
 
-const one = await client.get({
-  ...notesApi,
-  path: "/note?id=1",
-  endpoint: "/note",
-});
-console.log(one);
+  const one = await client.get({
+    ...notesApi,
+    path: "/notes/1",
+    endpoint: "/notes/:id",
+  });
+  console.log(one);
+} catch (err) {
+  if (err instanceof HttpError) {
+    console.error(err.status, err.body);
+  }
+}
 ```
 
-`put` / `patch` / `delete` follow the same `Endpoint` shape. `delete` and `get` send no body.
+## Generated product reads
 
-`client` does not throw on status 404. `{ error: "Not Found" }` is a parsed object.
-
-## Nectarine-shaped registration (copy, no codegen)
-
-From `libraries/nectarine/models/user/userAPI.yml` — only exact paths:
+Same shape as `generateRoutes` tests (catalog/slug before `:id`):
 
 ```ts
-import { parser } from "@citrusworx/nectarine";
-import { Seltzer } from "@citrusworx/seltzer";
+import { Seltzer, generateRoutes, type ApiOperation } from "@citrusworx/seltzer";
 
-const api = parser.yaml("./userAPI.yml");
-const spec = api.user.get.allUsers.api as { method: string; endpoint: string };
+const productReadOps: ApiOperation[] = [
+  { resource: "product", crud: "read", name: "allProducts", method: "GET", path: "/api/products", query: "allProducts" },
+  { resource: "product", crud: "read", name: "productsByCatalog", method: "GET", path: "/api/products/catalog/:catalog", query: "productsByCatalog" },
+  { resource: "product", crud: "read", name: "productById", method: "GET", path: "/api/products/:id", query: "productById" },
+  { resource: "product", crud: "read", name: "productBySlug", method: "GET", path: "/api/products/slug/:slug", query: "productBySlug" },
+];
+
+const products = [
+  { id: "stinkrat", name: "StinkRat", catalog: "gear", slug: "stink-rat" },
+];
 
 const app = Seltzer.init();
-app.route({
-  method: spec.method,
-  path: spec.endpoint,
-  handler: (ctx) => ctx.json({ users: [] }),
-});
-app.listen(3000);
+for (const route of generateRoutes(productReadOps, {
+  execute: ({ query, params }) => {
+    switch (query) {
+      case "allProducts":
+        return products;
+      case "productsByCatalog":
+        return products.filter((p) => p.catalog === params.catalog);
+      case "productById":
+        return products.find((p) => p.id === params.id) ?? null;
+      case "productBySlug":
+        return products.find((p) => p.slug === params.slug) ?? null;
+      default:
+        return null;
+    }
+  },
+})) {
+  app.route(route);
+}
 ```
 
-The YAML does not create the handler. You do. Do not register `usersById` (`/users/:id`) expecting `/users/42` to hit it.
+`GET /api/products/catalog/gear` is not stolen by `:id`.
 
-Equivalent copy without the parser:
+## Nectarine flatten (host code)
 
 ```ts
-const allUsers = { method: "GET", endpoint: "/users" };
-const createUser = { method: "POST", endpoint: "/users" };
+import { listApiOperations } from "@citrusworx/nectarine/config";
+import { generateRoutes } from "@citrusworx/seltzer";
+
+const ops = listApiOperations("product", product.api).filter(
+  (operation) => operation.crud === "read" && operation.method === "GET",
+);
+
+for (const route of generateRoutes(ops, { execute })) {
+  app.route(route);
+}
 ```
+
+Nectarine does not call `app.route`. You do.
 
 ## Sig.js consumer (browser `fetch`)
 
@@ -199,10 +200,11 @@ function NotesPreview() {
 
   effect(() => {
     fetch("http://127.0.0.1:3000/notes")
-      .then((res) => res.json())
-      .then((rows: { text: string }[]) =>
-        label.set(`${rows.length} notes`),
-      )
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        return res.json();
+      })
+      .then((rows: { text: string }[]) => label.set(`${rows.length} notes`))
       .catch((err: unknown) => label.set(String(err)));
   });
 
@@ -212,14 +214,14 @@ function NotesPreview() {
 mount(<NotesPreview />, document.getElementById("root")!);
 ```
 
-Juice can wrap that in a `card`. CORS is your `writeHead`, not a Seltzer flag. See [Integration](./seltzer-integration.md).
+Juice can wrap that in a `card`. CORS is `listen({ cors })`. See [Integration](./seltzer-integration.md).
 
-## What not to paste from the design doc
+## What not to paste from 0.2.0 docs
 
 ```ts
 // Not APIs
-app.pipeline.insert("auth").before("handle");
-ctx.params.id;
-ctx.body;
-return { status: 200, body: { ok: true } }; // listen will not serialize this
+ctx.json({ ok: true });
+ctx.params; // exists — but not if you never registered :id
+// Returning { ok: true } without { body }
+app.pipeline.insert("auth");
 ```

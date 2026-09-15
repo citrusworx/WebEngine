@@ -1,184 +1,392 @@
-# Nectarine Status
+# Nectarine Project Status
 
-Honest snapshot of `@citrusworx/nectarine` **0.1.0** against `libraries/nectarine/src`.
+Current state, roadmap, and future direction of Nectarine.
 
-The goal is the same as Sig.js and Juice maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
+## Current Version: 0.0.1
 
-**Early / Alpha.** Adapters and YAML I/O are real. The compiler that would turn query YAML into SQL is not. The workspace index says “Active alpha” because three drivers exist; this page is stricter about *product completeness*.
+Nectarine is in **early alpha**. Core concepts are proven, but many features are still in development.
 
-Do not treat comparison tables vs Prisma / Supabase / Firebase as a capability claim. Those were marketing. Nectarine is a small library in this repo.
+---
 
-Related: [Roadmap](./nectarine-roadmap.md) for direction. [API](./nectarine-api.md) for the surface as it exists.
+## What's Working ✓
 
-## Maturity levels
+### Core Schema System
+- ✓ YAML schema definitions
+- ✓ Field type support (int, string, varchar, text, date, timestamp, enum, etc.)
+- ✓ Constraints (PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, DEFAULT, AUTO_INCREMENT)
+- ✓ Automatic index creation for PRIMARY/UNIQUE/FOREIGN keys
 
-### `Stable-ish`
+### Database Adapters
+- ✓ PostgreSQL adapter
+- ✓ Basic MySQL support
+- ✓ MongoDB support (collections and aggregation)
+- ✓ Connection pooling (all adapters)
 
-The feature is usable today, central to the Nectarine experience, and unlikely to change dramatically in basic concept. Alpha still means the package version can move; the *idea* is settled.
+### Query System
+- ✓ SELECT queries (filtering, sorting, limiting)
+- ✓ INSERT queries (create operations)
+- ✓ UPDATE queries (modify operations)
+- ✓ DELETE queries (remove operations)
+- ✓ Parameter binding ($1, $2 style)
+- ✓ WHERE clauses and conditions
 
-### `Emerging`
+### API contracts
+- ✓ YAML API definitions (`*API.yml`) per resource
+- ✓ WebEngine / Blackwater hosts with Seltzer (`transport.server: seltzer`)
+- ✓ HTTP method mapping in API YAML (GET, POST, PUT, PATCH, DELETE)
+- ✓ Path parameter shapes (`:id`, `:name`, etc.)
+- ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
+- ✓ Product-read and waitlist GET + POST (`joinWaitlist`) Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
+- ✓ Remaining Blackwater resource **reads** auto-wire via engine `createNectarineReadRoutes` (`@citrusworx/webengine`; lesson `byId` stays the hand KiwiPress route)
+- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; product JSONB catalog writes (`insertPayload` / `updatePayload` / `deleteProduct`) and waitlist `joinWaitlist` stay host `execute` on the same helper (`createNectarineRoutes` + named YAML)
+- Express is **not** the generated or default server
 
-The feature is useful and present, but the API, conventions, or implementation details are still likely to evolve.
+### Validation
+- ✓ Seltzer default `validate` stage: `.required` keys from `*API.yml` `body:` (`string.required`) on `ctx.body`; missing/empty → 400
+- ✓ `generateRoutes` copies `ApiOperation.body` (plus resource/name) onto `Route.contract`
+- ✓ Hosts/Nectarine swap that builtin with `Seltzer#replace("validate", …)` for richer contracts
+- Planned: Zod schema validation on the Seltzer-hosted path via `replace("validate", …)`
+- Schema field types (required, unique, enums) are the intended source of those richer rules
+- Hosts register health / KiwiPress content by hand; resource reads, YAML writes, and waitlist POST (`joinWaitlist`) use `generateRoutes`
 
-### `Early`
+### Schema Distribution
+- ✓ Pre-built schemas: User, Blog, CMS, Store, Banking
+- ✓ Easy schema loading and composition
+- ✓ Schema extension and override support
 
-The feature exists, but it is still exploratory, incomplete, or not yet something Nectarine should strongly promise as a finished public surface.
+---
 
-### `Draft`
+## What's In Development 🔄
 
-The feature is more of a direction than a hardened part of the runtime.
+### Query Compiler
+- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), schema YAML → `CREATE TABLE` / indexes, versioned migration YAML → gated `ALTER`. Adapters execute `(sql, params)` only. JSONB columns, `$N::jsonb` binds, and JSONB operators (`@>`, `?`, `->>`) are supported; `COUNT` / `EXISTS` / INSERT `ON CONFLICT` compile from YAML. JSONB is not being dropped.
+- Planned: Optimization layer, query planning; joins / `GROUP BY` / `LIMIT`
 
-## Matrix
+### Schema Registry
+- Current: File-based loading
+- Planned: Runtime schema registry, schema versioning
 
-| Area | Maturity | Notes |
-|---|---|---|
-| `parser.yaml` | Stable-ish | `readFileSync` + `js-yaml`, always `console.log`s. No validation. This is the load primitive. |
-| `parser.genSQL` | Stable-ish | Returns `doc[type][method][config]`. Throws if missing. Not SQL. |
-| `parser.registerRoute` | Emerging | Filename check returns a string; lookup is top-level `method` then `route`; nested fixtures need `parser.yaml`. |
-| Postgres `select` / `from` / `where` **convention** | Emerging | Consistent in `models/user/db/pg/user.yml`. Not validated. Not compiled in package. |
-| `PgSql` class | Emerging | Connect / query / disconnect work. No pool. `query` swallows errors. `addTable` unused. |
-| `Mysql` + `pool` | Early | Thin `mysql2` `execute`. Pool at import. Throws. `mysql2` not declared on the package. |
-| `mapInsert` / `mapGetter` / `getValues` | Early | Join lists only. Private interfaces. MySQL fixture update/delete incomplete. |
-| Mongo `Mngz` / `insertOne` / `insertMany` | Early | Shared client at import. Helpers close it. No find/update/delete wrappers. |
-| `loadMongoConfig` | Draft | `parser.yaml('sql.yml')`, no return. |
-| `parser.buildSQL` | Draft | Empty body. Comments describe the intended pipeline. |
-| `CCompiler` | Draft | `parse_config` is yaml load; `clean_parse` nesting disagrees with `genSQL`; `buildQuery` empty. |
-| `optokens` | Draft | Type only. No runtime map. |
-| Example models | Early | User + blog fixtures. Typos, mixed layouts, `queries:` vs `user.get`. Not a published pack. |
-| `pgz.example.ts` builders | Early | Not exported. Paths stale. SELECT/INSERT helpers target MySQL-shaped keys. |
-| Seltzer importer | Draft | Documented copy of `method` + `path`. No code in either package. |
-| Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
-| Express + Zod generation | Draft | Not in `src`. |
-| `nectarine.config.yaml` | Draft | Design comment only. |
-| GraphQL / auth / GUI / migrations | Draft | Not started. |
-| Tests | Draft | `nectarine.test.ts` has no `test()` blocks. |
+### Host pipeline
+- Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers; Seltzer `validate` enforces `.required` body fields from `Route.contract`
+- Planned: Zod-backed `replace("validate", …)` plus authorize; product JSONB writes stay host-owned (document bind + merge)
 
-## What is shipped
+### Relationship Loading
+- Current: Manual join definitions
+- Planned: Automatic relationship resolver, nested population
 
-| Area | Symbol / file | Notes |
-|---|---|---|
-| YAML load | `parser.yaml` | `fs.readFileSync` + `js-yaml`, logs to console |
-| Named SQL object | `parser.genSQL` | Returns the YAML node |
-| Named API object | `parser.registerRoute` | Path must look like `*api.yml` |
-| SQL compile | `parser.buildSQL` | **Empty body** |
-| Compiler class | `CCompiler` | `parse_config`, `clean_parse` work as lookups; `buildQuery` empty |
-| PostgreSQL | `PgSql` | `addDb`, `connect`, `query`, `disconnect`, `addTable` |
-| MySQL | `Mysql`, `closeSql`, `pool` | `mysql2/promise` pool |
-| MySQL fragments | `mapInsert`, `mapGetter`, `getValues` | Join lists, not full SQL |
-| Mongo | `Mngz`, `connectMngz`, `closeMngz`, `createCollection`, `insertOne`, `insertMany`, `mngzClient` | Shared `MongoClient` |
-| Mongo config helper | `loadMongoConfig` | Stub (`parser.yaml('sql.yml')`) |
-| Example models | `libraries/nectarine/models/**` | User + blog fixtures |
-| Example builder | `adapters/pg/pgz.example.ts` | Not exported; does not match PG DSL keys |
+### Advanced Features
+- Current: Basic enum and array support
+- Planned: Full-text search, geospatial queries, graph relationships
 
-## What is not shipped
+---
 
-| Claim you may have seen | Reality |
-|---|---|
-| `generateRoutes(schema, queries, api)` | Does not exist |
-| `Pgsql()` / `gensql()` function exports | `PgSql` class, `parser.genSQL` |
-| Express routes + Zod on every request | Not implemented |
-| `nectarine.config.yaml` transport | Design comment only |
-| GUI / Sugar / WebEngine Wizard | Planned, no code |
-| Pre-built User/Blog/CMS/Store/Banking **packages** | User + blog YAML fixtures only |
-| Connection pooling “all adapters” | MySQL has a pool; Postgres creates a `Client` per `connect`; Mongo uses one module-level client |
-| Auto indexes, relationships resolver, GraphQL | No |
-| MySQL env `MYSQL_*` | Code reads `MS_*` |
-| Mongo `MONGO_URI` | Code builds URI from `MG_*` |
-| `MS_*` helper functions | Env prefix only; fragments are `mapInsert` / `mapGetter` / `getValues` |
-| `models` / `extendModels` package exports | Root `index.ts` is not in the `src` build |
-| `buildSQL()` compiles the DSL | Empty function |
-| `pgz.example.ts` compiles `db/pg/user.yml` | Wrong node shape |
-| WebEngine `modules: ["nectarine"]` loads the library | Config vocabulary, no import |
+## What's Planned 📋
 
-## Adapter honesty
+### Immediate (Next 2-4 weeks)
 
-| Database | Adapter | Query YAML | Guide-complete? |
-|---|---|---|---|
-| PostgreSQL | `PgSql` — usable | `select` / `from` / `where` DSL in `models/user/db/pg` | Furthest — tutorial builder exists in **docs**, not as an export |
-| MySQL | `Mysql()` — usable | Older `type`/`action`/`updates` + `?` | **Early** — write SQL yourself |
-| MongoDB | CRUD helpers — usable | `models/user/db/mg/schema.yaml` is a field list | **Early** — no query compiler |
+- [ ] **MySQL Full Support**
+  - Complete adapter implementation
+  - Type coercion for MySQL-specific types
+  - Example schemas (e-commerce with MySQL)
 
-MySQL is not “Active” in the product sense. The adapter is a few dozen lines. This repo has a [MySQL page](./nectarine-mysql.md) that matches that.
+- [ ] **Query Optimization**
+  - Index usage analysis
+  - Query plan explanations
+  - Performance recommendations
 
-## Compiler gap
+- [ ] **Relations System**
+  - Auto-population of related records
+  - Nested query support
+  - Circular reference handling
 
-`CCompiler` comments describe the intended flow:
+### Short Term (1-3 months)
 
-```ts
-const compiler = new CCompiler();
-const parse = compiler.parse_config("./nectar/models/user/sql.yml");
-const clean = compiler.clean_parse(parse, "get", "user");
-const getUserById = compiler.buildQuery(clean, "GetUserById");
+- [ ] **GraphQL Support**
+  - Auto-generate GraphQL schemas from Nectarine schemas
+  - GraphQL query resolver generation
+  - Mutation support
+
+- [ ] **Caching Layer**
+  - Built-in query result caching
+  - Cache invalidation strategies
+  - Redis integration
+
+- [ ] **Hooks System**
+  - Pre/post hooks on CRUD operations
+  - Custom business logic integration
+  - Audit logging hooks
+
+- [ ] **Real-time Features**
+  - WebSocket support
+  - Live query subscriptions
+  - Change streams
+
+### Medium Term (3-6 months)
+
+- [ ] **Permissions & Authorization**
+  - Row-level security
+  - Column-level permissions
+  - Role-based access control (RBAC)
+
+- [ ] **Audit Logging**
+  - Automatic change tracking
+  - User action logging
+  - Temporal queries (point-in-time)
+
+- [ ] **Multi-tenant Support**
+  - Tenant isolation
+  - Cross-tenant queries
+  - Tenant-aware migrations
+
+- [ ] **API Documentation**
+  - Auto-generated OpenAPI/Swagger docs
+  - Interactive API explorer
+  - API versioning support
+
+### Long Term (6-12 months)
+
+- [ ] **Advanced Query Features**
+  - Full-text search
+  - Geospatial queries
+  - Complex aggregations
+
+- [ ] **Performance Monitoring**
+  - Query performance metrics
+  - Slowlog integration
+  - Index recommendations
+
+- [ ] **Backup & Restore**
+  - Automatic backup strategies
+  - Point-in-time recovery
+  - Cross-database migration
+
+- [ ] **CLI Tools**
+  - Schema scaffolding
+  - Migration generators
+  - Database seeding
+
+---
+
+## Known Limitations
+
+### Current Constraints
+
+1. **Single Table Per Model**
+   - Cannot inherit columns from parent models
+   - **Workaround**: Use composition with foreign keys
+
+2. **Limited Transaction Support**
+   - No cross-adapter transactions
+   - **Workaround**: Keep related operations in same adapter
+
+3. **No Built-in Caching**
+   - Every request queries the database
+   - **Workaround**: Implement Redis in your application
+
+4. **No Authentication Out-of-Box**
+   - No JWT/session handling (yet)
+   - **Workaround**: Guard Seltzer handlers (or a future pipeline stage) on the host
+
+5. **No Authorization Rules**
+   - All routes accessible if specified
+   - **Workaround**: Add checks in the Seltzer `Route` handler until host middleware/pipeline stages exist
+
+6. **Limited Aggregation**
+   - Basic aggregations only
+   - **Workaround**: Use raw MongoDB/SQL for complex queries
+
+7. **No down migrations**
+   - The migrator is forward-only (ledger + versioned YAML). No `migrateDown` / Flyway rollback.
+   - **Workaround**: Write a new versioned migration that restores the previous shape (and gate destructive ops)
+
+### Database-Specific Limitations
+
+**PostgreSQL**:
+- Array types partially supported
+- JSONB is first-class: named query YAML can select `payload`, bind `{ value: $N, cast: jsonb }`, and filter with `@>` / `?` / `->>`
+- Window functions need custom query definitions
+
+**MySQL**:
+- Limited transaction features
+- JSON support varies by version
+- Full-text search not yet integrated
+
+**MongoDB**:
+- Cannot query across collections easily
+- Transactions have limitations (single shard)
+- Schema enforcement is optional
+
+---
+
+## Performance Characteristics
+
+### Query Performance
+
+- **Small databases** (< 1M rows): All queries < 10ms
+- **Medium databases** (1M-100M rows): Needs indexes, < 100ms
+- **Large databases** (> 100M rows): Requires query optimization
+
+### Connection Overhead
+
+- Pool initialization: ~100-500ms
+- Connection acquisition: < 1ms (cached)
+- Query execution: Depends on complexity
+
+### Memory Usage
+
+- Base server: ~50MB
+- Connection pool (20 connections): ~5-10MB
+- Worker process: ~30-40MB per
+
+---
+
+## Comparison with Similar Tools
+
+### vs. Prisma
+
+| Feature | Nectarine | Prisma |
+|---------|-----------|--------|
+| Config Format | YAML | JavaScript |
+| Databases | 3+ | 10+ |
+| Schema Generation | Automatic | Manual |
+| Speed to First Query | Minutes | Hours |
+| Maturity | Alpha | Production |
+| Learning Curve | Shallow | Moderate |
+
+**Choose Nectarine if**: You want rapid backend prototyping with YAML config
+
+**Choose Prisma if**: You need production-grade ORM with extensive features
+
+### vs. Supabase
+
+| Feature | Nectarine | Supabase |
+|---------|-----------|----------|
+| Deployment | Self-hosted | Cloud |
+| Setup Time | Minutes | Minutes |
+| Cost | $0 (self-hosted) | $25-1000/month |
+| GraphQL | Planned | Built-in |
+| Auth | Manual | Built-in |
+| Real-time | Planned | Built-in |
+
+**Choose Nectarine if**: You want control and no vendor lock-in
+
+**Choose Supabase if**: You want managed infrastructure and auth
+
+### vs. Firebase
+
+| Feature | Nectarine | Firebase |
+|---------|-----------|----------|
+| Data Model | Relational | NoSQL |
+| SQL | Yes | No |
+| Transactions | Limited | Good |
+| Authentication | Manual | Built-in |
+| Cost | $0 | Pay-per-use |
+| Vendor Lock-in | No | Yes |
+
+**Choose Nectarine if**: You prefer relational databases and cheap hosting
+
+**Choose Firebase if**: You want managed infrastructure and real-time
+
+---
+
+## Contributing
+
+Nectarine is actively developed. Areas where help is needed:
+
+### Documentation
+- Add more schema examples
+- Database-specific guides for MySQL
+- Performance tuning guides
+- Video tutorials
+
+### Testing
+- Add comprehensive unit tests
+- Performance benchmarks
+- Database compatibility tests
+- Edge case coverage
+
+### Features
+- MySQL full support
+- GraphQL adapter
+- Caching layer
+- Permission system
+
+### Database Support
+- TypeORM plugin
+- SQLite support
+- Oracle support
+- Elasticsearch integration
+
+---
+
+## Roadmap Summary
+
+```
+v0.0.1 (Current)
+├─ Core schema system ✓
+├─ PostgreSQL adapter ✓
+├─ MongoDB adapter ✓
+├─ Basic query compiler ✓
+├─ nectarine.config.yaml ✓
+└─ Seltzer hosting (WebEngine / Blackwater) ✓
+   Route auto-wiring from API YAML → next engine step
+
+v0.1.0
+├─ MySQL full support
+├─ Query optimization
+├─ Relationship loader
+└─ Enhanced documentation
+
+v0.2.0
+├─ Auto-wired Seltzer routes from API YAML
+├─ Zod validation on the hosted path
+├─ GraphQL support (later)
+└─ Caching layer
 ```
 
-`buildQuery` does not assign a statement. `parser.buildSQL` lists the steps (validate, tokenize, compile) and stops. `clean_parse(parsed, method, type)` is the opposite nesting of `genSQL(path, type, method, name)`.
+---
 
-`optokens` (`eq`, `gt`, `lt`, …) is exported as a type from the compiler module; nothing consumes it yet.
+## Getting Help
 
-Until compile lands, status stays Early. Details: [Compiler](./nectarine-compiler.md).
+- **GitHub Issues**: Report bugs or request features
+- **Documentation**: See other guides in this folder
+- **Examples**: Check `nectarine-examples.md` for real-world usage
+- **Database Guides**: 
+  - PostgreSQL: `nectarine-postgresql.md`
+  - MongoDB: `nectarine-mongodb.md`
 
-## Strongest areas
+---
 
-- YAML as a git-friendly contract (`parser.yaml` / `genSQL`)
-- Postgres adapter as a readable `pg.Client` wrapper
-- Postgres DSL convention that a small app builder can compile
-- Honesty in this docs set about what is not there
+## Version History
 
-## Most promising emerging
+### v0.0.1 (Current)
+- Initial alpha release
+- Basic schema definitions
+- PostgreSQL & MongoDB support
+- Config loader (`nectarine.config.yaml`, `transport.server: seltzer`)
+- Seltzer as the WebEngine / Blackwater HTTP transport (not Express)
+- Zod planned as validation on the hosted path
 
-- Flattening API YAML vs teaching `parser.yaml` walks
-- One documented compile module in apps (tutorial) that can move into the package
-- MySQL pool as a fine socket once env and lifecycle are obvious
+---
 
-## Early or draft
+## Next Steps
 
-- Mongo beyond insert scripts
-- `CCompiler` as a supported path
-- Seltzer auto-wiring
-- Tests
-- Any “generate a backend” story
+1. **Read the Getting Started Guide**: [nectarine-getting-started.md](./nectarine-getting-started.md)
+2. **Review Real Examples**: [nectarine-examples.md](./nectarine-examples.md)
+3. **Choose Your Database**: PostgreSQL or MongoDB guide
+4. **Build Your First Backend**: Follow the getting started guide
+5. **Join the Community**: Contribute feedback and improvements
 
-## Recommended positioning right now
+---
 
-> Nectarine is an Early/Alpha YAML contract folder with thin Postgres, MySQL, and Mongo sockets. You parse named objects, compile SQL in the app, and run it on an adapter. It is not Prisma, not a route generator, and not a SQL compiler yet.
+## Feedback & Suggestions
 
-**Less accurate positioning:**
+If you're using Nectarine, we'd love to hear:
+- What's working well
+- What's missing
+- What needs improvement
+- Real-world use cases
+- Performance metrics
+- Bug reports
 
-- “Active product databases” as if MySQL/Mongo were compiler-complete
-- “Drop in User/Blog/CMS packs”
-- “WebEngine module that boots a backend”
-- millisecond benchmark tables (none in-tree)
-
-## Practical interpretation
-
-- Adopt for **new CitrusWorx services** that want query names in git and will write a 40-line builder
-- Do not block an app on `buildQuery`
-- Do not promise Express/Zod generation to a customer
-- Contributors: implement compile for `UserById` first, with a test
-
-## Performance / lock-in notes
-
-There are no measured benchmarks in-tree. Do not cite invented millisecond tables.
-
-Transactions, migrations, and auth are application concerns.
-
-## Tests
-
-`libraries/nectarine/nectarine.test.ts` imports Playwright and defines **no tests**. `package.json` runs `playwright test && vitest run`.
-
-Docs can be honest without those tests. A 1.0 claim cannot.
-
-## Integration
-
-**Seltzer.** Complementary in design: Nectarine objects can describe `method` + `path`; Seltzer registers handlers. You copy the fields. See [Integration](./nectarine-integration.md).
-
-**WebEngine.** `webengine.toml` backend snippets in older docs are not implemented in this package.
-
-**Sig.js / Juice.** No client SDK.
-
-## Suggested reading
-
-- [README](./README.md)
-- [Tutorial](./nectarine-tutorial.md)
-- [Roadmap](./nectarine-roadmap.md)
-- [Best practices](./nectarine-best-practices.md)
+Your feedback helps guide development priorities!

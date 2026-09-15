@@ -2,92 +2,74 @@
 
 ## Current position
 
-Seltzer is no longer just an essay about pipelines.
+Seltzer is no longer an essay about pipelines, and it is no longer the 0.2.0 exact-path `ctx.json` listener.
 
-It is a small, implemented listener with three visible layers:
+It is a shipped 0.8.x runtime with three visible layers:
 
-- `Seltzer.init` / `.route` / `.handler` / `.listen` in `seltzer.ts`
-- an inline `ctx` with `req`, `res`, `options`, and `json`
-- `client.*` in `client.ts` as a JSON `fetch` wrapper
+- `Seltzer.init` / `.route` / `.before` / `.replace` / `.handler` / `.listen` in `seltzer.ts`
+- a named pipeline (`parse` → `send`) plus `ResponseData` / `send` / `generateRoutes`
+- `client.*` + `HttpError` in `client.ts`
 
-The strongest part of Seltzer today is still the kernel you can read in one file: exact routes, first match, JSON 404, `ctx.json`. The next strongest area is the vocabulary (`Route`, `Endpoint`) that KiwiPress and Nectarine-shaped YAML already speak.
+The strongest part of Seltzer today is the request engine: parametric routes, JSON parse, structured returns, and a pipeline you can insert into without inventing Express. The next strongest area is the Nectarine join (`ApiOperation[]` → `Route[]`).
 
 The weakest areas are still:
 
-- everything the [design overview](./seltzer-design.md) describes as stages
-- body / params / structured returns
-- `client` edge honesty
-- tests
+- HTTPS and production listen edges (timeouts, host bind)
+- full contract validation (reserved for `replace("validate")`)
+- client URL joining and abort/timeout
+- leftover `server.ts`
 
-Early implementation is the honest label. The kernel is real enough to teach in depth (this docs set); the pipeline is not.
+0.8.x is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior.
+
+These docs belong with Seltzer ≥0.8 on `cursor/blackwater-phase0-backend`. They must not be merged onto `master` alone while master still ships 0.2.0 APIs.
 
 ---
 
 ## What is already true
 
-### 1. Exact-path `listen` is a finished idea, not a sketch
+### 1. The pipeline shipped
 
-`route.method === req.method && route.path === pathname` is the matcher. `ctx.json` is `writeHead` + `stringify` + `end`. Unmatched requests are `{ error: "Not Found" }`.
+Named stages, `before`, `replace`, short-circuit to `send`, mutation in place. [Pipeline](./seltzer-pipeline.md) is a product topic. Exercises 6–7 rebuild it; they do not invent it.
 
-What that means for the roadmap: Seltzer does not need a new “way to start a server.” It needs better *edges* (await handlers, return the `Server`, body helper) around this one.
+### 2. Handlers return data; the runtime writes
 
-### 2. Handlers own the socket
+The design bet that 0.2.0 inverted (`ctx.json` writes immediately) was reversed in 0.4.0. Bare payloads are rejected. Do not document both styles as current.
 
-The product bet that shipped is the opposite of the design bet that has not: today the handler writes. The design wants the handler to return data and a `send` stage to write.
+### 3. `:id` and JSON bodies shipped (0.3)
 
-Both can be true later if structured returns are added **without** breaking `ctx.json`. Until then, docs and examples must teach writes, not returns.
+Query-string stand-ins and hand-rolled `readJson` are optional styles, not requirements.
 
-### 3. The client is a sibling, not a full HTTP stack
+### 4. Nectarine integration is flatten + generate, not copy-paste
 
-Five methods, JSON only, concatenate `baseUrl` + `path`. That is enough to call a Seltzer process from Node. KiwiPress already outgrew it (status checks, `endpoint` as absolute URL, `undici` TLS).
+YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is still registration. The join is `generateRoutes`, not a fake importer in documentation.
 
-The roadmap should not pretend `client` is KiwiPress. Align fields or document the split — do not silently read `endpoint` in prose.
+### 5. The design doc is rationale, not a backlog of missing stages
 
-### 4. Nectarine integration is copy, not codegen
-
-YAML `method` / `endpoint` pairs are data. Seltzer `.route` is registration. The join is app code. `registerRoute` does not mount handlers and does not understand the `user.` prefix on the checked-in fixture.
-
-A future contract stage is valuable. A fake importer in documentation is not.
-
-### 5. The design doc is a real target, stored out of the product path
-
-[seltzer-design.md](./seltzer-design.md) plus [courses](./courses.md) and [exercises](./exercises/README.md) are how contributors grow the runtime. They are electives. Product onboarding is the tutorial and topic pages.
-
-The roadmap should keep that split sharp. Shipping a stage means moving it from design into `libraries/seltzer/src` **and then** into the product docs — not the other way around.
+[seltzer-design.md](./seltzer-design.md) still explains why not middleware. Most of its lifecycle diagram is source. Remaining forks (Zod, HTTPS, `after`) belong on this roadmap.
 
 ---
 
 ## What is still holding Seltzer back
 
-### 1. Bodies and params are the first questions authors ask
+### 1. `validate` is presence-only
 
-Every JSON API needs a POST body and most need an id. The kernel answers neither. Query-string ids and hand-rolled `readJson` are teachable; they are also the ceiling of “feels like a framework.”
+`.required` closed the “no contracts” gap. Type and format checks are still host work. Highest-value increment: a Nectarine `replace("validate")` that reads the same `Route.contract` field.
 
-Highest-value code increments, if the core is opened:
+### 2. `client` URL join is still naive
 
-1. a documented `readJson` helper (even unexported-as-pattern in docs today)
-2. awaiting async handlers + 500 on throw
-3. parametric routes **after** exact-path behavior is boring and tested
+`HttpError` and JSON-vs-text closed the honesty gap. Slash-safe join, abort, and timeouts did not.
 
-Do not document `:id` or `ctx.body` until they exist.
+### 3. Listen is HTTP-only
 
-### 2. `listen` is hard to test
+No HTTPS, no `listen({ host })` overload. CORS and `Server.close` did ship.
 
-No returned `Server`, no `close`, no test suite. Docs can be honest without those. A 1.0 claim cannot.
+### 4. The leftover `server.ts`
 
-### 3. `client` disagrees with `Endpoint` and with KiwiPress
+A second `createServer` in-tree still confuses contributors. Delete or wire it when the package is touched. Docs already warn.
 
-Required `endpoint` field unused. `allowSelfSigned` unused. No `ok` check. Slash joining is naive.
+### 5. Stage API has no `after` / remove
 
-Small fixes here help more than a new pipeline runner.
-
-### 4. Handler return values look like they should work
-
-`return { status, body }` is the design-doc happy path and a natural guess. It hangs. Either implement send, or keep anti-patterns loud. This docs pass does the latter.
-
-### 5. The leftover `server.ts`
-
-A second `createServer` in-tree confuses contributors. Delete or wire it when the package is touched. Docs already warn.
+Insert-before covers auth and logging. Some hosts will want post-`handle` decoration without replacing `response`.
 
 ---
 
@@ -95,17 +77,17 @@ A second `createServer` in-tree confuses contributors. Delete or wire it when th
 
 If Seltzer is viewed as an HTTP platform, its current maturity looks roughly like this:
 
-- Exact-path listener: strong
-- `ctx.json`: strong, sharp (no extra headers)
-- Client: useful and narrow
-- Docs as product surface: much stronger after the tutorial and topic pages
-- Pipeline / params / parse: not started in source
-- Production-hardened framework: not the goal yet
+- Object-route listener: strong
+- Pipeline / params / parse / `ResponseData`: strong
+- `generateRoutes`: useful and still evolving with hosts
+- Client: useful and narrower than undici
+- Docs as product surface: this set, locked to 0.8.1 source
+- Production-hardened framework (HTTPS, quotas, OpenAPI): not the goal yet
 
 In practical terms:
 
-- Seltzer already feels like a real first HTTP process for this monorepo
-- Seltzer does not yet feel like a complete alternative to Express, and it should not try to by growing `use()`
+- Seltzer already feels like a real HTTP process for this monorepo
+- Seltzer should not try to win by growing `use()`
 
 That is a strong place to be.
 
@@ -115,104 +97,72 @@ That is a strong place to be.
 
 ### Priority 1. Keep the product path obvious
 
-The next work that helps the most is not a new stage. It is:
+Examples that return `ResponseData`, tutorials that use `:id` and `ctx.body`, anti-patterns for leftover `ctx.json`. This docs set is that work. Keep it aligned with `libraries/seltzer/src` when the code moves.
 
-- examples that look like JSON APIs, not pipeline diagrams
-- anti-patterns for Express and design-doc habits
-- a guided tutorial that includes POST body and query lookup
+### Priority 2. Richer validate via `replace`
 
-This docs set is that work. Keep it aligned with `libraries/seltzer/src` when the code moves.
+Do not add Zod inside Seltzer’s default stage if Nectarine owns contracts. Document the hook; implement the replacement in the host.
 
-### Priority 2. Harden `listen` edges
+### Priority 3. Client join / abort
 
-If the core is opened:
+Small fixes here help more than a new stage.
 
-1. `await` the handler; map uncaught errors to JSON 500
-2. return `http.Server` (or an object with `close`)
-3. optionally a small `readJson` exported helper — still not a pipeline
+### Priority 4. Stay complementary to Nectarine, Sig, Juice
 
-Do not add `app.use` as the extensibility story. The design already chose named stages over middleware.
-
-### Priority 3. Make `client` match its type
-
-Useful increments:
-
-- document (or implement) `endpoint` vs `path`
-- refuse to claim `allowSelfSigned`
-- optional `ok` check **or** keep always-json and say so (current docs say so)
-- slash-safe join
-
-### Priority 4. Parametric routes after exact match is tested
-
-`/users/:id` is the most requested missing piece. It is also the easiest to fake in docs. Implement it in source, test it, then teach it. Until then, query strings.
-
-### Priority 5. Pipeline as the contributor track
-
-Exercises 5–7 and the design essay remain the path to named stages. Promote a stage to the README showcase only when `seltzer.ts` (or a module it calls) runs it.
-
-### Priority 6. Stay complementary to Nectarine, Sig, Juice
-
-Seltzer should not grow a YAML compiler, a theme, or a component tree. If a pattern needs a contract, copy Nectarine. If it needs a page, Sig + Juice `fetch`.
+Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 ---
 
 ## Recommended build order
 
 1. Keep docs and examples locked to source (ongoing).
-2. Await handlers + 500 mapping; return `Server` from `listen`.
-3. `client` field/URL honesty.
-4. Tests for match, 404, `json`, first-wins.
-5. Optional `readJson` helper.
-6. Only then: parametric routes or a real parse stage — not both at once.
-7. Structured returns and named pipeline after those are boring.
+2. Host `replace("validate")` for real contracts.
+3. `client` slash-safe join + AbortSignal.
+4. Decide `server.ts` (delete or re-export).
+5. Only then: HTTPS listen or `after(name)` — not both at once.
 
 ---
 
 ## What would not move Seltzer upward
 
-- Documenting `ctx.params` / `pipeline.insert` before they exist
+- Documenting `ctx.json` / “no `:id`” as current
 - An Express compatibility layer
-- Codegen from Nectarine that is not in Nectarine
+- A second YAML flatten inside Seltzer
 - Merging Seltzer and Nectarine into one “backend framework” package
 - Starting app authors on exercise 06
 
-Those would blur the split that justifies the product path versus the elective path.
-
 ---
 
-## Shipped vs design-doc future
+## Shipped vs still open
 
-| Shipped (teach this) | Design / exercises (label this) |
+| Shipped (teach this) | Still open |
 |---|---|
-| `init` / `route` / `listen` | Named pipeline runner |
-| Exact match, first-wins | `/users/:id` → `ctx.params` |
-| `ctx.json`, raw `res` | Handler `return { status, headers, body }` |
-| Manual body stream | `parse` stage |
-| `client.*` JSON fetch | Status-throwing client, TLS agent |
-| Copy Nectarine exact paths | Contract `validate` stage |
-| Wrapper functions for auth/CORS | `before("handle", fn)` |
+| `init` / `route` / `listen` | HTTPS listen |
+| Named pipeline, `before` / `replace` | `after` / remove |
+| `/users/:id` → `ctx.params` | Trailing-slash normalize |
+| Handler `return { status, headers, body }` | Bare-payload wrapping (intentionally rejected) |
+| `parse` JSON + 400 | form-urlencoded / multipart |
+| Default `.required` validate | Zod / response-shape contracts |
+| `generateRoutes` + `response()` | Generating OpenAPI |
+| `client.*` + `HttpError` + undici TLS | Slash-safe join, timeouts |
+| CORS + OPTIONS 204 | Per-route CORS overrides |
+| Vitest | — |
 
 ---
 
 ## Summary
 
-Seltzer is in a meaningfully stronger place than a design-only HTTP essay.
+Seltzer 0.8.x is a meaningfully stronger place than both a design-only HTTP essay and the 0.2.0 kernel.
 
 It now has:
 
-- a credible exact-path listener
-- `ctx.json` as a real write helper
-- a JSON client sibling
-- a documented split with Nectarine, Sig, and Juice
-- a guided tutorial and topic depth that match that split
+- a credible object-route listener
+- a named pipeline with insert/replace
+- parametric matching and JSON parse
+- `ResponseData` as the handler contract
+- `generateRoutes` as the Nectarine join
+- a client that throws on failure
 
-The next stage is not inventing Seltzer from scratch.
+The next stage is refinement around contracts, client URLs, and listen edges — not reinventing Seltzer from scratch.
 
-The next stage is refinement:
-
-- make `listen` awaitable and closeable
-- make `client` match its types
-- test the matcher
-- promote parse / params / pipeline only when they land in source
-
-That is a strong place to be. Until those land, the product docs stay with [Status](./seltzer-status.md) and the APIs in `libraries/seltzer/src`.
+Until those land, the product docs stay with [Status](./seltzer-status.md) and the APIs in `libraries/seltzer/src` at 0.8.1.

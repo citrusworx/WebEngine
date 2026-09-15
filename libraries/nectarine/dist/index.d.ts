@@ -1,7 +1,5 @@
-export * from "./compiler/compiler";
-export * from "./adapters/mg/mgz";
-export * from "./adapters/ms/msqlz";
-export * from "./adapters/pg/pgz";
-export * from "./util/util";
-export * from "./util/mgutil";
-export * from "./util/msqlUtil";
+export * from "./compiler/compiler.js";
+export * from "./config/index.js";
+export * from "./util/util.js";
+export { applyMigrations, loadMigrationDocuments, MigrationRunError, LEDGER_TABLE, } from "./migrate/index.js";
+export type { ApplyMigrationsOptions, MigrationExecutor, MigrationQuery, MigrationRunResult, ProtectedColumn, } from "./migrate/index.js";

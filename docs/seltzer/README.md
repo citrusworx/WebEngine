@@ -1,46 +1,47 @@
 # Seltzer
 
-A small Node `http` server and a `fetch` client.
+A structured Node HTTP runtime: object routes, `ResponseData` handlers, and a named request pipeline.
 
-Seltzer is the CitrusWorx HTTP surface: register exact-path routes, get a context with `req`, `res`, and `ctx.json()`, listen on a port. A sibling `client` object wraps GET/POST/PUT/PATCH/DELETE.
+Seltzer is the CitrusWorx HTTP surface. Register `{ method, path, handler }` routes, return `{ status?, headers?, body? }`, and let the runtime parse, match, validate, and send. A sibling `client` wraps GET/POST/PUT/PATCH/DELETE. `generateRoutes` maps a flat `ApiOperation[]` list (from Nectarine YAML or by hand) onto those same object routes.
 
 The current model is:
 
 - **`Seltzer.init()`** builds an instance
-- **`.route({ method, path, handler })`** stores an exact method + pathname match
-- **`.listen(port)`** creates `http.createServer` and writes JSON 404s when nothing matches
-- **`client.get/post/put/patch/delete`** call `fetch` with an `Endpoint` object
+- **`.route({ method, path, handler, contract? })`** registers an object route (static or `:param`)
+- **`.before(name, stage)` / `.replace(name, stage)`** extend the named pipeline
+- **`.listen(port, options?)`** runs Node `http`, CORS/`OPTIONS` 204, then the pipeline
+- **`client.get/post/put/patch/delete`** call `fetch` with an `Endpoint` and throw `HttpError` on non-2xx
 
-Seltzer is strongest as a readable, tiny runtime you can hold in your head. It is not Express, and it is not yet the pipeline described in the [design overview](./seltzer-design.md).
+Seltzer is strongest as a readable request engine you can hold in your head. It is not Express, and it is not a middleware stack. The pipeline in [seltzer-design.md](./seltzer-design.md) is **shipped** in `@citrusworx/seltzer` **0.8.1**, not a future sketch.
+
+These docs describe Seltzer **≥0.8** as it lives on `cursor/blackwater-phase0-backend`. They must not be merged onto `master` alone while master still ships 0.2.0 APIs (`ctx.json`, exact-path only, no pipeline).
 
 ## Who it is for
 
 - App authors who need a first HTTP process in this monorepo
-- People wiring Nectarine YAML `method` / `endpoint` pairs to a listener by copy
+- Hosts that flatten Nectarine `*API.yml` with `listApiOperations` and call `generateRoutes`
 - Sig.js / Juice pages that talk to a JSON API over `fetch` or `client.*`
-- Contributors who will grow the pipeline — **after** they can run `Seltzer.init()`
+- Contributors who want to *understand* the pipeline — after they can run `init().route().listen()`
 
-It is not a middleware framework. Courses and exercises are **electives** for implementers, not the product path.
+It is not a middleware framework. Courses and exercises rebuild shipped internals by hand. They are not the product path.
 
 ## Why it exists
 
 CitrusWorx did not want the HTTP layer to be “whatever Express plugin we grabbed this week.” Juice already refused utility-class soup; Seltzer refuses middleware soup.
 
-The design bet (see the [design doc](./seltzer-design.md)) is:
+The design bet that **shipped**:
 
-- Normalize the request into a structured context
+- Normalize the request into a structured `RequestContext`
 - Run named pipeline stages instead of `next()`
-- Let handlers return data; let the runtime write the socket
-- Eventually share contracts with Nectarine
+- Let handlers return `ResponseData`; let the runtime write the socket
+- Share operation lists with Nectarine through `generateRoutes` and `Route.contract`
 
-**What shipped first** is the thinnest honest slice of that: Node `http`, exact routes, `ctx.json`, and a fetch client. The rest is still a study-and-build project. That is deliberate — the [courses](./courses.md) exist so contributors implement the missing stages by hand.
-
-If Seltzer were only a cleaner `createServer`, it would not be worth a package. The package exists so the ecosystem has one HTTP vocabulary (`Route`, `Endpoint`, `Seltzer`) to grow into.
+If Seltzer were only a cleaner `createServer`, it would not be worth a package. The package exists so the ecosystem has one HTTP vocabulary (`Route`, `RequestContext`, `ResponseData`, `Endpoint`) to grow into.
 
 The split across the stack:
 
-- **Nectarine** names the data and (as YAML) the method/path pairs
-- **Seltzer** listens and answers
+- **Nectarine** names data, YAML APIs, and `ApiOperation[]`
+- **Seltzer** listens, matches, validates `.required` body fields, and answers
 - **Sig.js / Juice** consume the JSON
 - **Grapevine** provisions the machine; it does not start `listen`
 
@@ -48,37 +49,45 @@ The split across the stack:
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 const app = Seltzer.init();
 
 app.route({
   method: "GET",
   path: "/",
-  handler: (ctx) => ctx.json([{ message: "Hello World!" }]),
+  handler: (): ResponseData => ({
+    body: [{ message: "Hello World!" }],
+  }),
 });
 
 app.listen(3000);
 ```
 
-That is `libraries/seltzer/src/example.ts`. Package version today: **0.2.0**.
+That is `libraries/seltzer/src/example.ts`. Package version today: **0.8.1**. Requires Node 18+.
+
+Handlers return `ResponseData`. The runtime writes the HTTP response. There is no writing `ctx.json` helper. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`.
 
 ## What it can do
 
-The sections below are the capability showcase. Every snippet matches `libraries/seltzer/src`. If a pattern is not here, it is probably not in the library — check [Status](./seltzer-status.md) before assuming an Express-shaped API.
+The sections below are the capability showcase. Every snippet matches `libraries/seltzer/src` at 0.8.1. If a pattern is not here, check [Status](./seltzer-status.md) before assuming an Express-shaped API.
 
-### 1. JSON GET on an exact path
+### 1. JSON GET with `ResponseData`
 
-`ctx.json(data, status?)` is `writeHead` + `JSON.stringify` + `end`. Default status is 200.
+`status` defaults to `200`. Object and array bodies are JSON with `Content-Type: application/json` unless you set that header yourself.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
+import type { ResponseData } from "@citrusworx/seltzer";
 
 const app = Seltzer.init();
 
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true, uptime: process.uptime() }),
+  handler: (): ResponseData => ({
+    body: { ok: true, uptime: process.uptime() },
+  }),
 });
 
 app.listen(3000);
@@ -86,81 +95,182 @@ app.listen(3000);
 
 `curl http://127.0.0.1:3000/health` → `{"ok":true,"uptime":…}`.
 
-The matcher uses `url.pathname` only. `/health?verbose=1` still hits `/health`. Read the query yourself if you need it — [Request and response](./seltzer-request-response.md).
+Matching uses `ctx.path` (the URL pathname). `/health?verbose=1` still hits `/health`; the search string is on `ctx.query`.
 
-### 2. JSON POST — you collect the body
+### 2. JSON POST — the `parse` stage owns the body
 
-There is **no** built-in body parser. The design doc assigns that to a `parse` stage; you collect the stream today.
+`parse` reads the stream for methods other than GET/HEAD. `Content-Type: application/json` is parsed; invalid JSON is **400** `{ error: "Invalid JSON body" }` and never reaches the handler. Other content types land as a UTF-8 string. Empty bodies are `undefined`.
 
 ```ts
-async function readJson(req: import("node:http").IncomingMessage) {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) {
-    chunks.push(chunk as Buffer);
-  }
-  const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : null;
-}
-
 app.route({
   method: "POST",
   path: "/notes",
-  handler: async (ctx) => {
-    try {
-      const body = (await readJson(ctx.req)) as { text?: string };
-      if (!body?.text) return ctx.json({ error: "text required" }, 400);
-      return ctx.json({ id: "1", text: body.text }, 201);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
+  handler: (ctx): ResponseData => {
+    const body = ctx.body as { text?: string } | undefined;
+    if (!body?.text) {
+      return { status: 400, body: { error: "text required" } };
     }
+    return { status: 201, body: { id: "1", text: body.text } };
   },
 });
 ```
 
-If you never read `ctx.req` and never `end` the response, the connection hangs. Always `ctx.json` or `ctx.res.end`. `listen` does **not** await the handler or serialize a returned object.
+Do not collect `ctx.req` yourself for JSON. Do not call `ctx.json` — it was removed in 0.4.0.
 
-### 3. Lookup without `:id` routes
+### 3. Parametric routes (`/notes/:id`)
 
-`/notes/1` will not match `/notes/:id`. Parametric routes are an exercise, not an API. Use a query string, or register a concrete path.
+`:param` segments compile to a regex. Captures land on `ctx.params`. Static prefixes win over `:id` even if the parametric route was registered first (`/items/new` beats `/items/:id`; `/api/products/catalog/:catalog` beats `/api/products/:id`).
 
 ```ts
 app.route({
   method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    return id
-      ? ctx.json({ id, text: "Ship the notes API" })
-      : ctx.json({ error: "id required" }, 400);
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => {
+    const note = notes.get(ctx.params.id);
+    return note
+      ? { body: note }
+      : { status: 404, body: { error: "Not Found" } };
   },
 });
 ```
 
-The [tutorial](./seltzer-api-tutorial.md) builds a small in-memory collection this way.
+Query strings remain available: `ctx.query.q` for `/notes/1?q=search`.
 
-### 4. 404 for unknown method + path
+### 4. 404 for unmatched method + path
 
-Matching is `route.method === req.method && route.path === url.pathname`. First registration wins. Trailing slashes are a different path: `/notes` ≠ `/notes/`.
+Unmatched requests get `{ error: "Not Found" }` with status 404 from the `route` stage. Method mismatch is also 404 (not 405). Trailing slashes are a different path: `/notes` ≠ `/notes/`.
 
-Unmatched requests get `{ error: "Not Found" }` with status 404. There is no custom 404 handler.
+### 5. Headers, text, and buffers without touching `res`
 
-### 5. Raw socket when JSON is the wrong content type
-
-`ctx.json` is a convenience, not a requirement. The Node `ServerResponse` is on `ctx.res`.
+Return extra headers and a non-JSON body on `ResponseData`. The `send` stage encodes it.
 
 ```ts
 app.route({
   method: "GET",
   path: "/robots.txt",
-  handler: (ctx) => {
-    ctx.res.writeHead(200, { "Content-Type": "text/plain" });
-    ctx.res.end("User-agent: *\nDisallow:\n");
-  },
+  handler: (): ResponseData => ({
+    headers: { "Content-Type": "text/plain" },
+    body: "User-agent: *\nDisallow:\n",
+  }),
 });
 ```
 
-### 6. Optional handler config (stored, barely used)
+`req` / `res` remain on ctx for escape hatches, but normal responses should not touch `res`. `send` is a no-op if headers were already sent.
+
+### 6. CORS and `OPTIONS` 204
+
+CORS runs **before** the pipeline. `OPTIONS` answers 204 and returns. Pass `cors` on `listen`:
+
+```ts
+app.listen(3000, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "OPTIONS"],
+    headers: ["Content-Type"],
+  },
+  locals: { notes },
+  onListening: (port) => console.log(`up on ${port}`),
+});
+```
+
+If `origin` is omitted, Seltzer reflects the request `Origin` when present. No `Origin` header means no CORS headers. `ctx.locals` is the `locals` object from `listen`.
+
+`listen` **returns** the `http.Server` (tests can `close()` it).
+
+### 7. Named pipeline: `before` and `replace`
+
+Each request runs:
+
+`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`
+
+`before("handle", stage)` inserts immediately before that builtin. Returning `ResponseData` from a stage skips the rest and jumps to `send`. `replace("validate", stage)` swaps the builtin so Nectarine can hang richer contracts.
+
+```ts
+import type { Stage } from "@citrusworx/seltzer";
+
+const requireAuth: Stage = (ctx) => {
+  if (!ctx.headers.authorization) {
+    return { status: 401, body: { error: "Unauthorized" } };
+  }
+};
+
+const app = Seltzer.init().before("handle", requireAuth);
+```
+
+See [Pipeline](./seltzer-pipeline.md).
+
+### 8. Default `validate` for `.required` body fields
+
+`Route.contract.body` uses YAML-style specs. Keys whose spec contains `.required` must be present and non-empty on a JSON object body. Missing → 400 `{ error: "Missing required field(s): …" }`. No specs → no-op.
+
+```ts
+app.route({
+  method: "POST",
+  path: "/api/waitlist",
+  contract: {
+    resource: "waitlist",
+    name: "joinWaitlist",
+    body: { name: "string", email: "string.required" },
+  },
+  handler: (): ResponseData => ({ status: 201, body: { ok: true } }),
+});
+```
+
+### 9. `generateRoutes` from `ApiOperation[]`
+
+Nectarine does not generate `Route`s. Seltzer does. Flatten YAML with `listApiOperations`, or build the list by hand.
+
+```ts
+import { Seltzer, generateRoutes, type ApiOperation } from "@citrusworx/seltzer";
+
+const operations: ApiOperation[] = [
+  {
+    resource: "product",
+    crud: "read",
+    name: "productById",
+    method: "GET",
+    path: "/api/products/:id",
+    query: "productById",
+  },
+];
+
+for (const route of generateRoutes(operations, {
+  execute: ({ query, params }) => {
+    if (query === "productById") {
+      return products.find((item) => item.id === params.id) ?? null;
+    }
+    return products;
+  },
+})) {
+  app.route(route);
+}
+```
+
+`execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ status, body }` objects are treated as payloads. See [Generate routes](./seltzer-generate.md).
+
+### 10. Outbound `client` with `HttpError`
+
+```ts
+import { client, HttpError } from "@citrusworx/seltzer";
+
+try {
+  const list = await client.get({
+    path: "/notes",
+    endpoint: "/notes",
+    options: { baseUrl: "http://127.0.0.1:3000" },
+  });
+} catch (err) {
+  if (err instanceof HttpError) {
+    console.error(err.status, err.body);
+  }
+}
+```
+
+Non-2xx throws `HttpError` (`status`, `statusText`, full `body`; the message includes a short snippet). Successful JSON is parsed; other content types come back as text. `204` / `205` and empty bodies resolve to `undefined`. `allowSelfSigned: true` on `https://` dynamically imports optional peer `undici`.
+
+URL is still `baseUrl + path` (no slash-safe join). `Endpoint.endpoint` and `Endpoint.route` are typed and unused.
+
+### 11. Optional `.handler()` config
 
 ```ts
 app.handler({
@@ -173,99 +283,40 @@ app.handler({
 });
 ```
 
-`options` is copied onto `ctx.options`. Nothing in `listen` reads `adapter` or `allowSelfSigned`. The client uses the same option shape when you pass an `Endpoint`. KiwiPress stores `baseUrl` this way for outbound WordPress calls — it does not make Seltzer speak WordPress.
+`options` is copied onto `ctx.options`. Nothing in `listen` reads `adapter`. KiwiPress stores `baseUrl` this way for outbound WordPress calls — it does not make Seltzer speak WordPress.
 
-### 7. Outbound fetch
+### 12. Node-only listen
 
-```ts
-import { client, type Endpoint } from "@citrusworx/seltzer";
-
-const notes: Endpoint = {
-  path: "/notes",
-  endpoint: "/notes",
-  options: { baseUrl: "http://127.0.0.1:3000" },
-};
-
-const list = await client.get(notes);
-await client.post(notes, { text: "Review the deploy window" });
-```
-
-`client` methods always `res.json()`. Non-JSON responses throw. There is no status check. `allowSelfSigned` is a comment only — no custom HTTPS agent.
-
-`Endpoint.route` and `Endpoint.endpoint` are typed but **not** read by the client. The URL is `options.baseUrl + path` or `path` alone.
-
-### 8. Copy a Nectarine method/path object
-
-Nectarine YAML can list `{ method, endpoint }`. Seltzer can register `{ method, path, handler }`. There is no importer and no codegen. Copy the exact-path pairs; skip `:id` entries until parametric routing exists.
-
-From `libraries/nectarine/models/user/userAPI.yml`:
-
-```yaml
-user:
-  get:
-    allUsers:
-      api:
-        method: GET
-        endpoint: /users
-  create:
-    user:
-      api:
-        method: POST
-        endpoint: /users
-```
-
-```ts
-import { Seltzer } from "@citrusworx/seltzer";
-
-const allUsers = { method: "GET", endpoint: "/users" };
-const createUser = { method: "POST", endpoint: "/users" };
-
-const app = Seltzer.init();
-
-app.route({
-  method: allUsers.method,
-  path: allUsers.endpoint,
-  handler: (ctx) => ctx.json({ users: [] }),
-});
-
-app.route({
-  method: createUser.method,
-  path: createUser.endpoint,
-  handler: (ctx) => ctx.json({ created: true }, 201),
-});
-
-app.listen(3000);
-```
-
-You can also `parser.yaml(…)` and walk `api.user.get.allUsers.api`. `parser.registerRoute` does **not** mount handlers, and it indexes the YAML file without a resource prefix — see [Integration](./seltzer-integration.md).
-
-### 9. Node-only listen
-
-`listen` throws if `process.versions.node` is missing. This is a server library, not a browser bundle. It uses `http.createServer`, not HTTPS. It does not return the `http.Server`, so there is no packaged `close()`.
+`listen` throws if `process.versions.node` is missing. Plain `http.createServer`, not HTTPS.
 
 ## Mental model
 
 ```text
 HTTP request
-  → URL pathname + method
-  → first exact route match
-  → handler(ctx)     ctx = { req, res, options, json }
-  → you write the body (usually ctx.json)
+  → CORS / OPTIONS 204 (if configured)
+  → parse (JSON body or raw)
+  → context (method, path, query, headers)
+  → route (match + params; 404 if none)
+  → validate (.required body keys)
+  → handle (handler returns ResponseData)
+  → response (reject bare values with 500)
+  → send (writeHead + end)
 ```
 
 | You want… | Today |
 |---|---|
-| JSON response | `ctx.json(value, status?)` |
-| Raw socket | `ctx.res.writeHead` / `ctx.res.end` |
-| Request body | Read `ctx.req` yourself |
-| Query string | `new URL(ctx.req.url, …).searchParams` |
-| `/users/:id` | Not implemented — query `?id=` or a concrete path |
-| Middleware | Not a thing — add code in the handler |
-| Handler `return { status, body }` | Discarded — `listen` does not send it |
-| Named pipeline insert | Design only |
-| CORS / HTTPS / timeouts | Platform / your handler |
+| JSON response | `return { body }` (status defaults to 200) |
+| Extra headers / 201 | `return { status, headers, body }` |
+| Request body | `ctx.body` (JSON parsed in `parse`) |
+| Query string | `ctx.query` |
+| `/users/:id` | `ctx.params.id` |
+| Auth / logging | `before("handle", stage)` |
+| Richer contracts | `replace("validate", …)` |
+| YAML APIs | `listApiOperations` + `generateRoutes` |
+| CORS | `listen(port, { cors })` |
+| Outbound JSON | `client.*` — catch `HttpError` |
 
-Functionally, a handler is “a function that must finish the Node response.” Seltzer finds the function. You own the bytes.
+Functionally, a handler is “a function that returns `ResponseData`.” Seltzer finds the function, runs the pipeline, and owns the bytes.
 
 ## Product path vs contributor path
 
@@ -273,50 +324,52 @@ Functionally, a handler is “a function that must finish the Node response.” 
 
 1. [Getting Started](./seltzer-getting-started.md)
 2. [JSON API tutorial](./seltzer-api-tutorial.md)
-3. Topic pages: [request/response](./seltzer-request-response.md), [routing](./seltzer-routing.md), [client](./seltzer-client.md)
+3. Topic pages: [request/response](./seltzer-request-response.md), [routing](./seltzer-routing.md), [pipeline](./seltzer-pipeline.md), [client](./seltzer-client.md), [generate routes](./seltzer-generate.md)
 4. [Patterns](./seltzer-patterns.md) · [Best practices](./seltzer-best-practices.md) · [Anti-patterns](./seltzer-anti-patterns.md)
 5. [Examples](./seltzer-examples.md) · [Integration](./seltzer-integration.md)
 
-**Implementing the runtime** (elective)
+**Understanding the runtime** (elective)
 
-1. [Design overview](./seltzer-design.md) — the pipeline Seltzer is *becoming*
-2. [Study guide](./courses.md) — Node courses mapped to stages
-3. [Exercises](./exercises/README.md) — echo server through fetch client
+1. [Design overview](./seltzer-design.md) — why pipelines, not middleware
+2. [Study guide](./courses.md) — Node courses mapped to shipped stages
+3. [Exercises](./exercises/README.md) — rebuild `parse` / `:id` / `send` / `before` from `node:http`
 
-Do not start with exercise 06 if you only need `listen(3000)`. Do not present parametric routes, a body parser, or pipeline insert as if they shipped.
+Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx.json` from 0.2.0 docs.
 
 ## Suggested reading order
 
 1. This page
 2. [Getting Started](./seltzer-getting-started.md) — install, hello world, context
-3. [JSON API tutorial](./seltzer-api-tutorial.md) — guided build: health → collection → POST → query lookup → Nectarine copy → client
-4. [Request and response](./seltzer-request-response.md) — `ctx`, `json`, body, query, raw `res`
-5. [Routing](./seltzer-routing.md) — exact match, first-wins, 404
-6. [Client](./seltzer-client.md) — `Endpoint`, `client.*`, what is ignored
-7. [Patterns](./seltzer-patterns.md) — truthful cookbook for small JSON APIs
-8. [Best Practices](./seltzer-best-practices.md) — how to compose Seltzer so it stays small
-9. [Anti-Patterns](./seltzer-anti-patterns.md) — Express habits, design-doc APIs, unended responses
-10. [Examples](./seltzer-examples.md) — longer showcases
-11. [API Reference](./seltzer-api.md) — the public surface, one page
-12. [Integration](./seltzer-integration.md) — Nectarine, Juice/Sig, Grapevine, KiwiPress
-13. [Troubleshooting](./seltzer-troubleshooting.md) — hangs, 404s, client throws
-14. [Status](./seltzer-status.md) — Early implementation matrix
-15. [Roadmap](./seltzer-roadmap.md) — shipped vs design-doc future
-16. [Design](./seltzer-design.md) — only if you need the long-term shape
+3. [JSON API tutorial](./seltzer-api-tutorial.md) — health → collection → POST → `:id` → `generateRoutes` → client
+4. [Request and response](./seltzer-request-response.md) — `RequestContext`, `ResponseData`, `send`
+5. [Routing](./seltzer-routing.md) — params, static-prefix preference, 404
+6. [Pipeline](./seltzer-pipeline.md) — stages, `before`, `replace`, short-circuit
+7. [Client](./seltzer-client.md) — `Endpoint`, `HttpError`, `allowSelfSigned`
+8. [Generate routes](./seltzer-generate.md) — `ApiOperation[]`, `execute`, `response()`
+9. [Patterns](./seltzer-patterns.md) — cookbook for JSON APIs
+10. [Best Practices](./seltzer-best-practices.md)
+11. [Anti-Patterns](./seltzer-anti-patterns.md) — Express habits, leftover `ctx.json`
+12. [Examples](./seltzer-examples.md)
+13. [API Reference](./seltzer-api.md)
+14. [Integration](./seltzer-integration.md) — Nectarine, Juice/Sig, Grapevine, KiwiPress
+15. [Troubleshooting](./seltzer-troubleshooting.md)
+16. [Status](./seltzer-status.md) — 0.8.x maturity matrix
+17. [Roadmap](./seltzer-roadmap.md) — what closed vs what is still open
+18. [Design](./seltzer-design.md) — rationale; most of it is now source
 
 ## Status
 
-**Early implementation** (`@citrusworx/seltzer` 0.2.0). Matches the workspace index.
+**0.8.x** (`@citrusworx/seltzer` **0.8.1**). Packaging/DX hygiene on top of the 0.8.0 HTTP core (git-labeled 0.7.0). Versions 0.3–0.7 were never published.
 
-Shipped: `Seltzer.init/route/handler/listen`, exact match, `ctx.json`, `client.*`.
+Shipped: object routes, parametric matching, JSON `parse`, `ResponseData` + `send`, named pipeline, default `validate`, `generateRoutes`, CORS/`OPTIONS`, hardened `client`.
 
-Not shipped: body parser, parametric routes, pipeline stages, structured handler return values, CORS, HTTPS listen, contracts, streaming helpers.
+Not shipped: HTTPS listen, `app.use`, Zod/full contract validation, form-urlencoded parser, slash-safe client URL join, first-class file/stream responses.
 
-Early here means the kernel is real and small enough to teach in depth, not that the HTTP story is finished. See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./seltzer-roadmap.md) for what is worth building next.
+See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./seltzer-roadmap.md) for what is worth building next.
 
 ## Sibling packages
 
-- [Nectarine](../nectarine/README.md) — YAML method/path objects you can copy into `.route()`
+- [Nectarine](../nectarine/README.md) — YAML + `listApiOperations`; Seltzer hosts with `generateRoutes`
 - [Sig.js](../sigjs/README.md) / [Juice](../juice/README.md) — consume Seltzer over `fetch`
 - [Grapevine](../grapevine/README.md) — provision the machine; does not start Seltzer
-- [KiwiPress](../kiwipress/README.md) — WordPress client that stores Seltzer `handler` options and uses its own `fetch`
+- [KiwiPress](../kiwipress/README.md) — WordPress client that stores Seltzer `handler` options

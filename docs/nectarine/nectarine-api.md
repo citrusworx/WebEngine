@@ -1,159 +1,741 @@
 # Nectarine API Reference
 
-Exports from `@citrusworx/nectarine` (`libraries/nectarine/src/index.ts`).
+Complete API reference for Nectarine config, schemas, queries, and host integration.
 
-Subpaths: `./compiler`, `./adapters/pg`, `./adapters/ms`, `./adapters/mg`, `./util`.
+## Table of Contents
 
-Package version: **0.1.0**. If a symbol is not on this page, it is not a public export — including `models`, `extendModels`, and the helpers inside `pgz.example.ts`.
+- [Schema Definition](#schema-definition)
+- [Query Types](#query-types)
+- [API Routes](#api-routes)
+- [Field Types](#field-types)
+- [Core Functions](#core-functions) (`loadNectarineConfig`, `listApiOperations`, `applyMigrations`, hosting with Seltzer)
+- [TypeScript Types](#typescript-types)
 
-Related: [Status](./nectarine-status.md) · [Compiler](./nectarine-compiler.md) · [Tutorial](./nectarine-tutorial.md)
+---
 
-## parser
+## Schema Definition
 
-```ts
-import { parser, type YAMLdata } from "@citrusworx/nectarine";
+### Schema Structure
+
+```yaml
+ModelName:
+  table: table_name              # Database table name
+  description: "Model description"
+  fields:
+    fieldName: dataType
+  relationships:
+    relationshipName: RelatedModel
 ```
 
-### `parser.yaml(filepath)`
+### Example: User Schema
 
-Reads a file, `js-yaml.load`, `console.log`s the result, returns the object.
-
-```ts
-const schema = parser.yaml("./userSchema.yml");
+```yaml
+User:
+  table: users
+  description: "User accounts with authentication"
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+    password: VARCHAR(255) NOT NULL
+    first_name: VARCHAR(50)
+    last_name: VARCHAR(50)
+    role: enum(admin, author, user) DEFAULT 'user'
+    is_active: boolean DEFAULT true
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    posts: Post[]
+    comments: Comment[]
 ```
 
-### `parser.genSQL(yaml, type, method, config)`
+---
 
-```ts
-parser.genSQL("./user.yml", "user", "get", "UserById");
+## Field Types
+
+### Numeric Types
+
+| Type | Range | Use Case |
+|------|-------|----------|
+| `int` | -2^31 to 2^31-1 | IDs, counts, integers |
+| `bigint` | -2^63 to 2^63-1 | Large numbers, timestamps |
+| `smallint` | -32,768 to 32,767 | Small integers |
+| `float` | Floating point | Decimals, measurements |
+| `decimal(p,s)` | Precise decimals | Money, percentages |
+
+### Text Types
+
+| Type | Characteristics | Use Case |
+|------|-----------------|----------|
+| `VARCHAR(n)` | String up to n chars | Names, emails, usernames |
+| `char(n)` | Fixed-length string | Codes, abbreviations |
+| `text` | Unlimited text | Descriptions, content |
+| `string` | Auto VARCHAR(255) | Generic text fields |
+
+### Date/Time Types
+
+| Type | Format | Use Case |
+|------|--------|----------|
+| `date` | YYYY-MM-DD | Birth dates, events |
+| `time` | HH:MM:SS | Time of day |
+| `timestamp` | YYYY-MM-DD HH:MM:SS | Created/updated times |
+| `datetime` | YYYY-MM-DD HH:MM:SS | Date and time together |
+
+### Boolean Type
+
+| Type | Values | Use Case |
+|------|--------|----------|
+| `boolean` | true/false | Flags, active status |
+
+### Enum Type
+
+```yaml
+# Define fixed set of values
+role: enum(admin, author, user, guest)
+status: enum(active, inactive, pending)
+priority: enum(high, medium, low)
 ```
 
-Returns `sql_obj[type][method][config]`. Throws if missing.
+### Special Modifiers
 
-This is **not** SQL. It is the YAML node.
+| Modifier | Description | Example |
+|----------|-------------|---------|
+| `PRIMARY KEY` | Unique identifier | `id: int PRIMARY KEY` |
+| `UNIQUE` | Unique constraint | `email: VARCHAR(100) UNIQUE` |
+| `NOT NULL` | Required field | `name: VARCHAR(50) NOT NULL` |
+| `DEFAULT value` | Default value | `role: enum(...) DEFAULT 'user'` |
+| `AUTO_INCREMENT` | Auto-increment ID | `id: int PRIMARY KEY AUTO_INCREMENT` |
+| `FOREIGN KEY` | Reference another table | `author_id: int FOREIGN KEY REFERENCES users(id)` |
 
-### `parser.registerRoute(yaml, method, route)`
+---
 
-```ts
-parser.registerRoute("./userAPI.yml", "get", "allUsers");
+## Query Types
+
+### SELECT (Read)
+
+```yaml
+queries:
+  getAllUsers:
+    type: SELECT
+    table: users
+    fields: '*'  # Or specific fields
+    where: optional_condition
+    join: optional_join
+    orderBy: id DESC
+    limit: 100
 ```
 
-The path must include `api.yml` or end with `api.yaml`, or the function returns the string `"Config must end with 'api.yml' or be named 'api.yaml'."` (it does not throw on that check).
+**Example**:
+```yaml
+getAllUsers:
+  type: SELECT
+  table: users
+  fields: [id, username, email, role]
+  orderBy: created_at DESC
 
-Looks up `api_obj[method][route]`. Throws if that node is missing.
+getUserById:
+  type: SELECT
+  table: users
+  fields: '*'
+  where: id = $1
 
-Note: `userAPI.yml` is nested as `user.get.allUsers`, but `registerRoute` indexes **top-level** `method` then `route`. For the checked-in file you would need either a flattened YAML or to call `parser.yaml` and walk `user.get.allUsers` yourself. The helper does not understand a resource prefix.
+getActiveUsers:
+  type: SELECT
+  table: users
+  fields: '*'
+  where: is_active = true
+  orderBy: username ASC
 
-### `parser.buildSQL(genSQL)`
+countUsers:
+  type: SELECT
+  table: users
+  count: true
 
-Declared. Body is empty. Returns `undefined`.
+emailExists:
+  type: SELECT
+  table: waitlist
+  exists: true
+  where: email = $1
+```
 
-## CCompiler
+`join` and `limit` in older examples are **not compiled**. Use `count: true` / `exists: true` / JSONB `payload->>'key'` instead of host SQL.
 
-```ts
-import { CCompiler, type optokens } from "@citrusworx/nectarine";
+### INSERT (Create)
+
+```yaml
+queries:
+  createUser:
+    type: INSERT
+    table: users
+    fields: [username, email, password]
+    returning: id, username, email
+```
+
+**Example**:
+```yaml
+createUser:
+  type: INSERT
+  table: users
+  fields: [username, email, password, role]
+  returning: '*'
+
+createPost:
+  type: INSERT
+  table: posts
+  fields: [title, content, author_id]
+  returning: [id, title, created_at]
+```
+
+### UPDATE (Modify)
+
+```yaml
+queries:
+  updateUser:
+    type: UPDATE
+    table: users
+    fields: [username, email, role]
+    where: id = $1
+    returning: '*'
+```
+
+**Example**:
+```yaml
+updateUser:
+  type: UPDATE
+  table: users
+  where: id = $1
+  fields: [username, email, first_name, last_name]
+  returning: '*'
+
+updateUserRole:
+  type: UPDATE
+  table: users
+  where: id = $1
+  fields: [role]
+  returning: [id, username, role]
+
+activateUser:
+  type: UPDATE
+  table: users
+  where: id = $1
+  fields: [is_active]
+```
+
+### DELETE (Remove)
+
+```yaml
+queries:
+  deleteUser:
+    type: DELETE
+    table: users
+    where: id = $1
+    returning: id
+```
+
+**Example**:
+```yaml
+deleteUser:
+  type: DELETE
+  table: users
+  where: id = $1
+  returning: '*'
+
+deleteUserPosts:
+  type: DELETE
+  table: posts
+  where: author_id = $1
+```
+
+---
+
+## API Routes
+
+### Route Structure
+
+```yaml
+modelName:
+  operationType:     # read, create, update, delete
+    queryName:       # Name from queries.yml
+      api:
+        method: HTTP_METHOD
+        endpoint: /path/:param
+        middleware: []
+        validation: true
+```
+
+### HTTP Methods
+
+| Method | Purpose | Query Type | Use Case |
+|--------|---------|-----------|----------|
+| `GET` | Retrieve data | SELECT | Fetch single record/list |
+| `POST` | Create data | INSERT | New record |
+| `PUT` | Replace data | UPDATE | Full update |
+| `PATCH` | Partial update | UPDATE | Partial update |
+| `DELETE` | Remove data | DELETE | Delete record |
+
+### Route Examples
+
+```yaml
+user:
+  read:
+    allUsers:
+      api:
+        method: GET
+        endpoint: /users
+    
+    userById:
+      api:
+        method: GET
+        endpoint: /users/:id
+    
+    userByEmail:
+      api:
+        method: GET
+        endpoint: /users/search/:email
+
+  create:
+    newUser:
+      api:
+        method: POST
+        endpoint: /users
+  
+  update:
+    updateUser:
+      api:
+        method: PUT
+        endpoint: /users/:id
+    
+    activateUser:
+      api:
+        method: PATCH
+        endpoint: /users/:id/activate
+  
+  delete:
+    deleteUser:
+      api:
+        method: DELETE
+        endpoint: /users/:id
+```
+
+### Route Parameters
+
+**Path Parameters** (in URL):
+```yaml
+endpoint: /users/:id          # Single parameter
+endpoint: /posts/:id/comments # Multiple
+endpoint: /search/:query      # Search term
+```
+
+**Query Parameters** (in query string):
+```yaml
+# GET /users?page=1&limit=10&sort=created_at
+
+# Defined in query YAML:
+limit: 10
+offset: $query.offset
+orderBy: $query.sort
+```
+
+---
+
+## Core Functions
+
+### loadNectarineConfig()
+
+Load a project `nectarine.config.yaml`, resolve resource paths, parse resource triads, and resolve vendor database credentials from env key names declared in YAML.
+
+This is the supported config entrypoint. Apps should not write their own YAML bootstrap helpers.
+
+**Signature**:
+```typescript
+function loadNectarineConfig(
+  configPath: string,
+  options?: {
+    env?: NodeJS.ProcessEnv;
+    loadResources?: boolean;
+  }
+): NectarineConfig
+```
+
+**Example**:
+```typescript
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const creds = config.resolveCredentials(); // uses PG_* / MS_* / MG_* from YAML
+const product = config.getResource("product");
+const app = config.getAppBySubdomain("courses");
+```
+
+Also available as `@citrusworx/nectarine/config`.
+
+### loadSchema() / loadYaml()
+
+Load and parse a single YAML file.
+
+**Signature**:
+```typescript
+function loadSchema<T>(filepath: string): T
+function loadYaml<T>(filepath: string): T
+```
+
+**Parameters**:
+- `filepath` - Path to YAML file
+
+**Returns**: Parsed schema object
+
+**Example**:
+```typescript
+import { loadSchema } from "@citrusworx/nectarine";
+
+const userSchema = loadSchema("schemas/user/userSchema.yml");
+const userQueries = loadSchema("schemas/user/userQueries.yml");
+const userAPI = loadSchema("schemas/user/userAPI.yml");
+```
+
+### listApiOperations() / loadApiOperations()
+
+Flatten a resource `*API.yml` into HTTP operations for Seltzer hosts / auto-wiring consumers. YAML `endpoint` maps to `ApiOperation.path`. Nectarine does **not** generate Seltzer `Route` objects — SeltzerBot owns that wiring.
+
+Also available as `@citrusworx/nectarine/config` and `@citrusworx/nectarine/api`.
+
+**Signature**:
+```typescript
+type ApiHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+type ApiOperation = {
+  resource: string;
+  crud: string;
+  name: string;
+  method: ApiHttpMethod;
+  path: string;
+  query?: string;
+  body?: Record<string, string>;
+};
+
+function listApiOperations(
+  resource: string,
+  api: Record<string, unknown>
+): ApiOperation[];
+
+function loadApiOperations(
+  resource: string,
+  apiPath: string
+): ApiOperation[];
+```
+
+**Example**:
+```typescript
+import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const product = nectarine.getResource("product");
+const ops = listApiOperations("product", product.api);
+// [{ resource: "product", crud: "read", name: "productById",
+//    method: "GET", path: "/api/products/:id", query: "productById" }, ...]
+```
+
+### Hosting with Seltzer
+
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s (copying `body` field specs onto `Route.contract`). Engine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call that path. Product JSONB catalog reads and writes keep a host `execute` that runs named queries (`payloadsByCatalog`, `payloadsBySlug`, `countPayloads`, `insertPayload`, `updatePayload`, `deleteProduct`) so the catalog document stays in `payload`. Waitlist `joinWaitlist` uses the same `createNectarineRoutes` + thin host `execute` pattern (generated id, `emailExists` duplicate UX, `source_app` allowlist, file-store fallback); health and KiwiPress content stay hand-registered. Default Seltzer `validate` enforces `.required` keys; Nectarine can later `replace("validate", …)` for Zod.
+
+Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
+
+**Example**:
+```typescript
+import { loadNectarineConfig, listApiOperations } from "@citrusworx/nectarine/config";
+import { Seltzer, generateRoutes } from "@citrusworx/seltzer";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const ops = listApiOperations("product", nectarine.getResource("product").api);
+const app = Seltzer.init();
+
+for (const route of generateRoutes(
+  ops.filter((operation) => operation.crud === "read" && operation.method === "GET"),
+  {
+    execute: ({ query, params, ctx }) => {
+      if (query === "productById") {
+        return ctx.locals.products.find((item) => item.id === params.id) ?? null;
+      }
+      return ctx.locals.products;
+    },
+  },
+)) {
+  app.route(route);
+}
+
+app.listen(3000);
+```
+
+See Blackwater (`apps/blackwatersound/back/src/server.ts`) for the current host pattern.
+
+### compileSchema()
+
+Compile schema to database-specific SQL.
+
+**Signature**:
+```typescript
+function compileSchema(
+  schema: SchemaDefinition | string,
+  driver: "postgres" | "mysql"
+): string
+```
+
+**Parameters**:
+- `schema` - Parsed schema object or filesystem path to `*Schema.yml`
+- `driver` - Target database (`postgres` default). `mongodb` is rejected (not SQL CREATE TABLE).
+
+**Returns**: `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` SQL. Pass `{ additive: true }` on Postgres for `ADD COLUMN IF NOT EXISTS`. Rename / drop / type change use `applyMigrations`, not this helper.
+
+**Example**:
+```typescript
+import { compileSchema, loadSchema } from "@citrusworx/nectarine";
+import { CCompiler } from "@citrusworx/nectarine/compiler";
+
+const userSchema = loadSchema("schemas/user/userSchema.yml");
+const sql = compileSchema(userSchema, "postgres");
+console.log(sql); // CREATE TABLE IF NOT EXISTS users (...)
 
 const compiler = new CCompiler();
-compiler.parse_config("./file.yml");           // parser.yaml; argument is a filepath
-compiler.clean_parse(parsed, "get", "user");  // parsed[method][type] — opposite of genSQL
-compiler.buildQuery(cleaned, "UserById");     // no-op
+const ddl = compiler.buildDdl(compiler.parse_config("schemas/product/productSchema.yml"));
 ```
 
-`parse_config` takes a **filepath** (despite the parameter name `config`), because it delegates to `parser.yaml`. Return type `Record<string, string>` does not match the nested YAML tree at runtime.
+### applyMigrations()
 
-`optokens` is a type (`eq` → `"="`, …). There is no runtime object.
+Apply current schema YAML plus pending versioned migration YAML through an adapter `query()`. Creates `nectarine_schema_migrations`, `CREATE TABLE IF NOT EXISTS`, applies rename / drop / type-change ops (each pending migration in a Postgres transaction), then additive `ADD COLUMN IF NOT EXISTS`, then `CREATE INDEX`.
 
-See [Compiler](./nectarine-compiler.md).
+Not Flyway: no down migrations, no raw SQL scripts, no silent schema-diff. Destructive ops require `destructive: true` and `confirm: dropColumn` / `confirm: changeType`. Postgres `changeType` uses `USING CAST(column AS <compiled type>)`.
 
-## PgSql
+Pass a Postgres adapter (`createPgAdapter`) as `execute` so `withTransaction` pins one pool client — `BEGIN`/`COMMIT` are otherwise not atomic on `pg.Pool.query()`. MySQL DDL implicit-commits; wrapping `START TRANSACTION` cannot roll back an earlier `ALTER`.
 
-```ts
-import { PgSql } from "@citrusworx/nectarine";
-
-const pg = new PgSql();
-pg.addDb("myapp");
-pg.addTable("users"); // stored; not used by query()
-const client = await pg.connect("myapp");
-await pg.query(client, { sql: "SELECT 1", params: [] });
-await pg.disconnect(client);
+**Signature**:
+```typescript
+async function applyMigrations(options: {
+  execute: { query: (sql: string, params?: readonly unknown[]) => Promise<unknown> };
+  vendor?: "postgres" | "mysql";
+  schemas?: unknown[];
+  migrations?: unknown[];
+  tableSchema?: string;
+  protectedColumns?: ReadonlyArray<{ table: string; column: string }>;
+}): Promise<{ applied: string[]; skipped: string[] }>
 ```
 
-| Method | Role |
-|---|---|
-| `client(db)` | `new Client({ …creds, database: this.dbs.get(db) })` |
-| `connect(db)` | `client` + `connect()` |
-| `query(client, { sql, params? })` | `client.query`; logs errors, returns `undefined` on failure |
-| `disconnect(client)` | `client.end()` |
-| `addDb` / `addTable` | register names in maps |
+**Example**:
+```typescript
+import { applyMigrations, compileMigration, loadMigrationDocuments } from "@citrusworx/nectarine/migrate";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
 
-Creds: `PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`. Missing env values become `undefined` on the `pg` Client. `PG_DB` is not read inside the class — pass it to `addDb` / `connect`.
+const pg = createPgAdapterFromConfig(config)!;
+await pg.connect();
 
-## Mysql
-
-```ts
-import { Mysql, closeSql, pool } from "@citrusworx/nectarine";
-
-const rows = await Mysql("SELECT 1 AS n", []);
-await closeSql();
+await applyMigrations({
+  execute: pg,
+  vendor: "postgres",
+  schemas: [userSchema],
+  migrations: loadMigrationDocuments("./db/migrations"),
+  protectedColumns: [{ table: "products", column: "payload" }],
+});
 ```
 
-| Export | Role |
-|---|---|
-| `pool` | module-level `mysql2/promise` pool |
-| `Mysql(query, values?)` | `pool.execute`; throws on error |
-| `closeSql()` | `pool.end()` |
+`compileMigration(doc)` compiles one YAML document to ALTER statements (for tests or inspection). `CCompiler.buildMigration` is the same entry.
 
-Env: `MS_HOST`, `MS_USER`, `MS_PASS`, `MS_DB`, `MS_PORT`. Placeholders are `?`. There are no `MS_*` functions.
+There is no `migrateDown`. Restore a previous shape with a new forward migration.
 
-Install `mysql2` in the app; it is not declared on the published package.
+### extendSchema()
 
-## MySQL utils
+Extend existing schema with overrides.
 
-```ts
-import { mapInsert, mapGetter, getValues } from "@citrusworx/nectarine";
+**Signature**:
+```typescript
+function extendSchema(
+  baseSchema: SchemaDefinition,
+  overrides: Partial<SchemaDefinition>
+): SchemaDefinition
 ```
 
-- `mapInsert(action)` — joins `action.updates.values`, replacing objects with `?`
-- `mapGetter(action)` — same for `action.statement.values` (also `console.log`s)
-- `getValues(action)` — `action.statement.column.join(', ')`
+**Parameters**:
+- `baseSchema` - Base schema
+- `overrides` - Fields to override/add
 
-These do not validate or emit `INSERT …`. Input interfaces are not exported.
+**Returns**: Merged schema
 
-## MongoDB
+**Example**:
+```typescript
+import { extendSchema, loadSchema } from "@citrusworx/nectarine";
 
-```ts
-import {
-  mngzClient,
-  connectMngz,
-  closeMngz,
-  Mngz,
-  createCollection,
-  insertOne,
-  insertMany,
-} from "@citrusworx/nectarine";
+const base = loadSchema("schemas/user/userSchema.yml");
+
+const extended = extendSchema(base, {
+  User: {
+    ...base.User,
+    fields: {
+      ...base.User.fields,
+      phone: "VARCHAR(20)"
+    }
+  }
+});
 ```
 
-| Export | Role |
-|---|---|
-| `mngzClient` | `new MongoClient(uri)` at import time |
-| `connectMngz()` | `connect()`, logs, returns client |
-| `closeMngz(client)` | closes **`mngzClient`**, not necessarily the argument |
-| `Mngz(callback)` | connect, `callback(client)`, log errors, no rethrow, no close |
-| `createCollection(client, name)` | `createCollection` on `MG_DB`, then `closeMngz` |
-| `insertOne` / `insertMany` | write, log, `closeMngz` |
+### validateData()
 
-URI uses `MG_USER`, `MG_PASS`, `MG_HOST`, `MG_PORT`, `MG_DB`. The client is constructed when the module loads — if env is unset, the URI is still interpolated.
+Validate data against schema. **Zod** is the planned validator on the Seltzer-hosted path; this helper is the intended contract, not a finished generate-routes pipeline.
 
-## loadMongoConfig
-
-```ts
-import { loadMongoConfig } from "@citrusworx/nectarine";
+**Signature**:
+```typescript
+function validateData(
+  model: string,
+  data: any,
+  schema: SchemaDefinition
+): ValidationResult
 ```
 
-Calls `parser.yaml('sql.yml')` with no return. Treat as unfinished.
+**Parameters**:
+- `model` - Model name (e.g., "User")
+- `data` - Data to validate
+- `schema` - Schema definition
 
-## Types
+**Returns**: Validation result
 
-`YAMLdata` is `{ [key: string]: any }`. `optokens` is the operator token map type. Adapter types are implicit. `MapInsertface` / `MapGetterface` are module-private.
+**Example**:
+```typescript
+import { validateData } from "@citrusworx/nectarine";
 
-There is no exported Zod schema for models, no `generateRoutes`, no `Nectarine` class, no `buildSelectSQL`.
+const result = validateData("User", {
+  username: "john",
+  email: "john@example.com",
+  password: "secret"
+}, userSchema);
+
+if (!result.valid) {
+  console.error("Validation errors:", result.errors);
+}
+```
+
+---
+
+## TypeScript Types
+
+### SchemaDefinition
+
+```typescript
+interface SchemaDefinition {
+  [modelName: string]: {
+    table: string;
+    description?: string;
+    fields: {
+      [fieldName: string]: string;
+    };
+    relationships?: {
+      [relName: string]: string;
+    };
+  };
+}
+```
+
+### QueryDefinition
+
+```typescript
+interface QueryDefinition {
+  [modelName: string]: {
+    read?: Record<string, SelectQuery>;
+    create?: Record<string, InsertQuery>;
+    update?: Record<string, UpdateQuery>;
+    delete?: Record<string, DeleteQuery>;
+  };
+}
+```
+
+### APIDefinition
+
+```typescript
+interface APIDefinition {
+  [modelName: string]: {
+    read?: Record<string, RouteDefinition>;
+    create?: Record<string, RouteDefinition>;
+    update?: Record<string, RouteDefinition>;
+    delete?: Record<string, RouteDefinition>;
+  };
+}
+```
+
+### RouteDefinition
+
+```typescript
+interface RouteDefinition {
+  api: {
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+    endpoint: string;
+    query?: string;
+    body?: Record<string, string>;
+    middleware?: string[];
+    validation?: boolean;
+  };
+}
+```
+
+### ApiOperation
+
+Flattened HTTP operation from `listApiOperations`. YAML `endpoint` is mapped to `path`.
+
+```typescript
+type ApiHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+type ApiOperation = {
+  resource: string;
+  crud: string;
+  name: string;
+  method: ApiHttpMethod;
+  path: string;
+  query?: string;
+  body?: Record<string, string>;
+};
+```
+
+---
+
+## Error Handling
+
+### Common Errors
+
+```typescript
+// Validation Error
+{
+  type: "VALIDATION_ERROR",
+  field: "email",
+  message: "Invalid email format"
+}
+
+// Not Found
+{
+  type: "NOT_FOUND",
+  message: "User with ID 123 not found"
+}
+
+// Database Error
+{
+  type: "DATABASE_ERROR",
+  message: "Connection failed",
+  code: "ECONNREFUSED"
+}
+
+// Constraint Error
+{
+  type: "CONSTRAINT_ERROR",
+  field: "username",
+  message: "Unique constraint violated"
+}
+```
+
+### Error Responses
+
+Seltzer handlers should return standard HTTP status codes:
+
+| Code | Type | Example |
+|------|------|---------|
+| 200 | OK | Successful GET/PUT |
+| 201 | Created | Successful POST |
+| 204 | No Content | Successful DELETE |
+| 400 | Bad Request | Validation failed |
+| 404 | Not Found | Resource not found |
+| 409 | Conflict | Unique constraint |
+| 500 | Server Error | Database error |

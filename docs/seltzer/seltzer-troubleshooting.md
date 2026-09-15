@@ -1,47 +1,49 @@
 # Seltzer Troubleshooting
 
-The usual “why didn’t it answer?” cases against `libraries/seltzer/src`.
+The usual “why didn’t it answer?” cases against `libraries/seltzer/src` at **0.8.1**.
 
-Related: [Anti-patterns](./seltzer-anti-patterns.md), [Request and response](./seltzer-request-response.md), [Routing](./seltzer-routing.md).
+Related: [Anti-patterns](./seltzer-anti-patterns.md), [Request and response](./seltzer-request-response.md), [Routing](./seltzer-routing.md), [Pipeline](./seltzer-pipeline.md).
 
-## curl hangs
+## `{ "error": "Internal Server Error", "message": "Handler must return ResponseData…" }`
 
-**Most likely:** the handler matched but never called `ctx.json` or `ctx.res.end`.
+You returned a bare object, array, or string. Wrap it: `{ body: value }`. Extra keys (`{ ok: true }`) also fail `isResponseData`.
 
-Check every branch, including validation `return`s. Returning `{ body }` does not send.
-
-**Also likely:** `await` without a following write, or an async throw (`listen` does not catch it, so you may hang *and* see an unhandled rejection).
+This is **not** a hang. 0.2.0 hung when you returned `{ status, body }`; 0.8.x sends 500 instead if the shape is wrong, and sends the body if the shape is right.
 
 ## `{ "error": "Not Found" }` when the handler exists
 
-Matching is exact and case-sensitive.
+Matching is method + compiled path, case-sensitive.
 
 | You registered | Request | Result |
 |---|---|---|
 | `GET` `/notes` | `POST /notes` | 404 |
 | `/notes` | `/notes/` | 404 |
-| `/notes/:id` | `/notes/1` | 404 |
 | `get` `/health` | `GET /health` | 404 (`req.method` is `"GET"`) |
+| `/notes/:id` | `/notes/1` | **match** — `{ id: "1" }` |
 
-Log `req.method` and `url.pathname` in a throwaway handler if you are stuck. Duplicate routes: first registration wins; the second never runs.
+Duplicate routes with the same rank: earlier registration wins.
 
-## POST body is empty or `undefined`
+## `{ "error": "Invalid JSON body" }`
 
-You did not read the stream. There is no `ctx.body`. See [tutorial](./seltzer-api-tutorial.md) step 3.
+`Content-Type` included `application/json` but the bytes were not JSON. The handler never ran. Fix the client, or omit that content type if you meant to send raw text (`ctx.body` will be a string).
 
-`JSON.parse("")` throws — treat empty raw as `null` if that is what you want.
+## `{ "error": "Missing required field: email" }`
 
-## `JSON.stringify` / circular value crash
+`Route.contract.body` (or generated `ApiOperation.body`) marks `email` as `.required`. Empty string and whitespace count as missing. `execute` / the handler did not run.
 
-`ctx.json` does not catch stringify errors. Keep handler payloads plain data.
+## POST `ctx.body` is `undefined`
 
-## Client throws `SyntaxError: Unexpected token`
+GET/HEAD skip the body. Other methods with an empty body are `undefined`. Non-JSON content types are a string, not an object — default `validate` then says “Request body must be an object” if `.required` keys exist.
 
-`client.*` always `res.json()`. A 500 HTML page, empty body, or `text/plain` will throw. Point `baseUrl` at the Seltzer process, not a random URL.
+Do not read `ctx.req` again; `parse` already consumed the stream.
 
-## Client returns `{ error: "Not Found" }` instead of throwing
+## `client` throws `HttpError`
 
-That is a successful JSON parse of Seltzer’s 404. Check the payload or use `fetch` + `response.ok`.
+Non-2xx. Read `err.status` and `err.body`. This is expected for Seltzer’s own 404 JSON. 0.2.0 parsed that JSON as success.
+
+## Client throws `SyntaxError` on success
+
+The success `Content-Type` was JSON but the body was not. Or you pointed `baseUrl` at HTML. Text successes return a string when Content-Type is not JSON.
 
 ## `http://host:3000//notes`
 
@@ -53,23 +55,39 @@ You imported Seltzer in a browser (or edge) runtime without `process.versions.no
 
 ## CORS errors in the Sig app
 
-Seltzer sends no CORS headers. `ctx.json` cannot add them. Write `writeHead` yourself and register `OPTIONS`. See [Integration](./seltzer-integration.md).
+Pass `cors` to `listen`. CORS headers are skipped when the request has no `Origin`. A mismatched `cors.origin` also skips headers. `OPTIONS` is 204 from `listen`, not from your routes.
+
+## Extra CORS headers on `ResponseData` plus `listen({ cors })`
+
+Usually redundant. If you `writeHead` yourself, `send` no-ops and the body may vanish.
 
 ## Port already in use
 
-`listen` does not handle `EADDRINUSE`. Nothing in the library retries or picks a free port.
+`listen` does not handle `EADDRINUSE`. Nothing in the library retries or picks a free port. Tests should `listen(0)` and `server.close()`.
 
 ## Cannot close the server in tests
 
-`listen` does not return `http.Server`. There is no `app.close()`. Process exit, or wrap `http.createServer` yourself (that is no longer “using listen”).
+`listen` **returns** `http.Server`. Hold the return value and `close()`. 0.2.0 returned `void`; that myth is closed.
+
+## Generated catalog route returns a product by id
+
+Register both `/api/products/catalog/:catalog` and `/api/products/:id`. `generateRoutes` sorts the static prefix first; `matchRoute` prefers it even if you did not. If you only registered `:id`, `catalog` is captured as an id.
+
+## `execute` status 418 comes back as 200
+
+Return `response({ status: 418, body })` from `execute`. Unbranded `{ status, body }` is wrapped as a payload.
 
 ## Nectarine route did not appear
 
-`registerRoute` did not call `.route`. The YAML node may be nested under `user`. Parametric `endpoint` values will not match. Copy exact pairs; walk `parser.yaml`.
+Nectarine does not call `.route`. You must `generateRoutes` (or copy by hand) and register. Flatten with `listApiOperations`, do not invent a second YAML walker.
 
 ## Changes to `server.ts` did nothing
 
-`src/core/server/server.ts` is not used by `Seltzer.listen`. Edit `core/seltzer.ts`.
+`src/core/server/server.ts` is not used by `Seltzer.listen`. Edit `core/seltzer.ts` / `pipeline/` / `generate/`.
+
+## `allowSelfSigned` throws about undici
+
+Install the optional peer `undici`, or use a trusted certificate. HTTP URLs ignore the flag.
 
 ## Suggested reading
 

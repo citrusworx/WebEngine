@@ -1,39 +1,189 @@
-const mysql = require('mysql2/promise');
-const dotenv = require('dotenv');
-const path = require('path');
+import { createPool } from "mysql2/promise";
+import type { FieldPacket, Pool, QueryResult, RowDataPacket } from "mysql2/promise";
+import type { NectarineConfig } from "../../config/NectarineConfig.js";
+import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+import { rewriteMysqlPlaceholders } from "./placeholders.js";
+
+export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+export { rewriteMysqlPlaceholders };
+export type { MysqlRewriteResult } from "./placeholders.js";
 
 /**
- * Connects to a Postgres database and executes a query based on
- * provided values.
- *
- * @param query - The SQL query to be executed.
- * @param values - The values to be inserted into placeholder values.
- * @returns Promise resolving to an array of query results.
+ * Result of {@link MysqlSql.query}. `rows` is a `RowDataPacket[]` for SELECT
+ * and a `ResultSetHeader` for INSERT/UPDATE/DELETE (mysql2 `execute` shape).
  */
+export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
+    rows: T;
+    fields: FieldPacket[];
+};
 
-export const pool = mysql.createPool({
-	host: process.env.MS_HOST,
-	user: process.env.MS_USER,
-	password: process.env.MS_PASS,
-	database: process.env.MS_DB,
-	port: process.env.MS_PORT,
-	// waitForConnections: true,
-	// connectionLimit: 10,
-	// queueLimit: 0
-})
+/**
+ * MySQL adapter for parameterized SQL.
+ *
+ * Credentials are {@link DatabaseCredentials} from
+ * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
+ * this adapter receives the resolved values. It does not read `process.env`
+ * itself.
+ *
+ * The Nectarine compiler is Postgres-first and emits `$1` / `$N::jsonb`.
+ * {@link MysqlSql.query} rewrites those binds to MySQL `?` (and
+ * `CAST(? AS JSON)` for json/jsonb) so compiled SQL can run here unchanged.
+ * JSONB `@>` / `?` / `->>` become MySQL `JSON_CONTAINS` / `JSON_CONTAINS_PATH`
+ * / `JSON_EXTRACT` (`JSON_QUOTE` wraps bound `has_key` names as one path segment).
+ * `ON CONFLICT` is Postgres-only and is rejected at this boundary.
+ *
+ * @example
+ * ```ts
+ * const creds = config.resolveCredentials("mysql");
+ * if (!creds) throw new Error("MySQL env is incomplete");
+ * const mysql = createMysqlAdapter(creds);
+ * await mysql.connect();
+ * const result = await mysql.query("SELECT id FROM users WHERE id = $1", [1]);
+ * await mysql.end();
+ * ```
+ */
+export class MysqlSql {
+    private pool: Pool | null = null;
+    private connecting: Promise<Pool> | null = null;
+    private readonly credentials: DatabaseCredentials;
 
-export async function Mysql<T = any>(query: string, values: any[] = []): Promise<any>{
-	try{
-		const [rows] = await pool.execute(query, values);
-		return rows as T[];
-	}
-	catch(err: any){
-		console.error('ERROR:', err.stack);
-		throw err;
-	}
+    constructor(credentials: DatabaseCredentials) {
+        this.credentials = requireMysqlCredentials(credentials);
+    }
+
+    static fromCredentials(credentials: DatabaseCredentials): MysqlSql {
+        return new MysqlSql(credentials);
+    }
+
+    get connected(): boolean {
+        return this.pool !== null;
+    }
+
+    /**
+     * Create the connection pool and check out one connection so failures
+     * surface here instead of on the first query.
+     */
+    async connect(): Promise<Pool> {
+        if (this.pool) {
+            return this.pool;
+        }
+        if (!this.connecting) {
+            this.connecting = this.openPool().finally(() => {
+                this.connecting = null;
+            });
+        }
+        return this.connecting;
+    }
+
+    private async openPool(): Promise<Pool> {
+        const pool = createPool({
+            user: this.credentials.user,
+            password: this.credentials.password,
+            host: this.credentials.host,
+            port: this.credentials.port,
+            database: this.credentials.database,
+        });
+
+        try {
+            const connection = await pool.getConnection();
+            connection.release();
+        } catch (error) {
+            await pool.end().catch(() => undefined);
+            throw error;
+        }
+
+        this.pool = pool;
+        return pool;
+    }
+
+    /**
+     * Run parameterized SQL against the connected pool.
+     *
+     * Compiler `$1` / `$N::jsonb` binds are rewritten to MySQL `?` here.
+     * Existing `?` SQL is executed as given.
+     */
+    async query<T extends QueryResult = RowDataPacket[]>(
+        sql: string,
+        params: readonly unknown[] = [],
+    ): Promise<MysqlQueryResult<T>> {
+        if (!this.pool) {
+            throw new Error("MySQL adapter is not connected. Call connect() before query()");
+        }
+        if (typeof sql !== "string" || !sql.trim()) {
+            throw new Error("MySQL adapter query() requires a SQL string");
+        }
+
+        const rewritten = rewriteMysqlPlaceholders(sql, params);
+        const [rows, fields] = await this.pool.execute<T>(
+            rewritten.sql,
+            rewritten.params as (string | number | bigint | boolean | Date | Buffer | null)[],
+        );
+        return { rows, fields };
+    }
+
+    async disconnect(): Promise<void> {
+        const pool = this.pool;
+        if (!pool) {
+            return;
+        }
+        this.pool = null;
+        await pool.end();
+    }
+
+    async end(): Promise<void> {
+        return this.disconnect();
+    }
 }
 
-export async function closeSql(): Promise<void>{
-	await pool.end()
-	console.log('MySQL connection terminated');
+export function createMysqlAdapter(credentials: DatabaseCredentials): MysqlSql {
+    return MysqlSql.fromCredentials(credentials);
+}
+
+/**
+ * Build a MySQL adapter from a loaded config when the active vendor is
+ * mysql and env values resolve. Returns `null` when the vendor is not
+ * mysql or credentials are incomplete (same as `resolveCredentials()`).
+ */
+export function createMysqlAdapterFromConfig(
+    config: NectarineConfig,
+    vendor?: DatabaseVendor,
+): MysqlSql | null {
+    if (config.getVendor(vendor) !== "mysql") {
+        return null;
+    }
+
+    const credentials = config.resolveCredentials("mysql");
+    if (!credentials) {
+        return null;
+    }
+
+    return createMysqlAdapter(credentials);
+}
+
+export function requireMysqlCredentials(
+    credentials: Partial<DatabaseCredentials> | null | undefined,
+): DatabaseCredentials {
+    if (!credentials) {
+        throw new Error("MySQL adapter requires DatabaseCredentials");
+    }
+
+    const user = credentials.user?.trim();
+    const password = credentials.password;
+    const host = credentials.host?.trim();
+    const database = credentials.database?.trim();
+    const port = Number(credentials.port);
+
+    if (!user || password == null || password === "" || !host || !database) {
+        throw new Error(
+            "MySQL adapter requires complete credentials: user, password, host, port, and database",
+        );
+    }
+
+    if (!Number.isFinite(port)) {
+        throw new Error(
+            `MySQL adapter port must be a finite number, got ${JSON.stringify(credentials.port)}`,
+        );
+    }
+
+    return { user, password, host, port, database };
 }

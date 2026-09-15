@@ -1,0 +1,15 @@
+{
+  name: "nectarine-fixture-app",
+  description: "WebEngine fixture web runtime with Nectarine data module",
+  version: "0.0.1",
+  network: {
+    host: "127.0.0.1",
+    port: 9091,
+    dns: {
+      enabled: false,
+    },
+  },
+  development: {},
+  staging: {},
+  deployment: {},
+}

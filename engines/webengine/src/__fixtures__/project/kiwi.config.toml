@@ -1,0 +1,15 @@
+version = "0.1.0"
+
+[kernel]
+modules = ["core", "web"]
+
+[runtimes.web]
+path = "webengine.config.json5"
+
+[webengine]
+app_name = "webengine-fixture"
+description = "Vitest fixture project for WebEngine kernel"
+host = "127.0.0.1"
+port = 9090
+debug_mode = true
+log_level = "debug"

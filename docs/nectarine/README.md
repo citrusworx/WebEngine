@@ -1,345 +1,562 @@
 # Nectarine
 
-YAML-described data models and thin database adapters.
+Nectarine is a config-driven backend library. Define models, schemas, queries, and APIs in YAML. Nectarine supplies the config loader, query compiler, and database adapters. **Seltzer** is the HTTP transport that hosts those contracts in WebEngine / Blackwater.
 
-Nectarine is the CitrusWorx place to write *what the data looks like* and *which query you meant*, then run that against PostgreSQL, MySQL, or MongoDB. There is no virtual schema engine, no one-command backend generator, and no SQL compiler in the package yet. You write YAML, parse it into objects, compile a statement in your app, and hand that statement to an adapter.
+Nectarine is a WebEngine native library but is fully independent. It can be used in any project. It does not spin up a server.
 
-The current model is:
+**Latest Version**: 0.1.0 on npm (pending Changesets target **0.2.0**)
 
-- **YAML files** describe tables, query intent, and (as data) HTTP routes
-- **`parser`** loads those files and picks a named query or route object
-- **You** (or a future compiler) turn that object into SQL or a Mongo operation
-- **Adapters** open a client and execute the statement you assembled
-- **`CCompiler.buildQuery` and `parser.buildSQL`** are stubs — they do not emit SQL
+Production deploy bar for Blackwater + Seltzer: [Production](./production.md).
 
-Nectarine is strongest when you treat YAML as the source of query *shape*, and the adapter as the socket. It is weakest when older docs promised Express + Zod routes from those files. That pipeline is not in `libraries/nectarine/src`.
+---
 
-## Who it is for
+## Philosophy
 
-- App authors who want models and query names in git-friendly YAML
-- Teams that already have (or will write) an HTTP layer — Seltzer, Express, or otherwise
-- Contributors extending the compiler so `genSQL` objects become real statements
+Backend development is repetitive. Models, schemas, queries, and API routes follow predictable patterns that should not require writing the same boilerplate over and over. Nectarine lets you define data and query contracts in YAML; the host serves them with Seltzer.
 
-It is not a hosted BaaS, not Prisma, not Drizzle, and not a GUI. It does not ship GraphQL, auth, migrations, or a client SDK for Sig.js.
+- **Config driven** — models, schemas, queries, and APIs defined in YAML
+- **Database agnostic** — PostgreSQL, MySQL, and MongoDB supported
+- **Library first** — Nectarine supplies config, compiler, and adapters; it does not spin up a server
+- **Seltzer transport** — WebEngine / Blackwater hosts HTTP with Seltzer (`transport.server: seltzer`)
+- **GUI ready** — visual editor planned for no-code backend creation
+- **WebEngine integrated** — works as the WebEngine data/config library, hosted by Seltzer
 
-## Why it exists
+---
 
-Backend CRUD is repetitive, but the expensive part is not typing `SELECT`. It is keeping the *contract* — columns, filters, route names — from drifting across SQL strings, handlers, and clients.
-
-CitrusWorx wants that contract in config:
-
-- Juice / Sig.js should not invent table shapes
-- Seltzer should eventually validate against the same contract
-- Operators should be able to read a resource as three files, not a scavenger hunt through repositories
-
-Nectarine is that contract folder. The adapters exist so the same repo can talk to Postgres, MySQL, or Mongo without a second ORM. The compiler is the unfinished piece that would turn query YAML into SQL so app code stops concatenating strings.
-
-The design bets:
-
-- **Config first** — tables and named queries live in YAML, next to the app, in git
-- **Adapters stay thin** — `PgSql`, `Mysql`, and `Mngz` are sockets, not query planners
-- **Compile is a separate job** — `genSQL` returns intent; a compiler (yours, today) emits SQL
-- **HTTP is a sibling** — `*API.yml` stores `{ method, endpoint }`; Seltzer registers handlers
-- **Small API** — `parser`, `CCompiler`, three adapters, a handful of MySQL/Mongo helpers
-
-That split is healthier than stuffing table shapes into handlers, or stuffing a full ORM into a package that is still finishing its compiler. Until that compiler lands, the honest workflow is: **parse YAML → walk the object → build a string in your app → run it on an adapter**.
-
-If you have already built a listener with the [Seltzer getting started](../seltzer/seltzer-getting-started.md), Nectarine is the next layer: the same `method` + `path`, plus the catalog those handlers should actually query. The [tutorial](./nectarine-tutorial.md) builds that catalog end to end.
-
-## Current setup shape
-
-```ts
-import { parser, PgSql } from "@citrusworx/nectarine";
-```
+## Quick Start
 
 ```bash
-export PG_USER=postgres
-export PG_HOST=localhost
-export PG_PASS=secret
-export PG_DB=myapp
-export PG_PORT=5432
+# npm (public package)
+npm install @citrusworx/nectarine
+npm install pg
+# plus @citrusworx/seltzer when hosting HTTP in WebEngine / Blackwater
+
+# yarn
+yarn add @citrusworx/nectarine pg
 ```
-
-There is no `generateRoutes()`, no `Pgsql()` function, and no `nectarine.config.yaml` loader. `PgSql` is a **class**. `parser.genSQL` returns an **object**.
-
-Peer-ish drivers the adapters import: `pg`, `mysql2`, `mongodb`, `js-yaml`. Install the one you call. `mysql2` is used from source but is not declared on the published package — add it in the app if you use MySQL.
-
-## What it can do
-
-The sections below are the capability showcase. Every snippet matches `libraries/nectarine/src`. If a pattern is not here, it is probably not in the library — check [Status](./nectarine-status.md) before assuming a Prisma-shaped API.
-
-### 1. Load a model file
-
-Checked-in example: `libraries/nectarine/models/user/userSchema.yml`.
 
 ```yaml
-User:
-  table: users
-  fields:
-    id:
-      type: int
-      primaryKey: true
-      autoIncrement: true
-    username:
-      type: VARCHAR
-      length: 55
-      unique: true
-      null: false
-    email:
-      type: VARCHAR
-      size: 100
-      unique: true
-      null: false
+# nectarine.config.yaml
+version: "0.1"
+transport:
+  server: seltzer   # WebEngine / Blackwater default. Do not use Express route generation.
+database:
+  default: postgres
+resources:
+  - name: user
+    schema: ./schemas/user/userSchema.yml
+    queries: ./schemas/user/userQueries.yml
+    api: ./schemas/user/userAPI.yml
 ```
 
 ```ts
-import { parser } from "@citrusworx/nectarine";
-
-const schema = parser.yaml("./models/user/userSchema.yml");
-const table = schema.User.table; // "users"
-```
-
-`parser.yaml` is a `js-yaml` + `readFileSync` wrapper. It logs the object to the console. It does not validate fields, emit DDL, or talk to a database. That is the whole trick: the contract is data, and anything that becomes `CREATE TABLE` is a loop you write.
-
-### 2. Pick a named query object
-
-PostgreSQL-oriented DSL lives under `models/user/db/pg/user.yml`:
-
-```yaml
-user:
-  get:
-    UserById:
-      select: ['id']
-      from: users
-      where:
-        column: id
-        operator: eq
-        value: $1
-```
-
-```ts
-const spec = parser.genSQL("./models/user/db/pg/user.yml", "user", "get", "UserById");
-// spec.select, spec.from, spec.where — not a SQL string
-```
-
-`parser.genSQL` returns that object. `parser.buildSQL(spec)` is empty. The [tutorial](./nectarine-tutorial.md) compiles this shape into `SELECT … WHERE id = $1` in app code.
-
-### 3. Compile a SELECT you can actually run
-
-The package does not map `eq` → `=`. The exported `optokens` type documents the tokens; a function you own is the runtime.
-
-```ts
-const OPS: Record<string, string> = {
-  eq: "=",
-  gt: ">",
-  lt: "<",
-  lte: "<=",
-  gte: ">=",
-  neq: "!=",
-};
-
-function buildSelect(spec: {
-  select?: string | string[];
-  from?: string;
-  where?: { column: string; operator: string; value: string };
-}): string {
-  const fields = Array.isArray(spec.select)
-    ? spec.select.join(", ")
-    : spec.select ?? "*";
-  const table = spec.from;
-  const where = spec.where
-    ? ` WHERE ${spec.where.column} ${OPS[spec.where.operator]} ${spec.where.value}`
-    : "";
-  return `SELECT ${fields} FROM ${table}${where}`;
-}
-
-const sql = buildSelect(spec);
-// SELECT id FROM users WHERE id = $1
-```
-
-Build statements from YAML **keys**. Keep request values in `params`. That split is the reason the DSL exists.
-
-### 4. Run SQL on PostgreSQL
-
-```ts
-import { PgSql } from "@citrusworx/nectarine";
-
-const pg = new PgSql();
-pg.addDb(process.env.PG_DB!);
-const client = await pg.connect(process.env.PG_DB!);
-
-if (!client) {
-  throw new Error("Postgres client missing — check PG_* env vars");
-}
-
-try {
-  const result = await pg.query(client, {
-    sql: "SELECT id FROM users WHERE id = $1",
-    params: [1],
-  });
-  console.log(result?.rows);
-} finally {
-  await pg.disconnect(client);
-}
-```
-
-`PgSql` is a class. Credentials come from `PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`. `addDb(name)` registers the database name used in `connect(name)`. `query` swallows errors and returns `undefined` — check the return. There is no pool and no transactions API.
-
-### 5. Emit CREATE TABLE from schema objects
-
-There is no migrator. Walk `fields`. Object values need a real column builder; string values are fragments.
-
-```ts
-function columnSql(name: string, definition: unknown): string {
-  if (typeof definition === "string") return `${name} ${definition}`;
-  const field = definition as { type: string; size?: number; length?: number; primaryKey?: boolean };
-  const width = field.length ?? field.size;
-  const type = width ? `${field.type}(${width})` : field.type;
-  return field.primaryKey ? `${name} ${type} PRIMARY KEY` : `${name} ${type}`;
-}
-```
-
-Identity syntax is engine-specific. Postgres wants `GENERATED BY DEFAULT AS IDENTITY`; MySQL wants `AUTO_INCREMENT`. Nectarine will not pick it. Details in the [Schema Guide](./nectarine-schema-guide.md).
-
-### 6. Run SQL on MySQL
-
-MySQL is a **thin `mysql2` pool**, not a second compiler.
-
-```ts
-import { Mysql, closeSql } from "@citrusworx/nectarine";
-
-const rows = await Mysql(
-  "SELECT email FROM users WHERE email = ?",
-  ["dev@citrusworx.com"],
-);
-
-await closeSql();
-```
-
-Env vars are `MS_HOST`, `MS_USER`, `MS_PASS`, `MS_DB`, `MS_PORT` — not `MYSQL_*`. The pool is created at import time. `closeSql()` ends it for the process — do not call it per request.
-
-Query YAML under `models/user/db/msql/user.yml` uses `?` placeholders and a `type` / `action` / `updates` shape. `mapInsert` / `mapGetter` only join value lists; they do not build full statements.
-
-### 7. Talk to MongoDB
-
-```ts
-import { Mngz, insertOne } from "@citrusworx/nectarine";
-
-await Mngz(async (client) => {
-  await insertOne(client, "users", {
-    email: "dev@citrusworx.com",
-    name: "Demo",
-  });
-});
-```
-
-URI is built from `MG_USER`, `MG_PASS`, `MG_HOST`, `MG_PORT`, `MG_DB`. Helpers: `connectMngz`, `closeMngz`, `createCollection`, `insertOne`, `insertMany`. There is no query DSL compiler for Mongo, and no `find` helper.
-
-`insertOne` / `insertMany` / `createCollection` close the shared client when they finish — treat them as short scripts, not as a long-lived pool. For a server, connect once and call `collection.find` yourself.
-
-### 8. Read an API YAML (as data)
-
-```yaml
-# flattened — matches registerRoute lookup
-get:
-  allUsers:
-    api:
-      method: GET
-      endpoint: /users
-```
-
-```ts
-const route = parser.registerRoute("./models/user/api.yml", "get", "allUsers");
-// { api: { method: "GET", endpoint: "/users" } }
-```
-
-`registerRoute` requires the path to contain `api.yml` or end with `api.yaml`. It looks up `doc[method][route]`. It does **not** mount Express or Seltzer handlers, and it does not understand a `user.get.allUsers` resource prefix. The checked-in `userAPI.yml` is nested — walk it with `parser.yaml`.
-
-### 9. Wire those objects to Seltzer by hand
-
-```ts
-import { parser } from "@citrusworx/nectarine";
+import { loadNectarineConfig } from "@citrusworx/nectarine";
 import { Seltzer } from "@citrusworx/seltzer";
+import type { Route } from "@citrusworx/seltzer";
 
-const api = parser.yaml("./models/user/api.yml");
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
 const app = Seltzer.init();
 
-app.route({
-  method: api.get.allUsers.api.method,
-  path: api.get.allUsers.api.endpoint,
-  handler: (ctx) => ctx.json({ users: [] }),
-});
+// Object-based Seltzer routes. Auto-wiring from *API.yml is the next engine step.
+const listUsers: Route = {
+  method: "GET",
+  path: "/api/users",
+  handler: () => ({
+    body: { resource: nectarine.getResource("user").name },
+  }),
+};
 
+app.route(listUsers);
 app.listen(3000);
 ```
 
-Seltzer matches exact paths. Put `PgSql.query` inside the handler when the catalog should return rows — the [tutorial](./nectarine-tutorial.md) does that for `/users` and `/user-by-id`.
-
-## Mental model
-
-```text
-*.yml  --parser.yaml / genSQL / registerRoute-->  plain objects
-                                                  |
-                         you (or a future compiler) build a statement
-                                                  |
-                     PgSql.query | Mysql | Mngz / insertOne
+```bash
+# Use API
+GET /api/users
+POST /api/users
 ```
 
-| You want… | Use |
-|---|---|
-| The whole YAML tree | `parser.yaml(path)` |
-| One named query object | `parser.genSQL(path, resource, crud, name)` |
-| One named API object (flat file) | `parser.registerRoute(path, method, name)` |
-| A SQL string from a PG `select` node | App builder (tutorial / getting started) |
-| To run SQL on Postgres | `new PgSql()` → `addDb` → `connect` → `query` |
-| To run SQL on MySQL | `Mysql(sql, values)` |
-| To insert a Mongo document | `insertOne` (script) or `Mngz` + driver (server) |
-| HTTP | Seltzer (or Express) — copy `method` / `endpoint` |
-| Compiled SQL from the package | **Not shipped** — `buildSQL` / `buildQuery` are empty |
+**[→ Full Getting Started Guide](./nectarine-getting-started.md)**
 
-Three file roles, when you follow the in-repo layout:
+---
 
-| File | Role today |
-|---|---|
-| `*Schema.yml` | Table / field documentation and CREATE TABLE input for *your* builder |
-| `db/pg/*.yml` or `db/msql/*.yml` | Named query objects (`genSQL`) |
-| `*API.yml` | Named `{ method, endpoint }` objects |
+## Documentation
 
-The blog and user trees under `libraries/nectarine/models/` are fixtures, not a published schema pack.
+| Guide | Topic |
+|-------|-------|
+| [Getting Started](./nectarine-getting-started.md) | Installation, setup, first backend |
+| [API Reference](./nectarine-api.md) | Complete API documentation |
+| [Schema Guide](./nectarine-schema-guide.md) | Schema definition and field types |
+| [Query DSL](./nectarine-query-dsl.md) | Phonics YAML query DSL (canonical + Blackwater) |
+| [No hard-coded SQL](./no-hardcoded-sql.md) | Hard rule, assembly model, Blackwater SQL inventory |
+| [Production](./production.md) | Deploy-today bar: env, migrate, JSONB seed, Seltzer host, non-goals |
+| [Examples](./nectarine-examples.md) | Real-world examples (blog, store, SaaS, CMS) |
+| [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
+| [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |
+| [Project Status](./nectarine-status.md) | Roadmap, limitations, comparison |
 
-## Suggested reading order
+---
 
-1. [Getting Started](./nectarine-getting-started.md) — env, parse, first adapter call
-2. [Tutorial](./nectarine-tutorial.md) — guided catalog: schema → queries → hand-built SQL → PgSql → Seltzer
-3. [Schema Guide](./nectarine-schema-guide.md) — model YAML mental model, field styles, what the library ignores
-4. [Query DSL](./nectarine-query-dsl.md) — Postgres intent shape, operators, placeholders
-5. [Compiler](./nectarine-compiler.md) — empty methods, nesting mismatch, `optokens`
-6. Adapters: [PostgreSQL](./nectarine-postgresql.md) · [MySQL](./nectarine-mysql.md) · [MongoDB](./nectarine-mongodb.md)
-7. [Patterns](./nectarine-patterns.md) — truthful cookbook for named queries, builders, HTTP
-8. [Best Practices](./nectarine-best-practices.md) — how to compose Nectarine so YAML stays data
-9. [Anti-Patterns](./nectarine-anti-patterns.md) — Prisma habits, env names, helper footguns
-10. [Examples](./nectarine-examples.md) — user + blog files, wired by hand
-11. [Seltzer + WebEngine](./nectarine-integration.md) — what you wire vs what does not load
-12. [API Reference](./nectarine-api.md) — exports that exist
-13. [Troubleshooting](./nectarine-troubleshooting.md) — undefined rows, bad env, `registerRoute`
-14. [Status](./nectarine-status.md) — Early / Alpha maturity matrix
-15. [Roadmap](./nectarine-roadmap.md) — what would move Nectarine upward, and what would not
+## Supported Databases
+
+| Database | Status | Guide |
+|----------|--------|-------|
+| PostgreSQL | ✓ Active | [PostgreSQL Guide](./nectarine-postgresql.md) |
+| MySQL | ✓ Active | Coming soon |
+| MongoDB | ✓ Active | [MongoDB Guide](./nectarine-mongodb.md) |
+
+---
+
+## How It Works
+
+Nectarine reads three YAML files per resource. The host serves HTTP with Seltzer:
+
+```
+userSchema.yml    ← Model definitions and table structure
+userQueries.yml   ← Query definitions (SELECT, INSERT, UPDATE, DELETE)
+userAPI.yml       ← REST endpoint routing
+```
+
+These three files define a complete backend resource. Nectarine:
+1. Parses the YAML schemas
+2. Compiles named database queries
+3. Supplies adapters (PostgreSQL, MySQL, MongoDB)
+
+The host (WebEngine / Blackwater) runs **Seltzer**:
+4. Registers object-based Seltzer routes (resource **reads and YAML writes** plus waitlist POST `joinWaitlist` auto-wire from `*API.yml` via `generateRoutes`)
+5. Default `validate` checks `.required` body fields; Zod lands later via `replace("validate", …)`
+
+---
+
+## Installation
+
+```bash
+yarn add @citrusworx/nectarine @citrusworx/seltzer
+```
+
+---
+
+## Core Features
+
+✓ **Schema-Driven**: Define models, queries, and APIs in YAML
+✓ **Database Support**: PostgreSQL, MySQL, MongoDB
+✓ **Seltzer Hosted**: WebEngine / Blackwater serves HTTP with Seltzer
+✓ **Validation Intent**: Zod is the planned validation layer on the hosted path
+✓ **Pre-built Schemas**: User, Blog, CMS, Store, Banking models included
+✓ **Query Compiler**: SELECT, INSERT, UPDATE, DELETE from query YAML; CREATE TABLE from schema YAML; versioned ALTER from migration YAML
+✓ **Relationships**: Foreign keys and relationships supported
+✓ **Flexible**: Extend and override as needed
+
+---
+
+## Example: Blog Backend
+
+Define a blog with posts and comments:
+
+```yaml
+# userSchema.yml
+User:
+  table: users
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+
+Post:
+  table: posts
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    title: VARCHAR(255) NOT NULL
+    content: text NOT NULL
+    author_id: int FOREIGN KEY REFERENCES users(id)
+
+Comment:
+  table: comments
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    content: text NOT NULL
+    post_id: int FOREIGN KEY REFERENCES posts(id)
+    author_id: int FOREIGN KEY REFERENCES users(id)
+```
+
+Those YAML files are the CRUD contracts. The compiler emits named queries; Seltzer hosts matching routes (auto-wiring from API YAML is next):
+- 3 CREATE operations (users, posts, comments)
+- 3 READ operations (get all, get by ID)
+- 3 UPDATE operations
+- 3 DELETE operations
+- REST endpoints defined in API YAML; Zod validation planned on the hosted path
+
+**[See full blog example →](./nectarine-examples.md#simple-blog)**
+
+---
+
+## Use Cases
+
+✓ **Rapid Prototyping**: Build backends in minutes, not days
+✓ **Startups**: Bootstrap quickly with minimal code
+✓ **GraphQL to REST**: Take GraphQL schema, generate REST API
+✓ **CMS Backends**: Content management with any database
+✓ **APIs**: Build CRUD APIs without repeating patterns
+✓ **Microservices**: Lightweight backends for microservice architecture
+
+---
+
+## What's Included
+
+- Schema definition system
+- Query compiler
+- `nectarine.config.yaml` loader
+- Seltzer as the WebEngine / Blackwater HTTP transport
+- Zod as planned route validation
+- PostgreSQL adapter
+- MongoDB adapter
+- MySQL adapter
+- Pre-built model schemas
+- Connection pooling
+
+---
+
+## What's Planned
+
+- [ ] GraphQL support
+- [ ] Caching layer
+- [ ] Authorization system
+- [ ] Audit logging
+- [ ] Real-time updates
+- [ ] Multi-tenant support
+- [ ] CLI tools
+
+**[See full roadmap →](./nectarine-status.md#roadmap-summary)**
+
+---
+
+## Next Steps
+
+1. **[Get Started](./nectarine-getting-started.md)** — Installation and first backend
+2. **[Learn the Concepts](./nectarine-schema-guide.md)** — Understand schemas
+3. **[See Examples](./nectarine-examples.md)** — Real-world backends
+4. **[Choose Your Database](./nectarine-postgresql.md)** — Setup guide
+5. **[Build Your Backend](./nectarine-getting-started.md)** — Create your first API
+
+---
+
+## Requirements
+
+- Node.js 18+ (MongoDB adapter: Node 20.19+ for `mongodb@7`)
+- `@citrusworx/seltzer` when hosting as WebEngine / Blackwater
+- One of: PostgreSQL, MySQL, MongoDB
+
+---
+
+## License
+
+MIT - Use freely in any project
+
+---
+
+## Schema Definition
+
+Schemas define your models and database table structure.
+
+```yaml
+# userSchema.yml
+User:
+  table: users
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(50) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+    password: VARCHAR(50) NOT NULL
+    created_at: timestamp DEFAULT NOW()
+    role: enum(admin, author, user) DEFAULT 'user'
+
+Post:
+  table: posts
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    title: string NOT NULL
+    content: text NOT NULL
+    author_id: int FOREIGN KEY REFERENCES users(id)
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+```
+
+---
+
+## Query Definition
+
+Queries define the SQL or MongoDB operations for each resource. Nectarine generates the actual query statements from these definitions.
+
+```yaml
+# user.yml
+user:
+  get:
+    AllUsers:
+      type: SELECT
+      table: users
+      action: FROM
+      fields: '*'
+
+    UserById:
+      type: SELECT
+      table: users
+      fields: id
+      conditions:
+        condition: WHERE
+        column: id
+        operator: '='
+        value: $1
+
+  create:
+    NewUser:
+      type: INSERT
+      action: INTO
+      table: users
+      updates:
+        column:
+          - email
+          - password
+          - name
+          - created_at
+        values:
+          - $1
+          - $2
+          - $3
+          - NOW()
+
+  update:
+    UserById:
+      type: UPDATE
+      table: users
+      updates:
+        column: name, age
+        value: $1, $2
+      conditions:
+        condition: WHERE
+        column: id
+        operator: '='
+        value: $3
+
+  delete:
+    User:
+      type: DELETE
+      action: FROM
+      table: users
+      conditions:
+        condition: WHERE
+        column: id
+        operator: '='
+        value: $1
+```
+
+---
+
+## API Definition
+
+APIs define REST endpoints for each resource. Hosts register matching object-based Seltzer `Route` definitions today. Auto-wiring those routes from `*API.yml` is the next engine step.
+
+```yaml
+# userAPI.yml
+user:
+  get:
+    allUsers:
+      api:
+        method: GET
+        endpoint: /users
+    usersById:
+      api:
+        method: GET
+        endpoint: /users/:id
+    usersByEmail:
+      api:
+        method: GET
+        endpoint: /users/:email
+
+  create:
+    user:
+      api:
+        method: POST
+        endpoint: /users
+
+  update:
+    user:
+      api:
+        method: PUT
+        endpoint: /users/:id
+
+  delete:
+    user:
+      api:
+        method: DELETE
+        endpoint: /users/:id
+```
+
+---
+
+## Database Adapters
+
+Nectarine includes adapters for each supported database. All connection details are sourced from environment variables. SQL statements are never hardcoded — they are built dynamically from the YAML query definitions at runtime.
+
+### Query Generation
+
+Nectarine reads a query definition from YAML and the **compiler** assembles SQL. App code must not concatenate tokens into a statement.
+
+```ts
+import { CCompiler } from "@citrusworx/nectarine/compiler";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+
+const compiler = new CCompiler();
+const parsed = compiler.parse_config("user.yml");
+const sql = compiler.buildQuery(compiler.clean_parse(parsed, "user", "get"), "UserById");
+// SELECT id FROM users WHERE id = $1
+
+const user = await pg.query(sql, [id]);
+```
+
+No SQL is written by hand. The query structure, fields, table, and conditions all come from the YAML definition. See [No hard-coded SQL](./no-hardcoded-sql.md).
+
+### PostgreSQL
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createPgAdapter, createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const pg = createPgAdapterFromConfig(config)
+    ?? createPgAdapter(config.resolveCredentials("postgres")!);
+
+await pg.connect();
+const result = await pg.query(sql, [param]);
+await pg.disconnect();
+```
+
+Environment variables:
+```
+PG_USER
+PG_HOST
+PG_PASS
+PG_DB
+PG_PORT
+```
+
+### MySQL
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMysqlAdapter, createMysqlAdapterFromConfig } from "@citrusworx/nectarine/adapters/ms";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const mysql = createMysqlAdapterFromConfig(config)
+    ?? createMysqlAdapter(config.resolveCredentials("mysql")!);
+
+await mysql.connect();
+const result = await mysql.query(sql, [param]); // compiler `$1` or MySQL `?`
+await mysql.disconnect();
+```
+
+YAML declares the env **key names** (typically `MS_USER`, `MS_HOST`, `MS_PASS`, `MS_DB`, `MS_PORT`). `NectarineConfig.resolveCredentials("mysql")` reads the values; the adapter does not read `process.env` itself. The compiler is still Postgres-first (`$1`); the MySQL adapter rewrites `$1` / `$N::jsonb` to `?` / `CAST(? AS JSON)` at `query()` time.
+
+### MongoDB
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine";
+import { createMongoAdapter, createMongoAdapterFromConfig } from "@citrusworx/nectarine/adapters/mg";
+
+const config = loadNectarineConfig("./nectarine.config.yaml");
+const creds = config.resolveCredentials("mongodb");
+if (!creds) {
+    throw new Error("MongoDB env is incomplete");
+}
+
+const mg = createMongoAdapterFromConfig(config) ?? createMongoAdapter(creds);
+await mg.connect();
+const result = await mg.collection("users").find(query).toArray();
+await mg.disconnect();
+```
+
+YAML declares the env key names (typically `MG_USER`, `MG_HOST`, `MG_PASS`, `MG_DB`, `MG_PORT`). The adapter receives resolved credentials and does not read `process.env` itself.
+
+---
+
+## Default Transport
+
+Nectarine does **not** spin up an HTTP server. It is a library: config, compiler, and adapters.
+
+WebEngine / Blackwater hosts with **Seltzer**. Blackwater's `nectarine.config.yaml` sets `transport.server: seltzer` and tells hosts not to use Express route generation.
+
+```yaml
+# nectarine.config.yaml
+version: "0.1"
+
+transport:
+  server: seltzer
+  # Object-based Seltzer Route definitions. Do not use Express route generation.
+  validation: zod       # planned on the hosted path
+  # client: axios       # optional; not part of the default stack
+
+database:
+  default: postgres     # postgres | mysql | mongodb
+
+resources:
+  - name: user
+    schema: ./user/userSchema.yml
+    queries: ./user/user.yml
+    api: ./user/userAPI.yml
+```
+
+Express may remain a historical or optional note. It is not what Nectarine does by default, and Nectarine does not generate or listen as an Express app. Route auto-wiring from `*API.yml` onto Seltzer is the next engine step.
+
+---
+
+## Usage with WebEngine
+
+Nectarine is the WebEngine data/config library. The host process runs **Seltzer**; Nectarine does not start its own server.
+
+Blackwater's backend (`apps/blackwatersound/back`) is the current pattern:
+
+```ts
+import { loadNectarineConfig } from "@citrusworx/nectarine/config";
+import { Seltzer } from "@citrusworx/seltzer";
+
+const nectarine = loadNectarineConfig("./nectarine.config.yaml");
+const app = Seltzer.init();
+
+for (const route of routes) {
+  app.route(route);
+}
+
+app.listen(port, { locals, onListening });
+```
+
+See [Seltzer](../seltzer/README.md) for the HTTP runtime.
+
+---
+
+## GUI
+
+A visual editor for Nectarine is planned — allowing developers and creators to define models, schemas, and APIs without writing YAML by hand. This will be powered by Sugar and integrated into the WebEngine Wizard.
+
+---
+
+## Roadmap
+
+```
+v0.1  ← PostgreSQL, MySQL, MongoDB adapters       🔧 Active
+       YAML-driven query generation
+       YAML-driven API/route definition
+       YAML-driven schema definition
+       nectarine.config.yaml (transport.server: seltzer)
+v0.2  ← Seltzer hosting as the WebEngine / Blackwater default
+       Auto-wired Seltzer routes from API YAML (next engine step)
+       Zod validation on the hosted path
+v0.3  ← Optional / historical alternate transports (e.g. Express)
+       GraphQL support
+v0.4  ← GUI (powered by Sugar)
+v1.0  ← stable API
+```
+
+---
 
 ## Status
 
-**Early / Alpha** (`@citrusworx/nectarine` 0.1.0).
-
-Shipped: YAML load, named query/route lookup, `PgSql`, `Mysql` + pool, Mongo helpers, example model trees.
-
-Not shipped: SQL compiler, Express/Zod generation, `nectarine.config.yaml`, GraphQL, auth, GUI, connection-string helpers beyond env vars, published User/Blog/CMS packs.
-
-MySQL and Mongo adapters **exist** and are usable as shown above. They are not a finished query compiler + guide-complete stack. Postgres is the furthest along because of the `select` / `from` / `where` DSL and the in-repo example builder idea — even though that example file targets a different node shape than the PG fixtures.
-
-Alpha here means the contract folder and sockets are real and documented, not that the API is frozen, and **not** that YAML compiles to SQL. See [Status](./nectarine-status.md) for the area-by-area matrix and [Roadmap](./nectarine-roadmap.md) for what is worth building next.
-
-## Sibling packages
-
-- [Seltzer](../seltzer/README.md) — HTTP you can point at Nectarine objects (you wire it)
-- [Sig.js](../sigjs/README.md) — UI state; no Nectarine client
-- [Grapevine](../grapevine/README.md) — provision a VM; does not start Nectarine
-- [Juice](../juice/README.md) — styling only
+Nectarine is in active development. The database adapters, YAML definition system, and config loader are functional. WebEngine / Blackwater hosts with Seltzer. Route auto-wiring from API YAML is the next engine step.

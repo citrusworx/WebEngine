@@ -7,7 +7,9 @@ export async function loadKiwiConfigFromPath(configPath) {
     const parsed = parse(raw);
     const result = kiwiConfigSchema.safeParse(parsed);
     if (!result.success) {
-        const msg = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+        const msg = result.error.issues
+            .map((i) => `${i.path.join(".")}: ${i.message}`)
+            .join("; ");
         throw new Error(`Invalid kiwi.config.toml: ${msg}`);
     }
     return {

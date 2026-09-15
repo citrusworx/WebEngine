@@ -1,0 +1,5 @@
+Product:
+  table: products
+  fields:
+    id: string PRIMARY KEY
+    name: string NOT NULL

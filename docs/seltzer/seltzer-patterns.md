@@ -4,30 +4,28 @@ Reusable HTTP patterns built from current Seltzer primitives. These are not new 
 
 Each pattern follows the same general rules:
 
-- exact `method` + `path` own matching
-- `ctx.json` owns JSON responses
-- handlers own body parsing, query strings, and status codes
+- object `method` + `path` own matching (`:id` is real)
+- handlers return `ResponseData`; the runtime `send`s
+- `ctx.body` / `ctx.params` / `ctx.query` are filled by the pipeline
 - app code owns data (memory, Nectarine adapters, files)
 
 Related:
 
-- [JSON API tutorial](./seltzer-api-tutorial.md) — these patterns composed into one notes service
+- [JSON API tutorial](./seltzer-api-tutorial.md)
 - [Best practices](./seltzer-best-practices.md)
-- [Examples](./seltzer-examples.md) — longer showcases of the same ideas
+- [Examples](./seltzer-examples.md)
 
 ## Health check
-
-Use this as the first route you register. It proves `listen` is alive without touching storage.
 
 ```ts
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true }),
+  handler: (): ResponseData => ({ body: { ok: true } }),
 });
 ```
 
-Include cheap process facts if you want (`uptime`, collection size). Do not block on a database ping unless you catch failures and still `end` the response.
+Include cheap process facts if you want (`uptime`, collection size). Do not block on a database ping unless you catch failures and still return `ResponseData`.
 
 ## Collection list
 
@@ -35,11 +33,11 @@ Include cheap process facts if you want (`uptime`, collection size). Do not bloc
 app.route({
   method: "GET",
   path: "/notes",
-  handler: (ctx) => ctx.json([...notes.values()]),
+  handler: (): ResponseData => ({ body: [...notes.values()] }),
 });
 ```
 
-Return an array at the top level or `{ notes: [...] }` — pick one and keep it. Seltzer has no envelope convention.
+Return an array via `{ body: array }` or `{ body: { notes: [...] } }` — pick one and keep it. Seltzer has no envelope convention. Returning the array **bare** is a 500.
 
 ## Query filter on the same path
 
@@ -49,128 +47,105 @@ Matching ignores search, so filters live in the handler:
 app.route({
   method: "GET",
   path: "/notes",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const q = url.searchParams.get("q")?.toLowerCase();
+  handler: (ctx): ResponseData => {
+    const q = ctx.query.q?.toLowerCase();
     const all = [...notes.values()];
     const items = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
-    return ctx.json(items);
+    return { body: items };
   },
 });
 ```
 
 `GET /notes` and `GET /notes?q=deploy` hit this one route.
 
-## Create with stream JSON
+## Create with JSON body
 
 ```ts
-async function readJson(req: import("node:http").IncomingMessage) {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk as Buffer);
-  const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : null;
-}
-
 app.route({
   method: "POST",
   path: "/notes",
-  handler: async (ctx) => {
-    try {
-      const body = (await readJson(ctx.req)) as { text?: string };
-      if (!body?.text) return ctx.json({ error: "text required" }, 400);
-      const note = { id: crypto.randomUUID(), text: body.text };
-      notes.set(note.id, note);
-      return ctx.json(note, 201);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
-    }
+  contract: { body: { text: "string.required" } },
+  handler: (ctx): ResponseData => {
+    const body = ctx.body as { text: string };
+    const note = { id: crypto.randomUUID(), text: body.text };
+    notes.set(note.id, note);
+    return { status: 201, body: note };
   },
 });
 ```
 
-Share `readJson` across POST/PUT/PATCH handlers. Do not paste a new stream loop in every route.
+Invalid JSON is 400 from `parse`. Missing `text` is 400 from `validate`. Do not paste a stream loop in every route.
 
-## Lookup by query id
+## Lookup by `:id`
 
 ```ts
 app.route({
   method: "GET",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    if (!id) return ctx.json({ error: "id required" }, 400);
-    const note = notes.get(id);
-    return note ? ctx.json(note) : ctx.json({ error: "Not Found" }, 404);
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => {
+    const note = notes.get(ctx.params.id);
+    return note
+      ? { body: note }
+      : { status: 404, body: { error: "Not Found" } };
   },
 });
 ```
 
-This is the product-path stand-in for `/notes/:id`.
+Static siblings (`/notes/new`) win over this route regardless of registration order.
 
-## Replace / patch on an exact collection path
-
-PUT/PATCH still need an identifier. Carry it in the body or a query string.
+## Replace / patch / delete
 
 ```ts
 app.route({
   method: "PUT",
-  path: "/note",
-  handler: async (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    if (!id) return ctx.json({ error: "id required" }, 400);
-    if (!notes.has(id)) return ctx.json({ error: "Not Found" }, 404);
-    try {
-      const body = (await readJson(ctx.req)) as { text?: string };
-      if (!body?.text) return ctx.json({ error: "text required" }, 400);
-      const note = { id, text: body.text };
-      notes.set(id, note);
-      return ctx.json(note);
-    } catch {
-      return ctx.json({ error: "invalid json" }, 400);
+  path: "/notes/:id",
+  contract: { body: { text: "string.required" } },
+  handler: (ctx): ResponseData => {
+    if (!notes.has(ctx.params.id)) {
+      return { status: 404, body: { error: "Not Found" } };
     }
+    const body = ctx.body as { text: string };
+    const note = { id: ctx.params.id, text: body.text };
+    notes.set(note.id, note);
+    return { body: note };
   },
 });
-```
 
-```ts
 app.route({
   method: "DELETE",
-  path: "/note",
-  handler: (ctx) => {
-    const url = new URL(ctx.req.url || "/", `http://${ctx.req.headers.host}`);
-    const id = url.searchParams.get("id");
-    if (!id) return ctx.json({ error: "id required" }, 400);
-    const ok = notes.delete(id);
-    return ok ? ctx.json({ deleted: id }) : ctx.json({ error: "Not Found" }, 404);
+  path: "/notes/:id",
+  handler: (ctx): ResponseData => {
+    const ok = notes.delete(ctx.params.id);
+    return ok
+      ? { body: { deleted: ctx.params.id } }
+      : { status: 404, body: { error: "Not Found" } };
   },
 });
 ```
-
-`client.put` / `client.patch` / `client.delete` use the same `Endpoint` shape. Put `?id=` on `path`:
 
 ```ts
 await client.delete({
-  path: "/note?id=1",
-  endpoint: "/note",
+  path: "/notes/1",
+  endpoint: "/notes/:id",
   options: { baseUrl: "http://127.0.0.1:3000" },
 });
 ```
+
+`endpoint` is unused; put the concrete path on `path`.
 
 ## Error shape
 
 Pick a small JSON error and reuse it:
 
 ```ts
-function fail(ctx: { json: (data: unknown, status?: number) => void }, status: number, error: string) {
-  return ctx.json({ error }, status);
+function fail(status: number, error: string): ResponseData {
+  return { status, body: { error } };
 }
 ```
 
-Seltzer’s unmatched route already uses `{ error: "Not Found" }` at 404. Matching that key in handlers keeps clients boring.
+Seltzer’s unmatched route uses `{ error: "Not Found" }` at 404. Matching that key in handlers keeps clients boring.
 
-There is no problem+json helper, no stack in production responses unless you add it.
+Thrown errors become `{ error: "Internal Server Error", message }`. Domain 400s should return `ResponseData`, not throw, if you want a stable `error` string.
 
 ## Plain text / non-JSON
 
@@ -178,57 +153,57 @@ There is no problem+json helper, no stack in production responses unless you add
 app.route({
   method: "GET",
   path: "/robots.txt",
-  handler: (ctx) => {
-    ctx.res.writeHead(200, { "Content-Type": "text/plain" });
-    ctx.res.end("User-agent: *\nDisallow:\n");
+  handler: (): ResponseData => ({
+    headers: { "Content-Type": "text/plain" },
+    body: "User-agent: *\nDisallow:\n",
+  }),
+});
+```
+
+Do not `writeHead` on `ctx.res` and then return `{ body }` — `send` will no-op.
+
+## CORS on listen
+
+```ts
+app.listen(3000, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "OPTIONS"],
+    headers: ["Content-Type"],
   },
 });
 ```
 
-Do not call `ctx.json` afterwards.
+Do not register a per-path `OPTIONS` handler unless you need behavior beyond the builtin 204. CORS only fires when the request has an `Origin` header.
 
-## CORS headers on a known origin
-
-`ctx.json` cannot add headers. Write the head yourself for browser apps on another origin:
+## Auth as `before("handle")`
 
 ```ts
-function jsonWithCors(ctx: { res: import("node:http").ServerResponse }, data: unknown, status = 200) {
-  ctx.res.writeHead(status, {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "http://localhost:5173",
-  });
-  ctx.res.end(JSON.stringify(data));
+const requireAuth: Stage = (ctx) => {
+  if (!ctx.headers.authorization) {
+    return { status: 401, body: { error: "Unauthorized" } };
+  }
+};
+
+app.before("handle", requireAuth);
+```
+
+404s still run first (`route` is earlier). Public routes on the same app will also see this stage — branch on `ctx.path` if you need exceptions, or mount public and private apps separately.
+
+## Generate list + by-id
+
+```ts
+for (const route of generateRoutes(operations, {
+  execute: ({ query, params }) => {
+    if (query === "noteById") return notes.get(params.id) ?? null;
+    return [...notes.values()];
+  },
+})) {
+  app.route(route);
 }
-
-app.route({
-  method: "OPTIONS",
-  path: "/notes",
-  handler: (ctx) => {
-    ctx.res.writeHead(204, {
-      "Access-Control-Allow-Origin": "http://localhost:5173",
-      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    });
-    ctx.res.end();
-  },
-});
 ```
 
-Register `OPTIONS` for each path the browser preflights. There is no global middleware slot.
-
-## Nectarine path copy
-
-```ts
-const allUsers = { method: "GET", endpoint: "/users" };
-
-app.route({
-  method: allUsers.method,
-  path: allUsers.endpoint,
-  handler: (ctx) => ctx.json({ users: [] }),
-});
-```
-
-Keep the YAML as the named contract. Keep the handler as yours. Skip `:id` keys.
+See [Generate routes](./seltzer-generate.md).
 
 ## Endpoint object per collection
 
@@ -242,7 +217,7 @@ const notesApi: Endpoint = {
 };
 ```
 
-Reuse it for `get` and `post`. For query lookups, a second object with `path: "/note"` (and `?id=` at the call site) is clearer than mutating `path`.
+Reuse it for `get` and `post`. For by-id, a second object with `path: "/notes/1"` is clearer than mutating `path`.
 
 ## Mount helpers (still just `.route`)
 
@@ -251,39 +226,34 @@ function mountNotes(app: Seltzer, store: Map<string, Note>) {
   app.route({
     method: "GET",
     path: "/notes",
-    handler: (ctx) => ctx.json([...store.values()]),
+    handler: (): ResponseData => ({ body: [...store.values()] }),
   });
-  // POST, etc.
 }
 ```
 
 This is how you “group” routes without a Router class.
 
-## Try/catch around async work
+## Locals instead of module globals
 
 ```ts
+app.listen(3000, { locals: { notes, db } });
+
 app.route({
   method: "GET",
-  path: "/users",
-  handler: async (ctx) => {
-    try {
-      return ctx.json(await loadUsers());
-    } catch (err) {
-      console.error(err);
-      return ctx.json({ error: "failed" }, 500);
-    }
-  },
+  path: "/notes",
+  handler: (ctx): ResponseData => ({
+    body: [...(ctx.locals as { notes: Map<string, Note> }).notes.values()],
+  }),
 });
 ```
-
-`listen` will not do this for you.
 
 ## What is not a pattern (yet)
 
 - `app.use(auth)`
-- `router.param("id", …)`
-- `return { status, body }`
+- `return { ok: true }` without `{ body }`
+- `ctx.json`
 - Automatic OpenAPI from `.route` calls
 - File uploads as first-class `ctx.file`
+- HTTPS `listen`
 
-Those would be new code. Until they exist, keep patterns on `ctx.json` and Node.
+Those would be new code.

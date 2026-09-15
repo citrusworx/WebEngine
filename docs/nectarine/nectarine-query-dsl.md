@@ -1,84 +1,104 @@
-# Query DSL
+# Nectarine Query DSL (phonics)
 
-How query YAML is shaped in `libraries/nectarine/models/user/db/pg/user.yml`, and what `parser.genSQL` actually returns. This is the mental model for **intent as data** — not a SQL string, not Knex, and not a compiler output.
+Nectarine assembles SQL **phonics-style**: YAML tokens are the letters; the
+compiler is the only place those letters become a statement. App code never
+embeds SQL. Adapters never build SQL.
 
-Related:
+Hard rule and Blackwater inventory: [No hard-coded SQL](./no-hardcoded-sql.md).
 
-- [Tutorial](./nectarine-tutorial.md) — compile `select` / `from` / `where` in app code
-- [Compiler](./nectarine-compiler.md) — `buildSQL` / `buildQuery` are empty
-- [Schema Guide](./nectarine-schema-guide.md) — tables live in a different file
-- [MySQL](./nectarine-mysql.md) — older `type` / `action` / `updates` shape
+## Layers
 
-## What the DSL is
-
-A query file is a nested map: **resource → CRUD verb → query name → intent object**.
-
-`parser.genSQL(path, type, method, config)` returns `doc[type][method][config]`. That is a plain object. It is not SQL.
-
-```ts
-import { parser } from "@citrusworx/nectarine";
-
-const spec = parser.genSQL(
-  "libraries/nectarine/models/user/db/pg/user.yml",
-  "user",
-  "get",
-  "UserById",
-);
-// { select: ["id"], from: "users", where: { column: "id", operator: "eq", value: "$1" } }
+```
+App code          →  named query or named DDL only
+Compiler          →  SELECT | INSERT | UPDATE | DELETE | CREATE TABLE from YAML tokens
+Adapter           →  query(sql, params)   // execute only
 ```
 
-The Postgres-oriented keys (`select`, `from`, `where`, `insert`, `set`) are a **convention in fixtures**. The parser does not check them. A future `buildSQL` is supposed to. Today your app does.
+- **App code** calls `CCompiler.buildQuery(...)` (or `parser.genSQL` +
+  `parser.buildSQL`) for DML, and `CCompiler.buildDdl` / `buildDdls` for
+  schema YAML. It passes the string plus bind values to an adapter.
+  It does not concatenate SQL, interpolate request data, or hand-write
+  `SELECT` / `INSERT` / `UPDATE` / `DELETE` / `CREATE TABLE`.
+- **Compiler** validates identifiers, operators, and values. Runtime values
+  are `$1`-style placeholders (`$1::jsonb` is an allowlisted Postgres bind
+  cast; `{ value: $N, cast: jsonb }` is equivalent). YAML-authored constants
+  (`true`, `42`, `'published'`) are allowed only as tagged `{ const: ... }`
+  or via the closed `where` fragment grammar — never via string interpolation
+  of user input. Mixed-case identifiers (`isActive`, `originalPrice`) are
+  quoted (`"isActive"`) so Postgres does not fold them to lowercase.
+  Schema field tokens (`jsonb NOT NULL`, `enum(...)`,
+  `DEFAULT NOW()`) become `CREATE TABLE` / `CREATE INDEX`.
+- **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
+  compiler. They do not assemble statements. The MySQL adapter rewrites `$N`
+  (and allowlisted `$N::jsonb`) to `?` at the query boundary, and JSONB `@>` /
+  `?` / `->>` to MySQL JSON functions; Postgres keeps `$1` and the operators.
+  `ON CONFLICT` is Postgres-only in this version (MySQL throws at `query()`).
 
-## What a query object is not
+## One phonics model, two YAML surfaces
 
-- **Not a statement.** `typeof spec === "object"`.
-- **Not validated.** Unknown operators, missing `from`, and `select: 12` all load.
-- **Not compiled by `buildSQL()`.** That function’s body is comments.
-- **Not shared with MySQL helpers.** `mapInsert` wants `updates.values`, not `insert.columns`.
-- **Not Mongo.** There is no `genSQL` flavor for collections.
+The **canonical** clause object is what `compileQuery` assembles:
 
-## A compact picture
+| Method | YAML keys | Example SQL |
+|--------|-----------|-------------|
+| `get` (`read` is an alias) | `select`, `from`, optional `where`, optional `orderBy`; or `count: true` / `exists: true` | `SELECT id FROM users WHERE id = $1` |
+| `create` | `insert.into`, `insert.columns`, `insert.values`, optional `returning`, optional `onConflict` | `INSERT INTO users (...) VALUES ($1, $2, $3, NOW())` |
+| `update` | `table`, `set`, `values`, `where` | `UPDATE users SET name = $1 WHERE id = $2` |
+| `delete` | `from`, `where` | `DELETE FROM users WHERE id = $1` |
 
-```text
-user.yml
-  user
-    get
-      UserById { select, from, where }     ──► genSQL(..., "user", "get", "UserById")
-      AllUsers { select, from }
-    create
-      NewUser  { insert: { into, columns, values } }
-    update
-      UserById { table, set, values, where }
-    delete
-      User     { from, where }
+Blackwater resources (`apps/blackwatersound/back/src/schemas/**/*Queries.yml`)
+use a flatter `type: SELECT` surface. The compiler **normalizes** that
+surface onto the canonical model — it does not execute the YAML `where`
+string as SQL.
 
-optokens type: eq gt lt lte gte neq        ──► documentation only
-your builder:  eq → =                      ──► the current compiler
-PgSql.query({ sql, params })               ──► the socket
+```yaml
+# Canonical — models/user/db/pg/user.yml
+user:
+  get:
+    UserById:
+      select: ['id']
+      from: users
+      where:
+        column: id
+        operator: eq
+        value: $1
+
+# Blackwater — productQueries.yml (normalized, then compiled)
+product:
+  read:                    # alias of get
+    allProducts:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: isActive = true
+      orderBy: catalog, category, name
 ```
 
-## Design bets (still the right ones)
-
-- Query YAML describes **intent**, not full SQL text
-- Runtime values are placeholders (`$1`, `$2`) passed separately as params
-- Operators are tokens (`eq`, `gt`) so a compiler can refuse unknown ones
-- Shapes should be consistent enough that a real `buildSQL()` would not need per-query special cases
-
-Those bets are why the [tutorial](./nectarine-tutorial.md) builder is small. They are not a claim that the package already compiles.
+Prefer the structured `where` object for new YAML. Keep the Blackwater
+surface so existing query files compile without a mechanical rewrite.
 
 ## Resource layout
 
-Each resource currently uses three YAML files when you follow the user bundle:
+Each resource currently uses three YAML files:
 
-- `userSchema.yml` — data model and table structure
-- `user.yml` (under `db/pg` or `db/msql`) — SQL / query DSL definitions
-- `userAPI.yml` — API endpoint definitions
+- `*Schema.yml`: data model compiled to `CREATE TABLE` / `CREATE INDEX` (`relationships:` is documentation, not FK DDL)
+- `*Queries.yml` or `user.yml`: query DSL
+- `*API.yml`: API endpoint definitions
 
-`genSQL` only needs the query file. It does not join schema or API files.
+Top-level pattern:
 
-## `get` queries
+```yaml
+resourceName:
+  get:      # or read
+    QueryName: ...
+  create:
+    QueryName: ...
+  update:
+    QueryName: ...
+  delete:
+    QueryName: ...
+```
 
-Read queries use `select`, `from`, and optional `where`.
+## `get` / `read` queries
 
 ```yaml
 user:
@@ -96,59 +116,76 @@ user:
         value: $1
 ```
 
-Current fields:
-
-- `select`: array of column names, or `['*']` (fixtures also use a `'*'` string in blog files)
-- `from`: table name
-- `where`: optional single predicate object
-
-Current `where` fields:
-
-- `column`: column name
-- `operator`: token from the table below
-- `value`: placeholder or literal
-
-Compilation target for `UserByEmail`:
-
-```sql
-SELECT email FROM users WHERE email = $1
-```
-
-Pass `["ops@citrusworx.com"]` as `params`. Do not splice the email into the YAML.
-
-## `update` queries
+Blackwater equivalent:
 
 ```yaml
-user:
-  update:
-    UserById:
-      table: users
-      set: ['name', 'age', 'updated_at']
-      values: [$1, $2, NOW()]
-      where:
-        column: id
-        operator: eq
-        value: $3
+product:
+  read:
+    productById:
+      type: SELECT
+      table: products
+      fields: '*'
+      where: id = $1
 ```
 
-Current fields:
+## `where` — structured (preferred)
 
-- `table`: target table
-- `set`: columns to update
-- `values`: values corresponding to `set`
-- `where`: predicate object
-
-Compilation target:
-
-```sql
-UPDATE users
-SET name = $1, age = $2, updated_at = NOW()
-WHERE id = $3
+```yaml
+where:
+  column: id
+  operator: eq          # eq | neq | gt | gte | lt | lte | in | not_in | is_null | is_not_null | contains | has_key
+  value: $1
 ```
 
-The checked-in file uses `{ fn: now }` in some `values` lists. That is YAML. Your builder maps it to `NOW()` or rejects it.
+AND / OR trees:
 
-## `create` queries
+```yaml
+where:
+  and:
+    - { column: catalog, operator: eq, value: $1 }
+    - { column: isActive, operator: eq, value: { const: true } }
+```
+
+`value` rules:
+
+| Form | Compiles to | Allowed? |
+|------|-------------|----------|
+| `$1`, `$2`, … | bind placeholder | yes — **required** for runtime / user data |
+| `{ fn: now }` or `NOW()` | `NOW()` | yes |
+| `{ const: true }` / `{ const: 'published' }` | `TRUE` / `'published'` | yes — YAML-authored constants only |
+| raw `true` / `1` / `"hello"` | — | **no** (forces parameterization) |
+
+## `where` — Blackwater fragment grammar (closed)
+
+`where: isActive = true` is parsed, not spliced. Allowed tokens:
+
+- identifiers (`isActive`, `created_at`)
+- operators `=` `!=` `<>` `<` `>` `<=` `>=` plus JSONB `@>` / `?`
+- `$N` placeholders
+- `TRUE` / `FALSE` / `NULL`, decimal numbers, single-quoted strings (`''` escape)
+- `AND` / `OR`, parentheses
+- `IN` / `NOT IN` (`status IN ('requested', 'confirmed')`)
+- `IS NULL` / `IS NOT NULL`
+- JSONB `@>` / `?` / `->>` (`payload->>'catalog' = $1`, `payload @> $1::jsonb`, `payload ? $1`)
+
+Rejected (compile error): comments, semicolons, function calls, subqueries,
+double-quoted identifiers, unquoted strings, anything else. This is
+intentional: raw SQL in YAML is a footgun.
+
+String literals and booleans in a fragment are **compile-time constants**
+from the YAML file. Request data must use `$N` and adapter params.
+
+## `orderBy`
+
+Blackwater: `orderBy: catalog, category, name` or `created_at DESC`.
+
+Canonical: `orderBy: [{ column: created_at, direction: DESC }]`.
+
+Identifiers only; optional `ASC` / `DESC`. Same closed grammar — no raw SQL.
+
+## `create` / INSERT
+
+Canonical:
 
 ```yaml
 user:
@@ -157,23 +194,138 @@ user:
       insert:
         into: users
         columns: ['email', 'password', 'name', 'created_at']
-        values: [$1, $2, $3, NOW()]
+        values: [$1, $2, $3, { fn: now }]
 ```
 
-Current fields:
+Blackwater (values default to `$1 … $N` in field order):
 
-- `insert.into`: target table
-- `insert.columns`: ordered column list
-- `insert.values`: ordered value list
-
-Compilation target:
-
-```sql
-INSERT INTO users (email, password, name, created_at)
-VALUES ($1, $2, $3, NOW())
+```yaml
+waitlist:
+  create:
+    joinWaitlist:
+      type: INSERT
+      table: waitlist
+      fields: [id, name, email, source_app, interest]
+      returning: [id, email, created_at]
 ```
 
-## `delete` queries
+→ `INSERT INTO waitlist (...) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, created_at`
+
+JSONB document insert (live Blackwater product store):
+
+```yaml
+product:
+  create:
+    seedPayload:
+      type: INSERT
+      table: products
+      fields: [id, payload]
+      values:
+        - $1
+        - { value: $2, cast: jsonb }   # equivalent: $2::jsonb
+      onConflict:
+        target: id
+        do: nothing
+```
+
+→ `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING`
+
+The app serializes a validated object (`JSON.stringify` after an object
+check) and binds it. The compiler is the only place `::jsonb` is emitted.
+HTTP create uses the same bind (`insertPayload`) with `RETURNING payload`.
+
+## `ON CONFLICT`
+
+INSERT-only. Postgres `ON CONFLICT (cols) DO NOTHING` or
+`DO UPDATE SET col = EXCLUDED.col`. Conflict target is one or more
+allowlisted columns (not `ON CONSTRAINT`). `DO UPDATE` SET is an
+allowlisted column list that copies `EXCLUDED.column` — no expressions,
+no extra `$N` binds, no `WHERE`.
+
+Canonical:
+
+```yaml
+product:
+  create:
+    seedPayload:
+      insert:
+        into: products
+        columns: [id, payload]
+        values: [$1, { value: $2, cast: jsonb }]
+        onConflict:
+          target: [id]
+          do: nothing
+```
+
+→ `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING`
+
+```yaml
+onConflict:
+  target: [id]
+  do: update
+  set: [payload]
+```
+
+→ `… ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload`
+
+Blackwater (`type: INSERT`) uses the same `onConflict` object. `target`
+may be a column name or a list. `action: do_nothing` / `do_update` is an
+alias of `do: nothing` / `update`. Optional `returning` still follows the
+conflict clause.
+
+Live Blackwater seed (`product.create.seedPayload`) uses `DO NOTHING` so
+the host does not `payloadById` before insert. HTTP `insertPayload` stays
+a plain INSERT so duplicates still fail.
+
+**MySQL:** this phonics is Postgres-only in v1. The MySQL adapter rejects
+`ON CONFLICT` at `query()` rather than rewriting to `ON DUPLICATE KEY UPDATE`
+(semantics differ; `INSERT IGNORE` would hide non-duplicate errors). Mongo
+does not execute SQL DML.
+
+Not compiled: `ON CONSTRAINT`, `DO UPDATE WHERE`, `EXCLUDED` expressions
+other than `EXCLUDED.column`, `jsonb_set` inside SET.
+
+## `update`
+
+Canonical `set` + `values` + structured `where`.
+
+Blackwater `type: UPDATE` with `fields` and no `values` assigns `$1 … $N`
+to SET columns, then **remaps** WHERE placeholders so `where: id = $1`
+becomes `$N+1`. Bind order is SET fields first, then WHERE params.
+
+```yaml
+product:
+  update:
+    updateProduct:
+      type: UPDATE
+      table: products
+      fields: [name, sub, updated_at]
+      where: id = $1
+```
+
+→ `UPDATE products SET name = $1, sub = $2, updated_at = $3 WHERE id = $4`
+
+Live JSONB catalog replace (explicit values so WHERE stays `$2`; `{ fn: now }` is not a bind):
+
+```yaml
+product:
+  update:
+    updatePayload:
+      type: UPDATE
+      table: products
+      fields: [payload, updated_at]
+      values:
+        - { value: $1, cast: jsonb }
+        - { fn: now }
+      where: id = $2
+```
+
+→ `UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2`
+
+Host execute merges the catalog document in TypeScript, then binds the full
+JSON string. The compiler does not emit JSONB `||` / `jsonb_set`.
+
+## `delete`
 
 ```yaml
 user:
@@ -186,106 +338,149 @@ user:
         value: $1
 ```
 
-Compilation target:
+Blackwater uses `table` instead of `from`; the normalizer maps it.
 
-```sql
-DELETE FROM users
-WHERE id = $1
+## `COUNT` / `EXISTS`
+
+List totals and duplicate checks without loading rows into the host.
+
+Canonical:
+
+```yaml
+product:
+  get:
+    countPayloads:
+      select: [{ fn: count }]          # COUNT(*)
+      from: products
+
+waitlist:
+  get:
+    emailExists:
+      exists: true
+      from: waitlist
+      where:
+        column: email
+        operator: eq
+        value: $1
 ```
 
-A delete without `where` is not modeled here. Keep it that way until a compiler can refuse it.
+Blackwater:
+
+```yaml
+countPayloads:
+  type: SELECT
+  table: products
+  count: true
+
+emailExists:
+  type: SELECT
+  table: waitlist
+  exists: true
+  where: email = $1
+```
+
+→ `SELECT COUNT(*) FROM products`
+
+→ `SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1)`
+
+`{ fn: count, column: id, as: n }` emits `COUNT(id) AS n`. `COUNT` cannot mix with other select columns or `orderBy` (`GROUP BY` is not compiled). Joins stay out of scope.
 
 ## Operator tokens
 
-| DSL token | SQL operator |
-|---|---|
+| DSL token | SQL |
+|-----------|-----|
 | `eq` | `=` |
 | `neq` | `!=` |
 | `gt` | `>` |
 | `gte` | `>=` |
 | `lt` | `<` |
 | `lte` | `<=` |
+| `in` | `IN (...)` |
+| `not_in` | `NOT IN (...)` |
+| `is_null` | `IS NULL` |
+| `is_not_null` | `IS NOT NULL` |
+| `contains` | `@>` (JSONB containment) |
+| `has_key` | `?` (JSONB key exists) |
 
-These tokens should be translated by a compiler rather than written as raw SQL in YAML. The package exports `optokens` as a **TypeScript type** from the compiler module. Nothing in `src/` maps the tokens at runtime. Copy the table into an allow-list in your builder — see [Getting Started](./nectarine-getting-started.md) and the tutorial.
+## JSONB
 
-Unknown tokens should throw in *your* compiler. `genSQL` will still return them.
-
-## Values and placeholders
-
-Postgres-oriented files use positional placeholders:
-
-- `$1`, `$2`, `$3`
-
-These are intended to be passed separately to `PgSql.query` as `params`.
-
-MySQL-oriented files use `?` instead. Do not feed `$1` to `Mysql()`.
-
-## Allowed SQL-ish literals
-
-Fixtures also use function literals such as `NOW()` and objects such as `{ fn: now }`.
-
-Current expectation for a hand-built compiler:
-
-- placeholders like `$1` stay in the string and match `params`
-- literals like `NOW()` are compiler-approved fragments
-- `{ fn: now }` is the same idea in object form — map it or reject it
-
-A future version may formalize functions. Do not document other `{ fn: … }` values as shipped.
-
-## Shapes `genSQL` cannot address
-
-`libraries/nectarine/models/blog/post/sql.yml` uses a top-level `queries:` map:
+**JSONB is supported; we are not dropping it.** Schema fields may be
+`json` / `jsonb` (Blackwater already uses `tags: json`). Query values may
+bind JSON with `$1::jsonb` (allowlist: `jsonb`, `json`, `text`).
 
 ```yaml
-queries:
-  getPublishedPosts:
-    select: [id, title, slug, excerpt, created_at]
-    where:
-      column: status
-      operator: eq
-      value: 'published'
+values: [$1, $2::jsonb]
 ```
 
-There is no `user.get.Name` nesting. `parser.genSQL(path, "queries", "getPublishedPosts", …)` will not find a CRUD layer that is not there. Load with `parser.yaml` and walk `doc.queries.getPublishedPosts`, or rewrite the file to the user-bundle layout.
+```sql
+INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)
+```
 
-Blog `user/sql.yml` is closer to the PG DSL but inconsistent (`insert` using `set`, `select: '*'` as a string). Treat fixtures as examples of *intent*, not as a schema pack.
+On MySQL, the adapter turns that bind into `CAST(? AS JSON)` (MySQL’s JSON
+type is the closest match to jsonb). `::text` is stripped to `?`.
 
-## MySQL is a different DSL
-
-`models/user/db/msql/user.yml`:
+JSONB path and operators are first-class phonics (not flattened columns):
 
 ```yaml
-user:
-  create:
-    new:
-      type: INSERT
-      action: INTO
-      table: users
-      values: VALUES
-      updates:
-        column: [email, password, name, created_at]
-        values: ['?', '?', '?', NOW()]
+where:
+  column: payload
+  path: catalog            # payload->>'catalog'
+  operator: eq
+  value: $1
 ```
 
-`parser.genSQL(path, "user", "create", "new")` still works — it only indexes keys. `mapInsert(spec)` joins `updates.values`. You still write `INSERT INTO …`. Update and delete nodes in that fixture are empty. See [MySQL](./nectarine-mysql.md).
+```yaml
+where:
+  column: payload
+  operator: contains       # payload @> $1::jsonb
+  value: $1::jsonb
+```
 
-## `pgz.example.ts` does not compile this DSL
+```yaml
+where:
+  column: payload
+  operator: has_key        # payload ? $1
+  value: $1
+```
 
-`buildSelectSQL` in `libraries/nectarine/src/adapters/pg/pgz.example.ts` expects `type`, `fields`, `table`, `action`, `conditions` — the MySQL-shaped keys. Calling it on a `UserById` node from `db/pg/user.yml` produces nonsense (`undefined * FROM undefined`).
+Blackwater fragments: `payload->>'catalog' = $1`, `payload @> $1::jsonb`,
+`payload ? $1`. Path keys are YAML-authored quoted strings, never `$N`.
+`contains` / `has_key` with `path` keep jsonb (`payload->'tags' @> $1::jsonb`).
 
-The getting-started / tutorial `buildSelect` is the builder that matches `select` / `from` / `where`. Copy that, not `buildSelectSQL`, unless you rewrite the YAML to the example’s shape.
+On MySQL, `->>` becomes `JSON_UNQUOTE(JSON_EXTRACT(…))`, `@>` becomes
+`JSON_CONTAINS`, and `?` becomes `JSON_CONTAINS_PATH` so the Postgres `?`
+operator is not mistaken for a `?` placeholder.
 
-## Known constraints
+Blackwater’s live `products` table keeps `payload JSONB` (document-store)
+plus a nullable catalog projection from `productSchema.yml`. That is a
+**hybrid**, not a reason to remove JSONB. Host execute runs catalog/slug
+named queries (`payloadsByCatalog`, `payloadsBySlug`) when Postgres is
+connected; seed/memory still maps a missing catalog to `gear`.
 
-This document describes the **current** DSL, not the final one.
+## Not yet compiled
 
-- `where` models a single predicate object (no `AND` / `OR` trees)
-- joins are not modeled
-- grouping, ordering, limits, and pagination are not formalized (`orderBy` appears in the blog post file and is unread)
-- SQL functions are still raw fragments or `{ fn: now }`
-- there is no validation layer for identifiers
-- `CCompiler.clean_parse` indexes `[method][type]`, the **opposite** of `genSQL` — see [Compiler](./nectarine-compiler.md)
+- blog `queries:` maps (`models/blog/post/sql.yml`)
+- joins, `GROUP BY`, `LIMIT` / pagination
+- general aggregates beyond `COUNT`, `EXISTS` as a WHERE subquery
+- JSONB `||` / `jsonb_set` (host merges documents, then binds `$N::jsonb`)
+- MySQL `ON DUPLICATE KEY UPDATE` (Postgres `ON CONFLICT` is compiled; MySQL rejects it)
 
-## Next step for the code
+## Usage
 
-Lock this DSL into TypeScript types and compile it through `buildSQL()` / `buildQuery` rather than treating it as loose YAML objects. Until that lands, the docs stay with a hand-built compiler and [Status](./nectarine-status.md).
+```ts
+import { CCompiler } from "@citrusworx/nectarine/compiler";
+import { createPgAdapterFromConfig } from "@citrusworx/nectarine/adapters/pg";
+
+const compiler = new CCompiler();
+const parsed = compiler.parse_config("./schemas/product/productQueries.yml");
+const reads = compiler.clean_parse(parsed, "product", "read");
+const sql = compiler.buildQuery(reads, "productById");
+// SELECT * FROM products WHERE id = $1
+
+await pg.query(sql, [id]);
+
+const schema = compiler.parse_config("./schemas/product/productSchema.yml");
+const ddl = compiler.buildDdl(schema);
+// CREATE TABLE IF NOT EXISTS products ( ... payload JSONB NOT NULL ... )
+await pg.query(ddl);
+```

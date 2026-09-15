@@ -1,0 +1,15 @@
+# Optional local overrides — copy to docker-compose.override.yml
+#
+# Example: expose Postgres to host for debugging
+#
+# services:
+#   postgres:
+#     ports:
+#       - "5432:5432"
+#
+# Example: publish back port for host Vite dev
+#
+# services:
+#   back:
+#     ports:
+#       - "3001:3001"

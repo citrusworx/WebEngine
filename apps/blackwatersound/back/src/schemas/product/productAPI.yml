@@ -1,0 +1,67 @@
+product:
+  read:
+    allProducts:
+      api:
+        method: GET
+        endpoint: /api/products
+        query: allProducts
+
+    countPayloads:
+      api:
+        method: GET
+        endpoint: /api/products/count
+        query: countPayloads
+
+    payloadsWithKey:
+      api:
+        method: GET
+        endpoint: /api/products/key/:key
+        query: payloadsWithKey
+
+    payloadsContaining:
+      api:
+        method: GET
+        endpoint: /api/products/containing
+        query: payloadsContaining
+
+    productsByCatalog:
+      api:
+        method: GET
+        endpoint: /api/products/catalog/:catalog
+        query: payloadsByCatalog
+
+    productById:
+      api:
+        method: GET
+        endpoint: /api/products/:id
+        query: productById
+
+    productBySlug:
+      api:
+        method: GET
+        endpoint: /api/products/slug/:slug
+        query: payloadsBySlug
+
+  create:
+    newProduct:
+      api:
+        method: POST
+        endpoint: /api/products
+        query: insertPayload
+        body:
+          id: string.required
+          name: string.required
+
+  update:
+    updateProduct:
+      api:
+        method: PUT
+        endpoint: /api/products/:id
+        query: updatePayload
+
+  delete:
+    deleteProduct:
+      api:
+        method: DELETE
+        endpoint: /api/products/:id
+        query: deleteProduct

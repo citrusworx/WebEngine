@@ -1,0 +1,15 @@
+Enrollment:
+  table: enrollments
+  description: Client enrollment in a course
+  fields:
+    id: string PRIMARY KEY
+    client_id: string FOREIGN KEY REFERENCES clients(id) NOT NULL
+    course_id: string FOREIGN KEY REFERENCES courses(id) NOT NULL
+    status: enum(active, completed, cancelled, paused) DEFAULT 'active'
+    progress_percent: int DEFAULT 0
+    enrolled_at: timestamp DEFAULT NOW()
+    completed_at: timestamp
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    client: Client
+    course: Course

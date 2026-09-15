@@ -2,12 +2,14 @@
 
 Outbound `fetch` helpers exported as `client` from `@citrusworx/seltzer`.
 
-Source: `libraries/seltzer/src/core/client/client.ts`. This is not a full HTTP client. KiwiPress already wraps `fetch` itself for WordPress; treat `client.*` as the packaged sibling of `Seltzer.listen`, not as a replacement for `undici`.
+Source: `libraries/seltzer/src/core/client/client.ts`. This is not a full HTTP client. KiwiPress still wraps `fetch` itself for WordPress in places; treat `client.*` as the packaged sibling of `Seltzer.listen`.
+
+Package **0.8.x** hardened this wrapper relative to 0.2.0: `HttpError` on non-2xx, JSON only when the success body is JSON, optional `allowSelfSigned` via `undici`.
 
 ## The object
 
 ```ts
-import { client, type Endpoint } from "@citrusworx/seltzer";
+import { client, HttpError, type Endpoint } from "@citrusworx/seltzer";
 
 client.get(endpoint);
 client.post(endpoint, data);
@@ -16,7 +18,7 @@ client.patch(endpoint, data);
 client.delete(endpoint);
 ```
 
-Each method returns `Promise<any>`: `fetch(url, init).then((res) => res.json())`.
+Each method returns `Promise<unknown>`.
 
 ## `Endpoint`
 
@@ -38,12 +40,12 @@ What the client **reads**:
 - `path`
 - `options.baseUrl`
 - `options.headers`
+- `options.allowSelfSigned` (only for `https://` URLs)
 
 What the client **does not read**:
 
 - `endpoint` — required by the type, ignored at runtime
 - `route` — optional, ignored
-- `options.allowSelfSigned` — typed, ignored (a comment mentions an HTTPS agent; none is constructed)
 
 ## URL construction
 
@@ -62,7 +64,7 @@ const url = endpoint.options?.baseUrl
 
 Prefer `baseUrl` without a trailing slash and `path` with a leading slash. Or put the full URL in `path` and omit `baseUrl`.
 
-Query strings belong on `path` (`/note?id=1`). The client will not append `searchParams` for you.
+Query strings belong on `path` (`/notes/1?verbose=1`). The client will not append `searchParams` for you.
 
 ## Methods
 
@@ -83,31 +85,64 @@ headers: {
 }
 ```
 
-Caller headers win. You can override `Content-Type`. You cannot skip `JSON.stringify` — `data` is always stringified, including `undefined` (body `"undefined"` as JSON? `JSON.stringify(undefined)` is the value `undefined`, and `fetch` may treat that as no body). Pass a real object.
+Caller headers win. You can override `Content-Type`. `data` is always stringified.
 
-## JSON-only responses
+## Success parsing
 
-Every method ends with `res.json()`. That means:
+After `res.ok`:
 
-- Non-JSON success bodies throw (`SyntaxError`)
-- Empty 204 bodies throw
-- HTML error pages throw
-- A JSON **error** document (`{ error: "Not Found" }` with status 404) **succeeds** as a parsed object — there is no `if (!res.ok) throw`
+- `204` / `205` → `undefined`
+- empty body → `undefined`
+- `Content-Type` `application/json` or `+json` → `JSON.parse`
+- no Content-Type: parse JSON if the body is JSON, else text
+- other Content-Types → text
 
-If you need status checks, use `fetch` yourself, or follow [exercise 8](./exercises/08-fetch-client.md) (elective; not how `client` behaves today). KiwiPress’s `requestWordPress` already throws on `!response.ok` and optionally uses `undici` for self-signed TLS. That code is in KiwiPress, not in Seltzer.
+## `HttpError`
+
+Non-2xx responses throw:
+
+```ts
+class HttpError extends Error {
+  readonly status: number;
+  readonly statusText: string;
+  readonly body: string; // full response text
+}
+```
+
+The `message` is `HTTP ${status} ${statusText}` plus a body snippet (trimmed, max 200 characters, ellipsis if longer). Catch `instanceof HttpError` instead of reading `{ error: "Not Found" }` as a successful payload — that 0.2.0 habit is closed.
+
+```ts
+try {
+  await client.get({
+    path: "/missing",
+    endpoint: "/missing",
+    options: { baseUrl: "http://127.0.0.1:3000" },
+  });
+} catch (err) {
+  if (err instanceof HttpError && err.status === 404) {
+    // err.body is the raw '{"error":"Not Found"}'
+  }
+}
+```
+
+## `allowSelfSigned`
+
+`allowSelfSigned: true` on an `https://` URL dynamically imports `undici` and uses `Agent({ connect: { rejectUnauthorized: false } })`. HTTP URLs ignore the flag. If `undici` is missing, the client throws a message telling you to install it or use a trusted certificate.
+
+Prefer a real certificate or `NODE_EXTRA_CA_CERTS` when you can. Everyday `init().route().listen()` does not need `undici`.
 
 ## Typical server + client pair
 
 ```ts
-import { Seltzer, client, type Endpoint } from "@citrusworx/seltzer";
+import { Seltzer, client, type Endpoint, type ResponseData } from "@citrusworx/seltzer";
 
 const app = Seltzer.init();
 app.route({
   method: "GET",
   path: "/health",
-  handler: (ctx) => ctx.json({ ok: true }),
+  handler: (): ResponseData => ({ body: { ok: true } }),
 });
-app.listen(3000);
+const server = app.listen(3000);
 
 const health: Endpoint = {
   path: "/health",
@@ -117,9 +152,11 @@ const health: Endpoint = {
 
 const data = await client.get(health);
 // { ok: true }
+
+server.close();
 ```
 
-Call the client from a second process, a script, or a Sig effect. `listen` does not return the `http.Server` and does not wait for the listening callback (that callback only `console.log`s). A same-file smoke test can race `ECONNREFUSED` if `client.get` runs before the port is bound — retry, or run the client after the log line appears.
+`listen` returns the `http.Server`. A same-file smoke test can still race `ECONNREFUSED` if `client.get` runs before the port is bound — wait for `listening` or pass `onListening`.
 
 ## Sharing option shape with `.handler()`
 
@@ -140,31 +177,25 @@ const notes: Endpoint = {
 };
 ```
 
-That duplication is honest. There is no `app.client`.
+There is no `app.client`.
 
 ## Browser vs Node
 
-`client` calls global `fetch`. Browsers have it. Modern Node has it. There is no package export that avoids `Seltzer` for browser bundles — the root module also exports the class that imports `node:http`. For a Sig page, either:
-
-- use platform `fetch` against the Seltzer origin, or
-- import `client` only if your bundler can tree-shake / ignore `Seltzer.listen`
-
-The honest frontend pattern in [Integration](./seltzer-integration.md) uses `client.get` in docs as a shape; production Juice/Sig apps often `fetch` directly so they never pull `node:http`.
+`client` calls global `fetch`. The root module also exports `Seltzer`, which imports `node:http`. For a Sig page, prefer platform `fetch` against the Seltzer origin so the bundle never pulls the server graph.
 
 ## What is not here
 
 - Timeouts, retries, abort
-- Base-URL joining that understands slashes
-- `allowSelfSigned`
-- Typed generics on the JSON result (the signature is `Promise<any>`)
+- Slash-safe base-URL joining
+- Typed generics on the JSON result
 - Multipart / non-JSON request bodies
 - Reading `Endpoint.endpoint` even when it is the absolute URL KiwiPress stores
 
-KiwiPress sets `endpoint` to a full WordPress URL and then **does not use `client`** — it `fetch`es `ctx.endpoint`. Do not assume Seltzer `client` follows that convention.
+KiwiPress may still `fetch` `ctx.endpoint` in its own helper. Do not assume Seltzer `client` follows that convention.
 
 ## Related
 
 - [JSON API tutorial](./seltzer-api-tutorial.md) step 6
-- [Patterns](./seltzer-patterns.md) — endpoint objects per collection
-- [Anti-patterns](./seltzer-anti-patterns.md) — assuming `!ok` throws
+- [Patterns](./seltzer-patterns.md)
+- [Anti-patterns](./seltzer-anti-patterns.md)
 - [API Reference](./seltzer-api.md)

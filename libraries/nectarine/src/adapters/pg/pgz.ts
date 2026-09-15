@@ -1,76 +1,202 @@
-import { Client } from 'pg';
+import { Pool } from "pg";
+import type { QueryResult, QueryResultRow } from "pg";
+import type { NectarineConfig } from "../../config/NectarineConfig.js";
+import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
 
+export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+
+/**
+ * Postgres adapter for parameterized SQL from the Nectarine compiler.
+ *
+ * Uses a `pg.Pool` so concurrent HTTP requests do not share a single client.
+ * Credentials are {@link DatabaseCredentials} from
+ * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
+ * this adapter receives the resolved values. It does not read `process.env`
+ * itself.
+ *
+ * @example
+ * ```ts
+ * const creds = config.resolveCredentials("postgres");
+ * if (!creds) throw new Error("Postgres env is incomplete");
+ * const pg = createPgAdapter(creds);
+ * await pg.connect();
+ * const result = await pg.query("SELECT id FROM users WHERE id = $1", [1]);
+ * await pg.end();
+ * ```
+ */
 export class PgSql {
-  private tables: Map<string, string> = new Map();
-  private dbs: Map<string, string> = new Map();
-  private readonly creds: Record<string, string> = {
-    user: process.env.PG_USER!,
-    password: process.env.PG_PASS!,
-    host: process.env.PG_HOST!,
-    port: process.env.PG_PORT!
-  }
+    private pool: Pool | null = null;
+    private connecting: Promise<Pool> | null = null;
+    private readonly credentials: DatabaseCredentials;
 
-  async client(db: string){
-    // TODO: detect the prescence of a .env file
-    if(!db){
-      console.log("Must have a .env file")
+    constructor(credentials: DatabaseCredentials) {
+        this.credentials = requirePgCredentials(credentials);
     }
-    try{ 
-      const client = new Client({
-      ...this.creds,
-      database: this.dbs.get(db)
-    })
 
-      return client;
+    static fromCredentials(credentials: DatabaseCredentials): PgSql {
+        return new PgSql(credentials);
     }
-    catch(error){
-      if(error instanceof Error){
-        console.error("Error creating client:", error.message);
-      }
-    }
-  }
-  async connect(db: string){
-    const client = await this.client(db);
-    await client?.connect();
-    return client;
-  }
-    
-  async disconnect(client: Client){
-      await client.end();
-  }
 
-  /**  Config-based query execution
-  // 
-  // @param client - the database client to use for executing the query
-  // @param config - the configuration object containing the SQL query and parameters
-  */
-
-  async query(client: Client, config: { sql: string, params?: any[] }){
-    if(!this.client){
-      console.log("No client found. Please connect to the database first.");
-      return;
+    get connected(): boolean {
+        return this.pool !== null;
     }
-    try {
-      const res = await client.query(config.sql, config.params);
-      return res;
-    }
-    catch(error){
-      if(error instanceof Error){
-        console.error("Error executing query:", error.message);
-      }
-    }
-  }
 
-  // Adds a table to the list of tables that the adapter can use
-  // 
-  // @param table - the name of the table to add to the list of tables
-  // 
-  // 
-  addTable(table: string){
-    this.tables.set(table, table);
-  }
+    /**
+     * Create the connection pool and check out one client so failures
+     * surface here instead of on the first query.
+     */
+    async connect(): Promise<Pool> {
+        if (this.pool) {
+            return this.pool;
+        }
+        if (!this.connecting) {
+            this.connecting = this.openPool().finally(() => {
+                this.connecting = null;
+            });
+        }
+        return this.connecting;
+    }
 
-  addDb(db: string){
-    this.dbs.set(db, db);
-  }
+    private async openPool(): Promise<Pool> {
+        const pool = new Pool({
+            user: this.credentials.user,
+            password: this.credentials.password,
+            host: this.credentials.host,
+            port: this.credentials.port,
+            database: this.credentials.database,
+            max: 10,
+            idleTimeoutMillis: 30_000,
+            connectionTimeoutMillis: 5_000,
+        });
+
+        pool.on("error", (error) => {
+            console.error("Nectarine Postgres pool idle client error:", error);
+        });
+
+        try {
+            const client = await pool.connect();
+            client.release();
+        } catch (error) {
+            await pool.end().catch(() => undefined);
+            throw error;
+        }
+
+        this.pool = pool;
+        return pool;
+    }
+
+    /**
+     * Run parameterized SQL (`$1`, `$2`, …) against the connected pool.
+     */
+    async query<T extends QueryResultRow = QueryResultRow>(
+        sql: string,
+        params: readonly unknown[] = [],
+    ): Promise<QueryResult<T>> {
+        if (!this.pool) {
+            throw new Error("Postgres adapter is not connected. Call connect() before query()");
+        }
+        if (typeof sql !== "string" || !sql.trim()) {
+            throw new Error("Postgres adapter query() requires a SQL string");
+        }
+
+        return this.pool.query<T>(sql, params as unknown[]);
+    }
+
+    /**
+     * Pin one pooled client for `work`. The migrator sends BEGIN/COMMIT through
+     * this query callback so a multi-op migration and its ledger insert share
+     * a transaction (`pool.query()` would use a different client per call).
+     */
+    async withTransaction<T>(
+        work: (
+            query: <R extends QueryResultRow = QueryResultRow>(
+                sql: string,
+                params?: readonly unknown[],
+            ) => Promise<QueryResult<R>>,
+        ) => Promise<T>,
+    ): Promise<T> {
+        if (!this.pool) {
+            throw new Error(
+                "Postgres adapter is not connected. Call connect() before withTransaction()",
+            );
+        }
+
+        const client = await this.pool.connect();
+        try {
+            return await work((sql, params = []) => {
+                if (typeof sql !== "string" || !sql.trim()) {
+                    throw new Error("Postgres adapter query() requires a SQL string");
+                }
+                return client.query(sql, params as unknown[]);
+            });
+        } finally {
+            client.release();
+        }
+    }
+
+    async disconnect(): Promise<void> {
+        const pool = this.pool;
+        if (!pool) {
+            return;
+        }
+        this.pool = null;
+        await pool.end();
+    }
+
+    async end(): Promise<void> {
+        return this.disconnect();
+    }
+}
+
+export function createPgAdapter(credentials: DatabaseCredentials): PgSql {
+    return PgSql.fromCredentials(credentials);
+}
+
+/**
+ * Build a Postgres adapter from a loaded config when the active vendor is
+ * postgres and env values resolve. Returns `null` when the vendor is not
+ * postgres or credentials are incomplete (same as `resolveCredentials()`).
+ */
+export function createPgAdapterFromConfig(
+    config: NectarineConfig,
+    vendor?: DatabaseVendor,
+): PgSql | null {
+    if (config.getVendor(vendor) !== "postgres") {
+        return null;
+    }
+
+    const credentials = config.resolveCredentials("postgres");
+    if (!credentials) {
+        return null;
+    }
+
+    return createPgAdapter(credentials);
+}
+
+export function requirePgCredentials(
+    credentials: Partial<DatabaseCredentials> | null | undefined,
+): DatabaseCredentials {
+    if (!credentials) {
+        throw new Error("Postgres adapter requires DatabaseCredentials");
+    }
+
+    const user = credentials.user?.trim();
+    const password = credentials.password;
+    const host = credentials.host?.trim();
+    const database = credentials.database?.trim();
+    const port = Number(credentials.port);
+
+    if (!user || password == null || password === "" || !host || !database) {
+        throw new Error(
+            "Postgres adapter requires complete credentials: user, password, host, port, and database",
+        );
+    }
+
+    if (!Number.isFinite(port)) {
+        throw new Error(
+            `Postgres adapter port must be a finite number, got ${JSON.stringify(credentials.port)}`,
+        );
+    }
+
+    return { user, password, host, port, database };
 }

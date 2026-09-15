@@ -8,7 +8,9 @@ export const coreModule = {
     },
     async health(ctx) {
         const h = ctx.getModuleHandle("core");
-        return h?.ready ? { ok: true } : { ok: false, detail: "core handle missing" };
+        return h?.ready
+            ? { ok: true }
+            : { ok: false, detail: "core handle missing" };
     },
     async shutdown(_ctx) {
         // noop

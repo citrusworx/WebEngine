@@ -1,219 +1,668 @@
-# Schema Guide
+# Nectarine Schema Definition Guide
 
-How model YAML actually works in `libraries/nectarine/models` and `parser.yaml`. This is the mental model for **tables as data** — not a Prisma schema, not a migrator, and not a type generator.
+Complete guide to defining data models with Nectarine schemas.
 
-Related:
+## Overview
 
-- [Tutorial](./nectarine-tutorial.md) — CREATE TABLE from a small, consistent schema
-- [Query DSL](./nectarine-query-dsl.md) — named queries live in a different file
-- [Compiler](./nectarine-compiler.md) — nothing here is compiled by the package
+A schema in Nectarine is a YAML file that defines your data models, fields, types, and relationships. This file becomes the single source of truth for your backend data structure.
 
-## What a schema is
+## File Location
 
-A schema file is a map of **model name → table + fields**. Nectarine does not validate it. `parser.yaml` returns the object. Anything that emits `CREATE TABLE` is your loop over `fields` (the same idea as `pgz.example.ts` `buildCreateTableSQL`, which is not a package export).
-
-```ts
-import { parser } from "@citrusworx/nectarine";
-
-const schema = parser.yaml("./models/user/userSchema.yml");
-schema.User.table;   // "users"
-schema.User.fields;  // mixed objects and strings
+```
+schemas/
+└── modelName/
+    ├── schema.yml           # Model definitions
+    ├── queries.yml          # Query definitions
+    └── api.yml              # Route definitions
 ```
 
-There is no `relationships:` key consumed by the library. Foreign keys, if you want them, are field metadata you interpret yourself.
-
-## What a schema is not
-
-- **Not a running database.** Loading YAML does not create tables.
-- **Not a TypeScript type.** `YAMLdata` is `{ [key: string]: any }`.
-- **Not an ORM model class.** There is no `User.find()`.
-- **Not Mongo validation.** `db/mg/schema.yaml` is a field note; `loadMongoConfig` does not read it.
-- **Not HTTP.** `*API.yml` lists methods and endpoints. See [API reference](./nectarine-api.md).
-
-## A compact picture
-
-```text
-schema.yml
-  ModelName
-    table: users
-    fields
-      id: { type, primaryKey, … }     ──► your DDL builder
-      email: { type, size, unique }
-      created_at: "timestamp …"       ──► string fragment, as-is
-
-query YAML (separate file)            ──► parser.genSQL
-API YAML (separate file)              ──► parser.yaml / registerRoute
+Example:
+```
+schemas/
+└── user/
+    ├── userSchema.yml
+    ├── userQueries.yml
+    └── userAPI.yml
 ```
 
-Three files, three jobs. Mixing query nodes into a schema file does not make `genSQL` find them. `genSQL` takes a **path** and indexes `doc[resource][crud][name]`.
+---
 
-## Two layouts in-tree
+## Basic Schema Structure
 
-### 1. Model-name keys (user fixture)
-
-`libraries/nectarine/models/user/userSchema.yml`:
+### Minimal Schema
 
 ```yaml
 User:
   table: users
   fields:
-    id:
-      type: int
-      primaryKey: true
-      autoIncrement: true
-    email:
-      type: VARCHAR
-      size: 100
-      unique: true
-      null: false
+    id: int PRIMARY KEY AUTO_INCREMENT
+    name: VARCHAR(100) NOT NULL
 ```
 
-`schema.User.table` is the natural walk. The [tutorial](./nectarine-tutorial.md) uses this layout.
-
-The same file also defines `Post` and `Comment`. That is the “blog” model in this package — not a separate published schema.
-
-### 2. Root `model:` / `table:` / `fields:` (some blog fixtures)
-
-`libraries/nectarine/models/blog/author/schema.yml`:
-
-```yaml
-model: Author
-table: authors
-
-fields:
-  id:
-    type: uuid
-    primary: true
-    default: {fn: uuid_v4}
-  name:
-    type: string
-    required: true
-```
-
-A builder that does `schema[modelName].table` will miss this. Walk `schema.table` and `schema.fields`, or normalize after load. Nectarine will not.
-
-`relations` in that file (and in `comment/schema.yml`) is documentation. Nothing resolves `one-to-many`.
-
-## Two field styles (often in one file)
-
-The user fixture mixes styles:
+### Complete Schema
 
 ```yaml
 User:
   table: users
+  description: "User accounts"
   fields:
-    id:
-      type: int
-      primaryKey: true
-      autoIncrement: true
-    created_at: timestamp DEAFULT NOW()   # string form; typo is in the fixture
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+    password: VARCHAR(255) NOT NULL
     role: enum(admin, author, user) DEFAULT 'user'
+    is_active: boolean DEFAULT true
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    posts: Post[]
+    comments: Comment[]
 ```
 
-A builder that only does `Object.entries(fields).map(([k, v]) => \`${k} ${v}\`)` works for **string** values and stringifies objects to `[object Object]`. Handle both:
+### Property Details
 
-```ts
-function columnSql(name: string, definition: unknown): string {
-  if (typeof definition === "string") {
-    return `${name} ${definition}`;
-  }
-  const field = definition as {
-    type: string;
-    length?: number;
-    size?: number;
-    primaryKey?: boolean;
-    autoIncrement?: boolean;
-    unique?: boolean;
-    null?: boolean;
-    foreignKey?: string;
-  };
-  const parts = [name, field.type];
-  if (field.length ?? field.size) {
-    parts[1] += `(${field.length ?? field.size})`;
-  }
-  if (field.primaryKey) parts.push("PRIMARY KEY");
-  if (field.autoIncrement) parts.push("GENERATED BY DEFAULT AS IDENTITY"); // pick PG or MySQL syntax
-  if (field.unique) parts.push("UNIQUE");
-  if (field.null === false) parts.push("NOT NULL");
-  if (field.foreignKey) parts.push(field.foreignKey);
-  return parts.join(" ");
-}
-```
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| Model Name | String | ✓ | Name of the model (e.g., "User", "Post") |
+| `table` | String | ✓ | Database table name |
+| `description` | String | | Documentation for the model |
+| `fields` | Object | ✓ | Field definitions |
+| `relationships` | Object | | Related models. **Not compiled to DDL.** Foreign keys come only from inline `FOREIGN KEY REFERENCES` on fields. |
 
-Identity / `AUTO_INCREMENT` syntax is engine-specific. Nectarine will not pick it for you.
+---
 
-## What to put in a field
+## Field Definitions
 
-Useful keys appearing in fixtures:
-
-| Key | Seen in | Meaning to *your* builder |
-|---|---|---|
-| `type` | user + blog | `int`, `VARCHAR`, `string`, `text`, `timestamp`, `uuid` |
-| `length` / `size` | user | VARCHAR width (both appear) |
-| `primaryKey` / `primary` | user vs author | same idea, different spelling |
-| `autoIncrement` | user | identity / auto increment |
-| `unique` | both | UNIQUE |
-| `null: false` | user | NOT NULL |
-| `required: true` | author | same idea as NOT NULL, different key |
-| `foreignKey` | user Post/Comment | raw `REFERENCES …` fragment |
-| `default` | author | `{ fn: uuid_v4 }` / `{ fn: now }` — unread by the library |
-| `enum(...)` string | user `role` | not a Nectarine type |
-
-String fields are “whatever you would type after the column name.”
-
-Enums are **not** a Nectarine type. `enum(admin, author, user)` is a string you must rewrite for Postgres (`TEXT CHECK (…)` ) or MySQL (`ENUM(...)`).
-
-`{ fn: now }` in schema defaults is the same story as in query YAML: YAML until your builder says `NOW()`.
-
-## One table per model
-
-That is a convention, not an inheritance system. `Post.author_id` points at `users` by documentation, not by a loader.
-
-Keep one resource folder when you can:
-
-```text
-models/user/
-  schema.yml          # tables
-  queries.yml         # genSQL layout (or db/pg/user.yml)
-  api.yml             # method + endpoint
-  db/msql/user.yml    # only if you also speak MySQL
-  db/mg/schema.yaml   # field notes only
-```
-
-## Mongo field lists
-
-`libraries/nectarine/models/user/db/mg/schema.yaml`:
+### Field Syntax
 
 ```yaml
-user:
-  default:
-    name: string
-    password: string
-    email: string
-    username: string
-  profile:
-    bio: string
-    location: string
+fieldName: dataType [CONSTRAINTS]
+
+# Examples
+id: int PRIMARY KEY AUTO_INCREMENT
+username: VARCHAR(50) UNIQUE NOT NULL
+role: enum(admin, user) DEFAULT 'user'
+is_active: boolean DEFAULT true
+created_at: timestamp DEFAULT NOW()
 ```
 
-Nothing in the adapter reads this file. `loadMongoConfig` calls `parser.yaml('sql.yml')` with a hardcoded path and returns nothing. Treat Mongo YAML as a note to humans until a Mongo compiler exists.
+### Core Data Types
 
-## Practices
+#### Integer Types
 
-- Keep one resource folder: schema + engine-specific query file + optional API file
-- Prefer one field style per file (object *or* SQL fragment)
-- Prefer one layout per tree (`User.table` *or* root `model:` / `table:`)
-- Do not invent `description` / `relationships` and expect the compiler to honor them
-- Version the YAML in git; there is no migration history in Nectarine
-- Copy fixtures into the app and fix typos (`DEAFULT`); do not import them as a published pack
-- Read [Query DSL](./nectarine-query-dsl.md) before adding `get` / `create` / `update` / `delete` nodes
+```yaml
+# Small quantities (recommended for flags, enums)
+small_count: smallint
 
-## Choosing the primitive
+# Standard integers (IDs, counts)
+quantity: int
+user_id: int
 
-| You want… | Put it in… |
-|---|---|
-| Columns and types | Schema YAML |
-| Named SELECT / INSERT intent | Query YAML (`genSQL` layout) |
-| HTTP method + path | API YAML |
-| Runtime values | Adapter `params` / `?` / document fields |
-| Engine-specific DDL | Your builder, not a Nectarine flag |
+# Large numbers (big timestamps, big integers)
+big_number: bigint
+
+# Decimal numbers (prices, percentages)
+price: decimal(10, 2)
+percentage: decimal(5, 2)
+
+# Floating point
+rating: float
+score: float
+```
+
+#### Text Types
+
+```yaml
+# Fixed-length strings
+country_code: char(2)
+state_code: char(2)
+
+# Variable-length strings (most common)
+username: VARCHAR(50)
+email: VARCHAR(100)
+password: VARCHAR(255)
+title: VARCHAR(255)
+
+# Unlimited text
+bio: text
+description: text
+content: text
+body: text
+
+# Generic string (auto VARCHAR(255))
+name: string
+```
+
+#### Date/Time Types
+
+```yaml
+# Date only
+birth_date: date
+event_date: date
+
+# Time only
+start_time: time
+end_time: time
+
+# Date and time (most common)
+created_at: timestamp
+updated_at: timestamp
+deleted_at: timestamp
+
+# Alternative timestamp format
+publication_date: datetime
+expiration_date: datetime
+```
+
+#### Boolean Type
+
+```yaml
+# Flags and status
+is_active: boolean
+is_verified: boolean
+is_deleted: boolean
+is_premium: boolean
+```
+
+#### Enum Type
+
+```yaml
+# Fixed set of values
+status: enum(active, inactive, pending)
+role: enum(admin, author, user, guest)
+priority: enum(high, medium, low)
+difficulty: enum(easy, medium, hard, expert)
+```
+
+#### JSON / JSONB (first-class)
+
+Postgres JSONB stays first-class. Named queries select the column and bind
+`{ value: $N, cast: jsonb }` — do not drop JSONB to keep SQL out of app code.
+
+```yaml
+# Store structured data (PostgreSQL/MySQL compatible)
+metadata: json
+settings: jsonb
+tags: json
+```
+
+---
+
+## Field Constraints
+
+### PRIMARY KEY
+
+Unique identifier for each row (usually ID).
+
+```yaml
+id: int PRIMARY KEY AUTO_INCREMENT
+```
+
+- Each table needs exactly one
+- Usually paired with AUTO_INCREMENT
+- Automatically indexed
+- Enforces uniqueness
+
+### FOREIGN KEY
+
+Reference to another table.
+
+```yaml
+author_id: int FOREIGN KEY REFERENCES users(id)
+category_id: int FOREIGN KEY REFERENCES categories(id)
+parent_id: int FOREIGN KEY REFERENCES comments(id)
+```
+
+**Syntax**: `FOREIGN KEY REFERENCES tableName(fieldName)`
+
+**Use cases**:
+- Link users to posts
+- Link authors to comments
+- Link orders to customers
+- Hierarchical relationships
+
+```yaml
+# Multi-table example
+Post:
+  fields:
+    author_id: int FOREIGN KEY REFERENCES users(id)
+    category_id: int FOREIGN KEY REFERENCES categories(id)
+
+Comment:
+  fields:
+    post_id: int FOREIGN KEY REFERENCES posts(id)
+    author_id: int FOREIGN KEY REFERENCES users(id)
+```
+
+### UNIQUE
+
+Ensure no duplicate values.
+
+```yaml
+username: VARCHAR(100) UNIQUE
+email: VARCHAR(100) UNIQUE NOT NULL
+user_code: VARCHAR(20) UNIQUE
+```
+
+**Common uses**:
+- Usernames
+- Email addresses
+- Account numbers
+- Unique codes
+
+### NOT NULL
+
+Field value is required.
+
+```yaml
+username: VARCHAR(100) NOT NULL
+email: VARCHAR(100) NOT NULL
+created_at: timestamp DEFAULT NOW() NOT NULL
+```
+
+**Without NOT NULL** - field is optional:
+```yaml
+middle_name: VARCHAR(50)        # Optional
+phone: VARCHAR(20)              # Optional
+bio: text                       # Optional
+```
+
+### AUTO_INCREMENT
+
+Automatically increment integer.
+
+```yaml
+id: int PRIMARY KEY AUTO_INCREMENT
+```
+
+**Only works with**:
+- PRIMARY KEY fields
+- Integer types
+
+**Example**:
+```yaml
+User:
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+
+# Creating users automatically increments ID
+POST /users {"username": "john"}
+# Response: {"id": 1, "username": "john"}
+
+POST /users {"username": "jane"}
+# Response: {"id": 2, "username": "jane"}
+```
+
+### DEFAULT
+
+Use a default value when not provided.
+
+```yaml
+# Static defaults
+role: enum(admin, author, user) DEFAULT 'user'
+is_active: boolean DEFAULT true
+priority: enum(high, medium, low) DEFAULT 'medium'
+
+# Dynamic defaults (database functions)
+created_at: timestamp DEFAULT NOW()
+updated_at: timestamp DEFAULT NOW()
+
+# Literal defaults
+status: VARCHAR(20) DEFAULT 'active'
+views: int DEFAULT 0
+```
+
+**Example**:
+```yaml
+User:
+  fields:
+    role: enum(admin, author, user) DEFAULT 'user'
+    is_active: boolean DEFAULT true
+    created_at: timestamp DEFAULT NOW()
+
+# Creating user without role
+POST /users {"username": "john", "email": "john@example.com"}
+# Automatically gets role='user', is_active=true, and current timestamp
+```
+
+---
+
+## Schema migrations
+
+`*Schema.yml` is the current CREATE TABLE shape. Additive `ADD COLUMN IF NOT EXISTS` covers new fields. Rename, drop, and type change are **explicit versioned YAML**, compiled by Nectarine — not raw SQL in the app, and not a silent diff against the live database (that would DROP columns without a gate).
+
+```yaml
+# 001_rename_nickname.yml
+version: "001_rename_nickname"
+description: Rename users.nickname to handle
+operations:
+  - renameColumn:
+      table: users
+      from: nickname
+      to: handle
+```
+
+```yaml
+# 002_drop_legacy_flag.yml
+version: "002_drop_legacy_flag"
+destructive: true
+operations:
+  - dropColumn:
+      table: users
+      column: legacy_flag
+      confirm: dropColumn
+  - changeType:
+      table: products
+      column: tags
+      type: jsonb
+      confirm: changeType
+```
+
+`dropColumn` and `changeType` require both `destructive: true` and a matching `confirm:` token. Postgres `changeType` uses `USING CAST(column AS <type>)` so spaced types (`float` → `DOUBLE PRECISION`) compile. Versions use a zero-padded prefix (`001_…`) so apply order is lexicographic. Indexes from current `*Schema.yml` are created **after** pending renames. See [Production](./production.md) and `applyMigrations` in the [API reference](./nectarine-api.md).
+
+Do not drop or demote Postgres JSONB columns such as Blackwater `products.payload`.
+
+---
+
+## Complete Example: Blog Schema
+
+```yaml
+User:
+  table: users
+  description: "Blog authors"
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+    password: VARCHAR(255) NOT NULL
+    first_name: VARCHAR(50)
+    last_name: VARCHAR(50)
+    bio: text
+    is_active: boolean DEFAULT true
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    posts: Post[]
+    comments: Comment[]
+
+Post:
+  table: posts
+  description: "Blog posts"
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    title: VARCHAR(255) NOT NULL
+    slug: VARCHAR(255) UNIQUE NOT NULL
+    content: text NOT NULL
+    excerpt: VARCHAR(500)
+    author_id: int FOREIGN KEY REFERENCES users(id) NOT NULL
+    category_id: int FOREIGN KEY REFERENCES categories(id)
+    status: enum(draft, published, archived) DEFAULT 'draft'
+    views: int DEFAULT 0
+    likes: int DEFAULT 0
+    featured: boolean DEFAULT false
+    published_at: timestamp
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    author: User
+    comments: Comment[]
+    tags: Tag[]
+
+Comment:
+  table: comments
+  description: "Comments on posts"
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    content: text NOT NULL
+    post_id: int FOREIGN KEY REFERENCES posts(id) NOT NULL
+    author_id: int FOREIGN KEY REFERENCES users(id) NOT NULL
+    parent_id: int FOREIGN KEY REFERENCES comments(id)
+    likes: int DEFAULT 0
+    is_approved: boolean DEFAULT false
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+  relationships:
+    post: Post
+    author: User
+    replies: Comment[]
+
+Category:
+  table: categories
+  description: "Post categories"
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    name: VARCHAR(100) UNIQUE NOT NULL
+    slug: VARCHAR(100) UNIQUE NOT NULL
+    description: text
+    icon: VARCHAR(255)
+    color: VARCHAR(7)
+    created_at: timestamp DEFAULT NOW()
+  relationships:
+    posts: Post[]
+
+Tag:
+  table: tags
+  description: "Post tags"
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    name: VARCHAR(100) UNIQUE NOT NULL
+    slug: VARCHAR(100) UNIQUE NOT NULL
+    created_at: timestamp DEFAULT NOW()
+  relationships:
+    posts: Post[]
+```
+
+---
+
+## Relationships
+
+`relationships:` on a model is documentation (and a hook for a later loader).
+The DDL compiler does **not** turn it into foreign keys or join tables.
+Emit `FOREIGN KEY REFERENCES table(column)` on the field that holds the key.
+
+Mixed-case field names (`originalPrice`, `isNew`) are emitted as quoted
+identifiers (`"originalPrice"`) so Postgres does not fold them to lowercase.
+All-lowercase names (`created_at`, `payload`) stay unquoted.
+
+### One-to-Many
+
+One user has many posts:
+
+```yaml
+User:
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    username: VARCHAR(100)
+  relationships:
+    posts: Post[]
+
+Post:
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    author_id: int FOREIGN KEY REFERENCES users(id)
+    title: VARCHAR(255)
+```
+
+### Many-to-Many
+
+Posts have many tags, tags have many posts:
+
+```yaml
+Post:
+  fields:
+    id: int PRIMARY KEY
+    title: VARCHAR(255)
+  relationships:
+    tags: Tag[]
+
+Tag:
+  fields:
+    id: int PRIMARY KEY
+    name: VARCHAR(100)
+  relationships:
+    posts: Post[]
+
+# Join table auto-created
+PostTag:
+  table: posts_tags
+  fields:
+    post_id: int FOREIGN KEY REFERENCES posts(id)
+    tag_id: int FOREIGN KEY REFERENCES tags(id)
+```
+
+### Self-referential
+
+Comments can have reply comments:
+
+```yaml
+Comment:
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    content: text
+    parent_id: int FOREIGN KEY REFERENCES comments(id)
+  relationships:
+    parent: Comment
+    replies: Comment[]
+```
+
+---
+
+## Best Practices
+
+### Naming Conventions
+
+```yaml
+# Table names: lowercase, plural
+users, posts, comments, categories
+
+# Column names: lowercase snake_case *or* quoted mixed-case from YAML
+user_id, post_title, created_at, is_active
+originalPrice  # emitted as "originalPrice" — casing preserved
+
+# Enum values: lowercase
+status: enum(active, inactive, pending)
+role: enum(admin, author, user)
+```
+
+### Field Organization
+
+```yaml
+User:
+  fields:
+    # 1. Identifiers
+    id: int PRIMARY KEY AUTO_INCREMENT
+    
+    # 2. Core data
+    username: VARCHAR(100) UNIQUE NOT NULL
+    email: VARCHAR(100) UNIQUE NOT NULL
+    password: VARCHAR(255) NOT NULL
+    
+    # 3. Optional data
+    first_name: VARCHAR(50)
+    bio: text
+    
+    # 4. Status/flags
+    is_active: boolean DEFAULT true
+    role: enum(admin, user)
+    
+    # 5. Timestamps
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+```
+
+### Avoid Common Mistakes
+
+❌ **No**: Don't use boolean as string
+```yaml
+is_active: VARCHAR(10)  # ❌ Wrong
+is_active: boolean      # ✓ Correct
+```
+
+❌ **No**: Don't make everything UNIQUE
+```yaml
+User:
+  fields:
+    email: VARCHAR(100) UNIQUE      # ✓ Good
+    name: VARCHAR(100) UNIQUE       # ❌ Probably wrong
+```
+
+❌ **No**: Don't forget timestamps
+```yaml
+Post:
+  fields:
+    title: VARCHAR(255)
+    # ❌ Missing created_at, updated_at
+```
+
+✓ **Yes**: Always include timestamps
+```yaml
+Post:
+  fields:
+    title: VARCHAR(255)
+    created_at: timestamp DEFAULT NOW()
+    updated_at: timestamp DEFAULT NOW()
+```
+
+### Performance Tips
+
+```yaml
+# Index frequently queried fields
+username: VARCHAR(100) UNIQUE              # AUTO-indexed
+email: VARCHAR(100) UNIQUE                 # AUTO-indexed
+status: enum(...) DEFAULT 'active'         # Consider indexing
+
+# Don't over-normalize
+# Usually OK to store denormalized data
+user:
+  fields:
+    username: VARCHAR(100)                 # Store here
+    author_email: VARCHAR(100)             # Also store here for performance
+
+# Use appropriate field sizes
+# Don't: VARCHAR(5000) for usernames
+username: VARCHAR(100)                     # ✓ Appropriate
+# Do: VARCHAR(100) for most text fields
+```
+
+---
+
+## Testing Your Schema
+
+### Create Test Schema
+
+```yaml
+# schemas/store/productSchema.yml
+Product:
+  table: products
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    name: VARCHAR(255) NOT NULL
+    price: decimal(10, 2) NOT NULL
+    stock: int DEFAULT 0
+    is_active: boolean DEFAULT true
+
+Order:
+  table: orders
+  fields:
+    id: int PRIMARY KEY AUTO_INCREMENT
+    customer_id: int NOT NULL
+    total: decimal(10, 2)
+    created_at: timestamp DEFAULT NOW()
+```
+
+### Validate Schema
+
+```typescript
+import { loadSchema, compileSchema } from "@citrusworx/nectarine";
+
+const schema = loadSchema("schemas/store/productSchema.yml");
+const sql = compileSchema(schema, "postgres");
+
+console.log(sql);
+// CREATE TABLE IF NOT EXISTS products (
+//   id TEXT PRIMARY KEY,
+//   name TEXT NOT NULL,
+//   ...
+// )
+```

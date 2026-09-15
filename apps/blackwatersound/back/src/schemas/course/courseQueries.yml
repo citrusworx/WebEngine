@@ -1,0 +1,46 @@
+course:
+  read:
+    allPublished:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: status = 'published'
+      orderBy: title
+
+    byLine:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: line = $1 AND status = 'published'
+      orderBy: title
+
+    byId:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: id = $1
+
+    bySlug:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: slug = $1
+
+  create:
+    newCourse:
+      type: INSERT
+      table: courses
+      fields: [id, slug, title, summary, description, level, line, price, currency, hero_image, status, coach_id, lesson_count, duration_minutes]
+
+  update:
+    updateCourse:
+      type: UPDATE
+      table: courses
+      fields: [slug, title, summary, description, level, line, price, currency, hero_image, status, coach_id, lesson_count, duration_minutes, updated_at]
+      where: id = $1
+
+  delete:
+    deleteCourse:
+      type: DELETE
+      table: courses
+      where: id = $1

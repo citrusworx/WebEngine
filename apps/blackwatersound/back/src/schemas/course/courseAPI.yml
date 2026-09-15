@@ -1,0 +1,46 @@
+course:
+  read:
+    allPublished:
+      api:
+        method: GET
+        endpoint: /api/courses
+        query: allPublished
+
+    byLine:
+      api:
+        method: GET
+        endpoint: /api/courses/line/:line
+        query: byLine
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/courses/:id
+        query: byId
+
+    bySlug:
+      api:
+        method: GET
+        endpoint: /api/courses/slug/:slug
+        query: bySlug
+
+  create:
+    newCourse:
+      api:
+        method: POST
+        endpoint: /api/courses
+        query: newCourse
+
+  update:
+    updateCourse:
+      api:
+        method: PUT
+        endpoint: /api/courses/:id
+        query: updateCourse
+
+  delete:
+    deleteCourse:
+      api:
+        method: DELETE
+        endpoint: /api/courses/:id
+        query: deleteCourse

@@ -1,0 +1,40 @@
+mix_review:
+  read:
+    byClient:
+      type: SELECT
+      table: mix_reviews
+      fields: '*'
+      where: client_id = $1
+      orderBy: created_at DESC
+
+    bySession:
+      type: SELECT
+      table: mix_reviews
+      fields: '*'
+      where: session_id = $1
+      orderBy: created_at DESC
+
+    byId:
+      type: SELECT
+      table: mix_reviews
+      fields: '*'
+      where: id = $1
+
+  create:
+    newMixReview:
+      type: INSERT
+      table: mix_reviews
+      fields: [id, session_id, client_id, title, track_url, notes, status]
+
+  update:
+    updateMixReview:
+      type: UPDATE
+      table: mix_reviews
+      fields: [title, track_url, notes, feedback, status, updated_at]
+      where: id = $1
+
+  delete:
+    deleteMixReview:
+      type: DELETE
+      table: mix_reviews
+      where: id = $1

@@ -1,0 +1,40 @@
+course:
+  read:
+    allPublished:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: status = 'published'
+      orderBy: title
+
+    byId:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: id = $1
+
+    bySlug:
+      type: SELECT
+      table: courses
+      fields: '*'
+      where: slug = $1
+
+  create:
+    newCourse:
+      type: INSERT
+      table: courses
+      fields: [id, slug, title, line, status]
+      returning: [id, slug, title, line, status]
+
+  update:
+    updateCourse:
+      type: UPDATE
+      table: courses
+      fields: [slug, title, line, status]
+      where: id = $1
+
+  delete:
+    deleteCourse:
+      type: DELETE
+      table: courses
+      where: id = $1

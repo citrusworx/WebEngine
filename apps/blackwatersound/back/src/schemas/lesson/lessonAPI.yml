@@ -1,0 +1,40 @@
+lesson:
+  read:
+    byCourse:
+      api:
+        method: GET
+        endpoint: /api/courses/:courseId/lessons
+        query: byCourse
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/lessons/:id
+        query: byId
+
+    bySlug:
+      api:
+        method: GET
+        endpoint: /api/courses/:courseId/lessons/:slug
+        query: bySlug
+
+  create:
+    newLesson:
+      api:
+        method: POST
+        endpoint: /api/lessons
+        query: newLesson
+
+  update:
+    updateLesson:
+      api:
+        method: PUT
+        endpoint: /api/lessons/:id
+        query: updateLesson
+
+  delete:
+    deleteLesson:
+      api:
+        method: DELETE
+        endpoint: /api/lessons/:id
+        query: deleteLesson

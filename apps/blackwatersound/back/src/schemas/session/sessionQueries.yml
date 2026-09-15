@@ -1,0 +1,40 @@
+session:
+  read:
+    byClient:
+      type: SELECT
+      table: sessions
+      fields: '*'
+      where: client_id = $1
+      orderBy: starts_at DESC
+
+    byId:
+      type: SELECT
+      table: sessions
+      fields: '*'
+      where: id = $1
+
+    byStatus:
+      type: SELECT
+      table: sessions
+      fields: '*'
+      where: status = $1
+      orderBy: starts_at ASC
+
+  create:
+    newSession:
+      type: INSERT
+      table: sessions
+      fields: [id, client_id, title, kind, status, starts_at, ends_at, notes, transfer_ref]
+
+  update:
+    updateSession:
+      type: UPDATE
+      table: sessions
+      fields: [title, kind, status, starts_at, ends_at, notes, transfer_ref, updated_at]
+      where: id = $1
+
+  delete:
+    deleteSession:
+      type: DELETE
+      table: sessions
+      where: id = $1

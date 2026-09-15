@@ -1,0 +1,20 @@
+import * as path from "node:path";
+import type { KiwiConfig } from "./kiwi-schema.js";
+
+export type RuntimeKind = "web" | "native" | "embedded";
+
+/**
+ * Resolves the config file path for a KiwiEngine runtime relative to the kiwi.config.toml directory.
+ * Precedence: `[runtimes.<kind>].path` → `[runtimes.<kind>].config_file` → (web only) legacy `[web.runtime].config_file` → default basename.
+ */
+export function resolveRuntimeConfigPath(
+    kiwi: KiwiConfig,
+    projectRoot: string,
+    kind: RuntimeKind,
+    defaultBasename: string,
+): string {
+    const entry = kiwi.runtimes?.[kind];
+    const legacyWeb = kind === "web" ? kiwi.web?.runtime?.config_file : undefined;
+    const rel = entry?.path ?? entry?.config_file ?? legacyWeb ?? defaultBasename;
+    return path.resolve(projectRoot, rel);
+}

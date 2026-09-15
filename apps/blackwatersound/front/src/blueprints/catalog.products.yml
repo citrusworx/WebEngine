@@ -1,0 +1,34 @@
+entity: product
+storage: nectarine
+status: seed-data
+
+fields:
+  id: string.primary
+  name: string.required
+  sub: string
+  price: money.display
+  originalPrice: money.display.optional
+  image: asset.url
+  imagePosition: string.optional
+  accent: color.hex
+  badge: string.optional
+  badgeBg: color.hex.optional
+  category:
+    enum: [Effects, Amplifiers, Studio, Lifestyle, Accessories]
+  tags: string.array
+  blurb: text.short
+  isNew: boolean.default(false)
+  isSoldOut: boolean.default(false)
+
+queries:
+  allProducts:
+    action: list
+    orderBy: category,name
+  productsByCategory:
+    action: list
+    where:
+      category: $category
+  productById:
+    action: get
+    where:
+      id: $id

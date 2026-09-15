@@ -1,0 +1,46 @@
+client:
+  read:
+    allClients:
+      api:
+        method: GET
+        endpoint: /api/clients
+        query: allClients
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/clients/:id
+        query: byId
+
+    byEmail:
+      api:
+        method: GET
+        endpoint: /api/clients/email/:email
+        query: byEmail
+
+  create:
+    newClient:
+      api:
+        method: POST
+        endpoint: /api/clients
+        query: newClient
+        body:
+          email: string.required
+          display_name: string
+          phone: string
+          role: string
+          source_app: string
+
+  update:
+    updateClient:
+      api:
+        method: PUT
+        endpoint: /api/clients/:id
+        query: updateClient
+
+  delete:
+    deleteClient:
+      api:
+        method: DELETE
+        endpoint: /api/clients/:id
+        query: deleteClient
