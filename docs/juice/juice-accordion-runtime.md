@@ -87,6 +87,8 @@ stopAccordionRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+`createAccordion()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-toggle with the singleton.
+
 ## AccordionOptions
 
 The configurable shape is:
