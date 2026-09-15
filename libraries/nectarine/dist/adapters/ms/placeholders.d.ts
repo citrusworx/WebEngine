@@ -17,7 +17,8 @@ export type MysqlRewriteResult = {
  * so the Postgres `?` key check is not mistaken for a MySQL placeholder:
  * - `payload->>'catalog'` → `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog'))`
  * - `payload @> $1::jsonb` → `JSON_CONTAINS(payload, CAST(? AS JSON))`
- * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', ?))`
+ * - `payload @> '{"a":1}'` → `JSON_CONTAINS(payload, CAST('{"a":1}' AS JSON))`
+ * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))`
  *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
  */

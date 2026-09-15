@@ -170,7 +170,7 @@ await applyMigrations({
 
 `@citrusworx/nectarine/adapters/ms` follows the same config-driven pattern as Postgres. YAML declares the env key names; `NectarineConfig.resolveCredentials("mysql")` reads the values. The adapter does not read `process.env` itself. Install `mysql2` alongside this package (peer dependency).
 
-The compiler is still Postgres-first and emits `$1` / `$N::jsonb`. `query()` rewrites those binds at the adapter boundary to MySQL `?` (and `CAST(? AS JSON)` for `json` / `jsonb`; `::text` is stripped). JSONB `@>` / `?` / `->>` become `JSON_CONTAINS` / `JSON_CONTAINS_PATH` / `JSON_EXTRACT` so Postgres `?` is not treated as a placeholder. Parameter order is preserved, including reused or out-of-order `$N`. SQL that already uses `?` is left as-is. Postgres still runs `$1` unchanged.
+The compiler is still Postgres-first and emits `$1` / `$N::jsonb`. `query()` rewrites those binds at the adapter boundary to MySQL `?` (and `CAST(? AS JSON)` for `json` / `jsonb`; `::text` is stripped). JSONB `@>` / `?` / `->>` become `JSON_CONTAINS` / `JSON_CONTAINS_PATH` / `JSON_EXTRACT`; bound `has_key` names go through `JSON_QUOTE` so `$."a.b"` stays one key. Parameter order is preserved, including reused or out-of-order `$N`. SQL that already uses `?` is left as-is. Postgres still runs `$1` unchanged.
 
 ```ts
 import { loadNectarineConfig } from "@citrusworx/nectarine";

@@ -200,8 +200,35 @@ describe("rewriteMysqlPlaceholders", () => {
             where: { column: "payload", operator: "has_key", value: "$1" },
         });
         expect(rewriteMysqlPlaceholders(hasKey, ["slug"])).toEqual({
-            sql: "SELECT payload FROM products WHERE JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', ?))",
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))",
             params: ["slug"],
+        });
+    });
+
+    it("rewrites @> string constants and quotes bound has_key segments", () => {
+        const containsConst = compileQuery({
+            type: "SELECT",
+            table: "products",
+            fields: "payload",
+            where: "payload @> '{\"catalog\":\"gear\"}'",
+        });
+        expect(rewriteMysqlPlaceholders(containsConst)).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS(payload, CAST('{\"catalog\":\"gear\"}' AS JSON))",
+            params: [],
+        });
+
+        const hasKey = compileQuery({
+            select: ["payload"],
+            from: "products",
+            where: { column: "payload", operator: "has_key", value: "$1" },
+        });
+        expect(rewriteMysqlPlaceholders(hasKey, ["a.b"])).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))",
+            params: ["a.b"],
+        });
+        expect(rewriteMysqlPlaceholders(hasKey, ["source-app"])).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))",
+            params: ["source-app"],
         });
     });
 
