@@ -11,8 +11,11 @@ describe("Juice consumer smoke", () => {
         const module = await import(entryUrl);
 
         expect(module.tokens.colors.families).toContain("black");
+        expect(module.tokens.colors.families).toContain("teal");
         expect(module.tokens.colors.black["900"]).toBe("hsl(0, 0%, 10%)");
         expect(module.tokens.colors.blue["500"]).toBe("hsl(210, 80%, 55%)");
+        expect(module.tokens.colors.teal["500"]).toBe("hsl(174, 65%, 54%)");
+        expect(module.tokens.colors.teal.swatches.colors).toContain("Lagoon");
         expect(module.tokens.typography.providers).toEqual(["adobe", "google"]);
     });
 

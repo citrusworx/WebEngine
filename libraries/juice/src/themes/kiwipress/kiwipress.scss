@@ -66,6 +66,20 @@
     --kw-pricing-background: linear-gradient(180deg, #{$white-100} 0%, #{$slate-100} 100%);
     --kw-step-marker-background: linear-gradient(135deg, #{$kiwi-700} 0%, #{$kiwi-800} 100%);
 
+    /* Accordion chrome roles — same names as Aquaflux / Citrusmint. */
+    --kw-trigger: var(--kw-surface-strong);
+    --kw-trigger-hover: var(--kw-surface-muted);
+    --kw-trigger-open: var(--kw-accent-soft);
+    --kw-chevron: var(--kw-accent);
+    --kw-panel-rule: var(--kw-border);
+    --kw-focus-ring: var(--kw-accent);
+    --juice-accordion-trigger: var(--kw-trigger);
+    --juice-accordion-trigger-hover: var(--kw-trigger-hover);
+    --juice-accordion-trigger-open: var(--kw-trigger-open);
+    --juice-accordion-chevron: var(--kw-chevron);
+    --juice-accordion-panel-rule: var(--kw-panel-rule);
+    --juice-accordion-focus-ring: var(--kw-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1175,6 +1189,51 @@
 [theme="kiwipress"] [modal-close]:hover {
     background-color: var(--kw-surface-muted);
     transform: rotate(90deg);
+}
+
+/* Accordion wrappers are structural, not default section surfaces.
+   Generic KiwiPress buttons are kiwi CTAs; triggers stay surface controls. */
+[theme="kiwipress"] :where([accordion]) {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+[theme="kiwipress"] button[accordion-item] {
+    background-color: var(--juice-accordion-trigger);
+    color: var(--kw-heading);
+    border: 1px solid var(--kw-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[accordion-item]::after {
+    border-color: var(--juice-accordion-chevron);
+}
+
+[theme="kiwipress"] button[accordion-item]:hover,
+[theme="kiwipress"] button[accordion-item]:focus-visible {
+    background-color: var(--juice-accordion-trigger-hover);
+    color: var(--kw-heading);
+    transform: none;
+    box-shadow: none;
+}
+
+[theme="kiwipress"] button[accordion-item]:focus-visible {
+    outline: 2px solid var(--juice-accordion-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="kiwipress"] button[accordion-item][aria-expanded="true"] {
+    background-color: var(--juice-accordion-trigger-open);
+    color: var(--kw-heading);
+}
+
+[theme="kiwipress"] [accordion] [role="region"] {
+    color: var(--kw-text);
+    background-color: var(--kw-surface-muted);
+    border: 1px solid var(--juice-accordion-panel-rule);
+    border-radius: 0.75rem;
 }
 
 

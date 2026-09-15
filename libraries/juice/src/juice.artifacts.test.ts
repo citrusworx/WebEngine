@@ -7,11 +7,14 @@ const PACKAGE_ROOT = process.cwd();
 const DIST_DIR = join(PACKAGE_ROOT, "dist");
 const PACKAGE_JSON_PATH = join(PACKAGE_ROOT, "package.json");
 
+type PackageExportTarget = { default?: string; types?: string } | string | null;
+
 function readPackageJson() {
     return JSON.parse(readFileSync(PACKAGE_JSON_PATH, "utf-8")) as {
         main?: string;
         types?: string;
-        exports?: Record<string, { default?: string; types?: string } | string>;
+        exports?: Record<string, PackageExportTarget>;
+        files?: string[];
         browserslist?: string[];
     };
 }
@@ -59,6 +62,19 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]/);
         expect(css).toMatch(/\[accordion-item\]:focus-visible/);
         expect(css).not.toMatch(/\[accordion-item\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).toContain("--juice-accordion-trigger");
+        expect(css).toContain("--juice-accordion-trigger-hover");
+        expect(css).toContain("--juice-accordion-trigger-open");
+        expect(css).toContain("--juice-accordion-chevron");
+        expect(css).toContain("--juice-accordion-panel-rule");
+        expect(css).toContain("--juice-accordion-focus-ring");
+        expect(css).toContain("--juice-accordion-item-border,");
+        expect(css).toContain("--juice-accordion-item-border-open,");
+        expect(css).toContain("--juice-accordion-trigger-accent,");
+        expect(css).toContain("--juice-accordion-panel,");
+        expect(css).toContain("--juice-accordion-open-glow,");
+        expect(css).toContain("--juice-accordion-chevron-size");
+        expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]::before/);
     });
 
     it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {
@@ -68,6 +84,8 @@ describe("Juice build artifacts", () => {
         );
 
         expect(themeCss).toContain("accordion-item");
+        expect(themeCss).toContain("--aqua-trigger: var(--aqua-surface-strong)");
+        expect(themeCss).toContain("--juice-accordion-trigger: var(--aqua-trigger)");
         expect(themeCss).toContain("--aqua-surface-strong");
         expect(themeCss).toContain("--aqua-heading");
         expect(themeCss).toContain("--aqua-accent");
@@ -76,6 +94,65 @@ describe("Juice build artifacts", () => {
         for (const block of accordionItemBlocks) {
             expect(block).not.toContain("--aqua-button-background");
         }
+    });
+
+    it("binds accordion chrome roles in KiwiPress and Citrusmint", () => {
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+
+        expect(kiwiCss).toContain("--kw-trigger: var(--kw-surface-strong)");
+        expect(kiwiCss).toContain("--juice-accordion-trigger: var(--kw-trigger)");
+        expect(kiwiCss).toContain("button[accordion-item]");
+        expect(kiwiCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-trigger: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-accordion-trigger: var(--cm-trigger)");
+        expect(mintCss).toContain("button[accordion-item]");
+    });
+
+    it("keeps draft tide CSS out of the stable theme export folder", () => {
+        const bundledThemeIds = readBundledThemeIds();
+        const draftPath = join(DIST_DIR, "themes", "_draft", "tide.css");
+
+        expect(bundledThemeIds).not.toContain("tide");
+        expect(bundledThemeIds).not.toContain("_draft");
+        expect(existsSync(draftPath)).toBe(true);
+
+        const draftCss = readFileSync(draftPath, "utf-8");
+        expect(draftCss).toMatch(/\[theme=["']?tide["']?\]/);
+        expect(draftCss).toContain("--tide-measure:");
+        expect(draftCss).toContain("45rem");
+        expect(draftCss).toContain("--juice-accordion-trigger: var(--tide-trigger)");
+        expect(draftCss).toContain("--juice-accordion-trigger-accent: var(--tide-trigger-accent)");
+        expect(draftCss).toContain("--juice-accordion-item-border: var(--tide-item-border)");
+        expect(draftCss).toContain("--juice-accordion-panel: var(--tide-panel-well)");
+        expect(draftCss).toContain("--juice-accordion-chevron-size:");
+        expect(draftCss).toContain("button[accordion-item]");
+        expect(draftCss).toContain("[accordion]:has(>");
+        expect(draftCss).toContain("--tide-line-glow:");
+        expect(draftCss).not.toContain("--tide-trigger-open: var(--tide-highlight)");
+        expect(draftCss).not.toContain("--tide-accent: hsl(174, 65%, 54%)");
+        expect(draftCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
+    });
+
+    it("keeps draft theme paths out of the public package export map", () => {
+        const pkg = readPackageJson();
+        const exportsMap = pkg.exports ?? {};
+
+        expect(exportsMap["./themes/_draft"]).toBeNull();
+        expect(exportsMap["./themes/_draft/*"]).toBeNull();
+        expect(exportsMap["./themes/_draft/*.css"]).toBeNull();
+        expect(exportsMap["./styles/themes/_draft"]).toBeNull();
+        expect(exportsMap["./styles/themes/_draft/*"]).toBeNull();
+        expect(pkg.files).toEqual(expect.arrayContaining(["!dist/themes/_draft", "!dist/themes/_draft/**"]));
+    });
+
+    it("rejects draft Tide through published package specifiers", async () => {
+        const cssSpecifier = ["@citrusworx/juiceui", "themes/_draft/tide.css"].join("/");
+        const aliasSpecifier = ["@citrusworx/juiceui", "styles/themes/_draft/tide"].join("/");
+
+        await expect(import(/* @vite-ignore */ cssSpecifier)).rejects.toThrow(/is not exported/);
+        await expect(import(/* @vite-ignore */ aliasSpecifier)).rejects.toThrow(/is not exported/);
     });
 
     it("produces JS output", () => {
@@ -120,6 +197,10 @@ describe("Juice package contract", () => {
         expect(existsSync(typesPath)).toBe(true);
 
         for (const target of Object.values(pkg.exports ?? {})) {
+            if (target == null) {
+                continue;
+            }
+
             if (typeof target === "string") {
                 if (target.includes("*")) {
                     expect(existsSync(join(PACKAGE_ROOT, target.split("*")[0]))).toBe(true);

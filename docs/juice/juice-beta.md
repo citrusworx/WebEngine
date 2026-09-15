@@ -15,7 +15,7 @@ Juice Beta is the first release line where the styling system, theme contract, a
 
 - Full animation roadmap ([juice-animations-roadmap.md](./juice-animations-roadmap.md)).
 - Config-driven theme generation from `juice.config.yaml` (optional, draft).
-- Draft themes under `src/themes/_draft/` (for example `blush`).
+- Draft themes under `src/themes/_draft/` (for example `blush`, `tide`). Tide includes SCSS and compiles to `dist/themes/_draft/tide.css` for local demos; package `exports` and the published tarball do not expose `_draft`.
 - A large public JS component API beyond the exports listed in the package README.
 
 ## Publish gate

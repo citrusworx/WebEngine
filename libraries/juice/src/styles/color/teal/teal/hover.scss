@@ -1,0 +1,95 @@
+@use '../../tokens/tokens.scss' as *;
+
+// Standard Hover - changes background and border.
+
+[hover="teal-100"]:hover {
+    background-color: $teal-100;
+    border-color: $teal-100;
+}
+
+[hover="teal-200"]:hover {
+    background-color: $teal-200;
+    border-color: $teal-200;
+}
+
+[hover="teal-300"]:hover {
+    background-color: $teal-300;
+    border-color: $teal-300;
+}
+
+[hover="teal-400"]:hover {
+    background-color: $teal-400;
+    border-color: $teal-400;
+}
+
+[hover="teal-500"]:hover {
+    background-color: $teal-500;
+    border-color: $teal-500;
+}
+
+[hover="teal-600"]:hover {
+    background-color: $teal-600;
+    border-color: $teal-600;
+}
+
+[hover="teal-700"]:hover {
+    background-color: $teal-700;
+    border-color: $teal-700;
+}
+
+[hover="teal-800"]:hover {
+    background-color: $teal-800;
+    border-color: $teal-800;
+}
+
+[hover="teal-900"]:hover {
+    background-color: $teal-900;
+    border-color: $teal-900;
+}
+
+// Outline hover -- changes text and border only
+
+[hover="teal-100"][outline]:hover {
+    color: $teal-100;
+    border-color: $teal-100;
+}
+
+[hover="teal-200"][outline]:hover {
+    color: $teal-200;
+    border-color: $teal-200;
+}
+
+[hover="teal-300"][outline]:hover {
+    color: $teal-300;
+    border-color: $teal-300;
+}
+
+[hover="teal-400"][outline]:hover {
+    color: $teal-400;
+    border-color: $teal-400;
+}
+
+[hover="teal-500"][outline]:hover {
+    color: $teal-500;
+    border-color: $teal-500;
+}
+
+[hover="teal-600"][outline]:hover {
+    color: $teal-600;
+    border-color: $teal-600;
+}
+
+[hover="teal-700"][outline]:hover {
+    color: $teal-700;
+    border-color: $teal-700;
+}
+
+[hover="teal-800"][outline]:hover {
+    color: $teal-800;
+    border-color: $teal-800;
+}
+
+[hover="teal-900"][outline]:hover {
+    color: $teal-900;
+    border-color: $teal-900;
+}

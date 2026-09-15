@@ -95,6 +95,14 @@ Juice organizes colors into families, each containing a base set of 9 shades (10
 - `maroon`: Dark, brownish red
 - `scarlett`: Bright, scarlet red
 
+### Teal Family
+
+**Base Teal Shades:**
+- `teal-100` through `teal-900`: Cyan-teal palette. `teal-500` (`hsl(174, 65%, 54%)`) is the dark FAQ accent used by draft Tide.
+
+**Swatches:**
+- `lagoon`: Deeper, more saturated cyan water tone
+
 ### White Family
 
 **Base White Shades:**
@@ -180,6 +188,7 @@ Example HSL values:
 - `cornflower-500`: `hsl(223, 73%, 50%)`
 - `citrusmint-300`: `hsl(160, 84%, 70%)`
 - `cherryred-700`: `hsl(0, 78%, 40%)`
+- `teal-500`: `hsl(174, 65%, 54%)`
 
 ## Implementation Details
 
@@ -336,6 +345,10 @@ Each color generates multiple CSS selectors:
 - crimson-100 through crimson-900
 - maroon-100 through maroon-900
 - scarlett-100 through scarlett-900
+
+**Teal Family:**
+- teal-100 through teal-900
+- lagoon-100 through lagoon-900
 
 **White Family:**
 - white-100 through white-900

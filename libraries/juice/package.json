@@ -13,6 +13,11 @@
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/index.css"
         },
+        "./themes/_draft": null,
+        "./themes/_draft/*": null,
+        "./themes/_draft/*.css": null,
+        "./styles/themes/_draft": null,
+        "./styles/themes/_draft/*": null,
         "./themes/*.css": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/*.css"
@@ -47,7 +52,9 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "!dist/themes/_draft",
+        "!dist/themes/_draft/**"
     ],
     "browserslist": [
         "last 2 Chrome versions",

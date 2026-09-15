@@ -489,3 +489,7 @@ export async function collectThemeEntries(): Promise<ThemeEntry[]> {
 
     return [...entries.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
+
+export async function collectDraftThemeEntries(): Promise<ThemeEntry[]> {
+    return discoverScssThemeEntries(join(THEMES_ROOT, "_draft"));
+}

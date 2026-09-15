@@ -8,7 +8,7 @@ import { dirname, resolve } from "node:path";
 import postcss from "gulp-postcss";
 import postcssRuntime from "postcss";
 import autoprefixer from "autoprefixer";
-import { collectThemeEntries, generateThemeArtifacts } from "./src/tools/theme-generator/index.ts";
+import { collectDraftThemeEntries, collectThemeEntries, generateThemeArtifacts } from "./src/tools/theme-generator/index.ts";
 
 const sass = gulpSass(dartSass);
 const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -71,6 +71,7 @@ const generateThemes = async () => {
 const compileThemeStyles = async (themeId: string, srcRelative: string) => {
     const sourcePath = resolve(ROOT_DIR, srcRelative);
     const outputPath = resolve(DIST_ROOT, "themes", `${themeId}.css`);
+    await fs.promises.mkdir(dirname(outputPath), { recursive: true });
     const sassResult = await dartSass.compileAsync(sourcePath, {
         loadPaths: [resolve(ROOT_DIR, "src")],
     });
@@ -87,6 +88,11 @@ const stylesThemes = async () => {
     await Promise.all(themeEntries.map(({ id, src }) => compileThemeStyles(id, src)));
 };
 
+const stylesDraftThemes = async () => {
+    const draftEntries = await collectDraftThemeEntries();
+    await Promise.all(draftEntries.map(({ id, src }) => compileThemeStyles(`_draft/${id}`, src)));
+};
+
 const icons = () => {
     return gulp.src("./src/icons/**/*.svg").pipe(gulp.dest("./dist/icons"));
 };
@@ -94,12 +100,12 @@ const icons = () => {
 const watchAll = () => {
     gulp.watch(
         ["./src/**/*.scss", "./src/themes/**/*.yaml", "./src/themes/**/*.config.yaml"],
-        gulp.series(generateThemes, gulp.parallel(stylesCore, stylesThemes))
+        gulp.series(generateThemes, gulp.parallel(stylesCore, stylesThemes, stylesDraftThemes))
     );
     gulp.watch("./src/icons/**/*.svg", icons);
 };
 
 export { clean };
-export const build = gulp.series(clean, generateThemes, stylesCore, stylesThemes, icons);
-export const dev = gulp.series(generateThemes, stylesCore, stylesThemes, icons, watchAll);
+export const build = gulp.series(clean, generateThemes, stylesCore, stylesThemes, stylesDraftThemes, icons);
+export const dev = gulp.series(generateThemes, stylesCore, stylesThemes, stylesDraftThemes, icons, watchAll);
 export default build;
