@@ -59,8 +59,8 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 ## What's In Development 🔄
 
 ### Query Compiler
-- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), schema YAML → `CREATE TABLE` / indexes, versioned migration YAML → gated `ALTER`. Adapters execute `(sql, params)` only. JSONB columns and `$N::jsonb` binds are supported; JSONB is not being dropped.
-- Planned: Optimization layer, query planning, JSONB operators (`@>`, `?`, `->>`)
+- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), schema YAML → `CREATE TABLE` / indexes, versioned migration YAML → gated `ALTER`. Adapters execute `(sql, params)` only. JSONB columns, `$N::jsonb` binds, and JSONB operators (`@>`, `?`, `->>`) are supported; `COUNT` / `EXISTS` compile from YAML. JSONB is not being dropped.
+- Planned: Optimization layer, query planning; joins / `ON CONFLICT` / `GROUP BY` / `LIMIT`
 
 ### Schema Registry
 - Current: File-based loading
@@ -203,7 +203,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 
 **PostgreSQL**:
 - Array types partially supported
-- JSONB is first-class: named query YAML can select `payload` and bind `{ value: $N, cast: jsonb }`
+- JSONB is first-class: named query YAML can select `payload`, bind `{ value: $N, cast: jsonb }`, and filter with `@>` / `?` / `->>`
 - Window functions need custom query definitions
 
 **MySQL**:

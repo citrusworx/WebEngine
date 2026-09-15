@@ -6,6 +6,9 @@
  *
  * Blackwater `type: SELECT` YAML is normalized onto this shape first
  * (`normalizeQuery`). Blog `queries:` maps are not compiled here.
+ *
+ * Also compiled: `COUNT(*)` (`{ fn: count }` / `count: true`),
+ * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`.
  */
 export { isRecord, QueryCompileError } from "./errors.js";
 export declare const OP_TOKENS: {
@@ -19,6 +22,10 @@ export declare const OP_TOKENS: {
     readonly not_in: "NOT IN";
     readonly is_null: "IS NULL";
     readonly is_not_null: "IS NOT NULL";
+    /** JSONB containment (`payload @> $1::jsonb`). */
+    readonly contains: "@>";
+    /** JSONB key exists (`payload ? $1`). */
+    readonly has_key: "?";
 };
 export declare const CRUD_METHODS: readonly ["get", "create", "update", "delete"];
 export type OperatorToken = keyof typeof OP_TOKENS;

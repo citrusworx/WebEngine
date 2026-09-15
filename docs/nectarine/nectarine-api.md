@@ -145,7 +145,20 @@ getActiveUsers:
   fields: '*'
   where: is_active = true
   orderBy: username ASC
+
+countUsers:
+  type: SELECT
+  table: users
+  count: true
+
+emailExists:
+  type: SELECT
+  table: waitlist
+  exists: true
+  where: email = $1
 ```
+
+`join` and `limit` in older examples are **not compiled**. Use `count: true` / `exists: true` / JSONB `payload->>'key'` instead of host SQL.
 
 ### INSERT (Create)
 

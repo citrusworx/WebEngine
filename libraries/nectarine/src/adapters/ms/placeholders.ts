@@ -24,41 +24,48 @@ export type MysqlRewriteResult = {
  * - `jsonb` / `json` → `CAST(? AS JSON)` (MySQL JSON is the closest type)
  * - `text` → `?` (strip; `CAST(? AS CHAR)` would change collation/padding)
  *
+ * JSONB operators the compiler emits (`@>`, `?`, `->>`) are rewritten first
+ * so the Postgres `?` key check is not mistaken for a MySQL placeholder:
+ * - `payload->>'catalog'` → `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog'))`
+ * - `payload @> $1::jsonb` → `JSON_CONTAINS(payload, CAST(? AS JSON))`
+ * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', ?))`
+ *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
  */
 export function rewriteMysqlPlaceholders(
     sql: string,
     params: readonly unknown[] = [],
 ): MysqlRewriteResult {
+    const rewritten = rewriteMysqlJsonbOperators(sql);
     let i = 0;
     let sawNumbered = false;
     let sawPositional = false;
     let out = "";
     const bound: unknown[] = [];
 
-    while (i < sql.length) {
-        const ch = sql[i];
+    while (i < rewritten.length) {
+        const ch = rewritten[i];
         if (ch === undefined) {
             break;
         }
 
         if (ch === "'" || ch === '"' || ch === "`") {
-            const next = skipQuoted(sql, i, ch);
-            out += sql.slice(i, next);
+            const next = skipQuoted(rewritten, i, ch);
+            out += rewritten.slice(i, next);
             i = next;
             continue;
         }
 
-        if (ch === "-" && sql[i + 1] === "-") {
-            const next = skipLineComment(sql, i);
-            out += sql.slice(i, next);
+        if (ch === "-" && rewritten[i + 1] === "-") {
+            const next = skipLineComment(rewritten, i);
+            out += rewritten.slice(i, next);
             i = next;
             continue;
         }
 
-        if (ch === "/" && sql[i + 1] === "*") {
-            const next = skipBlockComment(sql, i);
-            out += sql.slice(i, next);
+        if (ch === "/" && rewritten[i + 1] === "*") {
+            const next = skipBlockComment(rewritten, i);
+            out += rewritten.slice(i, next);
             i = next;
             continue;
         }
@@ -71,7 +78,7 @@ export function rewriteMysqlPlaceholders(
         }
 
         if (ch === "$") {
-            const slice = sql.slice(i);
+            const slice = rewritten.slice(i);
             const match = slice.match(PLACEHOLDER_AT);
             if (!match || match[1] === undefined) {
                 out += ch;
@@ -109,10 +116,238 @@ export function rewriteMysqlPlaceholders(
     }
 
     if (!sawNumbered) {
-        return { sql, params: [...params] };
+        return { sql: rewritten, params: [...params] };
     }
 
     return { sql: out, params: bound };
+}
+
+/**
+ * Rewrite compiler JSONB operators to MySQL JSON functions so Postgres `?`
+ * is not treated as a positional placeholder.
+ */
+export function rewriteMysqlJsonbOperators(sql: string): string {
+    if (!hasJsonbOperator(sql)) {
+        return sql;
+    }
+
+    let i = 0;
+    let out = "";
+
+    while (i < sql.length) {
+        const ch = sql[i];
+        if (ch === undefined) {
+            break;
+        }
+
+        if (ch === "'" || ch === '"' || ch === "`") {
+            const next = skipQuoted(sql, i, ch);
+            out += sql.slice(i, next);
+            i = next;
+            continue;
+        }
+
+        if (ch === "-" && sql[i + 1] === "-") {
+            const next = skipLineComment(sql, i);
+            out += sql.slice(i, next);
+            i = next;
+            continue;
+        }
+
+        if (ch === "/" && sql[i + 1] === "*") {
+            const next = skipBlockComment(sql, i);
+            out += sql.slice(i, next);
+            i = next;
+            continue;
+        }
+
+        if (isIdentBoundary(sql, i)) {
+            const rewritten = rewriteJsonbOperand(sql, i);
+            if (rewritten) {
+                out += rewritten.sql;
+                i = rewritten.end;
+                continue;
+            }
+        }
+
+        out += ch;
+        i += 1;
+    }
+
+    return out;
+}
+
+function hasJsonbOperator(sql: string): boolean {
+    return sql.includes("->>") || sql.includes("->'") || sql.includes(" @> ") || / \? \$/.test(sql);
+}
+
+function isIdentBoundary(sql: string, index: number): boolean {
+    if (index > 0) {
+        const prev = sql[index - 1];
+        if (prev !== undefined && /[A-Za-z0-9_]/.test(prev)) {
+            return false;
+        }
+    }
+    const ch = sql[index];
+    return ch === '"' || (ch !== undefined && /[A-Za-z_]/.test(ch));
+}
+
+function rewriteJsonbOperand(sql: string, start: number): { sql: string; end: number } | undefined {
+    const ident = readIdentPath(sql, start);
+    if (!ident) {
+        return undefined;
+    }
+
+    const arrows = readJsonArrows(sql, ident.end);
+    let end = arrows?.end ?? ident.end;
+    const operand = arrows
+        ? mysqlJsonExtract(ident.ident, arrows.keys, arrows.asText)
+        : ident.ident;
+
+    const afterOperand = skipSpaces(sql, end);
+    if (sql.startsWith("@>", afterOperand)) {
+        const afterOp = skipSpaces(sql, afterOperand + 2);
+        const placeholder = readPlaceholderToken(sql, afterOp);
+        if (placeholder) {
+            return {
+                sql: `JSON_CONTAINS(${operand}, ${placeholder.token})`,
+                end: placeholder.end,
+            };
+        }
+    }
+
+    if (sql[afterOperand] === "?") {
+        const afterOp = skipSpaces(sql, afterOperand + 1);
+        const placeholder = readPlaceholderToken(sql, afterOp);
+        if (placeholder) {
+            return {
+                sql: `JSON_CONTAINS_PATH(${operand}, 'one', CONCAT('$.', ${placeholder.token}))`,
+                end: placeholder.end,
+            };
+        }
+        const key = readSqlString(sql, afterOp);
+        if (key) {
+            const path = /^[A-Za-z_][A-Za-z0-9_]*$/.test(key.value)
+                ? `$.${key.value}`
+                : `$."${key.value.replace(/"/g, '\\"')}"`;
+            return {
+                sql: `JSON_CONTAINS_PATH(${operand}, 'one', '${path}')`,
+                end: key.end,
+            };
+        }
+    }
+
+    if (arrows) {
+        return { sql: operand, end };
+    }
+    return undefined;
+}
+
+function readIdentPath(sql: string, start: number): { ident: string; end: number } | undefined {
+    const first = readIdent(sql, start);
+    if (!first) {
+        return undefined;
+    }
+
+    let ident = first.ident;
+    let end = first.end;
+    while (sql[end] === ".") {
+        const next = readIdent(sql, end + 1);
+        if (!next) {
+            break;
+        }
+        ident += `.${next.ident}`;
+        end = next.end;
+    }
+    return { ident, end };
+}
+
+function readIdent(sql: string, start: number): { ident: string; end: number } | undefined {
+    if (sql[start] === '"') {
+        return { ident: sql.slice(start, skipQuoted(sql, start, '"')), end: skipQuoted(sql, start, '"') };
+    }
+    const match = sql.slice(start).match(/^[A-Za-z_][A-Za-z0-9_]*/);
+    if (!match) {
+        return undefined;
+    }
+    return { ident: match[0], end: start + match[0].length };
+}
+
+function readJsonArrows(
+    sql: string,
+    start: number,
+): { keys: string[]; asText: boolean; end: number } | undefined {
+    let i = start;
+    const keys: string[] = [];
+    let asText = false;
+
+    while (i < sql.length) {
+        let quoteAt: number | undefined;
+        if (sql.startsWith("->>'", i)) {
+            quoteAt = i + 3;
+            asText = true;
+        } else if (sql.startsWith("->'", i)) {
+            quoteAt = i + 2;
+            asText = false;
+        } else {
+            break;
+        }
+
+        const str = readSqlString(sql, quoteAt);
+        if (!str) {
+            break;
+        }
+        keys.push(str.value);
+        i = str.end;
+    }
+
+    return keys.length > 0 ? { keys, asText, end: i } : undefined;
+}
+
+function readSqlString(sql: string, start: number): { value: string; end: number } | undefined {
+    if (sql[start] !== "'") {
+        return undefined;
+    }
+    let i = start + 1;
+    let value = "";
+    while (i < sql.length) {
+        const ch = sql[i];
+        if (ch === "'" && sql[i + 1] === "'") {
+            value += "'";
+            i += 2;
+            continue;
+        }
+        if (ch === "'") {
+            return { value, end: i + 1 };
+        }
+        value += ch;
+        i += 1;
+    }
+    return undefined;
+}
+
+function mysqlJsonExtract(ident: string, keys: string[], asText: boolean): string {
+    const path = keys
+        .map((key) => (/^[A-Za-z_][A-Za-z0-9_]*$/.test(key) ? key : `"${key.replace(/"/g, '\\"')}"`))
+        .join(".");
+    const extract = `JSON_EXTRACT(${ident}, '$.${path}')`;
+    return asText ? `JSON_UNQUOTE(${extract})` : extract;
+}
+
+function skipSpaces(sql: string, start: number): number {
+    let i = start;
+    while (sql[i] === " " || sql[i] === "\t" || sql[i] === "\n") {
+        i += 1;
+    }
+    return i;
+}
+
+function readPlaceholderToken(sql: string, start: number): { token: string; end: number } | undefined {
+    const match = sql.slice(start).match(/^\$[1-9]\d*(?:::(?:jsonb|json|text))?/i);
+    if (!match) {
+        return undefined;
+    }
+    return { token: match[0], end: start + match[0].length };
 }
 
 function mysqlBindSql(cast: string | undefined): string {

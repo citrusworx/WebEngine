@@ -42,6 +42,38 @@ product:
       fields: payload
       where: id = $1
 
+    # JSONB path — catalog/slug live inside payload, not flattened columns.
+    # Host execute still filters in TS; these names compile for a later wire-up.
+    payloadsByCatalog:
+      type: SELECT
+      table: products
+      fields: payload
+      where: payload->>'catalog' = $1
+      orderBy: created_at ASC
+
+    payloadsBySlug:
+      type: SELECT
+      table: products
+      fields: payload
+      where: payload->>'slug' = $1
+
+    payloadsContaining:
+      type: SELECT
+      table: products
+      fields: payload
+      where: payload @> $1::jsonb
+
+    payloadsWithKey:
+      type: SELECT
+      table: products
+      fields: payload
+      where: payload ? $1
+
+    countPayloads:
+      type: SELECT
+      table: products
+      count: true
+
   create:
     newProduct:
       type: INSERT

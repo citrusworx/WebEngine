@@ -102,11 +102,18 @@ Adapters execute compiler SQL. They never build or concatenate it.
 
 ## Out of scope for this contract
 
-- Joins / `COUNT` / `EXISTS` / `ON CONFLICT` / JSONB operators (`@>`, `?`, `->>`)
+- Joins / `ON CONFLICT` / `GROUP BY` / `LIMIT` / JSONB `||` / `jsonb_set`
 - Flyway-style down migrations, raw SQL migration scripts, silent schema-diff DROP
 - Inventing Express route generation or `nectarine serve`
 
-Those remain later compiler/host work. They are not kernel invent-as-you-go.
+`COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` are **compiler phonics** in
+`@citrusworx/nectarine` (YAML tokens → SQL). They are not host-invented SQL.
+Joins and `ON CONFLICT` remain later compiler work. Host execute for product
+JSONB / waitlist `joinWaitlist` is unchanged in this increment — named queries
+such as `payloadsByCatalog` / `emailExists` / `countPayloads` compile and wait
+to be wired.
+
+Those remaining items are not kernel invent-as-you-go.
 
 ## Version note
 

@@ -170,7 +170,7 @@ await applyMigrations({
 
 `@citrusworx/nectarine/adapters/ms` follows the same config-driven pattern as Postgres. YAML declares the env key names; `NectarineConfig.resolveCredentials("mysql")` reads the values. The adapter does not read `process.env` itself. Install `mysql2` alongside this package (peer dependency).
 
-The compiler is still Postgres-first and emits `$1` / `$N::jsonb`. `query()` rewrites those binds at the adapter boundary to MySQL `?` (and `CAST(? AS JSON)` for `json` / `jsonb`; `::text` is stripped). Parameter order is preserved, including reused or out-of-order `$N`. SQL that already uses `?` is left as-is. Postgres still runs `$1` unchanged.
+The compiler is still Postgres-first and emits `$1` / `$N::jsonb`. `query()` rewrites those binds at the adapter boundary to MySQL `?` (and `CAST(? AS JSON)` for `json` / `jsonb`; `::text` is stripped). JSONB `@>` / `?` / `->>` become `JSON_CONTAINS` / `JSON_CONTAINS_PATH` / `JSON_EXTRACT` so Postgres `?` is not treated as a placeholder. Parameter order is preserved, including reused or out-of-order `$N`. SQL that already uses `?` is left as-is. Postgres still runs `$1` unchanged.
 
 ```ts
 import { loadNectarineConfig } from "@citrusworx/nectarine";
@@ -263,18 +263,19 @@ product:
 
 | Method | YAML keys | Example SQL |
 |--------|-----------|-------------|
-| `get` / `read` | `select`+`from` **or** `type: SELECT`+`table`+`fields`; optional `where`, `orderBy` | `SELECT * FROM products WHERE isActive = TRUE ORDER BY catalog, category, name` |
+| `get` / `read` | `select`+`from` **or** `type: SELECT`+`table`+`fields`; optional `where`, `orderBy`; `count: true` / `exists: true` | `SELECT * FROM products WHERE isActive = TRUE ORDER BY catalog, category, name` |
 | `create` | `insert.into/columns/values` **or** `type: INSERT`+`table`+`fields`; optional `returning` | `INSERT INTO waitlist (...) VALUES ($1, …) RETURNING id, email, created_at` |
 | `update` | `table`+`set`+`values`+`where` **or** `type: UPDATE`+`fields` (values default to `$1…$N`, WHERE `$1` remaps after SET) | `UPDATE products SET name = $1, … WHERE id = $14` |
 | `delete` | `from`+`where` **or** `type: DELETE`+`table`+`where` | `DELETE FROM products WHERE id = $1` |
 
 - `$1`, `$2`, … are bind placeholders. Raw numbers/booleans in canonical `value` are rejected; YAML constants use `{ const: true }` or the fragment grammar.
-- `{ fn: now }` (and the fragment `NOW()`) compile to vendor-neutral `NOW()`.
+- `{ fn: now }` (and the fragment `NOW()`) compile to vendor-neutral `NOW()`. `{ fn: count }` / Blackwater `count: true` emit `COUNT(*)`. `exists: true` emits `SELECT EXISTS(SELECT 1 FROM …)`.
+- JSONB `contains` (`@>`), `has_key` (`?`), and `path` (`->>`) filter document columns without flattening them.
 - Blackwater `where` / `orderBy` strings are a **closed grammar** (not raw SQL). Injection-shaped fragments fail compilation.
 - `clean_parse(parsed, type, method)` follows the YAML path and `parser.genSQL` — `read` and `get` resolve to the same method map. The returned `{ type, method, queries }` bundle is what `buildQuery` uses so GET vs DELETE is not inferred from a bare `from`.
 - `parser.buildSQL(queryObject, method?)` is a thin wrapper around the same compiler.
 
-**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, aggregates, `EXISTS`, `ON CONFLICT`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`. Versioned migration YAML compiles to gated `ALTER` (`renameColumn`, `dropColumn`, `changeType`).
+**Not compiled:** the blog `queries:` map (`models/blog/post/sql.yml`), joins, `GROUP BY`, `LIMIT`, `ON CONFLICT`, JSONB `||` / `jsonb_set`, arbitrary casts (only `$N::jsonb` / `{ cast: jsonb|json|text }`). Schema YAML `relationships:` is documentation only (not foreign-key DDL). `*Schema.yml` fields **are** compiled to `CREATE TABLE` / `CREATE INDEX`. Versioned migration YAML compiles to gated `ALTER` (`renameColumn`, `dropColumn`, `changeType`).
 
 ```ts
 import { CCompiler } from "@citrusworx/nectarine/compiler";

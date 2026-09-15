@@ -13,6 +13,17 @@ export type MysqlRewriteResult = {
  * - `jsonb` / `json` → `CAST(? AS JSON)` (MySQL JSON is the closest type)
  * - `text` → `?` (strip; `CAST(? AS CHAR)` would change collation/padding)
  *
+ * JSONB operators the compiler emits (`@>`, `?`, `->>`) are rewritten first
+ * so the Postgres `?` key check is not mistaken for a MySQL placeholder:
+ * - `payload->>'catalog'` → `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog'))`
+ * - `payload @> $1::jsonb` → `JSON_CONTAINS(payload, CAST(? AS JSON))`
+ * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', ?))`
+ *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
  */
 export declare function rewriteMysqlPlaceholders(sql: string, params?: readonly unknown[]): MysqlRewriteResult;
+/**
+ * Rewrite compiler JSONB operators to MySQL JSON functions so Postgres `?`
+ * is not treated as a positional placeholder.
+ */
+export declare function rewriteMysqlJsonbOperators(sql: string): string;

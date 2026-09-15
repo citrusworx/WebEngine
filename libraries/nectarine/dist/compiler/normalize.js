@@ -7,6 +7,8 @@
  *   type: SELECT | INSERT | UPDATE | DELETE
  *   table, fields, where (fragment or structured), orderBy, returning
  *   read: is an alias of get
+ *   count: true → SELECT COUNT(*)
+ *   exists: true → SELECT EXISTS(SELECT 1 FROM ...)
  *
  * Canonical:
  *   select / from / where:{column,operator,value}
@@ -101,6 +103,9 @@ function normalizeFieldList(fields, label, allowStar) {
     if (fields === undefined) {
         throw new errors_js_1.QueryCompileError(`${label} requires fields`);
     }
+    if ((0, errors_js_1.isRecord)(fields) && typeof fields.fn === "string") {
+        return [fields];
+    }
     if (typeof fields === "string") {
         const trimmed = fields.trim();
         if (trimmed === "*") {
@@ -119,8 +124,11 @@ function normalizeFieldList(fields, label, allowStar) {
         throw new errors_js_1.QueryCompileError(`${label} fields must be * or a non-empty list`);
     }
     return fields.map((field, index) => {
+        if ((0, errors_js_1.isRecord)(field) && typeof field.fn === "string") {
+            return field;
+        }
         if (typeof field !== "string") {
-            throw new errors_js_1.QueryCompileError(`${label} fields[${index}] must be a string`);
+            throw new errors_js_1.QueryCompileError(`${label} fields[${index}] must be a string or { fn: count }`);
         }
         return field;
     });
@@ -148,6 +156,45 @@ function requireTable(query, label) {
 }
 function normalizeSelect(query) {
     const table = requireTable(query, "SELECT");
+    if (query.exists === true || (0, errors_js_1.isRecord)(query.exists)) {
+        if (query.count === true) {
+            throw new errors_js_1.QueryCompileError("SELECT cannot mix count and exists");
+        }
+        if (query.fields !== undefined || query.select !== undefined) {
+            throw new errors_js_1.QueryCompileError("EXISTS cannot include fields");
+        }
+        if (query.orderBy !== undefined) {
+            throw new errors_js_1.QueryCompileError("EXISTS cannot include orderBy");
+        }
+        const nested = (0, errors_js_1.isRecord)(query.exists) ? query.exists : undefined;
+        const from = typeof nested?.from === "string" ? nested.from : (query.from ?? table);
+        const where = nested?.where !== undefined ? nested.where : query.where;
+        const normalized = {
+            exists: true,
+            from,
+        };
+        if (where !== undefined) {
+            normalized.where = normalizeWhere(where);
+        }
+        return normalized;
+    }
+    if (query.count === true) {
+        if (query.fields !== undefined) {
+            throw new errors_js_1.QueryCompileError("count: true cannot include fields");
+        }
+        const normalized = {
+            select: [{ fn: "count" }],
+            from: query.from ?? table,
+        };
+        if (query.where !== undefined) {
+            normalized.where = normalizeWhere(query.where);
+        }
+        const orderBy = normalizeOrderBy(query.orderBy);
+        if (orderBy !== undefined) {
+            normalized.orderBy = orderBy;
+        }
+        return normalized;
+    }
     const select = query.fields === undefined && query.select !== undefined
         ? query.select
         : normalizeFieldList(query.fields, "SELECT", true);
@@ -167,7 +214,7 @@ function normalizeSelect(query) {
 function normalizeInsert(query) {
     const table = requireTable(query, "INSERT");
     const columns = normalizeFieldList(query.fields ?? query.columns, "INSERT", false);
-    if (typeof columns === "string") {
+    if (!Array.isArray(columns) || columns.some((column) => typeof column !== "string")) {
         throw new errors_js_1.QueryCompileError("INSERT cannot include *");
     }
     const values = query.values === undefined
@@ -189,7 +236,7 @@ function normalizeUpdate(query) {
     const set = query.set === undefined
         ? normalizeFieldList(query.fields, "UPDATE", false)
         : query.set;
-    if (typeof set === "string") {
+    if (!Array.isArray(set) || set.some((column) => typeof column !== "string")) {
         throw new errors_js_1.QueryCompileError("UPDATE cannot include *");
     }
     const implicitValues = query.values === undefined;
