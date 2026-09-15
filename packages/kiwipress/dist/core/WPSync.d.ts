@@ -22,5 +22,4 @@ export declare class WPSync {
     preview(collections?: CmsCollection[]): Promise<TransferPreview>;
     transfer(collections?: CmsCollection[]): Promise<TransferResult>;
     private readCollection;
-    private loadRaw;
 }

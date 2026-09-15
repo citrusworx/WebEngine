@@ -1,7 +1,7 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import type { ApiDefinition } from "../types/api.js";
 
-export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
+async function sendWordPressRequest(ctx: Endpoint, init?: RequestInit): Promise<Response> {
     const headers = {
         ...(ctx.options?.headers ?? {}),
         ...(init?.headers ?? {})
@@ -18,11 +18,9 @@ export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
         "allowSelfSigned" in ctx.options &&
         Boolean((ctx.options as Record<string, unknown>).allowSelfSigned);
 
-    let response: Response;
-
     if (allowSelfSigned && ctx.endpoint.startsWith("https://")) {
         const { Agent } = await import("undici");
-        response = await fetch(ctx.endpoint, {
+        return fetch(ctx.endpoint, {
             ...requestInit,
             dispatcher: new Agent({
                 connect: {
@@ -30,15 +28,42 @@ export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
                 }
             })
         } as unknown as RequestInit);
-    } else {
-        response = await fetch(ctx.endpoint, requestInit);
     }
+
+    return fetch(ctx.endpoint, requestInit);
+}
+
+export async function requestWordPress(ctx: Endpoint, init?: RequestInit) {
+    const response = await sendWordPressRequest(ctx, init);
 
     if (!response.ok) {
         throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);
     }
 
     return response.json();
+}
+
+export type WordPressPage = {
+    data: unknown;
+    total: number;
+    totalPages: number;
+};
+
+export async function requestWordPressPage(ctx: Endpoint, init?: RequestInit): Promise<WordPressPage> {
+    const response = await sendWordPressRequest(ctx, init);
+
+    if (!response.ok) {
+        throw new Error(`WordPress request failed: ${response.status} ${response.statusText}`);
+    }
+
+    const total = Number(response.headers?.get?.("X-WP-Total") ?? "0") || 0;
+    const totalPages = Math.max(1, Number(response.headers?.get?.("X-WP-TotalPages") ?? "1") || 1);
+
+    return {
+        data: await response.json(),
+        total,
+        totalPages
+    };
 }
 
 export function createWordPressRoute(config: ApiDefinition, init?: RequestInit): Route<Endpoint> {

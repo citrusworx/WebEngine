@@ -1,3 +1,4 @@
+import { authorizeKiwiPressGateway } from "./auth.js";
 async function readJson(req) {
     const chunks = [];
     for await (const chunk of req) {
@@ -17,8 +18,17 @@ function sendError(ctx, error, fallback = "KiwiPress request failed.") {
     const message = error instanceof Error ? error.message : fallback;
     ctx.json({ error: message }, 500);
 }
+function guard(options, handler) {
+    return (ctx) => {
+        if (!authorizeKiwiPressGateway(ctx.req, options)) {
+            ctx.json({ error: "Unauthorized" }, 401);
+            return;
+        }
+        return handler(ctx);
+    };
+}
 async function loadWordpressCollection(kiwi, kind) {
-    return kind === "posts" ? kiwi.wordpress.posts.getAll() : kiwi.wordpress.pages.getAll();
+    return kiwi.wordpress.posts.listAll(kind, { status: "any", context: "edit" });
 }
 async function updateWordpressItem(kiwi, kind, id, payload) {
     return kind === "posts"
@@ -30,11 +40,11 @@ async function deleteWordpressItem(kiwi, kind, id) {
         ? kiwi.wordpress.posts.delete(id)
         : kiwi.wordpress.pages.delete(id);
 }
-function registerCollectionRoutes(app, kiwi, kind) {
+function registerCollectionRoutes(app, kiwi, kind, options) {
     app.route({
         method: "GET",
         path: `/__kiwipress/content/${kind}`,
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             void (async () => {
                 try {
                     if (kiwi.mode === "nectarine") {
@@ -47,12 +57,12 @@ function registerCollectionRoutes(app, kiwi, kind) {
                     sendError(ctx, error);
                 }
             })();
-        }
+        })
     });
     app.route({
         method: "POST",
         path: `/__kiwipress/content/${kind}`,
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             void (async () => {
                 try {
                     const payload = (await readJson(ctx.req));
@@ -68,12 +78,12 @@ function registerCollectionRoutes(app, kiwi, kind) {
                     sendError(ctx, error);
                 }
             })();
-        }
+        })
     });
     app.route({
         method: "PATCH",
         path: `/__kiwipress/content/${kind}`,
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             void (async () => {
                 try {
                     const id = queryId(ctx.req);
@@ -92,12 +102,12 @@ function registerCollectionRoutes(app, kiwi, kind) {
                     sendError(ctx, error);
                 }
             })();
-        }
+        })
     });
     app.route({
         method: "DELETE",
         path: `/__kiwipress/content/${kind}`,
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             void (async () => {
                 try {
                     const id = queryId(ctx.req);
@@ -115,25 +125,21 @@ function registerCollectionRoutes(app, kiwi, kind) {
                     sendError(ctx, error);
                 }
             })();
-        }
+        })
     });
 }
-export function registerKiwiPressGateway(app, kiwi) {
+export function registerKiwiPressGateway(app, kiwi, options = {}) {
     app.route({
         method: "GET",
         path: "/__kiwipress/health",
         handler: (ctx) => {
-            ctx.json({
-                ok: true,
-                mode: kiwi.mode,
-                auth: kiwi.auth.strategy()
-            });
+            ctx.json({ ok: true });
         }
     });
     app.route({
         method: "GET",
         path: "/__kiwipress/cms",
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             ctx.json({
                 mode: kiwi.mode,
                 entry: "wordpress",
@@ -148,12 +154,12 @@ export function registerKiwiPressGateway(app, kiwi) {
                     comments: kiwi.store.list("comments").length
                 }
             });
-        }
+        })
     });
     app.route({
         method: "POST",
         path: "/__kiwipress/cms",
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             void (async () => {
                 try {
                     const body = (await readJson(ctx.req));
@@ -173,12 +179,12 @@ export function registerKiwiPressGateway(app, kiwi) {
                     sendError(ctx, error);
                 }
             })();
-        }
+        })
     });
     app.route({
         method: "POST",
         path: "/__kiwipress/transfer",
-        handler: (ctx) => {
+        handler: guard(options, (ctx) => {
             void (async () => {
                 try {
                     if (!kiwi.sync) {
@@ -194,10 +200,10 @@ export function registerKiwiPressGateway(app, kiwi) {
                     sendError(ctx, error);
                 }
             })();
-        }
+        })
     });
-    registerCollectionRoutes(app, kiwi, "posts");
-    registerCollectionRoutes(app, kiwi, "pages");
+    registerCollectionRoutes(app, kiwi, "posts", options);
+    registerCollectionRoutes(app, kiwi, "pages", options);
     return app;
 }
 //# sourceMappingURL=register.js.map

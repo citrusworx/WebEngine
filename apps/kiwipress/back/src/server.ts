@@ -18,7 +18,9 @@ const kiwi = wordpressUrl
     });
 
 const server = Seltzer.init();
-registerKiwiPressGateway(server, kiwi);
+registerKiwiPressGateway(server, kiwi, {
+    token: process.env.KIWIPRESS_GATEWAY_TOKEN?.trim() || undefined
+});
 server.listen(port);
 
 console.log(

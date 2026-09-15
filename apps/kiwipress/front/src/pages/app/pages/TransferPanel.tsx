@@ -1,4 +1,5 @@
 import { Signal, effect } from "@citrusworx/sigjs";
+import { gatewayFetch } from "../../../api";
 
 type CmsStatus = {
     mode?: string;
@@ -24,7 +25,7 @@ export function TransferPanel() {
     async function loadCms() {
         status.set("Loading CMS status...");
         try {
-            const response = await fetch("/__kiwipress/cms");
+            const response = await gatewayFetch("/__kiwipress/cms");
             const payload = await response.json() as CmsStatus;
             if (!response.ok) {
                 throw new Error(payload.error ?? "Unable to load CMS status.");
@@ -41,7 +42,7 @@ export function TransferPanel() {
     async function runTransfer() {
         status.set("Transferring WordPress → Nectarine...");
         try {
-            const response = await fetch("/__kiwipress/transfer", {
+            const response = await gatewayFetch("/__kiwipress/transfer", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ collections: ["posts", "pages", "users", "categories", "tags", "comments"] })
@@ -61,7 +62,7 @@ export function TransferPanel() {
     }
 
     async function useWordpress() {
-        await fetch("/__kiwipress/cms", {
+        await gatewayFetch("/__kiwipress/cms", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mode: "wordpress" })

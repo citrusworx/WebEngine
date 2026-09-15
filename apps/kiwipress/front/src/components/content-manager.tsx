@@ -1,5 +1,6 @@
 import { Signal, effect } from "@citrusworx/sigjs";
 import type { Child } from "@citrusworx/sigjs";
+import { gatewayFetch } from "../api";
 
 type ContentKind = "posts" | "pages";
 
@@ -103,7 +104,7 @@ export function ContentManager() {
         managerError.set("");
 
         try {
-            const response = await fetch(`/__kiwipress/content/${kind}`);
+            const response = await gatewayFetch(`/__kiwipress/content/${kind}`);
             const payload = await response.json();
 
             if (!response.ok) {
@@ -146,7 +147,7 @@ export function ContentManager() {
                 content: contentArea.value
             };
 
-            const response = await fetch(`/__kiwipress/content/${selected.kind}?id=${encodeURIComponent(selected.id)}`, {
+            const response = await gatewayFetch(`/__kiwipress/content/${selected.kind}?id=${encodeURIComponent(selected.id)}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -188,7 +189,7 @@ export function ContentManager() {
         managerError.set("");
 
         try {
-            const response = await fetch(`/__kiwipress/content/${item.kind}?id=${encodeURIComponent(item.id)}`, {
+            const response = await gatewayFetch(`/__kiwipress/content/${item.kind}?id=${encodeURIComponent(item.id)}`, {
                 method: "DELETE"
             });
 

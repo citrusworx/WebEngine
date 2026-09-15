@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { NectarineStore } from "../cms/store.js";
 import { Posts } from "../posts/posts.js";
 import { Pages } from "../pages/pages.js";
@@ -20,20 +20,37 @@ function wordpressClients(url = "https://example.com") {
     };
 }
 
-describe("WPSync", () => {
-    it("transfers WordPress posts into a Nectarine store", async () => {
-        const fetchMock = vi.fn().mockResolvedValue({
-            ok: true,
-            json: async () => [
-                {
-                    id: 7,
-                    slug: "entry",
-                    status: "publish",
-                    title: { rendered: "Entry" },
-                    content: { rendered: "<p>Hi</p>" }
+function wpPage(body: unknown, totalPages = 1) {
+    return {
+        ok: true,
+        headers: {
+            get(name: string) {
+                if (name.toLowerCase() === "x-wp-totalpages") {
+                    return String(totalPages);
                 }
-            ]
-        });
+
+                return null;
+            }
+        },
+        json: async () => body
+    };
+}
+
+describe("WPSync", () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("transfers WordPress posts into a Nectarine store", async () => {
+        const fetchMock = vi.fn().mockResolvedValue(wpPage([
+            {
+                id: 7,
+                slug: "entry",
+                status: "publish",
+                title: { rendered: "Entry" },
+                content: { rendered: "<p>Hi</p>" }
+            }
+        ]));
         vi.stubGlobal("fetch", fetchMock);
 
         const store = new NectarineStore();
@@ -49,8 +66,37 @@ describe("WPSync", () => {
             status: "published",
             source: { cms: "nectarine" }
         });
-        expect(fetchMock).toHaveBeenCalled();
+        expect(String(fetchMock.mock.calls[0]?.[0])).toContain("status=any");
+        expect(String(fetchMock.mock.calls[0]?.[0])).toContain("context=edit");
+    });
 
-        vi.unstubAllGlobals();
+    it("walks every WordPress page before promoting", async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(wpPage([{
+                id: 1,
+                slug: "one",
+                status: "draft",
+                title: { rendered: "One" },
+                content: { rendered: "<p>1</p>" }
+            }], 2))
+            .mockResolvedValueOnce(wpPage([{
+                id: 2,
+                slug: "two",
+                status: "private",
+                title: { rendered: "Two" },
+                content: { rendered: "<p>2</p>" }
+            }], 2));
+        vi.stubGlobal("fetch", fetchMock);
+
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+        const result = await sync.transfer(["posts"]);
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(String(fetchMock.mock.calls[0]?.[0])).toContain("page=1");
+        expect(String(fetchMock.mock.calls[1]?.[0])).toContain("page=2");
+        expect(result.counts.posts).toBe(2);
+        expect(store.list("posts").map((record) => record.slug)).toEqual(["one", "two"]);
+        expect(store.list("posts").map((record) => record.status)).toEqual(["draft", "archived"]);
     });
 });

@@ -411,5 +411,9 @@ kiwi.toNectarine();       // new instance sharing the store
 
 **File:** `packages/kiwipress/src/gateway/register.ts`
 
-`registerKiwiPressGateway(app, kiwi)` attaches exact Seltzer routes under `/__kiwipress`. Item writes use `?id=`. Used by `apps/kiwipress/back`.
+`registerKiwiPressGateway(app, kiwi, options?)` attaches exact Seltzer routes under `/__kiwipress`. Item writes use `?id=`. Used by `apps/kiwipress/back`.
+
+`options.token` (`KIWIPRESS_GATEWAY_TOKEN`) is required for any non-loopback caller. `/__kiwipress/health` stays a public liveness probe and only returns `{ ok: true }`.
+
+`WPClient.listAll(collection, query)` pages WordPress using `X-WP-TotalPages`. `WPSync.transfer()` uses it with `status=any` and `context=edit` so drafts and later pages are not dropped.
 

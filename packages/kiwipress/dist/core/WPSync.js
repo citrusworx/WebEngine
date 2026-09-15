@@ -52,7 +52,7 @@ export class WPSync {
     }
     async readCollection(collection) {
         try {
-            const raw = await this.loadRaw(collection);
+            const raw = await this.wordpress.posts.listAll(collection, transferQuery(collection));
             return normalizeWordPressCollection(collection, raw, this.sourceUrl);
         }
         catch (error) {
@@ -60,21 +60,19 @@ export class WPSync {
             throw new Error(`WPSync failed to read WordPress ${collection}: ${message}`);
         }
     }
-    loadRaw(collection) {
-        switch (collection) {
-            case "posts":
-                return this.wordpress.posts.getAll();
-            case "pages":
-                return this.wordpress.pages.getAll();
-            case "users":
-                return this.wordpress.users.getAll();
-            case "categories":
-                return this.wordpress.categories.getAll();
-            case "tags":
-                return this.wordpress.tags.getAll();
-            case "comments":
-                return this.wordpress.comments.getAll();
-        }
+}
+function transferQuery(collection) {
+    switch (collection) {
+        case "posts":
+        case "pages":
+            return { status: "any", context: "edit" };
+        case "comments":
+            return { status: "any", context: "edit" };
+        case "users":
+            return { context: "edit" };
+        case "categories":
+        case "tags":
+            return { hide_empty: "false" };
     }
 }
 //# sourceMappingURL=WPSync.js.map

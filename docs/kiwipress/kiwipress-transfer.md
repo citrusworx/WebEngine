@@ -54,10 +54,12 @@ await native.native.posts.getBySlug("hello-world");
 
 `transfer()`:
 
-1. reads each WordPress collection through the existing domain objects
+1. pages every WordPress collection (`per_page=100`, `X-WP-TotalPages`) with `status=any` and `context=edit` where WordPress supports it
 2. normalizes every item onto `ContentRecord`
 3. upserts into the shared `NectarineStore`
 4. returns counts plus the records
+
+`Posts.getAll()` still returns WordPress’s default first page. Transfer does not use that method — it uses `listAll()`, so drafts, private posts, and sites with more than ten items are included.
 
 The store is **in memory** in this release. Postgres / MySQL / Mongo persistence through Nectarine adapters is the next layer, not a hidden one.
 
@@ -97,12 +99,20 @@ Copy `method` + `endpoint` onto Seltzer routes. Seltzer still matches exact path
 
 | Method | Path | Role |
 |---|---|---|
-| GET | `/__kiwipress/health` | process check |
+| GET | `/__kiwipress/health` | process check (`{ ok: true }`, unauthenticated) |
 | GET | `/__kiwipress/cms` | mode + native counts |
 | POST | `/__kiwipress/cms` | `{ mode: "wordpress" \| "nectarine" }` |
 | POST | `/__kiwipress/transfer` | run `WPSync.transfer` and `promote()` |
 | GET/POST/PATCH/DELETE | `/__kiwipress/content/posts` | WordPress or native; item id in `?id=` for PATCH/DELETE |
 | GET/POST/PATCH/DELETE | `/__kiwipress/content/pages` | same |
+
+Seltzer `listen(port)` binds every interface. Content, transfer, and CMS routes are **not** public:
+
+- set `KIWIPRESS_GATEWAY_TOKEN` and send `Authorization: Bearer …` or `X-KiwiPress-Token`
+- local Vite proxy is loopback, so those routes also accept 127.0.0.1 / ::1 without a token
+- non-loopback callers without a token get `401`
+
+The frontend sends `VITE_KIWIPRESS_GATEWAY_TOKEN` when that env is set.
 
 The Vite app proxies `/__kiwipress` to port 8787. Set `WP_URL` on the backend to enable the WordPress entry. Without it, the gateway starts in `nectarine` mode only.
 

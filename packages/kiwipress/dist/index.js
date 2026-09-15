@@ -13,6 +13,7 @@ export * from "./cms/native.js";
 export * from "./cms/KiwiPress.js";
 export * from "./nectarine/api.js";
 export * from "./gateway/register.js";
+export * from "./gateway/auth.js";
 export * from "./categories/routes.js";
 export * from "./categories/categories.js";
 export * from "./comments/routes.js";
