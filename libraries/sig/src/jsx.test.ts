@@ -1,3 +1,4 @@
+import "../jsdom-register.js";
 import { test, expect } from "@playwright/test";
 import { jsx, mount, disposeTree } from "./jsx-runtime.js";
 import { Signal, effect } from "./signal.js";

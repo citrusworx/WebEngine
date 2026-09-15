@@ -38,6 +38,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
+    "jsdom": "^29.0.1",
     "typescript": "^5.9.3"
   }
 }

@@ -139,6 +139,8 @@ If you put `{count.get()}` in JSX without a function wrapper, you get a static t
 - `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, `mount` / `disposeTree`
 - `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate
 
+DOM tests install a jsdom document from `libraries/sig/jsdom-register.ts` (not published).
+
 ```bash
 yarn workspace @citrusworx/sigjs test
 ```

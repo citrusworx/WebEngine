@@ -1,3 +1,4 @@
+import "../jsdom-register.js";
 import { test, expect } from "@playwright/test";
 import { SigRouter } from "./sig-router.js";
 
