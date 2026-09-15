@@ -55,8 +55,8 @@ The DDL compiler parses type + constraint tokens and emits vendor SQL.
 
 **JSONB is supported; we are not dropping it.** Postgres `json` / `jsonb`
 columns are first-class in schema YAML and query phonics (bind params,
-including `$N::jsonb`). Operators such as `@>`, `?`, and `->>` can come
-later.
+including `$N::jsonb`). Operators `@>`, `?`, and `->>` are compiler phonics
+(`contains` / `has_key` / `path:` or fragment `payload->>'catalog'`).
 
 ## Status legend
 
@@ -64,7 +64,7 @@ later.
 |--------|---------|
 | **migrated** | App calls a named compiled query or named compiled DDL. No SQL literal in `db/*.ts` / stores. |
 | **ready-to-migrate** | Compiler can emit this query from YAML (unused live path). |
-| **blocked-on-compiler** | Needs a compiler feature not added (`COUNT`, `EXISTS`, `ON CONFLICT`, aliases, aggregates). `$N::jsonb` bind casts are already allowed. |
+| **blocked-on-compiler** | Needs a compiler feature not added (`ON CONFLICT`, joins, `GROUP BY`, `LIMIT`). `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` compile from YAML. |
 | **schema-owned** | Table shape comes from `*Schema.yml` via the DDL compiler. JSONB columns stay where the live store uses them. |
 
 ---
@@ -84,7 +84,7 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 |----------|---------|-------------------|--------|
 | `migrate()` | **Whole-domain** bootstrap: every `*Schema.yml` (not only product + waitlist); versioned YAML for rename/drop/type change; additive `ADD COLUMN IF NOT EXISTS` after migrations; indexes last | `applyNamedMigrations` → `src/db/named-ddl.ts` | **migrated** — ledger `nectarine_schema_migrations`; destructive ops require `destructive: true` + `confirm`. Live `products` keeps `payload JSONB` (protected). Waitlist includes `source_app` / `interest` on new and existing tables. |
 | `loadProductsFromDb()` | Load JSONB documents | `product.read.allPayloads` | **migrated** — `SELECT payload … ORDER BY created_at ASC` |
-| `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — no `COUNT(*)` |
+| `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.allPayloads` (row count in TS) | **migrated** — `countPayloads` (`COUNT(*)`) compiles; live path still loads payloads |
 | `seedProductsIfEmpty()` | Insert JSONB payload | `product.read.payloadById` then `product.create.seedPayload` | **migrated** — existence check instead of `ON CONFLICT`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
 | `insertProductPayload()` | HTTP create catalog document | `product.create.insertPayload` | **migrated** — `INSERT (id, payload) … $2::jsonb RETURNING payload` |
 | `updateProductPayload()` | HTTP replace catalog document | `product.update.updatePayload` | **migrated** — `SET payload = $1::jsonb, updated_at = NOW()`; host merges first (no JSONB `||`) |
@@ -92,7 +92,7 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 | `loadWaitlistFromDb()` | List signups oldest-first | `waitlist.read.allEntries` | **migrated** — `SELECT * … ORDER BY created_at ASC`; `created_at` → `createdAt` in TS |
 | `loadWaitlistByEmailFromDb()` | Lookup signup by email | `waitlist.read.entryByEmail` | **migrated** — same named query as duplicate-email check; maps the first row |
 | `insertWaitlistEntry()` | Insert waitlist row | `waitlist.create.joinWaitlist` | **migrated** — columns `(id, name, email, source_app, interest)`. `insertEntry` remains in YAML as an unused alternate. |
-| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.entryByEmail` | **migrated** — `loadWaitlistByEmailFromDb() != null` instead of `EXISTS` |
+| `waitlistEmailExists()` | Duplicate email? | `waitlist.read.entryByEmail` | **migrated** — `loadWaitlistByEmailFromDb() != null`. `emailExists` (`EXISTS`) compiles; live path not rewired |
 
 ### `src/db/named-ddl.ts` / `docker/postgres/init.sql`
 
@@ -111,8 +111,8 @@ the live table keeps `payload JSONB` and nullable catalog columns.
 
 | File | Resource(s) | Live named queries | Notes |
 |------|-------------|--------------------|-------|
-| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `seedPayload`, `insertPayload`, `updatePayload`, `deleteProduct` | Hybrid: live DML is JSONB `payload` only. Relational CRUD compiles (`originalPrice` / `isNew` / `isActive` quoted) but catalog columns stay NULL. HTTP writes use host `execute` + these JSONB names. |
-| `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `allEntries`, `entryByEmail`, `joinWaitlist` | `insertEntry` compiles; unused live path |
+| `schemas/product/productQueries.yml` | `product` | `allPayloads`, `payloadById`, `seedPayload`, `insertPayload`, `updatePayload`, `deleteProduct` | Hybrid: live DML is JSONB `payload` only. Relational CRUD compiles (`originalPrice` / `isNew` / `isActive` quoted) but catalog columns stay NULL. HTTP writes use host `execute` + these JSONB names. Compiler-ready: `payloadsByCatalog` / `payloadsBySlug` (`->>`), `payloadsContaining` (`@>`), `payloadsWithKey` (`?`), `countPayloads`. |
+| `schemas/waitlist/waitlistQueries.yml` | `waitlist` | `allEntries`, `entryByEmail`, `joinWaitlist` | `insertEntry` compiles; unused live path. Compiler-ready: `emailExists`, `countEntries` |
 | `schemas/course/courseQueries.yml` | `course` | — | tables created by `migrate()`; quoted `'published'` constants |
 | `schemas/booking/bookingQueries.yml` | `booking` | — | `IN ('requested', 'confirmed')` |
 | `schemas/order/orderQueries.yml` | `order`, `order_item` | — | |
@@ -173,6 +173,7 @@ come only from inline `FOREIGN KEY REFERENCES` on fields.
    Named YAML runs INSERT/SELECT; host keeps generated `id`, duplicate-email
    UX, `source_app` allowlist, and JSON file-store fallback.
 5. **Later** — Remaining compiler features only if a later phase needs
-   them (`COUNT`, `EXISTS`, `ON CONFLICT`, JSONB operators `@>` / `?` / `->>`).
+   them (joins, `ON CONFLICT`, `GROUP BY`, `LIMIT`, JSONB `||` / `jsonb_set`).
+   `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>` ship as compiler phonics.
    Down migrations / silent schema-diff are not part of the migrator. Seltzer
    route generation is a separate track. Do **not** invent `nectarine serve`.

@@ -28,7 +28,8 @@ export type MysqlQueryResult<T extends QueryResult = RowDataPacket[]> = {
  * The Nectarine compiler is Postgres-first and emits `$1` / `$N::jsonb`.
  * {@link MysqlSql.query} rewrites those binds to MySQL `?` (and
  * `CAST(? AS JSON)` for json/jsonb) so compiled SQL can run here unchanged.
- * SQL that already uses `?` is left as-is.
+ * JSONB `@>` / `?` / `->>` become MySQL `JSON_CONTAINS` / `JSON_CONTAINS_PATH`
+ * / `JSON_EXTRACT`. SQL that already uses `?` is left as-is.
  *
  * @example
  * ```ts

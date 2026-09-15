@@ -42,6 +42,37 @@ describe("parseWhereFragment", () => {
         });
     });
 
+    it("parses JSONB path, containment, and key-exists operators", () => {
+        expect(parseWhereFragment("payload->>'catalog' = $1")).toEqual({
+            column: "payload",
+            path: ["catalog"],
+            operator: "eq",
+            value: { kind: "placeholder", token: "$1" },
+        });
+        expect(parseWhereFragment("payload->'specs'->>'color' = $1")).toEqual({
+            column: "payload",
+            path: ["specs", "color"],
+            operator: "eq",
+            value: { kind: "placeholder", token: "$1" },
+        });
+        expect(parseWhereFragment("payload @> $1::jsonb")).toEqual({
+            column: "payload",
+            operator: "contains",
+            value: { kind: "placeholder", token: "$1::jsonb" },
+        });
+        expect(parseWhereFragment("payload ? $1")).toEqual({
+            column: "payload",
+            operator: "has_key",
+            value: { kind: "placeholder", token: "$1" },
+        });
+    });
+
+    it("rejects an unquoted JSONB path key", () => {
+        expect(() => parseWhereFragment("payload->>catalog = $1")).toThrowError(
+            /single-quoted strings/,
+        );
+    });
+
     it("rejects comments, semicolons, and function calls", () => {
         expect(() => parseWhereFragment("id = $1; DROP TABLE users")).toThrowError(
             QueryCompileError,

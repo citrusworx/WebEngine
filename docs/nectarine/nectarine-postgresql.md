@@ -237,17 +237,29 @@ searchPosts:
 
 #### JSON Querying
 
+JSONB stays a document column. Filter with phonics — do not flatten into
+relational fields.
+
 ```yaml
 # Schema
 User:
   fields:
     preferences: jsonb
 
-# Query - get users with dark mode preference
+# Fragment (Blackwater) or structured path / contains / has_key
 darkModeUsers:
   type: SELECT
   table: users
-  where: preferences->>'theme' = 'dark'
+  where: preferences->>'theme' = $1
+
+# Containment: preferences @> $1::jsonb
+byPreference:
+  type: SELECT
+  table: users
+  where:
+    column: preferences
+    operator: contains
+    value: $1::jsonb
 ```
 
 #### Array Operations

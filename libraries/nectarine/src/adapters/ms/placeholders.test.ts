@@ -172,4 +172,54 @@ describe("rewriteMysqlPlaceholders", () => {
             params: ["sku-1", '{"sku":"sku-1"}'],
         });
     });
+
+    it("rewrites JSONB ->> / @> / ? to MySQL JSON functions", () => {
+        const path = compileQuery({
+            select: ["payload"],
+            from: "products",
+            where: { column: "payload", path: "catalog", operator: "eq", value: "$1" },
+        });
+        expect(rewriteMysqlPlaceholders(path, ["gear"])).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog')) = ?",
+            params: ["gear"],
+        });
+
+        const contains = compileQuery({
+            select: ["payload"],
+            from: "products",
+            where: { column: "payload", operator: "contains", value: "$1::jsonb" },
+        });
+        expect(rewriteMysqlPlaceholders(contains, [{ catalog: "gear" }])).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS(payload, CAST(? AS JSON))",
+            params: ['{"catalog":"gear"}'],
+        });
+
+        const hasKey = compileQuery({
+            select: ["payload"],
+            from: "products",
+            where: { column: "payload", operator: "has_key", value: "$1" },
+        });
+        expect(rewriteMysqlPlaceholders(hasKey, ["slug"])).toEqual({
+            sql: "SELECT payload FROM products WHERE JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', ?))",
+            params: ["slug"],
+        });
+    });
+
+    it("rewrites COUNT and EXISTS compiler SQL", () => {
+        const count = compileQuery({ select: [{ fn: "count" }], from: "products" });
+        expect(rewriteMysqlPlaceholders(count)).toEqual({
+            sql: "SELECT COUNT(*) FROM products",
+            params: [],
+        });
+
+        const exists = compileQuery({
+            exists: true,
+            from: "waitlist",
+            where: { column: "email", operator: "eq", value: "$1" },
+        });
+        expect(rewriteMysqlPlaceholders(exists, ["a@example.com"])).toEqual({
+            sql: "SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = ?)",
+            params: ["a@example.com"],
+        });
+    });
 });

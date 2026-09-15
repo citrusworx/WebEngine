@@ -7,6 +7,9 @@
  *
  * Blackwater `type: SELECT` YAML is normalized onto this shape first
  * (`normalizeQuery`). Blog `queries:` maps are not compiled here.
+ *
+ * Also compiled: `COUNT(*)` (`{ fn: count }` / `count: true`),
+ * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CRUD_METHODS = exports.OP_TOKENS = exports.QueryCompileError = exports.isRecord = void 0;
@@ -33,8 +36,14 @@ exports.OP_TOKENS = {
     not_in: "NOT IN",
     is_null: "IS NULL",
     is_not_null: "IS NOT NULL",
+    /** JSONB containment (`payload @> $1::jsonb`). */
+    contains: "@>",
+    /** JSONB key exists (`payload ? $1`). */
+    has_key: "?",
 };
 exports.CRUD_METHODS = ["get", "create", "update", "delete"];
+/** Operators that keep a JSONB operand (`->`) instead of text (`->>`). */
+const JSONB_KEEP_OPS = new Set(["contains", "has_key"]);
 const NOW_LITERAL = /^now\(\)$/i;
 const ALLOWED_CASTS = new Set(placeholders_js_1.BIND_CASTS);
 function isCrudMethod(value) {
@@ -139,6 +148,99 @@ function normalizeColumns(columns, label, allowStar) {
         return ident(column);
     });
 }
+function normalizeJsonPath(path) {
+    if (path === undefined) {
+        return undefined;
+    }
+    const keys = typeof path === "string" ? [path] : path;
+    if (!Array.isArray(keys) || keys.length === 0) {
+        throw new errors_js_1.QueryCompileError("where.path must be a string or a non-empty array of strings");
+    }
+    return keys.map((key, index) => {
+        if (typeof key !== "string" || key.length === 0) {
+            throw new errors_js_1.QueryCompileError(`where.path[${index}] must be a non-empty string`);
+        }
+        if (placeholders_js_1.PLACEHOLDER.test(key) || placeholders_js_1.TYPED_PLACEHOLDER.test(key)) {
+            throw new errors_js_1.QueryCompileError("JSONB path keys must be YAML-authored constants, not $N binds");
+        }
+        return key;
+    });
+}
+/**
+ * `payload`, `payload->>'catalog'`, or `payload->'tags'` (JSONB ops keep jsonb).
+ * Path keys are compile-time constants — never interpolated user input.
+ */
+function compileJsonOperand(column, path, operator) {
+    const root = ident(column);
+    if (path === undefined || path.length === 0) {
+        return root;
+    }
+    const keepJsonb = JSONB_KEEP_OPS.has(operator);
+    if (keepJsonb) {
+        return path.reduce((expr, key) => `${expr}->${compileConst(key)}`, root);
+    }
+    if (path.length === 1) {
+        return `${root}->>${compileConst(path[0])}`;
+    }
+    const head = path.slice(0, -1).reduce((expr, key) => `${expr}->${compileConst(key)}`, root);
+    return `${head}->>${compileConst(path[path.length - 1])}`;
+}
+function compileCount(item) {
+    if (typeof item.fn !== "string" || item.fn.toLowerCase() !== "count") {
+        throw new errors_js_1.QueryCompileError(`Unknown select function: ${String(item.fn)}; allowed: count`);
+    }
+    let inner = "*";
+    if (item.column !== undefined) {
+        if (item.column !== "*" && typeof item.column !== "string") {
+            throw new errors_js_1.QueryCompileError("count.column must be * or an identifier");
+        }
+        if (item.column !== "*") {
+            assertIdentifier(item.column, "count");
+            inner = ident(item.column);
+        }
+    }
+    let sql = `COUNT(${inner})`;
+    if (item.as !== undefined) {
+        if (typeof item.as !== "string") {
+            throw new errors_js_1.QueryCompileError("count.as must be an identifier");
+        }
+        assertIdentifier(item.as, "alias");
+        sql += ` AS ${ident(item.as)}`;
+    }
+    return sql;
+}
+function compileSelectList(select) {
+    if ((0, errors_js_1.isRecord)(select) && "fn" in select) {
+        return compileCount(select);
+    }
+    if (typeof select === "string") {
+        return normalizeColumns(select, "select", true).join(", ");
+    }
+    if (!Array.isArray(select) || select.length === 0) {
+        throw new errors_js_1.QueryCompileError("select must be a non-empty string or array");
+    }
+    const items = select.map((item, index) => {
+        if ((0, errors_js_1.isRecord)(item) && "fn" in item) {
+            return { kind: "count", sql: compileCount(item) };
+        }
+        if (typeof item !== "string") {
+            throw new errors_js_1.QueryCompileError(`select[${index}] must be a string or { fn: count }`);
+        }
+        if (item === "*") {
+            return { kind: "column", sql: "*" };
+        }
+        assertIdentifier(item, "select");
+        return { kind: "column", sql: ident(item) };
+    });
+    const counts = items.filter((item) => item.kind === "count");
+    if (counts.length > 0 && items.length !== counts.length) {
+        throw new errors_js_1.QueryCompileError("COUNT cannot mix with other select columns (GROUP BY is not compiled)");
+    }
+    if (counts.length > 1) {
+        throw new errors_js_1.QueryCompileError("COUNT must be the only select item");
+    }
+    return items.map((item) => item.sql).join(", ");
+}
 function compileInList(value) {
     if ((0, errors_js_1.isRecord)(value) && "list" in value) {
         if (!Array.isArray(value.list) || value.list.length === 0) {
@@ -169,20 +271,23 @@ function compilePredicate(where) {
     if (!(operator in exports.OP_TOKENS)) {
         throw new errors_js_1.QueryCompileError(`Unknown operator: ${operator}`);
     }
-    const sqlOp = exports.OP_TOKENS[operator];
+    const token = operator;
+    const sqlOp = exports.OP_TOKENS[token];
+    const path = normalizeJsonPath(where.path);
+    const left = compileJsonOperand(column, path, token);
     if (operator === "is_null" || operator === "is_not_null") {
         if (value !== undefined) {
             throw new errors_js_1.QueryCompileError(`${operator} does not take a value`);
         }
-        return `${ident(column)} ${sqlOp}`;
+        return `${left} ${sqlOp}`;
     }
     if (value === undefined) {
         throw new errors_js_1.QueryCompileError("where.value is required");
     }
     if (operator === "in" || operator === "not_in") {
-        return `${ident(column)} ${sqlOp} (${compileInList(value)})`;
+        return `${left} ${sqlOp} (${compileInList(value)})`;
     }
-    return `${ident(column)} ${sqlOp} ${compileValue(value)}`;
+    return `${left} ${sqlOp} ${compileValue(value)}`;
 }
 function compileWhere(where, parent) {
     if (typeof where === "string") {
@@ -244,7 +349,7 @@ function compileSelect(query) {
         throw new errors_js_1.QueryCompileError("SELECT requires from");
     }
     assertIdentifier(query.from, "table");
-    const fields = normalizeColumns(query.select, "select", true).join(", ");
+    const fields = compileSelectList(query.select);
     let sql = `SELECT ${fields} FROM ${ident(query.from)}`;
     if (query.where !== undefined) {
         sql += ` WHERE ${compileWhere(query.where)}`;
@@ -253,6 +358,36 @@ function compileSelect(query) {
         sql += ` ORDER BY ${compileOrderBy(query.orderBy)}`;
     }
     return sql;
+}
+function compileExists(query) {
+    let from;
+    let where;
+    if (query.exists === true) {
+        from = query.from;
+        where = query.where;
+    }
+    else if ((0, errors_js_1.isRecord)(query.exists)) {
+        from = query.exists.from ?? query.from;
+        where = query.exists.where ?? query.where;
+    }
+    else {
+        throw new errors_js_1.QueryCompileError("exists must be true or an object with from");
+    }
+    if (typeof from !== "string") {
+        throw new errors_js_1.QueryCompileError("EXISTS requires from");
+    }
+    assertIdentifier(from, "table");
+    if (query.select !== undefined) {
+        throw new errors_js_1.QueryCompileError("EXISTS cannot include select");
+    }
+    if (query.orderBy !== undefined) {
+        throw new errors_js_1.QueryCompileError("EXISTS cannot include orderBy");
+    }
+    let sql = `SELECT EXISTS(SELECT 1 FROM ${ident(from)}`;
+    if (where !== undefined) {
+        sql += ` WHERE ${compileWhere(where)}`;
+    }
+    return `${sql})`;
 }
 function compileInsert(query) {
     if (!(0, errors_js_1.isRecord)(query.insert)) {
@@ -311,14 +446,15 @@ function inferQueryKind(query) {
     const hasInsert = "insert" in query;
     const hasSelect = "select" in query;
     const hasSet = "set" in query;
-    const markers = [hasInsert, hasSelect, hasSet].filter(Boolean).length;
+    const hasExists = query.exists === true || (0, errors_js_1.isRecord)(query.exists);
+    const markers = [hasInsert, hasSelect, hasSet, hasExists].filter(Boolean).length;
     if (markers > 1) {
         throw new errors_js_1.QueryCompileError("Ambiguous query shape; pass a CRUD method (get|create|update|delete)");
     }
     if (hasInsert) {
         return "create";
     }
-    if (hasSelect) {
+    if (hasSelect || hasExists) {
         return "get";
     }
     if (hasSet) {
@@ -329,8 +465,11 @@ function inferQueryKind(query) {
 function compileByMethod(query, method) {
     switch (method) {
         case "get":
+            if (query.exists === true || (0, errors_js_1.isRecord)(query.exists)) {
+                return compileExists(query);
+            }
             if (!("select" in query)) {
-                throw new errors_js_1.QueryCompileError("GET query requires select");
+                throw new errors_js_1.QueryCompileError("GET query requires select or exists");
             }
             return compileSelect(query);
         case "create":

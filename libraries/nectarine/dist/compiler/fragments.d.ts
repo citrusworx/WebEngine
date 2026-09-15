@@ -7,7 +7,8 @@
  *
  * Allowed: identifiers, comparison operators, `$N` placeholders,
  * YAML-authored constants (booleans, numbers, single-quoted strings, NULL),
- * AND / OR, IN / NOT IN lists, IS [NOT] NULL, and parentheses.
+ * AND / OR, IN / NOT IN lists, IS [NOT] NULL, parentheses, and JSONB
+ * `@>` / `?` / `->>` (path keys are single-quoted constants).
  *
  * Runtime / user values must be `$N` bind placeholders — never interpolated.
  */
@@ -26,6 +27,7 @@ export type CompiledValue = {
 export type WherePredicate = {
     column: string;
     operator: string;
+    path?: string[];
     value?: CompiledValue;
 };
 export type WhereNode = WherePredicate | {

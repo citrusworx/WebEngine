@@ -30,8 +30,8 @@ Adapter           →  query(sql, params)   // execute only
   `DEFAULT NOW()`) become `CREATE TABLE` / `CREATE INDEX`.
 - **Adapters** (`pg` / `ms` / `mg`) execute `(sql, params)` produced by the
   compiler. They do not assemble statements. The MySQL adapter rewrites `$N`
-  (and allowlisted `$N::jsonb`) to `?` at the query boundary so compiled SQL
-  can run on MySQL; Postgres keeps `$1`.
+  (and allowlisted `$N::jsonb`) to `?` at the query boundary, and JSONB `@>` /
+  `?` / `->>` to MySQL JSON functions; Postgres keeps `$1` and the operators.
 
 ## One phonics model, two YAML surfaces
 
@@ -39,7 +39,7 @@ The **canonical** clause object is what `compileQuery` assembles:
 
 | Method | YAML keys | Example SQL |
 |--------|-----------|-------------|
-| `get` (`read` is an alias) | `select`, `from`, optional `where`, optional `orderBy` | `SELECT id FROM users WHERE id = $1` |
+| `get` (`read` is an alias) | `select`, `from`, optional `where`, optional `orderBy`; or `count: true` / `exists: true` | `SELECT id FROM users WHERE id = $1` |
 | `create` | `insert.into`, `insert.columns`, `insert.values`, optional `returning` | `INSERT INTO users (...) VALUES ($1, $2, $3, NOW())` |
 | `update` | `table`, `set`, `values`, `where` | `UPDATE users SET name = $1 WHERE id = $2` |
 | `delete` | `from`, `where` | `DELETE FROM users WHERE id = $1` |
@@ -132,7 +132,7 @@ product:
 ```yaml
 where:
   column: id
-  operator: eq          # eq | neq | gt | gte | lt | lte | in | not_in | is_null | is_not_null
+  operator: eq          # eq | neq | gt | gte | lt | lte | in | not_in | is_null | is_not_null | contains | has_key
   value: $1
 ```
 
@@ -159,12 +159,13 @@ where:
 `where: isActive = true` is parsed, not spliced. Allowed tokens:
 
 - identifiers (`isActive`, `created_at`)
-- operators `=` `!=` `<>` `<` `>` `<=` `>=`
+- operators `=` `!=` `<>` `<` `>` `<=` `>=` plus JSONB `@>` / `?`
 - `$N` placeholders
 - `TRUE` / `FALSE` / `NULL`, decimal numbers, single-quoted strings (`''` escape)
 - `AND` / `OR`, parentheses
 - `IN` / `NOT IN` (`status IN ('requested', 'confirmed')`)
 - `IS NULL` / `IS NOT NULL`
+- JSONB `@>` / `?` / `->>` (`payload->>'catalog' = $1`, `payload @> $1::jsonb`, `payload ? $1`)
 
 Rejected (compile error): comments, semicolons, function calls, subqueries,
 double-quoted identifiers, unquoted strings, anything else. This is
@@ -284,6 +285,51 @@ user:
 
 Blackwater uses `table` instead of `from`; the normalizer maps it.
 
+## `COUNT` / `EXISTS`
+
+List totals and duplicate checks without loading rows into the host.
+
+Canonical:
+
+```yaml
+product:
+  get:
+    countPayloads:
+      select: [{ fn: count }]          # COUNT(*)
+      from: products
+
+waitlist:
+  get:
+    emailExists:
+      exists: true
+      from: waitlist
+      where:
+        column: email
+        operator: eq
+        value: $1
+```
+
+Blackwater:
+
+```yaml
+countPayloads:
+  type: SELECT
+  table: products
+  count: true
+
+emailExists:
+  type: SELECT
+  table: waitlist
+  exists: true
+  where: email = $1
+```
+
+→ `SELECT COUNT(*) FROM products`
+
+→ `SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1)`
+
+`{ fn: count, column: id, as: n }` emits `COUNT(id) AS n`. `COUNT` cannot mix with other select columns (`GROUP BY` is not compiled). Joins stay out of scope.
+
 ## Operator tokens
 
 | DSL token | SQL |
@@ -298,6 +344,8 @@ Blackwater uses `table` instead of `from`; the normalizer maps it.
 | `not_in` | `NOT IN (...)` |
 | `is_null` | `IS NULL` |
 | `is_not_null` | `IS NOT NULL` |
+| `contains` | `@>` (JSONB containment) |
+| `has_key` | `?` (JSONB key exists) |
 
 ## JSONB
 
@@ -316,17 +364,49 @@ INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)
 On MySQL, the adapter turns that bind into `CAST(? AS JSON)` (MySQL’s JSON
 type is the closest match to jsonb). `::text` is stripped to `?`.
 
-JSONB operators (`@>`, `?`, `->>`, …) are a later phonics item — not
-required for this phase. Blackwater’s live `products` table keeps
-`payload JSONB` (document-store) plus a nullable catalog projection from
-`productSchema.yml`. That is a **hybrid**, not a reason to remove JSONB.
+JSONB path and operators are first-class phonics (not flattened columns):
+
+```yaml
+where:
+  column: payload
+  path: catalog            # payload->>'catalog'
+  operator: eq
+  value: $1
+```
+
+```yaml
+where:
+  column: payload
+  operator: contains       # payload @> $1::jsonb
+  value: $1::jsonb
+```
+
+```yaml
+where:
+  column: payload
+  operator: has_key        # payload ? $1
+  value: $1
+```
+
+Blackwater fragments: `payload->>'catalog' = $1`, `payload @> $1::jsonb`,
+`payload ? $1`. Path keys are YAML-authored quoted strings, never `$N`.
+`contains` / `has_key` with `path` keep jsonb (`payload->'tags' @> $1::jsonb`).
+
+On MySQL, `->>` becomes `JSON_UNQUOTE(JSON_EXTRACT(…))`, `@>` becomes
+`JSON_CONTAINS`, and `?` becomes `JSON_CONTAINS_PATH` so the Postgres `?`
+operator is not mistaken for a `?` placeholder.
+
+Blackwater’s live `products` table keeps `payload JSONB` (document-store)
+plus a nullable catalog projection from `productSchema.yml`. That is a
+**hybrid**, not a reason to remove JSONB. Host execute may still filter
+catalog/slug in TypeScript until those named queries are wired.
 
 ## Not yet compiled
 
 - blog `queries:` maps (`models/blog/post/sql.yml`)
-- joins, `GROUP BY`, `LIMIT` / pagination
-- aggregates (`COUNT`), `EXISTS`, `ON CONFLICT`, column aliases
-- JSONB operators (`@>`, `?`, `->>`) — columns and `$N::jsonb` binds work today
+- joins, `GROUP BY`, `LIMIT` / pagination, `ON CONFLICT`
+- general aggregates beyond `COUNT`, `EXISTS` as a WHERE subquery
+- JSONB `||` / `jsonb_set` (host merges documents, then binds `$N::jsonb`)
 
 ## Usage
 

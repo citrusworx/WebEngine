@@ -8,7 +8,8 @@
  *
  * Allowed: identifiers, comparison operators, `$N` placeholders,
  * YAML-authored constants (booleans, numbers, single-quoted strings, NULL),
- * AND / OR, IN / NOT IN lists, IS [NOT] NULL, and parentheses.
+ * AND / OR, IN / NOT IN lists, IS [NOT] NULL, parentheses, and JSONB
+ * `@>` / `?` / `->>` (path keys are single-quoted constants).
  *
  * Runtime / user values must be `$N` bind placeholders — never interpolated.
  */
@@ -24,7 +25,7 @@ const placeholders_js_1 = require("./placeholders.js");
 exports.MAX_FRAGMENT_LENGTH = 1024;
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const KEYWORDS = new Set(["AND", "OR", "IN", "NOT", "IS", "NULL", "TRUE", "FALSE", "ASC", "DESC"]);
-const TWO_CHAR_OPS = ["<=", ">=", "!=", "<>"];
+const TWO_CHAR_OPS = ["<=", ">=", "!=", "<>", "@>"];
 function assertFragmentLength(input, label) {
     if (input.length > exports.MAX_FRAGMENT_LENGTH) {
         throw new errors_js_1.QueryCompileError(`${label} fragment exceeds ${exports.MAX_FRAGMENT_LENGTH} characters`);
@@ -64,13 +65,23 @@ function tokenize(input, label) {
             i += match[0].length;
             continue;
         }
+        if (input.slice(i, i + 3) === "->>") {
+            tokens.push({ kind: "op", value: "->>", index: i });
+            i += 3;
+            continue;
+        }
+        if (input.slice(i, i + 2) === "->") {
+            tokens.push({ kind: "op", value: "->", index: i });
+            i += 2;
+            continue;
+        }
         const two = input.slice(i, i + 2);
         if (TWO_CHAR_OPS.includes(two)) {
             tokens.push({ kind: "op", value: two === "<>" ? "!=" : two, index: i });
             i += 2;
             continue;
         }
-        if (ch === "=" || ch === "<" || ch === ">") {
+        if (ch === "=" || ch === "<" || ch === ">" || ch === "?") {
             tokens.push({ kind: "op", value: ch, index: i });
             i += 1;
             continue;
@@ -197,31 +208,60 @@ class FragmentParser {
             return inner;
         }
         const column = this.expectIdent("column");
+        const path = this.parseJsonPath();
         const next = this.peek();
         if (this.peekKeyword("NOT")) {
             this.index += 1;
             this.expectKeyword("IN");
-            return { column, operator: "not_in", value: { kind: "list", values: this.parseValueList() } };
+            return {
+                column,
+                ...(path.length > 0 ? { path } : {}),
+                operator: "not_in",
+                value: { kind: "list", values: this.parseValueList() },
+            };
         }
         if (this.peekKeyword("IN")) {
             this.index += 1;
-            return { column, operator: "in", value: { kind: "list", values: this.parseValueList() } };
+            return {
+                column,
+                ...(path.length > 0 ? { path } : {}),
+                operator: "in",
+                value: { kind: "list", values: this.parseValueList() },
+            };
         }
         if (this.peekKeyword("IS")) {
             this.index += 1;
             if (this.peekKeyword("NOT")) {
                 this.index += 1;
                 this.expectKeyword("NULL");
-                return { column, operator: "is_not_null" };
+                return { column, ...(path.length > 0 ? { path } : {}), operator: "is_not_null" };
             }
             this.expectKeyword("NULL");
-            return { column, operator: "is_null" };
+            return { column, ...(path.length > 0 ? { path } : {}), operator: "is_null" };
         }
         if (next?.kind !== "op") {
             throw new errors_js_1.QueryCompileError(`Invalid where fragment: expected operator after ${column}`);
         }
         this.index += 1;
-        return { column, operator: operatorToken(next.value), value: this.parseValue() };
+        return {
+            column,
+            ...(path.length > 0 ? { path } : {}),
+            operator: operatorToken(next.value),
+            value: this.parseValue(),
+        };
+    }
+    parseJsonPath() {
+        const keys = [];
+        while (this.peek()?.kind === "op" && (this.peek()?.value === "->" || this.peek()?.value === "->>")) {
+            this.index += 1;
+            const token = this.peek();
+            if (token?.kind !== "string") {
+                throw new errors_js_1.QueryCompileError("JSONB path keys must be single-quoted strings");
+            }
+            this.index += 1;
+            keys.push(token.value);
+        }
+        return keys;
     }
     parseValueList() {
         this.expectPunct("(");
@@ -317,6 +357,10 @@ function operatorToken(op) {
             return "gte";
         case "<=":
             return "lte";
+        case "@>":
+            return "contains";
+        case "?":
+            return "has_key";
         default:
             throw new errors_js_1.QueryCompileError(`Unknown operator: ${op}`);
     }
@@ -352,6 +396,9 @@ function whereNodeToYaml(node) {
     return {
         column: node.column,
         operator: node.operator,
+        ...(node.path !== undefined && node.path.length > 0
+            ? { path: node.path.length === 1 ? node.path[0] : node.path }
+            : {}),
         ...(node.value !== undefined ? { value: compiledValueToYaml(node.value) } : {}),
     };
 }

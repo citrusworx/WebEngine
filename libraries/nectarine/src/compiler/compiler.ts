@@ -84,7 +84,8 @@ export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
  *
  * Blackwater `type: SELECT` documents are accepted and normalized onto the
  * same phonics model before assembly. Postgres JSONB binds use
- * `{ value: $N, cast: jsonb }` (allow-listed).
+ * `{ value: $N, cast: jsonb }` (allow-listed). JSONB `@>` / `?` / `->>`,
+ * `COUNT`, and `EXISTS` are compiler phonics — not host SQL.
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path

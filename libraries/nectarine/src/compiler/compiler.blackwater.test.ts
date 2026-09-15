@@ -92,6 +92,21 @@ describe("Blackwater query YAML", () => {
         expect(compileNamed("product/productQueries.yml", "product", "update", "updatePayload")).toBe(
             "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
         );
+        expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsByCatalog")).toBe(
+            "SELECT payload FROM products WHERE payload->>'catalog' = $1 ORDER BY created_at ASC",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsBySlug")).toBe(
+            "SELECT payload FROM products WHERE payload->>'slug' = $1",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsContaining")).toBe(
+            "SELECT payload FROM products WHERE payload @> $1::jsonb",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsWithKey")).toBe(
+            "SELECT payload FROM products WHERE payload ? $1",
+        );
+        expect(compileNamed("product/productQueries.yml", "product", "read", "countPayloads")).toBe(
+            "SELECT COUNT(*) FROM products",
+        );
     });
 
     it("compiles the live waitlist insert and ASC listing", () => {
@@ -118,6 +133,12 @@ describe("Blackwater query YAML", () => {
         );
         expect(compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "entryByEmail")).toBe(
             "SELECT * FROM waitlist WHERE email = $1",
+        );
+        expect(compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "emailExists")).toBe(
+            "SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1)",
+        );
+        expect(compileNamed("waitlist/waitlistQueries.yml", "waitlist", "read", "countEntries")).toBe(
+            "SELECT COUNT(*) FROM waitlist",
         );
     });
 

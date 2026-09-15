@@ -6,6 +6,8 @@
  *   type: SELECT | INSERT | UPDATE | DELETE
  *   table, fields, where (fragment or structured), orderBy, returning
  *   read: is an alias of get
+ *   count: true → SELECT COUNT(*)
+ *   exists: true → SELECT EXISTS(SELECT 1 FROM ...)
  *
  * Canonical:
  *   select / from / where:{column,operator,value}
@@ -109,9 +111,12 @@ function shiftPlaceholders(value: unknown, offset: number): unknown {
     return value;
 }
 
-function normalizeFieldList(fields: unknown, label: string, allowStar: boolean): string[] | string {
+function normalizeFieldList(fields: unknown, label: string, allowStar: boolean): unknown {
     if (fields === undefined) {
         throw new QueryCompileError(`${label} requires fields`);
+    }
+    if (isRecord(fields) && typeof fields.fn === "string") {
+        return [fields];
     }
     if (typeof fields === "string") {
         const trimmed = fields.trim();
@@ -131,8 +136,11 @@ function normalizeFieldList(fields: unknown, label: string, allowStar: boolean):
         throw new QueryCompileError(`${label} fields must be * or a non-empty list`);
     }
     return fields.map((field, index) => {
+        if (isRecord(field) && typeof field.fn === "string") {
+            return field;
+        }
         if (typeof field !== "string") {
-            throw new QueryCompileError(`${label} fields[${index}] must be a string`);
+            throw new QueryCompileError(`${label} fields[${index}] must be a string or { fn: count }`);
         }
         return field;
     });
@@ -164,6 +172,49 @@ function requireTable(query: Record<string, unknown>, label: string): string {
 
 function normalizeSelect(query: Record<string, unknown>): Record<string, unknown> {
     const table = requireTable(query, "SELECT");
+
+    if (query.exists === true || isRecord(query.exists)) {
+        if (query.count === true) {
+            throw new QueryCompileError("SELECT cannot mix count and exists");
+        }
+        if (query.fields !== undefined || query.select !== undefined) {
+            throw new QueryCompileError("EXISTS cannot include fields");
+        }
+        if (query.orderBy !== undefined) {
+            throw new QueryCompileError("EXISTS cannot include orderBy");
+        }
+
+        const nested = isRecord(query.exists) ? query.exists : undefined;
+        const from = typeof nested?.from === "string" ? nested.from : (query.from ?? table);
+        const where = nested?.where !== undefined ? nested.where : query.where;
+        const normalized: Record<string, unknown> = {
+            exists: true,
+            from,
+        };
+        if (where !== undefined) {
+            normalized.where = normalizeWhere(where);
+        }
+        return normalized;
+    }
+
+    if (query.count === true) {
+        if (query.fields !== undefined) {
+            throw new QueryCompileError("count: true cannot include fields");
+        }
+        const normalized: Record<string, unknown> = {
+            select: [{ fn: "count" }],
+            from: query.from ?? table,
+        };
+        if (query.where !== undefined) {
+            normalized.where = normalizeWhere(query.where);
+        }
+        const orderBy = normalizeOrderBy(query.orderBy);
+        if (orderBy !== undefined) {
+            normalized.orderBy = orderBy;
+        }
+        return normalized;
+    }
+
     const select = query.fields === undefined && query.select !== undefined
         ? query.select
         : normalizeFieldList(query.fields, "SELECT", true);
@@ -186,7 +237,7 @@ function normalizeSelect(query: Record<string, unknown>): Record<string, unknown
 function normalizeInsert(query: Record<string, unknown>): Record<string, unknown> {
     const table = requireTable(query, "INSERT");
     const columns = normalizeFieldList(query.fields ?? query.columns, "INSERT", false);
-    if (typeof columns === "string") {
+    if (!Array.isArray(columns) || columns.some((column) => typeof column !== "string")) {
         throw new QueryCompileError("INSERT cannot include *");
     }
 
@@ -212,7 +263,7 @@ function normalizeUpdate(query: Record<string, unknown>): Record<string, unknown
     const set = query.set === undefined
         ? normalizeFieldList(query.fields, "UPDATE", false)
         : query.set;
-    if (typeof set === "string") {
+    if (!Array.isArray(set) || set.some((column) => typeof column !== "string")) {
         throw new QueryCompileError("UPDATE cannot include *");
     }
 
