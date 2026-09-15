@@ -80,14 +80,23 @@ function createStubAdapter(): NectarineKernelAdapter & {
         },
         async query(sql: string, params?: readonly unknown[]) {
             sqls.push({ sql, params });
-            if (sql.includes("WHERE id = $1")) {
+            if (/FROM courses\b/i.test(sql)) {
+                if (sql.includes("WHERE id = $1")) {
+                    return {
+                        rows: [
+                            {
+                                id: params?.[0],
+                                title: "Fuzz",
+                                status: "published",
+                            },
+                        ],
+                    };
+                }
                 return {
-                    rows: [{ id: params?.[0], title: "Fuzz", status: "published" }],
+                    rows: [{ id: "c1", title: "Fuzz", status: "published" }],
                 };
             }
-            return {
-                rows: [{ id: "c1", title: "Fuzz", status: "published" }],
-            };
+            return { rows: [] };
         },
     };
 }
@@ -350,9 +359,14 @@ describe("kernel handle createReadRoutes", () => {
         await expect(byId!.handler(fakeCtx({ id: "c1" }))).resolves.toEqual({
             body: { id: "c1", title: "Fuzz", status: "published" },
         });
-        expect(adapter.sqls.some((entry) => entry.sql.startsWith("SELECT"))).toBe(
-            true,
-        );
+        expect(
+            adapter.sqls.some(
+                (entry) =>
+                    /FROM courses\b/i.test(entry.sql) &&
+                    Array.isArray(entry.params) &&
+                    entry.params[0] === "c1",
+            ),
+        ).toBe(true);
 
         await mod.shutdown?.(ctx);
     });
