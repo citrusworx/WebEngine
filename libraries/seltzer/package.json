@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/seltzer",
-    "version": "0.7.0",
+    "version": "0.9.0",
     "description": "Small Node HTTP runtime: object routes, ResponseData handlers, and a named request pipeline",
     "type": "module",
     "engines": {
