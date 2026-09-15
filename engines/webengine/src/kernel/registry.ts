@@ -1,6 +1,7 @@
 import { coreModule } from "./modules/core-module.js";
 import { embeddedRuntimeModule } from "./modules/embedded-runtime-module.js";
 import { nativeRuntimeModule } from "./modules/native-runtime-module.js";
+import { nectarineModule } from "./modules/nectarine-module.js";
 import { webRuntimeModule } from "./modules/web-runtime-module.js";
 import type { KernelModule } from "./types.js";
 
@@ -11,5 +12,6 @@ export function createBuiltinRegistry(): Map<string, KernelModule> {
         ["web", webRuntimeModule],
         ["native", nativeRuntimeModule],
         ["embedded", embeddedRuntimeModule],
+        ["nectarine", nectarineModule],
     ]);
 }

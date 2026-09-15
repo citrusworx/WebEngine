@@ -872,7 +872,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/nectarine@npm:^0.2.0, @citrusworx/nectarine@workspace:*, @citrusworx/nectarine@workspace:libraries/nectarine":
+"@citrusworx/nectarine@npm:^0.2.0, @citrusworx/nectarine@npm:^0.3.0, @citrusworx/nectarine@workspace:*, @citrusworx/nectarine@workspace:libraries/nectarine":
   version: 0.0.0-use.local
   resolution: "@citrusworx/nectarine@workspace:libraries/nectarine"
   dependencies:
@@ -967,6 +967,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/webengine@workspace:engines/webengine"
   dependencies:
+    "@citrusworx/nectarine": "npm:^0.3.0"
     "@citrusworx/types": "npm:^0.2.0"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^25.6.0"
@@ -976,6 +977,17 @@ __metadata:
     typescript: "npm:^5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^4.3.6"
+  peerDependencies:
+    mongodb: ^7.0.0
+    mysql2: ^3.0.0
+    pg: ^8.0.0
+  peerDependenciesMeta:
+    mongodb:
+      optional: true
+    mysql2:
+      optional: true
+    pg:
+      optional: true
   languageName: unknown
   linkType: soft
 

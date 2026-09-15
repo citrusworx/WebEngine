@@ -1,0 +1,15 @@
+version = "0.1.0"
+
+[kernel]
+modules = ["core", "web", "nectarine"]
+
+[runtimes.web]
+path = "webengine.config.json5"
+
+[webengine]
+app_name = "webengine-nectarine-fixture"
+description = "Vitest fixture project for WebEngine nectarine kernel module"
+host = "127.0.0.1"
+port = 9091
+debug_mode = true
+log_level = "debug"

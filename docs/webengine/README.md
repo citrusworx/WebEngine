@@ -15,9 +15,10 @@ What exists today:
 - constructor wiring for `Blueprint`, `Environment`, and `DeploymentManifest`
 - real `parse()` for YAML / TOML / JSON (`js-yaml`, `smol-toml`)
 - `init()` that locates `kiwi.config.toml`, validates it, and runs the kernel lifecycle
-- kernel modules: `core`, `web`, `native`, `embedded` (topo-sorted scaffold → bootstrap → health)
+- kernel modules: `core`, `web`, `native`, `embedded`, `nectarine` (topo-sorted scaffold → bootstrap → health)
+- Nectarine data module (`id: nectarine`) hosts `@citrusworx/nectarine` ≥0.3.0 as a library: load `nectarine.config.yaml`, resolve credentials, connect, `applyMigrations` (empty migrations dir is a no-op)
 - sample configs: `engines/webengine/kiwi.config.toml` + `webengine.config.json5`
-- vitest coverage for config find/load, topo-sort, and lifecycle health
+- vitest coverage for config find/load, topo-sort, lifecycle health, and Nectarine config load + migration no-op
 
 What is still mostly scaffold/design:
 
@@ -64,6 +65,8 @@ version = "0.1.0"
 
 [kernel]
 modules = ["core", "web"]
+# Opt in to the Nectarine data module:
+# modules = ["core", "web", "nectarine"]
 
 [runtimes.web]
 path = "webengine.config.json5"
@@ -75,6 +78,16 @@ port = 8080
 ```
 
 The web runtime module loads `webengine.config.json5` (JSON5 + Zod). Native/embedded modules load YAML runtime files when enabled.
+
+Enable `nectarine` in `kernel.modules` when the project has `nectarine.config.yaml`. The module:
+
+1. Loads config with `loadNectarineConfig` (or `NECTARINE_CONFIG` for an alternate path)
+2. Resolves credentials through `NectarineConfig` (YAML names env keys; adapters never read `process.env`)
+3. Creates a vendor adapter via `createPgAdapterFromConfig` / MySQL / Mongo factories
+4. Connects and runs `applyMigrations` (schemas from `*Schema.yml`, versioned YAML from `<config dir>/migrations`; missing dir is a no-op)
+5. Registers a handle on `KernelContext` (`config`, `adapter` / `query`, `listApiOperations`)
+
+Partial vendor env is a boot error. Fully unset env takes the host seed-fallback path when `fallback.seed: true` and the process is not production (or `ALLOW_SEED_FALLBACK=1`). HTTP stays in Seltzer: call `handle.listApiOperations()` then `generateRoutes`. See [Nectarine kernel contract](./nectarine-kernel-contract.md).
 
 ## Reality check
 

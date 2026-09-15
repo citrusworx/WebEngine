@@ -6,4 +6,5 @@ export { coreModule } from "./modules/core-module.js";
 export { webRuntimeModule } from "./modules/web-runtime-module.js";
 export { nativeRuntimeModule } from "./modules/native-runtime-module.js";
 export { embeddedRuntimeModule } from "./modules/embedded-runtime-module.js";
+export { NECTARINE_MODULE_ID, applyNectarineMigrations, createNectarineModule, listNectarineApiOperations, nectarineModule, } from "./modules/nectarine-module.js";
 //# sourceMappingURL=index.js.map
