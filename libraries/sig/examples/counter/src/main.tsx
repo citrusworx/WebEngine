@@ -66,7 +66,7 @@ const router = new SigRouter("#root");
 router.set({
   "/": Counter,
   about: About,
-  "/user/:id": (params) => User(params),
+  "/user/:id": (params) => User({ id: params.id ?? "" }),
   "*": NotFound,
 });
 router.start();

@@ -36,7 +36,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "prepack": "yarn build",
-    "test": "playwright test"
+    "test": "yarn run --top-level playwright test --config ../../playwright.config.ts --project=sigjs"
   },
   "devDependencies": {
     "jsdom": "^29.0.1",

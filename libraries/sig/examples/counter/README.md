@@ -9,9 +9,11 @@ Shows `Signal`, function children, function props, `batch`, and `SigRouter` (exa
 ```bash
 yarn workspace @citrusworx/sigjs build
 cd libraries/sig/examples/counter
-yarn
-yarn dev
+npm install
+npm run dev
 ```
+
+This folder is its own npm project (not a Yarn workspace) so it installs like an app outside the monorepo.
 
 Open the URL Vite prints (usually `http://localhost:5173`).
 
