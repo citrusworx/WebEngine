@@ -62,13 +62,27 @@ async function createAdapterFromConfig(config) {
     const { createMongoAdapterFromConfig } = await import("@citrusworx/nectarine/adapters/mg");
     return createMongoAdapterFromConfig(config);
 }
-function asMigrationExecutor(adapter) {
+function bindQuery(adapter) {
     if (typeof adapter.query !== "function") {
+        return undefined;
+    }
+    return adapter.query.bind(adapter);
+}
+/**
+ * `applyMigrations` calls `execute.query(...)` as a free function. Class
+ * adapters (`PgSql`, `MysqlSql`) keep pool state on `this`, so methods must
+ * stay bound to the instance.
+ */
+function asMigrationExecutor(adapter) {
+    const query = bindQuery(adapter);
+    if (!query) {
         return null;
     }
     return {
-        query: adapter.query,
-        withTransaction: adapter.withTransaction,
+        query,
+        withTransaction: typeof adapter.withTransaction === "function"
+            ? adapter.withTransaction.bind(adapter)
+            : undefined,
     };
 }
 export function createNectarineModule(options = {}) {
@@ -133,7 +147,7 @@ export function createNectarineModule(options = {}) {
                 configPath,
                 vendor,
                 adapter,
-                query: adapter?.query,
+                query: adapter ? bindQuery(adapter) : undefined,
                 migrations,
                 seedFallback,
                 connected,
