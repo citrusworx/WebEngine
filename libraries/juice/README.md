@@ -73,6 +73,10 @@ Use the `motion` attribute for animations (for example `motion="fade.in"`, `moti
 ```ts
 import {
   Accordion,
+  createAccordion,
+  initAccordion,
+  startAccordionRuntime,
+  stopAccordionRuntime,
   createNavigation,
   initNavigation,
   startNavigationRuntime,
@@ -82,6 +86,8 @@ import {
 ```
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
+
+Importing that entry auto-starts the navigation and accordion runtimes in the browser. Valid `[accordion]` markup toggles without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md).
 
 ## Use the built files directly
 
@@ -125,7 +131,8 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - accordion triggers should use `aria-expanded` and `aria-controls`
 - accordion panels should be labeled regions when they contain meaningful content
 - group FAQ stacks in `[aqua-card]` or `[aqua-panel]` under `theme="aquaflux"` so triggers paint as surface controls, not primary CTA buttons
-- open/closed panels use the native `hidden` attribute; optional `[motion="accordion"]` is height easing for a later runtime, not required for show/hide
+- open/closed panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for accordion state (those clash with layout `[content]`)
+- optional `[motion="accordion"]` is height easing, not required for show/hide
 
 ```html
 <article aqua-card stack gap="0.5rem" padding="0.75rem">

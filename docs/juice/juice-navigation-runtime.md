@@ -248,7 +248,7 @@ Interactive Juice browser features should follow this standard:
 That is the right mental model for:
 
 - navigation
-- future accordions
+- accordions
 - tabs
 - drawers
 - other built-in responsive interactions
