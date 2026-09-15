@@ -49,7 +49,7 @@ credentials:
 
 `applyGrapeConfig` copies that value onto `process.env.DO_TOKEN` before API calls so the shared HTTP client can read it. `getDoToken()` throws if the var is missing.
 
-`grape status` (without `-c`) always checks the literal env name `DO_TOKEN`, not `credentials.env`. If you renamed the variable, export `DO_TOKEN` as well, or only use `apply` / `validate`.
+`grape status` without `-c` checks `DO_TOKEN`. With `-c`, it uses `credentials.env` from that config. If you renamed the variable, export it (and `DO_TOKEN` if you run status without a config).
 
 There is no `DO_REGION` reader in the client. Put `region:` on the config or on each resource.
 

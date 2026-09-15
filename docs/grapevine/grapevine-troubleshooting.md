@@ -58,9 +58,9 @@ Fix: check the path; `readConfigSource` uses `path.resolve` for local files and 
 
 ### Unknown option / unknown argument
 
-Cause: `grape apply --dry-run`, `grape destroy`, extra flags.
+Cause: a flag the current `grape` binary does not implement.
 
-Fix: only `-c` / `--config` and `apply|validate|status|help`. Validate is the dry-run you have.
+Fix: `grape help` and `grape <command> --help`. Supported commands are `validate`, `plan`, `apply`, `destroy`, `status`, `init`. Common flags: `-c/--config`, `--json`, `-y/--yes`, `--dry-run`.
 
 ### Missing `-c`
 

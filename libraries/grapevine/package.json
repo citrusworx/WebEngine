@@ -14,14 +14,15 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "examples/blueprints"
     ],
     "publishConfig": {
         "access": "public"
     },
     "scripts": {
         "clean": "rimraf dist tsconfig.tsbuildinfo",
-        "build": "yarn clean && tsc -b",
+        "build": "yarn clean && tsc -b && node ./scripts/copy-blueprints.mjs",
         "dev": "tsc -w",
         "prepack": "yarn build",
         "test": "vitest run",
@@ -31,6 +32,7 @@
     "dependencies": {
         "@citrusworx/types": "^0.2.0",
         "axios": "^1.13.6",
+        "commander": "^15.0.0",
         "js-yaml": "^4.1.1",
         "sshpk": "^1.18.0",
         "zod": "^4.3.6"

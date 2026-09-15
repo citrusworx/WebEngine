@@ -38,18 +38,18 @@ The feature is more of a direction than a hardened part of the runtime.
 | Apply create order | Stable-ish | tags → SSH → VPC → droplets → firewalls → domains → LBs → alerts → apps. Tested with mocks. |
 | Same-apply `vpc:` / `droplets:` maps | Stable-ish | Process-local. Easy to misuse; behavior is consistent. |
 | `createDroplet` / `createVPC` / `createFireWall` | Stable-ish | Real POSTs through `doRequest`. |
-| `DO_TOKEN` / `credentials.env` | Stable-ish | Env only. Status ignores custom names. |
-| CLI `grape apply` | Emerging | Create-only; no dry-run; JSON receipt; no rollback. |
-| In-repo blueprints `01`–`04` | Emerging | Honest starters; `generate: true` and placeholders are sharp. |
-| Function CRUD (list/get/update/delete) | Emerging | Broad HTTP surface; not driven by YAML. |
-| `grape status` | Early | Token + counts. **Not drift.** |
+| `DO_TOKEN` / `credentials.env` | Stable-ish | Env only. Live `status`/`destroy` use `credentials.env` when `-c` is passed. |
+| CLI `grape apply` | Emerging | Create-only; `--dry-run` aliases `plan`; human receipt or `--json`; no rollback. |
+| In-repo blueprints `01`–`04` | Emerging | Honest starters; `grape init` copies them; `generate: true` and placeholders are sharp. |
+| Function CRUD (list/get/update/delete) | Emerging | Broad HTTP surface; `destroy` uses unique-name / tag matching. |
+| `grape status` | Emerging | Live tables (droplets/VPCs/firewalls/domains) plus optional config overlap. **Not drift.** |
 | App Platform / LB / alerts / domains in apply | Early | Create loops exist; little teaching or tests vs droplets/VPC/firewall. |
 | Images / Insight security | Early | Exported, not applied. |
 | `generate: true` SSH | Emerging | Writes OpenSSH private key to `.grape/ssh/<name>` (or `private_key_path`); apply reports the path. |
 | Docs as product surface | Emerging to Stable-ish | Tutorial, topics, patterns, anti-patterns now exist next to the API. |
 | Idempotent apply / state | Draft | Not implemented. |
 | Drift / reconcile | Draft | Not implemented. |
-| Destroy-from-YAML | Draft | Function deletes only. |
+| Destroy-from-YAML | Emerging | Conservative unique-name / `--tag` teardown; requires `--yes` off-TTY. |
 | grapeGUI / WebEngine dashboard | Draft | Absent. |
 | Second cloud provider | Draft | Schema forbids it. |
 | Volumes / DOKS / Spaces | Draft | Not grape resources. |
@@ -61,7 +61,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Zod grape config | `config/schema.ts` | yes |
 | Load file or HTTP(S) | `config/load.ts` | CLI |
 | Normalize + apply | `config/apply.ts` | CLI `apply` |
-| `grape` CLI | `bin/cli.ts` | apply / validate / status |
+| `grape` CLI | `bin/cli.ts` + `cli/` | apply / plan / validate / status / destroy / init |
 | Droplets | `droplet/droplet.ts` | yes |
 | VPC + peering | `vpc/vpc.ts` | VPC create yes; peering no |
 | Firewalls | `firewall/firewall.ts` | yes |

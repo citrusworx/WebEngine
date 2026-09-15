@@ -1,0 +1,58 @@
+# One-shot stack: tag, generated SSH key, VPC, droplet, and firewall.
+# droplets: [grapevine-web-01] resolves the droplet created in this same apply.
+#
+# Replace REPLACE_WITH_YOUR_IP with your public IPv4 before apply (SSH /32).
+#
+# generate: true uploads a new public key and writes the OpenSSH private key
+# (mode 0600) to private_key_path or .grape/ssh/<name>. Apply reports the
+# path only — never the key material. .grape/ is local-only; do not commit it.
+# Prefer public_key if you already have a key to keep.
+#
+# grape validate -c ./04-full-web-stack.yaml
+# grape apply -c ./04-full-web-stack.yaml
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - grapevine
+  ssh_keys:
+    - name: grapevine
+      generate: true
+      # private_key_path: .grape/ssh/grapevine  # default; absolute or cwd-relative
+  vpcs:
+    - name: grapevine
+      description: Grapevine starter VPC
+      ip_range: 10.120.0.0/16
+  droplets:
+    - name: grapevine-web-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: grapevine
+      monitoring: true
+      tags: [grapevine]
+  firewalls:
+    - name: grapevine-web
+      droplets: [grapevine-web-01]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["REPLACE_WITH_YOUR_IP/32"]
+        - protocol: tcp
+          ports: "80,443"
+          sources: ["0.0.0.0/0"]
+        - protocol: icmp
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: udp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: icmp
+          destinations: ["0.0.0.0/0"]

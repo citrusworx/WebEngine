@@ -8,7 +8,7 @@ mod welcome;
 #[command(name = "kiwi")]
 #[command(about = "A CLI tool for managing your projects", long_about = None)]
 struct Cli {
-    /// Delegate to the grape CLI (Grapevine DigitalOcean apply)
+    /// Delegate to the grape CLI (Grapevine DigitalOcean). Equivalent to `grape apply`.
     #[arg(long)]
     grape: bool,
 
@@ -25,9 +25,9 @@ enum Commands {
     Init,
     Dev,
     Build,
-    /// Apply or validate a Grapevine config via the `grape` binary
+    /// Run a grape subcommand via the `grape` binary (apply, validate, plan, status, …)
     Grape {
-        /// grape subcommand: apply (default), validate, or status
+        /// grape subcommand forwarded as `grape <action> -c <config>` (full flags live on grape)
         #[arg(default_value = "apply")]
         action: String,
         /// Grapevine config path or HTTP(S) URL

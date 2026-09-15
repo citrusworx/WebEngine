@@ -1,0 +1,39 @@
+# Firewall for an existing droplet. Does not create compute.
+#
+# Fill placeholders before `grape validate` — the schema expects numeric
+# droplet_ids, so REPLACE_DROPLET_ID will fail validation until replaced.
+#
+#   REPLACE_DROPLET_ID     numeric DigitalOcean droplet id
+#   REPLACE_WITH_YOUR_IP   your public IPv4 (SSH is locked to this /32)
+#
+# grape validate -c ./03-web-firewall.yaml
+# grape apply -c ./03-web-firewall.yaml
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  firewalls:
+    - name: grapevine-web
+      droplet_ids: [REPLACE_DROPLET_ID]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["REPLACE_WITH_YOUR_IP/32"]
+        - protocol: tcp
+          ports: "80,443"
+          sources: ["0.0.0.0/0"]
+        - protocol: icmp
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: udp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: icmp
+          destinations: ["0.0.0.0/0"]
