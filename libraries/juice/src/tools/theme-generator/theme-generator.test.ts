@@ -31,7 +31,7 @@ describe("Juice theme generator accordion roles", () => {
 
         expect(css).toContain("--jx-trigger: var(--jx-surface-strong)");
         expect(css).toContain("--jx-trigger-hover: var(--jx-surface-muted)");
-        expect(css).toContain("--jx-trigger-open: var(--jx-accent-soft)");
+        expect(css).toContain("--jx-trigger-open: var(--jx-surface-muted)");
         expect(css).toContain("--jx-chevron: var(--jx-accent)");
         expect(css).toContain("--jx-panel-rule: var(--jx-border)");
         expect(css).toContain("--jx-focus-ring: var(--jx-accent)");
@@ -49,6 +49,23 @@ describe("Juice theme generator accordion roles", () => {
         for (const block of accordionItemBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+            expect(block).not.toContain("--jx-accent-soft");
         }
+    });
+
+    it("uses --jx-accent-soft for the open trigger only when a soft accent is configured", () => {
+        const css = buildThemeStylesheet(
+            {
+                ...fixture,
+                palette: {
+                    ...fixture.palette,
+                    accents: { primary: "#ff7716", soft: "#ffe8d6" },
+                },
+            },
+            "test.yaml"
+        );
+
+        expect(css).toContain("--jx-trigger-open: var(--jx-accent-soft)");
+        expect(css).toContain("--juice-accordion-trigger-open: var(--jx-trigger-open)");
     });
 });
