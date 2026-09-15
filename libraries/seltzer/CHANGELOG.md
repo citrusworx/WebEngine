@@ -4,6 +4,13 @@
 
 ### Minor Changes
 
+- 5accf92: Harden outbound HTTP `client`: throw `HttpError` (status + body snippet) on non-2xx, parse JSON only for JSON successes, and support optional `allowSelfSigned` via undici Agent (KiwiPress pattern).
+- 7634d3a: Default `validate` stage enforces `.required` body fields from `Route.contract` (copied by `generateRoutes` from `ApiOperation.body`). `Seltzer#replace(name, stage)` swaps a builtin so Nectarine can hang full contract checks. `before` is unchanged.
+
+## 0.7.0
+
+### Minor Changes
+
 - Default `validate` stage enforces `.required` keys from `Route.contract.body` (YAML `email: string.required`) on `ctx.body`. Missing or empty → `{ status: 400, body: { error: … } }`. Routes without body specs stay a no-op.
 - `generateRoutes` copies `operation.resource`, `operation.name`, and `operation.body` onto `Route.contract` so `ctx.route` after the route stage carries what validate needs.
 - New public API: `Seltzer#replace(name, stage)` / `Pipeline#replace` swaps a builtin stage. `before` still inserts immediately before it. Nectarine hangs richer contracts with `replace("validate", …)`.

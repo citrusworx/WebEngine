@@ -1,6 +1,6 @@
 {
     "name": "@citrusworx/nectarine",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "YAML-driven query compiler and database adapters for CitrusWorx / WebEngine",
     "license": "MIT",
     "author": "CitrusWorx",
