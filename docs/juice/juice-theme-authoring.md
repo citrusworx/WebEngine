@@ -69,6 +69,7 @@ A healthy Juice theme should own:
 - form/control tone
 - named surfaces for authored brand moments
 - accordion chrome roles (`--juice-accordion-*`, bound from theme identity tokens)
+- tabs chrome roles (`--juice-tabs-*`, bound from theme identity tokens)
 
 Themes should not own:
 
@@ -210,6 +211,7 @@ The generated stylesheet currently defines:
 - semantic defaults for elements like `section`, `article`, `nav`, `footer`, and `form`
 - base treatments for `[hero]`, `[card]`, `[panel]`, `[cta]`, `[badge]`, and `[stat]`
 - accordion chrome role bindings (`--jx-trigger` / `--juice-accordion-*`) and surface-control paint for `[accordion-item]`
+- tabs chrome role bindings (`--jx-tabs-*` / `--juice-tabs-*`) and tab-trigger CTA overrides for `[tabs-list]` / `[tab]`
 - optional rules for `named_surfaces`
 
 ## Accordion chrome roles
@@ -249,6 +251,35 @@ Demo after `yarn workspace @citrusworx/juiceui build` (repo tree, not the npm ex
 A markup sketch lives at `libraries/juice/src/templates/html/tide-faq/index.html` (parallel to `aquaflux-faq`). Open that file after a local Juice build.
 
 Accordion wrappers (`[accordion]`) are structural. Group FAQ stacks in a named surface or card/panel rather than relying on default `section` paint.
+
+## Tabs chrome roles
+
+Library themes bind a shared tabs contract so `[tabs]` / `[tabs-list]` / `[tab]` paint is theme-agnostic in `tabs.scss`.
+
+Shared names (set on `[theme="..."]`):
+
+- `--juice-tabs-trigger` — idle trigger fill
+- `--juice-tabs-trigger-hover`
+- `--juice-tabs-trigger-active`
+- `--juice-tabs-text`
+- `--juice-tabs-text-hover`
+- `--juice-tabs-text-active`
+- `--juice-tabs-indicator` — selected underline
+- `--juice-tabs-list-rule` — strip bottom rule
+- `--juice-tabs-focus-ring`
+
+Optional hooks. Core `tabs.scss` consumes them with transparent / no-op fallbacks so themes can omit them:
+
+- `--juice-tabs-panel` — panel fill
+- `--juice-tabs-panel-rule` — inset panel divider
+
+Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-tabs-*`, `--kw-tabs-*`, `--cm-tabs-*`, …). App-owned generated themes use `--jx-tabs-*` and bind `--juice-tabs-*` from existing `--jx-*` surface/text/accent tokens. Do not invent a new hue family just for tabs chrome. Triggers are surface/text controls, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles under `[tabs-list]` and `[tab]` the same way.
+
+Selection paint uses Juice `[active]` and `aria-selected="true"` together. Visible vs hidden panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state.
+
+Draft **Tide** follows the same role contract with `--tide-tabs-*` aliases.
+
+`[tabs]` wrappers are structural. Put the widget in a named surface or card/panel when the page needs a chrome background; do not rely on default `section` paint.
 
 ## Recommended authoring rules
 

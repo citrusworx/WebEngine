@@ -168,6 +168,7 @@ Put these in the theme:
 - default control tone
 - named surfaces
 - accordion chrome role bindings (`--juice-accordion-*`)
+- tabs chrome role bindings (`--juice-tabs-*`)
 
 ## What does not belong in the theme
 

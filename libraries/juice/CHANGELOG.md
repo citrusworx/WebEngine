@@ -18,6 +18,8 @@
 - Added a shared accordion chrome role contract (`--juice-accordion-*`, with `--aqua-*` / `--kw-*` / `--cm-*` / `--jx-*` aliases) so library and generated themes bind trigger/chevron/panel/focus paint from existing tokens.
 - Added a teal/cyan color family (`teal-100`–`teal-900`, `lagoon` swatch) and a draft dark `tide` theme that binds accordion chrome roles for a product FAQ.
 - Added a DOM-first accordion runtime that auto-enhances valid `[accordion]` markup (click toggle, Escape, late DOM sync) without app init.
+- Added tabs layout chrome (`[tabs]`, `[tabs-list]`, `[tab]`, `[tab-panel]`) and a shared `--juice-tabs-*` role contract so library and generated themes bind strip/trigger/indicator/focus paint from existing tokens, with CTA overrides so tab buttons are not primary gradient buttons.
+- Added a DOM-first tabs runtime that auto-enhances valid `[tabs]` markup (exclusive panels, APG keyboard, dual-write `[active]`/`aria-selected`, late DOM sync) without app init.
 
 ## 0.1.1
 

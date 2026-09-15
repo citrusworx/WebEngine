@@ -67,6 +67,7 @@ Components should still emit meaningful HTML when possible.
 Examples:
 
 * accordions should use buttons and panels correctly
+* tabs should use a `[tabs]` root, `[tab]` triggers, and `[tab-panel]` panels
 * nav components should still rely on `nav`
 * cards should not fake semantics unless needed
 

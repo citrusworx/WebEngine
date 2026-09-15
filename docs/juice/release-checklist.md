@@ -24,7 +24,7 @@ That must pass before publishing.
 - confirm `libraries/juice/CHANGELOG.md` describes user-facing changes clearly
 - confirm `dist/index.css`, `dist/index.js`, and `dist/icons/` are present after build
 - confirm artifact budgets still pass in `src/juice.artifacts.test.ts`
-- confirm interactive runtime tests still pass for navigation and accordion behavior
+- confirm interactive runtime tests still pass for navigation, accordion, and tabs behavior
 - confirm any new assets are intentionally part of the published contract
 - confirm README examples and package entrypoints still match the build output
 
