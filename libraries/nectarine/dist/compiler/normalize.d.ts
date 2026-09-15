@@ -8,10 +8,11 @@
  *   read: is an alias of get
  *   count: true → SELECT COUNT(*)
  *   exists: true → SELECT EXISTS(SELECT 1 FROM ...)
+ *   onConflict: { target, do|action, set? } on INSERT
  *
  * Canonical:
  *   select / from / where:{column,operator,value}
- *   insert:{into,columns,values}
+ *   insert:{into,columns,values,onConflict?}
  *   table / set / values / where
  */
 import type { CrudMethod } from "./sql.js";

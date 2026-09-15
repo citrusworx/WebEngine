@@ -9,10 +9,11 @@
  *   read: is an alias of get
  *   count: true → SELECT COUNT(*)
  *   exists: true → SELECT EXISTS(SELECT 1 FROM ...)
+ *   onConflict: { target, do|action, set? } on INSERT
  *
  * Canonical:
  *   select / from / where:{column,operator,value}
- *   insert:{into,columns,values}
+ *   insert:{into,columns,values,onConflict?}
  *   table / set / values / where
  */
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -224,6 +225,11 @@ function normalizeInsert(query) {
         columns,
         values,
     };
+    const onConflict = query.onConflict
+        ?? ((0, errors_js_1.isRecord)(query.insert) ? query.insert.onConflict : undefined);
+    if (onConflict !== undefined) {
+        insert.onConflict = onConflict;
+    }
     const normalized = { insert };
     if (query.returning !== undefined) {
         normalized.returning = query.returning;
@@ -270,6 +276,9 @@ function normalizeQuery(query, method) {
     const kind = method ?? typeMethod;
     if (kind === undefined) {
         throw new errors_js_1.QueryCompileError("Blackwater query requires type or a CRUD method");
+    }
+    if (query.onConflict !== undefined && kind !== "create") {
+        throw new errors_js_1.QueryCompileError("onConflict is only valid on INSERT");
     }
     switch (kind) {
         case "get":

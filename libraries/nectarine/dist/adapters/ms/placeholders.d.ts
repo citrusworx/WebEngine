@@ -21,9 +21,18 @@ export type MysqlRewriteResult = {
  *   (decoded then re-escaped for MySQL so `\\` is not eaten as an SQL escape)
  * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))`
  *
+ * `ON CONFLICT` is Postgres-only in this version: this rewrite throws instead
+ * of emitting `ON DUPLICATE KEY UPDATE`.
+ *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
  */
 export declare function rewriteMysqlPlaceholders(sql: string, params?: readonly unknown[]): MysqlRewriteResult;
+/**
+ * Postgres `ON CONFLICT` is not rewritten to `ON DUPLICATE KEY UPDATE`.
+ * v1 keeps the subset Postgres-only so MySQL cannot silently change upsert
+ * semantics (or ignore non-duplicate errors via `INSERT IGNORE`).
+ */
+export declare function rejectMysqlOnConflict(sql: string): void;
 /**
  * Rewrite compiler JSONB operators to MySQL JSON functions so Postgres `?`
  * is not treated as a positional placeholder.

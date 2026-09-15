@@ -60,7 +60,7 @@ Object.defineProperty(exports, "parseWhereFragment", { enumerable: true, get: fu
  * Blackwater `type: SELECT` documents are accepted and normalized onto the
  * same phonics model before assembly. Postgres JSONB binds use
  * `{ value: $N, cast: jsonb }` (allow-listed). JSONB `@>` / `?` / `->>`,
- * `COUNT`, and `EXISTS` are compiler phonics — not host SQL.
+ * `COUNT`, `EXISTS`, and INSERT `onConflict` are compiler phonics — not host SQL.
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
