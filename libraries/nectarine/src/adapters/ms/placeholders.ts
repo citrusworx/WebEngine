@@ -28,7 +28,8 @@ export type MysqlRewriteResult = {
  * so the Postgres `?` key check is not mistaken for a MySQL placeholder:
  * - `payload->>'catalog'` → `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.catalog'))`
  * - `payload @> $1::jsonb` → `JSON_CONTAINS(payload, CAST(? AS JSON))`
- * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', ?))`
+ * - `payload @> '{"a":1}'` → `JSON_CONTAINS(payload, CAST('{"a":1}' AS JSON))`
+ * - `payload ? $1` → `JSON_CONTAINS_PATH(payload, 'one', CONCAT('$.', JSON_QUOTE(?)))`
  *
  * SQL that already uses `?` and has no `$N` binds is returned unchanged.
  */
@@ -178,7 +179,12 @@ export function rewriteMysqlJsonbOperators(sql: string): string {
 }
 
 function hasJsonbOperator(sql: string): boolean {
-    return sql.includes("->>") || sql.includes("->'") || sql.includes(" @> ") || / \? \$/.test(sql);
+    return (
+        sql.includes("->>") ||
+        sql.includes("->'") ||
+        sql.includes(" @> ") ||
+        / \? (?:\$|')/.test(sql)
+    );
 }
 
 function isIdentBoundary(sql: string, index: number): boolean {
@@ -214,6 +220,14 @@ function rewriteJsonbOperand(sql: string, start: number): { sql: string; end: nu
                 end: placeholder.end,
             };
         }
+        const constant = readSqlString(sql, afterOp);
+        if (constant) {
+            const quoted = sql.slice(afterOp, constant.end);
+            return {
+                sql: `JSON_CONTAINS(${operand}, CAST(${quoted} AS JSON))`,
+                end: constant.end,
+            };
+        }
     }
 
     if (sql[afterOperand] === "?") {
@@ -221,17 +235,15 @@ function rewriteJsonbOperand(sql: string, start: number): { sql: string; end: nu
         const placeholder = readPlaceholderToken(sql, afterOp);
         if (placeholder) {
             return {
-                sql: `JSON_CONTAINS_PATH(${operand}, 'one', CONCAT('$.', ${placeholder.token}))`,
+                sql: `JSON_CONTAINS_PATH(${operand}, 'one', CONCAT('$.', JSON_QUOTE(${placeholder.token})))`,
                 end: placeholder.end,
             };
         }
         const key = readSqlString(sql, afterOp);
         if (key) {
-            const path = /^[A-Za-z_][A-Za-z0-9_]*$/.test(key.value)
-                ? `$.${key.value}`
-                : `$."${key.value.replace(/"/g, '\\"')}"`;
+            const quoted = sql.slice(afterOp, key.end);
             return {
-                sql: `JSON_CONTAINS_PATH(${operand}, 'one', '${path}')`,
+                sql: `JSON_CONTAINS_PATH(${operand}, 'one', CONCAT('$.', JSON_QUOTE(${quoted})))`,
                 end: key.end,
             };
         }
@@ -327,11 +339,17 @@ function readSqlString(sql: string, start: number): { value: string; end: number
 }
 
 function mysqlJsonExtract(ident: string, keys: string[], asText: boolean): string {
-    const path = keys
-        .map((key) => (/^[A-Za-z_][A-Za-z0-9_]*$/.test(key) ? key : `"${key.replace(/"/g, '\\"')}"`))
-        .join(".");
+    const path = keys.map((key) => mysqlJsonPathSegment(key)).join(".");
     const extract = `JSON_EXTRACT(${ident}, '$.${path}')`;
     return asText ? `JSON_UNQUOTE(${extract})` : extract;
+}
+
+/** One JSON path member. Dots/hyphens stay a single key, matching Postgres `?`. */
+function mysqlJsonPathSegment(key: string): string {
+    if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
+        return key;
+    }
+    return `"${key.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
 }
 
 function skipSpaces(sql: string, start: number): number {

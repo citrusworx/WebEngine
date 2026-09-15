@@ -58,6 +58,24 @@ describe("compiler ops: COUNT", () => {
             }),
         ).toThrowError(/count: true cannot include fields/);
     });
+
+    it("rejects COUNT with orderBy", () => {
+        expect(() =>
+            compileQuery({
+                type: "SELECT",
+                table: "products",
+                count: true,
+                orderBy: "created_at ASC",
+            }),
+        ).toThrowError(/COUNT cannot include orderBy/);
+        expect(() =>
+            compileQuery({
+                select: [{ fn: "count" }],
+                from: "products",
+                orderBy: [{ column: "created_at", direction: "ASC" }],
+            }),
+        ).toThrowError(/COUNT cannot include orderBy/);
+    });
 });
 
 describe("compiler ops: EXISTS", () => {

@@ -328,7 +328,7 @@ emailExists:
 
 → `SELECT EXISTS(SELECT 1 FROM waitlist WHERE email = $1)`
 
-`{ fn: count, column: id, as: n }` emits `COUNT(id) AS n`. `COUNT` cannot mix with other select columns (`GROUP BY` is not compiled). Joins stay out of scope.
+`{ fn: count, column: id, as: n }` emits `COUNT(id) AS n`. `COUNT` cannot mix with other select columns or `orderBy` (`GROUP BY` is not compiled). Joins stay out of scope.
 
 ## Operator tokens
 
