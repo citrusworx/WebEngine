@@ -1,6 +1,6 @@
 # Getting Started With KiwiPress
 
-This is the usable WordPress REST client path. It is an **optional track** — not part of the core [Make A Web App](../webengine/make-a-web-app.md) chapters.
+This is the usable WordPress REST client path — the **entry point** into WebEngine. It is an **optional track** for people who already have WordPress content. The destination CMS path is [Transfer](./kiwipress-transfer.md).
 
 You need a WordPress site with the REST API reachable (typically `/wp-json/wp/v2`) and, for writes, credentials.
 
@@ -106,7 +106,27 @@ await posts.delete(draft.id);
 
 Bodies are `WordPressPayload` (`Record<string, unknown>`). There is no generated post schema. WordPress decides which fields it accepts.
 
-`packages/kiwipress/src/example.ts` is this create-then-`getBySlug` flow against `http://localhost:8080`.
+`packages/kiwipress/src/example.ts` is this create-then-`getBySlug` flow against `http://localhost:8080`, then a `KiwiPress.connect().sync.transfer(["posts"])` into the native store.
+
+## Transfer into Nectarine
+
+WordPress is the on-ramp. When you want the CMS WebEngine runs:
+
+```ts
+import { KiwiPress } from "@citrusworx/kiwipress";
+
+const kiwi = KiwiPress.connect({
+  url: "https://example.com",
+  username: "admin",
+  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx"
+});
+
+await kiwi.sync?.transfer(["posts", "pages"]);
+const native = kiwi.toNectarine();
+await native.native.posts.getAll();
+```
+
+Full walkthrough: [Transfer](./kiwipress-transfer.md).
 
 ## Read-only taxonomies and comments
 
@@ -161,14 +181,17 @@ That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.t
 
 ## Pitfalls
 
-- **Responses are raw JSON.** There is no normalization layer. `getBySlug` returns whatever WordPress returned (often an array).
+- **Responses from `Posts` / `Pages` are raw JSON.** Use `normalizeWordPressItem` or `WPSync.transfer()` when you want Nectarine-shaped `ContentRecord`s. `getBySlug` returns whatever WordPress returned (often an array).
 - **Failed HTTP throws.** `requestWordPress` throws `WordPress request failed: <status> <statusText>` on non-2xx.
-- **Nectarine is unused.** Do not look for YAML route loading in the client constructor.
+- **Nectarine YAML is loaded by `loadNectarineApi`.** The WordPress client still uses static `routes.ts` files; transfer and native CMS follow Nectarine models.
 - **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and calls `mutate`.
 - **Self-signed HTTPS** only bypasses TLS verification when `allowSelfSigned` is true and the URL is `https://`.
+- **Seltzer inbound paths are exact.** The app gateway updates items with `?id=`, not `/posts/:id`.
 
 ## Where to go next
 
+- [Transfer](./kiwipress-transfer.md)
 - [Core classes](./core-classes.md)
 - [Seltzer](../seltzer/README.md)
+- [Nectarine](../nectarine/README.md)
 - [Make A Web App](../webengine/make-a-web-app.md) electives table

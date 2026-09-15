@@ -268,7 +268,7 @@ Why it is bad:
 
 - WebEngine source does not import this package
 - Grapevine does not run `app.listen`
-- KiwiPress lists a dependency and does not import it
+- KiwiPress now imports Nectarine for `loadNectarineApiFile` (`parser.yaml`) and walks API YAML itself in `loadNectarineApi`
 
 Better:
 

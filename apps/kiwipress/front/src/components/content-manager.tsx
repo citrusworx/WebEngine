@@ -4,7 +4,7 @@ import type { Child } from "@citrusworx/sigjs";
 type ContentKind = "posts" | "pages";
 
 type ManagedContentItem = {
-    id: number;
+    id: string;
     kind: ContentKind;
     title: string;
     slug: string;
@@ -44,11 +44,13 @@ function normalizeItem(kind: ContentKind, value: unknown): ManagedContentItem {
     };
 
     return {
-        id: typeof item.id === "number" ? item.id : Number(item.id ?? 0),
+        id: item.id == null ? "" : String(item.id),
         kind,
         title: extractTextValue(item.title) || `Untitled ${kind.slice(0, -1)}`,
         slug: typeof item.slug === "string" ? item.slug : "",
-        status: typeof item.status === "string" ? item.status : "draft",
+        status: typeof item.status === "string"
+            ? (item.status === "published" ? "publish" : item.status)
+            : "draft",
         date: typeof item.date === "string" ? item.date : "",
         content: extractTextValue(item.content) || "<p></p>"
     };
@@ -57,7 +59,7 @@ function normalizeItem(kind: ContentKind, value: unknown): ManagedContentItem {
 export function ContentManager() {
     const currentKind = Signal<ContentKind>("posts");
     const items = Signal<ManagedContentItem[]>([]);
-    const selectedId = Signal<number | null>(null);
+    const selectedId = Signal<string | null>(null);
     const managerStatus = Signal("Idle");
     const managerError = Signal("");
     const saveStatus = Signal("Idle");
@@ -144,7 +146,7 @@ export function ContentManager() {
                 content: contentArea.value
             };
 
-            const response = await fetch(`/__kiwipress/content/${selected.kind}/${selected.id}`, {
+            const response = await fetch(`/__kiwipress/content/${selected.kind}?id=${encodeURIComponent(selected.id)}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -186,7 +188,7 @@ export function ContentManager() {
         managerError.set("");
 
         try {
-            const response = await fetch(`/__kiwipress/content/${item.kind}/${item.id}`, {
+            const response = await fetch(`/__kiwipress/content/${item.kind}?id=${encodeURIComponent(item.id)}`, {
                 method: "DELETE"
             });
 

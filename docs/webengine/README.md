@@ -150,7 +150,7 @@ Course hub: [Make A Web App With WebEngine](./make-a-web-app.md). Do not wait fo
 - [Types](../types/README.md)
 - [DNS](../dns/README.md) (elective infra)
 - [Stenzil](../stenzil/README.md) (advanced compiler elective)
-- [KiwiPress](../kiwipress/README.md) (optional WordPress track)
+- [KiwiPress](../kiwipress/README.md) (WordPress on-ramp; [transfer](../kiwipress/kiwipress-transfer.md))
 
 ## Source of truth
 

@@ -38,16 +38,16 @@ const STEPS = [
         body: "Create and manage your content in WordPress, just like you always have. Your editorial team uses familiar tools."
     },
     {
-        title: "Structure & Enrich",
-        body: "KiwiPress transforms WordPress content into structured, schema-driven data. Add metadata, relationships, and custom fields."
+        title: "Connect Headless",
+        body: "KiwiPress talks to the WordPress REST API as the entry point — clean domain objects, not query-string glue."
     },
     {
-        title: "Compose Visually",
-        body: "Use Sugar to compose experiences with drag-and-drop. Combine content blocks, add interactions, and design layouts—no code required."
+        title: "Transfer to Nectarine",
+        body: "When you are ready, WPSync maps posts, pages, users, and taxonomies onto Nectarine models — the CMS WebEngine actually runs."
     },
     {
         title: "Publish as Application",
-        body: "Web Engine renders the composed experience at runtime. Modern, interactive, and decoupled from your CMS."
+        body: "Web Engine renders the composed experience at runtime. Modern, interactive, and no longer coupled to WordPress."
     }
 ];
 
@@ -71,7 +71,7 @@ const ARCH_LAYERS: ArchLayer[] = [
         tier: "application",
         label: "APPLICATION LAYER",
         title: "KiwiPress",
-        features: ["CRUD operations", "Editorial workflows", "Content normalization", "Schema-driven models"],
+                        features: ["CRUD operations", "Content normalization", "WPSync transfer", "Nectarine CMS models"],
         divider: "COMPOSITION LAYER"
     },
     {
@@ -91,16 +91,16 @@ const ARCH_SUMMARY = [
 
 const PLAIN_ENGLISH = [
     { lead: "WordPress stores the content,",         rest: "like your company blog posts, marketing pages, and team bios." },
-    { lead: "KiwiPress helps shape and publish it,", rest: "adding structure, relationships, and metadata so content becomes more useful." },
-    { lead: "Web Engine makes it behave like a real product,", rest: "with interactive features, modern UX, and application-level workflows." },
-    { lead: "Sugar lets anyone build experiences",   rest: "by composing content and interactions visually—no coding required." }
+    { lead: "KiwiPress is the entry point,",         rest: "a headless client that later transfers that content into our CMS." },
+    { lead: "Nectarine is the destination CMS,",     rest: "typed models that are more expressive than WordPress posts and pages." },
+    { lead: "Web Engine makes it a product,",        rest: "with interactive features, modern UX, and application-level workflows." }
 ];
 
 const DEVELOPER_TERMS = [
-    { lead: "WordPress acts as the system of record,",          rest: "maintaining persistence for posts, taxonomies, users, and media assets." },
-    { lead: "KiwiPress decouples persistence from composition,", rest: "handling content normalization, schema validation, and the publishing bridge." },
-    { lead: "Web Engine provides the runtime layer,",            rest: "managing rendering, state, routing, and application behavior independently of WordPress." },
-    { lead: "Sugar is a visual composition framework",           rest: "that abstracts component integration and data binding through a drag-and-drop interface." }
+    { lead: "WordPress acts as the system of record,",          rest: "until you transfer; then Nectarine models are the content of record." },
+    { lead: "KiwiPress is the CMS adapter and publishing bridge,", rest: "WPAuth, domain objects, response normalization, and WPSync." },
+    { lead: "Nectarine owns the destination schema,",            rest: "YAML models for posts, pages, users, and taxonomies WebEngine can persist." },
+    { lead: "Web Engine provides the runtime layer,",            rest: "managing rendering, state, routing, and application behavior independently of WordPress." }
 ];
 
 const ENGINEERING = [
@@ -128,7 +128,7 @@ export function HowItWorks() {
                     <header arch-hero-header>
                         <h1>See How KiwiPress Works</h1>
                         <p lede>
-                            WordPress remains your content system of record. KiwiPress and Web Engine transform it into a complete application platform—separating content management from runtime behavior, composition, and workflows.
+                            WordPress is the on-ramp. KiwiPress normalizes that content and transfers it into a Nectarine CMS that WebEngine can run — more expressive, modern, and yours.
                         </p>
                         <div arch-hero-actions row gap="cozy">
                             <button scale="lg" type="button" onclick={startBuilding}>Start Building</button>
@@ -309,8 +309,8 @@ export function HowItWorks() {
             <section final-cta paddingY="roomy">
                 <div container narrow>
                     <div final-cta-inner>
-                        <h2>Use WordPress Like an Application Platform</h2>
-                        <p>Stop treating WordPress as your entire stack. Let it handle content while KiwiPress and Web Engine deliver the application layer you actually need.</p>
+                        <h2>Start on WordPress. Graduate to WebEngine.</h2>
+                        <p>KiwiPress is the entry point: keep WordPress as long as you need it, then transfer into a Nectarine CMS that is more expressive, modern, and easy to use.</p>
                         <div row gap="cozy">
                             <button scale="lg" type="button" onclick={getKiwipress}>Get KiwiPress</button>
                             <button btn="outline" scale="lg" type="button" onclick={contact}>Talk to Us</button>

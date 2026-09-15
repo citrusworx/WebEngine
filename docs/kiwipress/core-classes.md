@@ -2,7 +2,21 @@
 
 The core classes form an inheritance spine that separates WordPress infrastructure, transport, and CRUD concerns into distinct layers. Domain objects like `Posts`, `Pages`, and `Users` sit at the top of this spine and inherit everything they need.
 
-This page is the practical spine reference. For what/why and first requests, use the [README](./README.md) and [Getting started](./kiwipress-getting-started.md). KiwiPress is an **optional WordPress track**, not a core [Make A Web App](../webengine/make-a-web-app.md) chapter.
+This page is the practical spine reference. For what/why and first requests, use the [README](./README.md) and [Getting started](./kiwipress-getting-started.md). For WordPress → Nectarine, use [Transfer](./kiwipress-transfer.md). KiwiPress is the **WordPress on-ramp** into [Make A Web App](../webengine/make-a-web-app.md), not a core chapter.
+
+```
+WPCore + WPAuth
+  └── WPClient
+        ├── WPRead      ← base for all WordPress domain objects
+        ├── WPCreate
+        ├── WPUpdate
+        └── WPDelete
+
+KiwiPress.connect()
+  ├── wordpress.*   (Posts, Pages, …)
+  ├── sync          (WPSync → NectarineStore)
+  └── native.*      (NativeCollection)
+```
 
 Source files cited below live in the WebEngine monorepo under `packages/kiwipress/`. They are not part of this docs vault, so they are listed as paths rather than links.
 
@@ -64,7 +78,30 @@ type WPCoreConfig = {
 
 ### Auth header selection
 
-`createAuthHeaders()` applies the first fully-configured strategy it finds:
+`createAuthHeaders()` delegates to `WPAuth.headers()`. See **WPAuth** below.
+
+---
+
+## WPAuth
+
+**File:** `packages/kiwipress/src/core/WPAuth.ts`
+
+`WPAuth` owns credential strategy and header generation. `WPCore` constructs one from the resolved config.
+
+```ts
+import { WPAuth } from "@citrusworx/kiwipress";
+
+const auth = new WPAuth({
+  username: "admin",
+  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx"
+});
+
+auth.strategy();      // "basic" | "bearer" | "api-key" | "none"
+auth.isConfigured();  // true
+auth.headers();       // { Authorization: "Basic …" }
+```
+
+Priority:
 
 1. **Basic auth** — when both `username` and `appPassword` are set, produces `Authorization: Basic <base64>`
 2. **Bearer token** — when `token` is set, produces `Authorization: Bearer <token>`
@@ -317,3 +354,62 @@ type WordPressPayload = Record<string, unknown>;
 ```
 
 `ApiDefinition` is the input shape for `createWordPressRoute` and `createAliasedQueryRoute`. `WordPressPayload` is used as the body type for all mutating domain object methods.
+
+---
+
+## Normalize
+
+**File:** `packages/kiwipress/src/core/normalize.ts`
+
+`normalizeWordPressItem(collection, value, sourceUrl?)` maps raw WordPress JSON onto `ContentRecord`. `toNectarinePost` maps that onto the Nectarine `Post` schema (`title`, `content`, `slug`, `status`, `author_id`, `featured_image`).
+
+`Posts.getAll()` still returns raw JSON. Normalization is opt-in via these helpers or `WPSync.transfer()`.
+
+---
+
+## WPSync
+
+**File:** `packages/kiwipress/src/core/WPSync.ts`
+
+`WPSync` reads WordPress collections through domain objects and upserts `ContentRecord`s into a `NectarineStore`.
+
+```ts
+await kiwi.sync?.preview(["posts"]);
+await kiwi.sync?.transfer(["posts", "pages"]);
+```
+
+See [Transfer](./kiwipress-transfer.md).
+
+---
+
+## KiwiPress facade
+
+**File:** `packages/kiwipress/src/cms/KiwiPress.ts`
+
+```ts
+const kiwi = KiwiPress.connect({ url, username, appPassword });
+kiwi.mode;                // "wordpress" | "nectarine"
+kiwi.wordpress.posts;     // existing Posts client
+kiwi.native.posts;        // NativeCollection on NectarineStore
+kiwi.promote();           // in-place switch to nectarine
+kiwi.toNectarine();       // new instance sharing the store
+```
+
+`mode: "nectarine"` does not require `url`. Native collections then are the CMS.
+
+---
+
+## Nectarine API YAML
+
+**File:** `packages/kiwipress/src/nectarine/api.ts`
+
+`loadNectarineApi(data)` walks nested (`user.get.allUsers.api`) and flat API documents. `loadNectarineApiFile` uses Nectarine `parser.yaml`.
+
+---
+
+## Gateway
+
+**File:** `packages/kiwipress/src/gateway/register.ts`
+
+`registerKiwiPressGateway(app, kiwi)` attaches exact Seltzer routes under `/__kiwipress`. Item writes use `?id=`. Used by `apps/kiwipress/back`.
+

@@ -1,4 +1,5 @@
 import { Posts } from "./posts/posts.js";
+import { KiwiPress } from "./cms/KiwiPress.js";
 
 async function runExample() {
     const posts = new Posts({
@@ -19,6 +20,13 @@ async function runExample() {
 
     const postBySlug = await posts.getBySlug(slug);
     console.log("Post by slug:", postBySlug);
+
+    const kiwi = KiwiPress.connect({
+        url: "http://localhost:8080",
+        apiBase: "wp-json/wp/v2"
+    });
+    const transfer = await kiwi.sync?.transfer(["posts"]);
+    console.log("Transferred into Nectarine:", transfer?.counts);
 
     console.log("KiwiPress create post smoke test complete.");
 }

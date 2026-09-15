@@ -18,6 +18,7 @@ import { Payment } from "./pages/wizard/steps/Payment";
 import { Provisioning } from "./pages/wizard/steps/Provisioning";
 import { Live } from "./pages/wizard/steps/Live";
 import { Scale } from "./pages/wizard/steps/Scale";
+import { Content } from "./pages/app/pages/Content";
 import { Projects } from "./pages/app/pages/Projects";
 import { Blueprints as AppBlueprints } from "./pages/app/pages/Blueprints";
 import { Billing } from "./pages/app/pages/Billing";
@@ -46,6 +47,7 @@ router
     .set("/wizard/scale", <Scale />)
     .set("/app", <Projects />)
     .set("/app/projects", <Projects />)
+    .set("/app/content", <Content />)
     .set("/app/blueprints", <AppBlueprints />)
     .set("/app/billing", <Billing />)
     .set("/app/activity", <Activity />)
