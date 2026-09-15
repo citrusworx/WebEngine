@@ -16,7 +16,7 @@
  * count.set(1); // Only the effect callback runs, updating the DOM
  * ```
  */
-let isBatching = false;
+let batchDepth = 0;
 const pendingSubscribers = new Set();
 let currentSubscriber = null;
 let currentCleanupScope = null;
@@ -24,11 +24,18 @@ function runCleanup(cleanup) {
     cleanup?.();
 }
 function scheduleSubscriber(subscriber) {
-    if (isBatching) {
+    if (batchDepth > 0) {
         pendingSubscribers.add(subscriber);
         return;
     }
     subscriber.notify();
+}
+function flushPendingSubscribers() {
+    const queued = [...pendingSubscribers];
+    pendingSubscribers.clear();
+    for (const subscriber of queued) {
+        subscriber.notify();
+    }
 }
 function registerCleanup(cleanup) {
     currentCleanupScope?.cleanups.add(cleanup);
@@ -77,11 +84,16 @@ export function Signal(value) {
     };
 }
 export function batch(fn) {
-    isBatching = true;
-    fn();
-    isBatching = false;
-    pendingSubscribers.forEach(subscriber => subscriber.notify());
-    pendingSubscribers.clear();
+    batchDepth += 1;
+    try {
+        fn();
+    }
+    finally {
+        batchDepth -= 1;
+        if (batchDepth === 0) {
+            flushPendingSubscribers();
+        }
+    }
 }
 export function memo(fn) {
     let cachedValue;

@@ -7,7 +7,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 | Workspace | Package | Current status | What exists today | Primary docs |
 |---|---|---|---|---|
 | `libraries/types` | `@citrusworx/types` | Stable core types | Shared deployment, blueprint, project, environment, server, service, and domain types | [Types](./types/README.md) |
-| `libraries/sig` | `@citrusworx/sigjs` | Active alpha | Signals, effects, JSX runtime, JSX dev runtime, router, and tests | [Sig.js](./sigjs/README.md) |
+| `libraries/sig` | `@citrusworx/sigjs` | 0.2.0 standalone | Signals, effects, batch, memo, JSX-to-DOM, client router; no runtime deps | [Sig.js](./sigjs/README.md) · [package README](../libraries/sig/README.md) |
 | `libraries/juice` | `@citrusworx/juiceui` | Beta | CSS-first attribute-driven styling/composition system, modular themes, app-owned theme generation, and lightweight runtime hooks | [Juice](./juice/README.md) |
 | `libraries/seltzer` | `@citrusworx/seltzer` | Early implementation | Core server/client scaffolding and an evolving HTTP runtime design | [Seltzer](./seltzer/README.md) · [Study guide](./seltzer/courses.md) |
 | `libraries/nectarine` | `@citrusworx/nectarine` | Active alpha | Compiler plus PostgreSQL, MySQL, and MongoDB adapters; WebEngine/Blackwater hosts HTTP with Seltzer | [Nectarine](./nectarine/README.md) |
