@@ -95,7 +95,7 @@ If you are hosting Juice assets yourself, the main built files are:
 
 - `dist/index.css` (core)
 - `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`
-- `dist/themes/_draft/tide.css` (draft only — not a stable package export)
+- `dist/themes/_draft/tide.css` (local draft artifact only — blocked from package `exports` and omitted from the published tarball)
 - `dist/index.js`
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.

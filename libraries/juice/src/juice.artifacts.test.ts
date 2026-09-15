@@ -7,11 +7,14 @@ const PACKAGE_ROOT = process.cwd();
 const DIST_DIR = join(PACKAGE_ROOT, "dist");
 const PACKAGE_JSON_PATH = join(PACKAGE_ROOT, "package.json");
 
+type PackageExportTarget = { default?: string; types?: string } | string | null;
+
 function readPackageJson() {
     return JSON.parse(readFileSync(PACKAGE_JSON_PATH, "utf-8")) as {
         main?: string;
         types?: string;
-        exports?: Record<string, { default?: string; types?: string } | string>;
+        exports?: Record<string, PackageExportTarget>;
+        files?: string[];
         browserslist?: string[];
     };
 }
@@ -116,6 +119,26 @@ describe("Juice build artifacts", () => {
         expect(draftCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
     });
 
+    it("keeps draft theme paths out of the public package export map", () => {
+        const pkg = readPackageJson();
+        const exportsMap = pkg.exports ?? {};
+
+        expect(exportsMap["./themes/_draft"]).toBeNull();
+        expect(exportsMap["./themes/_draft/*"]).toBeNull();
+        expect(exportsMap["./themes/_draft/*.css"]).toBeNull();
+        expect(exportsMap["./styles/themes/_draft"]).toBeNull();
+        expect(exportsMap["./styles/themes/_draft/*"]).toBeNull();
+        expect(pkg.files).toEqual(expect.arrayContaining(["!dist/themes/_draft", "!dist/themes/_draft/**"]));
+    });
+
+    it("rejects draft Tide through published package specifiers", async () => {
+        const cssSpecifier = ["@citrusworx/juiceui", "themes/_draft/tide.css"].join("/");
+        const aliasSpecifier = ["@citrusworx/juiceui", "styles/themes/_draft/tide"].join("/");
+
+        await expect(import(/* @vite-ignore */ cssSpecifier)).rejects.toThrow(/is not exported/);
+        await expect(import(/* @vite-ignore */ aliasSpecifier)).rejects.toThrow(/is not exported/);
+    });
+
     it("produces JS output", () => {
         const jsPath = join(DIST_DIR, "index.js");
         const js = readFileSync(jsPath, "utf-8");
@@ -158,6 +181,10 @@ describe("Juice package contract", () => {
         expect(existsSync(typesPath)).toBe(true);
 
         for (const target of Object.values(pkg.exports ?? {})) {
+            if (target == null) {
+                continue;
+            }
+
             if (typeof target === "string") {
                 if (target.includes("*")) {
                     expect(existsSync(join(PACKAGE_ROOT, target.split("*")[0]))).toBe(true);
