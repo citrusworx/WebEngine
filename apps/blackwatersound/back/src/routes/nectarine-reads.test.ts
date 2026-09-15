@@ -284,12 +284,18 @@ describe("createRoutes", () => {
     expect(keys.filter((key) => key === "GET /api/lessons/:id")).toHaveLength(1);
     expect(keys.filter((key) => key === "POST /api/waitlist")).toHaveLength(1);
     expect(keys.filter((key) => key === "POST /api/courses")).toHaveLength(1);
+    expect(keys.filter((key) => key === "POST /api/products")).toHaveLength(1);
+    expect(keys.filter((key) => key === "PUT /api/products/:id")).toHaveLength(1);
+    expect(keys.filter((key) => key === "DELETE /api/products/:id")).toHaveLength(1);
     expect(keys).toEqual(expect.arrayContaining([
       "GET /api/health",
       "POST /api/waitlist",
       "GET /api/posts/:slug",
       "GET /api/lessons/:id",
       "GET /api/products",
+      "POST /api/products",
+      "PUT /api/products/:id",
+      "DELETE /api/products/:id",
       "GET /api/waitlist",
       "GET /api/courses",
       "POST /api/courses",
@@ -301,9 +307,16 @@ describe("createRoutes", () => {
       "POST /api/enrollments",
       "POST /api/clients",
     ]));
-    expect(keys).not.toContain("POST /api/products");
-    expect(keys).not.toContain("PUT /api/products/:id");
-    expect(keys).not.toContain("DELETE /api/products/:id");
+
+    const productCreate = routes.find((route) => route.method === "POST" && route.path === "/api/products");
+    expect(productCreate?.contract).toEqual({
+      resource: "product",
+      name: "newProduct",
+      body: {
+        id: "string.required",
+        name: "string.required",
+      },
+    });
 
     const lessonById = routes.find((route) => route.method === "GET" && route.path === "/api/lessons/:id");
     expect(lessonById?.contract).toBeUndefined();

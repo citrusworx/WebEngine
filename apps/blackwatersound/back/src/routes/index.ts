@@ -5,12 +5,13 @@ import type { BlackwaterContext } from "../types/context.js";
 import { isDatabaseConnected, runCompiledQuery } from "../db/postgres.js";
 import { getLessonRoute, getPostBySlugRoute } from "./content.js";
 import { healthRoute } from "./health.js";
-import { createProductReadRoutes } from "./products.js";
+import { createProductRoutes } from "./products.js";
 import { createWaitlistRoutes } from "./waitlist.js";
 
 /**
  * Resource reads **and** YAML writes via engine {@link createNectarineRoutes}.
- * Product + waitlist keep specialized execute (JSONB catalog / join allowlist).
+ * Product keeps specialized execute so JSONB `payload` is not flattened;
+ * waitlist `joinWaitlist` keeps its allowlist execute.
  * Lesson `byId` is excluded so the hand KiwiPress `GET /api/lessons/:id` stays unique.
  */
 export const GENERATED_RESOURCES = [
@@ -37,7 +38,7 @@ function compiledQuery(sql: string, params?: readonly unknown[]) {
 export function createRoutes(nectarine: NectarineConfig): Route<BlackwaterContext>[] {
   return [
     healthRoute,
-    ...createProductReadRoutes(nectarine),
+    ...createProductRoutes(nectarine),
     ...createWaitlistRoutes(nectarine),
     ...createNectarineRoutes(nectarine, {
       resources: GENERATED_RESOURCES,

@@ -71,7 +71,7 @@ for (const route of nectarine.createRoutes({
 await app.listen(port);
 ```
 
-Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Health, KiwiPress, and other host-owned paths stay hand-registered. Blackwater `createRoutes` calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`); product writes stay unwired so the JSONB catalog is not flattened.
+Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Health, KiwiPress, and other host-owned paths stay hand-registered. Blackwater `createRoutes` calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`); product writes use the same helper with a host `execute` so JSONB `payload` is not flattened onto relational columns.
 
 ## Adapter surface
 

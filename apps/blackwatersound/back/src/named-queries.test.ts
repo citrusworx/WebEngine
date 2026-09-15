@@ -39,6 +39,13 @@ describe("compileResourceQuery", () => {
   it("still exposes the special-cased product JSONB and waitlist keys", () => {
     expect(namedSql.allPayloads).toBe("SELECT payload FROM products ORDER BY created_at ASC");
     expect(namedSql.payloadById).toBe("SELECT payload FROM products WHERE id = $1");
+    expect(namedSql.insertPayload).toBe(
+      "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
+    );
+    expect(namedSql.updatePayload).toBe(
+      "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
+    );
+    expect(namedSql.deleteProduct).toBe("DELETE FROM products WHERE id = $1");
     expect(namedSql.allEntries).toBe("SELECT * FROM waitlist ORDER BY created_at ASC");
     expect(namedSql.entryByEmail).toBe("SELECT * FROM waitlist WHERE email = $1");
     expect(namedSql.joinWaitlist).toBe(

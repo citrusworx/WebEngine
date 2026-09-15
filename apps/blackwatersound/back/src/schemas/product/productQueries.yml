@@ -1,8 +1,8 @@
 product:
   read:
-    # Live DML is JSONB payload only (allPayloads / payloadById / seedPayload).
-    # Relational names compile with quoted camelCase ("isActive") but catalog
-    # columns stay NULL until a later write path.
+    # Live DML is JSONB payload only (allPayloads / payloadById / seedPayload /
+    # insertPayload / updatePayload / deleteProduct). Relational names compile
+    # with quoted camelCase ("isActive") but catalog columns stay NULL.
     allProducts:
       type: SELECT
       table: products
@@ -57,12 +57,36 @@ product:
         - $1
         - { value: $2, cast: jsonb }
 
+    # Live HTTP create. Same JSONB insert as seedPayload, plus RETURNING payload
+    # so the host can unwrap the catalog document (body is the document, not
+    # { payload }). Relational newProduct stays unused so columns are not flattened.
+    insertPayload:
+      type: INSERT
+      table: products
+      fields: [id, payload]
+      values:
+        - $1
+        - { value: $2, cast: jsonb }
+      returning: [payload]
+
   update:
     updateProduct:
       type: UPDATE
       table: products
       fields: [name, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive, updated_at]
       where: id = $1
+
+    # Live HTTP update. Host merges the catalog document in TS (compiler has no
+    # JSONB || / jsonb_set), then replaces payload. Explicit values so WHERE
+    # stays $2 (no implicit SET/$N remap). Relational updateProduct is unused.
+    updatePayload:
+      type: UPDATE
+      table: products
+      fields: [payload, updated_at]
+      values:
+        - { value: $1, cast: jsonb }
+        - { fn: now }
+      where: id = $2
 
   delete:
     deleteProduct:

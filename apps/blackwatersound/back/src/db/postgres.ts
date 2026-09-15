@@ -1,7 +1,7 @@
 import { createPgAdapter, type PgSql } from "@citrusworx/nectarine/adapters/pg";
 import type { DatabaseCredentials } from "@citrusworx/nectarine/config";
 import type { QueryResultRow } from "pg";
-import type { ProductRecord } from "../data/seed-products.js";
+import { asProductRecord, type ProductRecord } from "../data/seed-products.js";
 import type { WaitlistEntry } from "../types/context.js";
 import { namedQuery, bindJsonbDocument, type NamedQuery } from "./named-queries.js";
 import { applyNamedMigrations } from "./named-ddl.js";
@@ -81,17 +81,8 @@ async function runNamed<T extends QueryResultRow>(
   return runCompiledQuery<T>(namedQuery(name), params);
 }
 
-function asProductRecord(payload: unknown): ProductRecord | null {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return null;
-  }
-
-  const row = payload as Record<string, unknown>;
-  if (typeof row.id !== "string" || typeof row.name !== "string") {
-    return null;
-  }
-
-  return payload as ProductRecord;
+function rowsAffected(result: { rowCount?: number | null } | null): number {
+  return result?.rowCount ?? 0;
 }
 
 export async function loadProductsFromDb(): Promise<ProductRecord[]> {
@@ -133,6 +124,41 @@ export async function seedProductsIfEmpty(products: ProductRecord[]) {
 
     await runNamed("seedPayload", [product.id, bindJsonbDocument(product)]);
   }
+}
+
+/** Insert a catalog document into `products.payload`. Caller checks duplicates. */
+export async function insertProductPayload(product: ProductRecord): Promise<ProductRecord> {
+  const result = await runNamed<{ payload: unknown }>("insertPayload", [
+    product.id,
+    bindJsonbDocument(product),
+  ]);
+  if (!result) {
+    throw new Error("Database is not configured");
+  }
+
+  return asProductRecord(result.rows[0]?.payload) ?? product;
+}
+
+/**
+ * Replace `products.payload` for `id`. Host merges the catalog document first;
+ * this named query cannot express JSONB `||`.
+ */
+export async function updateProductPayload(id: string, product: ProductRecord): Promise<boolean> {
+  const result = await runNamed("updatePayload", [bindJsonbDocument(product), id]);
+  if (!result) {
+    throw new Error("Database is not configured");
+  }
+
+  return rowsAffected(result) > 0;
+}
+
+export async function deleteProductFromDb(id: string): Promise<boolean> {
+  const result = await runNamed("deleteProduct", [id]);
+  if (!result) {
+    throw new Error("Database is not configured");
+  }
+
+  return rowsAffected(result) > 0;
 }
 
 type WaitlistRow = {

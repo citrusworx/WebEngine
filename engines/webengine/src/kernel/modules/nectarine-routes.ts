@@ -545,8 +545,8 @@ export type CompiledNectarineExecuteOptions = {
  *
  * Writes: bind YAML columns from body / path (`order_id` ↔ `orderId`).
  * No database or zero affected rows → `null` (404). JSONB catalog mapping
- * and waitlist join (generated id, allowlist, duplicates) stay in host
- * `execute` callbacks.
+ * (product create/update merge) and waitlist join (generated id, allowlist,
+ * duplicates) stay in host `execute` callbacks.
  */
 export function createCompiledNectarineExecute<
     TContext extends RequestContext = RequestContext,
@@ -687,7 +687,7 @@ function operationAllowed(
  *
  * Default `execute` compiles `operation.query` from `*Queries.yml` and runs
  * adapter `query(sql, params)`. Pass `execute` to specialize (Blackwater
- * product JSONB / waitlist join).
+ * product JSONB catalog writes / waitlist join).
  */
 export function createNectarineRoutes<
     TContext extends RequestContext = RequestContext,

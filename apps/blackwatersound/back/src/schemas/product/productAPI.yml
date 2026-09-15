@@ -29,14 +29,17 @@ product:
       api:
         method: POST
         endpoint: /api/products
-        query: newProduct
+        query: insertPayload
+        body:
+          id: string.required
+          name: string.required
 
   update:
     updateProduct:
       api:
         method: PUT
         endpoint: /api/products/:id
-        query: updateProduct
+        query: updatePayload
 
   delete:
     deleteProduct:

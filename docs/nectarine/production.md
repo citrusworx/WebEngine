@@ -5,7 +5,7 @@ What is **production-ready today** for deploying Blackwater Sound’s backend wi
 ## Ready today
 
 - **Config:** `loadNectarineConfig` reads `nectarine.config.yaml`. Env *key names* come from YAML; secrets come from the environment (`PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`, `PG_DB`).
-- **Named DML:** product + waitlist live paths call compiler-owned queries (`allPayloads`, `seedPayload`, `joinWaitlist`, …). App code does not embed SQL.
+- **Named DML:** product + waitlist live paths call compiler-owned queries (`allPayloads`, `insertPayload`, `updatePayload`, `seedPayload`, `joinWaitlist`, …). App code does not embed SQL.
 - **Schema-YAML DDL:** `migrate()` runs Nectarine `applyMigrations`: ledger table, `CREATE TABLE` from every Blackwater `*Schema.yml`, pending versioned migration YAML (rename / drop / type change, each in a Postgres transaction), additive `ADD COLUMN IF NOT EXISTS`, then `CREATE INDEX`.
 - **HTTP:** Seltzer 0.4 hosts object-based `Route` handlers. Handlers return `ResponseData` (`{ status?, headers?, body? }`). There is no writing `ctx.json`.
 - **Postgres:** Blackwater uses Nectarine `createPgAdapter` (`pg.Pool`, idle-client error handler, `connect()` / `disconnect()`). Boot connects before migrate. Failed boot closes the pool. `SIGTERM` / `SIGINT` drain the HTTP server then the pool.
@@ -70,11 +70,12 @@ Put versioned files in `apps/blackwatersound/back/src/db/migrations/` (`001_rena
 
 ## JSONB seed caveat
 
-Live catalog reads **`products.payload` JSONB**, not the nullable relational catalog columns (`name`, `"originalPrice"`, `"isActive"`, …). Those columns stay `NULL` until a later write path. Seed inserts `(id, payload)` only.
+Live catalog reads **`products.payload` JSONB**, not the nullable relational catalog columns (`name`, `"originalPrice"`, `"isActive"`, …). Those columns stay `NULL`. Seed and HTTP writes insert/replace `(id, payload)` only.
 
 - Empty table → seed copies `SEED_PRODUCTS` into `payload`
 - Rows already present → seed is skipped, even if catalog columns are null
 - Rows whose `payload` is not a product object are ignored at read time; if that leaves the catalog empty, the API serves in-memory `SEED_PRODUCTS` and does **not** insert duplicates
+- HTTP create/update/delete use named JSONB queries (`insertPayload`, `updatePayload`, `deleteProduct`) plus a thin host `execute` that serializes the catalog document and merges on PUT (the compiler does not emit JSONB `||`)
 
 JSONB is first-class. It is not being dropped.
 
@@ -82,11 +83,10 @@ JSONB is first-class. It is not being dropped.
 
 Nectarine is a library. It does not listen on a port.
 
-Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds, then `Seltzer.init().listen()` (named pipeline + `ResponseData`). Resource **read and write** routes flatten `*API.yml` with Nectarine `listApiOperations` and map onto Seltzer `generateRoutes` via engine `createNectarineRoutes` (`@citrusworx/webengine`; `Route.contract` carries resource/name/body specs). Live product **reads** map API `query:` names (`allProducts`, `productById`) onto JSONB named queries (`allPayloads`, `payloadById`); catalog/slug filter those payloads. Product **writes** stay unwired so the JSONB document is not flattened onto relational columns. Waitlist reads use `allEntries` / `entryByEmail`; waitlist POST `joinWaitlist` is generated (`include` on the read helper, or `createWriteRoutes` + `execute`) with host execute handling insert, duplicate email, and the `source_app` allowlist. Other resources compile `operation.query` from `*Queries.yml` through CCompiler when Postgres is connected, and return `[]` / 404 without a database. Lesson `byId` stays the hand KiwiPress `GET /api/lessons/:id`. Health and KiwiPress `GET /api/posts/:slug` stay hand-written. Seltzer `validate` enforces `.required` body fields when `contract.body` is set (joinWaitlist declares `email: string.required`); Nectarine can later `replace("validate", …)`. Leftover `ctx.json` / writing helpers crash or 500.
+Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds, then `Seltzer.init().listen()` (named pipeline + `ResponseData`). Resource **read and write** routes flatten `*API.yml` with Nectarine `listApiOperations` and map onto Seltzer `generateRoutes` via engine `createNectarineRoutes` (`@citrusworx/webengine`; `Route.contract` carries resource/name/body specs). Live product **reads** map API `query:` names (`allProducts`, `productById`) onto JSONB named queries (`allPayloads`, `payloadById`); catalog/slug filter those payloads. Product **writes** use JSONB named queries (`insertPayload`, `updatePayload`, `deleteProduct`) with host `execute` so the catalog document is stored in `payload` instead of flattened onto relational columns. Waitlist reads use `allEntries` / `entryByEmail`; waitlist POST `joinWaitlist` is generated (`include` on the read helper, or `createWriteRoutes` + `execute`) with host execute handling insert, duplicate email, and the `source_app` allowlist. Other resources compile `operation.query` from `*Queries.yml` through CCompiler when Postgres is connected, and return `[]` / 404 without a database. Lesson `byId` stays the hand KiwiPress `GET /api/lessons/:id`. Health and KiwiPress `GET /api/posts/:slug` stay hand-written. Seltzer `validate` enforces `.required` body fields when `contract.body` is set (joinWaitlist declares `email: string.required`; product create declares `id` / `name`); Nectarine can later `replace("validate", …)`. Leftover `ctx.json` / writing helpers crash or 500.
 
 ## Non-goals (not in this production cut)
 
-- Product JSONB create/update/delete HTTP auto-wire (relational `newProduct` YAML compiles; live catalog stays `payload JSONB`)
 - `nectarine serve`
 - Mongo as the Blackwater production path
 - Joins / `COUNT` / `EXISTS` / `ON CONFLICT` / JSONB operators (`@>`, `?`, `->>`)

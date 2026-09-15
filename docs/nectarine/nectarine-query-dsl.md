@@ -227,6 +227,7 @@ product:
 
 The app serializes a validated object (`JSON.stringify` after an object
 check) and binds it. The compiler is the only place `::jsonb` is emitted.
+HTTP create uses the same bind (`insertPayload`) with `RETURNING payload`.
 
 ## `update`
 
@@ -247,6 +248,26 @@ product:
 ```
 
 → `UPDATE products SET name = $1, sub = $2, updated_at = $3 WHERE id = $4`
+
+Live JSONB catalog replace (explicit values so WHERE stays `$2`; `{ fn: now }` is not a bind):
+
+```yaml
+product:
+  update:
+    updatePayload:
+      type: UPDATE
+      table: products
+      fields: [payload, updated_at]
+      values:
+        - { value: $1, cast: jsonb }
+        - { fn: now }
+      where: id = $2
+```
+
+→ `UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2`
+
+Host execute merges the catalog document in TypeScript, then binds the full
+JSON string. The compiler does not emit JSONB `||` / `jsonb_set`.
 
 ## `delete`
 

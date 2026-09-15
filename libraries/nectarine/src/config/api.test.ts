@@ -87,7 +87,11 @@ describe("listApiOperations", () => {
                 name: "newProduct",
                 method: "POST",
                 path: "/api/products",
-                query: "newProduct",
+                query: "insertPayload",
+                body: {
+                    id: "string.required",
+                    name: "string.required",
+                },
             }),
             op({
                 resource: "product",
@@ -95,7 +99,7 @@ describe("listApiOperations", () => {
                 name: "updateProduct",
                 method: "PUT",
                 path: "/api/products/:id",
-                query: "updateProduct",
+                query: "updatePayload",
             }),
             op({
                 resource: "product",
