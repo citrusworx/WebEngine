@@ -1,4 +1,4 @@
-import { collectThemeEntries, generateExternalThemeArtifacts, generateThemeArtifacts } from "./index.ts";
+import { collectDraftThemeEntries, collectThemeEntries, generateExternalThemeArtifacts, generateThemeArtifacts } from "./index.ts";
 
 type CliOptions = {
     configPath?: string;
@@ -59,10 +59,18 @@ async function main() {
 
     await generateThemeArtifacts();
     const entries = await collectThemeEntries();
+    const draftEntries = await collectDraftThemeEntries();
 
     console.log(`Generated/discovered ${entries.length} Juice theme entries:`);
     for (const entry of entries) {
         console.log(`- ${entry.id}: ${entry.src}`);
+    }
+
+    if (draftEntries.length > 0) {
+        console.log(`Draft theme entries (${draftEntries.length}, not stable exports):`);
+        for (const entry of draftEntries) {
+            console.log(`- ${entry.id}: ${entry.src}`);
+        }
     }
 }
 

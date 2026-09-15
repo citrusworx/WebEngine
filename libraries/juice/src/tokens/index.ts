@@ -7,6 +7,7 @@ import orange from "./color/orange/orange.json";
 import pink from "./color/pink/pink.json";
 import purple from "./color/purple/purple.json";
 import red from "./color/red/red.json";
+import teal from "./color/teal/teal.json";
 import white from "./color/white/white.json";
 import yellow from "./color/yellow/yellow.json";
 
@@ -22,6 +23,7 @@ export const tokens = {
             "pink",
             "purple",
             "red",
+            "teal",
             "white",
             "yellow"
         ],
@@ -34,6 +36,7 @@ export const tokens = {
         pink: pink.pink,
         purple: purple.purple,
         red: red.red,
+        teal: teal.teal,
         white: white.white,
         yellow: yellow.yellow
     },

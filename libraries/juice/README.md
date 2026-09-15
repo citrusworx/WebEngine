@@ -95,6 +95,7 @@ If you are hosting Juice assets yourself, the main built files are:
 
 - `dist/index.css` (core)
 - `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`
+- `dist/themes/_draft/tide.css` (local draft artifact only — blocked from package `exports` and omitted from the published tarball)
 - `dist/index.js`
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.
@@ -130,8 +131,8 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - mobile nav toggles should expose an accessible name and control a sidebar with `aria-controls`
 - accordion triggers should use `aria-expanded` and `aria-controls`
 - accordion panels should be labeled regions when they contain meaningful content
-- group FAQ stacks in a card/panel surface (`[aqua-card]` / `[aqua-panel]` under Aquaflux) so the accordion wrapper stays structural
-- accordion chrome colors come from `--juice-accordion-*` roles bound by the active theme (Aquaflux, KiwiPress, and Citrusmint all paint `[accordion-item]` as a surface control, not a CTA)
+- accordion chrome colors come from `--juice-accordion-*` roles bound by the active theme (Aquaflux, KiwiPress, and Citrusmint, plus draft Tide)
+- group FAQ stacks in a card/panel surface (`[aqua-card]` / `[aqua-panel]` under Aquaflux, `[tide-card]` / `[tide-panel]` under draft Tide) so the accordion wrapper stays structural
 - open/closed panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for accordion state (those clash with layout `[content]`)
 - optional `[motion="accordion"]` is height easing, not required for show/hide
 

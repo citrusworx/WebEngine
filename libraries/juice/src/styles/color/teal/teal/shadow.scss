@@ -1,0 +1,37 @@
+@use '../../tokens/tokens.scss' as *;
+
+[shadow="teal-100"]{
+    --shadow-color: #{$teal-100};
+}
+
+[shadow="teal-200"]{
+    --shadow-color: #{$teal-200};
+}
+
+[shadow="teal-300"]{
+    --shadow-color: #{$teal-300};
+}
+
+[shadow="teal-400"]{
+    --shadow-color: #{$teal-400};
+}
+
+[shadow="teal-500"]{
+    --shadow-color: #{$teal-500};
+}
+
+[shadow="teal-600"]{
+    --shadow-color: #{$teal-600};
+}
+
+[shadow="teal-700"]{
+    --shadow-color: #{$teal-700};
+}
+
+[shadow="teal-800"]{
+    --shadow-color: #{$teal-800};
+}
+
+[shadow="teal-900"]{
+    --shadow-color: #{$teal-900};
+}

@@ -88,6 +88,7 @@ Examples in this repo include:
 - `obsidian` and `onyx` under black
 - `cornflower`, `morningblue`, `royalblue`, and `skyblue` under blue
 - `citrusmint`, `freshgreen`, `lime`, and `wintergreen` under green
+- `lagoon` under teal
 
 Styles consume swatches the same way they consume base colors:
 
@@ -142,7 +143,8 @@ Those values are consumed by selectors like:
 Theme data currently exists as YAML definitions in `src/themes`, for example:
 
 - `src/themes/aquaflux/aquaflux.yaml`
-- `src/themes/blush/blush.yml`
+- `src/themes/_draft/blush/blush.yaml`
+- `src/themes/_draft/tide/tide.yaml` (+ `tide.scss`, compiled to `dist/themes/_draft/tide.css`)
 
 At the moment, themes are better understood as early configuration/schema artifacts than a complete runtime theming system. The docs should treat them that way until the JS and CSS integration is wired through.
 

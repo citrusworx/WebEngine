@@ -224,7 +224,19 @@ Shared names (set on `[theme="..."]`):
 - `--juice-accordion-panel-rule` — optional panel divider
 - `--juice-accordion-focus-ring`
 
-Each shipped theme also aliases the same roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …) and maps those onto existing surface/accent tokens. Do not invent a new hue family for accordion chrome. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress and Citrusmint override generic `button` CTA styles the same way.
+Each shipped theme also aliases the same roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …) and maps those onto existing surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress and Citrusmint override generic `button` CTA styles the same way.
+
+Draft **Tide** (`src/themes/_draft/tide/`) follows the same role contract with `--tide-*` aliases. It is a dark product theme that consumes the teal token family. Gulp compiles it to `dist/themes/_draft/tide.css` so `theme="tide"` can paint from a **local Juice build**. Package `exports` block `@citrusworx/juiceui/themes/_draft/*` (and the `styles/themes/_draft` alias); the `_draft` folder is also omitted from the published tarball. YAML-only drafts (for example blush) still do not emit CSS.
+
+Demo after `yarn workspace @citrusworx/juiceui build` (repo tree, not the npm export):
+
+```html
+<link rel="stylesheet" href="libraries/juice/dist/index.css">
+<link rel="stylesheet" href="libraries/juice/dist/themes/_draft/tide.css">
+<body theme="tide">
+```
+
+A markup sketch lives at `libraries/juice/src/templates/html/tide-faq/index.html` (parallel to `aquaflux-faq`). Open that file after a local Juice build.
 
 Accordion wrappers (`[accordion]`) are structural. Group FAQ stacks in a named surface or card/panel rather than relying on default `section` paint.
 

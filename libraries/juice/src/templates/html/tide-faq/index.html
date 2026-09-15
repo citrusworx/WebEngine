@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../../dist/index.css">
+    <link rel="stylesheet" href="../../../../dist/themes/_draft/tide.css">
+    <title>Tide FAQ accordion (draft)</title>
+</head>
+<body theme="tide">
+    <main stack gap="2rem" paddingX="2rem" paddingY="2rem">
+        <header stack gap="0.75rem">
+            <p>Juice · Accordion runtime</p>
+            <h1>Billing &amp; account FAQ</h1>
+            <p>Answers to common billing and account questions.</p>
+            <div>
+                <button type="button">Update payment method</button>
+            </div>
+        </header>
+
+        <article tide-card stack gap="0.5rem" padding="0.75rem" rounded="lg">
+            <section accordion name="faq-billing">
+                <button
+                    type="button"
+                    id="faq-billing-trigger"
+                    accordion-item
+                    aria-expanded="true"
+                    aria-controls="faq-billing-panel"
+                >
+                    How do I update my billing information?
+                </button>
+                <div id="faq-billing-panel" role="region" aria-labelledby="faq-billing-trigger">
+                    You can update your payment method or billing details anytime from
+                    the Billing page in your account settings.
+                </div>
+            </section>
+
+            <section accordion name="faq-cancel">
+                <button
+                    type="button"
+                    id="faq-cancel-trigger"
+                    accordion-item
+                    aria-expanded="false"
+                    aria-controls="faq-cancel-panel"
+                >
+                    How do I cancel my subscription?
+                </button>
+                <div id="faq-cancel-panel" role="region" aria-labelledby="faq-cancel-trigger" hidden>
+                    Cancel from Settings → Billing. Access continues through the end of the paid term.
+                </div>
+            </section>
+
+            <section accordion name="faq-invoices">
+                <button
+                    type="button"
+                    id="faq-invoices-trigger"
+                    accordion-item
+                    aria-expanded="false"
+                    aria-controls="faq-invoices-panel"
+                >
+                    Where can I find my invoices and receipts?
+                </button>
+                <div id="faq-invoices-panel" role="region" aria-labelledby="faq-invoices-trigger" hidden>
+                    Invoices live under Settings → Billing → History. Receipts can be downloaded as PDF.
+                </div>
+            </section>
+        </article>
+    </main>
+
+    <script type="module" src="../../../../dist/index.js"></script>
+</body>
+</html>
