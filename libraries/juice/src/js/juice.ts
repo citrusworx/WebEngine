@@ -18,3 +18,13 @@ export type {
     AccordionController,
     AccordionOptions
 } from "./src/accordion/accordion-runtime.js";
+export {
+    createTabs,
+    initTabs,
+    startTabsRuntime,
+    stopTabsRuntime
+} from "./src/tabs/tabs-runtime.js";
+export type {
+    TabsController,
+    TabsOptions
+} from "./src/tabs/tabs-runtime.js";

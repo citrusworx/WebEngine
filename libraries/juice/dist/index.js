@@ -346,13 +346,13 @@ var A = {
 	root: typeof document < "u" ? document : {},
 	accordionSelector: "[accordion]",
 	triggerSelector: "[accordion-item]"
-}, j = (e) => Array.from(e), M = "juice-accordion-trigger", N = "juice-accordion-panel", P = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, F = /* @__PURE__ */ new WeakSet(), I = (e) => F.has(e) ? !1 : (F.add(e), !0), L = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", R = (e, t, n) => {
+}, j = (e) => Array.from(e), M = "juice-accordion-trigger", ee = "juice-accordion-panel", N = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, P = /* @__PURE__ */ new WeakSet(), F = (e) => P.has(e) ? !1 : (P.add(e), !0), te = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", I = (e, t, n) => {
 	let r = String(n);
 	if (e.getAttribute("aria-expanded") !== r && e.setAttribute("aria-expanded", r), !t) return;
 	t.hidden !== !n && (t.hidden = !n);
 	let i = String(!n);
 	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
-}, z = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", B = (e = {}) => {
+}, L = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", R = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -390,26 +390,26 @@ var A = {
 		return o()[0] ?? null;
 	}, p = (e) => {
 		let t = e.getAttribute("name");
-		return t ? L(t) : null;
+		return t ? te(t) : null;
 	}, m = (e, t) => {
 		let n = u(e);
 		if (!n) return;
 		let r = a(n), i = Math.max(0, r.indexOf(e)), o = p(n), s = r.length > 1 ? `-${i + 1}` : "";
-		e.id ||= o ? `${o}-trigger${s}` : l(M), P(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(N), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+		e.id ||= o ? `${o}-trigger${s}` : l(M), N(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(ee), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
 	}, h = (e) => {
 		let t = f(e);
 		if (!t) return;
 		let n = d(t);
-		m(t, n), R(t, n, !0), c = t;
+		m(t, n), I(t, n, !0), c = t;
 	}, g = (e) => {
 		let t = f(e);
 		if (!t) return;
 		let n = d(t);
-		m(t, n), R(t, n, !1), t === c && (c = o().find((e) => e !== t && z(e, d(e))) ?? null);
+		m(t, n), I(t, n, !1), t === c && (c = o().find((e) => e !== t && L(e, d(e))) ?? null);
 	}, _ = (e) => {
 		let t = f(e);
 		if (t) {
-			if (z(t, d(t))) {
+			if (L(t, d(t))) {
 				g(t);
 				return;
 			}
@@ -420,7 +420,7 @@ var A = {
 			a(e).forEach((e) => {
 				let t = d(e);
 				if (m(e, t), t) {
-					R(e, t, z(e, t));
+					I(e, t, L(e, t));
 					return;
 				}
 				e.hasAttribute("aria-expanded") || e.setAttribute("aria-expanded", "false");
@@ -430,23 +430,23 @@ var A = {
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		let r = n.closest(t.triggerSelector);
-		!(r instanceof HTMLElement) || !u(r) || I(e) && _(r);
+		!(r instanceof HTMLElement) || !u(r) || F(e) && _(r);
 	}, b = (e) => {
 		let n = e.closest(t.triggerSelector);
-		return n instanceof HTMLElement && u(n) && z(n, d(n)) ? n : o().filter((e) => z(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && z(c, d(c)) ? c : null);
+		return n instanceof HTMLElement && u(n) && L(n, d(n)) ? n : o().filter((e) => L(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && L(c, d(c)) ? c : null);
 	}, x = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		if (e.key === "Escape") {
 			let t = b(n);
-			if (!t || !I(e)) return;
+			if (!t || !F(e)) return;
 			e.preventDefault(), g(t), t.focus();
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let r = n.closest(t.triggerSelector);
-		!(r instanceof HTMLElement) || !u(r) || P(r) || I(e) && (e.preventDefault(), _(r));
+		!(r instanceof HTMLElement) || !u(r) || N(r) || F(e) && (e.preventDefault(), _(r));
 	}, S = !1, C = () => {
 		S || (S = !0, requestAnimationFrame(() => {
 			S = !1, v();
@@ -472,17 +472,216 @@ var A = {
 		collapse: g,
 		toggle: _
 	};
-}, V = (e = {}) => B(e), H = null, U = !1, W = null, G = () => {
-	W &&= (document.removeEventListener("DOMContentLoaded", W), null);
-}, K = () => typeof window > "u" || typeof document > "u" ? null : (U = !1, G(), H ? (H.sync(), H) : (H = B(), H)), q = () => {
-	U = !0, G(), H?.destroy(), H = null;
+}, ne = (e = {}) => R(e), z = null, B = !1, V = null, H = () => {
+	V &&= (document.removeEventListener("DOMContentLoaded", V), null);
+}, U = () => typeof window > "u" || typeof document > "u" ? null : (B = !1, H(), z ? (z.sync(), z) : (z = R(), z)), re = () => {
+	B = !0, H(), z?.destroy(), z = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (W = () => {
-	W = null, U || K();
-}, document.addEventListener("DOMContentLoaded", W)) : K());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (V = () => {
+	V = null, B || U();
+}, document.addEventListener("DOMContentLoaded", V)) : U());
+//#endregion
+//#region src/js/src/tabs/tabs-runtime.ts
+var ie = {
+	root: typeof document < "u" ? document : {},
+	tabsSelector: "[tabs]",
+	listSelector: "[tabs-list]",
+	triggerSelector: "[tab]",
+	panelSelector: "[tab-panel]"
+}, W = (e) => Array.from(e), ae = "juice-tabs-trigger", oe = "juice-tabs-panel", G = /* @__PURE__ */ new WeakSet(), K = (e) => G.has(e) ? !1 : (G.add(e), !0), q = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, se = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tabs", ce = (e) => e instanceof HTMLElement ? e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement ? !0 : e.isContentEditable : !1, le = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, J = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		select: () => {}
+	};
+	let t = {
+		...ie,
+		...e
+	}, n = t.root ?? document, r = n, i = () => W(n.querySelectorAll(t.tabsSelector)), a = (e) => {
+		let n = e.querySelector(`:scope > ${t.listSelector}`);
+		return n instanceof HTMLElement ? n : null;
+	}, o = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.tabsSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, s = (e) => {
+		let n = e.closest(t.panelSelector);
+		if (!(n instanceof HTMLElement)) return !1;
+		let r = o(e);
+		return !!(r && r.contains(n));
+	}, c = (e, n) => {
+		if (o(e) !== n || s(e)) return !1;
+		let r = a(n) ?? n;
+		return e.matches(t.triggerSelector) || e.getAttribute("role") === "tab" ? r.contains(e) : e.tagName === "BUTTON" && e.parentElement === r;
+	}, l = (e) => {
+		let n = a(e) ?? e, r = /* @__PURE__ */ new Set(), i = [], o = (t) => {
+			t instanceof HTMLElement && (!c(t, e) || r.has(t) || (r.add(t), i.push(t)));
+		};
+		return W(n.children).forEach(o), W(n.querySelectorAll(t.triggerSelector)).forEach(o), W(n.querySelectorAll("[role=\"tab\"]")).forEach(o), i.sort((e, t) => {
+			let n = e.compareDocumentPosition(t);
+			return n & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : n & Node.DOCUMENT_POSITION_PRECEDING ? 1 : 0;
+		});
+	}, u = (e) => W(e.querySelectorAll(t.panelSelector)).filter((t) => o(t) === e), d = () => i().flatMap((e) => l(e)), f = 0, p = (e) => (f += 1, `${e}-${f}`), m = (e) => {
+		let n = o(e);
+		if (!n) return null;
+		let r = e.getAttribute("aria-controls");
+		if (r) {
+			let e = n.querySelector(`#${le(r)}`);
+			if (e && e.matches(t.panelSelector) && o(e) === n) return e;
+		}
+		let i = l(n), a = u(n), s = i.indexOf(e);
+		if (s >= 0 && a[s]) return a[s];
+		let d = e.nextElementSibling;
+		for (; d;) {
+			if (d instanceof HTMLElement && d.matches(t.panelSelector) && o(d) === n) return d;
+			if (d instanceof HTMLElement && c(d, n)) break;
+			d = d.nextElementSibling;
+		}
+		return null;
+	}, h = (e) => {
+		if (e) {
+			let n = o(e);
+			if (n && c(e, n)) return e;
+			let r = e.closest(t.triggerSelector);
+			if (r instanceof HTMLElement) {
+				let e = o(r);
+				if (e && c(r, e)) return r;
+			}
+		}
+		return d()[0] ?? null;
+	}, g = (e) => {
+		let t = e.getAttribute("name");
+		return t ? se(t) : null;
+	}, _ = (e) => {
+		let t = a(e), n = u(e), r = t ?? (n.length === 0 ? e : null);
+		if (!r) return;
+		r.getAttribute("role") !== "tablist" && r.setAttribute("role", "tablist");
+		let i = e.getAttribute("name");
+		i && !r.hasAttribute("aria-label") && !r.hasAttribute("aria-labelledby") && r.setAttribute("aria-label", i);
+	}, v = (e, t) => {
+		let n = o(e);
+		if (!n) return;
+		_(n);
+		let r = l(n), i = Math.max(0, r.indexOf(e)), a = g(n), s = r.length > 1 ? `-${i + 1}` : "";
+		e.id ||= a ? `${a}-tab${s}` : p(ae), e.getAttribute("role") !== "tab" && e.setAttribute("role", "tab"), !q(e) && !e.hasAttribute("tabindex") && e.setAttribute("tabindex", "-1"), t && (t.id ||= a ? `${a}-panel${s}` : p(oe), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "tabpanel" && t.setAttribute("role", "tabpanel"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+	}, y = (e) => e.hasAttribute("active") || e.getAttribute("aria-selected") === "true", b = (e, t, n) => {
+		n ? e.hasAttribute("active") || e.setAttribute("active", "") : e.hasAttribute("active") && e.removeAttribute("active");
+		let r = String(n);
+		e.getAttribute("aria-selected") !== r && e.setAttribute("aria-selected", r);
+		let i = n ? "0" : "-1";
+		if (e.getAttribute("tabindex") !== i && e.setAttribute("tabindex", i), !t) return;
+		t.hidden !== !n && (t.hidden = !n);
+		let a = String(!n);
+		t.getAttribute("aria-hidden") !== a && t.setAttribute("aria-hidden", a), n ? t.getAttribute("tabindex") !== "0" && t.setAttribute("tabindex", "0") : t.hasAttribute("tabindex") && t.removeAttribute("tabindex");
+	}, x = (e, t) => {
+		let n = l(e), r = u(e), i = m(t);
+		n.forEach((e) => {
+			let n = m(e);
+			v(e, n), b(e, n, e === t);
+		}), r.forEach((e) => {
+			e !== i && (e.hidden ||= !0, e.getAttribute("aria-hidden") !== "true" && e.setAttribute("aria-hidden", "true"), e.hasAttribute("tabindex") && e.removeAttribute("tabindex"));
+		});
+	}, S = (e) => {
+		let t = h(e);
+		if (!t) return;
+		let n = o(t);
+		n && x(n, t);
+	}, C = (e) => {
+		let t = l(e);
+		return t.length === 0 ? null : t.find((e) => y(e)) ?? t[0];
+	}, w = () => {
+		i().forEach((e) => {
+			if (l(e).length === 0) {
+				_(e);
+				return;
+			}
+			let t = C(e);
+			t && x(e, t);
+		});
+	}, T = (e) => {
+		if (!(e instanceof HTMLElement)) return null;
+		let n = o(e);
+		if (!n) return null;
+		if (c(e, n)) return e;
+		let r = e.closest(`${t.triggerSelector}, [role="tab"], ${t.tabsSelector} > button, ${t.listSelector} > button`);
+		return r instanceof HTMLElement && c(r, n) ? r : null;
+	}, E = (e) => {
+		let t = e.target;
+		if (!(t instanceof Element)) return;
+		let n = T(t);
+		n && K(e) && S(n);
+	}, D = (e, t) => {
+		let n = o(e);
+		if (!n) return;
+		let r = l(n);
+		if (r.length === 0) return;
+		let i = r[t(Math.max(0, r.indexOf(e)), r.length)];
+		i && (S(i), i.focus());
+	}, O = (e) => {
+		if (!(e instanceof KeyboardEvent)) return;
+		let t = e.target;
+		if (!(t instanceof Element) || ce(t)) return;
+		let n = T(t);
+		if (n && !(e.key === "Escape" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
+			if (e.key === "ArrowRight") {
+				if (!K(e)) return;
+				e.preventDefault(), D(n, (e, t) => (e + 1) % t);
+				return;
+			}
+			if (e.key === "ArrowLeft") {
+				if (!K(e)) return;
+				e.preventDefault(), D(n, (e, t) => (e - 1 + t) % t);
+				return;
+			}
+			if (e.key === "Home") {
+				if (!K(e)) return;
+				e.preventDefault(), D(n, () => 0);
+				return;
+			}
+			if (e.key === "End") {
+				if (!K(e)) return;
+				e.preventDefault(), D(n, (e, t) => t - 1);
+				return;
+			}
+			e.key !== "Enter" && e.key !== " " || q(n) || K(e) && (e.preventDefault(), S(n));
+		}
+	}, k = !1, A = () => {
+		k || (k = !0, requestAnimationFrame(() => {
+			k = !1, w();
+		}));
+	}, j = typeof MutationObserver < "u" ? new MutationObserver(() => A()) : null;
+	return r.addEventListener("click", E), r.addEventListener("keydown", O), j && n instanceof Node && j.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"active",
+			"aria-selected",
+			"aria-controls",
+			"tabs",
+			"tabs-list",
+			"tab",
+			"tab-panel"
+		]
+	}), w(), {
+		destroy: () => {
+			r.removeEventListener("click", E), r.removeEventListener("keydown", O), j?.disconnect();
+		},
+		sync: w,
+		select: S
+	};
+}, ue = (e = {}) => J(e), Y = null, X = !1, Z = null, Q = () => {
+	Z &&= (document.removeEventListener("DOMContentLoaded", Z), null);
+}, $ = () => typeof window > "u" || typeof document > "u" ? null : (X = !1, Q(), Y ? (Y.sync(), Y) : (Y = J(), Y)), de = () => {
+	X = !0, Q(), Y?.destroy(), Y = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Z = () => {
+	Z = null, X || $();
+}, document.addEventListener("DOMContentLoaded", Z)) : $());
 //#endregion
 //#region src/tokens/index.ts
-var J = {
+var fe = {
 	colors: {
 		families: [
 			"black",
@@ -650,4 +849,4 @@ var J = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, B as createAccordion, T as createNavigation, V as initAccordion, E as initNavigation, K as startAccordionRuntime, O as startNavigationRuntime, q as stopAccordionRuntime, k as stopNavigationRuntime, J as tokens };
+export { v as Accordion, R as createAccordion, T as createNavigation, J as createTabs, ne as initAccordion, E as initNavigation, ue as initTabs, U as startAccordionRuntime, O as startNavigationRuntime, $ as startTabsRuntime, re as stopAccordionRuntime, k as stopNavigationRuntime, de as stopTabsRuntime, fe as tokens };
