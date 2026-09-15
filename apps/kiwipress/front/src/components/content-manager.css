@@ -1,0 +1,7 @@
+/* Juice [card] defaults to min(100%, 30vw), which leaves a lot of
+   dashboard whitespace around the posts/pages manager. Fill the main
+   column (already padded by dashboard-main) without going infinitely wide. */
+[dashboard-main] [content-manager][card] {
+    width: min(100%, 72rem);
+    margin-inline: 0;
+}

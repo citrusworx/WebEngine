@@ -1,6 +1,7 @@
 import { Signal, effect } from "@citrusworx/sigjs";
 import type { Child } from "@citrusworx/sigjs";
 import { gatewayFetch } from "../api";
+import "./content-manager.css";
 
 type ContentKind = "posts" | "pages";
 
@@ -352,6 +353,7 @@ export function ContentManager() {
     return (
         <div
             card
+            content-manager
             card-padding="lg"
             bgColor="white-100"
             rounded="lg"
