@@ -96490,6 +96490,7 @@ section[auto] > * {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  position: relative;
   width: 100%;
   margin: 0;
   padding: 0.875rem 1.25rem;
@@ -96502,15 +96503,29 @@ section[auto] > * {
   border-radius: 0.75rem;
 }
 
+[accordion-item][aria-expanded=true]::before {
+  content: "";
+  position: absolute;
+  left: 0.12rem;
+  top: 0.62rem;
+  bottom: 0.62rem;
+  width: 0.28rem;
+  border-radius: 999px;
+  background: var(--juice-accordion-trigger-accent, var(--aqua-trigger-accent, var(--kw-trigger-accent, var(--cm-trigger-accent, transparent))));
+  pointer-events: none;
+}
+
 [accordion-item]::after {
   content: "";
   display: block;
   flex-shrink: 0;
-  width: 0.45rem;
-  height: 0.45rem;
+  width: var(--juice-accordion-chevron-size, 0.45rem);
+  height: var(--juice-accordion-chevron-size, 0.45rem);
   margin-left: 1rem;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: currentColor;
+  border-width: 0 var(--juice-accordion-chevron-weight, 2px) var(--juice-accordion-chevron-weight, 2px) 0;
   transform: rotate(-45deg);
   transform-origin: 50% 50%;
   transition: transform 0.2s ease;
@@ -96528,7 +96543,12 @@ section[auto] > * {
 [accordion] [role=region] {
   padding: 0.75rem 1.25rem 1rem;
   box-sizing: border-box;
+  background-color: var(--juice-accordion-panel, var(--aqua-panel, var(--kw-panel, var(--cm-panel, transparent))));
   box-shadow: inset 0.2rem 0 0 var(--juice-accordion-panel-rule, var(--aqua-panel-rule, var(--kw-panel-rule, var(--cm-panel-rule, transparent))));
+}
+
+[accordion]:has(> [accordion-item][aria-expanded=true]) {
+  box-shadow: var(--juice-accordion-open-glow, var(--aqua-open-glow, var(--kw-open-glow, var(--cm-open-glow, 0 0 0 transparent))));
 }
 
 [accordion] [accordion-item] {
@@ -96536,6 +96556,7 @@ section[auto] > * {
   background-image: none;
   color: inherit;
   transform: none;
+  border: 1px solid var(--juice-accordion-item-border, var(--aqua-item-border, var(--kw-item-border, var(--cm-item-border, transparent))));
 }
 
 [accordion] [accordion-item]::after {
@@ -96551,6 +96572,7 @@ section[auto] > * {
 [accordion] [accordion-item][aria-expanded=true] {
   background-color: var(--juice-accordion-trigger-open, var(--aqua-trigger-open, var(--kw-trigger-open, var(--cm-trigger-open, var(--juice-accordion-trigger, var(--aqua-trigger, var(--kw-trigger, var(--cm-trigger, transparent))))))));
   background-image: none;
+  border-color: var(--juice-accordion-item-border-open, var(--aqua-item-border-open, var(--kw-item-border-open, var(--cm-item-border-open, var(--juice-accordion-item-border, var(--aqua-item-border, var(--kw-item-border, var(--cm-item-border, transparent))))))));
 }
 
 [accordion] [accordion-item]:focus-visible {

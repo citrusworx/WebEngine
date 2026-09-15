@@ -33,24 +33,28 @@ typography:
 
 palette:
   page:
-    base: teal-900
-    tint: teal-800
-    deep: black-900
+    base: black-900
+    tint: lagoon-800
+    deep: black-900 mixed toward lagoon-900
+    measure: 45rem
   text:
     default: white-200
-    muted: teal-200
+    muted: lagoon-200
     heading: white-100
   accents:
-    primary: teal-500
+    primary: lagoon-400 mixed toward teal-600 (cooler/deeper than teal-500)
     secondary: lagoon-400
-    soft: teal-300
-    highlight: teal-700
+    soft: lagoon-300
+    highlight: lagoon-700
+    open_wash: lagoon-500 at low alpha
+    line: lagoon-500 mixed toward lagoon-700
   surfaces:
-    default: teal-900 translucent glass
-    strong: black-900 / teal-800 elevated card
-    muted: teal-800 open-panel well
+    default: black-900 translucent glass
+    strong: black-900 elevated card
+    muted: lagoon-800 open-hover
     card: glass FAQ stack
     panel: quieter supporting well
+    accordion_panel: recessed black-900 well
 
 semantic_elements:
   default_surface_targets:
@@ -58,7 +62,6 @@ semantic_elements:
     - article
     - aside
     - nav
-    - header
     - footer
     - form
   div_behavior: transparent by default
@@ -81,6 +84,7 @@ authoring_rules:
   - Use Juice layout primitives for structure; do not redefine stack or gap in the theme.
   - Group FAQ stacks in [tide-card] / [tide-panel] so [accordion] stays structural.
   - Bind accordion chrome roles (`--tide-trigger` and `--juice-accordion-*`) from Tide surface/accent tokens so `[accordion-item]` stays a surface control, not a CTA.
+  - Optional chrome roles (`item-border`, `trigger-accent`, `panel`, `open-glow`) paint FAQ pill rows; other themes may omit them.
   - Do not promote this folder out of `_draft/` in this slice.
 
 example:
