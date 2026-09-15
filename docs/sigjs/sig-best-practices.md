@@ -164,7 +164,7 @@ batch(() => {
 });
 ```
 
-Do not nest `batch`. The flag is a boolean; the inner call flushes early.
+Nested `batch` is safe. One outer `batch` around related writes is still easier to read.
 
 ## Return cleanup for anything you start
 
@@ -222,7 +222,8 @@ router.start();
 ```
 
 - Functions, not `<Home />`
-- Exact paths (`navigate("/about")`, not `navigate("about")`)
+- Exact paths (`/about` ≠ `/about/`). `navigate("about")` is fine — it normalizes
+- Register `"*"` if you want a missing-path view
 - Nav outside the target
 - One router at the app edge
 

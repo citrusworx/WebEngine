@@ -10,6 +10,7 @@ export declare class SigRouter {
     private readonly onPopState;
     constructor(target?: string);
     private normalizePath;
+    private resolveRoute;
     private register;
     private resolveView;
     set(path: string, component: RouteView, name?: string): this;
@@ -21,6 +22,6 @@ export declare class SigRouter {
     goBack(): void;
     stop(): void;
     has(path: string): boolean;
-    private globalanchorintercept;
+    private attachNavigationListeners;
 }
 export {};

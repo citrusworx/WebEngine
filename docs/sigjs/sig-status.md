@@ -39,9 +39,9 @@ The feature is more of a direction than a hardened part of the runtime.
 | JSX → real DOM | Stable-ish | `createElement`, `on*`, `ref`, known properties vs attributes. No VDOM. |
 | `mount` / `disposeTree` | Stable-ish | Replace a target’s children; walk cleanups. |
 | `Fragment` | Stable-ish | `DocumentFragment`. Same child model as host elements. |
-| `batch` | Emerging | Works; **boolean flag, not nested-safe**. That limitation is real. |
+| `batch` | Stable-ish | Depth counter, `try` / `finally`. Nested calls and throws are covered by tests. |
 | `memo` | Emerging | Lazy `{ get }` cache. No public dispose. Useful, still a small surface. |
-| `SigRouter` exact paths | Emerging | Named routes, click + popstate, view dispose. No params, no 404 view, `navigate` does not normalize. |
+| `SigRouter` exact paths | Emerging | Named routes, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. No params. |
 | Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
 | Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys. Not a typed Juice plugin. |
 | List / conditional helpers | Draft | `replaceChildren` is the current instruction, not a `<For>` / `<Show>` primitive. |
@@ -57,7 +57,7 @@ The feature is more of a direction than a hardened part of the runtime.
 |---|---|---|
 | `Signal(value)` factory | `signal.ts` | `get` / `set` only |
 | `effect` + cleanup + dispose | `signal.ts` | Returns disposer |
-| `batch` | `signal.ts` | Boolean flag, not nested-safe |
+| `batch` | `signal.ts` | Nested-safe depth counter |
 | `memo` | `signal.ts` | `{ get }` cache |
 | `captureCleanupScope` | `signal.ts` | Used by JSX components |
 | JSX → real DOM | `jsx-runtime.ts` | No VDOM |
@@ -65,7 +65,8 @@ The feature is more of a direction than a hardened part of the runtime.
 | `ref`, `on*` events | `jsx-runtime.ts` | |
 | `mount` / `disposeTree` | `jsx-runtime.ts` | |
 | `Fragment` | `jsx-runtime.ts` | `DocumentFragment` |
-| `SigRouter` exact paths | `sig-router.ts` | Named routes, click + popstate |
+| `SigRouter` exact paths | `sig-router.ts` | Named routes, click + popstate, normalized `navigate` |
+| `"*"` unknown-route fallback | `sig-router.ts` | Optional; without it `navigate` no-ops and `popstate` empties |
 | View dispose on navigate | `sig-router.ts` | `disposeTree` |
 | Package exports | `package.json` | root, jsx-runtime, jsx-dev-runtime, sig-router |
 
@@ -102,9 +103,8 @@ These form the strongest case for Sig.js as a small behavior layer on Juice page
 
 These are already useful, but still need refinement before they feel fully settled:
 
-- `batch` (nesting)
 - `memo` (lifecycle)
-- `SigRouter` (params, unknown paths, `navigate` normalization)
+- `SigRouter` (params; `"*"` is the current unknown-path hook)
 - documentation as a product surface
 - Juice composition conventions (when to `setAttribute` a Juice flag)
 
@@ -135,14 +135,15 @@ If you put `{count.get()}` in JSX without a function wrapper, you get a static t
 
 ## Tests
 
-- `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose
-- `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render after cleanup
+- `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo`
+- `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, `mount` / `disposeTree`
+- `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate
 
 ```bash
 yarn workspace @citrusworx/sigjs test
 ```
 
-Coverage is real and narrow. There are no JSX-runtime Playwright tests in that folder today. Docs examples were checked against source, not executed in a browser from this package.
+Coverage is real and still narrow. Docs examples were checked against source, not executed as a separate browser suite from this package.
 
 ## Integration (what is real)
 
@@ -170,8 +171,8 @@ Less accurate positioning right now would be:
 If you are building with Sig.js today:
 
 - confidently use `Signal`, function-child text, `effect` + cleanup, `mount`
-- use `batch` and `memo` with the documented caveats
-- use `SigRouter` for a handful of exact pages
+- use `batch` (including nested) and `memo`
+- use `SigRouter` for a handful of exact pages; register `"*"` if you want a missing-path view
 - treat parametric routes, reactive props, and list components as things you write yourself or live without
 
 That is the cleanest adoption model for the current state of the system.

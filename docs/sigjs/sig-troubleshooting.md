@@ -70,7 +70,7 @@ batch(() => {
 });
 ```
 
-Do not nest `batch` — the implementation is a single boolean.
+Nested `batch` is safe (depth counter). One outer `batch` is still the clearer style.
 
 ### Memory leak / interval keeps firing
 
@@ -107,11 +107,11 @@ Call `router.start()` after `set`. Hrefs must match registered paths exactly (`/
 
 ### `navigate` is a no-op
 
-The path is not in the map. `navigate` returns without pushing history when `routes.get(path)` is missing. It also does not normalize: `navigate("about")` will not find `/about`.
+The path is not in the map, and there is no `"*"` fallback. `navigate` returns without pushing history. Leading slashes are normalized: `navigate("about")` finds `/about` if that route exists.
 
 ### Back button clears the view
 
-`popstate` renders `location.pathname`. If that path was never `set`, the container is emptied.
+`popstate` renders `location.pathname`. If that path was never `set` and you did not register `"*"`, the container is emptied.
 
 ### Two routers fight
 

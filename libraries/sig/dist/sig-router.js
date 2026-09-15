@@ -33,15 +33,19 @@ export class SigRouter {
         this.target = target;
     }
     normalizePath(path) {
-        if (path === "/") {
+        if (path === "/" || path === "*") {
             return path;
         }
         return path.startsWith("/") ? path : `/${path}`;
     }
+    resolveRoute(path) {
+        const normalizedPath = this.normalizePath(path);
+        return this.routes.get(normalizedPath) ?? this.routes.get("*");
+    }
     register(path, view, name) {
         const normalizedPath = this.normalizePath(path);
         this.routes.set(normalizedPath, { path: normalizedPath, view, name });
-        if (name) {
+        if (name && normalizedPath !== "*") {
             this.namedRoutes.set(name, normalizedPath);
         }
     }
@@ -66,7 +70,7 @@ export class SigRouter {
         return this.namedRoutes.get(name) ?? this.routes.get(this.normalizePath(name))?.path;
     }
     render(path) {
-        const route = this.routes.get(path);
+        const route = this.resolveRoute(path);
         const target = document.querySelector(this.target);
         if (!target)
             return;
@@ -88,15 +92,16 @@ export class SigRouter {
             return;
         }
         this.started = true;
-        this.globalanchorintercept();
+        this.attachNavigationListeners();
         this.render(window.location.pathname);
     }
     navigate(path) {
-        const route = this.routes.get(path);
+        const normalizedPath = this.normalizePath(path);
+        const route = this.resolveRoute(normalizedPath);
         if (!route)
             return;
-        window.history.pushState({}, "", path);
-        this.render(path);
+        window.history.pushState({}, "", normalizedPath);
+        this.render(normalizedPath);
     }
     goBack() {
         window.history.back();
@@ -112,7 +117,7 @@ export class SigRouter {
     has(path) {
         return this.routes.has(this.normalizePath(path));
     }
-    globalanchorintercept() {
+    attachNavigationListeners() {
         document.addEventListener("click", this.onDocumentClick);
         window.addEventListener("popstate", this.onPopState);
     }

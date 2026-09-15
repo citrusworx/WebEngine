@@ -45,7 +45,7 @@ router.set({
 router.start();
 ```
 
-`about` without a slash is stored as `/about` and registered under the name `"about"`.
+`about` without a slash is stored as `/about` and registered under the name `"about"`. `navigate("about")` uses the same normalization, so it hits `/about`.
 
 ```ts
 router.get("about"); // "/about"
@@ -105,9 +105,15 @@ After `start()`, a document-level click listener handles `<a href>`:
 | `download` | |
 | `target="_blank"` | |
 
-`navigate(path)` only succeeds if `has(path)` is true. Unknown paths do nothing (no 404 view).
+`navigate(path)` normalizes a leading slash the same way as `has` / `set`. Unknown paths with no `"*"` fallback do nothing (no 404 view, no `pushState`).
 
-`goBack()` is `history.back()`. The `popstate` listener then renders `window.location.pathname`. If that path is unregistered, the target is emptied.
+Register `"*"` for a missing-route view. `navigate("/nope")` then `pushState`s `/nope` and renders that fallback. `has("/nope")` stays false; `has("*")` is true.
+
+```tsx
+router.set("*", () => <p>Not found</p>);
+```
+
+`goBack()` is `history.back()`. The `popstate` listener then renders `window.location.pathname`. If that path is unregistered and there is no `"*"` fallback, the target is emptied.
 
 ## Programmatic navigation
 
@@ -184,9 +190,9 @@ Calling `start()` again after it has already started just re-renders the current
 
 ## Troubleshooting
 
-- **Clicks do nothing** — `start()` missing, or the href is not an exact registered path.
+- **Clicks do nothing** — `start()` missing, or the href is not an exact registered path (and there is no `"*"` fallback).
 - **Back button empty** — previous history entry is an unregistered path.
 - **Timers leak** — view was a prebuilt node, or the effect was created outside the component function.
 - **Nav disappears** — `#root` wraps the nav; move the target to an inner element.
 
-See [Troubleshooting](./sig-troubleshooting.md) for reactivity issues that show up after a route change. The [page tutorial](./sig-page-tutorial.md) adds an About route with a timer that cleans up. [Anti-patterns](./sig-anti-patterns.md) covers prebuilt `<About />` nodes and `navigate("about")`.
+See [Troubleshooting](./sig-troubleshooting.md) for reactivity issues that show up after a route change. The [page tutorial](./sig-page-tutorial.md) adds an About route with a timer that cleans up. [Anti-patterns](./sig-anti-patterns.md) covers prebuilt `<About />` nodes and constructing two routers.

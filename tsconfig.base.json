@@ -38,7 +38,7 @@
             "@citrusworx/stenzil": ["../../../libraries/stenzil/src/index.ts"],
             "@citrusworx/stenzil/*": ["../../../libraries/stenzil/src/*"],
 
-            "@citrusworx/sigjs/jsx-runtime": ["../../../libraries/sig/src/sig/jsx-runtime.ts"],
+            "@citrusworx/sigjs/jsx-runtime": ["../../../libraries/sig/src/jsx-runtime.ts"],
             "@citrusworx/sugar": ["../../../tooling/sugar/src/index.ts"]
             }
     }

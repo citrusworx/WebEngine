@@ -246,7 +246,7 @@ batch(() => {
 // the effect runs once after the batch, not twice
 ```
 
-`batch` is a boolean flag, not a counter. Do not nest batches — the inner call flushes early. Details in [Effects](./sig-effects.md).
+`batch` uses a depth counter: nested calls flush once, when the outermost `batch` finishes. A throw inside `fn` still resets the depth. Details in [Effects](./sig-effects.md).
 
 ### 7. Memoized derived values
 
@@ -323,7 +323,7 @@ router.start();
 </nav>
 ```
 
-There is no `/user/:id` matcher yet. Parse `window.location.pathname` yourself if you need a segment. `navigate("about")` does not find `/about` — pass the exact registered path.
+There is no `/user/:id` matcher yet. Parse `window.location.pathname` yourself if you need a segment. `navigate("about")` normalizes to `/about`, same as `set` / `has`. Register `"*"` if you want an unknown-path view; without it, `navigate` to a missing path is a no-op and `popstate` empties the target.
 
 ## Mental model
 

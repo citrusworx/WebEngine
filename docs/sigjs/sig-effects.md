@@ -181,7 +181,7 @@ If you would rather not assign the element to a variable first:
 function batch(fn: () => void): void
 ```
 
-While `fn` runs, `scheduleSubscriber` queues subscribers instead of calling `notify`. After `fn` returns, each queued subscriber is notified once.
+While `fn` runs, `scheduleSubscriber` queues subscribers instead of calling `notify`. After the outermost `fn` returns, each queued subscriber is notified once.
 
 ```ts
 import { Signal, batch, effect } from "@citrusworx/sigjs";
@@ -205,21 +205,20 @@ batch(() => {
 
 Without `batch`, that would be three runs (initial + `a` + `b`).
 
-### Nested batch is not safe
+### Nested batch is safe
 
-`isBatching` is a boolean, not a depth counter:
+`batch` keeps a depth counter. Inner calls increment it; the queue flushes only when depth returns to zero. If `fn` throws, `finally` still decrements and the outer flush still runs, so `batch` cannot stick “on” and successful `set`s from that batch still notify.
 
 ```ts
-export function batch(fn: () => void) {
-  isBatching = true;
-  fn();
-  isBatching = false;
-  pendingSubscribers.forEach((subscriber) => subscriber.notify());
-  pendingSubscribers.clear();
-}
+batch(() => {
+  a.set(1);
+  batch(() => b.set(2));
+  c.set(3);
+});
+// dependents of a, b, and c run once after the outer batch
 ```
 
-An inner `batch` sets the flag to `false` and **flushes** before the outer call finishes. Do not nest. Flatten the writes into one `batch`, or do not batch the inner section.
+One outer `batch` around related writes is still the clearer style. You do not have to un-nest library code that also calls `batch`.
 
 ## Memo
 
@@ -275,14 +274,9 @@ effect(() => {
   fullName.set(`${first.get()} ${last.get()}`);
 });
 
-// Nested batch
-batch(() => {
-  a.set(1);
-  batch(() => b.set(2));
-});
 ```
 
-The first is a homemade VDOM. The second is a duplicated source of truth. The third flushes early. [Anti-patterns](./sig-anti-patterns.md) collects more of these.
+The first is a homemade VDOM. The second is a duplicated source of truth. [Anti-patterns](./sig-anti-patterns.md) collects more of these.
 
 ## A compact picture
 
