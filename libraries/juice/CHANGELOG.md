@@ -15,6 +15,7 @@
 - Added motion wave 1: `fade.in.down/up`, `fade.out.down/up`, `slideOut.left/right/up/down` (P1).
 - Documented responsive defaults, `surfaceTone="soft"`, and expanded motion catalog.
 - Added accordion layout chrome (`[accordion]`, `[accordion-item]`) and Aquaflux surface styling so FAQ triggers read as stacked controls, not primary CTA buttons.
+- Added a shared accordion chrome role contract (`--juice-accordion-*`, with `--aqua-*` / `--kw-*` / `--cm-*` aliases) so Aquaflux, KiwiPress, and Citrusmint bind trigger/chevron/panel/focus paint from existing tokens.
 - Added a DOM-first accordion runtime that auto-enhances valid `[accordion]` markup (click toggle, Escape, late DOM sync) without app init.
 
 ## 0.1.1

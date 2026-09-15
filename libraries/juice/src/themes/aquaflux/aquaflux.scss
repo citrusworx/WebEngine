@@ -70,6 +70,21 @@
     --aqua-spec-background:
         linear-gradient(180deg, #{rgba($blue-100, 0.95)} 0%, #{rgba($white-100, 0.98)} 100%);
 
+    /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+       Bound from existing Aquaflux tokens; no new hue family. */
+    --aqua-trigger: var(--aqua-surface-strong);
+    --aqua-trigger-hover: var(--aqua-surface-muted);
+    --aqua-trigger-open: var(--aqua-highlight);
+    --aqua-chevron: var(--aqua-accent);
+    --aqua-panel-rule: var(--aqua-border);
+    --aqua-focus-ring: var(--aqua-accent);
+    --juice-accordion-trigger: var(--aqua-trigger);
+    --juice-accordion-trigger-hover: var(--aqua-trigger-hover);
+    --juice-accordion-trigger-open: var(--aqua-trigger-open);
+    --juice-accordion-chevron: var(--aqua-chevron);
+    --juice-accordion-panel-rule: var(--aqua-panel-rule);
+    --juice-accordion-focus-ring: var(--aqua-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -324,7 +339,8 @@
 }
 
 /* Accordion wrappers are structural, not named surfaces.
-   Group FAQ stacks in [aqua-card] / [aqua-panel] instead. */
+   Group FAQ stacks in [aqua-card] / [aqua-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
 [theme="aquaflux"] :where([accordion]) {
     background: transparent;
     background-image: none;
@@ -334,33 +350,34 @@
 }
 
 /* Generic Aquaflux buttons use --aqua-button-background (CTA gradient).
-   Accordion triggers are surface controls, not primary actions. */
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
 [theme="aquaflux"] button[accordion-item] {
     background-image: none;
-    background-color: var(--aqua-surface-strong);
+    background-color: var(--juice-accordion-trigger);
     color: var(--aqua-heading);
     border: 1px solid var(--aqua-border);
     box-shadow: 0 14px 32px -26px var(--aqua-shadow);
 }
 
 [theme="aquaflux"] button[accordion-item]::after {
-    border-color: var(--aqua-accent);
+    border-color: var(--juice-accordion-chevron);
 }
 
 [theme="aquaflux"] button[accordion-item]:hover {
     border-color: var(--aqua-border-strong);
-    background-color: var(--aqua-surface-muted);
+    background-color: var(--juice-accordion-trigger-hover);
     color: var(--aqua-heading);
 }
 
 [theme="aquaflux"] button[accordion-item]:focus-visible {
-    outline: 2px solid var(--aqua-accent);
+    outline: 2px solid var(--juice-accordion-focus-ring);
     outline-offset: 2px;
     box-shadow: 0 14px 32px -26px var(--aqua-shadow);
 }
 
 [theme="aquaflux"] button[accordion-item][aria-expanded="true"] {
-    background-color: var(--aqua-highlight);
+    background-color: var(--juice-accordion-trigger-open);
     background-image: none;
     color: var(--aqua-heading);
     border-color: var(--aqua-border-strong);
@@ -369,6 +386,8 @@
 [theme="aquaflux"] [accordion] [role="region"] {
     color: var(--aqua-text);
     background-color: var(--aqua-surface-muted);
-    border: 1px solid var(--aqua-border);
+    border: 1px solid var(--juice-accordion-panel-rule);
     border-radius: 0.75rem;
+    /* Slice A framed the panel; skip the shared inset rule. */
+    box-shadow: none;
 }
