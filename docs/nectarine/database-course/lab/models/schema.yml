@@ -1,0 +1,24 @@
+Member:
+  table: members
+  fields:
+    id: int PRIMARY KEY
+    name: text NOT NULL
+    email: text NOT NULL UNIQUE
+Item:
+  table: items
+  fields:
+    id: int PRIMARY KEY
+    name: text NOT NULL
+    category: text NOT NULL
+    details: jsonb NOT NULL
+Loan:
+  table: loans
+  fields:
+    id: int PRIMARY KEY
+    member_id: int NOT NULL FOREIGN KEY REFERENCES members(id)
+    item_id: int NOT NULL FOREIGN KEY REFERENCES items(id)
+    due_on: date NOT NULL
+    returned_at: timestamp
+  indexes:
+    loans_member_idx:
+      columns: [member_id]

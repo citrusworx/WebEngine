@@ -21,7 +21,7 @@ The weakest areas are still:
 
 0.8.x is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior.
 
-These docs belong with Seltzer ≥0.8 on `cursor/blackwater-phase0-backend`. They must not be merged onto `master` alone while master still ships 0.2.0 APIs.
+These docs describe the 0.8.1 runtime now present on local `master` after the Blackwater Phase 0 merge. For worked proposals with acceptance criteria, see the HTTP course's [future-design lesson](./http-course/11-future-design.md). Those proposals are exercises, not committed release plans.
 
 ---
 

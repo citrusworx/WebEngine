@@ -1,5 +1,7 @@
 # Seltzer Node Exercises
 
+For a guided introduction before rebuilding internals, take [HTTP, understood through Seltzer](../http-course/README.md). It includes a runnable application, HTTP-level tests, and checkpoint answers; these exercises remain optional reconstruction practice.
+
 **Contributor elective.** App authors should use [Getting Started](../seltzer-getting-started.md) and the [JSON API tutorial](../seltzer-api-tutorial.md) instead of this folder.
 
 Hands-on checkpoints for the [Seltzer study guide](../courses.md). Complete these in order using plain `node:http` and TypeScript **to rebuild shipped 0.8.x internals**, then compare with `libraries/seltzer/src/`.

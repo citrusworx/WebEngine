@@ -4,7 +4,11 @@ Nectarine is a config-driven backend library. Define models, schemas, queries, a
 
 Nectarine is a WebEngine native library but is fully independent. It can be used in any project. It does not spin up a server.
 
-**Latest Version**: 0.1.0 on npm (pending Changesets target **0.2.0**)
+**Version snapshot (September 16, 2026):** local manifest **0.3.0**; npm **0.4.0**. These are different baselines. See the course's [source and verification map](./database-course/source-map.md).
+
+**Learn databases and SQL:** [Ask the data: databases and SQL through Nectarine](./database-course/README.md) is a complete beginner course with a runnable PostgreSQL lab, prediction exercises, answers, and clearly labeled future compiler designs. It assumes basic JavaScript.
+
+Older examples and release-number plans below include historical material. Use the course source map to distinguish verified compiler capabilities from proposed features.
 
 Production deploy bar for Blackwater + Seltzer: [Production](./production.md).
 

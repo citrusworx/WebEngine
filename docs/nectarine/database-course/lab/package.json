@@ -1,0 +1,16 @@
+{
+  "name": "nectarine-database-course-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs",
+    "test": "node --test course.test.mjs",
+    "compile": "node compile.mjs",
+    "serve": "node http-server.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@citrusworx/nectarine": "file:../../../../libraries/nectarine",
+    "@citrusworx/seltzer": "file:../../../../libraries/seltzer"
+  }
+}

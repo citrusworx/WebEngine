@@ -1,5 +1,7 @@
 # Seltzer
 
+**Learn HTTP from the ground up:** [HTTP, understood through Seltzer](./http-course/README.md) is an in-depth course for readers with basic JavaScript knowledge and no backend experience. Build a Notes API, trace the runtime, test its behavior, and design future features without confusing proposals with shipped APIs.
+
 A structured Node HTTP runtime: object routes, `ResponseData` handlers, and a named request pipeline.
 
 Seltzer is the CitrusWorx HTTP surface. Register `{ method, path, handler }` routes, return `{ status?, headers?, body? }`, and let the runtime parse, match, validate, and send. A sibling `client` wraps GET/POST/PUT/PATCH/DELETE. `generateRoutes` maps a flat `ApiOperation[]` list (from Nectarine YAML or by hand) onto those same object routes.
@@ -14,7 +16,7 @@ The current model is:
 
 Seltzer is strongest as a readable request engine you can hold in your head. It is not Express, and it is not a middleware stack. The pipeline in [seltzer-design.md](./seltzer-design.md) is **shipped** in `@citrusworx/seltzer` **0.8.1**, not a future sketch.
 
-These docs describe Seltzer **≥0.8** as it lives on `cursor/blackwater-phase0-backend`. They must not be merged onto `master` alone while master still ships 0.2.0 APIs (`ctx.json`, exact-path only, no pipeline).
+These docs describe the Seltzer **0.8.1** runtime now present on local `master` after the Blackwater Phase 0 merge. Earlier 0.2.0 examples using `ctx.json` describe a different API; use the current source and versioned examples when comparing behavior.
 
 ## Who it is for
 

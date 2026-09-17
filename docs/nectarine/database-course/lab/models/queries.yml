@@ -1,0 +1,76 @@
+item:
+  get:
+    AllItems:
+      select: [id, name, category]
+      from: items
+      orderBy: [{ column: id, direction: ASC }]
+    ById:
+      select: [id, name, category, details]
+      from: items
+      where: { column: id, operator: eq, value: $1 }
+    ByCategory:
+      select: [id, name]
+      from: items
+      where: { column: category, operator: eq, value: $1 }
+      orderBy: [{ column: id, direction: ASC }]
+    WithDetails:
+      select: [id, name]
+      from: items
+      where: { column: details, operator: contains, value: { value: $1, cast: jsonb } }
+      orderBy: [{ column: id, direction: ASC }]
+  create:
+    NewItem:
+      insert:
+        into: items
+        columns: [id, name, category, details]
+        values: [$1, $2, $3, { value: $4, cast: jsonb }]
+      returning: [id, name]
+    EnsureItem:
+      insert:
+        into: items
+        columns: [id, name, category, details]
+        values: [$1, $2, $3, { value: $4, cast: jsonb }]
+        onConflict: { target: id, do: nothing }
+  delete:
+    ById:
+      from: items
+      where: { column: id, operator: eq, value: $1 }
+loan:
+  get:
+    OpenLoans:
+      select: [id, member_id, item_id, due_on]
+      from: loans
+      where: { column: returned_at, operator: is_null }
+      orderBy: [{ column: id, direction: ASC }]
+    Overdue:
+      select: [id, member_id, item_id, due_on]
+      from: loans
+      where:
+        and:
+          - { column: returned_at, operator: is_null }
+          - { column: due_on, operator: lt, value: $1 }
+      orderBy: [{ column: id, direction: ASC }]
+    CountOpen:
+      select: [{ fn: count, as: total }]
+      from: loans
+      where: { column: returned_at, operator: is_null }
+    HasOpenForItem:
+      exists: true
+      from: loans
+      where:
+        and:
+          - { column: item_id, operator: eq, value: $1 }
+          - { column: returned_at, operator: is_null }
+  create:
+    NewLoan:
+      insert:
+        into: loans
+        columns: [id, member_id, item_id, due_on]
+        values: [$1, $2, $3, $4]
+      returning: [id, item_id]
+  update:
+    MarkReturned:
+      table: loans
+      set: [returned_at]
+      values: [$1]
+      where: { column: id, operator: eq, value: $2 }

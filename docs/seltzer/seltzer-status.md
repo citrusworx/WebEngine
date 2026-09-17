@@ -1,10 +1,10 @@
 # Seltzer Status
 
-Honest snapshot of `@citrusworx/seltzer` **0.8.1** against `libraries/seltzer/src` on `cursor/blackwater-phase0-backend`.
+Snapshot of `@citrusworx/seltzer` **0.8.1** against `libraries/seltzer/src`, now present on local `master` after the Blackwater Phase 0 merge.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
-**0.8.x is the HTTP core.** 0.8.0 is the solidified runtime git labeled 0.7.0 (default `validate`, `replace`, hardened `client`). 0.8.1 is packaging/DX only (description, `engines.node` `>=18`, optional `undici` peer, standalone README). Versions 0.3–0.7 were never published. **0.2.0 remains what `origin/master` still documents** — do not mix those APIs.
+**0.8.x is the HTTP core.** The inspected 0.8.1 runtime includes default `validate`, `replace`, and the current `client`. Its package declares `engines.node` `>=18` and an optional `undici` peer. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons.
 
 Related: [Roadmap](./seltzer-roadmap.md). [API](./seltzer-api.md). [JSON API tutorial](./seltzer-api-tutorial.md).
 

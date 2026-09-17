@@ -11,7 +11,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 | `libraries/types` | `@citrusworx/types` | Stable core types | Shared deployment, blueprint, project, environment, server, service, and domain types | [Types](./types/README.md) |
 | `libraries/sig` | `@citrusworx/sigjs` | Active alpha | Signals, effects, JSX runtime, JSX dev runtime, router, and tests | [Sig.js](./sigjs/README.md) |
 | `libraries/juice` | `@citrusworx/juiceui` | Active alpha | Published CSS build, token exports, navigation, accordion, and tabs runtimes, early components | [Juice](./juice/README.md) |
-| `libraries/seltzer` | `@citrusworx/seltzer` | Early implementation | Core server/client scaffolding and an evolving HTTP runtime design | [Seltzer](./seltzer/README.md) · [Study guide](./seltzer/courses.md) |
+| `libraries/seltzer` | `@citrusworx/seltzer` | Implemented HTTP core (0.8.1) | Object routes, structured responses, named pipeline, generated routes, and HTTP client | [Seltzer](./seltzer/README.md) · [HTTP course](./seltzer/http-course/README.md) · [Study guide](./seltzer/courses.md) |
 | `libraries/nectarine` | `@citrusworx/nectarine` | Active alpha | Compiler plus PostgreSQL, MySQL, and MongoDB adapters with YAML-driven model assets | [Nectarine](./nectarine/README.md) |
 | `libraries/grapevine` | `@citrusworx/grapevine` | Active development | DigitalOcean provider surface for droplets, firewalls, VPC, SSH, monitoring, and related utilities | [Grapevine](./grapevine/README.md) |
 | `libraries/dns` | `@citrusworx/dns` | Early implementation | Core DNS/registrar abstractions and a ResellerClub adapter | [DNS](./dns/README.md) |
@@ -20,6 +20,8 @@ This docs folder tracks the current workspace reality first: what is published, 
 | `packages/kiwipress` | `@citrusworx/kiwipress` | Standalone WordPress + native CMS | WP REST client, WPAuth, WPSync transfer, file/Postgres persistence for a Nectarine-shaped store | [KiwiPress](./kiwipress/README.md) · [Transfer](./kiwipress/kiwipress-transfer.md) |
 
 ## Notes
+
+- Learn databases with [Ask the data: SQL through Nectarine](./nectarine/database-course/README.md), a question-first course with an executable PostgreSQL lab and a companion to the Seltzer HTTP course.
 
 - The main source of truth is the workspace code under `libraries/` and `engines/`.
 - Some older docs describe planned kernel/module systems or broader product visions. Those are useful for direction, but this index describes what is actually present in the repo now.

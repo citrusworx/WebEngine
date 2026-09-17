@@ -1,5 +1,9 @@
 # Seltzer Study: Node.js Reading & Course List
 
+**New to HTTP? Start with [HTTP, understood through Seltzer](./http-course/README.md).** It is a complete course for readers with basic JavaScript knowledge: plain-language lessons, runnable Notes API examples, exercises and answers, source walkthroughs, and explicitly proposed designs for unfinished capabilities.
+
+This page remains the supplemental reading list for the contributor track. It is not the new course's syllabus.
+
 **Contributor elective.** This is not the product getting-started path. App authors should not start here.
 
 If you want to **run** the HTTP surface that exists today (`Seltzer.init` / `.route` / `.listen` / `ResponseData` / `before` / `generateRoutes` / `client.*`), use the [product README](./README.md), [Getting Started](./seltzer-getting-started.md), and the [JSON API tutorial](./seltzer-api-tutorial.md).
