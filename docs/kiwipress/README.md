@@ -78,7 +78,7 @@ Posts / Pages / Users / …     WordPress entry (optional)
  File JSON or Nectarine Postgres — any Node host
 ```
 
-`WPCreate` / `WPUpdate` / `WPDelete` exist as named wrappers around `mutate`. Posts, Pages, and Users extend `WPRead` and delegate `create()` to a `WPCreate` collaborator. Update and delete still call `this.mutate()`.
+`WPCreate` / `WPUpdate` / `WPDelete` exist as named wrappers around `mutate`. Posts, Pages, and Users extend `WPRead` and delegate `create()` to a `WPCreate` collaborator and `update()` to a `WPUpdate` collaborator. Delete still calls `this.mutate()`.
 
 ## What it can do today
 

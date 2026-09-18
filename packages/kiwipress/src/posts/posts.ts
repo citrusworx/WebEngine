@@ -1,5 +1,6 @@
 import { WPCreate } from "../core/WPCreate.js";
 import { WPRead } from "../core/WPRead.js";
+import { WPUpdate } from "../core/WPUpdate.js";
 import type { WPCoreConfig } from "../core/WPCore.js";
 import {
     createPost,
@@ -21,12 +22,20 @@ class PostCreate extends WPCreate {
     }
 }
 
+class PostUpdate extends WPUpdate {
+    updatePost(id: string | number, data: WordPressPayload) {
+        return this.update(updatePost, data, { id });
+    }
+}
+
 export class Posts extends WPRead {
     private readonly creator: PostCreate;
+    private readonly updater: PostUpdate;
 
     constructor(config?: Partial<WPCoreConfig>) {
         super(config);
         this.creator = new PostCreate(config);
+        this.updater = new PostUpdate(config);
     }
 
     getAll() {
@@ -62,7 +71,7 @@ export class Posts extends WPRead {
     }
 
     update(id: string | number, data: WordPressPayload) {
-        return this.mutate(updatePost, data, { id });
+        return this.updater.updatePost(id, data);
     }
 
     delete(id: string | number) {

@@ -128,7 +128,7 @@ Identity for talking to WordPress:
 
 ### `WPCreate` / `WPRead` / `WPUpdate` / `WPDelete`
 
-CRUD execution boundaries on top of `WPClient`. Domain objects extend `WPRead`. Create goes through a `WPCreate` collaborator; update and delete still call `mutate()`.
+CRUD execution boundaries on top of `WPClient`. Domain objects extend `WPRead`. Create goes through a `WPCreate` collaborator; update goes through a `WPUpdate` collaborator; delete still calls `mutate()`.
 
 ### `WPSync`
 

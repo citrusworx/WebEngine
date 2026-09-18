@@ -3,6 +3,7 @@ import type { WPCoreConfig } from "../core/WPCore";
 import type { WordPressPayload } from "../types/api";
 export declare class Posts extends WPRead {
     private readonly creator;
+    private readonly updater;
     constructor(config?: Partial<WPCoreConfig>);
     getAll(): any;
     getById(id: string | number): any;
