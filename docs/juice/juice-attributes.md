@@ -148,6 +148,13 @@ Examples:
 
 For more detail, see [Sizing Reference](./juice-sizing.md).
 
+## Surface Attributes
+
+- `surfaceTone`
+  Values: `"soft"`, `"strong"`, `"muted"`
+
+Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` roles. Unthemed fallbacks keep the original light frost for `soft`. See [Surfaces](./juice-surfaces.md). `borderStrength` and standalone `blur` are not shipped.
+
 ## Icon Attributes
 
 - `icon`: applies a FontAwesome Free icon mask

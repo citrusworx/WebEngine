@@ -100,6 +100,21 @@
     --juice-tabs-list-rule: var(--kw-tabs-list-rule);
     --juice-tabs-focus-ring: var(--kw-tabs-focus-ring);
 
+    /* Surface tone roles — --kw-surface-strong is the frosted nav fill;
+       juice strong uses the opaque --kw-surface panel. */
+    --juice-surface-soft-bg: var(--kw-surface-strong);
+    --juice-surface-soft-border: var(--kw-border);
+    --juice-surface-soft-shadow: 0 18px 40px -28px var(--kw-shadow);
+    --juice-surface-soft-blur: 10px;
+    --juice-surface-strong-bg: var(--kw-surface);
+    --juice-surface-strong-border: var(--kw-border-strong);
+    --juice-surface-strong-shadow: 0 22px 48px -22px var(--kw-shadow-strong);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--kw-surface-muted);
+    --juice-surface-muted-border: var(--kw-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);

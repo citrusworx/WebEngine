@@ -112,6 +112,20 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-tabs-focus-ring: var(--tide-tabs-focus-ring);
     --juice-tabs-panel: var(--tide-tabs-panel);
 
+    /* Surface tone roles — dark frost / elevated / recessed, not white glass. */
+    --juice-surface-soft-bg: var(--tide-surface);
+    --juice-surface-soft-border: var(--tide-border);
+    --juice-surface-soft-shadow: var(--tide-line-glow), 0 18px 40px -28px var(--tide-shadow);
+    --juice-surface-soft-blur: 16px;
+    --juice-surface-strong-bg: var(--tide-surface-strong);
+    --juice-surface-strong-border: var(--tide-border-strong);
+    --juice-surface-strong-shadow: var(--tide-line-glow), 0 24px 56px -22px var(--tide-shadow);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--tide-surface-muted);
+    --juice-surface-muted-border: var(--tide-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);

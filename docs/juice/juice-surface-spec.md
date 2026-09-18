@@ -53,7 +53,8 @@ They are small, composable controls that work across many element types.
 Examples:
 
 - `surfaceTone="soft"` (implemented; see [juice-surfaces.md](./juice-surfaces.md))
-- `surfaceTone="strong"` (planned, not yet in CSS)
+- `surfaceTone="strong"` (implemented; themeable via `--juice-surface-strong-*`)
+- `surfaceTone="muted"` (implemented; quieter recessed wash)
 - `borderStrength="soft"`
 - `borderStrength="bold"`
 - `shadowTone="cool"`
@@ -98,7 +99,7 @@ A theme can decide:
 
 - what `card="hero"` actually looks like (background, gradient, padding texture)
 - what `featured` does (gradient? border? scale-up? glow?)
-- how `surfaceTone="soft"` translates to actual colors
+- how `surfaceTone="soft|strong|muted"` translates to actual colors via `--juice-surface-*` roles
 - which font `heading` uses inside a card
 
 A theme can also add **brand-specific structural variants** by extending the `card` attribute value space — e.g., `card="aqua-hero"` for a theme-specific hero pattern. Theme-specific variants still follow the parent/child naming rule: children inside `card="aqua-hero"` are bare slot names (`header`, `body`, `action`), not `aqua-header` or `aqua-body`.
