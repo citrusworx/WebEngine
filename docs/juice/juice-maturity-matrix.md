@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas.
+This document tracks the current maturity of Juice across its major system areas. It reflects `@citrusworx/juiceui@0.4.0`.
 
 The goal is to make it easy to answer:
 

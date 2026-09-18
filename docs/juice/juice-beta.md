@@ -1,6 +1,6 @@
 # Juice Beta
 
-Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish.
+Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. As of `@citrusworx/juiceui@0.4.0` on npm, that line is the current public cut. See [juice-roadmap.md](./juice-roadmap.md) for what 0.4.0 shipped and what comes next.
 
 ## What Beta includes
 

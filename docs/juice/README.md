@@ -106,6 +106,7 @@ Blackwater Sound is the current practical example of this model.
 - [Accordion Runtime](./juice-accordion-runtime.md)
 - [Tabs Runtime](./juice-tabs-runtime.md)
 - [Best Practices](./juice-best-practices.md)
+- [Roadmap](./juice-roadmap.md) (post-0.4.0)
 
 ## Status
 
