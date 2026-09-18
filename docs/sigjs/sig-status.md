@@ -1,6 +1,6 @@
 # Sig.js Status
 
-Honest snapshot of `@citrusworx/sigjs` **0.2.0** against `libraries/sig/src`.
+Honest snapshot of `@citrusworx/sigjs` **0.3.0** (npm, 2026-09-18) against `libraries/sig/src`.
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 
@@ -41,10 +41,10 @@ The feature is more of a direction than a hardened part of the runtime.
 | `mount` / `disposeTree` | Stable-ish | Replace a target’s children; walk cleanups. |
 | `Fragment` | Stable-ish | `DocumentFragment`. Same child model as host elements. |
 | `batch` | Stable-ish | Depth counter, `try` / `finally`. Nested calls and throws are covered by tests. |
-| `memo` | Emerging | Lazy `{ get }` cache. No public dispose. Useful, still a small surface. |
+| `memo` | Stable-ish | Lazy `{ get }` cache. Recomputes when signal (or memo) dependencies change; notifies subscribed effects. No public `dispose`, no equality check, no `set`. |
 | `SigRouter` exact + param paths | Emerging | Named routes, `:id` params, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. |
 | Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
-| Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys. Not a typed Juice plugin. |
+| Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys (covered by `jsx.test.ts`). Not a typed Juice plugin. |
 | List / conditional helpers | Draft | `replaceChildren` is the current instruction, not a `<For>` / `<Show>` primitive. |
 | SSR / hydration | Draft | Client DOM only. |
 | Error boundaries | Draft | Uncaught. |
@@ -57,7 +57,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `Signal(value)` factory | `signal.ts` | `get` / `set` only |
 | `effect` + cleanup + dispose | `signal.ts` | Returns disposer |
 | `batch` | `signal.ts` | Nested-safe depth counter |
-| `memo` | `signal.ts` | `{ get }` cache |
+| `memo` | `signal.ts` | `{ get }` cache. Public surface is `get` only; internal invalidator `dispose` is not exported. |
 | `captureCleanupScope` | `signal.ts` | Used by JSX components |
 | JSX → real DOM | `jsx-runtime.ts` | No VDOM |
 | Function-child **text** | `jsx-runtime.ts` | `String(child())` |
@@ -84,7 +84,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Built-in fetch / forms / persistence | Use the platform |
 | Keyed list reconciler | `replaceChildren` in your effect |
 
-`memo` **is** implemented. Older roadmap text that listed “derived signals” as a future version was stale.
+`memo` **is** implemented and tested (`lazy` cache + effect notification). It is **Stable-ish** as a derivation primitive: `{ get }` only, no public dispose. Older roadmap text that listed “derived signals” as a future version was stale.
 
 ## Strongest areas
 
@@ -92,6 +92,7 @@ These are the parts of Sig.js that are already carrying real value:
 
 - signals as `{ get, set }` boxes
 - effects with cleanup
+- `batch` and `memo` as the other two core primitives
 - function-child live text
 - function-valued live attributes
 - JSX that is actual DOM
@@ -104,10 +105,9 @@ These form the strongest case for Sig.js as a small behavior layer on Juice page
 
 These are already useful, but still need refinement before they feel fully settled:
 
-- `memo` (lifecycle)
 - `SigRouter` (first-registered param matches; no splat segments)
 - documentation as a product surface
-- Juice composition conventions (static flags vs function-valued attributes)
+- Juice composition conventions (typed plugin vs today’s attribute convention)
 
 These areas are what will most directly move Sig.js from strong alpha toward a calmer 1.0 story.
 
@@ -137,8 +137,8 @@ If you put `{count.get()}` in JSX without a function wrapper, you get a static t
 
 ## Tests
 
-- `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo`
-- `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, reactive `className` / `value` / booleans, `ref` + effect, `mount` / `disposeTree`
+- `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo` (lazy cache + effect notify)
+- `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, reactive `className` / `value` / booleans, Juice-style unknown attributes via `setAttribute`, `ref` + effect, `mount` / `disposeTree`
 - `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate, param match, exact-over-param
 
 DOM tests install a jsdom document from `libraries/sig/jsdom-register.ts` (not published).
@@ -175,7 +175,7 @@ Less accurate positioning right now would be:
 If you are building with Sig.js today:
 
 - confidently use `Signal`, function-child text, function-valued props, `effect` + cleanup, `mount`
-- use `batch` (including nested) and `memo`
+- use `batch` (including nested) and `memo` (lazy `{ get }` derivations)
 - use `SigRouter` for exact pages and `/user/:id`-style params; register `"*"` if you want a missing-path view
 - treat list components and live `style` objects as things you write yourself or live without
 

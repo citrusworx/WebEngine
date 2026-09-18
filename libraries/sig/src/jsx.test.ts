@@ -106,6 +106,41 @@ test("static props stay assign-once", () => {
     expect(el.className).toBe("card");
 });
 
+test("unknown Juice-style attributes survive setProp via setAttribute", () => {
+    const el = jsx("section", {
+        stack: true,
+        gap: "2rem",
+        card: true,
+        padding: "1.25rem",
+    }) as HTMLElement;
+
+    expect(el.getAttribute("stack")).toBe("");
+    expect(el.getAttribute("card")).toBe("");
+    expect(el.getAttribute("gap")).toBe("2rem");
+    expect(el.getAttribute("padding")).toBe("1.25rem");
+    expect((el as any).stack).toBeUndefined();
+    expect((el as any).gap).toBeUndefined();
+});
+
+test("function-valued Juice-style attributes update via setAttribute", () => {
+    const gap = Signal("1rem");
+    const dense = Signal(false);
+    const el = jsx("section", {
+        stack: true,
+        gap: () => gap.get(),
+        padding: () => (dense.get() ? "0.5rem" : "1.25rem"),
+    }) as HTMLElement;
+
+    expect(el.getAttribute("stack")).toBe("");
+    expect(el.getAttribute("gap")).toBe("1rem");
+    expect(el.getAttribute("padding")).toBe("1.25rem");
+
+    gap.set("2rem");
+    dense.set(true);
+    expect(el.getAttribute("gap")).toBe("2rem");
+    expect(el.getAttribute("padding")).toBe("0.5rem");
+});
+
 test("on* functions are listeners, not reactive getters", () => {
     let clicks = 0;
     const el = jsx("button", {

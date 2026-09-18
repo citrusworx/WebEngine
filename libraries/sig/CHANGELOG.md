@@ -1,8 +1,21 @@
 # @citrusworx/sigjs
 
+## 0.3.0
+
+Published to npm **2026-09-18**. Workspace `package.json` matches this version. Do not republish.
+
+### Minor Changes
+
+- Function-valued reactive JSX props and `/user/:id` parametric `SigRouter` routes.
+
+### Patch Changes
+
+- Nested-safe / exception-safe `batch()`, `navigate` path normalize, optional `*` fallback, tests excluded from published `dist/`.
+- Standalone library packaging and docs (not WebEngine-only).
+
 ## 0.2.0
 
-npm `0.2.0` was published 2026-07-01. That tarball is **not** current `libraries/sig` on master: it has exact-path routing only, no function-valued reactive props, and it still ships test files under `dist/`. The unpublished master work is queued as **0.3.0** via Changesets.
+npm `0.2.0` was published 2026-07-01. That tarball is **not** current `libraries/sig` on master: it has exact-path routing only, no function-valued reactive props, and it still ships test files under `dist/`. **0.3.0** superseded it.
 
 ### Minor Changes
 

@@ -23,10 +23,10 @@ It is not React. There is no `useState`, `useEffect`, or virtual DOM. Components
 ## Install
 
 ```bash
-yarn add @citrusworx/sigjs
+npm install @citrusworx/sigjs@^0.3.0
 ```
 
-Package version today: **0.2.0**.
+Package version today: **0.3.0** (npm). Yarn / pnpm: `yarn add @citrusworx/sigjs@^0.3.0` / `pnpm add @citrusworx/sigjs@^0.3.0`.
 
 ## Configure TypeScript for JSX
 

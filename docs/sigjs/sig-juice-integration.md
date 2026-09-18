@@ -16,7 +16,7 @@ Juice is not a component runtime. Do not import `{ Button }` from `@citrusworx/j
 ## Setup
 
 ```bash
-yarn add @citrusworx/juiceui @citrusworx/sigjs
+yarn add @citrusworx/juiceui @citrusworx/sigjs@^0.3.0
 ```
 
 ```json

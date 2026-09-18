@@ -82,7 +82,7 @@ That is teachable. Splat routes and a helper that fills named param URLs are sti
 
 ### 4. JSX-runtime tests exist but are still thin
 
-`signal.test.ts`, `jsx.test.ts`, and `router.test.ts` cover the child text model, reactive props, `mount` / `disposeTree`, `navigate` normalize, `"*"` fallback, and `:param` matching. They do not cover every `setProp` branch.
+`signal.test.ts`, `jsx.test.ts`, and `router.test.ts` cover the child text model, reactive props, Juice-style unknown attributes (`setAttribute` via `setProp`), `mount` / `disposeTree`, `navigate` normalize, `"*"` fallback, and `:param` matching. They do not cover every `setProp` branch.
 
 ---
 
