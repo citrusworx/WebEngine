@@ -1,6 +1,17 @@
+import { WPCreate } from "../core/WPCreate.js";
 import { WPRead } from "../core/WPRead.js";
 import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, getUsersByCity, getUsersByCityState, updateUser } from "./routes.js";
+class UserCreate extends WPCreate {
+    createUser(data) {
+        return this.create(createUser, data);
+    }
+}
 export class Users extends WPRead {
+    creator;
+    constructor(config) {
+        super(config);
+        this.creator = new UserCreate(config);
+    }
     getAll() {
         return this.read(getAllUsers);
     }
@@ -17,7 +28,7 @@ export class Users extends WPRead {
         return this.read(getUsersByCityState, { state, city });
     }
     create(data) {
-        return this.mutate(createUser, data);
+        return this.creator.createUser(data);
     }
     update(id, data) {
         return this.mutate(updateUser, data, { id });

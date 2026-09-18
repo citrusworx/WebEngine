@@ -1,6 +1,17 @@
-import { WPRead } from "../core/WPRead";
-import { createPost, deletePost, getAllPosts, getPostByAuthor, getPostById, getPostBySlug, getPostsByCategory, getPostsByDate, getPostsByTag, updatePost } from "./routes";
+import { WPCreate } from "../core/WPCreate.js";
+import { WPRead } from "../core/WPRead.js";
+import { createPost, deletePost, getAllPosts, getPostByAuthor, getPostById, getPostBySlug, getPostsByCategory, getPostsByDate, getPostsByTag, updatePost } from "./routes.js";
+class PostCreate extends WPCreate {
+    createPost(data) {
+        return this.create(createPost, data);
+    }
+}
 export class Posts extends WPRead {
+    creator;
+    constructor(config) {
+        super(config);
+        this.creator = new PostCreate(config);
+    }
     getAll() {
         return this.read(getAllPosts);
     }
@@ -23,7 +34,7 @@ export class Posts extends WPRead {
         return this.read(getPostsByDate, { date });
     }
     create(data) {
-        return this.mutate(createPost, data);
+        return this.creator.createPost(data);
     }
     update(id, data) {
         return this.mutate(updatePost, data, { id });

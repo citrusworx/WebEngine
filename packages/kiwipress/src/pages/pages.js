@@ -1,6 +1,17 @@
-import { WPRead } from "../core/WPRead";
-import { createPage, deletePage, getAllPages, getPageByAuthor, getPageByCategory, getPageById, getPageBySlug, getPageByTag, updatePage } from "./routes";
+import { WPCreate } from "../core/WPCreate.js";
+import { WPRead } from "../core/WPRead.js";
+import { createPage, deletePage, getAllPages, getPageByAuthor, getPageByCategory, getPageById, getPageBySlug, getPageByTag, updatePage } from "./routes.js";
+class PageCreate extends WPCreate {
+    createPage(data) {
+        return this.create(createPage, data);
+    }
+}
 export class Pages extends WPRead {
+    creator;
+    constructor(config) {
+        super(config);
+        this.creator = new PageCreate(config);
+    }
     getAll() {
         return this.read(getAllPages);
     }
@@ -20,7 +31,7 @@ export class Pages extends WPRead {
         return this.read(getPageByTag, { tag });
     }
     create(data) {
-        return this.mutate(createPage, data);
+        return this.creator.createPage(data);
     }
     update(id, data) {
         return this.mutate(updatePage, data, { id });
