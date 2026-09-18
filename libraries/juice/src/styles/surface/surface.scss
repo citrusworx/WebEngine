@@ -10,23 +10,31 @@
 //   --juice-surface-<tone>-blur    backdrop-filter blur length
 //
 // Tones: soft (frosted), strong (opaque elevated), muted (quiet recessed).
-// borderStrength and standalone blur="sm|md" are out of scope for this slice.
+// Slice B/C (standalone blur attrs) stay out of scope.
+//
+// [theme] [surfaceTone] must beat theme semantic defaults such as
+// [theme="…"] :where(section, article, …) so the attribute works on
+// those elements. Themes realize paint through the roles, not by
+// overriding the utility selector.
 
-[surfaceTone="soft"] {
+[surfaceTone="soft"],
+[theme] [surfaceTone="soft"] {
     background-color: var(--juice-surface-soft-bg, #{rgba($white-100, 0.88)});
     border: 1px solid var(--juice-surface-soft-border, #{rgba($gray-300, 0.6)});
     box-shadow: var(--juice-surface-soft-shadow, 0 18px 40px -28px #{rgba($gray-900, 0.35)});
     backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
 }
 
-[surfaceTone="strong"] {
+[surfaceTone="strong"],
+[theme] [surfaceTone="strong"] {
     background-color: var(--juice-surface-strong-bg, #{rgba($white-100, 0.98)});
     border: 1px solid var(--juice-surface-strong-border, #{rgba($gray-300, 0.85)});
     box-shadow: var(--juice-surface-strong-shadow, 0 22px 48px -22px #{rgba($gray-900, 0.42)});
     backdrop-filter: blur(var(--juice-surface-strong-blur, 0px));
 }
 
-[surfaceTone="muted"] {
+[surfaceTone="muted"],
+[theme] [surfaceTone="muted"] {
     background-color: var(--juice-surface-muted-bg, #{$gray-100});
     border: 1px solid var(--juice-surface-muted-border, #{rgba($gray-300, 0.45)});
     box-shadow: var(--juice-surface-muted-shadow, none);

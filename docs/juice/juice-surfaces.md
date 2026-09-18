@@ -4,7 +4,7 @@ Surfaces describe **how a region looks** without replacing structural attributes
 
 ## Beta-stable: `surfaceTone`
 
-Implemented in `libraries/juice/src/styles/surface/surface.scss`. Core CSS consumes shared `--juice-surface-<tone>-*` roles with light fallbacks, so unthemed markup keeps the original frost. Themes bind those roles from existing surface/page tokens.
+Implemented in `libraries/juice/src/styles/surface/surface.scss`. Core CSS consumes shared `--juice-surface-<tone>-*` roles with light fallbacks, so unthemed markup keeps the original frost. Themes bind those roles from existing surface/page tokens. Selectors include `[theme] [surfaceTone]` so the attribute wins over theme semantic defaults on `section` / `article` / `aside`.
 
 Shipped values:
 

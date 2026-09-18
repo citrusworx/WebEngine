@@ -62,6 +62,8 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[surfaceTone=["']?soft["']?\]/);
         expect(css).toMatch(/\[surfaceTone=["']?strong["']?\]/);
         expect(css).toMatch(/\[surfaceTone=["']?muted["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[surfaceTone=["']?soft["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[surfaceTone=["']?strong["']?\]/);
         expect(css).toContain("--juice-surface-soft-bg");
         expect(css).toContain("--juice-surface-soft-border");
         expect(css).toContain("--juice-surface-soft-shadow");

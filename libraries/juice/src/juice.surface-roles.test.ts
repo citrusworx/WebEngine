@@ -32,6 +32,9 @@ describe("Surface tone role contract", () => {
 
         expect(scss).toContain("var(--juice-surface-soft-bg,");
         expect(scss).toContain("rgba($white-100, 0.88)");
+        expect(scss).toContain("[theme] [surfaceTone=\"soft\"]");
+        expect(scss).toContain("[theme] [surfaceTone=\"strong\"]");
+        expect(scss).toContain("[theme] [surfaceTone=\"muted\"]");
         expect(scss).not.toContain('[blur="sm"]');
         expect(scss).not.toContain('[blur="md"]');
         expect(scss).not.toContain("[borderStrength");
