@@ -9,6 +9,7 @@ Use `yarn release-packages` to publish **all** versioned public packages to npm 
 Package-specific checklists:
 
 - Juice: [`docs/juice/release-checklist.md`](../docs/juice/release-checklist.md)
+- Sig.js: [`docs/sigjs/release-checklist.md`](../docs/sigjs/release-checklist.md)
 - Nectarine: [`docs/nectarine/release-checklist.md`](../docs/nectarine/release-checklist.md)
 
 To publish only Nectarine after `yarn version-packages`:
