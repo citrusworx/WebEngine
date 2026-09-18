@@ -189,7 +189,7 @@ class Posts extends WPRead {
 ### Notes
 
 - `WPRead` is the right base class for any custom read-only domain object.
-- Posts, Pages, and Users extend `WPRead` and hold a `WPCreate` collaborator for `create()` and a `WPUpdate` collaborator for `update()`. Delete still calls `this.mutate()`.
+- Posts, Pages, and Users extend `WPRead` and hold a `WPCreate` collaborator for `create()`, a `WPUpdate` collaborator for `update()`, and a `WPDelete` collaborator for `delete()`.
 
 ---
 
@@ -228,7 +228,7 @@ class Posts extends WPRead {
 }
 ```
 
-> Delete still calls `this.mutate()` from the `WPRead` subclass. That is a later step.
+> Delete goes through a `WPDelete` collaborator on the `WPRead` subclass.
 
 ---
 
@@ -267,7 +267,7 @@ class Posts extends WPRead {
 }
 ```
 
-> Delete still calls `this.mutate()` from the `WPRead` subclass. That is a later step.
+> Delete goes through a `WPDelete` collaborator on the `WPRead` subclass.
 
 ---
 
@@ -290,10 +290,18 @@ class Posts extends WPRead {
 
 ### Usage
 
+Posts, Pages, and Users keep extending `WPRead`. Delete goes through a small `WPDelete` collaborator constructed once with the same config:
+
 ```ts
+class PostDelete extends WPDelete {
+  deletePost(id: string | number) {
+    return this.delete(deletePost, { id });
+  }
+}
+
 class Posts extends WPRead {
   delete(id: string | number) {
-    return this.mutate(deletePost, undefined, { id });
+    return this.deleter.deletePost(id);
   }
 }
 ```

@@ -1,4 +1,5 @@
 import { WPCreate } from "../core/WPCreate.js";
+import { WPDelete } from "../core/WPDelete.js";
 import { WPRead } from "../core/WPRead.js";
 import { WPUpdate } from "../core/WPUpdate.js";
 import { createUser, deleteUser, getAllUsers, getUserByEmail, getUserById, getUsersByCity, getUsersByCityState, updateUser } from "./routes.js";
@@ -12,13 +13,20 @@ class UserUpdate extends WPUpdate {
         return this.update(updateUser, data, { id });
     }
 }
+class UserDelete extends WPDelete {
+    deleteUser(id) {
+        return this.delete(deleteUser, { id });
+    }
+}
 export class Users extends WPRead {
     creator;
     updater;
+    deleter;
     constructor(config) {
         super(config);
         this.creator = new UserCreate(config);
         this.updater = new UserUpdate(config);
+        this.deleter = new UserDelete(config);
     }
     getAll() {
         return this.read(getAllUsers);
@@ -42,7 +50,7 @@ export class Users extends WPRead {
         return this.updater.updateUser(id, data);
     }
     delete(id) {
-        return this.mutate(deleteUser, undefined, { id });
+        return this.deleter.deleteUser(id);
     }
 }
 //# sourceMappingURL=users.js.map
