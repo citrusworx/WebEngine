@@ -189,7 +189,7 @@ class Posts extends WPRead {
 ### Notes
 
 - `WPRead` is the right base class for any custom read-only domain object.
-- To build a domain object with both read and write capability, compose `WPRead` with `WPCreate`/`WPUpdate`/`WPDelete` through multiple inheritance or by extending a mixin — or simply call `this.mutate()` directly since it is inherited from `WPClient`.
+- Posts, Pages, and Users extend `WPRead` and hold a `WPCreate` collaborator for `create()`. Update and delete still call `this.mutate()`.
 
 ---
 
@@ -212,15 +212,23 @@ class Posts extends WPRead {
 
 ### Usage
 
+Posts, Pages, and Users keep extending `WPRead`. Create goes through a small `WPCreate` collaborator constructed once with the same config:
+
 ```ts
+class PostCreate extends WPCreate {
+  createPost(data: WordPressPayload) {
+    return this.create(createPost, data);
+  }
+}
+
 class Posts extends WPRead {
   create(data: WordPressPayload) {
-    return this.mutate(createPost, data);
+    return this.creator.createPost(data);
   }
 }
 ```
 
-> Domain objects currently call `this.mutate()` directly rather than extending `WPCreate`. `WPCreate` is exported for cases where you want a class whose role is explicitly creation-only.
+> Update and delete still call `this.mutate()` from the `WPRead` subclass. That is a later step.
 
 ---
 

@@ -1,6 +1,9 @@
 import { WPRead } from "../core/WPRead.js";
+import type { WPCoreConfig } from "../core/WPCore.js";
 import type { WordPressPayload } from "../types/api.js";
 export declare class Posts extends WPRead {
+    private readonly creator;
+    constructor(config?: Partial<WPCoreConfig>);
     getAll(): any;
     getById(id: string | number): any;
     getBySlug(slug: string): any;
