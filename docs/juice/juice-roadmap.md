@@ -86,7 +86,7 @@ Do not treat Tide as a fourth shipped library theme until it is promoted out of 
 ### 5. Packaging Matches the Runtime Story
 
 * `sideEffects` includes `dist/index.js`, so bundlers that trust the field do not drop auto-start navigation, accordion, and tabs.
-* `@citrusworx/sigjs` is a published `^0.2.0` caret range, not `workspace:^`.
+* `@citrusworx/sigjs` is a published `^0.3.0` caret range, not `workspace:^`.
 
 That is packaging honesty, not a new product surface.
 

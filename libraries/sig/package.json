@@ -1,6 +1,6 @@
 {
   "name": "@citrusworx/sigjs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Standalone signals, JSX-to-DOM runtime, and client router for TypeScript and JavaScript. No framework required.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
