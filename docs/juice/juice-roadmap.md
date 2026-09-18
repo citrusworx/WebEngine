@@ -2,337 +2,272 @@
 
 ## Current Position
 
-Juice is no longer just a collection of layout utilities.
+`@citrusworx/juiceui@0.4.0` is on npm. That is the current Juice Beta cut.
 
-It is now becoming a broader UI system with five visible layers:
+Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
+
+The visible layers today:
 
 * layout and spacing primitives
-* token-driven color, font, and gradient systems
-* emerging surface and theme contracts
-* browser runtime behavior for built-in features like navigation
-* early component exports
+* token-driven color, font, gradient, and motion systems
+* three shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`), with core CSS separate from theme identity
+* a small surface language (`surfaceTone="soft"`)
+* Emerging browser runtimes: navigation, accordion, and tabs auto-enhance when the JS entry is imported
+* a Sig Accordion factory plus create/init/start/stop helpers
+* templates as a stress-test bed
 
-The strongest part of Juice today is still its layout and spacing model.
-The next strongest areas are now themes, typography expansion, templates, and visual token structure.
+The strongest parts of Juice today are still layout, spacing, color tokens, typography, and icons.
+
+The next strongest areas are now:
+
+* modular shipped themes (KiwiPress is the richest reference)
+* motion wave 1 (P0 + P1)
+* accordion and tabs chrome plus DOM-first auto-enhance
+* templates as design proofs
 
 The weakest areas are still:
 
-* component maturity
-* icon contract stability
-* polish and consistency in the runtime/component layer
+* surface language breadth (one shipped tone)
+* theme-contract formalization across the shipped set
+* component maturity beyond the three auto-enhance runtimes
+* icon and typography polish
+* Tide (and blush) remaining unpublished drafts
+* config / generator workflow
+
+Tide is a dark product/FAQ theme under `src/themes/_draft/`. Accordion and tabs roles are already bound there. It is **not** a published theme in 0.4.0.
+
+For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity matrix](./juice-maturity-matrix.md).
 
 ---
 
-## What Has Improved
+## What Improved Through 0.4.0
 
-### 1. Themes Are Now Real
+### 1. Themes Are Modular, and Core CSS Is Core-Only
 
-Juice now has a meaningful theme direction instead of only utility styling.
+Juice no longer ships a single CSS bundle that also carries theme identity.
 
-The Aquaflux theme demonstrates the intended model:
+* `@citrusworx/juiceui/styles` is **core only** (utilities and components, no theme rules). This is a breaking change versus the older single-bundle mental model.
+* `aquaflux`, `kiwipress`, and `citrusmint` ship as separate CSS entrypoints: `@citrusworx/juiceui/styles/themes/<id>`.
+* Activate with `theme="<id>"` on the root after importing core + theme CSS.
+* Each shipped theme follows the `<id>.scss` + `<id>.yaml` authoring contract.
 
-* `theme="aquaflux"` establishes color and typography tone
-* standard HTML elements like `main`, `section`, `article`, `aside`, `nav`, `header`, and `footer` can be themed directly
-* headings and general text are styled at the theme level
-* the theme owns the visual treatment of Juice's structural attributes (`[card]`, `[card="hero"]`, etc.) and may add brand-specific variants on the same attributes (e.g. `card="aqua-hero"`) — see [Layers](./juice-layers.md) and [Surface Spec](./juice-surface-spec.md)
+Themes are no longer conceptual, and they are no longer one Aquaflux example. Three library themes are published. Tide is not one of them.
 
-This means the roadmap no longer needs to treat themes as purely conceptual. Theming is now an active design layer in Juice.
+### 2. Accordion and Tabs Joined Navigation as Real Runtimes
 
-### 2. Surface Work Has Started
+Juice is not CSS-only, and the browser layer is no longer “navigation only.”
 
-Juice now has the beginning of a surface language.
+0.4.0 ships:
 
-The current first example is:
+* accordion layout chrome (`[accordion]`, `[accordion-item]`) plus a shared `--juice-accordion-*` role contract
+* a DOM-first accordion runtime that auto-enhances valid markup (click toggle, Escape, late DOM sync)
+* tabs layout chrome (`[tabs]`, `[tabs-list]`, `[tab]`, `[tab-panel]`) plus a shared `--juice-tabs-*` role contract
+* a DOM-first tabs runtime that auto-enhances valid markup (exclusive panels, APG keyboard, dual-write `[active]` / `aria-selected`)
+* the Sig `Accordion` factory and create/init/start/stop helpers for navigation, accordion, and tabs
 
-* `surfaceTone="soft"`
+Navigation was already present. It remains Emerging, same as accordion and tabs. Importing `@citrusworx/juiceui` auto-starts all three. Markup plus auto-enhance is the contract, not a large JS component library.
 
-That is important because it confirms the intended split:
+See [Runtime Behavior](./juice-runtime-behavior.md), [Accordion Runtime](./juice-accordion-runtime.md), and [Tabs Runtime](./juice-tabs-runtime.md).
 
-* Juice controls layout, spacing, and reusable visual utilities
-* themes and component attributes can define more opinionated surface patterns
+### 3. Motion Wave 1 Is Documented and Gated
 
-The surface system is still early, but it is no longer hypothetical.
+The canonical `motion` attribute now covers the P0/P1 catalog (including `fade.in.down/up`, `fade.out.down/up`, and `slideOut.left/right/up/down`). `prefers-reduced-motion` is respected.
 
-### 3. Typography Has Expanded
+That is a supported Beta subset, not the full [animations roadmap](./juice-animations-roadmap.md).
 
-Typography is noticeably further along than before.
+### 4. Teal Tokens Exist; Tide Still Does Not Ship
 
-Juice now includes:
+0.4.0 added a teal/cyan family (`teal-100`–`teal-900`) and the `lagoon` swatch.
 
-* semantic text size attributes
-* `lineHeight`
-* `fontWeight`
-* broader font imports and selector mapping
-* improved font loading with Google font `@import` usage instead of invalid remote `@font-face` definitions
+Draft **Tide** consumes those tokens as a dark product/FAQ theme. Draft **blush** remains YAML-only. Both live under `src/themes/_draft/`. Package `exports` and the published tarball do not expose `_draft`. Local builds can still compile Tide CSS for demos.
 
-Typography is still not complete, but it has moved from “thin support” into “usable system layer.”
+Do not treat Tide as a fourth shipped library theme until it is promoted out of draft.
 
-### 4. Numeric Sizing Is Better
+### 5. Packaging Matches the Runtime Story
 
-Sizing support is stronger than it was previously.
+* `sideEffects` includes `dist/index.js`, so bundlers that trust the field do not drop auto-start navigation, accordion, and tabs.
+* `@citrusworx/sigjs` is a published `^0.2.0` caret range, not `workspace:^`.
 
-Juice now supports more practical fractional values like:
+That is packaging honesty, not a new product surface.
 
-* `1.25rem`
-* `1.75rem`
+### 6. Docs Maturity Caught Up to the JS Entry
 
-This improves real-world authoring for:
+The [maturity matrix](./juice-maturity-matrix.md) now marks the JS entrypoint and public component exports as **Emerging**. Beta docs no longer describe the JS entry as a stub, and they do not pretend Juice is a broad component library.
 
-* width
-* height
-* gap
-* padding
-* margin
+---
 
-That reduces friction and makes the utility system feel more credible for production work.
+## Foundations That Still Stand
 
-### 5. Gradient Architecture Is Getting Cleaner
+These were true before 0.4.0 and remain true:
 
-The gradient system is becoming more structurally consistent.
-
-Blue gradient work helped confirm a better split:
-
-* tokens define design data
-* styles emit the actual selectors
-
-That better matches the broader Juice architecture and should be repeated across other token groups where needed.
-
-### 6. Templates Are Now a Real Test Bed
-
-Juice now has enough template work to meaningfully stress-test its aesthetic range.
-
-Current templates show that Juice can reach several different visual directions:
-
-* SaaS
-* retail
-* pizza delivery
-* social feed
-* spa / themed marketing
-* hosting dashboard
-
-This is important because templates are now exposing where Juice is strong and where it still breaks down.
-
-### 7. Browser Runtime Work Has Started
-
-Juice is no longer CSS-only.
-
-The built-in navigation runtime shows that Juice can support framework-agnostic browser behavior that:
-
-* runs automatically
-* works with raw HTML, server-rendered markup, and reactive environments
-* aligns with Juice markup conventions
-
-That is a meaningful step forward, even though the runtime layer is still young.
-
-### 8. Section Layout Is Now Opt-In (Resolved)
-
-Plain semantic `<section>` no longer carries auto-responsive layout opinions.
-
-Previously a bare `<section>` behaved like a wrapping responsive flex container, which fought explicit layout primitives like `stack` and `row` (most visibly in the Facebook-style feed template). As of `e7a1584` (2026-05-16) that behavior is opt-in via `section[auto]`, and plain `<section>` is a neutral semantic block that themes can paint without fighting layout. No other semantic element (`article`, `aside`, `main`, `header`, `footer`, `nav`) carries bare layout opinions in core.
+* Layout and spacing are the identity of Juice. Plain `<section>` is a neutral semantic block; auto-responsive section layout is opt-in via `section[auto]`.
+* Typography is a usable system layer (semantic text sizes, `lineHeight`, `fontWeight`, font loading), not a thin add-on.
+* Numeric sizing includes practical fractional rem values.
+* Token/style split for gradients is the pattern to keep repeating.
+* Templates (SaaS, retail, delivery, social feed, spa/marketing, hosting dashboard, FAQ) are still the best stress tests of aesthetic range and layout semantics.
 
 ---
 
 ## What Is Still Holding Juice Back
 
-### 1. Components Are Not Mature Yet
+### 1. Surface Language Is Still Early
 
-Juice now exports components, but the component layer is not yet strong enough to be considered stable.
+Juice has a real surface hook, but not a full surface system.
 
-The Accordion work showed the current weak points:
+Shipped today:
 
-* reactive attribute mapping only recently improved
-* component authoring patterns are still settling
-* prop contracts for styling internal parts are still being figured out
-* the exported component surface is ahead of the component quality
+* `surfaceTone="soft"`
 
-This means Juice can expose components, but it is not yet a polished component library.
+Still missing or only specified:
 
-### 2. The Icon Contract Is Still Settling
-
-Icons work, but the public authoring contract still feels transitional.
-
-The system has been moving from mixed class-based patterns toward a more native attribute-driven contract.
-
-What still needs clarification:
-
-* canonical sizing pattern
-* canonical coloring pattern
-* alignment expectations for icon + text composition
-* which icon attributes are first-class and which are legacy carryover
-
-This is now better than before, but it still needs formalization.
-
-### 3. Surface Language Is Still Early
-
-Juice now has the beginning of surface utilities, but not yet a full surface system.
-
-What is still missing:
-
-* more surface tones
-* stronger border semantics
-* better depth/shadow language
+* more `surfaceTone` variants (`strong` is specified, not implemented)
+* stronger border semantics (`borderStrength`)
+* better depth / shadow language
 * clearer glass / overlay / tint patterns
-* more ready-made component surface attributes
+* more ready-made structural variants on `card` / `panel` / `hero`
 
-Right now, authors still need to hand-assemble too much of the visual character for cards, panels, and heroes.
+Authors still hand-assemble too much of the visual character for cards, panels, and heroes. See [Surfaces](./juice-surfaces.md) and [Surface Spec](./juice-surface-spec.md).
 
-### 4. Templates Still Expose Proportional Weaknesses
+### 2. The Theme Contract Is Still Formalizing
 
-Juice can now express many aesthetics, but dense layouts still reveal weaknesses in:
+Three shipped themes prove the split — Juice owns structure, themes own identity — but the contract is not yet as easy to repeat as it should be.
 
-* column math
-* containment
-* layout semantics
-* app-style shell composition
+A first-class theme system should make these decisions obvious:
 
-The Facebook-style work was useful because it showed:
+* typography choices
+* semantic text and surface colors
+* hero / card / panel variants
+* element-level defaults for headings, text, sections, forms, and nav
+* accordion and tabs chrome roles bound from identity tokens
 
-* Juice can produce the pieces
-* but getting a highly recognizable, dense application layout still takes careful manual correction
+KiwiPress is the richest shipped reference. Aquaflux and Citrusmint follow the same shape. Tide is the next reference that should join that set — after it is promoted, not before.
 
-That is not failure, but it does show where the system still needs refinement.
+Config-driven generation from `juice.config.yaml` remains draft. It should not block library theme work.
 
----
+### 3. Components Are Uneven Beyond the Runtimes
 
-## Revised Status
+Accordion and tabs now have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real.
 
-If Juice is viewed as a full UI system, its current maturity looks roughly like this:
+That is not the same as a polished component library. Cards, buttons, forms, and nav variants are useful and still settling. Prop contracts for styling internal parts are still being figured out. Juice should not pretend the exported component surface is broader or more mature than it is.
 
-* Layout and spacing system: strong
-* Tokens and visual primitives: solid early platform
-* Themes: emerging and credible
-* Surface model: early but real
-* Templates as design proofs: strong and useful
-* Browser runtime behavior: promising
-* Components: early and uneven
-* Production-ready system cohesion: not there yet, but clearly taking shape
+### 4. Icon and Typography Still Need Polish
 
-In practical terms:
+Icons and type are Stable-ish in the maturity matrix, and they already carry real value. The remaining work is contract polish, not invention:
 
-* Juice already feels like a real design system direction
-* Juice does not yet feel like a fully stable, polished UI framework
+* canonical icon sizing, coloring, and icon + text alignment
+* which icon attributes are first-class versus leftover
+* a clearer font-size / display-body hierarchy and naming consistency
 
-That is still very good progress.
+### 5. Tide Is Not Yet a Fourth Shipped Theme
+
+Tide is close enough to be the next library build: dark product/FAQ, teal/lagoon identity, accordion and tabs roles already bound. Until it leaves `_draft/` and is added to package exports, npm consumers cannot import it.
+
+Blush is further back (YAML-only, no emitted CSS).
+
+### 6. Templates Still Expose Proportional Weaknesses
+
+Juice can express many aesthetics, but dense layouts still reveal weaknesses in column math, containment, and app-style shell composition. That is useful signal, not failure. Templates should keep doing that job after each system improvement.
 
 ---
 
 ## Revised Priorities
 
-### Priority 1. Expand the Surface System
+Lock this build order. Do not reorder it because a later item is more exciting.
 
-Juice should build out the surface model that has already started.
+### Priority 1. Promote Tide to a Shipped Library Theme
+
+This is the next Juice library build after this docs refresh.
+
+The work is promotion, not invention: move Tide out of `src/themes/_draft/`, add the published CSS export, and treat it as a fourth shipped theme. Do not ship blush in the same step.
+
+Until that lands, docs and packaging should keep saying Tide is draft.
+
+### Priority 2. Expand the Surface Language
+
+Build out the surface model that already started.
 
 Recommended next additions:
 
 * more `surfaceTone` variants
 * `borderStrength`
-* `variant`
-* `blur`
-* more structural variants on `card` (e.g. `card="large"`, `card="muted"`, `card="hero"`) — see [Surface Spec](./juice-surface-spec.md) for the canonical naming model
+* depth / shadow language
+* `blur` / overlay / tint where they stay composable
+* more structural variants on `card` (see [Surface Spec](./juice-surface-spec.md))
 
-This would make templates feel far more polished with less manual assembly.
+This is what makes templates feel finished with less manual assembly.
 
-### Priority 2. Formalize the Theme Contract
+### Priority 3. Formalize the Theme Contract
 
-Themes are now real enough that they need a clearer contract.
+Once Tide ships, Juice will have four library themes as references.
 
-A first-class theme system should define:
+Use that set to make the contract easier to repeat and document:
 
-* typography choices
-* semantic text colors
-* semantic surface colors
-* hero/card/panel variants
-* element-level defaults for headings, text, sections, forms, and nav
+* required identity, typography, and palette decisions
+* semantic element defaults
+* accordion / tabs chrome role bindings
+* what belongs in a library theme versus an app-owned generated theme
 
-Aquaflux is the first real example, but the system should become easier to repeat and document.
+Aquaflux is no longer the only example. Do not wait for a generator rewrite to write the contract down.
 
-### Priority 3. Finish the Typography Layer
+### Priority 4. Typography / Icon Contract Polish
 
-Typography is in a much better place, but it still needs more systemization.
+Settle the remaining authoring rules:
 
-Likely next steps:
+* attribute-first icons with clear size, color, alignment, and library selection
+* tighter type hierarchy and naming
+* docs that match the real attributes
 
-* clearer font-size contract
-* more complete display/body hierarchy patterns
-* better naming consistency for type utilities
-* better documentation for font families and usage rules
+This is polish on strong layers, not a new layer.
 
-Typography is no longer a weak point, but it still has room to become more deliberate.
+### Priority 5. Next Runtime / Component, Carefully
 
-### Priority 4. Stabilize the Icon Contract
+The browser behavior layer should keep growing, but slowly.
 
-Juice should settle on one canonical icon authoring model.
+A plausible next runtime is something like a modal / dialog, following the same rule as accordion and tabs: valid Juice markup should auto-enhance. Do not oversell a component roadmap. Do not add a runtime until the chrome contract and markup conventions are real.
 
-The likely direction is:
+Short-term focus remains:
 
-* attribute-first
-* no dependency on template-local icon sizing classes
-* clear rules for size, color, alignment, and library selection
-
-This will help templates and components feel more native to Juice.
-
-### Priority 5. Strengthen the Runtime and Component Layer
-
-The browser behavior layer should keep growing, but carefully.
-
-Short-term focus:
-
-* stabilize navigation behavior
+* keep navigation, accordion, and tabs documented as Emerging until they settle
 * improve component authoring patterns
-* make reactive attribute usage more predictable
-* ensure exported components are actually ready before treating them as first-class
+* ensure anything newly exported is actually ready
 
-Juice should avoid pretending the component layer is more mature than it is.
+### Priority 6. Templates as Stress Tests; Juice CLI as a Separate Track
 
-### Priority 6. Keep Using Templates as Stress Tests
-
-Template work is now one of the most valuable tools in Juice development.
-
-Templates should continue to be used to test:
+Keep using templates to test:
 
 * dense app shells
 * marketing sites
-* retail/product merchandising
+* retail / product merchandising
 * themed experiences
-* social layouts
+* FAQ / product pages (especially once Tide is public)
 
-Templates are currently doing a better job than abstract planning at revealing what Juice still needs.
+The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block Tide promotion, surface work, or theme-contract formalization.
 
 ---
 
 ## Recommended Build Order
 
-1. Expand `surfaceTone` and related surface utilities.
-2. Formalize the theme contract using Aquaflux as the reference pattern.
-3. Tighten typography and naming consistency.
-4. Stabilize the icon API.
-5. Improve runtime/component maturity.
-6. Continue template-driven stress testing after each improvement.
+1. Promote Tide to a shipped library theme.
+2. Expand `surfaceTone` and related surface utilities.
+3. Formalize the theme contract using the four shipped themes as references (once Tide lands).
+4. Tighten typography and icon authoring contracts.
+5. Add the next runtime or component only when the chrome and markup are ready (for example modal). Do not oversell this.
+6. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
 ---
 
 ## Summary
 
-Juice is in a meaningfully stronger place than it was before.
+0.4.0 was a real Beta cut, not a packaging bump.
 
-It now has:
+It shipped modular themes, motion wave 1, accordion and tabs runtimes, teal tokens, and packaging that matches the auto-enhance story. Layout, tokens, typography, and icons were already the strongest layers; they still are. Tide is ready to be next, and it is not shipped yet.
 
-* a credible layout and spacing identity
-* better typography support
-* cleaner token/style separation in important areas
-* a real theme example
-* the beginning of a surface language
-* a browser runtime direction
-* a growing template library that exposes real strengths and weaknesses
+The next stage is refinement plus Tide promotion:
 
-The next stage is not inventing Juice from scratch anymore.
-
-The next stage is refinement:
-
-* make layout semantics safer
+* make Tide a public library theme
 * make surface language richer
-* formalize themes
-* settle icons
-* stabilize components and runtime behavior
+* formalize themes against four references
+* polish icons and type
+* grow runtime/components only when the markup contract is honest
 
 That is a strong place to be.
