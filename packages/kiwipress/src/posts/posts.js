@@ -1,4 +1,5 @@
 import { WPCreate } from "../core/WPCreate.js";
+import { WPDelete } from "../core/WPDelete.js";
 import { WPRead } from "../core/WPRead.js";
 import { WPUpdate } from "../core/WPUpdate.js";
 import { createPost, deletePost, getAllPosts, getPostByAuthor, getPostById, getPostBySlug, getPostsByCategory, getPostsByDate, getPostsByTag, updatePost } from "./routes.js";
@@ -12,13 +13,20 @@ class PostUpdate extends WPUpdate {
         return this.update(updatePost, data, { id });
     }
 }
+class PostDelete extends WPDelete {
+    deletePost(id) {
+        return this.delete(deletePost, { id });
+    }
+}
 export class Posts extends WPRead {
     creator;
     updater;
+    deleter;
     constructor(config) {
         super(config);
         this.creator = new PostCreate(config);
         this.updater = new PostUpdate(config);
+        this.deleter = new PostDelete(config);
     }
     getAll() {
         return this.read(getAllPosts);
@@ -48,7 +56,7 @@ export class Posts extends WPRead {
         return this.updater.updatePost(id, data);
     }
     delete(id) {
-        return this.mutate(deletePost, undefined, { id });
+        return this.deleter.deletePost(id);
     }
 }
 //# sourceMappingURL=posts.js.map

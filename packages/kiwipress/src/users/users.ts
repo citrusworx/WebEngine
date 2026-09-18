@@ -1,4 +1,5 @@
 import { WPCreate } from "../core/WPCreate.js";
+import { WPDelete } from "../core/WPDelete.js";
 import { WPRead } from "../core/WPRead.js";
 import { WPUpdate } from "../core/WPUpdate.js";
 import type { WPCoreConfig } from "../core/WPCore.js";
@@ -26,14 +27,22 @@ class UserUpdate extends WPUpdate {
     }
 }
 
+class UserDelete extends WPDelete {
+    deleteUser(id: string | number) {
+        return this.delete(deleteUser, { id });
+    }
+}
+
 export class Users extends WPRead {
     private readonly creator: UserCreate;
     private readonly updater: UserUpdate;
+    private readonly deleter: UserDelete;
 
     constructor(config?: Partial<WPCoreConfig>) {
         super(config);
         this.creator = new UserCreate(config);
         this.updater = new UserUpdate(config);
+        this.deleter = new UserDelete(config);
     }
 
     getAll() {
@@ -65,6 +74,6 @@ export class Users extends WPRead {
     }
 
     delete(id: string | number) {
-        return this.mutate(deleteUser, undefined, { id });
+        return this.deleter.deleteUser(id);
     }
 }

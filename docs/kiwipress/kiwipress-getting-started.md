@@ -188,7 +188,7 @@ That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.t
 - **Responses from `Posts` / `Pages` are raw JSON.** Use `normalizeWordPressItem` or `WPSync.transfer()` when you want Nectarine-shaped `ContentRecord`s. `getBySlug` returns whatever WordPress returned (often an array).
 - **Failed HTTP throws.** `requestWordPress` throws `WordPress request failed: <status> <statusText>` on non-2xx.
 - **Nectarine YAML is loaded by `loadNectarineApi`.** The WordPress client still uses static `routes.ts` files; transfer and native CMS follow Nectarine models.
-- **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and delegates `create()` to a `WPCreate` collaborator and `update()` to a `WPUpdate` collaborator.
+- **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and delegates `create()` to a `WPCreate` collaborator, `update()` to a `WPUpdate` collaborator, and `delete()` to a `WPDelete` collaborator.
 - **Self-signed HTTPS** only bypasses TLS verification when `allowSelfSigned` is true and the URL is `https://`.
 - **Seltzer inbound paths are exact.** The app gateway updates items with `?id=`, not `/posts/:id`.
 
