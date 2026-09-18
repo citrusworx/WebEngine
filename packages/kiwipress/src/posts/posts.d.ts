@@ -4,6 +4,7 @@ import type { WordPressPayload } from "../types/api";
 export declare class Posts extends WPRead {
     private readonly creator;
     private readonly updater;
+    private readonly deleter;
     constructor(config?: Partial<WPCoreConfig>);
     getAll(): any;
     getById(id: string | number): any;
