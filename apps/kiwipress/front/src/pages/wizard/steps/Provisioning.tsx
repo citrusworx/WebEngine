@@ -162,7 +162,10 @@ export function Provisioning() {
     });
 
     effect(() => {
+        let done = false;
+        let completeTimer = 0;
         const timer = window.setInterval(() => {
+            if (done) return;
             const index = cursor.get();
             const current = steps.get().map(step => ({ ...step }));
 
@@ -184,10 +187,18 @@ export function Provisioning() {
 
             steps.set(current);
             window.clearInterval(timer);
-            window.setTimeout(() => router.navigate("/wizard/live"), 2000);
+            completeTimer = window.setTimeout(() => {
+                if (done) return;
+                if (!document.querySelector("[step-page='provisioning']")) return;
+                router.navigate("/wizard/live");
+            }, 2000);
         }, 2000);
 
-        return () => window.clearInterval(timer);
+        return () => {
+            done = true;
+            window.clearInterval(timer);
+            window.clearTimeout(completeTimer);
+        };
     });
 
     return (
