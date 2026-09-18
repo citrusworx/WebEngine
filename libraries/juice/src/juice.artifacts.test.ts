@@ -206,7 +206,7 @@ describe("Juice build artifacts", () => {
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");
         expect(themeCss).toContain("nav[type=bar]");
-        expect(themeCss).toContain("main>header");
+        expect(themeCss).toContain("main > header");
     });
 
     it("keeps draft theme paths out of the public package export map", () => {
