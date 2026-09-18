@@ -38,7 +38,7 @@ These live in:
 libraries/juice/src/themes/<id>/
 ```
 
-They can be authored manually and discovered by the Juice build.
+They can be authored manually and discovered by the Juice build. Shipped today: `aquaflux`, `kiwipress`, `citrusmint`, and `tide`. Remaining drafts live under `src/themes/_draft/` (currently blush).
 
 ### 2. App-owned themes
 
@@ -236,15 +236,15 @@ Optional hooks. Core `accordion.scss` consumes them with transparent / no-op fal
 - `--juice-accordion-open-glow` — soft open-state shadow
 - `--juice-accordion-chevron-size` / `--juice-accordion-chevron-weight` — CSS chevron silhouette
 
-Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, …). App-owned generated themes use `--jx-trigger` and bind `--juice-accordion-*` from existing `--jx-*` surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress, Citrusmint, and generated themes override generic `button` CTA styles the same way.
+Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, `--tide-trigger`, …). App-owned generated themes use `--jx-trigger` and bind `--juice-accordion-*` from existing `--jx-*` surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles the same way.
 
-Draft **Tide** (`src/themes/_draft/tide/`) follows the same role contract with `--tide-*` aliases and binds the optional border / accent / panel / glow hooks for dark FAQ pill chrome. Chrome pigments lean on **lagoon** (hue 180) mixed with teal steps so borders and chevrons read cooler and deeper than `teal-500`, without using Aquaflux blue/purple. The FAQ column uses `--tide-measure: 45rem` (~720px) on `[tide-card]` and the page header. It is a dark product theme that consumes the teal token family. Gulp compiles it to `dist/themes/_draft/tide.css` so `theme="tide"` can paint from a **local Juice build**. Package `exports` block `@citrusworx/juiceui/themes/_draft/*` (and the `styles/themes/_draft` alias); the `_draft` folder is also omitted from the published tarball. YAML-only drafts (for example blush) still do not emit CSS.
+**Tide** (`src/themes/tide/`) follows the same role contract with `--tide-*` aliases and binds the optional border / accent / panel / glow hooks for dark FAQ pill chrome. Chrome pigments lean on **lagoon** (hue 180) mixed with teal steps so borders and chevrons read cooler and deeper than `teal-500`, without using Aquaflux blue/purple. The FAQ column uses `--tide-measure: 45rem` (~720px) on `[tide-card]` and `main > header`. It is a dark product theme that consumes the teal token family. Import `@citrusworx/juiceui/styles/themes/tide` (or `dist/themes/tide.css` from a local Juice build). YAML-only drafts (for example blush) still do not emit CSS; package `exports` block `@citrusworx/juiceui/themes/_draft/*`.
 
-Demo after `yarn workspace @citrusworx/juiceui build` (repo tree, not the npm export):
+Demo after installing the package, or after `yarn workspace @citrusworx/juiceui build`:
 
 ```html
 <link rel="stylesheet" href="libraries/juice/dist/index.css">
-<link rel="stylesheet" href="libraries/juice/dist/themes/_draft/tide.css">
+<link rel="stylesheet" href="libraries/juice/dist/themes/tide.css">
 <body theme="tide">
 ```
 
@@ -273,11 +273,9 @@ Optional hooks. Core `tabs.scss` consumes them with transparent / no-op fallback
 - `--juice-tabs-panel` — panel fill
 - `--juice-tabs-panel-rule` — inset panel divider
 
-Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-tabs-*`, `--kw-tabs-*`, `--cm-tabs-*`, …). App-owned generated themes use `--jx-tabs-*` and bind `--juice-tabs-*` from existing `--jx-*` surface/text/accent tokens. Do not invent a new hue family just for tabs chrome. Triggers are surface/text controls, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles under `[tabs-list]` and `[tab]` the same way.
+Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-tabs-*`, `--kw-tabs-*`, `--cm-tabs-*`, `--tide-tabs-*`, …). App-owned generated themes use `--jx-tabs-*` and bind `--juice-tabs-*` from existing `--jx-*` surface/text/accent tokens. Do not invent a new hue family just for tabs chrome. Triggers are surface/text controls, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles under `[tabs-list]` and `[tab]` the same way.
 
 Selection paint uses Juice `[active]` and `aria-selected="true"` together. Visible vs hidden panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state.
-
-Draft **Tide** follows the same role contract with `--tide-tabs-*` aliases.
 
 `[tabs]` wrappers are structural. Put the widget in a named surface or card/panel when the page needs a chrome background; do not rely on default `section` paint.
 

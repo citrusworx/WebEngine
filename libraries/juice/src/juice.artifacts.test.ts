@@ -132,9 +132,10 @@ describe("Juice build artifacts", () => {
         }
     });
 
-    it("binds accordion chrome roles in KiwiPress and Citrusmint", () => {
+    it("binds accordion chrome roles in KiwiPress, Citrusmint, and Tide", () => {
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
         const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
 
         expect(kiwiCss).toContain("--kw-trigger: var(--kw-surface-strong)");
         expect(kiwiCss).toContain("--juice-accordion-trigger: var(--kw-trigger)");
@@ -144,12 +145,17 @@ describe("Juice build artifacts", () => {
         expect(mintCss).toContain("--cm-trigger: var(--cm-surface)");
         expect(mintCss).toContain("--juice-accordion-trigger: var(--cm-trigger)");
         expect(mintCss).toContain("button[accordion-item]");
+
+        expect(tideCss).toContain("--juice-accordion-trigger: var(--tide-trigger)");
+        expect(tideCss).toContain("button[accordion-item]");
+        expect(tideCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
     });
 
-    it("binds tabs chrome roles in Aquaflux, KiwiPress, and Citrusmint", () => {
+    it("binds tabs chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
         const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
 
         expect(aquaCss).toContain("--aqua-tabs-text: var(--aqua-text-muted)");
         expect(aquaCss).toContain("--juice-tabs-trigger: var(--aqua-tabs-trigger)");
@@ -162,41 +168,59 @@ describe("Juice build artifacts", () => {
         expect(mintCss).toContain("--cm-tabs-text: var(--cm-text-muted)");
         expect(mintCss).toContain("--juice-tabs-trigger: var(--cm-tabs-trigger)");
         expect(mintCss).toContain("button[tab]");
+
+        expect(tideCss).toContain("--juice-tabs-trigger: var(--tide-tabs-trigger)");
+        expect(tideCss).toContain("--juice-tabs-panel: var(--tide-tabs-panel)");
+        expect(tideCss).toContain("button[tab]");
+        expect(tideCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
     });
 
-    it("keeps draft tide CSS out of the stable theme export folder", () => {
+    it("ships tide CSS as a stable theme export", () => {
         const bundledThemeIds = readBundledThemeIds();
+        const themePath = join(DIST_DIR, "themes", "tide.css");
         const draftPath = join(DIST_DIR, "themes", "_draft", "tide.css");
 
-        expect(bundledThemeIds).not.toContain("tide");
+        expect(bundledThemeIds).toEqual(expect.arrayContaining(["aquaflux", "citrusmint", "kiwipress", "tide"]));
         expect(bundledThemeIds).not.toContain("_draft");
-        expect(existsSync(draftPath)).toBe(true);
+        expect(existsSync(themePath)).toBe(true);
+        expect(existsSync(draftPath)).toBe(false);
 
-        const draftCss = readFileSync(draftPath, "utf-8");
-        expect(draftCss).toMatch(/\[theme=["']?tide["']?\]/);
-        expect(draftCss).toContain("--tide-measure:");
-        expect(draftCss).toContain("45rem");
-        expect(draftCss).toContain("--juice-accordion-trigger: var(--tide-trigger)");
-        expect(draftCss).toContain("--juice-accordion-trigger-accent: var(--tide-trigger-accent)");
-        expect(draftCss).toContain("--juice-accordion-item-border: var(--tide-item-border)");
-        expect(draftCss).toContain("--juice-accordion-panel: var(--tide-panel-well)");
-        expect(draftCss).toContain("--juice-accordion-chevron-size:");
-        expect(draftCss).toContain("button[accordion-item]");
-        expect(draftCss).toContain("[accordion]:has(>");
-        expect(draftCss).toContain("--tide-line-glow:");
-        expect(draftCss).not.toContain("--tide-trigger-open: var(--tide-highlight)");
-        expect(draftCss).not.toContain("--tide-accent: hsl(174, 65%, 54%)");
-        expect(draftCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
-        expect(draftCss).toContain("--juice-tabs-trigger: var(--tide-tabs-trigger)");
-        expect(draftCss).toContain("--juice-tabs-panel: var(--tide-tabs-panel)");
-        expect(draftCss).toContain("button[tab]");
-        expect(draftCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
+        const themeCss = readFileSync(themePath, "utf-8");
+        expect(themeCss).toMatch(/\[theme=["']?tide["']?\]/);
+        expect(themeCss).toContain("--tide-measure:");
+        expect(themeCss).toContain("45rem");
+        expect(themeCss).toContain("--juice-accordion-trigger: var(--tide-trigger)");
+        expect(themeCss).toContain("--juice-accordion-trigger-accent: var(--tide-trigger-accent)");
+        expect(themeCss).toContain("--juice-accordion-item-border: var(--tide-item-border)");
+        expect(themeCss).toContain("--juice-accordion-panel: var(--tide-panel-well)");
+        expect(themeCss).toContain("--juice-accordion-chevron-size:");
+        expect(themeCss).toContain("button[accordion-item]");
+        expect(themeCss).toContain("[accordion]:has(>");
+        expect(themeCss).toContain("--tide-line-glow:");
+        expect(themeCss).not.toContain("--tide-trigger-open: var(--tide-highlight)");
+        expect(themeCss).not.toContain("--tide-accent: hsl(174, 65%, 54%)");
+        expect(themeCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
+        expect(themeCss).toContain("--juice-tabs-trigger: var(--tide-tabs-trigger)");
+        expect(themeCss).toContain("--juice-tabs-panel: var(--tide-tabs-panel)");
+        expect(themeCss).toContain("button[tab]");
+        expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
+        expect(themeCss).toContain("input:focus-visible");
+        expect(themeCss).toContain("nav[type=bar]");
+        expect(themeCss).toContain("main > header");
     });
 
     it("keeps draft theme paths out of the public package export map", () => {
         const pkg = readPackageJson();
         const exportsMap = pkg.exports ?? {};
 
+        expect(exportsMap["./themes/tide.css"]).toEqual({
+            types: "./dist/themes/index.d.ts",
+            default: "./dist/themes/tide.css"
+        });
+        expect(exportsMap["./styles/themes/tide"]).toEqual({
+            types: "./dist/themes/index.d.ts",
+            default: "./dist/themes/tide.css"
+        });
         expect(exportsMap["./themes/_draft"]).toBeNull();
         expect(exportsMap["./themes/_draft/*"]).toBeNull();
         expect(exportsMap["./themes/_draft/*.css"]).toBeNull();
@@ -205,12 +229,14 @@ describe("Juice build artifacts", () => {
         expect(pkg.files).toEqual(expect.arrayContaining(["!dist/themes/_draft", "!dist/themes/_draft/**"]));
     });
 
-    it("rejects draft Tide through published package specifiers", async () => {
-        const cssSpecifier = ["@citrusworx/juiceui", "themes/_draft/tide.css"].join("/");
-        const aliasSpecifier = ["@citrusworx/juiceui", "styles/themes/_draft/tide"].join("/");
+    it("rejects remaining draft theme paths through published package specifiers", async () => {
+        const cssSpecifier = ["@citrusworx/juiceui", "themes/_draft/blush.css"].join("/");
+        const aliasSpecifier = ["@citrusworx/juiceui", "styles/themes/_draft/blush"].join("/");
+        const oldTideSpecifier = ["@citrusworx/juiceui", "themes/_draft/tide.css"].join("/");
 
         await expect(import(/* @vite-ignore */ cssSpecifier)).rejects.toThrow(/is not exported/);
         await expect(import(/* @vite-ignore */ aliasSpecifier)).rejects.toThrow(/is not exported/);
+        await expect(import(/* @vite-ignore */ oldTideSpecifier)).rejects.toThrow(/is not exported/);
     });
 
     it("produces JS output", () => {
@@ -303,7 +329,8 @@ describe("Juice package contract", () => {
             "./dist/themes/*.css",
             "./dist/themes/aquaflux.css",
             "./dist/themes/kiwipress.css",
-            "./dist/themes/citrusmint.css"
+            "./dist/themes/citrusmint.css",
+            "./dist/themes/tide.css"
         ]);
         expect(readFileSync(join(DIST_DIR, "index.js"), "utf-8")).toContain("DOMContentLoaded");
     });

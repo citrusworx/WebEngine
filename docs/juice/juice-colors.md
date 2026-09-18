@@ -98,7 +98,7 @@ Juice organizes colors into families, each containing a base set of 9 shades (10
 ### Teal Family
 
 **Base Teal Shades:**
-- `teal-100` through `teal-900`: Cyan-teal palette. `teal-500` (`hsl(174, 65%, 54%)`) is the dark FAQ accent used by draft Tide.
+- `teal-100` through `teal-900`: Cyan-teal palette. `teal-500` (`hsl(174, 65%, 54%)`) is the family midpoint; Tide mixes lagoon with teal steps for a cooler/deeper accent than `teal-500`.
 
 **Swatches:**
 - `lagoon`: Deeper, more saturated cyan water tone

@@ -23,14 +23,13 @@ const THEMES = [
     { id: "aquaflux", prefix: "aqua" },
     { id: "kiwipress", prefix: "kw" },
     { id: "citrusmint", prefix: "cm" },
+    { id: "tide", prefix: "tide" },
 ] as const;
+
+const THEMES_WITHOUT_OPTIONAL_PANEL = THEMES.filter((theme) => theme.id !== "tide");
 
 function readThemeScss(id: string) {
     return readFileSync(join(SRC_ROOT, "themes", id, `${id}.scss`), "utf-8");
-}
-
-function readDraftThemeScss(id: string) {
-    return readFileSync(join(SRC_ROOT, "themes", "_draft", id, `${id}.scss`), "utf-8");
 }
 
 describe("Tabs theme role contract", () => {
@@ -44,6 +43,7 @@ describe("Tabs theme role contract", () => {
         expect(scss).toContain("--aqua-tabs-#{$name}");
         expect(scss).toContain("--kw-tabs-#{$name}");
         expect(scss).toContain("--cm-tabs-#{$name}");
+        expect(scss).toContain("--tide-tabs-#{$name}");
         expect(scss).toContain("--jx-tabs-#{$name}");
         expect(scss).not.toContain("--aqua-button-background");
         expect(scss).not.toContain("--kw-cta-background");
@@ -89,7 +89,7 @@ describe("Tabs theme role contract", () => {
         expect(scss).not.toContain('content: "hidden"');
     });
 
-    it("binds the same tabs roles in aquaflux, kiwipress, and citrusmint", () => {
+    it("binds the same tabs roles in aquaflux, kiwipress, citrusmint, and tide", () => {
         for (const { id, prefix } of THEMES) {
             const scss = readThemeScss(id);
             const rootBlock = scss.split(`[theme="${id}"]`)[1] ?? "";
@@ -154,8 +154,8 @@ describe("Tabs theme role contract", () => {
         expect(scss).toContain("--cm-tabs-focus-ring: var(--cm-heading)");
     });
 
-    it("binds draft tide tabs roles onto --tide-* surfaces, not the CTA gradient", () => {
-        const scss = readDraftThemeScss("tide");
+    it("binds tide tabs roles onto --tide-* surfaces, not the CTA gradient", () => {
+        const scss = readThemeScss("tide");
         const rootBlock = scss.split(`[theme="tide"]`)[1] ?? "";
 
         expect(rootBlock.length).toBeGreaterThan(0);
@@ -182,7 +182,7 @@ describe("Tabs theme role contract", () => {
     });
 
     it("leaves optional tabs panel roles unbound in Aquaflux, KiwiPress, and Citrusmint", () => {
-        for (const { id, prefix } of THEMES) {
+        for (const { id, prefix } of THEMES_WITHOUT_OPTIONAL_PANEL) {
             const scss = readThemeScss(id);
 
             expect(scss).not.toContain(`--${prefix}-tabs-panel:`);

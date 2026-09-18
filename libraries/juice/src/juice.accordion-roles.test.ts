@@ -26,14 +26,13 @@ const THEMES = [
     { id: "aquaflux", prefix: "aqua" },
     { id: "kiwipress", prefix: "kw" },
     { id: "citrusmint", prefix: "cm" },
+    { id: "tide", prefix: "tide" },
 ] as const;
+
+const THEMES_WITHOUT_OPTIONAL_CHROME = THEMES.filter((theme) => theme.id !== "tide");
 
 function readThemeScss(id: string) {
     return readFileSync(join(SRC_ROOT, "themes", id, `${id}.scss`), "utf-8");
-}
-
-function readDraftThemeScss(id: string) {
-    return readFileSync(join(SRC_ROOT, "themes", "_draft", id, `${id}.scss`), "utf-8");
 }
 
 describe("Accordion theme role contract", () => {
@@ -47,6 +46,7 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("--aqua-#{$name}");
         expect(scss).toContain("--kw-#{$name}");
         expect(scss).toContain("--cm-#{$name}");
+        expect(scss).toContain("--tide-#{$name}");
         expect(scss).toContain("--jx-#{$name}");
         expect(scss).not.toContain("--aqua-button-background");
         expect(scss).not.toContain("--aqua-surface-strong");
@@ -71,7 +71,7 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("rotate(45deg)");
     });
 
-    it("binds the same accordion roles in aquaflux, kiwipress, and citrusmint", () => {
+    it("binds the same accordion roles in aquaflux, kiwipress, citrusmint, and tide", () => {
         for (const { id, prefix } of THEMES) {
             const scss = readThemeScss(id);
             const rootBlock = scss.split(`[theme="${id}"]`)[1] ?? "";
@@ -139,8 +139,8 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("--cm-focus-ring: var(--cm-heading)");
     });
 
-    it("binds draft tide accordion roles onto --tide-* surfaces, not the CTA gradient", () => {
-        const scss = readDraftThemeScss("tide");
+    it("binds tide accordion roles onto --tide-* surfaces, not the CTA gradient", () => {
+        const scss = readThemeScss("tide");
         const rootBlock = scss.split(`[theme="tide"]`)[1] ?? "";
 
         expect(rootBlock.length).toBeGreaterThan(0);
@@ -177,6 +177,13 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("--tide-page: #{$black-900}");
         expect(scss).not.toContain("--aqua-accent");
         expect(scss).not.toContain("$blue-500");
+        expect(scss).toContain(':where(section, article, aside, nav, header, footer, form)');
+        expect(scss).toContain(':where(main > header)');
+        expect(scss).toContain(':where(button, input, textarea, select)');
+        expect(scss).toContain(':where(button:hover, button:focus-visible)');
+        expect(scss).toContain(':where(nav[type="bar"], nav[type="sidebar"])');
+        expect(scss).toContain(':where(a:hover, a:focus-visible)');
+        expect(scss).toContain(':where(code, pre)');
 
         const regionBlock = scss.match(/\[accordion\] \[role="region"\]\s*\{[^}]+\}/)?.[0] ?? "";
         expect(regionBlock).toContain("var(--juice-accordion-panel)");
@@ -193,7 +200,7 @@ describe("Accordion theme role contract", () => {
     });
 
     it("leaves optional FAQ chrome roles unbound in Aquaflux, KiwiPress, and Citrusmint", () => {
-        for (const { id, prefix } of THEMES) {
+        for (const { id, prefix } of THEMES_WITHOUT_OPTIONAL_CHROME) {
             const scss = readThemeScss(id);
 
             expect(scss).not.toContain(`--${prefix}-item-border:`);
@@ -209,6 +216,8 @@ describe("Accordion theme role contract", () => {
         const html = readFileSync(join(SRC_ROOT, "templates/html/tide-faq/index.html"), "utf-8");
 
         expect(html).toContain('theme="tide"');
+        expect(html).toContain("dist/themes/tide.css");
+        expect(html).not.toContain("_draft");
         expect(html).toContain('stack centered');
         expect(html).toContain("Billing &amp; account FAQ");
         expect(html).toContain("hero-eyebrow");

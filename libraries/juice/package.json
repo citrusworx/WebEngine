@@ -34,6 +34,10 @@
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/citrusmint.css"
         },
+        "./themes/tide.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/tide.css"
+        },
         "./styles/themes/aquaflux": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/aquaflux.css"
@@ -45,6 +49,10 @@
         "./styles/themes/citrusmint": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/citrusmint.css"
+        },
+        "./styles/themes/tide": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/tide.css"
         },
         "./styles/themes/*": {
             "types": "./dist/themes/index.d.ts",
@@ -69,7 +77,8 @@
         "./dist/themes/*.css",
         "./dist/themes/aquaflux.css",
         "./dist/themes/kiwipress.css",
-        "./dist/themes/citrusmint.css"
+        "./dist/themes/citrusmint.css",
+        "./dist/themes/tide.css"
     ],
     "publishConfig": {
         "access": "public"

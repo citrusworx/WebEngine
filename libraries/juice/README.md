@@ -50,7 +50,7 @@ import "@citrusworx/juiceui/styles/themes/aquaflux";
 
 ```html
 <body theme="aquaflux">
-  <!-- or theme="kiwipress" | theme="citrusmint" -->
+  <!-- or theme="kiwipress" | theme="citrusmint" | theme="tide" -->
 </body>
 ```
 
@@ -98,8 +98,7 @@ Importing that entry auto-starts the navigation, accordion, and tabs runtimes in
 If you are hosting Juice assets yourself, the main built files are:
 
 - `dist/index.css` (core)
-- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`
-- `dist/themes/_draft/tide.css` (local draft artifact only — blocked from package `exports` and omitted from the published tarball)
+- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`, `dist/themes/tide.css`
 - `dist/index.js`
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.
@@ -135,13 +134,13 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - mobile nav toggles should expose an accessible name and control a sidebar with `aria-controls`
 - accordion triggers should use `aria-expanded` and `aria-controls`
 - accordion panels should be labeled regions when they contain meaningful content
-- accordion chrome colors come from `--juice-accordion-*` roles bound by the active theme (Aquaflux, KiwiPress, and Citrusmint, plus draft Tide)
-- group FAQ stacks in a card/panel surface (`[aqua-card]` / `[aqua-panel]` under Aquaflux, `[tide-card]` / `[tide-panel]` under draft Tide) so the accordion wrapper stays structural
+- accordion chrome colors come from `--juice-accordion-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, and Tide)
+- group FAQ stacks in a card/panel surface (`[aqua-card]` / `[aqua-panel]` under Aquaflux, `[tide-card]` / `[tide-panel]` under Tide) so the accordion wrapper stays structural
 - open/closed accordion panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for accordion state (those clash with layout `[content]`)
 - optional `[motion="accordion"]` is height easing, not required for show/hide
 - tabs live under a `[tabs]` root with `[tabs-list]`, `[tab]` triggers, and `[tab-panel]` panels; orphan triggers and panels are ignored
 - tab selection dual-writes Juice `[active]` and `aria-selected`; the runtime also wires `role="tablist"` / `tab` / `tabpanel`, roving tabindex, and labeled panels
-- tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, and Citrusmint, plus draft Tide and generated `--jx-tabs-*` aliases)
+- tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tabs-*` aliases)
 - visible vs hidden tab panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state
 
 ```html

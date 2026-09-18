@@ -5,7 +5,7 @@ Juice Beta is the first release line where the styling system, theme contract, a
 ## What Beta includes
 
 - Attribute-driven layout, spacing, color, typography, icons, gradients, and components (see [maturity matrix](./juice-maturity-matrix.md)).
-- **Modular themes:** `aquaflux`, `kiwipress`, `citrusmint` ship as separate CSS entrypoints (`@citrusworx/juiceui/styles/themes/<id>`). `@citrusworx/juiceui/styles` is **core only** (no theme rules). Activate with `theme="<id>"` on the root after importing core + theme CSS.
+- **Modular themes:** `aquaflux`, `kiwipress`, `citrusmint`, and `tide` ship as separate CSS entrypoints (`@citrusworx/juiceui/styles/themes/<id>`). `@citrusworx/juiceui/styles` is **core only** (no theme rules). Activate with `theme="<id>"` on the root after importing core + theme CSS.
 - **Responsive reference:** [juice-responsive-reference.md](./juice-responsive-reference.md).
 - **Surfaces:** `surfaceTone="soft"` — [juice-surfaces.md](./juice-surfaces.md).
 - **Motion:** canonical `motion` attribute with P0/P1 values ([juice-animations.md](./juice-animations.md)); `prefers-reduced-motion` respected.
@@ -16,7 +16,7 @@ Juice Beta is the first release line where the styling system, theme contract, a
 
 - Full animation roadmap ([juice-animations-roadmap.md](./juice-animations-roadmap.md)).
 - Config-driven theme generation from `juice.config.yaml` (optional, draft).
-- Draft themes under `src/themes/_draft/` (for example `blush`, `tide`). Tide includes SCSS and compiles to `dist/themes/_draft/tide.css` for local demos; package `exports` and the published tarball do not expose `_draft`.
+- Draft themes under `src/themes/_draft/` (for example `blush`). YAML-only drafts do not emit CSS; package `exports` and the published tarball do not expose `_draft`.
 - A large public JS component API. The documented auto-start runtimes (navigation, accordion, tabs) and the Sig Accordion factory do ship; a broad component library is not the center of Beta.
 
 ## Publish gate

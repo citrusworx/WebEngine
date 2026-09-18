@@ -143,8 +143,10 @@ Those values are consumed by selectors like:
 Theme data currently exists as YAML definitions in `src/themes`, for example:
 
 - `src/themes/aquaflux/aquaflux.yaml`
+- `src/themes/kiwipress/kiwipress.yaml`
+- `src/themes/citrusmint/citrusmint.yaml`
+- `src/themes/tide/tide.yaml` (+ `tide.scss`, compiled to `dist/themes/tide.css`)
 - `src/themes/_draft/blush/blush.yaml`
-- `src/themes/_draft/tide/tide.yaml` (+ `tide.scss`, compiled to `dist/themes/_draft/tide.css`)
 
 At the moment, themes are better understood as early configuration/schema artifacts than a complete runtime theming system. The docs should treat them that way until the JS and CSS integration is wired through.
 

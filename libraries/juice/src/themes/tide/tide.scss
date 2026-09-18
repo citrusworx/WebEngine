@@ -1,13 +1,13 @@
-@use '../../../tokens/color/black/black.scss' as *;
-@use '../../../tokens/color/gray/gray.scss' as *;
-@use '../../../tokens/color/teal/teal.scss' as *;
-@use '../../../tokens/color/white/white.scss' as *;
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/teal/teal.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
 @use 'sass:color';
 
 /*
-    Tide (draft) — dark product / SaaS FAQ identity.
+    Tide — dark product / SaaS identity.
     Teal family + black/gray/white tokens. Not Aquaflux (blue/purple hospitality).
-    Not bundled as a stable theme export. Gulp writes dist/themes/_draft/tide.css.
+    Ships as dist/themes/tide.css.
 */
 
 $_tide-measure: 45rem;
@@ -20,9 +20,10 @@ $_tide-open-glow: 0 0 20px -8px #{color.change($lagoon-400, $alpha: 0.32)};
 $_tide-line-glow: 0 0 10px -2px #{color.change($lagoon-400, $alpha: 0.26)};
 $_tide-panel-well: color.change($black-900, $alpha: 0.62);
 $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
+$_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
 
 [theme="tide"] {
-    /* Compact FAQ column — mock card is ~720px centered, not full-bleed. */
+    /* Compact FAQ / help column — named cards stay ~720px centered, not full-bleed. */
     --tide-measure: #{$_tide-measure};
 
     /* Foundation — near-black page (black/lagoon steps), not a mid-teal wash. */
@@ -132,7 +133,7 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
     color: inherit;
 }
 
-[theme="tide"] :where(section, article, aside, nav, footer, form) {
+[theme="tide"] :where(section, article, aside, nav, header, footer, form) {
     background-color: var(--tide-surface);
     color: var(--tide-text);
     border: 1px solid var(--tide-border);
@@ -141,7 +142,7 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
 }
 
 /* Page intro is type, not a competing glass surface. */
-[theme="tide"] :where(header) {
+[theme="tide"] :where(main > header) {
     width: min(var(--tide-measure), 100%);
     max-width: var(--tide-measure);
     background: transparent;
@@ -156,25 +157,77 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
     background-color: var(--tide-surface-strong);
 }
 
+[theme="tide"] :where(nav[type="bar"]) {
+    border-bottom: 1px solid var(--tide-border);
+}
+
 [theme="tide"] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--tide-heading);
     font-family: var(--tide-heading-font);
 }
 
-[theme="tide"] :where(p, span, li, label, small) {
+[theme="tide"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--tide-text);
+    font-family: var(--tide-body-font);
+}
+
+[theme="tide"] :where(small, figcaption) {
     color: var(--tide-text-muted);
     font-family: var(--tide-body-font);
+}
+
+[theme="tide"] :where(strong, b) {
+    color: var(--tide-heading);
 }
 
 [theme="tide"] :where(a) {
     color: var(--tide-accent-strong);
 }
 
-[theme="tide"] :where(button) {
-    background: var(--tide-button-background);
-    color: var(--tide-heading);
-    border: 1px solid transparent;
+[theme="tide"] :where(a:hover, a:focus-visible) {
+    color: var(--tide-accent);
+}
+
+[theme="tide"] :where(button, input, textarea, select) {
+    background-color: var(--tide-surface-strong);
+    color: var(--tide-text);
+    border: 1px solid var(--tide-border-strong);
     font-family: var(--tide-body-font);
+    box-shadow: 0 14px 32px -26px var(--tide-shadow);
+}
+
+[theme="tide"] :where(button) {
+    background-image: var(--tide-button-background);
+    color: var(--tide-heading);
+    border-color: transparent;
+}
+
+[theme="tide"] :where(button:hover, button:focus-visible) {
+    box-shadow: var(--tide-line-glow), 0 18px 38px -24px var(--tide-shadow);
+}
+
+[theme="tide"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--tide-text-muted);
+}
+
+[theme="tide"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid #{$_tide-control-focus};
+    outline-offset: 2px;
+}
+
+[theme="tide"] :where(code, pre) {
+    background-color: var(--tide-surface-muted);
+    color: var(--tide-heading);
+    border: 1px solid var(--tide-border);
+}
+
+[theme="tide"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--tide-border);
+}
+
+[theme="tide"] :where(ul, ol) {
+    color: var(--tide-text);
 }
 
 [theme="tide"][tide-card],
@@ -200,6 +253,11 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
     color: var(--tide-text-muted);
 }
 
+[theme="tide"][tide-card] :where(strong, b),
+[theme="tide"] [tide-card] :where(strong, b) {
+    color: var(--tide-heading);
+}
+
 [theme="tide"][tide-panel],
 [theme="tide"] [tide-panel] {
     background: var(--tide-panel-background);
@@ -210,6 +268,16 @@ $_tide-trigger-fill: color.change($black-900, $alpha: 0.22);
 
 [theme="tide"][tide-panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="tide"] [tide-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--tide-heading);
+}
+
+[theme="tide"][tide-panel] :where(p, span, li, small),
+[theme="tide"] [tide-panel] :where(p, span, li, small) {
+    color: var(--tide-text);
+}
+
+[theme="tide"][tide-panel] :where(strong, b),
+[theme="tide"] [tide-panel] :where(strong, b) {
     color: var(--tide-heading);
 }
 

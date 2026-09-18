@@ -12,7 +12,7 @@
 //   --juice-tabs-panel
 //   --juice-tabs-panel-rule
 // Themes bind those names (and optional --aqua-tabs-* / --kw-tabs-* /
-// --cm-tabs-* / --jx-tabs-* aliases) from existing identity tokens.
+// --cm-tabs-* / --tide-tabs-* / --jx-tabs-* aliases) from existing identity tokens.
 // Do not hard-code a single theme's hues here.
 //
 // [tabs] is a column widget root. Strip chrome lives on [tabs-list], or on
@@ -25,7 +25,7 @@
 @function -juice-tabs-role($name, $fallback) {
     @return var(
         --juice-tabs-#{$name},
-        var(--aqua-tabs-#{$name}, var(--kw-tabs-#{$name}, var(--cm-tabs-#{$name}, var(--jx-tabs-#{$name}, #{$fallback}))))
+        var(--aqua-tabs-#{$name}, var(--kw-tabs-#{$name}, var(--cm-tabs-#{$name}, var(--tide-tabs-#{$name}, var(--jx-tabs-#{$name}, #{$fallback})))))
     );
 }
 

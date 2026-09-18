@@ -62,6 +62,8 @@ Every real Juice theme should decide:
 libraries/juice/src/themes/my-theme/
 ```
 
+Shipped library themes today: `aquaflux`, `kiwipress`, `citrusmint`, and `tide`. Remaining drafts live under `src/themes/_draft/` (currently blush).
+
 ### App-owned theme
 
 ```text
