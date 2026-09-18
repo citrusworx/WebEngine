@@ -10,7 +10,7 @@ The visible layers today:
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
-* three shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`), with core CSS separate from theme identity
+* four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
 * a small surface language (`surfaceTone="soft"`)
 * Emerging browser runtimes: navigation, accordion, and tabs auto-enhance when the JS entry is imported
 * a Sig Accordion factory plus create/init/start/stop helpers
@@ -31,10 +31,10 @@ The weakest areas are still:
 * theme-contract formalization across the shipped set
 * component maturity beyond the three auto-enhance runtimes
 * icon and typography polish
-* Tide (and blush) remaining unpublished drafts
+* blush remaining an unpublished YAML-only draft
 * config / generator workflow
 
-Tide is a dark product/FAQ theme under `src/themes/_draft/`. Accordion and tabs roles are already bound there. It is **not** a published theme in 0.4.0.
+Tide is a shipped dark product/SaaS theme under `src/themes/tide/`. Accordion and tabs roles are bound there, and package exports include `@citrusworx/juiceui/styles/themes/tide`. Blush stays under `src/themes/_draft/`.
 
 For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity matrix](./juice-maturity-matrix.md).
 
@@ -47,11 +47,11 @@ For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity
 Juice no longer ships a single CSS bundle that also carries theme identity.
 
 * `@citrusworx/juiceui/styles` is **core only** (utilities and components, no theme rules). This is a breaking change versus the older single-bundle mental model.
-* `aquaflux`, `kiwipress`, and `citrusmint` ship as separate CSS entrypoints: `@citrusworx/juiceui/styles/themes/<id>`.
+* `aquaflux`, `kiwipress`, `citrusmint`, and `tide` ship as separate CSS entrypoints: `@citrusworx/juiceui/styles/themes/<id>`.
 * Activate with `theme="<id>"` on the root after importing core + theme CSS.
 * Each shipped theme follows the `<id>.scss` + `<id>.yaml` authoring contract.
 
-Themes are no longer conceptual, and they are no longer one Aquaflux example. Three library themes are published. Tide is not one of them.
+Themes are no longer conceptual, and they are no longer one Aquaflux example. Four library themes are in the package surface. 0.4.0 published the first three; Tide joined afterward.
 
 ### 2. Accordion and Tabs Joined Navigation as Real Runtimes
 
@@ -75,13 +75,11 @@ The canonical `motion` attribute now covers the P0/P1 catalog (including `fade.i
 
 That is a supported Beta subset, not the full [animations roadmap](./juice-animations-roadmap.md).
 
-### 4. Teal Tokens Exist; Tide Still Does Not Ship
+### 4. Teal Tokens Exist; Tide Now Ships
 
 0.4.0 added a teal/cyan family (`teal-100`–`teal-900`) and the `lagoon` swatch.
 
-Draft **Tide** consumes those tokens as a dark product/FAQ theme. Draft **blush** remains YAML-only. Both live under `src/themes/_draft/`. Package `exports` and the published tarball do not expose `_draft`. Local builds can still compile Tide CSS for demos.
-
-Do not treat Tide as a fourth shipped library theme until it is promoted out of draft.
+**Tide** consumes those tokens as a dark product/SaaS theme and now lives at `src/themes/tide/`, compiled to `dist/themes/tide.css`. Import `@citrusworx/juiceui/styles/themes/tide`. Draft **blush** remains YAML-only under `src/themes/_draft/`. Package `exports` and the published tarball still do not expose `_draft`.
 
 ### 5. Packaging Matches the Runtime Story
 
@@ -140,7 +138,7 @@ A first-class theme system should make these decisions obvious:
 * element-level defaults for headings, text, sections, forms, and nav
 * accordion and tabs chrome roles bound from identity tokens
 
-KiwiPress is the richest shipped reference. Aquaflux and Citrusmint follow the same shape. Tide is the next reference that should join that set — after it is promoted, not before.
+KiwiPress is the richest shipped reference. Aquaflux, Citrusmint, and Tide follow the same shape. The four-theme set is now the right basis for writing the contract down.
 
 Config-driven generation from `juice.config.yaml` remains draft. It should not block library theme work.
 
@@ -158,11 +156,9 @@ Icons and type are Stable-ish in the maturity matrix, and they already carry rea
 * which icon attributes are first-class versus leftover
 * a clearer font-size / display-body hierarchy and naming consistency
 
-### 5. Tide Is Not Yet a Fourth Shipped Theme
+### 5. Blush Is Still Draft
 
-Tide is close enough to be the next library build: dark product/FAQ, teal/lagoon identity, accordion and tabs roles already bound. Until it leaves `_draft/` and is added to package exports, npm consumers cannot import it.
-
-Blush is further back (YAML-only, no emitted CSS).
+Tide is a fourth shipped library theme: dark product/SaaS, teal/lagoon identity, accordion and tabs roles bound, published CSS export. Blush is further back (YAML-only, no emitted CSS).
 
 ### 6. Templates Still Expose Proportional Weaknesses
 
@@ -174,17 +170,11 @@ Juice can express many aesthetics, but dense layouts still reveal weaknesses in 
 
 Lock this build order. Do not reorder it because a later item is more exciting.
 
-### Priority 1. Promote Tide to a Shipped Library Theme
+### Priority 1. Expand the Surface Language
 
-This is the next Juice library build after this docs refresh.
+Tide promotion is done. Surface language is the next Juice library build.
 
-The work is promotion, not invention: move Tide out of `src/themes/_draft/`, add the published CSS export, and treat it as a fourth shipped theme. Do not ship blush in the same step.
-
-Until that lands, docs and packaging should keep saying Tide is draft.
-
-### Priority 2. Expand the Surface Language
-
-Build out the surface model that already started.
+Build out the surface model that already started. Do not treat that work as finished: Juice still ships one tone (`surfaceTone="soft"`).
 
 Recommended next additions:
 
@@ -196,9 +186,9 @@ Recommended next additions:
 
 This is what makes templates feel finished with less manual assembly.
 
-### Priority 3. Formalize the Theme Contract
+### Priority 2. Formalize the Theme Contract
 
-Once Tide ships, Juice will have four library themes as references.
+Juice now has four library themes as references (`aquaflux`, `kiwipress`, `citrusmint`, `tide`).
 
 Use that set to make the contract easier to repeat and document:
 
@@ -209,7 +199,7 @@ Use that set to make the contract easier to repeat and document:
 
 Aquaflux is no longer the only example. Do not wait for a generator rewrite to write the contract down.
 
-### Priority 4. Typography / Icon Contract Polish
+### Priority 3. Typography / Icon Contract Polish
 
 Settle the remaining authoring rules:
 
@@ -219,7 +209,7 @@ Settle the remaining authoring rules:
 
 This is polish on strong layers, not a new layer.
 
-### Priority 5. Next Runtime / Component, Carefully
+### Priority 4. Next Runtime / Component, Carefully
 
 The browser behavior layer should keep growing, but slowly.
 
@@ -231,7 +221,7 @@ Short-term focus remains:
 * improve component authoring patterns
 * ensure anything newly exported is actually ready
 
-### Priority 6. Templates as Stress Tests; Juice CLI as a Separate Track
+### Priority 5. Templates as Stress Tests; Juice CLI as a Separate Track
 
 Keep using templates to test:
 
@@ -239,20 +229,19 @@ Keep using templates to test:
 * marketing sites
 * retail / product merchandising
 * themed experiences
-* FAQ / product pages (especially once Tide is public)
+* FAQ / product pages under shipped Tide
 
-The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block Tide promotion, surface work, or theme-contract formalization.
+The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block surface work or theme-contract formalization.
 
 ---
 
 ## Recommended Build Order
 
-1. Promote Tide to a shipped library theme.
-2. Expand `surfaceTone` and related surface utilities.
-3. Formalize the theme contract using the four shipped themes as references (once Tide lands).
-4. Tighten typography and icon authoring contracts.
-5. Add the next runtime or component only when the chrome and markup are ready (for example modal). Do not oversell this.
-6. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
+1. Expand `surfaceTone` and related surface utilities.
+2. Formalize the theme contract using the four shipped themes as references.
+3. Tighten typography and icon authoring contracts.
+4. Add the next runtime or component only when the chrome and markup are ready (for example modal). Do not oversell this.
+5. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
 ---
 
@@ -260,11 +249,10 @@ The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block Tide 
 
 0.4.0 was a real Beta cut, not a packaging bump.
 
-It shipped modular themes, motion wave 1, accordion and tabs runtimes, teal tokens, and packaging that matches the auto-enhance story. Layout, tokens, typography, and icons were already the strongest layers; they still are. Tide is ready to be next, and it is not shipped yet.
+It shipped modular themes, motion wave 1, accordion and tabs runtimes, teal tokens, and packaging that matches the auto-enhance story. Layout, tokens, typography, and icons were already the strongest layers; they still are. Tide is now a fourth shipped library theme. Blush remains draft.
 
-The next stage is refinement plus Tide promotion:
+The next stage is refinement:
 
-* make Tide a public library theme
 * make surface language richer
 * formalize themes against four references
 * polish icons and type

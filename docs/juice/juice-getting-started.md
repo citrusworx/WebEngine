@@ -36,8 +36,19 @@ Juice core is intentionally separate from theme identity.
 
 You should import either:
 
-- a library theme, or
+- a library theme (`aquaflux`, `kiwipress`, `citrusmint`, or `tide`), or
 - an app-generated theme
+
+Example with a library theme:
+
+```ts
+import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/tide";
+```
+
+```html
+<body theme="tide"></body>
+```
 
 Example with an app-generated theme:
 

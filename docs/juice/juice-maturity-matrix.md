@@ -46,7 +46,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Docs and onboarding | Emerging to Stable-ish | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
 | JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts navigation, accordion, and tabs runtimes in the browser. Useful and documented, but still likely to evolve. |
 | Public component exports | Emerging | Ships the Sig `Accordion` factory plus create/init/start/stop helpers for navigation, accordion, and tabs. Markup plus auto-enhance is the contract, not a large JS component library. |
-| Themes | Emerging | Bundled themes (`aquaflux`, `kiwipress`, `citrusmint`) follow the `<id>.scss` + `<id>.yaml` contract; KiwiPress is the richest reference. |
+| Themes | Emerging | Bundled themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`) follow the `<id>.scss` + `<id>.yaml` contract; KiwiPress is the richest reference. |
 | Motion (`motion` attribute) | Emerging | P0/P1 catalog documented in [juice-animations.md](./juice-animations.md); `prefers-reduced-motion` supported. |
 | Config-driven branding | Draft | Useful direction, but still not required and not yet a hardened contract. |
 | Generator/config pipeline | Draft | The config exists, but the workflow around it is still early and evolving. |
