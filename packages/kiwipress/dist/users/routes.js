@@ -1,4 +1,4 @@
-import { createAliasedQueryRoute, createWordPressRoute } from "../core/route-utils.js";
+import { createAliasedQueryRoute, createAliasedQueryRouteFromKeys, createWordPressRoute } from "../core/route-utils.js";
 const routes = {
     allUsers: {
         method: "GET",
@@ -36,8 +36,8 @@ const routes = {
 export const getAllUsers = createWordPressRoute(routes.allUsers);
 export const getUserById = createWordPressRoute(routes.usersById);
 export const getUserByEmail = createAliasedQueryRoute(routes.usersByEmail, "users", "email");
-export const getUsersByCity = createWordPressRoute(routes.usersByCity);
-export const getUsersByCityState = createWordPressRoute(routes.usersByCityState);
+export const getUsersByCity = createAliasedQueryRoute(routes.usersByCity, "users", "city");
+export const getUsersByCityState = createAliasedQueryRouteFromKeys(routes.usersByCityState, "users", ["state", "city"]);
 export const createUser = createWordPressRoute(routes.createUser, {
     method: "POST",
     headers: {

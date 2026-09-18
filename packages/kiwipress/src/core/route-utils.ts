@@ -109,3 +109,28 @@ export function createAliasedQueryRoute(
         }
     };
 }
+
+export function createAliasedQueryRouteFromKeys(
+    config: ApiDefinition,
+    collection: string,
+    queryKeys: readonly string[]
+): Route<Endpoint> {
+    return {
+        method: config.method,
+        path: config.endpoint,
+        handler: async (ctx: Endpoint) => {
+            const values = ctx.path.split("/").slice(-queryKeys.length);
+            const query = queryKeys
+                .map((key, index) => {
+                    const value = decodeURIComponent(values[index] ?? "");
+                    return `${key}=${encodeURIComponent(value)}`;
+                })
+                .join("&");
+
+            return requestWordPress({
+                ...ctx,
+                endpoint: buildCollectionQueryEndpoint(ctx, collection, query)
+            });
+        }
+    };
+}
