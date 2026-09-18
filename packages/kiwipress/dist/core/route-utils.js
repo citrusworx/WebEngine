@@ -71,4 +71,23 @@ export function createAliasedQueryRoute(config, collection, queryKey) {
         }
     };
 }
+export function createAliasedQueryRouteFromKeys(config, collection, queryKeys) {
+    return {
+        method: config.method,
+        path: config.endpoint,
+        handler: async (ctx) => {
+            const values = ctx.path.split("/").slice(-queryKeys.length);
+            const query = queryKeys
+                .map((key, index) => {
+                const value = decodeURIComponent(values[index] ?? "");
+                return `${key}=${encodeURIComponent(value)}`;
+            })
+                .join("&");
+            return requestWordPress({
+                ...ctx,
+                endpoint: buildCollectionQueryEndpoint(ctx, collection, query)
+            });
+        }
+    };
+}
 //# sourceMappingURL=route-utils.js.map

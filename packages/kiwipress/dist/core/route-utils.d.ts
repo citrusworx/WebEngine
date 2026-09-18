@@ -11,3 +11,4 @@ export declare function createWordPressRoute(config: ApiDefinition, init?: Reque
 export declare function getLastParam(ctx: Endpoint): string;
 export declare function buildCollectionQueryEndpoint(ctx: Endpoint, collection: string, query: string): string;
 export declare function createAliasedQueryRoute(config: ApiDefinition, collection: string, queryKey: string): Route<Endpoint>;
+export declare function createAliasedQueryRouteFromKeys(config: ApiDefinition, collection: string, queryKeys: readonly string[]): Route<Endpoint>;
