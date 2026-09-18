@@ -21,7 +21,7 @@ export class Pages extends WPRead {
         return this.read(getPageById, { id });
     }
 
-    getByCategory(category: string) {
+    getByCategory(category: string | number) {
         return this.read(getPageByCategory, { category });
     }
 
@@ -29,11 +29,11 @@ export class Pages extends WPRead {
         return this.read(getPageBySlug, { slug });
     }
 
-    getByAuthor(author: string) {
+    getByAuthor(author: string | number) {
         return this.read(getPageByAuthor, { author });
     }
 
-    getByTag(tag: string) {
+    getByTag(tag: string | number) {
         return this.read(getPageByTag, { tag });
     }
 

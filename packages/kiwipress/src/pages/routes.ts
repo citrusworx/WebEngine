@@ -63,9 +63,9 @@ export const getPageBySlug = createAliasedQueryRoute(routes.pageBySlug, "pages",
 
 export const getPageByAuthor = createAliasedQueryRoute(routes.pageByAuthor, "pages", "author");
 
-export const getPageByTag = createAliasedQueryRoute(routes.pageByTag, "pages", "tag");
+export const getPageByTag = createAliasedQueryRoute(routes.pageByTag, "pages", "tags");
 
-export const getPageByCategory = createAliasedQueryRoute(routes.pageByCategory, "pages", "category");
+export const getPageByCategory = createAliasedQueryRoute(routes.pageByCategory, "pages", "categories");
 
 export const createPage = createWordPressRoute(routes.createPage, {
     method: "POST",

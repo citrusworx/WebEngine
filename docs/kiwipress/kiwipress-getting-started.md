@@ -88,7 +88,7 @@ const recent = await posts.getByDate("2026-01-01T00:00:00");
 
 Aliased reads (slug, author, tag, category, date) become collection query strings. `getByDate` maps to WordPress `after=`.
 
-`Pages` also has `getByCategory` and `getByTag` (string arguments) plus the write methods. `Users` has `getByEmail`, `getByCity`, and `getByCityState(state, city)`.
+`Pages` also has `getByCategory` and `getByTag` (`string | number` arguments, same as posts) plus the write methods. `Users` has `getByEmail`, `getByCity`, and `getByCityState(state, city)`.
 
 ## First writes
 
