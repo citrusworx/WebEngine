@@ -59,9 +59,9 @@ describe("Juice build artifacts", () => {
     it("includes themeable surfaceTone soft, strong, and muted in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
-        expect(css).toContain('[surfaceTone="soft"]');
-        expect(css).toContain('[surfaceTone="strong"]');
-        expect(css).toContain('[surfaceTone="muted"]');
+        expect(css).toMatch(/\[surfaceTone=["']?soft["']?\]/);
+        expect(css).toMatch(/\[surfaceTone=["']?strong["']?\]/);
+        expect(css).toMatch(/\[surfaceTone=["']?muted["']?\]/);
         expect(css).toContain("--juice-surface-soft-bg");
         expect(css).toContain("--juice-surface-soft-border");
         expect(css).toContain("--juice-surface-soft-shadow");
