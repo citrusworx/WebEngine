@@ -1,13 +1,14 @@
 import { StepTracker, type StepId } from "./StepTracker";
 import { OrderSummary } from "./OrderSummary";
+import "../wizard.css";
 
 type LayoutOpts = {
     step: StepId;
     children?: unknown;
 };
 
-const HIDE_STEP_TRACKER: ReadonlySet<StepId> = new Set<StepId>(["live", "blueprints", "scale"]);
-const HIDE_SIDEBAR: ReadonlySet<StepId> = new Set<StepId>(["live", "provisioning", "blueprints", "scale"]);
+const HIDE_STEP_TRACKER: ReadonlySet<StepId> = new Set<StepId>(["live", "scale"]);
+const HIDE_SIDEBAR: ReadonlySet<StepId> = new Set<StepId>(["live", "provisioning", "scale"]);
 
 export function WizardLayout({ step, children }: LayoutOpts) {
     const showTracker = !HIDE_STEP_TRACKER.has(step);
