@@ -28,7 +28,7 @@ By the end you will have used every public primitive that is worth teaching: `Si
 ## Setup
 
 ```bash
-yarn add @citrusworx/sigjs @citrusworx/juiceui
+yarn add @citrusworx/sigjs@^0.3.0 @citrusworx/juiceui
 ```
 
 ```json

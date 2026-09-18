@@ -109,7 +109,7 @@ items.set([10, 20]);
 sum.get(); // 30
 ```
 
-`memo` is readable from effects and from other memos. It has no `set`.
+`memo` is readable from effects and from other memos. It has no `set`. There is no public `dispose`; keep memos as cheap derivations.
 
 ## captureCleanupScope
 

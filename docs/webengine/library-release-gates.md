@@ -50,13 +50,13 @@ A library is “ready to release” when an outside developer can:
 
 **Ready when:**
 
-- [ ] `Signal` / `effect` / `batch` / `memo` / `mount` / `disposeTree` are documented and tested (**Stable-ish** per [sig-status.md](../sigjs/sig-status.md))
-- [ ] JSX factory + `jsxImportSource` recipes work for Vite and `tsc` from a fresh install
-- [ ] `SigRouter` supports exact paths, `:param` segments, optional `*`, and dispose-on-navigate; Juice attributes survive `setProp`
-- [ ] An example under `libraries/sig/examples/` (or a Juice+Sig shell) runs without monorepo-only magic
-- [ ] Non-goals are explicit in docs: no SSR, no `<For>` / `<Show>` primitives yet, function children are text-only
-- [ ] List/conditional usage has a blessed **pattern** in docs even if primitives remain Draft ([sig-roadmap.md](../sigjs/sig-roadmap.md))
-- [ ] Publish follows [sigjs release-checklist.md](../sigjs/release-checklist.md): next npm version is **0.3.0**; `yarn version-packages` will also patch-bump Juice/Sugar because `^0.2.0` does not include `0.3.0`
+- [x] `Signal` / `effect` / `batch` / `memo` / `mount` / `disposeTree` are documented and tested (**Stable-ish** per [sig-status.md](../sigjs/sig-status.md); `memo` is `{ get }` only, no public dispose)
+- [x] JSX factory + `jsxImportSource` recipes work for Vite and `tsc` from a fresh install
+- [x] `SigRouter` supports exact paths, `:param` segments, optional `*`, and dispose-on-navigate; Juice attributes survive `setProp` (`jsx.test.ts`)
+- [x] An example under `libraries/sig/examples/` (or a Juice+Sig shell) runs without monorepo-only magic ([counter](../../libraries/sig/examples/counter) installs `@citrusworx/sigjs@^0.3.0` from npm)
+- [x] Non-goals are explicit in docs: no SSR, no `<For>` / `<Show>` primitives yet, function children are text-only
+- [x] List/conditional usage has a blessed **pattern** in docs even if primitives remain Draft ([sig-roadmap.md](../sigjs/sig-roadmap.md), `replaceChildren`)
+- [x] npm `@citrusworx/sigjs@0.3.0` is published (2026-09-18). Further publishes follow [sigjs release-checklist.md](../sigjs/release-checklist.md)
 
 **Release label:** **0.3+ usable alpha/beta** for app shells; **1.0** only after the list/conditional story is intentional (primitive or documented pattern).
 

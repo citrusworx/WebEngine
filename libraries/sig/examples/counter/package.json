@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@citrusworx/sigjs": "file:../.."
+    "@citrusworx/sigjs": "^0.3.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
