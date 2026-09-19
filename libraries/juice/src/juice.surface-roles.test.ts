@@ -3,19 +3,18 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+    BORDER_STRENGTH_ROLES,
+    BORDER_STRENGTHS,
+    SHIPPED_LIBRARY_THEMES,
+    SURFACE_TONE_ROLES,
+    SURFACE_TONES,
+} from "./juice.theme-contract.js";
+
 const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), ".");
-
-const TONES = ["soft", "strong", "muted"] as const;
-const SURFACE_ROLES = ["bg", "border", "shadow", "blur"] as const;
-const BORDER_STRENGTHS = ["soft", "bold"] as const;
-const BORDER_STRENGTH_ROLES = ["width", "color"] as const;
-
-const THEMES = [
-    { id: "aquaflux", prefix: "aqua" },
-    { id: "kiwipress", prefix: "kw" },
-    { id: "citrusmint", prefix: "cm" },
-    { id: "tide", prefix: "tide" },
-] as const;
+const TONES = SURFACE_TONES;
+const SURFACE_ROLES = SURFACE_TONE_ROLES;
+const THEMES = SHIPPED_LIBRARY_THEMES;
 
 function readThemeScss(id: string) {
     return readFileSync(join(SRC_ROOT, "themes", id, `${id}.scss`), "utf-8");

@@ -3,31 +3,16 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+    OPTIONAL_ACCORDION_ROLE_HOOKS,
+    REQUIRED_ACCORDION_ROLES,
+    SHIPPED_LIBRARY_THEMES,
+} from "./juice.theme-contract.js";
+
 const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), ".");
-
-const ACCORDION_ROLES = [
-    "trigger",
-    "trigger-hover",
-    "trigger-open",
-    "chevron",
-    "panel-rule",
-    "focus-ring",
-] as const;
-
-const OPTIONAL_ACCORDION_ROLES = [
-    "item-border",
-    "item-border-open",
-    "trigger-accent",
-    "panel",
-    "open-glow",
-] as const;
-
-const THEMES = [
-    { id: "aquaflux", prefix: "aqua" },
-    { id: "kiwipress", prefix: "kw" },
-    { id: "citrusmint", prefix: "cm" },
-    { id: "tide", prefix: "tide" },
-] as const;
+const ACCORDION_ROLES = REQUIRED_ACCORDION_ROLES;
+const OPTIONAL_ACCORDION_ROLES = OPTIONAL_ACCORDION_ROLE_HOOKS;
+const THEMES = SHIPPED_LIBRARY_THEMES;
 
 const THEMES_WITHOUT_OPTIONAL_CHROME = THEMES.filter((theme) => theme.id !== "tide");
 

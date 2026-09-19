@@ -1,14 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { buildThemeStylesheet, type ThemeGeneratorConfig } from "./index.js";
+import {
+    BORDER_STRENGTH_ROLES,
+    BORDER_STRENGTHS,
+    REQUIRED_ACCORDION_ROLES,
+    REQUIRED_TABS_ROLES,
+    SURFACE_TONE_ROLES,
+    SURFACE_TONES,
+    missingRequiredJuiceBinds,
+    requiredGeneratedJxJuiceBinds,
+} from "../../juice.theme-contract.js";
 
-const ACCORDION_ROLES = [
-    "trigger",
-    "trigger-hover",
-    "trigger-open",
-    "chevron",
-    "panel-rule",
-    "focus-ring",
-] as const;
+const ACCORDION_ROLES = REQUIRED_ACCORDION_ROLES;
 
 const fixture: ThemeGeneratorConfig = {
     id: "apptheme",
@@ -70,17 +73,7 @@ describe("Juice theme generator accordion roles", () => {
     });
 });
 
-const TABS_ROLES = [
-    "trigger",
-    "trigger-hover",
-    "trigger-active",
-    "text",
-    "text-hover",
-    "text-active",
-    "indicator",
-    "list-rule",
-    "focus-ring",
-] as const;
+const TABS_ROLES = REQUIRED_TABS_ROLES;
 
 describe("Juice theme generator tabs roles", () => {
     it("binds --juice-tabs-* from existing --jx-* surfaces and accents", () => {
@@ -110,9 +103,6 @@ describe("Juice theme generator tabs roles", () => {
     });
 });
 
-const SURFACE_TONES = ["soft", "strong", "muted"] as const;
-const SURFACE_ROLES = ["bg", "border", "shadow", "blur"] as const;
-
 describe("Juice theme generator surface tone roles", () => {
     it("binds --juice-surface-* from existing --jx-* surfaces", () => {
         const css = buildThemeStylesheet(fixture, "test.yaml");
@@ -125,7 +115,7 @@ describe("Juice theme generator surface tone roles", () => {
         expect(css).toContain("--juice-surface-muted-bg: var(--jx-surface-muted)");
 
         for (const tone of SURFACE_TONES) {
-            for (const role of SURFACE_ROLES) {
+            for (const role of SURFACE_TONE_ROLES) {
                 expect(css).toContain(`--juice-surface-${tone}-${role}:`);
             }
         }
@@ -138,5 +128,23 @@ describe("Juice theme generator surface tone roles", () => {
         expect(css).toContain("--juice-border-strength-soft-color: var(--jx-border)");
         expect(css).toContain("--juice-border-strength-bold-width: 2px");
         expect(css).toContain("--juice-border-strength-bold-color: var(--jx-border-strong)");
+
+        for (const strength of BORDER_STRENGTHS) {
+            for (const role of BORDER_STRENGTH_ROLES) {
+                expect(css).toContain(`--juice-border-strength-${strength}-${role}:`);
+            }
+        }
+    });
+});
+
+describe("Juice theme generator contract lock", () => {
+    it("emits every required --juice-* bind, including --jx-* aliases the generator already writes", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(missingRequiredJuiceBinds(css)).toEqual([]);
+
+        for (const { juice, jx } of requiredGeneratedJxJuiceBinds()) {
+            expect(css).toContain(`${juice}: var(${jx})`);
+        }
     });
 });
