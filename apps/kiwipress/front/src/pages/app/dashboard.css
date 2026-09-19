@@ -923,6 +923,8 @@
 
 [dashboard-shell] [post-editor-frame] {
     padding: 1.5rem 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
 }
 
 [dashboard-shell] [post-editor-title] input {
@@ -1030,8 +1032,18 @@
     border: 1px solid var(--kw-accent-tint);
 }
 
+[dashboard-shell] [post-editor-frame] [save-row] {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0 -1.75rem -1.25rem;
+    padding: 0.85rem 1.75rem 1.25rem;
+    background: var(--kw-surface);
+    border-top: 1px solid var(--kw-border);
+}
+
 [dashboard-shell] [wysiwyg-canvas] {
-    min-height: 28rem;
+    min-height: 18rem;
     max-width: 42rem;
     margin: 0 auto;
     padding: 2.25rem 1.5rem 4rem;
