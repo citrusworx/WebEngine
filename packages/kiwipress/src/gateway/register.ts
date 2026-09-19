@@ -1,51 +1,41 @@
-import type { IncomingMessage } from "node:http";
-import { Seltzer } from "@citrusworx/seltzer";
+import type { RequestContext, ResponseData, Seltzer } from "@citrusworx/seltzer";
 import { KiwiPress } from "../cms/KiwiPress.js";
 import type { CmsCollection } from "../cms/types.js";
 import type { WordPressPayload } from "../types/api.js";
 import { authorizeKiwiPressGateway, type KiwiPressGatewayOptions } from "./auth.js";
 
-type GatewayContext = {
-    req: IncomingMessage & { url?: string };
-    json: (data: unknown, status?: number) => void;
-};
-
-async function readJson(req: IncomingMessage): Promise<unknown> {
-    const chunks: Buffer[] = [];
-
-    for await (const chunk of req) {
-        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    }
-
-    if (chunks.length === 0) {
-        return {};
-    }
-
-    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+function json(status: number, body: unknown): ResponseData {
+    return { status, body };
 }
 
-function queryId(req: IncomingMessage & { url?: string }): string {
-    const host = req.headers?.host ?? "localhost";
-    const url = new URL(req.url || "/", `http://${host}`);
-    return url.searchParams.get("id") ?? "";
+function errorMessage(error: unknown, fallback = "KiwiPress request failed."): string {
+    return error instanceof Error ? error.message : fallback;
 }
 
-function sendError(ctx: GatewayContext, error: unknown, fallback = "KiwiPress request failed.") {
-    const message = error instanceof Error ? error.message : fallback;
-    ctx.json({ error: message }, 500);
+function queryId(ctx: RequestContext): string {
+    return ctx.query.id ?? "";
+}
+
+function payload(ctx: RequestContext): WordPressPayload {
+    return (ctx.body && typeof ctx.body === "object" && !Array.isArray(ctx.body)
+        ? ctx.body
+        : {}) as WordPressPayload;
 }
 
 function guard(
     options: KiwiPressGatewayOptions,
-    handler: (ctx: GatewayContext) => void
+    handler: (ctx: RequestContext) => Promise<ResponseData>
 ) {
-    return (ctx: GatewayContext) => {
+    return async (ctx: RequestContext): Promise<ResponseData> => {
         if (!authorizeKiwiPressGateway(ctx.req, options)) {
-            ctx.json({ error: "Unauthorized" }, 401);
-            return;
+            return json(401, { error: "Unauthorized" });
         }
 
-        return handler(ctx);
+        try {
+            return await handler(ctx);
+        } catch (error) {
+            return json(500, { error: errorMessage(error) });
+        }
     };
 }
 
@@ -57,11 +47,11 @@ async function updateWordpressItem(
     kiwi: KiwiPress,
     kind: "posts" | "pages",
     id: string,
-    payload: WordPressPayload
+    body: WordPressPayload
 ) {
     return kind === "posts"
-        ? kiwi.wordpress.posts.update(id, payload)
-        : kiwi.wordpress.pages.update(id, payload);
+        ? kiwi.wordpress.posts.update(id, body)
+        : kiwi.wordpress.pages.update(id, body);
 }
 
 async function deleteWordpressItem(kiwi: KiwiPress, kind: "posts" | "pages", id: string) {
@@ -79,102 +69,73 @@ function registerCollectionRoutes(
     app.route({
         method: "GET",
         path: `/__kiwipress/content/${kind}`,
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    if (kiwi.mode === "nectarine") {
-                        ctx.json(await kiwi.native[kind].getAll());
-                        return;
-                    }
+        handler: guard(options, async () => {
+            if (kiwi.mode === "nectarine") {
+                return json(200, await kiwi.native[kind].getAll());
+            }
 
-                    ctx.json(await loadWordpressCollection(kiwi, kind));
-                } catch (error) {
-                    sendError(ctx, error);
-                }
-            })();
+            return json(200, await loadWordpressCollection(kiwi, kind));
         })
     });
 
     app.route({
         method: "POST",
         path: `/__kiwipress/content/${kind}`,
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    const payload = (await readJson(ctx.req)) as WordPressPayload;
+        handler: guard(options, async (ctx) => {
+            const body = payload(ctx);
 
-                    if (kiwi.mode === "nectarine") {
-                        const created = await kiwi.native[kind].create(payload);
-                        await kiwi.persist();
-                        ctx.json(created);
-                        return;
-                    }
+            if (kiwi.mode === "nectarine") {
+                const created = await kiwi.native[kind].create(body);
+                await kiwi.persist();
+                return json(200, created);
+            }
 
-                    ctx.json(
-                        kind === "posts"
-                            ? await kiwi.wordpress.posts.create(payload)
-                            : await kiwi.wordpress.pages.create(payload)
-                    );
-                } catch (error) {
-                    sendError(ctx, error);
-                }
-            })();
+            return json(
+                200,
+                kind === "posts"
+                    ? await kiwi.wordpress.posts.create(body)
+                    : await kiwi.wordpress.pages.create(body)
+            );
         })
     });
 
     app.route({
         method: "PATCH",
         path: `/__kiwipress/content/${kind}`,
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    const id = queryId(ctx.req);
-                    if (!id) {
-                        ctx.json({ error: "id query parameter is required." }, 400);
-                        return;
-                    }
+        handler: guard(options, async (ctx) => {
+            const id = queryId(ctx);
+            if (!id) {
+                return json(400, { error: "id query parameter is required." });
+            }
 
-                    const payload = (await readJson(ctx.req)) as WordPressPayload;
+            const body = payload(ctx);
 
-                    if (kiwi.mode === "nectarine") {
-                        const updated = await kiwi.native[kind].update(id, payload);
-                        await kiwi.persist();
-                        ctx.json(updated);
-                        return;
-                    }
+            if (kiwi.mode === "nectarine") {
+                const updated = await kiwi.native[kind].update(id, body);
+                await kiwi.persist();
+                return json(200, updated);
+            }
 
-                    ctx.json(await updateWordpressItem(kiwi, kind, id, payload));
-                } catch (error) {
-                    sendError(ctx, error);
-                }
-            })();
+            return json(200, await updateWordpressItem(kiwi, kind, id, body));
         })
     });
 
     app.route({
         method: "DELETE",
         path: `/__kiwipress/content/${kind}`,
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    const id = queryId(ctx.req);
-                    if (!id) {
-                        ctx.json({ error: "id query parameter is required." }, 400);
-                        return;
-                    }
+        handler: guard(options, async (ctx) => {
+            const id = queryId(ctx);
+            if (!id) {
+                return json(400, { error: "id query parameter is required." });
+            }
 
-                    if (kiwi.mode === "nectarine") {
-                        const deleted = await kiwi.native[kind].delete(id);
-                        await kiwi.persist();
-                        ctx.json({ deleted });
-                        return;
-                    }
+            if (kiwi.mode === "nectarine") {
+                const deleted = await kiwi.native[kind].delete(id);
+                await kiwi.persist();
+                return json(200, { deleted });
+            }
 
-                    ctx.json(await deleteWordpressItem(kiwi, kind, id));
-                } catch (error) {
-                    sendError(ctx, error);
-                }
-            })();
+            return json(200, await deleteWordpressItem(kiwi, kind, id));
         })
     });
 }
@@ -187,85 +148,66 @@ export function registerKiwiPressGateway(
     app.route({
         method: "GET",
         path: "/__kiwipress/health",
-        handler: (ctx: GatewayContext) => {
-            ctx.json({ ok: true });
-        }
+        handler: (): ResponseData => json(200, { ok: true })
     });
 
     app.route({
         method: "GET",
         path: "/__kiwipress/cms",
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    await kiwi.ready();
-                    ctx.json({
-                        mode: kiwi.mode,
-                        entry: "wordpress",
-                        destination: "nectarine",
-                        standalone: true,
-                        persistence: kiwi.store.persistenceKind,
-                        auth: kiwi.auth.strategy(),
-                        native: {
-                            posts: kiwi.store.list("posts").length,
-                            pages: kiwi.store.list("pages").length,
-                            users: kiwi.store.list("users").length,
-                            categories: kiwi.store.list("categories").length,
-                            tags: kiwi.store.list("tags").length,
-                            comments: kiwi.store.list("comments").length
-                        }
-                    });
-                } catch (error) {
-                    sendError(ctx, error);
+        handler: guard(options, async () => {
+            await kiwi.ready();
+            return json(200, {
+                mode: kiwi.mode,
+                entry: "wordpress",
+                destination: "nectarine",
+                standalone: true,
+                persistence: kiwi.store.persistenceKind,
+                auth: kiwi.auth.strategy(),
+                native: {
+                    posts: kiwi.store.list("posts").length,
+                    pages: kiwi.store.list("pages").length,
+                    users: kiwi.store.list("users").length,
+                    categories: kiwi.store.list("categories").length,
+                    tags: kiwi.store.list("tags").length,
+                    comments: kiwi.store.list("comments").length
                 }
-            })();
+            });
         })
     });
 
     app.route({
         method: "POST",
         path: "/__kiwipress/cms",
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    const body = (await readJson(ctx.req)) as { mode?: string };
-                    if (body.mode === "nectarine") {
-                        kiwi.promote();
-                    } else if (body.mode === "wordpress") {
-                        kiwi.useWordPress();
-                    } else {
-                        ctx.json({ error: "mode must be wordpress or nectarine." }, 400);
-                        return;
-                    }
+        handler: guard(options, async (ctx) => {
+            const body = payload(ctx);
+            if (body.mode === "nectarine") {
+                kiwi.promote();
+            } else if (body.mode === "wordpress") {
+                kiwi.useWordPress();
+            } else {
+                return json(400, { error: "mode must be wordpress or nectarine." });
+            }
 
-                    ctx.json({ mode: kiwi.mode });
-                } catch (error) {
-                    sendError(ctx, error);
-                }
-            })();
+            return json(200, { mode: kiwi.mode });
         })
     });
 
     app.route({
         method: "POST",
         path: "/__kiwipress/transfer",
-        handler: guard(options, (ctx: GatewayContext) => {
-            void (async () => {
-                try {
-                    if (!kiwi.sync) {
-                        ctx.json({ error: "Transfer requires a WordPress URL." }, 400);
-                        return;
-                    }
+        handler: guard(options, async (ctx) => {
+            if (!kiwi.sync) {
+                return json(400, { error: "Transfer requires a WordPress URL." });
+            }
 
-                    const body = (await readJson(ctx.req)) as { collections?: CmsCollection[] };
-                    const result = await kiwi.sync.transfer(body.collections);
-                    kiwi.promote();
-                    await kiwi.persist();
-                    ctx.json(result);
-                } catch (error) {
-                    sendError(ctx, error);
-                }
-            })();
+            const body = payload(ctx);
+            const collections = Array.isArray(body.collections)
+                ? body.collections as CmsCollection[]
+                : undefined;
+            const result = await kiwi.sync.transfer(collections);
+            kiwi.promote();
+            await kiwi.persist();
+            return json(200, result);
         })
     });
 

@@ -43,7 +43,7 @@ Direction or app chrome, not a hardened public surface.
 | Postgres persistence | Emerging | Nectarine `PgSql`; delete-then-insert; no tx |
 | `persistenceFromEnv` | Stable-ish | File before PG |
 | `loadNectarineApi` | Emerging | Walker only; `parser.yaml` logs |
-| `registerKiwiPressGateway` | Early | Pre-`ResponseData` `ctx.json` + `readJson(req)` |
+| `registerKiwiPressGateway` | Emerging | Seltzer `ResponseData`; content writes still use `?id=` |
 | Gateway token / loopback | Emerging | Timing-safe compare |
 | `apps/kiwipress` Content + transfer UI | Early | Real consumer; depends on gateway shape |
 | Dashboard wizard / billing / projects | Draft | Placeholders |
@@ -76,9 +76,9 @@ Tests exist beside the source (`*.test.ts`) and `vitest.config.ts`. The package.
 |---|---|
 | KiwiPress is “Seltzer serving WordPress” | No. Outbound is `fetch` via `requestWordPress`. |
 | `WPClient` uses Seltzer `client.*` | No. `Seltzer.init().handler()` only stores options. |
-| Gateway is a 0.8.1 tutorial | No. Handlers call `ctx.json` and return `undefined`. |
-| Seltzer cannot match `:id` | False as of 0.8.1. Gateway still uses `?id=`. |
-| `ctx.json` is current Seltzer | Removed in 0.4.0. Gateway still types it locally. |
+| Gateway is a 0.8.1 tutorial | Handlers now return `ResponseData`. Item writes still use `?id=`. |
+| Seltzer cannot match `:id` | False as of 0.8.1. Gateway still uses `?id=` for compatibility. |
+| `ctx.json` is current Seltzer | Removed in 0.4.0. The gateway no longer calls it. |
 
 ## Honesty: CMS
 

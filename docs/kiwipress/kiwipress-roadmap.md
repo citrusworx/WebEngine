@@ -34,11 +34,9 @@ File and Nectarine Postgres adapters ship. WebEngine is not in the import graph.
 
 ## What is still holding KiwiPress back
 
-### 1. Gateway ≠ Seltzer 0.8.1
+### 1. Gateway path params
 
-Highest-value increment: rewrite `registerKiwiPressGateway` handlers to **return `ResponseData`**, use `ctx.body` / `ctx.query`, and stop fire-and-forget `void async`. Until that lands, new hosts should write their own routes.
-
-Optional follow-on: `/content/posts/:id` now that Seltzer matches params. `?id=` can stay for the current front.
+`registerKiwiPressGateway` now returns `ResponseData` and uses `ctx.body` / `ctx.query`. Optional follow-on: `/content/posts/:id` now that Seltzer matches params. `?id=` stays for the current front.
 
 ### 2. Native writes are a subset
 

@@ -47,7 +47,7 @@ app.listen(Number(process.env.KIWIPRESS_API_PORT ?? 8787));
 
 There are **no** inbound content routes for users, categories, tags, or comments. Transfer can still move those collections.
 
-PATCH/DELETE without `id` respond `{ error: "id query parameter is required." }` with status 400 (via `ctx.json`, see below).
+PATCH/DELETE without `id` respond `{ error: "id query parameter is required." }` with status 400.
 
 `GET /__kiwipress/cms` body (success):
 
@@ -88,27 +88,18 @@ The Vite app sends `VITE_KIWIPRESS_GATEWAY_TOKEN` as Bearer when that env is set
 
 This token is not `WPAuth`. It does not become a WordPress application password.
 
-## Seltzer 0.8.1 mismatch (read this)
+## Seltzer 0.8.1
 
-Current Seltzer handlers **return `ResponseData`**: `{ status?, headers?, body? }`. `parse` fills `ctx.body`. `ctx.json` was **removed** in Seltzer 0.4.0. Bare returns are 500. Parametric `/notes/:id` is real (`ctx.params`).
+Handlers **return `ResponseData`**: `{ status?, headers?, body? }`. `parse` fills `ctx.body`. `ctx.json` was removed in Seltzer 0.4.0. Bare returns are 500.
 
-`registerKiwiPressGateway` still does something else. The code as shipped:
+`registerKiwiPressGateway` now matches that contract:
 
-- types a local `GatewayContext` with `json: (data, status?) => void`
-- calls `ctx.json(...)` on every response, including 401 / 400 / 500
-- re-reads the socket with `readJson(ctx.req)` instead of `ctx.body`
-- wraps work in `void (async () => { ... })()` so the Seltzer handler **returns `undefined` immediately**
-- uses `?id=` on the same path for PATCH/DELETE
+- every route returns `{ status, body }`
+- POST/PATCH bodies come from `ctx.body`
+- PATCH/DELETE still use `?id=` (`ctx.query.id`) so existing dashboard callers stay valid
+- auth failures are `401 { error: "Unauthorized" }`
 
-That is what `apps/kiwipress/back` registers. Document it as **actual gateway code**, not as the Seltzer tutorial.
-
-What this means on a strict 0.8.1 pipeline:
-
-- a handler that returns `undefined` is not `ResponseData` → Seltzer’s `response` stage 500s
-- `ctx.json` is not on `RequestContext`
-- `parse` has already consumed `req`; a second `readJson(ctx.req)` sees an empty stream
-
-If you are writing **new** host routes, do not copy `ctx.json`. Return `ResponseData` and read `ctx.body` / `ctx.query.id` (or register `/content/posts/:id` — Seltzer can match it). The library helper has not been rewritten yet. That gap is listed on [Status](./kiwipress-status.md) and [Roadmap](./kiwipress-roadmap.md).
+If you are writing **new** host routes, keep returning `ResponseData`. Do not add a `ctx.json` helper. Parametric `/content/posts/:id` is available in Seltzer if you want it later; this helper keeps `?id=` for compatibility.
 
 Seltzer `.handler({ adapter: "node:http", options })` on `WPClient` only stashes outbound options. It does not make `listen` speak WordPress. Adapter string in source is `"node:http"`; Seltzer does not interpret it.
 

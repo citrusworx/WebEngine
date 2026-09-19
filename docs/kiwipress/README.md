@@ -249,7 +249,7 @@ registerKiwiPressGateway(app, kiwi, {
 app.listen(8787);
 ```
 
-That is what `apps/kiwipress/back` does. Routes live under `/__kiwipress`. Item writes use `?id=`. **Honesty:** the registered handlers still call a local `ctx.json` helper and re-read `ctx.req`. Current Seltzer **0.8.1** wants handlers to **return `ResponseData`** and already parsed `ctx.body`. Documented as shipped code, not as the Seltzer tutorial pattern. See [Gateway](./kiwipress-gateway.md).
+That is what `apps/kiwipress/back` does. Routes live under `/__kiwipress`. Item writes use `?id=`. Handlers return Seltzer `ResponseData` and read `ctx.body` / `ctx.query`. See [Gateway](./kiwipress-gateway.md).
 
 ### 9. Walk Nectarine API YAML
 
