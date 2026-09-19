@@ -387,6 +387,20 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-tabs-list-rule: var(--jx-tabs-list-rule);
     --juice-tabs-focus-ring: var(--jx-tabs-focus-ring);
 
+    /* Surface tone roles — frosted / elevated / recessed from existing --jx-* tokens. */
+    --juice-surface-soft-bg: var(--jx-surface);
+    --juice-surface-soft-border: var(--jx-border);
+    --juice-surface-soft-shadow: var(--jx-shadow);
+    --juice-surface-soft-blur: 10px;
+    --juice-surface-strong-bg: var(--jx-surface-strong);
+    --juice-surface-strong-border: var(--jx-border-strong);
+    --juice-surface-strong-shadow: var(--jx-shadow-strong);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--jx-surface-muted);
+    --juice-surface-muted-border: var(--jx-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);

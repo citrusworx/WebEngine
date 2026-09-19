@@ -109,3 +109,25 @@ describe("Juice theme generator tabs roles", () => {
         }
     });
 });
+
+const SURFACE_TONES = ["soft", "strong", "muted"] as const;
+const SURFACE_ROLES = ["bg", "border", "shadow", "blur"] as const;
+
+describe("Juice theme generator surface tone roles", () => {
+    it("binds --juice-surface-* from existing --jx-* surfaces", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--juice-surface-soft-bg: var(--jx-surface)");
+        expect(css).toContain("--juice-surface-soft-border: var(--jx-border)");
+        expect(css).toContain("--juice-surface-soft-shadow: var(--jx-shadow)");
+        expect(css).toContain("--juice-surface-strong-bg: var(--jx-surface-strong)");
+        expect(css).toContain("--juice-surface-strong-border: var(--jx-border-strong)");
+        expect(css).toContain("--juice-surface-muted-bg: var(--jx-surface-muted)");
+
+        for (const tone of SURFACE_TONES) {
+            for (const role of SURFACE_ROLES) {
+                expect(css).toContain(`--juice-surface-${tone}-${role}:`);
+            }
+        }
+    });
+});

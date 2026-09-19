@@ -62,7 +62,7 @@ Built-in breakpoints, `row` collapse, and scaled spacing are documented in [docs
 
 ## Surfaces
 
-Beta-stable: `surfaceTone="soft"`. See [docs/juice/juice-surfaces.md](../../docs/juice/juice-surfaces.md).
+Beta-stable: `surfaceTone="soft|strong|muted"`. Themes bind `--juice-surface-*` roles. See [docs/juice/juice-surfaces.md](../../docs/juice/juice-surfaces.md).
 
 ## Motion (Beta)
 

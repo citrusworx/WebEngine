@@ -212,6 +212,7 @@ The generated stylesheet currently defines:
 - base treatments for `[hero]`, `[card]`, `[panel]`, `[cta]`, `[badge]`, and `[stat]`
 - accordion chrome role bindings (`--jx-trigger` / `--juice-accordion-*`) and surface-control paint for `[accordion-item]`
 - tabs chrome role bindings (`--jx-tabs-*` / `--juice-tabs-*`) and tab-trigger CTA overrides for `[tabs-list]` / `[tab]`
+- surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
 
 ## Accordion chrome roles
@@ -278,6 +279,22 @@ Each shipped library theme also aliases the same required roles with its identit
 Selection paint uses Juice `[active]` and `aria-selected="true"` together. Visible vs hidden panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state.
 
 `[tabs]` wrappers are structural. Put the widget in a named surface or card/panel when the page needs a chrome background; do not rely on default `section` paint.
+
+## Surface tone roles
+
+Library themes bind a shared `surfaceTone` contract so `[surfaceTone="soft|strong|muted"]` paint is theme-agnostic in `surface.scss`.
+
+Shared names (set on `[theme="..."]`):
+
+- `--juice-surface-soft-bg` / `-border` / `-shadow` / `-blur` — frosted / translucent
+- `--juice-surface-strong-bg` / `-border` / `-shadow` / `-blur` — opaque elevated panel
+- `--juice-surface-muted-bg` / `-border` / `-shadow` / `-blur` — quieter recessed wash
+
+Core `surface.scss` consumes each role with light fallbacks, so unthemed `soft` still matches the original near-white frost. Bind from existing surface/page tokens. Do not invent a new hue family, and do not paint Tide as a white frost.
+
+Aquaflux maps soft/strong/muted onto `--aqua-surface`, `--aqua-surface-strong`, and `--aqua-surface-muted`. KiwiPress maps soft onto the frosted `--kw-surface-strong` nav fill and strong onto opaque `--kw-surface`. Citrusmint mixes `--cm-surface` for frost because it has no dedicated translucent token. Tide uses `--tide-surface*` plus `--tide-line-glow`. Generated themes bind the same `--juice-surface-*` names from `--jx-surface*`.
+
+`borderStrength` and standalone `blur="sm|md"` are not part of this contract yet.
 
 ## Recommended authoring rules
 

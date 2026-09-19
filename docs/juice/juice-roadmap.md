@@ -11,7 +11,7 @@ The visible layers today:
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
-* a small surface language (`surfaceTone="soft"`)
+* a small surface language (`surfaceTone="soft|strong|muted"`)
 * Emerging browser runtimes: navigation, accordion, and tabs auto-enhance when the JS entry is imported
 * a Sig Accordion factory plus create/init/start/stop helpers
 * templates as a stress-test bed
@@ -27,7 +27,7 @@ The next strongest areas are now:
 
 The weakest areas are still:
 
-* surface language breadth (one shipped tone)
+* surface language breadth (`soft` / `strong` / `muted` ship; `borderStrength` and blur attrs do not)
 * theme-contract formalization across the shipped set
 * component maturity beyond the three auto-enhance runtimes
 * icon and typography polish
@@ -114,11 +114,10 @@ Juice has a real surface hook, but not a full surface system.
 
 Shipped today:
 
-* `surfaceTone="soft"`
+* `surfaceTone="soft|strong|muted"` with a `--juice-surface-*` theme role contract
 
 Still missing or only specified:
 
-* more `surfaceTone` variants (`strong` is specified, not implemented)
 * stronger border semantics (`borderStrength`)
 * better depth / shadow language
 * clearer glass / overlay / tint patterns
@@ -174,11 +173,11 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 Tide promotion is done. Surface language is the next Juice library build.
 
-Build out the surface model that already started. Do not treat that work as finished: Juice still ships one tone (`surfaceTone="soft"`).
+Build out the surface model that already started. Do not treat that work as finished: `surfaceTone="soft|strong|muted"` ships, but `borderStrength`, standalone blur, and overlay/variant utilities do not.
 
 Recommended next additions:
 
-* more `surfaceTone` variants
+* more surface utilities beyond the three shipped tones
 * `borderStrength`
 * depth / shadow language
 * `blur` / overlay / tint where they stay composable
