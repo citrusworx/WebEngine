@@ -729,7 +729,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/grapevine@workspace:libraries/grapevine":
+"@citrusworx/grapevine@workspace:*, @citrusworx/grapevine@workspace:libraries/grapevine":
   version: 0.0.0-use.local
   resolution: "@citrusworx/grapevine@workspace:libraries/grapevine"
   dependencies:
@@ -802,11 +802,13 @@ __metadata:
   resolution: "@citrusworx/kiwipressapp-back@workspace:apps/kiwipress/back"
   dependencies:
     "@citrusworx/dns": "workspace:*"
+    "@citrusworx/grapevine": "workspace:*"
     "@citrusworx/kiwipress": "workspace:*"
     "@citrusworx/seltzer": "workspace:*"
     "@types/node": "npm:^25.4.0"
     tsx: "npm:^4.20.6"
     typescript: "npm:~5.9.3"
+    vitest: "npm:^4.1.4"
   languageName: unknown
   linkType: soft
 

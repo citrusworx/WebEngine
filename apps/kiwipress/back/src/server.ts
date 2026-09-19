@@ -6,6 +6,7 @@ import {
     persistenceFromEnv,
     registerKiwiPressGateway
 } from "@citrusworx/kiwipress";
+import { registerKiwiPressProvision } from "./provision/register.js";
 
 function resolvePersistence() {
     return persistenceFromEnv() ?? createFilePersistence(
@@ -36,9 +37,11 @@ async function main() {
     await kiwi.ready();
 
     const server = Seltzer.init();
-    registerKiwiPressGateway(server, kiwi, {
+    const gatewayAuth = {
         token: process.env.KIWIPRESS_GATEWAY_TOKEN?.trim() || undefined
-    });
+    };
+    registerKiwiPressGateway(server, kiwi, gatewayAuth);
+    registerKiwiPressProvision(server, gatewayAuth);
     server.listen(port);
 
     console.log(

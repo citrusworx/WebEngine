@@ -468,6 +468,17 @@
     background: var(--kw-accent-soft);
 }
 
+[wizard-shell] [timeline-step][step="failed"] {
+    border-color: var(--kw-warm);
+    background: var(--kw-warm-soft);
+}
+
+[wizard-shell] [provision-error] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
 [wizard-shell] [timeline-step] [choice-head] {
     align-items: center;
 }

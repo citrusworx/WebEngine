@@ -72,7 +72,7 @@ Not started in this package. The dashboard wysiwyg folder is an experiment. Do n
 - Teaching `ctx.json` as the future
 - Pulling WebEngine in to get a JSON file
 - MySQL/Mongo adapters before the Postgres crash window is honest
-- Pretending the wizard provisions Grapevine droplets
+- Pretending apply works without a server-side DigitalOcean token
 
 ---
 
