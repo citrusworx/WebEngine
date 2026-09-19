@@ -49,4 +49,14 @@ export type {
     DrawerController,
     DrawerOptions
 } from "./js/src/drawer/drawer-runtime.js";
+export {
+    createToast,
+    initToast,
+    startToastRuntime,
+    stopToastRuntime
+} from "./js/src/toast/toast-runtime.js";
+export type {
+    ToastController,
+    ToastOptions
+} from "./js/src/toast/toast-runtime.js";
 export { tokens } from "./tokens/index.js";
