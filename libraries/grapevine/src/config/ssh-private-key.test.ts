@@ -3,7 +3,12 @@ import { chmodSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync }
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { persistGeneratedPrivateKey, resolvePrivateKeyPath, sanitizeKeyFileName } from "./ssh-private-key.js";
+import {
+    persistGeneratedPrivateKey,
+    readExistingPrivateKeyPublic,
+    resolvePrivateKeyPath,
+    sanitizeKeyFileName
+} from "./ssh-private-key.js";
 
 function pkcs8Rsa(): string {
     const { privateKey } = generateKeyPairSync("rsa", {
@@ -69,5 +74,28 @@ describe("generated SSH private key persistence", () => {
 
         expect(() => persistGeneratedPrivateKey(filePath, pkcs8Rsa())).toThrow(/already exists/);
         expect(readFileSync(filePath, "utf8")).toBe("existing\n");
+    });
+
+    it("derives a public key from an existing private key file without rewriting it", () => {
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-ssh-"));
+        dirs.push(dir);
+        const filePath = path.join(dir, "id_grapevine");
+        persistGeneratedPrivateKey(filePath, pkcs8Rsa());
+        const before = readFileSync(filePath, "utf8");
+
+        const publicKey = readExistingPrivateKeyPublic(filePath);
+
+        expect(publicKey).toMatch(/^ssh-rsa /);
+        expect(readFileSync(filePath, "utf8")).toBe(before);
+        expect(readExistingPrivateKeyPublic(path.join(dir, "missing"))).toBeUndefined();
+    });
+
+    it("fails clearly when an existing file is not a private key", () => {
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-ssh-"));
+        dirs.push(dir);
+        const filePath = path.join(dir, "id_grapevine");
+        writeFileSync(filePath, "not-a-key\n", { mode: 0o600 });
+
+        expect(() => readExistingPrivateKeyPublic(filePath)).toThrow(/Failed to read existing private key/);
     });
 });

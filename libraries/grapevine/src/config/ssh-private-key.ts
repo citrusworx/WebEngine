@@ -1,5 +1,6 @@
-import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import sshpk from "sshpk";
 import { toOpenSSHPrivateKey } from "../providers/digitalocean/ssh/ssh.js";
 
 /** Default directory (under process cwd) for generated SSH private keys. Local-only; do not commit. */
@@ -22,6 +23,26 @@ export function sanitizeKeyFileName(name: string): string {
 export function resolvePrivateKeyPath(name: string, configured?: string, cwd = process.cwd()): string {
     const relative = configured ?? path.join(DEFAULT_GENERATED_SSH_DIR, sanitizeKeyFileName(name));
     return path.resolve(cwd, relative);
+}
+
+/**
+ * Derive an OpenSSH public key from an existing private key file.
+ * Returns `undefined` when the file is absent so apply can generate instead.
+ * Does not overwrite the file.
+ */
+export function readExistingPrivateKeyPublic(filePath: string): string | undefined {
+    if (!existsSync(filePath)) {
+        return undefined;
+    }
+    try {
+        const body = readFileSync(filePath, "utf8");
+        const privateKey = sshpk.parsePrivateKey(body, "auto");
+        const publicKey = privateKey.toPublic().toString("ssh");
+        return publicKey.endsWith("\n") ? publicKey.slice(0, -1) : publicKey;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to read existing private key at ${filePath}: ${message}`);
+    }
 }
 
 /**
