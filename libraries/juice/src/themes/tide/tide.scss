@@ -126,6 +126,12 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-surface-muted-shadow: none;
     --juice-surface-muted-blur: 0px;
 
+    /* Border strength — lagoon line tokens, not the unthemed light gray. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--tide-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--tide-border-strong);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);

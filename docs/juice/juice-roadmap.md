@@ -11,7 +11,7 @@ The visible layers today:
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
-* a small surface language (`surfaceTone="soft|strong|muted"`)
+* a small surface language (`surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`)
 * Emerging browser runtimes: navigation, accordion, and tabs auto-enhance when the JS entry is imported
 * a Sig Accordion factory plus create/init/start/stop helpers
 * templates as a stress-test bed
@@ -27,7 +27,7 @@ The next strongest areas are now:
 
 The weakest areas are still:
 
-* surface language breadth (`soft` / `strong` / `muted` ship; `borderStrength` and blur attrs do not)
+* surface language breadth (`surfaceTone` and `borderStrength` ship; standalone blur attrs do not)
 * theme-contract formalization across the shipped set
 * component maturity beyond the three auto-enhance runtimes
 * icon and typography polish
@@ -115,10 +115,10 @@ Juice has a real surface hook, but not a full surface system.
 Shipped today:
 
 * `surfaceTone="soft|strong|muted"` with a `--juice-surface-*` theme role contract
+* `borderStrength="soft|bold"` with `--juice-border-strength-*` roles (composes with tones)
 
 Still missing or only specified:
 
-* stronger border semantics (`borderStrength`)
 * better depth / shadow language
 * clearer glass / overlay / tint patterns
 * more ready-made structural variants on `card` / `panel` / `hero`
@@ -173,12 +173,11 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 Tide promotion is done. Surface language is the next Juice library build.
 
-Build out the surface model that already started. Do not treat that work as finished: `surfaceTone="soft|strong|muted"` ships, but `borderStrength`, standalone blur, and overlay/variant utilities do not.
+Build out the surface model that already started. Do not treat that work as finished: `surfaceTone` and `borderStrength` ship, but standalone blur and overlay/variant utilities do not.
 
 Recommended next additions:
 
-* more surface utilities beyond the three shipped tones
-* `borderStrength`
+* more surface utilities beyond the shipped tones and border strengths
 * depth / shadow language
 * `blur` / overlay / tint where they stay composable
 * more structural variants on `card` (see [Surface Spec](./juice-surface-spec.md))

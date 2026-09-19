@@ -68,6 +68,12 @@
     --juice-surface-muted-shadow: none;
     --juice-surface-muted-blur: 0px;
 
+    /* Border strength — no --cm-border-strong; bold mixes heading for contrast. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--cm-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: color-mix(in srgb, var(--cm-heading) 22%, transparent);
+
     background-color: var(--cm-page);
     color: var(--cm-text);
     font-family: var(--cm-body-font);

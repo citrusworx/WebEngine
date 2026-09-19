@@ -401,6 +401,12 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-surface-muted-shadow: none;
     --juice-surface-muted-blur: 0px;
 
+    /* Border strength — existing --jx-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--jx-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--jx-border-strong);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);

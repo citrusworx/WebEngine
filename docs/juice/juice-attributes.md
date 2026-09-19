@@ -152,8 +152,10 @@ For more detail, see [Sizing Reference](./juice-sizing.md).
 
 - `surfaceTone`
   Values: `"soft"`, `"strong"`, `"muted"`
+- `borderStrength`
+  Values: `"soft"`, `"bold"`
 
-Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` roles. Unthemed fallbacks keep the original light frost for `soft`. See [Surfaces](./juice-surfaces.md). `borderStrength` and standalone `blur` are not shipped.
+Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` and `--juice-border-strength-<soft|bold>-width|color` roles. Unthemed fallbacks keep the original light frost for `soft` tones and a gray hairline / heavier rule for strength. `borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. See [Surfaces](./juice-surfaces.md). Standalone `blur` is not shipped.
 
 ## Icon Attributes
 

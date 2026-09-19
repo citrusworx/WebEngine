@@ -7,6 +7,8 @@ const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), ".");
 
 const TONES = ["soft", "strong", "muted"] as const;
 const SURFACE_ROLES = ["bg", "border", "shadow", "blur"] as const;
+const BORDER_STRENGTHS = ["soft", "bold"] as const;
+const BORDER_STRENGTH_ROLES = ["width", "color"] as const;
 
 const THEMES = [
     { id: "aquaflux", prefix: "aqua" },
@@ -37,7 +39,27 @@ describe("Surface tone role contract", () => {
         expect(scss).toContain("[theme] [surfaceTone=\"muted\"]");
         expect(scss).not.toContain('[blur="sm"]');
         expect(scss).not.toContain('[blur="md"]');
-        expect(scss).not.toContain("[borderStrength");
+    });
+
+    it("consumes shared --juice-border-strength-* roles without wiping surfaceTone paint", () => {
+        const scss = readFileSync(join(SRC_ROOT, "styles/surface/surface.scss"), "utf-8");
+
+        for (const strength of BORDER_STRENGTHS) {
+            expect(scss).toContain(`[borderStrength="${strength}"]`);
+            expect(scss).toContain(`[theme] [borderStrength="${strength}"]`);
+            expect(scss).toContain(`[surfaceTone][borderStrength="${strength}"]`);
+            expect(scss).toContain(`[theme] [surfaceTone][borderStrength="${strength}"]`);
+            for (const role of BORDER_STRENGTH_ROLES) {
+                expect(scss).toContain(`--juice-border-strength-${strength}-${role}`);
+            }
+        }
+
+        expect(scss).toContain("var(--juice-border-strength-soft-width, 1px)");
+        expect(scss).toContain("var(--juice-border-strength-bold-width, 2px)");
+        expect(scss).toContain(":not([surfaceTone]):not([borderColor])");
+        expect(scss).not.toMatch(/\[surfaceTone\]\[borderStrength="(?:soft|bold)"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[borderStrength="(?:soft|bold)"\][^{]*\{[^}]*box-shadow/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[borderStrength="(?:soft|bold)"\][^{]*\{[^}]*backdrop-filter/);
     });
 
     it("binds the same surface tone roles in aquaflux, kiwipress, citrusmint, and tide", () => {
@@ -50,6 +72,12 @@ describe("Surface tone role contract", () => {
             for (const tone of TONES) {
                 for (const role of SURFACE_ROLES) {
                     expect(scss).toContain(`--juice-surface-${tone}-${role}:`);
+                }
+            }
+
+            for (const strength of BORDER_STRENGTHS) {
+                for (const role of BORDER_STRENGTH_ROLES) {
+                    expect(scss).toContain(`--juice-border-strength-${strength}-${role}:`);
                 }
             }
         }
@@ -93,5 +121,22 @@ describe("Surface tone role contract", () => {
         expect(scss).toContain("--juice-surface-soft-shadow: var(--tide-line-glow)");
         expect(scss).not.toContain("--juice-surface-soft-bg: #{rgba($white-100");
         expect(scss).not.toContain("--aqua-surface)");
+    });
+
+    it("maps borderStrength onto existing theme border tokens", () => {
+        const aqua = readThemeScss("aquaflux");
+        const kiwi = readThemeScss("kiwipress");
+        const mint = readThemeScss("citrusmint");
+        const tide = readThemeScss("tide");
+
+        expect(aqua).toContain("--juice-border-strength-soft-color: var(--aqua-border)");
+        expect(aqua).toContain("--juice-border-strength-bold-color: var(--aqua-border-strong)");
+        expect(kiwi).toContain("--juice-border-strength-soft-color: var(--kw-border)");
+        expect(kiwi).toContain("--juice-border-strength-bold-color: var(--kw-border-strong)");
+        expect(mint).toContain("--juice-border-strength-soft-color: var(--cm-border)");
+        expect(mint).toContain("--juice-border-strength-bold-color: color-mix(in srgb, var(--cm-heading) 22%, transparent)");
+        expect(tide).toContain("--juice-border-strength-soft-color: var(--tide-border)");
+        expect(tide).toContain("--juice-border-strength-bold-color: var(--tide-border-strong)");
+        expect(tide).not.toContain("--juice-border-strength-bold-color: #{rgba($gray-400");
     });
 });

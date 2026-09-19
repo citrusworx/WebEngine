@@ -10,7 +10,8 @@
 //   --juice-surface-<tone>-blur    backdrop-filter blur length
 //
 // Tones: soft (frosted), strong (opaque elevated), muted (quiet recessed).
-// Slice B/C (standalone blur attrs) stay out of scope.
+// borderStrength (slice B) refines width / contrast. Standalone blur (slice C)
+// stays out of scope.
 //
 // [theme] [surfaceTone] must beat theme semantic defaults such as
 // [theme="…"] :where(section, article, …) so the attribute works on
@@ -39,4 +40,53 @@
     border: 1px solid var(--juice-surface-muted-border, #{rgba($gray-300, 0.45)});
     box-shadow: var(--juice-surface-muted-shadow, none);
     backdrop-filter: blur(var(--juice-surface-muted-blur, 0px));
+}
+
+// Border strength roles. Themes bind --juice-border-strength-<soft|bold>-*
+// on [theme="..."]. Light fallbacks keep a gray hairline / heavier rule when
+// no theme binds them.
+//
+//   --juice-border-strength-<value>-width  border-width
+//   --juice-border-strength-<value>-color  border-color (standalone only)
+//
+// Width-only is enough when composing with surfaceTone: the tone already
+// set a theme-aware border-color (Tide keeps its lagoon line, not a light
+// gray). Standalone use needs the color roles so dark themes do not fall
+// back to the unthemed gray. [borderColor] swatches still win on color
+// because they load after this file and only set border-color.
+//
+// Longhands (not `border:`) so a later width refine cannot wipe a tone's
+// background, shadow, or blur. [theme] [borderStrength] matches the tone
+// specificity pattern so the attribute works on themed section / article.
+
+[borderStrength="soft"],
+[theme] [borderStrength="soft"] {
+    border-width: var(--juice-border-strength-soft-width, 1px);
+    border-style: solid;
+}
+
+[borderStrength="soft"]:not([surfaceTone]):not([borderColor]),
+[theme] [borderStrength="soft"]:not([surfaceTone]):not([borderColor]) {
+    border-color: var(--juice-border-strength-soft-color, #{rgba($gray-300, 0.45)});
+}
+
+[borderStrength="bold"],
+[theme] [borderStrength="bold"] {
+    border-width: var(--juice-border-strength-bold-width, 2px);
+    border-style: solid;
+}
+
+[borderStrength="bold"]:not([surfaceTone]):not([borderColor]),
+[theme] [borderStrength="bold"]:not([surfaceTone]):not([borderColor]) {
+    border-color: var(--juice-border-strength-bold-color, #{rgba($gray-400, 0.9)});
+}
+
+[surfaceTone][borderStrength="soft"],
+[theme] [surfaceTone][borderStrength="soft"] {
+    border-width: var(--juice-border-strength-soft-width, 1px);
+}
+
+[surfaceTone][borderStrength="bold"],
+[theme] [surfaceTone][borderStrength="bold"] {
+    border-width: var(--juice-border-strength-bold-width, 2px);
 }
