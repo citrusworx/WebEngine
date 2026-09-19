@@ -701,6 +701,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initDrawer");
         expect(module).toHaveProperty("startDrawerRuntime");
         expect(module).toHaveProperty("stopDrawerRuntime");
+        expect(module).toHaveProperty("createToast");
+        expect(module).toHaveProperty("initToast");
+        expect(module).toHaveProperty("startToastRuntime");
+        expect(module).toHaveProperty("stopToastRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

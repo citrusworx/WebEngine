@@ -89,6 +89,10 @@ import {
   initDrawer,
   startDrawerRuntime,
   stopDrawerRuntime,
+  createToast,
+  initToast,
+  startToastRuntime,
+  stopToastRuntime,
   createNavigation,
   initNavigation,
   startNavigationRuntime,
@@ -99,7 +103,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, and drawer runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, and `[drawer-overlay]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), and [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, and toast runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, and `[toast-region]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), and [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
 
 ## Use the built files directly
 
@@ -151,7 +155,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tabs-*` aliases)
 - visible vs hidden tab panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state
 - modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). See [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md).
-- toast chrome colors come from `--juice-toast-*` roles bound by the active theme. `[toast-region]` is a non-modal stack (default `top-right`); hide an individual `[toast]` with the native `hidden` attribute. Status is `[toast="success|error|info|warning"]`. Toast runtime is later.
+- toast chrome colors come from `--juice-toast-*` roles bound by the active theme. `[toast-region]` is a non-modal stack (default `top-right`); hide an individual `[toast]` with the native `hidden` attribute. Status is `[toast="success|error|info|warning"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[toast-close]`, `toast-duration`, live-region ARIA). It is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed.
 - drawer chrome colors come from `--juice-drawer-*` roles bound by the active theme; hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. See [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
 
 ```html

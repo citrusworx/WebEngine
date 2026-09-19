@@ -302,12 +302,14 @@ See [Drawer Runtime](./juice-drawer-runtime.md). Theme paint uses `--juice-drawe
 ### Toast
 
 - `toast-region` — fixed stack container (`aria-live="polite"`). Values `"top-right"` / `"top-left"` / `"bottom-right"` / `"bottom-left"` (bare or unspecified is top-right). Stays in the DOM
-- `toast` — one notification panel (`role="status"`). Values `"success"` / `"error"` / `"info"` / `"warning"` (bare `[toast]` is neutral). Hide with the native `hidden` attribute
+- `toast` — one notification panel (`role="status"`, or `role="alert"` for `toast="error"` / assertive). Values `"success"` / `"error"` / `"info"` / `"warning"` (bare `[toast]` is neutral). Hide with the native `hidden` attribute
 - `toast-title` — optional title line
 - `toast-body` — message content
-- `toast-close` — dismiss control (surface paint, not a CTA). Chrome only; runtime wires it later
+- `toast-close` — dismiss control (surface paint, not a CTA). The toast runtime wires click / keyboard dismiss
+- `toast-duration` — optional auto-dismiss override in milliseconds (`"3000"`). `"0"`, `"Infinity"`, or a negative number is sticky
+- `toast-live` — optional `"assertive"` on the region or a toast (or set `aria-live="assertive"` in markup)
 
-Toast is non-modal feedback. It is not a dialog overlay and not the surface `overlay="frost|tint"` utility. Theme paint uses `--juice-toast-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`).
+Toast is non-modal feedback. It is not a dialog overlay and not the surface `overlay="frost|tint"` utility. Authors place `[toast-region]` in markup; the runtime does not invent a portal. Theme paint uses `--juice-toast-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`).
 
 ## Usage Examples
 

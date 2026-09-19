@@ -33,16 +33,16 @@ It should not require:
 
 ## Current Examples
 
-The navigation, accordion, tabs, modal, and drawer runtimes are the current examples.
+The navigation, accordion, tabs, modal, drawer, and toast runtimes are the current examples.
 
 They work by:
 
-* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, or `[drawer-overlay]` markup
+* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, or `[toast-region]` markup
 * booting automatically in the browser
 * responding to DOM changes
 * applying behavior without user init code
 
-See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), and [Juice Drawer Runtime](./juice-drawer-runtime.md).
+See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), and [Juice Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog.
 
 ## Runtime Scope
 
@@ -67,6 +67,7 @@ Shipped built-in runtime features include:
 * tabs
 * modal / dialog
 * drawers
+* toasts / snackbars
 
 Future built-in runtime features could include:
 

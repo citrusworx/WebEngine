@@ -48,6 +48,7 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopModalRuntime();
         module.stopDrawerRuntime();
+        module.stopToastRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -88,6 +89,7 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopModalRuntime();
         module.stopDrawerRuntime();
+        module.stopToastRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -124,6 +126,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         module.stopModalRuntime();
         module.stopDrawerRuntime();
+        module.stopToastRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -160,6 +163,49 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopToastRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built toast runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopToastRuntime();
+        document.body.innerHTML = `
+            <div toast-region>
+                <div toast id="demo-toast" hidden>
+                    <div toast-title>Saved</div>
+                    <div toast-body>Your changes were written.</div>
+                    <button type="button" toast-close aria-label="Dismiss">×</button>
+                </div>
+            </div>
+        `;
+
+        const controller = module.createToast({ root: document.body, defaultDuration: 0 });
+        const region = document.querySelector("[toast-region]");
+        const toast = document.getElementById("demo-toast");
+
+        expect(region?.getAttribute("aria-live")).toBe("polite");
+        expect(toast?.getAttribute("role")).toBe("status");
+        expect(toast?.getAttribute("aria-modal")).toBeNull();
+        expect(toast?.hasAttribute("hidden")).toBe(true);
+
+        controller.show(toast);
+        expect(toast?.hasAttribute("hidden")).toBe(false);
+
+        document
+            .querySelector("[toast-close]")
+            ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(toast?.hasAttribute("hidden")).toBe(true);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopToastRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopTabsRuntime();
