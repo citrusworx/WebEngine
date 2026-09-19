@@ -141,7 +141,44 @@ When both attributes are set, `shadowTone` paints **shadow cast only**. The tone
 
 Core selectors include `[theme] [shadowTone]` (same specificity pattern as tones) and `[surfaceTone][shadowTone]` so the compose rule cannot wipe tone paint. Standalone box-shadow is gated with `:not([depth])` so `[shadow][depth]` geometry wins.
 
-Remaining depth slices B (`overlay`) and C (`variant`) stay specified, not shipped.
+## Beta-stable: `overlay`
+
+Composable frost / tint wash. Standalone — no `surfaceTone` required. `frost` is a translucent frosted veil; `tint` is a subtler theme-colored wash. Themes bind `--juice-overlay-<frost|tint>-wash|layer` from existing tokens so dark themes (Tide) keep a near-black / lagoon veil instead of the unthemed white frost.
+
+| Value | Intent |
+|-------|--------|
+| `frost` | Translucent frosted wash / veil |
+| `tint` | Subtle colored wash (theme-tinted) |
+
+Standalone `overlay` paints via `background-image` (a `linear-gradient` of the wash). It does **not** replace `bgColor="…"` or a tone's `--juice-surface-*-bg` — those still own `background-color`. Overlay is the wash layer only.
+
+### Compose with `surfaceTone`
+
+When both attributes are set, `overlay` adjusts **wash only**. The tone keeps its background, border, shadow, and blur.
+
+```html
+<article card="feature" surfaceTone="soft" overlay="frost">…</article>
+<aside surfaceTone="muted" overlay="tint">…</aside>
+```
+
+```html
+<!-- Swatch fill stays; overlay is the veil on top. -->
+<section bgColor="white-100" rounded="xl" overlay="frost">…</section>
+```
+
+```html
+<!-- Standalone: themeable frost / tint veil, no surfaceTone required. -->
+<div rounded="lg" padding="1rem" overlay="tint">…</div>
+```
+
+```html
+<!-- A–C plus depth slices A+B: tone fill, strength width, explicit frost, cool cast, tint wash. -->
+<section surfaceTone="soft" borderStrength="bold" blur="md" shadowTone="cool" overlay="tint">…</section>
+```
+
+Core selectors include `[theme] [overlay]` (same specificity pattern as tones) and `[surfaceTone][overlay]` so the compose rule cannot wipe tone paint.
+
+Remaining depth slice C (`variant`) stays specified, not shipped.
 
 ## Theme role contract
 
@@ -178,6 +215,15 @@ Shadow tone roles:
 | `--juice-shadow-tone-warm-color` | `--shadow-color` for `shadow` / `depth` |
 | `--juice-shadow-tone-warm-shadow` | standalone / `surfaceTone` `box-shadow` |
 
+Overlay roles:
+
+| Role | Used as |
+|------|---------|
+| `--juice-overlay-frost-wash` | frost pigment (themes mix this into `-layer`) |
+| `--juice-overlay-frost-layer` | standalone / `surfaceTone` `background-image` |
+| `--juice-overlay-tint-wash` | tint pigment (themes mix this into `-layer`) |
+| `--juice-overlay-tint-layer` | standalone / `surfaceTone` `background-image` |
+
 Unthemed fallbacks (no theme binding):
 
 - **soft tone** — near-white frost (`rgba(white-100, 0.88)`), gray border, soft shadow, `10px` blur
@@ -188,26 +234,28 @@ Unthemed fallbacks (no theme binding):
 - **blur sm / md** — `6px` / `16px` (optional `--juice-blur-*` restyles; not theme-bound)
 - **cool shadow tone** — `rgba(blue-900, 0.28)` drop
 - **warm shadow tone** — `rgba(orange-800, 0.28)` drop
+- **frost overlay** — `rgba(white-100, 0.42)` veil
+- **tint overlay** — `rgba(blue-400, 0.18)` wash
 
 Shipped binds (existing tokens only; no new hue family):
 
-| Theme | soft tone | strong tone | muted tone | soft / bold strength | cool / warm shadow |
-|-------|-----------|-------------|------------|----------------------|--------------------|
-| Aquaflux | `--aqua-surface` + 14px blur | `--aqua-surface-strong` | `--aqua-surface-muted` | `--aqua-border` / `--aqua-border-strong` | `--aqua-shadow` / purple accent mix |
-| KiwiPress | `--kw-surface-strong` (frosted nav fill) | `--kw-surface` (opaque) | `--kw-surface-muted` | `--kw-border` / `--kw-border-strong` | cornflower tier / `--kw-warm` |
-| Citrusmint | `color-mix` of `--cm-surface` at 88% | `--cm-surface` | `--cm-surface-muted` | `--cm-border` / heading mix (no `--cm-border-strong`) | wintergreen / lime (same green family) |
-| Tide | `--tide-surface` + line glow + 16px blur | `--tide-surface-strong` | `--tide-surface-muted` | `--tide-border` / `--tide-border-strong` | lagoon mix + line glow / `--tide-shadow` |
+| Theme | soft tone | strong tone | muted tone | soft / bold strength | cool / warm shadow | frost / tint overlay |
+|-------|-----------|-------------|------------|----------------------|--------------------|----------------------|
+| Aquaflux | `--aqua-surface` + 14px blur | `--aqua-surface-strong` | `--aqua-surface-muted` | `--aqua-border` / `--aqua-border-strong` | `--aqua-shadow` / purple accent mix | `--aqua-page` / `--aqua-page-tint` |
+| KiwiPress | `--kw-surface-strong` (frosted nav fill) | `--kw-surface` (opaque) | `--kw-surface-muted` | `--kw-border` / `--kw-border-strong` | cornflower tier / `--kw-warm` | `--kw-surface` / `--kw-accent-tint` |
+| Citrusmint | `color-mix` of `--cm-surface` at 88% | `--cm-surface` | `--cm-surface-muted` | `--cm-border` / heading mix (no `--cm-border-strong`) | wintergreen / lime (same green family) | `--cm-surface` / `--cm-surface-muted` |
+| Tide | `--tide-surface` + line glow + 16px blur | `--tide-surface-strong` | `--tide-surface-muted` | `--tide-border` / `--tide-border-strong` | lagoon mix + line glow / `--tide-shadow` | `--tide-page` / `--tide-page-tint` |
 
-Tide must read as a **dark** frosted or elevated panel, not a white frost. Tide `borderStrength="bold"` uses `--tide-border-strong` (lagoon line at higher alpha, 2px) — not a light gray rule. Tide `shadowTone` uses `--tide-accent` mixed into `--tide-shadow` (cool, plus line glow) and `--tide-shadow` (warm ink) — not a light gray drop shadow. Light themes stay close to the original soft look.
+Tide must read as a **dark** frosted or elevated panel, not a white frost. Tide `borderStrength="bold"` uses `--tide-border-strong` (lagoon line at higher alpha, 2px) — not a light gray rule. Tide `shadowTone` uses `--tide-accent` mixed into `--tide-shadow` (cool, plus line glow) and `--tide-shadow` (warm ink) — not a light gray drop shadow. Tide `overlay` uses `--tide-page` (frost) and `--tide-page-tint` (tint) mixed into transparent — a dark veil, not a white wash. Light themes stay close to the original soft look.
 
-App-owned generated themes bind the same `--juice-surface-*`, `--juice-border-strength-*`, and `--juice-shadow-tone-*` roles from `--jx-surface*` / `--jx-border` / `--jx-border-strong` / `--jx-page-deep` / `--jx-warm` / `--jx-shadow`.
+App-owned generated themes bind the same `--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, and `--juice-overlay-*` roles from `--jx-surface*` / `--jx-border` / `--jx-border-strong` / `--jx-page-deep` / `--jx-warm` / `--jx-shadow` / `--jx-accent-tint`.
 
 ## Relationship to themes
 
 | Layer | Owns |
 |-------|------|
-| Juice utilities | `surfaceTone`, `borderStrength`, `blur`, `shadowTone`, `shadow`, `rounded`, `bgColor`, `borderColor`, … |
-| Theme | Colors, typography, `--juice-surface-*` / `--juice-border-strength-*` / `--juice-shadow-tone-*` paint, how `[card]`, `[hero]`, and semantic elements render under `theme="..."` |
+| Juice utilities | `surfaceTone`, `borderStrength`, `blur`, `shadowTone`, `overlay`, `shadow`, `rounded`, `bgColor`, `borderColor`, … |
+| Theme | Colors, typography, `--juice-surface-*` / `--juice-border-strength-*` / `--juice-shadow-tone-*` / `--juice-overlay-*` paint, how `[card]`, `[hero]`, and semantic elements render under `theme="..."` |
 
 ```html
 <body theme="aquaflux">
@@ -219,7 +267,6 @@ Import core + theme CSS separately (see [Theme authoring](./juice-theme-authorin
 
 ## Still planned
 
-A–C surface utilities ship, and remaining depth slice A (`shadowTone`) is in. These stay specified, not shipped:
+A–C surface utilities ship, and remaining depth slices A (`shadowTone`) and B (`overlay`) are in. This stays specified, not shipped:
 
-- `overlay` (slice B)
 - `variant` (slice C)

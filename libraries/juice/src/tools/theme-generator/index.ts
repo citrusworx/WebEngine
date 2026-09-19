@@ -413,6 +413,12 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-shadow-tone-warm-color: color-mix(in srgb, var(--jx-warm) 22%, transparent);
     --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--jx-warm) 22%, transparent);
 
+    /* Overlay — frost veil / accent-tint wash from existing --jx-* tokens. */
+    --juice-overlay-frost-wash: color-mix(in srgb, var(--jx-surface) 42%, transparent);
+    --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+    --juice-overlay-tint-wash: color-mix(in srgb, var(--jx-accent-tint) 36%, transparent);
+    --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);

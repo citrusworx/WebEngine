@@ -110,6 +110,11 @@
   --juice-shadow-tone-cool-shadow: var(--tide-line-glow), 0 18px 40px -28px color-mix(in srgb, var(--tide-accent) 45%, var(--tide-shadow));
   --juice-shadow-tone-warm-color: var(--tide-shadow);
   --juice-shadow-tone-warm-shadow: 0 22px 48px -22px var(--tide-shadow);
+  /* Overlay — dark frost / lagoon tint; never the unthemed white veil. */
+  --juice-overlay-frost-wash: color-mix(in srgb, var(--tide-page) 48%, transparent);
+  --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+  --juice-overlay-tint-wash: color-mix(in srgb, var(--tide-page-tint) 32%, transparent);
+  --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);

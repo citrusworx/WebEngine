@@ -3,6 +3,8 @@ import { buildThemeStylesheet, type ThemeGeneratorConfig } from "./index.js";
 import {
     BORDER_STRENGTH_ROLES,
     BORDER_STRENGTHS,
+    OVERLAY_ROLES,
+    OVERLAYS,
     REQUIRED_ACCORDION_ROLES,
     REQUIRED_TABS_ROLES,
     SHADOW_TONE_ROLES,
@@ -149,6 +151,21 @@ describe("Juice theme generator surface tone roles", () => {
         for (const tone of SHADOW_TONES) {
             for (const role of SHADOW_TONE_ROLES) {
                 expect(css).toContain(`--juice-shadow-tone-${tone}-${role}:`);
+            }
+        }
+    });
+
+    it("binds --juice-overlay-* from existing --jx-* tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--juice-overlay-frost-wash: color-mix(in srgb, var(--jx-surface) 42%, transparent)");
+        expect(css).toContain("--juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash))");
+        expect(css).toContain("--juice-overlay-tint-wash: color-mix(in srgb, var(--jx-accent-tint) 36%, transparent)");
+        expect(css).toContain("--juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash))");
+
+        for (const overlay of OVERLAYS) {
+            for (const role of OVERLAY_ROLES) {
+                expect(css).toContain(`--juice-overlay-${overlay}-${role}:`);
             }
         }
     });

@@ -26,7 +26,7 @@ Everyday language for this course. API lists stay in the [Juice reference](../RE
 
 **Structure.** How parts relate and nest. Juice’s primary job.
 
-**Surface tone.** Shipped paint contract: `surfaceTone="soft|strong|muted"` bound to `--juice-surface-*` roles. Composes with `borderStrength` (width), standalone `blur="sm|md"` (frost length), and `shadowTone="cool|warm"` (cast temperature).
+**Surface tone.** Shipped paint contract: `surfaceTone="soft|strong|muted"` bound to `--juice-surface-*` roles. Composes with `borderStrength` (width), standalone `blur="sm|md"` (frost length), `shadowTone="cool|warm"` (cast temperature), and `overlay="frost|tint"` (wash).
 
 **Theme.** Identity stylesheet plus config. Library-owned (`citrusmint`, `tide`, …) or app-owned YAML → generated CSS.
 
