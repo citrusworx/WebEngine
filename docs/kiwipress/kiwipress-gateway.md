@@ -36,18 +36,16 @@ app.listen(Number(process.env.KIWIPRESS_API_PORT ?? 8787));
 | Method | Path | Auth | Role |
 |---|---|---|---|
 | GET | `/__kiwipress/health` | public | `{ ok: true }` |
-| GET | `/__kiwipress/cms` | guarded | mode, persistence kind, native counts, WordPress `auth` strategy |
+| GET | `/__kiwipress/cms` | guarded | mode, persistence kind, native counts, registered types, WordPress `auth` strategy |
 | POST | `/__kiwipress/cms` | guarded | body `{ mode: "wordpress" \| "nectarine" }` |
 | POST | `/__kiwipress/transfer` | guarded | `sync.transfer(collections?)`, then `promote()`, then `persist()` |
-| GET | `/__kiwipress/content/posts` | guarded | native `getAll` or WordPress `listAll` (`status=any`, `context=edit`) |
-| POST | `/__kiwipress/content/posts` | guarded | native `create` or `wordpress.posts.create` |
-| PATCH | `/__kiwipress/content/posts?id=` | guarded | native `update` or WordPress `update` |
-| DELETE | `/__kiwipress/content/posts?id=` | guarded | native `delete` or WordPress `delete` |
-| GET/POST/PATCH/DELETE | `/__kiwipress/content/pages` | guarded | same as posts |
+| GET/POST | `/__kiwipress/types` | guarded | list / create native CPT definitions |
+| GET/PATCH/DELETE | `/__kiwipress/types/:slug` | guarded | read / update / delete a definition (delete drops its items) |
+| GET/POST/PATCH/DELETE | `/__kiwipress/content/:kind` | guarded | posts, pages, or a registered CPT slug |
 
-There are **no** inbound content routes for users, categories, tags, or comments. Transfer can still move those collections.
+There are **no** inbound content routes for users, categories, tags, or comments. Transfer can still move those collections. CPT slugs are rejected on transfer — WordPress CPT sync is out of scope.
 
-PATCH/DELETE without `id` respond `{ error: "id query parameter is required." }` with status 400 (via `ctx.json`, see below).
+PATCH/DELETE without `id` respond `{ error: "id query parameter is required." }` with status 400.
 
 `GET /__kiwipress/cms` body (success):
 
@@ -59,13 +57,14 @@ PATCH/DELETE without `id` respond `{ error: "id query parameter is required." }`
   standalone: true,
   persistence: kiwi.store.persistenceKind,
   auth: kiwi.auth.strategy(),
-  native: { posts, pages, users, categories, tags, comments } // counts
+  native: { posts, pages, users, categories, tags, comments, [cptSlug]: number },
+  types: CollectionTypeDefinition[]
 }
 ```
 
-`POST /__kiwipress/transfer` without `kiwi.sync` is 400 `{ error: "Transfer requires a WordPress URL." }`. Body may include `{ collections?: CmsCollection[] }`.
+`POST /__kiwipress/transfer` without `kiwi.sync` is 400 `{ error: "Transfer requires a WordPress URL." }`. Body may include `{ collections?: CmsCollection[] }`. Unknown / CPT slugs are 400.
 
-WordPress vs native on content routes follows `kiwi.mode`, not “did transfer run.” `promote()` is what transfer’s handler calls after a successful sync.
+WordPress vs native on posts/pages follows `kiwi.mode`. Custom type items always use the native store. `promote()` is what transfer’s handler calls after a successful sync.
 
 ## Gateway auth
 
@@ -88,27 +87,9 @@ The Vite app sends `VITE_KIWIPRESS_GATEWAY_TOKEN` as Bearer when that env is set
 
 This token is not `WPAuth`. It does not become a WordPress application password.
 
-## Seltzer 0.8.1 mismatch (read this)
+## Seltzer handlers
 
-Current Seltzer handlers **return `ResponseData`**: `{ status?, headers?, body? }`. `parse` fills `ctx.body`. `ctx.json` was **removed** in Seltzer 0.4.0. Bare returns are 500. Parametric `/notes/:id` is real (`ctx.params`).
-
-`registerKiwiPressGateway` still does something else. The code as shipped:
-
-- types a local `GatewayContext` with `json: (data, status?) => void`
-- calls `ctx.json(...)` on every response, including 401 / 400 / 500
-- re-reads the socket with `readJson(ctx.req)` instead of `ctx.body`
-- wraps work in `void (async () => { ... })()` so the Seltzer handler **returns `undefined` immediately**
-- uses `?id=` on the same path for PATCH/DELETE
-
-That is what `apps/kiwipress/back` registers. Document it as **actual gateway code**, not as the Seltzer tutorial.
-
-What this means on a strict 0.8.1 pipeline:
-
-- a handler that returns `undefined` is not `ResponseData` → Seltzer’s `response` stage 500s
-- `ctx.json` is not on `RequestContext`
-- `parse` has already consumed `req`; a second `readJson(ctx.req)` sees an empty stream
-
-If you are writing **new** host routes, do not copy `ctx.json`. Return `ResponseData` and read `ctx.body` / `ctx.query.id` (or register `/content/posts/:id` — Seltzer can match it). The library helper has not been rewritten yet. That gap is listed on [Status](./kiwipress-status.md) and [Roadmap](./kiwipress-roadmap.md).
+Gateway handlers return Seltzer `ResponseData` (`{ status, body }`), read `ctx.body` / `ctx.query.id` / `ctx.params`, and use the same `authorizeKiwiPressGateway` guard as before. Content PATCH/DELETE still use `?id=` so the dashboard does not have to change.
 
 Seltzer `.handler({ adapter: "node:http", options })` on `WPClient` only stashes outbound options. It does not make `listen` speak WordPress. Adapter string in source is `"node:http"`; Seltzer does not interpret it.
 

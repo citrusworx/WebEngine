@@ -1,16 +1,19 @@
 import {
     CMS_COLLECTIONS,
     type CmsCollection,
+    type CmsDocument,
     type CmsSnapshot,
+    type CollectionTypeDefinition,
     type ContentRecord
 } from "./types.js";
+import { asTypeDefinition, isCollectionSlug, PERSISTED_TYPES_COLLECTION } from "./type-registry.js";
 
 export type CmsPersistenceKind = "file" | "postgres" | "memory" | "custom";
 
 export interface CmsPersistence {
     readonly kind?: CmsPersistenceKind;
-    load(): Promise<CmsSnapshot | null>;
-    save(snapshot: CmsSnapshot): Promise<void>;
+    load(): Promise<CmsDocument | CmsSnapshot | null>;
+    save(document: CmsDocument): Promise<void>;
 }
 
 export function emptySnapshot(): CmsSnapshot {
@@ -24,8 +27,24 @@ export function emptySnapshot(): CmsSnapshot {
     };
 }
 
+export function emptyDocument(): CmsDocument {
+    return {
+        collections: emptySnapshot(),
+        types: []
+    };
+}
+
 export function isCmsCollection(value: string): value is CmsCollection {
     return (CMS_COLLECTIONS as readonly string[]).includes(value);
+}
+
+export function isCmsDocument(value: unknown): value is CmsDocument {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+        return false;
+    }
+
+    const candidate = value as { collections?: unknown; types?: unknown };
+    return Boolean(candidate.collections) && Array.isArray(candidate.types);
 }
 
 function asObject(value: unknown): Record<string, unknown> | null {
@@ -42,7 +61,7 @@ function asContentRecord(value: unknown): ContentRecord | null {
         return null;
     }
 
-    if (!isCmsCollection(record.collection)) {
+    if (!isCollectionSlug(record.collection) || record.collection === PERSISTED_TYPES_COLLECTION) {
         return null;
     }
 
@@ -58,12 +77,7 @@ function asContentRecord(value: unknown): ContentRecord | null {
         content: typeof record.content === "string" ? record.content : "",
         slug: typeof record.slug === "string" ? record.slug : record.id,
         status:
-            record.status === "draft" ||
-            record.status === "published" ||
-            record.status === "archived" ||
-            record.status === "pending" ||
-            record.status === "approved" ||
-            record.status === "spam"
+            typeof record.status === "string" && record.status.trim()
                 ? record.status
                 : "draft",
         authorId: typeof record.authorId === "string" ? record.authorId : undefined,
@@ -79,6 +93,17 @@ function asContentRecord(value: unknown): ContentRecord | null {
     };
 }
 
+function readCollectionItems(value: unknown, collection: string): ContentRecord[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value
+        .map((item) => asContentRecord(item))
+        .filter((item): item is ContentRecord => item !== null)
+        .map((item) => ({ ...item, collection }));
+}
+
 export function normalizeSnapshot(value: unknown): CmsSnapshot {
     const root = asObject(value);
     if (!root) {
@@ -88,17 +113,59 @@ export function normalizeSnapshot(value: unknown): CmsSnapshot {
     const source = asObject(root.collections) ?? root;
     const snapshot = emptySnapshot();
 
-    for (const collection of CMS_COLLECTIONS) {
-        const items = source[collection];
-        if (!Array.isArray(items)) {
+    for (const [collection, items] of Object.entries(source)) {
+        if (collection === "types" || collection === PERSISTED_TYPES_COLLECTION) {
             continue;
         }
 
-        snapshot[collection] = items
-            .map((item) => asContentRecord(item))
-            .filter((item): item is ContentRecord => item !== null)
-            .map((item) => ({ ...item, collection }));
+        if (!isCollectionSlug(collection) && !isCmsCollection(collection)) {
+            continue;
+        }
+
+        snapshot[collection] = readCollectionItems(items, collection);
     }
 
     return snapshot;
+}
+
+export function normalizeDocument(value: unknown): CmsDocument {
+    const root = asObject(value);
+    if (!root) {
+        throw new Error("KiwiPress persistence document must be an object.");
+    }
+
+    const typesSource = Array.isArray(root.types)
+        ? root.types
+        : Array.isArray(asObject(root.collections)?.types)
+            ? (asObject(root.collections)?.types as unknown[])
+            : [];
+
+    const types = typesSource
+        .map((entry) => asTypeDefinition(entry))
+        .filter((entry): entry is CollectionTypeDefinition => entry !== null);
+
+    return {
+        collections: normalizeSnapshot(value),
+        types
+    };
+}
+
+export function coerceDocument(value: CmsDocument | CmsSnapshot | null | undefined): CmsDocument | null {
+    if (!value) {
+        return null;
+    }
+
+    if (isCmsDocument(value)) {
+        return {
+            collections: normalizeSnapshot({ collections: value.collections }),
+            types: value.types
+                .map((entry) => asTypeDefinition(entry))
+                .filter((entry): entry is CollectionTypeDefinition => entry !== null)
+        };
+    }
+
+    return {
+        collections: normalizeSnapshot(value),
+        types: []
+    };
 }

@@ -1,3 +1,3 @@
-export declare const getAllTags: Route<Endpoint>;
-export declare const getTagById: Route<Endpoint>;
-export declare const getTagBySlug: Route<Endpoint>;
+export declare const getAllTags: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getTagById: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;
+export declare const getTagBySlug: import("@citrusworx/seltzer").Route<import("@citrusworx/seltzer").Endpoint>;

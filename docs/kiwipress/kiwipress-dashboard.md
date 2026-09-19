@@ -17,7 +17,9 @@ There is no root `apps/kiwipress/package.json`.
 
 - **Posts** (`/app/posts`) and **Pages** (`/app/pages`) — shared `CollectionWorkspace`
   - list / create / edit / delete via `/__kiwipress/content/{posts|pages}`
-  - no simulated stubs; same shell is reused later for custom types
+  - no simulated stubs
+- **Types** (`/app/types`) — register native custom collections (slug, labels, statuses)
+- **Type items** (`/app/c/:slug`) — same `CollectionWorkspace` for any registered CPT
 - **Content** (`/app/content`) — transfer + collection overview
   - `GET /__kiwipress/cms` status (mode, persistence, native counts)
   - `POST /__kiwipress/transfer` for all six collections, then re-read status
@@ -30,7 +32,7 @@ There is no root `apps/kiwipress/package.json`.
 
 - Home, How it works, Developers, Get KiwiPress, Contact, Login
 - Wizard steps (Welcome → Blueprints → Configure → Database → Domain → Payment → Provisioning → Live → Scale). Provisioning calls `POST /provision/plan` then `POST /provision/apply` and polls `GET /provision/:id`. Apply never sends `DO_TOKEN` from the browser.
-- Dashboard pages: Projects, Blueprints, Billing, Activity, Settings, Account — copy + empty placeholders. Posts and Pages are live against the gateway.
+- Dashboard pages: Projects, Blueprints, Billing, Activity, Settings, Account — copy + empty placeholders. Posts, Pages, Types, and `/app/c/:slug` are live against the gateway.
 - Sidebar brand “KiwiPress Cloud” and `v0.0.1` — UI chrome, not `@citrusworx/kiwipress` 0.4.3
 - Vite also proxies `/wp-json` to `https://wp.local.citrusworx.test` for local WP; that is app config, not a library default
 - `front/src/tools/wysiwyg/` is a spec + editor experiment, not a shipped CMS
@@ -72,14 +74,15 @@ Useful env (backend):
 
 Frontend: `VITE_KIWIPRESS_GATEWAY_TOKEN` (same value as the gateway token when you set one). Vite `allowedHosts` includes `app.local.citrusworx.test`, `frontend.kiwi.local`, `localhost`.
 
-Without `WP_URL`, Posts and Pages still work in nectarine mode: empty native collections until you create records in the dashboard. The transfer button will 400 (`Transfer requires a WordPress URL.`).
+Without `WP_URL`, Posts, Pages, and custom types still work in nectarine mode: empty native collections until you create records in the dashboard. The transfer button will 400 (`Transfer requires a WordPress URL.`). Transfer stays limited to the six WordPress-oriented collections.
 
 ## Collection workspace notes
 
 - Lists are normalized in the **app** (`extractTextValue`) so WordPress `{ rendered }` and native strings both display
 - Editor status options are WordPress-shaped (`publish`, `draft`, `pending`, `private`). Native `published` is shown as `publish` in the list
 - PATCH/DELETE use `?id=` — that matches the gateway, not Seltzer `:id`
-- Create-from-blank is on Posts and Pages (`POST /__kiwipress/content/{posts|pages}`)
+- Create-from-blank is on Posts, Pages, and `/app/c/:slug` (`POST /__kiwipress/content/{kind}`)
+- Custom type items live at **`/app/c/:slug`**. Type definitions live at **`/app/types`**. The sidebar lists registered types under Types.
 
 ## Provision routes (app host, not the library)
 

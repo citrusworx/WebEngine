@@ -133,8 +133,9 @@ export function normalizeWordPressCollection(
 }
 
 export function toNectarinePost(record: ContentRecord): NectarinePost {
+    const rawStatus = String(record.status);
     const status =
-        record.status === "published" || record.status === "archived" ? record.status : "draft";
+        rawStatus === "published" || rawStatus === "archived" ? rawStatus : "draft";
 
     return {
         id: record.id,

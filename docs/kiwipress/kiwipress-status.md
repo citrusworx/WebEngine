@@ -39,15 +39,16 @@ Direction or app chrome, not a hardened public surface.
 | `WPSync.preview` / `transfer` | Stable-ish | Explicit; throws per collection |
 | `KiwiPress.connect` wordpress + nectarine modes | Stable-ish | URL required only for wordpress mode |
 | `NativeCollection` get/create/update/delete | Emerging | Partial field copy on write |
-| File persistence | Stable-ish | Atomic rename; `{ version: 1, collections }` |
-| Postgres persistence | Emerging | Nectarine `PgSql`; delete-then-insert; no tx |
+| File persistence | Stable-ish | Atomic rename; `{ version: 1, types, collections }` |
+| Postgres persistence | Emerging | Nectarine `PgSql`; delete-then-insert; types stored as `__types` rows |
 | `persistenceFromEnv` | Stable-ish | File before PG |
 | `loadNectarineApi` | Emerging | Walker only; `parser.yaml` logs |
-| `registerKiwiPressGateway` | Early | Pre-`ResponseData` `ctx.json` + `readJson(req)` |
+| `registerKiwiPressGateway` | Emerging | `ResponseData` handlers; types + `/content/:kind` |
 | Gateway token / loopback | Emerging | Timing-safe compare |
-| `apps/kiwipress` Content + transfer UI | Early | Real consumer; depends on gateway shape |
+| Native CPT registry | Emerging | Definitions + items; no WordPress CPT sync |
+| `apps/kiwipress` Content + Types UI | Early | Real consumer; `/app/types` and `/app/c/:slug` |
 | Dashboard wizard / billing / projects | Draft | Placeholders |
-| Media / CPT / plugin adapters | Draft | Not in source |
+| Media / WP CPT / plugin adapters | Draft | Not in source |
 | MySQL / Mongo persistence | Draft | Not in source |
 | Echo visual CMS | Draft | Not in source |
 | WebEngine orchestration | Draft | No import |

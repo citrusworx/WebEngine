@@ -6,11 +6,11 @@ export declare class Users extends WPRead {
     private readonly updater;
     private readonly deleter;
     constructor(config?: Partial<WPCoreConfig>);
-    getAll(): any;
-    getById(id: string | number): any;
-    getByEmail(email: string): any;
-    getByCity(city: string): any;
-    getByCityState(state: string, city: string): any;
+    getAll(): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getById(id: string | number): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getByEmail(email: string): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getByCity(city: string): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getByCityState(state: string, city: string): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
     create(data: WordPressPayload): Promise<any>;
     update(id: string | number, data: WordPressPayload): Promise<any>;
     delete(id: string | number): Promise<any>;

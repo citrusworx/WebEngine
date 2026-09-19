@@ -12,9 +12,9 @@ From the package root (no subpath exports):
 
 **Normalize** — `extractTextValue`, `asCollection`, `normalizeWordPressItem`, `normalizeWordPressCollection`, `toNectarinePost`
 
-**CMS** — `KiwiPress`, `NectarineStore`, `NativeCollection`, `createNativeCms`, `CMS_COLLECTIONS`
+**CMS** — `KiwiPress`, `NectarineStore`, `NativeCollection`, `createNativeCms`, `CMS_COLLECTIONS`, type-registry helpers (`normalizeTypeDefinition`, `isCustomTypeSlug`, …)
 
-**Persistence** — `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`, `emptySnapshot`, `normalizeSnapshot`, `isCmsCollection`
+**Persistence** — `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`, `emptySnapshot`, `emptyDocument`, `normalizeSnapshot`, `normalizeDocument`, `isCmsCollection`
 
 **Nectarine YAML** — `loadNectarineApi`, `loadNectarineApiFile`
 
@@ -24,7 +24,7 @@ From the package root (no subpath exports):
 
 **Route utils** — `requestWordPress`, `requestWordPressPage`, `createWordPressRoute`, `createAliasedQueryRoute`, `createAliasedQueryRouteFromKeys`, `getLastParam`, `buildCollectionQueryEndpoint`
 
-**Types** — `WPCoreConfig`, `RouteParams`, `AuthStrategy`, `WPAuthCredentials`, `WordPressPayload`, `ApiDefinition`, `CmsMode`, `CmsCollection`, `ContentRecord`, `ContentStatus`, `NectarinePost`, `CmsSnapshot`, `TransferResult`, `TransferPreview`, `CmsPersistence`, `CmsPersistenceKind`, `PostgresPersistenceOptions`, `SqlExecutor`, `KiwiPressConfig`, `KiwiPressGatewayOptions`, `NectarineApiRoute`, `WordPressClients`, `WordPressPage`, `NativeCms`
+**Types** — `WPCoreConfig`, `RouteParams`, `AuthStrategy`, `WPAuthCredentials`, `WordPressPayload`, `ApiDefinition`, `CmsMode`, `CmsCollection`, `CollectionSlug`, `CollectionTypeDefinition`, `CmsDocument`, `ContentRecord`, `ContentStatus`, `NectarinePost`, `CmsSnapshot`, `TransferResult`, `TransferPreview`, `CmsPersistence`, `CmsPersistenceKind`, `PostgresPersistenceOptions`, `SqlExecutor`, `KiwiPressConfig`, `KiwiPressGatewayOptions`, `NectarineApiRoute`, `WordPressClients`, `WordPressPage`, `NativeCms`
 
 `example.ts` is not exported.
 

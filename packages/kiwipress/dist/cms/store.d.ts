@@ -1,7 +1,9 @@
-import { type CmsCollection, type CmsSnapshot, type ContentRecord } from "./types.js";
+import { type CmsDocument, type CmsSnapshot, type CollectionSlug, type CollectionTypeDefinition, type ContentRecord } from "./types.js";
 import type { CmsPersistence, CmsPersistenceKind } from "./persistence.js";
+import { type TypeDefinitionInput } from "./type-registry.js";
 export declare class NectarineStore {
     private records;
+    private typeDefs;
     private adapter?;
     private hydrated;
     private hydrating?;
@@ -11,12 +13,22 @@ export declare class NectarineStore {
     get persistenceKind(): CmsPersistenceKind;
     hydrate(): Promise<void>;
     flush(): Promise<void>;
-    list(collection: CmsCollection): ContentRecord[];
-    get(collection: CmsCollection, id: string | number): ContentRecord | undefined;
-    findBySlug(collection: CmsCollection, slug: string): ContentRecord | undefined;
+    isRegisteredCollection(collection: string): boolean;
+    isEditableCollection(collection: string): boolean;
+    list(collection: CollectionSlug): ContentRecord[];
+    get(collection: CollectionSlug, id: string | number): ContentRecord | undefined;
+    findBySlug(collection: CollectionSlug, slug: string): ContentRecord | undefined;
     upsert(record: ContentRecord): ContentRecord;
-    remove(collection: CmsCollection, id: string | number): boolean;
+    remove(collection: CollectionSlug, id: string | number): boolean;
+    listTypes(): CollectionTypeDefinition[];
+    getType(slug: string): CollectionTypeDefinition | undefined;
+    registerType(input: TypeDefinitionInput): CollectionTypeDefinition;
+    updateType(slug: string, input: TypeDefinitionInput): CollectionTypeDefinition;
+    removeType(slug: string): boolean;
+    document(): CmsDocument;
     snapshot(): CmsSnapshot;
+    replaceDocument(document: CmsDocument): void;
     replace(snapshot: Partial<CmsSnapshot>): void;
     clear(): void;
+    private ensureBucket;
 }

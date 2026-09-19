@@ -6,7 +6,7 @@ KiwiPress is no longer “a README and three topic pages.” The **library** at 
 
 The strongest part today is the WordPress domain spine plus `WPSync` → `NectarineStore`. The next strongest is native collections and file persistence.
 
-The weakest part that still ships is the **inbound gateway**: it predates Seltzer `ResponseData` and is what the dashboard Content page calls. Dashboard chrome (wizard, billing, projects) is not a library roadmap item.
+The inbound gateway now returns Seltzer `ResponseData` and hosts native type definitions plus `/content/:kind`. Dashboard chrome (wizard, billing, projects) is not a library roadmap item. WordPress CPT sync is still out of scope.
 
 This page is engineer-honest direction, not a committed release plan. For the matrix, see [Status](./kiwipress-status.md).
 
@@ -34,11 +34,9 @@ File and Nectarine Postgres adapters ship. WebEngine is not in the import graph.
 
 ## What is still holding KiwiPress back
 
-### 1. Gateway ≠ Seltzer 0.8.1
+### 1. Content item URLs still use `?id=`
 
-Highest-value increment: rewrite `registerKiwiPressGateway` handlers to **return `ResponseData`**, use `ctx.body` / `ctx.query`, and stop fire-and-forget `void async`. Until that lands, new hosts should write their own routes.
-
-Optional follow-on: `/content/posts/:id` now that Seltzer matches params. `?id=` can stay for the current front.
+`/content/:kind` is parameterized. PATCH/DELETE still take `?id=` for the current front. `/content/:kind/:id` can follow later.
 
 ### 2. Native writes are a subset
 
@@ -48,9 +46,9 @@ Optional follow-on: `/content/posts/:id` now that Seltzer matches params. `?id=`
 
 No transactions. A crash can empty `kiwipress_content`. Worth fixing when someone actually runs that adapter in production.
 
-### 4. No media / CPT / plugin objects
+### 4. No media / WordPress CPT sync / plugin objects
 
-Featured image ids without blobs. No `Media` class. No WooCommerce. Do not fake them in docs. Build them as `WPRead` subclasses when a product needs them.
+Native custom types exist. Featured image ids still have no blobs. No `Media` class. No WooCommerce. No WordPress CPT pull. Do not fake those in docs.
 
 ### 5. Package DX
 

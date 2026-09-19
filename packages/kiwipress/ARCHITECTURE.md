@@ -30,13 +30,14 @@ Shipped:
 - `KiwiPress.connect()` facade with `wordpress` (entry) and `nectarine` (destination) modes
 - opt-in `CmsPersistence` (`createFilePersistence`, `createPostgresPersistence` via Nectarine `PgSql`)
 - `registerKiwiPressGateway` for the `apps/kiwipress` Seltzer proxy
-- live app at `apps/kiwipress` (marketing, wizard, dashboard Content + transfer)
+- live app at `apps/kiwipress` (marketing, wizard, dashboard Content + Types)
+- native custom type registry (definitions + items; not WordPress CPT sync)
 
 Not finished yet:
 
 - MySQL / Mongo persistence adapters
 - a full visual CMS UI (Echo)
-- media and custom post type domain objects
+- media and WordPress custom post type sync
 - plugin adapters (WooCommerce, BuddyPress, MemberPress)
 
 ## The on-ramp
