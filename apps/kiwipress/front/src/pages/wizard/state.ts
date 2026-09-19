@@ -45,6 +45,14 @@ export type WizardData = {
     advancedMode: boolean;
 };
 
+export type LiveInstance = {
+    ip: string;
+    domain: string;
+    dropletId?: number | string;
+    databaseHost?: string;
+    databaseStatus?: string;
+};
+
 const defaults: WizardData = {
     dropletSize: "starter",
     region: "nyc3",
@@ -72,6 +80,7 @@ const defaults: WizardData = {
 };
 
 export const wizardData = Signal<WizardData>(defaults);
+export const liveInstance = Signal<LiveInstance | null>(null);
 
 export function updateWizard(patch: Partial<WizardData>): void {
     wizardData.set({ ...wizardData.get(), ...patch });
@@ -79,6 +88,14 @@ export function updateWizard(patch: Partial<WizardData>): void {
 
 export function resetWizard(): void {
     wizardData.set(defaults);
+    liveInstance.set(null);
+}
+
+export function seedLiveInstance(instance: LiveInstance): void {
+    liveInstance.set(instance);
+    if (instance.domain) {
+        updateWizard({ domainName: instance.domain });
+    }
 }
 
 export function selectDomain(selection: DomainSelection): void {

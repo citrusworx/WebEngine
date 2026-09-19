@@ -120,5 +120,6 @@ Seltzer `.handler({ adapter: "node:http", options })` on `WPClient` only stashes
 - uses `persistenceFromEnv() ?? createFilePersistence(cwd/data/kiwipress-cms.json)`
 - starts nectarine-only when `WP_URL` is missing
 - calls `registerKiwiPressGateway` and `listen`
+- registers `registerKiwiPressProvision` for `/provision/plan`, `/provision/apply`, and `GET /provision/:id` (Seltzer `ResponseData`, same gateway token)
 
 See [Dashboard](./kiwipress-dashboard.md).

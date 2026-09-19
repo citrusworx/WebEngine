@@ -1,7 +1,7 @@
 import { effect } from "@citrusworx/sigjs";
 import { router } from "../../../router";
 import { WizardLayout } from "../layout/WizardLayout";
-import { wizardData } from "../state";
+import { liveInstance, wizardData } from "../state";
 import { REGION_LABELS, publicInstanceName, resolvedDomain, titleCase } from "../catalog";
 
 export function Live() {
@@ -10,10 +10,12 @@ export function Live() {
     function paint() {
         if (!bodyNode) return;
         const data = wizardData.get();
-        const domain = resolvedDomain(data);
+        const live = liveInstance.get();
+        const domain = live?.domain || resolvedDomain(data);
+        const ip = live?.ip || "Pending";
         const region = REGION_LABELS[data.region] ?? data.region;
         const name = publicInstanceName();
-        const siteUrl = `https://${domain}`;
+        const siteUrl = domain.startsWith("http") ? domain : `https://${domain}`;
 
         bodyNode.replaceChildren(
             <div>
@@ -23,7 +25,7 @@ export function Live() {
                         Deployment Successful
                     </span>
                     <h1>Your KiwiPress Instance is Live</h1>
-                    <p lede>Production-ready WordPress stack deployed and accessible. Metrics below are simulated for this preview.</p>
+                    <p lede>WordPress stack apply finished. The IP and domain below come from GrapeVine; the metrics cards stay simulated.</p>
                 </div>
 
                 <div live-body>
@@ -60,7 +62,7 @@ export function Live() {
                                 </div>
                                 <div detail>
                                     <span>IP Address</span>
-                                    <p>167.99.123.45</p>
+                                    <p>{ip}</p>
                                 </div>
                                 <div detail>
                                     <span>Domain</span>
@@ -141,6 +143,7 @@ export function Live() {
 
     effect(() => {
         wizardData.get();
+        liveInstance.get();
         paint();
     });
 

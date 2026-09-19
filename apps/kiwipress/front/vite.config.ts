@@ -16,6 +16,11 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true,
                     secure: false
                 },
+                "/provision": {
+                    target: backendUrl,
+                    changeOrigin: true,
+                    secure: false
+                },
                 "/wp-json": {
                     target: "https://wp.local.citrusworx.test",
                     changeOrigin: true,
