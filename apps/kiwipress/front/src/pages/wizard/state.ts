@@ -6,6 +6,7 @@ export type DomainOption = "temporary" | "existing" | "buy";
 export type DeploymentMode = "traditional" | "performance";
 export type ExperienceProfile = "speed" | "fresh" | "interactive";
 export type RenderingStrategy = "ssr" | "ssg" | "csr" | "edge" | "hybrid";
+export type BlueprintId = "blog" | "commerce" | "api" | "business" | "";
 
 export type DomainSelection = {
     domain: string;
@@ -40,6 +41,7 @@ export type WizardData = {
     cdnEnabled: boolean;
     sslEnabled: boolean;
 
+    blueprintId: BlueprintId;
     advancedMode: boolean;
 };
 
@@ -65,6 +67,7 @@ const defaults: WizardData = {
     domainPrice: "",
     cdnEnabled: false,
     sslEnabled: true,
+    blueprintId: "",
     advancedMode: false
 };
 

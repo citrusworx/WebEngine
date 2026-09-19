@@ -18,6 +18,7 @@ type Step = {
 
 export const VISIBLE_STEPS: Step[] = [
     { id: "welcome",      path: "/wizard/welcome",      label: "Welcome",            description: "Deploy your instance" },
+    { id: "blueprints",   path: "/wizard/blueprints",   label: "Blueprints",         description: "Choose a stack" },
     { id: "configure",    path: "/wizard/configure",    label: "Configure Instance", description: "Select resources" },
     { id: "database",     path: "/wizard/database",     label: "Database",           description: "Configure storage" },
     { id: "domain",       path: "/wizard/domain",       label: "Domain & CDN",       description: "Connect domain" },
