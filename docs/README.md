@@ -2,7 +2,7 @@
 
 This docs folder tracks the current workspace reality first: what is published, what is implemented, and what is still mostly design work.
 
-**Start here if you are new to the stack:** [Make A Web App With WebEngine](./webengine/make-a-web-app.md) — a course outline and reading path. For CSS and design-system thinking, take [Design systems through Juice](./juice/course/README.md). Neither page replaces the status matrix below.
+**Start here if you are new to the stack:** [Make A Web App With WebEngine](./webengine/make-a-web-app.md) — a course outline and reading path. **New to Juice?** Start with the [CSS & design systems course](./juice/course/README.md). Neither page replaces the status matrix below.
 
 ## Status Matrix
 

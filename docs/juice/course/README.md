@@ -4,6 +4,8 @@ Learn to think in design systems by composing real Juice markup.
 
 This is a single progressive course, not a short series and not another encyclopedia. You will learn *why* tokens, surfaces, themes, and composition layers exist, then map each idea onto the attributes Juice actually ships. The [Juice reference set](../README.md) stays the deep dive.
 
+**See it in 10 minutes.** Open [00 — See it in 10 minutes](./00-first-look.md) and paste the Harbor Press hero + cards before any Foundations essays. Then come back here, or go straight to Lesson 01 to understand why that markup is shaped this way.
+
 ## The promise
 
 By the end you should be able to:
@@ -37,9 +39,9 @@ You can complete the course as a reading-and-markup study. A local stylesheet im
 
 | Document | Job |
 |---|---|
-| **This course** | Sequence, concepts, exercises, and a capstone |
+| **This course** | **Do this first.** Sequence, concepts, exercises, and a capstone |
 | [Juice reference](../README.md) | Lookup for attributes, tokens, themes, and runtimes |
-| [Page tutorial](../juice-page-tutorial.md) | One landing-page walkthrough; a sibling to Lessons 5 and 9, not a replacement |
+| [Page tutorial](../juice-page-tutorial.md) | A *second* build: a different CitrusWorx landing page. Same grammar, not a competing start |
 | [Patterns](../juice-patterns.md) | Copyable compositions after you know *why* they are shaped that way |
 | [Maturity matrix](../juice-maturity-matrix.md) | What is stable-ish vs emerging vs draft |
 | [Make a web app](../../webengine/make-a-web-app.md) | Stack-wide hub. Its Juice chapter is a reading list; this course is the written Juice curriculum |
@@ -59,11 +61,11 @@ The course will not invent attributes. If a lesson needs a gap, it says so.
 
 ## The running project
 
-**Harbor Press** is a small independent publisher: a catalog of titles, a short subscribe form, and a calm brand. Each lesson adds one layer to the same site. The [page tutorial](../juice-page-tutorial.md) builds a different CitrusWorx landing page; Harbor Press is this course's thread so the capstone can go further than that tutorial without cloning it.
+**Harbor Press** is a small independent publisher: a catalog of titles, a short subscribe form, and a calm brand. Each lesson adds one layer to the same site. Keep Harbor Press as this course's thread. After you finish, the [page tutorial](../juice-page-tutorial.md) is a *second* build — a different CitrusWorx landing page — not a competing start and not a substitute for the capstone.
 
 Early lessons use token attributes and the shipped `citrusmint` theme. Lesson 6 introduces `tide` and app-owned theme config. Lesson 9 asks you to finish a branded slice you can defend.
 
-Sig.js appears only if you want a tiny bit of subscribe-form state. Juice owns structure and a few built-in widgets; application behavior is out of scope.
+This course stays CSS and design-system focused. Sig.js is optional and tiny (a subscribe confirmation, a “saved title” flag). Finishing without Sig is full credit. Juice owns structure and a few built-in widgets; application behavior is out of scope.
 
 ## Course route
 
@@ -71,6 +73,7 @@ Plan for roughly 8–12 hours including exercises. Read in order on the first pa
 
 | Lesson | Learn | Produce |
 |---|---|---|
+| [00. See it in 10 minutes](./00-first-look.md) | Open a pretty Harbor Press page before theory | A hero + two title cards in the browser |
 | [01. Foundations](./01-foundations.md) | What a design system is; why Juice is attribute-first | A one-section Harbor Press shell |
 | [02. Tokens and visual language](./02-tokens.md) | Color, type, spacing, sizing as shared values | Token-backed type and color on that shell |
 | [03. Layout as structure](./03-layout.md) | Stack, row, grid, gap, flow; semantics vs wrappers | A page skeleton that reads as structure |
@@ -81,11 +84,11 @@ Plan for roughly 8–12 hours including exercises. Read in order on the first pa
 | [08. Hybrid styling and authoring](./08-hybrid-authoring.md) | When app CSS is OK; anti-patterns | A short exception list you can justify |
 | [09. Capstone](./09-capstone.md) | Independent composition of a branded slice | A Harbor Press page plus a layer map |
 
-Each lesson has a checkpoint. Try it before reading [the answer guide](./answers.md). Keep [the glossary](./glossary.md) nearby.
+Lesson 00 is a preview, not a checkpoint. Lessons 01–09 each have a checkpoint. Try those before reading [the answer guide](./answers.md). Keep [the glossary](./glossary.md) nearby.
 
 ## How to use a lesson
 
-Every lesson follows the same loop:
+Lessons 01–09 follow the same loop:
 
 1. **Goals** — what you should be able to do afterward
 2. **Concepts** — design-system language first, without Juice syntax
@@ -97,7 +100,11 @@ Every lesson follows the same loop:
 
 ## Workbench
 
-To preview markup in this repo after `yarn workspace @citrusworx/juiceui build`:
+Pick one path. The first-look page uses the same three recipes with a full Harbor Press paste.
+
+### In this repo
+
+From the repository root, after `yarn workspace @citrusworx/juiceui build`, save `harbor-press.html` **at the repo root** (not inside `docs/juice/course/`):
 
 ```html
 <!doctype html>
@@ -106,8 +113,8 @@ To preview markup in this repo after `yarn workspace @citrusworx/juiceui build`:
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Harbor Press</title>
-    <link rel="stylesheet" href="../../../libraries/juice/dist/index.css" />
-    <link rel="stylesheet" href="../../../libraries/juice/dist/themes/citrusmint.css" />
+    <link rel="stylesheet" href="./libraries/juice/dist/index.css" />
+    <link rel="stylesheet" href="./libraries/juice/dist/themes/citrusmint.css" />
   </head>
   <body theme="citrusmint">
     <main stack gap="2" padding="2rem">
@@ -117,7 +124,11 @@ To preview markup in this repo after `yarn workspace @citrusworx/juiceui build`:
 </html>
 ```
 
-From an app that depends on the package:
+Open that file in a browser. The two `href`s are relative to the repo root. If you insist on keeping the HTML next to these lessons, the same files are `../../../libraries/juice/dist/index.css` and `../../../libraries/juice/dist/themes/citrusmint.css` — but root placement is the path this course recommends.
+
+### From the npm package
+
+Shipped exports, from `libraries/juice/package.json`:
 
 ```ts
 import "@citrusworx/juiceui/styles";
@@ -128,7 +139,30 @@ import "@citrusworx/juiceui/styles/themes/citrusmint";
 <body theme="citrusmint"></body>
 ```
 
-Core CSS and theme CSS are separate imports. That split is the first design-system lesson: structure is not identity.
+`@citrusworx/juiceui/styles` is core CSS (`dist/index.css`). `@citrusworx/juiceui/styles/themes/citrusmint` is the theme (`dist/themes/citrusmint.css`). Library themes `tide`, `aquaflux`, and `kiwipress` use the same `./styles/themes/<id>` shape.
+
+### Standalone HTML
+
+Copy the two built files next to your HTML. Do not hunt through `src/`:
+
+```bash
+# after the in-repo build
+cp libraries/juice/dist/index.css .
+cp libraries/juice/dist/themes/citrusmint.css .
+
+# or after yarn add / npm install @citrusworx/juiceui
+cp node_modules/@citrusworx/juiceui/dist/index.css .
+cp node_modules/@citrusworx/juiceui/dist/themes/citrusmint.css .
+```
+
+```html
+<link rel="stylesheet" href="./index.css" />
+<link rel="stylesheet" href="./citrusmint.css" />
+```
+
+There is no official CodePen or hosted Juice playground. A local HTML file is the supported outsider path.
+
+Core CSS and theme CSS stay separate. That split is the first design-system lesson: structure is not identity.
 
 ## Advanced notes, not the spine
 
@@ -136,4 +170,4 @@ Core CSS and theme CSS are separate imports. That split is the first design-syst
 
 ## Start
 
-Open [Lesson 01 — Foundations](./01-foundations.md).
+Open [00 — See it in 10 minutes](./00-first-look.md). Then [Lesson 01 — Foundations](./01-foundations.md).

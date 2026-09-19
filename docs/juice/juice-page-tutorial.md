@@ -1,5 +1,7 @@
 # Juice Tutorial - Building a Page
 
+**Do the [CSS & design systems course](./course/README.md) first.** This tutorial is a *second* build — a different CitrusWorx landing page — not a competing start. Harbor Press stays the course thread.
+
 This tutorial walks through building a small landing page with Juice using the current best-practice approach.
 
 The goal is to show how Juice should be composed in real markup:

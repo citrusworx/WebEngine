@@ -98,9 +98,9 @@ Blackwater Sound is the current practical example of this model.
 
 Start with the course if you want a curriculum. The pages after it stay the lookup set — this list is not a rewrite of the reference tree.
 
-- [Design systems through Juice](./course/README.md) — progressive CSS / design-system course
+- [Design systems through Juice](./course/README.md) — **do this course first** (start at [See it in 10 minutes](./course/00-first-look.md))
 - [Getting Started](./juice-getting-started.md)
-- [Page Tutorial](./juice-page-tutorial.md)
+- [Page Tutorial](./juice-page-tutorial.md) — a *second* build (different CitrusWorx landing page), after the course
 - [Patterns](./juice-patterns.md)
 - [Maturity Matrix](./juice-maturity-matrix.md)
 - [Attributes](./juice-attributes.md)
