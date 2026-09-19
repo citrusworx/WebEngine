@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import {
     BORDER_STRENGTH_ROLES,
     BORDER_STRENGTHS,
+    OVERLAY_ROLES,
+    OVERLAYS,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
     SHIPPED_LIBRARY_THEMES,
@@ -105,6 +107,32 @@ describe("Surface tone role contract", () => {
         expect(scss).toMatch(/\[surfaceTone\]\[shadowTone="warm"\][^{]*\{[^}]*box-shadow/);
     });
 
+    it("consumes shared --juice-overlay-* roles without wiping surfaceTone paint", () => {
+        const scss = readFileSync(join(SRC_ROOT, "styles/surface/surface.scss"), "utf-8");
+
+        for (const overlay of OVERLAYS) {
+            expect(scss).toContain(`[overlay="${overlay}"]`);
+            expect(scss).toContain(`[theme] [overlay="${overlay}"]`);
+            expect(scss).toContain(`[surfaceTone][overlay="${overlay}"]`);
+            expect(scss).toContain(`[theme] [surfaceTone][overlay="${overlay}"]`);
+            for (const role of OVERLAY_ROLES) {
+                expect(scss).toContain(`--juice-overlay-${overlay}-${role}`);
+            }
+        }
+
+        expect(scss).toContain("var(--juice-overlay-frost-layer,");
+        expect(scss).toContain("var(--juice-overlay-tint-layer,");
+        expect(scss).toContain("background-image:");
+        expect(scss).not.toMatch(/\[overlay="(?:frost|tint)"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[overlay="(?:frost|tint)"\][^{]*\{[^}]*\bbackground:/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[overlay="(?:frost|tint)"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[overlay="(?:frost|tint)"\][^{]*\{[^}]*box-shadow/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[overlay="(?:frost|tint)"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[overlay="(?:frost|tint)"\][^{]*\{[^}]*border:/);
+        expect(scss).toMatch(/\[surfaceTone\]\[overlay="frost"\][^{]*\{[^}]*background-image/);
+        expect(scss).toMatch(/\[surfaceTone\]\[overlay="tint"\][^{]*\{[^}]*background-image/);
+    });
+
     it("binds the same surface tone roles in aquaflux, kiwipress, citrusmint, and tide", () => {
         for (const { id } of THEMES) {
             const scss = readThemeScss(id);
@@ -127,6 +155,12 @@ describe("Surface tone role contract", () => {
             for (const tone of SHADOW_TONES) {
                 for (const role of SHADOW_TONE_ROLES) {
                     expect(scss).toContain(`--juice-shadow-tone-${tone}-${role}:`);
+                }
+            }
+
+            for (const overlay of OVERLAYS) {
+                for (const role of OVERLAY_ROLES) {
+                    expect(scss).toContain(`--juice-overlay-${overlay}-${role}:`);
                 }
             }
         }
@@ -206,5 +240,23 @@ describe("Surface tone role contract", () => {
         expect(tide).toContain("--juice-shadow-tone-warm-color: var(--tide-shadow)");
         expect(tide).not.toContain("--juice-shadow-tone-cool-color: #{rgba($blue-900");
         expect(tide).not.toContain("--juice-shadow-tone-warm-color: #{rgba($orange-800");
+    });
+
+    it("maps overlay onto existing theme tokens, not a white Tide wash", () => {
+        const aqua = readThemeScss("aquaflux");
+        const kiwi = readThemeScss("kiwipress");
+        const mint = readThemeScss("citrusmint");
+        const tide = readThemeScss("tide");
+
+        expect(aqua).toContain("--juice-overlay-frost-wash: color-mix(in srgb, var(--aqua-page) 42%, transparent)");
+        expect(aqua).toContain("--juice-overlay-tint-wash: color-mix(in srgb, var(--aqua-page-tint) 38%, transparent)");
+        expect(kiwi).toContain("--juice-overlay-frost-wash: color-mix(in srgb, var(--kw-surface) 42%, transparent)");
+        expect(kiwi).toContain("--juice-overlay-tint-wash: color-mix(in srgb, var(--kw-accent-tint) 40%, transparent)");
+        expect(mint).toContain("--juice-overlay-frost-wash: color-mix(in srgb, var(--cm-surface) 42%, transparent)");
+        expect(mint).toContain("--juice-overlay-tint-wash: color-mix(in srgb, var(--cm-surface-muted) 40%, transparent)");
+        expect(tide).toContain("--juice-overlay-frost-wash: color-mix(in srgb, var(--tide-page) 48%, transparent)");
+        expect(tide).toContain("--juice-overlay-tint-wash: color-mix(in srgb, var(--tide-page-tint) 32%, transparent)");
+        expect(tide).not.toContain("--juice-overlay-frost-wash: #{rgba($white-100");
+        expect(tide).not.toContain("--juice-overlay-tint-wash: #{rgba($blue-400");
     });
 });

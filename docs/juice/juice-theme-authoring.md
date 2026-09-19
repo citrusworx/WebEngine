@@ -272,6 +272,14 @@ Bind from existing identity tokens. Do not invent a new hue family. Tide must us
 
 Core `surface.scss` feeds `--shadow-color` so `[shadow][depth]` geometry wins, and applies the shadow roles on standalone `[shadowTone]:not([depth])` plus combined `[surfaceTone][shadowTone]` (shadow only, so tone fill / border / blur stay). Generated themes bind the same names from `--jx-page-deep` / `--jx-warm` / `--jx-shadow`.
 
+## Overlay roles
+
+Library themes also bind `overlay` so `[overlay="frost|tint"]` can stand alone or compose with `surfaceTone` and `bgColor`. Required `--juice-overlay-frost|tint-wash|layer` names are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Bind from existing identity tokens. Do not invent a new hue family. Tide must use `--tide-page` / `--tide-page-tint` so the veil stays a dark frost or lagoon tint, not a white wash. Citrusmint uses `--cm-surface` / `--cm-surface-muted` from the thinner token set.
+
+Core `surface.scss` paints via `background-image` so `[bgColor]` swatches and tone `--juice-surface-*-bg` stay on `background-color`. Combined `[surfaceTone][overlay]` adjusts wash only, so tone fill / border / shadow / blur stay. Generated themes bind the same names from `--jx-surface` / `--jx-accent-tint`.
+
 ## Standalone blur
 
 `blur="sm|md"` is a core utility, not a theme role. See [Theme Contract](./juice-theme-contract.md). Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.

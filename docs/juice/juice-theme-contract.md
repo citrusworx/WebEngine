@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), and remaining depth slice A (`shadowTone`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Filling remaining SCSS/YAML gaps is later work.
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), and remaining depth slices A (`shadowTone`) and B (`overlay`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Filling remaining SCSS/YAML gaps is later work.
 
 ## 1. Layer rule
 
@@ -157,6 +157,21 @@ Bind from existing identity tokens. Do not invent a new hue family. Aquaflux use
 
 Core applies the shadow roles on standalone `[shadowTone]` (`:not([depth])` so `[shadow][depth]` geometry wins) and on combined `[surfaceTone][shadowTone]` (shadow only; tone fill / border / blur stay).
 
+### Overlay
+
+`overlay="frost|tint"`. Required names:
+
+| Role | Job |
+|---|---|
+| `--juice-overlay-frost-wash` | frost pigment (themes mix this into `-layer`) |
+| `--juice-overlay-frost-layer` | standalone / `surfaceTone` `background-image` |
+| `--juice-overlay-tint-wash` | tint pigment (themes mix this into `-layer`) |
+| `--juice-overlay-tint-layer` | standalone / `surfaceTone` `background-image` |
+
+Bind from existing identity tokens. Do not invent a new hue family. Aquaflux uses `--aqua-page` (frost) and `--aqua-page-tint` (tint). KiwiPress uses `--kw-surface` / `--kw-accent-tint`. Citrusmint uses `--cm-surface` / `--cm-surface-muted`. Tide mixes `--tide-page` (frost) and `--tide-page-tint` (tint) into transparent — a dark veil, not a white wash.
+
+Core paints via `background-image` (a `linear-gradient` of the wash), not `background-color` or `background` shorthand, so `[bgColor]` swatches and `--juice-surface-*-bg` stay intact. Combined `[surfaceTone][overlay]` adjusts wash only; tone fill / border / shadow / blur stay.
+
 ## 5. Optional hooks
 
 Core consumes these with transparent / no-op fallbacks. Aquaflux, KiwiPress, and Citrusmint omit them. Tide binds several for dark FAQ pill chrome.
@@ -184,7 +199,7 @@ Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-
 
 Tide binds `--juice-tabs-panel` from `--tide-tabs-panel`. It does not bind `--juice-tabs-panel-rule`. Other shipped themes bind neither.
 
-Generated app themes currently bind required accordion/tabs/surface/border-strength/shadow-tone roles only. They do not emit these optional hooks.
+Generated app themes currently bind required accordion/tabs/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
 
 ## 6. Identity-prefix alias convention
 
@@ -210,7 +225,7 @@ Standalone `blur="sm|md"` is a **core utility**, not a theme role family.
 
 See [Surfaces](./juice-surfaces.md).
 
-Also not theme roles: layout primitives, responsive collapse, app state, feature behavior, `overlay` / `variant` (specified, not shipped).
+Also not theme roles: layout primitives, responsive collapse, app state, feature behavior, `variant` (specified, not shipped).
 
 ## 8. Theme × role-family matrix
 
@@ -221,11 +236,12 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Surface tones (`soft` / `strong` / `muted` × bg, border, shadow, blur) | bind | bind | bind | bind |
 | Border strength (`soft` / `bold` × width, color) | bind | bind | bind | bind |
 | Shadow tone (`cool` / `warm` × color, shadow) | bind | bind | bind | bind |
+| Overlay (`frost` / `tint` × wash, layer) | bind | bind | bind | bind |
 | Accordion optional | omit (core no-op) | omit | omit | bind all seven |
 | Tabs optional | omit | omit | omit | `--juice-tabs-panel` only |
 | Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role |
 
-Generated `--jx-*` themes bind the five required families and omit the optional accordion/tabs hooks.
+Generated `--jx-*` themes bind the six required families and omit the optional accordion/tabs hooks.
 
 ## 9. Authoring checklist
 
@@ -239,10 +255,10 @@ A new theme is done when:
 6. Standalone `blur="sm|md"` is left to core. No second per-theme blur scale.
 7. Semantic defaults and named-surface recipes stay on the identity layer. `stack` / `row` / `grid` / `gap` are untouched.
 8. The app imports core CSS plus the theme stylesheet and sets `theme="<id>"` on the root.
-9. Swapping `theme` on unchanged markup retints accordion, tabs, `surfaceTone`, `borderStrength`, and `shadowTone` without fighting layout.
+9. Swapping `theme` on unchanged markup retints accordion, tabs, `surfaceTone`, `borderStrength`, `shadowTone`, and `overlay` without fighting layout.
 
 How to generate, import, and map tokens is in [Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md).
 
 ## Status
 
-This is Priority 2 through slice B: the checklist plus automated bind tests, now including remaining depth slice A (`shadowTone`). Filling any remaining SCSS/YAML gaps is later work (slice C). Blush, CLI, publish, and `overlay` / `variant` are out of scope here.
+This is Priority 2 through remaining depth slice B: the checklist plus automated bind tests, now including `shadowTone` and `overlay`. Filling any remaining SCSS/YAML gaps is later work (slice C). Blush, CLI, publish, and `variant` are out of scope here.

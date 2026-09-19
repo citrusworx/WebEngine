@@ -117,6 +117,11 @@
   --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--aqua-shadow);
   --juice-shadow-tone-warm-color: color-mix(in srgb, var(--aqua-accent-strong) 16%, transparent);
   --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--aqua-accent-strong) 16%, transparent);
+  /* Overlay — frost veil / page-tint wash; existing tokens only. */
+  --juice-overlay-frost-wash: color-mix(in srgb, var(--aqua-page) 42%, transparent);
+  --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+  --juice-overlay-tint-wash: color-mix(in srgb, var(--aqua-page-tint) 38%, transparent);
+  --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);

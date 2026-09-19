@@ -15,6 +15,8 @@
 // borderStrength (slice B) refines width / contrast. Standalone blur (slice C)
 // overrides backdrop-filter length only. shadowTone (remaining depth slice A)
 // paints shadow cast color / temperature without wiping tone fill / border / blur.
+// overlay (remaining depth slice B) paints a frost / tint wash via
+// background-image so tone fill / border / shadow / blur and bgColor stay.
 //
 // [theme] [surfaceTone] must beat theme semantic defaults such as
 // [theme="…"] :where(section, article, …) so the attribute works on
@@ -173,4 +175,39 @@
 [surfaceTone][shadowTone="warm"],
 [theme] [surfaceTone][shadowTone="warm"] {
     box-shadow: var(--juice-shadow-tone-warm-shadow, 0 18px 40px -28px #{rgba($orange-800, 0.28)});
+}
+
+// Overlay roles. Themes bind --juice-overlay-<frost|tint>-*
+// on [theme="..."]. Light fallbacks keep a white frost veil / bluish tint
+// when no theme binds them.
+//
+//   --juice-overlay-<value>-wash   pigment (themes mix this into -layer)
+//   --juice-overlay-<value>-layer  background-image (standalone + surfaceTone)
+//
+// background-image (not background / background-color / inset shadow) so
+// surfaceTone keeps --juice-surface-*-bg and [bgColor] swatches still win
+// on fill. Tone border / shadow / blur stay. Pseudo-elements would fight
+// existing ::before chrome; inset shadow would wipe tone / shadowTone
+// drops. [theme] [overlay] matches the tone specificity pattern.
+// [theme] [surfaceTone][overlay] is more specific than [theme] [surfaceTone]
+// so the wash holds even if later tone rules appear.
+
+[overlay="frost"],
+[theme] [overlay="frost"] {
+    background-image: var(--juice-overlay-frost-layer, linear-gradient(#{rgba($white-100, 0.42)}, #{rgba($white-100, 0.42)}));
+}
+
+[overlay="tint"],
+[theme] [overlay="tint"] {
+    background-image: var(--juice-overlay-tint-layer, linear-gradient(#{rgba($blue-400, 0.18)}, #{rgba($blue-400, 0.18)}));
+}
+
+[surfaceTone][overlay="frost"],
+[theme] [surfaceTone][overlay="frost"] {
+    background-image: var(--juice-overlay-frost-layer, linear-gradient(#{rgba($white-100, 0.42)}, #{rgba($white-100, 0.42)}));
+}
+
+[surfaceTone][overlay="tint"],
+[theme] [surfaceTone][overlay="tint"] {
+    background-image: var(--juice-overlay-tint-layer, linear-gradient(#{rgba($blue-400, 0.18)}, #{rgba($blue-400, 0.18)}));
 }

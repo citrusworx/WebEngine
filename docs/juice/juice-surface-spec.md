@@ -61,7 +61,8 @@ Examples:
 - `shadowTone="warm"` (implemented; warmer / amber-ish cast via `--juice-shadow-tone-warm-*`)
 - `blur="sm"` (implemented; `6px` backdrop-filter)
 - `blur="md"` (implemented; `16px` backdrop-filter)
-- `overlay="frost"`
+- `overlay="frost"` (implemented; frosted veil via `--juice-overlay-frost-*`)
+- `overlay="tint"` (implemented; theme-tinted wash via `--juice-overlay-tint-*`)
 - `variant="monochromatic"`
 - `variant="glass"`
 - `variant="tinted"`

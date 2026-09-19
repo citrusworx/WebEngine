@@ -46,6 +46,8 @@ export const BORDER_STRENGTHS = ["soft", "bold"] as const;
 export const BORDER_STRENGTH_ROLES = ["width", "color"] as const;
 export const SHADOW_TONES = ["cool", "warm"] as const;
 export const SHADOW_TONE_ROLES = ["color", "shadow"] as const;
+export const OVERLAYS = ["frost", "tint"] as const;
+export const OVERLAY_ROLES = ["wash", "layer"] as const;
 
 /**
  * Optional accordion hooks consumed with transparent / no-op fallbacks.
@@ -99,6 +101,12 @@ export function requiredShadowToneBinds(): string[] {
     );
 }
 
+export function requiredOverlayBinds(): string[] {
+    return OVERLAYS.flatMap((overlay) =>
+        OVERLAY_ROLES.map((role) => `--juice-overlay-${overlay}-${role}`)
+    );
+}
+
 /** Every required `--juice-*` bind from Theme Contract section 4. */
 export function requiredJuiceBinds(): string[] {
     return [
@@ -107,6 +115,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
         ...requiredShadowToneBinds(),
+        ...requiredOverlayBinds(),
     ];
 }
 
@@ -135,7 +144,7 @@ export function missingRequiredJuiceBinds(css: string): string[] {
 
 /**
  * `--jx-*` → `--juice-*` declarations the generator already emits.
- * Surface / border-strength / shadow-tone roles bind `--juice-*` from `--jx-*`
+ * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
