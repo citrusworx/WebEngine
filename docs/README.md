@@ -2,7 +2,7 @@
 
 This docs folder tracks the current workspace reality first: what is published, what is implemented, and what is still mostly design work.
 
-**Start here if you are new to the stack:** [Make A Web App With WebEngine](./webengine/make-a-web-app.md) — a course outline and reading path. It does not replace the status matrix below.
+**Start here if you are new to the stack:** [Make A Web App With WebEngine](./webengine/make-a-web-app.md) — a course outline and reading path. For CSS and design-system thinking, take [Design systems through Juice](./juice/course/README.md). Neither page replaces the status matrix below.
 
 ## Status Matrix
 
@@ -10,7 +10,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 |---|---|---|---|---|
 | `libraries/types` | `@citrusworx/types` | Stable core types | Shared deployment, blueprint, project, environment, server, service, and domain types | [Types](./types/README.md) |
 | `libraries/sig` | `@citrusworx/sigjs` | Active alpha | Signals, effects, JSX runtime, JSX dev runtime, router, and tests | [Sig.js](./sigjs/README.md) |
-| `libraries/juice` | `@citrusworx/juiceui` | Active alpha | Published CSS build, token exports, navigation, accordion, and tabs runtimes, early components | [Juice](./juice/README.md) |
+| `libraries/juice` | `@citrusworx/juiceui` | Active alpha | Published CSS build, token exports, navigation, accordion, and tabs runtimes, early components | [Juice](./juice/README.md) · [CSS/DS course](./juice/course/README.md) |
 | `libraries/seltzer` | `@citrusworx/seltzer` | Implemented HTTP core (0.8.1) | Object routes, structured responses, named pipeline, generated routes, and HTTP client | [Seltzer](./seltzer/README.md) · [HTTP course](./seltzer/http-course/README.md) · [Study guide](./seltzer/courses.md) |
 | `libraries/nectarine` | `@citrusworx/nectarine` | Active alpha | Compiler plus PostgreSQL, MySQL, and MongoDB adapters with YAML-driven model assets | [Nectarine](./nectarine/README.md) |
 | `libraries/grapevine` | `@citrusworx/grapevine` | Active development | DigitalOcean provider surface for droplets, firewalls, VPC, SSH, monitoring, and related utilities | [Grapevine](./grapevine/README.md) |
