@@ -123,6 +123,35 @@ describe("nectarine builtin module", () => {
                 path: "/api/products",
                 query: "allProducts",
             },
+            {
+                resource: "product",
+                crud: "create",
+                name: "newProduct",
+                method: "POST",
+                path: "/api/products",
+                query: "insertPayload",
+                status: 201,
+                body: {
+                    id: "string.required",
+                    name: "string.required",
+                },
+            },
+            {
+                resource: "product",
+                crud: "update",
+                name: "updateProduct",
+                method: "PUT",
+                path: "/api/products/:id",
+                query: "updatePayload",
+            },
+            {
+                resource: "product",
+                crud: "delete",
+                name: "deleteProduct",
+                method: "DELETE",
+                path: "/api/products/:id",
+                query: "deleteProduct",
+            },
         ]);
         const nectarineHealth = result.healthSummary.modules.find(
             (m) => m.id === NECTARINE_MODULE_ID,

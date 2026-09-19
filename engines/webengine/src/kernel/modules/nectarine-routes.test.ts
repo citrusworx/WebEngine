@@ -29,6 +29,7 @@ import {
     pathBindValues,
     resolveResourceQueries,
     writeBindValues,
+    bindJsonbDocument,
 } from "./nectarine-routes.js";
 
 const nectarineFixturesRoot = path.join(
@@ -396,7 +397,7 @@ describe("createNectarineWriteRoutes", () => {
     it("registers YAML writes and skips GET reads", () => {
         const nectarine = loadFixtureConfig();
         const routes = createNectarineWriteRoutes(nectarine, {
-            resources: ["course", "order", "order_item", "waitlist"],
+            resources: ["course", "order", "order_item", "waitlist", "product"],
         });
         const keys = routes.map((route) => `${route.method} ${route.path}`);
         expect(keys).toEqual(
@@ -408,6 +409,9 @@ describe("createNectarineWriteRoutes", () => {
                 "PATCH /api/orders/:id/status",
                 "POST /api/orders/:orderId/items",
                 "POST /api/waitlist",
+                "POST /api/products",
+                "PUT /api/products/:id",
+                "DELETE /api/products/:id",
             ]),
         );
         expect(keys.some((key) => key.startsWith("GET "))).toBe(false);
@@ -508,6 +512,46 @@ describe("writeBindValues", () => {
                 spec,
             ),
         ).toEqual([null, "Ada", "ada@example.com", "www", null]);
+    });
+
+    it("binds JSONB document writes from the HTTP body and skips { fn: now }", () => {
+        const nectarine = loadFixtureConfig();
+        const writes = listResourceWriteOperations(nectarine, "product");
+        const insert = writes.find((operation) => operation.name === "newProduct");
+        const update = writes.find((operation) => operation.name === "updateProduct");
+        const remove = writes.find((operation) => operation.name === "deleteProduct");
+        const document = { id: "fuzz", name: "Fuzz Face", catalog: "gear" };
+
+        expect(insert?.status).toBe(201);
+        expect(
+            writeBindValues(
+                insert!,
+                {},
+                document,
+                namedQuerySpec(
+                    resolveResourceQueries(nectarine, "product"),
+                    "product",
+                    "create",
+                    "insertPayload",
+                ),
+            ),
+        ).toEqual(["fuzz", bindJsonbDocument(document)]);
+        expect(
+            writeBindValues(
+                update!,
+                { id: "fuzz" },
+                document,
+                namedQuerySpec(
+                    resolveResourceQueries(nectarine, "product"),
+                    "product",
+                    "update",
+                    "updatePayload",
+                ),
+            ),
+        ).toEqual([bindJsonbDocument(document), "fuzz"]);
+        expect(writeBindValues(remove!, { id: "fuzz" }, undefined)).toEqual([
+            "fuzz",
+        ]);
     });
 });
 
@@ -676,6 +720,61 @@ describe("compiled write execute", () => {
         });
     });
 
+    it("compiles JSONB document POST/PUT/DELETE without a host execute", async () => {
+        const nectarine = loadFixtureConfig();
+        const sqls: { sql: string; params?: readonly unknown[] }[] = [];
+        const document = { id: "fuzz", name: "Fuzz Face", catalog: "gear" };
+        const routes = createNectarineWriteRoutes(nectarine, {
+            resources: ["product"],
+            query: async (sql, params) => {
+                sqls.push({ sql, params });
+                if (/^INSERT /i.test(sql)) {
+                    return { rows: [{ payload: document }] };
+                }
+                return { rows: [], rowCount: 1 };
+            },
+            connected: true,
+        });
+
+        const create = routes.find(
+            (route) => route.method === "POST" && route.path === "/api/products",
+        );
+        const update = routes.find(
+            (route) =>
+                route.method === "PUT" && route.path === "/api/products/:id",
+        );
+        const remove = routes.find(
+            (route) =>
+                route.method === "DELETE" &&
+                route.path === "/api/products/:id",
+        );
+
+        expect(create?.contract?.status).toBe(201);
+        await expect(create!.handler(fakeCtx({}, document))).resolves.toEqual({
+            status: 201,
+            body: document,
+        });
+        await expect(
+            update!.handler(fakeCtx({ id: "fuzz" }, document)),
+        ).resolves.toEqual({ body: { ok: true, rowCount: 1 } });
+        await expect(remove!.handler(fakeCtx({ id: "fuzz" }))).resolves.toEqual({
+            body: { ok: true, rowCount: 1 },
+        });
+
+        expect(sqls[0]).toEqual({
+            sql: "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
+            params: ["fuzz", bindJsonbDocument(document)],
+        });
+        expect(sqls[1]).toEqual({
+            sql: "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
+            params: [bindJsonbDocument(document), "fuzz"],
+        });
+        expect(sqls[2]).toEqual({
+            sql: "DELETE FROM products WHERE id = $1",
+            params: ["fuzz"],
+        });
+    });
+
     it("compiles write queries from YAML without host SQL", () => {
         const nectarine = loadFixtureConfig();
         expect(
@@ -702,6 +801,26 @@ describe("compiled write execute", () => {
                 "deleteCourse",
             ),
         ).toBe("DELETE FROM courses WHERE id = $1");
+        expect(
+            compileResourceQuery(
+                resolveResourceQueries(nectarine, "product"),
+                "product",
+                "create",
+                "insertPayload",
+            ),
+        ).toBe(
+            "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
+        );
+        expect(
+            compileResourceQuery(
+                resolveResourceQueries(nectarine, "product"),
+                "product",
+                "update",
+                "updatePayload",
+            ),
+        ).toBe(
+            "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
+        );
     });
 });
 

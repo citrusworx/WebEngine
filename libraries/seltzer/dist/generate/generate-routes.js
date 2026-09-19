@@ -8,8 +8,10 @@ const DEFAULT_NOT_FOUND = {
  * Turn Nectarine `ApiOperation[]` (`listApiOperations`) into object-based
  * Seltzer `Route`s. Nectarine does not generate routes.
  *
- * Copies `resource`, `name`, and `body` field specs onto `Route.contract`
- * so the default `validate` stage can see `.required` keys.
+ * Copies `resource`, `name`, `body` field specs, and optional `status`
+ * onto `Route.contract` so the default `validate` stage can see
+ * `.required` keys. A numeric `operation.status` becomes the wrap status
+ * for successful payloads (POST `201`, DELETE `204`, …).
  *
  * Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call `execute`, and
  * return `ResponseData`. They never write `ctx.json`.
@@ -32,6 +34,9 @@ export function generateRoutes(operations, options) {
             resource: operation.resource,
             name: operation.name,
             ...(operation.body ? { body: operation.body } : {}),
+            ...(typeof operation.status === "number"
+                ? { status: operation.status }
+                : {}),
         },
         handler: async (ctx) => {
             const args = {
@@ -48,6 +53,9 @@ export function generateRoutes(operations, options) {
             }
             if (result === null || result === undefined) {
                 return options.notFound?.(args) ?? DEFAULT_NOT_FOUND;
+            }
+            if (typeof operation.status === "number") {
+                return { status: operation.status, body: result };
             }
             return { body: result };
         },

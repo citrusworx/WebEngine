@@ -10,6 +10,8 @@ export type ApiOperation = {
     path: string;
     query?: string;
     body?: Record<string, string>;
+    /** Optional HTTP success status for Seltzer `generateRoutes`. */
+    status?: number;
 };
 
 const HTTP_METHODS = new Set<ApiHttpMethod>(["GET", "POST", "PUT", "PATCH", "DELETE"]);
@@ -41,6 +43,20 @@ function asPath(spec: Record<string, unknown>): string | undefined {
 
 function asQuery(spec: Record<string, unknown>): string | undefined {
     return typeof spec.query === "string" && spec.query.trim() ? spec.query.trim() : undefined;
+}
+
+function asStatus(spec: Record<string, unknown>): number | undefined {
+    const raw = spec.status;
+    const value =
+        typeof raw === "number"
+            ? raw
+            : typeof raw === "string" && raw.trim()
+              ? Number(raw.trim())
+              : Number.NaN;
+    if (!Number.isInteger(value) || value < 100 || value > 599) {
+        return undefined;
+    }
+    return value;
 }
 
 function asBody(spec: Record<string, unknown>): Record<string, string> | undefined {
@@ -119,6 +135,11 @@ function toOperation(
     const body = asBody(spec);
     if (body) {
         operation.body = body;
+    }
+
+    const status = asStatus(spec);
+    if (status !== undefined) {
+        operation.status = status;
     }
 
     return operation;

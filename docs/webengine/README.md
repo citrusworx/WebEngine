@@ -17,7 +17,7 @@ What exists today:
 - `init()` that locates `kiwi.config.toml`, validates it, and runs the kernel lifecycle
 - kernel modules: `core`, `web`, `native`, `embedded`, `nectarine` (topo-sorted scaffold → bootstrap → health)
 - Nectarine data module (`id: nectarine`) hosts `@citrusworx/nectarine` ≥0.3.0 as a library: load `nectarine.config.yaml`, resolve credentials, connect, `applyMigrations` (empty migrations dir is a no-op)
-- Nectarine → Seltzer route helper: `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` and handle `createReadRoutes` / `createWriteRoutes` / `createRoutes` (`listApiOperations` → `generateRoutes`; default execute is named YAML + adapter `query`; writes bind body + path)
+- Nectarine → Seltzer route helper: `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` and handle `createReadRoutes` / `createWriteRoutes` / `createRoutes` (`listApiOperations` → `generateRoutes`; default execute is named YAML + adapter `query`; writes bind body + path, skip `{ fn: now }`, and treat jsonb-cast columns as the JSON document when the key is absent)
 - Opt-in Seltzer listen after nectarine bootstrap: `startSeltzerFromKernel` / `serveNectarineHttp` (`Seltzer.init` + `createRoutes` + `listen`; kernel bootstrap still does not auto-listen)
 - Dual-process frontend + API: a separate Vite/React/Sig.js process talks HTTP to that listener ([walkthrough](./dual-process.md))
 - sample configs: `engines/webengine/kiwi.config.toml` + `webengine.config.json5`
@@ -128,7 +128,7 @@ const writes = createNectarineWriteRoutes(config, {
 });
 ```
 
-Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. Pass `execute` for host-specific reads and writes (Blackwater product JSONB catalog / waitlist join). See [Nectarine kernel contract](./nectarine-kernel-contract.md). A separate Vite/React/Sig.js process against this listener is [Dual-process frontend + API](./dual-process.md).
+Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. YAML jsonb-cast writes bind the request body as the document. Pass `execute` for host-only logic (waitlist join generated id / allowlist, or merge-on-PUT). See [Nectarine kernel contract](./nectarine-kernel-contract.md). A separate Vite/React/Sig.js process against this listener is [Dual-process frontend + API](./dual-process.md).
 
 ## Reality check
 

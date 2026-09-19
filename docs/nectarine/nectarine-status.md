@@ -38,7 +38,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 - ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
 - ✓ Product-read and waitlist GET + POST (`joinWaitlist`) Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
 - ✓ Remaining Blackwater resource **reads** auto-wire via engine `createNectarineReadRoutes` (`@citrusworx/webengine`; lesson `byId` stays the hand KiwiPress route)
-- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; product JSONB catalog writes (`insertPayload` / `updatePayload` / `deleteProduct`) and waitlist `joinWaitlist` stay host `execute` on the same helper (`createNectarineRoutes` + named YAML)
+- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; jsonb-cast document inserts/replaces (`insertPayload` / `updatePayload` / `deleteProduct`) bind from the HTTP body without a host adapter. Waitlist `joinWaitlist` still needs host `execute` (generated id, duplicate UX, allowlist, file-store). Optional YAML `api.status` is copied onto `ApiOperation.status` for Seltzer `generateRoutes`.
 - Express is **not** the generated or default server
 
 ### Validation
@@ -68,7 +68,7 @@ Nectarine is in **early alpha**. Core concepts are proven, but many features are
 
 ### Host pipeline
 - Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers; Seltzer `validate` enforces `.required` body fields from `Route.contract`
-- Planned: Zod-backed `replace("validate", …)` plus authorize; product JSONB writes stay host-owned (document bind + merge)
+- Planned: Zod-backed `replace("validate", …)` plus authorize; merge-on-PUT / generated ids stay host-owned when YAML cannot express them
 
 ### Relationship Loading
 - Current: Manual join definitions

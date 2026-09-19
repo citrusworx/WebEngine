@@ -25,7 +25,8 @@ export type CreateNectarineRoutesOptions<TContext extends RequestContext = Reque
     connected?: boolean | (() => boolean);
     exclude?: RouteExclude;
     /**
-     * Extra ops beyond `methods` (waitlist `joinWaitlist` on the read helper).
+     * Extra ops beyond `methods`. Prefer {@link createNectarineRoutes} with
+     * a host `execute` for specialized resources (waitlist join).
      */
     include?: (operation: ApiOperation) => boolean;
     /**
@@ -57,10 +58,18 @@ export declare function isSingularRead(name: string): boolean;
 export declare function pathBindValues(path: string, params: Record<string, string>): string[] | null;
 export declare function namedQuerySpec(queries: Record<string, unknown>, resource: string, method: string, name: string): Record<string, unknown> | undefined;
 /**
+ * Serialize a JSONB document bind (`$N::jsonb` / `{ value: $N, cast: jsonb }`).
+ * Objects and arrays become JSON text; strings pass through.
+ */
+export declare function bindJsonbDocument(value: unknown): string;
+/**
  * Bind values for create/update/delete: YAML field order, then path params
- * for update WHERE (compiler remaps `$1` after SET). Column names match
- * request body or path params (`order_id` / `orderId`). Missing values are
- * `null` — hosts that generate ids (waitlist join) pass `execute`.
+ * for update WHERE (compiler remaps `$1` after SET unless `values:` is
+ * explicit). Column names match request body or path params
+ * (`order_id` / `orderId`). `{ fn: now }` / `{ const }` are not binds.
+ * A jsonb-cast column missing from the body uses the whole JSON body
+ * (document-store create/update). Missing scalars stay `null` — hosts
+ * that generate ids (waitlist join) still pass `execute`.
  */
 export declare function writeBindValues(operation: ApiOperation, params: Record<string, string>, body: unknown, querySpec?: Record<string, unknown>): unknown[] | null;
 /**
@@ -94,9 +103,10 @@ export type CompiledNectarineExecuteOptions = {
  * unique lookups `null` (404).
  *
  * Writes: bind YAML columns from body / path (`order_id` ↔ `orderId`).
- * No database or zero affected rows → `null` (404). JSONB catalog mapping
- * and waitlist join (generated id, allowlist, duplicates) stay in host
- * `execute` callbacks.
+ * Explicit `values:` skip `{ fn: now }` / `{ const }`. A jsonb-cast column
+ * missing from the body binds the whole JSON body (document store).
+ * No database or zero affected rows → `null` (404). Host `execute` stays
+ * for merge-on-PUT, generated ids, allowlists, and file-store fallbacks.
  */
 export declare function createCompiledNectarineExecute<TContext extends RequestContext = RequestContext>(options: CompiledNectarineExecuteOptions): (args: ExecuteArgs<TContext>) => Promise<Record<string, unknown> | Record<string, unknown>[] | null>;
 /**
@@ -114,18 +124,22 @@ export declare function createCompiledNectarineExecute<TContext extends RequestC
  * ```
  *
  * Default `execute` compiles `operation.query` from `*Queries.yml` and runs
- * adapter `query(sql, params)`. Pass `execute` to specialize (Blackwater
- * product JSONB / waitlist join).
+ * adapter `query(sql, params)`. Pass `execute` to specialize (waitlist join
+ * generated id / allowlist, or a host that merges JSONB on PUT). JSONB
+ * document inserts/replaces described in YAML do not need a host adapter.
  */
 export declare function createNectarineRoutes<TContext extends RequestContext = RequestContext>(nectarine: NectarineConfig, options: CreateNectarineRoutesOptions<TContext>): Route<TContext>[];
 /**
- * GET reads from `*API.yml`. `include` can add a non-GET op such as waitlist
- * `joinWaitlist`; those typically need a custom `execute`.
+ * GET reads from `*API.yml`. `include` can add a non-GET op (e.g. a host
+ * that only wants GET + one extra write). Specialized resources such as
+ * Blackwater waitlist `joinWaitlist` prefer {@link createNectarineRoutes}
+ * with a host `execute` instead.
  */
 export declare function createNectarineReadRoutes<TContext extends RequestContext = RequestContext>(nectarine: NectarineConfig, options: CreateNectarineReadRoutesOptions<TContext>): Route<TContext>[];
 /**
  * POST/PUT/PATCH/DELETE as defined in YAML. Default execute is compiled
- * named queries. Exclude JSONB / join specials, or pass `execute`.
+ * named queries. YAML jsonb-cast + `{ fn: now }` writes bind here.
+ * Exclude join specials (generated id), or pass `execute`.
  */
 export declare function createNectarineWriteRoutes<TContext extends RequestContext = RequestContext>(nectarine: NectarineConfig, options: CreateNectarineWriteRoutesOptions<TContext>): Route<TContext>[];
 /**

@@ -5,3 +5,28 @@ product:
         method: GET
         endpoint: /api/products
         query: allProducts
+
+  create:
+    newProduct:
+      api:
+        method: POST
+        endpoint: /api/products
+        query: insertPayload
+        status: 201
+        body:
+          id: string.required
+          name: string.required
+
+  update:
+    updateProduct:
+      api:
+        method: PUT
+        endpoint: /api/products/:id
+        query: updatePayload
+
+  delete:
+    deleteProduct:
+      api:
+        method: DELETE
+        endpoint: /api/products/:id
+        query: deleteProduct

@@ -4,3 +4,29 @@ product:
       type: SELECT
       table: products
       fields: '*'
+
+  create:
+    insertPayload:
+      type: INSERT
+      table: products
+      fields: [id, payload]
+      values:
+        - $1
+        - { value: $2, cast: jsonb }
+      returning: [payload]
+
+  update:
+    updatePayload:
+      type: UPDATE
+      table: products
+      fields: [payload, updated_at]
+      values:
+        - { value: $1, cast: jsonb }
+        - { fn: now }
+      where: id = $2
+
+  delete:
+    deleteProduct:
+      type: DELETE
+      table: products
+      where: id = $1

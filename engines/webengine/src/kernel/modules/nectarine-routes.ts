@@ -51,7 +51,7 @@ export type CreateNectarineRoutesOptions<
     exclude?: RouteExclude;
     /**
      * Extra ops beyond `methods`. Prefer {@link createNectarineRoutes} with
-     * a host `execute` for specialized resources (waitlist join / JSONB).
+     * a host `execute` for specialized resources (waitlist join).
      */
     include?: (operation: ApiOperation) => boolean;
     /**
@@ -305,11 +305,91 @@ function updateSetColumns(spec: Record<string, unknown>): string[] | undefined {
     return stringList(spec.set) ?? stringList(spec.fields);
 }
 
+function updateValues(spec: Record<string, unknown>): unknown[] | undefined {
+    return Array.isArray(spec.values) ? spec.values : undefined;
+}
+
+function isFunctionOrConstValue(value: unknown): boolean {
+    if (typeof value === "string" && /^now\(\)$/i.test(value.trim())) {
+        return true;
+    }
+    return isRecord(value) && (typeof value.fn === "string" || "const" in value);
+}
+
+function isJsonbCast(value: unknown): boolean {
+    if (typeof value === "string") {
+        return /::(?:jsonb|json)$/i.test(value.trim());
+    }
+    if (!isRecord(value) || typeof value.cast !== "string") {
+        return false;
+    }
+    return /^(jsonb|json)$/i.test(value.cast.trim());
+}
+
+/**
+ * Serialize a JSONB document bind (`$N::jsonb` / `{ value: $N, cast: jsonb }`).
+ * Objects and arrays become JSON text; strings pass through.
+ */
+export function bindJsonbDocument(value: unknown): string {
+    if (typeof value === "string") {
+        return value;
+    }
+    if (value === null || typeof value !== "object") {
+        throw new Error("JSONB bind value must be a JSON object or array");
+    }
+    try {
+        return JSON.stringify(value);
+    } catch {
+        throw new Error("JSONB bind value is not JSON-serializable");
+    }
+}
+
+function lookupWriteBind(
+    column: string,
+    params: Record<string, string>,
+    body: Record<string, unknown> | undefined,
+    valueSpec?: unknown,
+): unknown {
+    const found = lookupBind(column, params, body);
+    if (isJsonbCast(valueSpec)) {
+        if (found !== null && found !== undefined) {
+            return bindJsonbDocument(found);
+        }
+        if (isRecord(body)) {
+            return bindJsonbDocument(body);
+        }
+        return null;
+    }
+    return found;
+}
+
+function bindColumnsFromValues(
+    columns: readonly string[],
+    values: readonly unknown[],
+    params: Record<string, string>,
+    body: Record<string, unknown> | undefined,
+): unknown[] {
+    const binds: unknown[] = [];
+    for (let index = 0; index < columns.length; index += 1) {
+        const value = values[index];
+        if (isFunctionOrConstValue(value)) {
+            continue;
+        }
+        if (isPlaceholderValue(value)) {
+            binds.push(lookupWriteBind(columns[index], params, body, value));
+        }
+    }
+    return binds;
+}
+
 /**
  * Bind values for create/update/delete: YAML field order, then path params
- * for update WHERE (compiler remaps `$1` after SET). Column names match
- * request body or path params (`order_id` / `orderId`). Missing values are
- * `null` — hosts that generate ids (waitlist join) pass `execute`.
+ * for update WHERE (compiler remaps `$1` after SET unless `values:` is
+ * explicit). Column names match request body or path params
+ * (`order_id` / `orderId`). `{ fn: now }` / `{ const }` are not binds.
+ * A jsonb-cast column missing from the body uses the whole JSON body
+ * (document-store create/update). Missing scalars stay `null` — hosts
+ * that generate ids (waitlist join) still pass `execute`.
  */
 export function writeBindValues(
     operation: ApiOperation,
@@ -333,7 +413,19 @@ export function writeBindValues(
             return null;
         }
         const setCols = querySpec ? updateSetColumns(querySpec) : undefined;
+        const values = querySpec ? updateValues(querySpec) : undefined;
         if (setCols?.length) {
+            if (Array.isArray(values) && values.length === setCols.length) {
+                return [
+                    ...bindColumnsFromValues(
+                        setCols,
+                        values,
+                        {},
+                        bodyRecord,
+                    ),
+                    ...pathBinds,
+                ];
+            }
             return [
                 ...setCols.map((column) =>
                     lookupBind(column, {}, bodyRecord),
@@ -353,15 +445,12 @@ export function writeBindValues(
     const values = querySpec ? insertValues(querySpec) : undefined;
     if (columns?.length) {
         if (Array.isArray(values) && values.length === columns.length) {
-            const binds: unknown[] = [];
-            for (let index = 0; index < columns.length; index += 1) {
-                if (isPlaceholderValue(values[index])) {
-                    binds.push(
-                        lookupBind(columns[index], params, bodyRecord),
-                    );
-                }
-            }
-            return binds;
+            return bindColumnsFromValues(
+                columns,
+                values,
+                params,
+                bodyRecord,
+            );
         }
         return columns.map((column) =>
             lookupBind(column, params, bodyRecord),
@@ -400,7 +489,13 @@ function compilerMethod(operation: ApiOperation): string {
 function mutationResult(result: unknown): Record<string, unknown> | Record<string, unknown>[] | null {
     const rows = rowsFromQueryResult(result).map((row) => normalizeRow(row));
     if (rows.length === 1) {
-        return rows[0];
+        const row = rows[0];
+        const keys = Object.keys(row);
+        const only = keys.length === 1 ? row[keys[0]] : undefined;
+        if (isRecord(only)) {
+            return normalizeRow(only);
+        }
+        return row;
     }
     if (rows.length > 1) {
         return rows;
@@ -545,9 +640,10 @@ export type CompiledNectarineExecuteOptions = {
  * unique lookups `null` (404).
  *
  * Writes: bind YAML columns from body / path (`order_id` ↔ `orderId`).
- * No database or zero affected rows → `null` (404). JSONB catalog mapping
- * (product create/update merge) and waitlist join (generated id, allowlist,
- * duplicates) stay in host `execute` callbacks.
+ * Explicit `values:` skip `{ fn: now }` / `{ const }`. A jsonb-cast column
+ * missing from the body binds the whole JSON body (document store).
+ * No database or zero affected rows → `null` (404). Host `execute` stays
+ * for merge-on-PUT, generated ids, allowlists, and file-store fallbacks.
  */
 export function createCompiledNectarineExecute<
     TContext extends RequestContext = RequestContext,
@@ -687,8 +783,9 @@ function operationAllowed(
  * ```
  *
  * Default `execute` compiles `operation.query` from `*Queries.yml` and runs
- * adapter `query(sql, params)`. Pass `execute` to specialize (Blackwater
- * product JSONB catalog writes / waitlist join).
+ * adapter `query(sql, params)`. Pass `execute` to specialize (waitlist join
+ * generated id / allowlist, or a host that merges JSONB on PUT). JSONB
+ * document inserts/replaces described in YAML do not need a host adapter.
  */
 export function createNectarineRoutes<
     TContext extends RequestContext = RequestContext,
@@ -732,7 +829,8 @@ export function createNectarineReadRoutes<
 
 /**
  * POST/PUT/PATCH/DELETE as defined in YAML. Default execute is compiled
- * named queries. Exclude JSONB / join specials, or pass `execute`.
+ * named queries. YAML jsonb-cast + `{ fn: now }` writes bind here.
+ * Exclude join specials (generated id), or pass `execute`.
  */
 export function createNectarineWriteRoutes<
     TContext extends RequestContext = RequestContext,

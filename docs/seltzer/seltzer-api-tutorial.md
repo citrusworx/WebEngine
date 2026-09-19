@@ -276,8 +276,8 @@ Why this works:
 
 - `query` on `ApiOperation` is a **named-query key** passed to `execute`, not `ctx.query`.
 - `null` / `undefined` from `execute` becomes 404 `{ error: "Not found" }` (customize with `notFound`).
-- Payloads are wrapped as `{ body: result }`. To send a custom status, return `response({ status: 418, body: … })` from `execute`.
-- `generateRoutes` copies `resource` / `name` / `body` onto `Route.contract`. Writes with `.required` keys get default `validate`.
+- Payloads are wrapped as `{ body: result }` at 200. Set `ApiOperation.status` (YAML `api.status`) for POST `201` and similar. To send any other transport result, return `response({ status: 418, body: … })` from `execute`.
+- `generateRoutes` copies `resource` / `name` / `body` / optional `status` onto `Route.contract`. Writes with `.required` keys get default `validate`. POST/PUT/PATCH/DELETE in the list become routes; they are not filtered out.
 
 If you already load Nectarine YAML:
 

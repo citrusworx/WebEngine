@@ -233,7 +233,7 @@ user:
 
 ### Step 4: Host with Seltzer
 
-Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. Flatten `*API.yml` with Nectarine `listApiOperations`, then Seltzer `generateRoutes` (or WebEngine `createNectarineRoutes`) for resource reads and YAML writes; waitlist POST `joinWaitlist` and product JSONB catalog writes stay on a host `execute` passed into that same helper. Remaining host-owned paths (health, KiwiPress) stay object-based `Route` definitions.
+Nectarine loads config and compiles queries. **Seltzer** is the HTTP server. Flatten `*API.yml` with Nectarine `listApiOperations`, then Seltzer `generateRoutes` (or WebEngine `createNectarineRoutes`) for resource reads and YAML writes — including jsonb-cast document POST/PUT/DELETE when `*Queries.yml` describes the binds. Waitlist POST `joinWaitlist` stays on a host `execute` (generated id / allowlist). Remaining host-owned paths (health, KiwiPress) stay object-based `Route` definitions.
 
 ```typescript
 import { loadNectarineConfig } from "@citrusworx/nectarine";

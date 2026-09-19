@@ -125,7 +125,7 @@ These three files define a complete backend resource. Nectarine:
 3. Supplies adapters (PostgreSQL, MySQL, MongoDB)
 
 The host (WebEngine / Blackwater) runs **Seltzer**:
-4. Registers object-based Seltzer routes (resource **reads and YAML writes** plus waitlist POST `joinWaitlist` auto-wire from `*API.yml` via `generateRoutes`)
+4. Registers object-based Seltzer routes (resource **reads and YAML writes**, including jsonb-cast document POST/PUT/DELETE, plus waitlist POST `joinWaitlist` from `*API.yml` via `generateRoutes`)
 5. Default `validate` checks `.required` body fields; Zod lands later via `replace("validate", …)`
 
 ---

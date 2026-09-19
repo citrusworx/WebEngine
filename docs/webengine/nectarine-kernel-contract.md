@@ -47,7 +47,7 @@ Blackwater reference: `migrate()` → `applyNamedMigrations` in `src/db/named-dd
 
 Nectarine flattens `*API.yml` into `ApiOperation[]` (`listApiOperations` / `loadApiOperations`). YAML `endpoint` maps to `ApiOperation.path`.
 
-**Seltzer** owns HTTP listen, routing, and the `validate` stage. `@citrusworx/webengine` `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` map `listApiOperations` onto object-based `Route`s via Seltzer `generateRoutes` (`Route.contract` carries resource/name/body). Default `execute` compiles `operation.query` from `*Queries.yml` (CCompiler) and runs adapter `query(sql, params)`. Writes bind YAML columns from the request body and path (`order_id` ↔ `orderId`). Handlers return `ResponseData`. They do not write `ctx.json`.
+**Seltzer** owns HTTP listen, routing, and the `validate` stage. `@citrusworx/webengine` `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` map `listApiOperations` onto object-based `Route`s via Seltzer `generateRoutes` (`Route.contract` carries resource/name/body and optional `status`). Default `execute` compiles `operation.query` from `*Queries.yml` (CCompiler) and runs adapter `query(sql, params)`. Writes bind YAML columns from the request body and path (`order_id` ↔ `orderId`). Explicit `values:` skip `{ fn: now }` / `{ const }`. A jsonb-cast column missing from the body binds the whole JSON document. Handlers return `ResponseData`. They do not write `ctx.json`.
 
 Nectarine does **not** generate `Route`s, listen on a port, or export `generateRoutes`. There is no `nectarine serve`. Do not invent Express.
 
@@ -91,17 +91,17 @@ for (const route of nectarine.createRoutes({
 await app.listen(port);
 ```
 
-Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Both use the same helper:
+Pass `execute` when YAML is not enough (waitlist `joinWaitlist`: generated id, duplicate UX, allowlist, file-store). Product-style JSONB insert/replace described in `*Queries.yml` (`{ value: $N, cast: jsonb }` plus `{ fn: now }`) uses the default compiled execute — no host adapter.
 
 ```ts
 createNectarineRoutes(nectarine, {
-  resources: ["waitlist"], // or ["product"]
+  resources: ["waitlist"],
   execute: executeWaitlist, // host: generated id, duplicate UX, allowlist, file-store
   notFound: () => ({ status: 404, body: { error: "Waitlist entry not found" } }),
 });
 ```
 
-SQL stays in `*Queries.yml`. Host execute stays thin. Health, KiwiPress, and other host-owned paths stay hand-registered (`startSeltzerFromKernel({ routes })` or `app.route`). Blackwater `createRoutes` calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`); product writes use the same helper with a host `execute` so JSONB `payload` is not flattened onto relational columns. Blackwater still calls `Seltzer.init()` / `listen` itself; it can migrate to `startSeltzerFromKernel` later.
+SQL stays in `*Queries.yml`. Host execute stays thin. Health, KiwiPress, and other host-owned paths stay hand-registered (`startSeltzerFromKernel({ routes })` or `app.route`). Blackwater `createRoutes` already calls the engine helper for generic resource reads **and** YAML writes (`POST`/`PUT`/`PATCH`/`DELETE`). It can drop the product host `execute` later and keep it only for merge-on-PUT / 409 / memory fallback. Blackwater still calls `Seltzer.init()` / `listen` itself; it can migrate to `startSeltzerFromKernel` later.
 
 ## Adapter surface
 
