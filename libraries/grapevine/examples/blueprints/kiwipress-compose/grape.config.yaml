@@ -37,16 +37,19 @@ resources:
           ports: "22"
           sources: ["REPLACE_WITH_YOUR_IP/32"]
         - protocol: tcp
-          ports: "80,443"
+          ports: "80"
+          sources: ["0.0.0.0/0"]
+        - protocol: tcp
+          ports: "443"
           sources: ["0.0.0.0/0"]
         - protocol: icmp
           sources: ["0.0.0.0/0"]
       outbound:
         - protocol: tcp
-          ports: "all"
+          ports: "1-65535"
           destinations: ["0.0.0.0/0"]
         - protocol: udp
-          ports: "all"
+          ports: "1-65535"
           destinations: ["0.0.0.0/0"]
         - protocol: icmp
           destinations: ["0.0.0.0/0"]

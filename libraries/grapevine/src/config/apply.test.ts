@@ -226,6 +226,53 @@ describe("apply grape config", () => {
         expect(result.warnings).toEqual([]);
     });
 
+    it("normalizes convenience firewall ports before calling DigitalOcean", async () => {
+        const { createFireWall } = await import("../providers/digitalocean/firewall/firewall.js");
+
+        await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc1",
+                resources: {
+                    firewalls: [
+                        {
+                            name: "web",
+                            inbound: [
+                                { protocol: "tcp", ports: "22", sources: ["203.0.113.10/32"] },
+                                { protocol: "tcp", ports: "80,443", sources: ["0.0.0.0/0"] },
+                                { protocol: "tcp", ports: "8000-9000", sources: ["10.0.0.0/8"] },
+                                { protocol: "icmp", ports: "all", sources: ["0.0.0.0/0"] }
+                            ],
+                            outbound: [
+                                { protocol: "tcp", ports: "all", destinations: ["0.0.0.0/0"] },
+                                { protocol: "udp", ports: "*", destinations: ["0.0.0.0/0"] },
+                                { protocol: "icmp", destinations: ["0.0.0.0/0"] }
+                            ]
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(createFireWall).toHaveBeenCalledWith({
+            name: "web",
+            droplet_ids: [],
+            tags: undefined,
+            inbound_rules: [
+                { protocol: "tcp", ports: "22", sources: { addresses: ["203.0.113.10/32"] } },
+                { protocol: "tcp", ports: "80", sources: { addresses: ["0.0.0.0/0"] } },
+                { protocol: "tcp", ports: "443", sources: { addresses: ["0.0.0.0/0"] } },
+                { protocol: "tcp", ports: "8000-9000", sources: { addresses: ["10.0.0.0/8"] } },
+                { protocol: "icmp", sources: { addresses: ["0.0.0.0/0"] } }
+            ],
+            outbound_rules: [
+                { protocol: "tcp", ports: "1-65535", destinations: { addresses: ["0.0.0.0/0"] } },
+                { protocol: "udp", ports: "1-65535", destinations: { addresses: ["0.0.0.0/0"] } },
+                { protocol: "icmp", destinations: { addresses: ["0.0.0.0/0"] } }
+            ]
+        });
+    });
+
     it("applies a classic DropletBlueprint document", async () => {
         const { createDroplet } = await import("../providers/digitalocean/droplet/droplet.js");
         await applyGrapeConfig(
