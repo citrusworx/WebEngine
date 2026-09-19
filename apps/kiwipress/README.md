@@ -15,11 +15,9 @@ From the monorepo root:
 
 ```bash
 yarn install
-yarn workspace @citrusworx/kiwipress build
-yarn workspace @citrusworx/grapevine build
 ```
 
-`@citrusworx/kiwipress` and `@citrusworx/grapevine` export from `dist`. The back process will not start without those builds.
+`@citrusworx/kiwipress` and `@citrusworx/grapevine` export from `dist`. This checkout already includes those builds. Rebuild them only if you changed those packages (`yarn workspace @citrusworx/grapevine build`, `yarn workspace @citrusworx/kiwipress build`).
 
 ## Env
 
