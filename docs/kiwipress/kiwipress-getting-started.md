@@ -1,8 +1,13 @@
 # Getting Started With KiwiPress
 
-This is the usable WordPress REST client path — a **standalone library**, not a WebEngine module. Use it in any Node project that can reach a WordPress REST API. The destination CMS path is [Transfer](./kiwipress-transfer.md).
+This is the usable product path for `@citrusworx/kiwipress` **0.4.3** — a **standalone library**, not a WebEngine module.
 
-You need a WordPress site with the REST API reachable (typically `/wp-json/wp/v2`) and, for writes, credentials.
+There are two honest first paths:
+
+1. **WordPress client** — talk to a live `/wp-json/wp/v2` install
+2. **Nectarine-only CMS** — skip WordPress, persist `ContentRecord`s yourself
+
+The destination CMS path (transfer + persist + native read) is the [tutorial](./kiwipress-tutorial.md) and [Transfer](./kiwipress-transfer.md). Start here if you want the smallest working import.
 
 ## Install
 
@@ -10,13 +15,23 @@ You need a WordPress site with the REST API reachable (typically `/wp-json/wp/v2
 yarn add @citrusworx/kiwipress
 ```
 
+Peers come along: `@citrusworx/seltzer@^0.8.1` and `@citrusworx/nectarine@^0.3.0`.
+
 In this monorepo:
 
 ```bash
 yarn workspace @citrusworx/kiwipress build
 ```
 
-## Configure
+The package.json has `build` / `dev` / `prepack`. There is **no** `test` script. Tests live next to the source (`*.test.ts`) and a `vitest.config.ts`; run them with Vitest from that package if you need to.
+
+The published package does not load `.env` files. The app or test harness must.
+
+## Path A — WordPress client
+
+You need a WordPress site with the REST API reachable (typically `/wp-json/wp/v2`) and, for writes, credentials.
+
+### Configure
 
 Constructor values win over `process.env`. `url` is required (or `WP_URL` on Node).
 
@@ -43,8 +58,6 @@ On Node, `WPCore` also reads:
 | `WP_API_KEY` | `apiKey` |
 | `WP_ALLOW_SELF_SIGNED` | `allowSelfSigned` (`1` / `true` / `yes`) |
 
-The published package does not load `.env` files. The app or test harness must.
-
 ### `WPCoreConfig`
 
 | Field | Type | Default | Notes |
@@ -59,17 +72,19 @@ The published package does not load `.env` files. The app or test harness must.
 
 Older docs said the default `apiBase` was `"wp-json/v2"`. The current constructor default is `"wp-json/wp/v2"`. Set it explicitly if your site differs.
 
-## Authenticate
+### Authenticate
 
-KiwiPress picks the first complete strategy in `createAuthHeaders()`:
+KiwiPress picks the first complete strategy in `WPAuth.headers()`:
 
 1. **Basic** — `username` and `appPassword` → `Authorization: Basic <base64>`
 2. **Bearer** — `token` → `Authorization: Bearer <token>`
 3. **API key** — always added as `X-API-Key` when present
 
-Application passwords are the usual self-hosted path. The constructor throws only when `url` is missing — not when auth is missing. Public reads may work without credentials; writes usually will not.
+Application passwords are the usual self-hosted path (Users → Profile → Application Passwords). The constructor throws only when `url` is missing — not when auth is missing. Public reads may work without credentials; writes usually will not.
 
-## First reads
+Details: [Auth](./kiwipress-auth.md).
+
+### First reads
 
 ```ts
 import { Posts, Pages, Users } from "@citrusworx/kiwipress";
@@ -90,7 +105,9 @@ Aliased reads (slug, author, tag, category, date) become collection query string
 
 `Pages` also has `getByCategory` and `getByTag` (`string | number` arguments, same as posts) plus the write methods. `Users` has `getByEmail`, `getByCity`, and `getByCityState(state, city)`.
 
-## First writes
+`getAll()` is WordPress’s default first page (usually 10 items). To page the whole collection the way transfer does, use `posts.listAll("posts", { status: "any", context: "edit" })` — `listAll` is public on `WPClient`.
+
+### First writes
 
 ```ts
 const draft = await posts.create({
@@ -108,31 +125,7 @@ Bodies are `WordPressPayload` (`Record<string, unknown>`). There is no generated
 
 `packages/kiwipress/src/example.ts` is this create-then-`getBySlug` flow against `http://localhost:8080`, then a `KiwiPress.connect().sync.transfer(["posts"])` into a file-backed native store.
 
-## Transfer into Nectarine
-
-WordPress is the on-ramp. When you want the native CMS this library owns:
-
-```ts
-import { KiwiPress, createFilePersistence } from "@citrusworx/kiwipress";
-
-const kiwi = KiwiPress.connect({
-  url: "https://example.com",
-  username: "admin",
-  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx",
-  persistence: createFilePersistence("./data/kiwipress-cms.json")
-});
-
-await kiwi.ready();
-await kiwi.sync?.transfer(["posts", "pages"]);
-const native = kiwi.toNectarine();
-await native.native.posts.getAll();
-```
-
-Pass `persistence` only when you want the store to survive process restart. Default is in-memory. Postgres uses Nectarine `PgSql` (`createPostgresPersistence({ database })` or `PG_DB`); inject an `SqlExecutor` in tests so `pg` is not loaded at import time.
-
-Full walkthrough: [Transfer](./kiwipress-transfer.md).
-
-## Read-only taxonomies and comments
+### Read-only taxonomies and comments
 
 ```ts
 import { Categories, Tags, Comments } from "@citrusworx/kiwipress";
@@ -148,7 +141,51 @@ const comments = new Comments(config);
 await comments.getByPost(12);
 ```
 
-There are no `create` / `update` / `delete` methods on these three classes.
+There are no `create` / `update` / `delete` methods on these three WordPress classes. After transfer, the **native** collections for the same names do have writes. See [Domain objects](./kiwipress-domain.md).
+
+## Path B — Nectarine-only / transfer
+
+Greenfield projects can skip WordPress:
+
+```ts
+import { KiwiPress, createFilePersistence } from "@citrusworx/kiwipress";
+
+const kiwi = KiwiPress.connect({
+  mode: "nectarine",
+  persistence: createFilePersistence("./data/kiwipress-cms.json")
+});
+
+await kiwi.ready();
+await kiwi.native.posts.create({
+  title: "Written in Nectarine",
+  content: "<p>No WordPress in this path.</p>",
+  status: "published"
+});
+
+const found = await kiwi.native.posts.getBySlug("written-in-nectarine");
+```
+
+`mode: "nectarine"` does not require `url`. `KiwiPress.connect({ mode: "wordpress" })` without `url` / `WP_URL` **throws**.
+
+If you *do* have WordPress and want the native store:
+
+```ts
+const kiwi = KiwiPress.connect({
+  url: "https://example.com",
+  username: "admin",
+  appPassword: "xxxx xxxx xxxx xxxx xxxx xxxx",
+  persistence: createFilePersistence("./data/kiwipress-cms.json")
+});
+
+await kiwi.ready();
+await kiwi.sync?.transfer(["posts", "pages"]);
+const native = kiwi.toNectarine();
+await native.native.posts.getAll();
+```
+
+Pass `persistence` only when you want the store to survive process restart. Default is in-memory. Postgres uses Nectarine `PgSql` (`createPostgresPersistence({ database })` or `PG_DB`); inject an `SqlExecutor` in tests so `pg` is not loaded at import time.
+
+Full walkthrough: [Tutorial](./kiwipress-tutorial.md) and [Transfer](./kiwipress-transfer.md).
 
 ## Extend with a custom collection
 
@@ -181,21 +218,25 @@ const getMediaBySlug = createAliasedQueryRoute(
 );
 ```
 
-That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.ts`.
+That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.ts`. There is no shipped `Media` class.
 
 ## Pitfalls
 
-- **Responses from `Posts` / `Pages` are raw JSON.** Use `normalizeWordPressItem` or `WPSync.transfer()` when you want Nectarine-shaped `ContentRecord`s. `getBySlug` returns whatever WordPress returned (often an array).
+- **Responses from `Posts` / `Pages` are raw JSON.** Use `normalizeWordPressItem` or `WPSync.transfer()` when you want Nectarine-shaped `ContentRecord`s. `getBySlug` returns whatever WordPress returned (often an array). Native `getBySlug` returns `ContentRecord | undefined`.
 - **Failed HTTP throws.** `requestWordPress` throws `WordPress request failed: <status> <statusText>` on non-2xx.
-- **Nectarine YAML is loaded by `loadNectarineApi`.** The WordPress client still uses static `routes.ts` files; transfer and native CMS follow Nectarine models.
-- **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and delegates `create()` to a `WPCreate` collaborator, `update()` to a `WPUpdate` collaborator, and `delete()` to a `WPDelete` collaborator.
+- **`getAll()` is not the whole site.** Transfer uses `listAll()`, not `getAll()`.
+- **Nectarine YAML is loaded by `loadNectarineApi`.** The WordPress client still uses static `routes.ts` files.
+- **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and delegates writes to collaborators.
 - **Self-signed HTTPS** only bypasses TLS verification when `allowSelfSigned` is true and the URL is `https://`.
-- **Seltzer inbound paths are exact.** The app gateway updates items with `?id=`, not `/posts/:id`.
+- **Inbound gateway ≠ current Seltzer tutorial.** `registerKiwiPressGateway` still calls `ctx.json` and re-reads `ctx.req`. New host routes should return `{ status?, headers?, body? }`. See [Gateway](./kiwipress-gateway.md).
+- **Seltzer 0.8.1 matches `:id`.** The gateway still uses `?id=` because that is how it was written, not because Seltzer cannot parse params.
 
 ## Where to go next
 
+- [Tutorial](./kiwipress-tutorial.md) — the guided connect → transfer → persist path
+- [Domain objects](./kiwipress-domain.md)
 - [Transfer](./kiwipress-transfer.md)
+- [Native CMS](./kiwipress-native-cms.md)
 - [Core classes](./core-classes.md)
-- [Seltzer](../seltzer/README.md)
-- [Nectarine](../nectarine/README.md)
-- [Make A Web App](../webengine/make-a-web-app.md) electives table (WebEngine is one possible host)
+- [Seltzer](../seltzer/README.md) and [Nectarine](../nectarine/README.md) if you are extending routes or models
+- [Make A Web App](../webengine/make-a-web-app.md) electives table (WebEngine is one possible future host)

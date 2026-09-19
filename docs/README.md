@@ -17,7 +17,7 @@ This docs folder tracks the current workspace reality first: what is published, 
 | `libraries/dns` | `@citrusworx/dns` | Early implementation | Core DNS/registrar abstractions and a ResellerClub adapter | [DNS](./dns/README.md) |
 | `libraries/stenzil` | `@citrusworx/stenzil` | Early implementation | Lexer, parser, AST types, and examples for the Stenzil language | [Stenzil](./stenzil/README.md) |
 | `engines/webengine` | `@citrusworx/webengine` | Early scaffold | `WebEngine` lifecycle class with parse/init/build/deploy/teardown method stubs and shared type integration | [WebEngine](./webengine/README.md) |
-| `packages/kiwipress` | `@citrusworx/kiwipress` | Standalone WordPress + native CMS | WP REST client, WPAuth, WPSync transfer, file/Postgres persistence for a Nectarine-shaped store | [KiwiPress](./kiwipress/README.md) · [Transfer](./kiwipress/kiwipress-transfer.md) |
+| `packages/kiwipress` | `@citrusworx/kiwipress` **0.4.3** | Standalone WordPress + native CMS | WP REST client, WPAuth, WPSync transfer, file/Postgres persistence, optional Seltzer gateway + `apps/kiwipress` dashboard | [KiwiPress](./kiwipress/README.md) · [Getting started](./kiwipress/kiwipress-getting-started.md) · [Tutorial](./kiwipress/kiwipress-tutorial.md) · [Status](./kiwipress/kiwipress-status.md) |
 
 ## Notes
 
