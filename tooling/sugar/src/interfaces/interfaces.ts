@@ -22,7 +22,10 @@ export interface SugarNode {
     width: number;
     height: number;
     label: string;
+    /** Category: content | parameter | operation | event | variable | utility | custom. */
     type: NodeType;
+    /** Concrete node identity under `type` (e.g. content/`hero`, event/`onClick`). */
+    kind: string;
     isDragging: boolean;
     ports: Port[];
     fields?: SugarField[];

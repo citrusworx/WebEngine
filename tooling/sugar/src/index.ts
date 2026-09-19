@@ -1,4 +1,5 @@
 import { heroNode } from "./nodes/HeroNode";
+import { createEventNode, createNode } from "./nodes/kinds";
 import { SugarNode, SugarEdge } from "./interfaces/interfaces";
 import { NodeType } from "./types/types";
 import { createTooltip } from "./util/utility";
@@ -46,6 +47,7 @@ const nodes: SugarNode[] = [
         width: 180, height: 70,
         label: "Danny Licks Buttsholes",
         type: "content",
+        kind: "getPage",
         isDragging: false,
         ports: [definePort("out", "out", "output")],
         tooltip: createTooltip("Fetches the current page content")
@@ -56,6 +58,7 @@ const nodes: SugarNode[] = [
         width: 200, height: 90,
         label: "Grab Container",
         type: "operation",
+        kind: "grabContainer",
         isDragging: false,
         ports: [
             definePort("in", "in", "input"),
@@ -69,6 +72,7 @@ const nodes: SugarNode[] = [
         width: 200, height: 90,
         label: "Add Button",
         type: "content",
+        kind: "button",
         isDragging: false,
         fields: [{ label: "text", value: "Click Me" }],
         ports: [
@@ -83,6 +87,7 @@ const nodes: SugarNode[] = [
         width: 220, height: 110,
         label: "GET",
         type: "operation",
+        kind: "httpGet",
         isDragging: false,
         ports: [
             definePort("in", "request", "input"),
@@ -98,6 +103,7 @@ const nodes: SugarNode[] = [
         width: 180, height: 70,
         label: "Params",
         type: "parameter",
+        kind: "params",
         isDragging: false,
         ports: [definePort("out", "out", "output")],
         fields: [{ label: "value", value: "title" }]
@@ -108,6 +114,7 @@ const nodes: SugarNode[] = [
         width: 200, height: 70,
         label: "Log",
         type: "event",
+        kind: "log",
         isDragging: false,
         ports: [definePort("in", "in", "input")]
     },
@@ -120,6 +127,7 @@ const nodes: SugarNode[] = [
         width: 200, height: 70,
         label: "userPosts",
         type: "variable",
+        kind: "userPosts",
         isDragging: false,
         ports: [
             definePort("in", "in", "input"),
@@ -127,7 +135,13 @@ const nodes: SugarNode[] = [
         ],
         fields: [{ label: "custom-field", value: "Custom Value" }],
         tooltip: createTooltip("This is a custom node with user-defined behavior")
-    }
+    },
+    createEventNode("onClick", { id: "10", x: 60, y: 40 }),
+    createNode("handleEvent", { id: "9", x: 300, y: 50 }),
+    createEventNode("onDragStart", { id: "11", x: 540, y: 40 }),
+    createEventNode("onDragMove", { id: "12", x: 780, y: 40 }),
+    createEventNode("onDragEnd", { id: "13", x: 1020, y: 40 }),
+    createEventNode("customEvent", { id: "14", x: 1260, y: 40 })
 ];
 
 const edges: SugarEdge[] = [
@@ -138,7 +152,8 @@ const edges: SugarEdge[] = [
     { id: "e5", fromNodeId: "2", fromPortId: "out", toNodeId: "7", toPortId: "in" },
     { id: "e6", fromNodeId: "4", fromPortId: "error", toNodeId: "6", toPortId: "in" },
     { id: "e7", fromNodeId: "7", fromPortId: "out", toNodeId: "4", toPortId: "in" },
-    { id: "e8", fromNodeId: "4", fromPortId: "response", toNodeId: "8", toPortId: "in" }
+    { id: "e8", fromNodeId: "4", fromPortId: "response", toNodeId: "8", toPortId: "in" },
+    { id: "e9", fromNodeId: "10", fromPortId: "trigger", toNodeId: "9", toPortId: "in" }
 ];
 
 validateGraph(nodes, edges);
