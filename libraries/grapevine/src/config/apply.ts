@@ -6,17 +6,18 @@ import {
     waitForDatabase,
     type DatabaseResource
 } from "../providers/digitalocean/databases/databases.js";
-import { createDroplet, type DropletBlueprint, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
-import { createFireWall, type FireWall } from "../providers/digitalocean/firewall/firewall.js";
+import { createDroplet, listAllDroplets, type DropletBlueprint, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
+import { createFireWall, listAllFirewalls, type FireWall } from "../providers/digitalocean/firewall/firewall.js";
 import { createAlertPolicy } from "../providers/digitalocean/monitoring/monitoring.js";
 import { createDomain, createDomainRecord } from "../providers/digitalocean/networking/domains.js";
 import { createLoadBalancer } from "../providers/digitalocean/networking/load-balancer.js";
-import { createSSHKey, uploadSSHKey, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
+import { createSSHKey, listSSHKeys, uploadSSHKey, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
-import { createVPC, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
+import { createVPC, listAllVPCs, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
+import { adoptDroplet, adoptFirewall, adoptSSHKey, adoptVPC } from "./adopt.js";
 import { normalizeFirewallRules } from "./firewall-rules.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
-import { persistGeneratedPrivateKey, resolvePrivateKeyPath } from "./ssh-private-key.js";
+import { persistGeneratedPrivateKey, readExistingPrivateKeyPublic, resolvePrivateKeyPath } from "./ssh-private-key.js";
 import { getConfigSourceDir, type GrapeRunOptions } from "./source.js";
 import {
     declaredStacks,
@@ -217,16 +218,39 @@ export async function applyGrapeConfig(
         }
     }
 
+    const accountKeys = (resources.ssh_keys ?? []).length > 0 ? await listSSHKeys() : [];
+    const liveVpcs = (resources.vpcs ?? []).length > 0 ? await listAllVPCs() : [];
+    const liveDroplets = (resources.droplets ?? []).length > 0 ? await listAllDroplets() : [];
+    const liveFirewalls = (resources.firewalls ?? []).length > 0 ? await listAllFirewalls() : [];
+
     for (const key of resources.ssh_keys ?? []) {
         let publicKey = key.public_key ?? key.publicKey;
         let privateKeyPath: string | undefined;
+        let reusedPrivateKey = false;
+        const resolvedKeyPath = resolvePrivateKeyPath(key.name, key.private_key_path);
+
+        if (!publicKey && key.generate) {
+            const existingPublic = readExistingPrivateKeyPublic(resolvedKeyPath);
+            if (existingPublic) {
+                publicKey = existingPublic;
+                privateKeyPath = resolvedKeyPath;
+                reusedPrivateKey = true;
+                warnings.push(`Reusing existing private key at ${resolvedKeyPath}`);
+            }
+        }
+
+        const adopted = adoptSSHKey(accountKeys, key.name, reusedPrivateKey ? publicKey : undefined);
+        if (adopted) {
+            result.ssh_keys.push(privateKeyPath ? { ...adopted, private_key_path: privateKeyPath } : adopted);
+            sshKeyIds.push(adopted.id);
+            warnings.push(`Adopting existing SSH key "${adopted.name}" (id ${adopted.id})`);
+            continue;
+        }
+
         if (!publicKey && key.generate) {
             const generated = createSSHKey(key.name);
             publicKey = generated.publicKey;
-            privateKeyPath = persistGeneratedPrivateKey(
-                resolvePrivateKeyPath(key.name, key.private_key_path),
-                generated.keys.privateKey
-            );
+            privateKeyPath = persistGeneratedPrivateKey(resolvedKeyPath, generated.keys.privateKey);
             result.private_key_paths.push(privateKeyPath);
             warnings.push(`Generated SSH private key for "${key.name}" saved to ${privateKeyPath}`);
         }
@@ -239,10 +263,18 @@ export async function applyGrapeConfig(
     }
 
     for (const vpc of resources.vpcs ?? []) {
+        const region = vpc.region ?? config.region ?? "";
+        const adopted = adoptVPC(liveVpcs, vpc.name, region);
+        if (adopted) {
+            result.vpcs.push(adopted);
+            vpcIds.set(adopted.name, adopted.id);
+            warnings.push(`Adopting existing VPC "${adopted.name}" (id ${adopted.id})`);
+            continue;
+        }
         const created = await createVPC({
             name: vpc.name,
             description: vpc.description ?? "",
-            region: vpc.region ?? config.region ?? "",
+            region,
             ip_range: vpc.ip_range
         });
         result.vpcs.push(created);
@@ -305,6 +337,17 @@ export async function applyGrapeConfig(
                 user_data_generated: true
             });
         }
+        const existing = adoptDroplet(liveDroplets, grapeBlueprint.name);
+        if (existing) {
+            result.droplets.push(existing);
+            if (existing.id !== undefined) {
+                dropletIds.set(existing.name, existing.id);
+            }
+            warnings.push(
+                `Adopting existing droplet "${existing.name}" (id ${existing.id}); skipping create`
+            );
+            continue;
+        }
         const blueprint: DropletBlueprint = {
             ...fields,
             region: fields.region ?? config.region ?? "",
@@ -334,6 +377,12 @@ export async function applyGrapeConfig(
                 .map((name) => dropletIds.get(name))
                 .filter((id): id is number => typeof id === "number")
         ];
+        const existing = adoptFirewall(liveFirewalls, firewall.name);
+        if (existing) {
+            result.firewalls.push({ id: existing.id, name: existing.name });
+            warnings.push(`Adopting existing firewall "${existing.name}" (id ${existing.id}); skipping create`);
+            continue;
+        }
         const payload: FireWall = {
             name: firewall.name,
             droplet_ids,

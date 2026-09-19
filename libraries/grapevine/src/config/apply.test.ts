@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import sshpk from "sshpk";
 import { applyGrapeConfig, normalizeResources } from "./apply.js";
 import { validateGrapeConfig } from "./schema.js";
+import { persistGeneratedPrivateKey, readExistingPrivateKeyPublic } from "./ssh-private-key.js";
 
 vi.mock("../providers/digitalocean/client.js", () => ({
     getDoToken: vi.fn(() => "fake-token")
@@ -21,6 +22,7 @@ vi.mock("../providers/digitalocean/ssh/ssh.js", async (importOriginal) => {
     return {
         ...actual,
         createSSHKey: vi.fn(),
+        listSSHKeys: vi.fn(async () => []),
         uploadSSHKey: vi.fn(async (key: { name: string }) => ({
             id: 7,
             name: key.name,
@@ -40,7 +42,8 @@ vi.mock("../providers/digitalocean/vpc/vpc.js", () => ({
         default: false,
         urn: "do:vpc:vpc-1",
         created_at: ""
-    }))
+    })),
+    listAllVPCs: vi.fn(async () => [])
 }));
 
 vi.mock("../providers/digitalocean/droplet/droplet.js", () => ({
@@ -51,7 +54,8 @@ vi.mock("../providers/digitalocean/droplet/droplet.js", () => ({
         status: "new",
         image: {},
         size: {}
-    }))
+    })),
+    listAllDroplets: vi.fn(async () => [])
 }));
 
 vi.mock("../providers/digitalocean/firewall/firewall.js", () => ({
@@ -61,7 +65,8 @@ vi.mock("../providers/digitalocean/firewall/firewall.js", () => ({
         status: "succeeded",
         inbound_rules: [],
         outbound_rules: []
-    }))
+    })),
+    listAllFirewalls: vi.fn(async () => [])
 }));
 
 vi.mock("../providers/digitalocean/networking/domains.js", () => ({
@@ -479,5 +484,343 @@ describe("apply grape config", () => {
         expect(serialized).not.toContain("secret");
         expect(serialized).not.toContain("WORDPRESS_DB_PASSWORD=");
         expect(serialized).not.toMatch(/doadmin:secret/);
+    });
+
+    it("reuses an existing generated private key file instead of failing", async () => {
+        const { createSSHKey, uploadSSHKey } = await import("../providers/digitalocean/ssh/ssh.js");
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-apply-reuse-ssh-"));
+        tempDirs.push(dir);
+        const keyPath = path.join(dir, "kiwipress");
+        const generated = generatedKeyPair("kiwipress");
+        persistGeneratedPrivateKey(keyPath, generated.keys.privateKey);
+        const before = readFileSync(keyPath, "utf8");
+        const publicKey = readExistingPrivateKeyPublic(keyPath);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    ssh_keys: [{ name: "kiwipress", generate: true, private_key_path: keyPath }]
+                }
+            })
+        );
+
+        expect(createSSHKey).not.toHaveBeenCalled();
+        expect(uploadSSHKey).toHaveBeenCalledWith({
+            name: "kiwipress",
+            public_key: publicKey
+        });
+        expect(readFileSync(keyPath, "utf8")).toBe(before);
+        expect(result.private_key_paths).toEqual([]);
+        expect(result.ssh_keys[0]?.private_key_path).toBe(keyPath);
+        expect(result.warnings).toEqual([`Reusing existing private key at ${keyPath}`]);
+    });
+
+    it("adopts a unique account SSH key by name and skips upload", async () => {
+        const { uploadSSHKey, listSSHKeys } = await import("../providers/digitalocean/ssh/ssh.js");
+        const { createDroplet } = await import("../providers/digitalocean/droplet/droplet.js");
+        vi.mocked(listSSHKeys).mockResolvedValueOnce([
+            {
+                id: 42,
+                name: "kiwipress",
+                fingerprint: "aa:bb",
+                public_key: "ssh-ed25519 AAAA"
+            }
+        ]);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    ssh_keys: [{ name: "kiwipress", public_key: "ssh-ed25519 AAAA" }],
+                    droplets: [
+                        {
+                            name: "kiwipress-01",
+                            size: "s-1vcpu-1gb",
+                            image: "ubuntu-24-04-x64"
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(uploadSSHKey).not.toHaveBeenCalled();
+        expect(createDroplet).toHaveBeenCalledWith(expect.objectContaining({ ssh_keys: [42] }));
+        expect(result.ssh_keys[0]?.id).toBe(42);
+        expect(result.warnings).toEqual(['Adopting existing SSH key "kiwipress" (id 42)']);
+    });
+
+    it("prefers fingerprint when a reused local key matches an account key", async () => {
+        const { uploadSSHKey, listSSHKeys } = await import("../providers/digitalocean/ssh/ssh.js");
+        const dir = mkdtempSync(path.join(tmpdir(), "grape-apply-fp-ssh-"));
+        tempDirs.push(dir);
+        const keyPath = path.join(dir, "kiwipress");
+        const generated = generatedKeyPair("kiwipress");
+        persistGeneratedPrivateKey(keyPath, generated.keys.privateKey);
+        const publicKey = readExistingPrivateKeyPublic(keyPath);
+        if (!publicKey) {
+            throw new Error("expected derived public key");
+        }
+        vi.mocked(listSSHKeys).mockResolvedValueOnce([
+            {
+                id: 11,
+                name: "kiwipress",
+                fingerprint: "00:11",
+                public_key: "ssh-ed25519 OTHER"
+            },
+            {
+                id: 22,
+                name: "leftover",
+                fingerprint: "ff:ee",
+                public_key: publicKey
+            }
+        ]);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    ssh_keys: [{ name: "kiwipress", generate: true, private_key_path: keyPath }]
+                }
+            })
+        );
+
+        expect(uploadSSHKey).not.toHaveBeenCalled();
+        expect(result.ssh_keys[0]?.id).toBe(22);
+        expect(result.warnings).toEqual([
+            `Reusing existing private key at ${keyPath}`,
+            'Adopting existing SSH key "leftover" (id 22)'
+        ]);
+    });
+
+    it("fails when multiple account SSH keys share the blueprint name", async () => {
+        const { listSSHKeys } = await import("../providers/digitalocean/ssh/ssh.js");
+        vi.mocked(listSSHKeys).mockResolvedValueOnce([
+            { id: 11, name: "kiwipress", fingerprint: "aa", public_key: "ssh-ed25519 A" },
+            { id: 22, name: "kiwipress", fingerprint: "bb", public_key: "ssh-ed25519 B" }
+        ]);
+
+        await expect(
+            applyGrapeConfig(
+                validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: {
+                        ssh_keys: [{ name: "kiwipress", public_key: "ssh-ed25519 AAAA" }]
+                    }
+                })
+            )
+        ).rejects.toThrow(/SSH key "kiwipress" is ambiguous: 2 live resources named "kiwipress" \(ids: 11, 22\)/);
+    });
+
+    it("adopts a unique VPC in the target region and skips create", async () => {
+        const { createVPC, listAllVPCs } = await import("../providers/digitalocean/vpc/vpc.js");
+        const { createDroplet } = await import("../providers/digitalocean/droplet/droplet.js");
+        vi.mocked(listAllVPCs).mockResolvedValueOnce([
+            {
+                id: "vpc-live",
+                name: "kiwipress",
+                description: "",
+                region: "nyc3",
+                ip_range: "10.80.0.0/16",
+                default: false,
+                urn: "do:vpc:vpc-live",
+                created_at: ""
+            }
+        ]);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }],
+                    droplets: [
+                        {
+                            name: "kiwipress-01",
+                            size: "s-1vcpu-1gb",
+                            image: "ubuntu-24-04-x64",
+                            vpc: "kiwipress"
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(createVPC).not.toHaveBeenCalled();
+        expect(createDroplet).toHaveBeenCalledWith(expect.objectContaining({ vpc_uuid: "vpc-live" }));
+        expect(result.vpcs[0]?.id).toBe("vpc-live");
+        expect(result.warnings).toEqual(['Adopting existing VPC "kiwipress" (id vpc-live)']);
+    });
+
+    it("fails when a VPC name exists only in another region", async () => {
+        const { listAllVPCs } = await import("../providers/digitalocean/vpc/vpc.js");
+        vi.mocked(listAllVPCs).mockResolvedValueOnce([
+            {
+                id: "vpc-sfo",
+                name: "kiwipress",
+                description: "",
+                region: "sfo3",
+                ip_range: "10.80.0.0/16",
+                default: false,
+                urn: "do:vpc:vpc-sfo",
+                created_at: ""
+            }
+        ]);
+
+        await expect(
+            applyGrapeConfig(
+                validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: {
+                        vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }]
+                    }
+                })
+            )
+        ).rejects.toThrow(/VPC "kiwipress" exists in region "sfo3" \(id vpc-sfo\), not "nyc3"/);
+    });
+
+    it("fails when multiple VPCs share the blueprint name", async () => {
+        const { listAllVPCs } = await import("../providers/digitalocean/vpc/vpc.js");
+        vi.mocked(listAllVPCs).mockResolvedValueOnce([
+            {
+                id: "vpc-a",
+                name: "kiwipress",
+                description: "",
+                region: "nyc3",
+                ip_range: "10.80.0.0/16",
+                default: false,
+                urn: "do:vpc:vpc-a",
+                created_at: ""
+            },
+            {
+                id: "vpc-b",
+                name: "kiwipress",
+                description: "",
+                region: "nyc3",
+                ip_range: "10.81.0.0/16",
+                default: false,
+                urn: "do:vpc:vpc-b",
+                created_at: ""
+            }
+        ]);
+
+        await expect(
+            applyGrapeConfig(
+                validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: {
+                        vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }]
+                    }
+                })
+            )
+        ).rejects.toThrow(/VPC "kiwipress" is ambiguous: 2 live resources named "kiwipress" \(ids: vpc-a, vpc-b\)/);
+    });
+
+    it("adopts a unique droplet and firewall and skips create", async () => {
+        const { createDroplet, listAllDroplets } = await import("../providers/digitalocean/droplet/droplet.js");
+        const { createFireWall, listAllFirewalls } = await import("../providers/digitalocean/firewall/firewall.js");
+        vi.mocked(listAllDroplets).mockResolvedValueOnce([
+            {
+                id: 321,
+                name: "kiwipress-01",
+                memory: 1024,
+                status: "active",
+                image: {},
+                size: {}
+            }
+        ]);
+        vi.mocked(listAllFirewalls).mockResolvedValueOnce([
+            {
+                id: "fw-live",
+                name: "kiwipress",
+                status: "succeeded",
+                inbound_rules: [],
+                outbound_rules: []
+            }
+        ]);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    droplets: [
+                        {
+                            name: "kiwipress-01",
+                            size: "s-1vcpu-1gb",
+                            image: "ubuntu-24-04-x64"
+                        }
+                    ],
+                    firewalls: [
+                        {
+                            name: "kiwipress",
+                            droplets: ["kiwipress-01"],
+                            inbound: [{ protocol: "tcp", ports: "22", sources: ["0.0.0.0/0"] }]
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(createDroplet).not.toHaveBeenCalled();
+        expect(createFireWall).not.toHaveBeenCalled();
+        expect(result.droplets[0]?.id).toBe(321);
+        expect(result.firewalls[0]).toEqual({ id: "fw-live", name: "kiwipress" });
+        expect(result.warnings).toEqual([
+            'Adopting existing droplet "kiwipress-01" (id 321); skipping create',
+            'Adopting existing firewall "kiwipress" (id fw-live); skipping create'
+        ]);
+    });
+
+    it("attaches a newly created firewall to an adopted droplet", async () => {
+        const { createDroplet, listAllDroplets } = await import("../providers/digitalocean/droplet/droplet.js");
+        const { createFireWall } = await import("../providers/digitalocean/firewall/firewall.js");
+        vi.mocked(listAllDroplets).mockResolvedValueOnce([
+            {
+                id: 321,
+                name: "kiwipress-01",
+                memory: 1024,
+                status: "active",
+                image: {},
+                size: {}
+            }
+        ]);
+
+        await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    droplets: [
+                        {
+                            name: "kiwipress-01",
+                            size: "s-1vcpu-1gb",
+                            image: "ubuntu-24-04-x64"
+                        }
+                    ],
+                    firewalls: [
+                        {
+                            name: "kiwipress",
+                            droplets: ["kiwipress-01"],
+                            inbound: [{ protocol: "tcp", ports: "22", sources: ["0.0.0.0/32"] }]
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(createDroplet).not.toHaveBeenCalled();
+        expect(createFireWall).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: "kiwipress",
+                droplet_ids: [321]
+            })
+        );
     });
 });
