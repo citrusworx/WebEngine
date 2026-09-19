@@ -329,4 +329,4 @@ Import core + theme CSS separately (see [Theme authoring](./juice-theme-authorin
 
 A–C surface utilities and remaining depth slices A–C (`shadowTone`, `overlay`, `variant`) ship. Structural `card="…"` recipes can stay later — see [Cards](./juice-cards.md) and the [Surface Spec](./juice-surface-spec.md).
 
-Modal / dialog **theme chrome** (`--juice-modal-*` on `[modal-overlay]` / `[modal]` / `[modal-close]`) also ships. That is a component scrim, not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Dialog runtime (focus trap / APG) is still slice B — see the [Theme Contract](./juice-theme-contract.md).
+Modal / dialog **theme chrome** (`--juice-modal-*` on `[modal-overlay]` / `[modal]` / `[modal-close]`) also ships. That is a component scrim, not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses native `hidden`. The dialog runtime auto-enhances valid overlay markup — see [Modal Runtime](./juice-modal-runtime.md) and the [Theme Contract](./juice-theme-contract.md).

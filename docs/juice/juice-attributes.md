@@ -274,13 +274,16 @@ See [Tabs Runtime](./juice-tabs-runtime.md). Theme paint uses `--juice-tabs-*` r
 
 ### Modal
 
-- `modal-overlay` — full-viewport scrim; hide with the native `hidden` attribute
-- `modal` — dialog panel; optional values `"sm"` / `"lg"` for width
+- `modal-overlay` — widget root / full-viewport scrim; required for the dialog runtime. Hide with the native `hidden` attribute. Value `"static"` opts out of backdrop-click close
+- `modal` — dialog panel (`role="dialog"`); optional values `"sm"` / `"lg"` for width
 - `modal-header` — title / lead region
 - `modal-body` — main content region
 - `modal-close` — dismiss control (surface paint, not a CTA)
+- `name` — optional overlay label used as the slug for generated ids
 
-Theme paint uses `--juice-modal-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility. Dialog runtime is still slice B.
+Openers pair through `aria-controls` pointing at the overlay `id`. There is no extra Juice opener attribute.
+
+See [Modal Runtime](./juice-modal-runtime.md). Theme paint uses `--juice-modal-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility.
 
 ## Usage Examples
 

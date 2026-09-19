@@ -113,6 +113,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Navigation Runtime](./juice-navigation-runtime.md)
 - [Accordion Runtime](./juice-accordion-runtime.md)
 - [Tabs Runtime](./juice-tabs-runtime.md)
+- [Modal Runtime](./juice-modal-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (0.4.0 on npm; master ahead toward 0.5.0)
 
