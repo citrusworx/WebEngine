@@ -6,6 +6,7 @@ import {
     persistenceFromEnv,
     registerKiwiPressGateway
 } from "@citrusworx/kiwipress";
+import { loadBackEnv } from "./env.js";
 import { registerKiwiPressProvision } from "./provision/register.js";
 
 function resolvePersistence() {
@@ -15,6 +16,7 @@ function resolvePersistence() {
 }
 
 async function main() {
+    loadBackEnv();
     const port = Number(process.env.KIWIPRESS_API_PORT ?? 8787);
     const wordpressUrl = process.env.WP_URL?.trim();
     const persistence = resolvePersistence();

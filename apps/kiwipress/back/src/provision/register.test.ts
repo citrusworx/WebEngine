@@ -1,7 +1,7 @@
 import http from "node:http";
 import { afterEach, describe, expect, it } from "vitest";
 import { Seltzer } from "@citrusworx/seltzer";
-import type { ApplyResult } from "@citrusworx/grapevine";
+import type { ApplyResult, DestroyResult, GrapeConfig } from "@citrusworx/grapevine";
 import { ProvisionJobStore } from "./jobs.js";
 import { registerKiwiPressProvision } from "./register.js";
 
@@ -43,6 +43,16 @@ async function request(
 ): Promise<{ status: number; json: unknown }> {
     const res = await fetch(url, init);
     return { status: res.status, json: await res.json() };
+}
+
+function mockDestroyResult(): DestroyResult {
+    return {
+        dry_run: false,
+        deleted: [{ kind: "droplet", name: "kiwipress-01", id: 42 }],
+        skipped: [{ kind: "vpc", name: "kiwipress", reason: "still in use" }],
+        failed: [],
+        warnings: ["Droplet deletion is asynchronous at DigitalOcean."]
+    };
 }
 
 function mockApplyResult(): ApplyResult {
@@ -211,5 +221,98 @@ describe("registerKiwiPressProvision", () => {
         const base = await listen(app);
         const res = await request(`${base}/provision/missing-job`);
         expect(res.status).toBe(404);
+    });
+
+    it("fails destroy closed when the server has no DO token", async () => {
+        const app = registerKiwiPressProvision(Seltzer.init(), {
+            hasDoToken: () => false
+        });
+        const base = await listen(app);
+        const res = await request(`${base}/provision/destroy`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ databaseType: "shared" })
+        });
+
+        expect(res.status).toBe(503);
+        expect(res.json).toMatchObject({
+            error: expect.stringContaining("DO_TOKEN"),
+            env: "DO_TOKEN",
+            packId: "kiwipress-compose"
+        });
+    });
+
+    it("destroys the managed pack for dedicated databases and sanitizes the summary", async () => {
+        let seen: GrapeConfig | undefined;
+        const app = registerKiwiPressProvision(Seltzer.init(), {
+            hasDoToken: () => true,
+            grapevine: {
+                destroyGrapeResources: async (options) => {
+                    seen = options.config;
+                    return {
+                        ...mockDestroyResult(),
+                        failed: [
+                            {
+                                kind: "firewall",
+                                name: "kiwipress-web",
+                                error: "DO_TOKEN=dop_v1_shouldnotleak"
+                            }
+                        ]
+                    };
+                }
+            }
+        });
+        const base = await listen(app);
+        const res = await request(`${base}/provision/destroy`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                databaseType: "dedicated",
+                dropletSize: "growth",
+                region: "lon1"
+            })
+        });
+
+        expect(res.status).toBe(200);
+        expect(seen?.region).toBe("lon1");
+        expect(res.json).toMatchObject({
+            packId: "kiwipress-managed",
+            region: "lon1",
+            dryRun: false,
+            deleted: [{ kind: "droplet", name: "kiwipress-01", id: 42 }],
+            skipped: [{ kind: "vpc", name: "kiwipress", reason: "still in use" }]
+        });
+        const body = res.json as { warnings: string[]; failed: Array<{ error?: string }> };
+        expect(body.warnings.some((warning) => warning.includes(".grape/ssh"))).toBe(true);
+        expect(body.failed[0]?.error).toContain("[redacted]");
+        expect(JSON.stringify(res.json)).not.toMatch(/dop_v1_shouldnotleak|password/i);
+    });
+
+    it("maps shared destroy onto the compose pack with the same gateway auth as plan", async () => {
+        const app = registerKiwiPressProvision(Seltzer.init(), {
+            token: "gateway-secret",
+            hasDoToken: () => true,
+            grapevine: {
+                destroyGrapeResources: async () => mockDestroyResult()
+            }
+        });
+        const base = await listen(app);
+        const denied = await request(`${base}/provision/destroy`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: "{}"
+        });
+        expect(denied.status).toBe(401);
+
+        const allowed = await request(`${base}/provision/destroy`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer gateway-secret"
+            },
+            body: JSON.stringify({ databaseType: "shared", dropletSize: "starter" })
+        });
+        expect(allowed.status).toBe(200);
+        expect(allowed.json).toMatchObject({ packId: "kiwipress-compose" });
     });
 });

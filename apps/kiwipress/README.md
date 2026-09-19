@@ -32,15 +32,7 @@ cp apps/kiwipress/front/.env.example apps/kiwipress/front/.env
 
 Vite loads `apps/kiwipress/front/.env` automatically.
 
-The API reads `process.env` only (no dotenv). Export keys in the **same shell** that starts the back:
-
-```bash
-set -a
-source apps/kiwipress/back/.env
-set +a
-```
-
-Or export individual keys (`export KIWIPRESS_API_PORT=8787`). Shell values win over a file you have not sourced.
+The API loads `apps/kiwipress/back/.env` on startup when that file exists (comments and blank lines ignored; `KEY=value` with optional quotes). It **does not override** variables already set in the shell — an exported `DO_TOKEN` still wins, including an empty export. Restart the back after editing `.env`. You do not need to `source` the file for the common case.
 
 ### Back (`apps/kiwipress/back/.env.example`)
 
@@ -48,7 +40,7 @@ Or export individual keys (`export KIWIPRESS_API_PORT=8787`). Shell values win o
 | --- | --- |
 | `KIWIPRESS_API_PORT` | Listen port. Default `8787`. |
 | `KIWIPRESS_GATEWAY_TOKEN` | When set, `/__kiwipress` (except health) and `/provision/*` require `Authorization: Bearer …` or `X-KiwiPress-Token`. Leave unset for loopback-only laptop use. |
-| `DO_TOKEN` | **Server-only.** Required for `POST /provision/apply`. Plan works without it. Blueprints use `credentials.env: DO_TOKEN`. |
+| `DO_TOKEN` | **Server-only.** Required for `POST /provision/apply` and `POST /provision/destroy`. Plan works without it. Blueprints use `credentials.env: DO_TOKEN`. |
 | `WP_URL` / `WP_API` / `WP_USER` / `WP_APP_PASSWORD` / `WP_TOKEN` / `WP_API_KEY` | Optional WordPress REST entry. Omit `WP_URL` for nectarine-only CMS. |
 | `KIWIPRESS_CMS_FILE` | Optional JSON persistence path. |
 | `KIWIPRESS_PG_DB` / `PG_DB` | Optional Nectarine Postgres persistence. |
@@ -71,7 +63,7 @@ No other front env is required. Vite also proxies `/wp-json` to `https://wp.loca
 Two terminals, from the monorepo root:
 
 ```bash
-# terminal 1 — after sourcing back/.env if you use one
+# terminal 1 — reads apps/kiwipress/back/.env on startup if present
 yarn workspace @citrusworx/kiwipressapp-back dev
 
 # terminal 2
@@ -85,7 +77,7 @@ The browser calls `/provision/…` and `/__kiwipress/…` on the Vite origin. Vi
 
 Wizard: [http://localhost:5173/wizard](http://localhost:5173/wizard) (Welcome). Steps: Welcome → Blueprints → Configure → Database → Domain → Payment → Provisioning → Live. Payment is a simulated checkout — no processor, no card charge. Confirm & Deploy navigates to Provisioning.
 
-Provisioning mounts, `POST`s the wizard snapshot to `/provision/plan`, paints that timeline, then `POST`s `/provision/apply` and polls `GET /provision/:id`. The browser never sends `DO_TOKEN`.
+Provisioning mounts, `POST`s the wizard snapshot to `/provision/plan`, paints that timeline, then `POST`s `/provision/apply` and polls `GET /provision/:id`. Live and Projects can `POST /provision/destroy` after a confirm step. The browser never sends `DO_TOKEN`.
 
 ## Test paths
 
@@ -101,12 +93,13 @@ Leave `DO_TOKEN` unset on the back process.
    > DigitalOcean token is not configured. Set `DO_TOKEN` (or the blueprint `credentials.env` name) on the KiwiPress API server. Apply does not run without it.
 
    The Provisioning step shows that message and a Retry apply button. Retry stays blocked until the back process has a token.
+5. **Destroy** from Live or Projects is blocked the same way (**503**) until `DO_TOKEN` is set.
 
 `databaseType` in the Database step picks the pack even on plan-only: **dedicated** → `kiwipress-managed`; **shared** / **self-hosted** / default → `kiwipress-compose`.
 
 ### Real apply (optional, costs money)
 
-Set `DO_TOKEN` on the **back process only** (`export DO_TOKEN=dop_v1_…` in the API shell, or source `back/.env` after filling the placeholder). Do not put it in `front/.env`.
+Set `DO_TOKEN` on the **back process only** (put it in `back/.env` and restart, or `export DO_TOKEN=dop_v1_…` in the API shell). Do not put it in `front/.env`.
 
 1. Same walk as the safe path.
 2. Plan still runs first (no spend).
@@ -116,7 +109,9 @@ Set `DO_TOKEN` on the **back process only** (`export DO_TOKEN=dop_v1_…` in the
 4. Pack paths resolve from the **monorepo root**, not cwd. Restart the back after changing env.
 5. Success seeds Live (droplet IP / domain) and navigates to `/wizard/live`.
 
-This creates real DigitalOcean resources (droplet; managed also creates two databases). Replace `REPLACE_WITH_YOUR_IP` in those packs before a production-shaped apply — the wizard currently opens SSH to `0.0.0.0/0` and warns. There is no destroy UI in this app; tear down with `grape destroy` if you apply.
+This creates real DigitalOcean resources (droplet; managed also creates two databases). Replace `REPLACE_WITH_YOUR_IP` in those packs before a production-shaped apply — the wizard currently opens SSH to `0.0.0.0/0` and warns.
+
+Tear down from **Live** or **Projects**: confirm, then the dashboard `POST`s `/provision/destroy` with the same wizard snapshot mapping. The API calls GrapeVine `destroyGrapeResources`. DigitalOcean destroy does **not** remove local `.grape/ssh/…` private key files — delete those yourself if you no longer need SSH. Droplet delete is asynchronous; skipped VPCs are normal on the first pass (run destroy again). `grape destroy` still works from a pack directory if you prefer the CLI.
 
 ## Routes (do not invent others)
 
@@ -126,6 +121,7 @@ Registered next to `registerKiwiPressGateway` with the same `authorizeKiwiPressG
 | --- | --- | --- |
 | `POST` | `/provision/plan` | Wizard snapshot → load/validate pack → `planGrapeConfig` → timeline + public plan. Works without `DO_TOKEN`. |
 | `POST` | `/provision/apply` | Same mapping. Missing token → **503**. Otherwise job + async `applyGrapeConfig`. |
+| `POST` | `/provision/destroy` | Same mapping and gateway auth. Missing token → **503**. Sync `destroyGrapeResources`. Returns deleted/skipped/failed/warnings (no secrets or key material). |
 | `GET` | `/provision/:id` | Job status, step events, apply summary (ids/IPs/hosts/warnings — not passwords or key material). |
 | `*` | `/__kiwipress/…` | CMS gateway. See [Dashboard](../../docs/kiwipress/kiwipress-dashboard.md) and [Gateway](../../docs/kiwipress/kiwipress-gateway.md). |
 

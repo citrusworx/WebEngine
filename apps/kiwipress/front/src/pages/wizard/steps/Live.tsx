@@ -1,6 +1,8 @@
 import { effect } from "@citrusworx/sigjs";
 import { router } from "../../../router";
 import { WizardLayout } from "../layout/WizardLayout";
+import { DestroyPanel } from "../DestroyPanel";
+import { destroyError, destroyPhase, destroySummary } from "../destroy-flow";
 import { liveInstance, wizardData } from "../state";
 import { REGION_LABELS, publicInstanceName, resolvedDomain, titleCase } from "../catalog";
 
@@ -11,8 +13,9 @@ export function Live() {
         if (!bodyNode) return;
         const data = wizardData.get();
         const live = liveInstance.get();
+        const tornDown = Boolean(live?.destroyed);
         const domain = live?.domain || resolvedDomain(data);
-        const ip = live?.ip || "Pending";
+        const ip = tornDown ? "Torn down" : live?.ip || "Pending";
         const region = REGION_LABELS[data.region] ?? data.region;
         const name = publicInstanceName();
         const siteUrl = domain.startsWith("http") ? domain : `https://${domain}`;
@@ -20,31 +23,35 @@ export function Live() {
         bodyNode.replaceChildren(
             <div>
                 <div live-hero>
-                    <span pill="accent">
+                    <span pill={tornDown ? "warm" : "accent"}>
                         <span status-dot></span>
-                        Deployment Successful
+                        {tornDown ? "Stack destroyed" : "Deployment Successful"}
                     </span>
-                    <h1>Your KiwiPress Instance is Live</h1>
-                    <p lede>WordPress stack apply finished. The IP and domain below come from GrapeVine; the metrics cards stay simulated.</p>
+                    <h1>{tornDown ? "This KiwiPress stack is no longer live" : "Your KiwiPress Instance is Live"}</h1>
+                    <p lede>
+                        {tornDown
+                            ? "DigitalOcean resources for this apply were torn down through GrapeVine. Local .grape/ssh keys are still on disk."
+                            : "WordPress stack apply finished. The IP and domain below come from GrapeVine; the metrics cards stay simulated."}
+                    </p>
                 </div>
 
                 <div live-body>
                     <div status-cards>
                         <div status-card>
                             <p subtle>Status</p>
-                            <strong><span status-dot></span> LIVE</strong>
+                            <strong><span status-dot></span> {tornDown ? "DESTROYED" : "LIVE"}</strong>
                         </div>
                         <div status-card>
                             <p subtle>Health</p>
-                            <strong><span status-dot></span> Healthy</strong>
+                            <strong><span status-dot></span> {tornDown ? "Offline" : "Healthy"}</strong>
                         </div>
                         <div status-card>
                             <p subtle>Backups</p>
-                            <strong><span status-dot></span> Active</strong>
+                            <strong><span status-dot></span> {tornDown ? "Stopped" : "Active"}</strong>
                         </div>
                         <div status-card>
                             <p subtle>Last Backup</p>
-                            <strong>2 hours ago</strong>
+                            <strong>{tornDown ? "—" : "2 hours ago"}</strong>
                         </div>
                     </div>
 
@@ -86,15 +93,29 @@ export function Live() {
                         <div panel-card>
                             <h3>Quick Actions</h3>
                             <div action-stack>
-                                <button type="button" onclick={() => window.open(siteUrl, "_blank", "noopener")}>
+                                <button
+                                    type="button"
+                                    disabled={tornDown || undefined}
+                                    onclick={() => window.open(siteUrl, "_blank", "noopener")}
+                                >
                                     <i icon="globe" lib="solid" iconSize="sm"></i>
                                     Open Site
                                 </button>
-                                <button btn="outline" type="button" onclick={() => window.open(`${siteUrl}/wp-admin`, "_blank", "noopener")}>
+                                <button
+                                    btn="outline"
+                                    type="button"
+                                    disabled={tornDown || undefined}
+                                    onclick={() => window.open(`${siteUrl}/wp-admin`, "_blank", "noopener")}
+                                >
                                     <i icon="server" lib="solid" iconSize="sm"></i>
                                     WordPress Admin
                                 </button>
-                                <button btn="outline" type="button" onclick={() => window.open(`${siteUrl}/wp-json/`, "_blank", "noopener")}>
+                                <button
+                                    btn="outline"
+                                    type="button"
+                                    disabled={tornDown || undefined}
+                                    onclick={() => window.open(`${siteUrl}/wp-json/`, "_blank", "noopener")}
+                                >
                                     <i icon="database" lib="solid" iconSize="sm"></i>
                                     View API Docs
                                 </button>
@@ -127,6 +148,8 @@ export function Live() {
                         </div>
                     </div>
 
+                    <DestroyPanel />
+
                     <div panel-card muted>
                         <h4>Your Instance, Your Control</h4>
                         <ul spec-list>
@@ -144,6 +167,9 @@ export function Live() {
     effect(() => {
         wizardData.get();
         liveInstance.get();
+        destroyPhase.get();
+        destroyError.get();
+        destroySummary.get();
         paint();
     });
 

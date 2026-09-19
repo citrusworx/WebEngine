@@ -124,6 +124,12 @@
     color: var(--kw-text-muted);
 }
 
+[dashboard-shell] [status-chip][tone="warm"] {
+    color: var(--kw-warm);
+    background: var(--kw-warm-soft);
+    border-color: var(--kw-warm-tint);
+}
+
 [dashboard-shell] [status-chip][tone="ok"] {
     color: var(--kw-heading);
 }
@@ -799,6 +805,17 @@
 
 [dashboard-shell] [danger-panel] button:hover {
     background: var(--kw-runtime-strong, var(--kw-warm));
+}
+
+[dashboard-shell] [danger-panel] [destroy-summary] p {
+    margin: 0 0 0.35rem;
+}
+
+[dashboard-shell] [destroy-actions] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
 }
 
 [dashboard-shell] [profile-row] {

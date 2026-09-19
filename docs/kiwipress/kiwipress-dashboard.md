@@ -31,7 +31,7 @@ There is no root `apps/kiwipress/package.json`.
 **Marketing / placeholder (do not document as library features)**
 
 - Home, How it works, Developers, Get KiwiPress, Contact, Login
-- Wizard steps (Welcome → Blueprints → Configure → Database → Domain → Payment → Provisioning → Live → Scale). Provisioning calls `POST /provision/plan` then `POST /provision/apply` and polls `GET /provision/:id`. Apply never sends `DO_TOKEN` from the browser.
+- Wizard steps (Welcome → Blueprints → Configure → Database → Domain → Payment → Provisioning → Live → Scale). Provisioning calls `POST /provision/plan` then `POST /provision/apply` and polls `GET /provision/:id`. Live and Projects can confirm and `POST /provision/destroy`. The browser never sends `DO_TOKEN`.
 - Dashboard pages: Projects, Blueprints, Billing, Activity, Settings, Account — copy + empty placeholders. Posts, Pages, Types, and `/app/c/:slug` are live against the gateway.
 - Sidebar brand “KiwiPress Cloud” and `v0.0.1` — UI chrome, not `@citrusworx/kiwipress` 0.4.3
 - Vite also proxies `/wp-json` to `https://wp.local.citrusworx.test` for local WP; that is app config, not a library default
@@ -70,7 +70,7 @@ Useful env (backend):
 | `KIWIPRESS_CMS_FILE` or `KIWIPRESS_PG_DB` / `PG_DB` | override persistence |
 | `KIWIPRESS_GATEWAY_TOKEN` | require Bearer / `X-KiwiPress-Token` |
 | `KIWIPRESS_API_PORT` | listen port |
-| `DO_TOKEN` (or blueprint `credentials.env`) | required for `POST /provision/apply` only; plan works without it |
+| `DO_TOKEN` (or blueprint `credentials.env`) | required for `POST /provision/apply` and `POST /provision/destroy`; plan works without it |
 
 Frontend: `VITE_KIWIPRESS_GATEWAY_TOKEN` (same value as the gateway token when you set one). Vite `allowedHosts` includes `app.local.citrusworx.test`, `frontend.kiwi.local`, `localhost`.
 
@@ -92,6 +92,7 @@ Without `WP_URL`, Posts, Pages, and custom types still work in nectarine mode: e
 |---|---|---|
 | POST | `/provision/plan` | Wizard snapshot → pack + patched grape config → `planGrapeConfig`. Works without `DO_TOKEN`. |
 | POST | `/provision/apply` | Same mapping. Missing token → **503**. Otherwise creates a job and runs `applyGrapeConfig` asynchronously. |
+| POST | `/provision/destroy` | Same mapping and auth. Missing token → **503**. Sync `destroyGrapeResources`; sanitized deleted/skipped/failed/warnings. Local `.grape/ssh` files are not removed. |
 | GET | `/provision/:id` | Job status, timeline events, apply summary (droplet ids/IPs, db id/host/status, warnings). |
 
 `databaseType: "dedicated"` loads `libraries/grapevine/examples/blueprints/kiwipress-managed`. Shared / self-hosted / default loads `kiwipress-compose`. Pack paths are resolved from the monorepo root, not `cwd`.
