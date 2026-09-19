@@ -59,8 +59,8 @@ Examples:
 - `borderStrength="bold"` (implemented; 2px heavier rule)
 - `shadowTone="cool"`
 - `shadowTone="warm"`
-- `blur="sm"`
-- `blur="md"`
+- `blur="sm"` (implemented; `6px` backdrop-filter)
+- `blur="md"` (implemented; `16px` backdrop-filter)
 - `overlay="frost"`
 - `variant="monochromatic"`
 - `variant="glass"`

@@ -62,7 +62,7 @@ Built-in breakpoints, `row` collapse, and scaled spacing are documented in [docs
 
 ## Surfaces
 
-Beta-stable: `surfaceTone="soft|strong|muted"` and `borderStrength="soft|bold"`. Themes bind `--juice-surface-*` and `--juice-border-strength-*` roles. See [docs/juice/juice-surfaces.md](../../docs/juice/juice-surfaces.md).
+Beta-stable: `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, and `blur="sm|md"`. Themes bind `--juice-surface-*` and `--juice-border-strength-*` roles. Standalone blur uses fixed `6px` / `16px` lengths. See [docs/juice/juice-surfaces.md](../../docs/juice/juice-surfaces.md).
 
 ## Motion (Beta)
 

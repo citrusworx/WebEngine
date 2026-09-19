@@ -11,7 +11,7 @@
 //
 // Tones: soft (frosted), strong (opaque elevated), muted (quiet recessed).
 // borderStrength (slice B) refines width / contrast. Standalone blur (slice C)
-// stays out of scope.
+// overrides backdrop-filter length only.
 //
 // [theme] [surfaceTone] must beat theme semantic defaults such as
 // [theme="…"] :where(section, article, …) so the attribute works on
@@ -89,4 +89,39 @@
 [surfaceTone][borderStrength="bold"],
 [theme] [surfaceTone][borderStrength="bold"] {
     border-width: var(--juice-border-strength-bold-width, 2px);
+}
+
+// Standalone blur utilities. Fixed lengths with optional --juice-blur-* restyles.
+// Themes do not bind a second blur scale — tone frost stays on
+// --juice-surface-<tone>-blur (soft defaults 10 / 14 / 16px).
+//
+//   sm = 6px  — lighter than every shipped soft-tone default
+//   md = 16px — heavier than the typical 10px unthemed / Kiwi / Citrusmint
+//               soft default; equals Tide's existing glass so an explicit
+//               blur="md" on Tide frost restates that length, not a new scale
+//
+// Explicit [blur] overrides a tone's backdrop-filter length (author intent)
+// without wiping tone background, border, or shadow. [theme] [blur] matches
+// the tone specificity pattern. [theme] [surfaceTone][blur] is more specific
+// than [theme] [surfaceTone] so the override holds even if later tone rules
+// appear.
+
+[blur="sm"],
+[theme] [blur="sm"] {
+    backdrop-filter: blur(var(--juice-blur-sm, 6px));
+}
+
+[blur="md"],
+[theme] [blur="md"] {
+    backdrop-filter: blur(var(--juice-blur-md, 16px));
+}
+
+[surfaceTone][blur="sm"],
+[theme] [surfaceTone][blur="sm"] {
+    backdrop-filter: blur(var(--juice-blur-sm, 6px));
+}
+
+[surfaceTone][blur="md"],
+[theme] [surfaceTone][blur="md"] {
+    backdrop-filter: blur(var(--juice-blur-md, 16px));
 }

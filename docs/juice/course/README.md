@@ -53,7 +53,7 @@ Juice is an active alpha (`@citrusworx/juiceui` 0.4.0 in the [maturity matrix](.
 
 - **Shipped:** present in `libraries/juice` and documented as usable today
 - **Emerging / draft:** useful, still evolving; do not treat the spelling as frozen
-- **Specified, not shipped:** described in philosophy or specs (`adapt` overrides, `borderStrength`, standalone `blur`) — not part of exercises
+- **Specified, not shipped:** described in philosophy or specs (`adapt` overrides, `overlay`, `variant`, `shadowTone`) — not part of exercises
 
 The course will not invent attributes. If a lesson needs a gap, it says so.
 

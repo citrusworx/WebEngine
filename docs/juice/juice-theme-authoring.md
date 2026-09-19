@@ -307,7 +307,9 @@ Bind colors from existing `--*-border` / `--*-border-strong` tokens. Do not inve
 
 Core `surface.scss` applies the color roles only when the element has neither `surfaceTone` nor `borderColor`. Combined `[surfaceTone][borderStrength]` selectors refine `border-width` only, so tone background / shadow / blur stay. Generated themes bind the same names from `--jx-border` / `--jx-border-strong`.
 
-Standalone `blur="sm|md"` is not part of this contract yet.
+## Standalone blur
+
+`blur="sm|md"` is a core utility, not a theme role contract. Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.
 
 ## Recommended authoring rules
 

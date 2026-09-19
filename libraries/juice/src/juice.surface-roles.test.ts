@@ -37,8 +37,6 @@ describe("Surface tone role contract", () => {
         expect(scss).toContain("[theme] [surfaceTone=\"soft\"]");
         expect(scss).toContain("[theme] [surfaceTone=\"strong\"]");
         expect(scss).toContain("[theme] [surfaceTone=\"muted\"]");
-        expect(scss).not.toContain('[blur="sm"]');
-        expect(scss).not.toContain('[blur="md"]');
     });
 
     it("consumes shared --juice-border-strength-* roles without wiping surfaceTone paint", () => {
@@ -60,6 +58,25 @@ describe("Surface tone role contract", () => {
         expect(scss).not.toMatch(/\[surfaceTone\]\[borderStrength="(?:soft|bold)"\][^{]*\{[^}]*background-color/);
         expect(scss).not.toMatch(/\[surfaceTone\]\[borderStrength="(?:soft|bold)"\][^{]*\{[^}]*box-shadow/);
         expect(scss).not.toMatch(/\[surfaceTone\]\[borderStrength="(?:soft|bold)"\][^{]*\{[^}]*backdrop-filter/);
+    });
+
+    it("consumes standalone blur sm/md without wiping surfaceTone paint", () => {
+        const scss = readFileSync(join(SRC_ROOT, "styles/surface/surface.scss"), "utf-8");
+
+        for (const length of ["sm", "md"] as const) {
+            expect(scss).toContain(`[blur="${length}"]`);
+            expect(scss).toContain(`[theme] [blur="${length}"]`);
+            expect(scss).toContain(`[surfaceTone][blur="${length}"]`);
+            expect(scss).toContain(`[theme] [surfaceTone][blur="${length}"]`);
+        }
+
+        expect(scss).toContain("var(--juice-blur-sm, 6px)");
+        expect(scss).toContain("var(--juice-blur-md, 16px)");
+        expect(scss).not.toMatch(/\[surfaceTone\]\[blur="(?:sm|md)"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[blur="(?:sm|md)"\][^{]*\{[^}]*box-shadow/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[blur="(?:sm|md)"\][^{]*\{[^}]*border:/);
+        expect(scss).toMatch(/\[surfaceTone\]\[blur="sm"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).toMatch(/\[surfaceTone\]\[blur="md"\][^{]*\{[^}]*backdrop-filter/);
     });
 
     it("binds the same surface tone roles in aquaflux, kiwipress, citrusmint, and tide", () => {
