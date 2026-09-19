@@ -145,6 +145,20 @@ describe("grape config schema", () => {
         expect(parsed.resources.databases?.[0]?.connection_env?.host).toBe("WORDPRESS_DB_HOST");
     });
 
+    it("accepts convenience firewall port forms all and comma lists", () => {
+        const parsed = validateGrapeConfig({
+            provider: "digitalocean",
+            firewall: {
+                inbound: [
+                    { protocol: "tcp", ports: "all", sources: ["0.0.0.0/0"] },
+                    { protocol: "tcp", ports: "80,443", sources: ["0.0.0.0/0"] },
+                    { protocol: "icmp", sources: ["0.0.0.0/0"] }
+                ]
+            }
+        });
+        expect(parsed.firewall?.inbound?.map((rule) => rule.ports)).toEqual(["all", "80,443", undefined]);
+    });
+
     it("accepts ssh_keys generate with optional private_key_path", () => {
         const parsed = validateGrapeConfig({
             provider: "digitalocean",

@@ -35,11 +35,14 @@ resources:
           ports: "22"
           sources: ["203.0.113.10/32"]
         - protocol: tcp
-          ports: "80,443"
+          ports: "80"
+          sources: ["0.0.0.0/0"]
+        - protocol: tcp
+          ports: "443"
           sources: ["0.0.0.0/0"]
       outbound:
         - protocol: tcp
-          ports: "all"
+          ports: "1-65535"
           destinations: ["0.0.0.0/0"]
   domains:
     - name: example.com

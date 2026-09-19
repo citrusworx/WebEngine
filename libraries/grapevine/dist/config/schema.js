@@ -56,6 +56,7 @@ const firewallSourceSchema = z.union([
 ]);
 export const firewallRuleSchema = z.object({
     protocol: z.string().min(1),
+    /** DigitalOcean forms (`22`, `8000-9000`) plus convenience `all`/`*` and comma lists; apply expands them. */
     ports: z.union([z.string(), z.number()]).optional(),
     sources: firewallSourceSchema.optional(),
     destinations: firewallSourceSchema.optional()

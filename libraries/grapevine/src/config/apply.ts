@@ -7,13 +7,14 @@ import {
     type DatabaseResource
 } from "../providers/digitalocean/databases/databases.js";
 import { createDroplet, type DropletBlueprint, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
-import { createFireWall, type FireWall, type FirewallRule, type FirewallRuleSources } from "../providers/digitalocean/firewall/firewall.js";
+import { createFireWall, type FireWall } from "../providers/digitalocean/firewall/firewall.js";
 import { createAlertPolicy } from "../providers/digitalocean/monitoring/monitoring.js";
 import { createDomain, createDomainRecord } from "../providers/digitalocean/networking/domains.js";
 import { createLoadBalancer } from "../providers/digitalocean/networking/load-balancer.js";
 import { createSSHKey, uploadSSHKey, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
+import { normalizeFirewallRules } from "./firewall-rules.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
 import { persistGeneratedPrivateKey, resolvePrivateKeyPath } from "./ssh-private-key.js";
 import { getConfigSourceDir, type GrapeRunOptions } from "./source.js";
@@ -64,53 +65,6 @@ export interface ApplyResult {
     /** Absolute paths of private keys written during this apply (generate: true). */
     private_key_paths: string[];
     warnings: string[];
-}
-
-function sourceFromList(values?: string[] | FirewallRuleSources): FirewallRuleSources | undefined {
-    if (!values) {
-        return undefined;
-    }
-    if (!Array.isArray(values)) {
-        return values;
-    }
-
-    const addresses: string[] = [];
-    const tags: string[] = [];
-    const droplet_ids: number[] = [];
-
-    for (const value of values) {
-        if (value.startsWith("tag:")) {
-            tags.push(value.slice(4));
-        } else if (value.startsWith("droplet:")) {
-            droplet_ids.push(Number(value.slice(8)));
-        } else {
-            addresses.push(value);
-        }
-    }
-
-    return {
-        ...(addresses.length ? { addresses } : {}),
-        ...(tags.length ? { tags } : {}),
-        ...(droplet_ids.length ? { droplet_ids } : {})
-    };
-}
-
-function normalizeRules(rules?: Array<{
-    protocol: string;
-    ports?: string | number;
-    sources?: string[] | FirewallRuleSources;
-    destinations?: string[] | FirewallRuleSources;
-}>): FirewallRule[] | undefined {
-    if (!rules?.length) {
-        return undefined;
-    }
-
-    return rules.map((rule) => ({
-        protocol: rule.protocol,
-        ports: rule.ports === undefined ? undefined : String(rule.ports),
-        sources: sourceFromList(rule.sources),
-        destinations: sourceFromList(rule.destinations)
-    }));
 }
 
 export function unwrapDropletEntry(entry: GrapeDropletEntry): DropletBlueprintConfig {
@@ -384,8 +338,8 @@ export async function applyGrapeConfig(
             name: firewall.name,
             droplet_ids,
             tags: firewall.tags,
-            inbound_rules: normalizeRules(firewall.inbound_rules ?? firewall.inbound),
-            outbound_rules: normalizeRules(firewall.outbound_rules ?? firewall.outbound)
+            inbound_rules: normalizeFirewallRules(firewall.inbound_rules ?? firewall.inbound),
+            outbound_rules: normalizeFirewallRules(firewall.outbound_rules ?? firewall.outbound)
         };
         const created = await createFireWall(payload);
         result.firewalls.push({ id: created.id, name: created.name });

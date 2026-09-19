@@ -9,47 +9,10 @@ import { createLoadBalancer } from "../providers/digitalocean/networking/load-ba
 import { createSSHKey, uploadSSHKey } from "../providers/digitalocean/ssh/ssh.js";
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC } from "../providers/digitalocean/vpc/vpc.js";
+import { normalizeFirewallRules } from "./firewall-rules.js";
 import { persistGeneratedPrivateKey, resolvePrivateKeyPath } from "./ssh-private-key.js";
 import { getConfigSourceDir } from "./source.js";
 import { declaredStacks, generateStackUserData, mergeUserData, resolveStack, servicesNeedsLegacyWarning } from "./stack.js";
-function sourceFromList(values) {
-    if (!values) {
-        return undefined;
-    }
-    if (!Array.isArray(values)) {
-        return values;
-    }
-    const addresses = [];
-    const tags = [];
-    const droplet_ids = [];
-    for (const value of values) {
-        if (value.startsWith("tag:")) {
-            tags.push(value.slice(4));
-        }
-        else if (value.startsWith("droplet:")) {
-            droplet_ids.push(Number(value.slice(8)));
-        }
-        else {
-            addresses.push(value);
-        }
-    }
-    return {
-        ...(addresses.length ? { addresses } : {}),
-        ...(tags.length ? { tags } : {}),
-        ...(droplet_ids.length ? { droplet_ids } : {})
-    };
-}
-function normalizeRules(rules) {
-    if (!rules?.length) {
-        return undefined;
-    }
-    return rules.map((rule) => ({
-        protocol: rule.protocol,
-        ports: rule.ports === undefined ? undefined : String(rule.ports),
-        sources: sourceFromList(rule.sources),
-        destinations: sourceFromList(rule.destinations)
-    }));
-}
 export function unwrapDropletEntry(entry) {
     if ("blueprint" in entry && entry.blueprint?.droplet) {
         return entry.blueprint.droplet;
@@ -287,8 +250,8 @@ export async function applyGrapeConfig(config, options = {}) {
             name: firewall.name,
             droplet_ids,
             tags: firewall.tags,
-            inbound_rules: normalizeRules(firewall.inbound_rules ?? firewall.inbound),
-            outbound_rules: normalizeRules(firewall.outbound_rules ?? firewall.outbound)
+            inbound_rules: normalizeFirewallRules(firewall.inbound_rules ?? firewall.inbound),
+            outbound_rules: normalizeFirewallRules(firewall.outbound_rules ?? firewall.outbound)
         };
         const created = await createFireWall(payload);
         result.firewalls.push({ id: created.id, name: created.name });
