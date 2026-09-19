@@ -96,7 +96,13 @@ Blackwater Sound is the current practical example of this model.
 
 ## Suggested reading order
 
+Start with the course if you want a curriculum. The pages after it stay the lookup set — this list is not a rewrite of the reference tree.
+
+- [Design systems through Juice](./course/README.md) — progressive CSS / design-system course
 - [Getting Started](./juice-getting-started.md)
+- [Page Tutorial](./juice-page-tutorial.md)
+- [Patterns](./juice-patterns.md)
+- [Maturity Matrix](./juice-maturity-matrix.md)
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
