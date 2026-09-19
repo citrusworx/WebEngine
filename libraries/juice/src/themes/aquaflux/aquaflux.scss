@@ -137,6 +137,25 @@
     --juice-overlay-tint-wash: color-mix(in srgb, var(--aqua-page-tint) 38%, transparent);
     --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
 
+    /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --aqua-modal-overlay: color-mix(in srgb, var(--aqua-page-deep) 62%, transparent);
+    --aqua-modal-panel: var(--aqua-surface-strong);
+    --aqua-modal-panel-border: var(--aqua-border);
+    --aqua-modal-panel-shadow: 0 24px 56px -24px var(--aqua-shadow);
+    --aqua-modal-close: var(--aqua-surface-strong);
+    --aqua-modal-close-color: var(--aqua-heading);
+    --aqua-modal-close-hover: var(--aqua-surface-muted);
+    --aqua-modal-focus-ring: var(--aqua-accent);
+    --juice-modal-overlay: var(--aqua-modal-overlay);
+    --juice-modal-panel: var(--aqua-modal-panel);
+    --juice-modal-panel-border: var(--aqua-modal-panel-border);
+    --juice-modal-panel-shadow: var(--aqua-modal-panel-shadow);
+    --juice-modal-close: var(--aqua-modal-close);
+    --juice-modal-close-color: var(--aqua-modal-close-color);
+    --juice-modal-close-hover: var(--aqua-modal-close-hover);
+    --juice-modal-focus-ring: var(--aqua-modal-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -504,4 +523,39 @@
 
 [theme="aquaflux"] [tab-panel] {
     color: var(--aqua-text);
+}
+
+/* Modal chrome. Generic Aquaflux buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme="aquaflux"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="aquaflux"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="aquaflux"] button[modal-close],
+[theme="aquaflux"] [modal-close] {
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[modal-close]:hover,
+[theme="aquaflux"] [modal-close]:hover {
+    background-image: none;
+    background-color: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+    transform: none;
+}
+
+[theme="aquaflux"] button[modal-close]:focus-visible,
+[theme="aquaflux"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
 }

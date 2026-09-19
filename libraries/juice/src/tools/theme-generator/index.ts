@@ -419,6 +419,25 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-overlay-tint-wash: color-mix(in srgb, var(--jx-accent-tint) 36%, transparent);
     --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
 
+    /* Modal chrome — dimming scrim + elevated panel from existing --jx-* tokens.
+       Close is a surface control, not the CTA fill. */
+    --jx-modal-overlay: color-mix(in srgb, var(--jx-page-deep) 70%, transparent);
+    --jx-modal-panel: var(--jx-surface);
+    --jx-modal-panel-border: var(--jx-border);
+    --jx-modal-panel-shadow: var(--jx-shadow-strong);
+    --jx-modal-close: var(--jx-surface);
+    --jx-modal-close-color: var(--jx-heading);
+    --jx-modal-close-hover: var(--jx-surface-muted);
+    --jx-modal-focus-ring: var(--jx-accent);
+    --juice-modal-overlay: var(--jx-modal-overlay);
+    --juice-modal-panel: var(--jx-modal-panel);
+    --juice-modal-panel-border: var(--jx-modal-panel-border);
+    --juice-modal-panel-shadow: var(--jx-modal-panel-shadow);
+    --juice-modal-close: var(--jx-modal-close);
+    --juice-modal-close-color: var(--jx-modal-close-color);
+    --juice-modal-close-hover: var(--jx-modal-close-hover);
+    --juice-modal-focus-ring: var(--jx-modal-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -642,6 +661,35 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 
 [theme="${config.id}"] [tab-panel] {
     color: var(--jx-text);
+}
+
+[theme="${config.id}"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="${config.id}"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="${config.id}"] button[modal-close],
+[theme="${config.id}"] [modal-close] {
+    background: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[modal-close]:hover,
+[theme="${config.id}"] [modal-close]:hover {
+    background: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+}
+
+[theme="${config.id}"] button[modal-close]:focus-visible,
+[theme="${config.id}"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
 }
 
 ${namedSurfaces}

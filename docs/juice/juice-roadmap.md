@@ -20,6 +20,7 @@ Pending Juice changesets on master (consume them at 0.5.0; Juice-only if possibl
 | `juice-shadow-tone` | **minor** | Themeable `shadowTone` `cool\|warm` (remaining depth slice A) |
 | `juice-overlay-frost-tint` | **minor** | Themeable `overlay` `frost\|tint` (remaining depth slice B) |
 | `juice-variant-monochromatic-glass-tinted` | **minor** | Composable `variant` `monochromatic\|glass\|tinted` (remaining depth slice C) |
+| `juice-modal-theme-chrome` | **minor** | Modal theme chrome roles (`--juice-modal-*`; runtime still slice B) |
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
@@ -81,7 +82,8 @@ This is the stack sitting in the pending Juice changesets above.
 
 * **Tide shipped as the fourth library theme** (PR #95, `juice-ship-tide-theme`). Import `@citrusworx/juiceui/styles/themes/tide` and activate with `theme="tide"`. Dark product/SaaS identity, teal/lagoon tokens, accordion and tabs chrome, named `tide-card` / `tide-panel` surfaces. Blush remains a YAML-only draft.
 * **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. Remaining depth slices A (`shadowTone` `cool|warm`), B (`overlay` `frost|tint`), and C (`variant` `monochromatic|glass|tinted`) are in. Structural `card="…"` recipes stay later.
-* **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, surface-tone, border-strength, shadow-tone, or overlay bind. Slice C is vacant — no remaining holes on the shipped set.
+* **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, modal, surface-tone, border-strength, shadow-tone, or overlay bind. Modal theme chrome (slice A) is in; dialog runtime is still slice B.
+* **Modal theme chrome.** Shared `--juice-modal-*` roles for `[modal-overlay]` / `[modal]` / `[modal-close]`, bound on Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-*` themes. Distinct from surface `overlay="frost|tint"`. Runtime / APG and runtime docs stay slices B and C.
 * **Typography and icon polish.** Icon authoring contract (#108): default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, `width` / `height` stay the custom-size escape hatch. Typography authoring contract (#110). Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults via `[theme] [attr]` companions (#112), same pattern as `surfaceTone`.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
@@ -158,7 +160,7 @@ See [Surfaces](./juice-surfaces.md) and [Cards](./juice-cards.md).
 
 The browser behavior layer should keep growing, but slowly.
 
-A plausible next runtime is something like a modal / dialog, following the same rule as accordion and tabs: valid Juice markup should auto-enhance. Do not oversell a component roadmap. Do not add a runtime until the chrome contract and markup conventions are real.
+Modal / dialog **theme chrome** (slice A) is in: `--juice-modal-*` roles, core paint, and theme binds. A plausible next runtime is the dialog behavior layer (slice B), following the same rule as accordion and tabs: valid Juice markup should auto-enhance. Do not oversell a component roadmap. Do not add that runtime until the chrome contract stays honest.
 
 Short-term focus remains:
 
@@ -189,7 +191,7 @@ This docs refresh does not cut 0.5.0. Do not run `yarn version-packages` or publ
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later. The next library build is the next runtime / component, carefully.
-2. Add the next runtime or component only when the chrome and markup are ready (for example modal). Keep nav / accordion / tabs Emerging. Do not oversell this.
+2. Modal theme chrome (slice A) is ready. Add the dialog runtime (slice B) only when that chrome stays honest. Keep nav / accordion / tabs Emerging. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 4. Cut **0.5.0** when ready: consume the pending Juice changesets; Juice-only if possible. Do not cut it from a docs refresh.
 

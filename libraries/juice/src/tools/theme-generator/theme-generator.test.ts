@@ -6,6 +6,7 @@ import {
     OVERLAY_ROLES,
     OVERLAYS,
     REQUIRED_ACCORDION_ROLES,
+    REQUIRED_MODAL_ROLES,
     REQUIRED_TABS_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -152,6 +153,33 @@ describe("Juice theme generator surface tone roles", () => {
             for (const role of SHADOW_TONE_ROLES) {
                 expect(css).toContain(`--juice-shadow-tone-${tone}-${role}:`);
             }
+        }
+    });
+
+    it("binds --juice-modal-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-modal-overlay: color-mix(in srgb, var(--jx-page-deep) 70%, transparent)");
+        expect(css).toContain("--jx-modal-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-modal-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-modal-panel-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-modal-close: var(--jx-surface)");
+        expect(css).toContain("--jx-modal-close-color: var(--jx-heading)");
+        expect(css).toContain("--jx-modal-close-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-modal-focus-ring: var(--jx-accent)");
+
+        for (const role of REQUIRED_MODAL_ROLES) {
+            expect(css).toContain(`--juice-modal-${role}: var(--jx-modal-${role})`);
+        }
+
+        const closeBlocks = [...css.matchAll(/button\[modal-close\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(closeBlocks.length).toBeGreaterThan(0);
+        for (const block of closeBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }
     });
 

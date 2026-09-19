@@ -40,6 +40,18 @@ export const REQUIRED_TABS_ROLES = [
     "focus-ring",
 ] as const;
 
+/** Modal chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_MODAL_ROLES = [
+    "overlay",
+    "panel",
+    "panel-border",
+    "panel-shadow",
+    "close",
+    "close-color",
+    "close-hover",
+    "focus-ring",
+] as const;
+
 export const SURFACE_TONES = ["soft", "strong", "muted"] as const;
 export const SURFACE_TONE_ROLES = ["bg", "border", "shadow", "blur"] as const;
 export const BORDER_STRENGTHS = ["soft", "bold"] as const;
@@ -85,6 +97,10 @@ export function requiredTabsBinds(): string[] {
     return REQUIRED_TABS_ROLES.map((role) => `--juice-tabs-${role}`);
 }
 
+export function requiredModalBinds(): string[] {
+    return REQUIRED_MODAL_ROLES.map((role) => `--juice-modal-${role}`);
+}
+
 export function requiredSurfaceToneBinds(): string[] {
     return SURFACE_TONES.flatMap((tone) =>
         SURFACE_TONE_ROLES.map((role) => `--juice-surface-${tone}-${role}`)
@@ -114,6 +130,7 @@ export function requiredJuiceBinds(): string[] {
     return [
         ...requiredAccordionBinds(),
         ...requiredTabsBinds(),
+        ...requiredModalBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
         ...requiredShadowToneBinds(),
@@ -148,6 +165,7 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
+ * Modal chrome uses `--jx-modal-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -158,6 +176,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_TABS_ROLES.map((role) => ({
             juice: `--juice-tabs-${role}`,
             jx: `--jx-tabs-${role}`,
+        })),
+        ...REQUIRED_MODAL_ROLES.map((role) => ({
+            juice: `--juice-modal-${role}`,
+            jx: `--jx-modal-${role}`,
         })),
     ];
 }

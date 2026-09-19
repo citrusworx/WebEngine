@@ -133,6 +133,25 @@
     --juice-overlay-tint-wash: color-mix(in srgb, var(--kw-accent-tint) 40%, transparent);
     --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
 
+    /* Modal chrome — dimming scrim + elevated panel from existing tokens.
+       Close is a surface control, not the kiwi CTA. */
+    --kw-modal-overlay: color-mix(in srgb, var(--kw-surface-deep) 75%, transparent);
+    --kw-modal-panel: var(--kw-surface);
+    --kw-modal-panel-border: var(--kw-border);
+    --kw-modal-panel-shadow: 0 24px 56px -24px var(--kw-shadow-strong);
+    --kw-modal-close: var(--kw-surface);
+    --kw-modal-close-color: var(--kw-heading);
+    --kw-modal-close-hover: var(--kw-surface-muted);
+    --kw-modal-focus-ring: var(--kw-accent);
+    --juice-modal-overlay: var(--kw-modal-overlay);
+    --juice-modal-panel: var(--kw-modal-panel);
+    --juice-modal-panel-border: var(--kw-modal-panel-border);
+    --juice-modal-panel-shadow: var(--kw-modal-panel-shadow);
+    --juice-modal-close: var(--kw-modal-close);
+    --juice-modal-close-color: var(--kw-modal-close-color);
+    --juice-modal-close-hover: var(--kw-modal-close-hover);
+    --juice-modal-focus-ring: var(--kw-modal-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1258,26 +1277,40 @@
     color: var(--kw-text-soft);
 }
 
-/* Modal */
+/* Modal chrome. Generic KiwiPress buttons are kiwi CTAs;
+   [modal-close] stays a surface control. Motion stays theme-local. */
 [theme="kiwipress"] [modal-overlay] {
-    background-color: #{rgba($black-900, 0.75)};
+    background-color: var(--juice-modal-overlay);
     animation: kw-fadeIn 0.2s ease-out;
 }
 
-[theme="kiwipress"] [modal] {
-    background-color: var(--kw-surface);
+[theme="kiwipress"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
     animation: kw-slideUp 0.3s ease-out;
 }
 
+[theme="kiwipress"] button[modal-close],
 [theme="kiwipress"] [modal-close] {
-    background-color: var(--kw-surface);
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
     box-shadow: 0 2px 8px var(--kw-shadow);
+    transform: none;
     transition: background-color 0.2s, transform 0.2s;
 }
 
+[theme="kiwipress"] button[modal-close]:hover,
 [theme="kiwipress"] [modal-close]:hover {
-    background-color: var(--kw-surface-muted);
+    background-color: var(--juice-modal-close-hover);
     transform: rotate(90deg);
+}
+
+[theme="kiwipress"] button[modal-close]:focus-visible,
+[theme="kiwipress"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
 }
 
 /* Accordion wrappers are structural, not default section surfaces.
