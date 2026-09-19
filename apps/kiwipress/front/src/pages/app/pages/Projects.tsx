@@ -9,9 +9,15 @@ import { ModeToggle } from "../components/ModeToggle";
 import { ModulesPanel } from "../components/ModulesPanel";
 import { ProjectConfiguration } from "../components/ProjectConfiguration";
 import { YAMLViewer } from "../components/YAMLViewer";
+import { DestroyPanel } from "../../wizard/DestroyPanel";
+import { beginDestroyConfirm, destroyError, destroyPhase, destroySummary } from "../../wizard/destroy-flow";
+import { liveInstance } from "../../wizard/state";
 import { backupsEnabled, instanceStatus, simulateAction, viewMode, yamlHistoryOpen } from "../state";
 
 function statusLabel(): string {
+    if (liveInstance.get()?.destroyed || destroyPhase.get() === "done") {
+        return "Destroyed";
+    }
     const status = instanceStatus.get();
     if (status === "restarting") return "Restarting";
     if (status === "rebuilding") return "Rebuilding";
@@ -25,6 +31,8 @@ export function Projects() {
         if (!bodyNode) return;
         const mode = viewMode.get();
         const status = instanceStatus.get();
+        const tornDown = Boolean(liveInstance.get()?.destroyed) || destroyPhase.get() === "done";
+        const phase = destroyPhase.get();
 
         bodyNode.replaceChildren(
             <div dashboard-page>
@@ -32,8 +40,8 @@ export function Projects() {
                     <div>
                         <h1 instance-title>{INSTANCE.name}</h1>
                         <div chip-row>
-                            <span status-chip tone="ok">
-                                <span status-dot pulse={status === "running" || undefined}></span>
+                            <span status-chip tone={tornDown ? "warm" : "ok"}>
+                                <span status-dot pulse={!tornDown && status === "running" || undefined}></span>
                                 {statusLabel()}
                             </span>
                             <span status-chip>
@@ -81,7 +89,8 @@ export function Projects() {
                                 danger
                                 type="button"
                                 scale="sm"
-                                onclick={() => simulateAction("Destroy is simulated. Instance left running.")}
+                                disabled={phase === "running" || undefined}
+                                onclick={beginDestroyConfirm}
                             >
                                 <i icon="trash" lib="solid" iconSize="sm"></i>
                                 Destroy
@@ -195,6 +204,13 @@ export function Projects() {
                     </div>
                 </div>
 
+                {phase !== "idle" || tornDown
+                    ? <div section-block>
+                        <h2 section-kicker>Danger Zone</h2>
+                        <DestroyPanel compact showIdleButton={false} />
+                    </div>
+                    : null}
+
                 <DeploymentTable />
                 <BackupSection />
 
@@ -213,6 +229,10 @@ export function Projects() {
         instanceStatus.get();
         yamlHistoryOpen.get();
         backupsEnabled.get();
+        liveInstance.get();
+        destroyPhase.get();
+        destroyError.get();
+        destroySummary.get();
         paint();
     });
 

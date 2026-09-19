@@ -64,6 +64,24 @@ export type ApplySummary = {
     warnings: string[];
 };
 
+export type DestroyTargetSummary = {
+    kind: string;
+    name: string;
+    id?: string | number;
+    reason?: string;
+    error?: string;
+};
+
+export type DestroySummary = {
+    packId: BlueprintPackId;
+    region?: string;
+    dryRun: boolean;
+    deleted: DestroyTargetSummary[];
+    skipped: DestroyTargetSummary[];
+    failed: DestroyTargetSummary[];
+    warnings: string[];
+};
+
 export type JobStatus = "queued" | "running" | "succeeded" | "failed";
 
 export type ProvisionJob = {

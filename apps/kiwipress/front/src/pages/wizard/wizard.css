@@ -591,6 +591,39 @@
     gap: 0.65rem;
 }
 
+[wizard-shell] [danger-panel] {
+    border: 2px solid var(--kw-warm-tint);
+    background: var(--kw-warm-soft);
+}
+
+[wizard-shell] [danger-panel] h3 {
+    margin: 0 0 0.35rem;
+    color: var(--kw-warm);
+}
+
+[wizard-shell] [danger-panel] p {
+    margin: 0 0 1rem;
+    color: var(--kw-warm);
+    font-size: 0.875rem;
+}
+
+[wizard-shell] [danger-panel] [destroy-summary] p {
+    margin: 0 0 0.35rem;
+}
+
+[wizard-shell] [destroy-actions] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+[wizard-shell] [danger-panel] button[danger] {
+    background: var(--kw-warm);
+    color: #fff;
+    border-color: var(--kw-warm);
+}
+
 [wizard-shell] [scale-card] {
     border: 1px solid var(--kw-border);
     border-radius: 0.5rem;

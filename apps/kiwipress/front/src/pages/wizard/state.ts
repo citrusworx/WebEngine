@@ -51,6 +51,7 @@ export type LiveInstance = {
     dropletId?: number | string;
     databaseHost?: string;
     databaseStatus?: string;
+    destroyed?: boolean;
 };
 
 const defaults: WizardData = {
@@ -92,10 +93,22 @@ export function resetWizard(): void {
 }
 
 export function seedLiveInstance(instance: LiveInstance): void {
-    liveInstance.set(instance);
+    liveInstance.set({ ...instance, destroyed: false });
     if (instance.domain) {
         updateWizard({ domainName: instance.domain });
     }
+}
+
+export function markLiveDestroyed(): void {
+    const current = liveInstance.get();
+    liveInstance.set({
+        ip: "",
+        domain: current?.domain ?? "",
+        dropletId: current?.dropletId,
+        databaseHost: current?.databaseHost,
+        databaseStatus: current?.databaseStatus,
+        destroyed: true
+    });
 }
 
 export function selectDomain(selection: DomainSelection): void {

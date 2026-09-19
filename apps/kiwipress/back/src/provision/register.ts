@@ -1,7 +1,9 @@
 import {
     applyGrapeConfig,
+    destroyGrapeResources,
     loadGrapeConfig,
     type ApplyResult,
+    type DestroyResult,
     type GrapeConfig,
     type GrapePlan,
     type GrapeRunOptions
@@ -18,12 +20,13 @@ import {
 } from "./map.js";
 import { resolveBlueprintConfigPath, resolveBlueprintPackDir } from "./paths.js";
 import { redactText, sanitizeForClient } from "./sanitize.js";
-import { summarizeApplyResult } from "./summary.js";
-import type { PlanResponse, ProvisionJob, TimelineStepId, WizardSnapshot } from "./types.js";
+import { summarizeApplyResult, summarizeDestroyResult } from "./summary.js";
+import type { DestroySummary, PlanResponse, ProvisionJob, TimelineStepId, WizardSnapshot } from "./types.js";
 
 export type GrapevineFns = {
     loadGrapeConfig: (source: string) => Promise<GrapeConfig>;
     applyGrapeConfig: (config: GrapeConfig, options?: GrapeRunOptions) => Promise<ApplyResult>;
+    destroyGrapeResources: (options: { config?: GrapeConfig }) => Promise<DestroyResult>;
 };
 
 export type ProvisionOptions = KiwiPressGatewayOptions & {
@@ -34,6 +37,9 @@ export type ProvisionOptions = KiwiPressGatewayOptions & {
 
 const MISSING_TOKEN_ERROR =
     "DigitalOcean token is not configured. Set DO_TOKEN (or the blueprint credentials.env name) on the KiwiPress API server. Apply does not run without it.";
+
+const MISSING_DESTROY_TOKEN_ERROR =
+    "DigitalOcean token is not configured. Set DO_TOKEN (or the blueprint credentials.env name) on the KiwiPress API server. Destroy does not run without it.";
 
 export function tokenEnvName(config: GrapeConfig): string {
     return config.credentials?.env?.trim() || "DO_TOKEN";
@@ -97,7 +103,8 @@ export function registerKiwiPressProvision(app: Seltzer, options: ProvisionOptio
     const jobs = options.jobs ?? new ProvisionJobStore();
     const grapevine: GrapevineFns = {
         loadGrapeConfig: options.grapevine?.loadGrapeConfig ?? loadGrapeConfig,
-        applyGrapeConfig: options.grapevine?.applyGrapeConfig ?? applyGrapeConfig
+        applyGrapeConfig: options.grapevine?.applyGrapeConfig ?? applyGrapeConfig,
+        destroyGrapeResources: options.grapevine?.destroyGrapeResources ?? destroyGrapeResources
     };
     const hasDoToken = options.hasDoToken ?? envHasToken;
 
@@ -205,6 +212,35 @@ export function registerKiwiPressProvision(app: Seltzer, options: ProvisionOptio
                 return json(202, sanitizeForClient(jobs.snapshot(job.id)));
             } catch (error) {
                 return json(500, { error: asErrorMessage(error, "Failed to start KiwiPress provision.") });
+            }
+        })
+    });
+
+    app.route({
+        method: "POST",
+        path: "/provision/destroy",
+        handler: guard(async (ctx) => {
+            try {
+                const snapshot = readSnapshot(ctx.body);
+                const prepared = await prepareConfig(snapshot, grapevine);
+                const envName = tokenEnvName(prepared.config);
+
+                if (!hasDoToken(envName)) {
+                    return json(503, {
+                        error: MISSING_DESTROY_TOKEN_ERROR,
+                        env: envName,
+                        packId: prepared.packId
+                    });
+                }
+
+                const result = await grapevine.destroyGrapeResources({ config: prepared.config });
+                const body: DestroySummary = summarizeDestroyResult(prepared.packId, result, {
+                    region: prepared.config.region,
+                    warnings: prepared.warnings
+                });
+                return json(200, body);
+            } catch (error) {
+                return json(500, { error: asErrorMessage(error, "Failed to destroy KiwiPress provision.") });
             }
         })
     });

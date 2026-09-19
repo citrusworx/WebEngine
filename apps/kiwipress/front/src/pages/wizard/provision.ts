@@ -30,6 +30,25 @@ export type ApplySummary = {
     warnings: string[];
 };
 
+export type DestroyTargetSummary = {
+    kind: string;
+    name: string;
+    id?: string | number;
+    reason?: string;
+    error?: string;
+};
+
+export type DestroyResponse = {
+    packId: string;
+    region?: string;
+    dryRun: boolean;
+    deleted: DestroyTargetSummary[];
+    skipped: DestroyTargetSummary[];
+    failed: DestroyTargetSummary[];
+    warnings: string[];
+    error?: string;
+};
+
 export type PlanResponse = {
     packId: string;
     region?: string;
@@ -110,4 +129,12 @@ export function getProvisionJob(id: string): Promise<JobResponse> {
     return gatewayFetch(`/provision/${encodeURIComponent(id)}`).then((response) =>
         readBody<JobResponse>(response)
     );
+}
+
+export function destroyProvision(data: WizardData): Promise<DestroyResponse> {
+    return gatewayFetch("/provision/destroy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(wizardSnapshot(data))
+    }).then((response) => readBody<DestroyResponse>(response));
 }
