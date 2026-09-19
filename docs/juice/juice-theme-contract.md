@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide and surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`). It does not add contract tests, and it does not change theme SCSS or YAML.
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide and surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Filling remaining SCSS/YAML gaps is later work.
 
 ## 1. Layer rule
 
@@ -229,4 +229,4 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 ## Status
 
-This is the docs formalization of Priority 2 (slice A). Automated tests that assert every shipped theme binds the required families are **not** written yet (slice B). Filling any remaining SCSS/YAML gaps is later work (slice C). Blush, CLI, publish, and `overlay` / `variant` are out of scope here.
+This is Priority 2 through slice B: the checklist plus automated bind tests. Filling any remaining SCSS/YAML gaps is later work (slice C). Blush, CLI, publish, and `overlay` / `variant` are out of scope here.

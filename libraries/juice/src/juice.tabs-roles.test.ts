@@ -3,28 +3,15 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+    OPTIONAL_TABS_ROLES,
+    REQUIRED_TABS_ROLES,
+    SHIPPED_LIBRARY_THEMES,
+} from "./juice.theme-contract.js";
+
 const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), ".");
-
-const TABS_ROLES = [
-    "trigger",
-    "trigger-hover",
-    "trigger-active",
-    "text",
-    "text-hover",
-    "text-active",
-    "indicator",
-    "list-rule",
-    "focus-ring",
-] as const;
-
-const OPTIONAL_TABS_ROLES = ["panel", "panel-rule"] as const;
-
-const THEMES = [
-    { id: "aquaflux", prefix: "aqua" },
-    { id: "kiwipress", prefix: "kw" },
-    { id: "citrusmint", prefix: "cm" },
-    { id: "tide", prefix: "tide" },
-] as const;
+const TABS_ROLES = REQUIRED_TABS_ROLES;
+const THEMES = SHIPPED_LIBRARY_THEMES;
 
 const THEMES_WITHOUT_OPTIONAL_PANEL = THEMES.filter((theme) => theme.id !== "tide");
 
