@@ -931,3 +931,208 @@
     color: var(--kw-heading);
     font-weight: 600;
 }
+
+/* Posts P1 document editor — writing workspace, not the cramped collection form. */
+
+[dashboard-shell] [post-editor] {
+    margin-bottom: 2rem;
+}
+
+[dashboard-shell] [post-editor-frame] {
+    padding: 1.5rem 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+[dashboard-shell] [post-editor-title] input {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    padding: 0.35rem 0;
+    border: none;
+    border-bottom: 1px solid var(--kw-border);
+    border-radius: 0;
+    background: transparent;
+}
+
+[dashboard-shell] [post-editor-title] input:focus {
+    outline: none;
+    border-bottom-color: var(--kw-accent);
+}
+
+[dashboard-shell] [post-editor-meta] {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (min-width: 720px) {
+    [dashboard-shell] [post-editor-meta] {
+        grid-template-columns: minmax(0, 1fr) 12rem;
+    }
+}
+
+[dashboard-shell] [post-editor-body] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+}
+
+[dashboard-shell] [post-editor-body] > span {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+[dashboard-shell] [wysiwyg-shell] {
+    border: 1px solid var(--kw-border);
+    border-radius: 0.5rem;
+    background: var(--kw-page);
+    overflow: hidden;
+}
+
+[dashboard-shell] [wysiwyg-toolbar] {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--kw-border);
+    background: var(--kw-surface);
+}
+
+[dashboard-shell] [wysiwyg-toolbar] [toolbar-group] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+[dashboard-shell] [wysiwyg-toolbar] [toolbar-divider] {
+    width: 1px;
+    height: 1.5rem;
+    background: var(--kw-border);
+    margin: 0 0.35rem;
+}
+
+[dashboard-shell] [wysiwyg-toolbar] select {
+    min-width: 9.5rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--kw-border);
+    border-radius: 0.375rem;
+    background: var(--kw-surface);
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+}
+
+[dashboard-shell] [wysiwyg-toolbar] button {
+    min-width: 2.15rem;
+    min-height: 2.15rem;
+    padding: 0.3rem;
+    color: var(--kw-text-muted);
+}
+
+[dashboard-shell] [wysiwyg-toolbar] button:hover {
+    background: var(--kw-accent-soft);
+    color: var(--kw-accent-strong);
+    box-shadow: none;
+    transform: none;
+}
+
+[dashboard-shell] [wysiwyg-toolbar] button[selected] {
+    background: var(--kw-accent-soft);
+    color: var(--kw-accent-strong);
+    border: 1px solid var(--kw-accent-tint);
+}
+
+[dashboard-shell] [post-editor-frame] [save-row] {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0 -1.75rem -1.25rem;
+    padding: 0.85rem 1.75rem 1.25rem;
+    background: var(--kw-surface);
+    border-top: 1px solid var(--kw-border);
+}
+
+[dashboard-shell] [wysiwyg-canvas] {
+    min-height: 18rem;
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem 4rem;
+    outline: none;
+    line-height: 1.7;
+    font-size: 1.0625rem;
+    color: var(--kw-heading);
+}
+
+[dashboard-shell] [wysiwyg-canvas][empty]::before {
+    content: attr(data-placeholder);
+    color: var(--kw-text-soft);
+    pointer-events: none;
+    float: left;
+    height: 0;
+}
+
+[dashboard-shell] [wysiwyg-canvas]:focus {
+    box-shadow: inset 0 0 0 1px var(--kw-accent-tint);
+}
+
+[dashboard-shell] [wysiwyg-canvas] p,
+[dashboard-shell] [wysiwyg-canvas] h1,
+[dashboard-shell] [wysiwyg-canvas] h2,
+[dashboard-shell] [wysiwyg-canvas] h3,
+[dashboard-shell] [wysiwyg-canvas] h4,
+[dashboard-shell] [wysiwyg-canvas] h5,
+[dashboard-shell] [wysiwyg-canvas] h6,
+[dashboard-shell] [wysiwyg-canvas] blockquote,
+[dashboard-shell] [wysiwyg-canvas] pre,
+[dashboard-shell] [wysiwyg-canvas] ul,
+[dashboard-shell] [wysiwyg-canvas] ol {
+    margin: 0 0 1rem;
+}
+
+[dashboard-shell] [wysiwyg-canvas] h1 {
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
+}
+
+[dashboard-shell] [wysiwyg-canvas] h2 {
+    font-size: 1.4rem;
+}
+
+[dashboard-shell] [wysiwyg-canvas] h3 {
+    font-size: 1.2rem;
+}
+
+[dashboard-shell] [wysiwyg-canvas] blockquote {
+    padding: 0.15rem 0 0.15rem 1rem;
+    border-left: 3px solid var(--kw-accent-tint);
+    color: var(--kw-text-muted);
+}
+
+[dashboard-shell] [wysiwyg-canvas] pre {
+    padding: 0.85rem 1rem;
+    border-radius: 0.375rem;
+    background: var(--kw-surface-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.875rem;
+    overflow-x: auto;
+}
+
+[dashboard-shell] [wysiwyg-canvas] ul,
+[dashboard-shell] [wysiwyg-canvas] ol {
+    padding-left: 1.4rem;
+}
+
+[dashboard-shell] [wysiwyg-canvas] a {
+    color: var(--kw-accent);
+}
+
+[dashboard-shell] [wysiwyg-canvas] :first-child {
+    margin-top: 0;
+}

@@ -1,5 +1,7 @@
 import { Signal, effect } from "@citrusworx/sigjs";
 import type { Child } from "@citrusworx/sigjs";
+import { DocumentEditor } from "../../../tools/wysiwyg/DocumentEditor";
+import type { WYSIWYG } from "../../../tools/wysiwyg/engine";
 import { DashboardLayout } from "../layout/DashboardLayout";
 import {
     createCollectionItem,
@@ -18,6 +20,7 @@ import type { CollectionWorkspaceCopy, ContentItem } from "./types";
 
 type WorkspaceProps = CollectionWorkspaceCopy & {
     page: string;
+    surface?: "form" | "document";
 };
 
 type EditorMode = "idle" | "create" | "edit";
@@ -30,7 +33,8 @@ export function CollectionWorkspace({
     lede,
     emptyTitle,
     emptyBody,
-    statuses
+    statuses,
+    surface = "form"
 }: WorkspaceProps) {
     const statusOptions = statuses && statuses.length > 0 ? [...statuses] : [...EDITOR_STATUSES];
     const defaultStatus = statusOptions.includes("draft") ? "draft" : statusOptions[0] ?? "draft";
@@ -44,6 +48,7 @@ export function CollectionWorkspace({
 
     let initialized = false;
     let listNode: HTMLElement | null = null;
+    let listSectionNode: HTMLElement | null = null;
     let noticeNode: HTMLElement | null = null;
     let editorNode: HTMLElement | null = null;
     let kickerMetaNode: HTMLElement | null = null;
@@ -51,7 +56,9 @@ export function CollectionWorkspace({
     let slugInput: HTMLInputElement | null = null;
     let statusSelect: HTMLSelectElement | null = null;
     let contentArea: HTMLTextAreaElement | null = null;
+    let wysiwyg: WYSIWYG | null = null;
     let slugTouched = false;
+    const documentSurface = surface === "document";
 
     function selectedItem(): ContentItem | null {
         const id = selectedId.get();
@@ -84,6 +91,10 @@ export function CollectionWorkspace({
         if (contentArea) {
             contentArea.value = item?.content ?? "";
         }
+
+        if (documentSurface) {
+            wysiwyg?.setHtml(item?.content ?? "");
+        }
     }
 
     function readFormPayload() {
@@ -91,8 +102,16 @@ export function CollectionWorkspace({
             title: titleInput?.value ?? "",
             slug: slugInput?.value ?? "",
             status: statusSelect?.value ?? "draft",
-            content: contentArea?.value ?? ""
+            content: documentSurface ? (wysiwyg?.getHtml() ?? "") : (contentArea?.value ?? "")
         });
+    }
+
+    function paintListVisibility() {
+        if (!listSectionNode) {
+            return;
+        }
+
+        listSectionNode.hidden = documentSurface && mode.get() !== "idle";
     }
 
     function startCreate() {
@@ -265,18 +284,82 @@ export function CollectionWorkspace({
         }
 
         const currentMode = mode.get();
+        wysiwyg?.detach();
+        wysiwyg = null;
+
         if (currentMode === "idle") {
             editorNode.replaceChildren();
             titleInput = null;
             slugInput = null;
             statusSelect = null;
             contentArea = null;
+            paintListVisibility();
             return;
         }
 
         const current = selectedItem();
         const heading = currentMode === "create" ? `New ${singular}` : `Edit ${singular}`;
         const busy = saving.get() || loading.get();
+
+        if (documentSurface) {
+            editorNode.replaceChildren(
+                <DocumentEditor
+                    heading={heading}
+                    itemLabel={current ? `#${current.id}` : "Unsaved draft"}
+                    statusOptions={statusOptions}
+                    busy={busy}
+                    saveLabel={currentMode === "create" ? `Create ${singular}` : "Save changes"}
+                    showDelete={currentMode === "edit" && Boolean(current)}
+                    singular={singular}
+                    onSubmit={(event) => {
+                        void saveEditor(event);
+                    }}
+                    onCancel={() => closeEditor()}
+                    onDelete={current
+                        ? () => {
+                            void removeItem(current);
+                        }
+                        : undefined}
+                    onBindEngine={(engine) => {
+                        wysiwyg = engine;
+                    }}
+                    bindTitle={(node) => {
+                        titleInput = node;
+                    }}
+                    bindSlug={(node) => {
+                        slugInput = node;
+                    }}
+                    bindStatus={(node) => {
+                        statusSelect = node;
+                    }}
+                    onTitleInput={() => {
+                        if (!slugTouched && slugInput && titleInput) {
+                            slugInput.value = slugFromTitle(titleInput.value);
+                        }
+                    }}
+                    onSlugInput={() => {
+                        slugTouched = true;
+                    }}
+                /> as Node
+            );
+
+            paintListVisibility();
+
+            if (currentMode === "edit") {
+                syncEditorFields(current);
+            } else {
+                syncEditorFields({
+                    id: "",
+                    kind,
+                    title: "",
+                    slug: "",
+                    status: defaultStatus,
+                    date: "",
+                    content: ""
+                });
+            }
+            return;
+        }
 
         editorNode.replaceChildren(
             <div section-block>
@@ -387,6 +470,8 @@ export function CollectionWorkspace({
                 content: ""
             });
         }
+
+        paintListVisibility();
     }
 
     async function loadItems(nextStatus?: string) {
@@ -503,6 +588,7 @@ export function CollectionWorkspace({
         mode.get();
         selectedId.get();
         paintEditor();
+        paintListVisibility();
     });
 
     return (
@@ -540,7 +626,13 @@ export function CollectionWorkspace({
                     }}
                 />
 
-                <div section-block>
+                <div
+                    section-block
+                    ref={(node: HTMLElement) => {
+                        listSectionNode = node;
+                        paintListVisibility();
+                    }}
+                >
                     <h2 section-kicker>
                         All {title}
                         <span ref={(node: HTMLElement) => {

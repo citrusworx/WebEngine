@@ -475,3 +475,9 @@ The first meaningful milestone should include:
 ## Product Statement
 
 KiwiPress WYSIWYG is a schema-driven browser word processor and the first stage of the Sugar pipeline, with a separable UI shell and extensible editing engine that together produce structured content for composition, logic, and publishing.
+
+## P1 delivered
+
+Posts now open a dedicated writing workspace (title, slug/status, Juice toolbar, contenteditable canvas) instead of the collection textarea form. The engine (`WYSIWYG`) owns selection, commands, shortcuts, and paste cleanup; the shell only calls engine methods.
+
+P1 persists HTML strings through the existing posts gateway. Pages and custom collection types still use `CollectionWorkspace` textarea. Deferred: markdown mode, document JSON, undo stack, taxonomies, media, autosave, Sugar handoff.
