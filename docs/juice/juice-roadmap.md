@@ -19,6 +19,7 @@ Pending Juice changesets on master (consume them at 0.5.0; Juice-only if possibl
 | `juice-author-type-attrs-beat-theme` | **patch** | Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults |
 | `juice-shadow-tone` | **minor** | Themeable `shadowTone` `cool\|warm` (remaining depth slice A) |
 | `juice-overlay-frost-tint` | **minor** | Themeable `overlay` `frost\|tint` (remaining depth slice B) |
+| `juice-variant-monochromatic-glass-tinted` | **minor** | Composable `variant` `monochromatic\|glass\|tinted` (remaining depth slice C) |
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
@@ -46,7 +47,7 @@ The next strongest areas are now:
 
 The weakest areas are still:
 
-* remaining surface depth (`variant` / structural card variants; `shadowTone` and `overlay` are in)
+* remaining surface depth (structural `card="…"` recipes; `shadowTone`, `overlay`, and `variant` utilities are in)
 * component maturity beyond the three auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
@@ -79,7 +80,7 @@ For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity
 This is the stack sitting in the pending Juice changesets above.
 
 * **Tide shipped as the fourth library theme** (PR #95, `juice-ship-tide-theme`). Import `@citrusworx/juiceui/styles/themes/tide` and activate with `theme="tide"`. Dark product/SaaS identity, teal/lagoon tokens, accordion and tabs chrome, named `tide-card` / `tide-panel` surfaces. Blush remains a YAML-only draft.
-* **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. Remaining depth slices A (`shadowTone` `cool|warm`) and B (`overlay` `frost|tint`) are in; C (`variant`) is not.
+* **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. Remaining depth slices A (`shadowTone` `cool|warm`), B (`overlay` `frost|tint`), and C (`variant` `monochromatic|glass|tinted`) are in. Structural `card="…"` recipes stay later.
 * **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, surface-tone, border-strength, shadow-tone, or overlay bind. Slice C is vacant — no remaining holes on the shipped set.
 * **Typography and icon polish.** Icon authoring contract (#108): default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, `width` / `height` stay the custom-size escape hatch. Typography authoring contract (#110). Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults via `[theme] [attr]` companions (#112), same pattern as `surfaceTone`.
 
@@ -103,15 +104,13 @@ These were true before 0.4.0 and remain true:
 
 ### 1. Remaining Surface Depth
 
-Surface language A–C ships. That is not a full surface system.
+Surface language A–C and remaining depth slices A–C ship. `shadowTone`, `overlay`, and `variant` utilities are **done**. See [Surfaces](./juice-surfaces.md).
 
-Still missing or only specified:
+Still later (light cross-link, not a hole in the utility pass):
 
-* `variant` and structural card variants (`monochromatic`, `glass`, `tinted`, plus `card` recipes in the [Surface Spec](./juice-surface-spec.md)) — remaining depth slice C
+* structural `card="…"` recipes in the [Surface Spec](./juice-surface-spec.md) / [Cards](./juice-cards.md)
 
-Slices A (`shadowTone` `cool|warm`) and B (`overlay` `frost|tint`) ship. See [Surfaces](./juice-surfaces.md).
-
-Authors still hand-assemble too much of the visual character for cards, panels, and heroes. See [Surfaces](./juice-surfaces.md).
+Authors can compose visual character with the shipped utilities. Structural card recipes would still reduce hand-assembly for cards, panels, and heroes.
 
 ### 2. Components Are Uneven Beyond the Runtimes
 
@@ -129,7 +128,7 @@ Juice can express many aesthetics, but dense layouts still reveal weaknesses in 
 
 ### 5. CLI and Generator Remain a Separate Track
 
-The Juice CLI (`tooling/cli/juice`) and config-driven generation from `juice.config.yaml` are draft. They must not block remaining surface depth. The theme contract on the four shipped references is already documented and tested; the generator workflow is a different problem.
+The Juice CLI (`tooling/cli/juice`) and config-driven generation from `juice.config.yaml` are draft. They must not block the next runtime / component work. The theme contract on the four shipped references is already documented and tested; the generator workflow is a different problem.
 
 ### 6. Optional Later Type Size-Step
 
@@ -151,13 +150,9 @@ These were the lock order after 0.4.0. They are done on master. They are not in 
 
 ### Priority 1. Remaining Surface Depth
 
-A–C utilities are **done**. Remaining depth slices A (`shadowTone`) and B (`overlay`) are in. The next Juice library build is the rest of the surface model.
+A–C utilities and remaining depth slices A–C (`shadowTone`, `overlay`, `variant`) are **done**. Structural `card="…"` recipes can stay later — a light cross-link, not the next required library build.
 
-Recommended next additions (see [Surface Spec](./juice-surface-spec.md)):
-
-* `variant` and more structural variants on `card` / `panel` / `hero`
-
-This is what makes templates feel finished with less manual assembly.
+See [Surfaces](./juice-surfaces.md) and [Cards](./juice-cards.md).
 
 ### Priority 2. Next Runtime / Component, Carefully
 
@@ -181,7 +176,7 @@ Keep using templates to test:
 * themed experiences
 * FAQ / product pages under shipped Tide
 
-The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block remaining surface depth.
+The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the next runtime / component work.
 
 ### Priority 4. 0.5.0 Publish Lane
 
@@ -193,7 +188,7 @@ This docs refresh does not cut 0.5.0. Do not run `yarn version-packages` or publ
 
 ## Recommended Build Order
 
-1. Remaining surface depth: `variant` / structural card variants. A–C utilities and depth slices A+B (`shadowTone`, `overlay`) are done.
+1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later. The next library build is the next runtime / component, carefully.
 2. Add the next runtime or component only when the chrome and markup are ready (for example modal). Keep nav / accordion / tabs Emerging. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 4. Cut **0.5.0** when ready: consume the pending Juice changesets; Juice-only if possible. Do not cut it from a docs refresh.
@@ -210,7 +205,7 @@ Master is ahead of that cut. Tide is a fourth shipped library theme. Surface A�
 
 The next stage is refinement, then a publish:
 
-* remaining surface depth (`variant`; `shadowTone` and `overlay` are in)
+* remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
 * grow runtime/components only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 * **0.5.0** as the publish lane for the pending Juice stack, when ready

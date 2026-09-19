@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), and remaining depth slices A (`shadowTone`) and B (`overlay`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Filling remaining SCSS/YAML gaps is later work.
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), and remaining depth slices A–C (`shadowTone`, `overlay`, `variant`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Filling remaining SCSS/YAML gaps is later work.
 
 ## 1. Layer rule
 
@@ -225,7 +225,17 @@ Standalone `blur="sm|md"` is a **core utility**, not a theme role family.
 
 See [Surfaces](./juice-surfaces.md).
 
-Also not theme roles: layout primitives, responsive collapse, app state, feature behavior, `variant` (specified, not shipped).
+`variant="monochromatic|glass|tinted"` is also a **core recipe**, not a theme role family.
+
+- `glass` composes `--juice-overlay-frost-*` + `--juice-surface-soft-blur`
+- `tinted` composes `--juice-overlay-tint-*`
+- `monochromatic` composes `--juice-border-strength-soft-*` + `--juice-surface-soft-shadow`
+- Do **not** require a `--juice-variant-*` bind family
+- Combined `[surfaceTone][variant]` applies only the recipe's properties; finer `overlay` / `blur` / `borderStrength` / `shadowTone` attrs win their property
+
+See [Surfaces](./juice-surfaces.md).
+
+Also not theme roles: layout primitives, responsive collapse, app state, feature behavior.
 
 ## 8. Theme × role-family matrix
 
@@ -240,6 +250,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Accordion optional | omit (core no-op) | omit | omit | bind all seven |
 | Tabs optional | omit | omit | omit | `--juice-tabs-panel` only |
 | Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role |
+| `variant` recipes | not a theme role | not a theme role | not a theme role | not a theme role |
 
 Generated `--jx-*` themes bind the six required families and omit the optional accordion/tabs hooks.
 
@@ -252,13 +263,13 @@ A new theme is done when:
 3. Identity tokens use one prefix (`--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` for a library theme, `--jx-*` for a generated app theme).
 4. `[theme="<id>"]` binds every **required** `--juice-*` name in section 4 from those existing tokens — no new hue family, no CTA paint on accordion/tab triggers.
 5. Optional accordion/tabs hooks are bound only when the chrome needs them (Tide FAQ pills). Omitting them is valid.
-6. Standalone `blur="sm|md"` is left to core. No second per-theme blur scale.
+6. Standalone `blur="sm|md"` and `variant="monochromatic|glass|tinted"` are left to core. No second per-theme blur scale or `--juice-variant-*` family.
 7. Semantic defaults and named-surface recipes stay on the identity layer. `stack` / `row` / `grid` / `gap` are untouched.
 8. The app imports core CSS plus the theme stylesheet and sets `theme="<id>"` on the root.
-9. Swapping `theme` on unchanged markup retints accordion, tabs, `surfaceTone`, `borderStrength`, `shadowTone`, and `overlay` without fighting layout.
+9. Swapping `theme` on unchanged markup retints accordion, tabs, `surfaceTone`, `borderStrength`, `shadowTone`, `overlay`, and `variant` recipes without fighting layout.
 
 How to generate, import, and map tokens is in [Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md).
 
 ## Status
 
-This is Priority 2 through remaining depth slice B: the checklist plus automated bind tests, now including `shadowTone` and `overlay`. Filling any remaining SCSS/YAML gaps is later work (slice C). Blush, CLI, publish, and `variant` are out of scope here.
+This is Priority 2 through remaining depth slice C: the checklist plus automated bind tests, including `shadowTone`, `overlay`, and `variant` recipes (core composition — no new required binds). Filling any remaining SCSS/YAML gaps is later work. Blush, CLI, and publish are out of scope here.

@@ -48,6 +48,8 @@ export const SHADOW_TONES = ["cool", "warm"] as const;
 export const SHADOW_TONE_ROLES = ["color", "shadow"] as const;
 export const OVERLAYS = ["frost", "tint"] as const;
 export const OVERLAY_ROLES = ["wash", "layer"] as const;
+/** Surface-depth slice C recipes. Core composition — not a required bind family. */
+export const SURFACE_VARIANTS = ["monochromatic", "glass", "tinted"] as const;
 
 /**
  * Optional accordion hooks consumed with transparent / no-op fallbacks.

@@ -12,6 +12,7 @@ import {
     requiredJuiceBinds,
     SHIPPED_LIBRARY_THEMES,
     STANDALONE_BLUR_ROLES,
+    SURFACE_VARIANTS,
     TIDE_OPTIONAL_TABS_ROLES,
 } from "./juice.theme-contract.js";
 
@@ -99,6 +100,23 @@ describe("Juice theme contract", () => {
             for (const name of STANDALONE_BLUR_ROLES) {
                 expect(declared.has(name), `${id} must not bind standalone ${name}`).toBe(false);
             }
+        }
+    });
+
+    it("does not require a --juice-variant-* bind family", () => {
+        const required = requiredJuiceBinds();
+
+        expect(SURFACE_VARIANTS).toEqual(["monochromatic", "glass", "tinted"]);
+
+        for (const name of required) {
+            expect(name.startsWith("--juice-variant-")).toBe(false);
+        }
+
+        for (const { id } of SHIPPED_LIBRARY_THEMES) {
+            const declared = declaredCustomProperties(readThemeCss(id));
+            const unexpected = [...declared].filter((name) => name.startsWith("--juice-variant-"));
+
+            expect(unexpected, `${id} unexpectedly bound --juice-variant-*`).toEqual([]);
         }
     });
 

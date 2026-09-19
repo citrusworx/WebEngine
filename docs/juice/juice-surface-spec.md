@@ -63,9 +63,9 @@ Examples:
 - `blur="md"` (implemented; `16px` backdrop-filter)
 - `overlay="frost"` (implemented; frosted veil via `--juice-overlay-frost-*`)
 - `overlay="tint"` (implemented; theme-tinted wash via `--juice-overlay-tint-*`)
-- `variant="monochromatic"`
-- `variant="glass"`
-- `variant="tinted"`
+- `variant="monochromatic"` (implemented; restrained neutral chrome via existing border / shadow roles)
+- `variant="glass"` (implemented; frost overlay + soft-tone frost length)
+- `variant="tinted"` (implemented; tint overlay / theme accent wash)
 - `lineHeight="2rem"`
 
 Utility attributes should:
