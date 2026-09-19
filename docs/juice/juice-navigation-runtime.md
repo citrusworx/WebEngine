@@ -250,5 +250,6 @@ That is the right mental model for:
 - navigation
 - accordions
 - tabs
+- modal / dialog
 - drawers
 - other built-in responsive interactions

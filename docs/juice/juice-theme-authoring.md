@@ -256,7 +256,7 @@ Library themes bind the shared modal contract so `[modal-overlay]` / `[modal]` /
 
 Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-modal-*`, `--kw-modal-*`, `--cm-modal-*`, `--tide-modal-*`, …). App-owned generated themes use `--jx-modal-*` and bind `--juice-modal-*` from existing `--jx-*` surface/page/text tokens. Do not invent a new hue family just for modal chrome. Close is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[modal-close]` the same way.
 
-`[modal-overlay]` is a dialog scrim. It is not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Dialog runtime (focus trap / APG) is still slice B.
+`[modal-overlay]` is a dialog scrim. It is not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Openers pair through `aria-controls`. The dialog runtime auto-enhances that markup — see [Modal Runtime](./juice-modal-runtime.md).
 
 Tide must bind a dark scrim and dark panel (`--tide-page` / `--tide-surface-strong`), not a white glass dialog.
 
