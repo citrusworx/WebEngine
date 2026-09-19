@@ -1,8 +1,10 @@
 # 01 — What a design system is, and why Juice
 
-[Course](./README.md) · [Next](./02-tokens.md)
+[Previous](./00-first-look.md) · [Course](./README.md) · [Next](./02-tokens.md)
 
 **Goal:** describe a design system as layered decisions, and place Juice in that stack without treating it as a utility kit or a component library. Allow 45 minutes.
+
+If you have not opened a pretty page yet, start with [00 — See it in 10 minutes](./00-first-look.md). Then come back here to understand why that Harbor Press markup is shaped this way.
 
 ## Learning goals
 
@@ -98,7 +100,7 @@ Why this is a system move, not just HTML:
 
 A utility-soup version of the same page would encode mint, padding, and flex on every node. A component-library version would hide the section inside `<Hero kicker="...">`. Juice leaves the structure readable.
 
-Save this as the Harbor Press workbench from the [course hub](./README.md). You will keep growing this file.
+Save this into the Harbor Press workbench from [00 — See it in 10 minutes](./00-first-look.md) (or the [course hub](./README.md) Workbench). You will keep growing this file.
 
 ## Exercises
 

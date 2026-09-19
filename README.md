@@ -10,6 +10,8 @@ The architecture splits into four tiers:
 - **Packages** — opinionated integrations targeting specific product domains (WordPress, mail, chat, storefront), pulled in via the CLI
 - **Apps** — end-user products and demos that consume the stack, scaffolded via the CLI
 
+**New to Juice?** Start with the [CSS & design systems course](docs/juice/course/README.md).
+
 ## 🧭 Developer Experience
 
 The monorepo layout below is the **default project shape** for any WebEngine project. A fresh `kiwi init` produces this skeleton with `apps/` and `packages/` empty.
@@ -75,7 +77,7 @@ The directory tree below reflects the *full* CitrusWorx monorepo, which is also 
 ## 🛠️ Key Capabilities
 - **WebEngine Runtime** — orchestrates the full application lifecycle through library calls (no per-step library logic lives in WER itself)
 - **Config-driven backend (Nectarine)** — schemas, queries, routes in YAML
-- **Attribute-driven UI (Juice)** — spacing, color, layout primitives via element attributes; one compiled stylesheet, no consumer build step
+- **Attribute-driven UI (Juice)** — spacing, color, layout primitives via element attributes; one compiled stylesheet, no consumer build step. **New to Juice?** [CSS & design systems course](docs/juice/course/README.md)
 - **Reactive UI runtime (Sig.js)** — signal-based rendering, custom JSX runtime
 - **Cloud provisioning (GrapeVine)** — DigitalOcean: droplets, firewalls, VPCs, SSH keys, monitoring, networking
 - **Domain lifecycle (DNS)** — Registrar / DnsHost split with per-vendor adapters
@@ -108,7 +110,7 @@ yarn workspace @citrusworx/citrusworx dev
 
 ## 📘 Documentation
 Docs live in `/docs`:
-- `/docs/juice` — Juice design system attributes & docs
+- `/docs/juice` — Juice design system attributes & docs ([course](docs/juice/course/README.md))
 - `/docs/sig` — Sig.js engine guides
 - `/docs/grapevine` — DigitalOcean provider docs
 - `/docs/nectarine` — backend YAML schema docs
