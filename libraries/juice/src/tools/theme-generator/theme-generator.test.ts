@@ -9,6 +9,7 @@ import {
     REQUIRED_DRAWER_ROLES,
     REQUIRED_MODAL_ROLES,
     REQUIRED_TOAST_ROLES,
+    REQUIRED_POPOVER_ROLES,
     REQUIRED_TABS_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -237,6 +238,33 @@ describe("Juice theme generator surface tone roles", () => {
         }
 
         const closeBlocks = [...css.matchAll(/button\[toast-close\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(closeBlocks.length).toBeGreaterThan(0);
+        for (const block of closeBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-popover-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-popover-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-popover-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-popover-panel-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-popover-ink: var(--jx-text)");
+        expect(css).toContain("--jx-popover-close: var(--jx-surface)");
+        expect(css).toContain("--jx-popover-close-color: var(--jx-heading)");
+        expect(css).toContain("--jx-popover-close-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-popover-focus-ring: var(--jx-accent)");
+
+        for (const role of REQUIRED_POPOVER_ROLES) {
+            expect(css).toContain(`--juice-popover-${role}: var(--jx-popover-${role})`);
+        }
+
+        const closeBlocks = [...css.matchAll(/button\[popover-close\][^{]*\{[^}]+\}/g)].map(
             (match) => match[0]
         );
 

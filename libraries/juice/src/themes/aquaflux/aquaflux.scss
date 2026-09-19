@@ -212,6 +212,26 @@
     --juice-toast-warning: var(--aqua-toast-warning);
     --juice-toast-warning-soft: var(--aqua-toast-warning-soft);
 
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Distinct from
+       modal/drawer/toast and overlay="frost|tint". */
+    --aqua-popover-panel: var(--aqua-surface-strong);
+    --aqua-popover-panel-border: var(--aqua-border);
+    --aqua-popover-panel-shadow: 0 18px 40px -24px var(--aqua-shadow);
+    --aqua-popover-ink: var(--aqua-text);
+    --aqua-popover-close: var(--aqua-surface-strong);
+    --aqua-popover-close-color: var(--aqua-heading);
+    --aqua-popover-close-hover: var(--aqua-surface-muted);
+    --aqua-popover-focus-ring: var(--aqua-accent);
+    --juice-popover-panel: var(--aqua-popover-panel);
+    --juice-popover-panel-border: var(--aqua-popover-panel-border);
+    --juice-popover-panel-shadow: var(--aqua-popover-panel-shadow);
+    --juice-popover-ink: var(--aqua-popover-ink);
+    --juice-popover-close: var(--aqua-popover-close);
+    --juice-popover-close-color: var(--aqua-popover-close-color);
+    --juice-popover-close-hover: var(--aqua-popover-close-hover);
+    --juice-popover-focus-ring: var(--aqua-popover-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -733,5 +753,42 @@
 [theme="aquaflux"] button[toast-close]:focus-visible,
 [theme="aquaflux"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Aquaflux buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme="aquaflux"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="aquaflux"] [popover-header],
+[theme="aquaflux"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="aquaflux"] button[popover-close],
+[theme="aquaflux"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[popover-close]:hover,
+[theme="aquaflux"] [popover-close]:hover {
+    background-image: none;
+    background-color: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+    transform: none;
+}
+
+[theme="aquaflux"] button[popover-close]:focus-visible,
+[theme="aquaflux"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
 }

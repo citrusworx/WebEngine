@@ -243,6 +243,39 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[toast-region\][^{]*\{[^}]*--juice-modal-overlay/);
     });
 
+    it("includes popover structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[popover-root]");
+        expect(css).toContain("[popover-panel]");
+        expect(css).toContain("[popover-header]");
+        expect(css).toContain("[popover-body]");
+        expect(css).toContain("[popover-close]");
+        expect(css).toMatch(/\[theme\]\s+\[popover-root\]/);
+        expect(css).toMatch(/\[theme\]\s+\[popover-panel\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[popover-close\]/);
+        expect(css).toMatch(/\[popover-root\]\[hidden\]/);
+        expect(css).toMatch(/\[popover-root=["']?top["']?\]/);
+        expect(css).toMatch(/\[popover-root=["']?left["']?\]/);
+        expect(css).toMatch(/\[popover-root=["']?right["']?\]/);
+        expect(css).toMatch(/\[popover-close\]:focus-visible/);
+        expect(css).toContain("z-index: 1050");
+        expect(css).toContain("--juice-popover-panel");
+        expect(css).toContain("--juice-popover-panel-border");
+        expect(css).toContain("--juice-popover-panel-shadow");
+        expect(css).toContain("--juice-popover-ink");
+        expect(css).toContain("--juice-popover-close");
+        expect(css).toContain("--juice-popover-close-color");
+        expect(css).toContain("--juice-popover-close-hover");
+        expect(css).toContain("--juice-popover-focus-ring");
+        expect(css).not.toMatch(/\[popover\](?![-a-z])/);
+        expect(css).not.toMatch(/\[popover-close\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[popover-root\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[popover-root\][^{]*\{[^}]*--juice-drawer-overlay/);
+        expect(css).not.toMatch(/\[popover-root\][^{]*\{[^}]*--juice-modal-overlay/);
+        expect(css).not.toMatch(/\[popover-root\][^{]*\{[^}]*--juice-toast-panel/);
+    });
+
     it("includes tabs structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -498,6 +531,33 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-toast-panel: var(--tide-page)");
     });
 
+    it("binds popover chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-popover-panel: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--juice-popover-ink: var(--aqua-popover-ink)");
+        expect(aquaCss).toContain("button[popover-close]");
+        expect(aquaCss).not.toMatch(/button\[popover-close\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-popover-panel: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-popover-close: var(--kw-popover-close)");
+        expect(kiwiCss).toContain("button[popover-close]");
+        expect(kiwiCss).not.toMatch(/button\[popover-close\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-popover-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-popover-ink: var(--cm-popover-ink)");
+        expect(mintCss).toContain("button[popover-close]");
+
+        expect(tideCss).toContain("--tide-popover-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-popover-ink: var(--tide-popover-ink)");
+        expect(tideCss).toContain("button[popover-close]");
+        expect(tideCss).not.toMatch(/button\[popover-close\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-popover-panel: var(--tide-page)");
+    });
+
     it("ships tide CSS as a stable theme export", () => {
         const bundledThemeIds = readBundledThemeIds();
         const themePath = join(DIST_DIR, "themes", "tide.css");
@@ -534,6 +594,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-toast-panel: var(--tide-toast-panel)");
         expect(themeCss).toContain("--juice-toast-ink: var(--tide-toast-ink)");
         expect(themeCss).toContain("button[toast-close]");
+        expect(themeCss).toContain("--juice-popover-panel: var(--tide-popover-panel)");
+        expect(themeCss).toContain("--juice-popover-ink: var(--tide-popover-ink)");
+        expect(themeCss).toContain("button[popover-close]");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");

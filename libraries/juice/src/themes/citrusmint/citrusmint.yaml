@@ -61,6 +61,7 @@ authoring_rules:
   - Bind accordion chrome roles (`--cm-trigger` and `--juice-accordion-*`) from the existing `--cm-*` set (surface/heading/border fallbacks; no new accent).
   - Bind drawer chrome roles (`--cm-drawer-*` and `--juice-drawer-*`) from the existing `--cm-*` set so `[drawer-close]` stays a surface control, not a heading-fill CTA.
   - Bind toast chrome roles (`--cm-toast-*` and `--juice-toast-*`) from the existing `--cm-*` set (plus wintergreen/lime already used for shadow tone) so `[toast-close]` stays a surface control.
+  - Bind popover chrome roles (`--cm-popover-*` and `--juice-popover-*`) from the existing `--cm-*` set so `[popover-close]` stays a surface control, not a heading-fill CTA.
 
 example:
   root: '<body theme="citrusmint">'

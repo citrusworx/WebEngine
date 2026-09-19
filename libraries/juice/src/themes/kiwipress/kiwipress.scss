@@ -8,7 +8,7 @@
 /*
   KiwiPress is a Juice theme.
   The theme paints Juice's component primitives — it does not define them.
-  Structure (hero, card, cta, panel, modal, drawer, toast, badge, stat, workflow, search-panel,
+  Structure (hero, card, cta, panel, modal, drawer, toast, popover, badge, stat, workflow, search-panel,
   tabs, plan, section-header) lives in src/components. The theme only owns:
   - color relationships
   - typography voice
@@ -206,6 +206,25 @@
     --juice-toast-info-soft: var(--kw-toast-info-soft);
     --juice-toast-warning: var(--kw-toast-warning);
     --juice-toast-warning-soft: var(--kw-toast-warning-soft);
+
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the kiwi CTA. */
+    --kw-popover-panel: var(--kw-surface);
+    --kw-popover-panel-border: var(--kw-border);
+    --kw-popover-panel-shadow: 0 18px 40px -24px var(--kw-shadow-strong);
+    --kw-popover-ink: var(--kw-text);
+    --kw-popover-close: var(--kw-surface);
+    --kw-popover-close-color: var(--kw-heading);
+    --kw-popover-close-hover: var(--kw-surface-muted);
+    --kw-popover-focus-ring: var(--kw-accent);
+    --juice-popover-panel: var(--kw-popover-panel);
+    --juice-popover-panel-border: var(--kw-popover-panel-border);
+    --juice-popover-panel-shadow: var(--kw-popover-panel-shadow);
+    --juice-popover-ink: var(--kw-popover-ink);
+    --juice-popover-close: var(--kw-popover-close);
+    --juice-popover-close-color: var(--kw-popover-close-color);
+    --juice-popover-close-hover: var(--kw-popover-close-hover);
+    --juice-popover-focus-ring: var(--kw-popover-focus-ring);
 
     background-color: var(--kw-page);
     color: var(--kw-text);
@@ -1481,6 +1500,41 @@
 [theme="kiwipress"] button[toast-close]:focus-visible,
 [theme="kiwipress"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic KiwiPress buttons are kiwi CTAs;
+   [popover-close] stays a surface control. */
+[theme="kiwipress"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="kiwipress"] [popover-header],
+[theme="kiwipress"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="kiwipress"] button[popover-close],
+[theme="kiwipress"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[popover-close]:hover,
+[theme="kiwipress"] [popover-close]:hover {
+    background-color: var(--juice-popover-close-hover);
+    transform: none;
+}
+
+[theme="kiwipress"] button[popover-close]:focus-visible,
+[theme="kiwipress"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
 }
 

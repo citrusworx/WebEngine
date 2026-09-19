@@ -146,6 +146,24 @@
   --juice-toast-info-soft: var(--cm-toast-info-soft);
   --juice-toast-warning: var(--cm-toast-warning);
   --juice-toast-warning-soft: var(--cm-toast-warning-soft);
+  /* Popover chrome — thinner --cm-* set. Close is a surface control,
+     not heading-fill. Distinct from modal/drawer/toast. */
+  --cm-popover-panel: var(--cm-surface);
+  --cm-popover-panel-border: var(--cm-border);
+  --cm-popover-panel-shadow: 0 18px 40px -24px color-mix(in srgb, var(--cm-heading) 22%, transparent);
+  --cm-popover-ink: var(--cm-text);
+  --cm-popover-close: var(--cm-surface);
+  --cm-popover-close-color: var(--cm-heading);
+  --cm-popover-close-hover: var(--cm-surface-muted);
+  --cm-popover-focus-ring: var(--cm-heading);
+  --juice-popover-panel: var(--cm-popover-panel);
+  --juice-popover-panel-border: var(--cm-popover-panel-border);
+  --juice-popover-panel-shadow: var(--cm-popover-panel-shadow);
+  --juice-popover-ink: var(--cm-popover-ink);
+  --juice-popover-close: var(--cm-popover-close);
+  --juice-popover-close-color: var(--cm-popover-close-color);
+  --juice-popover-close-hover: var(--cm-popover-close-hover);
+  --juice-popover-focus-ring: var(--cm-popover-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -421,5 +439,39 @@
 [theme=citrusmint] button[toast-close]:focus-visible,
 [theme=citrusmint] [toast-close]:focus-visible {
   outline: 2px solid var(--juice-toast-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Citrusmint buttons use heading fill;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme=citrusmint] [popover-panel]:not([surfaceTone]) {
+  background-color: var(--juice-popover-panel);
+  border: 1px solid var(--juice-popover-panel-border);
+  box-shadow: var(--juice-popover-panel-shadow);
+  color: var(--juice-popover-ink);
+}
+
+[theme=citrusmint] [popover-header],
+[theme=citrusmint] [popover-body] {
+  color: var(--juice-popover-ink);
+}
+
+[theme=citrusmint] button[popover-close],
+[theme=citrusmint] [popover-close] {
+  background-color: var(--juice-popover-close);
+  color: var(--juice-popover-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] button[popover-close]:hover,
+[theme=citrusmint] [popover-close]:hover {
+  background-color: var(--juice-popover-close-hover);
+  color: var(--juice-popover-close-color);
+}
+
+[theme=citrusmint] button[popover-close]:focus-visible,
+[theme=citrusmint] [popover-close]:focus-visible {
+  outline: 2px solid var(--juice-popover-focus-ring);
   outline-offset: 2px;
 }
