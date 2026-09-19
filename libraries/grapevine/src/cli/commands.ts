@@ -248,12 +248,13 @@ export async function handleInit(options: CommandOptions): Promise<void> {
     if (options.json) {
         printJson({
             copied: copied.blueprint,
-            dest: copied.dest
+            dest: copied.dest,
+            config: copied.configPath
         });
         return;
     }
 
     println(`Wrote ${copied.blueprint.id} → ${copied.dest}`);
-    println(`Next: grape validate -c ${copied.dest}`);
-    println("      grape plan -c " + copied.dest);
+    println(`Next: grape validate -c ${copied.configPath}`);
+    println("      grape plan -c " + copied.configPath);
 }

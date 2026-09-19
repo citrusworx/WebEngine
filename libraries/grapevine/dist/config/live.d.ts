@@ -7,6 +7,7 @@ import { type LoadBalancerResource } from "../providers/digitalocean/networking/
 import { type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { type Tag } from "../providers/digitalocean/tags/tags.js";
 import { type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
+import { type DatabaseResource } from "../providers/digitalocean/databases/databases.js";
 export interface LiveInventory {
     droplets: DropletResource[];
     vpcs: VPCResponse[];
@@ -17,6 +18,7 @@ export interface LiveInventory {
     apps: AppResource[];
     alert_policies: AlertPolicy[];
     tags: Tag[];
+    databases: DatabaseResource[];
 }
 export declare function tokenIsSet(envName?: string): boolean;
 export declare function fetchLiveInventory(): Promise<LiveInventory>;

@@ -3,6 +3,7 @@ import path from "node:path";
 import axios from "axios";
 import * as jsyaml from "js-yaml";
 import { validateGrapeConfig } from "./schema.js";
+import { setConfigSourceDir } from "./source.js";
 export function isRemoteConfigSource(source) {
     return /^https?:\/\//i.test(source);
 }
@@ -43,6 +44,10 @@ export function parseConfigText(text, source = "config") {
 export async function loadGrapeConfig(source) {
     const text = await readConfigSource(source);
     const raw = parseConfigText(text, source);
-    return validateGrapeConfig(raw);
+    const config = validateGrapeConfig(raw);
+    if (!isRemoteConfigSource(source)) {
+        setConfigSourceDir(config, path.dirname(path.resolve(source)));
+    }
+    return config;
 }
 //# sourceMappingURL=load.js.map

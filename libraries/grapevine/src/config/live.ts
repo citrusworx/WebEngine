@@ -14,6 +14,7 @@ import {
 import { listSSHKeys, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { listAllTags, type Tag } from "../providers/digitalocean/tags/tags.js";
 import { listAllVPCs, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
+import { listDatabases, type DatabaseResource } from "../providers/digitalocean/databases/databases.js";
 
 export interface LiveInventory {
     droplets: DropletResource[];
@@ -25,6 +26,7 @@ export interface LiveInventory {
     apps: AppResource[];
     alert_policies: AlertPolicy[];
     tags: Tag[];
+    databases: DatabaseResource[];
 }
 
 export function tokenIsSet(envName = "DO_TOKEN"): boolean {
@@ -46,7 +48,8 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         ssh_keys,
         apps,
         alert_policies,
-        tags
+        tags,
+        databases
     ] = await Promise.all([
         listAllDroplets(),
         listAllVPCs(),
@@ -56,7 +59,8 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         listSSHKeys(),
         listApps(),
         listAlertPolicies(),
-        listAllTags()
+        listAllTags(),
+        listDatabases()
     ]);
 
     return {
@@ -68,7 +72,8 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         ssh_keys,
         apps,
         alert_policies,
-        tags
+        tags,
+        databases
     };
 }
 

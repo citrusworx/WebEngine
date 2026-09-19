@@ -1,17 +1,21 @@
 import type { GrapeConfig, GrapeResources } from "./schema.js";
 import { normalizeResources, unwrapDropletEntry } from "./apply.js";
 import { resolvePrivateKeyPath } from "./ssh-private-key.js";
+import { getConfigSourceDir, type GrapeRunOptions } from "./source.js";
+import { declaredStacks, resolveDeclaredStacks, servicesNeedsLegacyWarning, stackPlanDetails } from "./stack.js";
 
 export const RESOURCE_KINDS = [
     "tags",
     "ssh_keys",
     "vpcs",
+    "databases",
     "droplets",
     "firewalls",
     "domains",
     "load_balancers",
     "alert_policies",
-    "apps"
+    "apps",
+    "stacks"
 ] as const;
 
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
@@ -20,12 +24,15 @@ export type PlannedKind =
     | "tag"
     | "ssh_key"
     | "vpc"
+    | "database"
     | "droplet"
     | "firewall"
     | "domain"
     | "load_balancer"
     | "alert_policy"
-    | "app";
+    | "app"
+    | "stack"
+    | "stack_step";
 
 export interface PlannedResource {
     kind: PlannedKind;
@@ -49,31 +56,35 @@ export function emptyCounts(): ResourceCounts {
         tags: 0,
         ssh_keys: 0,
         vpcs: 0,
+        databases: 0,
         droplets: 0,
         firewalls: 0,
         domains: 0,
         load_balancers: 0,
         alert_policies: 0,
-        apps: 0
+        apps: 0,
+        stacks: 0
     };
 }
 
-export function countResources(resources: GrapeResources): ResourceCounts {
+export function countResources(resources: GrapeResources, stackCount = 0): ResourceCounts {
     return {
         tags: resources.tags?.length ?? 0,
         ssh_keys: resources.ssh_keys?.length ?? 0,
         vpcs: resources.vpcs?.length ?? 0,
+        databases: resources.databases?.length ?? 0,
         droplets: resources.droplets?.length ?? 0,
         firewalls: resources.firewalls?.length ?? 0,
         domains: resources.domains?.length ?? 0,
         load_balancers: resources.load_balancers?.length ?? 0,
         alert_policies: resources.alert_policies?.length ?? 0,
-        apps: resources.apps?.length ?? 0
+        apps: resources.apps?.length ?? 0,
+        stacks: stackCount
     };
 }
 
 export function countNormalized(config: GrapeConfig): ResourceCounts {
-    return countResources(normalizeResources(config));
+    return countResources(normalizeResources(config), declaredStacks(config).length);
 }
 
 function detail(entries: Array<[string, string | undefined | number | boolean | string[] | null]>): Record<string, string> {
@@ -87,14 +98,14 @@ function detail(entries: Array<[string, string | undefined | number | boolean | 
     return result;
 }
 
-export function planGrapeConfig(config: GrapeConfig): GrapePlan {
+export function planGrapeConfig(config: GrapeConfig, options: GrapeRunOptions = {}): GrapePlan {
     const resources = normalizeResources(config);
     const planned: PlannedResource[] = [];
     const warnings: string[] = [];
 
-    if (config.services && Object.keys(config.services).length > 0) {
+    if (servicesNeedsLegacyWarning(config)) {
         warnings.push(
-            "services is accepted for validation but is not applied. Declare droplets or apps under resources instead."
+            "services is accepted for validation but is not applied. Declare a top-level stack (or a stack-shaped services section with droplet + compose) instead."
         );
     }
 
@@ -126,6 +137,21 @@ export function planGrapeConfig(config: GrapeConfig): GrapePlan {
             detail: detail([
                 ["region", vpc.region ?? config.region],
                 ["ip_range", vpc.ip_range]
+            ])
+        });
+    }
+
+    for (const database of resources.databases ?? []) {
+        planned.push({
+            kind: "database",
+            name: database.name,
+            detail: detail([
+                ["engine", database.engine],
+                ["version", database.version],
+                ["region", database.region ?? config.region],
+                ["size", database.size],
+                ["vpc", database.vpc],
+                ["wait", database.wait === false ? "false" : "true"]
             ])
         });
     }
@@ -192,11 +218,61 @@ export function planGrapeConfig(config: GrapeConfig): GrapePlan {
         });
     }
 
+    const dropletNames = new Set(
+        (resources.droplets ?? []).map((entry) => unwrapDropletEntry(entry).name)
+    );
+    const stacks = declaredStacks(config);
+    for (const stack of stacks) {
+        if (!dropletNames.has(stack.droplet)) {
+            warnings.push(
+                `stack "${stack.name ?? stack.droplet}" targets droplet "${stack.droplet}" which is not declared in this config`
+            );
+        }
+    }
+
+    try {
+        const resolved = resolveDeclaredStacks(config, {
+            baseDir: options.baseDir ?? getConfigSourceDir(config)
+        });
+        for (const stack of resolved) {
+            planned.push({
+                kind: "stack",
+                name: stack.name,
+                detail: stackPlanDetails(stack)
+            });
+            for (const step of stack.steps) {
+                planned.push({
+                    kind: "stack_step",
+                    name: step,
+                    detail: detail([
+                        ["stack", stack.name],
+                        ["droplet", stack.droplet],
+                        ["workdir", stack.workdir]
+                    ])
+                });
+            }
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        warnings.push(`stack assets could not be resolved: ${message}`);
+        for (const stack of stacks) {
+            planned.push({
+                kind: "stack",
+                name: stack.name ?? stack.droplet,
+                detail: detail([
+                    ["droplet", stack.droplet],
+                    ["workdir", stack.workdir],
+                    ["compose", stack.compose.file ?? stack.compose.files?.join(",") ?? "inline"]
+                ])
+            });
+        }
+    }
+
     return {
         dry_run: true,
         provider: config.provider,
         region: config.region,
-        counts: countResources(resources),
+        counts: countResources(resources, stacks.length),
         resources: planned,
         warnings
     };

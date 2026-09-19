@@ -30,6 +30,9 @@ vi.mock("../providers/digitalocean/tags/tags.js", () => ({
 vi.mock("../providers/digitalocean/vpc/vpc.js", () => ({
     deleteVPC: vi.fn(async () => undefined)
 }));
+vi.mock("../providers/digitalocean/databases/databases.js", () => ({
+    deleteDatabase: vi.fn(async () => undefined)
+}));
 
 function inventory(partial: Partial<LiveInventory> = {}): LiveInventory {
     return {
@@ -42,6 +45,7 @@ function inventory(partial: Partial<LiveInventory> = {}): LiveInventory {
         apps: [],
         alert_policies: [],
         tags: [],
+        databases: [],
         ...partial
     };
 }

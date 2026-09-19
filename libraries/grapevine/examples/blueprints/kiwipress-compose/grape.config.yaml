@@ -1,0 +1,79 @@
+# KiwiPress compose family — droplet + cloud-init Docker Compose stack.
+# Replace REPLACE_WITH_YOUR_IP before apply. Env placeholders stay in stack/.env.example.
+#
+#   export DO_TOKEN=dop_v1_...
+#   grape validate -c ./grape.config.yaml
+#   grape plan     -c ./grape.config.yaml
+#   grape apply    -c ./grape.config.yaml
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - kiwipress
+  ssh_keys:
+    - name: kiwipress
+      generate: true
+  vpcs:
+    - name: kiwipress
+      description: KiwiPress compose VPC
+      ip_range: 10.80.0.0/16
+  droplets:
+    - name: kiwipress-01
+      size: s-2vcpu-4gb
+      image: ubuntu-24-04-x64
+      vpc: kiwipress
+      monitoring: true
+      tags: [kiwipress]
+  firewalls:
+    - name: kiwipress-web
+      droplets: [kiwipress-01]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["REPLACE_WITH_YOUR_IP/32"]
+        - protocol: tcp
+          ports: "80,443"
+          sources: ["0.0.0.0/0"]
+        - protocol: icmp
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: udp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: icmp
+          destinations: ["0.0.0.0/0"]
+
+stack:
+  name: kiwipress-compose
+  droplet: kiwipress-01
+  workdir: /opt/kiwipress
+  compose:
+    file: ./stack/docker-compose.yml
+  env:
+    file: ./stack/.env.example
+  files:
+    - src: ./stack/traefik/traefik.yml
+      dest: traefik/traefik.yml
+    - src: ./stack/traefik/dynamic/routes.yml.tmpl
+      dest: traefik/dynamic/routes.yml.tmpl
+    - src: ./stack/minio/init-buckets.sh
+      dest: minio/init-buckets.sh
+    - src: ./stack/postgres/init.sql
+      dest: postgres/init.sql
+    - src: ./scripts/install-docker.sh
+      dest: scripts/install-docker.sh
+    - src: ./scripts/render-templates.sh
+      dest: scripts/render-templates.sh
+  bootstrap:
+    script: ./scripts/bootstrap.sh
+  health:
+    url: http://127.0.0.1/
+    wait_seconds: 180

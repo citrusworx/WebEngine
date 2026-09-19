@@ -3,6 +3,7 @@ export interface BlueprintInfo {
     file: string;
     summary: string;
     aliases: string[];
+    kind: "file" | "pack";
 }
 export declare const DEFAULT_INIT_OUT = "grape.config.yaml";
 export declare function resolveBlueprintsDir(from?: string): string;
@@ -16,4 +17,5 @@ export declare function copyBlueprint(options: {
 }): Promise<{
     blueprint: BlueprintInfo;
     dest: string;
+    configPath: string;
 }>;

@@ -28,7 +28,7 @@ Infrastructure in CitrusWorx should be a file, not a click-path that only one pe
 The alternative in this stack was “SSH into DigitalOcean’s control panel and hope staging matches prod.” Grapevine exists so:
 
 - the same `resources:` document can be validated without calling the API (`grape validate`)
-- apply order is fixed (tags → SSH keys → VPCs → droplets → firewalls → domains → load balancers → alerts → apps)
+- apply order is fixed (tags → SSH keys → VPCs → databases → droplets → firewalls → domains → load balancers → alerts → apps)
 - TypeScript callers and YAML callers share one schema (`grapeConfigSchema`)
 
 The design bets:
@@ -250,7 +250,7 @@ ssh:
   public_key: ssh-ed25519 …
 ```
 
-`networking.ssl` and `networking.cdn` are stored by the schema and **not** applied. `services:` is accepted by Zod and ignored at apply (a warning is pushed). Put compute under `resources.droplets` or `resources.apps`.
+`networking.ssl` and `networking.cdn` are stored by the schema and **not** applied. Loose `services:` maps still warn. Use top-level `stack` (or a stack-shaped `services` object) for compose bootstrap, and `resources.databases` for DigitalOcean managed databases.
 
 ### 9. Tear down with functions, not `grape destroy`
 

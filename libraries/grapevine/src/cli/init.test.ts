@@ -13,7 +13,9 @@ describe("grape init blueprints", () => {
             "01-vpc-and-tag",
             "02-droplet-in-vpc",
             "03-web-firewall",
-            "04-full-web-stack"
+            "04-full-web-stack",
+            "kiwipress-compose",
+            "kiwipress-managed"
         ]);
         expect(dir.replaceAll("\\", "/")).toMatch(/examples\/blueprints$/);
     });
@@ -40,5 +42,17 @@ describe("grape init blueprints", () => {
         const second = await copyBlueprint({ query: "02", out: dest, force: true });
         expect(second.blueprint.id).toBe("02-droplet-in-vpc");
         expect(await readFile(dest, "utf8")).toContain("grapevine-web-01");
+    });
+
+    it("copies a kiwipress pack directory", async () => {
+        const dir = await mkdtemp(path.join(tmpdir(), "grape-init-pack-"));
+        const dest = path.join(dir, "kiwipress-compose");
+        const copied = await copyBlueprint({ query: "kiwipress-compose", out: dest });
+        expect(copied.blueprint.kind).toBe("pack");
+        expect(copied.configPath).toBe(path.join(dest, "grape.config.yaml"));
+        const body = await readFile(copied.configPath, "utf8");
+        expect(body).toContain("stack:");
+        expect(body).toContain("kiwipress-01");
+        await expect(copyBlueprint({ query: "compose", out: dest })).rejects.toThrow(/--force/);
     });
 });

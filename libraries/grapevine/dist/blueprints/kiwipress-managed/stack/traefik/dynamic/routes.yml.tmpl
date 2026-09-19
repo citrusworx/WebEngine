@@ -1,0 +1,56 @@
+# Static routes so the stack works even if the Docker provider cannot talk to the daemon.
+# ${HOST} placeholders are rendered from /opt/kiwipress/.env by scripts/render-templates.sh.
+http:
+  routers:
+    api:
+      rule: Host(`${API_HOST}`)
+      entryPoints: [web]
+      service: api
+      priority: 10
+    front:
+      rule: Host(`${FRONT_HOST}`)
+      entryPoints: [web]
+      service: front
+      priority: 10
+    wp:
+      rule: Host(`${WP_HOST}`)
+      entryPoints: [web]
+      service: wp
+      priority: 10
+    minio:
+      rule: Host(`${MINIO_HOST}`)
+      entryPoints: [web]
+      service: minio
+      priority: 10
+    minio-console:
+      rule: Host(`${MINIO_CONSOLE_HOST}`)
+      entryPoints: [web]
+      service: minio-console
+      priority: 10
+    traefik-dash:
+      rule: Host(`${TRAEFIK_HOST}`)
+      entryPoints: [web]
+      service: api@internal
+      priority: 10
+
+  services:
+    api:
+      loadBalancer:
+        servers:
+          - url: "http://kp-back:${PORT}"
+    front:
+      loadBalancer:
+        servers:
+          - url: "http://kp-front:80"
+    wp:
+      loadBalancer:
+        servers:
+          - url: "http://kp-wordpress:80"
+    minio:
+      loadBalancer:
+        servers:
+          - url: "http://kp-minio:9000"
+    minio-console:
+      loadBalancer:
+        servers:
+          - url: "http://kp-minio:9001"

@@ -13,10 +13,10 @@ config (already validated)
         │
  normalizeResources    →  fold networking / firewall / ssh
         │
- warn if `services` is non-empty
+ warn if loose `services` is non-empty (stack-shaped services are applied)
         │
- tags → ssh_keys → vpcs → droplets → firewalls
-      → domains → load_balancers → alert_policies → apps
+ tags → ssh_keys → vpcs → databases → droplets (+ stack user_data)
+      → firewalls → domains → load_balancers → alert_policies → apps
         │
  return ApplyResult
 ```
@@ -45,15 +45,15 @@ A token must exist. `resolveToken` reads `config.credentials.env` (default `DO_T
 
 CLI `validate` and `grape status -c` also call `normalizeResources` for counts. Folding is not apply-only.
 
-## 2. `services` warning
+## 2. `services` warning vs applied `stack`
 
-If `config.services` has any keys:
+If `config.services` has keys and is **not** stack-shaped (`droplet` + `compose`):
 
 ```text
-services is accepted for validation but is not applied. Declare droplets or apps under resources instead.
+services is accepted for validation but is not applied. Declare a top-level stack (or a stack-shaped services section with droplet + compose) instead.
 ```
 
-Apply continues. Nothing under `services` is created. The warning is the only trace in `ApplyResult.warnings`.
+A top-level `stack` (or stack-shaped `services`) is applied: assets are resolved relative to the config file, cloud-init `user_data` is generated, and it is merged onto the target droplet before `createDroplet`.
 
 ## 3. In-memory maps
 
@@ -90,6 +90,15 @@ When `generate` is true, the OpenSSH private key is written (mode `0600`) to `pr
 
 If DigitalOcean returns a different name than you sent, the map key is whatever came back.
 
+### Databases
+
+For each `resources.databases` entry:
+
+1. Resolve `private_network_uuid` from the field, `vpc_uuid`, or `vpcIds.get(vpc)`
+2. `createDatabase` → POST `/databases`
+3. If `status !== "online"` and `wait !== false`, poll `GET /databases/:id` until online
+4. If `connection_env` is set, map the private connection onto stack env keys (passwords stay off `ApplyResult`)
+
 ### Droplets
 
 For each entry:
@@ -98,8 +107,9 @@ For each entry:
 2. `vpc_uuid` from the field, or `vpcIds.get(vpc)` if `vpc` was a name
 3. `region` from the droplet or `config.region` or `""`
 4. `ssh_keys` from the droplet, or **all** `sshKeyIds` from this run if the droplet omitted the field
-5. `createDroplet(blueprint)` → POST `/droplets`
-6. if `created.id` is defined, `dropletIds.set(created.name, created.id)`
+5. If a `stack` targets this droplet, generate cloud-init `user_data` (compose/env/bootstrap) and merge with any existing `user_data`
+6. `createDroplet(blueprint)` → POST `/droplets`
+7. if `created.id` is defined, `dropletIds.set(created.name, created.id)`
 
 Unresolved `vpc: some-name` becomes `vpc_uuid: undefined` and the droplet lands on DigitalOcean’s default network behavior for a missing VPC — it does **not** search the account for a VPC with that name.
 
@@ -137,12 +147,14 @@ interface ApplyResult {
   tags: string[];
   ssh_keys: AppliedSSHKey[]; // SSHKeyResource + optional private_key_path
   vpcs: VPCResponse[];
+  databases: AppliedDatabase[]; // id, name, engine, status, host — no passwords
   droplets: DropletResource[];
   firewalls: Array<{ id: string; name: string }>;
   domains: Array<{ name: string; records: number }>;
   load_balancers: Array<{ id: string; name?: string }>;
   alert_policies: Array<{ uuid: string; description: string }>;
   apps: Array<{ id: string; name: string }>;
+  stacks: AppliedStack[];
   private_key_paths: string[];
   warnings: string[];
 }
@@ -163,7 +175,7 @@ The CLI prints this as JSON after `Applied grape config`. Keep it if you will ca
 | Compare to live | That is not `grape status` either |
 | Run SSH commands | `user_data` on create only |
 | Provision volumes / DOKS / Spaces | Not in these loops |
-| Apply `services` / `monitoring` / ssl / cdn | Schema or warning only |
+| Apply loose `services` / `monitoring` / ssl / cdn | Schema or warning only (`stack` is applied) |
 
 `createDroplet` itself may send a `volumes` id list if you set it. Apply does not create those volumes first.
 

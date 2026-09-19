@@ -8,6 +8,7 @@ import { deleteLoadBalancer } from "../providers/digitalocean/networking/load-ba
 import { deleteSSHKey } from "../providers/digitalocean/ssh/ssh.js";
 import { deleteTag } from "../providers/digitalocean/tags/tags.js";
 import { deleteVPC } from "../providers/digitalocean/vpc/vpc.js";
+import { deleteDatabase } from "../providers/digitalocean/databases/databases.js";
 import { fetchLiveInventory } from "./live.js";
 export const DESTROY_ORDER = [
     "app",
@@ -16,6 +17,7 @@ export const DESTROY_ORDER = [
     "firewall",
     "domain",
     "droplet",
+    "database",
     "ssh_key",
     "vpc",
     "tag"
@@ -132,6 +134,12 @@ export function planDestroy(inventory, options) {
                 addUniqueTarget(targets, skipped, { kind: "droplet", name: match.name, id: match.id });
             }
         }
+        for (const database of resources.databases ?? []) {
+            const match = uniqueMatch(inventory.databases, database.name, (item) => item.name, "database", skipped);
+            if (match) {
+                addUniqueTarget(targets, skipped, { kind: "database", name: match.name, id: match.id });
+            }
+        }
         for (const key of resources.ssh_keys ?? []) {
             const match = uniqueMatch(inventory.ssh_keys, key.name, (item) => item.name, "ssh_key", skipped);
             if (match) {
@@ -220,6 +228,9 @@ async function runDelete(target) {
         case "droplet":
             await deleteDroplet(Number(target.id));
             return;
+        case "database":
+            await deleteDatabase(String(target.id));
+            return;
         case "ssh_key":
             await deleteSSHKey(target.id ?? target.name);
             return;
@@ -269,7 +280,7 @@ export const DESTROY_V1_NOTES = `v1 destroy support
   Local generated SSH private key files are not removed.
 
   Order: apps → alert policies → load balancers → firewalls → domains →
-  droplets → SSH keys → VPCs → tags.
+  droplets → databases → SSH keys → VPCs → tags.
 
   Droplet deletion is asynchronous at DigitalOcean; a VPC or tag may still be
   in use on the first pass. Re-run destroy after droplets finish deallocating.`;
