@@ -151,6 +151,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tabs-*` aliases)
 - visible vs hidden tab panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state
 - modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). See [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md).
+- toast chrome colors come from `--juice-toast-*` roles bound by the active theme. `[toast-region]` is a non-modal stack (default `top-right`); hide an individual `[toast]` with the native `hidden` attribute. Status is `[toast="success|error|info|warning"]`. Toast runtime is later.
 - drawer chrome colors come from `--juice-drawer-*` roles bound by the active theme; hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. See [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
 
 ```html

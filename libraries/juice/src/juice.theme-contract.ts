@@ -64,6 +64,26 @@ export const REQUIRED_DRAWER_ROLES = [
     "focus-ring",
 ] as const;
 
+/** Toast chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_TOAST_ROLES = [
+    "panel",
+    "panel-border",
+    "panel-shadow",
+    "ink",
+    "close",
+    "close-color",
+    "close-hover",
+    "focus-ring",
+    "success",
+    "success-soft",
+    "error",
+    "error-soft",
+    "info",
+    "info-soft",
+    "warning",
+    "warning-soft",
+] as const;
+
 export const SURFACE_TONES = ["soft", "strong", "muted"] as const;
 export const SURFACE_TONE_ROLES = ["bg", "border", "shadow", "blur"] as const;
 export const BORDER_STRENGTHS = ["soft", "bold"] as const;
@@ -117,6 +137,10 @@ export function requiredDrawerBinds(): string[] {
     return REQUIRED_DRAWER_ROLES.map((role) => `--juice-drawer-${role}`);
 }
 
+export function requiredToastBinds(): string[] {
+    return REQUIRED_TOAST_ROLES.map((role) => `--juice-toast-${role}`);
+}
+
 export function requiredSurfaceToneBinds(): string[] {
     return SURFACE_TONES.flatMap((tone) =>
         SURFACE_TONE_ROLES.map((role) => `--juice-surface-${tone}-${role}`)
@@ -148,6 +172,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredTabsBinds(),
         ...requiredModalBinds(),
         ...requiredDrawerBinds(),
+        ...requiredToastBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
         ...requiredShadowToneBinds(),
@@ -182,8 +207,8 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal and drawer chrome use `--jx-modal-*` / `--jx-drawer-*` aliases,
- * same suffix pattern as tabs.
+ * Modal, drawer, and toast chrome use `--jx-modal-*` / `--jx-drawer-*` /
+ * `--jx-toast-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -202,6 +227,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_DRAWER_ROLES.map((role) => ({
             juice: `--juice-drawer-${role}`,
             jx: `--jx-drawer-${role}`,
+        })),
+        ...REQUIRED_TOAST_ROLES.map((role) => ({
+            juice: `--juice-toast-${role}`,
+            jx: `--jx-toast-${role}`,
         })),
     ];
 }

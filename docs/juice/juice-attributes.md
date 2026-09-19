@@ -299,6 +299,16 @@ Openers pair through `aria-controls` pointing at the overlay `id`. There is no e
 
 See [Drawer Runtime](./juice-drawer-runtime.md). Theme paint uses `--juice-drawer-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility, and not `[modal-overlay]`.
 
+### Toast
+
+- `toast-region` — fixed stack container (`aria-live="polite"`). Values `"top-right"` / `"top-left"` / `"bottom-right"` / `"bottom-left"` (bare or unspecified is top-right). Stays in the DOM
+- `toast` — one notification panel (`role="status"`). Values `"success"` / `"error"` / `"info"` / `"warning"` (bare `[toast]` is neutral). Hide with the native `hidden` attribute
+- `toast-title` — optional title line
+- `toast-body` — message content
+- `toast-close` — dismiss control (surface paint, not a CTA). Chrome only; runtime wires it later
+
+Toast is non-modal feedback. It is not a dialog overlay and not the surface `overlay="frost|tint"` utility. Theme paint uses `--juice-toast-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`).
+
 ## Usage Examples
 
 ```html

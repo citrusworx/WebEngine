@@ -14,6 +14,7 @@ philosophy:
     - accordion chrome role bindings
     - tabs chrome role bindings
     - drawer chrome role bindings
+    - toast chrome role bindings
   does_not_own:
     - layout
     - spacing
@@ -89,6 +90,7 @@ authoring_rules:
   - Group FAQ stacks in [tide-card] / [tide-panel] so [accordion] stays structural.
   - Bind accordion chrome roles (`--tide-trigger` and `--juice-accordion-*`) from Tide surface/accent tokens so `[accordion-item]` stays a surface control, not a CTA.
   - Bind drawer chrome roles (`--tide-drawer-*` and `--juice-drawer-*`) from Tide page/surface tokens so `[drawer]` stays a dark panel and `[drawer-close]` stays a surface control, not a CTA.
+  - Bind toast chrome roles (`--tide-toast-*` and `--juice-toast-*`) from Tide page/surface/accent tokens so `[toast]` stays a dark panel and `[toast-close]` stays a surface control, not a CTA.
   - Optional chrome roles (`item-border`, `trigger-accent`, `panel`, `open-glow`) paint FAQ pill rows; other themes may omit them.
   - Keep page intros in `main > header` so they stay type, not a competing glass surface.
 

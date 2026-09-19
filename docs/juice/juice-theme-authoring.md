@@ -74,6 +74,7 @@ A healthy Juice theme should own:
 - tabs chrome roles (`--juice-tabs-*`, bound from theme identity tokens)
 - modal chrome roles (`--juice-modal-*`, bound from theme identity tokens)
 - drawer chrome roles (`--juice-drawer-*`, bound from theme identity tokens)
+- toast chrome roles (`--juice-toast-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
 Themes should not own:
@@ -219,6 +220,7 @@ The generated stylesheet currently defines:
 - tabs chrome role bindings (`--jx-tabs-*` / `--juice-tabs-*`) and tab-trigger CTA overrides for `[tabs-list]` / `[tab]`
 - modal chrome role bindings (`--jx-modal-*` / `--juice-modal-*`) and close-button CTA overrides for `[modal-close]`
 - drawer chrome role bindings (`--jx-drawer-*` / `--juice-drawer-*`) and close-button CTA overrides for `[drawer-close]`
+- toast chrome role bindings (`--jx-toast-*` / `--juice-toast-*`) and close-button CTA overrides for `[toast-close]`
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
 
@@ -271,6 +273,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 `[drawer-overlay]` is a drawer scrim. It is not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Edge is `[drawer]` / `[drawer="right"]` / `[drawer="left"]` (default right). Optional width is `[drawer-size="sm|lg"]`. Openers pair through `aria-controls`. The dialog runtime auto-enhances that markup — see [Drawer Runtime](./juice-drawer-runtime.md).
 
 Tide must bind a dark scrim and dark panel (`--tide-page` / `--tide-surface-strong`), not a white glass drawer.
+
+## Toast chrome roles
+
+Library themes bind the shared toast contract so `[toast-region]` / `[toast]` / `[toast-close]` paint is theme-agnostic in `toast.scss`. Required core names (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-toast-*`, `--kw-toast-*`, `--cm-toast-*`, `--tide-toast-*`, …). App-owned generated themes use `--jx-toast-*` and bind `--juice-toast-*` from existing `--jx-*` surface/page/text/accent tokens. Do not invent a new hue family just for toast chrome. Status remaps those identity tokens (accent, warm, page-deep, secondary) for a left accent bar plus optional soft panel tint. Close is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[toast-close]` the same way.
+
+`[toast-region]` is a non-modal stack. It is not a dialog overlay, not a modal/drawer scrim, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The region stays in the DOM. Closed vs open for an individual `[toast]` uses the native `hidden` attribute so static open markup demos stay visible. Region position is `[toast-region]` / `[toast-region="top-right"]` (default), `"top-left"`, `"bottom-right"`, `"bottom-left"`. Status is bare `[toast]` (neutral) or `[toast="success|error|info|warning"]`. Toast runtime is later.
+
+Tide must bind a dark panel (`--tide-surface-strong`), not a white glass toast.
 
 ## Surface tone roles
 

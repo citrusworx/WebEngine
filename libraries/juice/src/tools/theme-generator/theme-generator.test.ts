@@ -8,6 +8,7 @@ import {
     REQUIRED_ACCORDION_ROLES,
     REQUIRED_DRAWER_ROLES,
     REQUIRED_MODAL_ROLES,
+    REQUIRED_TOAST_ROLES,
     REQUIRED_TABS_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -201,6 +202,41 @@ describe("Juice theme generator surface tone roles", () => {
         }
 
         const closeBlocks = [...css.matchAll(/button\[drawer-close\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(closeBlocks.length).toBeGreaterThan(0);
+        for (const block of closeBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-toast-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-toast-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-toast-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-toast-panel-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-toast-ink: var(--jx-text)");
+        expect(css).toContain("--jx-toast-close: var(--jx-surface)");
+        expect(css).toContain("--jx-toast-close-color: var(--jx-heading)");
+        expect(css).toContain("--jx-toast-close-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-toast-focus-ring: var(--jx-accent)");
+        expect(css).toContain("--jx-toast-success: var(--jx-accent)");
+        expect(css).toContain("--jx-toast-success-soft: var(--jx-accent-soft)");
+        expect(css).toContain("--jx-toast-error: var(--jx-page-deep)");
+        expect(css).toContain("--jx-toast-error-soft: color-mix(in srgb, var(--jx-page-deep) 12%, var(--jx-surface))");
+        expect(css).toContain("--jx-toast-info: var(--jx-accent-secondary)");
+        expect(css).toContain("--jx-toast-info-soft: var(--jx-accent-tint)");
+        expect(css).toContain("--jx-toast-warning: var(--jx-warm)");
+        expect(css).toContain("--jx-toast-warning-soft: var(--jx-warm-soft)");
+
+        for (const role of REQUIRED_TOAST_ROLES) {
+            expect(css).toContain(`--juice-toast-${role}: var(--jx-toast-${role})`);
+        }
+
+        const closeBlocks = [...css.matchAll(/button\[toast-close\][^{]*\{[^}]+\}/g)].map(
             (match) => match[0]
         );
 

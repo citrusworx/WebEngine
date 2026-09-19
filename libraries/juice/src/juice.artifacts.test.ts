@@ -199,6 +199,50 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[drawer-overlay\][^{]*\{[^}]*--juice-overlay-frost/);
     });
 
+    it("includes toast structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[toast-region]");
+        expect(css).toContain("[toast]");
+        expect(css).toContain("[toast-title]");
+        expect(css).toContain("[toast-body]");
+        expect(css).toContain("[toast-close]");
+        expect(css).toMatch(/\[theme\]\s+\[toast-region\]/);
+        expect(css).toMatch(/\[theme\]\s+\[toast\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[toast-close\]/);
+        expect(css).toMatch(/\[toast\]\[hidden\]/);
+        expect(css).toMatch(/\[toast-region=["']?top-left["']?\]/);
+        expect(css).toMatch(/\[toast-region=["']?bottom-right["']?\]/);
+        expect(css).toMatch(/\[toast-region=["']?bottom-left["']?\]/);
+        expect(css).toMatch(/\[toast=["']?success["']?\]/);
+        expect(css).toMatch(/\[toast=["']?error["']?\]/);
+        expect(css).toMatch(/\[toast=["']?info["']?\]/);
+        expect(css).toMatch(/\[toast=["']?warning["']?\]/);
+        expect(css).toMatch(/\[toast-close\]:focus-visible/);
+        expect(css).toContain("z-index: 1100");
+        expect(css).toContain("pointer-events: none");
+        expect(css).toContain("--juice-toast-panel");
+        expect(css).toContain("--juice-toast-panel-border");
+        expect(css).toContain("--juice-toast-panel-shadow");
+        expect(css).toContain("--juice-toast-ink");
+        expect(css).toContain("--juice-toast-close");
+        expect(css).toContain("--juice-toast-close-color");
+        expect(css).toContain("--juice-toast-close-hover");
+        expect(css).toContain("--juice-toast-focus-ring");
+        expect(css).toContain("--juice-toast-success");
+        expect(css).toContain("--juice-toast-success-soft");
+        expect(css).toContain("--juice-toast-error");
+        expect(css).toContain("--juice-toast-error-soft");
+        expect(css).toContain("--juice-toast-info");
+        expect(css).toContain("--juice-toast-info-soft");
+        expect(css).toContain("--juice-toast-warning");
+        expect(css).toContain("--juice-toast-warning-soft");
+        expect(css).not.toMatch(/\[toast-close\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[toast-region\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[toast-region\][^{]*\{[^}]*--juice-drawer-overlay/);
+        expect(css).not.toMatch(/\[toast-region\][^{]*\{[^}]*--juice-modal-overlay/);
+    });
+
     it("includes tabs structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -425,6 +469,35 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-drawer-panel: var(--tide-page)");
     });
 
+    it("binds toast chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-toast-panel: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-toast-success: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-toast-ink: var(--aqua-toast-ink)");
+        expect(aquaCss).toContain("button[toast-close]");
+        expect(aquaCss).not.toMatch(/button\[toast-close\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-toast-success: var(--kw-accent)");
+        expect(kiwiCss).toContain("--kw-toast-warning: var(--kw-warm)");
+        expect(kiwiCss).toContain("--juice-toast-close: var(--kw-toast-close)");
+        expect(kiwiCss).toContain("button[toast-close]");
+        expect(kiwiCss).not.toMatch(/button\[toast-close\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-toast-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-toast-ink: var(--cm-toast-ink)");
+        expect(mintCss).toContain("button[toast-close]");
+
+        expect(tideCss).toContain("--tide-toast-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-toast-ink: var(--tide-toast-ink)");
+        expect(tideCss).toContain("button[toast-close]");
+        expect(tideCss).not.toMatch(/button\[toast-close\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-toast-panel: var(--tide-page)");
+    });
+
     it("ships tide CSS as a stable theme export", () => {
         const bundledThemeIds = readBundledThemeIds();
         const themePath = join(DIST_DIR, "themes", "tide.css");
@@ -458,6 +531,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-drawer-overlay: var(--tide-drawer-overlay)");
         expect(themeCss).toContain("--juice-drawer-panel: var(--tide-drawer-panel)");
         expect(themeCss).toContain("button[drawer-close]");
+        expect(themeCss).toContain("--juice-toast-panel: var(--tide-toast-panel)");
+        expect(themeCss).toContain("--juice-toast-ink: var(--tide-toast-ink)");
+        expect(themeCss).toContain("button[toast-close]");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");
