@@ -76,6 +76,24 @@
   --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
   --juice-overlay-tint-wash: color-mix(in srgb, var(--cm-surface-muted) 40%, transparent);
   --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+  /* Modal chrome — thinner --cm-* set; heading stands in for accent.
+     Close is a surface control, not heading-fill CTA. */
+  --cm-modal-overlay: color-mix(in srgb, var(--cm-heading) 55%, transparent);
+  --cm-modal-panel: var(--cm-surface);
+  --cm-modal-panel-border: var(--cm-border);
+  --cm-modal-panel-shadow: 0 22px 48px -22px color-mix(in srgb, var(--cm-heading) 22%, transparent);
+  --cm-modal-close: var(--cm-surface);
+  --cm-modal-close-color: var(--cm-heading);
+  --cm-modal-close-hover: var(--cm-surface-muted);
+  --cm-modal-focus-ring: var(--cm-heading);
+  --juice-modal-overlay: var(--cm-modal-overlay);
+  --juice-modal-panel: var(--cm-modal-panel);
+  --juice-modal-panel-border: var(--cm-modal-panel-border);
+  --juice-modal-panel-shadow: var(--cm-modal-panel-shadow);
+  --juice-modal-close: var(--cm-modal-close);
+  --juice-modal-close-color: var(--cm-modal-close-color);
+  --juice-modal-close-hover: var(--cm-modal-close-hover);
+  --juice-modal-focus-ring: var(--cm-modal-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -206,4 +224,36 @@
 
 [theme=citrusmint] [tab-panel] {
   color: var(--cm-text);
+}
+
+/* Modal chrome. Generic Citrusmint buttons use heading fill;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme=citrusmint] [modal-overlay] {
+  background-color: var(--juice-modal-overlay);
+}
+
+[theme=citrusmint] [modal]:not([surfaceTone]) {
+  background-color: var(--juice-modal-panel);
+  border: 1px solid var(--juice-modal-panel-border);
+  box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme=citrusmint] button[modal-close],
+[theme=citrusmint] [modal-close] {
+  background-color: var(--juice-modal-close);
+  color: var(--juice-modal-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] button[modal-close]:hover,
+[theme=citrusmint] [modal-close]:hover {
+  background-color: var(--juice-modal-close-hover);
+  color: var(--juice-modal-close-color);
+}
+
+[theme=citrusmint] button[modal-close]:focus-visible,
+[theme=citrusmint] [modal-close]:focus-visible {
+  outline: 2px solid var(--juice-modal-focus-ring);
+  outline-offset: 2px;
 }

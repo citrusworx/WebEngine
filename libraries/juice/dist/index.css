@@ -98151,7 +98151,8 @@ form[type=search] [scale=lg] {
   text-decoration: none;
 }
 
-[modal-overlay] {
+[modal-overlay],
+[theme] [modal-overlay] {
   position: fixed;
   inset: 0;
   display: flex;
@@ -98160,6 +98161,12 @@ form[type=search] [scale=lg] {
   padding: 1.5rem;
   z-index: 1000;
   box-sizing: border-box;
+  background-color: var(--juice-modal-overlay, var(--aqua-modal-overlay, var(--kw-modal-overlay, var(--cm-modal-overlay, var(--tide-modal-overlay, var(--jx-modal-overlay, rgba(25.5, 25.5, 25.5, 0.55)))))));
+}
+
+[modal-overlay][hidden],
+[theme] [modal-overlay][hidden] {
+  display: none;
 }
 
 [modal] {
@@ -98170,6 +98177,13 @@ form[type=search] [scale=lg] {
   overflow: auto;
   border-radius: 1rem;
   box-sizing: border-box;
+}
+
+[modal],
+[theme] [modal]:not([surfaceTone]) {
+  background-color: var(--juice-modal-panel, var(--aqua-modal-panel, var(--kw-modal-panel, var(--cm-modal-panel, var(--tide-modal-panel, var(--jx-modal-panel, hsl(0, 0%, 100%)))))));
+  border: 1px solid var(--juice-modal-panel-border, var(--aqua-modal-panel-border, var(--kw-modal-panel-border, var(--cm-modal-panel-border, var(--tide-modal-panel-border, var(--jx-modal-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+  box-shadow: var(--juice-modal-panel-shadow, var(--aqua-modal-panel-shadow, var(--kw-modal-panel-shadow, var(--cm-modal-panel-shadow, var(--tide-modal-panel-shadow, var(--jx-modal-panel-shadow, 0 24px 56px -24px rgba(25.5, 25.5, 25.5, 0.42)))))));
 }
 
 [modal=sm] {
@@ -98192,7 +98206,8 @@ form[type=search] [scale=lg] {
   padding: 0 2.5rem 2.5rem;
 }
 
-[modal-close] {
+[modal-close],
+[theme] [modal-close] {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -98205,6 +98220,26 @@ form[type=search] [scale=lg] {
   cursor: pointer;
   border: none;
   padding: 0;
+  background-color: var(--juice-modal-close, var(--aqua-modal-close, var(--kw-modal-close, var(--cm-modal-close, var(--tide-modal-close, var(--jx-modal-close, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  color: var(--juice-modal-close-color, var(--aqua-modal-close-color, var(--kw-modal-close-color, var(--cm-modal-close-color, var(--tide-modal-close-color, var(--jx-modal-close-color, hsl(0, 0%, 20%)))))));
+  box-shadow: none;
+  transform: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+[modal-close]:hover,
+[theme] [modal-close]:hover {
+  background-color: var(--juice-modal-close-hover, var(--aqua-modal-close-hover, var(--kw-modal-close-hover, var(--cm-modal-close-hover, var(--tide-modal-close-hover, var(--jx-modal-close-hover, hsl(0, 0%, 95%)))))));
+  background-image: none;
+  color: var(--juice-modal-close-color, var(--aqua-modal-close-color, var(--kw-modal-close-color, var(--cm-modal-close-color, var(--tide-modal-close-color, var(--jx-modal-close-color, hsl(0, 0%, 20%)))))));
+  transform: none;
+}
+
+[modal-close]:focus-visible,
+[theme] [modal-close]:focus-visible {
+  outline: 2px solid var(--juice-modal-focus-ring, var(--aqua-modal-focus-ring, var(--kw-modal-focus-ring, var(--cm-modal-focus-ring, var(--tide-modal-focus-ring, var(--jx-modal-focus-ring, currentColor))))));
+  outline-offset: 2px;
 }
 
 @media (max-width: 768px) {
@@ -98213,6 +98248,12 @@ form[type=search] [scale=lg] {
   }
   [modal-body] {
     padding: 0 1.5rem 1.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [modal-close],
+  [theme] [modal-close] {
+    transition: none;
   }
 }
 nav {
