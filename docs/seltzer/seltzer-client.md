@@ -181,7 +181,9 @@ There is no `app.client`.
 
 ## Browser vs Node
 
-`client` calls global `fetch`. The root module also exports `Seltzer`, which imports `node:http`. For a Sig page, prefer platform `fetch` against the Seltzer origin so the bundle never pulls the server graph.
+`client` calls global `fetch`. The root module also exports `Seltzer`, which imports `node:http`. For a Sig page, prefer platform `fetch` against the Seltzer origin so the bundle never pulls the server graph. `client` is outbound server `fetch`, not a browser SPA framework.
+
+A Vite/React/Sig.js process next to a kernel-bootstrapped listener: [Dual-process frontend + API](../webengine/dual-process.md).
 
 ## What is not here
 
@@ -199,3 +201,4 @@ KiwiPress may still `fetch` `ctx.endpoint` in its own helper. Do not assume Selt
 - [Patterns](./seltzer-patterns.md)
 - [Anti-patterns](./seltzer-anti-patterns.md)
 - [API Reference](./seltzer-api.md)
+- [Dual-process frontend + API](../webengine/dual-process.md)

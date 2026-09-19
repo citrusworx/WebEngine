@@ -19,6 +19,7 @@ What exists today:
 - Nectarine data module (`id: nectarine`) hosts `@citrusworx/nectarine` ≥0.3.0 as a library: load `nectarine.config.yaml`, resolve credentials, connect, `applyMigrations` (empty migrations dir is a no-op)
 - Nectarine → Seltzer route helper: `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` and handle `createReadRoutes` / `createWriteRoutes` / `createRoutes` (`listApiOperations` → `generateRoutes`; default execute is named YAML + adapter `query`; writes bind body + path)
 - Opt-in Seltzer listen after nectarine bootstrap: `startSeltzerFromKernel` / `serveNectarineHttp` (`Seltzer.init` + `createRoutes` + `listen`; kernel bootstrap still does not auto-listen)
+- Dual-process frontend + API: a separate Vite/React/Sig.js process talks HTTP to that listener ([walkthrough](./dual-process.md))
 - sample configs: `engines/webengine/kiwi.config.toml` + `webengine.config.json5`
 - vitest coverage for config find/load, topo-sort, lifecycle health, Nectarine config load + migration no-op, compiled read/write route generation, and opt-in Seltzer listen smoke
 
@@ -127,7 +128,7 @@ const writes = createNectarineWriteRoutes(config, {
 });
 ```
 
-Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. Pass `execute` for host-specific reads and writes (Blackwater product JSONB catalog / waitlist join). See [Nectarine kernel contract](./nectarine-kernel-contract.md).
+Default execute compiles `*Queries.yml` through CCompiler and runs adapter `query`. Pass `execute` for host-specific reads and writes (Blackwater product JSONB catalog / waitlist join). See [Nectarine kernel contract](./nectarine-kernel-contract.md). A separate Vite/React/Sig.js process against this listener is [Dual-process frontend + API](./dual-process.md).
 
 ## Reality check
 
@@ -141,8 +142,8 @@ WebEngine is meant to compose the library layer rather than replace it:
 
 - `@citrusworx/types` provides shared contracts
 - `@citrusworx/nectarine` is the backend/data layer ([kernel contract](./nectarine-kernel-contract.md))
-- `@citrusworx/seltzer` is the HTTP/runtime layer
-- `@citrusworx/juiceui` and `@citrusworx/sigjs` cover UI/runtime concerns
+- `@citrusworx/seltzer` is the HTTP/runtime layer ([dual-process FE + API](./dual-process.md))
+- `@citrusworx/juiceui` and `@citrusworx/sigjs` cover UI/runtime concerns (out of process; `fetch` the Seltzer origin)
 - `@citrusworx/grapevine` and `@citrusworx/dns` cover infrastructure and domain workflows
 
 ## Source of truth

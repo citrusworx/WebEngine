@@ -102,6 +102,8 @@ Do not expect Grapevine to spawn a Seltzer app from YAML.
 
 `engines/webengine` can host Nectarine through Seltzer (`transport.server: seltzer`, kernel helpers that call `generateRoutes`). After nectarine bootstrap, `startSeltzerFromKernel` (alias `serveNectarineHttp`) is the opt-in `Seltzer.init()` + `createRoutes` + `listen`. Kernel bootstrap still does not auto-listen. A standalone app can still call `Seltzer.init()` itself (Blackwater today). Seltzer does not read `webengine.toml`.
 
+A separate Vite/React/Sig.js process against that listener is the [dual-process frontend + API](../webengine/dual-process.md) path. Seltzer still does not serve the UI.
+
 See [WebEngine](../webengine/README.md) and [Nectarine kernel contract](../webengine/nectarine-kernel-contract.md).
 
 ## KiwiPress

@@ -94,6 +94,8 @@ POST /api/users
 | [PostgreSQL Guide](./nectarine-postgresql.md) | PostgreSQL setup and optimization |
 | [MongoDB Guide](./nectarine-mongodb.md) | MongoDB setup and features |
 | [Project Status](./nectarine-status.md) | Roadmap, limitations, comparison |
+| [Nectarine kernel contract](../webengine/nectarine-kernel-contract.md) | Host rules: YAML, migrate, `createRoutes`, opt-in listen |
+| [Dual-process FE + API](../webengine/dual-process.md) | Separate Vite/React/Sig.js process against `startSeltzerFromKernel` |
 
 ---
 
@@ -528,7 +530,7 @@ for (const route of routes) {
 app.listen(port, { locals, onListening });
 ```
 
-See [Seltzer](../seltzer/README.md) for the HTTP runtime.
+See [Seltzer](../seltzer/README.md) for the HTTP runtime. Kernel-hosted listen without writing `Seltzer.init()` yourself is `startSeltzerFromKernel` / `serveNectarineHttp` — [Nectarine kernel contract](../webengine/nectarine-kernel-contract.md), [dual-process frontend + API](../webengine/dual-process.md).
 
 ---
 

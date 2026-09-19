@@ -25,7 +25,7 @@ await engine.init();
 console.log(engine.getHealthSummary());
 ```
 
-`init()` looks upward for `kiwi.config.toml`, validates it, and runs builtin kernel modules (`core`, `web`, `nectarine`, …). Opt in to Nectarine with `kernel.modules = ["core", "web", "nectarine"]` and a project `nectarine.config.yaml`. After bootstrap, call `startSeltzerFromKernel(ctx)` (or keep wiring `handle.createRoutes` + `Seltzer.init()` / `listen` yourself). Kernel bootstrap still does not auto-listen. See [docs/webengine/README.md](../../docs/webengine/README.md) and [the Nectarine kernel contract](../../docs/webengine/nectarine-kernel-contract.md).
+`init()` looks upward for `kiwi.config.toml`, validates it, and runs builtin kernel modules (`core`, `web`, `nectarine`, …). Opt in to Nectarine with `kernel.modules = ["core", "web", "nectarine"]` and a project `nectarine.config.yaml`. After bootstrap, call `startSeltzerFromKernel(ctx)` (or keep wiring `handle.createRoutes` + `Seltzer.init()` / `listen` yourself). Kernel bootstrap still does not auto-listen. See [docs/webengine/README.md](../../docs/webengine/README.md), [the Nectarine kernel contract](../../docs/webengine/nectarine-kernel-contract.md), and [dual-process frontend + API](../../docs/webengine/dual-process.md).
 
 ## Development
 

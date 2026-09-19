@@ -69,6 +69,8 @@ const { app, server, port } = await startSeltzerFromKernel(result, {
 
 `startSeltzerFromKernel` (`serveNectarineHttp`) requires a bootstrapped nectarine handle. It runs `Seltzer.init()`, registers `handle.createRoutes({ resources })` (resources from options, else unique `apps[].resources`, else every loaded resource), then `listen`. Extra hand routes (health) and CORS stay in options. Default kernel bootstrap still does **not** auto-listen.
 
+A Vite/React/Sig.js UI in a **second process** against this listener: [Dual-process frontend + API](./dual-process.md). That page is not a Blackwater migration and does not add a static-file server to Seltzer.
+
 Hosts can still wire Seltzer themselves:
 
 ```ts
