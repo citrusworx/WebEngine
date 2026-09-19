@@ -1,5 +1,6 @@
 import { getDoToken } from "../providers/digitalocean/client.js";
 import { createApp } from "../providers/digitalocean/apps/apps.js";
+import { createDatabase, pickDatabaseConnection, waitForDatabase } from "../providers/digitalocean/databases/databases.js";
 import { createDroplet } from "../providers/digitalocean/droplet/droplet.js";
 import { createFireWall } from "../providers/digitalocean/firewall/firewall.js";
 import { createAlertPolicy } from "../providers/digitalocean/monitoring/monitoring.js";
@@ -9,6 +10,8 @@ import { createSSHKey, uploadSSHKey } from "../providers/digitalocean/ssh/ssh.js
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC } from "../providers/digitalocean/vpc/vpc.js";
 import { persistGeneratedPrivateKey, resolvePrivateKeyPath } from "./ssh-private-key.js";
+import { getConfigSourceDir } from "./source.js";
+import { declaredStacks, generateStackUserData, mergeUserData, resolveStack, servicesNeedsLegacyWarning } from "./stack.js";
 function sourceFromList(values) {
     if (!values) {
         return undefined;
@@ -63,7 +66,8 @@ export function normalizeResources(config) {
         domains: [...(config.resources?.domains ?? [])],
         load_balancers: [...(config.resources?.load_balancers ?? [])],
         alert_policies: [...(config.resources?.alert_policies ?? [])],
-        apps: [...(config.resources?.apps ?? [])]
+        apps: [...(config.resources?.apps ?? [])],
+        databases: [...(config.resources?.databases ?? [])]
     };
     if (config.networking?.vpc) {
         if (config.networking.vpc === true) {
@@ -109,23 +113,57 @@ function resolveToken(config) {
         process.env.DO_TOKEN = token;
     }
 }
-export async function applyGrapeConfig(config) {
+function connectionEnvOverlay(mapping, database, preferPrivate) {
+    if (!mapping) {
+        return {};
+    }
+    const connection = pickDatabaseConnection(database, preferPrivate);
+    if (!connection) {
+        return {};
+    }
+    const overlay = {};
+    const host = connection.host ?? "";
+    const port = connection.port !== undefined ? String(connection.port) : "";
+    if (mapping.host && host) {
+        overlay[mapping.host] = host;
+    }
+    if (mapping.port && port) {
+        overlay[mapping.port] = port;
+    }
+    if (mapping.user && connection.user) {
+        overlay[mapping.user] = connection.user;
+    }
+    if (mapping.password && connection.password) {
+        overlay[mapping.password] = connection.password;
+    }
+    if (mapping.database && connection.database) {
+        overlay[mapping.database] = connection.database;
+    }
+    if (mapping.uri && connection.uri) {
+        overlay[mapping.uri] = connection.uri;
+    }
+    return overlay;
+}
+export async function applyGrapeConfig(config, options = {}) {
     resolveToken(config);
     const resources = normalizeResources(config);
     const warnings = [];
-    if (config.services && Object.keys(config.services).length > 0) {
-        warnings.push("services is accepted for validation but is not applied. Declare droplets or apps under resources instead.");
+    const baseDir = options.baseDir ?? getConfigSourceDir(config);
+    if (servicesNeedsLegacyWarning(config)) {
+        warnings.push("services is accepted for validation but is not applied. Declare a top-level stack (or a stack-shaped services section with droplet + compose) instead.");
     }
     const result = {
         tags: [],
         ssh_keys: [],
         vpcs: [],
+        databases: [],
         droplets: [],
         firewalls: [],
         domains: [],
         load_balancers: [],
         alert_policies: [],
         apps: [],
+        stacks: [],
         private_key_paths: [],
         warnings
     };
@@ -167,20 +205,75 @@ export async function applyGrapeConfig(config) {
         result.vpcs.push(created);
         vpcIds.set(created.name, created.id);
     }
+    const envOverlay = {};
+    for (const database of resources.databases ?? []) {
+        const vpcUuid = database.private_network_uuid ??
+            database.vpc_uuid ??
+            (database.vpc ? vpcIds.get(database.vpc) : undefined);
+        let created = await createDatabase({
+            name: database.name,
+            engine: database.engine,
+            version: database.version,
+            region: database.region ?? config.region ?? "",
+            size: database.size,
+            num_nodes: database.num_nodes,
+            tags: database.tags,
+            private_network_uuid: vpcUuid,
+            project_id: database.project_id
+        });
+        if (created.status !== "online" && database.wait !== false) {
+            created = await waitForDatabase(created.id);
+        }
+        const preferPrivate = database.private !== false;
+        Object.assign(envOverlay, connectionEnvOverlay(database.connection_env, created, preferPrivate));
+        const connection = pickDatabaseConnection(created, preferPrivate);
+        result.databases.push({
+            id: created.id,
+            name: created.name,
+            engine: created.engine,
+            status: created.status,
+            host: connection?.host
+        });
+    }
+    const stacks = declaredStacks(config);
+    const stacksByDroplet = new Map(stacks.map((stack) => [stack.droplet, stack]));
+    if (stacks.length !== stacksByDroplet.size) {
+        throw new Error("Each stack must target a unique droplet");
+    }
     for (const entry of resources.droplets ?? []) {
         const grapeBlueprint = unwrapDropletEntry(entry);
         const { vpc, ...fields } = grapeBlueprint;
         const vpcUuid = fields.vpc_uuid ?? (vpc ? vpcIds.get(vpc) : undefined);
+        const stack = stacksByDroplet.get(grapeBlueprint.name);
+        let userData = fields.user_data;
+        if (stack) {
+            const resolved = resolveStack(stack, { baseDir, envOverlay });
+            userData = mergeUserData(fields.user_data, generateStackUserData(resolved));
+            result.stacks.push({
+                name: resolved.name,
+                droplet: resolved.droplet,
+                workdir: resolved.workdir,
+                files: resolved.files.map((file) => file.dest),
+                steps: resolved.steps,
+                user_data_generated: true
+            });
+        }
         const blueprint = {
             ...fields,
             region: fields.region ?? config.region ?? "",
             ssh_keys: fields.ssh_keys ?? (sshKeyIds.length ? sshKeyIds : undefined),
-            vpc_uuid: vpcUuid
+            vpc_uuid: vpcUuid,
+            user_data: userData
         };
         const created = await createDroplet(blueprint);
         result.droplets.push(created);
         if (created.id !== undefined) {
             dropletIds.set(created.name, created.id);
+        }
+    }
+    for (const stack of stacks) {
+        if (!result.stacks.some((applied) => applied.droplet === stack.droplet)) {
+            throw new Error(`stack "${stack.name ?? stack.droplet}" targets droplet "${stack.droplet}" which is not declared in this config`);
         }
     }
     for (const firewall of resources.firewalls ?? []) {

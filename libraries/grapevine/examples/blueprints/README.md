@@ -10,6 +10,8 @@ They follow a live smoke-test path: tag and VPC first (no droplet cost), then a 
 | [`02-droplet-in-vpc.yaml`](./02-droplet-in-vpc.yaml) | Tag, generated SSH key, VPC, droplet `grapevine-web-01` | Droplet (`s-1vcpu-1gb`) |
 | [`03-web-firewall.yaml`](./03-web-firewall.yaml) | Firewall attached to an **existing** droplet | Free |
 | [`04-full-web-stack.yaml`](./04-full-web-stack.yaml) | Tag + SSH + VPC + droplet + firewall in one apply | Droplet (`s-1vcpu-1gb`) |
+| [`kiwipress-compose/`](./kiwipress-compose/) | KiwiPress compose: VPC + droplet + firewall + Docker Compose stack | Droplet (`s-2vcpu-4gb`) |
+| [`kiwipress-managed/`](./kiwipress-managed/) | Managed MySQL + Postgres + droplet compose app layer | Droplet + 2× managed DB |
 
 ## Prerequisites
 
@@ -25,6 +27,7 @@ They follow a live smoke-test path: tag and VPC first (no droplet cost), then a 
    ```bash
    grape init --list
    grape init 01                    # writes ./grape.config.yaml
+   grape init kiwipress-compose     # writes ./kiwipress-compose/
    grape validate -c ./grape.config.yaml
    grape plan -c ./grape.config.yaml
    grape apply -c ./grape.config.yaml
@@ -37,7 +40,9 @@ They follow a live smoke-test path: tag and VPC first (no droplet cost), then a 
    grape apply -c ./01-vpc-and-tag.yaml
    ```
 
-`validate` checks the Grapevine schema only. `apply` calls the DigitalOcean API in dependency order (tags → SSH keys → VPCs → droplets → firewalls).
+`validate` checks the Grapevine schema only. `apply` calls the DigitalOcean API in dependency order (tags → SSH keys → VPCs → databases → droplets → firewalls). KiwiPress packs also generate droplet `user_data` from the `stack` section.
+
+Each KiwiPress pack has its own README (`kiwipress-compose/README.md`, `kiwipress-managed/README.md`) for compose assets, env placeholders, and what is deferred (wizard API).
 
 ## Placeholders
 
@@ -46,7 +51,8 @@ They follow a live smoke-test path: tag and VPC first (no droplet cost), then a 
 | Placeholder | Used in | Replace with |
 | --- | --- | --- |
 | `REPLACE_DROPLET_ID` | `03` | Numeric DigitalOcean droplet id (not a name) |
-| `REPLACE_WITH_YOUR_IP` | `03`, `04` | Your public IPv4 address for SSH (`/32`) |
+| `REPLACE_WITH_YOUR_IP` | `03`, `04`, KiwiPress packs | Your public IPv4 address for SSH (`/32`) |
+| `REPLACE_ME` | KiwiPress `stack/.env.example` | Local secrets (never commit real passwords) |
 
 Fill **`REPLACE_DROPLET_ID` before `grape validate`**. The schema expects `droplet_ids` to be numbers, so the placeholder string will fail validation until you substitute a real id.
 

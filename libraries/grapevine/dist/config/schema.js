@@ -145,6 +145,70 @@ export const appResourceSchema = z.object({
         domains: z.array(z.record(z.string(), z.unknown())).optional()
     })
 });
+export const databaseConnectionEnvSchema = z.object({
+    host: z.string().min(1).optional(),
+    port: z.string().min(1).optional(),
+    user: z.string().min(1).optional(),
+    password: z.string().min(1).optional(),
+    database: z.string().min(1).optional(),
+    uri: z.string().min(1).optional()
+});
+export const databaseResourceSchema = z.object({
+    name: z.string().min(1),
+    engine: z.string().min(1),
+    version: z.string().optional(),
+    region: z.string().min(1).optional(),
+    size: z.string().min(1),
+    num_nodes: z.number().int().positive().optional(),
+    tags: z.array(z.string()).optional(),
+    vpc: z.string().min(1).optional(),
+    vpc_uuid: z.string().min(1).optional(),
+    private_network_uuid: z.string().min(1).optional(),
+    project_id: z.string().min(1).optional(),
+    /** Prefer private VPC connection when injecting env (default true). */
+    private: z.boolean().optional(),
+    /** Poll until status is online before creating droplets (default true). */
+    wait: z.boolean().optional(),
+    /** Map DigitalOcean connection fields onto stack env keys. */
+    connection_env: databaseConnectionEnvSchema.optional()
+});
+const composeHasSource = (value) => Boolean(value.file || value.inline || (value.files && value.files.length > 0));
+export const stackComposeSchema = z
+    .object({
+    file: z.string().min(1).optional(),
+    files: z.array(z.string().min(1)).optional(),
+    inline: z.string().min(1).optional()
+})
+    .refine(composeHasSource, { message: "stack.compose requires file, files, or inline" });
+export const stackEnvSchema = z.object({
+    file: z.string().min(1).optional(),
+    keys: z.record(z.string(), z.string()).optional()
+});
+export const stackFileSchema = z.object({
+    src: z.string().min(1),
+    dest: z.string().min(1)
+});
+export const stackHealthSchema = z.object({
+    wait_seconds: z.number().int().nonnegative().optional(),
+    url: z.string().min(1).optional(),
+    command: z.string().min(1).optional()
+});
+export const stackSchema = z.object({
+    name: z.string().min(1).optional(),
+    /** Droplet name (from this apply) that receives compose + cloud-init. */
+    droplet: z.string().min(1),
+    workdir: z.string().min(1).optional(),
+    compose: stackComposeSchema,
+    env: stackEnvSchema.optional(),
+    files: z.array(stackFileSchema).optional(),
+    bootstrap: z
+        .object({
+        script: z.string().min(1).optional()
+    })
+        .optional(),
+    health: stackHealthSchema.optional()
+});
+export const stackConfigSchema = z.union([stackSchema, z.array(stackSchema)]);
 export const resourcesSchema = z.object({
     tags: z.array(z.union([z.string(), tagResourceSchema])).optional(),
     ssh_keys: z.array(sshKeyResourceSchema).optional(),
@@ -154,7 +218,8 @@ export const resourcesSchema = z.object({
     domains: z.array(domainResourceSchema).optional(),
     load_balancers: z.array(loadBalancerResourceSchema).optional(),
     alert_policies: z.array(alertPolicyResourceSchema).optional(),
-    apps: z.array(appResourceSchema).optional()
+    apps: z.array(appResourceSchema).optional(),
+    databases: z.array(databaseResourceSchema).optional()
 });
 export const grapeConfigSchema = z.object({
     version: z.string().optional().default("0.1"),
@@ -189,6 +254,15 @@ export const grapeConfigSchema = z.object({
         alerts: z.array(z.unknown()).optional()
     })
         .optional(),
+    /**
+     * Preferred applied compose/bootstrap section. Paths are resolved
+     * relative to the config file (or `GrapeRunOptions.baseDir`).
+     */
+    stack: stackConfigSchema.optional(),
+    /**
+     * Legacy loose map. Warn-only unless the object is stack-shaped
+     * (`droplet` + `compose` with file/files/inline).
+     */
     services: z.record(z.string(), z.unknown()).optional()
 });
 function asRecord(value) {

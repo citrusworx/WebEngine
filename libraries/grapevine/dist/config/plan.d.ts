@@ -1,7 +1,8 @@
 import type { GrapeConfig, GrapeResources } from "./schema.js";
-export declare const RESOURCE_KINDS: readonly ["tags", "ssh_keys", "vpcs", "droplets", "firewalls", "domains", "load_balancers", "alert_policies", "apps"];
+import { type GrapeRunOptions } from "./source.js";
+export declare const RESOURCE_KINDS: readonly ["tags", "ssh_keys", "vpcs", "databases", "droplets", "firewalls", "domains", "load_balancers", "alert_policies", "apps", "stacks"];
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
-export type PlannedKind = "tag" | "ssh_key" | "vpc" | "droplet" | "firewall" | "domain" | "load_balancer" | "alert_policy" | "app";
+export type PlannedKind = "tag" | "ssh_key" | "vpc" | "database" | "droplet" | "firewall" | "domain" | "load_balancer" | "alert_policy" | "app" | "stack" | "stack_step";
 export interface PlannedResource {
     kind: PlannedKind;
     name: string;
@@ -17,6 +18,6 @@ export interface GrapePlan {
     warnings: string[];
 }
 export declare function emptyCounts(): ResourceCounts;
-export declare function countResources(resources: GrapeResources): ResourceCounts;
+export declare function countResources(resources: GrapeResources, stackCount?: number): ResourceCounts;
 export declare function countNormalized(config: GrapeConfig): ResourceCounts;
-export declare function planGrapeConfig(config: GrapeConfig): GrapePlan;
+export declare function planGrapeConfig(config: GrapeConfig, options?: GrapeRunOptions): GrapePlan;

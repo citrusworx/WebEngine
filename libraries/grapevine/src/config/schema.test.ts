@@ -85,6 +85,66 @@ describe("grape config schema", () => {
         expect(result.success).toBe(false);
     });
 
+    it("accepts a stack with inline compose and env keys", () => {
+        const parsed = validateGrapeConfig({
+            provider: "digitalocean",
+            resources: {
+                droplets: [
+                    {
+                        name: "kp-01",
+                        size: "s-2vcpu-4gb",
+                        image: "ubuntu-24-04-x64"
+                    }
+                ]
+            },
+            stack: {
+                name: "kiwipress",
+                droplet: "kp-01",
+                compose: { inline: "services:\n  web:\n    image: nginx\n" },
+                env: { keys: { WP_URL: "http://wp.example.test" } },
+                health: { url: "http://127.0.0.1/", wait_seconds: 60 }
+            }
+        });
+        expect(parsed.stack && !Array.isArray(parsed.stack) ? parsed.stack.droplet : undefined).toBe("kp-01");
+    });
+
+    it("rejects stack.compose without a source", () => {
+        const result = safeValidateGrapeConfig({
+            provider: "digitalocean",
+            stack: {
+                droplet: "kp-01",
+                compose: {}
+            }
+        });
+        expect(result.success).toBe(false);
+    });
+
+    it("accepts resources.databases for managed DigitalOcean databases", () => {
+        const parsed = validateGrapeConfig({
+            provider: "digitalocean",
+            region: "nyc1",
+            resources: {
+                databases: [
+                    {
+                        name: "kiwipress-mysql",
+                        engine: "mysql",
+                        version: "8",
+                        size: "db-s-1vcpu-1gb",
+                        vpc: "kiwipress",
+                        connection_env: {
+                            host: "WORDPRESS_DB_HOST",
+                            user: "WORDPRESS_DB_USER",
+                            password: "WORDPRESS_DB_PASSWORD",
+                            database: "WORDPRESS_DB_NAME"
+                        }
+                    }
+                ]
+            }
+        });
+        expect(parsed.resources.databases?.[0]?.engine).toBe("mysql");
+        expect(parsed.resources.databases?.[0]?.connection_env?.host).toBe("WORDPRESS_DB_HOST");
+    });
+
     it("accepts ssh_keys generate with optional private_key_path", () => {
         const parsed = validateGrapeConfig({
             provider: "digitalocean",

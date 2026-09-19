@@ -81,6 +81,41 @@ vi.mock("../providers/digitalocean/apps/apps.js", () => ({
     createApp: vi.fn()
 }));
 
+vi.mock("../providers/digitalocean/databases/databases.js", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../providers/digitalocean/databases/databases.js")>();
+    return {
+        ...actual,
+        createDatabase: vi.fn(async (spec: { name: string; engine: string }) => ({
+            id: "db-1",
+            name: spec.name,
+            engine: spec.engine,
+            status: "online",
+            connection: {
+                host: "db.example",
+                port: 25060,
+                user: "doadmin",
+                password: "secret",
+                database: "defaultdb",
+                uri: "mysql://doadmin:secret@db.example:25060/defaultdb"
+            },
+            private_connection: {
+                host: "private.db.example",
+                port: 25060,
+                user: "doadmin",
+                password: "secret",
+                database: "defaultdb",
+                uri: "mysql://doadmin:secret@private.db.example:25060/defaultdb"
+            }
+        })),
+        waitForDatabase: vi.fn(async (id: string) => ({
+            id,
+            name: "ready",
+            engine: "mysql",
+            status: "online"
+        }))
+    };
+});
+
 function generatedKeyPair(name: string) {
     const { publicKey, privateKey } = generateKeyPairSync("rsa", {
         modulusLength: 2048,
@@ -314,5 +349,88 @@ describe("apply grape config", () => {
         } finally {
             cwdSpy.mockRestore();
         }
+    });
+
+    it("creates managed databases and injects stack user_data without leaking secrets in the result", async () => {
+        const { createDroplet } = await import("../providers/digitalocean/droplet/droplet.js");
+        const { createDatabase } = await import("../providers/digitalocean/databases/databases.js");
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc1",
+                resources: {
+                    vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }],
+                    databases: [
+                        {
+                            name: "kiwipress-mysql",
+                            engine: "mysql",
+                            size: "db-s-1vcpu-1gb",
+                            vpc: "kiwipress",
+                            connection_env: {
+                                host: "WORDPRESS_DB_HOST",
+                                user: "WORDPRESS_DB_USER",
+                                password: "WORDPRESS_DB_PASSWORD",
+                                database: "WORDPRESS_DB_NAME"
+                            }
+                        }
+                    ],
+                    droplets: [
+                        {
+                            name: "kp-01",
+                            size: "s-2vcpu-4gb",
+                            image: "ubuntu-24-04-x64",
+                            vpc: "kiwipress"
+                        }
+                    ]
+                },
+                stack: {
+                    name: "kiwipress",
+                    droplet: "kp-01",
+                    compose: { inline: "services:\n  wordpress:\n    image: wordpress:6.7-php8.2-apache\n" },
+                    env: { keys: { WP_URL: "http://wp.example.test" } },
+                    health: { url: "http://127.0.0.1/" }
+                }
+            })
+        );
+
+        expect(createDatabase).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: "kiwipress-mysql",
+                engine: "mysql",
+                region: "nyc1",
+                private_network_uuid: "vpc-1"
+            })
+        );
+        expect(createDroplet).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: "kp-01",
+                user_data: expect.stringContaining("#cloud-config")
+            })
+        );
+        const userData = vi.mocked(createDroplet).mock.calls[0]?.[0] as { user_data?: string };
+        expect(userData.user_data).toContain("#cloud-config");
+        expect(userData.user_data).toContain("write_files");
+        expect(userData.user_data).toContain("encoding: b64");
+        expect(userData.user_data).toContain("/opt/kiwipress/scripts/bootstrap.sh");
+
+        expect(result.databases[0]).toMatchObject({
+            id: "db-1",
+            name: "kiwipress-mysql",
+            engine: "mysql",
+            status: "online",
+            host: "private.db.example"
+        });
+        expect(result.stacks[0]).toMatchObject({
+            name: "kiwipress",
+            droplet: "kp-01",
+            user_data_generated: true
+        });
+        expect(result.stacks[0]?.steps).toContain("compose-up");
+
+        const serialized = JSON.stringify(result);
+        expect(serialized).not.toContain("secret");
+        expect(serialized).not.toContain("WORDPRESS_DB_PASSWORD=");
+        expect(serialized).not.toMatch(/doadmin:secret/);
     });
 });

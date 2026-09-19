@@ -85,6 +85,12 @@ export function renderApply(result: ApplyResult): void {
     for (const vpc of result.vpcs) {
         lines.push(`  vpc             ${vpc.name}  id=${vpc.id}  region=${vpc.region}`);
     }
+    for (const database of result.databases) {
+        const host = database.host ? `  host=${database.host}` : "";
+        lines.push(
+            `  database        ${database.name}  id=${database.id}  engine=${database.engine}  status=${database.status}${host}`
+        );
+    }
     for (const droplet of result.droplets) {
         lines.push(`  droplet         ${droplet.name}  id=${dash(droplet.id)}  status=${droplet.status}`);
     }
@@ -102,6 +108,11 @@ export function renderApply(result: ApplyResult): void {
     }
     for (const app of result.apps) {
         lines.push(`  app             ${app.name}  id=${app.id}`);
+    }
+    for (const stack of result.stacks) {
+        lines.push(
+            `  stack           ${stack.name}  droplet=${stack.droplet}  workdir=${stack.workdir}  files=${stack.files.length}`
+        );
     }
 
     if (lines.length === 0) {

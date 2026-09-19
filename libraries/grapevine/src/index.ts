@@ -5,8 +5,12 @@ export {
     validateGrapeConfig,
     safeValidateGrapeConfig,
     hoistBlueprintDocument,
+    stackSchema,
+    databaseResourceSchema,
     type GrapeConfig,
-    type GrapeResources
+    type GrapeResources,
+    type StackConfig,
+    type DatabaseResourceConfig
 } from "./config/schema.js";
 export { loadGrapeConfig, parseConfigText, readConfigSource, isRemoteConfigSource } from "./config/load.js";
 export {
@@ -14,7 +18,10 @@ export {
     normalizeResources,
     unwrapDropletEntry,
     type ApplyResult,
-    type AppliedSSHKey
+    type AppliedSSHKey,
+    type AppliedDatabase,
+    type AppliedStack,
+    type GrapeRunOptions
 } from "./config/apply.js";
 export {
     planGrapeConfig,
@@ -23,6 +30,16 @@ export {
     type PlannedResource,
     type ResourceCounts
 } from "./config/plan.js";
+export {
+    declaredStacks,
+    generateStackUserData,
+    mergeUserData,
+    resolveStack,
+    resolveDeclaredStacks,
+    generateDefaultBootstrap,
+    isStackShaped,
+    type ResolvedStack
+} from "./config/stack.js";
 export {
     destroyGrapeResources,
     planDestroy,

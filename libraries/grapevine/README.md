@@ -101,12 +101,12 @@ v1 matching is conservative:
 
 - From `-c`: unique live names for apps, alert policies, load balancers, firewalls, domains, droplets, SSH keys, non-default VPCs, and tags declared in the config. Duplicate names are skipped with a warning.
 - From `--tag`: droplets with that tag, plus firewalls that are clearly attached (firewall has the tag, or every `droplet_ids` entry is in the tagged set). Mixed attachments are skipped.
-- Order: apps → alert policies → load balancers → firewalls → domains → droplets → SSH keys → VPCs → tags.
+- Order: apps → alert policies → load balancers → firewalls → domains → droplets → databases → SSH keys → VPCs → tags.
 - Default VPCs and ambiguous matches are never deleted. Local `.grape/ssh` private key files are not removed. Droplet delete is asynchronous at DigitalOcean; a VPC or tag may still be busy on the first pass — re-run destroy after droplets finish.
 
 **`grape status`** — live account view (droplets with id/status/region/public+private IPs/tags, VPCs, firewalls with droplet counts, domains). With `-c`, also summarizes the config and notes name overlap with live resources. `--json` dumps the structured inventory.
 
-**`grape init [blueprint]`** — copy a packaged starter to `./grape.config.yaml`. No argument or `--list` lists `01`–`04`. `--force` overwrites. Blueprints ship in the npm package (`examples/blueprints` and `dist/blueprints`).
+**`grape init [blueprint]`** — copy a packaged starter. No argument or `--list` lists `01`–`04` plus the KiwiPress packs. File starters write `./grape.config.yaml`. Pack starters (`kiwipress-compose`, `kiwipress-managed`) copy a directory. `--force` overwrites. Blueprints ship in the npm package (`examples/blueprints` and `dist/blueprints`).
 
 **`grape help`** — top-level command list.
 
@@ -153,7 +153,51 @@ resources:
           data: 203.0.113.10
 ```
 
-`validate` only checks this schema. `apply` calls the DigitalOcean API in dependency order: tags → SSH keys → VPCs → droplets → firewalls → domains/records → load balancers → alert policies → apps.
+`validate` only checks this schema. `apply` calls the DigitalOcean API in dependency order: tags → SSH keys → VPCs → **databases** (wait until online) → droplets → firewalls → domains/records → load balancers → alert policies → apps. When a `stack` is present, apply generates droplet `user_data` (cloud-init: install Docker, write compose/env, `docker compose up -d`, health wait) before `POST /droplets`.
+
+### Stack (compose bootstrap)
+
+```yaml
+stack:
+  name: kiwipress-compose
+  droplet: kiwipress-01          # must match a droplet in this config
+  workdir: /opt/kiwipress        # default
+  compose:
+    file: ./stack/docker-compose.yml   # or files: [] or inline: |
+  env:
+    file: ./stack/.env.example
+    keys:
+      WP_URL: http://wp.example.test
+  files:
+    - src: ./scripts/bootstrap.sh
+      dest: scripts/bootstrap.sh
+  bootstrap:
+    script: ./scripts/bootstrap.sh
+  health:
+    url: http://127.0.0.1/
+    wait_seconds: 180
+```
+
+Paths resolve relative to the config file. `grape plan` lists the stack plus bootstrap steps (`install-docker`, `write-compose`, `write-env`, `compose-up`, `health-wait`). A top-level `services` map is still warn-only unless it is stack-shaped (`droplet` + `compose` with file/files/inline).
+
+### Managed databases
+
+```yaml
+resources:
+  databases:
+    - name: kiwipress-mysql
+      engine: mysql              # pg, mysql, redis, …
+      version: "8"
+      size: db-s-1vcpu-1gb
+      vpc: kiwipress             # same-apply VPC name → private_network_uuid
+      wait: true                 # default; poll until status=online
+      connection_env:            # baked into stack .env (not printed in apply JSON)
+        host: WORDPRESS_DB_HOST
+        port: WORDPRESS_DB_PORT
+        user: WORDPRESS_DB_USER
+        password: WORDPRESS_DB_PASSWORD
+        database: WORDPRESS_DB_NAME
+```
 
 A single-resource YAML blueprint is also valid:
 
@@ -181,12 +225,15 @@ Progressive DigitalOcean starters live in [`examples/blueprints/`](./examples/bl
 2. `02-droplet-in-vpc.yaml` — tag, generated SSH key, VPC, and a droplet
 3. `03-web-firewall.yaml` — firewall for an existing droplet (replace placeholders first)
 4. `04-full-web-stack.yaml` — one-shot tag + SSH + VPC + droplet + firewall
+5. `kiwipress-compose/` — KiwiPress compose pack (droplet + Traefik/MinIO/WordPress/MariaDB/Postgres)
+6. `kiwipress-managed/` — managed MySQL + Postgres + droplet app layer
 
 Scaffold one into the current directory (no KiwiEngine required):
 
 ```bash
 grape init --list
-grape init 01          # writes ./grape.config.yaml
+grape init 01                    # writes ./grape.config.yaml
+grape init kiwipress-compose     # writes ./kiwipress-compose/
 grape validate -c ./grape.config.yaml
 grape plan -c ./grape.config.yaml
 ```

@@ -119,6 +119,7 @@ import {
 | LB | `createLoadBalancer`, `listAllLoadBalancers`, `addDropletsToLoadBalancer`, `deleteLoadBalancer` |
 | Monitoring | `createAlertPolicy`, `listAlertPolicies`, `updateAlertPolicy`, `deleteAlertPolicy` |
 | Apps | `createApp`, `createAppFromBlueprint`, `listApps`, `updateApp`, `deleteApp`, `createDeployment` |
+| Databases | `createDatabase`, `listDatabases`, `getDatabase`, `waitForDatabase`, `deleteDatabase` |
 | Images | `listAllImages`, `createCustomImage`, `updateImage`, `deleteImage` |
 | Security | `createScan`, `listScans`, `getLatestScans`, `createSuppression`, … |
 | Actions | `getDropletActions`, `getAction`, `logDropletActions` |
@@ -128,7 +129,7 @@ import {
 
 - A `DigitalOcean` namespace object with `.Droplet.create`
 - `grapeGUI`
-- Config apply for `services`
+- Config apply for a loose (non-stack) `services` map
 - Any AWS/GCP SDK
 - `runCli` from the package root (it lives on the bin module)
 

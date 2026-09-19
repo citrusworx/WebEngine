@@ -8,6 +8,7 @@ import { listAllLoadBalancers } from "../providers/digitalocean/networking/load-
 import { listSSHKeys } from "../providers/digitalocean/ssh/ssh.js";
 import { listAllTags } from "../providers/digitalocean/tags/tags.js";
 import { listAllVPCs } from "../providers/digitalocean/vpc/vpc.js";
+import { listDatabases } from "../providers/digitalocean/databases/databases.js";
 export function tokenIsSet(envName = "DO_TOKEN") {
     try {
         getDoToken(envName);
@@ -18,7 +19,7 @@ export function tokenIsSet(envName = "DO_TOKEN") {
     }
 }
 export async function fetchLiveInventory() {
-    const [droplets, vpcs, firewalls, domains, load_balancers, ssh_keys, apps, alert_policies, tags] = await Promise.all([
+    const [droplets, vpcs, firewalls, domains, load_balancers, ssh_keys, apps, alert_policies, tags, databases] = await Promise.all([
         listAllDroplets(),
         listAllVPCs(),
         listAllFirewalls(),
@@ -27,7 +28,8 @@ export async function fetchLiveInventory() {
         listSSHKeys(),
         listApps(),
         listAlertPolicies(),
-        listAllTags()
+        listAllTags(),
+        listDatabases()
     ]);
     return {
         droplets,
@@ -38,7 +40,8 @@ export async function fetchLiveInventory() {
         ssh_keys,
         apps,
         alert_policies,
-        tags
+        tags,
+        databases
     };
 }
 export function dropletAddresses(droplet) {

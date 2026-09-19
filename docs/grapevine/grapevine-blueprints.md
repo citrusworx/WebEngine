@@ -8,13 +8,13 @@ The product schema lives in `libraries/grapevine/src/config/schema.ts`. Field li
 
 ## What “blueprint” means here
 
-Three different things in this repo use the word. Only the first two apply.
+Three different things in this repo use the word. All three below apply.
 
 | Thing | Path | `grape apply`? |
 |---|---|---|
 | Resource document | `examples/blueprints/0N-*.yaml`, `examples/grape.config.yaml` | Yes |
 | Hoisted `{ blueprint: { droplet, vpc?, firewall? } }` | same schema, optional top-level key | Yes, after hoist |
-| WordPress product sketches | `src/blueprints/wordpress/**/blueprint.yaml` | **No** |
+| KiwiPress packs | `examples/blueprints/kiwipress-compose/`, `kiwipress-managed/` | **Yes** |
 
 There is no marketplace, no `grape blueprint pull`, and no GUI picker.
 
@@ -28,6 +28,8 @@ There is no marketplace, no `grape blueprint pull`, and no GUI picker.
 | `02-droplet-in-vpc.yaml` | Tag, generated SSH key, VPC, droplet `grapevine-web-01` | Droplet (`s-1vcpu-1gb`) | `generate: true` |
 | `03-web-firewall.yaml` | Firewall on an **existing** droplet | Free | Numeric `droplet_ids` |
 | `04-full-web-stack.yaml` | Tag + SSH + VPC + droplet + firewall | Droplet | `droplets: [grapevine-web-01]` |
+| `kiwipress-compose/` | Droplet + Compose (Traefik, MinIO, WP, MariaDB, Postgres) | Droplet (`s-2vcpu-4gb`) | `stack:` + assets |
+| `kiwipress-managed/` | Managed MySQL + Postgres + droplet app layer | Droplet + 2 DBs | `resources.databases` |
 
 ```bash
 export DO_TOKEN=dop_v1_...
@@ -126,25 +128,17 @@ For VPC + firewall + keys, use `applyGrapeConfig` / `grape apply`. `deployByBlue
 
 It is a catalog of fields, not a better starter than `01`–`04`. Prefer the numbered files until you need a domain.
 
-## WordPress YAML is not Grapevine IaC
+## KiwiPress packs are Grapevine IaC
 
-```yaml
-# libraries/grapevine/src/blueprints/wordpress/traditional/blueprint.yaml
-blueprint:
-  name: wordpress
-  version: "0.1"
-runtime:
-  language: php
-services:
-  database:
-    engine: mariadb
-storage:
-  provider: citrode-object
+`examples/blueprints/kiwipress-compose/` and `kiwipress-managed/` are executable grape configs plus compose/scripts. `src/blueprints/wordpress/` is only a README that points at those packs. The old aspirational `blueprint.yaml` sketches are gone.
+
+```bash
+grape init kiwipress-compose
+grape validate -c ./kiwipress-compose/grape.config.yaml
+grape plan -c ./kiwipress-compose/grape.config.yaml
 ```
 
-There is no `provider: digitalocean`. The CLI and `grapeConfigSchema` do not load this folder. `grape validate -c` on that path will fail. Treat it as a future product sketch, not a provisionable stack.
-
-Headless WordPress next to it is the same kind of sketch.
+`apps/kiwipress` wizard wiring is not part of these packs.
 
 ## SSH keys in `02` and `04`
 
@@ -152,7 +146,7 @@ Both create an account SSH key with `generate: true`. Grapevine uploads the publ
 
 ## Authoring a new blueprint
 
-1. Start from `01` or `04`, not from the WordPress folder.
+1. Start from `01`, `04`, or a KiwiPress pack directory.
 2. Keep `provider: digitalocean` and `credentials.source: env`.
 3. Put everything you need in **one** file if names must resolve (`vpc:`, `droplets:`).
 4. `grape validate -c` until counts look right (remember shortcuts fold in).

@@ -67,7 +67,7 @@ describe("planGrapeConfig", () => {
         ).toBe(true);
     });
 
-    it("warns that services are not applied", () => {
+    it("warns that loose services are not applied", () => {
         const plan = planGrapeConfig(
             validateGrapeConfig({
                 provider: "digitalocean",
@@ -75,5 +75,55 @@ describe("planGrapeConfig", () => {
             })
         );
         expect(plan.warnings[0]).toMatch(/services is accepted/);
+    });
+
+    it("lists databases and stack bootstrap steps without a token", () => {
+        const plan = planGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc1",
+                resources: {
+                    droplets: [
+                        {
+                            name: "kp-01",
+                            size: "s-2vcpu-4gb",
+                            image: "ubuntu-24-04-x64"
+                        }
+                    ],
+                    databases: [
+                        {
+                            name: "kiwipress-mysql",
+                            engine: "mysql",
+                            size: "db-s-1vcpu-1gb"
+                        }
+                    ]
+                },
+                stack: {
+                    name: "kiwipress",
+                    droplet: "kp-01",
+                    compose: { inline: "services:\n  web:\n    image: nginx\n" },
+                    env: { keys: { WP_URL: "http://wp.example.test" } },
+                    health: { url: "http://127.0.0.1/" }
+                }
+            })
+        );
+
+        expect(plan.counts.databases).toBe(1);
+        expect(plan.counts.stacks).toBe(1);
+        expect(plan.resources.map((resource) => `${resource.kind}:${resource.name}`)).toEqual([
+            "database:kiwipress-mysql",
+            "droplet:kp-01",
+            "stack:kiwipress",
+            "stack_step:install-docker",
+            "stack_step:write-compose",
+            "stack_step:write-env",
+            "stack_step:compose-up",
+            "stack_step:health-wait"
+        ]);
+        expect(plan.resources.find((resource) => resource.kind === "stack")?.detail).toMatchObject({
+            droplet: "kp-01",
+            health: "http://127.0.0.1/"
+        });
+        expect(plan.warnings).toEqual([]);
     });
 });

@@ -61,7 +61,7 @@ There is no `DO_REGION` reader in the client. Put `region:` on the config or on 
 4. `grape status` to see whether the token works and how many droplets/VPCs/firewalls/domains the **account** has.
 5. Use function APIs when you need a single droplet, a one-off firewall, or an explicit delete.
 
-Skip `services:`, grapeGUI, other-cloud providers, and WordPress YAML under `src/blueprints/`. They will not apply.
+Skip loose `services:`, grapeGUI, and other-cloud providers. KiwiPress packs under `examples/blueprints/kiwipress-*` do apply.
 
 ## First config (no droplet)
 

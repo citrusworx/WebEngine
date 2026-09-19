@@ -49,7 +49,8 @@ Empty files throw. JSON that fails `JSON.parse` falls through to YAML, so some `
 | `firewall` | partial firewall | no | — | folded if it has rules |
 | `ssh` | ssh key object | no | — | folded into `ssh_keys` |
 | `monitoring` | `{ enabled?, alerts? }` | no | — | **schema only** |
-| `services` | `Record<string, unknown>` | no | — | warning, not applied |
+| `stack` | object or array | no | — | **yes** — compose/env/bootstrap → droplet `user_data` |
+| `services` | `Record<string, unknown>` | no | — | warning, unless stack-shaped (`droplet` + `compose`) |
 
 Grapevine does not validate DigitalOcean slugs (`nyc1`, `s-1vcpu-1gb`, `ubuntu-24-04-x64`) beyond “non-empty string.” Wrong values fail at the API.
 
@@ -143,7 +144,45 @@ resources:
         static_sites: []
         databases: []
         domains: []
+  databases:
+    - name: kiwipress-mysql
+      engine: mysql
+      version: "8"
+      size: db-s-1vcpu-1gb
+      vpc: main
+      wait: true
+      connection_env:
+        host: WORDPRESS_DB_HOST
+        user: WORDPRESS_DB_USER
+        password: WORDPRESS_DB_PASSWORD
+        database: WORDPRESS_DB_NAME
 ```
+
+### Databases
+
+Required: `name`, `engine`, `size`. `region` falls back to config `region`. `vpc` / `vpc_uuid` / `private_network_uuid` attach the cluster to a VPC (`vpc` is a same-apply name). `wait` (default true) polls until DigitalOcean reports `online` before droplets are created. `connection_env` maps the private connection onto stack env keys; those values are written onto the droplet and **not** included in apply JSON.
+
+### Stack
+
+Top-level `stack` (object or array) is applied. It names a droplet from this config and points at compose/env/bootstrap assets. Paths are resolved relative to the config file.
+
+```yaml
+stack:
+  name: kiwipress
+  droplet: web-01
+  workdir: /opt/kiwipress
+  compose:
+    file: ./stack/docker-compose.yml
+  env:
+    file: ./stack/.env.example
+  bootstrap:
+    script: ./scripts/bootstrap.sh
+  health:
+    url: http://127.0.0.1/
+    wait_seconds: 180
+```
+
+`grape plan` lists the stack and bootstrap steps. Apply generates `#cloud-config` `user_data` (install Docker, write files, `docker compose up -d`, health wait) and merges it with any droplet `user_data` already set.
 
 ### Tags
 
@@ -264,11 +303,9 @@ services:
     entry: apps/front
 ```
 
-Valid enough to parse. `applyGrapeConfig` adds:
+Valid enough to parse. Loose `services` maps warn and are not applied. A stack-shaped object (`droplet` + `compose`) is applied as `stack`.
 
-`services is accepted for validation but is not applied. Declare droplets or apps under resources instead.`
-
-Do not write `type: postgres` under `services` and expect a managed database. Managed DBs are not an apply resource (App Platform `spec.databases` is opaque passthrough only).
+Do not write `type: postgres` under a loose `services` map and expect a managed database. Use `resources.databases` or a compose service on a droplet.
 
 Top-level `monitoring.enabled` / `monitoring.alerts` are also unused. Alert policies belong under `resources.alert_policies`.
 

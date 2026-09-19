@@ -1,0 +1,2 @@
+-- Extra databases for KiwiPress app services can be created here.
+-- POSTGRES_DB from the compose environment is already created.

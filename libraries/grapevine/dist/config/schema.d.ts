@@ -380,6 +380,132 @@ export declare const appResourceSchema: z.ZodObject<{
         domains: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
     }, z.core.$strip>;
 }, z.core.$strip>;
+export declare const databaseConnectionEnvSchema: z.ZodObject<{
+    host: z.ZodOptional<z.ZodString>;
+    port: z.ZodOptional<z.ZodString>;
+    user: z.ZodOptional<z.ZodString>;
+    password: z.ZodOptional<z.ZodString>;
+    database: z.ZodOptional<z.ZodString>;
+    uri: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export declare const databaseResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    engine: z.ZodString;
+    version: z.ZodOptional<z.ZodString>;
+    region: z.ZodOptional<z.ZodString>;
+    size: z.ZodString;
+    num_nodes: z.ZodOptional<z.ZodNumber>;
+    tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    vpc: z.ZodOptional<z.ZodString>;
+    vpc_uuid: z.ZodOptional<z.ZodString>;
+    private_network_uuid: z.ZodOptional<z.ZodString>;
+    project_id: z.ZodOptional<z.ZodString>;
+    private: z.ZodOptional<z.ZodBoolean>;
+    wait: z.ZodOptional<z.ZodBoolean>;
+    connection_env: z.ZodOptional<z.ZodObject<{
+        host: z.ZodOptional<z.ZodString>;
+        port: z.ZodOptional<z.ZodString>;
+        user: z.ZodOptional<z.ZodString>;
+        password: z.ZodOptional<z.ZodString>;
+        database: z.ZodOptional<z.ZodString>;
+        uri: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+}, z.core.$strip>;
+export declare const stackComposeSchema: z.ZodObject<{
+    file: z.ZodOptional<z.ZodString>;
+    files: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    inline: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export declare const stackEnvSchema: z.ZodObject<{
+    file: z.ZodOptional<z.ZodString>;
+    keys: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+}, z.core.$strip>;
+export declare const stackFileSchema: z.ZodObject<{
+    src: z.ZodString;
+    dest: z.ZodString;
+}, z.core.$strip>;
+export declare const stackHealthSchema: z.ZodObject<{
+    wait_seconds: z.ZodOptional<z.ZodNumber>;
+    url: z.ZodOptional<z.ZodString>;
+    command: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export declare const stackSchema: z.ZodObject<{
+    name: z.ZodOptional<z.ZodString>;
+    droplet: z.ZodString;
+    workdir: z.ZodOptional<z.ZodString>;
+    compose: z.ZodObject<{
+        file: z.ZodOptional<z.ZodString>;
+        files: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        inline: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+    env: z.ZodOptional<z.ZodObject<{
+        file: z.ZodOptional<z.ZodString>;
+        keys: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+    }, z.core.$strip>>;
+    files: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        src: z.ZodString;
+        dest: z.ZodString;
+    }, z.core.$strip>>>;
+    bootstrap: z.ZodOptional<z.ZodObject<{
+        script: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    health: z.ZodOptional<z.ZodObject<{
+        wait_seconds: z.ZodOptional<z.ZodNumber>;
+        url: z.ZodOptional<z.ZodString>;
+        command: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+}, z.core.$strip>;
+export declare const stackConfigSchema: z.ZodUnion<readonly [z.ZodObject<{
+    name: z.ZodOptional<z.ZodString>;
+    droplet: z.ZodString;
+    workdir: z.ZodOptional<z.ZodString>;
+    compose: z.ZodObject<{
+        file: z.ZodOptional<z.ZodString>;
+        files: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        inline: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+    env: z.ZodOptional<z.ZodObject<{
+        file: z.ZodOptional<z.ZodString>;
+        keys: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+    }, z.core.$strip>>;
+    files: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        src: z.ZodString;
+        dest: z.ZodString;
+    }, z.core.$strip>>>;
+    bootstrap: z.ZodOptional<z.ZodObject<{
+        script: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    health: z.ZodOptional<z.ZodObject<{
+        wait_seconds: z.ZodOptional<z.ZodNumber>;
+        url: z.ZodOptional<z.ZodString>;
+        command: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+}, z.core.$strip>, z.ZodArray<z.ZodObject<{
+    name: z.ZodOptional<z.ZodString>;
+    droplet: z.ZodString;
+    workdir: z.ZodOptional<z.ZodString>;
+    compose: z.ZodObject<{
+        file: z.ZodOptional<z.ZodString>;
+        files: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        inline: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+    env: z.ZodOptional<z.ZodObject<{
+        file: z.ZodOptional<z.ZodString>;
+        keys: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+    }, z.core.$strip>>;
+    files: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        src: z.ZodString;
+        dest: z.ZodString;
+    }, z.core.$strip>>>;
+    bootstrap: z.ZodOptional<z.ZodObject<{
+        script: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    health: z.ZodOptional<z.ZodObject<{
+        wait_seconds: z.ZodOptional<z.ZodNumber>;
+        url: z.ZodOptional<z.ZodString>;
+        command: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+}, z.core.$strip>>]>;
 export declare const resourcesSchema: z.ZodObject<{
     tags: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodString, z.ZodObject<{
         name: z.ZodString;
@@ -583,6 +709,29 @@ export declare const resourcesSchema: z.ZodObject<{
             databases: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
             domains: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
         }, z.core.$strip>;
+    }, z.core.$strip>>>;
+    databases: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        engine: z.ZodString;
+        version: z.ZodOptional<z.ZodString>;
+        region: z.ZodOptional<z.ZodString>;
+        size: z.ZodString;
+        num_nodes: z.ZodOptional<z.ZodNumber>;
+        tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        vpc: z.ZodOptional<z.ZodString>;
+        vpc_uuid: z.ZodOptional<z.ZodString>;
+        private_network_uuid: z.ZodOptional<z.ZodString>;
+        project_id: z.ZodOptional<z.ZodString>;
+        private: z.ZodOptional<z.ZodBoolean>;
+        wait: z.ZodOptional<z.ZodBoolean>;
+        connection_env: z.ZodOptional<z.ZodObject<{
+            host: z.ZodOptional<z.ZodString>;
+            port: z.ZodOptional<z.ZodString>;
+            user: z.ZodOptional<z.ZodString>;
+            password: z.ZodOptional<z.ZodString>;
+            database: z.ZodOptional<z.ZodString>;
+            uri: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 export declare const grapeConfigSchema: z.ZodObject<{
@@ -907,6 +1056,29 @@ export declare const grapeConfigSchema: z.ZodObject<{
                 domains: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
             }, z.core.$strip>;
         }, z.core.$strip>>>;
+        databases: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            engine: z.ZodString;
+            version: z.ZodOptional<z.ZodString>;
+            region: z.ZodOptional<z.ZodString>;
+            size: z.ZodString;
+            num_nodes: z.ZodOptional<z.ZodNumber>;
+            tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+            vpc: z.ZodOptional<z.ZodString>;
+            vpc_uuid: z.ZodOptional<z.ZodString>;
+            private_network_uuid: z.ZodOptional<z.ZodString>;
+            project_id: z.ZodOptional<z.ZodString>;
+            private: z.ZodOptional<z.ZodBoolean>;
+            wait: z.ZodOptional<z.ZodBoolean>;
+            connection_env: z.ZodOptional<z.ZodObject<{
+                host: z.ZodOptional<z.ZodString>;
+                port: z.ZodOptional<z.ZodString>;
+                user: z.ZodOptional<z.ZodString>;
+                password: z.ZodOptional<z.ZodString>;
+                database: z.ZodOptional<z.ZodString>;
+                uri: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>>;
     networking: z.ZodOptional<z.ZodObject<{
         vpc: z.ZodOptional<z.ZodUnion<readonly [z.ZodBoolean, z.ZodObject<{
@@ -1008,12 +1180,65 @@ export declare const grapeConfigSchema: z.ZodObject<{
         enabled: z.ZodOptional<z.ZodBoolean>;
         alerts: z.ZodOptional<z.ZodArray<z.ZodUnknown>>;
     }, z.core.$strip>>;
+    stack: z.ZodOptional<z.ZodUnion<readonly [z.ZodObject<{
+        name: z.ZodOptional<z.ZodString>;
+        droplet: z.ZodString;
+        workdir: z.ZodOptional<z.ZodString>;
+        compose: z.ZodObject<{
+            file: z.ZodOptional<z.ZodString>;
+            files: z.ZodOptional<z.ZodArray<z.ZodString>>;
+            inline: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>;
+        env: z.ZodOptional<z.ZodObject<{
+            file: z.ZodOptional<z.ZodString>;
+            keys: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+        }, z.core.$strip>>;
+        files: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            src: z.ZodString;
+            dest: z.ZodString;
+        }, z.core.$strip>>>;
+        bootstrap: z.ZodOptional<z.ZodObject<{
+            script: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        health: z.ZodOptional<z.ZodObject<{
+            wait_seconds: z.ZodOptional<z.ZodNumber>;
+            url: z.ZodOptional<z.ZodString>;
+            command: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+    }, z.core.$strip>, z.ZodArray<z.ZodObject<{
+        name: z.ZodOptional<z.ZodString>;
+        droplet: z.ZodString;
+        workdir: z.ZodOptional<z.ZodString>;
+        compose: z.ZodObject<{
+            file: z.ZodOptional<z.ZodString>;
+            files: z.ZodOptional<z.ZodArray<z.ZodString>>;
+            inline: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>;
+        env: z.ZodOptional<z.ZodObject<{
+            file: z.ZodOptional<z.ZodString>;
+            keys: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+        }, z.core.$strip>>;
+        files: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            src: z.ZodString;
+            dest: z.ZodString;
+        }, z.core.$strip>>>;
+        bootstrap: z.ZodOptional<z.ZodObject<{
+            script: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+        health: z.ZodOptional<z.ZodObject<{
+            wait_seconds: z.ZodOptional<z.ZodNumber>;
+            url: z.ZodOptional<z.ZodString>;
+            command: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>;
+    }, z.core.$strip>>]>>;
     services: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, z.core.$strip>;
 export type GrapeConfig = z.infer<typeof grapeConfigSchema>;
 export type GrapeResources = z.infer<typeof resourcesSchema>;
 export type GrapeDropletEntry = z.infer<typeof dropletEntrySchema>;
 export type DropletBlueprintConfig = z.infer<typeof dropletBlueprintSchema>;
+export type StackConfig = z.infer<typeof stackSchema>;
+export type DatabaseResourceConfig = z.infer<typeof databaseResourceSchema>;
 /** Fold a classic `{ blueprint: { droplet | vpc | firewall } }` document into `resources`. */
 export declare function hoistBlueprintDocument(input: unknown): unknown;
 export declare function validateGrapeConfig(input: unknown): GrapeConfig;
@@ -1224,6 +1449,29 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
                 databases?: Record<string, unknown>[] | undefined;
                 domains?: Record<string, unknown>[] | undefined;
             };
+        }[] | undefined;
+        databases?: {
+            name: string;
+            engine: string;
+            size: string;
+            version?: string | undefined;
+            region?: string | undefined;
+            num_nodes?: number | undefined;
+            tags?: string[] | undefined;
+            vpc?: string | undefined;
+            vpc_uuid?: string | undefined;
+            private_network_uuid?: string | undefined;
+            project_id?: string | undefined;
+            private?: boolean | undefined;
+            wait?: boolean | undefined;
+            connection_env?: {
+                host?: string | undefined;
+                port?: string | undefined;
+                user?: string | undefined;
+                password?: string | undefined;
+                database?: string | undefined;
+                uri?: string | undefined;
+            } | undefined;
         }[] | undefined;
     };
     grapevine?: string | undefined;
@@ -1437,5 +1685,56 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
         enabled?: boolean | undefined;
         alerts?: unknown[] | undefined;
     } | undefined;
+    stack?: {
+        droplet: string;
+        compose: {
+            file?: string | undefined;
+            files?: string[] | undefined;
+            inline?: string | undefined;
+        };
+        name?: string | undefined;
+        workdir?: string | undefined;
+        env?: {
+            file?: string | undefined;
+            keys?: Record<string, string> | undefined;
+        } | undefined;
+        files?: {
+            src: string;
+            dest: string;
+        }[] | undefined;
+        bootstrap?: {
+            script?: string | undefined;
+        } | undefined;
+        health?: {
+            wait_seconds?: number | undefined;
+            url?: string | undefined;
+            command?: string | undefined;
+        } | undefined;
+    } | {
+        droplet: string;
+        compose: {
+            file?: string | undefined;
+            files?: string[] | undefined;
+            inline?: string | undefined;
+        };
+        name?: string | undefined;
+        workdir?: string | undefined;
+        env?: {
+            file?: string | undefined;
+            keys?: Record<string, string> | undefined;
+        } | undefined;
+        files?: {
+            src: string;
+            dest: string;
+        }[] | undefined;
+        bootstrap?: {
+            script?: string | undefined;
+        } | undefined;
+        health?: {
+            wait_seconds?: number | undefined;
+            url?: string | undefined;
+            command?: string | undefined;
+        } | undefined;
+    }[] | undefined;
     services?: Record<string, unknown> | undefined;
 }>;

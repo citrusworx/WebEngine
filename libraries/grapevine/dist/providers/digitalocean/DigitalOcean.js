@@ -6,6 +6,7 @@ export * from "./ssh/ssh.js";
 export * from "./vpc/vpc.js";
 export * from "./monitoring/monitoring.js";
 export * from "./apps/apps.js";
+export * from "./databases/databases.js";
 export * from "./images/images.js";
 export * from "./networking/domains.js";
 export * from "./networking/load-balancer.js";
