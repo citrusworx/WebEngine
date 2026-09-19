@@ -20,6 +20,7 @@
     "src/js/src/modal/modal-runtime.ts",
     "src/js/src/drawer/drawer-runtime.ts",
     "src/js/src/toast/toast-runtime.ts",
+    "src/js/src/popover/popover-runtime.ts",
     "src/tokens/**/*.ts",
     "src/themes/**/*.ts",
     "src/jsx.d.ts"

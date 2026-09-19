@@ -352,7 +352,7 @@ var A = {
 	t.hidden !== !n && (t.hidden = !n);
 	let i = String(!n);
 	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
-}, R = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", z = (e = {}) => {
+}, R = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", te = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -472,32 +472,32 @@ var A = {
 		collapse: g,
 		toggle: _
 	};
-}, te = (e = {}) => z(e), B = null, ne = !1, re = null, ie = () => {
-	re &&= (document.removeEventListener("DOMContentLoaded", re), null);
-}, ae = () => typeof window > "u" || typeof document > "u" ? null : (ne = !1, ie(), B ? (B.sync(), B) : (B = z(), B)), oe = () => {
-	ne = !0, ie(), B?.destroy(), B = null;
+}, ne = (e = {}) => te(e), z = null, re = !1, ie = null, ae = () => {
+	ie &&= (document.removeEventListener("DOMContentLoaded", ie), null);
+}, oe = () => typeof window > "u" || typeof document > "u" ? null : (re = !1, ae(), z ? (z.sync(), z) : (z = te(), z)), se = () => {
+	re = !0, ae(), z?.destroy(), z = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (re = () => {
-	re = null, ne || ae();
-}, document.addEventListener("DOMContentLoaded", re)) : ae());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (ie = () => {
+	ie = null, re || oe();
+}, document.addEventListener("DOMContentLoaded", ie)) : oe());
 //#endregion
 //#region src/js/src/tabs/tabs-runtime.ts
-var se = {
+var ce = {
 	root: typeof document < "u" ? document : {},
 	tabsSelector: "[tabs]",
 	listSelector: "[tabs-list]",
 	triggerSelector: "[tab]",
 	panelSelector: "[tab-panel]"
-}, ce = (e) => Array.from(e), le = "juice-tabs-trigger", ue = "juice-tabs-panel", de = /* @__PURE__ */ new WeakSet(), V = (e) => de.has(e) ? !1 : (de.add(e), !0), fe = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, pe = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tabs", me = (e) => e instanceof HTMLElement ? e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement ? !0 : e.isContentEditable : !1, he = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, ge = (e = {}) => {
+}, le = (e) => Array.from(e), ue = "juice-tabs-trigger", de = "juice-tabs-panel", fe = /* @__PURE__ */ new WeakSet(), pe = (e) => fe.has(e) ? !1 : (fe.add(e), !0), me = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, he = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tabs", ge = (e) => e instanceof HTMLElement ? e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement ? !0 : e.isContentEditable : !1, _e = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, ve = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
 		select: () => {}
 	};
 	let t = {
-		...se,
+		...ce,
 		...e
-	}, n = t.root ?? document, r = n, i = () => ce(n.querySelectorAll(t.tabsSelector)), a = (e) => {
+	}, n = t.root ?? document, r = n, i = () => le(n.querySelectorAll(t.tabsSelector)), a = (e) => {
 		let n = e.querySelector(`:scope > ${t.listSelector}`);
 		return n instanceof HTMLElement ? n : null;
 	}, o = (e) => {
@@ -517,16 +517,16 @@ var se = {
 		let n = a(e) ?? e, r = /* @__PURE__ */ new Set(), i = [], o = (t) => {
 			t instanceof HTMLElement && (!c(t, e) || r.has(t) || (r.add(t), i.push(t)));
 		};
-		return ce(n.children).forEach(o), ce(n.querySelectorAll(t.triggerSelector)).forEach(o), ce(n.querySelectorAll("[role=\"tab\"]")).forEach(o), i.sort((e, t) => {
+		return le(n.children).forEach(o), le(n.querySelectorAll(t.triggerSelector)).forEach(o), le(n.querySelectorAll("[role=\"tab\"]")).forEach(o), i.sort((e, t) => {
 			let n = e.compareDocumentPosition(t);
 			return n & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : n & Node.DOCUMENT_POSITION_PRECEDING ? 1 : 0;
 		});
-	}, u = (e) => ce(e.querySelectorAll(t.panelSelector)).filter((t) => o(t) === e), d = () => i().flatMap((e) => l(e)), f = 0, p = (e) => (f += 1, `${e}-${f}`), m = (e) => {
+	}, u = (e) => le(e.querySelectorAll(t.panelSelector)).filter((t) => o(t) === e), d = () => i().flatMap((e) => l(e)), f = 0, p = (e) => (f += 1, `${e}-${f}`), m = (e) => {
 		let n = o(e);
 		if (!n) return null;
 		let r = e.getAttribute("aria-controls");
 		if (r) {
-			let e = n.querySelector(`#${he(r)}`);
+			let e = n.querySelector(`#${_e(r)}`);
 			if (e && e.matches(t.panelSelector) && o(e) === n) return e;
 		}
 		let i = l(n), a = u(n), s = i.indexOf(e);
@@ -551,7 +551,7 @@ var se = {
 		return d()[0] ?? null;
 	}, g = (e) => {
 		let t = e.getAttribute("name");
-		return t ? pe(t) : null;
+		return t ? he(t) : null;
 	}, _ = (e) => {
 		let t = a(e), n = u(e), r = t ?? (n.length === 0 ? e : null);
 		if (!r) return;
@@ -563,7 +563,7 @@ var se = {
 		if (!n) return;
 		_(n);
 		let r = l(n), i = Math.max(0, r.indexOf(e)), a = g(n), s = r.length > 1 ? `-${i + 1}` : "";
-		e.id ||= a ? `${a}-tab${s}` : p(le), e.getAttribute("role") !== "tab" && e.setAttribute("role", "tab"), !fe(e) && !e.hasAttribute("tabindex") && e.setAttribute("tabindex", "-1"), t && (t.id ||= a ? `${a}-panel${s}` : p(ue), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "tabpanel" && t.setAttribute("role", "tabpanel"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+		e.id ||= a ? `${a}-tab${s}` : p(ue), e.getAttribute("role") !== "tab" && e.setAttribute("role", "tab"), !me(e) && !e.hasAttribute("tabindex") && e.setAttribute("tabindex", "-1"), t && (t.id ||= a ? `${a}-panel${s}` : p(de), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "tabpanel" && t.setAttribute("role", "tabpanel"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
 	}, y = (e) => e.hasAttribute("active") || e.getAttribute("aria-selected") === "true", b = (e, t, n) => {
 		n ? e.hasAttribute("active") || e.setAttribute("active", "") : e.hasAttribute("active") && e.removeAttribute("active");
 		let r = String(n);
@@ -609,7 +609,7 @@ var se = {
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = T(t);
-		n && V(e) && S(n);
+		n && pe(e) && S(n);
 	}, D = (e, t) => {
 		let n = o(e);
 		if (!n) return;
@@ -620,30 +620,30 @@ var se = {
 	}, O = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let t = e.target;
-		if (!(t instanceof Element) || me(t)) return;
+		if (!(t instanceof Element) || ge(t)) return;
 		let n = T(t);
 		if (n && !(e.key === "Escape" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
 			if (e.key === "ArrowRight") {
-				if (!V(e)) return;
+				if (!pe(e)) return;
 				e.preventDefault(), D(n, (e, t) => (e + 1) % t);
 				return;
 			}
 			if (e.key === "ArrowLeft") {
-				if (!V(e)) return;
+				if (!pe(e)) return;
 				e.preventDefault(), D(n, (e, t) => (e - 1 + t) % t);
 				return;
 			}
 			if (e.key === "Home") {
-				if (!V(e)) return;
+				if (!pe(e)) return;
 				e.preventDefault(), D(n, () => 0);
 				return;
 			}
 			if (e.key === "End") {
-				if (!V(e)) return;
+				if (!pe(e)) return;
 				e.preventDefault(), D(n, (e, t) => t - 1);
 				return;
 			}
-			e.key !== "Enter" && e.key !== " " || fe(n) || V(e) && (e.preventDefault(), S(n));
+			e.key !== "Enter" && e.key !== " " || me(n) || pe(e) && (e.preventDefault(), S(n));
 		}
 	}, k = !1, A = () => {
 		k || (k = !0, requestAnimationFrame(() => {
@@ -671,30 +671,30 @@ var se = {
 		sync: w,
 		select: S
 	};
-}, _e = (e = {}) => ge(e), H = null, ve = !1, ye = null, be = () => {
-	ye &&= (document.removeEventListener("DOMContentLoaded", ye), null);
-}, xe = () => typeof window > "u" || typeof document > "u" ? null : (ve = !1, be(), H ? (H.sync(), H) : (H = ge(), H)), Se = () => {
-	ve = !0, be(), H?.destroy(), H = null;
+}, ye = (e = {}) => ve(e), be = null, xe = !1, Se = null, Ce = () => {
+	Se &&= (document.removeEventListener("DOMContentLoaded", Se), null);
+}, we = () => typeof window > "u" || typeof document > "u" ? null : (xe = !1, Ce(), be ? (be.sync(), be) : (be = ve(), be)), Te = () => {
+	xe = !0, Ce(), be?.destroy(), be = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (ye = () => {
-	ye = null, ve || xe();
-}, document.addEventListener("DOMContentLoaded", ye)) : xe());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Se = () => {
+	Se = null, xe || we();
+}, document.addEventListener("DOMContentLoaded", Se)) : we());
 //#endregion
 //#region src/js/src/modal/modal-runtime.ts
-var Ce = {
+var Ee = {
 	root: typeof document < "u" ? document : {},
 	overlaySelector: "[modal-overlay]",
 	dialogSelector: "[modal]",
 	closeSelector: "[modal-close]",
 	closeOnBackdrop: !0
-}, U = (e) => Array.from(e), we = "juice-modal-overlay", Te = "juice-modal-dialog", Ee = "juice-modal-title", De = [
+}, B = (e) => Array.from(e), De = "juice-modal-overlay", Oe = "juice-modal-dialog", ke = "juice-modal-title", Ae = [
 	"a[href]",
 	"button:not([disabled])",
 	"textarea:not([disabled])",
 	"input:not([disabled]):not([type=\"hidden\"])",
 	"select:not([disabled])",
 	"[tabindex]:not([tabindex=\"-1\"])"
-].join(","), Oe = /* @__PURE__ */ new WeakSet(), ke = /* @__PURE__ */ new WeakMap(), W = (e) => Oe.has(e) ? !1 : (Oe.add(e), !0), Ae = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, je = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "modal", Me = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Ne = (e) => (e.getAttribute("aria-controls") ?? "").trim().split(/\s+/).filter(Boolean), G = (e) => !e.hasAttribute("hidden"), Pe = (e) => !(e.closest("[hidden]") || e.getAttribute("aria-hidden") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled), Fe = (e) => U(e.querySelectorAll(De)).filter(Pe), Ie = (e = {}) => {
+].join(","), je = /* @__PURE__ */ new WeakSet(), Me = /* @__PURE__ */ new WeakMap(), V = (e) => je.has(e) ? !1 : (je.add(e), !0), Ne = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, Pe = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "modal", Fe = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Ie = (e) => (e.getAttribute("aria-controls") ?? "").trim().split(/\s+/).filter(Boolean), H = (e) => !e.hasAttribute("hidden"), Le = (e) => !(e.closest("[hidden]") || e.getAttribute("aria-hidden") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled), Re = (e) => B(e.querySelectorAll(Ae)).filter(Le), ze = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -703,23 +703,23 @@ var Ce = {
 		toggle: () => {}
 	};
 	let t = {
-		...Ce,
+		...Ee,
 		...e
-	}, n = t.root ?? document, r = n, i = 0, a = (e) => (i += 1, `${e}-${i}`), o = () => U(n.querySelectorAll(t.overlaySelector)), s = (e) => {
+	}, n = t.root ?? document, r = n, i = 0, a = (e) => (i += 1, `${e}-${i}`), o = () => B(n.querySelectorAll(t.overlaySelector)), s = (e) => {
 		if (!e) return null;
 		let n = e.closest(t.overlaySelector);
 		return n instanceof HTMLElement ? n : null;
 	}, c = (e) => {
-		let t = Ae(e);
+		let t = Ne(e);
 		if (n instanceof Document || n instanceof Element) {
 			let e = n.querySelector(`#${t}`);
 			if (e) return e;
 		}
 		let r = document.getElementById(e);
 		return r instanceof HTMLElement ? r : null;
-	}, l = (e) => e?.matches(t.overlaySelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : o().includes(e) : !1, u = (e) => U(e.querySelectorAll(t.dialogSelector)).find((t) => s(t) === e) || U(e.querySelectorAll("[role=\"dialog\"]")).find((t) => s(t) === e) || (U(e.children).find((e) => e instanceof HTMLElement) ?? e), d = (e) => {
+	}, l = (e) => e?.matches(t.overlaySelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : o().includes(e) : !1, u = (e) => B(e.querySelectorAll(t.dialogSelector)).find((t) => s(t) === e) || B(e.querySelectorAll("[role=\"dialog\"]")).find((t) => s(t) === e) || (B(e.children).find((e) => e instanceof HTMLElement) ?? e), d = (e) => {
 		if (s(e)) return null;
-		for (let t of Ne(e)) {
+		for (let t of Ie(e)) {
 			let e = c(t);
 			if (e && l(e)) return e;
 		}
@@ -741,47 +741,47 @@ var Ce = {
 				if (e) return e;
 			}
 		}
-		return o().find(G) ?? o()[0] ?? null;
+		return o().find(H) ?? o()[0] ?? null;
 	}, p = (e) => {
 		let t = e.getAttribute("name");
-		return t ? je(t) : e.id ? je(e.id) : null;
-	}, m = (e) => e.id ? U(document.querySelectorAll("[aria-controls]")).filter((t) => s(t) ? !1 : Ne(t).includes(e.id)) : [], h = (e, t) => {
+		return t ? Pe(t) : e.id ? Pe(e.id) : null;
+	}, m = (e) => e.id ? B(document.querySelectorAll("[aria-controls]")).filter((t) => s(t) ? !1 : Ie(t).includes(e.id)) : [], h = (e, t) => {
 		let n = String(t);
 		m(e).forEach((e) => {
 			e.getAttribute("aria-expanded") !== n && e.setAttribute("aria-expanded", n), e.hasAttribute("aria-haspopup") || e.setAttribute("aria-haspopup", "dialog");
 		});
 	}, g = (e) => {
 		let n = u(e), r = p(e);
-		if (e.id ||= r ? `${r}-overlay` : a(we), n.id ||= r ? `${r}-dialog` : a(Te), n.getAttribute("role") !== "dialog" && n.setAttribute("role", "dialog"), n.getAttribute("aria-modal") !== "true" && n.setAttribute("aria-modal", "true"), !n.hasAttribute("aria-labelledby") && !n.hasAttribute("aria-label")) {
+		if (e.id ||= r ? `${r}-overlay` : a(De), n.id ||= r ? `${r}-dialog` : a(Oe), n.getAttribute("role") !== "dialog" && n.setAttribute("role", "dialog"), n.getAttribute("aria-modal") !== "true" && n.setAttribute("aria-modal", "true"), !n.hasAttribute("aria-labelledby") && !n.hasAttribute("aria-label")) {
 			let e = n.querySelector("[modal-header] :is(h1,h2,h3,h4,h5,h6), :is(h1,h2,h3,h4,h5,h6)");
-			e && (e.id ||= r ? `${r}-title` : a(Ee), n.setAttribute("aria-labelledby", e.id));
+			e && (e.id ||= r ? `${r}-title` : a(ke), n.setAttribute("aria-labelledby", e.id));
 		}
-		U(e.querySelectorAll(t.closeSelector)).filter((t) => s(t) === e).forEach((e) => {
-			Me(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Close");
+		B(e.querySelectorAll(t.closeSelector)).filter((t) => s(t) === e).forEach((e) => {
+			Fe(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Close");
 		}), m(e).forEach((t) => {
-			Me(t) || (t.setAttribute("role", "button"), t.hasAttribute("tabindex") || t.setAttribute("tabindex", "0")), t.hasAttribute("aria-haspopup") || t.setAttribute("aria-haspopup", "dialog"), t.hasAttribute("aria-expanded") || t.setAttribute("aria-expanded", String(G(e)));
+			Fe(t) || (t.setAttribute("role", "button"), t.hasAttribute("tabindex") || t.setAttribute("tabindex", "0")), t.hasAttribute("aria-haspopup") || t.setAttribute("aria-haspopup", "dialog"), t.hasAttribute("aria-expanded") || t.setAttribute("aria-expanded", String(H(e)));
 		});
 	}, _ = (e, t) => {
 		let n = document.activeElement instanceof HTMLElement ? document.activeElement : null, r = t && !e.contains(t) ? t : n && !e.contains(n) ? n : null;
-		r && ke.set(e, r);
+		r && Me.set(e, r);
 	}, v = (e) => {
-		let t = ke.get(e);
-		ke.delete(e), t?.isConnected && t.focus();
+		let t = Me.get(e);
+		Me.delete(e), t?.isConnected && t.focus();
 	}, y = (e) => {
-		let t = u(e), n = t.querySelector("[autofocus]"), r = Fe(t), i = (n && Pe(n) ? n : null) ?? r[0] ?? t;
+		let t = u(e), n = t.querySelector("[autofocus]"), r = Re(t), i = (n && Le(n) ? n : null) ?? r[0] ?? t;
 		i === t && !t.hasAttribute("tabindex") && t.setAttribute("tabindex", "-1"), i.focus();
 	}, b = (e, t) => {
 		e.hidden !== !t && (e.hidden = !t);
 	}, x = (e, t) => {
-		g(e), b(e, !1), h(e, !1), t ? v(e) : ke.delete(e);
+		g(e), b(e, !1), h(e, !1), t ? v(e) : Me.delete(e);
 	}, S = (e, n) => {
-		o().concat(U(document.querySelectorAll(t.overlaySelector))).forEach((t) => {
-			t === e || !G(t) || x(t, !1);
+		o().concat(B(document.querySelectorAll(t.overlaySelector))).forEach((t) => {
+			t === e || !H(t) || x(t, !1);
 		}), _(e, n), g(e), b(e, !0), h(e, !0), y(e);
 	}, C = (e) => {
 		let t = f(e);
 		if (t) {
-			if (G(t)) {
+			if (H(t)) {
 				g(t), h(t, !0);
 				return;
 			}
@@ -789,11 +789,11 @@ var Ce = {
 		}
 	}, w = (e) => {
 		let t = f(e);
-		!t || !G(t) || x(t, !0);
+		!t || !H(t) || x(t, !0);
 	}, T = (e) => {
 		let t = f(e);
 		if (t) {
-			if (G(t)) {
+			if (H(t)) {
 				w(t);
 				return;
 			}
@@ -801,7 +801,7 @@ var Ce = {
 		}
 	}, E = () => {
 		o().forEach((e) => {
-			g(e), h(e, G(e));
+			g(e), h(e, H(e));
 		});
 	}, D = (e) => t.closeOnBackdrop ? e.getAttribute("modal-overlay") !== "static" : !1, O = (e) => {
 		if (!(e instanceof HTMLElement) || s(e)) return null;
@@ -815,21 +815,21 @@ var Ce = {
 		if (r && l(r)) {
 			let i = n.closest(t.closeSelector) instanceof HTMLElement ? n.closest(t.closeSelector) : null;
 			if (i && s(i) === r) {
-				if (!W(e)) return;
+				if (!V(e)) return;
 				w(r);
 				return;
 			}
 			if (n === r && D(r)) {
-				if (!W(e)) return;
+				if (!V(e)) return;
 				w(r);
 			}
 			return;
 		}
 		let i = O(n);
-		i && W(e) && T(i);
-	}, A = () => o().find(G) ?? null, j = (e, t) => {
+		i && V(e) && T(i);
+	}, A = () => o().find(H) ?? null, j = (e, t) => {
 		if (e.key !== "Tab") return !1;
-		let n = u(t), r = Fe(n), i = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		let n = u(t), r = Re(n), i = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		if (r.length === 0) return e.preventDefault(), n.hasAttribute("tabindex") || n.setAttribute("tabindex", "-1"), n.focus(), !0;
 		let a = r[0], o = r[r.length - 1];
 		return e.shiftKey ? !i || i === a || !n.contains(i) ? (e.preventDefault(), o.focus(), !0) : !0 : !i || i === o || !n.contains(i) ? (e.preventDefault(), a.focus(), !0) : !0;
@@ -839,31 +839,31 @@ var Ce = {
 		if (!(n instanceof Element)) return;
 		let r = A();
 		if (r && e.key === "Escape") {
-			if (!W(e)) return;
+			if (!V(e)) return;
 			e.preventDefault(), e.stopPropagation(), w(r);
 			return;
 		}
 		if (r && e.key === "Tab") {
-			if (!W(e)) return;
+			if (!V(e)) return;
 			j(e, r);
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let i = n.closest(t.closeSelector);
-		if (i instanceof HTMLElement && s(i) && !Me(i)) {
-			if (!W(e)) return;
+		if (i instanceof HTMLElement && s(i) && !Fe(i)) {
+			if (!V(e)) return;
 			e.preventDefault(), w(i);
 			return;
 		}
 		let a = O(n);
-		!a || Me(a) || W(e) && (e.preventDefault(), T(a));
+		!a || Fe(a) || V(e) && (e.preventDefault(), T(a));
 	}, N = (e) => {
 		let t = A();
 		if (!t) return;
 		let n = e.target;
-		if (!(n instanceof Node) || t.contains(n) || !W(e)) return;
+		if (!(n instanceof Node) || t.contains(n) || !V(e)) return;
 		let r = u(t);
-		(Fe(r)[0] ?? r).focus();
+		(Re(r)[0] ?? r).focus();
 	}, P = !1, F = () => {
 		P || (P = !0, requestAnimationFrame(() => {
 			P = !1, E();
@@ -891,30 +891,30 @@ var Ce = {
 		close: w,
 		toggle: T
 	};
-}, Le = (e = {}) => Ie(e), K = null, Re = !1, q = null, ze = () => {
-	q &&= (document.removeEventListener("DOMContentLoaded", q), null);
-}, Be = () => typeof window > "u" || typeof document > "u" ? null : (Re = !1, ze(), K ? (K.sync(), K) : (K = Ie(), K)), Ve = () => {
-	Re = !0, ze(), K?.destroy(), K = null;
+}, Be = (e = {}) => ze(e), U = null, Ve = !1, He = null, Ue = () => {
+	He &&= (document.removeEventListener("DOMContentLoaded", He), null);
+}, We = () => typeof window > "u" || typeof document > "u" ? null : (Ve = !1, Ue(), U ? (U.sync(), U) : (U = ze(), U)), Ge = () => {
+	Ve = !0, Ue(), U?.destroy(), U = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (q = () => {
-	q = null, Re || Be();
-}, document.addEventListener("DOMContentLoaded", q)) : Be());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (He = () => {
+	He = null, Ve || We();
+}, document.addEventListener("DOMContentLoaded", He)) : We());
 //#endregion
 //#region src/js/src/drawer/drawer-runtime.ts
-var He = {
+var Ke = {
 	root: typeof document < "u" ? document : {},
 	overlaySelector: "[drawer-overlay]",
 	dialogSelector: "[drawer]",
 	closeSelector: "[drawer-close]",
 	closeOnBackdrop: !0
-}, J = (e) => Array.from(e), Ue = "juice-drawer-overlay", We = "juice-drawer-dialog", Ge = "juice-drawer-title", Ke = [
+}, W = (e) => Array.from(e), qe = "juice-drawer-overlay", Je = "juice-drawer-dialog", Ye = "juice-drawer-title", Xe = [
 	"a[href]",
 	"button:not([disabled])",
 	"textarea:not([disabled])",
 	"input:not([disabled]):not([type=\"hidden\"])",
 	"select:not([disabled])",
 	"[tabindex]:not([tabindex=\"-1\"])"
-].join(","), qe = /* @__PURE__ */ new WeakSet(), Je = /* @__PURE__ */ new WeakMap(), Y = (e) => qe.has(e) ? !1 : (qe.add(e), !0), Ye = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, Xe = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "drawer", Ze = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Qe = (e) => (e.getAttribute("aria-controls") ?? "").trim().split(/\s+/).filter(Boolean), X = (e) => !e.hasAttribute("hidden"), $e = (e) => !(e.closest("[hidden]") || e.getAttribute("aria-hidden") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled), et = (e) => J(e.querySelectorAll(Ke)).filter($e), tt = (e = {}) => {
+].join(","), Ze = /* @__PURE__ */ new WeakSet(), Qe = /* @__PURE__ */ new WeakMap(), G = (e) => Ze.has(e) ? !1 : (Ze.add(e), !0), $e = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, et = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "drawer", tt = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, nt = (e) => (e.getAttribute("aria-controls") ?? "").trim().split(/\s+/).filter(Boolean), K = (e) => !e.hasAttribute("hidden"), rt = (e) => !(e.closest("[hidden]") || e.getAttribute("aria-hidden") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled), it = (e) => W(e.querySelectorAll(Xe)).filter(rt), at = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -923,23 +923,23 @@ var He = {
 		toggle: () => {}
 	};
 	let t = {
-		...He,
+		...Ke,
 		...e
-	}, n = t.root ?? document, r = n, i = 0, a = (e) => (i += 1, `${e}-${i}`), o = () => J(n.querySelectorAll(t.overlaySelector)), s = (e) => {
+	}, n = t.root ?? document, r = n, i = 0, a = (e) => (i += 1, `${e}-${i}`), o = () => W(n.querySelectorAll(t.overlaySelector)), s = (e) => {
 		if (!e) return null;
 		let n = e.closest(t.overlaySelector);
 		return n instanceof HTMLElement ? n : null;
 	}, c = (e) => {
-		let t = Ye(e);
+		let t = $e(e);
 		if (n instanceof Document || n instanceof Element) {
 			let e = n.querySelector(`#${t}`);
 			if (e) return e;
 		}
 		let r = document.getElementById(e);
 		return r instanceof HTMLElement ? r : null;
-	}, l = (e) => e?.matches(t.overlaySelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : o().includes(e) : !1, u = (e) => J(e.querySelectorAll(t.dialogSelector)).find((t) => s(t) === e) || J(e.querySelectorAll("[role=\"dialog\"]")).find((t) => s(t) === e) || (J(e.children).find((e) => e instanceof HTMLElement) ?? e), d = (e) => {
+	}, l = (e) => e?.matches(t.overlaySelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : o().includes(e) : !1, u = (e) => W(e.querySelectorAll(t.dialogSelector)).find((t) => s(t) === e) || W(e.querySelectorAll("[role=\"dialog\"]")).find((t) => s(t) === e) || (W(e.children).find((e) => e instanceof HTMLElement) ?? e), d = (e) => {
 		if (s(e)) return null;
-		for (let t of Qe(e)) {
+		for (let t of nt(e)) {
 			let e = c(t);
 			if (e && l(e)) return e;
 		}
@@ -961,47 +961,47 @@ var He = {
 				if (e) return e;
 			}
 		}
-		return o().find(X) ?? o()[0] ?? null;
+		return o().find(K) ?? o()[0] ?? null;
 	}, p = (e) => {
 		let t = e.getAttribute("name");
-		return t ? Xe(t) : e.id ? Xe(e.id) : null;
-	}, m = (e) => e.id ? J(document.querySelectorAll("[aria-controls]")).filter((t) => s(t) ? !1 : Qe(t).includes(e.id)) : [], h = (e, t) => {
+		return t ? et(t) : e.id ? et(e.id) : null;
+	}, m = (e) => e.id ? W(document.querySelectorAll("[aria-controls]")).filter((t) => s(t) ? !1 : nt(t).includes(e.id)) : [], h = (e, t) => {
 		let n = String(t);
 		m(e).forEach((e) => {
 			e.getAttribute("aria-expanded") !== n && e.setAttribute("aria-expanded", n), e.hasAttribute("aria-haspopup") || e.setAttribute("aria-haspopup", "dialog");
 		});
 	}, g = (e) => {
 		let n = u(e), r = p(e);
-		if (e.id ||= r ? `${r}-overlay` : a(Ue), n.id ||= r ? `${r}-dialog` : a(We), n.getAttribute("role") !== "dialog" && n.setAttribute("role", "dialog"), n.getAttribute("aria-modal") !== "true" && n.setAttribute("aria-modal", "true"), !n.hasAttribute("aria-labelledby") && !n.hasAttribute("aria-label")) {
+		if (e.id ||= r ? `${r}-overlay` : a(qe), n.id ||= r ? `${r}-dialog` : a(Je), n.getAttribute("role") !== "dialog" && n.setAttribute("role", "dialog"), n.getAttribute("aria-modal") !== "true" && n.setAttribute("aria-modal", "true"), !n.hasAttribute("aria-labelledby") && !n.hasAttribute("aria-label")) {
 			let e = n.querySelector("[drawer-header] :is(h1,h2,h3,h4,h5,h6), :is(h1,h2,h3,h4,h5,h6)");
-			e && (e.id ||= r ? `${r}-title` : a(Ge), n.setAttribute("aria-labelledby", e.id));
+			e && (e.id ||= r ? `${r}-title` : a(Ye), n.setAttribute("aria-labelledby", e.id));
 		}
-		J(e.querySelectorAll(t.closeSelector)).filter((t) => s(t) === e).forEach((e) => {
-			Ze(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Close");
+		W(e.querySelectorAll(t.closeSelector)).filter((t) => s(t) === e).forEach((e) => {
+			tt(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Close");
 		}), m(e).forEach((t) => {
-			Ze(t) || (t.setAttribute("role", "button"), t.hasAttribute("tabindex") || t.setAttribute("tabindex", "0")), t.hasAttribute("aria-haspopup") || t.setAttribute("aria-haspopup", "dialog"), t.hasAttribute("aria-expanded") || t.setAttribute("aria-expanded", String(X(e)));
+			tt(t) || (t.setAttribute("role", "button"), t.hasAttribute("tabindex") || t.setAttribute("tabindex", "0")), t.hasAttribute("aria-haspopup") || t.setAttribute("aria-haspopup", "dialog"), t.hasAttribute("aria-expanded") || t.setAttribute("aria-expanded", String(K(e)));
 		});
 	}, _ = (e, t) => {
 		let n = document.activeElement instanceof HTMLElement ? document.activeElement : null, r = t && !e.contains(t) ? t : n && !e.contains(n) ? n : null;
-		r && Je.set(e, r);
+		r && Qe.set(e, r);
 	}, v = (e) => {
-		let t = Je.get(e);
-		Je.delete(e), t?.isConnected && t.focus();
+		let t = Qe.get(e);
+		Qe.delete(e), t?.isConnected && t.focus();
 	}, y = (e) => {
-		let t = u(e), n = t.querySelector("[autofocus]"), r = et(t), i = (n && $e(n) ? n : null) ?? r[0] ?? t;
+		let t = u(e), n = t.querySelector("[autofocus]"), r = it(t), i = (n && rt(n) ? n : null) ?? r[0] ?? t;
 		i === t && !t.hasAttribute("tabindex") && t.setAttribute("tabindex", "-1"), i.focus();
 	}, b = (e, t) => {
 		e.hidden !== !t && (e.hidden = !t);
 	}, x = (e, t) => {
-		g(e), b(e, !1), h(e, !1), t ? v(e) : Je.delete(e);
+		g(e), b(e, !1), h(e, !1), t ? v(e) : Qe.delete(e);
 	}, S = (e, n) => {
-		o().concat(J(document.querySelectorAll(t.overlaySelector))).forEach((t) => {
-			t === e || !X(t) || x(t, !1);
+		o().concat(W(document.querySelectorAll(t.overlaySelector))).forEach((t) => {
+			t === e || !K(t) || x(t, !1);
 		}), _(e, n), g(e), b(e, !0), h(e, !0), y(e);
 	}, C = (e) => {
 		let t = f(e);
 		if (t) {
-			if (X(t)) {
+			if (K(t)) {
 				g(t), h(t, !0);
 				return;
 			}
@@ -1009,11 +1009,11 @@ var He = {
 		}
 	}, w = (e) => {
 		let t = f(e);
-		!t || !X(t) || x(t, !0);
+		!t || !K(t) || x(t, !0);
 	}, T = (e) => {
 		let t = f(e);
 		if (t) {
-			if (X(t)) {
+			if (K(t)) {
 				w(t);
 				return;
 			}
@@ -1021,7 +1021,7 @@ var He = {
 		}
 	}, E = () => {
 		o().forEach((e) => {
-			g(e), h(e, X(e));
+			g(e), h(e, K(e));
 		});
 	}, D = (e) => t.closeOnBackdrop ? e.getAttribute("drawer-overlay") !== "static" : !1, O = (e) => {
 		if (!(e instanceof HTMLElement) || s(e)) return null;
@@ -1035,21 +1035,21 @@ var He = {
 		if (r && l(r)) {
 			let i = n.closest(t.closeSelector) instanceof HTMLElement ? n.closest(t.closeSelector) : null;
 			if (i && s(i) === r) {
-				if (!Y(e)) return;
+				if (!G(e)) return;
 				w(r);
 				return;
 			}
 			if (n === r && D(r)) {
-				if (!Y(e)) return;
+				if (!G(e)) return;
 				w(r);
 			}
 			return;
 		}
 		let i = O(n);
-		i && Y(e) && T(i);
-	}, A = () => o().find(X) ?? null, j = (e, t) => {
+		i && G(e) && T(i);
+	}, A = () => o().find(K) ?? null, j = (e, t) => {
 		if (e.key !== "Tab") return !1;
-		let n = u(t), r = et(n), i = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		let n = u(t), r = it(n), i = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		if (r.length === 0) return e.preventDefault(), n.hasAttribute("tabindex") || n.setAttribute("tabindex", "-1"), n.focus(), !0;
 		let a = r[0], o = r[r.length - 1];
 		return e.shiftKey ? !i || i === a || !n.contains(i) ? (e.preventDefault(), o.focus(), !0) : !0 : !i || i === o || !n.contains(i) ? (e.preventDefault(), a.focus(), !0) : !0;
@@ -1059,31 +1059,31 @@ var He = {
 		if (!(n instanceof Element)) return;
 		let r = A();
 		if (r && e.key === "Escape") {
-			if (!Y(e)) return;
+			if (!G(e)) return;
 			e.preventDefault(), e.stopPropagation(), w(r);
 			return;
 		}
 		if (r && e.key === "Tab") {
-			if (!Y(e)) return;
+			if (!G(e)) return;
 			j(e, r);
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let i = n.closest(t.closeSelector);
-		if (i instanceof HTMLElement && s(i) && !Ze(i)) {
-			if (!Y(e)) return;
+		if (i instanceof HTMLElement && s(i) && !tt(i)) {
+			if (!G(e)) return;
 			e.preventDefault(), w(i);
 			return;
 		}
 		let a = O(n);
-		!a || Ze(a) || Y(e) && (e.preventDefault(), T(a));
+		!a || tt(a) || G(e) && (e.preventDefault(), T(a));
 	}, N = (e) => {
 		let t = A();
 		if (!t) return;
 		let n = e.target;
-		if (!(n instanceof Node) || t.contains(n) || !Y(e)) return;
+		if (!(n instanceof Node) || t.contains(n) || !G(e)) return;
 		let r = u(t);
-		(et(r)[0] ?? r).focus();
+		(it(r)[0] ?? r).focus();
 	}, P = !1, F = () => {
 		P || (P = !0, requestAnimationFrame(() => {
 			P = !1, E();
@@ -1111,30 +1111,30 @@ var He = {
 		close: w,
 		toggle: T
 	};
-}, nt = (e = {}) => tt(e), Z = null, rt = !1, it = null, at = () => {
-	it &&= (document.removeEventListener("DOMContentLoaded", it), null);
-}, ot = () => typeof window > "u" || typeof document > "u" ? null : (rt = !1, at(), Z ? (Z.sync(), Z) : (Z = tt(), Z)), st = () => {
-	rt = !0, at(), Z?.destroy(), Z = null;
+}, ot = (e = {}) => at(e), q = null, st = !1, ct = null, lt = () => {
+	ct &&= (document.removeEventListener("DOMContentLoaded", ct), null);
+}, ut = () => typeof window > "u" || typeof document > "u" ? null : (st = !1, lt(), q ? (q.sync(), q) : (q = at(), q)), dt = () => {
+	st = !0, lt(), q?.destroy(), q = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (it = () => {
-	it = null, rt || ot();
-}, document.addEventListener("DOMContentLoaded", it)) : ot());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (ct = () => {
+	ct = null, st || ut();
+}, document.addEventListener("DOMContentLoaded", ct)) : ut());
 //#endregion
 //#region src/js/src/toast/toast-runtime.ts
-var ct = {
+var ft = {
 	root: typeof document < "u" ? document : {},
 	regionSelector: "[toast-region]",
 	toastSelector: "[toast]",
 	closeSelector: "[toast-close]",
 	defaultDuration: 5e3
-}, lt = (e) => Array.from(e), ut = /* @__PURE__ */ new WeakSet(), dt = (e) => ut.has(e) ? !1 : (ut.add(e), !0), ft = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Q = (e) => !e.hasAttribute("hidden"), pt = (e) => !Number.isFinite(e) || e <= 0, mt = (e, t) => {
+}, pt = (e) => Array.from(e), mt = /* @__PURE__ */ new WeakSet(), ht = (e) => mt.has(e) ? !1 : (mt.add(e), !0), gt = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, J = (e) => !e.hasAttribute("hidden"), _t = (e) => !Number.isFinite(e) || e <= 0, vt = (e, t) => {
 	if (e == null) return t;
 	let n = e.trim();
 	if (!n) return t;
 	if (n.toLowerCase() === "infinity") return 0;
 	let r = Number(n);
 	return Number.isNaN(r) ? t : r;
-}, ht = () => typeof document > "u" ? !1 : !!document.querySelector("[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])"), gt = (e = {}) => {
+}, yt = () => typeof document > "u" ? !1 : !!document.querySelector("[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])"), bt = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -1142,9 +1142,9 @@ var ct = {
 		dismiss: () => {}
 	};
 	let t = {
-		...ct,
+		...ft,
 		...e
-	}, n = t.root ?? document, r = n, i = typeof e.defaultDuration == "number" ? e.defaultDuration : ct.defaultDuration, a = /* @__PURE__ */ new WeakMap(), o = /* @__PURE__ */ new Set(), s = [], c = () => lt(n.querySelectorAll(t.regionSelector)), l = (e) => {
+	}, n = t.root ?? document, r = n, i = typeof e.defaultDuration == "number" ? e.defaultDuration : ft.defaultDuration, a = /* @__PURE__ */ new WeakMap(), o = /* @__PURE__ */ new Set(), s = [], c = () => pt(n.querySelectorAll(t.regionSelector)), l = (e) => {
 		if (!e) return null;
 		let n = e.closest(t.regionSelector);
 		return n instanceof HTMLElement ? n : null;
@@ -1152,7 +1152,7 @@ var ct = {
 		if (!e) return null;
 		let n = e.closest(t.toastSelector);
 		return !(n instanceof HTMLElement) || !l(n) ? null : n;
-	}, d = (e) => lt((e ?? n).querySelectorAll(t.toastSelector)).filter((e) => l(e)), f = (e) => !e?.matches(t.toastSelector) || !l(e) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : d().includes(e), p = (e) => mt(e.getAttribute("toast-duration"), i), m = (e, t) => e.getAttribute("aria-live") === "assertive" || e.getAttribute("toast-live") === "assertive" || t.getAttribute("aria-live") === "assertive" || t.getAttribute("toast-live") === "assertive", h = (e, t = !0) => {
+	}, d = (e) => pt((e ?? n).querySelectorAll(t.toastSelector)).filter((e) => l(e)), f = (e) => !e?.matches(t.toastSelector) || !l(e) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : d().includes(e), p = (e) => vt(e.getAttribute("toast-duration"), i), m = (e, t) => e.getAttribute("aria-live") === "assertive" || e.getAttribute("toast-live") === "assertive" || t.getAttribute("aria-live") === "assertive" || t.getAttribute("toast-live") === "assertive", h = (e, t = !0) => {
 		let n = s.indexOf(e);
 		if (n >= 0) {
 			if (!t) return;
@@ -1165,9 +1165,9 @@ var ct = {
 	}, _ = () => {
 		for (let e = s.length - 1; e >= 0; --e) {
 			let t = s[e];
-			if (t.isConnected && f(t) && Q(t)) return t;
+			if (t.isConnected && f(t) && J(t)) return t;
 		}
-		let e = d().filter(Q);
+		let e = d().filter(J);
 		return e[e.length - 1] ?? null;
 	}, v = (e) => {
 		if (e) {
@@ -1185,12 +1185,12 @@ var ct = {
 			t?.timeoutId != null && clearTimeout(t.timeoutId), a.delete(e);
 		}), o.clear();
 	}, x = (e) => {
-		if (!Q(e)) {
+		if (!J(e)) {
 			y(e);
 			return;
 		}
 		let t = p(e);
-		if (pt(t)) {
+		if (_t(t)) {
 			y(e);
 			return;
 		}
@@ -1216,8 +1216,8 @@ var ct = {
 			t.startedAt = Date.now(), t.timeoutId = setTimeout(() => k(e), t.remaining);
 		}
 	}, w = (e) => {
-		lt(e.querySelectorAll(t.closeSelector)).filter((t) => u(t) === e).forEach((e) => {
-			ft(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Dismiss");
+		pt(e.querySelectorAll(t.closeSelector)).filter((t) => u(t) === e).forEach((e) => {
+			gt(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Dismiss");
 		});
 	}, T = (e) => {
 		if (!e.hasAttribute("aria-live")) {
@@ -1235,7 +1235,7 @@ var ct = {
 		if (!t) return;
 		let n = l(t);
 		if (n) {
-			if (T(n), E(n, t), Q(t)) {
+			if (T(n), E(n, t), J(t)) {
 				h(t), x(t);
 				return;
 			}
@@ -1243,18 +1243,18 @@ var ct = {
 		}
 	}, k = (e) => {
 		let t = v(e);
-		!t || !Q(t) || (y(t), g(t), D(t, !1));
+		!t || !J(t) || (y(t), g(t), D(t, !1));
 	}, A = () => {
 		c().forEach((e) => {
 			T(e), d(e).forEach((t) => {
-				if (E(e, t), Q(t)) {
+				if (E(e, t), J(t)) {
 					h(t, !1), x(t);
 					return;
 				}
 				y(t), g(t);
 			});
 		}), o.forEach((e) => {
-			(!e.isConnected || !f(e) || !Q(e)) && y(e);
+			(!e.isConnected || !f(e) || !J(e)) && y(e);
 		});
 	}, j = (e) => {
 		let n = e.target;
@@ -1262,7 +1262,7 @@ var ct = {
 		let r = n.closest(t.closeSelector);
 		if (!(r instanceof HTMLElement)) return;
 		let i = u(r);
-		!i || !f(i) || dt(e) && k(i);
+		!i || !f(i) || ht(e) && k(i);
 	}, M = (e, t) => {
 		let n = e.relatedTarget;
 		return !(n instanceof Node && t.contains(n));
@@ -1270,47 +1270,47 @@ var ct = {
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = u(t instanceof HTMLElement ? t : t.parentElement);
-		!n || !f(n) || !Q(n) || S(n);
+		!n || !f(n) || !J(n) || S(n);
 	}, P = (e) => {
 		if (!(e instanceof MouseEvent)) return;
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = u(t instanceof HTMLElement ? t : t.parentElement);
-		!n || !f(n) || !Q(n) || M(e, n) && C(n);
+		!n || !f(n) || !J(n) || M(e, n) && C(n);
 	}, F = (e) => {
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = u(t instanceof HTMLElement ? t : t.parentElement);
-		!n || !f(n) || !Q(n) || S(n);
+		!n || !f(n) || !J(n) || S(n);
 	}, I = (e) => {
 		if (!(e instanceof FocusEvent)) return;
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = u(t instanceof HTMLElement ? t : t.parentElement);
-		!n || !f(n) || !Q(n) || M(e, n) && C(n);
+		!n || !f(n) || !J(n) || M(e, n) && C(n);
 	}, ee = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		if (e.key === "Escape") {
-			if (ht()) return;
+			if (yt()) return;
 			let t = _();
-			if (!t || !dt(e)) return;
+			if (!t || !ht(e)) return;
 			e.preventDefault(), e.stopPropagation(), k(t);
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let r = n.closest(t.closeSelector);
-		if (r instanceof HTMLElement && u(r) && !ft(r)) {
-			if (!dt(e)) return;
+		if (r instanceof HTMLElement && u(r) && !gt(r)) {
+			if (!ht(e)) return;
 			e.preventDefault(), k(r);
 		}
 	}, L = !1, R = () => {
 		L || (L = !0, requestAnimationFrame(() => {
 			L = !1, A();
 		}));
-	}, z = typeof MutationObserver < "u" ? new MutationObserver(() => R()) : null;
-	return r.addEventListener("click", j), r.addEventListener("keydown", ee), r.addEventListener("mouseover", N), r.addEventListener("mouseout", P), r.addEventListener("focusin", F), r.addEventListener("focusout", I), z && n instanceof Node && z.observe(n, {
+	}, te = typeof MutationObserver < "u" ? new MutationObserver(() => R()) : null;
+	return r.addEventListener("click", j), r.addEventListener("keydown", ee), r.addEventListener("mouseover", N), r.addEventListener("mouseout", P), r.addEventListener("focusin", F), r.addEventListener("focusout", I), te && n instanceof Node && te.observe(n, {
 		childList: !0,
 		subtree: !0,
 		attributes: !0,
@@ -1326,23 +1326,298 @@ var ct = {
 		]
 	}), A(), {
 		destroy: () => {
-			r.removeEventListener("click", j), r.removeEventListener("keydown", ee), r.removeEventListener("mouseover", N), r.removeEventListener("mouseout", P), r.removeEventListener("focusin", F), r.removeEventListener("focusout", I), z?.disconnect(), b();
+			r.removeEventListener("click", j), r.removeEventListener("keydown", ee), r.removeEventListener("mouseover", N), r.removeEventListener("mouseout", P), r.removeEventListener("focusin", F), r.removeEventListener("focusout", I), te?.disconnect(), b();
 		},
 		sync: A,
 		show: O,
 		dismiss: k
 	};
-}, _t = (e = {}) => gt(e), $ = null, vt = !1, yt = null, bt = () => {
-	yt &&= (document.removeEventListener("DOMContentLoaded", yt), null);
-}, xt = () => typeof window > "u" || typeof document > "u" ? null : (vt = !1, bt(), $ ? ($.sync(), $) : ($ = gt(), $)), St = () => {
-	vt = !0, bt(), $?.destroy(), $ = null;
+}, xt = (e = {}) => bt(e), Y = null, St = !1, Ct = null, wt = () => {
+	Ct &&= (document.removeEventListener("DOMContentLoaded", Ct), null);
+}, Tt = () => typeof window > "u" || typeof document > "u" ? null : (St = !1, wt(), Y ? (Y.sync(), Y) : (Y = bt(), Y)), Et = () => {
+	St = !0, wt(), Y?.destroy(), Y = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (yt = () => {
-	yt = null, vt || xt();
-}, document.addEventListener("DOMContentLoaded", yt)) : xt());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Ct = () => {
+	Ct = null, St || Tt();
+}, document.addEventListener("DOMContentLoaded", Ct)) : Tt());
+//#endregion
+//#region src/js/src/popover/popover-runtime.ts
+var Dt = {
+	root: typeof document < "u" ? document : {},
+	rootSelector: "[popover-root]",
+	panelSelector: "[popover-panel]",
+	closeSelector: "[popover-close]",
+	gap: 8
+}, Ot = new Set([
+	"top",
+	"bottom",
+	"left",
+	"right"
+]), X = (e) => Array.from(e), kt = "juice-popover-root", At = "juice-popover-panel", jt = "juice-popover-title", Mt = [
+	"a[href]",
+	"button:not([disabled])",
+	"textarea:not([disabled])",
+	"input:not([disabled]):not([type=\"hidden\"])",
+	"select:not([disabled])",
+	"[tabindex]:not([tabindex=\"-1\"])"
+].join(","), Nt = /* @__PURE__ */ new WeakSet(), Pt = /* @__PURE__ */ new WeakMap(), Ft = /* @__PURE__ */ new WeakMap(), Z = (e) => Nt.has(e) ? !1 : (Nt.add(e), !0), It = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, Lt = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "popover", Rt = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, zt = (e) => (e.getAttribute("aria-controls") ?? "").trim().split(/\s+/).filter(Boolean), Q = (e) => !e.hasAttribute("hidden"), Bt = (e) => !(e.closest("[hidden]") || e.getAttribute("aria-hidden") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled), Vt = (e) => X(e.querySelectorAll(Mt)).filter(Bt), Ht = () => typeof document > "u" ? !1 : !!document.querySelector("[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])"), Ut = (e) => {
+	let t = e.getAttribute("popover-root");
+	return t && Ot.has(t) ? t : "bottom";
+}, Wt = (e) => {
+	switch (e) {
+		case "top": return "bottom";
+		case "bottom": return "top";
+		case "left": return "right";
+		case "right": return "left";
+	}
+}, Gt = (e, t, n, r, i) => {
+	switch (e) {
+		case "bottom": return {
+			top: t.bottom + i,
+			left: t.left
+		};
+		case "top": return {
+			top: t.top - r - i,
+			left: t.left
+		};
+		case "right": return {
+			top: t.top,
+			left: t.right + i
+		};
+		case "left": return {
+			top: t.top,
+			left: t.left - n - i
+		};
+	}
+}, Kt = (e, t, n, r, i) => {
+	let a = window.innerWidth, o = window.innerHeight;
+	switch (e) {
+		case "bottom": return t + i > o;
+		case "top": return t < 0;
+		case "right": return n + r > a;
+		case "left": return n < 0;
+	}
+}, qt = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		open: () => {},
+		close: () => {},
+		toggle: () => {}
+	};
+	let t = {
+		...Dt,
+		...e
+	}, n = t.root ?? document, r = typeof e.gap == "number" && Number.isFinite(e.gap) ? e.gap : Dt.gap, i = 0, a = (e) => (i += 1, `${e}-${i}`), o = () => X(n.querySelectorAll(t.rootSelector)), s = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.rootSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, c = (e) => {
+		let t = It(e);
+		if (n instanceof Document || n instanceof Element) {
+			let e = n.querySelector(`#${t}`);
+			if (e) return e;
+		}
+		let r = document.getElementById(e);
+		return r instanceof HTMLElement ? r : null;
+	}, l = (e) => e?.matches(t.rootSelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : o().includes(e) : !1, u = (e) => X(e.querySelectorAll(t.panelSelector)).find((t) => s(t) === e) || X(e.querySelectorAll("[role=\"dialog\"]")).find((t) => s(t) === e) || (X(e.children).find((e) => e instanceof HTMLElement) ?? e), d = (e) => {
+		if (s(e)) return null;
+		for (let t of zt(e)) {
+			let e = c(t);
+			if (e && l(e)) return e;
+		}
+		return null;
+	}, f = (e) => {
+		if (e) {
+			if (l(e)) return e;
+			let n = s(e);
+			if (n && l(n)) return n;
+			if (e.matches(t.closeSelector)) {
+				let t = s(e);
+				if (t && l(t)) return t;
+			}
+			let r = d(e);
+			if (r) return r;
+			let i = e.closest("[aria-controls]");
+			if (i instanceof HTMLElement) {
+				let e = d(i);
+				if (e) return e;
+			}
+		}
+		return o().find(Q) ?? o()[0] ?? null;
+	}, p = (e) => {
+		let t = e.getAttribute("name");
+		return t ? Lt(t) : e.id ? Lt(e.id) : null;
+	}, m = (e) => e.id ? X(document.querySelectorAll("[aria-controls]")).filter((t) => s(t) ? !1 : zt(t).includes(e.id)) : [], h = (e, t) => {
+		let n = String(t);
+		m(e).forEach((e) => {
+			e.getAttribute("aria-expanded") !== n && e.setAttribute("aria-expanded", n), e.hasAttribute("aria-haspopup") || e.setAttribute("aria-haspopup", "dialog");
+		});
+	}, g = (e) => {
+		let n = u(e), r = p(e);
+		if (e.id ||= r ? `${r}-root` : a(kt), n.id ||= r ? `${r}-panel` : a(At), n.getAttribute("role") !== "dialog" && n.setAttribute("role", "dialog"), !n.hasAttribute("aria-labelledby") && !n.hasAttribute("aria-label")) {
+			let e = n.querySelector("[popover-header] :is(h1,h2,h3,h4,h5,h6), :is(h1,h2,h3,h4,h5,h6)");
+			e && (e.id ||= r ? `${r}-title` : a(jt), n.setAttribute("aria-labelledby", e.id));
+		}
+		X(e.querySelectorAll(t.closeSelector)).filter((t) => s(t) === e).forEach((e) => {
+			Rt(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Close");
+		}), m(e).forEach((t) => {
+			Rt(t) || (t.setAttribute("role", "button"), t.hasAttribute("tabindex") || t.setAttribute("tabindex", "0")), t.hasAttribute("aria-haspopup") || t.setAttribute("aria-haspopup", "dialog"), t.hasAttribute("aria-expanded") || t.setAttribute("aria-expanded", String(Q(e)));
+		});
+	}, _ = (e, t) => {
+		let n = document.activeElement instanceof HTMLElement ? document.activeElement : null, r = t && !e.contains(t) ? t : n && !e.contains(n) ? n : null;
+		r && Pt.set(e, r), t && !e.contains(t) && Ft.set(e, t);
+	}, v = (e) => {
+		let t = Pt.get(e);
+		Pt.delete(e), t?.isConnected && t.focus();
+	}, y = (e) => {
+		let t = u(e), n = t.querySelector("[autofocus]"), r = Vt(t), i = (n && Bt(n) ? n : null) ?? r[0] ?? t;
+		i === t && !t.hasAttribute("tabindex") && t.setAttribute("tabindex", "-1"), i.focus();
+	}, b = (e) => {
+		e.style.removeProperty("position"), e.style.removeProperty("top"), e.style.removeProperty("left"), e.style.removeProperty("right"), e.style.removeProperty("bottom"), e.style.removeProperty("margin");
+		let t = u(e);
+		t !== e && t.style.removeProperty("margin");
+	}, x = (e, t) => {
+		let n = t ?? Ft.get(e) ?? m(e)[0] ?? null;
+		if (!n) return;
+		let i = u(e);
+		e.style.position = "fixed", e.style.right = "auto", e.style.bottom = "auto", e.style.margin = "0", i !== e && (i.style.margin = "0");
+		let a = Ut(e), o = n.getBoundingClientRect(), s = e.getBoundingClientRect(), c = s.width || e.offsetWidth, l = s.height || e.offsetHeight, d = a, { top: f, left: p } = Gt(d, o, c, l, r);
+		Kt(d, f, p, c, l) && (d = Wt(d), {top: f, left: p} = Gt(d, o, c, l, r)), e.style.top = `${f}px`, e.style.left = `${p}px`;
+	}, S = (e, t) => {
+		e.hidden !== !t && (e.hidden = !t);
+	}, C = (e, t) => {
+		g(e), S(e, !1), h(e, !1), b(e), t ? v(e) : Pt.delete(e);
+	}, w = (e, n) => {
+		o().concat(X(document.querySelectorAll(t.rootSelector))).forEach((t) => {
+			t === e || !Q(t) || C(t, !1);
+		}), _(e, n), g(e), S(e, !0), h(e, !0), x(e, n), y(e);
+	}, T = (e) => {
+		let t = f(e);
+		if (t) {
+			if (Q(t)) {
+				g(t), h(t, !0), x(t);
+				return;
+			}
+			w(t, e && d(e) === t ? e : e?.closest("[aria-controls]") instanceof HTMLElement && d(e.closest("[aria-controls]")) === t ? e.closest("[aria-controls]") : null);
+		}
+	}, E = (e) => {
+		let t = f(e);
+		!t || !Q(t) || C(t, !0);
+	}, D = (e) => {
+		let t = f(e);
+		if (t) {
+			if (Q(t)) {
+				E(t);
+				return;
+			}
+			T(e ?? t);
+		}
+	}, O = () => {
+		o().forEach((e) => {
+			Q(e) && x(e);
+		});
+	}, k = () => {
+		o().forEach((e) => {
+			g(e), h(e, Q(e)), Q(e) && x(e);
+		});
+	}, A = (e) => {
+		if (!(e instanceof HTMLElement) || s(e)) return null;
+		if (d(e)) return e;
+		let t = e.closest("[aria-controls]");
+		return t instanceof HTMLElement && d(t) ? t : null;
+	}, j = () => o().find(Q) ?? null, M = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = s(n instanceof HTMLElement ? n : n.parentElement);
+		if (r && l(r)) {
+			let i = n.closest(t.closeSelector) instanceof HTMLElement ? n.closest(t.closeSelector) : null;
+			if (i && s(i) === r) {
+				if (!Z(e)) return;
+				E(r);
+			}
+			return;
+		}
+		let i = A(n);
+		if (i) {
+			if (!Z(e)) return;
+			D(i);
+			return;
+		}
+		let a = j();
+		a && Z(e) && E(a);
+	}, N = (e, t) => {
+		if (e.key !== "Tab") return !1;
+		let n = u(t), r = Vt(n), i = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		if (r.length === 0) return e.preventDefault(), n.hasAttribute("tabindex") || n.setAttribute("tabindex", "-1"), n.focus(), !0;
+		let a = r[0], o = r[r.length - 1];
+		return e.shiftKey ? !i || i === a || !n.contains(i) ? (e.preventDefault(), o.focus(), !0) : !0 : !i || i === o || !n.contains(i) ? (e.preventDefault(), a.focus(), !0) : !0;
+	}, P = (e) => {
+		if (!(e instanceof KeyboardEvent)) return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = j();
+		if (r && e.key === "Escape") {
+			if (Ht() || !Z(e)) return;
+			e.preventDefault(), e.stopPropagation(), E(r);
+			return;
+		}
+		if (r && e.key === "Tab") {
+			if (!Z(e)) return;
+			N(e, r);
+			return;
+		}
+		if (e.key !== "Enter" && e.key !== " ") return;
+		let i = n.closest(t.closeSelector);
+		if (i instanceof HTMLElement && s(i) && !Rt(i)) {
+			if (!Z(e)) return;
+			e.preventDefault(), E(i);
+			return;
+		}
+		let a = A(n);
+		!a || Rt(a) || Z(e) && (e.preventDefault(), D(a));
+	}, F = !1, I = () => {
+		F || (F = !0, requestAnimationFrame(() => {
+			F = !1, k();
+		}));
+	}, ee = !1, L = () => {
+		ee || (ee = !0, requestAnimationFrame(() => {
+			ee = !1, O();
+		}));
+	}, R = typeof MutationObserver < "u" ? new MutationObserver(() => I()) : null;
+	return document.addEventListener("click", M), document.addEventListener("keydown", P, !0), window.addEventListener("resize", L), window.addEventListener("scroll", L, !0), R && n instanceof Node && R.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"aria-controls",
+			"aria-labelledby",
+			"popover-root",
+			"popover-panel",
+			"popover-close",
+			"popover-header"
+		]
+	}), k(), {
+		destroy: () => {
+			document.removeEventListener("click", M), document.removeEventListener("keydown", P, !0), window.removeEventListener("resize", L), window.removeEventListener("scroll", L, !0), R?.disconnect();
+		},
+		sync: k,
+		open: T,
+		close: E,
+		toggle: D
+	};
+}, Jt = (e = {}) => qt(e), $ = null, Yt = !1, Xt = null, Zt = () => {
+	Xt &&= (document.removeEventListener("DOMContentLoaded", Xt), null);
+}, Qt = () => typeof window > "u" || typeof document > "u" ? null : (Yt = !1, Zt(), $ ? ($.sync(), $) : ($ = qt(), $)), $t = () => {
+	Yt = !0, Zt(), $?.destroy(), $ = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Xt = () => {
+	Xt = null, Yt || Qt();
+}, document.addEventListener("DOMContentLoaded", Xt)) : Qt());
 //#endregion
 //#region src/tokens/index.ts
-var Ct = {
+var en = {
 	colors: {
 		families: [
 			"black",
@@ -1510,4 +1785,4 @@ var Ct = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, z as createAccordion, tt as createDrawer, Ie as createModal, T as createNavigation, ge as createTabs, gt as createToast, te as initAccordion, nt as initDrawer, Le as initModal, E as initNavigation, _e as initTabs, _t as initToast, ae as startAccordionRuntime, ot as startDrawerRuntime, Be as startModalRuntime, O as startNavigationRuntime, xe as startTabsRuntime, xt as startToastRuntime, oe as stopAccordionRuntime, st as stopDrawerRuntime, Ve as stopModalRuntime, k as stopNavigationRuntime, Se as stopTabsRuntime, St as stopToastRuntime, Ct as tokens };
+export { v as Accordion, te as createAccordion, at as createDrawer, ze as createModal, T as createNavigation, qt as createPopover, ve as createTabs, bt as createToast, ne as initAccordion, ot as initDrawer, Be as initModal, E as initNavigation, Jt as initPopover, ye as initTabs, xt as initToast, oe as startAccordionRuntime, ut as startDrawerRuntime, We as startModalRuntime, O as startNavigationRuntime, Qt as startPopoverRuntime, we as startTabsRuntime, Tt as startToastRuntime, se as stopAccordionRuntime, dt as stopDrawerRuntime, Ge as stopModalRuntime, k as stopNavigationRuntime, $t as stopPopoverRuntime, Te as stopTabsRuntime, Et as stopToastRuntime, en as tokens };

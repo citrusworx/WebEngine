@@ -36,6 +36,8 @@ Pending Juice changesets on master (consume them at the next cut; Juice-only if 
 | `juice-toast-theme-chrome` | **minor** | Toast theme chrome roles (`--juice-toast-*`) |
 | `juice-toast-runtime` | **minor** | DOM-first toast / snackbar runtime (show/dismiss, duration, live region, Escape) |
 | `juice-toast-runtime-docs` | **patch** | Toast runtime / maturity docs (slice C) |
+| `juice-popover-theme-chrome` | **minor** | Popover theme chrome roles (`--juice-popover-*`) |
+| `juice-popover-runtime` | **minor** | DOM-first popover runtime (open/close, placement flip, Escape, outside click) |
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
@@ -105,6 +107,7 @@ This is the stack that shipped in 0.6.0.
 
 * **Drawer A→B→C.** Shared `--juice-drawer-*` roles for `[drawer-overlay]` / `[drawer]` / `[drawer-close]` (#128). DOM-first dialog runtime (#129): `createDrawer` / `initDrawer` / `startDrawerRuntime` / `stopDrawerRuntime`, auto-boot, Escape, focus trap, exclusive drawer open, backdrop click (`drawer-overlay="static"` opts out). Runtime docs and maturity notes in #131. Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. Distinct from surface `overlay="frost|tint"` and from modal. No Sig Drawer factory. Still unpublished vs 0.6.0.
 * **Toast A→B→C.** Shared `--juice-toast-*` roles for `[toast-region]` / `[toast]` / `[toast-close]` (#133). DOM-first snackbar runtime (#135): `createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`, auto-boot, `show` / `dismiss`, `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky), auto-dismiss pause on hover/focus, Escape for the most recent visible toast only when no open modal/drawer overlay exists. Runtime docs and maturity notes in this pass. Live region: `aria-live` polite + `aria-relevant`; `role="status"` vs `role="alert"` for error/assertive. Markup-first (no programmatic message factory). Distinct from surface `overlay="frost|tint"` and from modal/drawer. No Sig Toast factory. Still unpublished vs 0.6.0.
+* **Popover A→B.** Shared `--juice-popover-*` roles for `[popover-root]` / `[popover-panel]` / `[popover-close]` (#138). DOM-first anchored runtime: `createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`, auto-boot, open/close/toggle, Escape (yields to modal/drawer), outside click, light Tab cycle, exclusive popover open, dependency-free placement with one-axis flip. Non-modal dialog (`role="dialog"`, no `aria-modal`). Never a bare `popover` attribute. Full maturity docs (slice C) and a Sig Popover factory stay later. Still unpublished vs 0.6.0.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 

@@ -11,4 +11,6 @@ export { createDrawer, initDrawer, startDrawerRuntime, stopDrawerRuntime } from 
 export type { DrawerController, DrawerOptions } from "./js/src/drawer/drawer-runtime.js";
 export { createToast, initToast, startToastRuntime, stopToastRuntime } from "./js/src/toast/toast-runtime.js";
 export type { ToastController, ToastOptions } from "./js/src/toast/toast-runtime.js";
+export { createPopover, initPopover, startPopoverRuntime, stopPopoverRuntime } from "./js/src/popover/popover-runtime.js";
+export type { PopoverController, PopoverOptions, PopoverPlacement } from "./js/src/popover/popover-runtime.js";
 export { tokens } from "./tokens/index.js";

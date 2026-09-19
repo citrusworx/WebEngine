@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), toast theme chrome (`--juice-toast-*`), and popover theme chrome (`--juice-popover-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md). Popover is CSS-first chrome in this cut (no runtime).
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), toast theme chrome (`--juice-toast-*`), and popover theme chrome (`--juice-popover-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md). Popover is an anchored non-modal dialog runtime on `[popover-root]` (theme chrome plus open/close / placement).
 
 ## 1. Layer rule
 
@@ -202,7 +202,7 @@ Consumed by `popover.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint
 
 This is **Juice chrome**, not the native HTML Popover API. Never use a bare `popover` attribute for the panel — `popover=""` / `popover="manual"` activates the platform API. Juice names are `[popover-root]` (positioning wrapper), `[popover-panel]` (the surface), optional `[popover-header]` / `[popover-body]`, and `[popover-close]`.
 
-Popover is **not** a modal dialog, **not** a drawer, **not** a toast stack, and **not** the surface `overlay="frost|tint"` utility. There is no scrim. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[popover-root]` so static open markup demos stay visible. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"` — CSS stubs transform-origin and a small offset; runtime owns flip in a later cut.
+Popover is **not** a modal dialog, **not** a drawer, **not** a toast stack, and **not** the surface `overlay="frost|tint"` utility. There is no scrim. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[popover-root]` so static open markup demos stay visible. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"` — CSS stubs transform-origin and a small offset; the runtime positions the root and flips once to the opposite side if the preferred side overflows.
 
 Tide must stay a dark panel, not a white glass popover.
 
@@ -374,4 +374,4 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 ## Status
 
-This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B, and popover A (theme chrome only): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, and `--juice-popover-*`. Full popover docs / runtime / maturity are later. Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B, and popover A→B (theme chrome plus runtime): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, and `--juice-popover-*`. Full popover maturity docs are later. Blush, CLI, and publish are out of scope here.
