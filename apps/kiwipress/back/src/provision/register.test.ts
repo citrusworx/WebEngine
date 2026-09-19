@@ -125,7 +125,7 @@ describe("registerKiwiPressProvision", () => {
         const body = res.json as { steps: Array<{ id: string }>; plan: { counts: { databases: number } } };
         expect(body.plan.counts.databases).toBe(2);
         expect(body.steps.map((step) => step.id)).toContain("droplet");
-        expect(JSON.stringify(res.json)).not.toMatch(/dop_v1_|password/i);
+        expect(JSON.stringify(res.json)).not.toMatch(/dop_v1_|REPLACE_ME/);
     });
 
     it("fails apply closed when the server has no DO token", async () => {

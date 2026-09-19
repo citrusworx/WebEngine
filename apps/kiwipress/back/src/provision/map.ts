@@ -8,6 +8,7 @@ import {
 } from "@citrusworx/grapevine";
 import type {
     BlueprintPackId,
+    PlanResponse,
     ProvisionStep,
     TimelineStepId,
     WizardSnapshot
@@ -216,7 +217,7 @@ export function timelineSteps(plan: GrapePlan, snapshot: WizardSnapshot): Provis
     }));
 }
 
-export function publicPlan(plan: GrapePlan) {
+export function publicPlan(plan: GrapePlan): PlanResponse["plan"] {
     return {
         provider: plan.provider,
         region: plan.region,
