@@ -768,6 +768,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initToast");
         expect(module).toHaveProperty("startToastRuntime");
         expect(module).toHaveProperty("stopToastRuntime");
+        expect(module).toHaveProperty("createPopover");
+        expect(module).toHaveProperty("initPopover");
+        expect(module).toHaveProperty("startPopoverRuntime");
+        expect(module).toHaveProperty("stopPopoverRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

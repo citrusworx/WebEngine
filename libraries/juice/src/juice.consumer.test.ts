@@ -49,6 +49,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopDrawerRuntime();
         module.stopToastRuntime();
+        module.stopPopoverRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -90,6 +91,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopDrawerRuntime();
         module.stopToastRuntime();
+        module.stopPopoverRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -127,6 +129,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopDrawerRuntime();
         module.stopToastRuntime();
+        module.stopPopoverRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -166,6 +169,7 @@ describe("Juice consumer smoke", () => {
         module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopToastRuntime();
+        module.stopPopoverRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -205,6 +209,48 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopToastRuntime();
+        module.stopPopoverRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built popover runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopPopoverRuntime();
+        document.body.innerHTML = `
+            <button type="button" aria-controls="demo-pop">Open</button>
+            <div popover-root id="demo-pop" hidden>
+                <div popover-panel>
+                    <button type="button" popover-close aria-label="Close">×</button>
+                    <div popover-header><h2 id="demo-title">Help</h2></div>
+                    <div popover-body>Account details</div>
+                </div>
+            </div>
+        `;
+
+        const controller = module.createPopover({ root: document.body });
+        const root = document.getElementById("demo-pop");
+        const opener = document.querySelector("[aria-controls]");
+        const panel = document.querySelector("[popover-panel]");
+
+        expect(panel?.getAttribute("role")).toBe("dialog");
+        expect(panel?.getAttribute("aria-modal")).toBeNull();
+        expect(root?.hasAttribute("hidden")).toBe(true);
+        expect(root?.hasAttribute("popover")).toBe(false);
+
+        opener?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(root?.hasAttribute("hidden")).toBe(false);
+        expect(opener?.getAttribute("aria-expanded")).toBe("true");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopPopoverRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();

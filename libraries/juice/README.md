@@ -93,6 +93,10 @@ import {
   initToast,
   startToastRuntime,
   stopToastRuntime,
+  createPopover,
+  initPopover,
+  startPopoverRuntime,
+  stopPopoverRuntime,
   createNavigation,
   initNavigation,
   startNavigationRuntime,
@@ -103,7 +107,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, and toast runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, and `[toast-region]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), and [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, and popover runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, and `[popover-root]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), and [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md).
 
 ## Use the built files directly
 
@@ -157,6 +161,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). See [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md).
 - toast chrome colors come from `--juice-toast-*` roles bound by the active theme. `[toast-region]` is a non-modal stack (default `top-right`); hide an individual `[toast]` with the native `hidden` attribute. Status is `[toast="success|error|info|warning"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[toast-close]`, `toast-duration`, live-region ARIA). It is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed. See [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md).
 - drawer chrome colors come from `--juice-drawer-*` roles bound by the active theme; hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. See [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
+- popover chrome colors come from `--juice-popover-*` roles bound by the active theme; hide `[popover-root]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the root id. The runtime auto-enhances that markup (open/close, Escape, outside click, light Tab cycle, exclusive, one-axis flip). The panel is a non-modal dialog (`role="dialog"`, no `aria-modal`). Never use a bare `popover` attribute — the surface is `[popover-panel]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`.
 
 ```html
 <div tabs name="settings">
@@ -214,6 +219,15 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
     <div toast-title>Saved</div>
     <div toast-body>Your changes were written.</div>
     <button type="button" toast-close aria-label="Dismiss">×</button>
+  </div>
+</div>
+
+<button type="button" aria-controls="demo-pop">Open help</button>
+<div popover-root id="demo-pop" hidden>
+  <div popover-panel role="dialog">
+    <button type="button" popover-close aria-label="Close">×</button>
+    <div popover-header><h2>Help</h2></div>
+    <div popover-body>Account details live on this page.</div>
   </div>
 </div>
 ```

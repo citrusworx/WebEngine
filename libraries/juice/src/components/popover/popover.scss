@@ -22,19 +22,21 @@
 //   [popover-panel]  the floating surface
 //   [popover-header] optional title
 //   [popover-body]   optional body
-//   [popover-close]  dismiss chrome (runtime wires in slice B)
+//   [popover-close]  dismiss chrome (runtime wires click / keyboard)
 //
 // Popover is an anchored floating panel (menus, help, lightweight overlays).
 // It is not a modal dialog, not a drawer, not a toast stack, and not the
-// surface `overlay="frost|tint"` utility. No focus trap / open-close JS here.
+// surface `overlay="frost|tint"` utility. The runtime treats the panel as a
+// non-modal dialog (`role="dialog"`, no `aria-modal`).
 //
 // Closed vs open uses the native `hidden` attribute on [popover-root]
 // (display: none). Markup without [hidden] stays visible so static demos
-// keep working. Runtime (later) toggles [hidden] and wires [popover-close].
+// keep working. The runtime toggles [hidden], wires [popover-close], and
+// positions the root.
 // Optional surfaceTone on [popover-panel] is allowed; do not force it.
 //
 // Placement (default bottom). CSS stubs transform-origin + a small offset
-// for static demos. Runtime owns flip / shift / collision in slice B:
+// for static demos. Runtime owns one-axis flip (no shift / size middleware):
 //   [popover-root] / [popover-root="bottom"]
 //   [popover-root="top"]
 //   [popover-root="left"]

@@ -313,6 +313,18 @@ Toast is non-modal feedback. It is not a dialog overlay and not the surface `ove
 
 See [Toast Runtime](./juice-toast-runtime.md). Theme paint uses `--juice-toast-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`).
 
+### Popover
+
+- `popover-root` — positioning wrapper / widget root. Hide with the native `hidden` attribute. Values `"top"` / `"bottom"` / `"left"` / `"right"` (bare or unspecified is bottom). The runtime positions the root and flips once to the opposite side if the preferred side overflows
+- `popover-panel` — floating surface (`role="dialog"` without `aria-modal`). Never a bare `popover` attribute
+- `popover-header` — optional title
+- `popover-body` — optional body
+- `popover-close` — dismiss control (surface paint, not a CTA)
+
+Openers pair through `aria-controls` pointing at the root `id`. There is no extra Juice opener attribute.
+
+Popover is a non-modal anchored panel. It is not a modal dialog, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Theme paint uses `--juice-popover-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`).
+
 ## Usage Examples
 
 ```html
