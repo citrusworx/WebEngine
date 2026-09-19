@@ -17,7 +17,7 @@
 //
 // Closed vs open uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
-// Runtime (later) toggles [hidden] on [drawer-overlay].
+// Runtime toggles [hidden] on [drawer-overlay].
 // Optional surfaceTone on [drawer] is allowed; do not force it.
 // This is not the surface `overlay="frost|tint"` utility.
 //

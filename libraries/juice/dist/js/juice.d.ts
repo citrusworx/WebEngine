@@ -6,3 +6,5 @@ export { createTabs, initTabs, startTabsRuntime, stopTabsRuntime } from "./src/t
 export type { TabsController, TabsOptions } from "./src/tabs/tabs-runtime.js";
 export { createModal, initModal, startModalRuntime, stopModalRuntime } from "./src/modal/modal-runtime.js";
 export type { ModalController, ModalOptions } from "./src/modal/modal-runtime.js";
+export { createDrawer, initDrawer, startDrawerRuntime, stopDrawerRuntime } from "./src/drawer/drawer-runtime.js";
+export type { DrawerController, DrawerOptions } from "./src/drawer/drawer-runtime.js";

@@ -18,6 +18,7 @@
     "src/js/src/accordion/accordion-runtime.ts",
     "src/js/src/tabs/tabs-runtime.ts",
     "src/js/src/modal/modal-runtime.ts",
+    "src/js/src/drawer/drawer-runtime.ts",
     "src/tokens/**/*.ts",
     "src/themes/**/*.ts",
     "src/jsx.d.ts"
