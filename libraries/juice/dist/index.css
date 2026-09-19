@@ -100233,12 +100233,63 @@ Creating Gradient Animations
   box-shadow: 8px 8px 16px var(--shadow-color) !important;
 }
 
-[surfaceTone=soft] {
-  background-color: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(216.75, 216.75, 216.75, 0.6);
-  box-shadow: 0 18px 40px -28px rgba(140.25, 140.25, 140.25, 0.35);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+[surfaceTone=soft],
+[theme] [surfaceTone=soft] {
+  background-color: var(--juice-surface-soft-bg, rgba(255, 255, 255, 0.88));
+  border: 1px solid var(--juice-surface-soft-border, rgba(216.75, 216.75, 216.75, 0.6));
+  box-shadow: var(--juice-surface-soft-shadow, 0 18px 40px -28px rgba(140.25, 140.25, 140.25, 0.35));
+  -webkit-backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+          backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+}
+
+[surfaceTone=strong],
+[theme] [surfaceTone=strong] {
+  background-color: var(--juice-surface-strong-bg, rgba(255, 255, 255, 0.98));
+  border: 1px solid var(--juice-surface-strong-border, rgba(216.75, 216.75, 216.75, 0.85));
+  box-shadow: var(--juice-surface-strong-shadow, 0 22px 48px -22px rgba(140.25, 140.25, 140.25, 0.42));
+  -webkit-backdrop-filter: blur(var(--juice-surface-strong-blur, 0px));
+          backdrop-filter: blur(var(--juice-surface-strong-blur, 0px));
+}
+
+[surfaceTone=muted],
+[theme] [surfaceTone=muted] {
+  background-color: var(--juice-surface-muted-bg, hsl(0, 0%, 95%));
+  border: 1px solid var(--juice-surface-muted-border, rgba(216.75, 216.75, 216.75, 0.45));
+  box-shadow: var(--juice-surface-muted-shadow, none);
+  -webkit-backdrop-filter: blur(var(--juice-surface-muted-blur, 0px));
+          backdrop-filter: blur(var(--juice-surface-muted-blur, 0px));
+}
+
+[borderStrength=soft],
+[theme] [borderStrength=soft] {
+  border-width: var(--juice-border-strength-soft-width, 1px);
+  border-style: solid;
+}
+
+[borderStrength=soft]:not([surfaceTone]):not([borderColor]),
+[theme] [borderStrength=soft]:not([surfaceTone]):not([borderColor]) {
+  border-color: var(--juice-border-strength-soft-color, rgba(216.75, 216.75, 216.75, 0.45));
+}
+
+[borderStrength=bold],
+[theme] [borderStrength=bold] {
+  border-width: var(--juice-border-strength-bold-width, 2px);
+  border-style: solid;
+}
+
+[borderStrength=bold]:not([surfaceTone]):not([borderColor]),
+[theme] [borderStrength=bold]:not([surfaceTone]):not([borderColor]) {
+  border-color: var(--juice-border-strength-bold-color, rgba(204, 204, 204, 0.9));
+}
+
+[surfaceTone][borderStrength=soft],
+[theme] [surfaceTone][borderStrength=soft] {
+  border-width: var(--juice-border-strength-soft-width, 1px);
+}
+
+[surfaceTone][borderStrength=bold],
+[theme] [surfaceTone][borderStrength=bold] {
+  border-width: var(--juice-border-strength-bold-width, 2px);
 }
 
 [bgColor=black-100] {
