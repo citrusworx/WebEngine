@@ -175,6 +175,43 @@
     --juice-drawer-close-hover: var(--aqua-drawer-close-hover);
     --juice-drawer-focus-ring: var(--aqua-drawer-focus-ring);
 
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Status accents
+       remap Aquaflux identity (no new red/green family): accent /
+       page-deep / accent-soft / accent-strong. */
+    --aqua-toast-panel: var(--aqua-surface-strong);
+    --aqua-toast-panel-border: var(--aqua-border);
+    --aqua-toast-panel-shadow: 0 18px 40px -24px var(--aqua-shadow);
+    --aqua-toast-ink: var(--aqua-text);
+    --aqua-toast-close: var(--aqua-surface-strong);
+    --aqua-toast-close-color: var(--aqua-heading);
+    --aqua-toast-close-hover: var(--aqua-surface-muted);
+    --aqua-toast-focus-ring: var(--aqua-accent);
+    --aqua-toast-success: var(--aqua-accent);
+    --aqua-toast-success-soft: color-mix(in srgb, var(--aqua-accent) 14%, var(--aqua-surface-strong));
+    --aqua-toast-error: var(--aqua-page-deep);
+    --aqua-toast-error-soft: color-mix(in srgb, var(--aqua-page-deep) 12%, var(--aqua-surface-strong));
+    --aqua-toast-info: var(--aqua-accent-soft);
+    --aqua-toast-info-soft: color-mix(in srgb, var(--aqua-accent-soft) 18%, var(--aqua-surface-strong));
+    --aqua-toast-warning: var(--aqua-accent-strong);
+    --aqua-toast-warning-soft: color-mix(in srgb, var(--aqua-accent-strong) 12%, var(--aqua-surface-strong));
+    --juice-toast-panel: var(--aqua-toast-panel);
+    --juice-toast-panel-border: var(--aqua-toast-panel-border);
+    --juice-toast-panel-shadow: var(--aqua-toast-panel-shadow);
+    --juice-toast-ink: var(--aqua-toast-ink);
+    --juice-toast-close: var(--aqua-toast-close);
+    --juice-toast-close-color: var(--aqua-toast-close-color);
+    --juice-toast-close-hover: var(--aqua-toast-close-hover);
+    --juice-toast-focus-ring: var(--aqua-toast-focus-ring);
+    --juice-toast-success: var(--aqua-toast-success);
+    --juice-toast-success-soft: var(--aqua-toast-success-soft);
+    --juice-toast-error: var(--aqua-toast-error);
+    --juice-toast-error-soft: var(--aqua-toast-error-soft);
+    --juice-toast-info: var(--aqua-toast-info);
+    --juice-toast-info-soft: var(--aqua-toast-info-soft);
+    --juice-toast-warning: var(--aqua-toast-warning);
+    --juice-toast-warning-soft: var(--aqua-toast-warning-soft);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -611,5 +648,90 @@
 [theme="aquaflux"] button[drawer-close]:focus-visible,
 [theme="aquaflux"] [drawer-close]:focus-visible {
     outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Aquaflux buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme="aquaflux"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="aquaflux"] [toast-title],
+[theme="aquaflux"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="aquaflux"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="aquaflux"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="aquaflux"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="aquaflux"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="aquaflux"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="aquaflux"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="aquaflux"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="aquaflux"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="aquaflux"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="aquaflux"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="aquaflux"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="aquaflux"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="aquaflux"] button[toast-close],
+[theme="aquaflux"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[toast-close]:hover,
+[theme="aquaflux"] [toast-close]:hover {
+    background-image: none;
+    background-color: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+    transform: none;
+}
+
+[theme="aquaflux"] button[toast-close]:focus-visible,
+[theme="aquaflux"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
     outline-offset: 2px;
 }

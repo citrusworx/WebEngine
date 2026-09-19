@@ -457,6 +457,42 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-drawer-close-hover: var(--jx-drawer-close-hover);
     --juice-drawer-focus-ring: var(--jx-drawer-focus-ring);
 
+    /* Toast chrome — non-modal stack + panel from existing --jx-* tokens.
+       Close is a surface control, not the CTA fill. Status remaps accent /
+       page-deep / secondary / warm. */
+    --jx-toast-panel: var(--jx-surface);
+    --jx-toast-panel-border: var(--jx-border);
+    --jx-toast-panel-shadow: var(--jx-shadow-strong);
+    --jx-toast-ink: var(--jx-text);
+    --jx-toast-close: var(--jx-surface);
+    --jx-toast-close-color: var(--jx-heading);
+    --jx-toast-close-hover: var(--jx-surface-muted);
+    --jx-toast-focus-ring: var(--jx-accent);
+    --jx-toast-success: var(--jx-accent);
+    --jx-toast-success-soft: var(--jx-accent-soft);
+    --jx-toast-error: var(--jx-page-deep);
+    --jx-toast-error-soft: color-mix(in srgb, var(--jx-page-deep) 12%, var(--jx-surface));
+    --jx-toast-info: var(--jx-accent-secondary);
+    --jx-toast-info-soft: var(--jx-accent-tint);
+    --jx-toast-warning: var(--jx-warm);
+    --jx-toast-warning-soft: var(--jx-warm-soft);
+    --juice-toast-panel: var(--jx-toast-panel);
+    --juice-toast-panel-border: var(--jx-toast-panel-border);
+    --juice-toast-panel-shadow: var(--jx-toast-panel-shadow);
+    --juice-toast-ink: var(--jx-toast-ink);
+    --juice-toast-close: var(--jx-toast-close);
+    --juice-toast-close-color: var(--jx-toast-close-color);
+    --juice-toast-close-hover: var(--jx-toast-close-hover);
+    --juice-toast-focus-ring: var(--jx-toast-focus-ring);
+    --juice-toast-success: var(--jx-toast-success);
+    --juice-toast-success-soft: var(--jx-toast-success-soft);
+    --juice-toast-error: var(--jx-toast-error);
+    --juice-toast-error-soft: var(--jx-toast-error-soft);
+    --juice-toast-info: var(--jx-toast-info);
+    --juice-toast-info-soft: var(--jx-toast-info-soft);
+    --juice-toast-warning: var(--jx-toast-warning);
+    --juice-toast-warning-soft: var(--jx-toast-warning-soft);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -737,6 +773,85 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] button[drawer-close]:focus-visible,
 [theme="${config.id}"] [drawer-close]:focus-visible {
     outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="${config.id}"] [toast-title],
+[theme="${config.id}"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="${config.id}"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="${config.id}"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="${config.id}"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="${config.id}"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="${config.id}"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="${config.id}"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="${config.id}"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="${config.id}"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="${config.id}"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="${config.id}"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="${config.id}"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="${config.id}"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="${config.id}"] button[toast-close],
+[theme="${config.id}"] [toast-close] {
+    background: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[toast-close]:hover,
+[theme="${config.id}"] [toast-close]:hover {
+    background: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+}
+
+[theme="${config.id}"] button[toast-close]:focus-visible,
+[theme="${config.id}"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
     outline-offset: 2px;
 }
 

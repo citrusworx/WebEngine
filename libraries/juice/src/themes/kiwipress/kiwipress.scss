@@ -8,7 +8,7 @@
 /*
   KiwiPress is a Juice theme.
   The theme paints Juice's component primitives — it does not define them.
-  Structure (hero, card, cta, panel, modal, badge, stat, workflow, search-panel,
+  Structure (hero, card, cta, panel, modal, drawer, toast, badge, stat, workflow, search-panel,
   tabs, plan, section-header) lives in src/components. The theme only owns:
   - color relationships
   - typography voice
@@ -170,6 +170,42 @@
     --juice-drawer-close-color: var(--kw-drawer-close-color);
     --juice-drawer-close-hover: var(--kw-drawer-close-hover);
     --juice-drawer-focus-ring: var(--kw-drawer-focus-ring);
+
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the kiwi CTA. Status remaps
+       kiwi / cornflower / marmalade identity (no new hue family). */
+    --kw-toast-panel: var(--kw-surface);
+    --kw-toast-panel-border: var(--kw-border);
+    --kw-toast-panel-shadow: 0 18px 40px -24px var(--kw-shadow-strong);
+    --kw-toast-ink: var(--kw-text);
+    --kw-toast-close: var(--kw-surface);
+    --kw-toast-close-color: var(--kw-heading);
+    --kw-toast-close-hover: var(--kw-surface-muted);
+    --kw-toast-focus-ring: var(--kw-accent);
+    --kw-toast-success: var(--kw-accent);
+    --kw-toast-success-soft: var(--kw-accent-soft);
+    --kw-toast-error: var(--kw-surface-deep);
+    --kw-toast-error-soft: color-mix(in srgb, var(--kw-surface-deep) 10%, var(--kw-surface));
+    --kw-toast-info: var(--kw-tier-content);
+    --kw-toast-info-soft: var(--kw-tier-content-soft);
+    --kw-toast-warning: var(--kw-warm);
+    --kw-toast-warning-soft: var(--kw-warm-soft);
+    --juice-toast-panel: var(--kw-toast-panel);
+    --juice-toast-panel-border: var(--kw-toast-panel-border);
+    --juice-toast-panel-shadow: var(--kw-toast-panel-shadow);
+    --juice-toast-ink: var(--kw-toast-ink);
+    --juice-toast-close: var(--kw-toast-close);
+    --juice-toast-close-color: var(--kw-toast-close-color);
+    --juice-toast-close-hover: var(--kw-toast-close-hover);
+    --juice-toast-focus-ring: var(--kw-toast-focus-ring);
+    --juice-toast-success: var(--kw-toast-success);
+    --juice-toast-success-soft: var(--kw-toast-success-soft);
+    --juice-toast-error: var(--kw-toast-error);
+    --juice-toast-error-soft: var(--kw-toast-error-soft);
+    --juice-toast-info: var(--kw-toast-info);
+    --juice-toast-info-soft: var(--kw-toast-info-soft);
+    --juice-toast-warning: var(--kw-toast-warning);
+    --juice-toast-warning-soft: var(--kw-toast-warning-soft);
 
     background-color: var(--kw-page);
     color: var(--kw-text);
@@ -1362,6 +1398,89 @@
 [theme="kiwipress"] button[drawer-close]:focus-visible,
 [theme="kiwipress"] [drawer-close]:focus-visible {
     outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic KiwiPress buttons are kiwi CTAs;
+   [toast-close] stays a surface control. */
+[theme="kiwipress"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="kiwipress"] [toast-title],
+[theme="kiwipress"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="kiwipress"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="kiwipress"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="kiwipress"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="kiwipress"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="kiwipress"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="kiwipress"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="kiwipress"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="kiwipress"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="kiwipress"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="kiwipress"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="kiwipress"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="kiwipress"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="kiwipress"] button[toast-close],
+[theme="kiwipress"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[toast-close]:hover,
+[theme="kiwipress"] [toast-close]:hover {
+    background-color: var(--juice-toast-close-hover);
+    transform: none;
+}
+
+[theme="kiwipress"] button[toast-close]:focus-visible,
+[theme="kiwipress"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
     outline-offset: 2px;
 }
 
