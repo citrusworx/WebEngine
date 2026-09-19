@@ -438,6 +438,25 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-modal-close-hover: var(--jx-modal-close-hover);
     --juice-modal-focus-ring: var(--jx-modal-focus-ring);
 
+    /* Drawer chrome — dimming scrim + edge panel from existing --jx-* tokens.
+       Close is a surface control, not the CTA fill. */
+    --jx-drawer-overlay: color-mix(in srgb, var(--jx-page-deep) 70%, transparent);
+    --jx-drawer-panel: var(--jx-surface);
+    --jx-drawer-panel-border: var(--jx-border);
+    --jx-drawer-panel-shadow: var(--jx-shadow-strong);
+    --jx-drawer-close: var(--jx-surface);
+    --jx-drawer-close-color: var(--jx-heading);
+    --jx-drawer-close-hover: var(--jx-surface-muted);
+    --jx-drawer-focus-ring: var(--jx-accent);
+    --juice-drawer-overlay: var(--jx-drawer-overlay);
+    --juice-drawer-panel: var(--jx-drawer-panel);
+    --juice-drawer-panel-border: var(--jx-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--jx-drawer-panel-shadow);
+    --juice-drawer-close: var(--jx-drawer-close);
+    --juice-drawer-close-color: var(--jx-drawer-close-color);
+    --juice-drawer-close-hover: var(--jx-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--jx-drawer-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -689,6 +708,35 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] button[modal-close]:focus-visible,
 [theme="${config.id}"] [modal-close]:focus-visible {
     outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="${config.id}"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="${config.id}"] button[drawer-close],
+[theme="${config.id}"] [drawer-close] {
+    background: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[drawer-close]:hover,
+[theme="${config.id}"] [drawer-close]:hover {
+    background: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+}
+
+[theme="${config.id}"] button[drawer-close]:focus-visible,
+[theme="${config.id}"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
     outline-offset: 2px;
 }
 

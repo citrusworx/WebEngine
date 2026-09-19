@@ -156,6 +156,25 @@
     --juice-modal-close-hover: var(--aqua-modal-close-hover);
     --juice-modal-focus-ring: var(--aqua-modal-focus-ring);
 
+    /* Drawer chrome — same identity tokens as modal. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --aqua-drawer-overlay: color-mix(in srgb, var(--aqua-page-deep) 62%, transparent);
+    --aqua-drawer-panel: var(--aqua-surface-strong);
+    --aqua-drawer-panel-border: var(--aqua-border);
+    --aqua-drawer-panel-shadow: 0 24px 56px -24px var(--aqua-shadow);
+    --aqua-drawer-close: var(--aqua-surface-strong);
+    --aqua-drawer-close-color: var(--aqua-heading);
+    --aqua-drawer-close-hover: var(--aqua-surface-muted);
+    --aqua-drawer-focus-ring: var(--aqua-accent);
+    --juice-drawer-overlay: var(--aqua-drawer-overlay);
+    --juice-drawer-panel: var(--aqua-drawer-panel);
+    --juice-drawer-panel-border: var(--aqua-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--aqua-drawer-panel-shadow);
+    --juice-drawer-close: var(--aqua-drawer-close);
+    --juice-drawer-close-color: var(--aqua-drawer-close-color);
+    --juice-drawer-close-hover: var(--aqua-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--aqua-drawer-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -557,5 +576,40 @@
 [theme="aquaflux"] button[modal-close]:focus-visible,
 [theme="aquaflux"] [modal-close]:focus-visible {
     outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Aquaflux buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="aquaflux"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="aquaflux"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="aquaflux"] button[drawer-close],
+[theme="aquaflux"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[drawer-close]:hover,
+[theme="aquaflux"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="aquaflux"] button[drawer-close]:focus-visible,
+[theme="aquaflux"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
     outline-offset: 2px;
 }

@@ -170,6 +170,35 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[modal-overlay\][^{]*\{[^}]*--juice-overlay-frost/);
     });
 
+    it("includes drawer structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[drawer-overlay]");
+        expect(css).toContain("[drawer]");
+        expect(css).toContain("[drawer-header]");
+        expect(css).toContain("[drawer-body]");
+        expect(css).toContain("[drawer-close]");
+        expect(css).toContain("[drawer-size=");
+        expect(css).toMatch(/\[theme\]\s+\[drawer-overlay\]/);
+        expect(css).toMatch(/\[theme\]\s+\[drawer\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[drawer-close\]/);
+        expect(css).toMatch(/\[drawer-overlay\]\[hidden\]/);
+        expect(css).toMatch(/\[drawer=["']?left["']?\]/);
+        expect(css).toMatch(/\[drawer-size=["']?sm["']?\]/);
+        expect(css).toMatch(/\[drawer-size=["']?lg["']?\]/);
+        expect(css).toMatch(/\[drawer-close\]:focus-visible/);
+        expect(css).toContain("--juice-drawer-overlay");
+        expect(css).toContain("--juice-drawer-panel");
+        expect(css).toContain("--juice-drawer-panel-border");
+        expect(css).toContain("--juice-drawer-panel-shadow");
+        expect(css).toContain("--juice-drawer-close");
+        expect(css).toContain("--juice-drawer-close-color");
+        expect(css).toContain("--juice-drawer-close-hover");
+        expect(css).toContain("--juice-drawer-focus-ring");
+        expect(css).not.toMatch(/\[drawer-close\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[drawer-overlay\][^{]*\{[^}]*--juice-overlay-frost/);
+    });
+
     it("includes tabs structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -369,6 +398,33 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-modal-panel: var(--tide-page)");
     });
 
+    it("binds drawer chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-drawer-overlay: color-mix(in srgb, var(--aqua-page-deep) 62%, transparent)");
+        expect(aquaCss).toContain("--juice-drawer-panel: var(--aqua-drawer-panel)");
+        expect(aquaCss).toContain("button[drawer-close]");
+        expect(aquaCss).not.toMatch(/button\[drawer-close\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-drawer-overlay: color-mix(in srgb, var(--kw-surface-deep) 75%, transparent)");
+        expect(kiwiCss).toContain("--juice-drawer-close: var(--kw-drawer-close)");
+        expect(kiwiCss).toContain("button[drawer-close]");
+        expect(kiwiCss).not.toMatch(/button\[drawer-close\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-drawer-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-drawer-overlay: var(--cm-drawer-overlay)");
+        expect(mintCss).toContain("button[drawer-close]");
+
+        expect(tideCss).toContain("--tide-drawer-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-drawer-overlay: var(--tide-drawer-overlay)");
+        expect(tideCss).toContain("button[drawer-close]");
+        expect(tideCss).not.toMatch(/button\[drawer-close\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-drawer-panel: var(--tide-page)");
+    });
+
     it("ships tide CSS as a stable theme export", () => {
         const bundledThemeIds = readBundledThemeIds();
         const themePath = join(DIST_DIR, "themes", "tide.css");
@@ -399,6 +455,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-modal-overlay: var(--tide-modal-overlay)");
         expect(themeCss).toContain("--juice-modal-panel: var(--tide-modal-panel)");
         expect(themeCss).toContain("button[modal-close]");
+        expect(themeCss).toContain("--juice-drawer-overlay: var(--tide-drawer-overlay)");
+        expect(themeCss).toContain("--juice-drawer-panel: var(--tide-drawer-panel)");
+        expect(themeCss).toContain("button[drawer-close]");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");

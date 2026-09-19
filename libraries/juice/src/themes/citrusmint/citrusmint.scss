@@ -105,6 +105,25 @@
     --juice-modal-close-hover: var(--cm-modal-close-hover);
     --juice-modal-focus-ring: var(--cm-modal-focus-ring);
 
+    /* Drawer chrome — thinner --cm-* set; heading stands in for accent.
+       Close is a surface control, not heading-fill CTA. */
+    --cm-drawer-overlay: color-mix(in srgb, var(--cm-heading) 55%, transparent);
+    --cm-drawer-panel: var(--cm-surface);
+    --cm-drawer-panel-border: var(--cm-border);
+    --cm-drawer-panel-shadow: 0 22px 48px -22px color-mix(in srgb, var(--cm-heading) 22%, transparent);
+    --cm-drawer-close: var(--cm-surface);
+    --cm-drawer-close-color: var(--cm-heading);
+    --cm-drawer-close-hover: var(--cm-surface-muted);
+    --cm-drawer-focus-ring: var(--cm-heading);
+    --juice-drawer-overlay: var(--cm-drawer-overlay);
+    --juice-drawer-panel: var(--cm-drawer-panel);
+    --juice-drawer-panel-border: var(--cm-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--cm-drawer-panel-shadow);
+    --juice-drawer-close: var(--cm-drawer-close);
+    --juice-drawer-close-color: var(--cm-drawer-close-color);
+    --juice-drawer-close-hover: var(--cm-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--cm-drawer-focus-ring);
+
     background-color: var(--cm-page);
     color: var(--cm-text);
     font-family: var(--cm-body-font);
@@ -266,5 +285,37 @@
 [theme="citrusmint"] button[modal-close]:focus-visible,
 [theme="citrusmint"] [modal-close]:focus-visible {
     outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Citrusmint buttons use heading fill;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="citrusmint"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="citrusmint"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="citrusmint"] button[drawer-close],
+[theme="citrusmint"] [drawer-close] {
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="citrusmint"] button[drawer-close]:hover,
+[theme="citrusmint"] [drawer-close]:hover {
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+}
+
+[theme="citrusmint"] button[drawer-close]:focus-visible,
+[theme="citrusmint"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
     outline-offset: 2px;
 }

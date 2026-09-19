@@ -97381,6 +97381,114 @@ button[full] {
   margin: 0;
 }
 
+[drawer-overlay],
+[theme] [drawer-overlay] {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  background-color: var(--juice-drawer-overlay, var(--aqua-drawer-overlay, var(--kw-drawer-overlay, var(--cm-drawer-overlay, var(--tide-drawer-overlay, var(--jx-drawer-overlay, rgba(25.5, 25.5, 25.5, 0.55)))))));
+}
+
+[drawer-overlay][hidden],
+[theme] [drawer-overlay][hidden] {
+  display: none;
+}
+
+[drawer] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: 22rem;
+  max-width: 100%;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+[drawer=left] {
+  left: 0;
+  right: auto;
+}
+
+[drawer],
+[theme] [drawer]:not([surfaceTone]) {
+  background-color: var(--juice-drawer-panel, var(--aqua-drawer-panel, var(--kw-drawer-panel, var(--cm-drawer-panel, var(--tide-drawer-panel, var(--jx-drawer-panel, hsl(0, 0%, 100%)))))));
+  border: 1px solid var(--juice-drawer-panel-border, var(--aqua-drawer-panel-border, var(--kw-drawer-panel-border, var(--cm-drawer-panel-border, var(--tide-drawer-panel-border, var(--jx-drawer-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+  box-shadow: var(--juice-drawer-panel-shadow, var(--aqua-drawer-panel-shadow, var(--kw-drawer-panel-shadow, var(--cm-drawer-panel-shadow, var(--tide-drawer-panel-shadow, var(--jx-drawer-panel-shadow, 0 24px 56px -24px rgba(25.5, 25.5, 25.5, 0.42)))))));
+}
+
+[drawer-size=sm] {
+  width: 16rem;
+}
+
+[drawer-size=lg] {
+  width: 32rem;
+}
+
+[drawer-header] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: start;
+  padding: 2.5rem 2.5rem 1.25rem;
+}
+
+[drawer-body] {
+  padding: 0 2.5rem 2.5rem;
+}
+
+[drawer-close],
+[theme] [drawer-close] {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  background-color: var(--juice-drawer-close, var(--aqua-drawer-close, var(--kw-drawer-close, var(--cm-drawer-close, var(--tide-drawer-close, var(--jx-drawer-close, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  color: var(--juice-drawer-close-color, var(--aqua-drawer-close-color, var(--kw-drawer-close-color, var(--cm-drawer-close-color, var(--tide-drawer-close-color, var(--jx-drawer-close-color, hsl(0, 0%, 20%)))))));
+  box-shadow: none;
+  transform: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+[drawer-close]:hover,
+[theme] [drawer-close]:hover {
+  background-color: var(--juice-drawer-close-hover, var(--aqua-drawer-close-hover, var(--kw-drawer-close-hover, var(--cm-drawer-close-hover, var(--tide-drawer-close-hover, var(--jx-drawer-close-hover, hsl(0, 0%, 95%)))))));
+  background-image: none;
+  color: var(--juice-drawer-close-color, var(--aqua-drawer-close-color, var(--kw-drawer-close-color, var(--cm-drawer-close-color, var(--tide-drawer-close-color, var(--jx-drawer-close-color, hsl(0, 0%, 20%)))))));
+  transform: none;
+}
+
+[drawer-close]:focus-visible,
+[theme] [drawer-close]:focus-visible {
+  outline: 2px solid var(--juice-drawer-focus-ring, var(--aqua-drawer-focus-ring, var(--kw-drawer-focus-ring, var(--cm-drawer-focus-ring, var(--tide-drawer-focus-ring, var(--jx-drawer-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  [drawer-header] {
+    padding: 1.5rem 1.5rem 0.75rem;
+  }
+  [drawer-body] {
+    padding: 0 1.5rem 1.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [drawer-close],
+  [theme] [drawer-close] {
+    transition: none;
+  }
+}
 form input::placeholder,
 form input::-moz-placeholder,
 form input:-ms-input-placeholder,

@@ -152,6 +152,25 @@
     --juice-modal-close-hover: var(--kw-modal-close-hover);
     --juice-modal-focus-ring: var(--kw-modal-focus-ring);
 
+    /* Drawer chrome — dimming scrim + edge panel from existing tokens.
+       Close is a surface control, not the kiwi CTA. */
+    --kw-drawer-overlay: color-mix(in srgb, var(--kw-surface-deep) 75%, transparent);
+    --kw-drawer-panel: var(--kw-surface);
+    --kw-drawer-panel-border: var(--kw-border);
+    --kw-drawer-panel-shadow: 0 24px 56px -24px var(--kw-shadow-strong);
+    --kw-drawer-close: var(--kw-surface);
+    --kw-drawer-close-color: var(--kw-heading);
+    --kw-drawer-close-hover: var(--kw-surface-muted);
+    --kw-drawer-focus-ring: var(--kw-accent);
+    --juice-drawer-overlay: var(--kw-drawer-overlay);
+    --juice-drawer-panel: var(--kw-drawer-panel);
+    --juice-drawer-panel-border: var(--kw-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--kw-drawer-panel-shadow);
+    --juice-drawer-close: var(--kw-drawer-close);
+    --juice-drawer-close-color: var(--kw-drawer-close-color);
+    --juice-drawer-close-hover: var(--kw-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--kw-drawer-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1310,6 +1329,39 @@
 [theme="kiwipress"] button[modal-close]:focus-visible,
 [theme="kiwipress"] [modal-close]:focus-visible {
     outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic KiwiPress buttons are kiwi CTAs;
+   [drawer-close] stays a surface control. */
+[theme="kiwipress"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="kiwipress"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="kiwipress"] button[drawer-close],
+[theme="kiwipress"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[drawer-close]:hover,
+[theme="kiwipress"] [drawer-close]:hover {
+    background-color: var(--juice-drawer-close-hover);
+    transform: none;
+}
+
+[theme="kiwipress"] button[drawer-close]:focus-visible,
+[theme="kiwipress"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
     outline-offset: 2px;
 }
 

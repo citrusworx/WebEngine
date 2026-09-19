@@ -178,7 +178,8 @@ Put these in the theme:
 - accordion chrome role bindings (`--juice-accordion-*`)
 - tabs chrome role bindings (`--juice-tabs-*`)
 - modal chrome role bindings (`--juice-modal-*`)
-- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family. Modal chrome is a dialog scrim / panel / close contract, not `overlay="frost|tint"`. Closed vs open uses native `hidden`; the dialog runtime auto-enhances valid markup — see [Modal Runtime](./juice-modal-runtime.md).
+- drawer chrome role bindings (`--juice-drawer-*`)
+- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family. Modal chrome is a dialog scrim / panel / close contract, not `overlay="frost|tint"`. Drawer chrome is the same contract for an edge-docked panel (`[drawer]` / `[drawer="left"|"right"]`, optional `[drawer-size="sm|lg"]`), not `overlay="frost|tint"`. Closed vs open uses native `hidden`; the dialog runtime auto-enhances valid modal markup — see [Modal Runtime](./juice-modal-runtime.md).
 
 ## What does not belong in the theme
 

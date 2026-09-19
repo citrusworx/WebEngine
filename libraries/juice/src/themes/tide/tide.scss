@@ -163,6 +163,25 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-modal-close-hover: var(--tide-modal-close-hover);
     --juice-modal-focus-ring: var(--tide-modal-focus-ring);
 
+    /* Drawer chrome — dark scrim + elevated dark panel, not white glass.
+       Close is a surface control, not the CTA gradient. */
+    --tide-drawer-overlay: color-mix(in srgb, var(--tide-page) 72%, transparent);
+    --tide-drawer-panel: var(--tide-surface-strong);
+    --tide-drawer-panel-border: var(--tide-border);
+    --tide-drawer-panel-shadow: var(--tide-line-glow), 0 24px 56px -22px var(--tide-shadow);
+    --tide-drawer-close: var(--tide-surface-strong);
+    --tide-drawer-close-color: var(--tide-heading);
+    --tide-drawer-close-hover: var(--tide-surface-muted);
+    --tide-drawer-focus-ring: var(--tide-accent);
+    --juice-drawer-overlay: var(--tide-drawer-overlay);
+    --juice-drawer-panel: var(--tide-drawer-panel);
+    --juice-drawer-panel-border: var(--tide-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--tide-drawer-panel-shadow);
+    --juice-drawer-close: var(--tide-drawer-close);
+    --juice-drawer-close-color: var(--tide-drawer-close-color);
+    --juice-drawer-close-hover: var(--tide-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--tide-drawer-focus-ring);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
@@ -503,5 +522,40 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
 [theme="tide"] button[modal-close]:focus-visible,
 [theme="tide"] [modal-close]:focus-visible {
     outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Tide buttons use --tide-button-background;
+   [drawer-close] stays a surface control. Panel stays dark. */
+[theme="tide"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="tide"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="tide"] button[drawer-close],
+[theme="tide"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="tide"] button[drawer-close]:hover,
+[theme="tide"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="tide"] button[drawer-close]:focus-visible,
+[theme="tide"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
     outline-offset: 2px;
 }
