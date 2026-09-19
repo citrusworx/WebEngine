@@ -115,7 +115,7 @@ These are real docs, but they are not on the main path.
 
 | Track | What it is | Start |
 |---|---|---|
-| KiwiPress | Standalone WordPress client and Nectarine-shaped CMS. WebEngine may orchestrate it later; the library does not require the kernel. | [KiwiPress](../kiwipress/README.md) · [Getting started](../kiwipress/kiwipress-getting-started.md) · [Transfer](../kiwipress/kiwipress-transfer.md) · [Core classes](../kiwipress/core-classes.md) |
+| KiwiPress | Standalone WordPress client and Nectarine-shaped CMS. WebEngine may orchestrate it later; the library does not require the kernel. | [KiwiPress](../kiwipress/README.md) · [Getting started](../kiwipress/kiwipress-getting-started.md) · [Tutorial](../kiwipress/kiwipress-tutorial.md) · [Transfer](../kiwipress/kiwipress-transfer.md) · [Status](../kiwipress/kiwipress-status.md) |
 | Stenzil | Advanced elective compiler track, not required to ship a web app | [Stenzil](../stenzil/README.md) · [Getting started](../stenzil/stenzil-getting-started.md) · [Architecture](../stenzil/architecture.md) · [Courses](../stenzil/courses.md) |
 | Stencil folder | Legacy name only | [Redirect](../Stencil/README.md) |
 | Sugar | Visual editor under `tooling/sugar/` — not ready, not documented here | Do not promise it |
