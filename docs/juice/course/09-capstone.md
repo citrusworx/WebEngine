@@ -27,7 +27,7 @@ Required system work (not just HTML volume):
 
 - Import Juice **core + one theme**. Library `citrusmint` / `tide` / `aquaflux` / `kiwipress` is acceptable. An app-owned generated theme is better if you can run the generator; a complete YAML sketch counts if you cannot.
 - Prefer theme identity for page/heading/body. Local token attributes are allowed where you are making a *local* decision.
-- No invented Juice attributes. If you need something unspecified (`adapt`, `overlay`, `variant`, `shadowTone`), leave it out and say so.
+- No invented Juice attributes. If you need something unspecified (`adapt`, `overlay`, `variant`), leave it out and say so.
 - At most **one** app CSS file with a short comment at the top stating what it is allowed to do.
 - Sig.js is optional and small: a subscribe confirmation, a “saved title” flag. Do not rebuild the page as a SPA to finish this course. This course stays CSS and design-system focused — finishing without Sig is full credit.
 

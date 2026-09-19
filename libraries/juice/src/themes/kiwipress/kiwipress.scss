@@ -121,6 +121,12 @@
     --juice-border-strength-bold-width: 2px;
     --juice-border-strength-bold-color: var(--kw-border-strong);
 
+    /* Shadow tone — cornflower tier vs marmalade warm; no new hue family. */
+    --juice-shadow-tone-cool-color: color-mix(in srgb, var(--kw-tier-content) 18%, transparent);
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px color-mix(in srgb, var(--kw-tier-content) 18%, transparent);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--kw-warm) 18%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--kw-warm) 18%, transparent);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);

@@ -5,6 +5,8 @@ import {
     BORDER_STRENGTHS,
     REQUIRED_ACCORDION_ROLES,
     REQUIRED_TABS_ROLES,
+    SHADOW_TONE_ROLES,
+    SHADOW_TONES,
     SURFACE_TONE_ROLES,
     SURFACE_TONES,
     missingRequiredJuiceBinds,
@@ -132,6 +134,21 @@ describe("Juice theme generator surface tone roles", () => {
         for (const strength of BORDER_STRENGTHS) {
             for (const role of BORDER_STRENGTH_ROLES) {
                 expect(css).toContain(`--juice-border-strength-${strength}-${role}:`);
+            }
+        }
+    });
+
+    it("binds --juice-shadow-tone-* from existing --jx-* tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--juice-shadow-tone-cool-color: color-mix(in srgb, var(--jx-page-deep) 20%, transparent)");
+        expect(css).toContain("--juice-shadow-tone-cool-shadow: var(--jx-shadow)");
+        expect(css).toContain("--juice-shadow-tone-warm-color: color-mix(in srgb, var(--jx-warm) 22%, transparent)");
+        expect(css).toContain("--juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--jx-warm) 22%, transparent)");
+
+        for (const tone of SHADOW_TONES) {
+            for (const role of SHADOW_TONE_ROLES) {
+                expect(css).toContain(`--juice-shadow-tone-${tone}-${role}:`);
             }
         }
     });

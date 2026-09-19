@@ -89,6 +89,16 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[surfaceTone\]\[blur=["']?md["']?\]/);
         expect(css).toContain("--juice-blur-sm, 6px");
         expect(css).toContain("--juice-blur-md, 16px");
+        expect(css).toMatch(/\[shadowTone=["']?cool["']?\]/);
+        expect(css).toMatch(/\[shadowTone=["']?warm["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[shadowTone=["']?cool["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[shadowTone=["']?warm["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[shadowTone=["']?cool["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[shadowTone=["']?warm["']?\]/);
+        expect(css).toContain("--juice-shadow-tone-cool-color");
+        expect(css).toContain("--juice-shadow-tone-cool-shadow");
+        expect(css).toContain("--juice-shadow-tone-warm-color");
+        expect(css).toContain("--juice-shadow-tone-warm-shadow");
     });
 
     it("includes accordion structural chrome in core CSS", () => {
@@ -187,6 +197,24 @@ describe("Juice build artifacts", () => {
         expect(tideCss).toContain("--juice-border-strength-soft-color: var(--tide-border)");
         expect(tideCss).toContain("--juice-border-strength-bold-color: var(--tide-border-strong)");
         expect(tideCss).not.toContain("--juice-border-strength-bold-color: rgba(");
+    });
+
+    it("binds shadowTone roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--juice-shadow-tone-cool-color: var(--aqua-shadow)");
+        expect(aquaCss).toContain("--juice-shadow-tone-warm-color: color-mix(in srgb, var(--aqua-accent-strong) 16%, transparent)");
+        expect(kiwiCss).toContain("--juice-shadow-tone-cool-color: color-mix(in srgb, var(--kw-tier-content) 18%, transparent)");
+        expect(kiwiCss).toContain("--juice-shadow-tone-warm-color: color-mix(in srgb, var(--kw-warm) 18%, transparent)");
+        expect(mintCss).toContain("--juice-shadow-tone-cool-shadow:");
+        expect(mintCss).toContain("--juice-shadow-tone-warm-shadow:");
+        expect(tideCss).toContain("--juice-shadow-tone-cool-color: color-mix(in srgb, var(--tide-accent) 45%, var(--tide-shadow))");
+        expect(tideCss).toContain("--juice-shadow-tone-cool-shadow: var(--tide-line-glow)");
+        expect(tideCss).toContain("--juice-shadow-tone-warm-color: var(--tide-shadow)");
+        expect(tideCss).not.toContain("--juice-shadow-tone-warm-color: rgba(");
     });
 
     it("paints Aquaflux accordion triggers as surfaces, not CTA buttons", () => {

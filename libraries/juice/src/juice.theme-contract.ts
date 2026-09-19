@@ -44,6 +44,8 @@ export const SURFACE_TONES = ["soft", "strong", "muted"] as const;
 export const SURFACE_TONE_ROLES = ["bg", "border", "shadow", "blur"] as const;
 export const BORDER_STRENGTHS = ["soft", "bold"] as const;
 export const BORDER_STRENGTH_ROLES = ["width", "color"] as const;
+export const SHADOW_TONES = ["cool", "warm"] as const;
+export const SHADOW_TONE_ROLES = ["color", "shadow"] as const;
 
 /**
  * Optional accordion hooks consumed with transparent / no-op fallbacks.
@@ -91,6 +93,12 @@ export function requiredBorderStrengthBinds(): string[] {
     );
 }
 
+export function requiredShadowToneBinds(): string[] {
+    return SHADOW_TONES.flatMap((tone) =>
+        SHADOW_TONE_ROLES.map((role) => `--juice-shadow-tone-${tone}-${role}`)
+    );
+}
+
 /** Every required `--juice-*` bind from Theme Contract section 4. */
 export function requiredJuiceBinds(): string[] {
     return [
@@ -98,6 +106,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredTabsBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
+        ...requiredShadowToneBinds(),
     ];
 }
 
@@ -126,8 +135,8 @@ export function missingRequiredJuiceBinds(css: string): string[] {
 
 /**
  * `--jx-*` → `--juice-*` declarations the generator already emits.
- * Surface / border-strength roles bind `--juice-*` from `--jx-*` tokens
- * without a uniform suffix, so they are presence-checked only.
+ * Surface / border-strength / shadow-tone roles bind `--juice-*` from `--jx-*`
+ * tokens without a uniform suffix, so they are presence-checked only.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
