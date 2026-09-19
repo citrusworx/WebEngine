@@ -558,6 +558,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initTabs");
         expect(module).toHaveProperty("startTabsRuntime");
         expect(module).toHaveProperty("stopTabsRuntime");
+        expect(module).toHaveProperty("createModal");
+        expect(module).toHaveProperty("initModal");
+        expect(module).toHaveProperty("startModalRuntime");
+        expect(module).toHaveProperty("stopModalRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

@@ -46,6 +46,7 @@ describe("Juice consumer smoke", () => {
 
         accordion.remove();
         module.stopAccordionRuntime();
+        module.stopModalRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -82,6 +83,44 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopModalRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built modal runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopModalRuntime();
+        document.body.innerHTML = `
+            <div modal-overlay id="demo-modal" hidden>
+                <div modal>
+                    <button type="button" modal-close aria-label="Close">×</button>
+                    <div modal-header><h2 id="demo-title">Account</h2></div>
+                    <div modal-body>Billing details</div>
+                </div>
+            </div>
+            <button type="button" aria-controls="demo-modal">Open</button>
+        `;
+
+        const controller = module.createModal({ root: document.body });
+        const overlay = document.getElementById("demo-modal");
+        const opener = document.querySelector("[aria-controls]");
+        const dialog = document.querySelector("[modal]");
+
+        expect(dialog?.getAttribute("role")).toBe("dialog");
+        expect(dialog?.getAttribute("aria-modal")).toBe("true");
+        expect(overlay?.hasAttribute("hidden")).toBe(true);
+
+        opener?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(overlay?.hasAttribute("hidden")).toBe(false);
+        expect(opener?.getAttribute("aria-expanded")).toBe("true");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();

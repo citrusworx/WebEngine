@@ -28,3 +28,13 @@ export type {
     TabsController,
     TabsOptions
 } from "./src/tabs/tabs-runtime.js";
+export {
+    createModal,
+    initModal,
+    startModalRuntime,
+    stopModalRuntime
+} from "./src/modal/modal-runtime.js";
+export type {
+    ModalController,
+    ModalOptions
+} from "./src/modal/modal-runtime.js";
