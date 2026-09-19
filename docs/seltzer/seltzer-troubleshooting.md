@@ -55,7 +55,7 @@ You imported Seltzer in a browser (or edge) runtime without `process.versions.no
 
 ## CORS errors in the Sig app
 
-Pass `cors` to `listen`. CORS headers are skipped when the request has no `Origin`. A mismatched `cors.origin` also skips headers. `OPTIONS` is 204 from `listen`, not from your routes.
+Pass `cors` to `listen` (or `startSeltzerFromKernel({ cors })` when the kernel hosts HTTP). CORS headers are skipped when the request has no `Origin`. A mismatched `cors.origin` also skips headers. `OPTIONS` is 204 from `listen`, not from your routes. Two-process Vite + API: [Dual-process frontend + API](../webengine/dual-process.md).
 
 ## Extra CORS headers on `ResponseData` plus `listen({ cors })`
 

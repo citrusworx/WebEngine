@@ -351,7 +351,7 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 11. [Anti-Patterns](./seltzer-anti-patterns.md) — Express habits, leftover `ctx.json`
 12. [Examples](./seltzer-examples.md)
 13. [API Reference](./seltzer-api.md)
-14. [Integration](./seltzer-integration.md) — Nectarine, Juice/Sig, Grapevine, KiwiPress
+14. [Integration](./seltzer-integration.md) — Nectarine, Juice/Sig, Grapevine, KiwiPress ([dual-process FE + API](../webengine/dual-process.md))
 15. [Troubleshooting](./seltzer-troubleshooting.md)
 16. [Status](./seltzer-status.md) — 0.8.x maturity matrix
 17. [Roadmap](./seltzer-roadmap.md) — what closed vs what is still open
@@ -370,6 +370,7 @@ See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./se
 ## Sibling packages
 
 - [Nectarine](../nectarine/README.md) — YAML + `listApiOperations`; Seltzer hosts with `generateRoutes`
+- [WebEngine](../webengine/README.md) — kernel + opt-in `startSeltzerFromKernel` ([dual-process FE + API](../webengine/dual-process.md))
 - [Sig.js](../sigjs/README.md) / [Juice](../juice/README.md) — consume Seltzer over `fetch`
 - [Grapevine](../grapevine/README.md) — provision the machine; does not start Seltzer
 - [KiwiPress](../kiwipress/README.md) — WordPress client that stores Seltzer `handler` options

@@ -162,7 +162,7 @@ app.listen(3000, {
 });
 ```
 
-`ctx.locals` is that object. Browser preflight `OPTIONS` is 204 with CORS headers.
+`ctx.locals` is that object. Browser preflight `OPTIONS` is 204 with CORS headers. A Vite/React/Sig.js process against a kernel-hosted API is [Dual-process frontend + API](../webengine/dual-process.md).
 
 ## Call it from the Seltzer client
 

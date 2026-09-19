@@ -329,7 +329,7 @@ Caveats:
 - Successful `text/plain` comes back as a string, not JSON.
 - `allowSelfSigned` only applies to `https://` and needs the optional `undici` peer.
 
-A Sig.js page would call the same URL with `fetch` inside an `effect`. Juice styles that page. Neither library starts this Node process. CORS is `listen({ cors })`:
+A Sig.js page would call the same URL with `fetch` inside an `effect`. Juice styles that page. Neither library starts this Node process. CORS is `listen({ cors })`. Kernel-hosted listen (`startSeltzerFromKernel`) uses the same `cors` bag — [dual-process frontend + API](../webengine/dual-process.md):
 
 ```ts
 app.listen(3000, {
