@@ -74,6 +74,12 @@
     --juice-border-strength-bold-width: 2px;
     --juice-border-strength-bold-color: color-mix(in srgb, var(--cm-heading) 22%, transparent);
 
+    /* Shadow tone — same green family (wintergreen cool / lime warm). */
+    --juice-shadow-tone-cool-color: #{rgba($wintergreen-900, 0.2)};
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px #{rgba($wintergreen-900, 0.2)};
+    --juice-shadow-tone-warm-color: #{rgba($lime-800, 0.2)};
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px #{rgba($lime-800, 0.2)};
+
     background-color: var(--cm-page);
     color: var(--cm-text);
     font-family: var(--cm-body-font);

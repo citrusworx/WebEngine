@@ -58,7 +58,7 @@ Every real Juice theme should decide:
 
 ### 6. Chrome roles
 
-Required `--juice-*` accordion, tabs, surface-tone, and border-strength binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
+Required `--juice-*` accordion, tabs, surface-tone, border-strength, and shadow-tone binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
 
 ## The current file shapes
 
@@ -177,7 +177,7 @@ Put these in the theme:
 - named surfaces
 - accordion chrome role bindings (`--juice-accordion-*`)
 - tabs chrome role bindings (`--juice-tabs-*`)
-- surface tone and border strength role bindings (`--juice-surface-*`, `--juice-border-strength-*`) — see the [Theme Contract](./juice-theme-contract.md)
+- surface tone, border strength, and shadow tone role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`) — see the [Theme Contract](./juice-theme-contract.md)
 
 ## What does not belong in the theme
 

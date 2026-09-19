@@ -17,6 +17,7 @@ Pending Juice changesets on master (consume them at 0.5.0; Juice-only if possibl
 | `juice-theme-contract-tests` | **patch** | Automated `--juice-*` bind tests |
 | `juice-icon-authoring-contract` | **patch** | Icon authoring contract (`1rem` default, `iconSize`) |
 | `juice-author-type-attrs-beat-theme` | **patch** | Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults |
+| `juice-shadow-tone` | **minor** | Themeable `shadowTone` `cool\|warm` (remaining depth slice A) |
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
@@ -44,7 +45,7 @@ The next strongest areas are now:
 
 The weakest areas are still:
 
-* remaining surface depth (`shadowTone`, `overlay`, `variant` / structural card variants)
+* remaining surface depth (`overlay`, `variant` / structural card variants; `shadowTone` is in)
 * component maturity beyond the three auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
@@ -77,8 +78,8 @@ For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity
 This is the stack sitting in the pending Juice changesets above.
 
 * **Tide shipped as the fourth library theme** (PR #95, `juice-ship-tide-theme`). Import `@citrusworx/juiceui/styles/themes/tide` and activate with `theme="tide"`. Dark product/SaaS identity, teal/lagoon tokens, accordion and tabs chrome, named `tide-card` / `tide-panel` surfaces. Blush remains a YAML-only draft.
-* **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. `overlay`, `variant`, and `shadowTone` are not.
-* **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, surface-tone, or border-strength bind. Slice C is vacant — no remaining holes on the shipped set.
+* **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. Remaining depth slice A (`shadowTone` `cool|warm`) is in; B (`overlay`) and C (`variant`) are not.
+* **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, surface-tone, border-strength, or shadow-tone bind. Slice C is vacant — no remaining holes on the shipped set.
 * **Typography and icon polish.** Icon authoring contract (#108): default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, `width` / `height` stay the custom-size escape hatch. Typography authoring contract (#110). Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults via `[theme] [attr]` companions (#112), same pattern as `surfaceTone`.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
@@ -105,9 +106,10 @@ Surface language A–C ships. That is not a full surface system.
 
 Still missing or only specified:
 
-* `shadowTone` (cool / warm depth language)
-* `overlay` (frost / tint / glass overlays that stay composable)
-* `variant` and structural card variants (`monochromatic`, `glass`, `tinted`, plus `card` recipes in the [Surface Spec](./juice-surface-spec.md))
+* `overlay` (frost / tint / glass overlays that stay composable) — remaining depth slice B
+* `variant` and structural card variants (`monochromatic`, `glass`, `tinted`, plus `card` recipes in the [Surface Spec](./juice-surface-spec.md)) — remaining depth slice C
+
+Slice A (`shadowTone` `cool|warm`) ships. See [Surfaces](./juice-surfaces.md).
 
 Authors still hand-assemble too much of the visual character for cards, panels, and heroes. See [Surfaces](./juice-surfaces.md).
 
@@ -149,11 +151,10 @@ These were the lock order after 0.4.0. They are done on master. They are not in 
 
 ### Priority 1. Remaining Surface Depth
 
-A–C utilities are **done**. The next Juice library build is the rest of the surface model.
+A–C utilities are **done**. Remaining depth slice A (`shadowTone`) is in. The next Juice library build is the rest of the surface model.
 
 Recommended next additions (see [Surface Spec](./juice-surface-spec.md)):
 
-* `shadowTone` for depth / shadow language
 * `overlay` / tint where they stay composable
 * `variant` and more structural variants on `card` / `panel` / `hero`
 
@@ -193,7 +194,7 @@ This docs refresh does not cut 0.5.0. Do not run `yarn version-packages` or publ
 
 ## Recommended Build Order
 
-1. Remaining surface depth: `shadowTone`, `overlay`, `variant` / structural card variants. A–C utilities are done.
+1. Remaining surface depth: `overlay`, `variant` / structural card variants. A–C utilities and `shadowTone` (slice A) are done.
 2. Add the next runtime or component only when the chrome and markup are ready (for example modal). Keep nav / accordion / tabs Emerging. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 4. Cut **0.5.0** when ready: consume the pending Juice changesets; Juice-only if possible. Do not cut it from a docs refresh.
@@ -210,7 +211,7 @@ Master is ahead of that cut. Tide is a fourth shipped library theme. Surface A�
 
 The next stage is refinement, then a publish:
 
-* remaining surface depth (`shadowTone`, `overlay`, `variant`)
+* remaining surface depth (`overlay`, `variant`; `shadowTone` is in)
 * grow runtime/components only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 * **0.5.0** as the publish lane for the pending Juice stack, when ready

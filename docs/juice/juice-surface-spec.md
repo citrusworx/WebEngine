@@ -57,8 +57,8 @@ Examples:
 - `surfaceTone="muted"` (implemented; quieter recessed wash)
 - `borderStrength="soft"` (implemented; 1px hairline)
 - `borderStrength="bold"` (implemented; 2px heavier rule)
-- `shadowTone="cool"`
-- `shadowTone="warm"`
+- `shadowTone="cool"` (implemented; cooler / bluish cast via `--juice-shadow-tone-cool-*`)
+- `shadowTone="warm"` (implemented; warmer / amber-ish cast via `--juice-shadow-tone-warm-*`)
 - `blur="sm"` (implemented; `6px` backdrop-filter)
 - `blur="md"` (implemented; `16px` backdrop-filter)
 - `overlay="frost"`
@@ -126,7 +126,8 @@ Under `theme="aquaflux"`, this might render as a glassmorphic panel with a serif
 ├──────────────────────────────────────────┤
 │ Juice utility attributes                 │
 │   surfaceTone, borderStrength, blur,     │
-│   variant, lineHeight, overlay, ...      │
+│   shadowTone, variant, lineHeight,       │
+│   overlay, ...                           │
 ├──────────────────────────────────────────┤
 │ Juice structural attributes              │
 │   card, btn, badge, hero, plan,          │

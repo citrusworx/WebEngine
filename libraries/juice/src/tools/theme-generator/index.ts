@@ -407,6 +407,12 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-border-strength-bold-width: 2px;
     --juice-border-strength-bold-color: var(--jx-border-strong);
 
+    /* Shadow tone — existing --jx-page-deep / --jx-warm / --jx-shadow. */
+    --juice-shadow-tone-cool-color: color-mix(in srgb, var(--jx-page-deep) 20%, transparent);
+    --juice-shadow-tone-cool-shadow: var(--jx-shadow);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--jx-warm) 22%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--jx-warm) 22%, transparent);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);

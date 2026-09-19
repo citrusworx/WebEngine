@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import {
     BORDER_STRENGTH_ROLES,
     BORDER_STRENGTHS,
+    SHADOW_TONE_ROLES,
+    SHADOW_TONES,
     SHIPPED_LIBRARY_THEMES,
     SURFACE_TONE_ROLES,
     SURFACE_TONES,
@@ -78,6 +80,31 @@ describe("Surface tone role contract", () => {
         expect(scss).toMatch(/\[surfaceTone\]\[blur="md"\][^{]*\{[^}]*backdrop-filter/);
     });
 
+    it("consumes shared --juice-shadow-tone-* roles without wiping surfaceTone paint", () => {
+        const scss = readFileSync(join(SRC_ROOT, "styles/surface/surface.scss"), "utf-8");
+
+        for (const tone of SHADOW_TONES) {
+            expect(scss).toContain(`[shadowTone="${tone}"]`);
+            expect(scss).toContain(`[theme] [shadowTone="${tone}"]`);
+            expect(scss).toContain(`[surfaceTone][shadowTone="${tone}"]`);
+            expect(scss).toContain(`[theme] [surfaceTone][shadowTone="${tone}"]`);
+            for (const role of SHADOW_TONE_ROLES) {
+                expect(scss).toContain(`--juice-shadow-tone-${tone}-${role}`);
+            }
+        }
+
+        expect(scss).toContain("var(--juice-shadow-tone-cool-color,");
+        expect(scss).toContain("var(--juice-shadow-tone-warm-color,");
+        expect(scss).toContain("var(--juice-shadow-tone-cool-shadow,");
+        expect(scss).toContain("var(--juice-shadow-tone-warm-shadow,");
+        expect(scss).toContain(":not([depth])");
+        expect(scss).not.toMatch(/\[surfaceTone\]\[shadowTone="(?:cool|warm)"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[shadowTone="(?:cool|warm)"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[shadowTone="(?:cool|warm)"\][^{]*\{[^}]*border:/);
+        expect(scss).toMatch(/\[surfaceTone\]\[shadowTone="cool"\][^{]*\{[^}]*box-shadow/);
+        expect(scss).toMatch(/\[surfaceTone\]\[shadowTone="warm"\][^{]*\{[^}]*box-shadow/);
+    });
+
     it("binds the same surface tone roles in aquaflux, kiwipress, citrusmint, and tide", () => {
         for (const { id } of THEMES) {
             const scss = readThemeScss(id);
@@ -94,6 +121,12 @@ describe("Surface tone role contract", () => {
             for (const strength of BORDER_STRENGTHS) {
                 for (const role of BORDER_STRENGTH_ROLES) {
                     expect(scss).toContain(`--juice-border-strength-${strength}-${role}:`);
+                }
+            }
+
+            for (const tone of SHADOW_TONES) {
+                for (const role of SHADOW_TONE_ROLES) {
+                    expect(scss).toContain(`--juice-shadow-tone-${tone}-${role}:`);
                 }
             }
         }
@@ -154,5 +187,24 @@ describe("Surface tone role contract", () => {
         expect(tide).toContain("--juice-border-strength-soft-color: var(--tide-border)");
         expect(tide).toContain("--juice-border-strength-bold-color: var(--tide-border-strong)");
         expect(tide).not.toContain("--juice-border-strength-bold-color: #{rgba($gray-400");
+    });
+
+    it("maps shadowTone onto existing theme tokens, not a light gray Tide drop", () => {
+        const aqua = readThemeScss("aquaflux");
+        const kiwi = readThemeScss("kiwipress");
+        const mint = readThemeScss("citrusmint");
+        const tide = readThemeScss("tide");
+
+        expect(aqua).toContain("--juice-shadow-tone-cool-color: var(--aqua-shadow)");
+        expect(aqua).toContain("--juice-shadow-tone-warm-color: color-mix(in srgb, var(--aqua-accent-strong) 16%, transparent)");
+        expect(kiwi).toContain("--juice-shadow-tone-cool-color: color-mix(in srgb, var(--kw-tier-content) 18%, transparent)");
+        expect(kiwi).toContain("--juice-shadow-tone-warm-color: color-mix(in srgb, var(--kw-warm) 18%, transparent)");
+        expect(mint).toContain("--juice-shadow-tone-cool-color: #{rgba($wintergreen-900, 0.2)}");
+        expect(mint).toContain("--juice-shadow-tone-warm-color: #{rgba($lime-800, 0.2)}");
+        expect(tide).toContain("--juice-shadow-tone-cool-color: color-mix(in srgb, var(--tide-accent) 45%, var(--tide-shadow))");
+        expect(tide).toContain("--juice-shadow-tone-cool-shadow: var(--tide-line-glow)");
+        expect(tide).toContain("--juice-shadow-tone-warm-color: var(--tide-shadow)");
+        expect(tide).not.toContain("--juice-shadow-tone-cool-color: #{rgba($blue-900");
+        expect(tide).not.toContain("--juice-shadow-tone-warm-color: #{rgba($orange-800");
     });
 });

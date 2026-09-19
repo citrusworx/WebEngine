@@ -52,10 +52,11 @@ Core files: `libraries/juice/src/components/hero/hero.scss`, `panel/panel.scss`,
 - `surfaceTone="soft|strong|muted"` — **beta-stable** shared tones
 - `borderStrength="soft|bold"` — hairline vs heavier rule (width only when composed with a tone)
 - `blur="sm|md"` — standalone backdrop-filter (`6px` / `16px`); explicit blur overrides a tone's frost length
+- `shadowTone="cool|warm"` — shadow cast temperature (cool bluish / warm amber-ish)
 
 `surfaceTone` reads `--juice-surface-<tone>-bg|border|shadow|blur`. Unthemed fallbacks stay a light frost for `soft`. Themes rebind the roles. Tide must read as a dark panel, not a white frost. [Surfaces](../juice-surfaces.md).
 
-**Not shipped:** `overlay`, `variant`, `shadowTone`. Do not use them in exercises.
+**Not shipped:** `overlay`, `variant`. Do not use them in exercises. `shadowTone` is shipped (remaining depth slice A) but is not required for this lesson.
 
 ### Theme recipes
 

@@ -105,6 +105,11 @@
   --juice-border-strength-soft-color: var(--tide-border);
   --juice-border-strength-bold-width: 2px;
   --juice-border-strength-bold-color: var(--tide-border-strong);
+  /* Shadow tone — dark lagoon vs ink; never the unthemed light gray. */
+  --juice-shadow-tone-cool-color: color-mix(in srgb, var(--tide-accent) 45%, var(--tide-shadow));
+  --juice-shadow-tone-cool-shadow: var(--tide-line-glow), 0 18px 40px -28px color-mix(in srgb, var(--tide-accent) 45%, var(--tide-shadow));
+  --juice-shadow-tone-warm-color: var(--tide-shadow);
+  --juice-shadow-tone-warm-shadow: 0 22px 48px -22px var(--tide-shadow);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);

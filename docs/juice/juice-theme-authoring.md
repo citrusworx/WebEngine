@@ -264,6 +264,14 @@ Bind colors from existing `--*-border` / `--*-border-strong` tokens. Do not inve
 
 Core `surface.scss` applies the color roles only when the element has neither `surfaceTone` nor `borderColor`. Combined `[surfaceTone][borderStrength]` selectors refine `border-width` only, so tone background / shadow / blur stay. Generated themes bind the same names from `--jx-border` / `--jx-border-strong`.
 
+## Shadow tone roles
+
+Library themes also bind `shadowTone` so `[shadowTone="cool|warm"]` can stand alone or compose with `surfaceTone` and existing `shadow` / `depth`. Required `--juice-shadow-tone-cool|warm-color|shadow` names are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Bind from existing identity tokens. Do not invent a new hue family. Tide must use `--tide-accent` / `--tide-shadow` / `--tide-line-glow` so the cast stays a dark lagoon or ink drop, not a light gray. Citrusmint stays in the green family (`wintergreen` / `lime`).
+
+Core `surface.scss` feeds `--shadow-color` so `[shadow][depth]` geometry wins, and applies the shadow roles on standalone `[shadowTone]:not([depth])` plus combined `[surfaceTone][shadowTone]` (shadow only, so tone fill / border / blur stay). Generated themes bind the same names from `--jx-page-deep` / `--jx-warm` / `--jx-shadow`.
+
 ## Standalone blur
 
 `blur="sm|md"` is a core utility, not a theme role. See [Theme Contract](./juice-theme-contract.md). Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.

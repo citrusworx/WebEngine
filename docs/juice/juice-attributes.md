@@ -153,8 +153,10 @@ For more detail, see [Sizing Reference](./juice-sizing.md).
   Values: `"soft"`, `"bold"`
 - `blur`
   Values: `"sm"` (`6px`), `"md"` (`16px`)
+- `shadowTone`
+  Values: `"cool"`, `"warm"`
 
-Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` and `--juice-border-strength-<soft|bold>-width|color` roles. Unthemed fallbacks keep the original light frost for `soft` tones and a gray hairline / heavier rule for strength. `borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. Standalone `blur` applies `backdrop-filter` and overrides a tone's blur length when both are set, without wiping tone fill / border / shadow. Optional `--juice-blur-sm` / `--juice-blur-md` restyles; themes do not bind a second blur scale. See [Surfaces](./juice-surfaces.md).
+Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur`, `--juice-border-strength-<soft|bold>-width|color`, and `--juice-shadow-tone-<cool|warm>-color|shadow` roles. Unthemed fallbacks keep the original light frost for `soft` tones, a gray hairline / heavier rule for strength, and a bluish / amber-ish drop for shadow tone. `borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. Standalone `blur` applies `backdrop-filter` and overrides a tone's blur length when both are set, without wiping tone fill / border / shadow. `shadowTone` paints shadow cast color / temperature only; with `[shadow][depth]` it sets `--shadow-color` and leaves geometry to `depth`. Optional `--juice-blur-sm` / `--juice-blur-md` restyles; themes do not bind a second blur scale. See [Surfaces](./juice-surfaces.md).
 
 ## Icon Attributes
 

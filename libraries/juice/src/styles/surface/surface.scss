@@ -1,4 +1,6 @@
+@use '../../tokens/color/blue/blue.scss' as *;
 @use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/orange/orange.scss' as *;
 @use '../../tokens/color/white/white.scss' as *;
 
 // Surface tone roles. Themes bind --juice-surface-<tone>-* on [theme="..."].
@@ -11,7 +13,8 @@
 //
 // Tones: soft (frosted), strong (opaque elevated), muted (quiet recessed).
 // borderStrength (slice B) refines width / contrast. Standalone blur (slice C)
-// overrides backdrop-filter length only.
+// overrides backdrop-filter length only. shadowTone (remaining depth slice A)
+// paints shadow cast color / temperature without wiping tone fill / border / blur.
 //
 // [theme] [surfaceTone] must beat theme semantic defaults such as
 // [theme="…"] :where(section, article, …) so the attribute works on
@@ -124,4 +127,50 @@
 [surfaceTone][blur="md"],
 [theme] [surfaceTone][blur="md"] {
     backdrop-filter: blur(var(--juice-blur-md, 16px));
+}
+
+// Shadow tone roles. Themes bind --juice-shadow-tone-<cool|warm>-*
+// on [theme="..."]. Light fallbacks keep a bluish / amber-ish cast when
+// no theme binds them.
+//
+//   --juice-shadow-tone-<value>-color   --shadow-color (shadow / depth compose)
+//   --juice-shadow-tone-<value>-shadow  box-shadow (standalone + surfaceTone)
+//
+// Color-only is enough when composing with [shadow][depth]: those utilities
+// already own geometry via var(--shadow-color). Standalone use and
+// [surfaceTone][shadowTone] need the shadow roles so Tide can keep a dark
+// lagoon cast (plus line glow) instead of the unthemed light-theme drop.
+// Tone fill / border / blur stay. [theme] [shadowTone] matches the tone
+// specificity pattern. [theme] [surfaceTone][shadowTone] is more specific
+// than [theme] [surfaceTone] so the override holds even if later tone rules
+// appear. :not([depth]) lets existing [shadow][depth] geometry win.
+
+[shadowTone="cool"],
+[theme] [shadowTone="cool"] {
+    --shadow-color: var(--juice-shadow-tone-cool-color, #{rgba($blue-900, 0.28)});
+}
+
+[shadowTone="warm"],
+[theme] [shadowTone="warm"] {
+    --shadow-color: var(--juice-shadow-tone-warm-color, #{rgba($orange-800, 0.28)});
+}
+
+[shadowTone="cool"]:not([depth]),
+[theme] [shadowTone="cool"]:not([depth]) {
+    box-shadow: var(--juice-shadow-tone-cool-shadow, 0 18px 40px -28px #{rgba($blue-900, 0.28)});
+}
+
+[shadowTone="warm"]:not([depth]),
+[theme] [shadowTone="warm"]:not([depth]) {
+    box-shadow: var(--juice-shadow-tone-warm-shadow, 0 18px 40px -28px #{rgba($orange-800, 0.28)});
+}
+
+[surfaceTone][shadowTone="cool"],
+[theme] [surfaceTone][shadowTone="cool"] {
+    box-shadow: var(--juice-shadow-tone-cool-shadow, 0 18px 40px -28px #{rgba($blue-900, 0.28)});
+}
+
+[surfaceTone][shadowTone="warm"],
+[theme] [surfaceTone][shadowTone="warm"] {
+    box-shadow: var(--juice-shadow-tone-warm-shadow, 0 18px 40px -28px #{rgba($orange-800, 0.28)});
 }
