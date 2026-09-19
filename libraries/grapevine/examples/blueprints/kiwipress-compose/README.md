@@ -66,6 +66,7 @@ docker compose -f /opt/kiwipress/docker-compose.yml ps
 
 ## Deferred
 
-- `apps/kiwipress` wizard / API wiring
 - Billing, multi-region HA, Let's Encrypt production wiring
 - Re-apply / drift (Grapevine apply is create-oriented)
+
+Wizard plan/apply is `apps/kiwipress` (see that README). This pack does not start the platform app.

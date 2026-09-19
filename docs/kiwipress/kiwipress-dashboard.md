@@ -37,6 +37,8 @@ The front package does **not** depend on `@citrusworx/kiwipress`. It talks HTTP 
 
 ## How to run
 
+Local wizard + provision walkthrough (plan without `DO_TOKEN`, optional apply): [`apps/kiwipress/README.md`](../../apps/kiwipress/README.md). Env placeholders live in `apps/kiwipress/back/.env.example` and `apps/kiwipress/front/.env.example`.
+
 From the monorepo root, after the library is built:
 
 ```bash

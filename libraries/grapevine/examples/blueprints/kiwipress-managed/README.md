@@ -4,7 +4,7 @@ Classic DigitalOcean shape: **managed MySQL + managed Postgres** in a VPC, plus 
 
 Apply waits for each database to become `online`, then injects the **private** connection into the droplet `.env` (`connection_env`). Apply JSON reports database id/name/engine/status/host only — never passwords.
 
-The `apps/kiwipress` wizard is not wired. KiwiPress back/front remain optional image hooks (`COMPOSE_PROFILES=kiwipress-app`).
+Wizard plan/apply is `apps/kiwipress` (see that README). This pack does not start the platform app. KiwiPress back/front remain optional image hooks (`COMPOSE_PROFILES=kiwipress-app`).
 
 ## Commands
 
@@ -51,6 +51,5 @@ Destroy includes `resources.databases` by unique name (`grape destroy -c ./grape
 
 ## Deferred
 
-- `apps/kiwipress` wizard / API
 - Billing, multi-region HA, trusted sources / DB firewall extras beyond VPC
 - Let's Encrypt production certificates

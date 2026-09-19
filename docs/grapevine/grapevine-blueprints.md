@@ -138,7 +138,7 @@ grape validate -c ./kiwipress-compose/grape.config.yaml
 grape plan -c ./kiwipress-compose/grape.config.yaml
 ```
 
-`apps/kiwipress` wizard wiring is not part of these packs.
+`apps/kiwipress` wizard wiring is not part of these packs. Local plan/apply is documented in `apps/kiwipress/README.md`.
 
 ## SSH keys in `02` and `04`
 
