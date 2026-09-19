@@ -1,33 +1,41 @@
 @use '../../tokens/tokens.scss' as *;
 
-[fontColor="pink-100"]{
+[fontColor="pink-100"],
+[theme] [fontColor="pink-100"] {
     color: $pink-100;
 }
 
-[fontColor="pink-200"]{
+[fontColor="pink-200"],
+[theme] [fontColor="pink-200"] {
     color: $pink-200;
 }
 
-[fontColor="pink-300"]{
+[fontColor="pink-300"],
+[theme] [fontColor="pink-300"] {
     color: $pink-300;
 }
 
-[fontColor="pink-400"]{
+[fontColor="pink-400"],
+[theme] [fontColor="pink-400"] {
     color: $pink-500;
 }
 
-[fontColor="pink-500"]{
+[fontColor="pink-500"],
+[theme] [fontColor="pink-500"] {
     color: $pink-600;
 }
 
-[fontColor="pink-700"]{
+[fontColor="pink-700"],
+[theme] [fontColor="pink-700"] {
     color: $pink-700;
 }
 
-[fontColor="pink-800"]{
+[fontColor="pink-800"],
+[theme] [fontColor="pink-800"] {
     color: $pink-800;
 }
 
-[fontColor="pink-900"]{
+[fontColor="pink-900"],
+[theme] [fontColor="pink-900"] {
     color: $pink-900;
 }

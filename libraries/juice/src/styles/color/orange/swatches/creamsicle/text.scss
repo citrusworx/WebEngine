@@ -1,33 +1,41 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="creamsicle-100"]{
+[fontColor="creamsicle-100"],
+[theme] [fontColor="creamsicle-100"] {
     color: $creamsicle-100;
 }
 
-[fontColor="creamsicle-200"]{
+[fontColor="creamsicle-200"],
+[theme] [fontColor="creamsicle-200"] {
     color: $creamsicle-200;
 }
 
-[fontColor="creamsicle-300"]{
+[fontColor="creamsicle-300"],
+[theme] [fontColor="creamsicle-300"] {
     color: $creamsicle-300;
 }
 
-[fontColor="creamsicle-400"]{
+[fontColor="creamsicle-400"],
+[theme] [fontColor="creamsicle-400"] {
     color: $creamsicle-500;
 }
 
-[fontColor="creamsicle-500"]{
+[fontColor="creamsicle-500"],
+[theme] [fontColor="creamsicle-500"] {
     color: $creamsicle-600;
 }
 
-[fontColor="creamsicle-700"]{
+[fontColor="creamsicle-700"],
+[theme] [fontColor="creamsicle-700"] {
     color: $creamsicle-700;
 }
 
-[fontColor="creamsicle-800"]{
+[fontColor="creamsicle-800"],
+[theme] [fontColor="creamsicle-800"] {
     color: $creamsicle-800;
 }
 
-[fontColor="creamsicle-900"]{
+[fontColor="creamsicle-900"],
+[theme] [fontColor="creamsicle-900"] {
     color: $creamsicle-900;
 }

@@ -30,7 +30,7 @@ The weakest areas are still:
 * surface language breadth (A–C utilities ship; `overlay` / `variant` / `shadowTone` do not)
 * theme-contract SCSS/YAML gap-fill across the shipped set (checklist and bind tests are in; remaining holes are slice C)
 * component maturity beyond the three auto-enhance runtimes
-* typography cascade polish (theme semantic fonts still win over `font=` on `h1`–`h6` / `p`)
+* typography cascade polish (author `font=` / `fontColor` / `fontWeight` / `lineHeight` now beat theme semantic defaults)
 * blush remaining an unpublished YAML-only draft
 * config / generator workflow
 
@@ -144,7 +144,7 @@ Icons and type are Stable-ish in the maturity matrix, and they already carry rea
 
 * icon sizing, coloring, alignment, and library selection — **done**. See [Icons](./juice-icons.md)
 * type hierarchy and naming — **done for the authoring contract**. First-class attributes are `font`, `fontSize` (`sm`…`xxl`), `fontColor`, `lineHeight`, and `fontWeight`. Display / title / body / caption map onto those attributes. See [Typography Contract](./juice-typography-contract.md)
-* theme semantic fonts vs explicit `font=` — specified, not winning. Theme CSS is imported after core at equal specificity, so theme body/heading defaults currently clobber `font=` on `h1`–`h6` / `p`. That raise is slice C
+* theme semantic fonts vs explicit `font=` — **done**. `[theme] [font]` / `[theme] [fontColor]` / `[theme] [fontWeight]` / `[theme] [lineHeight]` beat `[theme="…"] :where(h1, p, …)`. Omit the attr and the theme default still applies. See [Typography Contract](./juice-typography-contract.md)
 
 ### 5. Blush Is Still Draft
 
@@ -185,9 +185,10 @@ Authoring contracts are in for both halves:
 
 * attribute-first icons with clear size, color, alignment, and library selection — **done**. Canonical attributes are `icon`, `iconcolor`, and `iconSize`; `width` / `height` are the custom-size escape hatch. Default unset size is `1rem`. Mobile `[icon]` size remaps are removed so author sizing wins. See [Icons](./juice-icons.md).
 * tighter type hierarchy and naming — **done for the authoring contract**. Canonical attributes are `font`, `fontSize` (`sm` `0.75rem` … `xxl` `3rem`), `fontColor`, plus shipped `lineHeight` (`1rem`–`10rem`) and `fontWeight` (`100`–`900`). Display / title / body / caption are roles, not attributes. Theme body/heading fonts apply when `font=` is omitted. See [Typography Contract](./juice-typography-contract.md).
+* author type attrs vs theme semantic defaults — **done (slice C, overrides only)**. `font=`, `fontColor=`, `fontWeight=`, and `lineHeight=` win on themed `h1`–`h6` / `p`. No `xs` / `1rem` `fontSize` step in this pass.
 * docs that match the real attributes — icon and typography docs match the stylesheet
 
-This is polish on strong layers, not a new layer. Remaining typography work is slice C: raise author `font=` / `fontColor` / `fontWeight` / `lineHeight` above theme semantic defaults, and any later size-step or type-token gap.
+This is polish on strong layers, not a new layer. Remaining typography work is any later size-step or type-token gap, not the theme-vs-author cascade.
 
 ### Priority 4. Next Runtime / Component, Carefully
 
@@ -219,7 +220,7 @@ The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block surfa
 
 1. Expand `surfaceTone` and related surface utilities.
 2. Formalize the theme contract: checklist and bind tests are in; remaining work is SCSS/YAML gap-fill.
-3. Typography and icon authoring contracts are documented. Remaining typography work is slice C cascade polish. See [Typography Contract](./juice-typography-contract.md) and [Icons](./juice-icons.md).
+3. Typography and icon authoring contracts are documented, including author type attrs beating theme semantic defaults. Remaining type work is any later size-step or token gap. See [Typography Contract](./juice-typography-contract.md) and [Icons](./juice-icons.md).
 4. Add the next runtime or component only when the chrome and markup are ready (for example modal). Do not oversell this.
 5. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
@@ -235,7 +236,7 @@ The next stage is refinement:
 
 * make surface language richer
 * fill remaining theme-contract SCSS/YAML gaps against the four shipped references
-* raise author type attributes above theme semantic defaults (slice C)
+* later type size-step or token work only if needed; author type attrs already beat theme defaults
 * grow runtime/components only when the markup contract is honest
 
 That is a strong place to be.

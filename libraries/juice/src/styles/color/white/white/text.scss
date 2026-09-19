@@ -1,33 +1,41 @@
 @use '../../tokens/tokens.scss' as *;
 
-[fontColor="white-100"]{
+[fontColor="white-100"],
+[theme] [fontColor="white-100"] {
     color: $white-100;
 }
 
-[fontColor="white-200"]{
+[fontColor="white-200"],
+[theme] [fontColor="white-200"] {
     color: $white-200;
 }
 
-[fontColor="white-300"]{
+[fontColor="white-300"],
+[theme] [fontColor="white-300"] {
     color: $white-300;
 }
 
-[fontColor="white-400"]{
+[fontColor="white-400"],
+[theme] [fontColor="white-400"] {
     color: $white-500;
 }
 
-[fontColor="white-500"]{
+[fontColor="white-500"],
+[theme] [fontColor="white-500"] {
     color: $white-600;
 }
 
-[fontColor="white-700"]{
+[fontColor="white-700"],
+[theme] [fontColor="white-700"] {
     color: $white-700;
 }
 
-[fontColor="white-800"]{
+[fontColor="white-800"],
+[theme] [fontColor="white-800"] {
     color: $white-800;
 }
 
-[fontColor="white-900"]{
+[fontColor="white-900"],
+[theme] [fontColor="white-900"] {
     color: $white-900;
 }

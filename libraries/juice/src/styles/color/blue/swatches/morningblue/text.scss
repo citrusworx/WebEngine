@@ -1,33 +1,41 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="morningblue-100"]{
+[fontColor="morningblue-100"],
+[theme] [fontColor="morningblue-100"] {
     color: $morningblue-100;
 }
 
-[fontColor="morningblue-200"]{
+[fontColor="morningblue-200"],
+[theme] [fontColor="morningblue-200"] {
     color: $morningblue-200;
 }
 
-[fontColor="morningblue-300"]{
+[fontColor="morningblue-300"],
+[theme] [fontColor="morningblue-300"] {
     color: $morningblue-300;
 }
 
-[fontColor="morningblue-400"]{
+[fontColor="morningblue-400"],
+[theme] [fontColor="morningblue-400"] {
     color: $morningblue-500;
 }
 
-[fontColor="morningblue-500"]{
+[fontColor="morningblue-500"],
+[theme] [fontColor="morningblue-500"] {
     color: $morningblue-600;
 }
 
-[fontColor="morningblue-700"]{
+[fontColor="morningblue-700"],
+[theme] [fontColor="morningblue-700"] {
     color: $morningblue-700;
 }
 
-[fontColor="morningblue-800"]{
+[fontColor="morningblue-800"],
+[theme] [fontColor="morningblue-800"] {
     color: $morningblue-800;
 }
 
-[fontColor="morningblue-900"]{
+[fontColor="morningblue-900"],
+[theme] [fontColor="morningblue-900"] {
     color: $morningblue-900;
 }

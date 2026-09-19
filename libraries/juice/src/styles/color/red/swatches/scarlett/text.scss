@@ -1,33 +1,41 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="scarlett-100"]{
+[fontColor="scarlett-100"],
+[theme] [fontColor="scarlett-100"] {
     color: $scarlett-100;
 }
 
-[fontColor="scarlett-200"]{
+[fontColor="scarlett-200"],
+[theme] [fontColor="scarlett-200"] {
     color: $scarlett-200;
 }
 
-[fontColor="scarlett-300"]{
+[fontColor="scarlett-300"],
+[theme] [fontColor="scarlett-300"] {
     color: $scarlett-300;
 }
 
-[fontColor="scarlett-400"]{
+[fontColor="scarlett-400"],
+[theme] [fontColor="scarlett-400"] {
     color: $scarlett-500;
 }
 
-[fontColor="scarlett-500"]{
+[fontColor="scarlett-500"],
+[theme] [fontColor="scarlett-500"] {
     color: $scarlett-600;
 }
 
-[fontColor="scarlett-700"]{
+[fontColor="scarlett-700"],
+[theme] [fontColor="scarlett-700"] {
     color: $scarlett-700;
 }
 
-[fontColor="scarlett-800"]{
+[fontColor="scarlett-800"],
+[theme] [fontColor="scarlett-800"] {
     color: $scarlett-800;
 }
 
-[fontColor="scarlett-900"]{
+[fontColor="scarlett-900"],
+[theme] [fontColor="scarlett-900"] {
     color: $scarlett-900;
 }

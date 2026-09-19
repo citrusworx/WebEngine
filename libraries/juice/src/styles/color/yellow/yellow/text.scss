@@ -1,33 +1,41 @@
 @use '../../tokens/tokens.scss' as *;
 
-[fontColor="yellow-100"]{
+[fontColor="yellow-100"],
+[theme] [fontColor="yellow-100"] {
     color: $yellow-100;
 }
 
-[fontColor="yellow-200"]{
+[fontColor="yellow-200"],
+[theme] [fontColor="yellow-200"] {
     color: $yellow-200;
 }
 
-[fontColor="yellow-300"]{
+[fontColor="yellow-300"],
+[theme] [fontColor="yellow-300"] {
     color: $yellow-300;
 }
 
-[fontColor="yellow-400"]{
+[fontColor="yellow-400"],
+[theme] [fontColor="yellow-400"] {
     color: $yellow-500;
 }
 
-[fontColor="yellow-500"]{
+[fontColor="yellow-500"],
+[theme] [fontColor="yellow-500"] {
     color: $yellow-600;
 }
 
-[fontColor="yellow-700"]{
+[fontColor="yellow-700"],
+[theme] [fontColor="yellow-700"] {
     color: $yellow-700;
 }
 
-[fontColor="yellow-800"]{
+[fontColor="yellow-800"],
+[theme] [fontColor="yellow-800"] {
     color: $yellow-800;
 }
 
-[fontColor="yellow-900"]{
+[fontColor="yellow-900"],
+[theme] [fontColor="yellow-900"] {
     color: $yellow-900;
 }

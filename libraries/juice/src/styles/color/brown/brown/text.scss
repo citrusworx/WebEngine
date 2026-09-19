@@ -1,33 +1,41 @@
 @use '../../tokens/tokens.scss' as *;
 
-[fontColor="brown-100"]{
+[fontColor="brown-100"],
+[theme] [fontColor="brown-100"] {
     color: $brown-100;
 }
 
-[fontColor="brown-200"]{
+[fontColor="brown-200"],
+[theme] [fontColor="brown-200"] {
     color: $brown-200;
 }
 
-[fontColor="brown-300"]{
+[fontColor="brown-300"],
+[theme] [fontColor="brown-300"] {
     color: $brown-300;
 }
 
-[fontColor="brown-400"]{
+[fontColor="brown-400"],
+[theme] [fontColor="brown-400"] {
     color: $brown-500;
 }
 
-[fontColor="brown-500"]{
+[fontColor="brown-500"],
+[theme] [fontColor="brown-500"] {
     color: $brown-600;
 }
 
-[fontColor="brown-700"]{
+[fontColor="brown-700"],
+[theme] [fontColor="brown-700"] {
     color: $brown-700;
 }
 
-[fontColor="brown-800"]{
+[fontColor="brown-800"],
+[theme] [fontColor="brown-800"] {
     color: $brown-800;
 }
 
-[fontColor="brown-900"]{
+[fontColor="brown-900"],
+[theme] [fontColor="brown-900"] {
     color: $brown-900;
 }

@@ -1,33 +1,41 @@
 @use '../../tokens/tokens.scss' as *;
 
-[fontColor="red-100"]{
+[fontColor="red-100"],
+[theme] [fontColor="red-100"] {
     color: $red-100;
 }
 
-[fontColor="red-200"]{
+[fontColor="red-200"],
+[theme] [fontColor="red-200"] {
     color: $red-200;
 }
 
-[fontColor="red-300"]{
+[fontColor="red-300"],
+[theme] [fontColor="red-300"] {
     color: $red-300;
 }
 
-[fontColor="red-400"]{
+[fontColor="red-400"],
+[theme] [fontColor="red-400"] {
     color: $red-500;
 }
 
-[fontColor="red-500"]{
+[fontColor="red-500"],
+[theme] [fontColor="red-500"] {
     color: $red-600;
 }
 
-[fontColor="red-700"]{
+[fontColor="red-700"],
+[theme] [fontColor="red-700"] {
     color: $red-700;
 }
 
-[fontColor="red-800"]{
+[fontColor="red-800"],
+[theme] [fontColor="red-800"] {
     color: $red-800;
 }
 
-[fontColor="red-900"]{
+[fontColor="red-900"],
+[theme] [fontColor="red-900"] {
     color: $red-900;
 }
