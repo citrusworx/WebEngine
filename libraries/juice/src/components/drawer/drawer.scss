@@ -1,0 +1,155 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Drawer chrome is structural. Color comes from the shared role contract:
+//   --juice-drawer-overlay
+//   --juice-drawer-panel
+//   --juice-drawer-panel-border
+//   --juice-drawer-panel-shadow
+//   --juice-drawer-close
+//   --juice-drawer-close-color
+//   --juice-drawer-close-hover
+//   --juice-drawer-focus-ring
+// Themes bind those names (and optional --aqua-drawer-* / --kw-drawer-* /
+// --cm-drawer-* / --tide-drawer-* / --jx-drawer-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Closed vs open uses the native `hidden` attribute (display: none).
+// Markup without [hidden] stays visible so static demos keep working.
+// Runtime (later) toggles [hidden] on [drawer-overlay].
+// Optional surfaceTone on [drawer] is allowed; do not force it.
+// This is not the surface `overlay="frost|tint"` utility.
+//
+// Edge + size are separate so they compose:
+//   [drawer] / [drawer="right"] / [drawer="left"]  — edge (default right)
+//   [drawer-size="sm"] / [drawer-size="lg"]        — optional width
+
+@function -juice-drawer-role($name, $fallback) {
+    @return var(
+        --juice-drawer-#{$name},
+        var(--aqua-drawer-#{$name}, var(--kw-drawer-#{$name}, var(--cm-drawer-#{$name}, var(--tide-drawer-#{$name}, var(--jx-drawer-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-drawer-overlay: -juice-drawer-role(overlay, #{rgba($black-900, 0.55)});
+$_juice-drawer-panel: -juice-drawer-role(panel, #{$white-100});
+$_juice-drawer-panel-border: -juice-drawer-role(panel-border, #{rgba($gray-300, 0.85)});
+$_juice-drawer-panel-shadow: -juice-drawer-role(panel-shadow, 0 24px 56px -24px #{rgba($black-900, 0.42)});
+$_juice-drawer-close: -juice-drawer-role(close, #{$white-100});
+$_juice-drawer-close-color: -juice-drawer-role(close-color, #{$black-700});
+$_juice-drawer-close-hover: -juice-drawer-role(close-hover, #{$gray-100});
+
+// [theme] [drawer…] must beat theme semantic defaults such as
+// [theme="…"] :where(div) / :where(section, article) and generic
+// :where(button) CTA paint. Themes realize color through the roles.
+
+[drawer-overlay],
+[theme] [drawer-overlay] {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+    background-color: $_juice-drawer-overlay;
+}
+
+[drawer-overlay][hidden],
+[theme] [drawer-overlay][hidden] {
+    display: none;
+}
+
+[drawer] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: 22rem;
+    max-width: 100%;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+[drawer="left"] {
+    left: 0;
+    right: auto;
+}
+
+[drawer],
+[theme] [drawer]:not([surfaceTone]) {
+    background-color: $_juice-drawer-panel;
+    border: 1px solid $_juice-drawer-panel-border;
+    box-shadow: $_juice-drawer-panel-shadow;
+}
+
+[drawer-size="sm"] {
+    width: 16rem;
+}
+
+[drawer-size="lg"] {
+    width: 32rem;
+}
+
+[drawer-header] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: start;
+    padding: 2.5rem 2.5rem 1.25rem;
+}
+
+[drawer-body] {
+    padding: 0 2.5rem 2.5rem;
+}
+
+[drawer-close],
+[theme] [drawer-close] {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: $_juice-drawer-close;
+    background-image: none;
+    color: $_juice-drawer-close-color;
+    box-shadow: none;
+    transform: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+[drawer-close]:hover,
+[theme] [drawer-close]:hover {
+    background-color: $_juice-drawer-close-hover;
+    background-image: none;
+    color: $_juice-drawer-close-color;
+    transform: none;
+}
+
+[drawer-close]:focus-visible,
+[theme] [drawer-close]:focus-visible {
+    outline: 2px solid -juice-drawer-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    [drawer-header] {
+        padding: 1.5rem 1.5rem 0.75rem;
+    }
+    [drawer-body] {
+        padding: 0 1.5rem 1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [drawer-close],
+    [theme] [drawer-close] {
+        transition: none;
+    }
+}

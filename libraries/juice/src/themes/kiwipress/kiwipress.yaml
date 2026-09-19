@@ -17,7 +17,7 @@ philosophy:
     - structural primitives
     - typography scale
     - responsiveness
-    - component vocabulary (Juice owns hero, card, cta, panel, modal, badge, stat, workflow, search-panel, tabs, plan, section-header)
+    - component vocabulary (Juice owns hero, card, cta, panel, modal, drawer, badge, stat, workflow, search-panel, tabs, plan, section-header)
 
 typography:
   body:
@@ -87,11 +87,12 @@ recommended_use_cases:
 
 authoring_rules:
   - Use semantic HTML for meaning first.
-  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
+  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [drawer], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
   - Use Juice layout primitives (stack, row, grid, gap, container, span) and semantic spacing tokens (snug, cozy, comfortable, roomy, expansive) for structure and spacing.
   - Reserve [featured] for one [card="pricing"] per group.
   - Use [warm] as the occasional marmalade accent against the kiwi base; do not co-equal them.
   - Bind accordion chrome roles (`--kw-trigger` and `--juice-accordion-*`) from `--kw-*` surfaces/accents so `[accordion-item]` is not a kiwi CTA.
+  - Bind drawer chrome roles (`--kw-drawer-*` and `--juice-drawer-*`) from `--kw-*` surfaces so `[drawer-close]` is not a kiwi CTA.
 
 example:
   root: '<body theme="kiwipress">'

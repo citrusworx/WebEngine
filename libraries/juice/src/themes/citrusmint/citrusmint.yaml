@@ -59,6 +59,7 @@ authoring_rules:
   - Use Juice layout primitives for structure; do not redefine stack or gap in the theme.
   - Prefer semantic HTML; avoid painting every div with a background.
   - Bind accordion chrome roles (`--cm-trigger` and `--juice-accordion-*`) from the existing `--cm-*` set (surface/heading/border fallbacks; no new accent).
+  - Bind drawer chrome roles (`--cm-drawer-*` and `--juice-drawer-*`) from the existing `--cm-*` set so `[drawer-close]` stays a surface control, not a heading-fill CTA.
 
 example:
   root: '<body theme="citrusmint">'

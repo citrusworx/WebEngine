@@ -6,6 +6,7 @@ import {
     OVERLAY_ROLES,
     OVERLAYS,
     REQUIRED_ACCORDION_ROLES,
+    REQUIRED_DRAWER_ROLES,
     REQUIRED_MODAL_ROLES,
     REQUIRED_TABS_ROLES,
     SHADOW_TONE_ROLES,
@@ -173,6 +174,33 @@ describe("Juice theme generator surface tone roles", () => {
         }
 
         const closeBlocks = [...css.matchAll(/button\[modal-close\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(closeBlocks.length).toBeGreaterThan(0);
+        for (const block of closeBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-drawer-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-drawer-overlay: color-mix(in srgb, var(--jx-page-deep) 70%, transparent)");
+        expect(css).toContain("--jx-drawer-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-drawer-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-drawer-panel-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-drawer-close: var(--jx-surface)");
+        expect(css).toContain("--jx-drawer-close-color: var(--jx-heading)");
+        expect(css).toContain("--jx-drawer-close-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-drawer-focus-ring: var(--jx-accent)");
+
+        for (const role of REQUIRED_DRAWER_ROLES) {
+            expect(css).toContain(`--juice-drawer-${role}: var(--jx-drawer-${role})`);
+        }
+
+        const closeBlocks = [...css.matchAll(/button\[drawer-close\][^{]*\{[^}]+\}/g)].map(
             (match) => match[0]
         );
 
