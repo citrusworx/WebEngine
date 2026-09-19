@@ -84,6 +84,18 @@ export const REQUIRED_TOAST_ROLES = [
     "warning-soft",
 ] as const;
 
+/** Popover chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_POPOVER_ROLES = [
+    "panel",
+    "panel-border",
+    "panel-shadow",
+    "ink",
+    "close",
+    "close-color",
+    "close-hover",
+    "focus-ring",
+] as const;
+
 export const SURFACE_TONES = ["soft", "strong", "muted"] as const;
 export const SURFACE_TONE_ROLES = ["bg", "border", "shadow", "blur"] as const;
 export const BORDER_STRENGTHS = ["soft", "bold"] as const;
@@ -141,6 +153,10 @@ export function requiredToastBinds(): string[] {
     return REQUIRED_TOAST_ROLES.map((role) => `--juice-toast-${role}`);
 }
 
+export function requiredPopoverBinds(): string[] {
+    return REQUIRED_POPOVER_ROLES.map((role) => `--juice-popover-${role}`);
+}
+
 export function requiredSurfaceToneBinds(): string[] {
     return SURFACE_TONES.flatMap((tone) =>
         SURFACE_TONE_ROLES.map((role) => `--juice-surface-${tone}-${role}`)
@@ -173,6 +189,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredModalBinds(),
         ...requiredDrawerBinds(),
         ...requiredToastBinds(),
+        ...requiredPopoverBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
         ...requiredShadowToneBinds(),
@@ -207,8 +224,8 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal, drawer, and toast chrome use `--jx-modal-*` / `--jx-drawer-*` /
- * `--jx-toast-*` aliases, same suffix pattern as tabs.
+ * Modal, drawer, toast, and popover chrome use `--jx-modal-*` / `--jx-drawer-*` /
+ * `--jx-toast-*` / `--jx-popover-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -231,6 +248,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_TOAST_ROLES.map((role) => ({
             juice: `--juice-toast-${role}`,
             jx: `--jx-toast-${role}`,
+        })),
+        ...REQUIRED_POPOVER_ROLES.map((role) => ({
+            juice: `--juice-popover-${role}`,
+            jx: `--jx-popover-${role}`,
         })),
     ];
 }

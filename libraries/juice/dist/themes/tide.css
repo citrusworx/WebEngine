@@ -185,6 +185,24 @@
   --juice-toast-info-soft: var(--tide-toast-info-soft);
   --juice-toast-warning: var(--tide-toast-warning);
   --juice-toast-warning-soft: var(--tide-toast-warning-soft);
+  /* Popover chrome — dark panel, not white glass. Close is a surface
+     control, not the CTA gradient. Distinct from modal/drawer/toast. */
+  --tide-popover-panel: var(--tide-surface-strong);
+  --tide-popover-panel-border: var(--tide-border);
+  --tide-popover-panel-shadow: var(--tide-line-glow), 0 18px 40px -22px var(--tide-shadow);
+  --tide-popover-ink: var(--tide-text);
+  --tide-popover-close: var(--tide-surface-strong);
+  --tide-popover-close-color: var(--tide-heading);
+  --tide-popover-close-hover: var(--tide-surface-muted);
+  --tide-popover-focus-ring: var(--tide-accent);
+  --juice-popover-panel: var(--tide-popover-panel);
+  --juice-popover-panel-border: var(--tide-popover-panel-border);
+  --juice-popover-panel-shadow: var(--tide-popover-panel-shadow);
+  --juice-popover-ink: var(--tide-popover-ink);
+  --juice-popover-close: var(--tide-popover-close);
+  --juice-popover-close-color: var(--tide-popover-close-color);
+  --juice-popover-close-hover: var(--tide-popover-close-hover);
+  --juice-popover-focus-ring: var(--tide-popover-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -650,5 +668,42 @@
 [theme=tide] button[toast-close]:focus-visible,
 [theme=tide] [toast-close]:focus-visible {
   outline: 2px solid var(--juice-toast-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Tide buttons use --tide-button-background;
+   [popover-close] stays a surface control. Panel stays dark. */
+[theme=tide] [popover-panel]:not([surfaceTone]) {
+  background-color: var(--juice-popover-panel);
+  border: 1px solid var(--juice-popover-panel-border);
+  box-shadow: var(--juice-popover-panel-shadow);
+  color: var(--juice-popover-ink);
+}
+
+[theme=tide] [popover-header],
+[theme=tide] [popover-body] {
+  color: var(--juice-popover-ink);
+}
+
+[theme=tide] button[popover-close],
+[theme=tide] [popover-close] {
+  background-image: none;
+  background-color: var(--juice-popover-close);
+  color: var(--juice-popover-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[popover-close]:hover,
+[theme=tide] [popover-close]:hover {
+  background-image: none;
+  background-color: var(--juice-popover-close-hover);
+  color: var(--juice-popover-close-color);
+  transform: none;
+}
+
+[theme=tide] button[popover-close]:focus-visible,
+[theme=tide] [popover-close]:focus-visible {
+  outline: 2px solid var(--juice-popover-focus-ring);
   outline-offset: 2px;
 }

@@ -75,6 +75,7 @@ A healthy Juice theme should own:
 - modal chrome roles (`--juice-modal-*`, bound from theme identity tokens)
 - drawer chrome roles (`--juice-drawer-*`, bound from theme identity tokens)
 - toast chrome roles (`--juice-toast-*`, bound from theme identity tokens)
+- popover chrome roles (`--juice-popover-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
 Themes should not own:
@@ -221,6 +222,7 @@ The generated stylesheet currently defines:
 - modal chrome role bindings (`--jx-modal-*` / `--juice-modal-*`) and close-button CTA overrides for `[modal-close]`
 - drawer chrome role bindings (`--jx-drawer-*` / `--juice-drawer-*`) and close-button CTA overrides for `[drawer-close]`
 - toast chrome role bindings (`--jx-toast-*` / `--juice-toast-*`) and close-button CTA overrides for `[toast-close]`
+- popover chrome role bindings (`--jx-popover-*` / `--juice-popover-*`) and close-button CTA overrides for `[popover-close]`
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
 
@@ -283,6 +285,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 `[toast-region]` is a non-modal stack. It is not a dialog overlay, not a modal/drawer scrim, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The region stays in the DOM. Closed vs open for an individual `[toast]` uses the native `hidden` attribute so static open markup demos stay visible. Region position is `[toast-region]` / `[toast-region="top-right"]` (default), `"top-left"`, `"bottom-right"`, `"bottom-left"`. Status is bare `[toast]` (neutral) or `[toast="success|error|info|warning"]`. The toast runtime auto-enhances that markup (`show` / `dismiss`, `[toast-close]`, `toast-duration`) — see [Toast Runtime](./juice-toast-runtime.md).
 
 Tide must bind a dark panel (`--tide-surface-strong`), not a white glass toast.
+
+## Popover chrome roles
+
+Library themes bind the shared popover contract so `[popover-root]` / `[popover-panel]` / `[popover-close]` paint is theme-agnostic in `popover.scss`. Required core names (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-popover-*`, `--kw-popover-*`, `--cm-popover-*`, `--tide-popover-*`, …). App-owned generated themes use `--jx-popover-*` and bind `--juice-popover-*` from existing `--jx-*` surface/page/text tokens. Do not invent a new hue family just for popover chrome. Close is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[popover-close]` the same way.
+
+This is Juice chrome, not the native HTML Popover API — never use a bare `popover` attribute for the panel. `[popover-root]` is an anchored positioning wrapper. It is not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[popover-root]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`. Runtime is later.
+
+Tide must bind a dark panel (`--tide-surface-strong`), not a white glass popover.
 
 ## Surface tone roles
 

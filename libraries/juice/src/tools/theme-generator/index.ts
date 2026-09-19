@@ -493,6 +493,25 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-toast-warning: var(--jx-toast-warning);
     --juice-toast-warning-soft: var(--jx-toast-warning-soft);
 
+    /* Popover chrome — anchored floating panel from existing --jx-* tokens.
+       Close is a surface control, not the CTA fill. */
+    --jx-popover-panel: var(--jx-surface);
+    --jx-popover-panel-border: var(--jx-border);
+    --jx-popover-panel-shadow: var(--jx-shadow-strong);
+    --jx-popover-ink: var(--jx-text);
+    --jx-popover-close: var(--jx-surface);
+    --jx-popover-close-color: var(--jx-heading);
+    --jx-popover-close-hover: var(--jx-surface-muted);
+    --jx-popover-focus-ring: var(--jx-accent);
+    --juice-popover-panel: var(--jx-popover-panel);
+    --juice-popover-panel-border: var(--jx-popover-panel-border);
+    --juice-popover-panel-shadow: var(--jx-popover-panel-shadow);
+    --juice-popover-ink: var(--jx-popover-ink);
+    --juice-popover-close: var(--jx-popover-close);
+    --juice-popover-close-color: var(--jx-popover-close-color);
+    --juice-popover-close-hover: var(--jx-popover-close-hover);
+    --juice-popover-focus-ring: var(--jx-popover-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -852,6 +871,37 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] button[toast-close]:focus-visible,
 [theme="${config.id}"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="${config.id}"] [popover-header],
+[theme="${config.id}"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="${config.id}"] button[popover-close],
+[theme="${config.id}"] [popover-close] {
+    background: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[popover-close]:hover,
+[theme="${config.id}"] [popover-close]:hover {
+    background: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+}
+
+[theme="${config.id}"] button[popover-close]:focus-visible,
+[theme="${config.id}"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
 }
 

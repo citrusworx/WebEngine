@@ -84,6 +84,7 @@ authoring_rules:
   - Bind accordion chrome roles (`--aqua-trigger` and `--juice-accordion-*`) from existing surface/accent tokens so FAQ triggers stay surfaces, not CTA buttons.
   - Bind drawer chrome roles (`--aqua-drawer-*` and `--juice-drawer-*`) from existing page/surface tokens so `[drawer-close]` stays a surface control, not a CTA.
   - Bind toast chrome roles (`--aqua-toast-*` and `--juice-toast-*`) from existing page/surface/accent tokens so `[toast-close]` stays a surface control and status accents remap Aquaflux identity (no new red/green family).
+  - Bind popover chrome roles (`--aqua-popover-*` and `--juice-popover-*`) from existing page/surface tokens so `[popover-close]` stays a surface control, not a CTA.
 
 example:
   root: '<body theme="aquaflux">'
