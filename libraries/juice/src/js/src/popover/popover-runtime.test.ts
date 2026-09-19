@@ -236,6 +236,49 @@ describe('createPopover', () => {
     controller.destroy();
   });
 
+  it('yields Escape to a modal runtime that already consumed the key', async () => {
+    const { createModal, stopModalRuntime } = await import(
+      '../modal/modal-runtime.js'
+    );
+    document.body.innerHTML = `
+      <div modal-overlay id="open-modal">
+        <div modal>
+          <button type="button" modal-close aria-label="Close">×</button>
+          <div modal-header><h2>Account</h2></div>
+        </div>
+      </div>
+      <button type="button" id="demo-open" aria-controls="demo-pop">Open</button>
+      <div popover-root id="demo-pop">
+        <div popover-panel>
+          <button type="button" popover-close aria-label="Close">×</button>
+          <div popover-body>Help</div>
+        </div>
+      </div>
+    `;
+    stopPopoverRuntime();
+    stopModalRuntime();
+
+    const modal = createModal();
+    const popover = createPopover({ root: document.body });
+    const overlay = document.getElementById('open-modal');
+    const root = document.getElementById('demo-pop');
+
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        key: 'Escape',
+      })
+    );
+
+    expect(overlay?.hasAttribute('hidden')).toBe(true);
+    expect(root?.hasAttribute('hidden')).toBe(false);
+
+    modal.destroy();
+    popover.destroy();
+    stopModalRuntime();
+  });
+
   it('keeps only one popover open at a time and does not close a modal', () => {
     document.body.innerHTML = `
       <div modal-overlay id="demo-modal">
@@ -289,6 +332,35 @@ describe('createPopover', () => {
     controller.destroy();
   });
 
+  it('opens when the click lands on an SVG descendant of the opener', () => {
+    document.body.innerHTML = `
+      <button type="button" id="demo-open" aria-controls="demo-pop">
+        <svg id="demo-icon" width="16" height="16"><circle cx="8" cy="8" r="4"></circle></svg>
+        Open
+      </button>
+      <div popover-root id="demo-pop" hidden>
+        <div popover-panel>
+          <button type="button" popover-close aria-label="Close">×</button>
+          <div popover-body>Help</div>
+        </div>
+      </div>
+    `;
+    stopPopoverRuntime();
+
+    const controller = createPopover({ root: document.body });
+    const root = document.getElementById('demo-pop');
+    const icon = document.getElementById('demo-icon');
+
+    icon?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(root?.hasAttribute('hidden')).toBe(false);
+    expect(document.getElementById('demo-open')?.getAttribute('aria-expanded')).toBe(
+      'true'
+    );
+
+    controller.destroy();
+  });
+
   it('dismisses on outside click and stays open for clicks inside', () => {
     document.body.innerHTML = `
       ${popoverMarkup}
@@ -313,6 +385,30 @@ describe('createPopover', () => {
 
     outside?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(root?.hasAttribute('hidden')).toBe(true);
+
+    controller.destroy();
+  });
+
+  it('keeps focus on the outside control that dismissed the popover', () => {
+    document.body.innerHTML = `
+      ${popoverMarkup}
+      <input id="outside-field" />
+    `;
+    stopPopoverRuntime();
+
+    const controller = createPopover({ root: document.body });
+    const root = document.getElementById('demo-pop');
+    const opener = document.getElementById('demo-open');
+    const field = document.getElementById('outside-field');
+
+    opener?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(root?.hasAttribute('hidden')).toBe(false);
+
+    field?.focus();
+    field?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(root?.hasAttribute('hidden')).toBe(true);
+    expect(document.activeElement).toBe(field);
 
     controller.destroy();
   });
@@ -436,6 +532,49 @@ describe('createPopover', () => {
     controller.open(openRight);
     expect(rightRoot?.style.left).toBe('492px');
     expect(rightRoot?.style.top).toBe('80px');
+
+    controller.destroy();
+  });
+
+  it('offsets fixed placement for a transformed containing block', () => {
+    document.body.innerHTML = `
+      <div id="card" style="transform: translate(80px, 40px)">
+        <button type="button" id="demo-open" aria-controls="demo-pop">Open</button>
+        <div popover-root id="demo-pop" hidden>
+          <div popover-panel><div popover-body>Help</div></div>
+        </div>
+      </div>
+    `;
+    stopPopoverRuntime();
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 800 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 600 });
+
+    const card = document.getElementById('card');
+    const nativeComputed = window.getComputedStyle.bind(window);
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
+      const style = nativeComputed(element);
+      if (element !== card) return style;
+      return new Proxy(style, {
+        get: (target, prop, receiver) => {
+          if (prop === 'transform') return 'matrix(1, 0, 0, 1, 80, 40)';
+          return Reflect.get(target, prop, receiver);
+        },
+      }) as CSSStyleDeclaration;
+    });
+
+    const controller = createPopover({ root: document.body, gap: 8 });
+    const root = document.getElementById('demo-pop');
+    const opener = document.getElementById('demo-open');
+
+    mockRect(opener, { top: 120, left: 160, width: 64, height: 24 });
+    mockRect(root, { top: 0, left: 0, width: 200, height: 80 });
+    mockRect(card, { top: 80, left: 40, width: 400, height: 300 });
+
+    controller.open(opener);
+
+    expect(root?.style.top).toBe('72px');
+    expect(root?.style.left).toBe('120px');
 
     controller.destroy();
   });

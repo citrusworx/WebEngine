@@ -22,13 +22,18 @@
  * Placement (honest v1, no Floating UI): read `popover-root` (`top` /
  * `bottom` / `left` / `right`, default `bottom`), position `fixed` near the
  * opener from getBoundingClientRect (viewport coords; `fixed` needs no
- * scroll offset), with a small gap. If the preferred side overflows the
- * viewport, flip once to the opposite side. No shift / size middleware.
- * Repositions on open, window resize, and capture scroll (rAF-throttled).
+ * scroll offset), with a small gap. If a transformed / filtered ancestor
+ * is the fixed containing block, subtract that origin so Juice cards
+ * (`[card="interactive"]:focus-within`) do not offset the panel. If the
+ * preferred side overflows the viewport, flip once to the opposite side.
+ * No shift / size middleware. Repositions on open, window resize, and
+ * capture scroll (rAF-throttled).
  *
- * Escape closes the open popover, but yields when an open [modal-overlay]
- * or [drawer-overlay] exists (same courtesy as toast). Opening one managed
- * popover closes the others. Modal / drawer are not auto-closed.
+ * Escape closes the open popover on bubble (after modal/drawer capture),
+ * and also yields when an open [modal-overlay] or [drawer-overlay] exists
+ * or the event is already defaultPrevented (same courtesy as toast).
+ * Opening one managed popover closes the others. Modal / drawer are not
+ * auto-closed.
  */
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
 export type PopoverOptions = {
