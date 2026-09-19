@@ -163,7 +163,7 @@ If you *do* generate, import the CSS artifact and set `theme="harborpress"`. Mar
 </body>
 ```
 
-No `font="oswald"` required if the theme bound heading font. Keeping a local `font=` is allowed; it is no longer the identity source.
+No `font="oswald"` required if the theme bound heading font. Keeping a local `font=` is allowed on nodes the theme does not restyle; it is no longer the identity source. On themed `h1`–`h6` / `p`, theme fonts currently win at equal specificity — see the [Typography Contract](../juice-typography-contract.md).
 
 ## Exercises
 
@@ -179,6 +179,7 @@ What file would you edit to change Harbor Press’s heading face across the app?
 
 ## Go deeper
 
+- [Typography contract](../juice-typography-contract.md) — theme body/heading vs local `font=`
 - [Theme contract](../juice-theme-contract.md)
 - [Theme authoring](../juice-theme-authoring.md)
 - [Theme manual](../juice-theme-manual.md)

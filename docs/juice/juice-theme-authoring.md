@@ -26,7 +26,7 @@ Juice still owns:
 - sizing and spacing primitives
 - responsive layout behavior
 
-The required-versus-optional `--juice-*` checklist, identity-prefix rules, and theme × role-family matrix live in the [Theme Contract](./juice-theme-contract.md). This page keeps how-to detail. Do not treat the role lists below as a second source of truth.
+The required-versus-optional `--juice-*` checklist, identity-prefix rules, and theme × role-family matrix live in the [Theme Contract](./juice-theme-contract.md). How authors consume `font` / `fontSize` versus those theme body and heading defaults lives in the [Typography Contract](./juice-typography-contract.md). This page keeps how-to detail. Do not treat the role lists below as a second source of truth.
 
 ## Current theme model
 

@@ -102,17 +102,19 @@ In that example:
 
 ## Typography today
 
+Markup attributes (`font`, `fontSize`, `fontColor`, `lineHeight`, `fontWeight`) follow the [Typography Contract](./juice-typography-contract.md). The face catalog is [Typography Reference](./juice-typography.md).
+
 Juice themes define:
 
-- `--jx-body-font`
-- `--jx-heading-font`
+- `--jx-body-font` (generated) or `--<prefix>-body-font` (library)
+- `--jx-heading-font` (generated) or `--<prefix>-heading-font` (library)
 
 They may also define optional variant roles through `typography.variants`, which become:
 
 - `--jx-font-body-...`
 - `--jx-font-display-...`
 
-The app can then map those to product-specific selectors.
+The app can then map those to product-specific selectors. Omit `font=` when the theme pair is enough.
 
 This is how Blackwater Sound uses multiple Citrus Gothic and Noto Sans variants without asking Juice core to guess the exact product roles.
 

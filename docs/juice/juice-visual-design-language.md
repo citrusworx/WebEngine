@@ -40,7 +40,7 @@ A strong Juice page often benefits from:
 * one display font for headings
 * one body font for reading
 
-This creates clearer hierarchy than using one voice everywhere.
+This creates clearer hierarchy than using one voice everywhere. Map those roles onto `fontSize` + `font` — they are not attributes. See the [Typography Contract](./juice-typography-contract.md).
 
 Examples that worked well:
 

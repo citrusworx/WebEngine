@@ -51,12 +51,15 @@ Examples that exist: `white-100`, `gray-700`, `obsidian-900`, `green-500`, `citr
 ### Typography
 
 - `font` — shipped family aliases (`lato`, `oswald`, `playfair-display`, `korolev-rounded`, `bebas-neue`, …)
-- `fontSize` — `sm`, `md`, `lg`, `xl`, `xxl`
-- `align` — `center`, `right`, `justify`
-- `decoration` — `underline`
-- `weight` — limited; depends on the face
+- `fontSize` — `sm` (`0.75rem`), `md` (`1.25rem`), `lg` (`1.5rem`), `xl` (`2rem`), `xxl` (`3rem`)
+- `fontColor` — token-backed text color (same families as the color attributes above)
+- `lineHeight` — `"1rem"` through `"10rem"`
+- `fontWeight` — `"100"` through `"900"`
+- `align` — `center`, `right`, `justify` (`p` only)
+- `decoration` — `underline` (`p` only)
+- `weight` — Inter only (`font="Inter"` + `weight="normal"`). Prefer `fontWeight`.
 
-The full face list is [Typography](../juice-typography.md). A theme can also bind `--jx-body-font` and `--jx-heading-font` so you stop stamping `font=` on every node. That is Lesson 6. Today, explicit `font` is legal and useful.
+Map display / title / body / caption onto `fontSize` + `font`. Those words are not attributes. The full face list is [Typography](../juice-typography.md). Authoring rules are the [Typography Contract](../juice-typography-contract.md). A theme can also bind `--jx-body-font` and `--jx-heading-font` so you stop stamping `font=` on every node. That is Lesson 6. Today, explicit `font` is legal and useful.
 
 ### Spacing
 
@@ -128,6 +131,7 @@ Name one color token, one type token, one spacing attribute, and one sizing attr
 ## Go deeper
 
 - [Colors](../juice-colors.md) — families and swatches
+- [Typography Contract](../juice-typography-contract.md) — size scale, hierarchy, theme vs `font=`
 - [Typography](../juice-typography.md) — shipped faces
 - [Spacing](../juice-spacing.md) / [Sizing](../juice-sizing.md)
 - [Token system](../juice-token-system.md) / [Token architecture](../juice-token-architecture.md)
