@@ -115,6 +115,12 @@
     --juice-surface-muted-shadow: none;
     --juice-surface-muted-blur: 0px;
 
+    /* Border strength — existing --kw-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--kw-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--kw-border-strong);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);

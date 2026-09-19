@@ -7,7 +7,7 @@ Juice Beta is the first release line where the styling system, theme contract, a
 - Attribute-driven layout, spacing, color, typography, icons, gradients, and components (see [maturity matrix](./juice-maturity-matrix.md)).
 - **Modular themes:** `aquaflux`, `kiwipress`, `citrusmint`, and `tide` ship as separate CSS entrypoints (`@citrusworx/juiceui/styles/themes/<id>`). `@citrusworx/juiceui/styles` is **core only** (no theme rules). Activate with `theme="<id>"` on the root after importing core + theme CSS.
 - **Responsive reference:** [juice-responsive-reference.md](./juice-responsive-reference.md).
-- **Surfaces:** `surfaceTone="soft|strong|muted"` with a shared `--juice-surface-*` theme role contract — [juice-surfaces.md](./juice-surfaces.md). `borderStrength` and standalone `blur` are not in this cut.
+- **Surfaces:** `surfaceTone="soft|strong|muted"` and `borderStrength="soft|bold"` with shared `--juice-surface-*` / `--juice-border-strength-*` theme role contracts — [juice-surfaces.md](./juice-surfaces.md). Standalone `blur` is not in this cut.
 - **Motion:** canonical `motion` attribute with P0/P1 values ([juice-animations.md](./juice-animations.md)); `prefers-reduced-motion` respected.
 - **Theme authoring:** each shipped theme uses `src/themes/<id>/<id>.scss` + `<id>.yaml` ([juice-theme-authoring.md](./juice-theme-authoring.md)).
 - **Auto-start runtimes:** importing `@citrusworx/juiceui` auto-enhances valid navigation, `[accordion]`, and `[tabs]` markup in the browser. See [juice-runtime-behavior.md](./juice-runtime-behavior.md), [juice-navigation-runtime.md](./juice-navigation-runtime.md), [juice-accordion-runtime.md](./juice-accordion-runtime.md), and [juice-tabs-runtime.md](./juice-tabs-runtime.md).

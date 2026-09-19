@@ -119,6 +119,12 @@
     --juice-surface-muted-shadow: none;
     --juice-surface-muted-blur: 0px;
 
+    /* Border strength — existing --aqua-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--aqua-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--aqua-border-strong);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);

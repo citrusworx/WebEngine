@@ -294,7 +294,20 @@ Core `surface.scss` consumes each role with light fallbacks, so unthemed `soft` 
 
 Aquaflux maps soft/strong/muted onto `--aqua-surface`, `--aqua-surface-strong`, and `--aqua-surface-muted`. KiwiPress maps soft onto the frosted `--kw-surface-strong` nav fill and strong onto opaque `--kw-surface`. Citrusmint mixes `--cm-surface` for frost because it has no dedicated translucent token. Tide uses `--tide-surface*` plus `--tide-line-glow`. Generated themes bind the same `--juice-surface-*` names from `--jx-surface*`.
 
-`borderStrength` and standalone `blur="sm|md"` are not part of this contract yet.
+## Border strength roles
+
+Library themes also bind `borderStrength` so `[borderStrength="soft|bold"]` can stand alone or compose with `surfaceTone`.
+
+Shared names (set on `[theme="..."]`):
+
+- `--juice-border-strength-soft-width` / `-color` — 1px hairline
+- `--juice-border-strength-bold-width` / `-color` — 2px heavier rule
+
+Bind colors from existing `--*-border` / `--*-border-strong` tokens. Do not invent a new hue family. Tide must use `--tide-border` / `--tide-border-strong` so bold is a lagoon line, not a light gray. Citrusmint has no `--cm-border-strong`; bold mixes `--cm-heading` at low alpha.
+
+Core `surface.scss` applies the color roles only when the element has neither `surfaceTone` nor `borderColor`. Combined `[surfaceTone][borderStrength]` selectors refine `border-width` only, so tone background / shadow / blur stay. Generated themes bind the same names from `--jx-border` / `--jx-border-strong`.
+
+Standalone `blur="sm|md"` is not part of this contract yet.
 
 ## Recommended authoring rules
 

@@ -55,8 +55,8 @@ Examples:
 - `surfaceTone="soft"` (implemented; see [juice-surfaces.md](./juice-surfaces.md))
 - `surfaceTone="strong"` (implemented; themeable via `--juice-surface-strong-*`)
 - `surfaceTone="muted"` (implemented; quieter recessed wash)
-- `borderStrength="soft"`
-- `borderStrength="bold"`
+- `borderStrength="soft"` (implemented; 1px hairline)
+- `borderStrength="bold"` (implemented; 2px heavier rule)
 - `shadowTone="cool"`
 - `shadowTone="warm"`
 - `blur="sm"`

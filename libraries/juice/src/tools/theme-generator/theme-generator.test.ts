@@ -130,4 +130,13 @@ describe("Juice theme generator surface tone roles", () => {
             }
         }
     });
+
+    it("binds --juice-border-strength-* from existing --jx-border tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--juice-border-strength-soft-width: 1px");
+        expect(css).toContain("--juice-border-strength-soft-color: var(--jx-border)");
+        expect(css).toContain("--juice-border-strength-bold-width: 2px");
+        expect(css).toContain("--juice-border-strength-bold-color: var(--jx-border-strong)");
+    });
 });
