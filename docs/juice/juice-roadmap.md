@@ -2,11 +2,9 @@
 
 ## Current Position
 
-`@citrusworx/juiceui@0.6.0` is the live npm Juice Beta cut.
+`@citrusworx/juiceui@0.7.0` is the versioned Juice Beta cut. **0.6.0 remains the public npm cut** until `yarn release-packages`.
 
-**0.6.0 is the public cut.** Tide, surface language A–C plus remaining depth, the theme contract plus bind tests, icon/typography authoring polish, and modal / dialog A→B→C shipped in this lane. 0.4.0 was the prior public npm cut.
-
-**Master is ahead of 0.6.0.** Drawer A→B→C, toast A→B→C, and popover A→B→C (theme chrome, runtime, runtime / maturity docs) live on master and are not in the published tarball. Do not run `yarn version-packages` or publish from this picture. Do not invent a next version number; the next cut happens when new Juice changesets are consumed.
+**0.7.0 is the cut.** Drawer A→B→C, toast A→B→C, and popover A→B→C (theme chrome, runtime, runtime / maturity docs) are versioned in this lane. This PR does **not** publish. After merge, run `yarn release-packages` to put 0.7.0 on npm.
 
 Consumed Juice changesets (the 0.6.0 lane):
 
@@ -26,7 +24,7 @@ Consumed Juice changesets (the 0.6.0 lane):
 | `juice-modal-dialog-runtime` | **minor** | DOM-first modal dialog runtime (open/close, Escape, focus trap, exclusive) |
 | `juice-modal-runtime-docs` | **patch** | Modal runtime / maturity docs (slice C) |
 
-Pending Juice changesets on master (consume them at the next cut; Juice-only if possible):
+Consumed Juice changesets (this 0.7.0 version PR):
 
 | Changeset | Bump | What it records |
 |---|---|---|
@@ -42,7 +40,7 @@ Pending Juice changesets on master (consume them at the next cut; Juice-only if 
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
-The visible layers today (0.6.0 plus unreleased master):
+The visible layers today (0.7.0, not yet on npm):
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
@@ -104,11 +102,11 @@ This is the stack that shipped in 0.6.0.
 * **Modal / dialog A→B→C.** Shared `--juice-modal-*` roles for `[modal-overlay]` / `[modal]` / `[modal-close]` (#118 / #119). DOM-first dialog runtime (#121): `createModal` / `initModal` / `startModalRuntime` / `stopModalRuntime`, auto-boot, Escape, focus trap, exclusive open, backdrop click (`modal-overlay="static"` opts out). Runtime docs and maturity notes shipped with the cut. Distinct from surface `overlay="frost|tint"`. No Sig Modal factory.
 * **Typography and icon polish.** Icon authoring contract (#108): default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, `width` / `height` stay the custom-size escape hatch. Typography authoring contract (#110). Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults via `[theme] [attr]` companions (#112), same pattern as `surfaceTone`.
 
-### Since 0.6.0 (on master, unpublished)
+### Since 0.6.0 (in 0.7.0, not yet on npm)
 
-* **Drawer A→B→C.** Shared `--juice-drawer-*` roles for `[drawer-overlay]` / `[drawer]` / `[drawer-close]` (#128). DOM-first dialog runtime (#129): `createDrawer` / `initDrawer` / `startDrawerRuntime` / `stopDrawerRuntime`, auto-boot, Escape, focus trap, exclusive drawer open, backdrop click (`drawer-overlay="static"` opts out). Runtime docs and maturity notes in #131. Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. Distinct from surface `overlay="frost|tint"` and from modal. No Sig Drawer factory. Still unpublished vs 0.6.0.
-* **Toast A→B→C.** Shared `--juice-toast-*` roles for `[toast-region]` / `[toast]` / `[toast-close]` (#133). DOM-first snackbar runtime (#135): `createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`, auto-boot, `show` / `dismiss`, `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky), auto-dismiss pause on hover/focus, Escape for the most recent visible toast only when no open modal/drawer overlay exists. Runtime docs and maturity notes in this pass. Live region: `aria-live` polite + `aria-relevant`; `role="status"` vs `role="alert"` for error/assertive. Markup-first (no programmatic message factory). Distinct from surface `overlay="frost|tint"` and from modal/drawer. No Sig Toast factory. Still unpublished vs 0.6.0.
-* **Popover A→B→C.** Shared `--juice-popover-*` roles for `[popover-root]` / `[popover-panel]` / `[popover-close]` (#138). DOM-first anchored runtime (#139): `createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`, auto-boot, open/close/toggle, Escape (yields to modal/drawer), outside click, Tab trap, exclusive popover open, dependency-free placement with one-axis flip (`position: fixed` from opener rect + gap 8). Non-modal dialog (`role="dialog"`, no `aria-modal`); focus moves into the panel and restores to the opener. Never a bare `popover` attribute. Runtime docs and maturity notes in this pass. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast. No Sig Popover factory. Still unpublished vs 0.6.0.
+* **Drawer A→B→C.** Shared `--juice-drawer-*` roles for `[drawer-overlay]` / `[drawer]` / `[drawer-close]` (#128). DOM-first dialog runtime (#129): `createDrawer` / `initDrawer` / `startDrawerRuntime` / `stopDrawerRuntime`, auto-boot, Escape, focus trap, exclusive drawer open, backdrop click (`drawer-overlay="static"` opts out). Runtime docs and maturity notes in #131. Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. Distinct from surface `overlay="frost|tint"` and from modal. No Sig Drawer factory. Versioned in 0.7.0; not yet on npm.
+* **Toast A→B→C.** Shared `--juice-toast-*` roles for `[toast-region]` / `[toast]` / `[toast-close]` (#133). DOM-first snackbar runtime (#135): `createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`, auto-boot, `show` / `dismiss`, `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky), auto-dismiss pause on hover/focus, Escape for the most recent visible toast only when no open modal/drawer overlay exists. Runtime docs and maturity notes in this pass. Live region: `aria-live` polite + `aria-relevant`; `role="status"` vs `role="alert"` for error/assertive. Markup-first (no programmatic message factory). Distinct from surface `overlay="frost|tint"` and from modal/drawer. No Sig Toast factory. Versioned in 0.7.0; not yet on npm.
+* **Popover A→B→C.** Shared `--juice-popover-*` roles for `[popover-root]` / `[popover-panel]` / `[popover-close]` (#138). DOM-first anchored runtime (#139): `createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`, auto-boot, open/close/toggle, Escape (yields to modal/drawer), outside click, Tab trap, exclusive popover open, dependency-free placement with one-axis flip (`position: fixed` from opener rect + gap 8). Non-modal dialog (`role="dialog"`, no `aria-modal`); focus moves into the panel and restores to the opener. Never a bare `popover` attribute. Runtime docs and maturity notes in this pass. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast. No Sig Popover factory. Versioned in 0.7.0; not yet on npm.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
@@ -173,7 +171,7 @@ These were the lock order after 0.4.0. They shipped in the 0.6.0 public cut.
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
 * **Old P3 — Typography / icon polish.** Icon contract, typography contract, and author type attrs beating theme defaults are in. See [Icons](./juice-icons.md) and [Typography Contract](./juice-typography-contract.md).
-* **Old P4 — Publish the pending Juice stack.** `@citrusworx/juiceui@0.6.0` is live on npm. Do not invent a next version number; the next cut happens when new Juice changesets exist.
+* **Old P4 — Publish the pending Juice stack.** `@citrusworx/juiceui@0.6.0` is live on npm. **0.7.0 is versioned** (drawer / toast / popover). After this version PR merges, publish with `yarn release-packages`. Do not re-run `yarn version-packages` for Juice until new Juice changesets exist.
 
 ### Priority 1. Remaining Surface Depth
 
@@ -187,11 +185,11 @@ The browser behavior layer should keep growing, but slowly.
 
 Modal / dialog **A→B→C shipped in 0.6.0**: theme chrome (`--juice-modal-*`), dialog runtime, and runtime / maturity docs. Valid `[modal-overlay]` markup auto-enhances.
 
-Drawer **A→B→C is done on master** (still unpublished vs 0.6.0): theme chrome (`--juice-drawer-*`), dialog runtime, and runtime / maturity docs. Valid `[drawer-overlay]` markup auto-enhances.
+Drawer **A→B→C is in 0.7.0** (not yet on npm): theme chrome (`--juice-drawer-*`), dialog runtime, and runtime / maturity docs. Valid `[drawer-overlay]` markup auto-enhances.
 
-Toast **A→B→C is done on master** (still unpublished vs 0.6.0 along with drawer): theme chrome (`--juice-toast-*`), snackbar runtime, and runtime / maturity docs. Valid `[toast-region]` markup auto-enhances.
+Toast **A→B→C is in 0.7.0** (not yet on npm along with drawer): theme chrome (`--juice-toast-*`), snackbar runtime, and runtime / maturity docs. Valid `[toast-region]` markup auto-enhances.
 
-Popover **A→B→C is done on master** (still unpublished vs 0.6.0 along with drawer and toast): theme chrome (`--juice-popover-*`), anchored runtime, and runtime / maturity docs. Valid `[popover-root]` markup auto-enhances. Popover is the seventh Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, or Sig Popover factory stays later.
+Popover **A→B→C is in 0.7.0** (not yet on npm along with drawer and toast): theme chrome (`--juice-popover-*`), anchored runtime, and runtime / maturity docs. Valid `[popover-root]` markup auto-enhances. Popover is the seventh Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, or Sig Popover factory stays later.
 
 Short-term focus remains:
 
@@ -217,10 +215,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C are done on master (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer / toast / popover Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C are versioned in 0.7.0 (chrome, runtime, docs; not yet on npm). Keep nav / accordion / tabs / modal / drawer / toast / popover Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer A→B→C on master, toast A→B→C on master, and popover A→B→C on master. Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, and drawer / toast / popover A→B→C in the 0.7.0 versioned cut. **0.7.0 is versioned.** Publish separately with `yarn release-packages` after merge. Do not re-cut Juice until new Juice changesets exist.
 
 ---
 
@@ -228,14 +226,15 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 0.4.0 was a real Beta cut. It shipped modular themes, motion wave 1, accordion and tabs runtimes, teal tokens, and packaging that matches the auto-enhance story. It was the prior public npm cut.
 
-**0.6.0 is the live npm cut** for the later stack. Tide is a fourth shipped library theme. Surface A–C utilities, the theme contract plus bind tests, icon/typography authoring contracts (including author type overrides), and modal / dialog A→B→C are in 0.6.0. Blush remains draft.
+**0.6.0 is the live npm cut** for Tide, surfaces + depth, contracts, and modal / dialog A→B→C. Blush remains draft.
 
-Master is ahead of that cut. Drawer A→B→C, toast A→B→C, and popover A→B→C are on master and unpublished.
+**0.7.0 is the versioned cut** for drawer, toast, and popover A→B→C (not yet on npm).
 
-The next stage is post-0.6.0 refinement:
+The next stage is npm publish, then refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are done on master (still unpublished vs 0.6.0); grow runtime/components only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; grow runtime/components only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
+* **publish 0.7.0** with `yarn release-packages` after this version PR merges
 
 That is a strong place to be.

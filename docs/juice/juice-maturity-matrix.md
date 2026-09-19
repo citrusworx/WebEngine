@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.6.0** public cut on npm (Tide, surfaces + depth, contracts, modal runtime). Master is ahead with unpublished drawer, toast, and popover runtime work; maturity ratings below are unchanged. 0.4.0 was the prior public cut.
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.7.0** versioned cut (drawer, toast, and popover A→B→C). `@citrusworx/juiceui@0.6.0` remains the public npm cut until publish. Maturity ratings below are unchanged.
 
 The goal is to make it easy to answer:
 
