@@ -145,6 +145,31 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[accordion-item\]\[aria-expanded=["']?true["']?\]::before/);
     });
 
+    it("includes modal structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[modal-overlay]");
+        expect(css).toContain("[modal]");
+        expect(css).toContain("[modal-header]");
+        expect(css).toContain("[modal-body]");
+        expect(css).toContain("[modal-close]");
+        expect(css).toMatch(/\[theme\]\s+\[modal-overlay\]/);
+        expect(css).toMatch(/\[theme\]\s+\[modal\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[modal-close\]/);
+        expect(css).toMatch(/\[modal-overlay\]\[hidden\]/);
+        expect(css).toMatch(/\[modal-close\]:focus-visible/);
+        expect(css).toContain("--juice-modal-overlay");
+        expect(css).toContain("--juice-modal-panel");
+        expect(css).toContain("--juice-modal-panel-border");
+        expect(css).toContain("--juice-modal-panel-shadow");
+        expect(css).toContain("--juice-modal-close");
+        expect(css).toContain("--juice-modal-close-color");
+        expect(css).toContain("--juice-modal-close-hover");
+        expect(css).toContain("--juice-modal-focus-ring");
+        expect(css).not.toMatch(/\[modal-close\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[modal-overlay\][^{]*\{[^}]*--juice-overlay-frost/);
+    });
+
     it("includes tabs structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -317,6 +342,33 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
     });
 
+    it("binds modal chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-modal-overlay: color-mix(in srgb, var(--aqua-page-deep) 62%, transparent)");
+        expect(aquaCss).toContain("--juice-modal-panel: var(--aqua-modal-panel)");
+        expect(aquaCss).toContain("button[modal-close]");
+        expect(aquaCss).not.toMatch(/button\[modal-close\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-modal-overlay: color-mix(in srgb, var(--kw-surface-deep) 75%, transparent)");
+        expect(kiwiCss).toContain("--juice-modal-close: var(--kw-modal-close)");
+        expect(kiwiCss).toContain("button[modal-close]");
+        expect(kiwiCss).not.toMatch(/button\[modal-close\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-modal-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-modal-overlay: var(--cm-modal-overlay)");
+        expect(mintCss).toContain("button[modal-close]");
+
+        expect(tideCss).toContain("--tide-modal-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-modal-overlay: var(--tide-modal-overlay)");
+        expect(tideCss).toContain("button[modal-close]");
+        expect(tideCss).not.toMatch(/button\[modal-close\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-modal-panel: var(--tide-page)");
+    });
+
     it("ships tide CSS as a stable theme export", () => {
         const bundledThemeIds = readBundledThemeIds();
         const themePath = join(DIST_DIR, "themes", "tide.css");
@@ -344,6 +396,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).not.toMatch(/button\[accordion-item\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("--juice-tabs-trigger: var(--tide-tabs-trigger)");
         expect(themeCss).toContain("--juice-tabs-panel: var(--tide-tabs-panel)");
+        expect(themeCss).toContain("--juice-modal-overlay: var(--tide-modal-overlay)");
+        expect(themeCss).toContain("--juice-modal-panel: var(--tide-modal-panel)");
+        expect(themeCss).toContain("button[modal-close]");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");

@@ -58,7 +58,7 @@ Every real Juice theme should decide:
 
 ### 6. Chrome roles
 
-Required `--juice-*` accordion, tabs, surface-tone, border-strength, shadow-tone, and overlay binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
+Required `--juice-*` accordion, tabs, modal, surface-tone, border-strength, shadow-tone, and overlay binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
 
 ## The current file shapes
 
@@ -177,7 +177,8 @@ Put these in the theme:
 - named surfaces
 - accordion chrome role bindings (`--juice-accordion-*`)
 - tabs chrome role bindings (`--juice-tabs-*`)
-- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family.
+- modal chrome role bindings (`--juice-modal-*`)
+- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family. Modal chrome is a dialog scrim / panel / close contract, not `overlay="frost|tint"`.
 
 ## What does not belong in the theme
 

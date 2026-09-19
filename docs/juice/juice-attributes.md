@@ -272,6 +272,16 @@ See [Accordion Runtime](./juice-accordion-runtime.md). Theme paint uses `--juice
 
 See [Tabs Runtime](./juice-tabs-runtime.md). Theme paint uses `--juice-tabs-*` roles (`trigger`, `trigger-hover`, `trigger-active`, `text`, `text-hover`, `text-active`, `indicator`, `list-rule`, `focus-ring`, plus optional `panel` / `panel-rule`).
 
+### Modal
+
+- `modal-overlay` — full-viewport scrim; hide with the native `hidden` attribute
+- `modal` — dialog panel; optional values `"sm"` / `"lg"` for width
+- `modal-header` — title / lead region
+- `modal-body` — main content region
+- `modal-close` — dismiss control (surface paint, not a CTA)
+
+Theme paint uses `--juice-modal-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility. Dialog runtime is still slice B.
+
 ## Usage Examples
 
 ```html

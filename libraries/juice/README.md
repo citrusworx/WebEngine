@@ -142,6 +142,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - tab selection dual-writes Juice `[active]` and `aria-selected`; the runtime also wires `role="tablist"` / `tab` / `tabpanel`, roving tabindex, and labeled panels
 - tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tabs-*` aliases)
 - visible vs hidden tab panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state
+- modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Dialog runtime is still slice B.
 
 ```html
 <div tabs name="settings">

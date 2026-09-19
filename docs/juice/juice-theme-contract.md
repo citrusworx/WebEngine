@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), and remaining depth slices A–C (`shadowTone`, `overlay`, `variant`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Filling remaining SCSS/YAML gaps is later work.
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), and modal theme chrome (`--juice-modal-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog runtime is still later work.
 
 ## 1. Layer rule
 
@@ -75,7 +75,7 @@ Library companion YAML (`<id>.yaml` next to `<id>.scss`) is an identity record, 
 
 ## 4. Required `--juice-*` binds
 
-Set every name in this section on `[theme="…"]` for every shipped library theme. Bind from existing identity tokens. Do not invent a new hue family for chrome. Accordion and tab triggers stay surface/text controls, not the CTA button gradient.
+Set every name in this section on `[theme="…"]` for every shipped library theme. Bind from existing identity tokens. Do not invent a new hue family for chrome. Accordion triggers, tab triggers, and `[modal-close]` stay surface/text controls, not the CTA button gradient.
 
 Core CSS reads `--juice-*`. Identity aliases (`--aqua-*`, `--kw-*`, `--cm-*`, `--tide-*`, `--jx-*`) are how themes name the same values.
 
@@ -107,6 +107,27 @@ Consumed by `accordion.scss`. Aquaflux, KiwiPress, Citrusmint, Tide, and generat
 | `--juice-tabs-focus-ring` | focus outline |
 
 Consumed by `tabs.scss`. Same four library themes plus generated `--jx-tabs-*`.
+
+### Modal chrome
+
+Structural dialog paint. Required names:
+
+| Role | Job |
+|---|---|
+| `--juice-modal-overlay` | dimming scrim on `[modal-overlay]` |
+| `--juice-modal-panel` | elevated panel fill |
+| `--juice-modal-panel-border` | panel hairline |
+| `--juice-modal-panel-shadow` | panel elevation |
+| `--juice-modal-close` | close-button fill |
+| `--juice-modal-close-color` | close-button ink |
+| `--juice-modal-close-hover` | close-button hover fill |
+| `--juice-modal-focus-ring` | close-button focus outline |
+
+Consumed by `modal.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-modal-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
+
+This is **not** the surface `overlay="frost|tint"` utility. `[modal-overlay]` is a dialog scrim. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Dialog runtime (focus trap / APG) is still slice B.
+
+Tide must stay a dark scrim and dark panel, not a white glass dialog.
 
 ### Surface tones
 
@@ -199,7 +220,7 @@ Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-
 
 Tide binds `--juice-tabs-panel` from `--tide-tabs-panel`. It does not bind `--juice-tabs-panel-rule`. Other shipped themes bind neither.
 
-Generated app themes currently bind required accordion/tabs/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
+Generated app themes currently bind required accordion/tabs/modal/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
 
 ## 6. Identity-prefix alias convention
 
@@ -211,7 +232,7 @@ Generated app themes currently bind required accordion/tabs/surface/border-stren
 | Tide | `--tide-*` | `--tide-border-strong` → `--juice-border-strength-bold-color` |
 | Generated app themes | `--jx-*` | `--jx-trigger` → `--juice-accordion-trigger` |
 
-`--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values. Core accordion/tabs helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Do not add a fifth library prefix.
+`--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values. Core accordion/tabs/modal helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Do not add a fifth library prefix.
 
 ## 7. Not theme roles
 
@@ -243,6 +264,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 |---|---|---|---|---|
 | Accordion core | bind | bind | bind | bind |
 | Tabs core | bind | bind | bind | bind |
+| Modal chrome | bind | bind | bind | bind |
 | Surface tones (`soft` / `strong` / `muted` × bg, border, shadow, blur) | bind | bind | bind | bind |
 | Border strength (`soft` / `bold` × width, color) | bind | bind | bind | bind |
 | Shadow tone (`cool` / `warm` × color, shadow) | bind | bind | bind | bind |
@@ -252,7 +274,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role |
 | `variant` recipes | not a theme role | not a theme role | not a theme role | not a theme role |
 
-Generated `--jx-*` themes bind the six required families and omit the optional accordion/tabs hooks.
+Generated `--jx-*` themes bind the seven required families and omit the optional accordion/tabs hooks.
 
 ## 9. Authoring checklist
 
@@ -261,15 +283,15 @@ A new theme is done when:
 1. Identity is recorded: `id`, `name`, `selector` (`theme="<id>"`), body + heading typography, and palette groups for page, text, accents, and surfaces.
 2. Named surfaces exist only when each has a one-sentence job; Juice `[hero]` / `[card]` / `[panel]` still do the structure.
 3. Identity tokens use one prefix (`--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` for a library theme, `--jx-*` for a generated app theme).
-4. `[theme="<id>"]` binds every **required** `--juice-*` name in section 4 from those existing tokens — no new hue family, no CTA paint on accordion/tab triggers.
+4. `[theme="<id>"]` binds every **required** `--juice-*` name in section 4 from those existing tokens — no new hue family, no CTA paint on accordion/tab triggers or `[modal-close]`.
 5. Optional accordion/tabs hooks are bound only when the chrome needs them (Tide FAQ pills). Omitting them is valid.
 6. Standalone `blur="sm|md"` and `variant="monochromatic|glass|tinted"` are left to core. No second per-theme blur scale or `--juice-variant-*` family.
 7. Semantic defaults and named-surface recipes stay on the identity layer. `stack` / `row` / `grid` / `gap` are untouched.
 8. The app imports core CSS plus the theme stylesheet and sets `theme="<id>"` on the root.
-9. Swapping `theme` on unchanged markup retints accordion, tabs, `surfaceTone`, `borderStrength`, `shadowTone`, `overlay`, and `variant` recipes without fighting layout.
+9. Swapping `theme` on unchanged markup retints accordion, tabs, modal chrome, `surfaceTone`, `borderStrength`, `shadowTone`, `overlay`, and `variant` recipes without fighting layout.
 
 How to generate, import, and map tokens is in [Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md).
 
 ## Status
 
-This is Priority 2 through remaining depth slice C: the checklist plus automated bind tests, including `shadowTone`, `overlay`, and `variant` recipes (core composition — no new required binds). Filling any remaining SCSS/YAML gaps is later work. Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal chrome slice A: the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, and `--juice-modal-*`. Dialog runtime and runtime docs are later work (modal slices B and C). Blush, CLI, and publish are out of scope here.
