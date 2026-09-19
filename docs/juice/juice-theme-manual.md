@@ -18,6 +18,8 @@ Juice defines structure.
 
 If a theme starts replacing layout primitives, it is leaving its layer.
 
+The canonical required-versus-optional list is the [Theme Contract](./juice-theme-contract.md). Use this manual for the authoring flow; use the contract for the bind checklist and theme × role-family matrix.
+
 ## What a theme must decide
 
 Every real Juice theme should decide:
@@ -53,6 +55,10 @@ Every real Juice theme should decide:
 
 - what branded surface recipes need first-class names
 - which ones should be exposed through `surface="..."`
+
+### 6. Chrome roles
+
+Required `--juice-*` accordion, tabs, surface-tone, and border-strength binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
 
 ## The current file shapes
 
@@ -171,6 +177,7 @@ Put these in the theme:
 - named surfaces
 - accordion chrome role bindings (`--juice-accordion-*`)
 - tabs chrome role bindings (`--juice-tabs-*`)
+- surface tone and border strength role bindings (`--juice-surface-*`, `--juice-border-strength-*`) — see the [Theme Contract](./juice-theme-contract.md)
 
 ## What does not belong in the theme
 
@@ -196,11 +203,14 @@ This is not a failure of Juice. It is the intended layering model.
 
 ## Practical checklist
 
-Before calling a theme "done," verify:
+Before calling a theme "done," walk the numbered list in the [Theme Contract](./juice-theme-contract.md). In short:
 
 - the root `theme="..."` contract is clear
 - the palette is coherent
 - body and heading fonts are defined
+- every required `--juice-*` family is bound on `[theme="..."]`
+- optional accordion/tabs hooks are bound only when the chrome needs them
+- standalone `blur="sm|md"` is left to core
 - optional font variants have real jobs
 - named surfaces are distinct and useful
 - semantic elements feel intentional

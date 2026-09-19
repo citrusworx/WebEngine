@@ -109,5 +109,6 @@ Three reasons:
 ## See also
 
 - [Naming](./juice-naming.md) — the parent/child/sibling rule used by both Juice and themes
+- [Theme Contract](./juice-theme-contract.md) — required-versus-optional `--juice-*` checklist
 - [Theme Authoring](./juice-theme-authoring.md) — how to build a theme
 - [Surface Spec](./juice-surface-spec.md) — the surface model that sits on top of this split

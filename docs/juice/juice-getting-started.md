@@ -197,6 +197,7 @@ Juice and Sig.js fit well together because Juice owns styling plus a few built-i
 ## Where to go next
 
 - [Styles](./juice-styles.md)
+- [Theme Contract](./juice-theme-contract.md)
 - [Theme Authoring](./juice-theme-authoring.md)
 - [Theme Manual](./juice-theme-manual.md)
 - [Best Practices](./juice-best-practices.md)

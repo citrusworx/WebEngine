@@ -106,6 +106,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
+- [Theme Contract](./juice-theme-contract.md) — required-versus-optional `--juice-*` checklist
 - [Theme Authoring](./juice-theme-authoring.md)
 - [Theme Manual](./juice-theme-manual.md)
 - [Navigation Runtime](./juice-navigation-runtime.md)

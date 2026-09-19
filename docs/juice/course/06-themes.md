@@ -30,7 +30,7 @@ Named surfaces are branded recipes (`surface="harbor-stage"`). They are how a th
 
 ## Juice mapping
 
-[Theme authoring](../juice-theme-authoring.md) and [Theme manual](../juice-theme-manual.md) are the references. This lesson does not reprint them.
+[Theme contract](../juice-theme-contract.md) is the required-versus-optional checklist. [Theme authoring](../juice-theme-authoring.md) and [Theme manual](../juice-theme-manual.md) are the how-to. This lesson does not reprint them.
 
 ### Shipped library themes
 
@@ -179,6 +179,7 @@ What file would you edit to change Harbor Press’s heading face across the app?
 
 ## Go deeper
 
+- [Theme contract](../juice-theme-contract.md)
 - [Theme authoring](../juice-theme-authoring.md)
 - [Theme manual](../juice-theme-manual.md)
 - [Getting started](../juice-getting-started.md) — app-owned generation
