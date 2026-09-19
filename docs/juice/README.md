@@ -115,6 +115,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Tabs Runtime](./juice-tabs-runtime.md)
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
+- [Toast Runtime](./juice-toast-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.6.0` live on npm)
 

@@ -252,4 +252,5 @@ That is the right mental model for:
 - tabs
 - modal / dialog
 - drawers
+- toasts / snackbars
 - other built-in responsive interactions
