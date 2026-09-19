@@ -17,6 +17,8 @@
 // paints shadow cast color / temperature without wiping tone fill / border / blur.
 // overlay (remaining depth slice B) paints a frost / tint wash via
 // background-image so tone fill / border / shadow / blur and bgColor stay.
+// variant (remaining depth slice C) is a recipe: glass / tinted / monochromatic
+// compose those existing roles. No new required --juice-variant-* binds.
 //
 // [theme] [surfaceTone] must beat theme semantic defaults such as
 // [theme="…"] :where(section, article, …) so the attribute works on
@@ -210,4 +212,81 @@
 [surfaceTone][overlay="tint"],
 [theme] [surfaceTone][overlay="tint"] {
     background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)}), var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)})));
+}
+
+// Variant recipes. Compose existing overlay / blur / border / shadow roles
+// instead of inventing one-off paint. Themes do not bind a second
+// --juice-variant-* family — glass and tinted read --juice-overlay-*,
+// glass frost length reads --juice-surface-soft-blur, and monochromatic
+// chrome reads --juice-border-strength-soft-* plus --juice-surface-soft-shadow.
+//
+//   glass          frost overlay + soft-tone frost length
+//   tinted         tint overlay / theme accent wash
+//   monochromatic  soft hairline + restrained neutral shadow
+//
+// Standalone — no surfaceTone required. [theme] [variant] matches the tone
+// specificity pattern. Combined [surfaceTone][variant] applies only the
+// recipe's properties so tone fill stays. Finer overlay / blur /
+// borderStrength / shadowTone attrs win their property via :not([attr])
+// gates (same spirit as blur overriding tone frost length, and
+// shadowTone :not([depth]) leaving geometry to depth).
+
+[variant="glass"]:not([overlay]),
+[theme] [variant="glass"]:not([overlay]) {
+    background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)}), var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)})));
+}
+
+[variant="glass"]:not([blur]),
+[theme] [variant="glass"]:not([blur]) {
+    backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+}
+
+[variant="tinted"]:not([overlay]),
+[theme] [variant="tinted"]:not([overlay]) {
+    background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)}), var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)})));
+}
+
+[variant="monochromatic"],
+[theme] [variant="monochromatic"] {
+    border-style: solid;
+}
+
+[variant="monochromatic"]:not([borderStrength]),
+[theme] [variant="monochromatic"]:not([borderStrength]) {
+    border-width: var(--juice-border-strength-soft-width, 1px);
+}
+
+[variant="monochromatic"]:not([surfaceTone]):not([borderColor]):not([borderStrength]),
+[theme] [variant="monochromatic"]:not([surfaceTone]):not([borderColor]):not([borderStrength]) {
+    border-color: var(--juice-border-strength-soft-color, #{rgba($gray-300, 0.45)});
+}
+
+[variant="monochromatic"]:not([depth]):not([shadowTone]),
+[theme] [variant="monochromatic"]:not([depth]):not([shadowTone]) {
+    box-shadow: var(--juice-surface-soft-shadow, 0 10px 28px -22px #{rgba($gray-900, 0.18)});
+}
+
+[surfaceTone][variant="glass"]:not([overlay]),
+[theme] [surfaceTone][variant="glass"]:not([overlay]) {
+    background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)}), var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)})));
+}
+
+[surfaceTone][variant="glass"]:not([blur]),
+[theme] [surfaceTone][variant="glass"]:not([blur]) {
+    backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+}
+
+[surfaceTone][variant="tinted"]:not([overlay]),
+[theme] [surfaceTone][variant="tinted"]:not([overlay]) {
+    background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)}), var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)})));
+}
+
+[surfaceTone][variant="monochromatic"]:not([borderStrength]),
+[theme] [surfaceTone][variant="monochromatic"]:not([borderStrength]) {
+    border-width: var(--juice-border-strength-soft-width, 1px);
+}
+
+[surfaceTone][variant="monochromatic"]:not([depth]):not([shadowTone]),
+[theme] [surfaceTone][variant="monochromatic"]:not([depth]):not([shadowTone]) {
+    box-shadow: var(--juice-surface-soft-shadow, 0 10px 28px -22px #{rgba($gray-900, 0.18)});
 }

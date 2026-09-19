@@ -109,6 +109,17 @@ describe("Juice build artifacts", () => {
         expect(css).toContain("--juice-overlay-frost-layer");
         expect(css).toContain("--juice-overlay-tint-wash");
         expect(css).toContain("--juice-overlay-tint-layer");
+        expect(css).toMatch(/\[variant=["']?glass["']?\]/);
+        expect(css).toMatch(/\[variant=["']?tinted["']?\]/);
+        expect(css).toMatch(/\[variant=["']?monochromatic["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[variant=["']?glass["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[variant=["']?tinted["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[variant=["']?monochromatic["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[variant=["']?glass["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[variant=["']?tinted["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[variant=["']?monochromatic["']?\]/);
+        expect(css).toContain("--juice-surface-soft-blur, 10px");
+        expect(css).not.toMatch(/--juice-variant-[a-z]+:/);
     });
 
     it("includes accordion structural chrome in core CSS", () => {

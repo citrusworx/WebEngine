@@ -284,6 +284,16 @@ Core `surface.scss` paints via `background-image` so `[bgColor]` swatches and to
 
 `blur="sm|md"` is a core utility, not a theme role. See [Theme Contract](./juice-theme-contract.md). Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.
 
+## Variant recipes
+
+`variant="monochromatic|glass|tinted"` is a core recipe, not a theme role family. See [Theme Contract](./juice-theme-contract.md) and [Surfaces](./juice-surfaces.md). Recipes compose existing overlay / blur / border / shadow binds so Tide stays dark without a second `--juice-variant-*` scale.
+
+- `glass` — frost overlay + soft-tone frost length
+- `tinted` — tint overlay / theme accent wash
+- `monochromatic` — soft hairline + restrained `--juice-surface-soft-shadow`
+
+Combined `[surfaceTone][variant]` applies only the recipe's properties. Finer `overlay` / `blur` / `borderStrength` / `shadowTone` attrs win their property.
+
 ## Recommended authoring rules
 
 - Let Juice own structure and responsiveness

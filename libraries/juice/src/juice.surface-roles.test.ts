@@ -13,6 +13,7 @@ import {
     SHIPPED_LIBRARY_THEMES,
     SURFACE_TONE_ROLES,
     SURFACE_TONES,
+    SURFACE_VARIANTS,
 } from "./juice.theme-contract.js";
 
 const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), ".");
@@ -133,6 +134,46 @@ describe("Surface tone role contract", () => {
         expect(scss).not.toMatch(/\[surfaceTone\]\[overlay="(?:frost|tint)"\][^{]*\{[^}]*border:/);
         expect(scss).toMatch(/\[surfaceTone\]\[overlay="frost"\][^{]*\{[^}]*background-image/);
         expect(scss).toMatch(/\[surfaceTone\]\[overlay="tint"\][^{]*\{[^}]*background-image/);
+    });
+
+    it("composes variant recipes from existing overlay / blur / border / shadow roles", () => {
+        const scss = readFileSync(join(SRC_ROOT, "styles/surface/surface.scss"), "utf-8");
+
+        for (const variant of SURFACE_VARIANTS) {
+            expect(scss).toContain(`[variant="${variant}"]`);
+            expect(scss).toContain(`[theme] [variant="${variant}"]`);
+            expect(scss).toContain(`[surfaceTone][variant="${variant}"]`);
+            expect(scss).toContain(`[theme] [surfaceTone][variant="${variant}"]`);
+        }
+
+        expect(scss).toContain("var(--juice-overlay-frost-layer,");
+        expect(scss).toContain("var(--juice-overlay-tint-layer,");
+        expect(scss).toContain("var(--juice-surface-soft-blur, 10px)");
+        expect(scss).toContain("var(--juice-border-strength-soft-width, 1px)");
+        expect(scss).toContain("var(--juice-border-strength-soft-color,");
+        expect(scss).toContain("var(--juice-surface-soft-shadow,");
+        expect(scss).toContain(":not([overlay])");
+        expect(scss).toContain(":not([blur])");
+        expect(scss).toContain(":not([borderStrength])");
+        expect(scss).toContain(":not([shadowTone])");
+        expect(scss).not.toMatch(/--juice-variant-[a-z]+:/);
+        expect(scss).not.toMatch(/\[variant="glass"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[variant="tinted"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[variant="monochromatic"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[variant="monochromatic"\][^{]*\{[^}]*background-image/);
+        expect(scss).not.toMatch(/\[variant="monochromatic"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="(?:glass|tinted|monochromatic)"\][^{]*\{[^}]*background-color/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="glass"\][^{]*\{[^}]*box-shadow/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="glass"\][^{]*\{[^}]*border:/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="tinted"\][^{]*\{[^}]*box-shadow/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="tinted"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="monochromatic"\][^{]*\{[^}]*background-image/);
+        expect(scss).not.toMatch(/\[surfaceTone\]\[variant="monochromatic"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).toMatch(/\[surfaceTone\]\[variant="glass"\][^{]*\{[^}]*background-image/);
+        expect(scss).toMatch(/\[surfaceTone\]\[variant="glass"\][^{]*\{[^}]*backdrop-filter/);
+        expect(scss).toMatch(/\[surfaceTone\]\[variant="tinted"\][^{]*\{[^}]*background-image/);
+        expect(scss).toMatch(/\[surfaceTone\]\[variant="monochromatic"\][^{]*\{[^}]*border-width/);
+        expect(scss).toMatch(/\[surfaceTone\]\[variant="monochromatic"\][^{]*\{[^}]*box-shadow/);
     });
 
     it("binds the same surface tone roles in aquaflux, kiwipress, citrusmint, and tide", () => {

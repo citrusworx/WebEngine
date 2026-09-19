@@ -68,6 +68,8 @@ Use for pricing tiers. Pairs naturally with a `plan` child region.
 
 Sizing and surface-character variants. These replace the legacy `card-large`, `card-muted`, `hero-panel` shorthands.
 
+Surface-depth **utility** recipes (`variant="monochromatic|glass|tinted"`) are a different attribute — they compose overlay / blur / border / shadow and are not `card="…"` values. See [Surfaces](./juice-surfaces.md). Structural `card` recipes beyond the list above stay later.
+
 ## Card sizing
 
 Sizing lives on the card itself with the bare `size` attribute.

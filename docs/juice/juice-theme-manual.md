@@ -177,7 +177,7 @@ Put these in the theme:
 - named surfaces
 - accordion chrome role bindings (`--juice-accordion-*`)
 - tabs chrome role bindings (`--juice-tabs-*`)
-- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md)
+- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family.
 
 ## What does not belong in the theme
 

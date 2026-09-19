@@ -54,10 +54,11 @@ Core files: `libraries/juice/src/components/hero/hero.scss`, `panel/panel.scss`,
 - `blur="sm|md"` — standalone backdrop-filter (`6px` / `16px`); explicit blur overrides a tone's frost length
 - `shadowTone="cool|warm"` — shadow cast temperature (cool bluish / warm amber-ish)
 - `overlay="frost|tint"` — frost veil / theme-tinted wash (wash only; tone fill and `bgColor` stay)
+- `variant="monochromatic|glass|tinted"` — recipe utilities (restrained chrome / frost + blur / tint wash). Finer attrs win their property.
 
 `surfaceTone` reads `--juice-surface-<tone>-bg|border|shadow|blur`. Unthemed fallbacks stay a light frost for `soft`. Themes rebind the roles. Tide must read as a dark panel, not a white frost. [Surfaces](../juice-surfaces.md).
 
-**Not shipped:** `variant`. Do not use it in exercises. `shadowTone` and `overlay` are shipped (remaining depth slices A+B) but are not required for this lesson.
+`variant` is shipped (remaining depth slice C) but is not required for this lesson. Structural `card="…"` recipes stay later.
 
 ### Theme recipes
 

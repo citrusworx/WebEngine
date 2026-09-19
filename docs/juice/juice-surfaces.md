@@ -178,7 +178,62 @@ When both attributes are set, `overlay` adjusts **wash only**. The tone keeps it
 
 Core selectors include `[theme] [overlay]` (same specificity pattern as tones) and `[surfaceTone][overlay]` so the compose rule cannot wipe tone paint.
 
-Remaining depth slice C (`variant`) stays specified, not shipped.
+## Beta-stable: `variant`
+
+Composable surface-depth recipes. Standalone — no `surfaceTone` required. Recipes wire **existing** overlay / blur / border / shadow roles instead of a new `--juice-variant-*` bind family. Themes already paint those roles, so Tide stays a dark frost / lagoon chrome, not a white glass.
+
+| Value | Intent | Existing roles |
+|-------|--------|----------------|
+| `monochromatic` | Restrained neutral chrome | `--juice-border-strength-soft-*` hairline + `--juice-surface-soft-shadow` |
+| `glass` | Frosted translucent recipe | `--juice-overlay-frost-*` wash + `--juice-surface-soft-blur` |
+| `tinted` | Theme-tinted wash recipe | `--juice-overlay-tint-*` wash |
+
+`glass` and `tinted` paint via `background-image` (same as `overlay`). `monochromatic` uses border longhands and a restrained drop. None of the recipes set `background-color`, so `surfaceTone` fill and `bgColor` swatches stay.
+
+### Compose with finer attributes
+
+When both a recipe and a finer attr are set, the finer attr wins **its property**. The recipe keeps the rest.
+
+| Finer attr | Wins |
+|------------|------|
+| `overlay` | wash / `background-image` |
+| `blur` | backdrop-filter length |
+| `borderStrength` | border width (and standalone color) |
+| `shadowTone` | shadow cast (`:not([depth])` still leaves geometry to `depth`) |
+
+```html
+<article card="feature" variant="glass">…</article>
+<aside variant="tinted">…</aside>
+<section rounded="lg" padding="1rem" variant="monochromatic">…</section>
+```
+
+```html
+<!-- Tone fill stays; glass adds frost wash + soft-tone frost length. -->
+<article card="feature" surfaceTone="soft" variant="glass">…</article>
+```
+
+```html
+<!-- Finer attrs win their property: tint wash, 6px frost, bold rule, cool cast. -->
+<section
+  surfaceTone="soft"
+  variant="glass"
+  overlay="tint"
+  blur="sm"
+  borderStrength="bold"
+  shadowTone="cool"
+>
+  …
+</section>
+```
+
+```html
+<!-- A–C plus depth slices A–C: tone fill, strength width, explicit frost, cool cast, tint wash, glass recipe. -->
+<section surfaceTone="soft" borderStrength="bold" blur="md" shadowTone="cool" overlay="tint" variant="glass">…</section>
+```
+
+Core selectors include `[theme] [variant]` (same specificity pattern as tones) and `[surfaceTone][variant]` so the recipe cannot wipe tone paint. `:not([overlay])` / `:not([blur])` / `:not([borderStrength])` / `:not([shadowTone])` gates keep finer attrs in charge of their property.
+
+This finishes remaining surface-depth slice C. Structural `card="…"` recipes stay a later cross-link — see [Cards](./juice-cards.md).
 
 ## Theme role contract
 
@@ -236,6 +291,9 @@ Unthemed fallbacks (no theme binding):
 - **warm shadow tone** — `rgba(orange-800, 0.28)` drop
 - **frost overlay** — `rgba(white-100, 0.42)` veil
 - **tint overlay** — `rgba(blue-400, 0.18)` wash
+- **glass variant** — frost overlay + soft-tone frost length (`10px` unthemed)
+- **tinted variant** — tint overlay
+- **monochromatic variant** — soft hairline + restrained gray drop (`0 10px 28px -22px` / `rgba(gray-900, 0.18)` unthemed)
 
 Shipped binds (existing tokens only; no new hue family):
 
@@ -246,7 +304,9 @@ Shipped binds (existing tokens only; no new hue family):
 | Citrusmint | `color-mix` of `--cm-surface` at 88% | `--cm-surface` | `--cm-surface-muted` | `--cm-border` / heading mix (no `--cm-border-strong`) | wintergreen / lime (same green family) | `--cm-surface` / `--cm-surface-muted` |
 | Tide | `--tide-surface` + line glow + 16px blur | `--tide-surface-strong` | `--tide-surface-muted` | `--tide-border` / `--tide-border-strong` | lagoon mix + line glow / `--tide-shadow` | `--tide-page` / `--tide-page-tint` |
 
-Tide must read as a **dark** frosted or elevated panel, not a white frost. Tide `borderStrength="bold"` uses `--tide-border-strong` (lagoon line at higher alpha, 2px) — not a light gray rule. Tide `shadowTone` uses `--tide-accent` mixed into `--tide-shadow` (cool, plus line glow) and `--tide-shadow` (warm ink) — not a light gray drop shadow. Tide `overlay` uses `--tide-page` (frost) and `--tide-page-tint` (tint) mixed into transparent — a dark veil, not a white wash. Light themes stay close to the original soft look.
+Tide must read as a **dark** frosted or elevated panel, not a white frost. Tide `borderStrength="bold"` uses `--tide-border-strong` (lagoon line at higher alpha, 2px) — not a light gray rule. Tide `shadowTone` uses `--tide-accent` mixed into `--tide-shadow` (cool, plus line glow) and `--tide-shadow` (warm ink) — not a light gray drop shadow. Tide `overlay` uses `--tide-page` (frost) and `--tide-page-tint` (tint) mixed into transparent — a dark veil, not a white wash. Tide `variant` recipes reuse those same binds (`glass` / `tinted` via overlay, `monochromatic` via soft hairline + `--tide-line-glow` soft shadow) — still dark, not a white glass. Light themes stay close to the original soft look.
+
+`variant` recipes consume those same roles. There is no required `--juice-variant-*` bind family.
 
 App-owned generated themes bind the same `--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, and `--juice-overlay-*` roles from `--jx-surface*` / `--jx-border` / `--jx-border-strong` / `--jx-page-deep` / `--jx-warm` / `--jx-shadow` / `--jx-accent-tint`.
 
@@ -254,7 +314,7 @@ App-owned generated themes bind the same `--juice-surface-*`, `--juice-border-st
 
 | Layer | Owns |
 |-------|------|
-| Juice utilities | `surfaceTone`, `borderStrength`, `blur`, `shadowTone`, `overlay`, `shadow`, `rounded`, `bgColor`, `borderColor`, … |
+| Juice utilities | `surfaceTone`, `borderStrength`, `blur`, `shadowTone`, `overlay`, `variant`, `shadow`, `rounded`, `bgColor`, `borderColor`, … |
 | Theme | Colors, typography, `--juice-surface-*` / `--juice-border-strength-*` / `--juice-shadow-tone-*` / `--juice-overlay-*` paint, how `[card]`, `[hero]`, and semantic elements render under `theme="..."` |
 
 ```html
@@ -267,6 +327,4 @@ Import core + theme CSS separately (see [Theme authoring](./juice-theme-authorin
 
 ## Still planned
 
-A–C surface utilities ship, and remaining depth slices A (`shadowTone`) and B (`overlay`) are in. This stays specified, not shipped:
-
-- `variant` (slice C)
+A–C surface utilities and remaining depth slices A–C (`shadowTone`, `overlay`, `variant`) ship. Structural `card="…"` recipes can stay later — see [Cards](./juice-cards.md) and the [Surface Spec](./juice-surface-spec.md).
