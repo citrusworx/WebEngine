@@ -36,6 +36,7 @@ describe("Juice build artifacts", () => {
 
         expect(css).toContain("[bgColor=");
         expect(css).toContain("[icon=");
+        expect(css).toMatch(/\[iconSize=["']?sm["']?\]/);
         expect(css).toContain("[stack]");
         expect(css.length).toBeGreaterThan(1000);
         for (const id of bundledThemeIds) {

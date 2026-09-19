@@ -45,7 +45,7 @@ Each rule in `regular.scss` maps an icon key to one of these SVG files.
 <i icon="circle-user"></i>
 ```
 
-For proper rendering, ensure your icon component or global icon rule provides sizing and color handling.
+Size with `iconSize` (default `1rem` if unset) or `width` / `height`. Color with `iconcolor`. See [Icons](./juice-icons.md).
 
 ## Adding a regular icon
 

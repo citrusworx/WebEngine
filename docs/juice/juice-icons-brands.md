@@ -53,7 +53,7 @@ Use the `icon` attribute directly in markup:
 <i icon="shopify"></i>
 ```
 
-A shared icon rule should provide width, height, color, and mask behavior.
+Size with `iconSize` (default `1rem` if unset) or `width` / `height`. Color with `iconcolor`. See [Icons](./juice-icons.md).
 
 ## Adding a brand icon
 

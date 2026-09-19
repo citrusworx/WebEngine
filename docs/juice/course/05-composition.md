@@ -49,7 +49,7 @@ Patterns are collected in [Patterns](../juice-patterns.md). They copy current pr
 ```html
 <div card="feature" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
   <div media center>
-    <i icon="book" width="2rem" height="2rem" iconcolor="gray-700"></i>
+    <i icon="book" lib="solid" iconSize="md" iconcolor="gray-700"></i>
   </div>
   <div body stack gap="0.75rem">
     <h3 font="oswald">The Inlet</h3>
@@ -63,7 +63,7 @@ Patterns are collected in [Patterns](../juice-patterns.md). They copy current pr
 
 Buttons: `btn="flat|outline|text|3d|metallic"`, `scale="lg"`, `theme="citrusmint-300"`. Emerging, useful.
 
-Icons: `icon` + `iconcolor` with Font Awesome Free keys. [Icons](../juice-icons.md).
+Icons: first-class `icon`, `iconcolor`, and `iconSize` (`xxs`…`xxl`). Use `lib="solid"` for solid glyphs. `width` / `height` are the custom-size escape hatch, not the default. [Icons](../juice-icons.md).
 
 ### Forms
 
@@ -136,7 +136,7 @@ Harbor Press becomes a small site slice: bar, hero, feature cards, subscribe for
       <div grid="3x1" gap="1">
         <article card="feature" bgColor="white-100" rounded="md">
           <div media center>
-            <i icon="water" width="2rem" height="2rem" iconcolor="blue-700"></i>
+            <i icon="water" lib="solid" iconSize="md" iconcolor="blue-700"></i>
           </div>
           <div body center>
             <h3 font="oswald">The Inlet</h3>
@@ -148,7 +148,7 @@ Harbor Press becomes a small site slice: bar, hero, feature cards, subscribe for
         </article>
         <article card="feature" bgColor="white-100" rounded="md">
           <div media center>
-            <i icon="clock" width="2rem" height="2rem" iconcolor="brown-700"></i>
+            <i icon="clock" lib="solid" iconSize="md" iconcolor="brown-700"></i>
           </div>
           <div body center>
             <h3 font="oswald">Letterpress Hours</h3>
@@ -160,7 +160,7 @@ Harbor Press becomes a small site slice: bar, hero, feature cards, subscribe for
         </article>
         <article card="feature" bgColor="white-100" rounded="md">
           <div media center>
-            <i icon="cloud" width="2rem" height="2rem" iconcolor="gray-700"></i>
+            <i icon="cloud" lib="solid" iconSize="md" iconcolor="gray-700"></i>
           </div>
           <div body center>
             <h3 font="oswald">Fog Index</h3>

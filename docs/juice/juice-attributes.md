@@ -161,10 +161,26 @@ Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` and `--juice-bor
 
 ## Icon Attributes
 
+First-class:
+
 - `icon`: applies a FontAwesome Free icon mask
   Values: any icon key that exists in the Juice solid, regular, or brands sets
 - `iconcolor`: applies icon color through Juice's icon color selectors
   Values: token-backed color values such as `"red-800"`, `"gray-900"`, or `"freshgreen-600"`
+- `iconSize`: stepped icon size
+  Values: `"xxs"` (10px), `"xs"` (12px), `"sm"` (24px), `"md"` (36px), `"lg"` (48px), `"xl"` (60px), `"xxl"` (72px)
+
+Set selection:
+
+- `lib`: `"solid"` is required for solid icons. `"regular"` and `"brands"` document intent; those sets match on `icon` alone.
+
+Escape hatch:
+
+- `width` / `height`: custom size when the `iconSize` scale is not enough. Set both. These utilities compile after the icon rules, so they win over the default and `iconSize`.
+
+Default: `[icon]` is `1rem × 1rem` when neither `iconSize` nor `width` / `height` is set. There is no mobile size remap.
+
+Color: `iconcolor` sets `color`; the mask uses `background-color: currentColor`. With no `iconcolor`, the icon inherits parent `color`. Do not use `fontColor` as the icon API.
 
 Examples:
 
@@ -173,8 +189,6 @@ Examples:
 - `"github"`
 - `"shopify"`
 - `"shield-halved"`
-
-Use `iconcolor` to tint icons.
 
 For more detail, see [Icons](./juice-icons.md).
 
@@ -264,19 +278,19 @@ See [Tabs Runtime](./juice-tabs-runtime.md). Theme paint uses `--juice-tabs-*` r
     Description text with centered alignment.
   </p>
 
-  <div row gap="1" centered>
+    <div row gap="1" centered>
     <button bgColor="green-500" hover="green-600" fontColor="white-100" padding="1rem">
       Primary
     </button>
-    <i icon="check" width="1rem" height="1rem" iconcolor="green-600"></i>
-    <i icon="github" width="1rem" height="1rem" iconcolor="gray-900"></i>
+    <i icon="check" lib="solid" iconSize="sm" iconcolor="green-600"></i>
+    <i icon="github" lib="brands" width="1.25rem" height="1.25rem" iconcolor="gray-900"></i>
   </div>
 </section>
 
 <div card="cta" size="md" bgColor="white-100" shadow="gray-400" depth="sm">
   <div header row space="between" centered>
     <h3 font="korolev-rounded-bold">Card Title</h3>
-    <i icon="toggle-on" width="2rem" height="2rem" iconcolor="red-800"></i>
+    <i icon="toggle-on" lib="solid" iconSize="md" iconcolor="red-800"></i>
   </div>
   <div body stack gap="1rem">
     <p font="korolev-rounded">Structured card content.</p>

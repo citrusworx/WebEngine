@@ -44,7 +44,7 @@ Each rule in `solid.scss` maps an icon key to one of these SVG files.
 <i icon="arrow-right"></i>
 ```
 
-For proper rendering, ensure the element also receives width, height, and color styling.
+Size with `iconSize` (default `1rem` if unset) or `width` / `height`. Color with `iconcolor`. Solid icons require `lib="solid"`. See [Icons](./juice-icons.md).
 
 ## Adding or refreshing solid icons
 
