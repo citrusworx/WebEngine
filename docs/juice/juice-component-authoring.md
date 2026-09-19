@@ -69,6 +69,7 @@ Examples:
 * accordions should use buttons and panels correctly
 * tabs should use a `[tabs]` root, `[tab]` triggers, and `[tab-panel]` panels
 * modals should use a `[modal-overlay]` root, a `[modal]` dialog, and `aria-controls` openers
+* drawers should use a `[drawer-overlay]` root, a `[drawer]` dialog, and `aria-controls` openers
 * nav components should still rely on `nav`
 * cards should not fake semantics unless needed
 

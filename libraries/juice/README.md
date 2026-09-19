@@ -99,7 +99,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, and drawer runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, and `[drawer-overlay]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), and [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, modal, and drawer runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, and `[drawer-overlay]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), and [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
 
 ## Use the built files directly
 
@@ -151,7 +151,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tabs-*` aliases)
 - visible vs hidden tab panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state
 - modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). See [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md).
-- drawer chrome colors come from `--juice-drawer-*` roles bound by the active theme; hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`.
+- drawer chrome colors come from `--juice-drawer-*` roles bound by the active theme; hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. See [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
 
 ```html
 <div tabs name="settings">
@@ -194,6 +194,15 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
   </div>
 </div>
 <button type="button" aria-controls="demo-modal">Open account</button>
+
+<div drawer-overlay id="demo-drawer" hidden>
+  <div drawer role="dialog" aria-modal="true" aria-labelledby="demo-drawer-title">
+    <button type="button" drawer-close aria-label="Close">×</button>
+    <div drawer-header><h2 id="demo-drawer-title">Filters</h2></div>
+    <div drawer-body>Refine results from the catalog.</div>
+  </div>
+</div>
+<button type="button" aria-controls="demo-drawer">Open filters</button>
 ```
 
 ## Browser Support

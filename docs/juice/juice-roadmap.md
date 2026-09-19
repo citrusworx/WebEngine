@@ -6,6 +6,8 @@
 
 **0.6.0 is the public cut.** Tide, surface language A–C plus remaining depth, the theme contract plus bind tests, icon/typography authoring polish, and modal / dialog A→B→C shipped in this lane. 0.4.0 was the prior public npm cut.
 
+**Master is ahead of 0.6.0.** Drawer A→B→C (theme chrome, dialog runtime, runtime / maturity docs) lives on master and is not in the published tarball. Do not run `yarn version-packages` or publish from this picture. Do not invent a next version number; the next cut happens when new Juice changesets are consumed.
+
 Consumed Juice changesets (the 0.6.0 lane):
 
 | Changeset | Bump | What it records |
@@ -24,16 +26,24 @@ Consumed Juice changesets (the 0.6.0 lane):
 | `juice-modal-dialog-runtime` | **minor** | DOM-first modal dialog runtime (open/close, Escape, focus trap, exclusive) |
 | `juice-modal-runtime-docs` | **patch** | Modal runtime / maturity docs (slice C) |
 
+Pending Juice changesets on master (consume them at the next cut; Juice-only if possible):
+
+| Changeset | Bump | What it records |
+|---|---|---|
+| `juice-drawer-theme-chrome` | **minor** | Drawer theme chrome roles (`--juice-drawer-*`) |
+| `juice-drawer-dialog-runtime` | **minor** | DOM-first drawer dialog runtime (open/close, Escape, focus trap, exclusive) |
+| `juice-drawer-runtime-docs` | **patch** | Drawer runtime / maturity docs (slice C) |
+
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
-The visible layers today (0.6.0):
+The visible layers today (0.6.0 plus unreleased master):
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
 * surface language A–C: themeable `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`
-* Emerging browser runtimes: navigation, accordion, tabs, and modal auto-enhance when the JS entry is imported
-* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal factory)
+* Emerging browser runtimes: navigation, accordion, tabs, modal, and drawer auto-enhance when the JS entry is imported
+* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal or Sig Drawer factory)
 * contracts for themes, icons, and typography, including author type overrides
 * templates as a stress-test bed
 
@@ -44,14 +54,14 @@ The next strongest areas are now:
 * modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one)
 * motion wave 1 (P0 + P1)
 * surface utilities A–C
-* accordion, tabs, and modal chrome plus DOM-first auto-enhance
+* accordion, tabs, modal, and drawer chrome plus DOM-first auto-enhance
 * documented theme / icon / typography contracts
 * templates as design proofs
 
 The weakest areas are still:
 
 * remaining surface depth (structural `card="…"` recipes; `shadowTone`, `overlay`, and `variant` utilities are in)
-* component maturity beyond the four auto-enhance runtimes
+* component maturity beyond the five auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
 * Juice CLI and config / generator workflow
@@ -88,6 +98,10 @@ This is the stack that shipped in 0.6.0.
 * **Modal / dialog A→B→C.** Shared `--juice-modal-*` roles for `[modal-overlay]` / `[modal]` / `[modal-close]` (#118 / #119). DOM-first dialog runtime (#121): `createModal` / `initModal` / `startModalRuntime` / `stopModalRuntime`, auto-boot, Escape, focus trap, exclusive open, backdrop click (`modal-overlay="static"` opts out). Runtime docs and maturity notes shipped with the cut. Distinct from surface `overlay="frost|tint"`. No Sig Modal factory.
 * **Typography and icon polish.** Icon authoring contract (#108): default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, `width` / `height` stay the custom-size escape hatch. Typography authoring contract (#110). Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults via `[theme] [attr]` companions (#112), same pattern as `surfaceTone`.
 
+### Since 0.6.0 (on master, unpublished)
+
+* **Drawer A→B→C.** Shared `--juice-drawer-*` roles for `[drawer-overlay]` / `[drawer]` / `[drawer-close]` (#128). DOM-first dialog runtime (#129): `createDrawer` / `initDrawer` / `startDrawerRuntime` / `stopDrawerRuntime`, auto-boot, Escape, focus trap, exclusive drawer open, backdrop click (`drawer-overlay="static"` opts out). Runtime docs and maturity notes in this pass. Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. Distinct from surface `overlay="frost|tint"` and from modal. No Sig Drawer factory. Still unpublished vs 0.6.0.
+
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
 ---
@@ -118,7 +132,7 @@ Authors can compose visual character with the shipped utilities. Structural card
 
 ### 2. Components Are Uneven Beyond the Runtimes
 
-Accordion, tabs, and modal have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal factory.
+Accordion, tabs, modal, and drawer have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal or Sig Drawer factory.
 
 That is not the same as a polished component library. Cards, buttons, forms, and nav variants are useful and still settling. Prop contracts for styling internal parts are still being figured out. Juice should not pretend the exported component surface is broader or more mature than it is.
 
@@ -163,13 +177,16 @@ See [Surfaces](./juice-surfaces.md) and [Cards](./juice-cards.md).
 
 The browser behavior layer should keep growing, but slowly.
 
-Modal / dialog **A→B→C shipped in 0.6.0**: theme chrome (`--juice-modal-*`), dialog runtime, and runtime / maturity docs. Valid `[modal-overlay]` markup auto-enhances. Do not oversell a component roadmap. Drawer and a Sig Modal factory stay later.
+Modal / dialog **A→B→C shipped in 0.6.0**: theme chrome (`--juice-modal-*`), dialog runtime, and runtime / maturity docs. Valid `[modal-overlay]` markup auto-enhances.
+
+Drawer **A→B→C is done on master** (still unpublished vs 0.6.0): theme chrome (`--juice-drawer-*`), dialog runtime, and runtime / maturity docs. Valid `[drawer-overlay]` markup auto-enhances. Do not oversell a component roadmap. A Sig Modal or Sig Drawer factory stays later.
 
 Short-term focus remains:
 
-* keep navigation, accordion, tabs, and modal documented as Emerging until they settle
+* keep navigation, accordion, tabs, modal, and drawer documented as Emerging until they settle
 * improve component authoring patterns
 * ensure anything newly exported is actually ready
+* grow the next runtime only when that markup contract stays honest
 
 ### Priority 3. Templates as Stress Tests; Juice CLI as a Separate Track
 
@@ -188,10 +205,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Keep nav / accordion / tabs / modal Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C is done on master (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, and the 0.6.0 npm publish. Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, and drawer A→B→C on master. Do not invent a next version number; the next cut happens when new Juice changesets exist.
 
 ---
 
@@ -201,10 +218,12 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 **0.6.0 is the live npm cut** for the later stack. Tide is a fourth shipped library theme. Surface A–C utilities, the theme contract plus bind tests, icon/typography authoring contracts (including author type overrides), and modal / dialog A→B→C are in 0.6.0. Blush remains draft.
 
+Master is ahead of that cut. Drawer A→B→C is on master and unpublished.
+
 The next stage is post-0.6.0 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; grow runtime/components only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C is done on master (still unpublished vs 0.6.0); grow runtime/components only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.
