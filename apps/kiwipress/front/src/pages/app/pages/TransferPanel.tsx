@@ -39,26 +39,39 @@ export function TransferPanel() {
         const counts = current.native ?? {};
         const transferError = transfer.get().error;
         const cmsError = current.error;
+        const entries = Object.entries(counts);
 
         summaryNode.replaceChildren(
             <div stack gap="0.75rem">
-                {cmsError ? <p>{cmsError}</p> : null}
-                {transferError ? <p>{transferError}</p> : null}
-                <p>
-                    Entry: {current.entry ?? "wordpress"} → destination: {current.destination ?? "nectarine"}
-                    {" "}({current.persistence ?? "memory"})
-                </p>
-                <ul>
-                    {Object.entries(counts).map(([collection, count]) => (
-                        <li>{collection}: {count}</li>
-                    ))}
-                </ul>
-            </div>
+                {cmsError ? <div note><i icon="circle-exclamation" lib="solid" iconSize="sm"></i><p>{cmsError}</p></div> : null}
+                {transferError ? <div note><i icon="circle-exclamation" lib="solid" iconSize="sm"></i><p>{transferError}</p></div> : null}
+                <div detail-grid>
+                    <div detail>
+                        <span>Mode</span>
+                        <p>{current.mode ?? "unknown"}</p>
+                    </div>
+                    <div detail>
+                        <span>Path</span>
+                        <p>{current.entry ?? "wordpress"} → {current.destination ?? "nectarine"}</p>
+                    </div>
+                    <div detail>
+                        <span>Persistence</span>
+                        <p>{current.persistence ?? "memory"}</p>
+                    </div>
+                </div>
+                {entries.length
+                    ? <div chip-wrap>
+                        {entries.map(([collection, count]) => (
+                            <span chip>{collection}: {count}</span>
+                        ))}
+                    </div>
+                    : <p subtle>No native collection counts yet.</p>}
+            </div> as Node
         );
     }
 
     async function loadCms() {
-        status.set("Loading CMS status...");
+        status.set("Loading CMS status…");
         paintStatus();
         try {
             const response = await gatewayFetch("/__kiwipress/cms");
@@ -78,7 +91,7 @@ export function TransferPanel() {
     }
 
     async function runTransfer() {
-        status.set("Transferring WordPress → Nectarine...");
+        status.set("Transferring WordPress → Nectarine…");
         paintStatus();
         try {
             const response = await gatewayFetch("/__kiwipress/transfer", {
@@ -132,32 +145,36 @@ export function TransferPanel() {
     });
 
     return (
-        <div card card-padding="lg">
-            <div card-header stack gap="0.5rem">
-                <p>Standalone CMS</p>
-                <h2>Transfer to Nectarine</h2>
-                <p>
-                    Start on WordPress Headless. Move posts, pages, users, and taxonomies into the native
-                    Nectarine-shaped CMS this library owns — persist it here, reuse it in other projects.
-                </p>
-            </div>
-            <div card-body stack gap="1rem">
-                <div row wrap gap="0.5rem">
-                    <button type="button" onclick={() => { void loadCms(); }}>Refresh status</button>
-                    <button type="button" onclick={() => { void runTransfer(); }}>Transfer from WordPress</button>
-                    <button btn="outline" type="button" onclick={() => { void useWordpress(); }}>Use WordPress</button>
+        <div panel-card>
+            <div tile-head>
+                <div>
+                    <h3>Transfer to Nectarine</h3>
+                    <p subtle>
+                        Start on WordPress Headless when a URL is configured. Move posts, pages, users, and taxonomies into the native CMS this library persists.
+                    </p>
                 </div>
-                <code ref={(node: HTMLElement) => {
-                    statusNode = node;
-                    paintStatus();
-                    bindPanel();
-                }}>{status.get()}</code>
-                <div ref={(node: HTMLElement) => {
-                    summaryNode = node;
-                    paintSummary();
-                    bindPanel();
-                }} />
             </div>
+            <div action-group>
+                <button btn="outline" type="button" scale="sm" onclick={() => { void loadCms(); }}>
+                    Refresh status
+                </button>
+                <button type="button" scale="sm" onclick={() => { void runTransfer(); }}>
+                    Transfer from WordPress
+                </button>
+                <button btn="outline" type="button" scale="sm" onclick={() => { void useWordpress(); }}>
+                    Use WordPress
+                </button>
+            </div>
+            <p subtle ref={(node: HTMLElement) => {
+                statusNode = node;
+                paintStatus();
+                bindPanel();
+            }}>{status.get()}</p>
+            <div ref={(node: HTMLElement) => {
+                summaryNode = node;
+                paintSummary();
+                bindPanel();
+            }} />
         </div>
     );
 }
