@@ -42,7 +42,7 @@ They work by:
 * responding to DOM changes
 * applying behavior without user init code
 
-See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), and [Juice Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog.
+See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), [Juice Drawer Runtime](./juice-drawer-runtime.md), and [Juice Toast Runtime](./juice-toast-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog.
 
 ## Runtime Scope
 

@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), and toast theme chrome (`--juice-toast-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]`.
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), and toast theme chrome (`--juice-toast-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md).
 
 ## 1. Layer rule
 
@@ -177,7 +177,7 @@ Structural non-modal feedback paint. Required names:
 
 Consumed by `toast.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-toast-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Status remaps identity tokens (accent, warm, page-deep, secondary) — not a second semantic palette. Close stays a surface control, not the CTA button gradient.
 
-This is **not** a dialog overlay and **not** the surface `overlay="frost|tint"` utility. There is no toast scrim. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The stack (`[toast-region]`) stays in the DOM. Closed vs open for an individual `[toast]` uses the native `hidden` attribute so static open markup demos stay visible. The toast runtime auto-enhances that markup.
+This is **not** a dialog overlay and **not** the surface `overlay="frost|tint"` utility. There is no toast scrim. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The stack (`[toast-region]`) stays in the DOM. Closed vs open for an individual `[toast]` uses the native `hidden` attribute so static open markup demos stay visible. The toast runtime auto-enhances that markup — see [Toast Runtime](./juice-toast-runtime.md).
 
 Region position: `[toast-region]` / `[toast-region="top-right"]` (default), `"top-left"`, `"bottom-right"`, `"bottom-left"`. Status: bare `[toast]` is neutral; `[toast="success|error|info|warning"]` paints a 4px left accent bar plus the matching soft tint.
 
