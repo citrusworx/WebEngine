@@ -264,7 +264,7 @@ This is a walker, not a router. Copy `method` + `endpoint` onto Seltzer routes y
 
 ### 10. Optional dashboard app
 
-`apps/kiwipress` is a Juice + Sig marketing site, onboarding wizard, and dashboard that **consumes** the library. It is not the library. The live CMS surface is **Content**: transfer panel plus posts/pages manager. Other dashboard pages (Projects, Billing, …) are placeholders. See [Dashboard app](./kiwipress-dashboard.md).
+`apps/kiwipress` is a Juice + Sig marketing site, onboarding wizard, and dashboard that **consumes** the library. It is not the library. The live CMS surface is **Content**: transfer panel plus posts/pages manager. Other dashboard pages (Projects, Billing, …) are placeholders. See [Dashboard app](./kiwipress-dashboard.md). Local run + wizard provision walkthrough: [`apps/kiwipress/README.md`](../../apps/kiwipress/README.md).
 
 ## Mental model
 
