@@ -1,4 +1,5 @@
 import { Sidebar, type NavId } from "./Sidebar";
+import "../dashboard.css";
 
 type LayoutOpts = {
     page: NavId;

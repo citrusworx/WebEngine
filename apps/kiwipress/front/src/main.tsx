@@ -46,14 +46,14 @@ router
     .set("/wizard/provisioning", () => <Provisioning />)
     .set("/wizard/live", () => <Live />)
     .set("/wizard/scale", () => <Scale />)
-    .set("/app", <Projects />)
-    .set("/app/projects", <Projects />)
-    .set("/app/content", <Content />)
-    .set("/app/blueprints", <AppBlueprints />)
-    .set("/app/billing", <Billing />)
-    .set("/app/activity", <Activity />)
-    .set("/app/settings", <Settings />)
-    .set("/app/account", <Account />)
+    .set("/app", () => <Projects />)
+    .set("/app/projects", () => <Projects />)
+    .set("/app/content", () => <Content />)
+    .set("/app/blueprints", () => <AppBlueprints />)
+    .set("/app/billing", () => <Billing />)
+    .set("/app/activity", () => <Activity />)
+    .set("/app/settings", () => <Settings />)
+    .set("/app/account", () => <Account />)
 
 router.start();
 router.navigate(window.location.pathname);
