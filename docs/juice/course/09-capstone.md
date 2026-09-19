@@ -31,7 +31,7 @@ Required system work (not just HTML volume):
 - At most **one** app CSS file with a short comment at the top stating what it is allowed to do.
 - Sig.js is optional and small: a subscribe confirmation, a “saved title” flag. Do not rebuild the page as a SPA to finish this course. This course stays CSS and design-system focused — finishing without Sig is full credit.
 
-Keep behavior honest. A `<form>` that does not POST anywhere is fine if you say so. Juice’s nav/accordion/tabs/modal/drawer/toast runtimes are optional; they are not the grading surface.
+Keep behavior honest. A `<form>` that does not POST anywhere is fine if you say so. Juice’s nav/accordion/tabs/modal/drawer/toast/popover runtimes are optional; they are not the grading surface.
 
 ## Make three deliveries
 

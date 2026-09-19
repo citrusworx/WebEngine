@@ -323,7 +323,9 @@ See [Toast Runtime](./juice-toast-runtime.md). Theme paint uses `--juice-toast-*
 
 Openers pair through `aria-controls` pointing at the root `id`. There is no extra Juice opener attribute.
 
-Popover is a non-modal anchored panel. It is not a modal dialog, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Theme paint uses `--juice-popover-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`).
+Popover is a non-modal anchored panel. It is not a modal dialog, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility.
+
+See [Popover Runtime](./juice-popover-runtime.md). Theme paint uses `--juice-popover-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`).
 
 ## Usage Examples
 

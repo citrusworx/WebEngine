@@ -253,4 +253,5 @@ That is the right mental model for:
 - modal / dialog
 - drawers
 - toasts / snackbars
+- popovers
 - other built-in responsive interactions
