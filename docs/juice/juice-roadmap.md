@@ -28,7 +28,7 @@ The next strongest areas are now:
 The weakest areas are still:
 
 * surface language breadth (A–C utilities ship; `overlay` / `variant` / `shadowTone` do not)
-* theme-contract formalization across the shipped set
+* theme-contract tests across the shipped set (checklist is written; automation is not)
 * component maturity beyond the three auto-enhance runtimes
 * icon and typography polish
 * blush remaining an unpublished YAML-only draft
@@ -128,19 +128,9 @@ Authors still hand-assemble too much of the visual character for cards, panels, 
 
 ### 2. The Theme Contract Is Still Formalizing
 
-Three shipped themes prove the split — Juice owns structure, themes own identity — but the contract is not yet as easy to repeat as it should be.
+The required-versus-optional checklist now lives in [Theme Contract](./juice-theme-contract.md). All four shipped themes are equal references there: identity YAML, required `--juice-*` binds, optional Tide hooks, prefix aliases, and the theme × role-family matrix.
 
-A first-class theme system should make these decisions obvious:
-
-* typography choices
-* semantic text and surface colors
-* hero / card / panel variants
-* element-level defaults for headings, text, sections, forms, and nav
-* accordion and tabs chrome roles bound from identity tokens
-
-KiwiPress is the richest shipped reference. Aquaflux, Citrusmint, and Tide follow the same shape. The four-theme set is now the right basis for writing the contract down.
-
-Config-driven generation from `juice.config.yaml` remains draft. It should not block library theme work.
+That is docs formalization, not a finished system. Automated tests that assert every shipped theme binds the required accordion, tabs, surface-tone, and border-strength families are **not** written yet. Config-driven generation from `juice.config.yaml` remains draft. Neither should block the next contract step.
 
 ### 3. Components Are Uneven Beyond the Runtimes
 
@@ -187,16 +177,9 @@ This is what makes templates feel finished with less manual assembly.
 
 ### Priority 2. Formalize the Theme Contract
 
-Juice now has four library themes as references (`aquaflux`, `kiwipress`, `citrusmint`, `tide`).
+Docs formalization is in progress. [Theme Contract](./juice-theme-contract.md) is the canonical checklist against `aquaflux`, `kiwipress`, `citrusmint`, and `tide`.
 
-Use that set to make the contract easier to repeat and document:
-
-* required identity, typography, and palette decisions
-* semantic element defaults
-* accordion / tabs chrome role bindings
-* what belongs in a library theme versus an app-owned generated theme
-
-Aquaflux is no longer the only example. Do not wait for a generator rewrite to write the contract down.
+Next step is automated tests that fail if a shipped library theme omits a required `--juice-*` bind. Do not claim those tests are done. Do not wait for a generator rewrite. Filling remaining SCSS/YAML gaps is later work.
 
 ### Priority 3. Typography / Icon Contract Polish
 
@@ -237,7 +220,7 @@ The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block surfa
 ## Recommended Build Order
 
 1. Expand `surfaceTone` and related surface utilities.
-2. Formalize the theme contract using the four shipped themes as references.
+2. Formalize the theme contract: checklist is written; next is automated bind tests.
 3. Tighten typography and icon authoring contracts.
 4. Add the next runtime or component only when the chrome and markup are ready (for example modal). Do not oversell this.
 5. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
@@ -253,7 +236,7 @@ It shipped modular themes, motion wave 1, accordion and tabs runtimes, teal toke
 The next stage is refinement:
 
 * make surface language richer
-* formalize themes against four references
+* automate the theme contract against the four shipped references
 * polish icons and type
 * grow runtime/components only when the markup contract is honest
 

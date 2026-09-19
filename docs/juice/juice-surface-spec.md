@@ -262,5 +262,6 @@ That gives Juice an expressive surface language while preserving its design phil
 
 - [Layers](./juice-layers.md)
 - [Naming](./juice-naming.md)
+- [Theme Contract](./juice-theme-contract.md)
 - [Theme Authoring](./juice-theme-authoring.md)
 - [Cards](./juice-cards.md)

@@ -9,7 +9,7 @@ Juice Beta is the first release line where the styling system, theme contract, a
 - **Responsive reference:** [juice-responsive-reference.md](./juice-responsive-reference.md).
 - **Surfaces:** `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, and standalone `blur="sm|md"` — [juice-surfaces.md](./juice-surfaces.md). Tones and strength use `--juice-surface-*` / `--juice-border-strength-*` theme roles; blur uses fixed lengths (`6px` / `16px`).
 - **Motion:** canonical `motion` attribute with P0/P1 values ([juice-animations.md](./juice-animations.md)); `prefers-reduced-motion` respected.
-- **Theme authoring:** each shipped theme uses `src/themes/<id>/<id>.scss` + `<id>.yaml` ([juice-theme-authoring.md](./juice-theme-authoring.md)).
+- **Theme authoring:** each shipped theme uses `src/themes/<id>/<id>.scss` + `<id>.yaml` ([juice-theme-authoring.md](./juice-theme-authoring.md)). Required `--juice-*` binds are listed in the [Theme Contract](./juice-theme-contract.md).
 - **Auto-start runtimes:** importing `@citrusworx/juiceui` auto-enhances valid navigation, `[accordion]`, and `[tabs]` markup in the browser. See [juice-runtime-behavior.md](./juice-runtime-behavior.md), [juice-navigation-runtime.md](./juice-navigation-runtime.md), [juice-accordion-runtime.md](./juice-accordion-runtime.md), and [juice-tabs-runtime.md](./juice-tabs-runtime.md).
 
 ## What Beta does not promise yet

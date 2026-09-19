@@ -26,6 +26,8 @@ Juice still owns:
 - sizing and spacing primitives
 - responsive layout behavior
 
+The required-versus-optional `--juice-*` checklist, identity-prefix rules, and theme × role-family matrix live in the [Theme Contract](./juice-theme-contract.md). This page keeps how-to detail. Do not treat the role lists below as a second source of truth.
+
 ## Current theme model
 
 Juice now supports two equally valid theme sources:
@@ -70,6 +72,7 @@ A healthy Juice theme should own:
 - named surfaces for authored brand moments
 - accordion chrome roles (`--juice-accordion-*`, bound from theme identity tokens)
 - tabs chrome roles (`--juice-tabs-*`, bound from theme identity tokens)
+- surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
 Themes should not own:
 
@@ -80,7 +83,7 @@ Themes should not own:
 
 ## Required config shape
 
-The generator currently expects a config object with at least:
+Canonical required keys and optional generator fields are listed in the [Theme Contract](./juice-theme-contract.md). The generator currently expects a config object with at least:
 
 ```yaml
 id: mytheme
@@ -217,27 +220,9 @@ The generated stylesheet currently defines:
 
 ## Accordion chrome roles
 
-Library themes bind a shared accordion contract so `[accordion-item]` paint is theme-agnostic in `accordion.scss`.
+Library themes bind the shared accordion contract so `[accordion-item]` paint is theme-agnostic in `accordion.scss`. Required core names (`trigger`, `trigger-hover`, `trigger-open`, `chevron`, `panel-rule`, `focus-ring`) and optional hooks (`item-border`, `item-border-open`, `trigger-accent`, `panel`, `open-glow`, `chevron-size` / `chevron-weight`) are listed in the [Theme Contract](./juice-theme-contract.md).
 
-Shared names (set on `[theme="..."]`):
-
-- `--juice-accordion-trigger` — idle trigger fill
-- `--juice-accordion-trigger-hover`
-- `--juice-accordion-trigger-open`
-- `--juice-accordion-chevron`
-- `--juice-accordion-panel-rule` — optional panel divider
-- `--juice-accordion-focus-ring`
-
-Optional hooks. Core `accordion.scss` consumes them with transparent / no-op fallbacks so Aquaflux, KiwiPress, and Citrusmint can omit them:
-
-- `--juice-accordion-item-border` — idle trigger outline
-- `--juice-accordion-item-border-open` — expanded trigger / wrapping-item outline
-- `--juice-accordion-trigger-accent` — left bar on the open header (`::before`)
-- `--juice-accordion-panel` — recessed answer-well fill
-- `--juice-accordion-open-glow` — soft open-state shadow
-- `--juice-accordion-chevron-size` / `--juice-accordion-chevron-weight` — CSS chevron silhouette
-
-Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, `--tide-trigger`, …). App-owned generated themes use `--jx-trigger` and bind `--juice-accordion-*` from existing `--jx-*` surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles the same way.
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-trigger`, `--kw-trigger`, `--cm-trigger`, `--tide-trigger`, …). App-owned generated themes use `--jx-trigger` and bind `--juice-accordion-*` from existing `--jx-*` surface/accent tokens. Do not invent a new hue family just for accordion chrome, and do not retint Aquaflux toward teal. Aquaflux keeps surface triggers (not the CTA button gradient). KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles the same way.
 
 **Tide** (`src/themes/tide/`) follows the same role contract with `--tide-*` aliases and binds the optional border / accent / panel / glow hooks for dark FAQ pill chrome. Chrome pigments lean on **lagoon** (hue 180) mixed with teal steps so borders and chevrons read cooler and deeper than `teal-500`, without using Aquaflux blue/purple. The FAQ column uses `--tide-measure: 45rem` (~720px) on `[tide-card]` and `main > header`. It is a dark product theme that consumes the teal token family. Import `@citrusworx/juiceui/styles/themes/tide` (or `dist/themes/tide.css` from a local Juice build). YAML-only drafts (for example blush) still do not emit CSS; package `exports` block `@citrusworx/juiceui/themes/_draft/*`.
 
@@ -255,26 +240,9 @@ Accordion wrappers (`[accordion]`) are structural. Group FAQ stacks in a named s
 
 ## Tabs chrome roles
 
-Library themes bind a shared tabs contract so `[tabs]` / `[tabs-list]` / `[tab]` paint is theme-agnostic in `tabs.scss`.
+Library themes bind the shared tabs contract so `[tabs]` / `[tabs-list]` / `[tab]` paint is theme-agnostic in `tabs.scss`. Required core names (`trigger`, `trigger-hover`, `trigger-active`, `text`, `text-hover`, `text-active`, `indicator`, `list-rule`, `focus-ring`) and optional hooks (`panel`, `panel-rule`) are listed in the [Theme Contract](./juice-theme-contract.md).
 
-Shared names (set on `[theme="..."]`):
-
-- `--juice-tabs-trigger` — idle trigger fill
-- `--juice-tabs-trigger-hover`
-- `--juice-tabs-trigger-active`
-- `--juice-tabs-text`
-- `--juice-tabs-text-hover`
-- `--juice-tabs-text-active`
-- `--juice-tabs-indicator` — selected underline
-- `--juice-tabs-list-rule` — strip bottom rule
-- `--juice-tabs-focus-ring`
-
-Optional hooks. Core `tabs.scss` consumes them with transparent / no-op fallbacks so themes can omit them:
-
-- `--juice-tabs-panel` — panel fill
-- `--juice-tabs-panel-rule` — inset panel divider
-
-Each shipped library theme also aliases the same required roles with its identity prefix (`--aqua-tabs-*`, `--kw-tabs-*`, `--cm-tabs-*`, `--tide-tabs-*`, …). App-owned generated themes use `--jx-tabs-*` and bind `--juice-tabs-*` from existing `--jx-*` surface/text/accent tokens. Do not invent a new hue family just for tabs chrome. Triggers are surface/text controls, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles under `[tabs-list]` and `[tab]` the same way.
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-tabs-*`, `--kw-tabs-*`, `--cm-tabs-*`, `--tide-tabs-*`, …). App-owned generated themes use `--jx-tabs-*` and bind `--juice-tabs-*` from existing `--jx-*` surface/text/accent tokens. Do not invent a new hue family just for tabs chrome. Triggers are surface/text controls, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles under `[tabs-list]` and `[tab]` the same way.
 
 Selection paint uses Juice `[active]` and `aria-selected="true"` together. Visible vs hidden panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state.
 
@@ -282,13 +250,7 @@ Selection paint uses Juice `[active]` and `aria-selected="true"` together. Visib
 
 ## Surface tone roles
 
-Library themes bind a shared `surfaceTone` contract so `[surfaceTone="soft|strong|muted"]` paint is theme-agnostic in `surface.scss`.
-
-Shared names (set on `[theme="..."]`):
-
-- `--juice-surface-soft-bg` / `-border` / `-shadow` / `-blur` — frosted / translucent
-- `--juice-surface-strong-bg` / `-border` / `-shadow` / `-blur` — opaque elevated panel
-- `--juice-surface-muted-bg` / `-border` / `-shadow` / `-blur` — quieter recessed wash
+Library themes bind the shared `surfaceTone` contract so `[surfaceTone="soft|strong|muted"]` paint is theme-agnostic in `surface.scss`. Required `--juice-surface-<tone>-bg|border|shadow|blur` names are listed in the [Theme Contract](./juice-theme-contract.md).
 
 Core `surface.scss` consumes each role with light fallbacks, so unthemed `soft` still matches the original near-white frost. Bind from existing surface/page tokens. Do not invent a new hue family, and do not paint Tide as a white frost.
 
@@ -296,12 +258,7 @@ Aquaflux maps soft/strong/muted onto `--aqua-surface`, `--aqua-surface-strong`, 
 
 ## Border strength roles
 
-Library themes also bind `borderStrength` so `[borderStrength="soft|bold"]` can stand alone or compose with `surfaceTone`.
-
-Shared names (set on `[theme="..."]`):
-
-- `--juice-border-strength-soft-width` / `-color` — 1px hairline
-- `--juice-border-strength-bold-width` / `-color` — 2px heavier rule
+Library themes also bind `borderStrength` so `[borderStrength="soft|bold"]` can stand alone or compose with `surfaceTone`. Required `--juice-border-strength-soft|bold-width|color` names are listed in the [Theme Contract](./juice-theme-contract.md).
 
 Bind colors from existing `--*-border` / `--*-border-strong` tokens. Do not invent a new hue family. Tide must use `--tide-border` / `--tide-border-strong` so bold is a lagoon line, not a light gray. Citrusmint has no `--cm-border-strong`; bold mixes `--cm-heading` at low alpha.
 
@@ -309,7 +266,7 @@ Core `surface.scss` applies the color roles only when the element has neither `s
 
 ## Standalone blur
 
-`blur="sm|md"` is a core utility, not a theme role contract. Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.
+`blur="sm|md"` is a core utility, not a theme role. See [Theme Contract](./juice-theme-contract.md). Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.
 
 ## Recommended authoring rules
 

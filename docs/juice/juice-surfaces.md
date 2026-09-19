@@ -106,6 +106,8 @@ This finishes the approved A→B→C surface utility pass (`surfaceTone`, `borde
 
 ## Theme role contract
 
+Required-versus-optional names for every shipped theme live in the [Theme Contract](./juice-theme-contract.md). Surface-specific roles:
+
 Set these on `[theme="..."]`. Each tone uses the same four roles:
 
 | Role | Used as |
