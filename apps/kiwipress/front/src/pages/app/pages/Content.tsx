@@ -41,7 +41,7 @@ export function Content() {
                                 </div>
                             </div>
                             <strong>Pages</strong>
-                            <p subtle>Same editor shell as posts, wired to the pages collection.</p>
+                            <p subtle>Gateway pages collection with the classic textarea workspace.</p>
                             <button
                                 btn="outline"
                                 type="button"
