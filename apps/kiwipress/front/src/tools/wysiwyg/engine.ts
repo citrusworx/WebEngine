@@ -268,7 +268,8 @@ export class WYSIWYG {
             return false;
         }
 
-        const target = block.tagName === "LI" ? (block.closest("ul, ol") ?? block) : block;
+        const list = block.closest("ul, ol");
+        const target = block.tagName === "LI" && list instanceof HTMLElement ? list : block;
         if (align === "left") {
             target.style.removeProperty("text-align");
         } else {
@@ -283,7 +284,7 @@ export class WYSIWYG {
         const editor = this.canvas;
         const range = this.getEditorRange(editor);
         const block = this.getClosestBlock(range?.commonAncestorContainer ?? editor?.firstChild ?? null, editor);
-        const list = block?.closest("ul, ol");
+        const list = block?.closest("ul, ol") ?? null;
         const align = this.readAlign(block, list);
 
         return {
