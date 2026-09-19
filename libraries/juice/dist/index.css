@@ -100429,6 +100429,68 @@ Creating Gradient Animations
   background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18)), var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18))));
 }
 
+[variant=glass]:not([overlay]),
+[theme] [variant=glass]:not([overlay]) {
+  background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42)), var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42))));
+}
+
+[variant=glass]:not([blur]),
+[theme] [variant=glass]:not([blur]) {
+  -webkit-backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+          backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+}
+
+[variant=tinted]:not([overlay]),
+[theme] [variant=tinted]:not([overlay]) {
+  background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18)), var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18))));
+}
+
+[variant=monochromatic],
+[theme] [variant=monochromatic] {
+  border-style: solid;
+}
+
+[variant=monochromatic]:not([borderStrength]),
+[theme] [variant=monochromatic]:not([borderStrength]) {
+  border-width: var(--juice-border-strength-soft-width, 1px);
+}
+
+[variant=monochromatic]:not([surfaceTone]):not([borderColor]):not([borderStrength]),
+[theme] [variant=monochromatic]:not([surfaceTone]):not([borderColor]):not([borderStrength]) {
+  border-color: var(--juice-border-strength-soft-color, rgba(216.75, 216.75, 216.75, 0.45));
+}
+
+[variant=monochromatic]:not([depth]):not([shadowTone]),
+[theme] [variant=monochromatic]:not([depth]):not([shadowTone]) {
+  box-shadow: var(--juice-surface-soft-shadow, 0 10px 28px -22px rgba(140.25, 140.25, 140.25, 0.18));
+}
+
+[surfaceTone][variant=glass]:not([overlay]),
+[theme] [surfaceTone][variant=glass]:not([overlay]) {
+  background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42)), var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42))));
+}
+
+[surfaceTone][variant=glass]:not([blur]),
+[theme] [surfaceTone][variant=glass]:not([blur]) {
+  -webkit-backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+          backdrop-filter: blur(var(--juice-surface-soft-blur, 10px));
+}
+
+[surfaceTone][variant=tinted]:not([overlay]),
+[theme] [surfaceTone][variant=tinted]:not([overlay]) {
+  background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18)), var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18))));
+}
+
+[surfaceTone][variant=monochromatic]:not([borderStrength]),
+[theme] [surfaceTone][variant=monochromatic]:not([borderStrength]) {
+  border-width: var(--juice-border-strength-soft-width, 1px);
+}
+
+[surfaceTone][variant=monochromatic]:not([depth]):not([shadowTone]),
+[theme] [surfaceTone][variant=monochromatic]:not([depth]):not([shadowTone]) {
+  box-shadow: var(--juice-surface-soft-shadow, 0 10px 28px -22px rgba(140.25, 140.25, 140.25, 0.18));
+}
+
 [bgColor=black-100] {
   background-color: hsl(0, 0%, 50%);
 }
