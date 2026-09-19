@@ -87,7 +87,7 @@ Under `[theme="…"]` the usual defaults are:
 
 **When to set `font=`.** One-off voice that is not the theme pair: a code sample (`source-code-pro`), a script accent, a display lockup that should stay Oswald after a Tide swap. Keep those local. Do not restamp the theme pair on every node.
 
-**Cascade honesty.** `[font]`, `[fontColor]`, `[fontWeight]`, and `[lineHeight]` are `(0,1,0)`. Theme semantic rules are `[theme="…"] :where(h1, …)` — also `(0,1,0)`, because `:where()` zeroes the element. Theme CSS is imported after core, so **theme defaults currently win on those semantic elements**. `font=` still wins on nodes the theme does not restyle (`div`, `code`, unmarked wrappers). Raising author type attributes above theme semantic defaults is slice C. Until then, treat `font=` on a themed `h1` / `p` as specified-but-not-winning.
+**Cascade.** Bare `[font]`, `[fontColor]`, `[fontWeight]`, and `[lineHeight]` are `(0,1,0)`. Theme semantic rules are `[theme="…"] :where(h1, …)` — also `(0,1,0)`, because `:where()` zeroes the element. Core therefore pairs each author type attribute with `[theme] [attr]`, the same raise as `[theme] [surfaceTone]`. That companion is `(0,2,0)`, so **author attrs win on themed `h1`–`h6` / `p` (and similar) when present**. Omit the attr and only the theme semantic rule matches, so the brand face / color / weight / leading still apply. `font=` on nodes the theme does not restyle (`div`, `code`, unmarked wrappers) keeps winning at `(0,1,0)`.
 
 `fontSize` is not in that fight. Themes do not set `font-size` on headings, so the scale always applies.
 
@@ -95,7 +95,7 @@ Under `[theme="…"]` the usual defaults are:
 
 `fontColor` paints text through the color token sheets. It is the text API. Do not use it to tint icons; that is `iconcolor`. See [Icons](./juice-icons.md).
 
-Theme `color` on `h1`–`h6` and body copy follows the same equal-specificity rule as `font=`. Prefer theme text roles (`palette.text.heading`, `--*-heading`) for identity. Keep local `fontColor` for a warning line, a muted caption, or inverse type on a dark fill.
+Theme `color` on `h1`–`h6` and body copy yields to `fontColor=` the same way `font=` yields the face: `[theme] [fontColor]` beats `[theme="…"] :where(h1, p, …)`. Prefer theme text roles (`palette.text.heading`, `--*-heading`) for identity. Keep local `fontColor` for a warning line, a muted caption, or inverse type on a dark fill.
 
 ## 6. Shipped, but not first-class
 
@@ -123,14 +123,14 @@ Do not author these. They are not in the stylesheet.
 - new font families in this contract
 - a `--juice-type-*` token layer
 
-Font loading, face aliases, and the catalog stay on [Typography Reference](./juice-typography.md). Filling the theme-vs-author cascade, a `1rem` size step, and any later type tokens is slice C.
+Font loading, face aliases, and the catalog stay on [Typography Reference](./juice-typography.md). Author type attrs already beat theme semantic defaults. A `1rem` size step and any later type tokens remain later work.
 
 ## 8. Source files
 
-- `libraries/juice/src/core/typography.scss` — size scale, Inter + `weight`, `align`, `decoration`, `leading`, `lineHeight`, `fontWeight`, `h1` / `h2` / `p` clamps
-- `libraries/juice/src/styles/fonts/google.scss`
-- `libraries/juice/src/styles/fonts/adobe.scss`
-- `libraries/juice/src/styles/color/**/text.scss` — `fontColor`
+- `libraries/juice/src/core/typography.scss` — size scale, Inter + `weight`, `align`, `decoration`, `leading`, `lineHeight`, `fontWeight`, `h1` / `h2` / `p` clamps, `[theme]` companions for `fontWeight` / `lineHeight`
+- `libraries/juice/src/styles/fonts/google.scss` — `[font]` plus `[theme] [font]`
+- `libraries/juice/src/styles/fonts/adobe.scss` — `[font]` plus `[theme] [font]`
+- `libraries/juice/src/styles/color/**/text.scss` — `fontColor` plus `[theme] [fontColor]`
 - `libraries/juice/src/themes/<id>/<id>.scss` — body / heading font defaults
 - `libraries/juice/src/tools/theme-generator/index.ts` — `--jx-body-font` / `--jx-heading-font`
 

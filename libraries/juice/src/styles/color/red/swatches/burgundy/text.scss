@@ -1,33 +1,41 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="burgundy-100"]{
+[fontColor="burgundy-100"],
+[theme] [fontColor="burgundy-100"] {
     color: $burgundy-100;
 }
 
-[fontColor="burgundy-200"]{
+[fontColor="burgundy-200"],
+[theme] [fontColor="burgundy-200"] {
     color: $burgundy-200;
 }
 
-[fontColor="burgundy-300"]{
+[fontColor="burgundy-300"],
+[theme] [fontColor="burgundy-300"] {
     color: $burgundy-300;
 }
 
-[fontColor="burgundy-400"]{
+[fontColor="burgundy-400"],
+[theme] [fontColor="burgundy-400"] {
     color: $burgundy-500;
 }
 
-[fontColor="burgundy-500"]{
+[fontColor="burgundy-500"],
+[theme] [fontColor="burgundy-500"] {
     color: $burgundy-600;
 }
 
-[fontColor="burgundy-700"]{
+[fontColor="burgundy-700"],
+[theme] [fontColor="burgundy-700"] {
     color: $burgundy-700;
 }
 
-[fontColor="burgundy-800"]{
+[fontColor="burgundy-800"],
+[theme] [fontColor="burgundy-800"] {
     color: $burgundy-800;
 }
 
-[fontColor="burgundy-900"]{
+[fontColor="burgundy-900"],
+[theme] [fontColor="burgundy-900"] {
     color: $burgundy-900;
 }

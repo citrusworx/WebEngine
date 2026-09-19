@@ -1,33 +1,41 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="cornflower-100"]{
+[fontColor="cornflower-100"],
+[theme] [fontColor="cornflower-100"] {
     color: $cornflower-100;
 }
 
-[fontColor="cornflower-200"]{
+[fontColor="cornflower-200"],
+[theme] [fontColor="cornflower-200"] {
     color: $cornflower-200;
 }
 
-[fontColor="cornflower-300"]{
+[fontColor="cornflower-300"],
+[theme] [fontColor="cornflower-300"] {
     color: $cornflower-300;
 }
 
-[fontColor="cornflower-400"]{
+[fontColor="cornflower-400"],
+[theme] [fontColor="cornflower-400"] {
     color: $cornflower-500;
 }
 
-[fontColor="cornflower-500"]{
+[fontColor="cornflower-500"],
+[theme] [fontColor="cornflower-500"] {
     color: $cornflower-600;
 }
 
-[fontColor="cornflower-700"]{
+[fontColor="cornflower-700"],
+[theme] [fontColor="cornflower-700"] {
     color: $cornflower-700;
 }
 
-[fontColor="cornflower-800"]{
+[fontColor="cornflower-800"],
+[theme] [fontColor="cornflower-800"] {
     color: $cornflower-800;
 }
 
-[fontColor="cornflower-900"]{
+[fontColor="cornflower-900"],
+[theme] [fontColor="cornflower-900"] {
     color: $cornflower-900;
 }

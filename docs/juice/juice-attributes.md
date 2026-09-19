@@ -61,7 +61,7 @@ First-class attributes. The size scale is real CSS, not font-dependent. Canonica
 - `fontWeight`: numeric weight
   Values: `"100"` through `"900"`
 
-Display / title / body / caption are hierarchy roles mapped onto `fontSize` + `font`, not attributes. Under a theme, omit `font=` and let body / heading defaults apply; set `font=` only for a local override. Theme CSS is imported after core, so theme semantic fonts currently win on `h1`–`h6` / `p` — see the contract.
+Display / title / body / caption are hierarchy roles mapped onto `fontSize` + `font`, not attributes. Under a theme, omit `font=` and let body / heading defaults apply; set `font=` (or `fontColor` / `fontWeight` / `lineHeight`) only for a local override. Those author attrs beat theme semantic defaults on `h1`–`h6` / `p` — see the contract.
 
 Secondary (shipped, limited):
 

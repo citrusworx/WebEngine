@@ -1,33 +1,41 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="skyblue-100"]{
+[fontColor="skyblue-100"],
+[theme] [fontColor="skyblue-100"] {
     color: $skyblue-100;
 }
 
-[fontColor="skyblue-200"]{
+[fontColor="skyblue-200"],
+[theme] [fontColor="skyblue-200"] {
     color: $skyblue-200;
 }
 
-[fontColor="skyblue-300"]{
+[fontColor="skyblue-300"],
+[theme] [fontColor="skyblue-300"] {
     color: $skyblue-300;
 }
 
-[fontColor="skyblue-400"]{
+[fontColor="skyblue-400"],
+[theme] [fontColor="skyblue-400"] {
     color: $skyblue-500;
 }
 
-[fontColor="skyblue-500"]{
+[fontColor="skyblue-500"],
+[theme] [fontColor="skyblue-500"] {
     color: $skyblue-600;
 }
 
-[fontColor="skyblue-700"]{
+[fontColor="skyblue-700"],
+[theme] [fontColor="skyblue-700"] {
     color: $skyblue-700;
 }
 
-[fontColor="skyblue-800"]{
+[fontColor="skyblue-800"],
+[theme] [fontColor="skyblue-800"] {
     color: $skyblue-800;
 }
 
-[fontColor="skyblue-900"]{
+[fontColor="skyblue-900"],
+[theme] [fontColor="skyblue-900"] {
     color: $skyblue-900;
 }

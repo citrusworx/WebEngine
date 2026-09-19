@@ -1,37 +1,46 @@
 @use '../../../tokens/tokens.scss' as *;
 
-[fontColor="lagoon-100"]{
+[fontColor="lagoon-100"],
+[theme] [fontColor="lagoon-100"] {
     color: $lagoon-100;
 }
 
-[fontColor="lagoon-200"]{
+[fontColor="lagoon-200"],
+[theme] [fontColor="lagoon-200"] {
     color: $lagoon-200;
 }
 
-[fontColor="lagoon-300"]{
+[fontColor="lagoon-300"],
+[theme] [fontColor="lagoon-300"] {
     color: $lagoon-300;
 }
 
-[fontColor="lagoon-400"]{
+[fontColor="lagoon-400"],
+[theme] [fontColor="lagoon-400"] {
     color: $lagoon-400;
 }
 
-[fontColor="lagoon-500"]{
+[fontColor="lagoon-500"],
+[theme] [fontColor="lagoon-500"] {
     color: $lagoon-500;
 }
 
-[fontColor="lagoon-600"]{
+[fontColor="lagoon-600"],
+[theme] [fontColor="lagoon-600"] {
     color: $lagoon-600;
 }
 
-[fontColor="lagoon-700"]{
+[fontColor="lagoon-700"],
+[theme] [fontColor="lagoon-700"] {
     color: $lagoon-700;
 }
 
-[fontColor="lagoon-800"]{
+[fontColor="lagoon-800"],
+[theme] [fontColor="lagoon-800"] {
     color: $lagoon-800;
 }
 
-[fontColor="lagoon-900"]{
+[fontColor="lagoon-900"],
+[theme] [fontColor="lagoon-900"] {
     color: $lagoon-900;
 }

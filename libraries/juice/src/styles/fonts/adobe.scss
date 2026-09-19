@@ -1,39 +1,48 @@
 @use '../../tokens/fonts/adobe.scss' as *;
 
-[font="korolev-rounded-light"]{
+// [theme] [font] beats [theme="…"] :where(h1, p, …) semantic faces.
+[font="korolev-rounded-light"],
+[theme] [font="korolev-rounded-light"] {
     font-family: $korolev-rounded;
     font-weight: 300;
     font-style: normal;
 }
 
-[font="korolev-rounded"]{
+[font="korolev-rounded"],
+[theme] [font="korolev-rounded"] {
     font-family: $korolev-rounded;
     font-weight: 500;
     font-style: normal;
 }
 
-[font="korolev-rounded-bold"]{
+[font="korolev-rounded-bold"],
+[theme] [font="korolev-rounded-bold"] {
     font-family: $korolev-rounded;
     font-weight: 700;
     font-style: normal;
 }
 
-[font="alientz"]{
+[font="alientz"],
+[theme] [font="alientz"] {
     font-family: $alientz;
 }
 
-[font="darka"]{
+[font="darka"],
+[theme] [font="darka"] {
     font-family: $darka;
 }
 
-[font="grange"]{
+[font="grange"],
+[theme] [font="grange"] {
     font-family: $grange;
 }
 
-[font="p22-sting"]{
+[font="p22-sting"],
+[theme] [font="p22-sting"] {
     font-family: $p22-sting;
 }
 
-[font="private-sans"]{
+[font="private-sans"],
+[theme] [font="private-sans"] {
     font-family: $private-sans;
 }

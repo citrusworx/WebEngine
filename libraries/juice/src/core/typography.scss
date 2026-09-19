@@ -11,7 +11,11 @@ $text--xxl: 3rem;
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 // Font families
-[font="Inter"][weight="normal"]{
+// [theme] [attr] must beat theme semantic defaults such as
+// [theme="…"] :where(h1, p, …) so author type attrs win when present.
+// Omit the attr and the theme face / color / weight / leading still apply.
+[font="Inter"][weight="normal"],
+[theme] [font="Inter"][weight="normal"] {
     font-family: "Inter", sans-serif;
     font-weight: 400;
     font-style: normal;
@@ -78,7 +82,8 @@ p {
 // Line Height
 @mixin create-line-height(){
     @for $i from 1 through 10 {
-        [lineHeight="#{$i}rem"]{
+        [lineHeight="#{$i}rem"],
+        [theme] [lineHeight="#{$i}rem"] {
             line-height: #{$i}rem;
         }
     }
@@ -87,7 +92,8 @@ p {
 // Font Weight
 @mixin create-weight(){
     @for $i from 1 through 9 {
-        [fontWeight="#{$i}00"]{
+        [fontWeight="#{$i}00"],
+        [theme] [fontWeight="#{$i}00"] {
             font-weight: #{$i}00;
         }
     }

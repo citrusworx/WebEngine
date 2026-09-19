@@ -1,140 +1,176 @@
 @use '../../tokens/fonts/google.scss' as *;
 
-[font="abril-fatface"]{
+// [theme] [font] beats [theme="…"] :where(h1, p, …) semantic faces.
+[font="abril-fatface"],
+[theme] [font="abril-fatface"] {
     font-family: $abril-fatface;
 }
 
-[font="acme"]{
+[font="acme"],
+[theme] [font="acme"] {
     font-family: $acme;
 }
 
-[font="anton"]{
+[font="anton"],
+[theme] [font="anton"] {
     font-family: $anton;
 }
 
-[font="architects-daughter"]{
+[font="architects-daughter"],
+[theme] [font="architects-daughter"] {
     font-family: $architects-daughter;
 }
 
-[font="archivo-black"]{
+[font="archivo-black"],
+[theme] [font="archivo-black"] {
     font-family: $archivo-black;
 }
 
-[font="bebas-neue"]{
+[font="bebas-neue"],
+[theme] [font="bebas-neue"] {
     font-family: $bebas-neue;
 }
 
-[font="caveat"]{
+[font="caveat"],
+[theme] [font="caveat"] {
     font-family: $caveat;
 }
 
-[font="comfortaa"]{
+[font="comfortaa"],
+[theme] [font="comfortaa"] {
     font-family: $comfortaa;
 }
 
-[font="dancing-script"]{
+[font="dancing-script"],
+[theme] [font="dancing-script"] {
     font-family: $dancing-script;
 }
 
-[font="google-sans"]{
+[font="google-sans"],
+[theme] [font="google-sans"] {
     font-family: $google-sans;
 }
 
-[font="homemade-apple"]{
+[font="homemade-apple"],
+[theme] [font="homemade-apple"] {
     font-family: $homemade-apple;
 }
 
-[font="indie-flower"]{
+[font="indie-flower"],
+[theme] [font="indie-flower"] {
     font-family: $indie-flower;
 }
 
-[font="josefin-sans"]{
+[font="josefin-sans"],
+[theme] [font="josefin-sans"] {
     font-family: $josefin-sans;
 }
 
-[font="lato"]{
+[font="lato"],
+[theme] [font="lato"] {
     font-family: $lato;
 }
 
-[font="lilita-one"]{
+[font="lilita-one"],
+[theme] [font="lilita-one"] {
     font-family: $lilita-one;
 }
 
-[font="lobster"]{
+[font="lobster"],
+[theme] [font="lobster"] {
     font-family: $lobster;
 }
 
-[font="luckiest-guy"]{
+[font="luckiest-guy"],
+[theme] [font="luckiest-guy"] {
     font-family: $luckiest-guy;
 }
 
-[font="macondo"]{
+[font="macondo"],
+[theme] [font="macondo"] {
     font-family: $macondo;
 }
 
-[font="montserrat"]{
+[font="montserrat"],
+[theme] [font="montserrat"] {
     font-family: $montserrat;
 }
 
-[font="open-sans"]{
+[font="open-sans"],
+[theme] [font="open-sans"] {
     font-family: $open-sans;
 }
 
-[font="oswald"]{
+[font="oswald"],
+[theme] [font="oswald"] {
     font-family: $oswald;
 }
 
-[font="pacifico"]{
+[font="pacifico"],
+[theme] [font="pacifico"] {
     font-family: $pacifico;
 }
 
-[font="play"]{
+[font="play"],
+[theme] [font="play"] {
     font-family: $play;
 }
 
-[font="playfair-display"]{
+[font="playfair-display"],
+[theme] [font="playfair-display"] {
     font-family: $playfair-display;
 }
 
-[font="poppins"]{
+[font="poppins"],
+[theme] [font="poppins"] {
     font-family: $poppins;
 }
 
-[font="poppins-light"]{
+[font="poppins-light"],
+[theme] [font="poppins-light"] {
     font-family: $poppins-light;
 }
 
-[font="raleway"]{
+[font="raleway"],
+[theme] [font="raleway"] {
     font-family: $raleway;
 }
 
-[font="reenie-beanie"]{
+[font="reenie-beanie"],
+[theme] [font="reenie-beanie"] {
     font-family: $reenie-beanie;
 }
 
-[font="roboto"]{
+[font="roboto"],
+[theme] [font="roboto"] {
     font-family: $roboto;
 }
 
-[font="satisfy"]{
+[font="satisfy"],
+[theme] [font="satisfy"] {
     font-family: $satisfy;
 }
 
-[font="sekuya"]{
+[font="sekuya"],
+[theme] [font="sekuya"] {
     font-family: $sekuya;
 }
 
-[font="source-code-pro"]{
+[font="source-code-pro"],
+[theme] [font="source-code-pro"] {
     font-family: $source-code-pro;
 }
-[font="titillium-web"]{
+[font="titillium-web"],
+[theme] [font="titillium-web"] {
     font-family: $titillium-web;
 }
 
-[font="ubuntu"]{
+[font="ubuntu"],
+[theme] [font="ubuntu"] {
     font-family: $ubuntu;
 }
 
-[font="yanone-kaffeesatz"]{
+[font="yanone-kaffeesatz"],
+[theme] [font="yanone-kaffeesatz"] {
     font-family: $yanone-kaffeesatz;
 }
