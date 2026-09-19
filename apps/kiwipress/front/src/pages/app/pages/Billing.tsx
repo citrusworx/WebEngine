@@ -1,7 +1,7 @@
 import { effect } from "@citrusworx/sigjs";
 import { DashboardLayout } from "../layout/DashboardLayout";
 import { INVOICES, PLANS } from "../catalog";
-import { actionNotice, currentPlan, simulateAction } from "../state";
+import { currentPlan, simulateAction } from "../state";
 import type { BillingPlan } from "../state";
 
 export function Billing() {
@@ -11,7 +11,6 @@ export function Billing() {
         if (!bodyNode) return;
         const planId = currentPlan.get();
         const plan = PLANS.find(item => item.id === planId) ?? PLANS[1];
-        const notice = actionNotice.get();
 
         bodyNode.replaceChildren(
             <div dashboard-page>
@@ -19,8 +18,6 @@ export function Billing() {
                     <h1>Billing</h1>
                     <p lede>Current usage, invoices, and payment methods. Charges stay simulated.</p>
                 </header>
-
-                {notice ? <div notice>{notice}</div> : null}
 
                 <div section-block>
                     <h2 section-kicker>Current Plan</h2>
@@ -137,7 +134,6 @@ export function Billing() {
 
     effect(() => {
         currentPlan.get();
-        actionNotice.get();
         paint();
     });
 

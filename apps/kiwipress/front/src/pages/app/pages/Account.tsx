@@ -1,6 +1,6 @@
 import { effect } from "@citrusworx/sigjs";
 import { DashboardLayout } from "../layout/DashboardLayout";
-import { accountDraft, actionNotice, simulateAction } from "../state";
+import { accountDraft, simulateAction } from "../state";
 
 export function Account() {
     let bodyNode: HTMLElement | null = null;
@@ -8,7 +8,6 @@ export function Account() {
     function paint() {
         if (!bodyNode) return;
         const draft = accountDraft.get();
-        const notice = actionNotice.get();
 
         bodyNode.replaceChildren(
             <div dashboard-page>
@@ -16,8 +15,6 @@ export function Account() {
                     <h1>Account</h1>
                     <p lede>Your personal profile, sessions, and preferences. Updates stay local.</p>
                 </header>
-
-                {notice ? <div notice>{notice}</div> : null}
 
                 <div section-block>
                     <h2 section-kicker>Profile Information</h2>
@@ -150,7 +147,6 @@ export function Account() {
 
     effect(() => {
         accountDraft.get();
-        actionNotice.get();
         paint();
     });
 

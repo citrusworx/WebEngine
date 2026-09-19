@@ -1,4 +1,5 @@
 import { Sidebar, type NavId } from "./Sidebar";
+import { ActionNotice } from "../components/ActionNotice";
 import "../dashboard.css";
 
 type LayoutOpts = {
@@ -11,6 +12,7 @@ export function DashboardLayout({ page, children }: LayoutOpts) {
         <div dashboard-shell theme="kiwipress">
             <Sidebar active={page} />
             <main dashboard-main>
+                <ActionNotice />
                 {children}
             </main>
         </div>

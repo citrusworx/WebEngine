@@ -16,6 +16,7 @@ export function YAMLViewer() {
                         btn="outline"
                         type="button"
                         scale="sm"
+                        selected={showHistory || undefined}
                         onclick={() => yamlHistoryOpen.set(!showHistory)}
                     >
                         <i icon="clock-rotate-left" lib="solid" iconSize="sm"></i>
@@ -40,7 +41,7 @@ export function YAMLViewer() {
             </div>
 
             {showHistory
-                ? <div panel-card>
+                ? <div panel-card ref={(node: HTMLElement) => { node.scrollIntoView({ block: "nearest", behavior: "smooth" }); }}>
                     <h3>Configuration History</h3>
                     {YAML_VERSIONS.map(version => (
                         <div history-row>

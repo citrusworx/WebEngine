@@ -195,6 +195,12 @@
     box-shadow: none;
 }
 
+[dashboard-shell] [dashboard-page] button[selected] {
+    background: var(--kw-heading);
+    color: #fff;
+    border-color: var(--kw-heading);
+}
+
 [dashboard-shell] [dashboard-page] button[current] {
     background: var(--kw-accent-soft);
     color: var(--kw-accent-strong);
@@ -797,14 +803,25 @@
     justify-content: flex-end;
 }
 
+[dashboard-shell] [notice-host] {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+[dashboard-shell] [notice-host]:empty {
+    display: none;
+}
+
 [dashboard-shell] [notice] {
-    margin-bottom: 1rem;
+    margin: 0 0 1rem;
     padding: 0.75rem 1rem;
     border: 1px solid var(--kw-accent-tint);
     border-radius: 0.5rem;
     background: var(--kw-accent-soft);
     color: var(--kw-accent-strong);
     font-size: 0.875rem;
+    box-shadow: 0 8px 24px var(--kw-shadow);
 }
 
 [dashboard-shell] [spec-list] {

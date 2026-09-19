@@ -9,7 +9,7 @@ import { ModeToggle } from "../components/ModeToggle";
 import { ModulesPanel } from "../components/ModulesPanel";
 import { ProjectConfiguration } from "../components/ProjectConfiguration";
 import { YAMLViewer } from "../components/YAMLViewer";
-import { actionNotice, backupsEnabled, instanceStatus, simulateAction, viewMode, yamlHistoryOpen } from "../state";
+import { backupsEnabled, instanceStatus, simulateAction, viewMode, yamlHistoryOpen } from "../state";
 
 function statusLabel(): string {
     const status = instanceStatus.get();
@@ -24,13 +24,10 @@ export function Projects() {
     function paint() {
         if (!bodyNode) return;
         const mode = viewMode.get();
-        const notice = actionNotice.get();
         const status = instanceStatus.get();
 
         bodyNode.replaceChildren(
             <div dashboard-page>
-                {notice ? <div notice>{notice}</div> : null}
-
                 <div header-row>
                     <div>
                         <h1 instance-title>{INSTANCE.name}</h1>
@@ -214,7 +211,6 @@ export function Projects() {
     effect(() => {
         viewMode.get();
         instanceStatus.get();
-        actionNotice.get();
         yamlHistoryOpen.get();
         backupsEnabled.get();
         paint();

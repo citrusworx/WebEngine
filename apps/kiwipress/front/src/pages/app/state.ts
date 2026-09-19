@@ -37,9 +37,10 @@ let noticeTimer = 0;
 export function simulateAction(message: string, status?: InstanceStatus): void {
     actionNotice.set(message);
     if (status) instanceStatus.set(status);
+    document.querySelector("[dashboard-main]")?.scrollTo({ top: 0, behavior: "smooth" });
     window.clearTimeout(noticeTimer);
     noticeTimer = window.setTimeout(() => {
         if (status) instanceStatus.set("running");
         actionNotice.set("");
-    }, 1600);
+    }, 3500);
 }

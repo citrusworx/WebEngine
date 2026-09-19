@@ -1,6 +1,6 @@
 import { effect } from "@citrusworx/sigjs";
 import { DashboardLayout } from "../layout/DashboardLayout";
-import { actionNotice, settingsDraft, simulateAction } from "../state";
+import { settingsDraft, simulateAction } from "../state";
 
 export function Settings() {
     let bodyNode: HTMLElement | null = null;
@@ -8,7 +8,6 @@ export function Settings() {
     function paint() {
         if (!bodyNode) return;
         const draft = settingsDraft.get();
-        const notice = actionNotice.get();
 
         bodyNode.replaceChildren(
             <div dashboard-page>
@@ -16,8 +15,6 @@ export function Settings() {
                     <h1>Settings</h1>
                     <p lede>Application defaults, notifications, and destructive actions. Changes stay local.</p>
                 </header>
-
-                {notice ? <div notice>{notice}</div> : null}
 
                 <div section-block>
                     <h2 section-kicker>Application Settings</h2>
@@ -175,7 +172,6 @@ export function Settings() {
 
     effect(() => {
         settingsDraft.get();
-        actionNotice.get();
         paint();
     });
 
