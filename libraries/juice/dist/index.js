@@ -346,13 +346,13 @@ var A = {
 	root: typeof document < "u" ? document : {},
 	accordionSelector: "[accordion]",
 	triggerSelector: "[accordion-item]"
-}, j = (e) => Array.from(e), M = "juice-accordion-trigger", ee = "juice-accordion-panel", N = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, P = /* @__PURE__ */ new WeakSet(), F = (e) => P.has(e) ? !1 : (P.add(e), !0), te = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", I = (e, t, n) => {
+}, j = (e) => Array.from(e), ee = "juice-accordion-trigger", M = "juice-accordion-panel", N = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, te = /* @__PURE__ */ new WeakSet(), P = (e) => te.has(e) ? !1 : (te.add(e), !0), ne = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "accordion", F = (e, t, n) => {
 	let r = String(n);
 	if (e.getAttribute("aria-expanded") !== r && e.setAttribute("aria-expanded", r), !t) return;
 	t.hidden !== !n && (t.hidden = !n);
 	let i = String(!n);
 	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
-}, L = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", R = (e = {}) => {
+}, I = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", re = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
@@ -390,26 +390,26 @@ var A = {
 		return o()[0] ?? null;
 	}, p = (e) => {
 		let t = e.getAttribute("name");
-		return t ? te(t) : null;
+		return t ? ne(t) : null;
 	}, m = (e, t) => {
 		let n = u(e);
 		if (!n) return;
 		let r = a(n), i = Math.max(0, r.indexOf(e)), o = p(n), s = r.length > 1 ? `-${i + 1}` : "";
-		e.id ||= o ? `${o}-trigger${s}` : l(M), N(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(ee), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+		e.id ||= o ? `${o}-trigger${s}` : l(ee), N(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(M), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
 	}, h = (e) => {
 		let t = f(e);
 		if (!t) return;
 		let n = d(t);
-		m(t, n), I(t, n, !0), c = t;
+		m(t, n), F(t, n, !0), c = t;
 	}, g = (e) => {
 		let t = f(e);
 		if (!t) return;
 		let n = d(t);
-		m(t, n), I(t, n, !1), t === c && (c = o().find((e) => e !== t && L(e, d(e))) ?? null);
+		m(t, n), F(t, n, !1), t === c && (c = o().find((e) => e !== t && I(e, d(e))) ?? null);
 	}, _ = (e) => {
 		let t = f(e);
 		if (t) {
-			if (L(t, d(t))) {
+			if (I(t, d(t))) {
 				g(t);
 				return;
 			}
@@ -420,7 +420,7 @@ var A = {
 			a(e).forEach((e) => {
 				let t = d(e);
 				if (m(e, t), t) {
-					I(e, t, L(e, t));
+					F(e, t, I(e, t));
 					return;
 				}
 				e.hasAttribute("aria-expanded") || e.setAttribute("aria-expanded", "false");
@@ -430,23 +430,23 @@ var A = {
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		let r = n.closest(t.triggerSelector);
-		!(r instanceof HTMLElement) || !u(r) || F(e) && _(r);
+		!(r instanceof HTMLElement) || !u(r) || P(e) && _(r);
 	}, b = (e) => {
 		let n = e.closest(t.triggerSelector);
-		return n instanceof HTMLElement && u(n) && L(n, d(n)) ? n : o().filter((e) => L(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && L(c, d(c)) ? c : null);
+		return n instanceof HTMLElement && u(n) && I(n, d(n)) ? n : o().filter((e) => I(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && I(c, d(c)) ? c : null);
 	}, x = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let n = e.target;
 		if (!(n instanceof Element)) return;
 		if (e.key === "Escape") {
 			let t = b(n);
-			if (!t || !F(e)) return;
+			if (!t || !P(e)) return;
 			e.preventDefault(), g(t), t.focus();
 			return;
 		}
 		if (e.key !== "Enter" && e.key !== " ") return;
 		let r = n.closest(t.triggerSelector);
-		!(r instanceof HTMLElement) || !u(r) || N(r) || F(e) && (e.preventDefault(), _(r));
+		!(r instanceof HTMLElement) || !u(r) || N(r) || P(e) && (e.preventDefault(), _(r));
 	}, S = !1, C = () => {
 		S || (S = !0, requestAnimationFrame(() => {
 			S = !1, v();
@@ -472,32 +472,32 @@ var A = {
 		collapse: g,
 		toggle: _
 	};
-}, ne = (e = {}) => R(e), z = null, B = !1, V = null, H = () => {
-	V &&= (document.removeEventListener("DOMContentLoaded", V), null);
-}, U = () => typeof window > "u" || typeof document > "u" ? null : (B = !1, H(), z ? (z.sync(), z) : (z = R(), z)), re = () => {
-	B = !0, H(), z?.destroy(), z = null;
+}, ie = (e = {}) => re(e), L = null, ae = !1, R = null, oe = () => {
+	R &&= (document.removeEventListener("DOMContentLoaded", R), null);
+}, z = () => typeof window > "u" || typeof document > "u" ? null : (ae = !1, oe(), L ? (L.sync(), L) : (L = re(), L)), se = () => {
+	ae = !0, oe(), L?.destroy(), L = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (V = () => {
-	V = null, B || U();
-}, document.addEventListener("DOMContentLoaded", V)) : U());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (R = () => {
+	R = null, ae || z();
+}, document.addEventListener("DOMContentLoaded", R)) : z());
 //#endregion
 //#region src/js/src/tabs/tabs-runtime.ts
-var ie = {
+var ce = {
 	root: typeof document < "u" ? document : {},
 	tabsSelector: "[tabs]",
 	listSelector: "[tabs-list]",
 	triggerSelector: "[tab]",
 	panelSelector: "[tab-panel]"
-}, W = (e) => Array.from(e), ae = "juice-tabs-trigger", oe = "juice-tabs-panel", G = /* @__PURE__ */ new WeakSet(), K = (e) => G.has(e) ? !1 : (G.add(e), !0), q = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, se = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tabs", ce = (e) => e instanceof HTMLElement ? e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement ? !0 : e.isContentEditable : !1, le = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, J = (e = {}) => {
+}, B = (e) => Array.from(e), le = "juice-tabs-trigger", ue = "juice-tabs-panel", de = /* @__PURE__ */ new WeakSet(), V = (e) => de.has(e) ? !1 : (de.add(e), !0), fe = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, pe = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "tabs", me = (e) => e instanceof HTMLElement ? e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement ? !0 : e.isContentEditable : !1, he = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, H = (e = {}) => {
 	if (typeof window > "u" || typeof document > "u") return {
 		destroy: () => {},
 		sync: () => {},
 		select: () => {}
 	};
 	let t = {
-		...ie,
+		...ce,
 		...e
-	}, n = t.root ?? document, r = n, i = () => W(n.querySelectorAll(t.tabsSelector)), a = (e) => {
+	}, n = t.root ?? document, r = n, i = () => B(n.querySelectorAll(t.tabsSelector)), a = (e) => {
 		let n = e.querySelector(`:scope > ${t.listSelector}`);
 		return n instanceof HTMLElement ? n : null;
 	}, o = (e) => {
@@ -517,16 +517,16 @@ var ie = {
 		let n = a(e) ?? e, r = /* @__PURE__ */ new Set(), i = [], o = (t) => {
 			t instanceof HTMLElement && (!c(t, e) || r.has(t) || (r.add(t), i.push(t)));
 		};
-		return W(n.children).forEach(o), W(n.querySelectorAll(t.triggerSelector)).forEach(o), W(n.querySelectorAll("[role=\"tab\"]")).forEach(o), i.sort((e, t) => {
+		return B(n.children).forEach(o), B(n.querySelectorAll(t.triggerSelector)).forEach(o), B(n.querySelectorAll("[role=\"tab\"]")).forEach(o), i.sort((e, t) => {
 			let n = e.compareDocumentPosition(t);
 			return n & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : n & Node.DOCUMENT_POSITION_PRECEDING ? 1 : 0;
 		});
-	}, u = (e) => W(e.querySelectorAll(t.panelSelector)).filter((t) => o(t) === e), d = () => i().flatMap((e) => l(e)), f = 0, p = (e) => (f += 1, `${e}-${f}`), m = (e) => {
+	}, u = (e) => B(e.querySelectorAll(t.panelSelector)).filter((t) => o(t) === e), d = () => i().flatMap((e) => l(e)), f = 0, p = (e) => (f += 1, `${e}-${f}`), m = (e) => {
 		let n = o(e);
 		if (!n) return null;
 		let r = e.getAttribute("aria-controls");
 		if (r) {
-			let e = n.querySelector(`#${le(r)}`);
+			let e = n.querySelector(`#${he(r)}`);
 			if (e && e.matches(t.panelSelector) && o(e) === n) return e;
 		}
 		let i = l(n), a = u(n), s = i.indexOf(e);
@@ -551,7 +551,7 @@ var ie = {
 		return d()[0] ?? null;
 	}, g = (e) => {
 		let t = e.getAttribute("name");
-		return t ? se(t) : null;
+		return t ? pe(t) : null;
 	}, _ = (e) => {
 		let t = a(e), n = u(e), r = t ?? (n.length === 0 ? e : null);
 		if (!r) return;
@@ -563,7 +563,7 @@ var ie = {
 		if (!n) return;
 		_(n);
 		let r = l(n), i = Math.max(0, r.indexOf(e)), a = g(n), s = r.length > 1 ? `-${i + 1}` : "";
-		e.id ||= a ? `${a}-tab${s}` : p(ae), e.getAttribute("role") !== "tab" && e.setAttribute("role", "tab"), !q(e) && !e.hasAttribute("tabindex") && e.setAttribute("tabindex", "-1"), t && (t.id ||= a ? `${a}-panel${s}` : p(oe), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "tabpanel" && t.setAttribute("role", "tabpanel"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+		e.id ||= a ? `${a}-tab${s}` : p(le), e.getAttribute("role") !== "tab" && e.setAttribute("role", "tab"), !fe(e) && !e.hasAttribute("tabindex") && e.setAttribute("tabindex", "-1"), t && (t.id ||= a ? `${a}-panel${s}` : p(ue), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "tabpanel" && t.setAttribute("role", "tabpanel"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
 	}, y = (e) => e.hasAttribute("active") || e.getAttribute("aria-selected") === "true", b = (e, t, n) => {
 		n ? e.hasAttribute("active") || e.setAttribute("active", "") : e.hasAttribute("active") && e.removeAttribute("active");
 		let r = String(n);
@@ -609,7 +609,7 @@ var ie = {
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = T(t);
-		n && K(e) && S(n);
+		n && V(e) && S(n);
 	}, D = (e, t) => {
 		let n = o(e);
 		if (!n) return;
@@ -620,30 +620,30 @@ var ie = {
 	}, O = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let t = e.target;
-		if (!(t instanceof Element) || ce(t)) return;
+		if (!(t instanceof Element) || me(t)) return;
 		let n = T(t);
 		if (n && !(e.key === "Escape" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
 			if (e.key === "ArrowRight") {
-				if (!K(e)) return;
+				if (!V(e)) return;
 				e.preventDefault(), D(n, (e, t) => (e + 1) % t);
 				return;
 			}
 			if (e.key === "ArrowLeft") {
-				if (!K(e)) return;
+				if (!V(e)) return;
 				e.preventDefault(), D(n, (e, t) => (e - 1 + t) % t);
 				return;
 			}
 			if (e.key === "Home") {
-				if (!K(e)) return;
+				if (!V(e)) return;
 				e.preventDefault(), D(n, () => 0);
 				return;
 			}
 			if (e.key === "End") {
-				if (!K(e)) return;
+				if (!V(e)) return;
 				e.preventDefault(), D(n, (e, t) => t - 1);
 				return;
 			}
-			e.key !== "Enter" && e.key !== " " || q(n) || K(e) && (e.preventDefault(), S(n));
+			e.key !== "Enter" && e.key !== " " || fe(n) || V(e) && (e.preventDefault(), S(n));
 		}
 	}, k = !1, A = () => {
 		k || (k = !0, requestAnimationFrame(() => {
@@ -671,17 +671,237 @@ var ie = {
 		sync: w,
 		select: S
 	};
-}, ue = (e = {}) => J(e), Y = null, X = !1, Z = null, Q = () => {
-	Z &&= (document.removeEventListener("DOMContentLoaded", Z), null);
-}, $ = () => typeof window > "u" || typeof document > "u" ? null : (X = !1, Q(), Y ? (Y.sync(), Y) : (Y = J(), Y)), de = () => {
-	X = !0, Q(), Y?.destroy(), Y = null;
+}, ge = (e = {}) => H(e), U = null, W = !1, G = null, _e = () => {
+	G &&= (document.removeEventListener("DOMContentLoaded", G), null);
+}, ve = () => typeof window > "u" || typeof document > "u" ? null : (W = !1, _e(), U ? (U.sync(), U) : (U = H(), U)), ye = () => {
+	W = !0, _e(), U?.destroy(), U = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Z = () => {
-	Z = null, X || $();
-}, document.addEventListener("DOMContentLoaded", Z)) : $());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (G = () => {
+	G = null, W || ve();
+}, document.addEventListener("DOMContentLoaded", G)) : ve());
+//#endregion
+//#region src/js/src/modal/modal-runtime.ts
+var be = {
+	root: typeof document < "u" ? document : {},
+	overlaySelector: "[modal-overlay]",
+	dialogSelector: "[modal]",
+	closeSelector: "[modal-close]",
+	closeOnBackdrop: !0
+}, K = (e) => Array.from(e), xe = "juice-modal-overlay", Se = "juice-modal-dialog", Ce = "juice-modal-title", we = [
+	"a[href]",
+	"button:not([disabled])",
+	"textarea:not([disabled])",
+	"input:not([disabled]):not([type=\"hidden\"])",
+	"select:not([disabled])",
+	"[tabindex]:not([tabindex=\"-1\"])"
+].join(","), Te = /* @__PURE__ */ new WeakSet(), q = /* @__PURE__ */ new WeakMap(), J = (e) => Te.has(e) ? !1 : (Te.add(e), !0), Ee = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, De = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "modal", Y = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Oe = (e) => (e.getAttribute("aria-controls") ?? "").trim().split(/\s+/).filter(Boolean), X = (e) => !e.hasAttribute("hidden"), ke = (e) => !(e.closest("[hidden]") || e.getAttribute("aria-hidden") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled), Ae = (e) => K(e.querySelectorAll(we)).filter(ke), je = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		open: () => {},
+		close: () => {},
+		toggle: () => {}
+	};
+	let t = {
+		...be,
+		...e
+	}, n = t.root ?? document, r = n, i = 0, a = (e) => (i += 1, `${e}-${i}`), o = () => K(n.querySelectorAll(t.overlaySelector)), s = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.overlaySelector);
+		return n instanceof HTMLElement ? n : null;
+	}, c = (e) => {
+		let t = Ee(e);
+		if (n instanceof Document || n instanceof Element) {
+			let e = n.querySelector(`#${t}`);
+			if (e) return e;
+		}
+		let r = document.getElementById(e);
+		return r instanceof HTMLElement ? r : null;
+	}, l = (e) => e?.matches(t.overlaySelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : o().includes(e) : !1, u = (e) => K(e.querySelectorAll(t.dialogSelector)).find((t) => s(t) === e) || K(e.querySelectorAll("[role=\"dialog\"]")).find((t) => s(t) === e) || (K(e.children).find((e) => e instanceof HTMLElement) ?? e), d = (e) => {
+		if (s(e)) return null;
+		for (let t of Oe(e)) {
+			let e = c(t);
+			if (e && l(e)) return e;
+		}
+		return null;
+	}, f = (e) => {
+		if (e) {
+			if (l(e)) return e;
+			let n = s(e);
+			if (n && l(n)) return n;
+			if (e.matches(t.closeSelector)) {
+				let t = s(e);
+				if (t && l(t)) return t;
+			}
+			let r = d(e);
+			if (r) return r;
+			let i = e.closest("[aria-controls]");
+			if (i instanceof HTMLElement) {
+				let e = d(i);
+				if (e) return e;
+			}
+		}
+		return o().find(X) ?? o()[0] ?? null;
+	}, p = (e) => {
+		let t = e.getAttribute("name");
+		return t ? De(t) : e.id ? De(e.id) : null;
+	}, m = (e) => e.id ? K(document.querySelectorAll("[aria-controls]")).filter((t) => s(t) ? !1 : Oe(t).includes(e.id)) : [], h = (e, t) => {
+		let n = String(t);
+		m(e).forEach((e) => {
+			e.getAttribute("aria-expanded") !== n && e.setAttribute("aria-expanded", n), e.hasAttribute("aria-haspopup") || e.setAttribute("aria-haspopup", "dialog");
+		});
+	}, g = (e) => {
+		let n = u(e), r = p(e);
+		if (e.id ||= r ? `${r}-overlay` : a(xe), n.id ||= r ? `${r}-dialog` : a(Se), n.getAttribute("role") !== "dialog" && n.setAttribute("role", "dialog"), n.getAttribute("aria-modal") !== "true" && n.setAttribute("aria-modal", "true"), !n.hasAttribute("aria-labelledby") && !n.hasAttribute("aria-label")) {
+			let e = n.querySelector("[modal-header] :is(h1,h2,h3,h4,h5,h6), :is(h1,h2,h3,h4,h5,h6)");
+			e && (e.id ||= r ? `${r}-title` : a(Ce), n.setAttribute("aria-labelledby", e.id));
+		}
+		K(e.querySelectorAll(t.closeSelector)).filter((t) => s(t) === e).forEach((e) => {
+			Y(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Close");
+		}), m(e).forEach((t) => {
+			Y(t) || (t.setAttribute("role", "button"), t.hasAttribute("tabindex") || t.setAttribute("tabindex", "0")), t.hasAttribute("aria-haspopup") || t.setAttribute("aria-haspopup", "dialog"), t.hasAttribute("aria-expanded") || t.setAttribute("aria-expanded", String(X(e)));
+		});
+	}, _ = (e, t) => {
+		let n = document.activeElement instanceof HTMLElement ? document.activeElement : null, r = t && !e.contains(t) ? t : n && !e.contains(n) ? n : null;
+		r && q.set(e, r);
+	}, v = (e) => {
+		let t = q.get(e);
+		q.delete(e), t?.isConnected && t.focus();
+	}, y = (e) => {
+		let t = u(e), n = t.querySelector("[autofocus]"), r = Ae(t), i = (n && ke(n) ? n : null) ?? r[0] ?? t;
+		i === t && !t.hasAttribute("tabindex") && t.setAttribute("tabindex", "-1"), i.focus();
+	}, b = (e, t) => {
+		e.hidden !== !t && (e.hidden = !t);
+	}, x = (e, t) => {
+		g(e), b(e, !1), h(e, !1), t ? v(e) : q.delete(e);
+	}, S = (e, n) => {
+		o().concat(K(document.querySelectorAll(t.overlaySelector))).forEach((t) => {
+			t === e || !X(t) || x(t, !1);
+		}), _(e, n), g(e), b(e, !0), h(e, !0), y(e);
+	}, C = (e) => {
+		let t = f(e);
+		if (t) {
+			if (X(t)) {
+				g(t), h(t, !0);
+				return;
+			}
+			S(t, e && d(e) === t ? e : e?.closest("[aria-controls]") instanceof HTMLElement && d(e.closest("[aria-controls]")) === t ? e.closest("[aria-controls]") : null);
+		}
+	}, w = (e) => {
+		let t = f(e);
+		!t || !X(t) || x(t, !0);
+	}, T = (e) => {
+		let t = f(e);
+		if (t) {
+			if (X(t)) {
+				w(t);
+				return;
+			}
+			C(e ?? t);
+		}
+	}, E = () => {
+		o().forEach((e) => {
+			g(e), h(e, X(e));
+		});
+	}, D = (e) => t.closeOnBackdrop ? e.getAttribute("modal-overlay") !== "static" : !1, O = (e) => {
+		if (!(e instanceof HTMLElement) || s(e)) return null;
+		if (d(e)) return e;
+		let t = e.closest("[aria-controls]");
+		return t instanceof HTMLElement && d(t) ? t : null;
+	}, k = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = s(n instanceof HTMLElement ? n : n.parentElement);
+		if (r && l(r)) {
+			let i = n.closest(t.closeSelector) instanceof HTMLElement ? n.closest(t.closeSelector) : null;
+			if (i && s(i) === r) {
+				if (!J(e)) return;
+				w(r);
+				return;
+			}
+			if (n === r && D(r)) {
+				if (!J(e)) return;
+				w(r);
+			}
+			return;
+		}
+		let i = O(n);
+		i && J(e) && T(i);
+	}, A = () => o().find(X) ?? null, j = (e, t) => {
+		if (e.key !== "Tab") return !1;
+		let n = u(t), r = Ae(n), i = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		if (r.length === 0) return e.preventDefault(), n.hasAttribute("tabindex") || n.setAttribute("tabindex", "-1"), n.focus(), !0;
+		let a = r[0], o = r[r.length - 1];
+		return e.shiftKey ? !i || i === a || !n.contains(i) ? (e.preventDefault(), o.focus(), !0) : !0 : !i || i === o || !n.contains(i) ? (e.preventDefault(), a.focus(), !0) : !0;
+	}, ee = (e) => {
+		if (!(e instanceof KeyboardEvent)) return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = A();
+		if (r && e.key === "Escape") {
+			if (!J(e)) return;
+			e.preventDefault(), e.stopPropagation(), w(r);
+			return;
+		}
+		if (r && e.key === "Tab") {
+			if (!J(e)) return;
+			j(e, r);
+			return;
+		}
+		if (e.key !== "Enter" && e.key !== " ") return;
+		let i = n.closest(t.closeSelector);
+		if (i instanceof HTMLElement && s(i) && !Y(i)) {
+			if (!J(e)) return;
+			e.preventDefault(), w(i);
+			return;
+		}
+		let a = O(n);
+		!a || Y(a) || J(e) && (e.preventDefault(), T(a));
+	}, M = (e) => {
+		let t = A();
+		if (!t) return;
+		let n = e.target;
+		if (!(n instanceof Node) || t.contains(n) || !J(e)) return;
+		let r = u(t);
+		(Ae(r)[0] ?? r).focus();
+	}, N = !1, te = () => {
+		N || (N = !0, requestAnimationFrame(() => {
+			N = !1, E();
+		}));
+	}, P = typeof MutationObserver < "u" ? new MutationObserver(() => te()) : null;
+	return r.addEventListener("click", k), r.addEventListener("keydown", ee, !0), r.addEventListener("focusin", M, !0), P && n instanceof Node && P.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"aria-controls",
+			"aria-labelledby",
+			"aria-modal",
+			"modal-overlay",
+			"modal",
+			"modal-close"
+		]
+	}), E(), {
+		destroy: () => {
+			r.removeEventListener("click", k), r.removeEventListener("keydown", ee, !0), r.removeEventListener("focusin", M, !0), P?.disconnect();
+		},
+		sync: E,
+		open: C,
+		close: w,
+		toggle: T
+	};
+}, Me = (e = {}) => je(e), Z = null, Ne = !1, Q = null, Pe = () => {
+	Q &&= (document.removeEventListener("DOMContentLoaded", Q), null);
+}, $ = () => typeof window > "u" || typeof document > "u" ? null : (Ne = !1, Pe(), Z ? (Z.sync(), Z) : (Z = je(), Z)), Fe = () => {
+	Ne = !0, Pe(), Z?.destroy(), Z = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Q = () => {
+	Q = null, Ne || $();
+}, document.addEventListener("DOMContentLoaded", Q)) : $());
 //#endregion
 //#region src/tokens/index.ts
-var fe = {
+var Ie = {
 	colors: {
 		families: [
 			"black",
@@ -849,4 +1069,4 @@ var fe = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, R as createAccordion, T as createNavigation, J as createTabs, ne as initAccordion, E as initNavigation, ue as initTabs, U as startAccordionRuntime, O as startNavigationRuntime, $ as startTabsRuntime, re as stopAccordionRuntime, k as stopNavigationRuntime, de as stopTabsRuntime, fe as tokens };
+export { v as Accordion, re as createAccordion, je as createModal, T as createNavigation, H as createTabs, ie as initAccordion, Me as initModal, E as initNavigation, ge as initTabs, z as startAccordionRuntime, $ as startModalRuntime, O as startNavigationRuntime, ve as startTabsRuntime, se as stopAccordionRuntime, Fe as stopModalRuntime, k as stopNavigationRuntime, ye as stopTabsRuntime, Ie as tokens };
