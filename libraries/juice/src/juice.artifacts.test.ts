@@ -80,8 +80,14 @@ describe("Juice build artifacts", () => {
         expect(css).toContain("--juice-border-strength-soft-color");
         expect(css).toContain("--juice-border-strength-bold-width");
         expect(css).toContain("--juice-border-strength-bold-color");
-        expect(css).not.toMatch(/\[blur=["']?sm["']?\]/);
-        expect(css).not.toMatch(/\[blur=["']?md["']?\]/);
+        expect(css).toMatch(/\[blur=["']?sm["']?\]/);
+        expect(css).toMatch(/\[blur=["']?md["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[blur=["']?sm["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[blur=["']?md["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[blur=["']?sm["']?\]/);
+        expect(css).toMatch(/\[surfaceTone\]\[blur=["']?md["']?\]/);
+        expect(css).toContain("--juice-blur-sm, 6px");
+        expect(css).toContain("--juice-blur-md, 16px");
     });
 
     it("includes accordion structural chrome in core CSS", () => {

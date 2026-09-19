@@ -100292,6 +100292,30 @@ Creating Gradient Animations
   border-width: var(--juice-border-strength-bold-width, 2px);
 }
 
+[blur=sm],
+[theme] [blur=sm] {
+  -webkit-backdrop-filter: blur(var(--juice-blur-sm, 6px));
+          backdrop-filter: blur(var(--juice-blur-sm, 6px));
+}
+
+[blur=md],
+[theme] [blur=md] {
+  -webkit-backdrop-filter: blur(var(--juice-blur-md, 16px));
+          backdrop-filter: blur(var(--juice-blur-md, 16px));
+}
+
+[surfaceTone][blur=sm],
+[theme] [surfaceTone][blur=sm] {
+  -webkit-backdrop-filter: blur(var(--juice-blur-sm, 6px));
+          backdrop-filter: blur(var(--juice-blur-sm, 6px));
+}
+
+[surfaceTone][blur=md],
+[theme] [surfaceTone][blur=md] {
+  -webkit-backdrop-filter: blur(var(--juice-blur-md, 16px));
+          backdrop-filter: blur(var(--juice-blur-md, 16px));
+}
+
 [bgColor=black-100] {
   background-color: hsl(0, 0%, 50%);
 }

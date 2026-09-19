@@ -68,6 +68,42 @@ When both attributes are set, `borderStrength` refines **width only**. The tone 
 
 Core selectors include `[theme] [borderStrength]` (same specificity pattern as tones) and `[surfaceTone][borderStrength]` so the compose rule cannot wipe tone paint.
 
+## Beta-stable: `blur`
+
+Composable backdrop-filter length. Standalone — no `surfaceTone` required. `sm` is `6px`; `md` is `16px`. Those sit off the typical unthemed soft-tone default (`10px`) so the utilities read as a lighter frost and a heavier frost, not a restatement of `surfaceTone="soft"`.
+
+Optional `--juice-blur-sm` / `--juice-blur-md` restyles exist with those fallbacks. Themes do **not** bind a second blur scale; tone frost stays on `--juice-surface-<tone>-blur` (soft is `10px` unthemed / Kiwi / Citrusmint, `14px` Aquaflux, `16px` Tide).
+
+| Value | Length | Intent |
+|-------|--------|--------|
+| `sm` | `6px` | Lighter frost than every shipped soft-tone default |
+| `md` | `16px` | Heavier frost than the typical `10px` soft default |
+
+### Compose with `surfaceTone`
+
+When both attributes are set, explicit `blur` overrides **backdrop-filter length only**. The tone keeps its background, border, and shadow. Author intent wins: `surfaceTone="soft" blur="sm"` is the tone's fill with a `6px` frost, not the tone's `10px` / `14px` / `16px` role.
+
+```html
+<!-- Standalone: blur the element, no tone required. -->
+<div rounded="lg" padding="1rem" blur="sm">…</div>
+<section hero blur="md">…</section>
+```
+
+```html
+<!-- Explicit blur wins the length; tone paint stays. -->
+<article card="feature" surfaceTone="soft" blur="sm">…</article>
+<aside surfaceTone="muted" blur="md">…</aside>
+```
+
+```html
+<!-- A–C together: tone fill, strength width, explicit frost. -->
+<section surfaceTone="soft" borderStrength="bold" blur="md">…</section>
+```
+
+Core selectors include `[theme] [blur]` (same specificity pattern as tones) and `[surfaceTone][blur]` so the compose rule cannot wipe tone paint.
+
+This finishes the approved A→B→C surface utility pass (`surfaceTone`, `borderStrength`, standalone `blur`). `variant`, `overlay`, and `shadowTone` stay specified, not shipped.
+
 ## Theme role contract
 
 Set these on `[theme="..."]`. Each tone uses the same four roles:
@@ -99,6 +135,7 @@ Unthemed fallbacks (no theme binding):
 - **muted tone** — `gray-100` wash, quieter border, no shadow, `0px` blur
 - **soft strength** — `1px` + `rgba(gray-300, 0.45)`
 - **bold strength** — `2px` + `rgba(gray-400, 0.9)`
+- **blur sm / md** — `6px` / `16px` (optional `--juice-blur-*` restyles; not theme-bound)
 
 Shipped binds (existing tokens only; no new hue family):
 
@@ -117,7 +154,7 @@ App-owned generated themes bind the same `--juice-surface-*` and `--juice-border
 
 | Layer | Owns |
 |-------|------|
-| Juice utilities | `surfaceTone`, `borderStrength`, `shadow`, `rounded`, `bgColor`, `borderColor`, … |
+| Juice utilities | `surfaceTone`, `borderStrength`, `blur`, `shadow`, `rounded`, `bgColor`, `borderColor`, … |
 | Theme | Colors, typography, `--juice-surface-*` / `--juice-border-strength-*` paint, how `[card]`, `[hero]`, and semantic elements render under `theme="..."` |
 
 ```html
@@ -130,7 +167,6 @@ Import core + theme CSS separately (see [Theme authoring](./juice-theme-authorin
 
 ## Still planned
 
-These stay specified, not shipped:
+A–C surface utilities ship (`surfaceTone`, `borderStrength`, `blur`). These stay specified, not shipped:
 
-- standalone `blur="sm|md"`
 - `overlay`, `variant`, `shadowTone`

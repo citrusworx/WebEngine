@@ -154,8 +154,10 @@ For more detail, see [Sizing Reference](./juice-sizing.md).
   Values: `"soft"`, `"strong"`, `"muted"`
 - `borderStrength`
   Values: `"soft"`, `"bold"`
+- `blur`
+  Values: `"sm"` (`6px`), `"md"` (`16px`)
 
-Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` and `--juice-border-strength-<soft|bold>-width|color` roles. Unthemed fallbacks keep the original light frost for `soft` tones and a gray hairline / heavier rule for strength. `borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. See [Surfaces](./juice-surfaces.md). Standalone `blur` is not shipped.
+Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur` and `--juice-border-strength-<soft|bold>-width|color` roles. Unthemed fallbacks keep the original light frost for `soft` tones and a gray hairline / heavier rule for strength. `borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. Standalone `blur` applies `backdrop-filter` and overrides a tone's blur length when both are set, without wiping tone fill / border / shadow. Optional `--juice-blur-sm` / `--juice-blur-md` restyles; themes do not bind a second blur scale. See [Surfaces](./juice-surfaces.md).
 
 ## Icon Attributes
 

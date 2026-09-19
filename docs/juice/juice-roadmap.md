@@ -11,7 +11,7 @@ The visible layers today:
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
-* a small surface language (`surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`)
+* a small surface language (`surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, `blur="sm|md"`)
 * Emerging browser runtimes: navigation, accordion, and tabs auto-enhance when the JS entry is imported
 * a Sig Accordion factory plus create/init/start/stop helpers
 * templates as a stress-test bed
@@ -27,7 +27,7 @@ The next strongest areas are now:
 
 The weakest areas are still:
 
-* surface language breadth (`surfaceTone` and `borderStrength` ship; standalone blur attrs do not)
+* surface language breadth (A–C utilities ship; `overlay` / `variant` / `shadowTone` do not)
 * theme-contract formalization across the shipped set
 * component maturity beyond the three auto-enhance runtimes
 * icon and typography polish
@@ -116,6 +116,7 @@ Shipped today:
 
 * `surfaceTone="soft|strong|muted"` with a `--juice-surface-*` theme role contract
 * `borderStrength="soft|bold"` with `--juice-border-strength-*` roles (composes with tones)
+* `blur="sm|md"` standalone backdrop-filter (`6px` / `16px`; explicit blur overrides a tone's length)
 
 Still missing or only specified:
 
@@ -173,13 +174,13 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 Tide promotion is done. Surface language is the next Juice library build.
 
-Build out the surface model that already started. Do not treat that work as finished: `surfaceTone` and `borderStrength` ship, but standalone blur and overlay/variant utilities do not.
+Build out the surface model that already started. Do not treat that work as finished: A–C utilities (`surfaceTone`, `borderStrength`, standalone `blur`) ship, but overlay / variant / shadowTone do not.
 
 Recommended next additions:
 
-* more surface utilities beyond the shipped tones and border strengths
+* more surface utilities beyond the shipped A–C set
 * depth / shadow language
-* `blur` / overlay / tint where they stay composable
+* overlay / tint where they stay composable
 * more structural variants on `card` (see [Surface Spec](./juice-surface-spec.md))
 
 This is what makes templates feel finished with less manual assembly.
