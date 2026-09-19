@@ -39,4 +39,14 @@ export type {
     ModalController,
     ModalOptions
 } from "./js/src/modal/modal-runtime.js";
+export {
+    createDrawer,
+    initDrawer,
+    startDrawerRuntime,
+    stopDrawerRuntime
+} from "./js/src/drawer/drawer-runtime.js";
+export type {
+    DrawerController,
+    DrawerOptions
+} from "./js/src/drawer/drawer-runtime.js";
 export { tokens } from "./tokens/index.js";

@@ -47,6 +47,7 @@ describe("Juice consumer smoke", () => {
         accordion.remove();
         module.stopAccordionRuntime();
         module.stopModalRuntime();
+        module.stopDrawerRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -86,6 +87,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopModalRuntime();
+        module.stopDrawerRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -120,6 +122,45 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopModalRuntime();
+        module.stopDrawerRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built drawer runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopDrawerRuntime();
+        document.body.innerHTML = `
+            <div drawer-overlay id="demo-drawer" hidden>
+                <div drawer>
+                    <button type="button" drawer-close aria-label="Close">×</button>
+                    <div drawer-header><h2 id="demo-title">Filters</h2></div>
+                    <div drawer-body>Refine results</div>
+                </div>
+            </div>
+            <button type="button" aria-controls="demo-drawer">Open</button>
+        `;
+
+        const controller = module.createDrawer({ root: document.body });
+        const overlay = document.getElementById("demo-drawer");
+        const opener = document.querySelector("[aria-controls]");
+        const dialog = document.querySelector("[drawer]");
+
+        expect(dialog?.getAttribute("role")).toBe("dialog");
+        expect(dialog?.getAttribute("aria-modal")).toBe("true");
+        expect(overlay?.hasAttribute("hidden")).toBe(true);
+
+        opener?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(overlay?.hasAttribute("hidden")).toBe(false);
+        expect(opener?.getAttribute("aria-expanded")).toBe("true");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
