@@ -1,6 +1,6 @@
 # Juice Beta
 
-Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.7.0` is the versioned Beta cut (drawer, toast, and popover A→B→C on top of the 0.6.0 stack). **0.6.0 remains the public npm cut** until someone runs `yarn release-packages` after this version lands. See [juice-roadmap.md](./juice-roadmap.md).
+Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.7.0` is the public Beta cut on npm (drawer, toast, and popover A→B→C on top of the 0.6.0 stack). 0.6.0 was the prior public cut. See [juice-roadmap.md](./juice-roadmap.md).
 
 ## What Beta includes
 

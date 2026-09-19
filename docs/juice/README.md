@@ -118,7 +118,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Toast Runtime](./juice-toast-runtime.md)
 - [Popover Runtime](./juice-popover-runtime.md)
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.6.0` live on npm)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.7.0` live on npm)
 
 ## Status
 
