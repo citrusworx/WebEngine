@@ -631,7 +631,8 @@
 }
 
 [dashboard-shell] [dash-form] input,
-[dashboard-shell] [dash-form] select {
+[dashboard-shell] [dash-form] select,
+[dashboard-shell] [dash-form] textarea {
     width: 100%;
     box-sizing: border-box;
     padding: 0.65rem 0.85rem;
@@ -640,6 +641,32 @@
     background: var(--kw-page);
     color: inherit;
     font: inherit;
+}
+
+[dashboard-shell] [dash-form] textarea {
+    min-height: 16rem;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+[dashboard-shell] [data-table] tr[current] td {
+    background: var(--kw-accent-soft);
+}
+
+[dashboard-shell] [collection-editor] [save-row] {
+    justify-content: flex-start;
+}
+
+[dashboard-shell] [header-row] > [page-header] {
+    margin-bottom: 0;
+}
+
+[dashboard-shell] [tile-grid] [panel-card] button {
+    margin-top: 0.75rem;
+}
+
+[dashboard-shell] [data-table] [action-group] {
+    justify-content: flex-end;
 }
 
 [dashboard-shell] [note] {

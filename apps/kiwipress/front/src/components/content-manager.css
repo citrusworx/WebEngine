@@ -1,7 +1,0 @@
-/* Juice [card] defaults to min(100%, 30vw). Keep the manager wide, but
-   center it in the dashboard main column (it is a flex item of [stack]). */
-[dashboard-main] [content-manager][card] {
-    width: min(100%, 72rem);
-    margin-inline: auto;
-    align-self: center;
-}
