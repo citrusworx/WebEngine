@@ -176,9 +176,9 @@ Set selection:
 
 Escape hatch:
 
-- `width` / `height`: custom size when the `iconSize` scale is not enough. Set both. These utilities compile after the icon rules, so they win over the default and `iconSize`.
+- `width` / `height`: custom size when the `iconSize` scale is not enough. Set both. These utilities compile after the icon rules, so they win over the default and `iconSize`. rem / vw / vh values still follow the shared responsive scale; `iconSize` does not.
 
-Default: `[icon]` is `1rem × 1rem` when neither `iconSize` nor `width` / `height` is set. There is no mobile size remap.
+Default: `[icon]` is `1rem × 1rem` when neither `iconSize` nor `width` / `height` is set. There is no `[icon]` mobile size remap.
 
 Color: `iconcolor` sets `color`; the mask uses `background-color: currentColor`. With no `iconcolor`, the icon inherits parent `color`. Do not use `fontColor` as the icon API.
 

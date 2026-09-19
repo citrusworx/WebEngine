@@ -31,6 +31,8 @@ There is no mobile remapping. Viewport media queries do not override icon size. 
 
 `width` and `height` utilities compile after the icon rules, so an explicit custom size wins over both the default and `iconSize`. Set both axes when you use the escape hatch.
 
+`iconSize` values are pixels and do not change across breakpoints. `width` / `height` rem, vw, and vh values still follow the shared [responsive scale](./juice-responsive-reference.md) (50% below 640px, 75% / 80% in the tablet bands). Use `iconSize` when you want the same glyph size on a phone as on desktop.
+
 ## Size scale
 
 | `iconSize` | Rendered size |
@@ -91,13 +93,22 @@ The default `1rem` size sits on the text line. Add `iconSize` only when the labe
 Button with icon:
 
 ```html
-<button btn="flat" theme="citrusmint-300" scale="lg" row gap="1" centered>
+<button btn="flat" theme="citrusmint-300" scale="lg">
   <i icon="plus" lib="solid" iconcolor="white-100"></i>
   Add title
 </button>
 ```
 
-`row`, `gap`, and `centered` keep the glyph and label on one flex line. Prefer `iconSize="sm"` or the `1rem` default inside buttons; `lg` / `xl` belong on media regions, not in the label.
+Keep the glyph and label as inline content so they stay on one line. Do not put `row` on the button: `[row]` collapses to a column below 768px. Prefer `iconSize="sm"` or the `1rem` default inside buttons; `lg` / `xl` belong on media regions, not in the label.
+
+Toolbar or nav cluster (flex, and allowed to wrap or stack):
+
+```html
+<div row gap="1" centered>
+  <i icon="bell" lib="solid" iconSize="sm" iconcolor="obsidian-900"></i>
+  <span>Alerts</span>
+</div>
+```
 
 Stack with gap:
 
