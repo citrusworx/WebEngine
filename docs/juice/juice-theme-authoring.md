@@ -268,7 +268,7 @@ Library themes bind the shared drawer contract so `[drawer-overlay]` / `[drawer]
 
 Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-drawer-*`, `--kw-drawer-*`, `--cm-drawer-*`, `--tide-drawer-*`, …). App-owned generated themes use `--jx-drawer-*` and bind `--juice-drawer-*` from existing `--jx-*` surface/page/text tokens. Do not invent a new hue family just for drawer chrome. Close is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[drawer-close]` the same way.
 
-`[drawer-overlay]` is a drawer scrim. It is not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Edge is `[drawer]` / `[drawer="right"]` / `[drawer="left"]` (default right). Optional width is `[drawer-size="sm|lg"]`.
+`[drawer-overlay]` is a drawer scrim. It is not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Edge is `[drawer]` / `[drawer="right"]` / `[drawer="left"]` (default right). Optional width is `[drawer-size="sm|lg"]`. Openers pair through `aria-controls`. The dialog runtime auto-enhances that markup — see [Drawer Runtime](./juice-drawer-runtime.md).
 
 Tide must bind a dark scrim and dark panel (`--tide-page` / `--tide-surface-strong`), not a white glass drawer.
 

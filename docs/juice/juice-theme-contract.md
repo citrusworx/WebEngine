@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), and drawer theme chrome (`--juice-drawer-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md).
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), and drawer theme chrome (`--juice-drawer-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md).
 
 ## 1. Layer rule
 
@@ -146,7 +146,7 @@ Structural sliding-panel paint. Required names:
 
 Consumed by `drawer.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-drawer-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
 
-This is **not** the surface `overlay="frost|tint"` utility. `[drawer-overlay]` is a drawer scrim. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible.
+This is **not** the surface `overlay="frost|tint"` utility. `[drawer-overlay]` is a drawer scrim. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Openers pair through `aria-controls`. The dialog runtime auto-enhances that markup — see [Drawer Runtime](./juice-drawer-runtime.md).
 
 Edge and size are separate so they compose: `[drawer]` / `[drawer="right"]` / `[drawer="left"]` dock the panel (bare or unspecified is right). Optional `[drawer-size="sm|lg"]` sets width (default `22rem`, `sm` `16rem`, `lg` `32rem`). Do not put size on the `drawer` attribute — that slot is the edge.
 
@@ -318,4 +318,4 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 ## Status
 
-This is Priority 2 through remaining depth slice C plus modal A→B→C and drawer theme chrome (slice A): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, and `--juice-drawer-*`. Drawer runtime is later. Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal A→B→C and drawer A→B→C: the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, and `--juice-drawer-*`, with the drawer runtime and runtime docs on master. Blush, CLI, and publish are out of scope here.

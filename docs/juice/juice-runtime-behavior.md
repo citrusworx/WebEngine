@@ -33,16 +33,16 @@ It should not require:
 
 ## Current Examples
 
-The navigation, accordion, tabs, and modal runtimes are the current examples.
+The navigation, accordion, tabs, modal, and drawer runtimes are the current examples.
 
 They work by:
 
-* watching for valid Juice nav, `[accordion]`, `[tabs]`, or `[modal-overlay]` markup
+* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, or `[drawer-overlay]` markup
 * booting automatically in the browser
 * responding to DOM changes
 * applying behavior without user init code
 
-See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), and [Juice Modal Runtime](./juice-modal-runtime.md).
+See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), and [Juice Drawer Runtime](./juice-drawer-runtime.md).
 
 ## Runtime Scope
 
@@ -66,10 +66,10 @@ Shipped built-in runtime features include:
 * accordion / disclosure behavior
 * tabs
 * modal / dialog
+* drawers
 
 Future built-in runtime features could include:
 
-* drawers
 * additional disclosure patterns
 
 But each should follow the same rule:

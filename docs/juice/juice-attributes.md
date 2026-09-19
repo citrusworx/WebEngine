@@ -285,6 +285,20 @@ Openers pair through `aria-controls` pointing at the overlay `id`. There is no e
 
 See [Modal Runtime](./juice-modal-runtime.md). Theme paint uses `--juice-modal-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility.
 
+### Drawer
+
+- `drawer-overlay` — widget root / full-viewport scrim; required for the dialog runtime. Hide with the native `hidden` attribute. Value `"static"` opts out of backdrop-click close
+- `drawer` — edge-docked dialog panel (`role="dialog"`); values `"left"` / `"right"` (bare or unspecified is right)
+- `drawer-size` — optional width; values `"sm"` / `"lg"` (default `22rem`, `sm` `16rem`, `lg` `32rem`). Do not put size on the `drawer` attribute
+- `drawer-header` — title / lead region
+- `drawer-body` — main content region
+- `drawer-close` — dismiss control (surface paint, not a CTA)
+- `name` — optional overlay label used as the slug for generated ids
+
+Openers pair through `aria-controls` pointing at the overlay `id`. There is no extra Juice opener attribute.
+
+See [Drawer Runtime](./juice-drawer-runtime.md). Theme paint uses `--juice-drawer-*` roles (`overlay`, `panel`, `panel-border`, `panel-shadow`, `close`, `close-color`, `close-hover`, `focus-ring`). This is not the surface `overlay="frost|tint"` utility, and not `[modal-overlay]`.
+
 ## Usage Examples
 
 ```html

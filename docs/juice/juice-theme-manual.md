@@ -58,7 +58,7 @@ Every real Juice theme should decide:
 
 ### 6. Chrome roles
 
-Required `--juice-*` accordion, tabs, modal, surface-tone, border-strength, shadow-tone, and overlay binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
+Required `--juice-*` accordion, tabs, modal, drawer, surface-tone, border-strength, shadow-tone, and overlay binds, plus optional Tide-style hooks, are listed in the [Theme Contract](./juice-theme-contract.md). Bind them from existing identity tokens. Do not invent a new hue family.
 
 ## The current file shapes
 
@@ -179,7 +179,7 @@ Put these in the theme:
 - tabs chrome role bindings (`--juice-tabs-*`)
 - modal chrome role bindings (`--juice-modal-*`)
 - drawer chrome role bindings (`--juice-drawer-*`)
-- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family. Modal chrome is a dialog scrim / panel / close contract, not `overlay="frost|tint"`. Drawer chrome is the same contract for an edge-docked panel (`[drawer]` / `[drawer="left"|"right"]`, optional `[drawer-size="sm|lg"]`), not `overlay="frost|tint"`. Closed vs open uses native `hidden`; the dialog runtime auto-enhances valid modal markup — see [Modal Runtime](./juice-modal-runtime.md).
+- surface tone, border strength, shadow tone, and overlay role bindings (`--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, `--juice-overlay-*`) — see the [Theme Contract](./juice-theme-contract.md). `variant` recipes consume those same roles; do not add a `--juice-variant-*` family. Modal chrome is a dialog scrim / panel / close contract, not `overlay="frost|tint"`. Drawer chrome is the same contract for an edge-docked panel (`[drawer]` / `[drawer="left"|"right"]`, optional `[drawer-size="sm|lg"]`), not `overlay="frost|tint"`. Closed vs open uses native `hidden`; the dialog runtimes auto-enhance valid modal and drawer markup — see [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md).
 
 ## What does not belong in the theme
 
