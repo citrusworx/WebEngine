@@ -139,9 +139,9 @@ const nodes: SugarNode[] = [
     createEventNode("onClick", { id: "10", x: 60, y: 40 }),
     createNode("handleEvent", { id: "9", x: 300, y: 50 }),
     createEventNode("onDragStart", { id: "11", x: 540, y: 40 }),
-    createEventNode("onDragMove", { id: "12", x: 780, y: 40 }),
-    createEventNode("onDragEnd", { id: "13", x: 1020, y: 40 }),
-    createEventNode("customEvent", { id: "14", x: 1260, y: 40 })
+    createEventNode("onDragMove", { id: "12", x: 760, y: 40 }),
+    createEventNode("onDragEnd", { id: "13", x: 980, y: 40 }),
+    createEventNode("customEvent", { id: "14", x: 60, y: 320 })
 ];
 
 const edges: SugarEdge[] = [
