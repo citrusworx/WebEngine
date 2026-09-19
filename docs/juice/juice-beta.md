@@ -1,6 +1,6 @@
 # Juice Beta
 
-Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.4.0` is the current public cut on npm. Master is ahead (Tide, surface A–C, theme/icon/type contracts); a future 0.5.0 is the publish lane. See [juice-roadmap.md](./juice-roadmap.md).
+Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.5.0` is the versioned Beta cut (Tide, surfaces + depth, contracts, modal runtime). **0.4.0 remains the public npm cut** until someone runs `yarn release-packages` after this version lands. See [juice-roadmap.md](./juice-roadmap.md).
 
 ## What Beta includes
 

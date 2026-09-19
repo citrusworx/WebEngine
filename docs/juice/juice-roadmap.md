@@ -2,11 +2,11 @@
 
 ## Current Position
 
-`@citrusworx/juiceui@0.4.0` is on npm. That is the current public Juice Beta cut.
+`@citrusworx/juiceui@0.5.0` is the versioned Juice Beta cut. **0.4.0 remains the public npm cut** until `yarn release-packages`.
 
-**Master is ahead of 0.4.0.** Tide, surface language A–C, the theme contract plus bind tests, icon/typography authoring polish, and modal / dialog A→B→C all live on master and are not in the published tarball. Do not run `yarn version-packages` or publish from this picture. A future **0.5.0** cut is the publish lane for the pending Juice stack. That cut has not been made.
+**0.5.0 is the cut.** Tide, surface language A–C plus remaining depth, the theme contract plus bind tests, icon/typography authoring polish, and modal / dialog A→B→C are versioned in this lane. This PR does **not** publish. After merge, run `yarn release-packages` to put 0.5.0 on npm.
 
-Pending Juice changesets on master (consume them at 0.5.0; Juice-only if possible):
+Consumed Juice changesets (this 0.5.0 version PR):
 
 | Changeset | Bump | What it records |
 |---|---|---|
@@ -26,7 +26,7 @@ Pending Juice changesets on master (consume them at 0.5.0; Juice-only if possibl
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
-The visible layers today (0.4.0 plus unreleased master):
+The visible layers today (0.5.0, not yet on npm):
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
@@ -78,9 +78,9 @@ For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity
 * **Packaging matches the runtime story.** `sideEffects` includes `dist/index.js`. `@citrusworx/sigjs` is a published `^0.3.0` caret range, not `workspace:^`.
 * **Docs maturity caught up to the JS entry.** The [maturity matrix](./juice-maturity-matrix.md) marks the JS entrypoint and public component exports as **Emerging**.
 
-### Since 0.4.0 (on master, unpublished)
+### Since 0.4.0 (in 0.5.0, not yet on npm)
 
-This is the stack sitting in the pending Juice changesets above.
+This is the stack consumed by the 0.5.0 version cut.
 
 * **Tide shipped as the fourth library theme** (PR #95, `juice-ship-tide-theme`). Import `@citrusworx/juiceui/styles/themes/tide` and activate with `theme="tide"`. Dark product/SaaS identity, teal/lagoon tokens, accordion and tabs chrome, named `tide-card` / `tide-panel` surfaces. Blush remains a YAML-only draft.
 * **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. Remaining depth slices A (`shadowTone` `cool|warm`), B (`overlay` `frost|tint`), and C (`variant` `monochromatic|glass|tinted`) are in. Structural `card="…"` recipes stay later.
@@ -146,7 +146,7 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 ### Closed / done on master (old P1–P3)
 
-These were the lock order after 0.4.0. They are done on master. They are not in the 0.4.0 tarball.
+These were the lock order after 0.4.0. They are in the 0.5.0 versioned cut. They are not in the 0.4.0 tarball.
 
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
@@ -184,9 +184,7 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 
 ### Priority 4. 0.5.0 Publish Lane
 
-When the library work above is ready to ship — or earlier if a clean Juice-only cut is wanted — consume the pending Juice changesets and publish **0.5.0**. Prefer a Juice-only version-packages pass so other packages do not ride along.
-
-This docs refresh does not cut 0.5.0. Do not run `yarn version-packages` or publish from a roadmap update.
+**0.5.0 is versioned.** The pending Juice changesets are consumed. After this version PR merges, publish with `yarn release-packages` (manual; this repo has no `NPM_TOKEN`). Do not re-run `yarn version-packages` for Juice until new Juice changesets exist.
 
 ---
 
@@ -195,7 +193,7 @@ This docs refresh does not cut 0.5.0. Do not run `yarn version-packages` or publ
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
 2. Modal / dialog A→B→C is done on master (chrome, runtime, docs). Keep nav / accordion / tabs / modal Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
-4. Cut **0.5.0** when ready: consume the pending Juice changesets; Juice-only if possible. Do not cut it from a docs refresh.
+4. **0.5.0 is versioned.** Publish separately with `yarn release-packages` after merge. Do not re-cut Juice until new Juice changesets exist.
 
 Closed on master, not in this order: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C.
 
@@ -205,13 +203,13 @@ Closed on master, not in this order: expand surfaces A–C, formalize the theme 
 
 0.4.0 was a real Beta cut. It shipped modular themes, motion wave 1, accordion and tabs runtimes, teal tokens, and packaging that matches the auto-enhance story.
 
-Master is ahead of that cut. Tide is a fourth shipped library theme. Surface A–C utilities, the theme contract plus bind tests, icon/typography authoring contracts (including author type overrides), and modal / dialog A→B→C are on master and unpublished. Blush remains draft.
+**0.5.0 is the versioned cut** for that later stack (not yet on npm). Tide is a fourth shipped library theme. Surface A–C utilities, the theme contract plus bind tests, icon/typography authoring contracts (including author type overrides), and modal / dialog A→B→C are in 0.5.0. Blush remains draft.
 
-The next stage is refinement, then a publish:
+The next stage is refinement, then npm publish:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is done on master (still unpublished vs 0.4.0); grow runtime/components only when the markup contract is honest
+* modal / dialog A→B→C is in 0.5.0; grow runtime/components only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
-* **0.5.0** as the publish lane for the pending Juice stack, when ready
+* **publish 0.5.0** with `yarn release-packages` after this version PR merges
 
 That is a strong place to be.

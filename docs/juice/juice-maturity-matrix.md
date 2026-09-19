@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects `@citrusworx/juiceui@0.4.0` on npm. Master is ahead with unpublished theme, surface, authoring-contract, and modal runtime work; maturity ratings below are unchanged.
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.5.0** versioned cut (Tide, surfaces + depth, contracts, modal runtime). `@citrusworx/juiceui@0.4.0` remains the public npm cut until publish. Maturity ratings below are unchanged.
 
 The goal is to make it easy to answer:
 

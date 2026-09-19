@@ -702,7 +702,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/blackwater-sound@workspace:apps/blackwatersound/front"
   dependencies:
-    "@citrusworx/juiceui": "npm:^0.4.0"
+    "@citrusworx/juiceui": "npm:^0.5.0"
     "@citrusworx/sigjs": "npm:^0.3.0"
     typescript: "npm:^5.9.3"
     vite: "npm:^8.0.0"
@@ -751,7 +751,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/juiceui@npm:^0.4.0, @citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:^, @citrusworx/juiceui@workspace:libraries/juice":
+"@citrusworx/juiceui@npm:^0.5.0, @citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:^, @citrusworx/juiceui@workspace:libraries/juice":
   version: 0.0.0-use.local
   resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
@@ -896,7 +896,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/sugar@workspace:tooling/sugar"
   dependencies:
-    "@citrusworx/juiceui": "npm:^0.4.0"
+    "@citrusworx/juiceui": "npm:^0.5.0"
     "@citrusworx/sigjs": "npm:^0.3.0"
     json5: "npm:^2.2.3"
     typescript: "npm:^6.0.2"

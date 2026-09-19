@@ -1,5 +1,20 @@
 # @citrusworx/juiceui
 
+## 0.5.0
+
+### Minor Changes
+
+- **Tide is a fourth library theme.** Import `@citrusworx/juiceui/styles/themes/tide` (or `themes/tide.css`) and activate with `theme="tide"`. Dark product/SaaS identity with teal/lagoon tokens, accordion and tabs chrome, and named `tide-card` / `tide-panel` surfaces. Blush remains a draft under `src/themes/_draft/`.
+- **Surface language A–C plus remaining depth.** Themeable `surfaceTone="soft|strong|muted"`, composable `borderStrength="soft|bold"`, standalone `blur="sm|md"` (`6px` / `16px`), themeable `shadowTone="cool|warm"`, themeable `overlay="frost|tint"`, and composable `variant="monochromatic|glass|tinted"` recipes. Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes bind the `--juice-*` roles from existing tokens. Finer overlay / blur / borderStrength / shadowTone attrs win their property when combined with a tone or variant.
+- **Modal theme chrome and dialog runtime.** Shared `--juice-modal-*` roles paint `[modal-overlay]` / `[modal]` / `[modal-close]`. The DOM-first runtime auto-enhances valid overlay markup (`createModal` / `initModal` / `startModalRuntime` / `stopModalRuntime`): opener pairing via `aria-controls`, native `hidden` for open vs closed, focus trap, Escape and backdrop click (`modal-overlay="static"` opts out), and exclusive open. Distinct from surface `overlay="frost|tint"`. No Sig Modal factory.
+
+### Patch Changes
+
+- Lock the Theme Contract required `--juice-*` binds with automated tests. `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, modal, surface-tone, border-strength, shadow-tone, or overlay bind.
+- Honor the icon authoring contract: default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, and `width` / `height` remain the custom-size escape hatch. Mobile `[icon]` size remaps no longer clobber author sizing.
+- Author `font=`, `fontColor=`, `fontWeight=`, and `lineHeight=` beat theme semantic defaults on headings and paragraphs via `[theme] [attr]` companions.
+- Document the modal dialog runtime as an Emerging auto-enhance (`docs/juice/juice-modal-runtime.md`).
+
 ## 0.4.0
 
 ### Breaking Changes
