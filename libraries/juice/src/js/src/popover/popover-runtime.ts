@@ -22,13 +22,18 @@
  * Placement (honest v1, no Floating UI): read `popover-root` (`top` /
  * `bottom` / `left` / `right`, default `bottom`), position `fixed` near the
  * opener from getBoundingClientRect (viewport coords; `fixed` needs no
- * scroll offset), with a small gap. If the preferred side overflows the
- * viewport, flip once to the opposite side. No shift / size middleware.
- * Repositions on open, window resize, and capture scroll (rAF-throttled).
+ * scroll offset), with a small gap. If a transformed / filtered ancestor
+ * is the fixed containing block, subtract that origin so Juice cards
+ * (`[card="interactive"]:focus-within`) do not offset the panel. If the
+ * preferred side overflows the viewport, flip once to the opposite side.
+ * No shift / size middleware. Repositions on open, window resize, and
+ * capture scroll (rAF-throttled).
  *
- * Escape closes the open popover, but yields when an open [modal-overlay]
- * or [drawer-overlay] exists (same courtesy as toast). Opening one managed
- * popover closes the others. Modal / drawer are not auto-closed.
+ * Escape closes the open popover on bubble (after modal/drawer capture),
+ * and also yields when an open [modal-overlay] or [drawer-overlay] exists
+ * or the event is already defaultPrevented (same courtesy as toast).
+ * Opening one managed popover closes the others. Modal / drawer are not
+ * auto-closed.
  */
 
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
@@ -204,6 +209,59 @@ const overflowsPreferredAxis = (
   }
 };
 
+const tokenList = (value: string | null | undefined) =>
+  (value ?? '')
+    .split(/[,\s]+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+const createsFixedContainingBlock = (element: Element) => {
+  if (!(element instanceof HTMLElement)) return false;
+  if (element === document.documentElement || element === document.body) {
+    return false;
+  }
+
+  const style = window.getComputedStyle(element);
+  if (style.transform !== 'none') return true;
+  if (style.perspective !== 'none') return true;
+  if (style.filter !== 'none') return true;
+
+  const backdrop = style.getPropertyValue('backdrop-filter');
+  if (backdrop && backdrop !== 'none') return true;
+
+  if (
+    tokenList(style.willChange).some((token) =>
+      ['transform', 'perspective', 'filter', 'backdrop-filter'].includes(token)
+    )
+  ) {
+    return true;
+  }
+
+  return tokenList(style.contain).some((token) =>
+    ['paint', 'layout', 'strict', 'content'].includes(token)
+  );
+};
+
+const getFixedContainingBlock = (element: HTMLElement) => {
+  let current = element.parentElement;
+  while (current && current !== document.documentElement) {
+    if (createsFixedContainingBlock(current)) return current;
+    current = current.parentElement;
+  }
+  return null;
+};
+
+const toContainingBlockCoords = (
+  popover: HTMLElement,
+  top: number,
+  left: number
+) => {
+  const containing = getFixedContainingBlock(popover);
+  if (!containing) return { top, left };
+  const origin = containing.getBoundingClientRect();
+  return { top: top - origin.top, left: left - origin.left };
+};
+
 export const createPopover = (options: PopoverOptions = {}): PopoverController => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return {
@@ -232,7 +290,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
   const getPopovers = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.rootSelector));
 
-  const resolveContainingPopover = (element: HTMLElement | null | undefined) => {
+  const resolveContainingPopover = (element: Element | null | undefined) => {
     if (!element) return null;
     const popover = element.closest(settings.rootSelector);
     return popover instanceof HTMLElement ? popover : null;
@@ -498,6 +556,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       ({ top, left } = coordsFor(placement, anchor, width, height, gap));
     }
 
+    ({ top, left } = toContainingBlockCoords(popover, top, left));
     popover.style.top = `${top}px`;
     popover.style.left = `${left}px`;
   };
@@ -563,10 +622,10 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     showPopover(popover, opener);
   };
 
-  const close = (target?: HTMLElement | null) => {
+  const close = (target?: HTMLElement | null, restore = true) => {
     const popover = resolvePopover(target);
     if (!popover || !isPopoverOpen(popover)) return;
-    hidePopover(popover, true);
+    hidePopover(popover, restore);
   };
 
   const toggle = (target?: HTMLElement | null) => {
@@ -597,12 +656,14 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
   };
 
   const resolveOpenerFromEvent = (target: Element) => {
-    if (!(target instanceof HTMLElement)) return null;
-    if (resolveContainingPopover(target)) return null;
+    const candidate =
+      target instanceof HTMLElement ? target : target.closest('[aria-controls]');
+    if (!(candidate instanceof HTMLElement)) return null;
+    if (resolveContainingPopover(candidate)) return null;
 
-    if (resolvePopoverFromControls(target)) return target;
+    if (resolvePopoverFromControls(candidate)) return candidate;
 
-    const closest = target.closest('[aria-controls]');
+    const closest = candidate.closest('[aria-controls]');
     if (closest instanceof HTMLElement && resolvePopoverFromControls(closest)) {
       return closest;
     }
@@ -616,9 +677,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     const target = event.target;
     if (!(target instanceof Element)) return;
 
-    const popover = resolveContainingPopover(
-      target instanceof HTMLElement ? target : target.parentElement
-    );
+    const popover = resolveContainingPopover(target);
 
     if (popover && isManagedPopover(popover)) {
       const closeControl =
@@ -642,7 +701,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     const openPopover = getOpenPopover();
     if (!openPopover) return;
     if (!claimEvent(event)) return;
-    close(openPopover);
+    close(openPopover, false);
   };
 
   const trapFocus = (event: KeyboardEvent, popover: HTMLElement) => {
@@ -692,15 +751,6 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
 
     const openPopover = getOpenPopover();
 
-    if (openPopover && event.key === 'Escape') {
-      if (hasOpenDialogOverlay()) return;
-      if (!claimEvent(event)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      close(openPopover);
-      return;
-    }
-
     if (openPopover && event.key === 'Tab') {
       if (!claimEvent(event)) return;
       trapFocus(event, openPopover);
@@ -726,6 +776,18 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     if (!claimEvent(event)) return;
     event.preventDefault();
     toggle(opener);
+  };
+
+  const handleEscapeKeydown = (event: Event) => {
+    if (!(event instanceof KeyboardEvent) || event.key !== 'Escape') return;
+    if (hasOpenDialogOverlay() || event.defaultPrevented) return;
+
+    const openPopover = getOpenPopover();
+    if (!openPopover) return;
+    if (!claimEvent(event)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    close(openPopover);
   };
 
   let syncScheduled = false;
@@ -757,6 +819,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
 
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('keydown', handleDocumentKeydown, true);
+  document.addEventListener('keydown', handleEscapeKeydown);
   window.addEventListener('resize', schedulePlace);
   window.addEventListener('scroll', schedulePlace, true);
 
@@ -783,6 +846,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     destroy: () => {
       document.removeEventListener('click', handleDocumentClick);
       document.removeEventListener('keydown', handleDocumentKeydown, true);
+      document.removeEventListener('keydown', handleEscapeKeydown);
       window.removeEventListener('resize', schedulePlace);
       window.removeEventListener('scroll', schedulePlace, true);
       observer?.disconnect();
