@@ -53,7 +53,7 @@ describe("KiwiPress CMS modes", () => {
 
     it("hydrates persisted native records on ready()", async () => {
         const store = new NectarineStore();
-        let snapshot = store.snapshot();
+        let snapshot: ReturnType<NectarineStore["document"]> | ReturnType<NectarineStore["snapshot"]> = store.snapshot();
         store.usePersistence({
             kind: "custom",
             async load() {
@@ -91,5 +91,26 @@ describe("KiwiPress CMS modes", () => {
 
         await kiwi.ready();
         expect(await kiwi.native.posts.getBySlug("kept")).toMatchObject({ title: "Kept" });
+    });
+
+    it("creates native records on a registered custom type", async () => {
+        const kiwi = KiwiPress.connect({
+            mode: "nectarine",
+            store: new NectarineStore()
+        });
+
+        kiwi.store.registerType({ slug: "recipe", label: "Recipes" });
+        const created = await kiwi.native.collection("recipe").create({
+            title: "Soup",
+            status: "draft"
+        });
+
+        expect(created.collection).toBe("recipe");
+        expect(await kiwi.native.collection("recipe").getBySlug(created.slug)).toMatchObject({
+            title: "Soup"
+        });
+        await expect(kiwi.native.collection("unknown").create({ title: "Nope" })).rejects.toThrow(
+            /Unknown KiwiPress collection/
+        );
     });
 });

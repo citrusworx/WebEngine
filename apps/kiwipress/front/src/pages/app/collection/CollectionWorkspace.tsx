@@ -1,7 +1,6 @@
 import { Signal, effect } from "@citrusworx/sigjs";
 import type { Child } from "@citrusworx/sigjs";
 import { DashboardLayout } from "../layout/DashboardLayout";
-import type { NavId } from "../layout/Sidebar";
 import {
     createCollectionItem,
     deleteCollectionItem,
@@ -18,7 +17,7 @@ import {
 import type { CollectionWorkspaceCopy, ContentItem } from "./types";
 
 type WorkspaceProps = CollectionWorkspaceCopy & {
-    page: NavId;
+    page: string;
 };
 
 type EditorMode = "idle" | "create" | "edit";
@@ -30,8 +29,11 @@ export function CollectionWorkspace({
     singular,
     lede,
     emptyTitle,
-    emptyBody
+    emptyBody,
+    statuses
 }: WorkspaceProps) {
+    const statusOptions = statuses && statuses.length > 0 ? [...statuses] : [...EDITOR_STATUSES];
+    const defaultStatus = statusOptions.includes("draft") ? "draft" : statusOptions[0] ?? "draft";
     const items = Signal<ContentItem[]>([]);
     const selectedId = Signal<string | null>(null);
     const mode = Signal<EditorMode>("idle");
@@ -75,10 +77,8 @@ export function CollectionWorkspace({
         }
 
         if (statusSelect) {
-            const nextStatus = item?.status ?? "draft";
-            statusSelect.value = EDITOR_STATUSES.includes(nextStatus as typeof EDITOR_STATUSES[number])
-                ? nextStatus
-                : "draft";
+            const nextStatus = item?.status ?? defaultStatus;
+            statusSelect.value = statusOptions.includes(nextStatus) ? nextStatus : defaultStatus;
         }
 
         if (contentArea) {
@@ -104,7 +104,7 @@ export function CollectionWorkspace({
             kind,
             title: "",
             slug: "",
-            status: "draft",
+            status: defaultStatus,
             date: "",
             content: ""
         });
@@ -332,7 +332,7 @@ export function CollectionWorkspace({
                                 statusSelect = node;
                             }}
                         >
-                            {EDITOR_STATUSES.map((value) => (
+                            {statusOptions.map((value) => (
                                 <option value={value}>{value}</option>
                             ))}
                         </select>
@@ -382,7 +382,7 @@ export function CollectionWorkspace({
                 kind,
                 title: "",
                 slug: "",
-                status: "draft",
+                status: defaultStatus,
                 date: "",
                 content: ""
             });

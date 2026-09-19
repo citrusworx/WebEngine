@@ -99,7 +99,8 @@ export function normalizeWordPressCollection(collection, value, sourceUrl) {
     return asCollection(value).map((item) => normalizeWordPressItem(collection, item, sourceUrl));
 }
 export function toNectarinePost(record) {
-    const status = record.status === "published" || record.status === "archived" ? record.status : "draft";
+    const rawStatus = String(record.status);
+    const status = rawStatus === "published" || rawStatus === "archived" ? rawStatus : "draft";
     return {
         id: record.id,
         title: record.title,

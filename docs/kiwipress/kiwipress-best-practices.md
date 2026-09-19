@@ -42,7 +42,7 @@ Basic + app password is the tested self-hosted path. Bearer is a fallback. `X-AP
 
 ## Be honest about the gateway
 
-If you need inbound HTTP on Seltzer **0.8.1**, write `ResponseData` handlers. Use `registerKiwiPressGateway` only when you are hosting the current helper (dashboard) and understand [the mismatch](./kiwipress-gateway.md).
+`registerKiwiPressGateway` returns Seltzer `ResponseData` and hosts posts/pages plus native custom types. Transfer stays WordPress-only. Do not treat a CPT slug as a WordPress collection.
 
 ## Label dashboard-only UI
 

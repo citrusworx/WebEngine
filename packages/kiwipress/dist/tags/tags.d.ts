@@ -1,6 +1,6 @@
 import { WPRead } from "../core/WPRead.js";
 export declare class Tags extends WPRead {
-    getAll(): any;
-    getById(id: string | number): any;
-    getBySlug(slug: string): any;
+    getAll(): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getById(id: string | number): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getBySlug(slug: string): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
 }

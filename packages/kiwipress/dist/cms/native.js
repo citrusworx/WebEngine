@@ -6,18 +6,19 @@ function slugFromTitle(title) {
         .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
 }
 function asStatus(value, fallback = "draft") {
-    if (value === "draft" ||
-        value === "published" ||
-        value === "archived" ||
-        value === "pending" ||
-        value === "approved" ||
-        value === "spam") {
-        return value;
-    }
     if (value === "publish") {
         return "published";
     }
+    if (typeof value === "string" && value.trim()) {
+        return value.trim();
+    }
     return fallback;
+}
+function asMeta(value) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+        return { ...value };
+    }
+    return {};
 }
 export class NativeCollection {
     store;
@@ -40,6 +41,9 @@ export class NativeCollection {
     }
     async create(data) {
         await this.store.hydrate();
+        if (!this.store.isRegisteredCollection(this.collection)) {
+            throw new Error(`Unknown KiwiPress collection "${this.collection}".`);
+        }
         const title = typeof data.title === "string" ? data.title : "Untitled";
         const id = typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : crypto.randomUUID();
         const record = {
@@ -57,7 +61,7 @@ export class NativeCollection {
                 cms: "nectarine",
                 id
             },
-            meta: {}
+            meta: asMeta("meta" in data ? data.meta : undefined)
         };
         const created = this.store.upsert(record);
         await this.store.flush();
@@ -75,7 +79,8 @@ export class NativeCollection {
             content: typeof data.content === "string" ? data.content : existing.content,
             slug: typeof data.slug === "string" ? data.slug : existing.slug,
             status: asStatus(data.status, existing.status),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
+            meta: "meta" in data ? { ...existing.meta, ...asMeta(data.meta) } : existing.meta
         };
         const updated = this.store.upsert(next);
         await this.store.flush();
@@ -95,7 +100,10 @@ export function createNativeCms(store) {
         users: new NativeCollection(store, "users"),
         categories: new NativeCollection(store, "categories"),
         tags: new NativeCollection(store, "tags"),
-        comments: new NativeCollection(store, "comments")
+        comments: new NativeCollection(store, "comments"),
+        collection(slug) {
+            return new NativeCollection(store, slug);
+        }
     };
 }
 //# sourceMappingURL=native.js.map

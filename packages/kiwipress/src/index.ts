@@ -8,6 +8,7 @@ export * from "./core/WPRead.js";
 export * from "./core/WPSync.js";
 export * from "./core/normalize.js";
 export * from "./cms/types.js";
+export * from "./cms/type-registry.js";
 export * from "./cms/store.js";
 export * from "./cms/native.js";
 export * from "./cms/persistence.js";

@@ -31,21 +31,24 @@ Default `mode` is `"wordpress"`, which requires `url` or `WP_URL`. `mode: "necta
 
 ## `NectarineStore`
 
-In-memory buckets for the six `CmsCollection`s.
+In-memory buckets for the six `CmsCollection`s plus any registered custom type slugs.
 
 | Method | Behavior |
 |---|---|
 | `list(collection)` | shallow copy of the bucket |
 | `get(collection, id)` | id compared as string |
 | `findBySlug(collection, slug)` | first matching slug |
-| `upsert(record)` | replace or push; forces `source.cms = "nectarine"` |
+| `upsert(record)` | replace or push; forces `source.cms = "nectarine"`; collection must be registered |
 | `remove(collection, id)` | returns whether anything was removed |
-| `snapshot()` | `{ posts, pages, users, categories, tags, comments }` |
-| `replace(partial)` | missing collections become `[]` |
-| `clear()` | empty buckets |
+| `listTypes` / `getType` / `registerType` / `updateType` / `removeType` | native CPT definitions |
+| `document()` | `{ collections, types }` |
+| `snapshot()` | built-in buckets plus custom type buckets |
+| `replace(partial)` | missing built-ins become `[]`; extra CPT keys are kept when valid |
+| `replaceDocument` | types + collections |
+| `clear()` | empty buckets and type definitions |
 | `usePersistence(adapter)` | attach `CmsPersistence` |
 | `hydrate()` | `load()` once; ignore `null` |
-| `flush()` | queued `save(snapshot())`; no-op without adapter |
+| `flush()` | queued `save(document())`; no-op without adapter |
 
 `flush` serializes saves on a promise chain so overlapping native writes do not interleave two snapshots. A failed save still advances the queue (the rejection is not swallowed for the caller — `await flush()` throws — but the next flush is not stuck).
 
@@ -60,6 +63,7 @@ kiwi.native.users;
 kiwi.native.categories;
 kiwi.native.tags;
 kiwi.native.comments;
+kiwi.native.collection("recipe"); // registered CPT slug
 ```
 
 Each method hydrates first.
@@ -84,30 +88,31 @@ Each method hydrates first.
 - `status` — see below
 - `authorId` — **only if already a string** (a numeric WordPress `author` is ignored)
 - `featuredImage` — **only if already a string**
+- `meta` — object when provided, else `{}`
 
-`meta` is always `{}`. Extra keys are dropped. `createdAt` / `updatedAt` are set to `new Date().toISOString()`.
+Extra keys are dropped. `createdAt` / `updatedAt` are set to `new Date().toISOString()`.
 
 ### Update fields actually copied
 
-`title`, `content`, `slug`, `status` when they are strings / valid statuses. `authorId` and `featuredImage` are **not** patched. `updatedAt` is refreshed.
+`title`, `content`, `slug`, `status` when they are strings. `meta` is merged when provided. `authorId` and `featuredImage` are **not** patched. `updatedAt` is refreshed.
 
 ### Native status
 
-`publish` → `published`. Allowed: `draft`, `published`, `archived`, `pending`, `approved`, `spam`. Anything else uses the fallback (`draft` on create, existing status on update).
+`publish` → `published`. Other non-empty strings are stored as-is (custom type statuses). Empty / missing uses the fallback (`draft` on create, existing status on update).
 
 ## Persistence interface
 
 ```ts
 interface CmsPersistence {
   readonly kind?: "file" | "postgres" | "memory" | "custom";
-  load(): Promise<CmsSnapshot | null>;
-  save(snapshot: CmsSnapshot): Promise<void>;
+  load(): Promise<CmsDocument | CmsSnapshot | null>;
+  save(document: CmsDocument): Promise<void>;
 }
 ```
 
 `kind` is optional; missing → reported as `custom` when attached, `memory` when none.
 
-`normalizeSnapshot` accepts either `{ collections: { posts: [...] } }` or a flat `{ posts: [...] }`. Invalid items are dropped. Load of a missing file returns `null` (empty store). Corrupt JSON throws.
+`normalizeDocument` reads `{ types, collections }` and still accepts a flat / collections-only snapshot (types become `[]`). Invalid items are dropped. Load of a missing file returns `null` (empty store). Corrupt JSON throws.
 
 ### File
 
@@ -115,7 +120,7 @@ interface CmsPersistence {
 createFilePersistence("./data/kiwipress-cms.json");
 ```
 
-`path.resolve`s the path. `load` reads UTF-8 JSON. `ENOENT` → `null`. `save` `mkdir`s the directory, writes `*.pid.timestamp.tmp`, then `rename`s. On-disk shape: `{ version: 1, collections }`.
+`path.resolve`s the path. `load` reads UTF-8 JSON. `ENOENT` → `null`. `save` `mkdir`s the directory, writes `*.pid.timestamp.tmp`, then `rename`s. On-disk shape: `{ version: 1, types, collections }`. Older `{ version: 1, collections }` files still load.
 
 Node `fs` only. No WebEngine.
 

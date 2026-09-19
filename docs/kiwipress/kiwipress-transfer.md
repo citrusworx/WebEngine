@@ -76,7 +76,7 @@ await native.native.posts.getBySlug("hello-world");
 
 `preview()` runs the same reads and returns `{ collections, counts }` without upsert or flush.
 
-Default collections if you omit the argument: all six.
+Default collections if you omit the argument: all six. Custom type slugs are not WordPress collections; the gateway rejects them on `POST /__kiwipress/transfer`.
 
 ### Paging and query flags
 

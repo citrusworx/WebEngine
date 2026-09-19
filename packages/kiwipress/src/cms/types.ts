@@ -11,6 +11,25 @@ export const CMS_COLLECTIONS = [
 
 export type CmsCollection = (typeof CMS_COLLECTIONS)[number];
 
+/** Built-in WordPress-oriented collection, or a registered custom type slug. */
+export type CollectionSlug = CmsCollection | (string & {});
+
+export const DEFAULT_TYPE_STATUSES = ["draft", "published", "archived"] as const;
+
+export const DEFAULT_TYPE_FIELDS = ["title", "slug", "status", "content", "meta"] as const;
+
+export type CollectionFieldId = (typeof DEFAULT_TYPE_FIELDS)[number];
+
+export type CollectionTypeDefinition = {
+    slug: string;
+    label: string;
+    singular: string;
+    statuses: string[];
+    fields: CollectionFieldId[];
+    createdAt: string;
+    updatedAt: string;
+};
+
 export type ContentStatus =
     | "draft"
     | "published"
@@ -27,11 +46,11 @@ export type ContentSource = {
 
 export type ContentRecord = {
     id: string;
-    collection: CmsCollection;
+    collection: CollectionSlug;
     title: string;
     content: string;
     slug: string;
-    status: ContentStatus;
+    status: ContentStatus | (string & {});
     authorId?: string;
     featuredImage?: string;
     createdAt?: string;
@@ -52,7 +71,14 @@ export type NectarinePost = {
     updated_at?: string;
 };
 
-export type CmsSnapshot = Record<CmsCollection, ContentRecord[]>;
+export type CmsSnapshot = Record<CmsCollection, ContentRecord[]> & {
+    [collection: string]: ContentRecord[];
+};
+
+export type CmsDocument = {
+    collections: CmsSnapshot;
+    types: CollectionTypeDefinition[];
+};
 
 export type TransferCounts = Record<CmsCollection, number>;
 

@@ -22,6 +22,8 @@ import { Scale } from "./pages/wizard/steps/Scale";
 import { Content } from "./pages/app/pages/Content";
 import { Posts } from "./pages/app/pages/Posts";
 import { Pages } from "./pages/app/pages/Pages";
+import { Types } from "./pages/app/pages/Types";
+import { TypeCollection } from "./pages/app/pages/TypeCollection";
 import { Projects } from "./pages/app/pages/Projects";
 import { Blueprints as AppBlueprints } from "./pages/app/pages/Blueprints";
 import { Billing } from "./pages/app/pages/Billing";
@@ -53,6 +55,8 @@ router
     .set("/app/posts", () => <Posts />)
     .set("/app/pages", () => <Pages />)
     .set("/app/content", () => <Content />)
+    .set("/app/types", () => <Types />)
+    .set("/app/c/:slug", TypeCollection)
     .set("/app/blueprints", () => <AppBlueprints />)
     .set("/app/billing", () => <Billing />)
     .set("/app/activity", () => <Activity />)

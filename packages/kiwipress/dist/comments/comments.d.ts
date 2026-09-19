@@ -1,6 +1,6 @@
 import { WPRead } from "../core/WPRead.js";
 export declare class Comments extends WPRead {
-    getAll(): any;
-    getById(id: string | number): any;
-    getByPost(post: string | number): any;
+    getAll(): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getById(id: string | number): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
+    getByPost(post: string | number): import("@citrusworx/seltzer").ResponseData | Promise<import("@citrusworx/seltzer").ResponseData>;
 }

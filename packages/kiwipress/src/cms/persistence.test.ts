@@ -100,6 +100,49 @@ describe("KiwiPress persistence", () => {
         });
     });
 
+    it("persists custom type definitions and their items across file reloads", async () => {
+        const dir = await mkdtemp(path.join(os.tmpdir(), "kiwipress-cms-"));
+        tempDirs.push(dir);
+        const file = path.join(dir, "cms.json");
+
+        const writer = KiwiPress.connect({
+            mode: "nectarine",
+            persistence: createFilePersistence(file)
+        });
+        const recipe = writer.store.registerType({
+            slug: "recipe",
+            label: "Recipes",
+            singular: "Recipe"
+        });
+        expect(recipe.statuses).toEqual(["draft", "published", "archived"]);
+        await writer.native.collection("recipe").create({
+            title: "Pie",
+            slug: "pie",
+            status: "published",
+            content: "<p>Bake it.</p>",
+            meta: { servings: 8 }
+        });
+
+        const saved = JSON.parse(await readFile(file, "utf8")) as {
+            types?: Array<{ slug?: string }>;
+            collections?: { recipe?: unknown[] };
+        };
+        expect(saved.types).toEqual([expect.objectContaining({ slug: "recipe", label: "Recipes" })]);
+        expect(saved.collections?.recipe).toHaveLength(1);
+
+        const reader = KiwiPress.connect({
+            mode: "nectarine",
+            persistence: createFilePersistence(file)
+        });
+        await reader.ready();
+        expect(reader.store.getType("recipe")).toMatchObject({ singular: "Recipe" });
+        expect(await reader.native.collection("recipe").getBySlug("pie")).toMatchObject({
+            title: "Pie",
+            collection: "recipe",
+            meta: { servings: 8 }
+        });
+    });
+
     it("uses a Nectarine Postgres executor when one is injected", async () => {
         const { executor, rows } = memoryExecutor();
         const persistence = createPostgresPersistence({ executor });
@@ -117,6 +160,34 @@ describe("KiwiPress persistence", () => {
         expect(hydrated.list("posts")).toMatchObject([{ id: "42", title: "Hello" }]);
     });
 
+    it("round-trips custom types through the Postgres adapter", async () => {
+        const { executor, rows } = memoryExecutor();
+        const persistence = createPostgresPersistence({ executor });
+        const store = new NectarineStore();
+        store.usePersistence(persistence);
+        store.registerType({ slug: "recipe", label: "Recipes", singular: "Recipe" });
+        store.upsert({
+            id: "pie",
+            collection: "recipe",
+            title: "Pie",
+            content: "",
+            slug: "pie",
+            status: "published",
+            source: { cms: "nectarine", id: "pie" },
+            meta: {}
+        });
+        await store.flush();
+
+        expect(rows.some((row) => row.collection === "recipe")).toBe(true);
+        expect(rows.some((row) => row.collection === "__types" && row.id === "recipe")).toBe(true);
+
+        const hydrated = new NectarineStore();
+        hydrated.usePersistence(persistence);
+        await hydrated.hydrate();
+        expect(hydrated.getType("recipe")).toMatchObject({ label: "Recipes" });
+        expect(hydrated.list("recipe")).toMatchObject([{ id: "pie", title: "Pie" }]);
+    });
+
     it("throws when the Postgres adapter swallows a query error", async () => {
         const persistence = createPostgresPersistence({
             executor: {
@@ -127,7 +198,7 @@ describe("KiwiPress persistence", () => {
         });
 
         await expect(persistence.load()).rejects.toThrow(/Postgres query failed/);
-        await expect(persistence.save(emptySnapshot())).rejects.toThrow(/Postgres query failed/);
+        await expect(persistence.save({ collections: emptySnapshot(), types: [] })).rejects.toThrow(/Postgres query failed/);
     });
 
     it("picks file persistence before Postgres from env", () => {

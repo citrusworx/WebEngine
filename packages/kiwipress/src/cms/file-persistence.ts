@@ -1,7 +1,7 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { normalizeSnapshot, type CmsPersistence } from "./persistence.js";
-import type { CmsSnapshot } from "./types.js";
+import { normalizeDocument, type CmsPersistence } from "./persistence.js";
+import type { CmsDocument } from "./types.js";
 
 export function createFilePersistence(filePath: string): CmsPersistence {
     const resolved = path.resolve(filePath);
@@ -11,7 +11,7 @@ export function createFilePersistence(filePath: string): CmsPersistence {
         async load() {
             try {
                 const raw = await readFile(resolved, "utf8");
-                return normalizeSnapshot(JSON.parse(raw));
+                return normalizeDocument(JSON.parse(raw));
             } catch (error) {
                 if ((error as NodeJS.ErrnoException).code === "ENOENT") {
                     return null;
@@ -20,10 +20,14 @@ export function createFilePersistence(filePath: string): CmsPersistence {
                 throw error;
             }
         },
-        async save(snapshot: CmsSnapshot) {
+        async save(document: CmsDocument) {
             await mkdir(path.dirname(resolved), { recursive: true });
             const tmp = `${resolved}.${process.pid}.${Date.now()}.tmp`;
-            await writeFile(tmp, `${JSON.stringify({ version: 1, collections: snapshot }, null, 2)}\n`, "utf8");
+            await writeFile(
+                tmp,
+                `${JSON.stringify({ version: 1, types: document.types, collections: document.collections }, null, 2)}\n`,
+                "utf8"
+            );
             await rename(tmp, resolved);
         }
     };

@@ -1,5 +1,5 @@
 import type { WordPressPayload } from "../types/api.js";
-import type { CmsCollection, ContentRecord, ContentStatus } from "./types.js";
+import type { CollectionSlug, ContentRecord, ContentStatus } from "./types.js";
 import { NectarineStore } from "./store.js";
 
 function slugFromTitle(title: string): string {
@@ -10,29 +10,30 @@ function slugFromTitle(title: string): string {
         .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
 }
 
-function asStatus(value: unknown, fallback: ContentStatus = "draft"): ContentStatus {
-    if (
-        value === "draft" ||
-        value === "published" ||
-        value === "archived" ||
-        value === "pending" ||
-        value === "approved" ||
-        value === "spam"
-    ) {
-        return value;
-    }
-
+function asStatus(value: unknown, fallback: ContentStatus | (string & {}) = "draft"): ContentStatus | (string & {}) {
     if (value === "publish") {
         return "published";
+    }
+
+    if (typeof value === "string" && value.trim()) {
+        return value.trim();
     }
 
     return fallback;
 }
 
+function asMeta(value: unknown): Record<string, unknown> {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+        return { ...(value as Record<string, unknown>) };
+    }
+
+    return {};
+}
+
 export class NativeCollection {
     constructor(
         private readonly store: NectarineStore,
-        private readonly collection: CmsCollection
+        private readonly collection: CollectionSlug
     ) {}
 
     async getAll(): Promise<ContentRecord[]> {
@@ -52,6 +53,10 @@ export class NativeCollection {
 
     async create(data: WordPressPayload | Partial<ContentRecord>): Promise<ContentRecord> {
         await this.store.hydrate();
+        if (!this.store.isRegisteredCollection(this.collection)) {
+            throw new Error(`Unknown KiwiPress collection "${this.collection}".`);
+        }
+
         const title = typeof data.title === "string" ? data.title : "Untitled";
         const id = typeof data.id === "string" || typeof data.id === "number" ? String(data.id) : crypto.randomUUID();
         const record: ContentRecord = {
@@ -69,7 +74,7 @@ export class NativeCollection {
                 cms: "nectarine",
                 id
             },
-            meta: {}
+            meta: asMeta("meta" in data ? data.meta : undefined)
         };
 
         const created = this.store.upsert(record);
@@ -91,7 +96,8 @@ export class NativeCollection {
             content: typeof data.content === "string" ? data.content : existing.content,
             slug: typeof data.slug === "string" ? data.slug : existing.slug,
             status: asStatus(data.status, existing.status),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
+            meta: "meta" in data ? { ...existing.meta, ...asMeta(data.meta) } : existing.meta
         };
 
         const updated = this.store.upsert(next);
@@ -114,6 +120,7 @@ export type NativeCms = {
     categories: NativeCollection;
     tags: NativeCollection;
     comments: NativeCollection;
+    collection(slug: string): NativeCollection;
 };
 
 export function createNativeCms(store: NectarineStore): NativeCms {
@@ -123,6 +130,9 @@ export function createNativeCms(store: NectarineStore): NativeCms {
         users: new NativeCollection(store, "users"),
         categories: new NativeCollection(store, "categories"),
         tags: new NativeCollection(store, "tags"),
-        comments: new NativeCollection(store, "comments")
+        comments: new NativeCollection(store, "comments"),
+        collection(slug: string) {
+            return new NativeCollection(store, slug);
+        }
     };
 }

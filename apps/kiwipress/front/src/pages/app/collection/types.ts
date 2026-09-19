@@ -24,4 +24,5 @@ export type CollectionWorkspaceCopy = {
     lede: string;
     emptyTitle: string;
     emptyBody: string;
+    statuses?: readonly string[];
 };

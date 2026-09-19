@@ -1,5 +1,5 @@
-import { CMS_COLLECTIONS } from "./types.js";
-import { emptySnapshot, isCmsCollection } from "./persistence.js";
+import { emptySnapshot } from "./persistence.js";
+import { asTypeDefinition, isCollectionSlug, PERSISTED_TYPES_COLLECTION } from "./type-registry.js";
 const DEFAULT_TABLE = "kiwipress_content";
 function tableName(value = DEFAULT_TABLE) {
     if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) {
@@ -12,7 +12,7 @@ function asRecord(value) {
         return null;
     }
     const record = value;
-    if (typeof record.id !== "string" || !isCmsCollection(record.collection)) {
+    if (typeof record.id !== "string" || !isCollectionSlug(record.collection)) {
         return null;
     }
     return record;
@@ -33,6 +33,22 @@ function rowRecord(row) {
     }
     return asRecord(raw);
 }
+function rowType(row) {
+    const object = row && typeof row === "object" ? row : null;
+    if (!object) {
+        return null;
+    }
+    const raw = object.record;
+    if (typeof raw === "string") {
+        try {
+            return asTypeDefinition(JSON.parse(raw));
+        }
+        catch {
+            return null;
+        }
+    }
+    return asTypeDefinition(raw);
+}
 async function runQuery(executor, sql, params) {
     const result = await executor.query(sql, params);
     if (result === undefined) {
@@ -42,17 +58,29 @@ async function runQuery(executor, sql, params) {
 }
 async function createNectarinePgExecutor(database) {
     const { PgSql } = await import("@citrusworx/nectarine/adapters/pg");
-    const pg = new PgSql();
-    pg.addDb(database);
-    const client = await pg.connect(database);
-    if (!client) {
+    const user = process.env.PG_USER?.trim();
+    const password = process.env.PG_PASS?.trim() || process.env.PG_PASSWORD?.trim();
+    const host = process.env.PG_HOST?.trim();
+    const port = Number(process.env.PG_PORT ?? 5432);
+    if (!user || !password || !host || !Number.isFinite(port)) {
         throw new Error("KiwiPress Postgres persistence could not connect. Set PG_USER, PG_PASS, PG_HOST, PG_PORT, and pass a database name.");
     }
+    const pg = new PgSql({
+        user,
+        password,
+        host,
+        port,
+        database
+    });
+    await pg.connect();
     return {
         query(sql, params) {
-            return pg.query(client, { sql, params });
+            return pg.query(sql, params);
         }
     };
+}
+function collectionEntries(snapshot) {
+    return Object.entries(snapshot).filter((entry) => Array.isArray(entry[1]));
 }
 export function createPostgresPersistence(options = {}) {
     const table = tableName(options.table);
@@ -90,22 +118,40 @@ export function createPostgresPersistence(options = {}) {
                 return null;
             }
             const snapshot = emptySnapshot();
+            const types = [];
             for (const row of rows) {
+                const object = row && typeof row === "object" ? row : null;
+                if (object?.collection === PERSISTED_TYPES_COLLECTION) {
+                    const definition = rowType(row);
+                    if (definition) {
+                        types.push(definition);
+                    }
+                    continue;
+                }
                 const record = rowRecord(row);
                 if (record) {
+                    if (!snapshot[record.collection]) {
+                        snapshot[record.collection] = [];
+                    }
                     snapshot[record.collection].push(record);
                 }
             }
-            return snapshot;
+            return { collections: snapshot, types };
         },
-        async save(snapshot) {
+        async save(document) {
             const sql = await executor();
             await ensureSchema(sql);
             await runQuery(sql, `DELETE FROM ${table}`);
-            for (const collection of CMS_COLLECTIONS) {
-                for (const record of snapshot[collection]) {
+            for (const [collection, records] of collectionEntries(document.collections)) {
+                if (collection === PERSISTED_TYPES_COLLECTION) {
+                    continue;
+                }
+                for (const record of records) {
                     await runQuery(sql, `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`, [collection, record.id, JSON.stringify(record)]);
                 }
+            }
+            for (const definition of document.types) {
+                await runQuery(sql, `INSERT INTO ${table} (collection, id, record, updated_at) VALUES ($1, $2, $3::jsonb, NOW())`, [PERSISTED_TYPES_COLLECTION, definition.slug, JSON.stringify(definition)]);
             }
         }
     };

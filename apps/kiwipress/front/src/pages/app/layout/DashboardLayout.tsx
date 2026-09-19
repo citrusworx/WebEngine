@@ -1,9 +1,9 @@
-import { Sidebar, type NavId } from "./Sidebar";
+import { Sidebar } from "./Sidebar";
 import { ActionNotice } from "../components/ActionNotice";
 import "../dashboard.css";
 
 type LayoutOpts = {
-    page: NavId;
+    page: string;
     children?: unknown;
 };
 

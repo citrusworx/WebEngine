@@ -9,7 +9,7 @@ export function Content() {
                 <header page-header>
                     <h1>Content</h1>
                     <p lede>
-                        Transfer WordPress collections into the native Nectarine CMS. Edit day-to-day writing from Posts and Pages.
+                        Transfer WordPress collections into the native Nectarine CMS. Edit writing from Posts, Pages, and any custom type you register.
                     </p>
                 </header>
 
@@ -49,6 +49,24 @@ export function Content() {
                                 onclick={() => router.navigate("/app/pages")}
                             >
                                 Open Pages
+                                <i icon="arrow-right" lib="solid" iconSize="sm"></i>
+                            </button>
+                        </div>
+                        <div panel-card>
+                            <div tile-head>
+                                <div choice-icon>
+                                    <i icon="cubes" lib="solid" iconSize="sm"></i>
+                                </div>
+                            </div>
+                            <strong>Types</strong>
+                            <p subtle>Register custom collections, then edit their items with the same workspace.</p>
+                            <button
+                                btn="outline"
+                                type="button"
+                                scale="sm"
+                                onclick={() => router.navigate("/app/types")}
+                            >
+                                Open Types
                                 <i icon="arrow-right" lib="solid" iconSize="sm"></i>
                             </button>
                         </div>
