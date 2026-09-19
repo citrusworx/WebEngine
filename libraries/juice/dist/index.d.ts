@@ -5,4 +5,6 @@ export { createAccordion, initAccordion, startAccordionRuntime, stopAccordionRun
 export type { AccordionController, AccordionOptions } from "./js/src/accordion/accordion-runtime.js";
 export { createTabs, initTabs, startTabsRuntime, stopTabsRuntime } from "./js/src/tabs/tabs-runtime.js";
 export type { TabsController, TabsOptions } from "./js/src/tabs/tabs-runtime.js";
+export { createModal, initModal, startModalRuntime, stopModalRuntime } from "./js/src/modal/modal-runtime.js";
+export type { ModalController, ModalOptions } from "./js/src/modal/modal-runtime.js";
 export { tokens } from "./tokens/index.js";

@@ -81,6 +81,10 @@ import {
   initTabs,
   startTabsRuntime,
   stopTabsRuntime,
+  createModal,
+  initModal,
+  startModalRuntime,
+  stopModalRuntime,
   createNavigation,
   initNavigation,
   startNavigationRuntime,
@@ -91,7 +95,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, and tabs runtimes in the browser. Valid `[accordion]` and `[tabs]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md) and [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, and modal runtimes in the browser. Valid `[accordion]`, `[tabs]`, and `[modal-overlay]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md) and [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md).
 
 ## Use the built files directly
 
@@ -142,7 +146,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - tab selection dual-writes Juice `[active]` and `aria-selected`; the runtime also wires `role="tablist"` / `tab` / `tabpanel`, roving tabindex, and labeled panels
 - tab chrome colors come from `--juice-tabs-*` roles bound by the active theme (Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tabs-*` aliases)
 - visible vs hidden tab panels use the native `hidden` attribute; do not use `content="active"` or `content="hidden"` for panel state
-- modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Dialog runtime is still slice B.
+- modal chrome colors come from `--juice-modal-*` roles bound by the active theme; hide `[modal-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive).
 
 ```html
 <div tabs name="settings">

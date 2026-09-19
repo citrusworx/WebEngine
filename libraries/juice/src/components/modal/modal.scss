@@ -17,7 +17,7 @@
 //
 // Closed vs open uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
-// Runtime (slice B) can toggle [hidden] on [modal-overlay].
+// Runtime toggles [hidden] on [modal-overlay].
 // Optional surfaceTone on [modal] is allowed; do not force it.
 // This is not the surface `overlay="frost|tint"` utility.
 
