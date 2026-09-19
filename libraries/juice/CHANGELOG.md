@@ -1,5 +1,23 @@
 # @citrusworx/juiceui
 
+## 0.7.0
+
+### Minor Changes
+
+- **Drawer theme chrome and dialog runtime.** Shared `--juice-drawer-*` roles paint `[drawer-overlay]` / `[drawer]` / `[drawer-close]`. The DOM-first runtime auto-enhances valid overlay markup (`createDrawer` / `initDrawer` / `startDrawerRuntime` / `stopDrawerRuntime`): opener pairing via `aria-controls`, native `hidden` for open vs closed, focus trap, Escape and backdrop click (`drawer-overlay="static"` opts out), and exclusive open. Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. Distinct from surface `overlay="frost|tint"` and from modal. No Sig Drawer factory.
+- **Toast theme chrome and snackbar runtime.** Shared `--juice-toast-*` roles paint `[toast-region]` / `[toast]` / `[toast-close]`. The DOM-first runtime auto-enhances valid region markup (`createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`): authors place the region and toast nodes; `show` / `dismiss`; `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky); auto-dismiss pause on hover/focus; Escape for the most recent visible toast only when no open modal/drawer overlay exists. Not a dialog (no focus trap, no `aria-modal`). Distinct from surface `overlay="frost|tint"` and from modal/drawer. No Sig Toast factory.
+- **Popover theme chrome and anchored runtime.** Shared `--juice-popover-*` roles paint `[popover-root]` / `[popover-panel]` / `[popover-close]`. The DOM-first runtime auto-enhances valid root markup (`createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`): open/close/toggle, Escape (yields to modal/drawer), outside click, Tab trap, exclusive popover open, dependency-free placement with one-axis flip. Non-modal dialog (`role="dialog"`, no `aria-modal`). Names avoid the native HTML `popover` attribute. Distinct from modal/drawer/toast. No Sig Popover factory.
+
+### Patch Changes
+
+- Document the drawer dialog runtime as an Emerging auto-enhance (`docs/juice/juice-drawer-runtime.md`).
+- Document the toast / snackbar runtime as an Emerging auto-enhance (`docs/juice/juice-toast-runtime.md`).
+- Document the popover runtime as an Emerging auto-enhance (`docs/juice/juice-popover-runtime.md`).
+
+## 0.6.0
+
+Public npm cut of the 0.5.0 versioned stack (Tide, surfaces + depth, contracts, modal runtime). Workspace `package.json` on master still read 0.5.0; this records the published lineage before the next minor.
+
 ## 0.5.0
 
 ### Minor Changes
