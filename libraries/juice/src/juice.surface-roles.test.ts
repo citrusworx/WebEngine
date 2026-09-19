@@ -120,6 +120,8 @@ describe("Surface tone role contract", () => {
             }
         }
 
+        expect(scss).toContain("var(--juice-overlay-frost-wash,");
+        expect(scss).toContain("var(--juice-overlay-tint-wash,");
         expect(scss).toContain("var(--juice-overlay-frost-layer,");
         expect(scss).toContain("var(--juice-overlay-tint-layer,");
         expect(scss).toContain("background-image:");

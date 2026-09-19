@@ -181,7 +181,7 @@
 // on [theme="..."]. Light fallbacks keep a white frost veil / bluish tint
 // when no theme binds them.
 //
-//   --juice-overlay-<value>-wash   pigment (themes mix this into -layer)
+//   --juice-overlay-<value>-wash   pigment (layer fallback + theme mixes)
 //   --juice-overlay-<value>-layer  background-image (standalone + surfaceTone)
 //
 // background-image (not background / background-color / inset shadow) so
@@ -194,20 +194,20 @@
 
 [overlay="frost"],
 [theme] [overlay="frost"] {
-    background-image: var(--juice-overlay-frost-layer, linear-gradient(#{rgba($white-100, 0.42)}, #{rgba($white-100, 0.42)}));
+    background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)}), var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)})));
 }
 
 [overlay="tint"],
 [theme] [overlay="tint"] {
-    background-image: var(--juice-overlay-tint-layer, linear-gradient(#{rgba($blue-400, 0.18)}, #{rgba($blue-400, 0.18)}));
+    background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)}), var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)})));
 }
 
 [surfaceTone][overlay="frost"],
 [theme] [surfaceTone][overlay="frost"] {
-    background-image: var(--juice-overlay-frost-layer, linear-gradient(#{rgba($white-100, 0.42)}, #{rgba($white-100, 0.42)}));
+    background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)}), var(--juice-overlay-frost-wash, #{rgba($white-100, 0.42)})));
 }
 
 [surfaceTone][overlay="tint"],
 [theme] [surfaceTone][overlay="tint"] {
-    background-image: var(--juice-overlay-tint-layer, linear-gradient(#{rgba($blue-400, 0.18)}, #{rgba($blue-400, 0.18)}));
+    background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)}), var(--juice-overlay-tint-wash, #{rgba($blue-400, 0.18)})));
 }

@@ -100411,22 +100411,22 @@ Creating Gradient Animations
 
 [overlay=frost],
 [theme] [overlay=frost] {
-  background-image: var(--juice-overlay-frost-layer, linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.42)));
+  background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42)), var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42))));
 }
 
 [overlay=tint],
 [theme] [overlay=tint] {
-  background-image: var(--juice-overlay-tint-layer, linear-gradient(rgba(71.4, 153, 234.6, 0.18), rgba(71.4, 153, 234.6, 0.18)));
+  background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18)), var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18))));
 }
 
 [surfaceTone][overlay=frost],
 [theme] [surfaceTone][overlay=frost] {
-  background-image: var(--juice-overlay-frost-layer, linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.42)));
+  background-image: var(--juice-overlay-frost-layer, linear-gradient(var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42)), var(--juice-overlay-frost-wash, rgba(255, 255, 255, 0.42))));
 }
 
 [surfaceTone][overlay=tint],
 [theme] [surfaceTone][overlay=tint] {
-  background-image: var(--juice-overlay-tint-layer, linear-gradient(rgba(71.4, 153, 234.6, 0.18), rgba(71.4, 153, 234.6, 0.18)));
+  background-image: var(--juice-overlay-tint-layer, linear-gradient(var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18)), var(--juice-overlay-tint-wash, rgba(71.4, 153, 234.6, 0.18))));
 }
 
 [bgColor=black-100] {

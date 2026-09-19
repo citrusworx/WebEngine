@@ -105,7 +105,9 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[theme\]\s+\[overlay=["']?tint["']?\]/);
         expect(css).toMatch(/\[surfaceTone\]\[overlay=["']?frost["']?\]/);
         expect(css).toMatch(/\[surfaceTone\]\[overlay=["']?tint["']?\]/);
+        expect(css).toContain("--juice-overlay-frost-wash");
         expect(css).toContain("--juice-overlay-frost-layer");
+        expect(css).toContain("--juice-overlay-tint-wash");
         expect(css).toContain("--juice-overlay-tint-layer");
     });
 
