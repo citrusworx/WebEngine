@@ -34,7 +34,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Layout primitives (`stack`, `row`, `gap`, `space`, `content`, `container`) | Stable-ish | Central to day-to-day composition and already useful across pages and app views. |
 | Spacing and sizing utilities | Stable-ish | Broadly useful and predictable, though still worth continued normalization. |
 | Color tokens and swatches | Stable-ish | One of the strongest parts of the system. |
-| Typography utilities | Stable-ish | Readable and useful, with good practical value in page-building. |
+| Typography utilities | Stable-ish | Readable and useful. Authoring contract documents `font`, `fontSize` (`sm`…`xxl`), `fontColor`, `lineHeight`, and `fontWeight`. See [Typography Contract](./juice-typography-contract.md). |
 | Icon system | Stable-ish | Strong now that FontAwesome Free solid, regular, and brands are integrated and documented. |
 | Responsive core behavior | Emerging | Built-in breakpoints, row collapse, and spacing scale documented in [juice-responsive-reference.md](./juice-responsive-reference.md). |
 | Card system | Emerging | Now has a meaningful structure, variants, and content regions, but is still maturing. |

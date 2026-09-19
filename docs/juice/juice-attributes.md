@@ -48,32 +48,29 @@ Juice uses HTML attributes to apply styles directly in markup. Attributes are gr
 
 ## Typography Attributes
 
-### Font Family
+First-class attributes. The size scale is real CSS, not font-dependent. Canonical rules: [Typography Contract](./juice-typography-contract.md).
 
-- `font`
-  Values include integrated Google fonts, Adobe fonts, and a few custom family aliases used by Juice.
+- `font`: face alias
+  Values: shipped Google, Adobe, and custom aliases such as `"bebas-neue"`, `"lato"`, `"oswald"`, `"playfair-display"`, `"source-code-pro"`, `"korolev-rounded"`, `"korolev-rounded-bold"`
+- `fontSize`: stepped size from `libraries/juice/src/core/typography.scss`
+  Values: `"sm"` (`0.75rem`), `"md"` (`1.25rem`), `"lg"` (`1.5rem`), `"xl"` (`2rem`), `"xxl"` (`3rem`)
+- `fontColor`: token-backed text color
+  Values: palette steps such as `"obsidian-900"`, `"gray-700"`, `"white-100"`
+- `lineHeight`: explicit leading
+  Values: `"1rem"` through `"10rem"`
+- `fontWeight`: numeric weight
+  Values: `"100"` through `"900"`
 
-Examples:
+Display / title / body / caption are hierarchy roles mapped onto `fontSize` + `font`, not attributes. Under a theme, omit `font=` and let body / heading defaults apply; set `font=` only for a local override. Theme CSS is imported after core, so theme semantic fonts currently win on `h1`–`h6` / `p` — see the contract.
 
-- `"bebas-neue"`
-- `"lato"`
-- `"playfair-display"`
-- `"source-code-pro"`
-- `"korolev-rounded"`
-- `"korolev-rounded-bold"`
+Secondary (shipped, limited):
+
+- `weight`: `"normal"` only, and only with `font="Inter"`. Prefer `fontWeight`.
+- `align`: `"center"`, `"right"`, `"justify"` — `p` only
+- `decoration`: `"underline"` — `p` only
+- `leading`: `"1px"` through `"10px"` — this is `letter-spacing`, not line-height
 
 For the full font list, see [Typography Reference](./juice-typography.md).
-
-### Font Properties
-
-- `fontSize`
-  Values: `"sm"`, `"md"`, `"lg"`, `"xl"`, `"xxl"`
-- `weight`
-  Current support is limited and depends on the font family in use
-- `align`
-  Values: `"center"`, `"right"`, `"justify"`
-- `decoration`
-  Values: `"underline"`
 
 ## Color Attributes
 

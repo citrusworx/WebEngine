@@ -1,6 +1,8 @@
 # Juice Typography Reference
 
-This document provides a comprehensive reference of all integrated fonts in Juice's typography system, including Google Fonts and Adobe Fonts.
+This document is the full face catalog: Google Fonts, Adobe Fonts, and the `font="…"` aliases that compile from those files.
+
+Authoring rules — `fontSize` scale, `fontColor`, `lineHeight`, `fontWeight`, hierarchy roles, and theme fonts vs `font=` — live in the [Typography Contract](./juice-typography-contract.md). Do not treat this catalog as that contract.
 
 ## Overview
 

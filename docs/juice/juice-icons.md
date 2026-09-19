@@ -187,4 +187,4 @@ Regular and brands map the name alone:
 
 - Icon names follow the FontAwesome file names in this repo.
 - Juice treats icons as a stylesheet feature rather than a JavaScript component API.
-- Roadmap Priority 3 icon authoring (size, color, alignment, library selection) is the current contract. Typography polish is a later slice.
+- Roadmap Priority 3 icon authoring (size, color, alignment, library selection) is the current contract. The typography half is the [Typography Contract](./juice-typography-contract.md).
