@@ -83,7 +83,7 @@ Let accent color carry meaning.
 
 If a pattern should be native to Juice, do not keep it in a half-class, half-attribute state forever.
 
-This has been a recurring issue around icon sizing and similar areas.
+Icon sizing is now first-class (`iconSize`, with `width` / `height` as the custom-size escape hatch). Do not reintroduce class-based icon size helpers.
 
 ## 8. BEM-Style Compound Child Names
 

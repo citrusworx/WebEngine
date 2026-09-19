@@ -183,11 +183,11 @@ Docs formalization and automated bind tests are in. [Theme Contract](./juice-the
 
 Settle the remaining authoring rules:
 
-* attribute-first icons with clear size, color, alignment, and library selection
-* tighter type hierarchy and naming
-* docs that match the real attributes
+* attribute-first icons with clear size, color, alignment, and library selection — **done for icons**. Canonical attributes are `icon`, `iconcolor`, and `iconSize`; `width` / `height` are the custom-size escape hatch. Default unset size is `1rem`. Mobile `[icon]` size remaps are removed so author sizing wins. See [Icons](./juice-icons.md).
+* tighter type hierarchy and naming — still open (typography slice)
+* docs that match the real attributes — icon docs match the stylesheet; typography docs are unchanged here
 
-This is polish on strong layers, not a new layer.
+This is polish on strong layers, not a new layer. Typography contract rewrite is a later slice.
 
 ### Priority 4. Next Runtime / Component, Carefully
 
@@ -219,7 +219,7 @@ The Juice CLI (`tooling/cli/juice`) is a separate track. It must not block surfa
 
 1. Expand `surfaceTone` and related surface utilities.
 2. Formalize the theme contract: checklist and bind tests are in; remaining work is SCSS/YAML gap-fill.
-3. Tighten typography and icon authoring contracts.
+3. Tighten the typography authoring contract. Icon size, color, alignment, and library selection are documented in [Icons](./juice-icons.md).
 4. Add the next runtime or component only when the chrome and markup are ready (for example modal). Do not oversell this.
 5. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 

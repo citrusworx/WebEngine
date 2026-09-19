@@ -34,7 +34,7 @@ Good:
 
   <div row gap="1" centered>
     <button btn="outline" theme="citrusmint-300" scale="lg">Primary action</button>
-    <i icon="check" width="1rem" height="1rem" fontColor="green-600"></i>
+    <i icon="check" lib="solid" iconSize="sm" iconcolor="green-600"></i>
   </div>
 </section>
 ```
@@ -102,7 +102,7 @@ Good:
 <div card="cta" bgColor="white-100">
   <div header row space="between" centered>
     <h3 font="korolev-rounded-bold">Simple Mode</h3>
-    <i icon="toggle-on" width="2rem" height="2rem" fontColor="red-800"></i>
+    <i icon="toggle-on" lib="solid" iconSize="md" iconcolor="red-800"></i>
   </div>
 
   <div body stack gap="1rem">
@@ -166,14 +166,15 @@ Good:
 
 Do not treat `field` as a global-purpose layout helper outside form composition.
 
-## Use icons with `iconcolor`
+## Use icons with `iconcolor` and `iconSize`
 
-Juice icons are mask-based and the public coloring attribute is `iconcolor`.
+Juice icons are mask-based. Color with `iconcolor`. Size with `iconSize` (`xxs`…`xxl`). Use `width` / `height` only for a custom size.
 
 Good:
 
 ```html
-<i icon="github" width="1.25rem" height="1.25rem" iconcolor="gray-900"></i>
+<i icon="github" lib="brands" iconSize="sm" iconcolor="gray-900"></i>
+<i icon="github" lib="brands" width="1.25rem" height="1.25rem" iconcolor="gray-900"></i>
 ```
 
 ## Keep the public surface small and clear
