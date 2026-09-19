@@ -526,3 +526,194 @@ describe("generateRoutes waitlist reads", () => {
         });
     });
 });
+
+function writeOp(
+    name: string,
+    method: ApiOperation["method"],
+    path: string,
+    query: string,
+    body?: Record<string, string>,
+    status?: number,
+): ApiOperation {
+    return {
+        resource: "product",
+        crud: method === "POST" ? "create" : method === "DELETE" ? "delete" : "update",
+        name,
+        method,
+        path,
+        query,
+        ...(body ? { body } : {}),
+        ...(typeof status === "number" ? { status } : {}),
+    };
+}
+
+const productWriteOps: ApiOperation[] = [
+    writeOp("newProduct", "POST", "/api/products", "newProduct", {
+        id: "string.required",
+        name: "string.required",
+    }),
+    writeOp("updateProduct", "PUT", "/api/products/:id", "updateProduct"),
+    writeOp(
+        "updateProductStatus",
+        "PATCH",
+        "/api/products/:id/status",
+        "updateProductStatus",
+        { status: "string.required" },
+    ),
+    writeOp("deleteProduct", "DELETE", "/api/products/:id", "deleteProduct"),
+];
+
+describe("generateRoutes writes", () => {
+    it("returns POST/PUT/PATCH/DELETE routes and copies body + optional status", () => {
+        const created = writeOp(
+            "newProduct",
+            "POST",
+            "/api/products",
+            "newProduct",
+            { id: "string.required", name: "string.required" },
+            201,
+        );
+        const routes = generateRoutes([created, ...productWriteOps.slice(1)], {
+            execute: () => ({ ok: true }),
+        });
+
+        expect(routes.map((route) => [route.method, route.path])).toEqual([
+            ["PATCH", "/api/products/:id/status"],
+            ["POST", "/api/products"],
+            ["PUT", "/api/products/:id"],
+            ["DELETE", "/api/products/:id"],
+        ]);
+        expect(routes.find((route) => route.method === "POST")?.contract).toEqual({
+            resource: "product",
+            name: "newProduct",
+            body: { id: "string.required", name: "string.required" },
+            status: 201,
+        });
+        expect(routes.find((route) => route.method === "DELETE")?.contract).toEqual({
+            resource: "product",
+            name: "deleteProduct",
+        });
+    });
+
+    it("serves PUT/PATCH/DELETE with path + body and honors operation.status", async () => {
+        const catalog = new Map(products.map((product) => [product.id, { ...product }]));
+        const operations: ApiOperation[] = [
+            writeOp(
+                "newProduct",
+                "POST",
+                "/api/products",
+                "newProduct",
+                { id: "string.required", name: "string.required" },
+                201,
+            ),
+            writeOp("updateProduct", "PUT", "/api/products/:id", "updateProduct"),
+            writeOp(
+                "updateProductStatus",
+                "PATCH",
+                "/api/products/:id/status",
+                "updateProductStatus",
+                { status: "string.required" },
+            ),
+            writeOp("deleteProduct", "DELETE", "/api/products/:id", "deleteProduct"),
+        ];
+
+        const app = Seltzer.init();
+        for (const route of generateRoutes(operations, {
+            execute: ({ query, params, body }) => {
+                const payload =
+                    body && typeof body === "object" && !Array.isArray(body)
+                        ? (body as Record<string, unknown>)
+                        : {};
+                switch (query) {
+                    case "newProduct": {
+                        const id = String(payload.id ?? "");
+                        const created = {
+                            id,
+                            name: String(payload.name ?? ""),
+                            catalog: "gear",
+                            slug: id,
+                        };
+                        catalog.set(id, created);
+                        return created;
+                    }
+                    case "updateProduct": {
+                        const existing = catalog.get(params.id);
+                        if (!existing) {
+                            return null;
+                        }
+                        const next = { ...existing, ...payload, id: params.id };
+                        catalog.set(params.id, next);
+                        return next;
+                    }
+                    case "updateProductStatus": {
+                        const existing = catalog.get(params.id);
+                        if (!existing) {
+                            return null;
+                        }
+                        const next = {
+                            ...existing,
+                            catalog: String(payload.status ?? existing.catalog),
+                        };
+                        catalog.set(params.id, next);
+                        return next;
+                    }
+                    case "deleteProduct":
+                        return catalog.delete(params.id) ? { ok: true, id: params.id } : null;
+                    default:
+                        return null;
+                }
+            },
+        })) {
+            app.route(route);
+        }
+
+        const base = await listen(app);
+
+        const created = await fetch(`${base}/api/products`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: "fuzz", name: "Fuzz Face" }),
+        });
+        expect(created.status).toBe(201);
+        expect(await created.json()).toEqual({
+            id: "fuzz",
+            name: "Fuzz Face",
+            catalog: "gear",
+            slug: "fuzz",
+        });
+
+        const updated = await fetch(`${base}/api/products/stinkrat`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "Stink Rat Deluxe" }),
+        });
+        expect(updated.status).toBe(200);
+        expect(await updated.json()).toMatchObject({
+            id: "stinkrat",
+            name: "Stink Rat Deluxe",
+        });
+
+        const patched = await fetch(`${base}/api/products/daw/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "gear" }),
+        });
+        expect(patched.status).toBe(200);
+        expect(await patched.json()).toMatchObject({ id: "daw", catalog: "gear" });
+
+        const missingPatch = await fetch(`${base}/api/products/daw/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+        });
+        expect(missingPatch.status).toBe(400);
+
+        const deleted = await fetch(`${base}/api/products/daw`, { method: "DELETE" });
+        expect(deleted.status).toBe(200);
+        expect(await deleted.json()).toEqual({ ok: true, id: "daw" });
+
+        const missing = await fetch(`${base}/api/products/missing`, { method: "DELETE" });
+        expect(missing.status).toBe(404);
+        expect(await missing.json()).toEqual({ error: "Not found" });
+    });
+});

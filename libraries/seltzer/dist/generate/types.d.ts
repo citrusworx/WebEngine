@@ -14,4 +14,10 @@ export type ApiOperation = {
     path: string;
     query?: string;
     body?: Record<string, string>;
+    /**
+     * Optional HTTP status for a successful payload wrap.
+     * Copied from YAML `api.status` by Nectarine `listApiOperations`.
+     * Omitting it keeps the historic `{ body }` / 200 default.
+     */
+    status?: number;
 };

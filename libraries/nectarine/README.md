@@ -108,7 +108,7 @@ const ops = listApiOperations("product", product.api);
 // ops[].method + ops[].path (from YAML `endpoint`) are ready for Seltzer Route wiring
 ```
 
-`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes — Seltzer's `generateRoutes` maps `ApiOperation[]` onto `Route[]` (Blackwater product reads and waitlist GET + POST `joinWaitlist` use this).
+`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes — Seltzer's `generateRoutes` maps `ApiOperation[]` onto `Route[]` (reads, YAML writes, and optional `api.status`). WebEngine compiled execute binds jsonb-cast document writes; waitlist POST `joinWaitlist` still uses a host `execute`.
 
 Express is not the default transport. Seltzer's default `validate` stage enforces `.required` body fields from `Route.contract` (copied by `generateRoutes` from `ApiOperation.body`). Zod is the planned richer layer via `Seltzer#replace("validate", …)`. An HTTP client such as Axios is optional and not part of the default stack.
 

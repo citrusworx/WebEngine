@@ -30,6 +30,7 @@ export {
     type NectarineModuleOptions,
 } from "./modules/nectarine-module.js";
 export {
+    bindJsonbDocument,
     compileResourceQuery,
     createCompiledNectarineExecute,
     createNectarineHandleReadRoutes,

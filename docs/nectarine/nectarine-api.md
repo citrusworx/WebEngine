@@ -411,6 +411,7 @@ type ApiOperation = {
   path: string;
   query?: string;
   body?: Record<string, string>;
+  status?: number;
 };
 
 function listApiOperations(
@@ -437,7 +438,7 @@ const ops = listApiOperations("product", product.api);
 
 ### Hosting with Seltzer
 
-Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s (copying `body` field specs onto `Route.contract`). Engine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call that path. Product JSONB catalog reads and writes keep a host `execute` that runs named queries (`payloadsByCatalog`, `payloadsBySlug`, `countPayloads`, `insertPayload`, `updatePayload`, `deleteProduct`) so the catalog document stays in `payload`. Waitlist `joinWaitlist` uses the same `createNectarineRoutes` + thin host `execute` pattern (generated id, `emailExists` duplicate UX, `source_app` allowlist, file-store fallback); health and KiwiPress content stay hand-registered. Default Seltzer `validate` enforces `.required` keys; Nectarine can later `replace("validate", …)` for Zod.
+Nectarine does **not** export `generateRoutes` and does not spin up a server. WebEngine / Blackwater hosts with **Seltzer**. Flatten `*API.yml` with Nectarine `listApiOperations`; Seltzer `generateRoutes` maps those operations onto `Route`s (copying `body` field specs and optional `status` onto `Route.contract`). Engine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call that path. Default compiled writes bind jsonb-cast columns from the HTTP body (`insertPayload` / `updatePayload` / `deleteProduct`) so the catalog document stays in `payload`. Product **reads** that remap `query:` names onto JSONB (`payloadsByCatalog`, `payloadsBySlug`, `countPayloads`) and waitlist `joinWaitlist` (generated id, `emailExists` duplicate UX, `source_app` allowlist, file-store fallback) still use a thin host `execute` on the same helper; health and KiwiPress content stay hand-registered. Default Seltzer `validate` enforces `.required` keys; Nectarine can later `replace("validate", …)` for Zod.
 
 Set `transport.server: seltzer` in `nectarine.config.yaml`. Do not use Express route generation.
 
@@ -675,7 +676,7 @@ interface RouteDefinition {
 
 ### ApiOperation
 
-Flattened HTTP operation from `listApiOperations`. YAML `endpoint` is mapped to `path`.
+Flattened HTTP operation from `listApiOperations`. YAML `endpoint` is mapped to `path`. Optional `api.status` becomes `status` for Seltzer `generateRoutes`.
 
 ```typescript
 type ApiHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -688,6 +689,7 @@ type ApiOperation = {
   path: string;
   query?: string;
   body?: Record<string, string>;
+  status?: number;
 };
 ```
 

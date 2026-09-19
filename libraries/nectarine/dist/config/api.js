@@ -26,6 +26,18 @@ function asPath(spec) {
 function asQuery(spec) {
     return typeof spec.query === "string" && spec.query.trim() ? spec.query.trim() : undefined;
 }
+function asStatus(spec) {
+    const raw = spec.status;
+    const value = typeof raw === "number"
+        ? raw
+        : typeof raw === "string" && raw.trim()
+            ? Number(raw.trim())
+            : Number.NaN;
+    if (!Number.isInteger(value) || value < 100 || value > 599) {
+        return undefined;
+    }
+    return value;
+}
 function asBody(spec) {
     if (!isRecord(spec.body)) {
         return undefined;
@@ -79,6 +91,10 @@ function toOperation(resource, crud, name, value) {
     const body = asBody(spec);
     if (body) {
         operation.body = body;
+    }
+    const status = asStatus(spec);
+    if (status !== undefined) {
+        operation.status = status;
     }
     return operation;
 }

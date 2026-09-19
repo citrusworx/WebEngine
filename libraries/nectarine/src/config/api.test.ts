@@ -276,6 +276,61 @@ describe("listApiOperations", () => {
         ]);
     });
 
+    it("copies optional api.status onto write operations", () => {
+        const operations = listApiOperations("product", {
+            product: {
+                create: {
+                    newProduct: {
+                        api: {
+                            method: "POST",
+                            endpoint: "/api/products",
+                            query: "insertPayload",
+                            status: 201,
+                            body: { id: "string.required", name: "string.required" },
+                        },
+                    },
+                },
+                delete: {
+                    deleteProduct: {
+                        api: {
+                            method: "DELETE",
+                            endpoint: "/api/products/:id",
+                            query: "deleteProduct",
+                            status: "204",
+                        },
+                    },
+                },
+            },
+        });
+
+        expect(operations.find((entry) => entry.name === "newProduct")).toEqual({
+            resource: "product",
+            crud: "create",
+            name: "newProduct",
+            method: "POST",
+            path: "/api/products",
+            query: "insertPayload",
+            body: { id: "string.required", name: "string.required" },
+            status: 201,
+        });
+        expect(operations.find((entry) => entry.name === "deleteProduct")?.status).toBe(204);
+        expect(
+            listApiOperations("product", {
+                product: {
+                    create: {
+                        newProduct: {
+                            api: {
+                                method: "POST",
+                                endpoint: "/api/products",
+                                status: 99,
+                            },
+                        },
+                    },
+                },
+            })[0],
+        ).not.toHaveProperty("status");
+    });
+
     it("accepts an already-unwrapped resource block and path as an endpoint alias", () => {
         const operations = listApiOperations("product", {
             read: {

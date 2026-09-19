@@ -36,7 +36,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. |
 | `ResponseData` + `send` | Stable-ish | Bare values are 500. No `ctx.json`. |
 | Default `validate` (`.required`) | Emerging | Presence-only. Zod is `replace("validate")`. |
-| `generateRoutes` | Emerging | Host `execute` + `response()` brand. |
+| `generateRoutes` | Emerging | Host `execute` + `response()` brand. POST/PUT/PATCH/DELETE plus optional `ApiOperation.status`. |
 | CORS / OPTIONS 204 | Stable-ish | On `listen`, before the pipeline. |
 | `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
@@ -92,7 +92,6 @@ These form the case for Seltzer as the ecosystem’s HTTP engine, not a thin `cr
 ## Most promising emerging areas
 
 - richer `validate` (Zod) via `replace` without changing handler signatures
-- `generateRoutes` covering more write operations in hosts
 - slash-safe client URL join
 - typed `client` generics
 

@@ -17,6 +17,7 @@ type ApiOperation = {
   path: string;
   query?: string;
   body?: Record<string, string>;
+  status?: number;
 };
 ```
 
@@ -49,7 +50,7 @@ Each selected operation becomes:
 {
   method,
   path,
-  contract: { resource, name, body? },
+  contract: { resource, name, body?, status? },
   handler: async (ctx) => { /* execute → ResponseData */ },
 }
 ```
@@ -60,9 +61,11 @@ Each selected operation becomes:
 
 | Return | HTTP result |
 |---|---|
-| a payload (object, array, string, …) | `{ body: payload }` at 200 |
+| a payload (object, array, string, …) | `{ body: payload }` at 200, or `operation.status` when set |
 | `null` or `undefined` | `notFound(args)` or `{ status: 404, body: { error: "Not found" } }` |
 | value from `response({ status?, headers?, body? })` | sent as-is (branded) |
+
+`generateRoutes` does not invent write verbs. POST/PUT/PATCH/DELETE in the operation list become routes. YAML `api.status: 201` (copied by Nectarine `listApiOperations`) is the opt-in created-status; omitting it keeps 200 so existing hosts do not change.
 
 Unbranded `{ status, body }` or `{ body: "copy" }` objects are **payloads**. `execute: () => ({ body: "copy" })` responds with JSON `{ "body": "copy" }`, not the string `"copy"`. Use `response()` when the host needs a transport status other than the default wrap.
 
@@ -149,7 +152,7 @@ const routes = generateRoutes(operations, {
 
 Do **not** reimplement YAML walking in Seltzer docs or apps. Nectarine owns flatten; Seltzer owns `Route[]`.
 
-WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call this path. Blackwater product JSONB catalog and waitlist GET + POST `joinWaitlist` pass a host `execute` into `createNectarineRoutes`. Health and KiwiPress content stay hand-registered.
+WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call this path. Default compiled writes bind YAML columns, skip `{ fn: now }`, and treat a jsonb-cast column missing from the body as the whole JSON document. Waitlist `joinWaitlist` (generated id / allowlist / duplicate UX) and optional merge-on-PUT still pass a host `execute`. Health and KiwiPress content stay hand-registered.
 
 ## Mixing generated and hand-written routes
 

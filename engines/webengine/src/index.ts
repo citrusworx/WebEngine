@@ -47,6 +47,7 @@ export {
     KernelContext,
     NECTARINE_MODULE_ID,
     applyNectarineMigrations,
+    bindJsonbDocument,
     compileResourceQuery,
     computeModuleClosure,
     createBuiltinRegistry,

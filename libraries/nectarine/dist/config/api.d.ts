@@ -7,6 +7,8 @@ export type ApiOperation = {
     path: string;
     query?: string;
     body?: Record<string, string>;
+    /** Optional HTTP success status for Seltzer `generateRoutes`. */
+    status?: number;
 };
 /**
  * Flatten a resource `*API.yml` (already-loaded object) into HTTP operations.

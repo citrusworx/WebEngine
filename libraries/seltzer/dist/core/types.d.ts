@@ -36,6 +36,8 @@ export type RouteContract = {
     name?: string;
     /** YAML body field specs, e.g. `{ email: "string.required" }`. */
     body?: Record<string, string>;
+    /** Optional success status copied from `ApiOperation.status`. */
+    status?: number;
 };
 export type Route<TContext = RequestContext> = {
     method: string;
