@@ -1,6 +1,6 @@
 # Juice Beta
 
-Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.7.0` is the public Beta cut on npm (drawer, toast, and popover A→B→C on top of the 0.6.0 stack). Master is ahead with an unpublished wizard runtime. 0.6.0 was the prior public cut. See [juice-roadmap.md](./juice-roadmap.md).
+Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.7.0` is the public Beta cut on npm (drawer, toast, and popover A→B→C on top of the 0.6.0 stack). Master is ahead with unpublished wizard and tooltip runtimes. 0.6.0 was the prior public cut. See [juice-roadmap.md](./juice-roadmap.md).
 
 ## What Beta includes
 
@@ -10,14 +10,14 @@ Juice Beta is the first release line where the styling system, theme contract, a
 - **Surfaces:** `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`, `shadowTone="cool|warm"`, `overlay="frost|tint"`, and `variant="monochromatic|glass|tinted"` — [juice-surfaces.md](./juice-surfaces.md). Tones, strength, shadow tone, and overlay use `--juice-surface-*` / `--juice-border-strength-*` / `--juice-shadow-tone-*` / `--juice-overlay-*` theme roles; blur uses fixed lengths (`6px` / `16px`); variant recipes compose those same roles.
 - **Motion:** canonical `motion` attribute with P0/P1 values ([juice-animations.md](./juice-animations.md)); `prefers-reduced-motion` respected.
 - **Theme authoring:** each shipped theme uses `src/themes/<id>/<id>.scss` + `<id>.yaml` ([juice-theme-authoring.md](./juice-theme-authoring.md)). Required `--juice-*` binds are listed in the [Theme Contract](./juice-theme-contract.md).
-- **Auto-start runtimes:** importing `@citrusworx/juiceui` auto-enhances valid navigation, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, and `[wizard-shell]` markup in the browser. See [juice-runtime-behavior.md](./juice-runtime-behavior.md), [juice-navigation-runtime.md](./juice-navigation-runtime.md), [juice-accordion-runtime.md](./juice-accordion-runtime.md), [juice-tabs-runtime.md](./juice-tabs-runtime.md), [juice-modal-runtime.md](./juice-modal-runtime.md), [juice-drawer-runtime.md](./juice-drawer-runtime.md), [juice-toast-runtime.md](./juice-toast-runtime.md), [juice-popover-runtime.md](./juice-popover-runtime.md), and [juice-wizard-runtime.md](./juice-wizard-runtime.md).
+- **Auto-start runtimes:** importing `@citrusworx/juiceui` auto-enhances valid navigation, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, and `[tooltip-root]` markup in the browser. See [juice-runtime-behavior.md](./juice-runtime-behavior.md), [juice-navigation-runtime.md](./juice-navigation-runtime.md), [juice-accordion-runtime.md](./juice-accordion-runtime.md), [juice-tabs-runtime.md](./juice-tabs-runtime.md), [juice-modal-runtime.md](./juice-modal-runtime.md), [juice-drawer-runtime.md](./juice-drawer-runtime.md), [juice-toast-runtime.md](./juice-toast-runtime.md), [juice-popover-runtime.md](./juice-popover-runtime.md), [juice-wizard-runtime.md](./juice-wizard-runtime.md), and [juice-tooltip-runtime.md](./juice-tooltip-runtime.md).
 
 ## What Beta does not promise yet
 
 - Full animation roadmap ([juice-animations-roadmap.md](./juice-animations-roadmap.md)).
 - Config-driven theme generation from `juice.config.yaml` (optional, draft).
 - Draft themes under `src/themes/_draft/` (for example `blush`). YAML-only drafts do not emit CSS; package `exports` and the published tarball do not expose `_draft`.
-- A large public JS component API. The documented auto-start runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard) and the Sig Accordion factory do ship; there is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, or Sig Wizard factory. A broad component library is not the center of Beta.
+- A large public JS component API. The documented auto-start runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip) and the Sig Accordion factory do ship; there is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, or Sig Tooltip factory. A broad component library is not the center of Beta.
 
 ## Publish gate
 

@@ -255,4 +255,5 @@ That is the right mental model for:
 - toasts / snackbars
 - popovers
 - wizards / multi-step shells
+- tooltips / hover-focus tips
 - other built-in responsive interactions
