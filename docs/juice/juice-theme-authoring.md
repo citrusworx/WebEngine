@@ -304,7 +304,7 @@ Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-he
 
 Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-wizard-*`, `--kw-wizard-*`, `--cm-wizard-*`, `--tide-wizard-*`, …). App-owned generated themes use `--jx-wizard-*` and bind `--juice-wizard-*` from existing `--jx-*` surface/page/text/accent tokens. Do not invent a new hue family just for wizard chrome. Step indicators are surfaces, not CTA buttons.
 
-Step progress uses `[step="pending"|"active"|"completed"]` (bare `[step]` paints as pending). This is theme chrome only — there is no wizard runtime yet.
+Step progress uses `[step="pending"|"active"|"completed"]` (bare `[step]` paints as pending). Slice A is theme chrome. Slice B writes those attrs from `[wizard-shell]` markup.
 
 Tide must bind a dark shell (`--tide-page`) and dark rails, not a white onboarding page.
 

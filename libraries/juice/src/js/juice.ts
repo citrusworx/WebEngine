@@ -69,3 +69,13 @@ export type {
     PopoverOptions,
     PopoverPlacement
 } from "./src/popover/popover-runtime.js";
+export {
+    createWizard,
+    initWizard,
+    startWizardRuntime,
+    stopWizardRuntime
+} from "./src/wizard/wizard-runtime.js";
+export type {
+    WizardController,
+    WizardOptions
+} from "./src/wizard/wizard-runtime.js";

@@ -841,6 +841,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initPopover");
         expect(module).toHaveProperty("startPopoverRuntime");
         expect(module).toHaveProperty("stopPopoverRuntime");
+        expect(module).toHaveProperty("createWizard");
+        expect(module).toHaveProperty("initWizard");
+        expect(module).toHaveProperty("startWizardRuntime");
+        expect(module).toHaveProperty("stopWizardRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), toast theme chrome (`--juice-toast-*`), popover theme chrome (`--juice-popover-*`), and wizard theme chrome (`--juice-wizard-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md). Popover is an anchored non-modal dialog runtime on `[popover-root]` — see [Popover Runtime](./juice-popover-runtime.md). Wizard slice A is chrome roles only — no step-navigation runtime yet.
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), toast theme chrome (`--juice-toast-*`), popover theme chrome (`--juice-popover-*`), and wizard theme chrome (`--juice-wizard-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md). Popover is an anchored non-modal dialog runtime on `[popover-root]` — see [Popover Runtime](./juice-popover-runtime.md). Wizard slice A is chrome roles. Slice B is the DOM-first step runtime on `[wizard-shell]`.
 
 ## 1. Layer rule
 
@@ -230,7 +230,7 @@ Structural multi-step onboarding paint. Required names:
 
 Consumed by `wizard.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-wizard-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family.
 
-Step progress paint uses the existing `[step="pending"|"active"|"completed"]` values already in KiwiPress markup. Bare `[step]` paints as pending. A completed step's connector uses `--juice-wizard-step-current`. This is **slice A** (theme chrome only) — there is no wizard runtime yet.
+Step progress paint uses the existing `[step="pending"|"active"|"completed"]` values already in KiwiPress markup. Bare `[step]` paints as pending. A completed step's connector uses `--juice-wizard-step-current`. Slice A is theme chrome. Slice B (`createWizard` / `initWizard` / `startWizardRuntime` / `stopWizardRuntime`) writes those step attrs and shows one `[step-page]` with native `hidden`.
 
 KiwiPress may keep product-local extras (logo, badge, header button, feature-icon, pill, trust dots) on `--kw-*` tokens. Those are not required roles.
 

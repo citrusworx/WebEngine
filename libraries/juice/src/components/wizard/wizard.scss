@@ -31,7 +31,7 @@
 //
 // Step progress uses the existing [step="pending"|"active"|"completed"]
 // values already painted by KiwiPress. Bare [step] paints as pending.
-// Runtime (slice B) can set those attrs; this file only consumes them.
+// Runtime (slice B) sets those attrs; this file only consumes them.
 
 @function -juice-wizard-role($name, $fallback) {
     @return var(

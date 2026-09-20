@@ -1650,8 +1650,277 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	en = null, $t || nn();
 }, document.addEventListener("DOMContentLoaded", en)) : nn());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/wizard/wizard-runtime.ts
 var an = {
+	root: typeof document < "u" ? document : {},
+	shellSelector: "[wizard-shell]",
+	trackerSelector: "[step-tracker]",
+	stepsSelector: "[steps]",
+	stepSelector: "[step]",
+	pageSelector: "[step-page]",
+	navSelector: "[step-nav]",
+	nextSelector: "[wizard-next]",
+	prevSelector: "[wizard-prev]",
+	completeSelector: "[wizard-complete]"
+}, on = (e) => Array.from(e), sn = "juice-wizard-step", cn = "juice-wizard-page", ln = /* @__PURE__ */ new WeakSet(), un = (e) => ln.has(e) ? !1 : (ln.add(e), !0), dn = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLInputElement ? e.type === "button" || e.type === "submit" : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, fn = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "wizard", pn = (e) => typeof CSS < "u" && typeof CSS.escape == "function" ? CSS.escape(e) : e, mn = (e, t) => {
+	let n = e.compareDocumentPosition(t);
+	return n & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : n & Node.DOCUMENT_POSITION_PRECEDING ? 1 : 0;
+}, hn = (e) => {
+	let t = (e.getAttribute("wizard-shell") || "").trim().toLowerCase();
+	return t === "linear" ? "linear" : t === "free" ? "free" : "default";
+}, gn = (e) => e.getAttribute("data-step") || e.getAttribute("name") || e.getAttribute("step-page") || (e.id ? e.id : null), _n = (e) => {
+	let t = /* @__PURE__ */ new Set(), n = e.getAttribute("data-step");
+	n && t.add(n);
+	let r = e.getAttribute("name");
+	r && t.add(r);
+	let i = e.getAttribute("step-page");
+	return i && t.add(i), e.id && t.add(e.id), t;
+}, vn = (e, t, n) => t === n ? !0 : e === "linear" ? !1 : e === "free" ? !0 : t < n, yn = (e) => (e instanceof HTMLButtonElement || e instanceof HTMLInputElement) && e.disabled ? !0 : e.getAttribute("aria-disabled") === "true", bn = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		next: () => {},
+		prev: () => {},
+		goTo: () => {},
+		current: () => 0
+	};
+	let t = {
+		...an,
+		...e
+	}, n = t.root ?? document, r = n, i = () => on(n.querySelectorAll(t.shellSelector)), a = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.shellSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, o = (e, t) => a(e) === t, s = (e) => {
+		let n = e.querySelector(t.stepsSelector), r = e.querySelector(t.trackerSelector), i = n ?? r ?? e, a = /* @__PURE__ */ new Set(), s = [];
+		return on(i.querySelectorAll(t.stepSelector)).forEach((n) => {
+			n instanceof HTMLElement && n.matches(t.stepSelector) && (!o(n, e) || a.has(n) || n.closest(t.pageSelector) || (a.add(n), s.push(n)));
+		}), s.sort(mn);
+	}, c = (e) => on(e.querySelectorAll(t.pageSelector)).filter((t) => o(t, e)).sort(mn), l = (e) => on(e.querySelectorAll(t.navSelector)).filter((t) => o(t, e)), u = (e, t) => on(e.querySelectorAll(t)).filter((t) => o(t, e)), d = (e) => {
+		let n = /* @__PURE__ */ new Set(), r = [], i = (t) => {
+			t instanceof HTMLElement && (n.has(t) || !e.contains(t) || !o(t, a(e) ?? e) || (n.add(t), r.push(t)));
+		};
+		return on(e.querySelectorAll("button")).forEach(i), on(e.querySelectorAll(`${t.prevSelector}, ${t.nextSelector}`)).forEach(i), r.sort(mn);
+	}, f = (e) => {
+		let n = u(e, t.prevSelector);
+		if (n.length > 0) return n;
+		let r = [];
+		return l(e).forEach((e) => {
+			let n = d(e).filter((e) => !e.matches(t.nextSelector));
+			n.length >= 2 && r.push(n[0]);
+		}), r;
+	}, p = (e) => {
+		let n = u(e, t.nextSelector);
+		if (n.length > 0) return n;
+		let r = [];
+		return l(e).forEach((e) => {
+			let n = d(e).filter((e) => !e.matches(t.prevSelector));
+			n.length >= 2 ? r.push(n[n.length - 1]) : n.length === 1 && r.push(n[0]);
+		}), r;
+	}, m = (e) => u(e, t.completeSelector), h = (e, n) => {
+		let r = c(e), i = s(e), a = n.getAttribute("aria-controls");
+		if (a) {
+			let n = e.querySelector(`#${pn(a)}`);
+			if (n && n.matches(t.pageSelector) && o(n, e)) return n;
+		}
+		let l = gn(n);
+		if (l) {
+			let e = r.find((e) => _n(e).has(l));
+			if (e) return e;
+		}
+		let u = i.indexOf(n);
+		return u >= 0 ? r[u] ?? null : null;
+	}, g = (e, t) => {
+		let n = s(e), r = c(e), i = n.find((n) => h(e, n) === t);
+		if (i) return i;
+		let a = r.indexOf(t);
+		return a >= 0 ? n[a] ?? null : null;
+	}, _ = (e, t) => {
+		let n = s(e), r = c(e), i = n.findIndex((e) => e.id === t ? !0 : _n(e).has(t));
+		if (i >= 0) return i;
+		let a = r.findIndex((e) => e.id === t ? !0 : _n(e).has(t));
+		if (a >= 0) {
+			let t = g(e, r[a]), i = t ? n.indexOf(t) : a;
+			return i >= 0 ? i : a;
+		}
+		return -1;
+	}, v = (e) => {
+		let t = Math.max(s(e).length, c(e).length);
+		return Math.max(0, t - 1);
+	}, y = (e) => {
+		let t = s(e), n = c(e), r = t.findIndex((e) => e.getAttribute("step") === "active");
+		if (r >= 0) return r;
+		let i = n.find((e) => !e.hasAttribute("hidden"));
+		if (i) {
+			let r = g(e, i), a = r ? t.indexOf(r) : n.indexOf(i);
+			if (a >= 0) return a;
+		}
+		let a = e.querySelector("[wizard-content]"), o = e.getAttribute("data-step") || a?.getAttribute("data-step");
+		if (o) {
+			let t = _(e, o);
+			if (t >= 0) return t;
+		}
+		return 0;
+	}, b = 0, x = (e) => (b += 1, `${e}-${b}`), S = (e) => {
+		let t = e.getAttribute("name");
+		return t ? fn(t) : null;
+	}, C = (e) => {
+		let n = e.querySelector(t.stepsSelector);
+		!n || !o(n, e) || n.tagName === "UL" || n.tagName === "OL" || n.getAttribute("role") || n.setAttribute("role", "list");
+	}, w = (e, t, n, r, i) => {
+		let a = s(e), o = S(e), l = a.length > 1 || c(e).length > 1 ? `-${r + 1}` : "";
+		t.id ||= o ? `${o}-step${l}` : x(sn), dn(t) || (i && t.getAttribute("tabindex") !== "0" && t.setAttribute("tabindex", "0"), !i && t.getAttribute("tabindex") === "0" && t.removeAttribute("tabindex")), n && (n.id ||= o ? `${o}-page${l}` : x(cn), t.getAttribute("aria-controls") !== n.id && t.setAttribute("aria-controls", n.id), n.getAttribute("role") || n.setAttribute("role", "region"), !n.hasAttribute("aria-label") && !n.hasAttribute("aria-labelledby") && n.setAttribute("aria-labelledby", t.id));
+	}, T = (e, t) => {
+		(e instanceof HTMLButtonElement || e instanceof HTMLInputElement) && e.disabled !== t && (e.disabled = t);
+		let n = String(t);
+		e.getAttribute("aria-disabled") !== n && e.setAttribute("aria-disabled", n);
+	}, E = (e, t) => {
+		e.hidden !== !t && (e.hidden = !t);
+		let n = String(!t);
+		e.getAttribute("aria-hidden") !== n && e.setAttribute("aria-hidden", n);
+	}, D = (e, t) => {
+		let n = s(e), r = c(e);
+		if (n.length === 0 && r.length === 0) return;
+		let i = Math.min(Math.max(0, t), v(e)), a = hn(e);
+		C(e), n.forEach((t, n) => {
+			let r = n < i ? "completed" : n === i ? "active" : "pending";
+			t.getAttribute("step") !== r && t.setAttribute("step", r), n === i ? t.getAttribute("aria-current") !== "step" && t.setAttribute("aria-current", "step") : t.hasAttribute("aria-current") && t.removeAttribute("aria-current");
+			let o = vn(a, n, i);
+			w(e, t, h(e, t), n, o), o ? t.getAttribute("aria-disabled") === "true" && t.removeAttribute("aria-disabled") : t.getAttribute("aria-disabled") !== "true" && t.setAttribute("aria-disabled", "true");
+		});
+		let o = n[i] ?? null, l = o ? h(e, o) : r[i] ?? null;
+		r.forEach((t) => {
+			let a = g(e, t);
+			E(t, (a ? n.indexOf(a) : r.indexOf(t)) === i), t.getAttribute("role") || t.setAttribute("role", "region");
+		});
+		let u = e.querySelector("[wizard-content]"), d = l && gn(l) || o && gn(o);
+		u && d && u.getAttribute("data-step") !== d && u.setAttribute("data-step", d);
+		let _ = i <= 0, y = i >= v(e);
+		f(e).forEach((e) => T(e, _)), p(e).forEach((e) => T(e, y)), m(e).forEach((e) => T(e, !y));
+	}, O = (e) => {
+		if (e) {
+			let t = a(e);
+			if (t) return t;
+		}
+		return i()[0] ?? null;
+	}, k = (e) => {
+		let t = O(e);
+		return t ? y(t) : 0;
+	}, A = (e, t) => {
+		let n = O(t);
+		if (!n) return;
+		let r = typeof e == "number" ? e : _(n, e);
+		r < 0 || D(n, r);
+	}, j = (e) => {
+		let t = O(e);
+		t && D(t, y(t) + 1);
+	}, M = (e) => {
+		let t = O(e);
+		t && D(t, y(t) - 1);
+	}, N = () => {
+		i().forEach((e) => {
+			D(e, y(e));
+		});
+	}, P = (e) => {
+		if (!(e instanceof HTMLElement)) return null;
+		let n = a(e);
+		if (!n || e.closest(t.pageSelector)) return null;
+		let r = e.closest(t.stepSelector);
+		return !(r instanceof HTMLElement) || !o(r, n) || r.closest(t.pageSelector) ? null : s(n).includes(r) ? r : null;
+	}, F = (e) => {
+		if (!(e instanceof HTMLElement)) return null;
+		let n = a(e);
+		if (!n) return null;
+		let r = e.closest(t.completeSelector);
+		if (r instanceof HTMLElement && o(r, n)) return "complete";
+		let i = e.closest(t.nextSelector);
+		if (i instanceof HTMLElement && o(i, n)) return "next";
+		let s = e.closest(t.prevSelector);
+		if (s instanceof HTMLElement && o(s, n)) return "prev";
+		let c = e.closest(t.navSelector);
+		if (!(c instanceof HTMLElement) || !o(c, n)) return null;
+		let l = e.closest("button, [wizard-next], [wizard-prev]");
+		return !(l instanceof HTMLElement) || !c.contains(l) ? null : p(n).includes(l) ? "next" : f(n).includes(l) ? "prev" : null;
+	}, I = (e) => {
+		let t = a(e);
+		if (!t) return;
+		let n = s(t).indexOf(e);
+		n < 0 || vn(hn(t), n, y(t)) && D(t, n);
+	}, ee = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = F(n), i = n instanceof HTMLElement ? n.closest(`${t.nextSelector}, ${t.prevSelector}, ${t.completeSelector}, button`) : null;
+		if (i instanceof HTMLElement && yn(i) && (r === "next" || r === "prev" || r === "complete")) return;
+		if (r === "complete") {
+			un(e);
+			return;
+		}
+		if (r === "next") {
+			if (!un(e)) return;
+			j(n);
+			return;
+		}
+		if (r === "prev") {
+			if (!un(e)) return;
+			M(n);
+			return;
+		}
+		let a = P(n);
+		a && un(e) && I(a);
+	}, L = (e) => {
+		if (!(e instanceof KeyboardEvent) || e.key !== "Enter" && e.key !== " ") return;
+		let t = e.target;
+		if (!(t instanceof Element)) return;
+		let n = F(t);
+		if (n === "next" || n === "prev") {
+			let r = t.closest("button, [wizard-next], [wizard-prev]");
+			if (r instanceof HTMLElement && dn(r) || !un(e)) return;
+			e.preventDefault(), n === "next" ? j(t) : M(t);
+			return;
+		}
+		let r = P(t);
+		!r || dn(r) || un(e) && (e.preventDefault(), I(r));
+	}, R = !1, z = () => {
+		R || (R = !0, requestAnimationFrame(() => {
+			R = !1, N();
+		}));
+	}, te = typeof MutationObserver < "u" ? new MutationObserver(() => z()) : null;
+	return r.addEventListener("click", ee), r.addEventListener("keydown", L), te && n instanceof Node && te.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"step",
+			"data-step",
+			"aria-controls",
+			"wizard-shell",
+			"step-page",
+			"wizard-next",
+			"wizard-prev",
+			"wizard-complete"
+		]
+	}), N(), {
+		destroy: () => {
+			r.removeEventListener("click", ee), r.removeEventListener("keydown", L), te?.disconnect();
+		},
+		sync: N,
+		next: j,
+		prev: M,
+		goTo: A,
+		current: k
+	};
+}, xn = (e = {}) => bn(e), Sn = null, Cn = !1, wn = null, Tn = () => {
+	wn &&= (document.removeEventListener("DOMContentLoaded", wn), null);
+}, En = () => typeof window > "u" || typeof document > "u" ? null : (Cn = !1, Tn(), Sn ? (Sn.sync(), Sn) : (Sn = bn(), Sn)), Dn = () => {
+	Cn = !0, Tn(), Sn?.destroy(), Sn = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (wn = () => {
+	wn = null, Cn || En();
+}, document.addEventListener("DOMContentLoaded", wn)) : En());
+//#endregion
+//#region src/tokens/index.ts
+var On = {
 	colors: {
 		families: [
 			"black",
@@ -1819,4 +2088,4 @@ var an = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, z as createAccordion, rt as createDrawer, Le as createModal, T as createNavigation, Xt as createPopover, _e as createTabs, vt as createToast, te as initAccordion, it as initDrawer, Re as initModal, E as initNavigation, Zt as initPopover, ve as initTabs, yt as initToast, ae as startAccordionRuntime, ct as startDrawerRuntime, He as startModalRuntime, O as startNavigationRuntime, nn as startPopoverRuntime, Se as startTabsRuntime, Ct as startToastRuntime, oe as stopAccordionRuntime, lt as stopDrawerRuntime, Ue as stopModalRuntime, k as stopNavigationRuntime, rn as stopPopoverRuntime, Ce as stopTabsRuntime, wt as stopToastRuntime, an as tokens };
+export { v as Accordion, z as createAccordion, rt as createDrawer, Le as createModal, T as createNavigation, Xt as createPopover, _e as createTabs, vt as createToast, bn as createWizard, te as initAccordion, it as initDrawer, Re as initModal, E as initNavigation, Zt as initPopover, ve as initTabs, yt as initToast, xn as initWizard, ae as startAccordionRuntime, ct as startDrawerRuntime, He as startModalRuntime, O as startNavigationRuntime, nn as startPopoverRuntime, Se as startTabsRuntime, Ct as startToastRuntime, En as startWizardRuntime, oe as stopAccordionRuntime, lt as stopDrawerRuntime, Ue as stopModalRuntime, k as stopNavigationRuntime, rn as stopPopoverRuntime, Ce as stopTabsRuntime, wt as stopToastRuntime, Dn as stopWizardRuntime, On as tokens };
