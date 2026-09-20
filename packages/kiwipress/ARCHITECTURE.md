@@ -21,8 +21,8 @@ Shipped:
 - `WPAuth` as credential strategy and header generation
 - `WPClient` as the executable WordPress client layer
 - `WPRead` / `WPCreate` / `WPUpdate` / `WPDelete`
-- `Users`, `Posts`, and `Pages` with CRUD
-- `Categories`, `Tags`, and `Comments` as read-side domain objects
+- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, and `Comments` with CRUD
+- `Media` with list/get, file create (raw binary or multipart), update, and delete
 - route alias translation from clean KiwiPress shapes into WordPress query strings
 - response normalization onto `ContentRecord` / Nectarine post shapes
 - `loadNectarineApi` for nested or flat Nectarine API YAML
@@ -37,7 +37,8 @@ Not finished yet:
 
 - MySQL / Mongo persistence adapters
 - a full visual CMS UI (Echo)
-- media and WordPress custom post type sync
+- media transfer into `NectarineStore`
+- WordPress custom post type sync
 - plugin adapters (WooCommerce, BuddyPress, MemberPress)
 
 ## The on-ramp
@@ -129,7 +130,9 @@ Identity for talking to WordPress:
 
 ### `WPCreate` / `WPRead` / `WPUpdate` / `WPDelete`
 
-CRUD execution boundaries on top of `WPClient`. Domain objects extend `WPRead`. Create goes through a `WPCreate` collaborator; update goes through a `WPUpdate` collaborator; delete goes through a `WPDelete` collaborator.
+CRUD execution boundaries on top of `WPClient`. Domain objects extend `WPRead`. Create goes through a `WPCreate` collaborator; update goes through a `WPUpdate` collaborator; delete goes through a `WPDelete` collaborator. Updates use `PUT`, matching Posts/Pages/Users.
+
+`Media.create` accepts a JSON `WordPressPayload` or a file upload `{ file, filename, contentType?, …fields }`. File-only uploads send the binary body with `Content-Type` and `Content-Disposition: attachment; filename="…"`. Extra metadata fields (`title`, `alt_text`, …) switch the request to `multipart/form-data` with a `file` part — do not set `Content-Type` yourself so fetch can supply the boundary. Seltzer has no upload helper; this path lives on `WPClient.mutateUpload`.
 
 ### `WPSync`
 
@@ -185,7 +188,7 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 ## Current Exported Surface
 
 - `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`
-- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`
+- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
 - `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
 - `normalizeWordPressItem`, `toNectarinePost`, `loadNectarineApi`

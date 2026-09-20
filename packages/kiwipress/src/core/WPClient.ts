@@ -3,7 +3,8 @@ import type { Endpoint, Route } from "@citrusworx/seltzer";
 import { WPCore, type RouteParams, type WPCoreConfig } from "./WPCore.js";
 import { requestWordPress, requestWordPressPage } from "./route-utils.js";
 import { asCollection } from "./normalize.js";
-import type { WordPressPayload } from "../types/api.js";
+import { createMediaUploadInit } from "../media/upload.js";
+import type { MediaUploadPayload, WordPressPayload } from "../types/api.js";
 
 export class WPClient extends WPCore {
     protected readonly app: Seltzer;
@@ -25,7 +26,7 @@ export class WPClient extends WPCore {
         const endpoint = `${this.config.url}/${this.config.apiBase}${path}`;
 
         return {
-            route,
+            route: route as unknown as Endpoint["route"],
             path,
             endpoint,
             options: {
@@ -52,6 +53,26 @@ export class WPClient extends WPCore {
             method: route.method,
             headers,
             body: body ? JSON.stringify(body) : undefined
+        });
+    }
+
+    protected mutateUpload(route: Route<Endpoint>, body: MediaUploadPayload, params?: RouteParams) {
+        const endpoint = this.buildEndpoint(route, params);
+        const upload = createMediaUploadInit(body);
+        const headers: Record<string, string> = {
+            ...(endpoint.options?.headers ?? {}),
+            ...upload.headers
+        };
+
+        if (typeof FormData !== "undefined" && upload.body instanceof FormData) {
+            delete headers["Content-Type"];
+            delete headers["content-type"];
+        }
+
+        return requestWordPress(endpoint, {
+            method: route.method,
+            headers,
+            body: upload.body
         });
     }
 

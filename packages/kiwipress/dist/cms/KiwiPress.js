@@ -2,6 +2,7 @@ import { Categories } from "../categories/categories.js";
 import { Comments } from "../comments/comments.js";
 import { createNativeCms } from "./native.js";
 import { NectarineStore } from "./store.js";
+import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
@@ -34,7 +35,8 @@ export class KiwiPress {
                 users: new Users(wordpressConfig),
                 categories: new Categories(wordpressConfig),
                 tags: new Tags(wordpressConfig),
-                comments: new Comments(wordpressConfig)
+                comments: new Comments(wordpressConfig),
+                media: new Media(wordpressConfig)
             };
             this.sync = new WPSync(this.wp, this.store, url);
         }

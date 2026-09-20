@@ -32,4 +32,7 @@ export * from "./tags/routes.js";
 export * from "./tags/tags.js";
 export * from "./users/routes.js";
 export * from "./users/users.js";
+export * from "./media/routes.js";
+export * from "./media/media.js";
+export * from "./media/upload.js";
 //# sourceMappingURL=index.js.map

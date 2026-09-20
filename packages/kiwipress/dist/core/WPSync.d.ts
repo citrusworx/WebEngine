@@ -2,6 +2,7 @@ import { Categories } from "../categories/categories.js";
 import { Comments } from "../comments/comments.js";
 import { NectarineStore } from "../cms/store.js";
 import type { CmsCollection, TransferPreview, TransferResult } from "../cms/types.js";
+import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
@@ -13,6 +14,7 @@ export type WordPressClients = {
     categories: Categories;
     tags: Tags;
     comments: Comments;
+    media: Media;
 };
 export declare class WPSync {
     private readonly wordpress;

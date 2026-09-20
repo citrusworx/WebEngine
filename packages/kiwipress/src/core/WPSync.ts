@@ -3,6 +3,7 @@ import { Comments } from "../comments/comments.js";
 import { NectarineStore } from "../cms/store.js";
 import type { CmsCollection, TransferCounts, TransferPreview, TransferResult } from "../cms/types.js";
 import { normalizeWordPressCollection } from "./normalize.js";
+import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
@@ -15,6 +16,7 @@ export type WordPressClients = {
     categories: Categories;
     tags: Tags;
     comments: Comments;
+    media: Media;
 };
 
 const DEFAULT_COLLECTIONS: CmsCollection[] = [
