@@ -236,6 +236,40 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-popover-close-hover: var(--tide-popover-close-hover);
     --juice-popover-focus-ring: var(--tide-popover-focus-ring);
 
+    /* Wizard chrome — dark shell / rails / steps, not a white onboarding
+       page. Current uses accent; complete uses highlight so step-on
+       (heading / white) stays readable. */
+    --tide-wizard-shell: var(--tide-page);
+    --tide-wizard-header: var(--tide-surface-strong);
+    --tide-wizard-header-border: var(--tide-border);
+    --tide-wizard-rail: var(--tide-surface-muted);
+    --tide-wizard-rail-border: var(--tide-border);
+    --tide-wizard-step: var(--tide-surface-strong);
+    --tide-wizard-step-border: var(--tide-border);
+    --tide-wizard-step-ink: var(--tide-text-muted);
+    --tide-wizard-step-current: var(--tide-accent);
+    --tide-wizard-step-complete: var(--tide-highlight);
+    --tide-wizard-step-on: var(--tide-heading);
+    --tide-wizard-step-connector: var(--tide-border);
+    --tide-wizard-panel: var(--tide-surface-strong);
+    --tide-wizard-panel-border: var(--tide-border);
+    --tide-wizard-focus-ring: var(--tide-accent);
+    --juice-wizard-shell: var(--tide-wizard-shell);
+    --juice-wizard-header: var(--tide-wizard-header);
+    --juice-wizard-header-border: var(--tide-wizard-header-border);
+    --juice-wizard-rail: var(--tide-wizard-rail);
+    --juice-wizard-rail-border: var(--tide-wizard-rail-border);
+    --juice-wizard-step: var(--tide-wizard-step);
+    --juice-wizard-step-border: var(--tide-wizard-step-border);
+    --juice-wizard-step-ink: var(--tide-wizard-step-ink);
+    --juice-wizard-step-current: var(--tide-wizard-step-current);
+    --juice-wizard-step-complete: var(--tide-wizard-step-complete);
+    --juice-wizard-step-on: var(--tide-wizard-step-on);
+    --juice-wizard-step-connector: var(--tide-wizard-step-connector);
+    --juice-wizard-panel: var(--tide-wizard-panel);
+    --juice-wizard-panel-border: var(--tide-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--tide-wizard-focus-ring);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);

@@ -1,16 +1,72 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
 /* =====================================================================
    Wizard — multi-step onboarding chrome
    Owns: shell, header, rails, step tracker, order summary, step pages,
          feature cards, pill, navigation. Structure only — colors live
-         in the theme.
+         in the theme via --juice-wizard-* roles.
    ===================================================================== */
 
+// Wizard chrome is structural. Color comes from the shared role contract:
+//   --juice-wizard-shell
+//   --juice-wizard-header
+//   --juice-wizard-header-border
+//   --juice-wizard-rail
+//   --juice-wizard-rail-border
+//   --juice-wizard-step
+//   --juice-wizard-step-border
+//   --juice-wizard-step-ink
+//   --juice-wizard-step-current
+//   --juice-wizard-step-complete
+//   --juice-wizard-step-on
+//   --juice-wizard-step-connector
+//   --juice-wizard-panel
+//   --juice-wizard-panel-border
+//   --juice-wizard-focus-ring
+// Themes bind those names (and optional --aqua-wizard-* / --kw-wizard-* /
+// --cm-wizard-* / --tide-wizard-* / --jx-wizard-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Step progress uses the existing [step="pending"|"active"|"completed"]
+// values already painted by KiwiPress. Bare [step] paints as pending.
+// Runtime (slice B) can set those attrs; this file only consumes them.
+
+@function -juice-wizard-role($name, $fallback) {
+    @return var(
+        --juice-wizard-#{$name},
+        var(--aqua-wizard-#{$name}, var(--kw-wizard-#{$name}, var(--cm-wizard-#{$name}, var(--tide-wizard-#{$name}, var(--jx-wizard-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-wizard-shell: -juice-wizard-role(shell, #{$white-100});
+$_juice-wizard-header: -juice-wizard-role(header, #{$white-100});
+$_juice-wizard-header-border: -juice-wizard-role(header-border, #{rgba($gray-300, 0.85)});
+$_juice-wizard-rail: -juice-wizard-role(rail, #{$gray-100});
+$_juice-wizard-rail-border: -juice-wizard-role(rail-border, #{rgba($gray-300, 0.85)});
+$_juice-wizard-step: -juice-wizard-role(step, #{$white-100});
+$_juice-wizard-step-border: -juice-wizard-role(step-border, #{$gray-300});
+$_juice-wizard-step-ink: -juice-wizard-role(step-ink, #{$gray-600});
+$_juice-wizard-step-current: -juice-wizard-role(step-current, #{$black-700});
+$_juice-wizard-step-complete: -juice-wizard-role(step-complete, #{$black-800});
+$_juice-wizard-step-on: -juice-wizard-role(step-on, #{$white-100});
+$_juice-wizard-step-connector: -juice-wizard-role(step-connector, #{$gray-300});
+$_juice-wizard-panel: -juice-wizard-role(panel, #{$white-100});
+$_juice-wizard-panel-border: -juice-wizard-role(panel-border, #{rgba($gray-300, 0.85)});
+
+// [theme] [wizard…] must beat theme semantic defaults such as
+// [theme="…"] :where(div) / :where(section, header) and generic
+// :where(button) CTA paint. Themes realize color through the roles.
+
 /* Shell --------------------------------------------------------------- */
-[wizard-shell] {
+[wizard-shell],
+[theme] [wizard-shell] {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     position: relative;
+    background-color: $_juice-wizard-shell;
 }
 
 [wizard-header] {
@@ -19,6 +75,12 @@
     z-index: 50;
     border-bottom: 1px solid;
     backdrop-filter: blur(8px);
+}
+
+[wizard-header],
+[theme] [wizard-header] {
+    background-color: $_juice-wizard-header;
+    border-bottom-color: $_juice-wizard-header-border;
 }
 
 [wizard-header] > [container] {
@@ -81,6 +143,14 @@
     }
 }
 
+[wizard-rail="left"],
+[wizard-rail="right"],
+[theme] [wizard-rail="left"],
+[theme] [wizard-rail="right"] {
+    background-color: $_juice-wizard-rail;
+    border-color: $_juice-wizard-rail-border;
+}
+
 [wizard-content] {
     flex: 1;
     width: 100%;
@@ -107,7 +177,8 @@
     top: 4rem;
 }
 
-[step-tracker] > header {
+[step-tracker] > header,
+[theme] [step-tracker] > header {
     margin-bottom: 2rem;
     border: none;
     padding: 0;
@@ -155,6 +226,16 @@
     height: 1rem;
 }
 
+[steps] > [step]:not(:last-child)::after,
+[theme] [steps] > [step]:not(:last-child)::after {
+    background-color: $_juice-wizard-step-connector;
+}
+
+[steps] > [step][step="completed"]:not(:last-child)::after,
+[theme] [steps] > [step][step="completed"]:not(:last-child)::after {
+    background-color: $_juice-wizard-step-current;
+}
+
 [step-indicator] {
     width: 2.5rem;
     height: 2.5rem;
@@ -167,6 +248,39 @@
     font-size: 0.875rem;
     font-weight: 500;
     transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+[step-indicator],
+[theme] [step-indicator],
+[steps] > [step][step="pending"] [step-indicator],
+[theme] [steps] > [step][step="pending"] [step-indicator] {
+    background-color: $_juice-wizard-step;
+    border-color: $_juice-wizard-step-border;
+    color: $_juice-wizard-step-ink;
+}
+
+[steps] > [step][step="active"] [step-indicator],
+[theme] [steps] > [step][step="active"] [step-indicator] {
+    background-color: $_juice-wizard-step-current;
+    border-color: $_juice-wizard-step-current;
+    color: $_juice-wizard-step-on;
+}
+
+[steps] > [step][step="completed"] [step-indicator],
+[theme] [steps] > [step][step="completed"] [step-indicator] {
+    background-color: $_juice-wizard-step-complete;
+    border-color: $_juice-wizard-step-complete;
+    color: $_juice-wizard-step-on;
+}
+
+[step-indicator]:focus-visible,
+[steps] > [step]:focus-visible,
+[step-nav] :focus-visible,
+[theme] [step-indicator]:focus-visible,
+[theme] [steps] > [step]:focus-visible,
+[theme] [step-nav] :focus-visible {
+    outline: 2px solid -juice-wizard-role(focus-ring, currentColor);
+    outline-offset: 2px;
 }
 
 [step-body] {
@@ -195,7 +309,8 @@
     top: 4rem;
 }
 
-[order-summary] > header {
+[order-summary] > header,
+[theme] [order-summary] > header {
     margin-bottom: 1.5rem;
     border: none;
     padding: 0;
@@ -213,10 +328,25 @@
     padding: 1.5rem;
 }
 
+[summary-card],
+[theme] [summary-card] {
+    background-color: $_juice-wizard-panel;
+    border-color: $_juice-wizard-panel-border;
+}
+
 [summary-mode] {
     padding-bottom: 1.5rem;
     border-bottom: 1px solid;
     margin-bottom: 1.5rem;
+}
+
+[summary-mode],
+[theme] [summary-mode],
+[summary-total],
+[theme] [summary-total],
+[trust],
+[theme] [trust] {
+    border-color: $_juice-wizard-panel-border;
 }
 
 [mode-row] {
@@ -381,6 +511,12 @@
     background: transparent;
 }
 
+[feature],
+[theme] [feature] {
+    background-color: $_juice-wizard-panel;
+    border-color: $_juice-wizard-panel-border;
+}
+
 [feature] > div:last-child {
     flex: 1;
 }
@@ -456,6 +592,12 @@
     margin-bottom: 2rem;
 }
 
+[placeholder],
+[theme] [placeholder] {
+    background-color: $_juice-wizard-panel;
+    border-color: $_juice-wizard-panel-border;
+}
+
 [placeholder] > p {
     margin: 0;
     font-size: 0.9375rem;
@@ -474,6 +616,12 @@
     padding: 1rem 1.25rem;
     border: 1px solid;
     border-radius: 0.5rem;
+}
+
+[selected-domain],
+[theme] [selected-domain] {
+    background-color: $_juice-wizard-panel;
+    border-color: $_juice-wizard-panel-border;
 }
 
 [selected-domain] > strong {
@@ -496,4 +644,13 @@
 
 [subtle] {
     font-size: 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [step-indicator],
+    [theme] [step-indicator],
+    [feature],
+    [theme] [feature] {
+        transition: none;
+    }
 }

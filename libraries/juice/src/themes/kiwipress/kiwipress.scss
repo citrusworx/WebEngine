@@ -226,6 +226,39 @@
     --juice-popover-close-hover: var(--kw-popover-close-hover);
     --juice-popover-focus-ring: var(--kw-popover-focus-ring);
 
+    /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+       Product extras (logo, badge, pill, feature-icon) stay KiwiPress-local. */
+    --kw-wizard-shell: var(--kw-page);
+    --kw-wizard-header: var(--kw-surface-strong);
+    --kw-wizard-header-border: var(--kw-border);
+    --kw-wizard-rail: var(--kw-surface-muted);
+    --kw-wizard-rail-border: var(--kw-border);
+    --kw-wizard-step: var(--kw-surface);
+    --kw-wizard-step-border: var(--kw-border);
+    --kw-wizard-step-ink: var(--kw-text-soft);
+    --kw-wizard-step-current: var(--kw-accent);
+    --kw-wizard-step-complete: var(--kw-accent-strong);
+    --kw-wizard-step-on: var(--kw-page);
+    --kw-wizard-step-connector: var(--kw-border);
+    --kw-wizard-panel: var(--kw-surface);
+    --kw-wizard-panel-border: var(--kw-border);
+    --kw-wizard-focus-ring: var(--kw-accent);
+    --juice-wizard-shell: var(--kw-wizard-shell);
+    --juice-wizard-header: var(--kw-wizard-header);
+    --juice-wizard-header-border: var(--kw-wizard-header-border);
+    --juice-wizard-rail: var(--kw-wizard-rail);
+    --juice-wizard-rail-border: var(--kw-wizard-rail-border);
+    --juice-wizard-step: var(--kw-wizard-step);
+    --juice-wizard-step-border: var(--kw-wizard-step-border);
+    --juice-wizard-step-ink: var(--kw-wizard-step-ink);
+    --juice-wizard-step-current: var(--kw-wizard-step-current);
+    --juice-wizard-step-complete: var(--kw-wizard-step-complete);
+    --juice-wizard-step-on: var(--kw-wizard-step-on);
+    --juice-wizard-step-connector: var(--kw-wizard-step-connector);
+    --juice-wizard-panel: var(--kw-wizard-panel);
+    --juice-wizard-panel-border: var(--kw-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--kw-wizard-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1173,15 +1206,16 @@
 }
 
 /* Wizard chrome --------------------------------------------------------
-   Paints the structural primitives in libraries/juice/src/components/wizard.
+   Structural paint comes from --juice-wizard-* roles. Product extras
+   (logo, badge, header button, feature-icon, pill, trust dots) stay here.
    ====================================================================== */
 [theme="kiwipress"] [wizard-shell] {
-    background-color: var(--kw-page);
+    background-color: var(--juice-wizard-shell);
 }
 
 [theme="kiwipress"] [wizard-header] {
-    background-color: var(--kw-surface-strong);
-    border-bottom-color: var(--kw-border);
+    background-color: var(--juice-wizard-header);
+    border-bottom-color: var(--juice-wizard-header-border);
 }
 
 [theme="kiwipress"] [wizard-header] [brand] [logo] {
@@ -1210,8 +1244,8 @@
 
 [theme="kiwipress"] [wizard-rail="left"],
 [theme="kiwipress"] [wizard-rail="right"] {
-    background-color: var(--kw-surface-muted);
-    border-color: var(--kw-border);
+    background-color: var(--juice-wizard-rail);
+    border-color: var(--juice-wizard-rail-border);
 }
 
 [theme="kiwipress"] [step-tracker] [eyebrow] {
@@ -1223,21 +1257,21 @@
 }
 
 [theme="kiwipress"] [steps] > [step][step="pending"] [step-indicator] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
-    color: var(--kw-text-soft);
+    background-color: var(--juice-wizard-step);
+    border-color: var(--juice-wizard-step-border);
+    color: var(--juice-wizard-step-ink);
 }
 
 [theme="kiwipress"] [steps] > [step][step="active"] [step-indicator] {
-    background-color: var(--kw-accent);
-    border-color: var(--kw-accent);
-    color: #ffffff;
+    background-color: var(--juice-wizard-step-current);
+    border-color: var(--juice-wizard-step-current);
+    color: var(--juice-wizard-step-on);
 }
 
 [theme="kiwipress"] [steps] > [step][step="completed"] [step-indicator] {
-    background-color: var(--kw-accent-strong);
-    border-color: var(--kw-accent-strong);
-    color: #ffffff;
+    background-color: var(--juice-wizard-step-complete);
+    border-color: var(--juice-wizard-step-complete);
+    color: var(--juice-wizard-step-on);
 }
 
 [theme="kiwipress"] [steps] > [step][step="pending"] [step-body] > h4 {
@@ -1254,11 +1288,11 @@
 }
 
 [theme="kiwipress"] [steps] > [step]:not(:last-child)::after {
-    background-color: var(--kw-border);
+    background-color: var(--juice-wizard-step-connector);
 }
 
 [theme="kiwipress"] [steps] > [step][step="completed"]:not(:last-child)::after {
-    background-color: var(--kw-accent);
+    background-color: var(--juice-wizard-step-current);
 }
 
 [theme="kiwipress"] [order-summary] [eyebrow],
@@ -1267,13 +1301,13 @@
 }
 
 [theme="kiwipress"] [summary-card] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
+    background-color: var(--juice-wizard-panel);
+    border-color: var(--juice-wizard-panel-border);
     box-shadow: 0 1px 2px var(--kw-shadow);
 }
 
 [theme="kiwipress"] [summary-mode] {
-    border-bottom-color: var(--kw-border);
+    border-bottom-color: var(--juice-wizard-panel-border);
 }
 
 [theme="kiwipress"] [mode-row] > i {
@@ -1292,11 +1326,11 @@
 }
 
 [theme="kiwipress"] [summary-total] {
-    border-top-color: var(--kw-border);
+    border-top-color: var(--juice-wizard-panel-border);
 }
 
 [theme="kiwipress"] [trust] {
-    border-top-color: var(--kw-border);
+    border-top-color: var(--juice-wizard-panel-border);
 }
 
 [theme="kiwipress"] [trust] > li {
@@ -1309,8 +1343,8 @@
 
 /* Welcome page features (wizard scope only — distinct from [card="feature"]) */
 [theme="kiwipress"] [step-page="welcome"] [feature] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
+    background-color: var(--juice-wizard-panel);
+    border-color: var(--juice-wizard-panel-border);
 }
 
 [theme="kiwipress"] [step-page="welcome"] [feature]:hover {
@@ -1331,7 +1365,7 @@
 
 [theme="kiwipress"] [placeholder] {
     border-color: var(--kw-border-strong);
-    background-color: var(--kw-surface);
+    background-color: var(--juice-wizard-panel);
 }
 
 [theme="kiwipress"] [placeholder] > p {
@@ -1339,8 +1373,8 @@
 }
 
 [theme="kiwipress"] [selected-domain] {
-    background-color: var(--kw-surface);
-    border-color: var(--kw-border);
+    background-color: var(--juice-wizard-panel);
+    border-color: var(--juice-wizard-panel-border);
 }
 
 [theme="kiwipress"] [selected-domain] > i {
@@ -1349,6 +1383,13 @@
 
 [theme="kiwipress"] [selected-domain] > [subtle] {
     color: var(--kw-text-soft);
+}
+
+[theme="kiwipress"] [step-indicator]:focus-visible,
+[theme="kiwipress"] [steps] > [step]:focus-visible,
+[theme="kiwipress"] [step-nav] :focus-visible {
+    outline: 2px solid var(--juice-wizard-focus-ring);
+    outline-offset: 2px;
 }
 
 /* Modal chrome. Generic KiwiPress buttons are kiwi CTAs;

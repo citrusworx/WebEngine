@@ -11,6 +11,7 @@ import {
     REQUIRED_TOAST_ROLES,
     REQUIRED_POPOVER_ROLES,
     REQUIRED_TABS_ROLES,
+    REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
     SURFACE_TONE_ROLES,
@@ -272,6 +273,30 @@ describe("Juice theme generator surface tone roles", () => {
         for (const block of closeBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-wizard-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-wizard-shell: var(--jx-page)");
+        expect(css).toContain("--jx-wizard-header: var(--jx-surface-strong)");
+        expect(css).toContain("--jx-wizard-header-border: var(--jx-border)");
+        expect(css).toContain("--jx-wizard-rail: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-wizard-rail-border: var(--jx-border)");
+        expect(css).toContain("--jx-wizard-step: var(--jx-surface)");
+        expect(css).toContain("--jx-wizard-step-border: var(--jx-border)");
+        expect(css).toContain("--jx-wizard-step-ink: var(--jx-text-muted)");
+        expect(css).toContain("--jx-wizard-step-current: var(--jx-accent)");
+        expect(css).toContain("--jx-wizard-step-complete: var(--jx-accent-strong)");
+        expect(css).toContain("--jx-wizard-step-on: var(--jx-text-inverse)");
+        expect(css).toContain("--jx-wizard-step-connector: var(--jx-border)");
+        expect(css).toContain("--jx-wizard-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-wizard-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-wizard-focus-ring: var(--jx-accent)");
+
+        for (const role of REQUIRED_WIZARD_ROLES) {
+            expect(css).toContain(`--juice-wizard-${role}: var(--jx-wizard-${role})`);
         }
     });
 

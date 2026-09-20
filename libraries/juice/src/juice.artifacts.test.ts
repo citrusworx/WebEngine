@@ -276,6 +276,46 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[popover-root\][^{]*\{[^}]*--juice-toast-panel/);
     });
 
+    it("includes wizard structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[wizard-shell]");
+        expect(css).toContain("[wizard-header]");
+        expect(css).toContain("[wizard-body]");
+        expect(css).toContain("[wizard-rail=");
+        expect(css).toContain("[wizard-content]");
+        expect(css).toContain("[step-tracker]");
+        expect(css).toContain("[step-indicator]");
+        expect(css).toContain("[order-summary]");
+        expect(css).toContain("[step-page]");
+        expect(css).toContain("[step-nav]");
+        expect(css).toMatch(/\[theme\]\s+\[wizard-shell\]/);
+        expect(css).toMatch(/\[theme\]\s+\[wizard-header\]/);
+        expect(css).toMatch(/\[theme\]\s+\[wizard-rail=["']?left["']?\]/);
+        expect(css).toMatch(/\[step=["']?pending["']?\]/);
+        expect(css).toMatch(/\[step=["']?active["']?\]/);
+        expect(css).toMatch(/\[step=["']?completed["']?\]/);
+        expect(css).toMatch(/\[step-indicator\]:focus-visible/);
+        expect(css).toContain("--juice-wizard-shell");
+        expect(css).toContain("--juice-wizard-header");
+        expect(css).toContain("--juice-wizard-header-border");
+        expect(css).toContain("--juice-wizard-rail");
+        expect(css).toContain("--juice-wizard-rail-border");
+        expect(css).toContain("--juice-wizard-step");
+        expect(css).toContain("--juice-wizard-step-border");
+        expect(css).toContain("--juice-wizard-step-ink");
+        expect(css).toContain("--juice-wizard-step-current");
+        expect(css).toContain("--juice-wizard-step-complete");
+        expect(css).toContain("--juice-wizard-step-on");
+        expect(css).toContain("--juice-wizard-step-connector");
+        expect(css).toContain("--juice-wizard-panel");
+        expect(css).toContain("--juice-wizard-panel-border");
+        expect(css).toContain("--juice-wizard-focus-ring");
+        expect(css).not.toMatch(/\[wizard-shell\][^{]*\{[^}]*--aqua-page/);
+        expect(css).not.toMatch(/\[wizard-shell\][^{]*\{[^}]*--kw-page/);
+        expect(css).not.toMatch(/\[step-indicator\][^{]*\{[^}]*--aqua-button-background/);
+    });
+
     it("includes tabs structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -558,6 +598,33 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-popover-panel: var(--tide-page)");
     });
 
+    it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-wizard-shell: var(--aqua-page)");
+        expect(aquaCss).toContain("--juice-wizard-header: var(--aqua-wizard-header)");
+        expect(aquaCss).toContain("--juice-wizard-step-current: var(--aqua-wizard-step-current)");
+
+        expect(kiwiCss).toContain("--kw-wizard-shell: var(--kw-page)");
+        expect(kiwiCss).toContain("--juice-wizard-rail: var(--kw-wizard-rail)");
+        expect(kiwiCss).toContain("--juice-wizard-step-complete: var(--kw-wizard-step-complete)");
+        expect(kiwiCss).toMatch(/\[step=["']?active["']?\]/);
+        expect(kiwiCss).toMatch(/\[pill=["']?accent["']?\]/);
+
+        expect(mintCss).toContain("--cm-wizard-shell: var(--cm-page)");
+        expect(mintCss).toContain("--juice-wizard-panel: var(--cm-wizard-panel)");
+        expect(mintCss).toContain("--cm-wizard-step-current: var(--cm-heading)");
+
+        expect(tideCss).toContain("--tide-wizard-shell: var(--tide-page)");
+        expect(tideCss).toContain("--juice-wizard-panel: var(--tide-wizard-panel)");
+        expect(tideCss).toContain("--tide-wizard-step-complete: var(--tide-highlight)");
+        expect(tideCss).not.toContain("--tide-wizard-shell: var(--tide-surface)");
+        expect(tideCss).not.toContain("--tide-wizard-panel: var(--tide-page)");
+    });
+
     it("ships tide CSS as a stable theme export", () => {
         const bundledThemeIds = readBundledThemeIds();
         const themePath = join(DIST_DIR, "themes", "tide.css");
@@ -597,6 +664,8 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-popover-panel: var(--tide-popover-panel)");
         expect(themeCss).toContain("--juice-popover-ink: var(--tide-popover-ink)");
         expect(themeCss).toContain("button[popover-close]");
+        expect(themeCss).toContain("--juice-wizard-shell: var(--tide-wizard-shell)");
+        expect(themeCss).toContain("--juice-wizard-panel: var(--tide-wizard-panel)");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");
