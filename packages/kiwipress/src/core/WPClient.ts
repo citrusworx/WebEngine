@@ -26,7 +26,7 @@ export class WPClient extends WPCore {
         const endpoint = `${this.config.url}/${this.config.apiBase}${path}`;
 
         return {
-            route,
+            route: route as unknown as Endpoint["route"],
             path,
             endpoint,
             options: {
