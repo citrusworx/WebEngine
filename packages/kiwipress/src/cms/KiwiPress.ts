@@ -4,6 +4,7 @@ import { createNativeCms, type NativeCms } from "./native.js";
 import type { CmsPersistence } from "./persistence.js";
 import { NectarineStore } from "./store.js";
 import type { CmsMode } from "./types.js";
+import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
@@ -48,7 +49,8 @@ export class KiwiPress {
                 users: new Users(wordpressConfig),
                 categories: new Categories(wordpressConfig),
                 tags: new Tags(wordpressConfig),
-                comments: new Comments(wordpressConfig)
+                comments: new Comments(wordpressConfig),
+                media: new Media(wordpressConfig)
             };
             this.sync = new WPSync(this.wp, this.store, url);
         } else if (this.mode === "wordpress") {

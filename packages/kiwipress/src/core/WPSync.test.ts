@@ -6,6 +6,7 @@ import { Users } from "../users/users.js";
 import { Categories } from "../categories/categories.js";
 import { Tags } from "../tags/tags.js";
 import { Comments } from "../comments/comments.js";
+import { Media } from "../media/media.js";
 import { WPSync } from "./WPSync.js";
 
 function wordpressClients(url = "https://example.com") {
@@ -16,7 +17,8 @@ function wordpressClients(url = "https://example.com") {
         users: new Users(config),
         categories: new Categories(config),
         tags: new Tags(config),
-        comments: new Comments(config)
+        comments: new Comments(config),
+        media: new Media(config)
     };
 }
 
