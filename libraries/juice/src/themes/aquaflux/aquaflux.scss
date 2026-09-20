@@ -265,6 +265,17 @@
     --juice-wizard-panel-border: var(--aqua-wizard-panel-border);
     --juice-wizard-focus-ring: var(--aqua-wizard-focus-ring);
 
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --aqua-tooltip-panel: var(--aqua-surface-strong);
+    --aqua-tooltip-panel-border: var(--aqua-border);
+    --aqua-tooltip-panel-shadow: 0 12px 28px -20px var(--aqua-shadow);
+    --aqua-tooltip-ink: var(--aqua-text);
+    --juice-tooltip-panel: var(--aqua-tooltip-panel);
+    --juice-tooltip-panel-border: var(--aqua-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--aqua-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--aqua-tooltip-ink);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -824,4 +835,13 @@
 [theme="aquaflux"] [popover-close]:focus-visible {
     outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="aquaflux"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
 }

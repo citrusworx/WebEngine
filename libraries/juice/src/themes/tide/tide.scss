@@ -270,6 +270,17 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-wizard-panel-border: var(--tide-wizard-panel-border);
     --juice-wizard-focus-ring: var(--tide-wizard-focus-ring);
 
+    /* Tooltip chrome — dark tip, not white glass. No close, no status.
+       Distinct from popover. */
+    --tide-tooltip-panel: var(--tide-surface-strong);
+    --tide-tooltip-panel-border: var(--tide-border);
+    --tide-tooltip-panel-shadow: var(--tide-line-glow), 0 12px 28px -18px var(--tide-shadow);
+    --tide-tooltip-ink: var(--tide-text);
+    --juice-tooltip-panel: var(--tide-tooltip-panel);
+    --juice-tooltip-panel-border: var(--tide-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--tide-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--tide-tooltip-ink);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
@@ -768,4 +779,13 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
 [theme="tide"] [popover-close]:focus-visible {
     outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Panel stays dark.
+   Optional surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="tide"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
 }

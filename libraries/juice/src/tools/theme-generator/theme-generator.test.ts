@@ -11,6 +11,7 @@ import {
     REQUIRED_TOAST_ROLES,
     REQUIRED_POPOVER_ROLES,
     REQUIRED_TABS_ROLES,
+    REQUIRED_TOOLTIP_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -274,6 +275,23 @@ describe("Juice theme generator surface tone roles", () => {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }
+    });
+
+    it("binds --juice-tooltip-* from existing --jx-* surfaces", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-tooltip-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-tooltip-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-tooltip-panel-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-tooltip-ink: var(--jx-text)");
+
+        for (const role of REQUIRED_TOOLTIP_ROLES) {
+            expect(css).toContain(`--juice-tooltip-${role}: var(--jx-tooltip-${role})`);
+        }
+
+        expect(css).toContain("[tooltip-panel]:not([surfaceTone])");
+        expect(css).not.toMatch(/\[tooltip\](?![-a-z])/);
+        expect(css).not.toContain("[tooltip-close]");
     });
 
     it("binds --juice-wizard-* from existing --jx-* surfaces and accents", () => {

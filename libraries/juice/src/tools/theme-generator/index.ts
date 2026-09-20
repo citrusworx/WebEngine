@@ -544,6 +544,17 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-wizard-panel-border: var(--jx-wizard-panel-border);
     --juice-wizard-focus-ring: var(--jx-wizard-focus-ring);
 
+    /* Tooltip chrome — hover/focus tip from existing --jx-* tokens.
+       No close, no status. Distinct from popover. */
+    --jx-tooltip-panel: var(--jx-surface);
+    --jx-tooltip-panel-border: var(--jx-border);
+    --jx-tooltip-panel-shadow: var(--jx-shadow-strong);
+    --jx-tooltip-ink: var(--jx-text);
+    --juice-tooltip-panel: var(--jx-tooltip-panel);
+    --juice-tooltip-panel-border: var(--jx-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--jx-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--jx-tooltip-ink);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -935,6 +946,13 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [popover-close]:focus-visible {
     outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
+}
+
+[theme="${config.id}"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
 }
 
 ${namedSurfaces}

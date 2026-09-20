@@ -276,6 +276,34 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[popover-root\][^{]*\{[^}]*--juice-toast-panel/);
     });
 
+    it("includes tooltip structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[tooltip-root]");
+        expect(css).toContain("[tooltip-panel]");
+        expect(css).toMatch(/\[theme\]\s+\[tooltip-root\]/);
+        expect(css).toMatch(/\[theme\]\s+\[tooltip-panel\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[tooltip-root\]\[hidden\]/);
+        expect(css).toMatch(/\[tooltip-root=["']?bottom["']?\]/);
+        expect(css).toMatch(/\[tooltip-root=["']?left["']?\]/);
+        expect(css).toMatch(/\[tooltip-root=["']?right["']?\]/);
+        expect(css).toContain("z-index: 1060");
+        expect(css).toContain("--juice-tooltip-panel");
+        expect(css).toContain("--juice-tooltip-panel-border");
+        expect(css).toContain("--juice-tooltip-panel-shadow");
+        expect(css).toContain("--juice-tooltip-ink");
+        expect(css).not.toMatch(/\[tooltip\](?![-a-z])/);
+        expect(css).not.toContain("[tooltip-close]");
+        expect(css).not.toContain("--juice-tooltip-close");
+        expect(css).not.toContain("--juice-tooltip-focus-ring");
+        expect(css).not.toMatch(/\[tooltip-root\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[tooltip-root\][^{]*\{[^}]*--juice-drawer-overlay/);
+        expect(css).not.toMatch(/\[tooltip-root\][^{]*\{[^}]*--juice-modal-overlay/);
+        expect(css).not.toMatch(/\[tooltip-root\][^{]*\{[^}]*--juice-toast-panel/);
+        expect(css).not.toMatch(/\[tooltip-root\][^{]*\{[^}]*--juice-popover-panel/);
+        expect(css).not.toMatch(/\[title\]/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -598,6 +626,30 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-popover-panel: var(--tide-page)");
     });
 
+    it("binds tooltip chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-tooltip-panel: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--juice-tooltip-ink: var(--aqua-tooltip-ink)");
+        expect(aquaCss).toContain("[tooltip-panel]:not([surfaceTone])");
+
+        expect(kiwiCss).toContain("--kw-tooltip-panel: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-tooltip-panel: var(--kw-tooltip-panel)");
+        expect(kiwiCss).toContain("[tooltip-panel]:not([surfaceTone])");
+
+        expect(mintCss).toContain("--cm-tooltip-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-tooltip-ink: var(--cm-tooltip-ink)");
+        expect(mintCss).toContain("[tooltip-panel]:not([surfaceTone])");
+
+        expect(tideCss).toContain("--tide-tooltip-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-tooltip-ink: var(--tide-tooltip-ink)");
+        expect(tideCss).toContain("[tooltip-panel]:not([surfaceTone])");
+        expect(tideCss).not.toContain("--tide-tooltip-panel: var(--tide-page)");
+    });
+
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
@@ -666,6 +718,8 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("button[popover-close]");
         expect(themeCss).toContain("--juice-wizard-shell: var(--tide-wizard-shell)");
         expect(themeCss).toContain("--juice-wizard-panel: var(--tide-wizard-panel)");
+        expect(themeCss).toContain("--juice-tooltip-panel: var(--tide-tooltip-panel)");
+        expect(themeCss).toContain("--juice-tooltip-ink: var(--tide-tooltip-ink)");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");
