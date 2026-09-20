@@ -96,6 +96,25 @@ export const REQUIRED_POPOVER_ROLES = [
     "focus-ring",
 ] as const;
 
+/** Wizard chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_WIZARD_ROLES = [
+    "shell",
+    "header",
+    "header-border",
+    "rail",
+    "rail-border",
+    "step",
+    "step-border",
+    "step-ink",
+    "step-current",
+    "step-complete",
+    "step-on",
+    "step-connector",
+    "panel",
+    "panel-border",
+    "focus-ring",
+] as const;
+
 export const SURFACE_TONES = ["soft", "strong", "muted"] as const;
 export const SURFACE_TONE_ROLES = ["bg", "border", "shadow", "blur"] as const;
 export const BORDER_STRENGTHS = ["soft", "bold"] as const;
@@ -157,6 +176,10 @@ export function requiredPopoverBinds(): string[] {
     return REQUIRED_POPOVER_ROLES.map((role) => `--juice-popover-${role}`);
 }
 
+export function requiredWizardBinds(): string[] {
+    return REQUIRED_WIZARD_ROLES.map((role) => `--juice-wizard-${role}`);
+}
+
 export function requiredSurfaceToneBinds(): string[] {
     return SURFACE_TONES.flatMap((tone) =>
         SURFACE_TONE_ROLES.map((role) => `--juice-surface-${tone}-${role}`)
@@ -190,6 +213,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredDrawerBinds(),
         ...requiredToastBinds(),
         ...requiredPopoverBinds(),
+        ...requiredWizardBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
         ...requiredShadowToneBinds(),
@@ -224,8 +248,9 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal, drawer, toast, and popover chrome use `--jx-modal-*` / `--jx-drawer-*` /
- * `--jx-toast-*` / `--jx-popover-*` aliases, same suffix pattern as tabs.
+ * Modal, drawer, toast, popover, and wizard chrome use `--jx-modal-*` /
+ * `--jx-drawer-*` / `--jx-toast-*` / `--jx-popover-*` / `--jx-wizard-*`
+ * aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -252,6 +277,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_POPOVER_ROLES.map((role) => ({
             juice: `--juice-popover-${role}`,
             jx: `--jx-popover-${role}`,
+        })),
+        ...REQUIRED_WIZARD_ROLES.map((role) => ({
+            juice: `--juice-wizard-${role}`,
+            jx: `--jx-wizard-${role}`,
         })),
     ];
 }

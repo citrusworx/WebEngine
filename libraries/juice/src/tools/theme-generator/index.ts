@@ -512,6 +512,38 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-popover-close-hover: var(--jx-popover-close-hover);
     --juice-popover-focus-ring: var(--jx-popover-focus-ring);
 
+    /* Wizard chrome — onboarding shell / rails / steps from existing --jx-* tokens. */
+    --jx-wizard-shell: var(--jx-page);
+    --jx-wizard-header: var(--jx-surface-strong);
+    --jx-wizard-header-border: var(--jx-border);
+    --jx-wizard-rail: var(--jx-surface-muted);
+    --jx-wizard-rail-border: var(--jx-border);
+    --jx-wizard-step: var(--jx-surface);
+    --jx-wizard-step-border: var(--jx-border);
+    --jx-wizard-step-ink: var(--jx-text-muted);
+    --jx-wizard-step-current: var(--jx-accent);
+    --jx-wizard-step-complete: var(--jx-accent-strong);
+    --jx-wizard-step-on: var(--jx-text-inverse);
+    --jx-wizard-step-connector: var(--jx-border);
+    --jx-wizard-panel: var(--jx-surface);
+    --jx-wizard-panel-border: var(--jx-border);
+    --jx-wizard-focus-ring: var(--jx-accent);
+    --juice-wizard-shell: var(--jx-wizard-shell);
+    --juice-wizard-header: var(--jx-wizard-header);
+    --juice-wizard-header-border: var(--jx-wizard-header-border);
+    --juice-wizard-rail: var(--jx-wizard-rail);
+    --juice-wizard-rail-border: var(--jx-wizard-rail-border);
+    --juice-wizard-step: var(--jx-wizard-step);
+    --juice-wizard-step-border: var(--jx-wizard-step-border);
+    --juice-wizard-step-ink: var(--jx-wizard-step-ink);
+    --juice-wizard-step-current: var(--jx-wizard-step-current);
+    --juice-wizard-step-complete: var(--jx-wizard-step-complete);
+    --juice-wizard-step-on: var(--jx-wizard-step-on);
+    --juice-wizard-step-connector: var(--jx-wizard-step-connector);
+    --juice-wizard-panel: var(--jx-wizard-panel);
+    --juice-wizard-panel-border: var(--jx-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--jx-wizard-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);

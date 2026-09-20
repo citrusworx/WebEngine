@@ -76,6 +76,7 @@ A healthy Juice theme should own:
 - drawer chrome roles (`--juice-drawer-*`, bound from theme identity tokens)
 - toast chrome roles (`--juice-toast-*`, bound from theme identity tokens)
 - popover chrome roles (`--juice-popover-*`, bound from theme identity tokens)
+- wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
 Themes should not own:
@@ -223,6 +224,7 @@ The generated stylesheet currently defines:
 - drawer chrome role bindings (`--jx-drawer-*` / `--juice-drawer-*`) and close-button CTA overrides for `[drawer-close]`
 - toast chrome role bindings (`--jx-toast-*` / `--juice-toast-*`) and close-button CTA overrides for `[toast-close]`
 - popover chrome role bindings (`--jx-popover-*` / `--juice-popover-*`) and close-button CTA overrides for `[popover-close]`
+- wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
 
@@ -295,6 +297,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome, not the native HTML Popover API — never use a bare `popover` attribute for the panel. `[popover-root]` is an anchored positioning wrapper. It is not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[popover-root]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`. The popover runtime auto-enhances that markup (open/close, Escape, outside click, Tab trap, one-axis flip) — see [Popover Runtime](./juice-popover-runtime.md).
 
 Tide must bind a dark panel (`--tide-surface-strong`), not a white glass popover.
+
+## Wizard chrome roles
+
+Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step-indicator]` paint is theme-agnostic in `wizard.scss`. Required names (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-wizard-*`, `--kw-wizard-*`, `--cm-wizard-*`, `--tide-wizard-*`, …). App-owned generated themes use `--jx-wizard-*` and bind `--juice-wizard-*` from existing `--jx-*` surface/page/text/accent tokens. Do not invent a new hue family just for wizard chrome. Step indicators are surfaces, not CTA buttons.
+
+Step progress uses `[step="pending"|"active"|"completed"]` (bare `[step]` paints as pending). This is theme chrome only — there is no wizard runtime yet.
+
+Tide must bind a dark shell (`--tide-page`) and dark rails, not a white onboarding page.
 
 ## Surface tone roles
 

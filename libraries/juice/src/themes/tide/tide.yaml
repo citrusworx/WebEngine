@@ -16,6 +16,7 @@ philosophy:
     - drawer chrome role bindings
     - toast chrome role bindings
     - popover chrome role bindings
+    - wizard chrome role bindings
   does_not_own:
     - layout
     - spacing
@@ -93,6 +94,7 @@ authoring_rules:
   - Bind drawer chrome roles (`--tide-drawer-*` and `--juice-drawer-*`) from Tide page/surface tokens so `[drawer]` stays a dark panel and `[drawer-close]` stays a surface control, not a CTA.
   - Bind toast chrome roles (`--tide-toast-*` and `--juice-toast-*`) from Tide page/surface/accent tokens so `[toast]` stays a dark panel and `[toast-close]` stays a surface control, not a CTA.
   - Bind popover chrome roles (`--tide-popover-*` and `--juice-popover-*`) from Tide page/surface tokens so `[popover-panel]` stays a dark panel and `[popover-close]` stays a surface control, not a CTA.
+  - Bind wizard chrome roles (`--tide-wizard-*` and `--juice-wizard-*`) from Tide page/surface/accent tokens so the onboarding shell stays a dark page, not a white wizard.
   - Optional chrome roles (`item-border`, `trigger-accent`, `panel`, `open-glow`) paint FAQ pill rows; other themes may omit them.
   - Keep page intros in `main > header` so they stay type, not a competing glass surface.
 

@@ -99333,14 +99333,16 @@ nav[type=actions] a:hover {
    Wizard — multi-step onboarding chrome
    Owns: shell, header, rails, step tracker, order summary, step pages,
          feature cards, pill, navigation. Structure only — colors live
-         in the theme.
+         in the theme via --juice-wizard-* roles.
    ===================================================================== */
 /* Shell --------------------------------------------------------------- */
-[wizard-shell] {
+[wizard-shell],
+[theme] [wizard-shell] {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: var(--juice-wizard-shell, var(--aqua-wizard-shell, var(--kw-wizard-shell, var(--cm-wizard-shell, var(--tide-wizard-shell, var(--jx-wizard-shell, hsl(0, 0%, 100%)))))));
 }
 
 [wizard-header] {
@@ -99350,6 +99352,12 @@ nav[type=actions] a:hover {
   border-bottom: 1px solid;
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
+}
+
+[wizard-header],
+[theme] [wizard-header] {
+  background-color: var(--juice-wizard-header, var(--aqua-wizard-header, var(--kw-wizard-header, var(--cm-wizard-header, var(--tide-wizard-header, var(--jx-wizard-header, hsl(0, 0%, 100%)))))));
+  border-bottom-color: var(--juice-wizard-header-border, var(--aqua-wizard-header-border, var(--kw-wizard-header-border, var(--cm-wizard-header-border, var(--tide-wizard-header-border, var(--jx-wizard-header-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
 }
 
 [wizard-header] > [container] {
@@ -99414,6 +99422,14 @@ nav[type=actions] a:hover {
   }
 }
 
+[wizard-rail=left],
+[wizard-rail=right],
+[theme] [wizard-rail=left],
+[theme] [wizard-rail=right] {
+  background-color: var(--juice-wizard-rail, var(--aqua-wizard-rail, var(--kw-wizard-rail, var(--cm-wizard-rail, var(--tide-wizard-rail, var(--jx-wizard-rail, hsl(0, 0%, 95%)))))));
+  border-color: var(--juice-wizard-rail-border, var(--aqua-wizard-rail-border, var(--kw-wizard-rail-border, var(--cm-wizard-rail-border, var(--tide-wizard-rail-border, var(--jx-wizard-rail-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+}
+
 [wizard-content] {
   flex: 1;
   width: 100%;
@@ -99441,7 +99457,8 @@ nav[type=actions] a:hover {
   top: 4rem;
 }
 
-[step-tracker] > header {
+[step-tracker] > header,
+[theme] [step-tracker] > header {
   margin-bottom: 2rem;
   border: none;
   padding: 0;
@@ -99489,6 +99506,16 @@ nav[type=actions] a:hover {
   height: 1rem;
 }
 
+[steps] > [step]:not(:last-child)::after,
+[theme] [steps] > [step]:not(:last-child)::after {
+  background-color: var(--juice-wizard-step-connector, var(--aqua-wizard-step-connector, var(--kw-wizard-step-connector, var(--cm-wizard-step-connector, var(--tide-wizard-step-connector, var(--jx-wizard-step-connector, hsl(0, 0%, 85%)))))));
+}
+
+[steps] > [step][step=completed]:not(:last-child)::after,
+[theme] [steps] > [step][step=completed]:not(:last-child)::after {
+  background-color: var(--juice-wizard-step-current, var(--aqua-wizard-step-current, var(--kw-wizard-step-current, var(--cm-wizard-step-current, var(--tide-wizard-step-current, var(--jx-wizard-step-current, hsl(0, 0%, 20%)))))));
+}
+
 [step-indicator] {
   width: 2.5rem;
   height: 2.5rem;
@@ -99501,6 +99528,39 @@ nav[type=actions] a:hover {
   font-size: 0.875rem;
   font-weight: 500;
   transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+[step-indicator],
+[theme] [step-indicator],
+[steps] > [step][step=pending] [step-indicator],
+[theme] [steps] > [step][step=pending] [step-indicator] {
+  background-color: var(--juice-wizard-step, var(--aqua-wizard-step, var(--kw-wizard-step, var(--cm-wizard-step, var(--tide-wizard-step, var(--jx-wizard-step, hsl(0, 0%, 100%)))))));
+  border-color: var(--juice-wizard-step-border, var(--aqua-wizard-step-border, var(--kw-wizard-step-border, var(--cm-wizard-step-border, var(--tide-wizard-step-border, var(--jx-wizard-step-border, hsl(0, 0%, 85%)))))));
+  color: var(--juice-wizard-step-ink, var(--aqua-wizard-step-ink, var(--kw-wizard-step-ink, var(--cm-wizard-step-ink, var(--tide-wizard-step-ink, var(--jx-wizard-step-ink, hsl(0, 0%, 70%)))))));
+}
+
+[steps] > [step][step=active] [step-indicator],
+[theme] [steps] > [step][step=active] [step-indicator] {
+  background-color: var(--juice-wizard-step-current, var(--aqua-wizard-step-current, var(--kw-wizard-step-current, var(--cm-wizard-step-current, var(--tide-wizard-step-current, var(--jx-wizard-step-current, hsl(0, 0%, 20%)))))));
+  border-color: var(--juice-wizard-step-current, var(--aqua-wizard-step-current, var(--kw-wizard-step-current, var(--cm-wizard-step-current, var(--tide-wizard-step-current, var(--jx-wizard-step-current, hsl(0, 0%, 20%)))))));
+  color: var(--juice-wizard-step-on, var(--aqua-wizard-step-on, var(--kw-wizard-step-on, var(--cm-wizard-step-on, var(--tide-wizard-step-on, var(--jx-wizard-step-on, hsl(0, 0%, 100%)))))));
+}
+
+[steps] > [step][step=completed] [step-indicator],
+[theme] [steps] > [step][step=completed] [step-indicator] {
+  background-color: var(--juice-wizard-step-complete, var(--aqua-wizard-step-complete, var(--kw-wizard-step-complete, var(--cm-wizard-step-complete, var(--tide-wizard-step-complete, var(--jx-wizard-step-complete, hsl(0, 0%, 15%)))))));
+  border-color: var(--juice-wizard-step-complete, var(--aqua-wizard-step-complete, var(--kw-wizard-step-complete, var(--cm-wizard-step-complete, var(--tide-wizard-step-complete, var(--jx-wizard-step-complete, hsl(0, 0%, 15%)))))));
+  color: var(--juice-wizard-step-on, var(--aqua-wizard-step-on, var(--kw-wizard-step-on, var(--cm-wizard-step-on, var(--tide-wizard-step-on, var(--jx-wizard-step-on, hsl(0, 0%, 100%)))))));
+}
+
+[step-indicator]:focus-visible,
+[steps] > [step]:focus-visible,
+[step-nav] :focus-visible,
+[theme] [step-indicator]:focus-visible,
+[theme] [steps] > [step]:focus-visible,
+[theme] [step-nav] :focus-visible {
+  outline: 2px solid var(--juice-wizard-focus-ring, var(--aqua-wizard-focus-ring, var(--kw-wizard-focus-ring, var(--cm-wizard-focus-ring, var(--tide-wizard-focus-ring, var(--jx-wizard-focus-ring, currentColor))))));
+  outline-offset: 2px;
 }
 
 [step-body] {
@@ -99529,7 +99589,8 @@ nav[type=actions] a:hover {
   top: 4rem;
 }
 
-[order-summary] > header {
+[order-summary] > header,
+[theme] [order-summary] > header {
   margin-bottom: 1.5rem;
   border: none;
   padding: 0;
@@ -99547,10 +99608,25 @@ nav[type=actions] a:hover {
   padding: 1.5rem;
 }
 
+[summary-card],
+[theme] [summary-card] {
+  background-color: var(--juice-wizard-panel, var(--aqua-wizard-panel, var(--kw-wizard-panel, var(--cm-wizard-panel, var(--tide-wizard-panel, var(--jx-wizard-panel, hsl(0, 0%, 100%)))))));
+  border-color: var(--juice-wizard-panel-border, var(--aqua-wizard-panel-border, var(--kw-wizard-panel-border, var(--cm-wizard-panel-border, var(--tide-wizard-panel-border, var(--jx-wizard-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+}
+
 [summary-mode] {
   padding-bottom: 1.5rem;
   border-bottom: 1px solid;
   margin-bottom: 1.5rem;
+}
+
+[summary-mode],
+[theme] [summary-mode],
+[summary-total],
+[theme] [summary-total],
+[trust],
+[theme] [trust] {
+  border-color: var(--juice-wizard-panel-border, var(--aqua-wizard-panel-border, var(--kw-wizard-panel-border, var(--cm-wizard-panel-border, var(--tide-wizard-panel-border, var(--jx-wizard-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
 }
 
 [mode-row] {
@@ -99714,6 +99790,12 @@ nav[type=actions] a:hover {
   background: transparent;
 }
 
+[feature],
+[theme] [feature] {
+  background-color: var(--juice-wizard-panel, var(--aqua-wizard-panel, var(--kw-wizard-panel, var(--cm-wizard-panel, var(--tide-wizard-panel, var(--jx-wizard-panel, hsl(0, 0%, 100%)))))));
+  border-color: var(--juice-wizard-panel-border, var(--aqua-wizard-panel-border, var(--kw-wizard-panel-border, var(--cm-wizard-panel-border, var(--tide-wizard-panel-border, var(--jx-wizard-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+}
+
 [feature] > div:last-child {
   flex: 1;
 }
@@ -99789,6 +99871,12 @@ nav[type=actions] a:hover {
   margin-bottom: 2rem;
 }
 
+[placeholder],
+[theme] [placeholder] {
+  background-color: var(--juice-wizard-panel, var(--aqua-wizard-panel, var(--kw-wizard-panel, var(--cm-wizard-panel, var(--tide-wizard-panel, var(--jx-wizard-panel, hsl(0, 0%, 100%)))))));
+  border-color: var(--juice-wizard-panel-border, var(--aqua-wizard-panel-border, var(--kw-wizard-panel-border, var(--cm-wizard-panel-border, var(--tide-wizard-panel-border, var(--jx-wizard-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+}
+
 [placeholder] > p {
   margin: 0;
   font-size: 0.9375rem;
@@ -99807,6 +99895,12 @@ nav[type=actions] a:hover {
   padding: 1rem 1.25rem;
   border: 1px solid;
   border-radius: 0.5rem;
+}
+
+[selected-domain],
+[theme] [selected-domain] {
+  background-color: var(--juice-wizard-panel, var(--aqua-wizard-panel, var(--kw-wizard-panel, var(--cm-wizard-panel, var(--tide-wizard-panel, var(--jx-wizard-panel, hsl(0, 0%, 100%)))))));
+  border-color: var(--juice-wizard-panel-border, var(--aqua-wizard-panel-border, var(--kw-wizard-panel-border, var(--cm-wizard-panel-border, var(--tide-wizard-panel-border, var(--jx-wizard-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
 }
 
 [selected-domain] > strong {
@@ -99831,6 +99925,14 @@ nav[type=actions] a:hover {
   font-size: 0.875rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [step-indicator],
+  [theme] [step-indicator],
+  [feature],
+  [theme] [feature] {
+    transition: none;
+  }
+}
 [workflow] {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;

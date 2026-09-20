@@ -213,6 +213,38 @@
   --juice-popover-close-color: var(--aqua-popover-close-color);
   --juice-popover-close-hover: var(--aqua-popover-close-hover);
   --juice-popover-focus-ring: var(--aqua-popover-focus-ring);
+  /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+     Distinct from modal/drawer/popover. No new hue family. */
+  --aqua-wizard-shell: var(--aqua-page);
+  --aqua-wizard-header: var(--aqua-surface-strong);
+  --aqua-wizard-header-border: var(--aqua-border);
+  --aqua-wizard-rail: var(--aqua-surface-muted);
+  --aqua-wizard-rail-border: var(--aqua-border);
+  --aqua-wizard-step: var(--aqua-surface-strong);
+  --aqua-wizard-step-border: var(--aqua-border);
+  --aqua-wizard-step-ink: var(--aqua-text-muted);
+  --aqua-wizard-step-current: var(--aqua-accent);
+  --aqua-wizard-step-complete: var(--aqua-accent-strong);
+  --aqua-wizard-step-on: var(--aqua-page);
+  --aqua-wizard-step-connector: var(--aqua-border);
+  --aqua-wizard-panel: var(--aqua-surface-strong);
+  --aqua-wizard-panel-border: var(--aqua-border);
+  --aqua-wizard-focus-ring: var(--aqua-accent);
+  --juice-wizard-shell: var(--aqua-wizard-shell);
+  --juice-wizard-header: var(--aqua-wizard-header);
+  --juice-wizard-header-border: var(--aqua-wizard-header-border);
+  --juice-wizard-rail: var(--aqua-wizard-rail);
+  --juice-wizard-rail-border: var(--aqua-wizard-rail-border);
+  --juice-wizard-step: var(--aqua-wizard-step);
+  --juice-wizard-step-border: var(--aqua-wizard-step-border);
+  --juice-wizard-step-ink: var(--aqua-wizard-step-ink);
+  --juice-wizard-step-current: var(--aqua-wizard-step-current);
+  --juice-wizard-step-complete: var(--aqua-wizard-step-complete);
+  --juice-wizard-step-on: var(--aqua-wizard-step-on);
+  --juice-wizard-step-connector: var(--aqua-wizard-step-connector);
+  --juice-wizard-panel: var(--aqua-wizard-panel);
+  --juice-wizard-panel-border: var(--aqua-wizard-panel-border);
+  --juice-wizard-focus-ring: var(--aqua-wizard-focus-ring);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);

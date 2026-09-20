@@ -62,6 +62,7 @@ authoring_rules:
   - Bind drawer chrome roles (`--cm-drawer-*` and `--juice-drawer-*`) from the existing `--cm-*` set so `[drawer-close]` stays a surface control, not a heading-fill CTA.
   - Bind toast chrome roles (`--cm-toast-*` and `--juice-toast-*`) from the existing `--cm-*` set (plus wintergreen/lime already used for shadow tone) so `[toast-close]` stays a surface control.
   - Bind popover chrome roles (`--cm-popover-*` and `--juice-popover-*`) from the existing `--cm-*` set so `[popover-close]` stays a surface control, not a heading-fill CTA.
+  - Bind wizard chrome roles (`--cm-wizard-*` and `--juice-wizard-*`) from the existing `--cm-*` set (heading stands in for accent) so the onboarding shell, rails, and step indicators retint.
 
 example:
   root: '<body theme="citrusmint">'
