@@ -99329,6 +99329,63 @@ nav[type=actions] a:hover {
     transition: none;
   }
 }
+[tooltip-root],
+[theme] [tooltip-root] {
+  position: absolute;
+  z-index: 1060;
+  width: max-content;
+  max-width: min(16rem, 100vw - 2rem);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+[tooltip-root][hidden],
+[theme] [tooltip-root][hidden] {
+  display: none;
+}
+
+[tooltip-panel] {
+  position: relative;
+  max-width: 100%;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+[tooltip-panel],
+[theme] [tooltip-panel]:not([surfaceTone]) {
+  background-color: var(--juice-tooltip-panel, var(--aqua-tooltip-panel, var(--kw-tooltip-panel, var(--cm-tooltip-panel, var(--tide-tooltip-panel, var(--jx-tooltip-panel, hsl(0, 0%, 100%)))))));
+  border: 1px solid var(--juice-tooltip-panel-border, var(--aqua-tooltip-panel-border, var(--kw-tooltip-panel-border, var(--cm-tooltip-panel-border, var(--tide-tooltip-panel-border, var(--jx-tooltip-panel-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+  box-shadow: var(--juice-tooltip-panel-shadow, var(--aqua-tooltip-panel-shadow, var(--kw-tooltip-panel-shadow, var(--cm-tooltip-panel-shadow, var(--tide-tooltip-panel-shadow, var(--jx-tooltip-panel-shadow, 0 12px 28px -20px rgba(25.5, 25.5, 25.5, 0.28)))))));
+  color: var(--juice-tooltip-ink, var(--aqua-tooltip-ink, var(--kw-tooltip-ink, var(--cm-tooltip-ink, var(--tide-tooltip-ink, var(--jx-tooltip-ink, hsl(0, 0%, 20%)))))));
+}
+
+[tooltip-root] [tooltip-panel],
+[tooltip-root=top] [tooltip-panel] {
+  margin-bottom: 0.375rem;
+  transform-origin: bottom center;
+}
+
+[tooltip-root=bottom] [tooltip-panel] {
+  margin-bottom: 0;
+  margin-top: 0.375rem;
+  transform-origin: top center;
+}
+
+[tooltip-root=left] [tooltip-panel] {
+  margin-bottom: 0;
+  margin-right: 0.375rem;
+  transform-origin: right center;
+}
+
+[tooltip-root=right] [tooltip-panel] {
+  margin-bottom: 0;
+  margin-left: 0.375rem;
+  transform-origin: left center;
+}
+
 /* =====================================================================
    Wizard — multi-step onboarding chrome
    Owns: shell, header, rails, step tracker, order summary, step pages,

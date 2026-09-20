@@ -8,7 +8,7 @@
 /*
   KiwiPress is a Juice theme.
   The theme paints Juice's component primitives — it does not define them.
-  Structure (hero, card, cta, panel, modal, drawer, toast, popover, badge, stat, workflow, search-panel,
+  Structure (hero, card, cta, panel, modal, drawer, toast, popover, tooltip, badge, stat, workflow, search-panel,
   tabs, plan, section-header) lives in src/components. The theme only owns:
   - color relationships
   - typography voice
@@ -258,6 +258,17 @@
     --juice-wizard-panel: var(--kw-wizard-panel);
     --juice-wizard-panel-border: var(--kw-wizard-panel-border);
     --juice-wizard-focus-ring: var(--kw-wizard-focus-ring);
+
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --kw-tooltip-panel: var(--kw-surface);
+    --kw-tooltip-panel-border: var(--kw-border);
+    --kw-tooltip-panel-shadow: 0 12px 28px -20px var(--kw-shadow-strong);
+    --kw-tooltip-ink: var(--kw-text);
+    --juice-tooltip-panel: var(--kw-tooltip-panel);
+    --juice-tooltip-panel-border: var(--kw-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--kw-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--kw-tooltip-ink);
 
     background-color: var(--kw-page);
     color: var(--kw-text);
@@ -1577,6 +1588,15 @@
 [theme="kiwipress"] [popover-close]:focus-visible {
     outline: 2px solid var(--juice-popover-focus-ring);
     outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. */
+[theme="kiwipress"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
 }
 
 /* Accordion wrappers are structural, not default section surfaces.

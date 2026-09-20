@@ -76,6 +76,7 @@ A healthy Juice theme should own:
 - drawer chrome roles (`--juice-drawer-*`, bound from theme identity tokens)
 - toast chrome roles (`--juice-toast-*`, bound from theme identity tokens)
 - popover chrome roles (`--juice-popover-*`, bound from theme identity tokens)
+- tooltip chrome roles (`--juice-tooltip-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -224,6 +225,7 @@ The generated stylesheet currently defines:
 - drawer chrome role bindings (`--jx-drawer-*` / `--juice-drawer-*`) and close-button CTA overrides for `[drawer-close]`
 - toast chrome role bindings (`--jx-toast-*` / `--juice-toast-*`) and close-button CTA overrides for `[toast-close]`
 - popover chrome role bindings (`--jx-popover-*` / `--juice-popover-*`) and close-button CTA overrides for `[popover-close]`
+- tooltip chrome role bindings (`--jx-tooltip-*` / `--juice-tooltip-*`) for `[tooltip-root]` / `[tooltip-panel]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -297,6 +299,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome, not the native HTML Popover API — never use a bare `popover` attribute for the panel. `[popover-root]` is an anchored positioning wrapper. It is not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[popover-root]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`. The popover runtime auto-enhances that markup (open/close, Escape, outside click, Tab trap, one-axis flip) — see [Popover Runtime](./juice-popover-runtime.md).
 
 Tide must bind a dark panel (`--tide-surface-strong`), not a white glass popover.
+
+## Tooltip chrome roles
+
+Library themes bind the shared tooltip contract so `[tooltip-root]` / `[tooltip-panel]` paint is theme-agnostic in `tooltip.scss`. Required core names (`panel`, `panel-border`, `panel-shadow`, `ink`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-tooltip-*`, `--kw-tooltip-*`, `--cm-tooltip-*`, `--tide-tooltip-*`, …). App-owned generated themes use `--jx-tooltip-*` and bind `--juice-tooltip-*` from existing `--jx-*` surface/page/text tokens. Do not invent a new hue family just for tooltip chrome. There is no close button and no status variant.
+
+This is Juice chrome, not the native HTML `title` attribute — do not restyle or replace `title`. The surface is `[tooltip-panel]`; do not use a bare `[tooltip]` attribute. Tooltip is a thin cousin of popover: hover/focus only, no interactive content, no focus trap. It is not a popover, not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[tooltip-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[tooltip-root]`. Placement is `[tooltip-root]` / `[tooltip-root="top"]` (default), `"bottom"`, `"left"`, `"right"`. Core CSS paints the root at z-index **1060** (slightly above popover 1050, below toast 1100). This is theme chrome only — there is no tooltip runtime yet.
+
+Tide must bind a dark tip (`--tide-surface-strong`), not a white glass tooltip.
 
 ## Wizard chrome roles
 

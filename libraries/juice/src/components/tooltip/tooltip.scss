@@ -1,0 +1,113 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Tooltip chrome is structural. Color comes from the shared role contract:
+//   --juice-tooltip-panel
+//   --juice-tooltip-panel-border
+//   --juice-tooltip-panel-shadow
+//   --juice-tooltip-ink
+// Themes bind those names (and optional --aqua-tooltip-* / --kw-tooltip-* /
+// --cm-tooltip-* / --tide-tooltip-* / --jx-tooltip-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, not the native HTML `title` attribute. Do not restyle or
+// replace `title`. Juice names are:
+//   [tooltip-root]   positioning wrapper (closed with native `hidden`)
+//   [tooltip-panel]  the tip surface (`role="tooltip"` in markup)
+// Do not use a bare `[tooltip]` attribute — that name is reserved and
+// collides too easily. The surface is always `[tooltip-panel]`.
+//
+// Tooltip is a thin cousin of popover: hover/focus only, no interactive
+// content, no close button, no focus trap, no status variants, no arrow
+// in this cut. It is not a popover, not a modal, not a drawer, not a
+// toast, and not the surface `overlay="frost|tint"` utility. Slice B
+// owns show on hover/focus.
+//
+// Closed vs open uses the native `hidden` attribute on [tooltip-root]
+// (display: none). Markup without [hidden] stays visible so static demos
+// keep working. The runtime toggles [hidden] and positions the root.
+// Optional surfaceTone on [tooltip-panel] is allowed; do not force it.
+//
+// Placement (default top). CSS stubs transform-origin + a small offset
+// for static demos. Runtime owns show/hide later:
+//   [tooltip-root] / [tooltip-root="top"]
+//   [tooltip-root="bottom"]
+//   [tooltip-root="left"]
+//   [tooltip-root="right"]
+//
+// z-index 1060 sits slightly above popover (1050) so a tip can float
+// over an open panel, and below toast (1100). Modal/drawer stay at 1000.
+
+@function -juice-tooltip-role($name, $fallback) {
+    @return var(
+        --juice-tooltip-#{$name},
+        var(--aqua-tooltip-#{$name}, var(--kw-tooltip-#{$name}, var(--cm-tooltip-#{$name}, var(--tide-tooltip-#{$name}, var(--jx-tooltip-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-tooltip-panel: -juice-tooltip-role(panel, #{$white-100});
+$_juice-tooltip-panel-border: -juice-tooltip-role(panel-border, #{rgba($gray-300, 0.85)});
+$_juice-tooltip-panel-shadow: -juice-tooltip-role(panel-shadow, 0 12px 28px -20px #{rgba($black-900, 0.28)});
+$_juice-tooltip-ink: -juice-tooltip-role(ink, #{$black-700});
+
+// [theme] [tooltip-…] must beat theme semantic defaults such as
+// [theme="…"] :where(div). Themes realize color through the roles.
+
+[tooltip-root],
+[theme] [tooltip-root] {
+    position: absolute;
+    z-index: 1060;
+    width: max-content;
+    max-width: min(16rem, calc(100vw - 2rem));
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+[tooltip-root][hidden],
+[theme] [tooltip-root][hidden] {
+    display: none;
+}
+
+[tooltip-panel] {
+    position: relative;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+}
+
+[tooltip-panel],
+[theme] [tooltip-panel]:not([surfaceTone]) {
+    background-color: $_juice-tooltip-panel;
+    border: 1px solid $_juice-tooltip-panel-border;
+    box-shadow: $_juice-tooltip-panel-shadow;
+    color: $_juice-tooltip-ink;
+}
+
+// Default / top — tip sits above the root (anchor stub).
+[tooltip-root] [tooltip-panel],
+[tooltip-root="top"] [tooltip-panel] {
+    margin-bottom: 0.375rem;
+    transform-origin: bottom center;
+}
+
+[tooltip-root="bottom"] [tooltip-panel] {
+    margin-bottom: 0;
+    margin-top: 0.375rem;
+    transform-origin: top center;
+}
+
+[tooltip-root="left"] [tooltip-panel] {
+    margin-bottom: 0;
+    margin-right: 0.375rem;
+    transform-origin: right center;
+}
+
+[tooltip-root="right"] [tooltip-panel] {
+    margin-bottom: 0;
+    margin-left: 0.375rem;
+    transform-origin: left center;
+}
