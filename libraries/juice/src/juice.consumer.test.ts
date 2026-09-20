@@ -51,6 +51,7 @@ describe("Juice consumer smoke", () => {
         module.stopToastRuntime();
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -94,6 +95,7 @@ describe("Juice consumer smoke", () => {
         module.stopToastRuntime();
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -133,6 +135,7 @@ describe("Juice consumer smoke", () => {
         module.stopToastRuntime();
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -174,6 +177,7 @@ describe("Juice consumer smoke", () => {
         module.stopToastRuntime();
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -216,6 +220,7 @@ describe("Juice consumer smoke", () => {
         module.stopToastRuntime();
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopTabsRuntime();
@@ -257,6 +262,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
@@ -269,6 +275,7 @@ describe("Juice consumer smoke", () => {
         const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
         const module = await import(entryUrl);
         module.stopWizardRuntime();
+        module.stopTooltipRuntime();
         document.body.innerHTML = `
             <div wizard-shell name="demo">
                 <ol steps>
@@ -303,6 +310,45 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopWizardRuntime();
+        module.stopTooltipRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built tooltip runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopTooltipRuntime();
+        document.body.innerHTML = `
+            <button type="button" aria-describedby="demo-tip">Save</button>
+            <div tooltip-root id="demo-tip" hidden>
+                <div tooltip-panel>Saves your draft</div>
+            </div>
+        `;
+
+        const controller = module.createTooltip({ root: document.body, hideDelay: 0 });
+        const root = document.getElementById("demo-tip");
+        const trigger = document.querySelector("[aria-describedby]");
+        const panel = document.querySelector("[tooltip-panel]");
+
+        expect(panel?.getAttribute("role")).toBe("tooltip");
+        expect(root?.hasAttribute("hidden")).toBe(true);
+        expect(trigger?.getAttribute("aria-describedby")).toBe("demo-tip");
+
+        trigger?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+
+        expect(root?.hasAttribute("hidden")).toBe(false);
+        expect(document.activeElement).not.toBe(panel);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopTooltipRuntime();
         module.stopWizardRuntime();
         module.stopPopoverRuntime();
         module.stopToastRuntime();
