@@ -327,6 +327,26 @@ Popover is a non-modal anchored panel. It is not a modal dialog, not a drawer, n
 
 See [Popover Runtime](./juice-popover-runtime.md). Theme paint uses `--juice-popover-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`).
 
+### Wizard
+
+- `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
+- `wizard-header` — sticky header region (theme chrome)
+- `wizard-rail` — left / right rail; values `"left"` / `"right"`
+- `wizard-body` / `wizard-content` — main column. The runtime writes `data-step` on `[wizard-content]` from the current pairing token
+- `step-tracker` / `steps` — optional tracker scopes for `[step]` items
+- `step` — tracker item. Values `"pending"` / `"active"` / `"completed"` (bare `[step]` paints as pending). The runtime writes these
+- `step-page` — one step panel. Hide inactive pages with the native `hidden` attribute
+- `step-nav` — prev/next row. Unmarked buttons are discovered when `[wizard-prev]` / `[wizard-next]` are absent
+- `wizard-prev` / `wizard-next` — marked step controls. Prev is disabled on the first step, next on the last
+- `wizard-complete` — optional last-step control. Enabled only on the last step. The runtime does not submit or provision
+- `name` — optional shell label used as the slug for generated ids
+
+Pairing is `aria-controls` → page `id`, else shared `data-step` / `name` / `[step-page="…"]` / `id`, else index order.
+
+Wizard is a multi-step shell. It is not a dialog overlay, not a toast stack, not APG Tabs, and not the surface `overlay="frost|tint"` utility.
+
+See [Wizard Runtime](./juice-wizard-runtime.md). Theme paint uses `--juice-wizard-*` roles (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`).
+
 ## Usage Examples
 
 ```html

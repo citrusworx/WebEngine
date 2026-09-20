@@ -111,7 +111,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, and wizard runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, and `[wizard-shell]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), and [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, and wizard runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, and `[wizard-shell]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), and [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md).
 
 ## Use the built files directly
 
@@ -166,7 +166,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - toast chrome colors come from `--juice-toast-*` roles bound by the active theme. `[toast-region]` is a non-modal stack (default `top-right`); hide an individual `[toast]` with the native `hidden` attribute. Status is `[toast="success|error|info|warning"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[toast-close]`, `toast-duration`, live-region ARIA). It is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed. See [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md).
 - drawer chrome colors come from `--juice-drawer-*` roles bound by the active theme; hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`; optional width is `[drawer-size="sm|lg"]`. See [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md).
 - popover chrome colors come from `--juice-popover-*` roles bound by the active theme; hide `[popover-root]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the root id. The runtime auto-enhances that markup (open/close, Escape, outside click, Tab trap, exclusive, one-axis flip). The panel is a non-modal dialog (`role="dialog"`, no `aria-modal`). Never use a bare `popover` attribute — the surface is `[popover-panel]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`. See [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md).
-- wizard chrome colors come from `--juice-wizard-*` roles bound by the active theme. Scope is `[wizard-shell]`. The runtime paints `[step="pending"|"active"|"completed"]`, shows one `[step-page]` with native `hidden`, and wires `[wizard-prev]` / `[wizard-next]` (or unmarked buttons in `[step-nav]`). Default navigation jumps to completed + current; `wizard-shell="linear"` is prev/next only; `wizard-shell="free"` jumps to any step. Do not use `content="active"` or `content="hidden"` for page state.
+- wizard chrome colors come from `--juice-wizard-*` roles bound by the active theme. Scope is `[wizard-shell]`. The runtime paints `[step="pending"|"active"|"completed"]`, shows one `[step-page]` with native `hidden`, and wires `[wizard-prev]` / `[wizard-next]` (or unmarked buttons in `[step-nav]`). Default navigation jumps to completed + current; `wizard-shell="linear"` is prev/next only; `wizard-shell="free"` jumps to any step. Do not use `content="active"` or `content="hidden"` for page state. See [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md).
 
 ```html
 <div tabs name="settings">
@@ -234,6 +234,21 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
     <div popover-header><h2>Help</h2></div>
     <div popover-body>Account details live on this page.</div>
   </div>
+</div>
+
+<div wizard-shell name="onboard">
+  <ol steps>
+    <li step="active" data-step="welcome">Welcome</li>
+    <li step="pending" data-step="plan">Plan</li>
+  </ol>
+  <main wizard-content>
+    <section step-page="welcome">Welcome page</section>
+    <section step-page="plan" hidden>Plan page</section>
+    <div step-nav>
+      <button type="button" wizard-prev>Back</button>
+      <button type="button" wizard-next>Continue</button>
+    </div>
+  </main>
 </div>
 ```
 

@@ -33,16 +33,16 @@ It should not require:
 
 ## Current Examples
 
-The navigation, accordion, tabs, modal, drawer, toast, and popover runtimes are the current examples.
+The navigation, accordion, tabs, modal, drawer, toast, popover, and wizard runtimes are the current examples.
 
 They work by:
 
-* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, or `[popover-root]` markup
+* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, or `[wizard-shell]` markup
 * booting automatically in the browser
 * responding to DOM changes
 * applying behavior without user init code
 
-See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), [Juice Drawer Runtime](./juice-drawer-runtime.md), [Juice Toast Runtime](./juice-toast-runtime.md), and [Juice Popover Runtime](./juice-popover-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog. Popover is a non-modal anchored dialog (`[popover-root]` / `[popover-panel]`), not a modal, drawer, or toast.
+See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), [Juice Drawer Runtime](./juice-drawer-runtime.md), [Juice Toast Runtime](./juice-toast-runtime.md), [Juice Popover Runtime](./juice-popover-runtime.md), and [Juice Wizard Runtime](./juice-wizard-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog. Popover is a non-modal anchored dialog (`[popover-root]` / `[popover-panel]`), not a modal, drawer, or toast. Wizard is a multi-step onboarding shell (`[wizard-shell]` / `[step-page]`), not a dialog and not APG Tabs.
 
 ## Runtime Scope
 
@@ -69,6 +69,7 @@ Shipped built-in runtime features include:
 * drawers
 * toasts / snackbars
 * popovers
+* wizards / multi-step shells
 
 Future built-in runtime features could include:
 

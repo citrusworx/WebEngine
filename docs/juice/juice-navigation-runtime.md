@@ -254,4 +254,5 @@ That is the right mental model for:
 - drawers
 - toasts / snackbars
 - popovers
+- wizards / multi-step shells
 - other built-in responsive interactions
