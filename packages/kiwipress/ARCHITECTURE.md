@@ -23,6 +23,7 @@ Shipped:
 - `WPRead` / `WPCreate` / `WPUpdate` / `WPDelete`
 - `Users`, `Posts`, `Pages`, `Categories`, `Tags`, and `Comments` with CRUD
 - `Media` with list/get, file create (raw binary or multipart), update, and delete
+- generic WordPress CPT client (`CustomPostType` / `kiwi.wordpress.cpt(restBase)`) for `/wp/v2/{restBase}`
 - route alias translation from clean KiwiPress shapes into WordPress query strings
 - response normalization onto `ContentRecord` / Nectarine post shapes
 - `loadNectarineApi` for nested or flat Nectarine API YAML
@@ -152,6 +153,8 @@ Operational data movement from WordPress into Nectarine-shaped records.
 
 `KiwiPress.connect({ persistence })` then `await kiwi.ready()` hydrates once. Default remains in-memory.
 
+The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection. Discovering types from `/wp/v2/types` and transferring CPT items through `WPSync` are still out of scope.
+
 ## Route Layer
 
 KiwiPress routes are thin. They define a clean public path and translate WordPress query quirks inside handlers (`createAliasedQueryRoute`).
@@ -162,7 +165,7 @@ Inbound app routes live in `registerKiwiPressGateway`. Seltzer matches exact pat
 
 `loadNectarineApi` walks Nectarine API YAML — nested (`user.get.allUsers.api`) or flat (`get.allUsers.api`) — into `{ method, endpoint }` records.
 
-The live WordPress client still uses static `routes.ts` files because WordPress query aliases are not in those YAML files. Native CMS paths follow the Nectarine contracts.
+The live WordPress client still uses static `routes.ts` files because WordPress query aliases are not in those YAML files. The CPT client is the exception: `createCptRoutes(restBase)` builds the same `createWordPressRoute` / `createAliasedQueryRoute` shapes at runtime for any collection base. Native CMS paths follow the Nectarine contracts.
 
 ## Direction of Dependency
 
@@ -188,7 +191,7 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 ## Current Exported Surface
 
 - `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`
-- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`
+- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
 - `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
 - `normalizeWordPressItem`, `toNectarinePost`, `loadNectarineApi`
