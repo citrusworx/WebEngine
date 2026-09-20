@@ -50,6 +50,7 @@ describe("Juice consumer smoke", () => {
         module.stopDrawerRuntime();
         module.stopToastRuntime();
         module.stopPopoverRuntime();
+        module.stopWizardRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -92,6 +93,7 @@ describe("Juice consumer smoke", () => {
         module.stopDrawerRuntime();
         module.stopToastRuntime();
         module.stopPopoverRuntime();
+        module.stopWizardRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -130,6 +132,7 @@ describe("Juice consumer smoke", () => {
         module.stopDrawerRuntime();
         module.stopToastRuntime();
         module.stopPopoverRuntime();
+        module.stopWizardRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -170,6 +173,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopToastRuntime();
         module.stopPopoverRuntime();
+        module.stopWizardRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -211,6 +215,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         module.stopToastRuntime();
         module.stopPopoverRuntime();
+        module.stopWizardRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopTabsRuntime();
@@ -250,6 +255,55 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopPopoverRuntime();
+        module.stopWizardRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built wizard runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopWizardRuntime();
+        document.body.innerHTML = `
+            <div wizard-shell name="demo">
+                <ol steps>
+                    <li step="active" data-step="welcome">Welcome</li>
+                    <li step="pending" data-step="plan">Plan</li>
+                </ol>
+                <section step-page="welcome">Welcome page</section>
+                <section step-page="plan" hidden>Plan page</section>
+                <div step-nav>
+                    <button type="button" wizard-prev>Back</button>
+                    <button type="button" wizard-next>Continue</button>
+                </div>
+            </div>
+        `;
+
+        const controller = module.createWizard({ root: document.body });
+        const steps = document.querySelectorAll("[step]");
+        const pages = document.querySelectorAll("[step-page]");
+        const next = document.querySelector("[wizard-next]");
+
+        expect(steps[0]?.getAttribute("step")).toBe("active");
+        expect(pages[1]?.hasAttribute("hidden")).toBe(true);
+        expect(pages[0]?.getAttribute("content")).toBeNull();
+
+        next?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(steps[0]?.getAttribute("step")).toBe("completed");
+        expect(steps[1]?.getAttribute("step")).toBe("active");
+        expect(pages[1]?.hasAttribute("hidden")).toBe(false);
+        expect(pages[0]?.hasAttribute("hidden")).toBe(true);
+        expect(pages[1]?.getAttribute("content")).toBeNull();
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopWizardRuntime();
         module.stopPopoverRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
