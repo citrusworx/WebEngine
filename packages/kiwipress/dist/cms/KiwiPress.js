@@ -1,14 +1,7 @@
-import { Categories } from "../categories/categories.js";
-import { Comments } from "../comments/comments.js";
 import { createNativeCms } from "./native.js";
 import { NectarineStore } from "./store.js";
-import { Media } from "../media/media.js";
-import { Pages } from "../pages/pages.js";
-import { Posts } from "../posts/posts.js";
-import { Tags } from "../tags/tags.js";
-import { Users } from "../users/users.js";
 import { WPAuth } from "../core/WPAuth.js";
-import { WPSync } from "../core/WPSync.js";
+import { createWordPressClients, WPSync } from "../core/WPSync.js";
 export class KiwiPress {
     auth;
     store;
@@ -29,15 +22,7 @@ export class KiwiPress {
         const url = config.url?.trim() || (typeof process !== "undefined" ? process.env.WP_URL?.trim() : "");
         if (url) {
             const wordpressConfig = { ...config, url };
-            this.wp = {
-                posts: new Posts(wordpressConfig),
-                pages: new Pages(wordpressConfig),
-                users: new Users(wordpressConfig),
-                categories: new Categories(wordpressConfig),
-                tags: new Tags(wordpressConfig),
-                comments: new Comments(wordpressConfig),
-                media: new Media(wordpressConfig)
-            };
+            this.wp = createWordPressClients(wordpressConfig);
             this.sync = new WPSync(this.wp, this.store, url);
         }
         else if (this.mode === "wordpress") {
