@@ -13,6 +13,8 @@ export { createToast, initToast, startToastRuntime, stopToastRuntime } from "./j
 export type { ToastController, ToastOptions } from "./js/src/toast/toast-runtime.js";
 export { createPopover, initPopover, startPopoverRuntime, stopPopoverRuntime } from "./js/src/popover/popover-runtime.js";
 export type { PopoverController, PopoverOptions, PopoverPlacement } from "./js/src/popover/popover-runtime.js";
+export { createTooltip, initTooltip, startTooltipRuntime, stopTooltipRuntime } from "./js/src/tooltip/tooltip-runtime.js";
+export type { TooltipController, TooltipOptions, TooltipPlacement } from "./js/src/tooltip/tooltip-runtime.js";
 export { createWizard, initWizard, startWizardRuntime, stopWizardRuntime } from "./js/src/wizard/wizard-runtime.js";
 export type { WizardController, WizardOptions } from "./js/src/wizard/wizard-runtime.js";
 export { tokens } from "./tokens/index.js";

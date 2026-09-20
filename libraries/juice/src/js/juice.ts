@@ -70,6 +70,17 @@ export type {
     PopoverPlacement
 } from "./src/popover/popover-runtime.js";
 export {
+    createTooltip,
+    initTooltip,
+    startTooltipRuntime,
+    stopTooltipRuntime
+} from "./src/tooltip/tooltip-runtime.js";
+export type {
+    TooltipController,
+    TooltipOptions,
+    TooltipPlacement
+} from "./src/tooltip/tooltip-runtime.js";
+export {
     createWizard,
     initWizard,
     startWizardRuntime,
