@@ -6,6 +6,8 @@
 
 **0.7.0 is the public cut.** Drawer A→B→C, toast A→B→C, and popover A→B→C (theme chrome, runtime, runtime / maturity docs) shipped in this lane. 0.6.0 was the prior public npm cut.
 
+**Master is ahead of 0.7.0.** Wizard A→B→C (theme chrome, step runtime, runtime / maturity docs) lives on master and is not in the published tarball. Do not run `yarn version-packages` or publish from this picture. Do not invent a next version number; the next cut happens when new Juice changesets are consumed.
+
 Consumed Juice changesets (the 0.7.0 lane):
 
 | Changeset | Bump | What it records |
@@ -19,6 +21,14 @@ Consumed Juice changesets (the 0.7.0 lane):
 | `juice-popover-theme-chrome` | **minor** | Popover theme chrome roles (`--juice-popover-*`) |
 | `juice-popover-runtime` | **minor** | DOM-first popover runtime (open/close, placement flip, Escape, outside click) |
 | `juice-popover-runtime-docs` | **patch** | Popover runtime / maturity docs (slice C) |
+
+Pending Juice changesets on master (consume them at the next cut; Juice-only if possible):
+
+| Changeset | Bump | What it records |
+|---|---|---|
+| `juice-wizard-theme-chrome` | **minor** | Wizard theme chrome roles (`--juice-wizard-*`) |
+| `juice-wizard-runtime` | **minor** | DOM-first wizard step runtime (`next` / `prev` / `goTo`, pairing, modes) |
+| `juice-wizard-runtime-docs` | **patch** | Wizard runtime / maturity docs (slice C) |
 
 Consumed Juice changesets (the 0.6.0 lane):
 
@@ -40,14 +50,14 @@ Consumed Juice changesets (the 0.6.0 lane):
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
-The visible layers today (0.7.0):
+The visible layers today (0.7.0 plus unreleased master):
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
 * surface language A–C: themeable `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`
-* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, and popover auto-enhance when the JS entry is imported
-* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, or Sig Popover factory)
+* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, and wizard auto-enhance when the JS entry is imported
+* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, or Sig Wizard factory)
 * contracts for themes, icons, and typography, including author type overrides
 * templates as a stress-test bed
 
@@ -58,14 +68,14 @@ The next strongest areas are now:
 * modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one)
 * motion wave 1 (P0 + P1)
 * surface utilities A–C
-* accordion, tabs, modal, drawer, toast, and popover chrome plus DOM-first auto-enhance
+* accordion, tabs, modal, drawer, toast, popover, and wizard chrome plus DOM-first auto-enhance
 * documented theme / icon / typography contracts
 * templates as design proofs
 
 The weakest areas are still:
 
 * remaining surface depth (structural `card="…"` recipes; `shadowTone`, `overlay`, and `variant` utilities are in)
-* component maturity beyond the seven auto-enhance runtimes
+* component maturity beyond the eight auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
 * Juice CLI and config / generator workflow
@@ -110,6 +120,12 @@ This is the stack that shipped in 0.7.0.
 * **Toast A→B→C.** Shared `--juice-toast-*` roles for `[toast-region]` / `[toast]` / `[toast-close]` (#133). DOM-first snackbar runtime (#135): `createToast` / `initToast` / `startToastRuntime` / `stopToastRuntime`, auto-boot, `show` / `dismiss`, `toast-duration` (default 5000; `0` / `Infinity` / negative is sticky), auto-dismiss pause on hover/focus, Escape for the most recent visible toast only when no open modal/drawer overlay exists. Runtime docs and maturity notes shipped with the cut. Live region: `aria-live` polite + `aria-relevant`; `role="status"` vs `role="alert"` for error/assertive. Markup-first (no programmatic message factory). Distinct from surface `overlay="frost|tint"` and from modal/drawer. No Sig Toast factory.
 * **Popover A→B→C.** Shared `--juice-popover-*` roles for `[popover-root]` / `[popover-panel]` / `[popover-close]` (#138). DOM-first anchored runtime (#139): `createPopover` / `initPopover` / `startPopoverRuntime` / `stopPopoverRuntime`, auto-boot, open/close/toggle, Escape (yields to modal/drawer), outside click, Tab trap, exclusive popover open, dependency-free placement with one-axis flip (`position: fixed` from opener rect + gap 8). Non-modal dialog (`role="dialog"`, no `aria-modal`); focus moves into the panel and restores to the opener. Never a bare `popover` attribute. Runtime docs and maturity notes shipped with the cut. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast. No Sig Popover factory.
 
+### Since 0.7.0 (unpublished on master)
+
+This is the stack on master that is not in the 0.7.0 tarball.
+
+* **Wizard A→B→C.** Shared `--juice-wizard-*` roles for `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step]` (#144). DOM-first step runtime (#145): `createWizard` / `initWizard` / `startWizardRuntime` / `stopWizardRuntime`, auto-boot, `next` / `prev` / `goTo(index|id)` / `current`, pairing (`aria-controls` → id, else shared `data-step` / `name` / `step-page`, else index), nav modes (bare = completed + current; `linear` = prev/next only; `free` = any step), `[wizard-prev]` / `[wizard-next]` or unmarked `[step-nav]` buttons, optional `[wizard-complete]` on the last step. Pages use native `hidden`. A11y is `aria-current="step"` plus pages as `role="region"` — not APG Tabs. `sync` writes `data-step` on `[wizard-content]`. Runtime docs and maturity notes in this pass. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast/popover. No Sig Wizard factory. Still unpublished vs 0.7.0.
+
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
 ---
@@ -140,7 +156,7 @@ Authors can compose visual character with the shipped utilities. Structural card
 
 ### 2. Components Are Uneven Beyond the Runtimes
 
-Accordion, tabs, modal, drawer, toast, and popover have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, or Sig Popover factory.
+Accordion, tabs, modal, drawer, toast, popover, and wizard have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, or Sig Wizard factory.
 
 That is not the same as a polished component library. Cards, buttons, forms, and nav variants are useful and still settling. Prop contracts for styling internal parts are still being figured out. Juice should not pretend the exported component surface is broader or more mature than it is.
 
@@ -168,7 +184,7 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 ### Closed / done on master (old P1–P3, plus 0.6.0 and 0.7.0 publish)
 
-These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0.
+These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C is done on master (unpublished vs 0.7.0).
 
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
@@ -191,11 +207,13 @@ Drawer **A→B→C shipped in 0.7.0**: theme chrome (`--juice-drawer-*`), dialog
 
 Toast **A→B→C shipped in 0.7.0**: theme chrome (`--juice-toast-*`), snackbar runtime, and runtime / maturity docs. Valid `[toast-region]` markup auto-enhances.
 
-Popover **A→B→C shipped in 0.7.0**: theme chrome (`--juice-popover-*`), anchored runtime, and runtime / maturity docs. Valid `[popover-root]` markup auto-enhances. Popover is the seventh Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, or Sig Popover factory stays later. Grow the next runtime only when that markup contract stays honest.
+Popover **A→B→C shipped in 0.7.0**: theme chrome (`--juice-popover-*`), anchored runtime, and runtime / maturity docs. Valid `[popover-root]` markup auto-enhances.
+
+Wizard **A→B→C is done on master** (still unpublished vs 0.7.0): theme chrome (`--juice-wizard-*`), step runtime, and runtime / maturity docs. Valid `[wizard-shell]` markup auto-enhances. Wizard is the eighth Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, or Sig Wizard factory stays later. Grow the next runtime only when that markup contract stays honest.
 
 Short-term focus remains:
 
-* keep navigation, accordion, tabs, modal, drawer, toast, and popover documented as Emerging until they settle
+* keep navigation, accordion, tabs, modal, drawer, toast, popover, and wizard documented as Emerging until they settle
 * improve component authoring patterns
 * ensure anything newly exported is actually ready
 * grow the next runtime only when that markup contract stays honest
@@ -217,10 +235,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer / toast / popover Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C is done on master (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, and drawer / toast / popover A→B→C in the 0.7.0 npm publish. Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, and wizard A→B→C on master. Do not invent a next version number; the next cut happens when new Juice changesets exist.
 
 ---
 
@@ -232,10 +250,12 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 **0.7.0 is the live npm cut** for drawer, toast, and popover A→B→C.
 
+Master is ahead of that cut. Wizard A→B→C is on master and unpublished.
+
 The next stage is post-0.7.0 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; grow the next runtime only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C is done on master (still unpublished vs 0.7.0); grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.

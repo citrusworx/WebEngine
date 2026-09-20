@@ -72,6 +72,7 @@ Examples:
 * drawers should use a `[drawer-overlay]` root, a `[drawer]` dialog, and `aria-controls` openers
 * toasts should use a `[toast-region]` root and `[toast]` panels (not a dialog overlay)
 * popovers should use a `[popover-root]` wrapper, a `[popover-panel]` surface, and `aria-controls` openers — never a bare `popover` attribute
+* wizards should use a `[wizard-shell]` root, `[step]` tracker items, and `[step-page]` panels
 * nav components should still rely on `nav`
 * cards should not fake semantics unless needed
 
