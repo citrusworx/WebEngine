@@ -33,9 +33,10 @@
  * and capture scroll (rAF-throttled).
  *
  * Escape hides the open tip on bubble, but yields when an open
- * [modal-overlay], [drawer-overlay], or [popover-root] exists, or the
- * event is already defaultPrevented (same courtesy as toast / popover).
- * Opening one managed tooltip closes the others.
+ * [modal-overlay], [drawer-overlay], [popover-root], or [combobox-list]
+ * exists, or the event is already defaultPrevented (same courtesy as
+ * toast / popover). Toast does not block tooltip Escape — the tip can
+ * hide while toasts remain. Opening one managed tooltip closes the others.
  */
 
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
@@ -122,18 +123,27 @@ const includeToken = (value: string | null | undefined, id: string) => {
 
 const isTooltipOpen = (tooltip: HTMLElement) => !tooltip.hasAttribute('hidden');
 
-const hasOpenBlockingOverlay = () => {
+const hasOpenDialogOverlay = () => {
   if (typeof document === 'undefined') return false;
   return Boolean(
     document.querySelector(
-      [
-        '[modal-overlay]:not([hidden])',
-        '[drawer-overlay]:not([hidden])',
-        '[popover-root]:not([hidden])',
-      ].join(', ')
+      '[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])'
     )
   );
 };
+
+const hasOpenPopover = () => {
+  if (typeof document === 'undefined') return false;
+  return Boolean(document.querySelector('[popover-root]:not([hidden])'));
+};
+
+const hasOpenComboboxList = () => {
+  if (typeof document === 'undefined') return false;
+  return Boolean(document.querySelector('[combobox-list]:not([hidden])'));
+};
+
+const shouldYieldEscape = () =>
+  hasOpenDialogOverlay() || hasOpenPopover() || hasOpenComboboxList();
 
 const readPlacement = (tooltip: HTMLElement): TooltipPlacement => {
   const raw = tooltip.getAttribute('tooltip-root');
@@ -678,7 +688,7 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
 
   const handleEscapeKeydown = (event: Event) => {
     if (!(event instanceof KeyboardEvent) || event.key !== 'Escape') return;
-    if (hasOpenBlockingOverlay() || event.defaultPrevented) return;
+    if (shouldYieldEscape() || event.defaultPrevented) return;
 
     const openTooltip = getOpenTooltip();
     if (!openTooltip) return;

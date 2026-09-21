@@ -230,7 +230,7 @@ describe('createTooltip', () => {
     controller.destroy();
   });
 
-  it('closes on Escape and yields to modal, drawer, and popover', () => {
+  it('closes on Escape and yields to modal, drawer, popover, and combobox', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -244,10 +244,13 @@ describe('createTooltip', () => {
 
     const controller = createTooltip({ root: document.body, hideDelay: 0 });
     const tip = document.getElementById('tip-1');
+    const pressEscape = () => {
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+      );
+    };
 
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
+    pressEscape();
     expect(tip?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-modal')?.setAttribute('hidden', '');
@@ -256,9 +259,7 @@ describe('createTooltip', () => {
       `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
     );
 
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
+    pressEscape();
     expect(tip?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-drawer')?.setAttribute('hidden', '');
@@ -267,16 +268,29 @@ describe('createTooltip', () => {
       `<div popover-root id="open-pop"><div popover-panel>Help</div></div>`
     );
 
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
+    pressEscape();
     expect(tip?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-pop')?.setAttribute('hidden', '');
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div combobox><ul combobox-list id="open-list"><li combobox-option>Apple</li></ul></div>`
     );
+
+    pressEscape();
+    expect(tip?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-list')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div toast-region><div toast id="open-toast">Saved.</div></div>`
+    );
+
+    pressEscape();
     expect(tip?.hasAttribute('hidden')).toBe(true);
+    expect(document.getElementById('open-toast')?.hasAttribute('hidden')).toBe(
+      false
+    );
 
     controller.destroy();
   });

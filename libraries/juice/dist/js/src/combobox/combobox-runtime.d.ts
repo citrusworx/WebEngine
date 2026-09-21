@@ -21,7 +21,9 @@
  * `aria-activedescendant` plus `combobox-option="active"` paint.
  * Committed choice is `aria-selected="true"`.
  *
- * Open on input focus, typing, or trigger click. Close on Escape,
+ * Open on input focus, typing, or trigger click. Close on Escape
+ * (yields when an open [modal-overlay], [drawer-overlay], or
+ * [popover-root] exists — those surfaces own Escape first),
  * outside click, blur (option mousedown preventDefault so the input
  * keeps focus through click-to-select), or after select.
  *
@@ -35,7 +37,7 @@
  *   Home / End           first / last visible option while open
  *                        (closed: native input cursor)
  *   Enter                select the active option
- *   Escape               close
+ *   Escape               close (yields to open dialog / popover)
  *   Tab                  close without committing the active option
  *                        (APG manual selection). Focus moves on.
  *

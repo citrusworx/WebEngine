@@ -19,7 +19,9 @@
  * Auto-dismiss pauses while pointer or focus is inside the toast, then resumes.
  *
  * Escape dismisses the most recently shown visible toast, but only when no
- * open [modal-overlay] or [drawer-overlay] exists (those dialogs own Escape).
+ * open [modal-overlay], [drawer-overlay], [popover-root], [combobox-list],
+ * or [tooltip-root] exists (those surfaces own Escape first). An open tip
+ * hides while toasts remain — toast does not steal Escape from tooltip.
  *
  * Live region: sync fills missing aria-live="polite" and
  * aria-relevant="additions" on [toast-region]. Opt into assertive with

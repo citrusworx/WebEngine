@@ -56,7 +56,7 @@ It requires a `[toast-region]` root. Authors place that region in markup. The ru
 
 **Live polarity:** optional `toast-live="assertive"` on the region or a toast, or set `aria-live="assertive"` in markup.
 
-**Close:** `[toast-close]` inside the toast, or Escape for the most recently shown visible toast when no open modal/drawer overlay exists.
+**Close:** `[toast-close]` inside the toast, or Escape for the most recently shown visible toast when no open modal/drawer overlay, popover, combobox list, or tooltip exists.
 
 Prefer shipping `aria-live="polite"` on the region. The runtime fills missing live-region ARIA and toast roles if they are missing, plus an empty close name (`aria-label="Dismiss"`).
 
@@ -148,7 +148,7 @@ The runtime performs seven main jobs:
 4. Fill an empty `[toast-close]` name (`aria-label="Dismiss"`) and button role/tabindex on non-native closes
 5. Show / dismiss via native `hidden` on the toast (the region stays); `show()` never hides siblings and does not move focus into the toast
 6. Auto-dismiss after `defaultDuration` (5000) or `toast-duration`; pause while pointer or focus is inside the toast; sticky when `0` / `Infinity` / negative
-7. Handle click (`[toast-close]`) and keyboard (Escape for the most recently shown visible toast when no open modal/drawer overlay exists; Enter/Space on non-button closes)
+7. Handle click (`[toast-close]`) and keyboard (Escape for the most recently shown visible toast when no open modal/drawer overlay, popover, combobox list, or tooltip exists; Enter/Space on non-button closes)
 
 Orphan `[toast]` nodes that are not inside `[toast-region]` are ignored.
 
@@ -170,7 +170,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape dismisses the most recently shown visible toast, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape)
+- Escape dismisses the most recently shown visible toast, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[combobox-list]`, or `[tooltip-root]` exists (those surfaces own Escape first). An open tip hides while toasts remain.
 - Enter and Space activate non-button `[toast-close]` controls (native buttons already synthesize a click)
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the toast on show.
 
@@ -183,7 +183,7 @@ Arrow-key roving is intentionally out of scope.
 - Toast is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed.
 - Individual toasts use native `hidden`, never layout `content=`. The region stays in the DOM.
 - Centered modal / dialog, edge-docked drawer, and inline banner / callout behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Banner Runtime](./juice-banner-runtime.md).
-- Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay exists.
+- Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay, popover, combobox list, or tooltip exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 

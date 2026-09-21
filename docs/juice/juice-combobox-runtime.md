@@ -153,7 +153,7 @@ The runtime performs eight main jobs:
 
 1. Find `[combobox]` roots and resolve the input, optional trigger, list, and options inside that root. Orphan nodes outside a `[combobox]` are ignored
 2. Fill missing roles (`combobox` / `listbox` / `option`), list and option ids, `aria-autocomplete="list"`, `aria-controls`, and trigger `aria-haspopup="listbox"`
-3. Open on input focus, typing, or trigger click. Close on Escape, outside click, blur (unless focus stays inside the combobox), Tab, or after select. Option `mousedown` is prevented so the input keeps focus through click-to-select
+3. Open on input focus, typing, or trigger click. Close on Escape (yields when an open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists), outside click, blur (unless focus stays inside the combobox), Tab, or after select. Option `mousedown` is prevented so the input keeps focus through click-to-select
 4. Filter visible options with a case-insensitive substring against option text and, when present, `data-value`. Non-matches get `hidden`. An empty match set stays open
 5. Write `aria-expanded` on the input and, when present, the trigger. Visual / keyboard focus on a row is `aria-activedescendant` plus `combobox-option="active"`
 6. Select is single-select only. The input value becomes option text, or `data-value` when that attribute is present. The chosen option gets `aria-selected="true"`; siblings are cleared
@@ -197,7 +197,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 - ArrowDown / ArrowUp open the list if needed, then move `combobox-option="active"` among visible options (no wrap). Focus stays on the input; `aria-activedescendant` tracks the active row
 - Home / End move to the first / last visible option while the list is open. Closed, those keys keep native input-cursor behavior
 - Enter selects the active option
-- Escape closes without changing the input value
+- Escape closes without changing the input value, but only when no open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists (those surfaces own Escape). See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Tab closes without committing the active option (APG manual selection). Focus moves on
 - IME composition keys are ignored
 - Enter / Space on a non-button trigger toggles the list
