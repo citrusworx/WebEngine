@@ -646,10 +646,12 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 
     /* Switch chrome — APG switch from existing --jx-* tokens.
        The host is a surface track, not the CTA fill. Distinct from
-       checkbox and menuitemcheckbox. */
-    --jx-switch-track: var(--jx-surface-muted);
+       checkbox and menuitemcheckbox. Idle track mixes text into
+       muted so the inverse thumb still reads when surfaces.muted
+       falls back to surfaces.default (same as --jx-surface). */
+    --jx-switch-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted));
     --jx-switch-track-checked: var(--jx-accent);
-    --jx-switch-thumb: var(--jx-surface);
+    --jx-switch-thumb: var(--jx-text-inverse);
     --jx-switch-thumb-checked: var(--jx-text-inverse);
     --jx-switch-focus-ring: var(--jx-accent);
     --juice-switch-track: var(--jx-switch-track);

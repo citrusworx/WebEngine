@@ -413,11 +413,18 @@ describe("Juice theme generator surface tone roles", () => {
     it("binds --juice-switch-* from existing --jx-* surfaces and accents", () => {
         const css = buildThemeStylesheet(fixture, "test.yaml");
 
-        expect(css).toContain("--jx-switch-track: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-switch-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted))");
         expect(css).toContain("--jx-switch-track-checked: var(--jx-accent)");
-        expect(css).toContain("--jx-switch-thumb: var(--jx-surface)");
+        expect(css).toContain("--jx-switch-thumb: var(--jx-text-inverse)");
         expect(css).toContain("--jx-switch-thumb-checked: var(--jx-text-inverse)");
         expect(css).toContain("--jx-switch-focus-ring: var(--jx-accent)");
+
+        // Fixture omits surfaces.muted, so muted === default. Do not bind
+        // idle thumb to --jx-surface or idle track to raw muted.
+        expect(css).toContain("--jx-surface: #fffdf8");
+        expect(css).toContain("--jx-surface-muted: #fffdf8");
+        expect(css).not.toContain("--jx-switch-track: var(--jx-surface-muted)");
+        expect(css).not.toContain("--jx-switch-thumb: var(--jx-surface)");
 
         for (const role of REQUIRED_SWITCH_ROLES) {
             expect(css).toContain(`--juice-switch-${role}: var(--jx-switch-${role})`);
