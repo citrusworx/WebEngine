@@ -333,6 +333,16 @@ body {
   color: inherit;
 }
 
+[sell] [cta] pre[sell-command],
+[theme] [sell] [cta] pre[sell-command] {
+  color: #fff;
+}
+
+[sell] [cta] pre[sell-command] > code,
+[theme] [sell] [cta] pre[sell-command] > code {
+  color: #fff;
+}
+
 [sell] pre[sell-command] > code,
 [theme] [sell] pre[sell-command] > code {
   background: transparent;
@@ -362,9 +372,22 @@ body {
   background: transparent;
 }
 
+[install-pm] [tab-panel][hidden] {
+  display: none;
+}
+
 [sell] [cta] [install-pm] {
   width: min(100%, 40rem);
   align-items: center;
+}
+
+[sell] [cta] [install-pm] [tabs] {
+  width: 100%;
+}
+
+[sell] [cta] [install-pm] [tab-panel],
+[theme] [sell] [cta] [install-pm] [tab-panel] {
+  color: inherit;
 }
 
 [sell] [cta] [install-pm] [tabs-list] {

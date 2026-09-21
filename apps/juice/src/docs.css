@@ -376,6 +376,10 @@ body {
   background: transparent;
 }
 
+[docs-window-body] [install-pm] [tab-panel][hidden] {
+  display: none;
+}
+
 [docs-window-body] [install-pm] .doc-md-window {
   margin: 0.65rem 0 0;
 }
