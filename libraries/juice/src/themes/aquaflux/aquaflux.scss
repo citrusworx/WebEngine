@@ -212,6 +212,40 @@
     --juice-toast-warning: var(--aqua-toast-warning);
     --juice-toast-warning-soft: var(--aqua-toast-warning-soft);
 
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the CTA gradient. Status remaps
+       Aquaflux identity (no new red/green family). Distinct from toast. */
+    --aqua-banner-panel: var(--aqua-surface-strong);
+    --aqua-banner-panel-border: var(--aqua-border);
+    --aqua-banner-ink: var(--aqua-text);
+    --aqua-banner-close: var(--aqua-surface-strong);
+    --aqua-banner-close-color: var(--aqua-heading);
+    --aqua-banner-close-hover: var(--aqua-surface-muted);
+    --aqua-banner-focus-ring: var(--aqua-accent);
+    --aqua-banner-success: var(--aqua-accent);
+    --aqua-banner-success-soft: color-mix(in srgb, var(--aqua-accent) 14%, var(--aqua-surface-strong));
+    --aqua-banner-error: var(--aqua-page-deep);
+    --aqua-banner-error-soft: color-mix(in srgb, var(--aqua-page-deep) 12%, var(--aqua-surface-strong));
+    --aqua-banner-info: var(--aqua-accent-soft);
+    --aqua-banner-info-soft: color-mix(in srgb, var(--aqua-accent-soft) 18%, var(--aqua-surface-strong));
+    --aqua-banner-warning: var(--aqua-accent-strong);
+    --aqua-banner-warning-soft: color-mix(in srgb, var(--aqua-accent-strong) 12%, var(--aqua-surface-strong));
+    --juice-banner-panel: var(--aqua-banner-panel);
+    --juice-banner-panel-border: var(--aqua-banner-panel-border);
+    --juice-banner-ink: var(--aqua-banner-ink);
+    --juice-banner-close: var(--aqua-banner-close);
+    --juice-banner-close-color: var(--aqua-banner-close-color);
+    --juice-banner-close-hover: var(--aqua-banner-close-hover);
+    --juice-banner-focus-ring: var(--aqua-banner-focus-ring);
+    --juice-banner-success: var(--aqua-banner-success);
+    --juice-banner-success-soft: var(--aqua-banner-success-soft);
+    --juice-banner-error: var(--aqua-banner-error);
+    --juice-banner-error-soft: var(--aqua-banner-error-soft);
+    --juice-banner-info: var(--aqua-banner-info);
+    --juice-banner-info-soft: var(--aqua-banner-info-soft);
+    --juice-banner-warning: var(--aqua-banner-warning);
+    --juice-banner-warning-soft: var(--aqua-banner-warning-soft);
+
     /* Popover chrome — anchored floating panel from existing tokens.
        Close is a surface control, not the CTA gradient. Distinct from
        modal/drawer/toast and overlay="frost|tint". */
@@ -826,6 +860,76 @@
 [theme="aquaflux"] button[toast-close]:focus-visible,
 [theme="aquaflux"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Aquaflux buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="aquaflux"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="aquaflux"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="aquaflux"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="aquaflux"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="aquaflux"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="aquaflux"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="aquaflux"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="aquaflux"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="aquaflux"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="aquaflux"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="aquaflux"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="aquaflux"] button[banner-close],
+[theme="aquaflux"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[banner-close]:hover,
+[theme="aquaflux"] [banner-close]:hover {
+    background-image: none;
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+    transform: none;
+}
+
+[theme="aquaflux"] button[banner-close]:focus-visible,
+[theme="aquaflux"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
     outline-offset: 2px;
 }
 

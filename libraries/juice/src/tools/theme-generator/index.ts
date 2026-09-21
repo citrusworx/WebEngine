@@ -493,6 +493,40 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-toast-warning: var(--jx-toast-warning);
     --juice-toast-warning-soft: var(--jx-toast-warning-soft);
 
+    /* Banner chrome — inline alert / callout from existing --jx-* tokens.
+       Close is a surface control, not the CTA fill. Status remaps accent /
+       page-deep / secondary / warm. Distinct from toast stack. */
+    --jx-banner-panel: var(--jx-surface);
+    --jx-banner-panel-border: var(--jx-border);
+    --jx-banner-ink: var(--jx-text);
+    --jx-banner-close: var(--jx-surface);
+    --jx-banner-close-color: var(--jx-heading);
+    --jx-banner-close-hover: var(--jx-surface-muted);
+    --jx-banner-focus-ring: var(--jx-accent);
+    --jx-banner-success: var(--jx-accent);
+    --jx-banner-success-soft: var(--jx-accent-soft);
+    --jx-banner-error: var(--jx-page-deep);
+    --jx-banner-error-soft: color-mix(in srgb, var(--jx-page-deep) 12%, var(--jx-surface));
+    --jx-banner-info: var(--jx-accent-secondary);
+    --jx-banner-info-soft: var(--jx-accent-tint);
+    --jx-banner-warning: var(--jx-warm);
+    --jx-banner-warning-soft: var(--jx-warm-soft);
+    --juice-banner-panel: var(--jx-banner-panel);
+    --juice-banner-panel-border: var(--jx-banner-panel-border);
+    --juice-banner-ink: var(--jx-banner-ink);
+    --juice-banner-close: var(--jx-banner-close);
+    --juice-banner-close-color: var(--jx-banner-close-color);
+    --juice-banner-close-hover: var(--jx-banner-close-hover);
+    --juice-banner-focus-ring: var(--jx-banner-focus-ring);
+    --juice-banner-success: var(--jx-banner-success);
+    --juice-banner-success-soft: var(--jx-banner-success-soft);
+    --juice-banner-error: var(--jx-banner-error);
+    --juice-banner-error-soft: var(--jx-banner-error-soft);
+    --juice-banner-info: var(--jx-banner-info);
+    --juice-banner-info-soft: var(--jx-banner-info-soft);
+    --juice-banner-warning: var(--jx-banner-warning);
+    --juice-banner-warning-soft: var(--jx-banner-warning-soft);
+
     /* Popover chrome — anchored floating panel from existing --jx-* tokens.
        Close is a surface control, not the CTA fill. */
     --jx-popover-panel: var(--jx-surface);
@@ -943,6 +977,70 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] button[toast-close]:focus-visible,
 [theme="${config.id}"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="${config.id}"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="${config.id}"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="${config.id}"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="${config.id}"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="${config.id}"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="${config.id}"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="${config.id}"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="${config.id}"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="${config.id}"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="${config.id}"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="${config.id}"] button[banner-close],
+[theme="${config.id}"] [banner-close] {
+    background: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[banner-close]:hover,
+[theme="${config.id}"] [banner-close]:hover {
+    background: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+}
+
+[theme="${config.id}"] button[banner-close]:focus-visible,
+[theme="${config.id}"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
     outline-offset: 2px;
 }
 

@@ -185,6 +185,38 @@
   --juice-toast-info-soft: var(--tide-toast-info-soft);
   --juice-toast-warning: var(--tide-toast-warning);
   --juice-toast-warning-soft: var(--tide-toast-warning-soft);
+  /* Banner chrome — dark panel, not white glass. Close is a surface
+     control, not the CTA gradient. Status remaps lagoon identity. */
+  --tide-banner-panel: var(--tide-surface-strong);
+  --tide-banner-panel-border: var(--tide-border);
+  --tide-banner-ink: var(--tide-text);
+  --tide-banner-close: var(--tide-surface-strong);
+  --tide-banner-close-color: var(--tide-heading);
+  --tide-banner-close-hover: var(--tide-surface-muted);
+  --tide-banner-focus-ring: var(--tide-accent);
+  --tide-banner-success: var(--tide-accent);
+  --tide-banner-success-soft: color-mix(in srgb, var(--tide-accent) 16%, var(--tide-surface-strong));
+  --tide-banner-error: var(--tide-accent-strong);
+  --tide-banner-error-soft: color-mix(in srgb, var(--tide-accent-strong) 14%, var(--tide-surface-strong));
+  --tide-banner-info: var(--tide-accent-soft);
+  --tide-banner-info-soft: var(--tide-surface-muted);
+  --tide-banner-warning: var(--tide-page-tint);
+  --tide-banner-warning-soft: color-mix(in srgb, var(--tide-page-tint) 22%, var(--tide-surface-strong));
+  --juice-banner-panel: var(--tide-banner-panel);
+  --juice-banner-panel-border: var(--tide-banner-panel-border);
+  --juice-banner-ink: var(--tide-banner-ink);
+  --juice-banner-close: var(--tide-banner-close);
+  --juice-banner-close-color: var(--tide-banner-close-color);
+  --juice-banner-close-hover: var(--tide-banner-close-hover);
+  --juice-banner-focus-ring: var(--tide-banner-focus-ring);
+  --juice-banner-success: var(--tide-banner-success);
+  --juice-banner-success-soft: var(--tide-banner-success-soft);
+  --juice-banner-error: var(--tide-banner-error);
+  --juice-banner-error-soft: var(--tide-banner-error-soft);
+  --juice-banner-info: var(--tide-banner-info);
+  --juice-banner-info-soft: var(--tide-banner-info-soft);
+  --juice-banner-warning: var(--tide-banner-warning);
+  --juice-banner-warning-soft: var(--tide-banner-warning-soft);
   /* Popover chrome — dark panel, not white glass. Close is a surface
      control, not the CTA gradient. Distinct from modal/drawer/toast. */
   --tide-popover-panel: var(--tide-surface-strong);
@@ -739,6 +771,76 @@
 [theme=tide] button[toast-close]:focus-visible,
 [theme=tide] [toast-close]:focus-visible {
   outline: 2px solid var(--juice-toast-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Tide buttons use --tide-button-background;
+   [banner-close] stays a surface control. Panel stays dark. */
+[theme=tide] [banner]:not([surfaceTone]) {
+  background-color: var(--juice-banner-panel);
+  color: var(--juice-banner-ink);
+}
+
+[theme=tide] [banner]:not([surfaceTone]):not([banner-tone]) {
+  border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme=tide] [banner-body] {
+  color: var(--juice-banner-ink);
+}
+
+[theme=tide] [banner][banner-tone=success]:not([surfaceTone]) {
+  background-color: var(--juice-banner-success-soft);
+}
+
+[theme=tide] [banner][banner-tone=success] {
+  border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme=tide] [banner][banner-tone=error]:not([surfaceTone]) {
+  background-color: var(--juice-banner-error-soft);
+}
+
+[theme=tide] [banner][banner-tone=error] {
+  border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme=tide] [banner][banner-tone=info]:not([surfaceTone]) {
+  background-color: var(--juice-banner-info-soft);
+}
+
+[theme=tide] [banner][banner-tone=info] {
+  border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme=tide] [banner][banner-tone=warning]:not([surfaceTone]) {
+  background-color: var(--juice-banner-warning-soft);
+}
+
+[theme=tide] [banner][banner-tone=warning] {
+  border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme=tide] button[banner-close],
+[theme=tide] [banner-close] {
+  background-image: none;
+  background-color: var(--juice-banner-close);
+  color: var(--juice-banner-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[banner-close]:hover,
+[theme=tide] [banner-close]:hover {
+  background-image: none;
+  background-color: var(--juice-banner-close-hover);
+  color: var(--juice-banner-close-color);
+  transform: none;
+}
+
+[theme=tide] button[banner-close]:focus-visible,
+[theme=tide] [banner-close]:focus-visible {
+  outline: 2px solid var(--juice-banner-focus-ring);
   outline-offset: 2px;
 }
 
