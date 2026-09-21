@@ -101,4 +101,14 @@ export type {
     ComboboxController,
     ComboboxOptions
 } from "./js/src/combobox/combobox-runtime.js";
+export {
+    createBanner,
+    initBanner,
+    startBannerRuntime,
+    stopBannerRuntime
+} from "./js/src/banner/banner-runtime.js";
+export type {
+    BannerController,
+    BannerOptions
+} from "./js/src/banner/banner-runtime.js";
 export { tokens } from "./tokens/index.js";

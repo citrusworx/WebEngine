@@ -1065,6 +1065,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initCombobox");
         expect(module).toHaveProperty("startComboboxRuntime");
         expect(module).toHaveProperty("stopComboboxRuntime");
+        expect(module).toHaveProperty("createBanner");
+        expect(module).toHaveProperty("initBanner");
+        expect(module).toHaveProperty("startBannerRuntime");
+        expect(module).toHaveProperty("stopBannerRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

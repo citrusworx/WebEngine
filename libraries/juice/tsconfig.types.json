@@ -24,6 +24,7 @@
     "src/js/src/tooltip/tooltip-runtime.ts",
     "src/js/src/wizard/wizard-runtime.ts",
     "src/js/src/combobox/combobox-runtime.ts",
+    "src/js/src/banner/banner-runtime.ts",
     "src/tokens/**/*.ts",
     "src/themes/**/*.ts",
     "src/jsx.d.ts"

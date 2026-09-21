@@ -315,14 +315,16 @@ See [Toast Runtime](./juice-toast-runtime.md). Theme paint uses `--juice-toast-*
 
 ### Banner
 
-- `banner` — inline alert / callout (`role="status"` in markup). Value `"full"` is edge-to-edge layout (width 100%, no radius). Bare `[banner]` is inset. Hide with the native `hidden` attribute
+- `banner` — inline alert / callout (`role="status"`, or `role="alert"` for `banner-tone="error|warning"`). Value `"full"` is edge-to-edge layout (width 100%, no radius). Bare `[banner]` is inset. Hide with the native `hidden` attribute
 - `banner-tone` — optional status paint; values `"info"` / `"success"` / `"warning"` / `"error"`. Bare `[banner]` without `banner-tone` is neutral. Do not put status on the `banner` attribute — that slot is layout (`full`)
 - `banner-body` — message content
-- `banner-close` — dismiss control (surface paint, not a CTA). Slice A is chrome only; runtime later toggles `hidden`
+- `banner-close` — dismiss control (surface paint, not a CTA). The banner runtime wires click / keyboard dismiss
+- `banner-persist` — optional `"session"` / `"local"` remember-dismiss when `name` or `id` is set
+- `name` — optional persist key (falls back to `id`)
 
-Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Compose layout and status: `<div banner="full" banner-tone="warning">`.
+Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Compose layout and status: `<div banner="full" banner-tone="warning">`. The runtime auto-enhances that markup (`show` / `dismiss`); there is no focus trap and no Escape steal.
 
-Theme paint uses `--juice-banner-*` roles (`panel`, `panel-border`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`). There is no panel-shadow role. This is theme chrome only — there is no banner dismiss runtime yet.
+Theme paint uses `--juice-banner-*` roles (`panel`, `panel-border`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`). There is no panel-shadow role.
 
 ### Popover
 

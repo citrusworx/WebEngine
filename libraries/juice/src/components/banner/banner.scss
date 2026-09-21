@@ -34,7 +34,7 @@
 //
 // Closed vs open uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
-// Runtime (later) toggles [hidden] on [banner] and wires [banner-close].
+// Runtime toggles [hidden] on [banner] and wires [banner-close].
 // Optional surfaceTone on [banner] is allowed; do not force it.
 
 @function -juice-banner-role($name, $fallback) {
