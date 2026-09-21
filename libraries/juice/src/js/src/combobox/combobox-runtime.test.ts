@@ -318,6 +318,59 @@ describe('createCombobox', () => {
     controller.destroy();
   });
 
+  it('does not steal Escape from an open modal, drawer, or popover', () => {
+    document.body.innerHTML = `
+      <div modal-overlay id="open-modal">
+        <div modal><h2>Account</h2></div>
+      </div>
+      ${comboboxMarkup}
+    `;
+    stopComboboxRuntime();
+
+    const controller = createCombobox({ root: document.body });
+    const input = document.querySelector<HTMLInputElement>('[combobox-input]');
+    const list = document.querySelector<HTMLElement>('[combobox-list]');
+
+    input?.focus();
+    expect(list?.hasAttribute('hidden')).toBe(false);
+
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-modal')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
+    );
+
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-drawer')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div popover-root id="open-pop"><div popover-panel>Help</div></div>`
+    );
+
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-pop')?.setAttribute('hidden', '');
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(true);
+    expect(input?.getAttribute('aria-expanded')).toBe('false');
+
+    controller.destroy();
+  });
+
   it('closes on Tab without committing the active option', () => {
     document.body.innerHTML = comboboxMarkup;
     stopComboboxRuntime();

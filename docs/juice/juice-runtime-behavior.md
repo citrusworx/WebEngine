@@ -82,6 +82,20 @@ But each should follow the same rule:
 
 * valid Juice markup should be enough
 
+## Escape / layering
+
+When several Emerging surfaces are open, Escape is owned in this order (highest first):
+
+1. **Modal / drawer overlays** — an open `[modal-overlay]:not([hidden])` or `[drawer-overlay]:not([hidden])` owns Escape. Modal and drawer stay independently exclusive: both may be open at once. This slice does not make them exclusive across types.
+2. **Popover** — an open `[popover-root]:not([hidden])` owns Escape after dialogs, and yields when a dialog overlay is open.
+3. **Combobox** — an open `[combobox-list]:not([hidden])` owns Escape after popover, and yields when a dialog overlay or open popover exists.
+4. **Toast** — the most recent visible toast owns Escape after the above, and yields when a dialog overlay, open popover, open combobox list, or open tooltip exists.
+5. **Tooltip** — an open tip hides last among these, and yields when a dialog overlay, open popover, or open combobox list exists. Toast does not block tooltip Escape: the tip can hide while toasts remain.
+6. **Banner** — never steals Escape. Dismiss stays on `[banner-close]`.
+7. **Accordion** — Escape collapses the focused or last open item only when that accordion context already owns the key. There is no global accordion Escape. Tabs, navigation, and wizard leave Escape out of scope (tabs explicitly ignores it).
+
+Yield checks live in the individual runtimes. Shared helpers are a later extract.
+
 ## Summary
 
 Juice runtime behavior should feel like a natural extension of the markup system, not a separate app framework.

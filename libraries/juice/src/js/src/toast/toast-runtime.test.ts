@@ -297,7 +297,7 @@ describe('createToast', () => {
     controller.destroy();
   });
 
-  it('does not steal Escape from an open modal or drawer overlay', () => {
+  it('does not steal Escape from an open dialog, popover, combobox, or tooltip', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -313,10 +313,13 @@ describe('createToast', () => {
 
     const controller = createToast({ root: document.body, defaultDuration: 0 });
     const toast = document.getElementById('demo-toast');
+    const pressEscape = () => {
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+      );
+    };
 
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
+    pressEscape();
     expect(toast?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-modal')?.setAttribute('hidden', '');
@@ -325,15 +328,38 @@ describe('createToast', () => {
       `<div drawer-overlay id="open-drawer"><div drawer><h2>Filters</h2></div></div>`
     );
 
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
-    );
+    pressEscape();
     expect(toast?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-drawer')?.setAttribute('hidden', '');
-    document.body.dispatchEvent(
-      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div popover-root id="open-pop"><div popover-panel>Help</div></div>`
     );
+
+    pressEscape();
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-pop')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div combobox><ul combobox-list id="open-list"><li combobox-option>Apple</li></ul></div>`
+    );
+
+    pressEscape();
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-list')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div tooltip-root id="open-tip"><div tooltip-panel role="tooltip">Saved</div></div>`
+    );
+
+    pressEscape();
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-tip')?.setAttribute('hidden', '');
+    pressEscape();
     expect(toast?.hasAttribute('hidden')).toBe(true);
 
     controller.destroy();
