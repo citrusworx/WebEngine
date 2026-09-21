@@ -50,6 +50,31 @@ describe("grape config schema", () => {
         expect(parsed.resources).toEqual({});
     });
 
+    it("accepts spaces, certificates, and cdn as resources", () => {
+        const parsed = validateGrapeConfig({
+            provider: "digitalocean",
+            region: "nyc3",
+            resources: {
+                spaces: [{ name: "replace-space-name", acl: "public-read" }],
+                certificates: [{ name: "juice-static", dns_names: ["static.example.com"] }],
+                cdn: [{ space: "replace-space-name", ttl: 3600, certificate: "juice-static" }]
+            }
+        });
+        expect(parsed.resources.spaces?.[0]?.acl).toBe("public-read");
+        expect(parsed.resources.certificates?.[0]?.type).toBe("lets_encrypt");
+        expect(parsed.resources.cdn?.[0]?.ttl).toBe(3600);
+    });
+
+    it("rejects a Let's Encrypt certificate without dns names", () => {
+        const result = safeValidateGrapeConfig({
+            provider: "digitalocean",
+            resources: {
+                certificates: [{ name: "juice-static", type: "lets_encrypt" }]
+            }
+        });
+        expect(result.success).toBe(false);
+    });
+
     it("rejects unsupported providers", () => {
         const result = safeValidateGrapeConfig({
             provider: "aws",

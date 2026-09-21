@@ -8,6 +8,9 @@ import { type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { type Tag } from "../providers/digitalocean/tags/tags.js";
 import { type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 import { type DatabaseResource } from "../providers/digitalocean/databases/databases.js";
+import { type CdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
+import { type CertificateResource } from "../providers/digitalocean/certificates/certificates.js";
+import { type SpaceBucket } from "../providers/digitalocean/spaces/spaces.js";
 export interface LiveInventory {
     droplets: DropletResource[];
     vpcs: VPCResponse[];
@@ -19,6 +22,11 @@ export interface LiveInventory {
     alert_policies: AlertPolicy[];
     tags: Tag[];
     databases: DatabaseResource[];
+    spaces: SpaceBucket[];
+    cdn: CdnEndpoint[];
+    certificates: CertificateResource[];
+    /** False when Spaces keys were absent, so buckets were not listed. */
+    spaces_listed: boolean;
 }
 export declare function tokenIsSet(envName?: string): boolean;
 export declare function fetchLiveInventory(): Promise<LiveInventory>;

@@ -14,6 +14,7 @@ describe("grape init blueprints", () => {
             "02-droplet-in-vpc",
             "03-web-firewall",
             "04-full-web-stack",
+            "05-static-site-spaces",
             "kiwipress-compose",
             "kiwipress-managed"
         ]);

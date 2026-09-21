@@ -8,6 +8,12 @@ export declare function sanitizeKeyFileName(name: string): string;
  */
 export declare function resolvePrivateKeyPath(name: string, configured?: string, cwd?: string): string;
 /**
+ * Derive an OpenSSH public key from an existing private key file.
+ * Returns `undefined` when the file is absent so apply can generate instead.
+ * Does not overwrite the file.
+ */
+export declare function readExistingPrivateKeyPublic(filePath: string): string | undefined;
+/**
  * Write an OpenSSH private key to `filePath` with mode `0600` on POSIX.
  * Refuses to overwrite an existing file.
  */

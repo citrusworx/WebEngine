@@ -1,4 +1,5 @@
 import sshpk from "sshpk";
+import type { CdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
 import type { DropletResource } from "../providers/digitalocean/droplet/droplet.js";
 import type { FireWallResponse } from "../providers/digitalocean/firewall/firewall.js";
 import type { SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
@@ -114,4 +115,21 @@ export function adoptDroplet(droplets: DropletResource[], name: string): Droplet
 
 export function adoptFirewall(firewalls: FireWallResponse[], name: string): FireWallResponse | undefined {
     return findUniqueByName("Firewall", name, firewalls);
+}
+
+export function adoptCdnByOrigin(endpoints: CdnEndpoint[], origin: string): CdnEndpoint | undefined {
+    const matches = endpoints.filter((endpoint) => endpoint.origin === origin);
+    if (matches.length === 0) {
+        return undefined;
+    }
+    if (matches.length > 1) {
+        throw new Error(
+            formatAmbiguousError(
+                "CDN endpoint",
+                origin,
+                matches.map((endpoint) => ({ id: endpoint.id, name: endpoint.origin }))
+            )
+        );
+    }
+    return matches[0];
 }

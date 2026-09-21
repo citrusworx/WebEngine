@@ -33,6 +33,31 @@ vi.mock("../providers/digitalocean/vpc/vpc.js", () => ({
 vi.mock("../providers/digitalocean/databases/databases.js", () => ({
     deleteDatabase: vi.fn(async () => undefined)
 }));
+vi.mock("../providers/digitalocean/cdn/cdn.js", () => ({
+    deleteCdnEndpoint: vi.fn(async () => undefined),
+    resolveCdnOrigin: (input: {
+        origin?: string;
+        space?: string;
+        region?: string;
+        spaceRegion?: string;
+        fallbackRegion?: string;
+    }) => {
+        if (input.origin?.trim()) {
+            return input.origin.trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+        }
+        const region = input.region ?? input.spaceRegion ?? input.fallbackRegion;
+        if (!input.space || !region) {
+            throw new Error("CDN endpoint requires origin, or a space name plus a region");
+        }
+        return `${input.space}.${region}.digitaloceanspaces.com`;
+    }
+}));
+vi.mock("../providers/digitalocean/certificates/certificates.js", () => ({
+    deleteCertificate: vi.fn(async () => undefined)
+}));
+vi.mock("../providers/digitalocean/spaces/spaces.js", () => ({
+    deleteSpace: vi.fn(async () => undefined)
+}));
 
 function inventory(partial: Partial<LiveInventory> = {}): LiveInventory {
     return {
@@ -46,6 +71,10 @@ function inventory(partial: Partial<LiveInventory> = {}): LiveInventory {
         alert_policies: [],
         tags: [],
         databases: [],
+        spaces: [],
+        cdn: [],
+        certificates: [],
+        spaces_listed: true,
         ...partial
     };
 }
@@ -303,5 +332,107 @@ describe("destroyGrapeResources", () => {
         });
 
         expect(order).toEqual(["firewall", "droplet", "vpc", "tag"]);
+    });
+
+    it("deletes CDN, then the certificate, then the Space", async () => {
+        const { deleteCdnEndpoint } = await import("../providers/digitalocean/cdn/cdn.js");
+        const { deleteCertificate } = await import("../providers/digitalocean/certificates/certificates.js");
+        const { deleteSpace } = await import("../providers/digitalocean/spaces/spaces.js");
+        const order: string[] = [];
+        vi.mocked(deleteCdnEndpoint).mockImplementation(async () => {
+            order.push("cdn");
+        });
+        vi.mocked(deleteCertificate).mockImplementation(async () => {
+            order.push("certificate");
+        });
+        vi.mocked(deleteSpace).mockImplementation(async () => {
+            order.push("space");
+        });
+
+        const result = await destroyGrapeResources({
+            inventory: inventory({
+                cdn: [
+                    {
+                        id: "cdn-1",
+                        origin: "replace-space-name.nyc3.digitaloceanspaces.com",
+                        endpoint: "replace-space-name.nyc3.cdn.digitaloceanspaces.com",
+                        custom_domain: "static.example.com"
+                    }
+                ],
+                certificates: [
+                    { id: "cert-1", name: "juice-static", type: "lets_encrypt", state: "verified" }
+                ],
+                spaces: [{ name: "replace-space-name" }]
+            }),
+            config: validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    spaces: [{ name: "replace-space-name", region: "nyc3", acl: "public-read" }],
+                    certificates: [
+                        { name: "juice-static", type: "lets_encrypt", dns_names: ["static.example.com"] }
+                    ],
+                    cdn: [
+                        {
+                            space: "replace-space-name",
+                            region: "nyc3",
+                            custom_domain: "static.example.com",
+                            certificate: "juice-static"
+                        }
+                    ]
+                }
+            })
+        });
+
+        expect(order).toEqual(["cdn", "certificate", "space"]);
+        expect(result.deleted.map((target) => target.kind)).toEqual(["cdn", "certificate", "space"]);
+        expect(result.failed).toEqual([]);
+    });
+
+    it("skips Spaces when credentials were not available to list them", () => {
+        const plan = planDestroy(
+            inventory({ spaces_listed: false, spaces: [{ name: "replace-space-name" }] }),
+            {
+                config: validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: {
+                        spaces: [{ name: "replace-space-name", region: "nyc3" }]
+                    }
+                })
+            }
+        );
+        expect(plan.targets).toEqual([]);
+        expect(plan.skipped[0]?.reason).toMatch(/Spaces credentials are not set/);
+    });
+
+    it("skips an ambiguous CDN origin", () => {
+        const plan = planDestroy(
+            inventory({
+                cdn: [
+                    {
+                        id: "cdn-1",
+                        origin: "assets.nyc3.digitaloceanspaces.com",
+                        endpoint: "a.nyc3.cdn.digitaloceanspaces.com"
+                    },
+                    {
+                        id: "cdn-2",
+                        origin: "assets.nyc3.digitaloceanspaces.com",
+                        endpoint: "b.nyc3.cdn.digitaloceanspaces.com"
+                    }
+                ]
+            }),
+            {
+                config: validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: {
+                        cdn: [{ origin: "assets.nyc3.digitaloceanspaces.com" }]
+                    }
+                })
+            }
+        );
+        expect(plan.targets).toEqual([]);
+        expect(plan.skipped[0]?.reason).toMatch(/ambiguous/);
     });
 });

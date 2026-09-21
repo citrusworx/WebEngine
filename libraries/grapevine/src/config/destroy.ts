@@ -10,16 +10,22 @@ import { deleteSSHKey } from "../providers/digitalocean/ssh/ssh.js";
 import { deleteTag } from "../providers/digitalocean/tags/tags.js";
 import { deleteVPC } from "../providers/digitalocean/vpc/vpc.js";
 import { deleteDatabase } from "../providers/digitalocean/databases/databases.js";
+import { deleteCdnEndpoint, resolveCdnOrigin } from "../providers/digitalocean/cdn/cdn.js";
+import { deleteCertificate } from "../providers/digitalocean/certificates/certificates.js";
+import { deleteSpace } from "../providers/digitalocean/spaces/spaces.js";
 import { fetchLiveInventory, type LiveInventory } from "./live.js";
 
 export const DESTROY_ORDER = [
+    "cdn",
     "app",
     "alert_policy",
     "load_balancer",
+    "certificate",
     "firewall",
     "domain",
     "droplet",
     "database",
+    "space",
     "ssh_key",
     "vpc",
     "tag"
@@ -31,6 +37,8 @@ export interface DestroyTarget {
     kind: DestroyKind;
     name: string;
     id?: string | number;
+    /** Spaces addressing. DeleteBucket uses `{name}.{region}.digitaloceanspaces.com`. */
+    region?: string;
     reason?: string;
 }
 
@@ -148,6 +156,40 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
     if (config) {
         const resources = normalizeResources(config);
 
+        const spaceRegions = new Map<string, string>();
+        for (const space of resources.spaces ?? []) {
+            const region = space.region ?? config.region;
+            if (region) {
+                spaceRegions.set(space.name, region);
+            }
+        }
+
+        for (const endpoint of resources.cdn ?? []) {
+            const label = endpoint.custom_domain ?? endpoint.space ?? endpoint.origin ?? "cdn";
+            let origin: string;
+            try {
+                origin = resolveCdnOrigin({
+                    origin: endpoint.origin,
+                    space: endpoint.space,
+                    region: endpoint.region,
+                    spaceRegion: endpoint.space ? spaceRegions.get(endpoint.space) : undefined,
+                    fallbackRegion: config.region
+                });
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                skipped.push({ kind: "cdn", name: label, reason: message });
+                continue;
+            }
+            const match = uniqueMatch(inventory.cdn, origin, (item) => item.origin, "cdn", skipped);
+            if (match) {
+                addUniqueTarget(targets, skipped, {
+                    kind: "cdn",
+                    name: match.custom_domain || match.origin,
+                    id: match.id
+                });
+            }
+        }
+
         for (const app of resources.apps ?? []) {
             const match = uniqueMatch(inventory.apps, app.spec.name, (item) => item.spec?.name, "app", skipped);
             if (match) {
@@ -189,6 +231,23 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
             }
         }
 
+        for (const certificate of resources.certificates ?? []) {
+            const match = uniqueMatch(
+                inventory.certificates,
+                certificate.name,
+                (item) => item.name,
+                "certificate",
+                skipped
+            );
+            if (match) {
+                addUniqueTarget(targets, skipped, {
+                    kind: "certificate",
+                    name: match.name,
+                    id: match.id
+                });
+            }
+        }
+
         for (const firewall of resources.firewalls ?? []) {
             const match = uniqueMatch(inventory.firewalls, firewall.name, (item) => item.name, "firewall", skipped);
             if (match) {
@@ -216,6 +275,32 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
             if (match) {
                 addUniqueTarget(targets, skipped, { kind: "database", name: match.name, id: match.id });
             }
+        }
+
+        for (const space of resources.spaces ?? []) {
+            if (!inventory.spaces_listed) {
+                skipped.push({
+                    kind: "space",
+                    name: space.name,
+                    reason:
+                        "Spaces credentials are not set (DO_SPACES_ACCESS_KEY_ID and DO_SPACES_SECRET_ACCESS_KEY); the bucket was not listed"
+                });
+                continue;
+            }
+            const region = space.region ?? config.region;
+            const match = uniqueMatch(inventory.spaces, space.name, (item) => item.name, "space", skipped);
+            if (!match) {
+                continue;
+            }
+            if (!region) {
+                skipped.push({
+                    kind: "space",
+                    name: space.name,
+                    reason: "region required to delete the Space"
+                });
+                continue;
+            }
+            addUniqueTarget(targets, skipped, { kind: "space", name: match.name, region });
         }
 
         for (const key of resources.ssh_keys ?? []) {
@@ -298,8 +383,14 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
 
 async function runDelete(target: DestroyTarget): Promise<void> {
     switch (target.kind) {
+        case "cdn":
+            await deleteCdnEndpoint(String(target.id));
+            return;
         case "app":
             await deleteApp(String(target.id));
+            return;
+        case "certificate":
+            await deleteCertificate(String(target.id));
             return;
         case "alert_policy":
             await deleteAlertPolicy(String(target.id));
@@ -318,6 +409,12 @@ async function runDelete(target: DestroyTarget): Promise<void> {
             return;
         case "database":
             await deleteDatabase(String(target.id));
+            return;
+        case "space":
+            if (!target.region) {
+                throw new Error(`Space "${target.name}" is missing region`);
+            }
+            await deleteSpace(target.name, target.region);
             return;
         case "ssh_key":
             await deleteSSHKey(target.id ?? target.name);
@@ -371,8 +468,14 @@ export const DESTROY_V1_NOTES = `v1 destroy support
   are a subset of the tagged set). Default VPCs and ambiguous names are skipped.
   Local generated SSH private key files are not removed.
 
-  Order: apps → alert policies → load balancers → firewalls → domains →
-  droplets → databases → SSH keys → VPCs → tags.
+  Order: CDN endpoints → apps → alert policies → load balancers →
+  certificates → firewalls → domains → droplets → databases → Spaces →
+  SSH keys → VPCs → tags.
 
-  Droplet deletion is asynchronous at DigitalOcean; a VPC or tag may still be
-  in use on the first pass. Re-run destroy after droplets finish deallocating.`;
+  CDN endpoints are removed before certificates and Spaces because DigitalOcean
+  rejects those deletes while a CDN endpoint still references them. Load
+  balancers are removed before certificates for the same reason. A Space delete
+  fails when the bucket still has objects; destroy does not empty it.
+
+  Droplet deletion is asynchronous at DigitalOcean; a VPC, tag, or Space CDN
+  may still be in use on the first pass. Re-run destroy after deallocation.`;

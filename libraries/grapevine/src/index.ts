@@ -10,7 +10,10 @@ export {
     type GrapeConfig,
     type GrapeResources,
     type StackConfig,
-    type DatabaseResourceConfig
+    type DatabaseResourceConfig,
+    type SpaceResourceConfig,
+    type CertificateResourceConfig,
+    type CdnResourceConfig
 } from "./config/schema.js";
 export { loadGrapeConfig, parseConfigText, readConfigSource, isRemoteConfigSource } from "./config/load.js";
 export {
@@ -20,6 +23,9 @@ export {
     type ApplyResult,
     type AppliedSSHKey,
     type AppliedDatabase,
+    type AppliedSpace,
+    type AppliedCertificate,
+    type AppliedCdn,
     type AppliedStack,
     type GrapeRunOptions
 } from "./config/apply.js";

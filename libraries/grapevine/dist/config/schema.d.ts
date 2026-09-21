@@ -2,6 +2,8 @@ import { z } from "zod";
 export declare const credentialsSchema: z.ZodObject<{
     source: z.ZodDefault<z.ZodLiteral<"env">>;
     env: z.ZodDefault<z.ZodString>;
+    spaces_access_key_env: z.ZodOptional<z.ZodString>;
+    spaces_secret_key_env: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const dropletBlueprintSchema: z.ZodObject<{
     name: z.ZodString;
@@ -388,6 +390,39 @@ export declare const databaseConnectionEnvSchema: z.ZodObject<{
     database: z.ZodOptional<z.ZodString>;
     uri: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
+export declare const spaceResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    region: z.ZodOptional<z.ZodString>;
+    acl: z.ZodOptional<z.ZodEnum<{
+        private: "private";
+        "public-read": "public-read";
+    }>>;
+}, z.core.$strip>;
+export declare const certificateResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    type: z.ZodDefault<z.ZodEnum<{
+        custom: "custom";
+        lets_encrypt: "lets_encrypt";
+    }>>;
+    dns_names: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    private_key: z.ZodOptional<z.ZodString>;
+    leaf_certificate: z.ZodOptional<z.ZodString>;
+    certificate_chain: z.ZodOptional<z.ZodString>;
+    private_key_env: z.ZodOptional<z.ZodString>;
+    leaf_certificate_env: z.ZodOptional<z.ZodString>;
+    certificate_chain_env: z.ZodOptional<z.ZodString>;
+    wait: z.ZodOptional<z.ZodBoolean>;
+}, z.core.$strip>;
+export declare const cdnTtlSchema: z.ZodUnion<readonly [z.ZodLiteral<60>, z.ZodLiteral<600>, z.ZodLiteral<3600>, z.ZodLiteral<86400>, z.ZodLiteral<604800>]>;
+export declare const cdnResourceSchema: z.ZodObject<{
+    space: z.ZodOptional<z.ZodString>;
+    origin: z.ZodOptional<z.ZodString>;
+    region: z.ZodOptional<z.ZodString>;
+    ttl: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<60>, z.ZodLiteral<600>, z.ZodLiteral<3600>, z.ZodLiteral<86400>, z.ZodLiteral<604800>]>>;
+    custom_domain: z.ZodOptional<z.ZodString>;
+    certificate: z.ZodOptional<z.ZodString>;
+    certificate_id: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
 export declare const databaseResourceSchema: z.ZodObject<{
     name: z.ZodString;
     engine: z.ZodString;
@@ -733,6 +768,38 @@ export declare const resourcesSchema: z.ZodObject<{
             uri: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>;
     }, z.core.$strip>>>;
+    spaces: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        region: z.ZodOptional<z.ZodString>;
+        acl: z.ZodOptional<z.ZodEnum<{
+            private: "private";
+            "public-read": "public-read";
+        }>>;
+    }, z.core.$strip>>>;
+    certificates: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        type: z.ZodDefault<z.ZodEnum<{
+            custom: "custom";
+            lets_encrypt: "lets_encrypt";
+        }>>;
+        dns_names: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        private_key: z.ZodOptional<z.ZodString>;
+        leaf_certificate: z.ZodOptional<z.ZodString>;
+        certificate_chain: z.ZodOptional<z.ZodString>;
+        private_key_env: z.ZodOptional<z.ZodString>;
+        leaf_certificate_env: z.ZodOptional<z.ZodString>;
+        certificate_chain_env: z.ZodOptional<z.ZodString>;
+        wait: z.ZodOptional<z.ZodBoolean>;
+    }, z.core.$strip>>>;
+    cdn: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        space: z.ZodOptional<z.ZodString>;
+        origin: z.ZodOptional<z.ZodString>;
+        region: z.ZodOptional<z.ZodString>;
+        ttl: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<60>, z.ZodLiteral<600>, z.ZodLiteral<3600>, z.ZodLiteral<86400>, z.ZodLiteral<604800>]>>;
+        custom_domain: z.ZodOptional<z.ZodString>;
+        certificate: z.ZodOptional<z.ZodString>;
+        certificate_id: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export declare const grapeConfigSchema: z.ZodObject<{
     version: z.ZodDefault<z.ZodOptional<z.ZodString>>;
@@ -741,6 +808,8 @@ export declare const grapeConfigSchema: z.ZodObject<{
     credentials: z.ZodDefault<z.ZodOptional<z.ZodObject<{
         source: z.ZodDefault<z.ZodLiteral<"env">>;
         env: z.ZodDefault<z.ZodString>;
+        spaces_access_key_env: z.ZodOptional<z.ZodString>;
+        spaces_secret_key_env: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>>;
     region: z.ZodOptional<z.ZodString>;
     blueprint: z.ZodOptional<z.ZodObject<{
@@ -1079,6 +1148,38 @@ export declare const grapeConfigSchema: z.ZodObject<{
                 uri: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>>;
         }, z.core.$strip>>>;
+        spaces: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            region: z.ZodOptional<z.ZodString>;
+            acl: z.ZodOptional<z.ZodEnum<{
+                private: "private";
+                "public-read": "public-read";
+            }>>;
+        }, z.core.$strip>>>;
+        certificates: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            type: z.ZodDefault<z.ZodEnum<{
+                custom: "custom";
+                lets_encrypt: "lets_encrypt";
+            }>>;
+            dns_names: z.ZodOptional<z.ZodArray<z.ZodString>>;
+            private_key: z.ZodOptional<z.ZodString>;
+            leaf_certificate: z.ZodOptional<z.ZodString>;
+            certificate_chain: z.ZodOptional<z.ZodString>;
+            private_key_env: z.ZodOptional<z.ZodString>;
+            leaf_certificate_env: z.ZodOptional<z.ZodString>;
+            certificate_chain_env: z.ZodOptional<z.ZodString>;
+            wait: z.ZodOptional<z.ZodBoolean>;
+        }, z.core.$strip>>>;
+        cdn: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            space: z.ZodOptional<z.ZodString>;
+            origin: z.ZodOptional<z.ZodString>;
+            region: z.ZodOptional<z.ZodString>;
+            ttl: z.ZodOptional<z.ZodUnion<readonly [z.ZodLiteral<60>, z.ZodLiteral<600>, z.ZodLiteral<3600>, z.ZodLiteral<86400>, z.ZodLiteral<604800>]>>;
+            custom_domain: z.ZodOptional<z.ZodString>;
+            certificate: z.ZodOptional<z.ZodString>;
+            certificate_id: z.ZodOptional<z.ZodString>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>>;
     networking: z.ZodOptional<z.ZodObject<{
         vpc: z.ZodOptional<z.ZodUnion<readonly [z.ZodBoolean, z.ZodObject<{
@@ -1239,6 +1340,9 @@ export type GrapeDropletEntry = z.infer<typeof dropletEntrySchema>;
 export type DropletBlueprintConfig = z.infer<typeof dropletBlueprintSchema>;
 export type StackConfig = z.infer<typeof stackSchema>;
 export type DatabaseResourceConfig = z.infer<typeof databaseResourceSchema>;
+export type SpaceResourceConfig = z.infer<typeof spaceResourceSchema>;
+export type CertificateResourceConfig = z.infer<typeof certificateResourceSchema>;
+export type CdnResourceConfig = z.infer<typeof cdnResourceSchema>;
 /** Fold a classic `{ blueprint: { droplet | vpc | firewall } }` document into `resources`. */
 export declare function hoistBlueprintDocument(input: unknown): unknown;
 export declare function validateGrapeConfig(input: unknown): GrapeConfig;
@@ -1248,6 +1352,8 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
     credentials: {
         source: "env";
         env: string;
+        spaces_access_key_env?: string | undefined;
+        spaces_secret_key_env?: string | undefined;
     };
     resources: {
         tags?: (string | {
@@ -1472,6 +1578,32 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
                 database?: string | undefined;
                 uri?: string | undefined;
             } | undefined;
+        }[] | undefined;
+        spaces?: {
+            name: string;
+            region?: string | undefined;
+            acl?: "private" | "public-read" | undefined;
+        }[] | undefined;
+        certificates?: {
+            name: string;
+            type: "custom" | "lets_encrypt";
+            dns_names?: string[] | undefined;
+            private_key?: string | undefined;
+            leaf_certificate?: string | undefined;
+            certificate_chain?: string | undefined;
+            private_key_env?: string | undefined;
+            leaf_certificate_env?: string | undefined;
+            certificate_chain_env?: string | undefined;
+            wait?: boolean | undefined;
+        }[] | undefined;
+        cdn?: {
+            space?: string | undefined;
+            origin?: string | undefined;
+            region?: string | undefined;
+            ttl?: 60 | 600 | 3600 | 86400 | 604800 | undefined;
+            custom_domain?: string | undefined;
+            certificate?: string | undefined;
+            certificate_id?: string | undefined;
         }[] | undefined;
     };
     grapevine?: string | undefined;

@@ -42,6 +42,13 @@ const CATALOG: Array<Omit<BlueprintInfo, "file"> & { file: string }> = [
         kind: "file"
     },
     {
+        id: "05-static-site-spaces",
+        file: "05-static-site-spaces.yaml",
+        summary: "Space + Let's Encrypt certificate + CDN for a static site (Juice-style; no upload)",
+        aliases: ["05", "static-site", "spaces", "juice"],
+        kind: "file"
+    },
+    {
         id: "kiwipress-compose",
         file: "kiwipress-compose",
         summary: "KiwiPress compose: droplet + Docker (Traefik, MinIO, WordPress, MariaDB, Postgres)",

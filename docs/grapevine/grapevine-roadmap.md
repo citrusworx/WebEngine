@@ -18,7 +18,7 @@ The weakest areas are still:
 
 - apply is create-only (no idempotency, no rollback, no plan)
 - `grape status` is not drift
-- several schema fields (`services`, `monitoring`, ssl/cdn) look like product and do not provision
+- several schema fields (`services`, `monitoring`, boolean `networking.ssl` / `networking.cdn`) look like product and do not provision. Spaces, CDN endpoints, and certificates are real resources; full re-apply and static upload are not
 - tests beyond mocked HTTP
 
 Active development is the honest label. The DigitalOcean create path is real enough to teach in depth; it is not Terraform and not frozen.
@@ -101,7 +101,7 @@ If Grapevine is viewed as an IaC platform, its current maturity looks roughly li
 - function CRUD: useful and unevenly documented
 - status CLI: useful and easy to over-read
 - Docs as product surface: much stronger after the tutorial and topic pages
-- State / drift / destroy-from-YAML: not started
+- State / drift: not started. `grape destroy` exists and is still conservative. Spaces/CDN/certs are emerging, not a finished Juice host
 - Multi-cloud / GUI: not started, and not the current goal
 
 In practical terms:
@@ -153,7 +153,7 @@ Highest value schema work:
 
 - fail `services` instead of warning, **or** document it as deprecated and remove it
 - map `resources.alert_policies` only (already) and remove unused top-level `monitoring`
-- keep `networking.ssl` / `cdn` out of apply until certificate/CDN helpers exist
+- boolean `networking.ssl` / `networking.cdn` now warn. Real resources are `resources.certificates` and `resources.cdn`. Still open: idempotent updates, CDN-edge wait, and uploading a Vite `dist/` (Juice follow-ups)
 
 ### Priority 6. Stay complementary to CitrusWorx
 

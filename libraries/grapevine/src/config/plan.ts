@@ -1,8 +1,9 @@
 import type { GrapeConfig, GrapeResources } from "./schema.js";
-import { normalizeResources, unwrapDropletEntry } from "./apply.js";
+import { grapeConfigWarnings, normalizeResources, unwrapDropletEntry } from "./apply.js";
+import { resolveCdnOrigin } from "../providers/digitalocean/cdn/cdn.js";
 import { resolvePrivateKeyPath } from "./ssh-private-key.js";
 import { getConfigSourceDir, type GrapeRunOptions } from "./source.js";
-import { declaredStacks, resolveDeclaredStacks, servicesNeedsLegacyWarning, stackPlanDetails } from "./stack.js";
+import { declaredStacks, resolveDeclaredStacks, stackPlanDetails } from "./stack.js";
 
 export const RESOURCE_KINDS = [
     "tags",
@@ -15,6 +16,9 @@ export const RESOURCE_KINDS = [
     "load_balancers",
     "alert_policies",
     "apps",
+    "spaces",
+    "certificates",
+    "cdn",
     "stacks"
 ] as const;
 
@@ -31,6 +35,9 @@ export type PlannedKind =
     | "load_balancer"
     | "alert_policy"
     | "app"
+    | "space"
+    | "certificate"
+    | "cdn"
     | "stack"
     | "stack_step";
 
@@ -63,6 +70,9 @@ export function emptyCounts(): ResourceCounts {
         load_balancers: 0,
         alert_policies: 0,
         apps: 0,
+        spaces: 0,
+        certificates: 0,
+        cdn: 0,
         stacks: 0
     };
 }
@@ -79,6 +89,9 @@ export function countResources(resources: GrapeResources, stackCount = 0): Resou
         load_balancers: resources.load_balancers?.length ?? 0,
         alert_policies: resources.alert_policies?.length ?? 0,
         apps: resources.apps?.length ?? 0,
+        spaces: resources.spaces?.length ?? 0,
+        certificates: resources.certificates?.length ?? 0,
+        cdn: resources.cdn?.length ?? 0,
         stacks: stackCount
     };
 }
@@ -101,13 +114,7 @@ function detail(entries: Array<[string, string | undefined | number | boolean | 
 export function planGrapeConfig(config: GrapeConfig, options: GrapeRunOptions = {}): GrapePlan {
     const resources = normalizeResources(config);
     const planned: PlannedResource[] = [];
-    const warnings: string[] = [];
-
-    if (servicesNeedsLegacyWarning(config)) {
-        warnings.push(
-            "services is accepted for validation but is not applied. Declare a top-level stack (or a stack-shaped services section with droplet + compose) instead."
-        );
-    }
+    const warnings = grapeConfigWarnings(config);
 
     for (const tag of resources.tags ?? []) {
         const name = typeof tag === "string" ? tag : tag.name;
@@ -215,6 +222,69 @@ export function planGrapeConfig(config: GrapeConfig, options: GrapeRunOptions = 
             kind: "app",
             name: app.spec.name,
             detail: detail([["region", app.spec.region ?? config.region]])
+        });
+    }
+
+    const spaceRegions = new Map<string, string>();
+    for (const space of resources.spaces ?? []) {
+        const region = space.region ?? config.region;
+        if (region) {
+            spaceRegions.set(space.name, region);
+        }
+        planned.push({
+            kind: "space",
+            name: space.name,
+            detail: detail([
+                ["region", region],
+                ["acl", space.acl ?? "private"]
+            ])
+        });
+    }
+
+    for (const certificate of resources.certificates ?? []) {
+        planned.push({
+            kind: "certificate",
+            name: certificate.name,
+            detail: detail([
+                ["type", certificate.type],
+                ["dns_names", certificate.dns_names],
+                [
+                    "private_key",
+                    certificate.private_key
+                        ? "provided"
+                        : certificate.private_key_env
+                          ? `env:${certificate.private_key_env}`
+                          : undefined
+                ],
+                ["wait", certificate.wait === false ? "false" : undefined]
+            ])
+        });
+    }
+
+    for (const endpoint of resources.cdn ?? []) {
+        let origin: string | undefined;
+        try {
+            origin = resolveCdnOrigin({
+                origin: endpoint.origin,
+                space: endpoint.space,
+                region: endpoint.region,
+                spaceRegion: endpoint.space ? spaceRegions.get(endpoint.space) : undefined,
+                fallbackRegion: config.region
+            });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            warnings.push(message);
+        }
+        planned.push({
+            kind: "cdn",
+            name: endpoint.custom_domain ?? origin ?? endpoint.space ?? "cdn",
+            detail: detail([
+                ["origin", origin],
+                ["space", endpoint.space],
+                ["ttl", endpoint.ttl],
+                ["certificate", endpoint.certificate ?? endpoint.certificate_id],
+                ["custom_domain", endpoint.custom_domain]
+            ])
         });
     }
 

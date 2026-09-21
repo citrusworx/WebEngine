@@ -243,7 +243,30 @@ Rules accept `inbound` / `outbound` or `inbound_rules` / `outbound_rules`. `sour
 
 All four arrays are first-class apply resources. Domain records require `type`, `name`, `data`. Alert policies require `description`, `type`, `value` (`window` defaults `"5m"`, `enabled` defaults `true`). Apps require `spec.name`; the rest of `spec` is passed through to App Platform.
 
-Grapevine does not compile a Juice/Sig app into `spec`. You write the App Platform document yourself.
+Grapevine does not compile a Juice/Sig app into `spec`. You write the App Platform document yourself. The Juice static site path is Spaces + CDN + a certificate, not App Platform.
+
+### Spaces, certificates, CDN
+
+```yaml
+spaces:
+  - name: replace-space-name   # DNS-style, 3–63 chars
+    region: nyc3
+    acl: public-read            # or private (the create default)
+certificates:
+  - name: juice-static
+    type: lets_encrypt          # default
+    dns_names: [static.example.com]
+    # wait: false               # skip the CDN-attach poll
+cdn:
+  - space: replace-space-name
+    ttl: 3600                   # 60 | 600 | 3600 | 86400 | 604800
+    custom_domain: static.example.com
+    certificate: juice-static   # name, or set certificate_id
+```
+
+Spaces calls need `DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY` (or `credentials.spaces_access_key_env` / `spaces_secret_key_env`). CDN and certificates use `DO_TOKEN`. Custom certificates take `private_key` / `leaf_certificate` / `certificate_chain`, or the same fields with an `_env` suffix. Apply does not print that PEM material.
+
+This does not upload objects. A public Juice Vite build still needs a later sync of `dist/`.
 
 ## Top-level shortcuts (folded into `resources`)
 
@@ -252,8 +275,8 @@ networking:
   vpc: true                       # creates { name: digitalocean-vpc, region }
   # vpc: { name: main, ip_range: 10.10.0.0/16 }
   domain: example.com             # appends resources.domains unless already present
-  ssl: true                       # stored, not applied
-  cdn: false                      # stored, not applied
+  ssl: true                       # deprecated; warns; use resources.certificates
+  cdn: true                       # deprecated; warns; use resources.cdn
 
 firewall:
   name: main

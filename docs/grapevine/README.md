@@ -250,7 +250,7 @@ ssh:
   public_key: ssh-ed25519 …
 ```
 
-`networking.ssl` and `networking.cdn` are stored by the schema and **not** applied. Loose `services:` maps still warn. Use top-level `stack` (or a stack-shaped `services` object) for compose bootstrap, and `resources.databases` for DigitalOcean managed databases.
+`networking.ssl` and `networking.cdn` are deprecated booleans: plan and apply warn, and they do not provision anything. Use `resources.certificates` and `resources.cdn`. Loose `services:` maps still warn. Use top-level `stack` (or a stack-shaped `services` object) for compose bootstrap, `resources.databases` for DigitalOcean managed databases, and `resources.spaces` for a static-site bucket.
 
 ### 9. Tear down with functions, not `grape destroy`
 
@@ -314,10 +314,11 @@ Convenience fields `networking.vpc`, `networking.domain`, `firewall`, `ssh` are 
 | `DigitalOcean.VPC.create` class | Functions, not a namespace class |
 | Apply `services.frontend.type: app` | Warning only |
 | SSH into the box and run commands | Not implemented (`user_data` at create only) |
-| State file / update / destroy plan | Apply creates; deletes are explicit function calls |
-| Drift / reconcile | `grape status` counts; it does not diff |
-| Dry-run / `grape plan` | Not implemented |
-| Volumes / DOKS / Spaces as grape resources | No first-class apply types |
+| State file / full update | No state file. `grape destroy` matches unique names. Re-apply does not update adopted resources |
+| Drift / reconcile | `grape status` overlap is not a diff |
+| Live dry-run | `grape plan` does not call DigitalOcean |
+| Volumes / DOKS as grape resources | No first-class apply types. Spaces, CDN, and certificates are `resources.spaces`, `resources.cdn`, and `resources.certificates` |
+| Juice static upload | `05-static-site-spaces.yaml` provisions hosting only. It does not build `@citrusworx/juiceapp` or upload `dist/` |
 | Marketplace of blueprints | `examples/blueprints/` only |
 | WordPress YAML under `src/blueprints/` | Not a grape config — will not validate |
 

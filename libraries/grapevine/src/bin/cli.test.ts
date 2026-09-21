@@ -48,6 +48,9 @@ vi.mock("../config/apply.js", async () => {
             alert_policies: [],
             apps: [],
             databases: [],
+            spaces: [],
+            certificates: [],
+            cdn: [],
             stacks: [],
             private_key_paths: ["/tmp/.grape/ssh/grapevine"],
             warnings: ['Generated SSH private key for "grapevine" saved to /tmp/.grape/ssh/grapevine']
@@ -103,7 +106,11 @@ const liveInventory: LiveInventory = {
     apps: [],
     alert_policies: [],
     tags: [{ name: "grapevine" }],
-    databases: []
+    databases: [],
+    spaces: [],
+    cdn: [],
+    certificates: [],
+    spaces_listed: false
 };
 
 vi.mock("../config/live.js", async () => {

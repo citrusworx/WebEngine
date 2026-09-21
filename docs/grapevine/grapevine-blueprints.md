@@ -28,6 +28,7 @@ There is no marketplace, no `grape blueprint pull`, and no GUI picker.
 | `02-droplet-in-vpc.yaml` | Tag, generated SSH key, VPC, droplet `grapevine-web-01` | Droplet (`s-1vcpu-1gb`) | `generate: true` |
 | `03-web-firewall.yaml` | Firewall on an **existing** droplet | Free | Numeric `droplet_ids` |
 | `04-full-web-stack.yaml` | Tag + SSH + VPC + droplet + firewall | Droplet | `droplets: [grapevine-web-01]` |
+| `05-static-site-spaces.yaml` | Space + certificate + CDN for a static site | Space + CDN | Placeholders; does not upload `dist/` |
 | `kiwipress-compose/` | Droplet + Compose (Traefik, MinIO, WP, MariaDB, Postgres) | Droplet (`s-2vcpu-4gb`) | `stack:` + assets |
 | `kiwipress-managed/` | Managed MySQL + Postgres + droplet app layer | Droplet + 2 DBs | `resources.databases` |
 
