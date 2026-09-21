@@ -727,4 +727,55 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
     });
+
+    it("lets a consumer mount and sync the built breadcrumb runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopBreadcrumbRuntime();
+        document.body.innerHTML = `
+            <nav breadcrumb id="trail">
+                <span breadcrumb-item><a href="/" id="home">Home</a></span>
+                <span breadcrumb-item><a href="/docs" id="docs" aria-current="page">Docs</a></span>
+                <span breadcrumb-item><a href="/docs/juice" id="juice" aria-current="page">Juice</a></span>
+            </nav>
+        `;
+
+        const controller = module.createBreadcrumb({ root: document.body });
+        const trail = document.getElementById("trail");
+        const home = document.getElementById("home");
+        const docs = document.getElementById("docs");
+        const juice = document.getElementById("juice");
+
+        expect(trail?.getAttribute("aria-label")).toBe("Breadcrumb");
+        expect(trail?.hasAttribute("role")).toBe(false);
+        expect(docs?.getAttribute("aria-current")).toBe("page");
+        expect(juice?.hasAttribute("aria-current")).toBe(false);
+        expect(home?.getAttribute("href")).toBe("/");
+        expect(trail?.getAttribute("aria-modal")).toBeNull();
+
+        controller.setCurrent(2);
+        expect(juice?.getAttribute("aria-current")).toBe("page");
+        expect(juice?.getAttribute("href")).toBe("/docs/juice");
+        expect(docs?.hasAttribute("aria-current")).toBe(false);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopBreadcrumbRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
 });

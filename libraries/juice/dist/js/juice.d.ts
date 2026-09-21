@@ -30,3 +30,5 @@ export { createCheckbox, initCheckbox, startCheckboxRuntime, stopCheckboxRuntime
 export type { CheckboxController, CheckboxOptions } from "./src/checkbox/checkbox-runtime.js";
 export { createRadio, initRadio, startRadioRuntime, stopRadioRuntime } from "./src/radio/radio-runtime.js";
 export type { RadioController, RadioOptions } from "./src/radio/radio-runtime.js";
+export { createBreadcrumb, initBreadcrumb, startBreadcrumbRuntime, stopBreadcrumbRuntime } from "./src/breadcrumb/breadcrumb-runtime.js";
+export type { BreadcrumbController, BreadcrumbOptions } from "./src/breadcrumb/breadcrumb-runtime.js";

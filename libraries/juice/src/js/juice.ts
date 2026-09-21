@@ -160,3 +160,13 @@ export type {
     RadioController,
     RadioOptions
 } from "./src/radio/radio-runtime.js";
+export {
+    createBreadcrumb,
+    initBreadcrumb,
+    startBreadcrumbRuntime,
+    stopBreadcrumbRuntime
+} from "./src/breadcrumb/breadcrumb-runtime.js";
+export type {
+    BreadcrumbController,
+    BreadcrumbOptions
+} from "./src/breadcrumb/breadcrumb-runtime.js";
