@@ -119,7 +119,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, and `[combobox]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md), and [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, and `[combobox]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md), [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md), and [docs/juice/juice-combobox-runtime.md](../../docs/juice/juice-combobox-runtime.md).
 
 ## Use the built files directly
 
@@ -176,6 +176,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - popover chrome colors come from `--juice-popover-*` roles bound by the active theme; hide `[popover-root]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the root id. The runtime auto-enhances that markup (open/close, Escape, outside click, Tab trap, exclusive, one-axis flip). The panel is a non-modal dialog (`role="dialog"`, no `aria-modal`). Never use a bare `popover` attribute — the surface is `[popover-panel]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`. See [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md).
 - wizard chrome colors come from `--juice-wizard-*` roles bound by the active theme. Scope is `[wizard-shell]`. The runtime paints `[step="pending"|"active"|"completed"]`, shows one `[step-page]` with native `hidden`, and wires `[wizard-prev]` / `[wizard-next]` (or unmarked buttons in `[step-nav]`). Default navigation jumps to completed + current; `wizard-shell="linear"` is prev/next only; `wizard-shell="free"` jumps to any step. Do not use `content="active"` or `content="hidden"` for page state. See [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md).
 - tooltip chrome colors come from `--juice-tooltip-*` roles bound by the active theme; hide `[tooltip-root]` with the native `hidden` attribute. Triggers prefer `aria-describedby` pointing at the root id (`aria-controls` is also accepted). The runtime auto-enhances that markup (show/hide, Escape, exclusive, one-axis flip). There is no focus trap; focus never moves into the tip. Never use a bare `tooltip` attribute or native `title` — the surface is `[tooltip-panel]`. Placement is `[tooltip-root]` / `[tooltip-root="top"]` (default), `"bottom"`, `"left"`, `"right"`. See [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md).
+- combobox chrome colors come from `--juice-combobox-*` roles bound by the active theme; hide `[combobox-list]` with the native `hidden` attribute. Scope is `[combobox]` with `[combobox-input]`, optional `[combobox-trigger]`, `[combobox-list]`, and `[combobox-option]`. The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, case-insensitive substring filter, Arrow/Home/End/Enter/Escape/Tab). `aria-expanded` is written on the input and trigger; `aria-activedescendant` tracks the active option. Select writes option text or `data-value`. Distinct from native `<select>`. Placement is CSS-only (absolute under the field). See [docs/juice/juice-combobox-runtime.md](../../docs/juice/juice-combobox-runtime.md).
 
 ```html
 <div tabs name="settings">
@@ -263,6 +264,16 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 <button type="button" aria-describedby="demo-tip">Save</button>
 <div tooltip-root id="demo-tip" hidden>
   <div tooltip-panel role="tooltip">Saves the current draft.</div>
+</div>
+
+<label for="fruit-input">Fruit</label>
+<div combobox name="fruit">
+  <input id="fruit-input" combobox-input type="text" />
+  <button type="button" combobox-trigger aria-label="Show fruits"></button>
+  <ul combobox-list hidden>
+    <li combobox-option>Apple</li>
+    <li combobox-option>Banana</li>
+  </ul>
 </div>
 ```
 
