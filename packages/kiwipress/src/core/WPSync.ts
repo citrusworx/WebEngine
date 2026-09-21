@@ -20,7 +20,9 @@ import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
+import { CustomTaxonomy } from "../taxonomy/taxonomy.js";
 import { Users } from "../users/users.js";
+import { WordPressTaxonomies } from "../wp-taxonomies/wp-taxonomies.js";
 import { WordPressTypes } from "../wp-types/wp-types.js";
 
 export type WordPressClients = {
@@ -32,7 +34,9 @@ export type WordPressClients = {
     comments: Comments;
     media: Media;
     types: WordPressTypes;
+    taxonomies: WordPressTaxonomies;
     cpt(restBase: string): CustomPostType;
+    taxonomy(restBase: string): CustomTaxonomy;
 };
 
 export function createWordPressClients(config: Partial<WPCoreConfig>): WordPressClients {
@@ -45,8 +49,12 @@ export function createWordPressClients(config: Partial<WPCoreConfig>): WordPress
         comments: new Comments(config),
         media: new Media(config),
         types: new WordPressTypes(config),
+        taxonomies: new WordPressTaxonomies(config),
         cpt(restBase: string) {
             return new CustomPostType(config, restBase);
+        },
+        taxonomy(restBase: string) {
+            return new CustomTaxonomy(config, restBase);
         }
     };
 }
@@ -73,17 +81,31 @@ function emptyCounts(): TransferCounts {
 }
 
 function uniqueCpts(cpts: string[]): string[] {
+    return uniqueCustomRestBases(
+        cpts,
+        (entry) =>
+            `CPT REST base "${entry}" collides with a built-in WordPress collection. Use collections or includeMedia instead.`
+    );
+}
+
+function uniqueTaxonomies(taxonomies: string[]): string[] {
+    return uniqueCustomRestBases(
+        taxonomies,
+        (entry) =>
+            `Taxonomy REST base "${entry}" collides with a built-in WordPress collection. Use collections instead.`
+    );
+}
+
+function uniqueCustomRestBases(entries: string[], collisionMessage: (entry: string) => string): string[] {
     const seen = new Set<string>();
     const restBases: string[] = [];
 
-    for (const entry of cpts) {
+    for (const entry of entries) {
         const restBase = sanitizeRestBase(entry);
         const collection = restBase.toLowerCase();
 
         if (isCmsCollection(collection)) {
-            throw new Error(
-                `CPT REST base "${entry}" collides with a built-in WordPress collection. Use collections or includeMedia instead.`
-            );
+            throw new Error(collisionMessage(entry));
         }
 
         if (seen.has(collection)) {
@@ -100,13 +122,14 @@ function uniqueCpts(cpts: string[]): string[] {
 function resolveTransferRequest(input?: TransferRequest): {
     collections: CmsCollection[];
     cpts: string[];
+    taxonomies: string[];
 } {
     if (input === undefined) {
-        return { collections: [...DEFAULT_COLLECTIONS], cpts: [] };
+        return { collections: [...DEFAULT_COLLECTIONS], cpts: [], taxonomies: [] };
     }
 
     if (Array.isArray(input)) {
-        return { collections: [...input], cpts: [] };
+        return { collections: [...input], cpts: [], taxonomies: [] };
     }
 
     const collections = [...(input.collections ?? DEFAULT_COLLECTIONS)];
@@ -116,7 +139,8 @@ function resolveTransferRequest(input?: TransferRequest): {
 
     return {
         collections,
-        cpts: uniqueCpts(input.cpts ?? [])
+        cpts: uniqueCpts(input.cpts ?? []),
+        taxonomies: uniqueTaxonomies(input.taxonomies ?? [])
     };
 }
 
@@ -128,7 +152,7 @@ export class WPSync {
     ) {}
 
     async preview(request: TransferRequest = DEFAULT_COLLECTIONS): Promise<TransferPreview> {
-        const { collections, cpts } = resolveTransferRequest(request);
+        const { collections, cpts, taxonomies } = resolveTransferRequest(request);
         const counts = emptyCounts();
 
         for (const collection of collections) {
@@ -141,12 +165,17 @@ export class WPSync {
             counts[restBase.toLowerCase()] = records.length;
         }
 
-        return { collections, cpts, counts };
+        for (const restBase of taxonomies) {
+            const records = await this.readTaxonomy(restBase);
+            counts[restBase.toLowerCase()] = records.length;
+        }
+
+        return { collections, cpts, taxonomies, counts };
     }
 
     async transfer(request: TransferRequest = DEFAULT_COLLECTIONS): Promise<TransferResult> {
         await this.store.hydrate();
-        const { collections, cpts } = resolveTransferRequest(request);
+        const { collections, cpts, taxonomies } = resolveTransferRequest(request);
         const counts = emptyCounts();
         const records: ContentRecord[] = [];
 
@@ -162,7 +191,18 @@ export class WPSync {
         for (const restBase of cpts) {
             const items = await this.readCpt(restBase);
             const collection = restBase.toLowerCase();
-            this.ensureCptCollection(collection);
+            this.ensureNativeCollection(collection, "CPT");
+            counts[collection] = items.length;
+
+            for (const item of items) {
+                records.push(this.store.upsert(item));
+            }
+        }
+
+        for (const restBase of taxonomies) {
+            const items = await this.readTaxonomy(restBase);
+            const collection = restBase.toLowerCase();
+            this.ensureNativeCollection(collection, "taxonomy");
             counts[collection] = items.length;
 
             for (const item of items) {
@@ -176,19 +216,20 @@ export class WPSync {
             mode: "nectarine",
             collections,
             cpts,
+            taxonomies,
             counts,
             records
         };
     }
 
-    private ensureCptCollection(collection: string) {
+    private ensureNativeCollection(collection: string, kind: "CPT" | "taxonomy") {
         if (this.store.isRegisteredCollection(collection)) {
             return;
         }
 
         if (!isCustomTypeSlug(collection)) {
             throw new Error(
-                `CPT REST base "${collection}" is not a valid native collection slug.`
+                `${kind} REST base "${collection}" is not a valid native collection slug.`
             );
         }
 
@@ -210,6 +251,15 @@ export class WPSync {
 
         return this.readAndNormalize(collection, () =>
             client.listAll(client.restBase, { status: "any", context: "edit" })
+        );
+    }
+
+    private async readTaxonomy(restBase: string) {
+        const client = this.wordpress.taxonomy(restBase);
+        const collection = client.restBase.toLowerCase();
+
+        return this.readAndNormalize(collection, () =>
+            client.listAll(client.restBase, { hide_empty: "false" })
         );
     }
 

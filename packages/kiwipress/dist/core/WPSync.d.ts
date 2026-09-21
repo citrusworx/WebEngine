@@ -8,7 +8,9 @@ import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
+import { CustomTaxonomy } from "../taxonomy/taxonomy.js";
 import { Users } from "../users/users.js";
+import { WordPressTaxonomies } from "../wp-taxonomies/wp-taxonomies.js";
 import { WordPressTypes } from "../wp-types/wp-types.js";
 export type WordPressClients = {
     posts: Posts;
@@ -19,7 +21,9 @@ export type WordPressClients = {
     comments: Comments;
     media: Media;
     types: WordPressTypes;
+    taxonomies: WordPressTaxonomies;
     cpt(restBase: string): CustomPostType;
+    taxonomy(restBase: string): CustomTaxonomy;
 };
 export declare function createWordPressClients(config: Partial<WPCoreConfig>): WordPressClients;
 export declare class WPSync {
@@ -29,8 +33,9 @@ export declare class WPSync {
     constructor(wordpress: WordPressClients, store: NectarineStore, sourceUrl?: string | undefined);
     preview(request?: TransferRequest): Promise<TransferPreview>;
     transfer(request?: TransferRequest): Promise<TransferResult>;
-    private ensureCptCollection;
+    private ensureNativeCollection;
     private readCollection;
     private readCpt;
+    private readTaxonomy;
     private readAndNormalize;
 }

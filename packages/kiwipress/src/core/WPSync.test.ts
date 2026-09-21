@@ -132,12 +132,16 @@ describe("WPSync", () => {
             "comments"
         ]);
         expect(preview.cpts).toEqual([]);
+        expect(preview.taxonomies).toEqual([]);
         expect(preview.counts.media).toBe(0);
         expect(fetchMock.mock.calls.map((call) => String(call[0]))).not.toEqual(
             expect.arrayContaining([expect.stringContaining("/media")])
         );
         expect(fetchMock.mock.calls.map((call) => String(call[0]))).not.toEqual(
             expect.arrayContaining([expect.stringContaining("/books")])
+        );
+        expect(fetchMock.mock.calls.map((call) => String(call[0]))).not.toEqual(
+            expect.arrayContaining([expect.stringContaining("/genre")])
         );
     });
 
@@ -247,6 +251,90 @@ describe("WPSync", () => {
             /collides with a built-in WordPress collection/
         );
         await expect(sync.preview({ includeMedia: true, cpts: ["media"] })).rejects.toThrow(
+            /collides with a built-in WordPress collection/
+        );
+    });
+
+    it("transfers named taxonomy rest bases into matching native collections", async () => {
+        const fetchMock = vi.fn(async (url: string) => {
+            const href = String(url);
+            if (href.includes("/genre")) {
+                return wpPage([{
+                    id: 4,
+                    slug: "fiction",
+                    name: "Fiction",
+                    description: "Novels and stories",
+                    taxonomy: "genre",
+                    count: 3,
+                    parent: 0
+                }]);
+            }
+
+            if (href.includes("/product_cat")) {
+                return wpPage([{
+                    id: 8,
+                    slug: "mugs",
+                    name: "Mugs",
+                    taxonomy: "product_cat"
+                }]);
+            }
+
+            return wpPage([]);
+        });
+        vi.stubGlobal("fetch", fetchMock);
+
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+        const preview = await sync.preview({
+            collections: ["posts"],
+            taxonomies: ["genre", "product_cat"]
+        });
+        const result = await sync.transfer({
+            collections: ["posts"],
+            taxonomies: ["genre", "product_cat"]
+        });
+
+        expect(preview.collections).toEqual(["posts"]);
+        expect(preview.cpts).toEqual([]);
+        expect(preview.taxonomies).toEqual(["genre", "product_cat"]);
+        expect(preview.counts.genre).toBe(1);
+        expect(preview.counts.product_cat).toBe(1);
+        expect(result.taxonomies).toEqual(["genre", "product_cat"]);
+        expect(result.counts.genre).toBe(1);
+        expect(result.counts.product_cat).toBe(1);
+        expect(store.getType("genre")).toMatchObject({ slug: "genre" });
+        expect(store.getType("product_cat")).toMatchObject({ slug: "product_cat" });
+        expect(store.list("genre")[0]).toMatchObject({
+            id: "4",
+            collection: "genre",
+            title: "Fiction",
+            slug: "fiction",
+            content: "Novels and stories"
+        });
+        expect(store.list("product_cat")[0]).toMatchObject({
+            id: "8",
+            collection: "product_cat",
+            slug: "mugs"
+        });
+        expect(String(fetchMock.mock.calls.find((call) => String(call[0]).includes("/genre"))?.[0])).toContain(
+            "hide_empty=false"
+        );
+        expect(fetchMock.mock.calls.some((call) => String(call[0]).includes("/wp-json/wp/v2/product_cat"))).toBe(
+            true
+        );
+    });
+
+    it("rejects taxonomy rest bases that collide with built-in collections", async () => {
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+
+        await expect(sync.transfer({ collections: [], taxonomies: ["categories"] })).rejects.toThrow(
+            /collides with a built-in WordPress collection/
+        );
+        await expect(sync.preview({ taxonomies: ["tags"] })).rejects.toThrow(
+            /collides with a built-in WordPress collection/
+        );
+        await expect(sync.preview({ taxonomies: ["posts"] })).rejects.toThrow(
             /collides with a built-in WordPress collection/
         );
     });

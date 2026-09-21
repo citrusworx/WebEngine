@@ -9,7 +9,9 @@ import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
+import { CustomTaxonomy } from "../taxonomy/taxonomy.js";
 import { Users } from "../users/users.js";
+import { WordPressTaxonomies } from "../wp-taxonomies/wp-taxonomies.js";
 import { WordPressTypes } from "../wp-types/wp-types.js";
 export function createWordPressClients(config) {
     return {
@@ -21,8 +23,12 @@ export function createWordPressClients(config) {
         comments: new Comments(config),
         media: new Media(config),
         types: new WordPressTypes(config),
+        taxonomies: new WordPressTaxonomies(config),
         cpt(restBase) {
             return new CustomPostType(config, restBase);
+        },
+        taxonomy(restBase) {
+            return new CustomTaxonomy(config, restBase);
         }
     };
 }
@@ -46,13 +52,19 @@ function emptyCounts() {
     };
 }
 function uniqueCpts(cpts) {
+    return uniqueCustomRestBases(cpts, (entry) => `CPT REST base "${entry}" collides with a built-in WordPress collection. Use collections or includeMedia instead.`);
+}
+function uniqueTaxonomies(taxonomies) {
+    return uniqueCustomRestBases(taxonomies, (entry) => `Taxonomy REST base "${entry}" collides with a built-in WordPress collection. Use collections instead.`);
+}
+function uniqueCustomRestBases(entries, collisionMessage) {
     const seen = new Set();
     const restBases = [];
-    for (const entry of cpts) {
+    for (const entry of entries) {
         const restBase = sanitizeRestBase(entry);
         const collection = restBase.toLowerCase();
         if (isCmsCollection(collection)) {
-            throw new Error(`CPT REST base "${entry}" collides with a built-in WordPress collection. Use collections or includeMedia instead.`);
+            throw new Error(collisionMessage(entry));
         }
         if (seen.has(collection)) {
             continue;
@@ -64,10 +76,10 @@ function uniqueCpts(cpts) {
 }
 function resolveTransferRequest(input) {
     if (input === undefined) {
-        return { collections: [...DEFAULT_COLLECTIONS], cpts: [] };
+        return { collections: [...DEFAULT_COLLECTIONS], cpts: [], taxonomies: [] };
     }
     if (Array.isArray(input)) {
-        return { collections: [...input], cpts: [] };
+        return { collections: [...input], cpts: [], taxonomies: [] };
     }
     const collections = [...(input.collections ?? DEFAULT_COLLECTIONS)];
     if (input.includeMedia && !collections.includes("media")) {
@@ -75,7 +87,8 @@ function resolveTransferRequest(input) {
     }
     return {
         collections,
-        cpts: uniqueCpts(input.cpts ?? [])
+        cpts: uniqueCpts(input.cpts ?? []),
+        taxonomies: uniqueTaxonomies(input.taxonomies ?? [])
     };
 }
 export class WPSync {
@@ -88,7 +101,7 @@ export class WPSync {
         this.sourceUrl = sourceUrl;
     }
     async preview(request = DEFAULT_COLLECTIONS) {
-        const { collections, cpts } = resolveTransferRequest(request);
+        const { collections, cpts, taxonomies } = resolveTransferRequest(request);
         const counts = emptyCounts();
         for (const collection of collections) {
             const records = await this.readCollection(collection);
@@ -98,11 +111,15 @@ export class WPSync {
             const records = await this.readCpt(restBase);
             counts[restBase.toLowerCase()] = records.length;
         }
-        return { collections, cpts, counts };
+        for (const restBase of taxonomies) {
+            const records = await this.readTaxonomy(restBase);
+            counts[restBase.toLowerCase()] = records.length;
+        }
+        return { collections, cpts, taxonomies, counts };
     }
     async transfer(request = DEFAULT_COLLECTIONS) {
         await this.store.hydrate();
-        const { collections, cpts } = resolveTransferRequest(request);
+        const { collections, cpts, taxonomies } = resolveTransferRequest(request);
         const counts = emptyCounts();
         const records = [];
         for (const collection of collections) {
@@ -115,7 +132,16 @@ export class WPSync {
         for (const restBase of cpts) {
             const items = await this.readCpt(restBase);
             const collection = restBase.toLowerCase();
-            this.ensureCptCollection(collection);
+            this.ensureNativeCollection(collection, "CPT");
+            counts[collection] = items.length;
+            for (const item of items) {
+                records.push(this.store.upsert(item));
+            }
+        }
+        for (const restBase of taxonomies) {
+            const items = await this.readTaxonomy(restBase);
+            const collection = restBase.toLowerCase();
+            this.ensureNativeCollection(collection, "taxonomy");
             counts[collection] = items.length;
             for (const item of items) {
                 records.push(this.store.upsert(item));
@@ -126,16 +152,17 @@ export class WPSync {
             mode: "nectarine",
             collections,
             cpts,
+            taxonomies,
             counts,
             records
         };
     }
-    ensureCptCollection(collection) {
+    ensureNativeCollection(collection, kind) {
         if (this.store.isRegisteredCollection(collection)) {
             return;
         }
         if (!isCustomTypeSlug(collection)) {
-            throw new Error(`CPT REST base "${collection}" is not a valid native collection slug.`);
+            throw new Error(`${kind} REST base "${collection}" is not a valid native collection slug.`);
         }
         this.store.registerType({ slug: collection });
     }
@@ -151,6 +178,11 @@ export class WPSync {
         const client = this.wordpress.cpt(restBase);
         const collection = client.restBase.toLowerCase();
         return this.readAndNormalize(collection, () => client.listAll(client.restBase, { status: "any", context: "edit" }));
+    }
+    async readTaxonomy(restBase) {
+        const client = this.wordpress.taxonomy(restBase);
+        const collection = client.restBase.toLowerCase();
+        return this.readAndNormalize(collection, () => client.listAll(client.restBase, { hide_empty: "false" }));
     }
     async readAndNormalize(collection, load) {
         try {

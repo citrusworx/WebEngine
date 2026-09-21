@@ -89,6 +89,7 @@ export type TransferOptions = {
     collections?: CmsCollection[];
     includeMedia?: boolean;
     cpts?: string[];
+    taxonomies?: string[];
 };
 
 export type TransferRequest = CmsCollection[] | TransferOptions;
@@ -96,6 +97,7 @@ export type TransferRequest = CmsCollection[] | TransferOptions;
 export type TransferPreview = {
     collections: CmsCollection[];
     cpts: string[];
+    taxonomies: string[];
     counts: TransferCounts;
 };
 
@@ -103,6 +105,7 @@ export type TransferResult = {
     mode: "nectarine";
     collections: CmsCollection[];
     cpts: string[];
+    taxonomies: string[];
     counts: TransferCounts;
     records: ContentRecord[];
 };
