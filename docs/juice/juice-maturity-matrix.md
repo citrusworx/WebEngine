@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.8.0** public cut on npm (wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C). Master is ahead with the unpublished switch, slider, checkbox, radio, breadcrumb, and progress runtimes (theme chrome, runtime, and runtime / maturity docs). Menu is the twelfth Emerging auto-enhance runtime in 0.8.0. On master, switch is the thirteenth, slider is the fourteenth, checkbox is the fifteenth, radio is the sixteenth, breadcrumb is the seventeenth, and progress is the eighteenth. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable-ish. 0.7.0 was the prior public cut.
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.9.0** versioned cut (switch, slider, checkbox, radio, breadcrumb, and progress A→B→C). `@citrusworx/juiceui@0.8.0` remains the public npm cut until publish. Menu is the twelfth Emerging auto-enhance runtime in 0.8.0. Switch is the thirteenth, slider is the fourteenth, checkbox is the fifteenth, radio is the sixteenth, breadcrumb is the seventeenth, and progress is the eighteenth. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable-ish.
 
 The goal is to make it easy to answer:
 
@@ -44,7 +44,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Page-level patterns | Emerging | Tutorials and patterns are now present, which makes Juice more teachable and reusable. |
 | Rules engine | Emerging | The philosophy is strong, but only lightly formalized in written protocol docs so far. |
 | Docs and onboarding | Emerging to Stable-ish | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
-| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress runtimes in the browser. Switch, slider, checkbox, radio, breadcrumb, and progress are on master and are not in the 0.8.0 npm cut. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Escape / layering is documented in [juice-runtime-behavior.md](./juice-runtime-behavior.md#escape--layering). Useful and documented, but still likely to evolve. |
+| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress runtimes in the browser. Switch, slider, checkbox, radio, breadcrumb, and progress are in 0.9.0 and are not yet on npm. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Escape / layering is documented in [juice-runtime-behavior.md](./juice-runtime-behavior.md#escape--layering). Useful and documented, but still likely to evolve. |
 | Public component exports | Emerging | Ships the Sig `Accordion` factory plus create/init/start/stop helpers for navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress. Markup plus auto-enhance is the contract, not a large JS component library. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, or Sig Progress factory. |
 | Themes | Emerging | Bundled themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`) follow the `<id>.scss` + `<id>.yaml` contract; required `--juice-*` binds are listed in [Theme Contract](./juice-theme-contract.md). KiwiPress is the richest product reference. |
 | Motion (`motion` attribute) | Emerging | P0/P1 catalog documented in [juice-animations.md](./juice-animations.md); `prefers-reduced-motion` supported. |
@@ -91,7 +91,7 @@ These should be treated more carefully in positioning:
 - generator/config workflow
 - a large public JS component API beyond the shipped runtimes and Accordion factory
 
-The JS entrypoint is no longer a stub. Navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress auto-enhance on import, and `Accordion()` is a real Sig factory. Switch, slider, checkbox, radio, breadcrumb, and progress are unpublished versus 0.8.0. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. That layer is Emerging, not the center of the Juice promise.
+The JS entrypoint is no longer a stub. Navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress auto-enhance on import, and `Accordion()` is a real Sig factory. Switch, slider, checkbox, radio, breadcrumb, and progress are in 0.9.0 (not yet on npm). Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. That layer is Emerging, not the center of the Juice promise.
 
 ## Recommended positioning right now
 
@@ -135,7 +135,7 @@ If you are building with Juice today:
 
 - confidently use the CSS-first styling, layout, token, typography, and icon layers
 - use cards, forms, nav, and buttons with the understanding that they are still maturing
-- use the shipped auto-enhance runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress) and the Sig Accordion factory as Emerging — valid markup should work after importing the JS entry, but that surface is not Stable-ish. Switch, slider, checkbox, radio, breadcrumb, and progress are on master and are not in the 0.8.0 npm cut. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar
+- use the shipped auto-enhance runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress) and the Sig Accordion factory as Emerging — valid markup should work after importing the JS entry, but that surface is not Stable-ish. Switch, slider, checkbox, radio, breadcrumb, and progress are in 0.9.0 and are not yet on npm. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar
 - treat config-driven branding and generator workflow as draft
 
 That is the cleanest and most honest adoption model for the current state of the system.
