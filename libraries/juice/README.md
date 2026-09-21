@@ -120,6 +120,10 @@ import {
   initMenu,
   startMenuRuntime,
   stopMenuRuntime,
+  createSwitch,
+  initSwitch,
+  startSwitchRuntime,
+  stopSwitchRuntime,
   createNavigation,
   initNavigation,
   startNavigationRuntime,
@@ -130,7 +134,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, and `[menu-root]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md), [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md), [docs/juice/juice-combobox-runtime.md](../../docs/juice/juice-combobox-runtime.md), [docs/juice/juice-banner-runtime.md](../../docs/juice/juice-banner-runtime.md), and [docs/juice/juice-menu-runtime.md](../../docs/juice/juice-menu-runtime.md). Banner is an inline alert / callout (`show` / `dismiss`, `[banner-close]`), not a toast stack. Menu is an APG menu button (`open` / `close` / `toggle` / `select`), not a popover and not a menubar.
+Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, and switch runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, `[menu-root]`, and `[switch]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md), [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md), [docs/juice/juice-combobox-runtime.md](../../docs/juice/juice-combobox-runtime.md), [docs/juice/juice-banner-runtime.md](../../docs/juice/juice-banner-runtime.md), and [docs/juice/juice-menu-runtime.md](../../docs/juice/juice-menu-runtime.md). Banner is an inline alert / callout (`show` / `dismiss`, `[banner-close]`), not a toast stack. Menu is an APG menu button (`open` / `close` / `toggle` / `select`), not a popover and not a menubar. Switch is an APG switch (`toggle` / `setChecked`); full runtime docs are later.
 
 ## Use the built files directly
 
@@ -190,6 +194,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - combobox chrome colors come from `--juice-combobox-*` roles bound by the active theme; hide `[combobox-list]` with the native `hidden` attribute. Scope is `[combobox]` with `[combobox-input]`, optional `[combobox-trigger]`, `[combobox-list]`, and `[combobox-option]`. The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, case-insensitive substring filter, Arrow/Home/End/Enter/Escape/Tab). `aria-expanded` is written on the input and trigger; `aria-activedescendant` tracks the active option. Select writes option text or `data-value`. Distinct from native `<select>`. Placement is CSS-only (absolute under the field). See [docs/juice/juice-combobox-runtime.md](../../docs/juice/juice-combobox-runtime.md).
 - banner chrome colors come from `--juice-banner-*` roles bound by the active theme. `[banner]` is an inline alert / callout, not a toast stack and not a dialog. Hide with the native `hidden` attribute. Layout is `[banner]` / `[banner="full"]`; optional status is `[banner-tone="info|success|warning|error"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[banner-close]`, optional `banner-persist="session|local"` with `name` / `id`). It is not a dialog: no focus trap, no `aria-modal`, no Escape steal. See [docs/juice/juice-banner-runtime.md](../../docs/juice/juice-banner-runtime.md).
 - menu chrome colors come from `--juice-menu-*` roles bound by the active theme. `[menu-root]` wraps an opener plus `[menu]`; hide the panel with the native `hidden` attribute. Optional `[menu-button]` is surface paint, not a CTA. Items are `[menuitem]` (value `"active"` is keyboard focus); optional `[menu-separator]` / `[menu-label]`. APG Menu Button, not a popover, combobox, or native `<select>`. Placement is CSS-only (`[menu-root]` / `"bottom"` default, `"top"`, `"left"`, `"right"`). The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, roving tabindex, Escape with popover). See [docs/juice/juice-menu-runtime.md](../../docs/juice/juice-menu-runtime.md).
+- switch chrome colors come from `--juice-switch-*` roles bound by the active theme. `[switch]` is an APG switch on a button host (checkbox-backed hosts are a secondary story). The runtime auto-enhances that markup (`toggle` / `check` / `uncheck` / `setChecked`, `role="switch"`, `aria-checked`). Authors supply the accessible name. It is not a form checkbox, not menuitemcheckbox, and not a layered overlay: no focus trap, no Escape steal.
 
 ```html
 <div tabs name="settings">
@@ -304,6 +309,8 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
     <button type="button" menuitem="active">Report.pdf</button>
   </div>
 </div>
+
+<button type="button" switch aria-label="Notifications"></button>
 ```
 
 ## Browser Support

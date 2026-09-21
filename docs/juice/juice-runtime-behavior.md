@@ -33,16 +33,16 @@ It should not require:
 
 ## Current Examples
 
-The navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu runtimes are the current examples.
+The navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, and switch runtimes are the current examples.
 
 They work by:
 
-* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, or `[menu-root]` markup
+* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, `[menu-root]`, or `[switch]` markup
 * booting automatically in the browser
 * responding to DOM changes
 * applying behavior without user init code
 
-See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), [Juice Drawer Runtime](./juice-drawer-runtime.md), [Juice Toast Runtime](./juice-toast-runtime.md), [Juice Popover Runtime](./juice-popover-runtime.md), [Juice Wizard Runtime](./juice-wizard-runtime.md), [Juice Tooltip Runtime](./juice-tooltip-runtime.md), [Juice Combobox Runtime](./juice-combobox-runtime.md), [Juice Banner Runtime](./juice-banner-runtime.md), and [Juice Menu Runtime](./juice-menu-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog. Popover is a non-modal anchored dialog (`[popover-root]` / `[popover-panel]`), not a modal, drawer, or toast. Wizard is a multi-step onboarding shell (`[wizard-shell]` / `[step-page]`), not a dialog and not APG Tabs. Tooltip is a hover/focus tip (`[tooltip-root]` / `[tooltip-panel]`), not a popover and not native `title`. Combobox is an input + listbox popup (`[combobox]` / `[combobox-list]`), not a native `<select>` and not a popover. Banner is an inline alert / callout (`[banner]` / `[banner-close]`), not a toast stack and not a dialog. Menu is an APG menu button (`[menu-root]` / `[menu]` / `[menuitem]`), not a popover, not a combobox, and not a menubar.
+See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), [Juice Drawer Runtime](./juice-drawer-runtime.md), [Juice Toast Runtime](./juice-toast-runtime.md), [Juice Popover Runtime](./juice-popover-runtime.md), [Juice Wizard Runtime](./juice-wizard-runtime.md), [Juice Tooltip Runtime](./juice-tooltip-runtime.md), [Juice Combobox Runtime](./juice-combobox-runtime.md), [Juice Banner Runtime](./juice-banner-runtime.md), and [Juice Menu Runtime](./juice-menu-runtime.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog. Popover is a non-modal anchored dialog (`[popover-root]` / `[popover-panel]`), not a modal, drawer, or toast. Wizard is a multi-step onboarding shell (`[wizard-shell]` / `[step-page]`), not a dialog and not APG Tabs. Tooltip is a hover/focus tip (`[tooltip-root]` / `[tooltip-panel]`), not a popover and not native `title`. Combobox is an input + listbox popup (`[combobox]` / `[combobox-list]`), not a native `<select>` and not a popover. Banner is an inline alert / callout (`[banner]` / `[banner-close]`), not a toast stack and not a dialog. Menu is an APG menu button (`[menu-root]` / `[menu]` / `[menuitem]`), not a popover, not a combobox, and not a menubar. Switch is an APG switch (`[switch]`), not a form checkbox and not a layered overlay; full runtime docs are later.
 
 When several of those surfaces are open, [Escape / layering](#escape--layering) decides who owns the key. [Z-index bands](#z-index-bands) are a separate structural paint order.
 
@@ -76,6 +76,7 @@ Shipped built-in runtime features include:
 * comboboxes / list autocomplete
 * banners / inline alerts
 * menus / menu buttons
+* switches / APG toggles
 
 Future built-in runtime features could include:
 
@@ -98,6 +99,7 @@ The overlay band is the exception inside itself: modal and drawer do **not** yie
 | 3 | Combobox | An open `[combobox-list]:not([hidden])` | An open dialog overlay, open popover, or open menu exists |
 | 4 | Toast / tooltip | See the interaction below | See the interaction below |
 | — | Banner | Never. Dismiss stays on `[banner-close]` | — |
+| — | Switch | Never. Toggle stays on click / Enter / Space | — |
 | — | Accordion | The focused open item, or the last opened item, when that accordion context already owns the key. There is no global accordion Escape. | — |
 | — | Tabs, navigation, wizard | Out of scope. Tabs ignores Escape. Wizard is not a dialog. Navigation does not close on Escape. | — |
 
@@ -118,6 +120,7 @@ Core chrome sets these stacking values. They are **structural bands**, not a the
 | Wizard chrome | `[wizard-header]` | `50` | Sticky in-page header |
 | Nav chrome | `nav[type="sidebar"]` | `30` | Sidebar / mobile panel |
 | Banner | `[banner]` | none | Inline callout; no elevation in this cut |
+| Switch | `[switch]` | none | Inline control; no elevation in this cut |
 
 Tabs and accordion do not set a stacking band.
 

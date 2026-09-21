@@ -121,4 +121,14 @@ export type {
     MenuController,
     MenuOptions
 } from "./js/src/menu/menu-runtime.js";
+export {
+    createSwitch,
+    initSwitch,
+    startSwitchRuntime,
+    stopSwitchRuntime
+} from "./js/src/switch/switch-runtime.js";
+export type {
+    SwitchController,
+    SwitchOptions
+} from "./js/src/switch/switch-runtime.js";
 export { tokens } from "./tokens/index.js";

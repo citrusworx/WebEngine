@@ -1209,6 +1209,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initMenu");
         expect(module).toHaveProperty("startMenuRuntime");
         expect(module).toHaveProperty("stopMenuRuntime");
+        expect(module).toHaveProperty("createSwitch");
+        expect(module).toHaveProperty("initSwitch");
+        expect(module).toHaveProperty("startSwitchRuntime");
+        expect(module).toHaveProperty("stopSwitchRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

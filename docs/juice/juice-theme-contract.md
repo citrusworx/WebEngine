@@ -331,7 +331,7 @@ A boolean `[switch]` attribute is fine: there is no HTML global `switch` attribu
 
 Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children. This slice does not size the control: no `switch-size`, and `scale="sm|lg"` does not change track/thumb geometry (`scale` is ordinary button padding; `*-size` is a layout attr). Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
 
-Checked paint for static demos is `aria-checked="true"` so chrome and runtime B share one story. There is no `switch="on"`. Core CSS treats this as an **inline** control — no floating overlay z-index band. Thumb slide honors `prefers-reduced-motion`. Switch runtime (B) and maturity docs (C) are later.
+Checked paint for static demos is `aria-checked="true"` so chrome and runtime share one story. There is no `switch="on"`. Core CSS treats this as an **inline** control — no floating overlay z-index band. Thumb slide honors `prefers-reduced-motion`. The runtime auto-enhances button and checkbox `[switch]` hosts (`createSwitch` / `toggle` / `setChecked`). Maturity docs (C) are later.
 
 Tide must stay a dark track, not a white pill.
 
@@ -539,4 +539,4 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 ## Status
 
-This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, and switch A (theme chrome): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, and `--juice-wizard-*`. Switch runtime (B) and maturity docs (C) are later. Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, and switch A→B (theme chrome + runtime): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, and `--juice-wizard-*`. Switch maturity docs (C) are later. Blush, CLI, and publish are out of scope here.

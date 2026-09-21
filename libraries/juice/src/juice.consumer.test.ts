@@ -55,6 +55,7 @@ describe("Juice consumer smoke", () => {
         module.stopComboboxRuntime();
         module.stopBannerRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -102,6 +103,7 @@ describe("Juice consumer smoke", () => {
         module.stopComboboxRuntime();
         module.stopBannerRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -147,6 +149,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -192,6 +195,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -240,6 +244,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -286,6 +291,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -339,6 +345,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -380,6 +387,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -434,6 +442,7 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -468,6 +477,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         module.stopBannerRuntime();
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         module.stopComboboxRuntime();
         module.stopTooltipRuntime();
         module.stopWizardRuntime();
@@ -484,6 +494,7 @@ describe("Juice consumer smoke", () => {
         const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
         const module = await import(entryUrl);
         module.stopMenuRuntime();
+        module.stopSwitchRuntime();
         document.body.innerHTML = `
             <div menu-root>
                 <button type="button" menu-button id="demo-open">File</button>
@@ -513,6 +524,45 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopMenuRuntime();
+        module.stopSwitchRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built switch runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopSwitchRuntime();
+        document.body.innerHTML = `
+            <button switch aria-label="Notifications" id="demo-switch"></button>
+        `;
+
+        const controller = module.createSwitch({ root: document.body });
+        const control = document.getElementById("demo-switch");
+
+        expect(control?.getAttribute("role")).toBe("switch");
+        expect(control?.getAttribute("aria-checked")).toBe("false");
+        expect(control?.getAttribute("type")).toBe("button");
+        expect(control?.getAttribute("aria-modal")).toBeNull();
+
+        control?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(control?.getAttribute("aria-checked")).toBe("true");
+        expect(controller.isChecked(control)).toBe(true);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopSwitchRuntime();
         module.stopMenuRuntime();
         module.stopBannerRuntime();
         module.stopComboboxRuntime();
