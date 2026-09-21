@@ -22,3 +22,5 @@ export { createBanner, initBanner, startBannerRuntime, stopBannerRuntime } from 
 export type { BannerController, BannerOptions } from "./src/banner/banner-runtime.js";
 export { createMenu, initMenu, startMenuRuntime, stopMenuRuntime } from "./src/menu/menu-runtime.js";
 export type { MenuController, MenuOptions } from "./src/menu/menu-runtime.js";
+export { createSwitch, initSwitch, startSwitchRuntime, stopSwitchRuntime } from "./src/switch/switch-runtime.js";
+export type { SwitchController, SwitchOptions } from "./src/switch/switch-runtime.js";

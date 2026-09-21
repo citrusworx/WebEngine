@@ -2905,8 +2905,112 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	$r = null, Qr || ti();
 }, document.addEventListener("DOMContentLoaded", $r)) : ti());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/switch/switch-runtime.ts
 var ri = {
+	root: typeof document < "u" ? document : {},
+	switchSelector: "[switch]"
+}, ii = (e) => Array.from(e), ai = A(), oi = (e) => e instanceof HTMLInputElement && e.type === "checkbox", si = (e) => e instanceof HTMLButtonElement, ci = (e) => si(e) || oi(e), li = (e) => e.getAttribute("aria-disabled") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled ? !0 : e.hasAttribute("disabled"), ui = (e) => oi(e) && e.checked ? !0 : e.getAttribute("aria-checked") === "true", di = (e, t) => {
+	let n = t ? "true" : "false";
+	e.getAttribute("aria-checked") !== n && e.setAttribute("aria-checked", n), oi(e) && e.checked !== t && (e.checked = t);
+}, fi = () => ({
+	destroy: () => {},
+	sync: () => {},
+	toggle: () => {},
+	check: () => {},
+	uncheck: () => {},
+	setChecked: () => {},
+	isChecked: () => !1
+}), pi = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return fi();
+	let t = {
+		...ri,
+		...e
+	}, n = t.root ?? document, r = n, i = () => ii(n.querySelectorAll(t.switchSelector)).filter(ci), a = (e) => !e?.matches(t.switchSelector) || !ci(e) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : i().includes(e), o = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.switchSelector);
+		return !(n instanceof HTMLElement) || !a(n) ? null : n;
+	}, s = (e) => {
+		if (e) {
+			if (a(e)) return e;
+			let t = o(e);
+			if (t) return t;
+		}
+		return i().find(a) ?? null;
+	}, c = (e) => {
+		e.getAttribute("role") !== "switch" && e.setAttribute("role", "switch"), si(e) && !e.hasAttribute("type") && (e.type = "button"), di(e, ui(e));
+	}, l = (e, t) => {
+		let n = s(e);
+		!n || li(n) || (c(n), di(n, t));
+	}, u = (e) => {
+		let t = s(e);
+		!t || li(t) || l(t, !ui(t));
+	}, d = (e) => {
+		l(e, !0);
+	}, f = (e) => {
+		l(e, !1);
+	}, p = (e, t) => {
+		l(t, e);
+	}, m = (e) => {
+		let t = s(e);
+		return t ? ui(t) : !1;
+	}, h = () => {
+		i().forEach((e) => {
+			a(e) && c(e);
+		});
+	}, g = (e) => {
+		let t = e.target;
+		if (!(t instanceof Element)) return;
+		let n = o(t instanceof HTMLElement ? t : t.parentElement);
+		!n || li(n) || !si(n) || ai(e) && (e.preventDefault(), u(n));
+	}, _ = (e) => {
+		let t = e.target;
+		!(t instanceof HTMLElement) || !oi(t) || !a(t) || li(t) || ai(e) && di(t, t.checked);
+	}, v = (e) => {
+		if (!(e instanceof KeyboardEvent) || e.key !== "Enter" && e.key !== " ") return;
+		let t = e.target;
+		if (!(t instanceof Element)) return;
+		let n = o(t instanceof HTMLElement ? t : t.parentElement);
+		!n || li(n) || ai(e) && (e.preventDefault(), u(n));
+	}, y = !1, b = () => {
+		y || (y = !0, requestAnimationFrame(() => {
+			y = !1, h();
+		}));
+	}, x = typeof MutationObserver < "u" ? new MutationObserver(() => b()) : null;
+	return r.addEventListener("click", g), r.addEventListener("change", _), r.addEventListener("keydown", v), x && n instanceof Node && x.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"switch",
+			"role",
+			"aria-checked",
+			"aria-disabled",
+			"disabled",
+			"type",
+			"checked"
+		]
+	}), h(), {
+		destroy: () => {
+			r.removeEventListener("click", g), r.removeEventListener("change", _), r.removeEventListener("keydown", v), x?.disconnect();
+		},
+		sync: h,
+		toggle: u,
+		check: d,
+		uncheck: f,
+		setChecked: p,
+		isChecked: m
+	};
+}, mi = (e = {}) => pi(e), hi = null, gi = !1, _i = null, vi = () => {
+	_i &&= (document.removeEventListener("DOMContentLoaded", _i), null);
+}, yi = () => typeof window > "u" || typeof document > "u" ? null : (gi = !1, vi(), hi ? (hi.sync(), hi) : (hi = pi(), hi)), bi = () => {
+	gi = !0, vi(), hi?.destroy(), hi = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (_i = () => {
+	_i = null, gi || yi();
+}, document.addEventListener("DOMContentLoaded", _i)) : yi());
+//#endregion
+//#region src/tokens/index.ts
+var xi = {
 	colors: {
 		families: [
 			"black",
@@ -3074,4 +3178,4 @@ var ri = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, kr as createBanner, dr as createCombobox, $e as createDrawer, Yr as createMenu, Le as createModal, T as createNavigation, qt as createPopover, ge as createTabs, bt as createToast, bn as createTooltip, Vn as createWizard, ne as initAccordion, Ar as initBanner, fr as initCombobox, et as initDrawer, Xr as initMenu, Re as initModal, E as initNavigation, Jt as initPopover, _e as initTabs, xt as initToast, xn as initTooltip, Hn as initWizard, oe as startAccordionRuntime, Fr as startBannerRuntime, _r as startComboboxRuntime, at as startDrawerRuntime, ti as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, $t as startPopoverRuntime, Se as startTabsRuntime, Et as startToastRuntime, En as startTooltipRuntime, qn as startWizardRuntime, se as stopAccordionRuntime, Ir as stopBannerRuntime, vr as stopComboboxRuntime, ot as stopDrawerRuntime, ni as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, en as stopPopoverRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, Dn as stopTooltipRuntime, Jn as stopWizardRuntime, ri as tokens };
+export { v as Accordion, te as createAccordion, kr as createBanner, dr as createCombobox, $e as createDrawer, Yr as createMenu, Le as createModal, T as createNavigation, qt as createPopover, pi as createSwitch, ge as createTabs, bt as createToast, bn as createTooltip, Vn as createWizard, ne as initAccordion, Ar as initBanner, fr as initCombobox, et as initDrawer, Xr as initMenu, Re as initModal, E as initNavigation, Jt as initPopover, mi as initSwitch, _e as initTabs, xt as initToast, xn as initTooltip, Hn as initWizard, oe as startAccordionRuntime, Fr as startBannerRuntime, _r as startComboboxRuntime, at as startDrawerRuntime, ti as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, $t as startPopoverRuntime, yi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, En as startTooltipRuntime, qn as startWizardRuntime, se as stopAccordionRuntime, Ir as stopBannerRuntime, vr as stopComboboxRuntime, ot as stopDrawerRuntime, ni as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, en as stopPopoverRuntime, bi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, Dn as stopTooltipRuntime, Jn as stopWizardRuntime, xi as tokens };
