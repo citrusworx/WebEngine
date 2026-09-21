@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getting started — Juice</title>
+    <meta name="description" content="Getting started with Juice. This page is a stub for the next showcase slice." />
+  </head>
+  <body theme="kiwipress">
+    <div app-shell stack>
+      <nav sticky>
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+          <nav type="mobile"></nav>
+          <div nav-links>
+            <a href="/">Landing</a>
+            <a href="/getting-started.html" nav-link="active">Getting started</a>
+            <a href="/demos.html">Demos</a>
+            <a href="/themes.html">Themes</a>
+            <a href="/reference.html">Reference</a>
+          </div>
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/">Back to landing</button>
+          </div>
+        </div>
+        <nav type="sidebar" hidden>
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+          </div>
+        </nav>
+      </nav>
+
+      <main>
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>Next slice</span>
+            </span>
+            <h1 hero-title>Getting started</h1>
+            <p hero-subtitle>
+              This page will walk through install, core + theme imports, and the
+              first attribute-composed page. Until then, the monorepo docs stay
+              the source of truth.
+            </p>
+            <div hero-actions>
+              <button type="button" scale="lg" data-href="/">Return to landing</button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <h2>What will live here</h2>
+                <p>
+                  A short, honest onboarding page: import core CSS, import one
+                  library theme, set <code>theme="…"</code>, compose with
+                  <code>stack</code> / <code>row</code> / <code>grid</code>.
+                </p>
+              </article>
+              <aside panel padding="2rem" stack gap="1">
+                <h2>Until it ships</h2>
+                <p>Read <code>docs/juice/juice-getting-started.md</code> in this repo.</p>
+                <button type="button" btn="outline" data-href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md">
+                  Open getting started docs
+                </button>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div center>
+            <nav type="footer">
+              <ul row gap="2" centered>
+                <li><a href="/">Landing</a></li>
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </nav>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

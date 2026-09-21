@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Themes — Juice</title>
+    <meta name="description" content="Shipped Juice library themes. Stub page with the landing theme switcher." />
+  </head>
+  <body theme="kiwipress">
+    <div app-shell stack>
+      <nav sticky>
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+          <nav type="mobile"></nav>
+          <div nav-links>
+            <a href="/">Landing</a>
+            <a href="/getting-started.html">Getting started</a>
+            <a href="/demos.html">Demos</a>
+            <a href="/themes.html" nav-link="active">Themes</a>
+            <a href="/reference.html">Reference</a>
+          </div>
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/">Back to landing</button>
+          </div>
+        </div>
+        <nav type="sidebar" hidden>
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+          </div>
+        </nav>
+      </nav>
+
+      <main>
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>Library themes</span>
+            </span>
+            <h1 hero-title>Four shipped faces. Same structure.</h1>
+            <p hero-subtitle>
+              Safe to use: KiwiPress, Tide, Citrusmint, Aquaflux. Blush and
+              anything under <code>_draft</code> stay unpublished.
+            </p>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Try a face on this page</h2>
+              <p>The landing uses the same switch. Choice is stored locally.</p>
+            </div>
+            <div row wrap gap="1" centered>
+              <button type="button" data-theme="kiwipress">KiwiPress</button>
+              <button type="button" btn="outline" data-theme="tide">Tide</button>
+              <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
+              <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div grid="2x2" gap="comfortable">
+              <article card="feature" width="100%">
+                <h3>KiwiPress</h3>
+                <p>Richest product reference. Default for this showcase.</p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <h3>Tide</h3>
+                <p>Dark product / SaaS identity. Teal and lagoon tokens.</p>
+              </article>
+              <article card="feature" width="100%">
+                <h3>Citrusmint</h3>
+                <p>The course and tutorial face. Mint wash, calm marketing.</p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <h3>Aquaflux</h3>
+                <p>Cool blue / purple library theme. Same structure contract.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div center>
+            <nav type="footer">
+              <ul row gap="2" centered>
+                <li><a href="/">Landing</a></li>
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </nav>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Juice — CSS-first, attribute-driven UI</title>
+    <meta
+      name="description"
+      content="Juice is a CSS-first, attribute-driven styling and composition system. Juice owns structure. Themes own identity. Honest Beta."
+    />
+  </head>
+  <body theme="kiwipress">
+    <div app-shell stack>
+      <nav sticky>
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+
+          <nav type="mobile"></nav>
+
+          <div nav-links>
+            <a href="/" nav-link="active">Landing</a>
+            <a href="/getting-started.html">Getting started</a>
+            <a href="/demos.html">Demos</a>
+            <a href="/themes.html">Themes</a>
+            <a href="/reference.html">Reference</a>
+          </div>
+
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
+          </div>
+        </div>
+
+        <nav type="sidebar" hidden>
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+            <button type="button" data-href="/getting-started.html">Get started</button>
+          </div>
+        </nav>
+      </nav>
+
+      <main>
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>Honest Beta · @citrusworx/juiceui 0.7.0</span>
+            </span>
+
+            <h1 hero-title>CSS-first. Attribute-driven. Not a component framework.</h1>
+
+            <p hero-subtitle>
+              Juice is a styling and composition system. Markup holds structure.
+              Themes hold brand. A small JS entry auto-enhances Emerging runtimes
+              when the markup is already valid.
+            </p>
+
+            <div hero-actions>
+              <button type="button" scale="lg" data-href="/getting-started.html">Get started</button>
+              <button type="button" btn="outline" scale="lg" data-href="/demos.html">See demos</button>
+            </div>
+
+            <div hero-meta>
+              <div stats>
+                <div stat>
+                  <div stat-value>CSS-first</div>
+                  <div stat-label>Attributes, not class soup</div>
+                </div>
+                <div stat>
+                  <div stat-value>4 themes</div>
+                  <div stat-label>KiwiPress, Tide, Citrusmint, Aquaflux</div>
+                </div>
+                <div stat>
+                  <div stat-value>Emerging</div>
+                  <div stat-label>DOM-first auto-enhance runtimes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Compose in markup. Leave identity to the theme.</h2>
+              <p>
+                Juice is strongest as a shared structural language — not a utility-class
+                clone, and not a heavyweight React runtime.
+              </p>
+            </div>
+
+            <div grid="3x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <i icon="code" lib="solid" iconSize="lg"></i>
+                <h3>CSS-first</h3>
+                <p>
+                  Import the core stylesheet, add a theme, set
+                  <code>theme="…"</code> on the root. Layout and surfaces work
+                  before any JavaScript runs.
+                </p>
+              </article>
+
+              <article card="feature" width="100%" warm>
+                <i icon="layer-group" lib="solid" iconSize="lg"></i>
+                <h3>Attribute-driven</h3>
+                <p>
+                  <code>stack</code>, <code>row</code>, <code>grid</code>,
+                  <code>gap</code>, <code>hero</code>, <code>card</code>, and
+                  <code>cta</code> stay in the markup. Wrappers own placement.
+                  Components own structure.
+                </p>
+              </article>
+
+              <article card="feature" width="100%">
+                <i icon="swatchbook" lib="solid" iconSize="lg"></i>
+                <h3>Composition</h3>
+                <p>
+                  Juice owns shared structure, spacing, responsive behavior, and
+                  primitive surface hooks. App CSS stays small and intentional.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Juice owns structure. Themes own identity.</h2>
+              <p>
+                The same landing markup can wear KiwiPress, Tide, Citrusmint, or
+                Aquaflux. Core CSS has no theme rules. Activate a theme with one
+                attribute.
+              </p>
+            </div>
+
+            <div stack gap="comfortable">
+              <div row wrap gap="1" centered>
+                <button type="button" data-theme="kiwipress">KiwiPress</button>
+                <button type="button" btn="outline" data-theme="tide">Tide</button>
+                <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
+                <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+              </div>
+
+              <div grid="2x1" gap="comfortable">
+                <article card="feature" width="100%">
+                  <h3>Structure</h3>
+                  <p>
+                    Layout primitives, spacing, page hooks, and component
+                    vocabulary stay in Juice. This page is mostly attributes.
+                  </p>
+                </article>
+                <aside panel padding="2rem" stack gap="0.75rem">
+                  <h3>Identity</h3>
+                  <p>
+                    Typography voice, color relationships, and semantic defaults
+                    live in the theme. KiwiPress is the richest product
+                    reference; Tide is the dark product / SaaS face.
+                  </p>
+                </aside>
+              </div>
+
+              <pre><code>import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/kiwipress";
+import "@citrusworx/juiceui";</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Emerging runtimes, DOM-first</h2>
+              <p>
+                Importing the JS entry auto-enhances valid markup. Useful and
+                documented — still Emerging, not a finished component library.
+              </p>
+            </div>
+
+            <div grid="4x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <i icon="bars" lib="solid" iconSize="lg"></i>
+                <h3>Navigation</h3>
+                <p>Bar, mobile toggle, and sidebar. This header uses that markup.</p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <i icon="layer-group" lib="solid" iconSize="lg"></i>
+                <h3>Accordion</h3>
+                <p>Disclosure panels from <code>[accordion]</code> markup.</p>
+              </article>
+              <article card="feature" width="100%">
+                <i icon="folder" lib="solid" iconSize="lg"></i>
+                <h3>Tabs</h3>
+                <p>Paired tab lists and panels, auto-started in the browser.</p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <i icon="window-maximize" lib="solid" iconSize="lg"></i>
+                <h3>Modal</h3>
+                <p>Dialog overlay with Escape, focus trap, and exclusive open.</p>
+              </article>
+              <article card="feature" width="100%">
+                <i icon="table-columns" lib="solid" iconSize="lg"></i>
+                <h3>Drawer</h3>
+                <p>Edge panels on <code>[drawer-overlay]</code>.</p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <i icon="bell" lib="solid" iconSize="lg"></i>
+                <h3>Toast</h3>
+                <p>Non-modal stack in a live region. Not a dialog.</p>
+              </article>
+              <article card="feature" width="100%">
+                <i icon="comment-dots" lib="solid" iconSize="lg"></i>
+                <h3>Popover</h3>
+                <p>Anchored, non-modal panel with placement flip.</p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <i icon="flask" lib="solid" iconSize="lg"></i>
+                <h3>On master</h3>
+                <p>
+                  Wizard and tooltip exist on master ahead of the 0.7.0 npm cut.
+                  They are not the public Beta promise.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="pricing" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Honest Beta</h2>
+              <p>
+                Juice Beta is a CSS-first, attribute-driven styling and
+                composition system with strong layout, token, typography, icon,
+                and page-structure support, a documented theme contract, and a
+                supported subset of motion attributes.
+              </p>
+            </div>
+
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <h3>Ready today</h3>
+                <p>
+                  Attribute-driven styling, layout primitives, spacing, color
+                  tokens, typography, and icons are the strongest layers. Use
+                  those with confidence.
+                </p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <h3>Still settling</h3>
+                <p>
+                  Cards, buttons, forms, nav, and the JS entry are Emerging.
+                  Config-driven branding is Draft. Juice is not a mature
+                  component framework and does not pretend to be one.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section cta>
+          <h2 cta-title>Start with structure, then pick a face.</h2>
+          <p cta-subtitle>
+            The getting-started page is next. Until it ships, the monorepo docs
+            in <code>docs/juice</code> are the source of truth.
+          </p>
+          <div cta-actions>
+            <button type="button" scale="lg" data-href="/getting-started.html">Getting started</button>
+            <p cta-note>Workspace package · Vite · vanilla HTML / TS</p>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div grid="4x1" gap="comfortable">
+            <div stack gap="cozy">
+              <h4>Juice</h4>
+              <p>
+                CSS-first, attribute-driven styling and composition from
+                CitrusWorx. Showcase for <code>@citrusworx/juiceui</code>.
+              </p>
+            </div>
+            <div stack gap="cozy">
+              <h4>Site</h4>
+              <ul stack gap="snug">
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Docs</h4>
+              <ul stack gap="snug">
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/docs/juice">docs/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md">Getting started</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">Beta notes</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Package</h4>
+              <ul stack gap="snug">
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+              </ul>
+            </div>
+          </div>
+          <div center marginY="comfortable">
+            <nav type="footer">
+              <ul row gap="2" centered>
+                <li><a href="/">Landing</a></li>
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+              </ul>
+            </nav>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

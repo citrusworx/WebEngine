@@ -1,0 +1,12 @@
+html,
+body {
+  margin: 0;
+}
+
+[app-shell] {
+  min-height: 100vh;
+}
+
+[app-shell] > main {
+  flex: 1 1 auto;
+}
