@@ -29,6 +29,13 @@ Consumed Juice changesets (the 0.8.0 lane):
 | `juice-menu-runtime` | **minor** | DOM-first APG menu-button runtime (`createMenu`, open/close/toggle/select, Escape with popover) |
 | `juice-menu-runtime-docs` | **patch** | Menu runtime / maturity docs (slice C) |
 
+Pending Juice changesets on master (consume them at the next cut; Juice-only if the lane stays Juice-only):
+
+| Changeset | Bump | What it records |
+|---|---|---|
+| `juice-switch-theme-chrome` | **minor** | Switch theme chrome roles (`--juice-switch-*`) |
+| `juice-switch-runtime` | **minor** | DOM-first APG switch runtime (`createSwitch`, toggle / setChecked) |
+
 Consumed Juice changesets (the 0.7.0 lane):
 
 | Changeset | Bump | What it records |
@@ -144,6 +151,12 @@ This is the stack that shipped in 0.8.0.
 * **Eleven-runtime polish A→B→C.** Escape / layering (#166): modal/drawer → popover → combobox → toast/tooltip as implemented; banner never; accordion contextual; tabs / nav / wizard out of scope. Shared internals (#167) under `libraries/juice/src/js/src/shared/` (not a public API). Docs / Limitations / z-index / maturity consistency in this pass. The eleven stay **Emerging**.
 * **Menu A→B→C.** Shared `--juice-menu-*` roles for `[menu-root]` / `[menu]` / `[menuitem]` (#171). DOM-first APG menu-button runtime (#174): `createMenu` / `initMenu` / `startMenuRuntime` / `stopMenuRuntime`, auto-boot, `open` / `close` / `toggle` / `select`, opener pairing (`[menu-button]` or a plain control inside the root), roving tabindex on `[menuitem]`, exclusive among menus, Escape with popover (yields to modal/drawer; combobox / toast / tooltip yield to an open menu). Boolean `[menu]` attr (no HTML global `menu`; not the `<menu>` element). Placement CSS-absolute from the root (`top|bottom|left|right`); z-index 1050. Distinct from popover, combobox, native `<select>`, menubar, and context menu. No submenus, no typeahead, no Sig Menu factory. Runtime docs and maturity notes in this pass. Menu is the twelfth Emerging auto-enhance runtime.
 
+### Since 0.8.0 (pending the next cut)
+
+This is the stack on master that is not in the 0.8.0 tarball.
+
+* **Switch A→B.** Shared `--juice-switch-*` roles for `[switch]` (#179). DOM-first APG switch runtime: `createSwitch` / `initSwitch` / `startSwitchRuntime` / `stopSwitchRuntime`, auto-boot, `toggle` / `check` / `uncheck` / `setChecked`, `role="switch"` plus binary `aria-checked` on button hosts (checkbox-backed hosts stay honest with `:checked`). Click and Enter/Space toggle. Disabled / `aria-disabled` ignored. No focus trap, no Escape steal, no tri-state, no menuitemcheckbox, no Sig Switch factory. Full runtime docs (slice C) later. Still unpublished vs 0.8.0.
+
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
 ---
@@ -238,6 +251,8 @@ Banner **A→B→C shipped in 0.8.0**: theme chrome (`--juice-banner-*`), dismis
 **Eleven-runtime polish A→B→C shipped in 0.8.0.** Escape / layering, shared internals, and docs / Limitations / z-index consistency. Those eleven stay Emerging.
 
 Menu **A→B→C shipped in 0.8.0**: theme chrome (`--juice-menu-*`), APG menu-button runtime, and runtime / maturity docs. Valid `[menu-root]` markup auto-enhances. Menu is the twelfth Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, or Sig Menu factory stays later. Grow the next runtime only when that markup contract stays honest.
+
+Switch **A→B on master**: theme chrome (`--juice-switch-*`) plus DOM-first APG switch runtime. Valid `[switch]` markup auto-enhances. Full runtime docs (slice C) later. No Sig Switch factory.
 
 Short-term focus remains:
 

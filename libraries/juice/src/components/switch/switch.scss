@@ -27,7 +27,7 @@
 //
 // Juice names:
 //   [switch]   the control root (boolean attr). Primary host is
-//              <button type="button" switch>. Runtime B will fill
+//              <button type="button" switch>. The runtime fills
 //              role="switch" and aria-checked. Visible labels live
 //              beside the control (wrapping <label>, aria-label, or
 //              aria-labelledby) — the host *is* the track.
