@@ -1,4 +1,4 @@
-import "@citrusworx/juiceui";
+import { createToast } from "@citrusworx/juiceui";
 
 const THEMES = ["kiwipress", "tide", "citrusmint", "aquaflux"] as const;
 
@@ -50,5 +50,27 @@ document.querySelectorAll<HTMLElement>("[data-href]").forEach((element) => {
       return;
     }
     window.location.assign(href);
+  });
+});
+
+const toastController = createToast();
+
+document.querySelectorAll<HTMLButtonElement>("[data-toast-show]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const id = button.dataset.toastShow;
+    if (!id) {
+      return;
+    }
+    toastController.show(document.getElementById(id));
+  });
+});
+
+document.querySelectorAll<HTMLButtonElement>("[data-toast-dismiss]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const id = button.dataset.toastDismiss;
+    if (!id) {
+      return;
+    }
+    toastController.dismiss(document.getElementById(id));
   });
 });
