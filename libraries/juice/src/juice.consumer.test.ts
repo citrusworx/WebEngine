@@ -53,6 +53,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -98,6 +99,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -139,6 +141,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -182,6 +185,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -226,6 +230,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopTabsRuntime();
@@ -269,6 +274,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
@@ -319,6 +325,7 @@ describe("Juice consumer smoke", () => {
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopPopoverRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
@@ -357,6 +364,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         module.stopWizardRuntime();
         module.stopPopoverRuntime();
         module.stopToastRuntime();
@@ -371,6 +379,7 @@ describe("Juice consumer smoke", () => {
         const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
         const module = await import(entryUrl);
         module.stopComboboxRuntime();
+        module.stopBannerRuntime();
         document.body.innerHTML = `
             <div combobox>
                 <input combobox-input type="text" />
@@ -406,6 +415,49 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopComboboxRuntime();
+        module.stopBannerRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built banner runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopBannerRuntime();
+        document.body.innerHTML = `
+            <div banner id="demo-banner" hidden>
+                <div banner-body>Scheduled maintenance tonight.</div>
+                <button type="button" banner-close aria-label="Dismiss">×</button>
+            </div>
+        `;
+
+        const controller = module.createBanner({ root: document.body });
+        const banner = document.getElementById("demo-banner");
+
+        expect(banner?.getAttribute("role")).toBe("status");
+        expect(banner?.getAttribute("aria-modal")).toBeNull();
+        expect(banner?.hasAttribute("hidden")).toBe(true);
+
+        controller.show(banner);
+        expect(banner?.hasAttribute("hidden")).toBe(false);
+
+        document
+            .querySelector("[banner-close]")
+            ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(banner?.hasAttribute("hidden")).toBe(true);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopBannerRuntime();
         module.stopComboboxRuntime();
         module.stopTooltipRuntime();
         module.stopWizardRuntime();

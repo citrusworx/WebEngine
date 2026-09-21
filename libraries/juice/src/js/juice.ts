@@ -100,3 +100,13 @@ export type {
     ComboboxController,
     ComboboxOptions
 } from "./src/combobox/combobox-runtime.js";
+export {
+    createBanner,
+    initBanner,
+    startBannerRuntime,
+    stopBannerRuntime
+} from "./src/banner/banner-runtime.js";
+export type {
+    BannerController,
+    BannerOptions
+} from "./src/banner/banner-runtime.js";
