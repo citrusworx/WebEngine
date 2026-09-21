@@ -380,7 +380,7 @@ A boolean `[checkbox]` attribute is fine: there is no HTML global `checkbox` att
 
 The box is the host. The checkmark is `::after`. There is no `[checkbox-box]` child. This slice does not size the control: no `checkbox-size`, and `scale` does not change box geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
 
-Checked paint for static demos is `aria-checked="true"` so chrome and runtime share one story. v1 does not paint `aria-checked="mixed"`. Core CSS treats this as an **inline** control — no floating overlay z-index band. Check motion honors `prefers-reduced-motion`. Checkbox toggle runtime (B) and maturity docs (C) are later.
+Checked paint for static demos is `aria-checked="true"` so chrome and runtime share one story. v1 does not paint `aria-checked="mixed"`. Core CSS treats this as an **inline** control — no floating overlay z-index band. Check motion honors `prefers-reduced-motion`. The checkbox runtime auto-enhances that markup (binary toggle). Maturity docs (C) are later.
 
 Tide must stay a dark box (`--tide-surface-strong`), not a white square. The checkmark stays `--tide-heading`, not the page color.
 
@@ -403,11 +403,11 @@ Consumed by `radio.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, 
 
 This is **Juice chrome** for the APG **Radio** pattern (an option in a radiogroup, checked with `aria-checked`). It is **not** `[switch]`, **not** `[checkbox]`, and **not** a native `<input type="radio">` restyle as the only story. Juice names are `[radiogroup]` (group root) and `[radio]` (one option). Primary host is `<button type="button" radio>`. A native host (`<input type="radio" radio>`) is allowed; `:checked` paints that path. Use role in markup; attrs own Juice structure. Do not style bare `[role="radio"]` or `[role="radiogroup"]`.
 
-A boolean `[radio]` attribute is fine: there is no HTML global `radio` attribute. Group name and exclusive selection are runtime B. This slice only paints.
+A boolean `[radio]` attribute is fine: there is no HTML global `radio` attribute. Group name and exclusive selection belong to the radio runtime. This slice only paints.
 
 The disc is the host. The dot is `::after`. There is no `[radio-dot]` child. This slice does not size the control: no `radio-size`, and `scale` does not change disc geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
 
-Checked paint for static demos is `aria-checked="true"` so chrome and runtime share one story. Core CSS treats this as an **inline** control — no floating overlay z-index band. Dot motion honors `prefers-reduced-motion`. Radiogroup exclusive keyboard (B) and maturity docs (C) are later.
+Checked paint for static demos is `aria-checked="true"` so chrome and runtime share one story. Core CSS treats this as an **inline** control — no floating overlay z-index band. Dot motion honors `prefers-reduced-motion`. The radio runtime auto-enhances exclusive keyboard inside `[radiogroup]`. Maturity docs (C) are later.
 
 Tide must stay a dark disc (`--tide-surface-strong`), not a white ring. The dot stays `--tide-accent`, not the page color.
 
@@ -618,4 +618,4 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 ## Status
 
-This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, switch A→B→C, and slider A→B→C (theme chrome, runtime, and runtime docs), plus checkbox and radio theme chrome (slice A): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, `--juice-slider-*`, `--juice-checkbox-*`, `--juice-radio-*`, and `--juice-wizard-*`. Switch and slider are unpublished versus 0.8.0. Checkbox and radio are theme chrome only (toggle and radiogroup keyboard are later). Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, switch A→B→C, and slider A→B→C (theme chrome, runtime, and runtime docs), plus checkbox and radio theme chrome and runtimes (slices A–B): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, `--juice-slider-*`, `--juice-checkbox-*`, `--juice-radio-*`, and `--juice-wizard-*`. Switch and slider are unpublished versus 0.8.0. Checkbox and radio runtimes are in; maturity docs (C) are later. Blush, CLI, and publish are out of scope here.
