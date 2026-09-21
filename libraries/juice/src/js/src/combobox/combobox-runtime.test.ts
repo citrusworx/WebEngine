@@ -484,6 +484,80 @@ describe('createCombobox', () => {
     controller.destroy();
   });
 
+  it('toggles a non-native trigger with Enter and Space', () => {
+    document.body.innerHTML = `
+      <div combobox>
+        <input combobox-input type="text" />
+        <div combobox-trigger>Open</div>
+        <ul combobox-list hidden>
+          <li combobox-option>Apple</li>
+        </ul>
+      </div>
+    `;
+    stopComboboxRuntime();
+
+    const controller = createCombobox({ root: document.body });
+    const trigger = document.querySelector<HTMLElement>('[combobox-trigger]');
+    const list = document.querySelector<HTMLElement>('[combobox-list]');
+
+    expect(trigger?.getAttribute('role')).toBe('button');
+    expect(trigger?.getAttribute('tabindex')).toBe('0');
+
+    trigger?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Enter' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(false);
+
+    trigger?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: ' ' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(true);
+
+    controller.destroy();
+  });
+
+  it('gives unique ids to nameless comboboxes across scoped controllers', () => {
+    document.body.innerHTML = `
+      <div id="host-a">
+        <div combobox>
+          <input combobox-input type="text" />
+          <ul combobox-list hidden>
+            <li combobox-option>Alpha</li>
+          </ul>
+        </div>
+      </div>
+      <div id="host-b">
+        <div combobox>
+          <input combobox-input type="text" />
+          <ul combobox-list hidden>
+            <li combobox-option>Beta</li>
+          </ul>
+        </div>
+      </div>
+    `;
+    stopComboboxRuntime();
+
+    const first = createCombobox({
+      root: document.getElementById('host-a') ?? document.body,
+    });
+    const second = createCombobox({
+      root: document.getElementById('host-b') ?? document.body,
+    });
+
+    const lists = document.querySelectorAll<HTMLElement>('[combobox-list]');
+    const options = document.querySelectorAll<HTMLElement>('[combobox-option]');
+
+    expect(lists[0]?.id).toBeTruthy();
+    expect(lists[1]?.id).toBeTruthy();
+    expect(lists[0]?.id).not.toBe(lists[1]?.id);
+    expect(options[0]?.id).not.toBe(options[1]?.id);
+    expect(document.querySelectorAll(`#${lists[0]?.id}`)).toHaveLength(1);
+    expect(document.querySelectorAll(`#${lists[1]?.id}`)).toHaveLength(1);
+
+    first.destroy();
+    second.destroy();
+  });
+
   it('opens once when a manual controller coexists with the auto runtime', () => {
     document.body.innerHTML = comboboxMarkup;
     startComboboxRuntime();

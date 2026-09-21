@@ -85,6 +85,34 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const LIST_ID_PREFIX = 'juice-combobox-list';
 const OPTION_ID_PREFIX = 'juice-combobox-option';
 
+let idSerial = 0;
+
+const nextGeneratedId = (prefix: string) => {
+  let candidate = '';
+  do {
+    idSerial += 1;
+    candidate = `${prefix}-${idSerial}`;
+  } while (
+    typeof document !== 'undefined' &&
+    document.getElementById(candidate)
+  );
+  return candidate;
+};
+
+const assignUniqueId = (
+  element: HTMLElement,
+  preferred: string | null,
+  prefix: string
+) => {
+  if (element.id) return element.id;
+  if (preferred && !document.getElementById(preferred)) {
+    element.id = preferred;
+    return preferred;
+  }
+  element.id = nextGeneratedId(prefix);
+  return element.id;
+};
+
 const handledEvents = new WeakSet<Event>();
 
 const claimEvent = (event: Event) => {
@@ -147,13 +175,6 @@ export const createCombobox = (
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
-
-  let idCounter = 0;
-
-  const nextId = (prefix: string) => {
-    idCounter += 1;
-    return `${prefix}-${idCounter}`;
-  };
 
   const getComboboxes = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.rootSelector));
@@ -344,9 +365,7 @@ export const createCombobox = (
       input.setAttribute('aria-autocomplete', 'list');
     }
 
-    if (!list.id) {
-      list.id = base ? `${base}-list` : nextId(LIST_ID_PREFIX);
-    }
+    assignUniqueId(list, base ? `${base}-list` : null, LIST_ID_PREFIX);
 
     if (list.getAttribute('role') !== 'listbox') {
       list.setAttribute('role', 'listbox');
@@ -357,11 +376,11 @@ export const createCombobox = (
     }
 
     options.forEach((option, index) => {
-      if (!option.id) {
-        option.id = base
-          ? `${base}-option-${index + 1}`
-          : nextId(OPTION_ID_PREFIX);
-      }
+      assignUniqueId(
+        option,
+        base ? `${base}-option-${index + 1}` : null,
+        OPTION_ID_PREFIX
+      );
       if (option.getAttribute('role') !== 'option') {
         option.setAttribute('role', 'option');
       }
@@ -677,6 +696,22 @@ export const createCombobox = (
       moveActive(combobox, (index, length) =>
         index < 0 ? length - 1 : index - 1
       );
+      return;
+    }
+
+    if (
+      trigger &&
+      !input &&
+      !isNativeInteractive(trigger) &&
+      (event.key === 'Enter' || event.key === ' ')
+    ) {
+      if (!claimEvent(event)) return;
+      event.preventDefault();
+      toggle(combobox);
+      const field = getInput(combobox);
+      if (isListOpen(combobox) && field && document.activeElement !== field) {
+        field.focus();
+      }
       return;
     }
 
