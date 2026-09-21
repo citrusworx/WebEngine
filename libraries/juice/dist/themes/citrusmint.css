@@ -265,6 +265,30 @@
   --juice-combobox-trigger: var(--cm-combobox-trigger);
   --juice-combobox-trigger-ink: var(--cm-combobox-trigger-ink);
   --juice-combobox-focus-ring: var(--cm-combobox-focus-ring);
+  /* Menu chrome — thinner --cm-* set. Opener is a surface
+     control, not heading-fill. Distinct from popover / select. */
+  --cm-menu-panel: var(--cm-surface);
+  --cm-menu-panel-border: var(--cm-border);
+  --cm-menu-panel-shadow: 0 18px 40px -24px color-mix(in srgb, var(--cm-heading) 22%, transparent);
+  --cm-menu-ink: var(--cm-text);
+  --cm-menu-item: transparent;
+  --cm-menu-item-hover: var(--cm-surface-muted);
+  --cm-menu-item-active: var(--cm-surface-muted);
+  --cm-menu-separator: var(--cm-border);
+  --cm-menu-focus-ring: var(--cm-heading);
+  --cm-menu-opener: var(--cm-surface);
+  --cm-menu-opener-ink: var(--cm-heading);
+  --juice-menu-panel: var(--cm-menu-panel);
+  --juice-menu-panel-border: var(--cm-menu-panel-border);
+  --juice-menu-panel-shadow: var(--cm-menu-panel-shadow);
+  --juice-menu-ink: var(--cm-menu-ink);
+  --juice-menu-item: var(--cm-menu-item);
+  --juice-menu-item-hover: var(--cm-menu-item-hover);
+  --juice-menu-item-active: var(--cm-menu-item-active);
+  --juice-menu-separator: var(--cm-menu-separator);
+  --juice-menu-focus-ring: var(--cm-menu-focus-ring);
+  --juice-menu-opener: var(--cm-menu-opener);
+  --juice-menu-opener-ink: var(--cm-menu-opener-ink);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -695,4 +719,50 @@
 [theme=citrusmint] [combobox-option][aria-selected=true],
 [theme=citrusmint] [combobox-option=active] {
   background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control, not heading-fill.
+   Optional surfaceTone on [menu] is allowed. */
+[theme=citrusmint] [menu]:not([surfaceTone]) {
+  background-color: var(--juice-menu-panel);
+  border: 1px solid var(--juice-menu-panel-border);
+  box-shadow: var(--juice-menu-panel-shadow);
+  color: var(--juice-menu-ink);
+}
+
+[theme=citrusmint] button[menu-button],
+[theme=citrusmint] [menu-button] {
+  background-color: var(--juice-menu-opener);
+  color: var(--juice-menu-opener-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] button[menu-button]:focus-visible,
+[theme=citrusmint] [menu-button]:focus-visible,
+[theme=citrusmint] [menuitem]:focus-visible {
+  outline: 2px solid var(--juice-menu-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=citrusmint] [menuitem] {
+  background-color: var(--juice-menu-item);
+  color: var(--juice-menu-ink);
+}
+
+[theme=citrusmint] [menuitem]:hover {
+  background-color: var(--juice-menu-item-hover);
+}
+
+[theme=citrusmint] [menuitem=active] {
+  background-color: var(--juice-menu-item-active);
+}
+
+[theme=citrusmint] [menu-separator] {
+  border-top-color: var(--juice-menu-separator);
+}
+
+[theme=citrusmint] [menu-label] {
+  color: var(--juice-menu-ink);
 }

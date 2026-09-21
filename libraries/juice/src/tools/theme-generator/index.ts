@@ -618,6 +618,32 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-combobox-trigger-ink: var(--jx-combobox-trigger-ink);
     --juice-combobox-focus-ring: var(--jx-combobox-focus-ring);
 
+    /* Menu chrome — APG menu button from existing --jx-* tokens.
+       Opener is a surface control, not the CTA fill. Distinct from
+       popover, combobox, and native select. */
+    --jx-menu-panel: var(--jx-surface);
+    --jx-menu-panel-border: var(--jx-border);
+    --jx-menu-panel-shadow: var(--jx-shadow-strong);
+    --jx-menu-ink: var(--jx-text);
+    --jx-menu-item: transparent;
+    --jx-menu-item-hover: var(--jx-surface-muted);
+    --jx-menu-item-active: var(--jx-accent-tint);
+    --jx-menu-separator: var(--jx-border);
+    --jx-menu-focus-ring: var(--jx-accent);
+    --jx-menu-opener: var(--jx-surface);
+    --jx-menu-opener-ink: var(--jx-heading);
+    --juice-menu-panel: var(--jx-menu-panel);
+    --juice-menu-panel-border: var(--jx-menu-panel-border);
+    --juice-menu-panel-shadow: var(--jx-menu-panel-shadow);
+    --juice-menu-ink: var(--jx-menu-ink);
+    --juice-menu-item: var(--jx-menu-item);
+    --juice-menu-item-hover: var(--jx-menu-item-hover);
+    --juice-menu-item-active: var(--jx-menu-item-active);
+    --juice-menu-separator: var(--jx-menu-separator);
+    --juice-menu-focus-ring: var(--jx-menu-focus-ring);
+    --juice-menu-opener: var(--jx-menu-opener);
+    --juice-menu-opener-ink: var(--jx-menu-opener-ink);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1120,6 +1146,48 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [combobox-option][aria-selected="true"],
 [theme="${config.id}"] [combobox-option="active"] {
     background-color: var(--juice-combobox-option-selected);
+}
+
+[theme="${config.id}"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="${config.id}"] button[menu-button],
+[theme="${config.id}"] [menu-button] {
+    background: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [menu-button]:focus-visible,
+[theme="${config.id}"] button[menu-button]:focus-visible,
+[theme="${config.id}"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="${config.id}"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="${config.id}"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="${config.id}"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="${config.id}"] [menu-label] {
+    color: var(--juice-menu-ink);
 }
 
 ${namedSurfaces}

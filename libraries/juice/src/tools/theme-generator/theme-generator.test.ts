@@ -14,6 +14,7 @@ import {
     REQUIRED_TABS_ROLES,
     REQUIRED_TOOLTIP_ROLES,
     REQUIRED_COMBOBOX_ROLES,
+    REQUIRED_MENU_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -367,6 +368,42 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(triggerBlocks.length).toBeGreaterThan(0);
         for (const block of triggerBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-menu-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-menu-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-menu-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-menu-panel-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-menu-ink: var(--jx-text)");
+        expect(css).toContain("--jx-menu-item: transparent");
+        expect(css).toContain("--jx-menu-item-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-menu-item-active: var(--jx-accent-tint)");
+        expect(css).toContain("--jx-menu-separator: var(--jx-border)");
+        expect(css).toContain("--jx-menu-focus-ring: var(--jx-accent)");
+        expect(css).toContain("--jx-menu-opener: var(--jx-surface)");
+        expect(css).toContain("--jx-menu-opener-ink: var(--jx-heading)");
+
+        for (const role of REQUIRED_MENU_ROLES) {
+            expect(css).toContain(`--juice-menu-${role}: var(--jx-menu-${role})`);
+        }
+
+        expect(css).toContain("[menu]:not([surfaceTone])");
+        expect(css).toContain("button[menu-button]");
+        expect(css).toContain("[menuitem=\"active\"]");
+        expect(css).not.toMatch(/select\[menu/);
+        expect(css).not.toMatch(/\[role=["']?menu["']?\]/);
+
+        const openerBlocks = [...css.matchAll(/button\[menu-button\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(openerBlocks.length).toBeGreaterThan(0);
+        for (const block of openerBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

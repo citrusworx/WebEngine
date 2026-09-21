@@ -140,6 +140,21 @@ export const REQUIRED_COMBOBOX_ROLES = [
     "focus-ring",
 ] as const;
 
+/** Menu chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_MENU_ROLES = [
+    "panel",
+    "panel-border",
+    "panel-shadow",
+    "ink",
+    "item",
+    "item-hover",
+    "item-active",
+    "separator",
+    "focus-ring",
+    "opener",
+    "opener-ink",
+] as const;
+
 /** Wizard chrome — required on every shipped library theme and generated `--jx-*` themes. */
 export const REQUIRED_WIZARD_ROLES = [
     "shell",
@@ -232,6 +247,10 @@ export function requiredComboboxBinds(): string[] {
     return REQUIRED_COMBOBOX_ROLES.map((role) => `--juice-combobox-${role}`);
 }
 
+export function requiredMenuBinds(): string[] {
+    return REQUIRED_MENU_ROLES.map((role) => `--juice-menu-${role}`);
+}
+
 export function requiredWizardBinds(): string[] {
     return REQUIRED_WIZARD_ROLES.map((role) => `--juice-wizard-${role}`);
 }
@@ -272,6 +291,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredPopoverBinds(),
         ...requiredTooltipBinds(),
         ...requiredComboboxBinds(),
+        ...requiredMenuBinds(),
         ...requiredWizardBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
@@ -307,9 +327,9 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal, drawer, toast, banner, popover, tooltip, combobox, and wizard chrome use `--jx-modal-*` /
+ * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, and wizard chrome use `--jx-modal-*` /
  * `--jx-drawer-*` / `--jx-toast-*` / `--jx-banner-*` / `--jx-popover-*` / `--jx-tooltip-*` /
- * `--jx-combobox-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
+ * `--jx-combobox-*` / `--jx-menu-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -348,6 +368,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_COMBOBOX_ROLES.map((role) => ({
             juice: `--juice-combobox-${role}`,
             jx: `--jx-combobox-${role}`,
+        })),
+        ...REQUIRED_MENU_ROLES.map((role) => ({
+            juice: `--juice-menu-${role}`,
+            jx: `--jx-menu-${role}`,
         })),
         ...REQUIRED_WIZARD_ROLES.map((role) => ({
             juice: `--juice-wizard-${role}`,

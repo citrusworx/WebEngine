@@ -1,0 +1,274 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Menu chrome is structural. Color comes from the shared role contract:
+//   --juice-menu-panel
+//   --juice-menu-panel-border
+//   --juice-menu-panel-shadow
+//   --juice-menu-ink
+//   --juice-menu-item
+//   --juice-menu-item-hover
+//   --juice-menu-item-active
+//   --juice-menu-separator
+//   --juice-menu-focus-ring
+//   --juice-menu-opener
+//   --juice-menu-opener-ink
+// Themes bind those names (and optional --aqua-menu-* / --kw-menu-* /
+// --cm-menu-* / --tide-menu-* / --jx-menu-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG Menu Button (opener toggles a menu of menuitems).
+// Distinct from popover (generic non-modal dialog), combobox (editable
+// listbox), native <select>, and later menubar / context menu / submenus.
+//
+// Native collision: there is no HTML global `menu` attribute (the old
+// <button type="menu"> / button `menu` attr were withdrawn). A boolean
+// [menu] attribute has no platform behavior, unlike `popover=""` which
+// activates the Popover API and unlike native `title` tooltips. HTML
+// <menu> is a list container (now equivalent to <ul>); Juice [menu] is
+// an *attribute* selector, not the type selector `menu`. Authors should
+// write <div menu>, not <menu>. Do not restyle the HTML <menu> element.
+//
+// Juice names:
+//   [menu-root]         composite wrapper (opener + panel). Placement
+//                       values "top" / "bottom" / "left" / "right"
+//                       (bare or unspecified is bottom)
+//   [menu-button]       optional opener chrome (surface control, not CTA).
+//                       Authors who want a themed CTA opener omit this
+//                       attr and use a plain button inside [menu-root]
+//   [menu]              the menu panel (`role="menu"` filled later by
+//                       runtime). Attrs own Juice structure — do not
+//                       style bare [role="menu"]
+//   [menuitem]          item row (`role="menuitem"` later). Value
+//                       "active" is keyboard / visual focus
+//   [menu-separator]    non-interactive divider (`role="separator"` later)
+//   [menu-label]        non-interactive group label
+//
+// Pairing (honest v1, CSS-absolute — no Floating UI):
+//   [menu-root] wraps the opener and [menu], same composite idea as
+//   [combobox]. Placement attrs follow popover (`top|bottom|left|right`)
+//   so chrome can stub transform-origin + offset. The opener lives
+//   *inside* the root; closed vs open is native `hidden` on [menu], not
+//   on [menu-root] (hiding the root would hide the button). APG pairing
+//   for runtime B: opener `aria-haspopup="menu"` + `aria-controls`
+//   pointing at the [menu] id. There is no outside-opener CSS model in A.
+//
+// Use role in markup; attrs own Juice structure. Do not style
+// [role="menu"] or [role="menuitem"] alone.
+//
+// Optional surfaceTone on [menu] is allowed; do not force it.
+//
+// z-index 1050 matches popover / combobox so the panel floats like an
+// anchored menu, below tooltip (1060) and toast (1100). Modal/drawer
+// stay at 1000. Escape layering for B will treat menu like popover
+// (dialog-adjacent); A only sets this structural z-index.
+
+@function -juice-menu-role($name, $fallback) {
+    @return var(
+        --juice-menu-#{$name},
+        var(--aqua-menu-#{$name}, var(--kw-menu-#{$name}, var(--cm-menu-#{$name}, var(--tide-menu-#{$name}, var(--jx-menu-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-menu-panel: -juice-menu-role(panel, #{$white-100});
+$_juice-menu-panel-border: -juice-menu-role(panel-border, #{rgba($gray-300, 0.85)});
+$_juice-menu-panel-shadow: -juice-menu-role(panel-shadow, 0 18px 40px -24px #{rgba($black-900, 0.28)});
+$_juice-menu-ink: -juice-menu-role(ink, #{$black-700});
+$_juice-menu-item: -juice-menu-role(item, transparent);
+$_juice-menu-item-hover: -juice-menu-role(item-hover, #{$gray-100});
+$_juice-menu-item-active: -juice-menu-role(item-active, #{$gray-200});
+$_juice-menu-separator: -juice-menu-role(separator, #{rgba($gray-300, 0.85)});
+$_juice-menu-opener: -juice-menu-role(opener, transparent);
+$_juice-menu-opener-ink: -juice-menu-role(opener-ink, #{$black-700});
+
+// [theme] [menu-…] must beat theme semantic defaults such as
+// [theme="…"] :where(div) / :where(button) CTA paint. Themes realize
+// color through the roles.
+
+[menu-root],
+[theme] [menu-root] {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+[menu-button],
+[theme] [menu-button] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.375rem 0.625rem;
+    border: none;
+    border-radius: 0.5rem;
+    font: inherit;
+    line-height: 1.4;
+    cursor: pointer;
+    background-color: $_juice-menu-opener;
+    background-image: none;
+    color: $_juice-menu-opener-ink;
+    box-shadow: none;
+    transform: none;
+}
+
+[menu-button]::after,
+[theme] [menu-button]::after {
+    content: "";
+    display: block;
+    width: 0.35rem;
+    height: 0.35rem;
+    margin-top: -0.15rem;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    border-color: currentColor;
+    transform: rotate(45deg);
+}
+
+[menu-button]:focus-visible,
+[theme] [menu-button]:focus-visible {
+    outline: 2px solid -juice-menu-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[menu] {
+    position: absolute;
+    z-index: 1050;
+    box-sizing: border-box;
+    min-width: 10rem;
+    width: max-content;
+    max-width: min(18rem, calc(100vw - 2rem));
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    border-radius: 0.5rem;
+}
+
+[menu],
+[theme] [menu]:not([surfaceTone]) {
+    background-color: $_juice-menu-panel;
+    border: 1px solid $_juice-menu-panel-border;
+    box-shadow: $_juice-menu-panel-shadow;
+    color: $_juice-menu-ink;
+}
+
+[menu][hidden],
+[theme] [menu][hidden] {
+    display: none;
+}
+
+// Default / bottom — panel hangs below the opener.
+[menu-root] [menu],
+[menu-root="bottom"] [menu] {
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    transform-origin: top left;
+}
+
+[menu-root="top"] [menu] {
+    top: auto;
+    bottom: 100%;
+    left: 0;
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+    transform-origin: bottom left;
+}
+
+[menu-root="left"] [menu] {
+    top: 0;
+    left: auto;
+    right: 100%;
+    margin-top: 0;
+    margin-right: 0.25rem;
+    transform-origin: top right;
+}
+
+[menu-root="right"] [menu] {
+    top: 0;
+    left: 100%;
+    margin-top: 0;
+    margin-left: 0.25rem;
+    transform-origin: top left;
+}
+
+[menuitem],
+[theme] [menuitem] {
+    display: block;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.375rem 0.625rem;
+    border: none;
+    border-radius: 0.375rem;
+    font: inherit;
+    line-height: 1.4;
+    text-align: start;
+    width: 100%;
+    background-color: $_juice-menu-item;
+    background-image: none;
+    color: $_juice-menu-ink;
+    cursor: pointer;
+    box-shadow: none;
+    transform: none;
+    transition: background-color 0.15s;
+}
+
+[menuitem]:hover,
+[theme] [menuitem]:hover {
+    background-color: $_juice-menu-item-hover;
+    background-image: none;
+}
+
+[menuitem="active"],
+[theme] [menuitem="active"] {
+    background-color: $_juice-menu-item-active;
+    background-image: none;
+}
+
+[menuitem]:focus-visible,
+[theme] [menuitem]:focus-visible {
+    outline: 2px solid -juice-menu-role(focus-ring, currentColor);
+    outline-offset: 0;
+}
+
+[menuitem][aria-disabled="true"],
+[theme] [menuitem][aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+[menu-separator],
+[theme] [menu-separator] {
+    display: block;
+    height: 0;
+    margin: 0.25rem 0.375rem;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid $_juice-menu-separator;
+    pointer-events: none;
+}
+
+[menu-label],
+[theme] [menu-label] {
+    display: block;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.375rem 0.625rem 0.125rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    color: $_juice-menu-ink;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [menuitem],
+    [theme] [menuitem] {
+        transition: none;
+    }
+}

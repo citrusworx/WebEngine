@@ -79,6 +79,7 @@ A healthy Juice theme should own:
 - popover chrome roles (`--juice-popover-*`, bound from theme identity tokens)
 - tooltip chrome roles (`--juice-tooltip-*`, bound from theme identity tokens)
 - combobox chrome roles (`--juice-combobox-*`, bound from theme identity tokens)
+- menu chrome roles (`--juice-menu-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -230,6 +231,7 @@ The generated stylesheet currently defines:
 - popover chrome role bindings (`--jx-popover-*` / `--juice-popover-*`) and close-button CTA overrides for `[popover-close]`
 - tooltip chrome role bindings (`--jx-tooltip-*` / `--juice-tooltip-*`) for `[tooltip-root]` / `[tooltip-panel]`
 - combobox chrome role bindings (`--jx-combobox-*` / `--juice-combobox-*`) and trigger CTA overrides for `[combobox-trigger]`
+- menu chrome role bindings (`--jx-menu-*` / `--juice-menu-*`) and opener CTA overrides for `[menu-button]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -333,6 +335,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome, not a native `<select>` restyle — do not restyle or replace `<select>`. Combobox is an input + listbox popup. Use role in markup; attrs own Juice structure (`[combobox]`, `[combobox-input]`, optional `[combobox-trigger]`, `[combobox-list]`, `[combobox-option]`). It is not a popover, not a tooltip, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[combobox-list]`. Core CSS paints the list at z-index **1050** (same band as popover). The combobox runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, filter, keyboard) — see [Combobox Runtime](./juice-combobox-runtime.md).
 
 Tide must bind a dark field and dark list (`--tide-surface-strong`), not a white glass combobox.
+
+## Menu chrome roles
+
+Library themes bind the shared menu contract so `[menu-root]` / `[menu]` / `[menuitem]` paint is theme-agnostic in `menu.scss`. Required names (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-menu-*`, `--kw-menu-*`, `--cm-menu-*`, `--tide-menu-*`, …). App-owned generated themes use `--jx-menu-*` and bind `--juice-menu-*` from existing `--jx-*` surface/page/text tokens. Do not invent a new hue family just for menu chrome. `[menu-button]` is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[menu-button]` the same way.
+
+This is Juice chrome for the APG Menu Button pattern — an opener toggles a menu of menuitems. It is not a popover, not a combobox, not a native `<select>` restyle, and not a menubar or context menu. A boolean `[menu]` attribute is fine (no HTML global `menu` attr; unlike `popover=""` it has no platform behavior). Do not use the HTML `<menu>` element. Use role in markup; attrs own Juice structure (`[menu-root]`, optional `[menu-button]`, `[menu]`, `[menuitem]`, optional `[menu-separator]` / `[menu-label]`). Do not style bare `[role="menu"]`. Optional `surfaceTone` on `[menu]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[menu]` (not the root). Placement is `[menu-root]` / `[menu-root="bottom"]` (default), `"top"`, `"left"`, `"right"` — CSS-absolute under the opener; no Floating UI. Core CSS paints the panel at z-index **1050** (same band as popover). This slice is chrome only; the menu-button runtime is later.
+
+Tide must bind a dark panel (`--tide-surface-strong`), not a white glass menu.
 
 ## Wizard chrome roles
 
