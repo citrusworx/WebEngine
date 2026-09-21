@@ -1,5 +1,26 @@
 # @citrusworx/juiceui
 
+## 0.8.0
+
+### Minor Changes
+
+- **Wizard theme chrome and step runtime.** Shared `--juice-wizard-*` roles paint `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step]`. The DOM-first runtime auto-enhances valid shell markup (`createWizard` / `initWizard` / `startWizardRuntime` / `stopWizardRuntime`): `next` / `prev` / `goTo(index|id)` / `current`, pairing (`aria-controls` → id, else shared `data-step` / `name` / `step-page`, else index), nav modes (bare = completed + current; `linear` = prev/next only; `free` = any step), `[wizard-prev]` / `[wizard-next]` or unmarked `[step-nav]` buttons, optional `[wizard-complete]` on the last step. Pages use native `hidden`. A11y is `aria-current="step"` plus pages as `role="region"` — not APG Tabs. Distinct from modal/drawer/toast/popover. No Sig Wizard factory.
+- **Tooltip theme chrome and hover/focus runtime.** Shared `--juice-tooltip-*` roles paint `[tooltip-root]` / `[tooltip-panel]`. The DOM-first runtime auto-enhances valid root markup (`createTooltip` / `initTooltip` / `startTooltipRuntime` / `stopTooltipRuntime`): `show` / `hide`, pairing (`aria-describedby` preferred), show on mouseover/focusin, hide on mouseout/focusout with a 150ms grace delay, exclusive one tip, Escape (yields to open modal/drawer overlay or popover-root), no focus trap, dependency-free placement with one-axis flip. Touch / first-tap later. Distinct from popover (interactive) and native `title`. Never a bare `tooltip` attribute. No Sig Tooltip factory.
+- **Combobox theme chrome and listbox runtime.** Shared `--juice-combobox-*` roles paint `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]`. The DOM-first runtime auto-enhances valid markup (`createCombobox` / `initCombobox` / `startComboboxRuntime` / `stopComboboxRuntime`): `open` / `close` / `toggle` / `select`, case-insensitive substring filter, keyboard (ArrowUp/Down, Home/End, Enter selects, Escape closes, Tab closes without commit), `aria-activedescendant` plus `aria-expanded`, exclusive among comboboxes. Placement is CSS-only (absolute under the field). Distinct from native `<select>`. No multi-select / async fetch. No Sig Combobox factory.
+- **Banner theme chrome and dismiss runtime.** Shared `--juice-banner-*` roles paint `[banner]` / `[banner-body]` / `[banner-close]`. The DOM-first runtime auto-enhances valid markup (`createBanner` / `initBanner` / `startBannerRuntime` / `stopBannerRuntime`): `show` / `dismiss`, `[banner-close]` click / keyboard, `role="status"` (or `role="alert"` for error/warning), optional `banner-persist="session|local"` with `name` / `id`. No focus trap, no Escape steal, no auto-dismiss timer. Distinct from toast stack and from modal/drawer. No Sig Banner factory.
+- **Menu theme chrome and APG menu-button runtime.** Shared `--juice-menu-*` roles paint `[menu-root]` / `[menu]` / `[menuitem]`. The DOM-first runtime auto-enhances valid root markup (`createMenu` / `initMenu` / `startMenuRuntime` / `stopMenuRuntime`): `open` / `close` / `toggle` / `select`, opener pairing, roving tabindex on `[menuitem]`, exclusive among menus, Escape with popover (yields to modal/drawer). Boolean `[menu]` attr (no HTML global `menu`; not the `<menu>` element). Placement CSS-absolute from the root (`top|bottom|left|right`). Distinct from popover, combobox, native `<select>`, menubar, and context menu. No submenus, no typeahead, no Sig Menu factory.
+
+### Patch Changes
+
+- Document the wizard step runtime as an Emerging auto-enhance (`docs/juice/juice-wizard-runtime.md`).
+- Document the tooltip hover/focus runtime as an Emerging auto-enhance (`docs/juice/juice-tooltip-runtime.md`).
+- Document the combobox listbox runtime as an Emerging auto-enhance (`docs/juice/juice-combobox-runtime.md`).
+- Document the banner dismiss runtime as an Emerging auto-enhance (`docs/juice/juice-banner-runtime.md`).
+- Document the APG menu-button runtime as an Emerging auto-enhance (`docs/juice/juice-menu-runtime.md`).
+- Tighten Emerging runtime Escape yield: dialogs, then popover, then combobox, then toast / tooltip. Banner never steals Escape. Menu yields with popover.
+- Extract internal shared runtime primitives (event claim, escapeId, overlay queries, focus trap) under `src/js/src/shared/` (not a public API).
+- Document Escape / z-index bands and honest Limitations for the Emerging auto-enhance runtimes (polish C). The twelve stay **Emerging**.
+
 ## 0.7.0
 
 ### Minor Changes

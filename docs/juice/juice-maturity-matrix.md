@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.7.0** public cut on npm (drawer, toast, and popover A→B→C). Master is ahead with unpublished wizard, tooltip, combobox, banner, and menu runtime work plus a closed eleven-runtime polish pass (Escape / layering, shared internals, docs consistency). Menu is the twelfth Emerging auto-enhance runtime. Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable-ish. 0.6.0 was the prior public cut.
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.8.0** versioned cut (wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C). `@citrusworx/juiceui@0.7.0` remains the public npm cut until publish. Menu is the twelfth Emerging auto-enhance runtime. Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable-ish.
 
 The goal is to make it easy to answer:
 
