@@ -11,8 +11,9 @@
     />
   </head>
   <body theme="kiwipress">
+    <a href="#content" skip-link>Skip to content</a>
     <div app-shell stack>
-      <nav sticky>
+      <nav sticky aria-label="Primary">
         <div container>
           <a href="/" nav-brand logo>
             <span logo="text">Juice</span>
@@ -21,7 +22,8 @@
           <div nav-links>
             <a href="/">Landing</a>
             <a href="/getting-started.html">Getting started</a>
-            <a href="/demos.html" nav-link="active">Demos</a>
+            <a href="/demos.html" aria-current="page" nav-link="active">Demos</a>
+            <a href="/playground.html">Playground</a>
             <a href="/themes.html">Themes</a>
             <a href="/docs/">Docs</a>
             <a href="/reference.html">Reference</a>
@@ -30,7 +32,7 @@
             <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
-        <nav type="sidebar" hidden>
+        <nav type="sidebar" hidden aria-label="Primary">
           <div stack gap="1" paddingX="1rem" paddingY="1rem">
             <a href="/" nav-brand logo>
               <span logo="text">Juice</span>
@@ -38,7 +40,8 @@
             <div stack gap="0.75rem">
               <a href="/">Landing</a>
               <a href="/getting-started.html">Getting started</a>
-              <a href="/demos.html">Demos</a>
+              <a href="/demos.html" aria-current="page">Demos</a>
+              <a href="/playground.html">Playground</a>
               <a href="/themes.html">Themes</a>
               <a href="/docs/">Docs</a>
               <a href="/reference.html">Reference</a>
@@ -48,7 +51,7 @@
         </nav>
       </nav>
 
-      <main>
+      <main id="content" tabindex="-1">
         <section hero>
           <div container>
             <span hero-eyebrow>
@@ -85,11 +88,11 @@
                 <code>_draft</code> stay unpublished. Choice is stored locally.
               </p>
             </div>
-            <div row wrap gap="1" centered>
-              <button type="button" data-theme="kiwipress">KiwiPress</button>
-              <button type="button" btn="outline" data-theme="tide">Tide</button>
-              <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
-              <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            <div row wrap gap="1" centered role="radiogroup" aria-label="Theme" data-theme-group>
+              <button type="button" role="radio" aria-checked="true" data-theme="kiwipress">KiwiPress</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="tide">Tide</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="citrusmint">Citrusmint</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="aquaflux">Aquaflux</button>
             </div>
             <div row wrap gap="1" centered marginY="comfortable">
               <button type="button" btn="outline" scale="sm" data-href="#navigation">Navigation</button>
@@ -694,7 +697,8 @@
               <h4>Site</h4>
               <ul stack gap="snug">
                 <li><a href="/getting-started.html">Getting started</a></li>
-                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/demos.html" aria-current="page">Demos</a></li>
+                <li><a href="/playground.html">Playground</a></li>
                 <li><a href="/themes.html">Themes</a></li>
                 <li><a href="/docs/">Docs</a></li>
                 <li><a href="/reference.html">Reference</a></li>
@@ -714,6 +718,7 @@
               <ul stack gap="snug">
                 <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
                 <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/libraries/juice/CHANGELOG.md">Changelog</a></li>
               </ul>
             </div>
           </div>
@@ -722,7 +727,8 @@
               <ul row gap="2" centered>
                 <li><a href="/">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
-                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/demos.html" aria-current="page">Demos</a></li>
+                <li><a href="/playground.html">Playground</a></li>
                 <li><a href="/themes.html">Themes</a></li>
                 <li><a href="/docs/">Docs</a></li>
               </ul>

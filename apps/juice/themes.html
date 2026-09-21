@@ -11,8 +11,9 @@
     />
   </head>
   <body theme="kiwipress">
+    <a href="#content" skip-link>Skip to content</a>
     <div app-shell stack>
-      <nav sticky>
+      <nav sticky aria-label="Primary">
         <div container>
           <a href="/" nav-brand logo>
             <span logo="text">Juice</span>
@@ -22,7 +23,8 @@
             <a href="/">Landing</a>
             <a href="/getting-started.html">Getting started</a>
             <a href="/demos.html">Demos</a>
-            <a href="/themes.html" nav-link="active">Themes</a>
+            <a href="/playground.html">Playground</a>
+            <a href="/themes.html" aria-current="page" nav-link="active">Themes</a>
             <a href="/docs/">Docs</a>
             <a href="/reference.html">Reference</a>
           </div>
@@ -30,7 +32,7 @@
             <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
-        <nav type="sidebar" hidden>
+        <nav type="sidebar" hidden aria-label="Primary">
           <div stack gap="1" paddingX="1rem" paddingY="1rem">
             <a href="/" nav-brand logo>
               <span logo="text">Juice</span>
@@ -39,7 +41,8 @@
               <a href="/">Landing</a>
               <a href="/getting-started.html">Getting started</a>
               <a href="/demos.html">Demos</a>
-              <a href="/themes.html">Themes</a>
+              <a href="/playground.html">Playground</a>
+              <a href="/themes.html" aria-current="page">Themes</a>
               <a href="/docs/">Docs</a>
               <a href="/reference.html">Reference</a>
             </div>
@@ -48,7 +51,7 @@
         </nav>
       </nav>
 
-      <main>
+      <main id="content" tabindex="-1">
         <section hero>
           <div container>
             <span hero-eyebrow>
@@ -116,11 +119,11 @@
                 set.
               </p>
             </div>
-            <div row wrap gap="1" centered>
-              <button type="button" data-theme="kiwipress">KiwiPress</button>
-              <button type="button" btn="outline" data-theme="tide">Tide</button>
-              <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
-              <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            <div row wrap gap="1" centered role="radiogroup" aria-label="Theme" data-theme-group>
+              <button type="button" role="radio" aria-checked="true" data-theme="kiwipress">KiwiPress</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="tide">Tide</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="citrusmint">Citrusmint</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="aquaflux">Aquaflux</button>
             </div>
             <div row wrap gap="1" centered marginY="comfortable">
               <button type="button" btn="outline" scale="sm" data-href="#gallery">Gallery</button>
@@ -157,7 +160,7 @@
                   src="/theme-frame.html?theme=kiwipress"
                   loading="lazy"
                 ></iframe>
-                <button type="button" data-theme="kiwipress">Wear this face</button>
+                <button type="button" data-theme="kiwipress">Wear KiwiPress</button>
               </article>
               <article card="feature" width="100%" stack gap="1" warm>
                 <span badge>tide</span>
@@ -172,7 +175,7 @@
                   src="/theme-frame.html?theme=tide"
                   loading="lazy"
                 ></iframe>
-                <button type="button" data-theme="tide">Wear this face</button>
+                <button type="button" data-theme="tide">Wear Tide</button>
               </article>
               <article card="feature" width="100%" stack gap="1">
                 <span badge>citrusmint</span>
@@ -187,7 +190,7 @@
                   src="/theme-frame.html?theme=citrusmint"
                   loading="lazy"
                 ></iframe>
-                <button type="button" data-theme="citrusmint">Wear this face</button>
+                <button type="button" data-theme="citrusmint">Wear Citrusmint</button>
               </article>
               <article card="feature" width="100%" stack gap="1" warm>
                 <span badge>aquaflux</span>
@@ -202,7 +205,7 @@
                   src="/theme-frame.html?theme=aquaflux"
                   loading="lazy"
                 ></iframe>
-                <button type="button" data-theme="aquaflux">Wear this face</button>
+                <button type="button" data-theme="aquaflux">Wear Aquaflux</button>
               </article>
             </div>
           </div>
@@ -461,7 +464,8 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <ul stack gap="snug">
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
-                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/playground.html">Playground</a></li>
+                <li><a href="/themes.html" aria-current="page">Themes</a></li>
                 <li><a href="/docs/">Docs</a></li>
                 <li><a href="/reference.html">Reference</a></li>
               </ul>
@@ -480,6 +484,7 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <ul stack gap="snug">
                 <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
                 <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/libraries/juice/CHANGELOG.md">Changelog</a></li>
               </ul>
             </div>
           </div>
@@ -489,7 +494,8 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
                 <li><a href="/">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
-                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/playground.html">Playground</a></li>
+                <li><a href="/themes.html" aria-current="page">Themes</a></li>
                 <li><a href="/docs/">Docs</a></li>
               </ul>
             </nav>

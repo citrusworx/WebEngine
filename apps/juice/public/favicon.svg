@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Juice">
+  <rect width="32" height="32" rx="8" fill="#0e2419"/>
+  <circle cx="16" cy="16" r="11" fill="#123d28"/>
+  <circle cx="16" cy="16" r="9" fill="#f6c945"/>
+  <circle cx="16" cy="16" r="7.2" fill="#ffe896"/>
+  <path d="M16 8.8v14.4M8.8 16h14.4M10.9 10.9l10.2 10.2M21.1 10.9 10.9 21.1" stroke="#123524" stroke-width="1.2" stroke-linecap="round"/>
+  <circle cx="16" cy="16" r="1.25" fill="#123524"/>
+</svg>

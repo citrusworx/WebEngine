@@ -36,9 +36,18 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 - Themes: four shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux) as a gallery — same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into Juice Docs theme pages
 - Reference: browsable index into Juice Docs (attributes, layout, surfaces, typography, theme docs, responsive, runtimes, practice / status, course) with short blurbs, on-site docs links, and tiny live Juice samples
 - Docs: windowed on-site reader for the whole `docs/juice` tree (sidebar, TOC, markdown pipeline). Open `/docs/`
+- Playground: edit Juice attribute markup and preview it in a CSS-only sandbox (`/playground.html`)
+- Unknown routes: `404.html`, served with status 404 by the Vite dev and preview servers (`appType: "mpa"`)
+
+## Favicon and social cards
+
+`public/favicon.svg` is the tab icon. `public/og.png` is the Open Graph / Twitter image.
+
+The site plugin injects root-relative `og:image` and `twitter:image` values (`/og.png`) plus a root-relative favicon (`/favicon.svg`). Those paths resolve on whatever host serves the built site. This repo does not invent an absolute image host. Social crawlers that ignore root-relative image URLs need the deploy origin filled in later (for example `https://<host>/og.png`). Docs routes share one HTML shell, so their crawler tags stay on that shell; the reader updates the title and description in the browser after a page loads.
 - Default theme: **KiwiPress** (richest product reference)
 - Cheap theme switcher: KiwiPress, Tide, Citrusmint, Aquaflux (never blush / `_draft`)
-- Chrome: Juice nav (including mobile + sidebar) and footer on every marketing page; Docs uses its own top bar with Back to Juice
+- Chrome: Juice nav (including mobile + sidebar) and footer on every marketing page; Docs uses its own top bar with Back to Juice and a Playground link
+- Package links: npm `@citrusworx/juiceui`, `libraries/juice` on GitHub, and `libraries/juice/CHANGELOG.md` (there is no separate GitHub Releases feed for the package)
 
 ## What this slice does not include
 

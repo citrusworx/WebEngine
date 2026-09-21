@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playground — Juice</title>
+    <link rel="stylesheet" href="/src/juice.css" />
+    <meta
+      name="description"
+      content="Tweak Juice attribute markup and preview it live. The sandbox loads Juice CSS only — structure in, theme on the page. Honest Beta."
+    />
+  </head>
+  <body theme="kiwipress">
+    <a href="#content" skip-link>Skip to content</a>
+    <div app-shell stack>
+      <nav sticky aria-label="Primary">
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+          <nav type="mobile"></nav>
+          <div nav-links>
+            <a href="/">Landing</a>
+            <a href="/getting-started.html">Getting started</a>
+            <a href="/demos.html">Demos</a>
+            <a href="/playground.html" nav-link="active" aria-current="page">Playground</a>
+            <a href="/themes.html">Themes</a>
+            <a href="/docs/">Docs</a>
+            <a href="/reference.html">Reference</a>
+          </div>
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
+          </div>
+        </div>
+        <nav type="sidebar" hidden aria-label="Primary">
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/playground.html" aria-current="page">Playground</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/docs/">Docs</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+            <button type="button" data-href="/getting-started.html">Get started</button>
+          </div>
+        </nav>
+      </nav>
+
+      <main id="content" tabindex="-1">
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>Honest Beta · markup sandbox</span>
+            </span>
+            <h1 hero-title>Edit attributes. See the page.</h1>
+            <p hero-subtitle>
+              A single pane for Juice markup. The preview loads core CSS and
+              the four shipped themes — no showcase chrome inside the frame,
+              and no runtime JavaScript. Switch the face with the same theme
+              control as the rest of the site.
+            </p>
+            <p package-links>
+              <a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm · @citrusworx/juiceui</a>
+              <a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">GitHub · libraries/juice</a>
+              <a href="https://github.com/citrusworx/WebEngine/blob/master/libraries/juice/CHANGELOG.md">Changelog</a>
+            </p>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy">
+          <div container stack gap="comfortable">
+            <div row wrap gap="1" centered role="radiogroup" aria-label="Theme" data-theme-group>
+              <button type="button" role="radio" aria-checked="true" data-theme="kiwipress">KiwiPress</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="tide">Tide</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="citrusmint">Citrusmint</button>
+              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            </div>
+
+            <div playground-layout>
+              <div stack gap="0.75rem">
+                <label for="playground-markup">Markup</label>
+                <textarea
+                  id="playground-markup"
+                  playground-editor
+                  spellcheck="false"
+                  autocomplete="off"
+                  aria-describedby="playground-hint"
+                ></textarea>
+                <p id="playground-hint" playground-hint>
+                  Edits render in the preview. Script tags and inline event
+                  handlers are stripped. Tabs, dialogs, and other runtimes
+                  stay on the demos page — this frame is CSS-first Juice.
+                </p>
+                <div row wrap gap="0.5rem" role="group" aria-label="Samples">
+                  <button type="button" scale="sm" data-preset="stack">Card stack</button>
+                  <button type="button" btn="outline" scale="sm" data-preset="hero">Hero</button>
+                  <button type="button" btn="outline" scale="sm" data-preset="form">Sign-in form</button>
+                </div>
+              </div>
+
+              <div stack gap="0.75rem">
+                <h2 id="playground-preview-heading">Preview</h2>
+                <iframe
+                  id="playground-preview"
+                  playground-preview
+                  title="Live Juice preview"
+                  sandbox=""
+                ></iframe>
+                <p id="playground-status" playground-status role="status"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div grid="4x1" gap="comfortable">
+            <div stack gap="cozy">
+              <h4>Juice</h4>
+              <p>
+                CSS-first, attribute-driven styling and composition from
+                CitrusWorx. Adopt the structure. Bring your own face.
+              </p>
+            </div>
+            <div stack gap="cozy">
+              <h4>Site</h4>
+              <ul stack gap="snug">
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/playground.html" aria-current="page">Playground</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/docs/">Docs</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Docs</h4>
+              <ul stack gap="snug">
+                <li><a href="/docs/">docs/juice</a></li>
+                <li><a href="/docs/juice-getting-started.html">Getting started</a></li>
+                <li><a href="/docs/juice-maturity-matrix.html">Maturity matrix</a></li>
+                <li><a href="/docs/juice-beta.html">Beta notes</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Package</h4>
+              <ul stack gap="snug">
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/libraries/juice/CHANGELOG.md">Changelog</a></li>
+              </ul>
+            </div>
+          </div>
+          <div center marginY="comfortable">
+            <nav type="footer" aria-label="Footer">
+              <ul row gap="2" centered>
+                <li><a href="/">Landing</a></li>
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/playground.html" aria-current="page">Playground</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/docs/">Docs</a></li>
+              </ul>
+            </nav>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/playground.ts"></script>
+  </body>
+</html>
