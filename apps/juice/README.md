@@ -1,6 +1,6 @@
 # Juice showcase (`apps/juice`)
 
-Vanilla Vite + HTML / TypeScript site that consumes the workspace package `@citrusworx/juiceui`. Landing, Getting started, live Emerging runtime demos, a Themes gallery, and a Reference hub into `docs/juice`.
+Vanilla Vite + HTML / TypeScript site that consumes the workspace package `@citrusworx/juiceui`. Landing, Getting started, live Emerging runtime demos, a Themes gallery, a Reference hub, and an on-site Juice Docs reader for `docs/juice`.
 
 Package name: `@citrusworx/juiceapp`.
 
@@ -33,14 +33,15 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 - Landing page: CSS-first + attribute-driven pitch, structure vs identity, Emerging runtimes, Honest Beta
 - Getting started: install → core CSS → theme import → `theme="…"` → first attribute-driven page, plus a live hero/card/panel demo under the active theme
 - Demos: live navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox (markup + JS auto-enhance; toast show/dismiss via `createToast()`)
-- Themes: four shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux) as a gallery — same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into `docs/juice` theme docs
-- Reference: browsable index into `docs/juice` (attributes, layout, surfaces, typography, theme docs, responsive, runtimes, practice / status, course) with short blurbs, GitHub links, and tiny live Juice samples — not a rewrite of the docs tree
+- Themes: four shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux) as a gallery — same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into Juice Docs theme pages
+- Reference: browsable index into Juice Docs (attributes, layout, surfaces, typography, theme docs, responsive, runtimes, practice / status, course) with short blurbs, on-site docs links, and tiny live Juice samples
+- Docs: windowed on-site reader for the whole `docs/juice` tree (sidebar, TOC, markdown pipeline). Open `/docs/`
 - Default theme: **KiwiPress** (richest product reference)
 - Cheap theme switcher: KiwiPress, Tide, Citrusmint, Aquaflux (never blush / `_draft`)
-- Chrome: Juice nav (including mobile + sidebar) and footer on every page
+- Chrome: Juice nav (including mobile + sidebar) and footer on every marketing page; Docs uses its own top bar with Back to Juice
 
 ## What this slice does not include
 
 - Animations / WebGL / Spline
-- Rewriting `docs/juice` into the site
+- Full-text search (the Docs ⌘K field filters the sidebar)
 - New library APIs

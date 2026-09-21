@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Juice Docs</title>
+    <link rel="stylesheet" href="/src/juice.css" />
+    <meta
+      name="description"
+      content="On-site Juice documentation. Hosted from docs/juice in the WebEngine monorepo. Honest Beta."
+    />
+  </head>
+  <body theme="kiwipress">
+    <div docs-shell stack>
+      <header docs-topbar>
+        <div docs-topbar-inner>
+          <a href="/docs/" docs-brand>
+            <span logo="text">Juice</span>
+            <span docs-brand-suffix>Docs</span>
+          </a>
+
+          <label docs-search>
+            <span class="visually-hidden">Search docs</span>
+            <input
+              id="doc-search"
+              type="search"
+              placeholder="Search…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <kbd id="doc-search-hint">⌘K</kbd>
+          </label>
+
+          <a href="/" docs-back>Back to Juice</a>
+        </div>
+      </header>
+
+      <div docs-frame>
+        <aside docs-sidebar>
+          <button type="button" docs-nav-toggle id="doc-nav-toggle">Menu</button>
+          <nav id="doc-nav" docs-nav aria-label="Documentation"></nav>
+        </aside>
+
+        <main docs-main>
+          <p docs-crumb id="doc-crumb">Docs</p>
+          <article docs-window>
+            <header docs-window-chrome>
+              <span docs-traffic aria-hidden="true">
+                <span class="doc-dot doc-dot--red"></span>
+                <span class="doc-dot doc-dot--yellow"></span>
+                <span class="doc-dot doc-dot--green"></span>
+              </span>
+              <span docs-window-filename id="doc-filename">README.md</span>
+              <span docs-window-meta id="doc-meta">v0.7.0</span>
+            </header>
+            <div docs-window-body id="doc-article">
+              <p>Loading Juice docs…</p>
+            </div>
+          </article>
+        </main>
+
+        <aside docs-toc>
+          <p docs-toc-label>On this page</p>
+          <nav id="doc-toc" aria-label="On this page"></nav>
+        </aside>
+      </div>
+    </div>
+    <script type="module" src="/src/docs.ts"></script>
+  </body>
+</html>
