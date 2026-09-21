@@ -20,6 +20,7 @@ export default defineConfig({
         gettingStarted: fileURLToPath(new URL("./getting-started.html", import.meta.url)),
         demos: fileURLToPath(new URL("./demos.html", import.meta.url)),
         themes: fileURLToPath(new URL("./themes.html", import.meta.url)),
+        themeFrame: fileURLToPath(new URL("./theme-frame.html", import.meta.url)),
         reference: fileURLToPath(new URL("./reference.html", import.meta.url))
       }
     }

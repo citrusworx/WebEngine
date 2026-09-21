@@ -1,6 +1,6 @@
 # Juice showcase (`apps/juice`)
 
-Vanilla Vite + HTML / TypeScript site that consumes the workspace package `@citrusworx/juiceui`. Landing, Getting started, and live Emerging runtime demos.
+Vanilla Vite + HTML / TypeScript site that consumes the workspace package `@citrusworx/juiceui`. Landing, Getting started, live Emerging runtime demos, and a Themes gallery.
 
 Package name: `@citrusworx/juiceapp`.
 
@@ -33,9 +33,10 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 - Landing page: CSS-first + attribute-driven pitch, structure vs identity, Emerging runtimes, Honest Beta
 - Getting started: install → core CSS → theme import → `theme="…"` → first attribute-driven page, plus a live hero/card/panel demo under the active theme
 - Demos: live navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox (markup + JS auto-enhance; toast show/dismiss via `createToast()`)
+- Themes: four shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux) as a gallery — same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into `docs/juice` theme docs
 - Default theme: **KiwiPress** (richest product reference)
 - Cheap theme switcher: KiwiPress, Tide, Citrusmint, Aquaflux (never blush / `_draft`)
-- Chrome: Juice nav (including mobile + sidebar), footer, stub routes for Themes / Reference
+- Chrome: Juice nav (including mobile + sidebar), footer, stub route for Reference
 
 ## What this slice does not include
 
@@ -45,4 +46,4 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 
 ## Next
 
-- Themes and Reference pages beyond their current stubs
+- Reference page beyond its current stub
