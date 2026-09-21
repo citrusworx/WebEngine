@@ -42,8 +42,13 @@ document.querySelectorAll<HTMLButtonElement>("[data-theme]").forEach((button) =>
 document.querySelectorAll<HTMLElement>("[data-href]").forEach((element) => {
   element.addEventListener("click", () => {
     const href = element.dataset.href;
-    if (href) {
-      window.location.assign(href);
+    if (!href) {
+      return;
     }
+    if (href.startsWith("#")) {
+      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    window.location.assign(href);
   });
 });
