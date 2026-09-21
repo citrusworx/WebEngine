@@ -52,55 +52,105 @@
         </nav>
       </nav>
 
-      <main>
+      <main sell>
         <section hero>
           <div container>
-            <span hero-eyebrow>
-              <span badge>Honest Beta · @citrusworx/juiceui</span>
-            </span>
+            <div sell-copy stack gap="1.25rem">
+              <span hero-eyebrow>
+                <span badge>Honest Beta · @citrusworx/juiceui</span>
+              </span>
 
-            <h1 hero-title>Write the layout you mean.</h1>
+              <h1 hero-title>Write the layout<br />you mean.</h1>
 
-            <p hero-subtitle>
-              Juice is a CSS-first, attribute-driven styling and composition
-              system. Markup holds structure — <code>stack</code>,
-              <code>row</code>, <code>grid</code>, <code>gap</code>,
-              <code>hero</code>, <code>card</code>. Themes hold brand. Import
-              CSS, set <code>theme="…"</code>, and compose.
-            </p>
+              <p hero-subtitle>
+                Juice is a CSS-first, attribute-driven styling and composition
+                system. Markup holds structure —
+                <code>stack</code>, <code>row</code>, <code>grid</code>,
+                <code>gap</code>, <code>hero</code>, <code>card</code>.
+                Themes hold brand. Import CSS, set <code>theme="…"</code>,
+                and compose.
+              </p>
 
-            <div hero-actions>
-              <button type="button" scale="lg" data-href="/getting-started.html">
-                Get started
-              </button>
-              <button type="button" btn="outline" scale="lg" data-href="/docs/">
-                Read the docs
-              </button>
-              <button type="button" btn="outline" scale="lg" data-href="/demos.html">
-                See demos
-              </button>
+              <div hero-actions>
+                <button type="button" scale="lg" data-href="/getting-started.html">
+                  Get started
+                </button>
+                <button type="button" btn="outline" scale="lg" data-href="/docs/">
+                  Read the docs
+                </button>
+              </div>
+
+              <p sell-tertiary>
+                <a href="/demos.html">Emerging runtimes are optional — see demos</a>
+              </p>
             </div>
 
-            <div hero-meta>
-              <div stats>
-                <div stat>
-                  <div stat-value>Attributes</div>
-                  <div stat-label>HTML with intent, not class soup</div>
+            <div sell-stage>
+              <article sell-window surfaceTone="strong" borderStrength="soft">
+                <header sell-window-chrome>
+                  <span sell-dots aria-hidden="true"></span>
+                  <span sell-window-title>index.html · attributes</span>
+                </header>
+                <div sell-canvas padding="1.25rem">
+                  <section
+                    stack
+                    gap="1"
+                    padding="1.25rem"
+                    surfaceTone="muted"
+                    sell-mark-host
+                  >
+                    <span badge sell-mark="stack">stack</span>
+                    <h2>Harbor Press</h2>
+                    <p>
+                      Short-run books and a catalog that still fits on one
+                      shelf.
+                    </p>
+                    <div grid="2x1" gap="1" sell-mark-host>
+                      <span badge sell-mark="grid">grid</span>
+                      <article
+                        card
+                        padding="1rem"
+                        stack
+                        gap="0.5rem"
+                        width="100%"
+                        sell-mark-host
+                      >
+                        <span badge sell-mark="card">card</span>
+                        <h3>The Inlet</h3>
+                        <p>Essays on harbors and tide tables.</p>
+                      </article>
+                      <article card padding="1rem" stack gap="0.5rem" width="100%">
+                        <h3>Letterpress Hours</h3>
+                        <p>A shop diary from a one-room bindery.</p>
+                      </article>
+                    </div>
+                  </section>
                 </div>
-                <div stat>
-                  <div stat-value>Themes</div>
-                  <div stat-label>Identity stays out of the markup</div>
-                </div>
-                <div stat>
-                  <div stat-value>CSS-first</div>
-                  <div stat-label>Structure paints before any JS runs</div>
-                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section sell-proof>
+          <div container>
+            <div stats>
+              <div stat>
+                <div stat-value>Attributes</div>
+                <div stat-label>HTML with intent, not class soup</div>
+              </div>
+              <div stat>
+                <div stat-value>Themes</div>
+                <div stat-label>Identity stays out of the markup</div>
+              </div>
+              <div stat>
+                <div stat-value>CSS-first</div>
+                <div stat-label>Structure paints before any JS runs</div>
               </div>
             </div>
           </div>
         </section>
 
-        <section type="features" paddingY="roomy" id="attributes">
+        <section type="workflow" paddingY="expansive" id="attributes">
           <div container>
             <div section-header>
               <h2>Write structure in markup.</h2>
@@ -111,16 +161,22 @@
               </p>
             </div>
 
-            <div stack gap="comfortable">
-              <div grid="2x1" gap="comfortable">
-                <aside panel padding="1.5rem" stack gap="1" width="100%">
-                  <span badge>Typical utilities</span>
-                  <h3>Class-heavy CSS</h3>
-                  <p>
-                    A competent utility layout. Readable if you know the
-                    dialect. The structure is still encoded as CSS class names.
-                  </p>
-                  <pre padding="1rem"><code>&lt;section class="flex flex-col gap-4 p-8"&gt;
+            <div stack gap="expansive">
+              <div sell-compare>
+                <article sell-window="utilities" surfaceTone="muted" borderStrength="soft">
+                  <header sell-window-chrome>
+                    <span sell-dots aria-hidden="true"></span>
+                    <span sell-window-title>utilities.html</span>
+                    <span badge>Typical utilities</span>
+                  </header>
+                  <div sell-window-copy stack gap="0.75rem" padding="1.25rem">
+                    <h3>Class-heavy CSS</h3>
+                    <p>
+                      A competent utility layout. Readable if you know the
+                      dialect. The structure is still encoded as CSS class names.
+                    </p>
+                  </div>
+                  <pre sell-code><code>&lt;section class="flex flex-col gap-4 p-8"&gt;
   &lt;h2 class="text-2xl font-semibold"&gt;Harbor Press&lt;/h2&gt;
   &lt;p class="text-base text-slate-600"&gt;
     Short-run books and a catalog that still fits on one shelf.
@@ -136,17 +192,25 @@
     &lt;/article&gt;
   &lt;/div&gt;
 &lt;/section&gt;</code></pre>
-                </aside>
+                </article>
 
-                <article card="feature" padding="1.5rem" stack gap="1" width="100%">
-                  <span badge>Juice</span>
-                  <h3>Attributes with intent</h3>
-                  <p>
-                    Same layout job. The markup says <code>stack</code>,
-                    <code>gap</code>, <code>grid</code>, and <code>card</code>
-                    — the structure you mean.
-                  </p>
-                  <pre padding="1rem"><code>&lt;section stack gap="1" padding="2rem"&gt;
+                <span sell-versus aria-hidden="true">vs</span>
+
+                <article sell-window="juice" surfaceTone="strong" borderStrength="bold">
+                  <header sell-window-chrome>
+                    <span sell-dots aria-hidden="true"></span>
+                    <span sell-window-title>juice.html</span>
+                    <span badge>Juice</span>
+                  </header>
+                  <div sell-window-copy stack gap="0.75rem" padding="1.25rem">
+                    <h3>Attributes with intent</h3>
+                    <p>
+                      Same layout job. The markup says <code>stack</code>,
+                      <code>gap</code>, <code>grid</code>, and <code>card</code>
+                      — the structure you mean.
+                    </p>
+                  </div>
+                  <pre sell-code><code>&lt;section stack gap="1" padding="2rem"&gt;
   &lt;h2&gt;Harbor Press&lt;/h2&gt;
   &lt;p&gt;
     Short-run books and a catalog that still fits on one shelf.
@@ -165,22 +229,24 @@
                 </article>
               </div>
 
-              <div stack gap="1">
-                <div center>
-                  <p>
+              <article sell-window="stage" surfaceTone="strong" borderStrength="soft" id="live-sample">
+                <header sell-window-chrome>
+                  <span sell-dots aria-hidden="true"></span>
+                  <span sell-window-title>Harbor Press — live sample</span>
+                  <div row wrap gap="0.5rem">
+                    <button type="button" scale="sm" data-theme="kiwipress">KiwiPress</button>
+                    <button type="button" btn="outline" scale="sm" data-theme="tide">Tide</button>
+                    <button type="button" btn="outline" scale="sm" data-theme="citrusmint">Citrusmint</button>
+                    <button type="button" btn="outline" scale="sm" data-theme="aquaflux">Aquaflux</button>
+                  </div>
+                </header>
+                <div sell-canvas padding="2rem" stack gap="1">
+                  <p sell-sample-note>
                     The Juice version, live on this page — pure attributes,
-                    wearing the active theme.
+                    wearing the active theme. Faces restyle the sample; they
+                    are not the reason to adopt.
                   </p>
-                </div>
-
-                <div
-                  panel
-                  padding="1.5rem"
-                  stack
-                  gap="1"
-                  id="live-sample"
-                >
-                  <section stack gap="1" padding="2rem">
+                  <section stack gap="1" padding="2rem" surfaceTone="muted">
                     <h2>Harbor Press</h2>
                     <p>
                       Short-run books and a catalog that still fits on one
@@ -198,11 +264,10 @@
                     </div>
                   </section>
                 </div>
-              </div>
+              </article>
 
-              <div grid="2x2" gap="comfortable">
-                <article card="feature" width="100%">
-                  <i icon="layer-group" lib="solid" iconSize="lg"></i>
+              <div sell-beats grid="3x1" gap="comfortable">
+                <div stack gap="0.75rem">
                   <h3>Portable structure</h3>
                   <p>
                     <code>stack</code>, <code>row</code>, <code>grid</code>, and
@@ -210,60 +275,42 @@
                     composition across products instead of reinventing layout
                     in each codebase.
                   </p>
-                </article>
-                <article card="feature" width="100%" warm>
-                  <i icon="swatchbook" lib="solid" iconSize="lg"></i>
+                </div>
+                <div stack gap="0.75rem">
                   <h3>Themeable identity</h3>
                   <p>
                     Type, color, and surface tone live in the theme. Swap
                     <code>theme="…"</code> and the page keeps its structure.
                     Juice owns the skeleton; the face is not baked in.
                   </p>
-                </article>
-                <article card="feature" width="100%" warm>
-                  <i icon="table-columns" lib="solid" iconSize="lg"></i>
-                  <h3>Fewer one-off CSS decisions</h3>
-                  <p>
-                    Spacing, surfaces, and page hooks are already in the
-                    vocabulary. App CSS stays small and intentional — polish,
-                    not a second layout system.
-                  </p>
-                </article>
-                <article card="feature" width="100%">
-                  <i icon="code" lib="solid" iconSize="lg"></i>
+                </div>
+                <div stack gap="0.75rem">
                   <h3>Works with your stack</h3>
                   <p>
                     Vanilla HTML, Vite, Sig.js, or whatever you already ship.
                     Juice is a stylesheet plus attributes — not a React runtime
                     and not a component framework you have to buy into.
                   </p>
-                </article>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section type="workflow" paddingY="roomy" id="themes">
+        <section paddingY="expansive" id="themes">
           <div container>
-            <div section-header>
-              <h2>Themes own identity.</h2>
-              <p>
-                The sample above is the same markup under every face. Juice
-                keeps layout, spacing, and composition. KiwiPress, Tide,
-                Citrusmint, and Aquaflux decide how that language should feel.
-              </p>
-            </div>
-
-            <div stack gap="comfortable">
-              <div row wrap gap="1" centered>
-                <button type="button" data-theme="kiwipress">KiwiPress</button>
-                <button type="button" btn="outline" data-theme="tide">Tide</button>
-                <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
-                <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            <div sell-identity grid="2x1" gap="comfortable">
+              <div section-header align="left">
+                <h2>Themes own identity.</h2>
+                <p>
+                  The sample above is the same markup under every face. Juice
+                  keeps layout, spacing, and composition. KiwiPress, Tide,
+                  Citrusmint, and Aquaflux decide how that language should feel.
+                </p>
               </div>
 
-              <div grid="2x1" gap="comfortable">
-                <article card="feature" width="100%">
+              <div stack gap="1">
+                <article surfaceTone="muted" padding="1.5rem" stack gap="0.75rem" width="100%">
                   <h3>Structure stays in Juice</h3>
                   <p>
                     Layout primitives, spacing, page hooks, and the composition
@@ -271,7 +318,7 @@
                     mostly attributes.
                   </p>
                 </article>
-                <aside panel padding="2rem" stack gap="0.75rem">
+                <article surfaceTone="strong" padding="1.5rem" stack gap="0.75rem" width="100%">
                   <h3>Identity stays in the theme</h3>
                   <p>
                     Typography voice, color relationships, and semantic
@@ -279,16 +326,22 @@
                     Activate a face with one attribute.
                   </p>
                   <a href="/themes.html">Browse the four shipped themes</a>
-                </aside>
+                </article>
               </div>
-
-              <pre padding="1rem"><code>import "@citrusworx/juiceui/styles";
-import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
             </div>
+
+            <article sell-window="code" surfaceTone="strong" borderStrength="soft" marginY="comfortable">
+              <header sell-window-chrome>
+                <span sell-dots aria-hidden="true"></span>
+                <span sell-window-title>main.ts</span>
+              </header>
+              <pre sell-code><code>import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
+            </article>
           </div>
         </section>
 
-        <section type="pricing" paddingY="roomy" id="beta">
+        <section type="pricing" paddingY="expansive" id="beta">
           <div container>
             <div section-header>
               <h2>Honest Beta. Strong enough to adopt.</h2>
@@ -301,7 +354,7 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
             </div>
 
             <div grid="2x1" gap="comfortable">
-              <article card="feature" width="100%">
+              <article surfaceTone="strong" padding="2rem" stack gap="1" width="100%">
                 <span badge>Stable-ish</span>
                 <h3>The reason to start</h3>
                 <p>
@@ -312,7 +365,7 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
                   works in real markup.
                 </p>
               </article>
-              <article card="feature" width="100%" warm>
+              <article surfaceTone="muted" padding="2rem" stack gap="1" width="100%">
                 <span badge>Emerging</span>
                 <h3>Useful, still settling</h3>
                 <p>
@@ -326,9 +379,9 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
           </div>
         </section>
 
-        <section type="features" paddingY="roomy" id="runtimes">
+        <section paddingY="roomy" id="runtimes">
           <div container>
-            <div panel padding="2rem" stack gap="1">
+            <article surfaceTone="muted" padding="2rem" stack gap="1" width="100%">
               <h2>Runtimes are optional power.</h2>
               <p>
                 Importing <code>@citrusworx/juiceui</code> auto-enhances valid
@@ -339,20 +392,20 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <div row wrap gap="1">
                 <a href="/demos.html">See live demos</a>
               </div>
-            </div>
+            </article>
           </div>
         </section>
 
         <section cta>
           <h2 cta-title>Install Juice. Compose a page.</h2>
+          <pre sell-command><code>yarn add @citrusworx/juiceui</code></pre>
           <p cta-subtitle>
-            <code>yarn add @citrusworx/juiceui</code>
-            — then import core, import a theme, set <code>theme="…"</code>,
+            Then import core, import a theme, set <code>theme="…"</code>,
             and write structure as attributes.
           </p>
           <div cta-actions>
             <button type="button" scale="lg" data-href="/getting-started.html">
-              Getting started
+              Get started
             </button>
             <p cta-note>Published as @citrusworx/juiceui · Honest Beta</p>
           </div>
