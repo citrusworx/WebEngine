@@ -400,11 +400,12 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
           <h2 cta-title>Install Juice. Compose a page.</h2>
           <div install-pm>
             <div tabs name="install-juice-landing">
-              <div tabs-list aria-label="Package manager">
+              <div tabs-list aria-label="Install method">
                 <button type="button" tab active>npm</button>
                 <button type="button" tab>pnpm</button>
                 <button type="button" tab>yarn</button>
                 <button type="button" tab>bun</button>
+                <button type="button" tab>CDN</button>
               </div>
               <div tab-panel>
                 <pre sell-command><code>npm install @citrusworx/juiceui</code></pre>
@@ -418,17 +419,24 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <div tab-panel hidden>
                 <pre sell-command><code>bun add @citrusworx/juiceui</code></pre>
               </div>
+              <div tab-panel hidden>
+                <pre sell-command><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.css" /&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/themes/kiwipress.css" /&gt;
+&lt;script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.js"&gt;&lt;/script&gt;</code></pre>
+              </div>
             </div>
           </div>
           <p cta-subtitle>
             Then import core, import a theme, set <code>theme="…"</code>,
-            and write structure as attributes.
+            and write structure as attributes. No bundler? The CDN tab loads
+            published <code>dist/</code> files from jsDelivr — there is no
+            first-party Juice CDN.
           </p>
           <div cta-actions>
             <button type="button" scale="lg" data-href="/getting-started.html">
               Get started
             </button>
-            <p cta-note>Published as @citrusworx/juiceui · Honest Beta</p>
+            <p cta-note>Published as @citrusworx/juiceui@0.8.0 · Honest Beta</p>
           </div>
         </section>
       </main>
@@ -465,7 +473,7 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
             <div stack gap="cozy">
               <h4>Package</h4>
               <ul stack gap="snug">
-                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
                 <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
               </ul>
             </div>

@@ -29,6 +29,26 @@ bun add @citrusworx/juiceui
 
 Monorepo contributors already have the workspace package linked — you do not add it again. Workspace scripts such as `yarn workspace @citrusworx/juiceui generate:themes` stay yarn because this repo is a Yarn workspace.
 
+## Plain HTML / CDN (no bundler)
+
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.8.0`:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/themes/kiwipress.css" />
+
+<body theme="kiwipress">
+  <!-- markup -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.js"></script>
+</body>
+```
+
+The JS `<script>` is optional. Loading it auto-enhances Emerging runtimes. Core CSS plus a theme is enough for CSS-first composition. Pin a version — do not rely on a floating `@latest` for production.
+
+unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.8.0/`.
+
+If you prefer not to hit a CDN, copy the same files from `node_modules/@citrusworx/juiceui/dist/` (or `libraries/juice/dist/` in this repo) next to your HTML. See the [course first look](./course/00-first-look.md) standalone path.
+
 ## Import the core stylesheet
 
 ```ts
@@ -201,6 +221,8 @@ Juice and Sig.js fit well together because Juice owns styling plus a few built-i
 4. compose pages with `stack`, `row`, `grid`, `gap`, and semantic surface hooks
 5. add app CSS only where brand-specific polish is truly needed
 6. add Sig.js only where app-specific runtime behavior is needed
+
+If you are not in a bundler app, use the CDN or copy-dist path under [Plain HTML / CDN](#plain-html--cdn-no-bundler) instead of steps 1–2. The JS module is still optional.
 
 ## Best current advice
 

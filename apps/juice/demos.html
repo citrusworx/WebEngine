@@ -58,9 +58,9 @@
             <p hero-subtitle>
               These demos are DOM-first auto-enhance — not a component kit.
               Write the Juice attributes, import <code>@citrusworx/juiceui</code>,
-              and the runtime wires the rest. Still Emerging. The 0.7.0 npm
-              promise runs through popover; wizard, tooltip, and combobox are
-              on master ahead of that cut.
+              and the runtime wires the rest. Still Emerging.
+              <code>@citrusworx/juiceui@0.8.0</code> is the public npm cut:
+              twelve auto-enhance runtimes through menu.
             </p>
             <div hero-actions>
               <button type="button" scale="lg" data-href="#navigation">Jump to demos</button>
@@ -102,6 +102,8 @@
               <button type="button" btn="outline" scale="sm" data-href="#wizard">Wizard</button>
               <button type="button" btn="outline" scale="sm" data-href="#tooltip">Tooltip</button>
               <button type="button" btn="outline" scale="sm" data-href="#combobox">Combobox</button>
+              <button type="button" btn="outline" scale="sm" data-href="#banner">Banner</button>
+              <button type="button" btn="outline" scale="sm" data-href="#menu">Menu</button>
             </div>
           </div>
         </section>
@@ -449,11 +451,11 @@
         <section type="workflow" paddingY="roomy" id="wizard">
           <div container>
             <div section-header>
-              <h2>Wizard <span badge>On master</span></h2>
+              <h2>Wizard</h2>
               <p>
                 <code>[wizard-shell]</code>, <code>[step]</code> tracker items, and
                 <code>[step-page]</code> panels. Bare shell jumps to completed plus
-                current. Not the 0.7.0 public Beta promise. Not APG Tabs.
+                current. Not APG Tabs. Still Emerging.
               </p>
             </div>
             <div wizard-shell name="demo-onboard">
@@ -494,7 +496,7 @@
         <section type="features" paddingY="roomy" id="tooltip">
           <div container>
             <div section-header>
-              <h2>Tooltip <span badge>On master</span></h2>
+              <h2>Tooltip</h2>
               <p>
                 Triggers prefer <code>aria-describedby</code> pointing at
                 <code>[tooltip-root]</code>. The surface is
@@ -521,7 +523,7 @@
         <section type="workflow" paddingY="roomy" id="combobox">
           <div container>
             <div section-header>
-              <h2>Combobox <span badge>On master</span></h2>
+              <h2>Combobox</h2>
               <p>
                 APG list autocomplete, manual selection.
                 <code>createCombobox</code> / <code>startComboboxRuntime</code>
@@ -545,9 +547,87 @@
               </div>
               <p>
                 Apricot commits <code>data-value="apricot"</code>. Other options
-                commit their text. Not in the 0.7.0 npm promise.
+                commit their text.
               </p>
             </aside>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="banner">
+          <div container>
+            <div section-header>
+              <h2>Banner</h2>
+              <p>
+                Inline alert / callout — not a toast stack and not a dialog.
+                Layout is <code>[banner]</code> / <code>[banner="full"]</code>.
+                Status is <code>banner-tone="info|success|warning|error"</code>.
+                Dismiss with <code>[banner-close]</code>. No Escape steal.
+                Reload to bring a dismissed banner back.
+              </p>
+            </div>
+            <div stack gap="1">
+              <div banner role="status">
+                <div banner-body>
+                  Neutral inset banner. Bare <code>[banner]</code> without a
+                  tone. Close dismisses in memory only.
+                </div>
+                <button type="button" banner-close aria-label="Dismiss">×</button>
+              </div>
+              <div banner="full" banner-tone="warning" role="alert">
+                <div banner-body>
+                  <code>banner="full"</code> is edge-to-edge.
+                  <code>banner-tone="warning"</code> paints status. Optional
+                  persist is <code>banner-persist="session|local"</code> plus a
+                  <code>name</code> or <code>id</code> — this demo skips it.
+                </div>
+                <button type="button" banner-close aria-label="Dismiss">×</button>
+              </div>
+              <div banner banner-tone="success" role="status">
+                <div banner-body>Saved. Success tone, inset layout.</div>
+                <button type="button" banner-close aria-label="Dismiss">×</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="menu">
+          <div container>
+            <div section-header>
+              <h2>Menu</h2>
+              <p>
+                APG menu button: <code>[menu-root]</code> wraps an opener plus
+                <code>[menu]</code>. Use <code>&lt;div menu&gt;</code>, not the
+                HTML <code>&lt;menu&gt;</code> element. Closed vs open is native
+                <code>hidden</code> on the panel. Distinct from popover,
+                combobox, and native <code>&lt;select&gt;</code>.
+              </p>
+            </div>
+            <div row wrap gap="2" demo-menu-stage>
+              <div menu-root name="demo-file">
+                <button type="button" menu-button>File</button>
+                <div menu hidden>
+                  <button type="button" menuitem>New</button>
+                  <button type="button" menuitem>Open…</button>
+                  <div menu-separator></div>
+                  <div menu-label>Recent</div>
+                  <button type="button" menuitem>Report.pdf</button>
+                </div>
+              </div>
+              <div menu-root="top" name="demo-actions">
+                <button type="button">Actions</button>
+                <div menu hidden>
+                  <button type="button" menuitem>Duplicate</button>
+                  <button type="button" menuitem>Archive</button>
+                  <div menu-separator></div>
+                  <button type="button" menuitem>Delete</button>
+                </div>
+              </div>
+            </div>
+            <p marginY="comfortable">
+              File uses <code>[menu-button]</code> chrome. Actions is a plain
+              themed CTA opener with <code>menu-root="top"</code>. Arrow keys
+              and Escape follow the APG menu-button contract.
+            </p>
           </div>
         </section>
 
@@ -566,7 +646,7 @@
                 <h3>Auto-enhance on import</h3>
                 <p>
                   Navigation, accordion, tabs, modal, drawer, toast, popover,
-                  wizard, tooltip, and combobox all boot from
+                  wizard, tooltip, combobox, banner, and menu all boot from
                   <code>import "@citrusworx/juiceui"</code>. Toast show/dismiss
                   is the one demo that uses the documented
                   <code>createToast()</code> helper.
@@ -580,6 +660,8 @@
                   <a href="/docs/juice-maturity-matrix.html">Maturity matrix</a>
                   <a href="/docs/juice-beta.html">Beta notes</a>
                   <a href="/docs/juice-combobox-runtime.html">Combobox runtime</a>
+                  <a href="/docs/juice-banner-runtime.html">Banner runtime</a>
+                  <a href="/docs/juice-menu-runtime.html">Menu runtime</a>
                 </div>
               </aside>
             </div>
@@ -630,7 +712,7 @@
             <div stack gap="cozy">
               <h4>Package</h4>
               <ul stack gap="snug">
-                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
                 <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
               </ul>
             </div>
