@@ -45,4 +45,6 @@ export * from "./wp-types/routes.js";
 export * from "./wp-types/wp-types.js";
 export * from "./wp-taxonomies/routes.js";
 export * from "./wp-taxonomies/wp-taxonomies.js";
+export * from "./search/routes.js";
+export * from "./search/search.js";
 //# sourceMappingURL=index.js.map

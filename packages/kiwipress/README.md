@@ -73,6 +73,17 @@ extractTextParts({ raw: "<!-- wp:p -->", rendered: "<p></p>" });
 
 Featured images: `_embed` `source_url` wins, then the previous normalize fallbacks. Optionally `resolveFeaturedImageUrl(media, id)` calls `Media.getById`.
 
+## WordPress REST search
+
+`kiwi.wordpress.search` is a read-only client for core `/wp/v2/search`. Hits are `SearchHit`s, not full posts and not `ContentRecord`s.
+
+```ts
+const hits = await kiwi.wordpress.search.query("kiwi", { type: "post", per_page: 10 });
+// hits[0].id, .title, .url, .type, .subtype
+```
+
+Options map onto the WordPress REST args: `type` (`post` | `term` | `post-format`), `subtype`, `page`, `per_page`, `exclude`, `include`. This is not Elasticsearch, a search plugin, or native Nectarine store search.
+
 ## Development
 
 ```bash
