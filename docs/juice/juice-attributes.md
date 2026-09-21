@@ -398,20 +398,20 @@ See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switc
 
 Checked paint is `aria-checked="true"` so chrome and runtime share one story. `:checked` covers the native host. The host is the box; `::after` is the checkmark. There is no `checkbox-size`, and `scale` does not change box geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name.
 
-Checkbox is an APG checkbox (binary). It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. v1 does not paint `aria-checked="mixed"`. Inline control — no overlay z-index. The runtime auto-enhances `[checkbox]` markup (`toggle` / `check` / `uncheck` / `setChecked`). Maturity docs are later. No Sig Checkbox factory.
+Checkbox is an APG checkbox (binary). It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. v1 does not paint `aria-checked="mixed"`. Inline control — no overlay z-index. The runtime auto-enhances button and native `[checkbox]` markup (`toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, binary `aria-checked`). Click and Enter/Space toggle. Native `disabled` and `aria-disabled="true"` are ignored. Authors must supply the accessible name. There is no focus trap, no Escape steal, and no tri-state. No Sig Checkbox factory.
 
-Theme paint uses `--juice-checkbox-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
+See [Checkbox Runtime](./juice-checkbox-runtime.md). Theme paint uses `--juice-checkbox-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
 
 ### Radio
 
 - `radiogroup` — group root. Layout only (`stack` / `row` / `gap`). No `--juice-radiogroup-*` roles. The runtime fills `role="radiogroup"` and exclusive selection
 - `radio` — one option (boolean attr). Primary host is `<button type="button" radio>`. A native `<input type="radio" radio>` is allowed when you want `:checked` paint. A boolean `[radio]` attribute is fine: there is no HTML global `radio` attribute. Do not restyle bare `[role="radio"]` or `[role="radiogroup"]`
 
-Checked paint is `aria-checked="true"`. `:checked` covers the native host. The host is the disc; `::after` is the dot. There is no `radio-size`, and `scale` does not change disc geometry. Visible labels live beside the option (`<label>`, `aria-label`, or `aria-labelledby`). Group `name` and exclusive keyboard belong to the radio runtime; this slice only paints.
+Checked paint is `aria-checked="true"`. `:checked` covers the native host. The host is the disc; `::after` is the dot. There is no `radio-size`, and `scale` does not change disc geometry. Visible labels live beside the option (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply the group name and each option name — the runtime does not invent one.
 
-Radio is an APG radio in a radiogroup. It is not `[switch]`, not `[checkbox]`, not a native `<input type="radio">` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. No Sig Radio factory.
+Radio is an APG radio in a radiogroup. It is not `[switch]`, not `[checkbox]`, not a native `<input type="radio">` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances `[radio]` options inside `[radiogroup]` (`select` / `getChecked`, exclusive selection, roving tabindex). Click, Enter, and Space select. Arrow keys move among enabled options and wrap. Orphans outside `[radiogroup]` are ignored. Exclusivity is the nearest group, not the native input `name`. There is no focus trap and no Escape. No Sig Radio factory.
 
-Theme paint uses `--juice-radio-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
+See [Radio Runtime](./juice-radio-runtime.md). Theme paint uses `--juice-radio-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
 
 ### Slider
 
