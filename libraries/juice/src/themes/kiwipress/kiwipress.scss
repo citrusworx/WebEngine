@@ -333,6 +333,32 @@
     --juice-combobox-trigger-ink: var(--kw-combobox-trigger-ink);
     --juice-combobox-focus-ring: var(--kw-combobox-focus-ring);
 
+    /* Menu chrome — APG menu button from existing tokens. Opener is a
+       surface control, not a kiwi CTA. Distinct from popover / combobox /
+       native select. */
+    --kw-menu-panel: var(--kw-surface);
+    --kw-menu-panel-border: var(--kw-border);
+    --kw-menu-panel-shadow: 0 18px 40px -24px var(--kw-shadow-strong);
+    --kw-menu-ink: var(--kw-text);
+    --kw-menu-item: transparent;
+    --kw-menu-item-hover: var(--kw-surface-muted);
+    --kw-menu-item-active: var(--kw-accent-soft);
+    --kw-menu-separator: var(--kw-border);
+    --kw-menu-focus-ring: var(--kw-accent);
+    --kw-menu-opener: var(--kw-surface);
+    --kw-menu-opener-ink: var(--kw-heading);
+    --juice-menu-panel: var(--kw-menu-panel);
+    --juice-menu-panel-border: var(--kw-menu-panel-border);
+    --juice-menu-panel-shadow: var(--kw-menu-panel-shadow);
+    --juice-menu-ink: var(--kw-menu-ink);
+    --juice-menu-item: var(--kw-menu-item);
+    --juice-menu-item-hover: var(--kw-menu-item-hover);
+    --juice-menu-item-active: var(--kw-menu-item-active);
+    --juice-menu-separator: var(--kw-menu-separator);
+    --juice-menu-focus-ring: var(--kw-menu-focus-ring);
+    --juice-menu-opener: var(--kw-menu-opener);
+    --juice-menu-opener-ink: var(--kw-menu-opener-ink);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1772,6 +1798,52 @@
 [theme="kiwipress"] [combobox-option][aria-selected="true"],
 [theme="kiwipress"] [combobox-option="active"] {
     background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control, not a kiwi CTA.
+   Optional surfaceTone on [menu] is allowed. */
+[theme="kiwipress"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="kiwipress"] button[menu-button],
+[theme="kiwipress"] [menu-button] {
+    background-color: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[menu-button]:focus-visible,
+[theme="kiwipress"] [menu-button]:focus-visible,
+[theme="kiwipress"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="kiwipress"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="kiwipress"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="kiwipress"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="kiwipress"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="kiwipress"] [menu-label] {
+    color: var(--juice-menu-ink);
 }
 
 /* Accordion wrappers are structural, not default section surfaces.

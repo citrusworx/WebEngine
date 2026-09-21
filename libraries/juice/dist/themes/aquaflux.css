@@ -316,6 +316,31 @@
   --juice-combobox-trigger: var(--aqua-combobox-trigger);
   --juice-combobox-trigger-ink: var(--aqua-combobox-trigger-ink);
   --juice-combobox-focus-ring: var(--aqua-combobox-focus-ring);
+  /* Menu chrome — APG menu button from existing tokens. Opener is a
+     surface control, not a CTA. Distinct from popover / combobox /
+     native select. */
+  --aqua-menu-panel: var(--aqua-surface-strong);
+  --aqua-menu-panel-border: var(--aqua-border);
+  --aqua-menu-panel-shadow: 0 18px 40px -24px var(--aqua-shadow);
+  --aqua-menu-ink: var(--aqua-text);
+  --aqua-menu-item: transparent;
+  --aqua-menu-item-hover: var(--aqua-surface-muted);
+  --aqua-menu-item-active: var(--aqua-highlight);
+  --aqua-menu-separator: var(--aqua-border);
+  --aqua-menu-focus-ring: var(--aqua-accent);
+  --aqua-menu-opener: var(--aqua-surface-strong);
+  --aqua-menu-opener-ink: var(--aqua-heading);
+  --juice-menu-panel: var(--aqua-menu-panel);
+  --juice-menu-panel-border: var(--aqua-menu-panel-border);
+  --juice-menu-panel-shadow: var(--aqua-menu-panel-shadow);
+  --juice-menu-ink: var(--aqua-menu-ink);
+  --juice-menu-item: var(--aqua-menu-item);
+  --juice-menu-item-hover: var(--aqua-menu-item-hover);
+  --juice-menu-item-active: var(--aqua-menu-item-active);
+  --juice-menu-separator: var(--aqua-menu-separator);
+  --juice-menu-focus-ring: var(--aqua-menu-focus-ring);
+  --juice-menu-opener: var(--aqua-menu-opener);
+  --juice-menu-opener-ink: var(--aqua-menu-opener-ink);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -1002,4 +1027,51 @@
 [theme=aquaflux] [combobox-option][aria-selected=true],
 [theme=aquaflux] [combobox-option=active] {
   background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme=aquaflux] [menu]:not([surfaceTone]) {
+  background-color: var(--juice-menu-panel);
+  border: 1px solid var(--juice-menu-panel-border);
+  box-shadow: var(--juice-menu-panel-shadow);
+  color: var(--juice-menu-ink);
+}
+
+[theme=aquaflux] button[menu-button],
+[theme=aquaflux] [menu-button] {
+  background-image: none;
+  background-color: var(--juice-menu-opener);
+  color: var(--juice-menu-opener-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] button[menu-button]:focus-visible,
+[theme=aquaflux] [menu-button]:focus-visible,
+[theme=aquaflux] [menuitem]:focus-visible {
+  outline: 2px solid var(--juice-menu-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=aquaflux] [menuitem] {
+  background-color: var(--juice-menu-item);
+  color: var(--juice-menu-ink);
+}
+
+[theme=aquaflux] [menuitem]:hover {
+  background-color: var(--juice-menu-item-hover);
+}
+
+[theme=aquaflux] [menuitem=active] {
+  background-color: var(--juice-menu-item-active);
+}
+
+[theme=aquaflux] [menu-separator] {
+  border-top-color: var(--juice-menu-separator);
+}
+
+[theme=aquaflux] [menu-label] {
+  color: var(--juice-menu-ink);
 }

@@ -18,6 +18,8 @@ philosophy:
     - popover chrome role bindings
     - wizard chrome role bindings
     - tooltip chrome role bindings
+    - combobox chrome role bindings
+    - menu chrome role bindings
   does_not_own:
     - layout
     - spacing
@@ -98,6 +100,7 @@ authoring_rules:
   - Bind wizard chrome roles (`--tide-wizard-*` and `--juice-wizard-*`) from Tide page/surface/accent tokens so the onboarding shell stays a dark page, not a white wizard.
   - Bind tooltip chrome roles (`--tide-tooltip-*` and `--juice-tooltip-*`) from Tide page/surface tokens so `[tooltip-panel]` stays a dark tip, not a white glass tooltip. No close button.
   - Bind combobox chrome roles (`--tide-combobox-*` and `--juice-combobox-*`) from Tide page/surface tokens so `[combobox-list]` stays a dark popup and `[combobox-trigger]` stays a surface control, not a CTA. Not a native `<select>` restyle.
+  - Bind menu chrome roles (`--tide-menu-*` and `--juice-menu-*`) from Tide page/surface tokens so `[menu]` stays a dark panel and `[menu-button]` stays a surface control, not a CTA. APG menu button, not popover / combobox / native `<select>`.
   - Optional chrome roles (`item-border`, `trigger-accent`, `panel`, `open-glow`) paint FAQ pill rows; other themes may omit them.
   - Keep page intros in `main > header` so they stay type, not a competing glass surface.
 

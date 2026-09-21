@@ -386,6 +386,50 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[combobox-list\][^{]*\{[^}]*--juice-drawer-overlay/);
     });
 
+    it("includes menu structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[menu-root]");
+        expect(css).toContain("[menu-button]");
+        expect(css).toContain("[menu]");
+        expect(css).toContain("[menuitem]");
+        expect(css).toContain("[menu-separator]");
+        expect(css).toContain("[menu-label]");
+        expect(css).toMatch(/\[theme\]\s+\[menu-root\]/);
+        expect(css).toMatch(/\[theme\]\s+\[menu-button\]/);
+        expect(css).toMatch(/\[theme\]\s+\[menu\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[menuitem\]/);
+        expect(css).toMatch(/\[menu\]\[hidden\]/);
+        expect(css).toMatch(/\[menu-root=["']?top["']?\]/);
+        expect(css).toMatch(/\[menu-root=["']?left["']?\]/);
+        expect(css).toMatch(/\[menu-root=["']?right["']?\]/);
+        expect(css).toMatch(/\[menuitem=["']?active["']?\]/);
+        expect(css).toMatch(/\[menu-button\]:focus-visible/);
+        expect(css).toMatch(/\[menuitem\]:focus-visible/);
+        expect(css).toContain("z-index: 1050");
+        expect(css).toContain("--juice-menu-panel");
+        expect(css).toContain("--juice-menu-panel-border");
+        expect(css).toContain("--juice-menu-panel-shadow");
+        expect(css).toContain("--juice-menu-ink");
+        expect(css).toContain("--juice-menu-item");
+        expect(css).toContain("--juice-menu-item-hover");
+        expect(css).toContain("--juice-menu-item-active");
+        expect(css).toContain("--juice-menu-separator");
+        expect(css).toContain("--juice-menu-focus-ring");
+        expect(css).toContain("--juice-menu-opener");
+        expect(css).toContain("--juice-menu-opener-ink");
+        expect(css).not.toMatch(/select\[menu/);
+        expect(css).not.toMatch(/\[role=["']?menu["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?menuitem["']?\]/);
+        expect(css).not.toMatch(/\[menu-button\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[menu-root\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[menu\][^{]*\{[^}]*--juice-popover-panel/);
+        expect(css).not.toMatch(/\[menu\][^{]*\{[^}]*--juice-combobox-list/);
+        expect(css).not.toMatch(/\[menu\][^{]*\{[^}]*--juice-tooltip-panel/);
+        expect(css).not.toMatch(/\[menu\][^{]*\{[^}]*--juice-modal-overlay/);
+        expect(css).not.toMatch(/\[menu\][^{]*\{[^}]*--juice-drawer-overlay/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -802,6 +846,37 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-combobox-input: var(--tide-page)");
     });
 
+    it("binds menu chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-menu-panel: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--juice-menu-ink: var(--aqua-menu-ink)");
+        expect(aquaCss).toContain("button[menu-button]");
+        expect(aquaCss).toContain("[menu]:not([surfaceTone])");
+        expect(aquaCss).not.toMatch(/button\[menu-button\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-menu-panel: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-menu-panel: var(--kw-menu-panel)");
+        expect(kiwiCss).toContain("button[menu-button]");
+        expect(kiwiCss).toContain("[menu]:not([surfaceTone])");
+        expect(kiwiCss).not.toMatch(/button\[menu-button\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-menu-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-menu-ink: var(--cm-menu-ink)");
+        expect(mintCss).toContain("button[menu-button]");
+        expect(mintCss).toContain("[menu]:not([surfaceTone])");
+
+        expect(tideCss).toContain("--tide-menu-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-menu-ink: var(--tide-menu-ink)");
+        expect(tideCss).toContain("button[menu-button]");
+        expect(tideCss).toContain("[menu]:not([surfaceTone])");
+        expect(tideCss).not.toMatch(/button\[menu-button\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-menu-panel: var(--tide-page)");
+    });
+
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
@@ -878,6 +953,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-combobox-input: var(--tide-combobox-input)");
         expect(themeCss).toContain("--juice-combobox-list: var(--tide-combobox-list)");
         expect(themeCss).toContain("button[combobox-trigger]");
+        expect(themeCss).toContain("--juice-menu-panel: var(--tide-menu-panel)");
+        expect(themeCss).toContain("--juice-menu-ink: var(--tide-menu-ink)");
+        expect(themeCss).toContain("button[menu-button]");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");

@@ -182,6 +182,7 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 - tooltip chrome colors come from `--juice-tooltip-*` roles bound by the active theme; hide `[tooltip-root]` with the native `hidden` attribute. Triggers prefer `aria-describedby` pointing at the root id (`aria-controls` is also accepted). The runtime auto-enhances that markup (show/hide, Escape, exclusive, one-axis flip). There is no focus trap; focus never moves into the tip. Never use a bare `tooltip` attribute or native `title` — the surface is `[tooltip-panel]`. Placement is `[tooltip-root]` / `[tooltip-root="top"]` (default), `"bottom"`, `"left"`, `"right"`. See [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md).
 - combobox chrome colors come from `--juice-combobox-*` roles bound by the active theme; hide `[combobox-list]` with the native `hidden` attribute. Scope is `[combobox]` with `[combobox-input]`, optional `[combobox-trigger]`, `[combobox-list]`, and `[combobox-option]`. The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, case-insensitive substring filter, Arrow/Home/End/Enter/Escape/Tab). `aria-expanded` is written on the input and trigger; `aria-activedescendant` tracks the active option. Select writes option text or `data-value`. Distinct from native `<select>`. Placement is CSS-only (absolute under the field). See [docs/juice/juice-combobox-runtime.md](../../docs/juice/juice-combobox-runtime.md).
 - banner chrome colors come from `--juice-banner-*` roles bound by the active theme. `[banner]` is an inline alert / callout, not a toast stack and not a dialog. Hide with the native `hidden` attribute. Layout is `[banner]` / `[banner="full"]`; optional status is `[banner-tone="info|success|warning|error"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[banner-close]`, optional `banner-persist="session|local"` with `name` / `id`). It is not a dialog: no focus trap, no `aria-modal`, no Escape steal. See [docs/juice/juice-banner-runtime.md](../../docs/juice/juice-banner-runtime.md).
+- menu chrome colors come from `--juice-menu-*` roles bound by the active theme. `[menu-root]` wraps an opener plus `[menu]`; hide the panel with the native `hidden` attribute. Optional `[menu-button]` is surface paint, not a CTA. Items are `[menuitem]` (value `"active"` is keyboard focus); optional `[menu-separator]` / `[menu-label]`. APG Menu Button, not a popover, combobox, or native `<select>`. Placement is CSS-only (`[menu-root]` / `"bottom"` default, `"top"`, `"left"`, `"right"`). Runtime is later.
 
 ```html
 <div tabs name="settings">
@@ -284,6 +285,17 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
 <div banner="full" banner-tone="warning" name="maintenance" banner-persist="session">
   <div banner-body>Scheduled maintenance tonight.</div>
   <button type="button" banner-close aria-label="Dismiss">×</button>
+</div>
+
+<div menu-root>
+  <button type="button" menu-button aria-haspopup="menu" aria-controls="file-menu">File</button>
+  <div menu id="file-menu">
+    <button type="button" menuitem>New</button>
+    <button type="button" menuitem>Open…</button>
+    <div menu-separator></div>
+    <div menu-label>Recent</div>
+    <button type="button" menuitem="active">Report.pdf</button>
+  </div>
 </div>
 ```
 

@@ -366,6 +366,21 @@ Combobox is an input + listbox popup. It is not a native `<select>`, not a popov
 
 See [Combobox Runtime](./juice-combobox-runtime.md). Theme paint uses `--juice-combobox-*` roles (`input`, `input-border`, `input-ink`, `list`, `list-border`, `list-shadow`, `option`, `option-hover`, `option-selected`, `option-ink`, `trigger`, `trigger-ink`, `focus-ring`).
 
+### Menu
+
+- `menu-root` — composite wrapper (opener + panel). Values `"top"` / `"bottom"` / `"left"` / `"right"` (bare or unspecified is bottom). CSS-absolute placement of `[menu]`; no Floating UI
+- `menu-button` — optional opener chrome (surface paint, not a CTA). Authors who want a themed CTA opener omit this attr and use a plain button inside `[menu-root]`
+- `menu` — the menu panel (`role="menu"` later). Hide with the native `hidden` attribute. A boolean `[menu]` attribute is fine: there is no HTML global `menu` attribute, and unlike `popover=""` it has no platform behavior. Do not use the HTML `<menu>` element
+- `menuitem` — item row (`role="menuitem"` later). Value `"active"` is keyboard / visual focus
+- `menu-separator` — non-interactive divider (`role="separator"` later)
+- `menu-label` — non-interactive group label
+
+Pairing is wrapped: `[menu-root]` contains the opener and `[menu]`. APG pairing for the later runtime is opener `aria-haspopup="menu"` plus `aria-controls` pointing at the `[menu]` id. Closed vs open is `hidden` on `[menu]`, not the root.
+
+Menu is an APG menu button. It is not a popover, not a combobox, not a native `<select>`, not a menubar, and not the surface `overlay="frost|tint"` utility. Placement is CSS-only (absolute from the root). This slice is chrome only; the menu-button runtime is later.
+
+Theme paint uses `--juice-menu-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
