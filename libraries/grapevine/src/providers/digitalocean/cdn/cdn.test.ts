@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { doRequest } from "../client.js";
 import {
+    cdnEndpointIsLive,
     createCdnEndpoint,
     deleteCdnEndpoint,
     listCdnEndpoints,
     resolveCdnOrigin,
-    updateCdnEndpoint
+    updateCdnEndpoint,
+    waitForCdnEndpoint
 } from "./cdn.js";
 
 vi.mock("../client.js", () => ({
@@ -73,5 +75,46 @@ describe("digitalocean cdn", () => {
             method: "DELETE",
             url: "/cdn/endpoints/cdn-1"
         });
+    });
+
+    it("treats a hostname as live and polls until one is assigned", async () => {
+        expect(cdnEndpointIsLive({ id: "cdn-1", origin: "origin.example", endpoint: "edge.example" })).toBe(true);
+        expect(cdnEndpointIsLive({ id: "cdn-1", origin: "origin.example", endpoint: "" })).toBe(false);
+        expect(
+            cdnEndpointIsLive({
+                id: "cdn-1",
+                origin: "origin.example",
+                endpoint: "edge.example",
+                status: "pending"
+            })
+        ).toBe(false);
+
+        mockedRequest
+            .mockResolvedValueOnce({ endpoint: { id: "cdn-1", origin: "origin.example", endpoint: "" } })
+            .mockResolvedValueOnce({
+                endpoint: {
+                    id: "cdn-1",
+                    origin: "origin.example",
+                    endpoint: "origin.example.cdn.digitaloceanspaces.com"
+                }
+            });
+        const sleeps: number[] = [];
+        const ready = await waitForCdnEndpoint("cdn-1", {
+            intervalMs: 5,
+            sleep: async (ms) => {
+                sleeps.push(ms);
+            }
+        });
+        expect(ready.endpoint).toBe("origin.example.cdn.digitaloceanspaces.com");
+        expect(sleeps).toEqual([5]);
+    });
+
+    it("fails the CDN poll on a bounded timeout", async () => {
+        mockedRequest.mockResolvedValue({
+            endpoint: { id: "cdn-1", origin: "origin.example", endpoint: "", status: "pending" }
+        });
+        await expect(
+            waitForCdnEndpoint("cdn-1", { timeoutMs: 0, intervalMs: 5, sleep: async () => undefined })
+        ).rejects.toThrow(/Timed out waiting for DigitalOcean CDN endpoint cdn-1/);
     });
 });

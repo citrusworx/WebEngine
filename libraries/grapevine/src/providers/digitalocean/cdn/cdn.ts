@@ -1,4 +1,5 @@
 import { doRequest } from "../client.js";
+import { pollUntil } from "../wait.js";
 import { cleanPayload } from "../utilities.js";
 import { spaceOriginHostname } from "../spaces/spaces.js";
 
@@ -9,11 +10,17 @@ export type CdnTtl = (typeof CDN_TTL_VALUES)[number];
 export interface CdnEndpoint {
     id: string;
     origin: string;
-    endpoint: string;
+    /** CDN hostname (`*.cdn.digitaloceanspaces.com`). Empty until DigitalOcean assigns it. */
+    endpoint?: string;
     ttl?: number;
     certificate_id?: string;
     custom_domain?: string;
     created_at?: string;
+    /**
+     * Not part of the documented v2 CDN object. If a response includes it,
+     * `active` / `online` count as live and `error` / `failed` fail the wait.
+     */
+    status?: string;
 }
 
 export interface CdnBlueprint {
@@ -92,5 +99,62 @@ export async function deleteCdnEndpoint(id: string): Promise<void> {
     await doRequest<void>({
         method: "DELETE",
         url: `/cdn/endpoints/${encodeURIComponent(id)}`
+    });
+}
+
+export interface WaitForCdnEndpointOptions {
+    timeoutMs?: number;
+    intervalMs?: number;
+    sleep?: (ms: number) => Promise<void>;
+}
+
+/** Default CDN hostname poll: 5 minutes, every 5 seconds. */
+export const DEFAULT_CDN_WAIT_MS = 5 * 60 * 1000;
+export const DEFAULT_CDN_POLL_MS = 5_000;
+
+/**
+ * A CDN endpoint is usable once DigitalOcean has assigned the `endpoint` hostname.
+ * The public v2 object has no status field; a non-empty hostname is the ready signal.
+ * If `status` is present, only `active` or `online` (with a hostname) counts as live.
+ */
+export function cdnEndpointIsLive(endpoint: CdnEndpoint): boolean {
+    const hostname = endpoint.endpoint?.trim();
+    if (!hostname) {
+        return false;
+    }
+    const status = endpoint.status?.trim().toLowerCase();
+    if (!status) {
+        return true;
+    }
+    return status === "active" || status === "online";
+}
+
+function cdnTerminalError(endpoint: CdnEndpoint): string | undefined {
+    const status = endpoint.status?.trim().toLowerCase();
+    if (status === "error" || status === "failed") {
+        return `DigitalOcean CDN endpoint ${endpoint.id} entered status "${endpoint.status}"`;
+    }
+    return undefined;
+}
+
+/**
+ * Poll GET /cdn/endpoints/:id until the endpoint hostname is present
+ * (and status, when returned, is active). Bounded; never loops forever.
+ */
+export async function waitForCdnEndpoint(
+    id: string,
+    options: WaitForCdnEndpointOptions = {}
+): Promise<CdnEndpoint> {
+    const timeoutMs = options.timeoutMs ?? DEFAULT_CDN_WAIT_MS;
+    const intervalMs = options.intervalMs ?? DEFAULT_CDN_POLL_MS;
+    return pollUntil({
+        timeoutMs,
+        intervalMs,
+        sleep: options.sleep,
+        read: () => getCdnEndpoint(id),
+        done: cdnEndpointIsLive,
+        failure: cdnTerminalError,
+        timeoutError: (current) =>
+            `Timed out waiting for DigitalOcean CDN endpoint ${id} to become usable (last endpoint: ${current.endpoint?.trim() || "missing"}${current.status ? `, status ${current.status}` : ""})`
     });
 }

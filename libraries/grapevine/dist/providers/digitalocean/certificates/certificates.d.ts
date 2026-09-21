@@ -27,9 +27,12 @@ export interface WaitForCertificateOptions {
     intervalMs?: number;
     sleep?: (ms: number) => Promise<void>;
 }
+/** Default Let's Encrypt poll: 5 minutes, every 5 seconds. */
+export declare const DEFAULT_CERTIFICATE_WAIT_MS: number;
+export declare const DEFAULT_CERTIFICATE_POLL_MS = 5000;
 /**
  * Poll GET /certificates/:id until `state` is `verified`.
- * Let's Encrypt certificates are created as `pending`. Used when a same-apply
- * CDN endpoint needs the certificate id. This does not wait for the CDN edge.
+ * Let's Encrypt certificates are created as `pending`. `error` fails immediately.
+ * The loop is bounded by `timeoutMs` and by `ceil(timeoutMs / intervalMs)` reads.
  */
 export declare function waitForCertificate(id: string, options?: WaitForCertificateOptions): Promise<CertificateResource>;

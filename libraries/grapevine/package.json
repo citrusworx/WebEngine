@@ -22,7 +22,7 @@
     },
     "scripts": {
         "clean": "rimraf dist tsconfig.tsbuildinfo",
-        "build": "yarn clean && tsc -b && node ./scripts/copy-blueprints.mjs",
+        "build": "yarn clean && tsc -b && node ./scripts/copy-blueprints.mjs && chmod +x dist/bin/cli.js",
         "dev": "tsc -w",
         "prepack": "yarn build",
         "test": "vitest run",

@@ -381,6 +381,8 @@ export declare const appResourceSchema: z.ZodObject<{
         databases: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
         domains: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
     }, z.core.$strip>;
+    wait: z.ZodOptional<z.ZodBoolean>;
+    wait_seconds: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
 export declare const databaseConnectionEnvSchema: z.ZodObject<{
     host: z.ZodOptional<z.ZodString>;
@@ -412,6 +414,7 @@ export declare const certificateResourceSchema: z.ZodObject<{
     leaf_certificate_env: z.ZodOptional<z.ZodString>;
     certificate_chain_env: z.ZodOptional<z.ZodString>;
     wait: z.ZodOptional<z.ZodBoolean>;
+    wait_seconds: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
 export declare const cdnTtlSchema: z.ZodUnion<readonly [z.ZodLiteral<60>, z.ZodLiteral<600>, z.ZodLiteral<3600>, z.ZodLiteral<86400>, z.ZodLiteral<604800>]>;
 export declare const cdnResourceSchema: z.ZodObject<{
@@ -422,6 +425,23 @@ export declare const cdnResourceSchema: z.ZodObject<{
     custom_domain: z.ZodOptional<z.ZodString>;
     certificate: z.ZodOptional<z.ZodString>;
     certificate_id: z.ZodOptional<z.ZodString>;
+    wait: z.ZodOptional<z.ZodBoolean>;
+    wait_seconds: z.ZodOptional<z.ZodNumber>;
+}, z.core.$strip>;
+export declare const staticSiteResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    workspace: z.ZodOptional<z.ZodString>;
+    build: z.ZodOptional<z.ZodString>;
+    dist: z.ZodString;
+    space: z.ZodString;
+    region: z.ZodOptional<z.ZodString>;
+    cwd: z.ZodOptional<z.ZodString>;
+    prefix: z.ZodOptional<z.ZodString>;
+    acl: z.ZodOptional<z.ZodEnum<{
+        private: "private";
+        "public-read": "public-read";
+    }>>;
+    delete_stale: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
 export declare const databaseResourceSchema: z.ZodObject<{
     name: z.ZodString;
@@ -744,6 +764,8 @@ export declare const resourcesSchema: z.ZodObject<{
             databases: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
             domains: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
         }, z.core.$strip>;
+        wait: z.ZodOptional<z.ZodBoolean>;
+        wait_seconds: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>>>;
     databases: z.ZodOptional<z.ZodArray<z.ZodObject<{
         name: z.ZodString;
@@ -790,6 +812,7 @@ export declare const resourcesSchema: z.ZodObject<{
         leaf_certificate_env: z.ZodOptional<z.ZodString>;
         certificate_chain_env: z.ZodOptional<z.ZodString>;
         wait: z.ZodOptional<z.ZodBoolean>;
+        wait_seconds: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>>>;
     cdn: z.ZodOptional<z.ZodArray<z.ZodObject<{
         space: z.ZodOptional<z.ZodString>;
@@ -799,6 +822,23 @@ export declare const resourcesSchema: z.ZodObject<{
         custom_domain: z.ZodOptional<z.ZodString>;
         certificate: z.ZodOptional<z.ZodString>;
         certificate_id: z.ZodOptional<z.ZodString>;
+        wait: z.ZodOptional<z.ZodBoolean>;
+        wait_seconds: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>>;
+    static_sites: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        workspace: z.ZodOptional<z.ZodString>;
+        build: z.ZodOptional<z.ZodString>;
+        dist: z.ZodString;
+        space: z.ZodString;
+        region: z.ZodOptional<z.ZodString>;
+        cwd: z.ZodOptional<z.ZodString>;
+        prefix: z.ZodOptional<z.ZodString>;
+        acl: z.ZodOptional<z.ZodEnum<{
+            private: "private";
+            "public-read": "public-read";
+        }>>;
+        delete_stale: z.ZodOptional<z.ZodBoolean>;
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 export declare const grapeConfigSchema: z.ZodObject<{
@@ -1124,6 +1164,8 @@ export declare const grapeConfigSchema: z.ZodObject<{
                 databases: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
                 domains: z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
             }, z.core.$strip>;
+            wait: z.ZodOptional<z.ZodBoolean>;
+            wait_seconds: z.ZodOptional<z.ZodNumber>;
         }, z.core.$strip>>>;
         databases: z.ZodOptional<z.ZodArray<z.ZodObject<{
             name: z.ZodString;
@@ -1170,6 +1212,7 @@ export declare const grapeConfigSchema: z.ZodObject<{
             leaf_certificate_env: z.ZodOptional<z.ZodString>;
             certificate_chain_env: z.ZodOptional<z.ZodString>;
             wait: z.ZodOptional<z.ZodBoolean>;
+            wait_seconds: z.ZodOptional<z.ZodNumber>;
         }, z.core.$strip>>>;
         cdn: z.ZodOptional<z.ZodArray<z.ZodObject<{
             space: z.ZodOptional<z.ZodString>;
@@ -1179,6 +1222,23 @@ export declare const grapeConfigSchema: z.ZodObject<{
             custom_domain: z.ZodOptional<z.ZodString>;
             certificate: z.ZodOptional<z.ZodString>;
             certificate_id: z.ZodOptional<z.ZodString>;
+            wait: z.ZodOptional<z.ZodBoolean>;
+            wait_seconds: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>>;
+        static_sites: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            workspace: z.ZodOptional<z.ZodString>;
+            build: z.ZodOptional<z.ZodString>;
+            dist: z.ZodString;
+            space: z.ZodString;
+            region: z.ZodOptional<z.ZodString>;
+            cwd: z.ZodOptional<z.ZodString>;
+            prefix: z.ZodOptional<z.ZodString>;
+            acl: z.ZodOptional<z.ZodEnum<{
+                private: "private";
+                "public-read": "public-read";
+            }>>;
+            delete_stale: z.ZodOptional<z.ZodBoolean>;
         }, z.core.$strip>>>;
     }, z.core.$strip>>>;
     networking: z.ZodOptional<z.ZodObject<{
@@ -1343,6 +1403,7 @@ export type DatabaseResourceConfig = z.infer<typeof databaseResourceSchema>;
 export type SpaceResourceConfig = z.infer<typeof spaceResourceSchema>;
 export type CertificateResourceConfig = z.infer<typeof certificateResourceSchema>;
 export type CdnResourceConfig = z.infer<typeof cdnResourceSchema>;
+export type StaticSiteResourceConfig = z.infer<typeof staticSiteResourceSchema>;
 /** Fold a classic `{ blueprint: { droplet | vpc | firewall } }` document into `resources`. */
 export declare function hoistBlueprintDocument(input: unknown): unknown;
 export declare function validateGrapeConfig(input: unknown): GrapeConfig;
@@ -1555,6 +1616,8 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
                 databases?: Record<string, unknown>[] | undefined;
                 domains?: Record<string, unknown>[] | undefined;
             };
+            wait?: boolean | undefined;
+            wait_seconds?: number | undefined;
         }[] | undefined;
         databases?: {
             name: string;
@@ -1595,6 +1658,7 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
             leaf_certificate_env?: string | undefined;
             certificate_chain_env?: string | undefined;
             wait?: boolean | undefined;
+            wait_seconds?: number | undefined;
         }[] | undefined;
         cdn?: {
             space?: string | undefined;
@@ -1604,6 +1668,20 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
             custom_domain?: string | undefined;
             certificate?: string | undefined;
             certificate_id?: string | undefined;
+            wait?: boolean | undefined;
+            wait_seconds?: number | undefined;
+        }[] | undefined;
+        static_sites?: {
+            name: string;
+            dist: string;
+            space: string;
+            workspace?: string | undefined;
+            build?: string | undefined;
+            region?: string | undefined;
+            cwd?: string | undefined;
+            prefix?: string | undefined;
+            acl?: "private" | "public-read" | undefined;
+            delete_stale?: boolean | undefined;
         }[] | undefined;
     };
     grapevine?: string | undefined;

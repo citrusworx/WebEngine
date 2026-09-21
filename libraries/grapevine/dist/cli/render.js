@@ -154,6 +154,9 @@ export function renderApply(result) {
         const custom = endpoint.custom_domain ? `  custom_domain=${endpoint.custom_domain}` : "";
         lines.push(`  cdn             ${endpoint.origin}  id=${endpoint.id}  endpoint=${dash(endpoint.endpoint)}${custom}`);
     }
+    for (const site of result.static_sites ?? []) {
+        lines.push(`  static_site     ${site.name}  space=${site.space}  uploaded=${site.uploaded}  deleted=${site.deleted}`);
+    }
     for (const stack of result.stacks) {
         lines.push(`  stack           ${stack.name}  droplet=${stack.droplet}  workdir=${stack.workdir}  files=${stack.files.length}`);
     }
@@ -505,7 +508,7 @@ export function renderLiveStatus(inventory) {
         println(formatTable(inventory.cdn.map((endpoint) => ({
             origin: endpoint.origin,
             id: endpoint.id,
-            endpoint: endpoint.endpoint,
+            endpoint: endpoint.endpoint ?? "-",
             domain: endpoint.custom_domain ?? "-"
         })), [
             { key: "origin", header: "ORIGIN" },

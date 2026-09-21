@@ -166,21 +166,23 @@ Call them from TypeScript if you need them. Do not invent YAML keys for them.
 
 ## Spaces, CDN, and certificates
 
-Emerging, and the chosen path for a public static site such as Juice (`apps/juice`, `@citrusworx/juiceapp`). Starter: `examples/blueprints/05-static-site-spaces.yaml`.
+Emerging, and the chosen path for a public static site such as Juice (`apps/juice`, `@citrusworx/juiceapp`). Infrastructure starter: `examples/blueprints/05-static-site-spaces.yaml`. Build and upload template: `06-juice-static.yaml`.
 
 | Product | YAML | Notes |
 |---|---|---|
-| Space | `resources.spaces[]` with `name`, `region`, optional `acl` (`private` or `public-read`) | Create is `PUT /` with `x-amz-acl`. List is `GET /` on `{region}.digitaloceanspaces.com` (account-wide). Delete requires an empty bucket; Grapevine does not delete objects. |
+| Space | `resources.spaces[]` with `name`, `region`, optional `acl` (`private` or `public-read`) | Create is `PUT /` with `x-amz-acl`. List is `GET /` on `{region}.digitaloceanspaces.com` (account-wide). Bucket delete requires an empty bucket; destroy does not empty it. `static_sites` can delete individual keys when `delete_stale` is true. |
 | Certificate | `resources.certificates[]` | `lets_encrypt` needs `dns_names`. `custom` needs PEM material inline or via `private_key_env` / `leaf_certificate_env` / `certificate_chain_env`. Key material is not copied onto `ApplyResult`. |
 | CDN | `resources.cdn[]` | `origin`, or `space` plus region. Optional `ttl` (60, 600, 3600, 86400, 604800), `custom_domain`, and `certificate` (name) or `certificate_id`. |
 
-Apply order for these three is Spaces, then certificates, then CDN. A same-apply CDN reference polls `GET /certificates/:id` until `verified` (or `error` / timeout) before `POST /cdn/endpoints`. Certificates that nothing references are left `pending`. This is not a general "wait until the CDN edge is live" helper, and it is not `waitForAppDeployment`.
+Apply order is Spaces, then certificates, then CDN, then `resources.static_sites`. Certificates poll until `verified` (`wait` / `wait_seconds`, default 300 seconds) unless `wait: false`. A CDN create that sends `certificate_id` waits for `verified` even when the certificate opted out. CDN endpoints poll until the `endpoint` hostname exists when the create or adopt payload does not already include one. `waitForAppDeployment` is implemented and opt-in on `resources.apps` (`wait: true`). None of these polls create DNS records.
 
-Destroy order removes the CDN endpoint before the certificate and the Space. A certificate still attached to a load balancer is removed only after load balancers in the same plan. Re-apply adopts a unique Space name, a unique certificate name, and a unique CDN origin. It updates CDN TTL only. It does not change ACL or custom domain.
+`resources.static_sites` (template: `examples/blueprints/06-juice-static.yaml`) runs the build from the monorepo root, or from `cwd`, and uploads `dist/` with S3 PutObject. `grape publish -c` does only that step. `05-static-site-spaces.yaml` is still infrastructure only.
+
+Destroy order removes the CDN endpoint before the certificate and the Space. A certificate still attached to a load balancer is removed only after load balancers in the same plan. Re-apply adopts a unique Space name, a unique certificate name, and a unique CDN origin. It updates CDN TTL only. It does not change ACL or custom domain. It does rebuild and re-upload `static_sites`.
 
 `networking.ssl` and `networking.cdn` still do nothing except warn. Declare the resource arrays.
 
-Juice follow-ups that this layer does not pretend to finish: waiting until the certificate and CDN edge are live, the CNAME from the site hostname to the CDN endpoint, `yarn workspace @citrusworx/juiceapp build`, and uploading `dist/`.
+Still operator-owned: the CNAME from the site hostname to the CDN `endpoint` hostname. Grapevine prints that hostname. It does not configure the registrar. This path is DigitalOcean only.
 
 ## Not implemented as Grapevine resources
 
@@ -189,7 +191,7 @@ Juice follow-ups that this layer does not pretend to finish: waiting until the c
 | Block storage volumes | Droplet field `volumes?: string[]` may be sent; no `POST /volumes` |
 | Kubernetes (DOKS) | No cluster APIs; `kubernetes_ids` only on firewall payload shape |
 | Projects, floating IPs | Not grape resources |
-| Object upload / static sync | Spaces exist; putting files in them does not |
+| Object upload outside `static_sites` | `putSpaceObject` exists; apply uploads only `resources.static_sites` |
 | Other clouds | Schema rejects anything but `digitalocean` |
 
 ## Client primitives

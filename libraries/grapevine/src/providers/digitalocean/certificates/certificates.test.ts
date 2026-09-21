@@ -96,6 +96,16 @@ describe("digitalocean certificates", () => {
         expect(getCertificate).toBeTypeOf("function");
     });
 
+    it("stops when the certificate stays pending past the timeout", async () => {
+        mockedRequest.mockResolvedValue({
+            certificate: { id: "cert-1", name: "juice-static", state: "pending", type: "lets_encrypt" }
+        });
+        await expect(
+            waitForCertificate("cert-1", { timeoutMs: 0, intervalMs: 5, sleep: async () => undefined })
+        ).rejects.toThrow(/Timed out waiting/);
+        expect(mockedRequest).toHaveBeenCalledTimes(1);
+    });
+
     it("fails fast when issuance enters error", async () => {
         mockedRequest.mockResolvedValueOnce({
             certificate: { id: "cert-1", name: "juice-static", state: "error", type: "lets_encrypt" }

@@ -2,7 +2,16 @@ import axios from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DigitalOceanError } from "../client.js";
 import { spacesRequest } from "./client.js";
-import { createSpace, deleteSpace, listSpaces, parseListBuckets } from "./spaces.js";
+import {
+    createSpace,
+    deleteSpace,
+    deleteSpaceObject,
+    listSpaceObjects,
+    listSpaces,
+    parseListBuckets,
+    parseListObjects,
+    putSpaceObject
+} from "./spaces.js";
 
 vi.mock("axios", () => {
     const request = vi.fn();
@@ -101,6 +110,62 @@ describe("digitalocean spaces", () => {
             id: "BucketNotEmpty",
             requestId: "req-9"
         });
+    });
+
+    it("puts an object with a content type and lists or deletes keys", async () => {
+        const body = new TextEncoder().encode("<html></html>");
+        mockedAxios.request.mockResolvedValueOnce({ status: 200, data: "" });
+        await putSpaceObject(
+            {
+                bucket: "juice-showcase",
+                region: "nyc3",
+                key: "index.html",
+                body,
+                acl: "public-read"
+            },
+            { credentials }
+        );
+        expect(mockedAxios.request).toHaveBeenCalledWith(
+            expect.objectContaining({
+                method: "PUT",
+                url: "https://juice-showcase.nyc3.digitaloceanspaces.com/index.html",
+                data: body,
+                headers: expect.objectContaining({
+                    "content-type": "text/html; charset=utf-8",
+                    "x-amz-acl": "public-read"
+                })
+            })
+        );
+
+        const listed = parseListObjects(`<ListBucketResult>
+          <IsTruncated>false</IsTruncated>
+          <Contents><Key>index.html</Key><Size>13</Size></Contents>
+          <Contents><Key>old.txt</Key><Size>1</Size></Contents>
+        </ListBucketResult>`);
+        expect(listed.objects.map((object) => object.key)).toEqual(["index.html", "old.txt"]);
+        expect(listed.truncated).toBe(false);
+
+        mockedAxios.request.mockResolvedValueOnce({
+            status: 200,
+            data: `<ListBucketResult><IsTruncated>true</IsTruncated><NextContinuationToken>tok</NextContinuationToken><Contents><Key>a.txt</Key></Contents></ListBucketResult>`
+        });
+        mockedAxios.request.mockResolvedValueOnce({
+            status: 200,
+            data: `<ListBucketResult><IsTruncated>false</IsTruncated><Contents><Key>b.txt</Key></Contents></ListBucketResult>`
+        });
+        await expect(listSpaceObjects("juice-showcase", "nyc3", { credentials, prefix: "" })).resolves.toEqual([
+            { key: "a.txt", size: undefined },
+            { key: "b.txt", size: undefined }
+        ]);
+
+        mockedAxios.request.mockResolvedValueOnce({ status: 204, data: "" });
+        await deleteSpaceObject("juice-showcase", "nyc3", "old.txt", { credentials });
+        expect(mockedAxios.request).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                method: "DELETE",
+                url: "https://juice-showcase.nyc3.digitaloceanspaces.com/old.txt"
+            })
+        );
     });
 
     it("refuses to call Spaces without access keys", async () => {

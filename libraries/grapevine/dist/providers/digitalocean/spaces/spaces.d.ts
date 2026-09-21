@@ -31,6 +31,33 @@ export declare function listSpaces(region?: string, options?: SpaceCallOptions):
 export declare function createSpace(blueprint: SpaceBlueprint, options?: SpaceCallOptions): Promise<SpaceResource>;
 /**
  * DELETE / on the bucket host. The bucket must already be empty.
- * Grapevine does not delete objects.
+ * Destroy does not delete objects. `deleteSpaceObject` removes one key.
  */
 export declare function deleteSpace(name: string, region: string, options?: SpaceCallOptions): Promise<void>;
+export interface SpaceObject {
+    key: string;
+    size?: number;
+}
+export interface PutSpaceObjectInput {
+    bucket: string;
+    region: string;
+    key: string;
+    body: Uint8Array;
+    contentType?: string;
+    acl?: SpaceAcl;
+}
+/** Reject empty keys and `..` so a sync cannot escape the intended prefix. */
+export declare function normalizeObjectKey(key: string): string;
+export declare function parseListObjects(xml: string): {
+    objects: SpaceObject[];
+    truncated: boolean;
+    continuationToken?: string;
+};
+/** PUT object bytes. Content-Type defaults from the key extension. */
+export declare function putSpaceObject(input: PutSpaceObjectInput, options?: SpaceCallOptions): Promise<void>;
+export interface ListSpaceObjectsOptions extends SpaceCallOptions {
+    prefix?: string;
+}
+/** GET `?list-type=2`, following continuation tokens. Stops after 1000 pages. */
+export declare function listSpaceObjects(bucket: string, region: string, options?: ListSpaceObjectsOptions): Promise<SpaceObject[]>;
+export declare function deleteSpaceObject(bucket: string, region: string, key: string, options?: SpaceCallOptions): Promise<void>;

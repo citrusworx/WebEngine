@@ -2,9 +2,9 @@ import type { GrapeConfig, GrapeResources } from "./schema.js";
 import { type LiveInventory } from "./live.js";
 import { type GrapeRunOptions } from "./source.js";
 export declare const LOCAL_PLAN_NOTE = "Plan is local-only: no DigitalOcean token is set, so create vs adopt was not checked against the account.";
-export declare const RESOURCE_KINDS: readonly ["tags", "ssh_keys", "vpcs", "databases", "droplets", "firewalls", "domains", "load_balancers", "alert_policies", "apps", "spaces", "certificates", "cdn", "stacks"];
+export declare const RESOURCE_KINDS: readonly ["tags", "ssh_keys", "vpcs", "databases", "droplets", "firewalls", "domains", "load_balancers", "alert_policies", "apps", "spaces", "certificates", "cdn", "static_sites", "stacks"];
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
-export type PlannedKind = "tag" | "ssh_key" | "vpc" | "database" | "droplet" | "firewall" | "domain" | "load_balancer" | "alert_policy" | "app" | "space" | "certificate" | "cdn" | "stack" | "stack_step";
+export type PlannedKind = "tag" | "ssh_key" | "vpc" | "database" | "droplet" | "firewall" | "domain" | "load_balancer" | "alert_policy" | "app" | "space" | "certificate" | "cdn" | "static_site" | "stack" | "stack_step";
 export interface PlannedResource {
     kind: PlannedKind;
     name: string;

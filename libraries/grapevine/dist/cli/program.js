@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { Command } from "commander";
 import { DESTROY_V1_NOTES } from "../config/destroy.js";
-import { handleApply, handleDestroy, handleInit, handlePlan, handleStatus, handleValidate } from "./commands.js";
+import { handleApply, handleDestroy, handleInit, handlePlan, handlePublish, handleStatus, handleValidate } from "./commands.js";
 const require = createRequire(import.meta.url);
 const pkg = require("../../package.json");
 function addCommonOptions(command) {
@@ -42,6 +42,11 @@ export function createProgram() {
         await handleApply(mergedOptions(command));
     });
     addCommonOptions(program
+        .command("publish")
+        .description("Build resources.static_sites and upload dist/ to Spaces (no other resources)")).action(async (_opts, command) => {
+        await handlePublish(mergedOptions(command));
+    });
+    addCommonOptions(program
         .command("destroy")
         .alias("teardown")
         .description("Tear down matching DigitalOcean resources (requires --yes unless stdin is a TTY)")
@@ -68,6 +73,7 @@ Examples:
   grape plan -c ./grape.config.yaml
   grape apply --dry-run -c ./grape.config.yaml
   grape apply -c ./grape.config.yaml
+  grape publish -c ./grape.config.yaml
   grape status
   grape status -c ./grape.config.yaml
   grape init --list

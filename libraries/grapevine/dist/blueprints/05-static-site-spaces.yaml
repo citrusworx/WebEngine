@@ -1,8 +1,9 @@
-# Static site on DigitalOcean Spaces + CDN
+# Static site on DigitalOcean Spaces + CDN (infrastructure only)
 #
 # For a public Vite MPA such as apps/juice (@citrusworx/juiceapp).
 # This file creates the Space, a Let's Encrypt certificate, and a CDN endpoint.
 # It does not build the site and it does not upload dist/.
+# Use 06-juice-static.yaml when apply should run the Vite build and sync dist/.
 #
 # Replace the placeholder names before apply:
 #   replace-space-name     DNS-style Space name, unique in your account
@@ -14,10 +15,13 @@
 #   DO_SPACES_ACCESS_KEY_ID
 #   DO_SPACES_SECRET_ACCESS_KEY   # Spaces key with All (Buckets and Objects)
 #
-# Let's Encrypt must be able to validate static.example.com before the CDN
-# custom domain is attached. Apply polls the certificate only because this
-# CDN entry references it. It does not create the CNAME to the CDN hostname
-# and it does not wait for the edge to go live.
+# Let's Encrypt must be able to validate static.example.com. Apply polls the
+# certificate until state is verified (override with wait: false / wait_seconds).
+# A CDN entry that sends certificate_id waits even when the certificate sets
+# wait: false. Apply also polls the CDN endpoint until it has a hostname when
+# the create response does not include one yet.
+# It does not create the CNAME from static.example.com to the CDN hostname.
+# That record stays operator-owned (registrar or DigitalOcean DNS).
 
 version: "0.1"
 provider: digitalocean

@@ -2,6 +2,7 @@ import { type DropletResource } from "../providers/digitalocean/droplet/droplet.
 import { type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
+import { type StaticSitePublishResult } from "./static-publish.js";
 import { type GrapeRunOptions } from "./source.js";
 export type { GrapeRunOptions } from "./source.js";
 export interface AppliedSSHKey extends SSHKeyResource {
@@ -33,6 +34,7 @@ export interface AppliedCdn {
     endpoint?: string;
     custom_domain?: string;
 }
+export type { StaticSitePublishResult } from "./static-publish.js";
 export interface AppliedStack {
     name: string;
     droplet: string;
@@ -78,6 +80,7 @@ export interface ApplyResult {
     spaces: AppliedSpace[];
     certificates: AppliedCertificate[];
     cdn: AppliedCdn[];
+    static_sites: StaticSitePublishResult[];
     stacks: AppliedStack[];
     /** Absolute paths of private keys written during this apply (generate: true). */
     private_key_paths: string[];

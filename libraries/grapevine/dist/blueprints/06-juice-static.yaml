@@ -1,0 +1,62 @@
+# Juice static site: Space + certificate + CDN + Vite build/upload
+#
+# Template for apps/juice (@citrusworx/juiceapp). Placeholders only — no secrets.
+# Replace names before apply:
+#   juice-showcase         DNS-style Space name, unique in the account
+#   static.example.com     hostname that should serve the site
+#   example.com            apex already delegated to DigitalOcean (Let's Encrypt)
+#
+# grape apply runs, in order: Space, certificate (poll until verified), CDN
+# (poll until the endpoint hostname exists), then the build and dist upload.
+# grape publish -c this file runs only the build and upload.
+#
+# cwd: omitted, so the build runs from the monorepo root (nearest parent of
+# the process cwd whose package.json has `workspaces`, else process.cwd()).
+# Set `cwd` to override (absolute, or relative to this file).
+#
+# Required env for apply (validate and plan do not call DigitalOcean):
+#   DO_TOKEN
+#   DO_SPACES_ACCESS_KEY_ID
+#   DO_SPACES_SECRET_ACCESS_KEY
+#
+# Still operator-owned, not done by this file:
+#   CNAME static.example.com → <space>.<region>.cdn.digitaloceanspaces.com
+#   (the CDN `endpoint` hostname printed by apply). Grapevine does not create
+#   that record and does not talk to a registrar.
+#   Optional second build (juiceui) is a comment below, not a second site.
+
+version: "0.1"
+provider: digitalocean
+region: nyc3
+resources:
+  domains:
+    - name: example.com
+  spaces:
+    - name: juice-showcase
+      region: nyc3
+      acl: public-read
+  certificates:
+    - name: juice-static
+      type: lets_encrypt
+      dns_names:
+        - static.example.com
+      # wait: true
+      # wait_seconds: 300
+  cdn:
+    - space: juice-showcase
+      region: nyc3
+      ttl: 3600
+      custom_domain: static.example.com
+      certificate: juice-static
+      # wait: true
+      # wait_seconds: 300
+  static_sites:
+    - name: juice
+      workspace: "@citrusworx/juiceapp"
+      build: "yarn workspace @citrusworx/juiceapp build"
+      dist: "apps/juice/dist"
+      space: juice-showcase
+      # cwd: .          # relative to this file; default is the monorepo root
+      # delete_stale: false
+      # Also build @citrusworx/juiceui first if the showcase import needs it:
+      # build: "yarn workspace @citrusworx/juiceui build && yarn workspace @citrusworx/juiceapp build"

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { doRequest } from "../client.js";
-import { createApp, deleteApp, getApp, listApps, listDeployments } from "./apps.js";
+import { createApp, deleteApp, getApp, listApps, listDeployments, waitForAppDeployment } from "./apps.js";
 
 vi.mock("../client.js", () => ({
     doRequest: vi.fn()
@@ -38,5 +38,34 @@ describe("apps", () => {
             method: "DELETE",
             url: "/apps/app-1"
         });
+    });
+
+    it("waits until the active deployment is ACTIVE and fails on ERROR", async () => {
+        mockedRequest
+            .mockResolvedValueOnce({
+                app: {
+                    id: "app-1",
+                    spec: { name: "api" },
+                    in_progress_deployment: { id: "d1", phase: "BUILDING" }
+                }
+            })
+            .mockResolvedValueOnce({
+                app: {
+                    id: "app-1",
+                    spec: { name: "api" },
+                    active_deployment: { id: "d1", phase: "ACTIVE" }
+                }
+            });
+        const ready = await waitForAppDeployment("app-1", { intervalMs: 1, sleep: async () => undefined });
+        expect(ready.active_deployment?.phase).toBe("ACTIVE");
+
+        mockedRequest.mockResolvedValueOnce({
+            app: {
+                id: "app-1",
+                spec: { name: "api" },
+                active_deployment: { id: "d2", phase: "ERROR" }
+            }
+        });
+        await expect(waitForAppDeployment("app-1", { sleep: async () => undefined })).rejects.toThrow(/phase "ERROR"/);
     });
 });

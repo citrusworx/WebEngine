@@ -243,7 +243,7 @@ Rules accept `inbound` / `outbound` or `inbound_rules` / `outbound_rules`. `sour
 
 All four arrays are first-class apply resources. Domain records require `type`, `name`, `data`. Alert policies require `description`, `type`, `value` (`window` defaults `"5m"`, `enabled` defaults `true`). Apps require `spec.name`; the rest of `spec` is passed through to App Platform.
 
-Grapevine does not compile a Juice/Sig app into `spec`. You write the App Platform document yourself. The Juice static site path is Spaces + CDN + a certificate, not App Platform.
+Grapevine does not compile a Juice/Sig app into `spec`. You write the App Platform document yourself. The Juice static site path is Spaces + CDN + a certificate + `static_sites`, not App Platform. Set `wait: true` on an app entry to poll until the deployment is `ACTIVE` (`wait_seconds` defaults to 600). Default is not to wait.
 
 ### Spaces, certificates, CDN
 
@@ -256,17 +256,32 @@ certificates:
   - name: juice-static
     type: lets_encrypt          # default
     dns_names: [static.example.com]
-    # wait: false               # skip the CDN-attach poll
+    # wait: false               # skip the verified poll (CDN create still waits if it needs the id)
+    # wait_seconds: 300
 cdn:
   - space: replace-space-name
     ttl: 3600                   # 60 | 600 | 3600 | 86400 | 604800
     custom_domain: static.example.com
     certificate: juice-static   # name, or set certificate_id
+    # wait: true                # poll until the endpoint hostname exists
+    # wait_seconds: 300
+static_sites:
+  - name: juice
+    workspace: "@citrusworx/juiceapp"
+    build: "yarn workspace @citrusworx/juiceapp build"
+    dist: apps/juice/dist       # relative to cwd
+    space: replace-space-name
+    # cwd: .                    # absolute, or relative to this file; default is monorepo root
+    # prefix: site
+    # delete_stale: false       # true deletes keys under the prefix that dist did not upload
+    # acl: public-read          # default: the Space acl in this config
 ```
 
 Spaces calls need `DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY` (or `credentials.spaces_access_key_env` / `spaces_secret_key_env`). CDN and certificates use `DO_TOKEN`. Custom certificates take `private_key` / `leaf_certificate` / `certificate_chain`, or the same fields with an `_env` suffix. Apply does not print that PEM material.
 
-This does not upload objects. A public Juice Vite build still needs a later sync of `dist/`.
+`static_sites` runs on apply after the Space is created or adopted, and on `grape publish` by itself. The build cwd is the monorepo root unless `cwd` is set: Grapevine walks parents of `process.cwd()` for a `package.json` with `workspaces`. This is DigitalOcean Spaces only.
+
+The CNAME from the public hostname to the CDN `endpoint` (`<space>.<region>.cdn.digitaloceanspaces.com`) is not created. Add it at the registrar or as a domain record you wrote yourself.
 
 ## Top-level shortcuts (folded into `resources`)
 

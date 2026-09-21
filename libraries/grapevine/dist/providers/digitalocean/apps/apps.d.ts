@@ -86,3 +86,17 @@ export declare function deleteApp(id: string): Promise<void>;
 export declare function listDeployments(appId: string): Promise<AppDeployment[]>;
 export declare function createDeployment(appId: string, forceBuild?: boolean): Promise<AppDeployment>;
 export declare function getDeployment(appId: string, deploymentId: string): Promise<AppDeployment>;
+export interface WaitForAppDeploymentOptions {
+    timeoutMs?: number;
+    intervalMs?: number;
+    sleep?: (ms: number) => Promise<void>;
+}
+/** Default App Platform poll: 10 minutes, every 5 seconds. Opt-in from grape config (`wait: true`). */
+export declare const DEFAULT_APP_WAIT_MS: number;
+export declare const DEFAULT_APP_POLL_MS = 5000;
+/**
+ * Poll GET /apps/:id until there is no in-progress deployment and
+ * `active_deployment.phase` is `ACTIVE`. ERROR and CANCELED fail immediately.
+ * Juice static hosting does not use this; App Platform apply waits only when `wait: true`.
+ */
+export declare function waitForAppDeployment(appId: string, options?: WaitForAppDeploymentOptions): Promise<AppResource>;

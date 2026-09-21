@@ -24,11 +24,14 @@ export interface SpacesRequestOptions extends SpacesCredentialEnv {
     method: "GET" | "PUT" | "DELETE" | "HEAD";
     region: string;
     bucket?: string;
+    /** Object key. Omitted means the bucket root (`/`), used for create, list, and delete bucket. */
+    key?: string;
     query?: Record<string, string | undefined>;
     headers?: Record<string, string>;
-    body?: string;
+    body?: string | Uint8Array;
     credentials?: SpacesCredentials;
 }
+export declare function spacesObjectPath(key?: string): string;
 export declare function spacesRequest(options: SpacesRequestOptions): Promise<{
     status: number;
     body: string;

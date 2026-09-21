@@ -15,6 +15,7 @@ describe("grape init blueprints", () => {
             "03-web-firewall",
             "04-full-web-stack",
             "05-static-site-spaces",
+            "06-juice-static",
             "kiwipress-compose",
             "kiwipress-managed"
         ]);
@@ -26,6 +27,7 @@ describe("grape init blueprints", () => {
         expect(resolveBlueprint("01", blueprints).id).toBe("01-vpc-and-tag");
         expect(resolveBlueprint("02-droplet-in-vpc.yaml", blueprints).id).toBe("02-droplet-in-vpc");
         expect(resolveBlueprint("full", blueprints).id).toBe("04-full-web-stack");
+        expect(resolveBlueprint("juice", blueprints).id).toBe("06-juice-static");
         expect(() => resolveBlueprint("nope", blueprints)).toThrow(CliError);
     });
 

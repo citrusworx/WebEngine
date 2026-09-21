@@ -25,6 +25,7 @@ export const RESOURCE_KINDS = [
     "spaces",
     "certificates",
     "cdn",
+    "static_sites",
     "stacks"
 ] as const;
 
@@ -44,6 +45,7 @@ export type PlannedKind =
     | "space"
     | "certificate"
     | "cdn"
+    | "static_site"
     | "stack"
     | "stack_step";
 
@@ -81,6 +83,7 @@ export function emptyCounts(): ResourceCounts {
         spaces: 0,
         certificates: 0,
         cdn: 0,
+        static_sites: 0,
         stacks: 0
     };
 }
@@ -100,6 +103,7 @@ export function countResources(resources: GrapeResources, stackCount = 0): Resou
         spaces: resources.spaces?.length ?? 0,
         certificates: resources.certificates?.length ?? 0,
         cdn: resources.cdn?.length ?? 0,
+        static_sites: resources.static_sites?.length ?? 0,
         stacks: stackCount
     };
 }
@@ -264,7 +268,8 @@ export function planGrapeConfig(config: GrapeConfig, options: GrapeRunOptions = 
                           ? `env:${certificate.private_key_env}`
                           : undefined
                 ],
-                ["wait", certificate.wait === false ? "false" : undefined]
+                ["wait", certificate.wait === false ? "false" : undefined],
+                ["wait_seconds", certificate.wait_seconds]
             ])
         });
     }
@@ -291,7 +296,30 @@ export function planGrapeConfig(config: GrapeConfig, options: GrapeRunOptions = 
                 ["space", endpoint.space],
                 ["ttl", endpoint.ttl],
                 ["certificate", endpoint.certificate ?? endpoint.certificate_id],
-                ["custom_domain", endpoint.custom_domain]
+                ["custom_domain", endpoint.custom_domain],
+                ["wait", endpoint.wait === false ? "false" : undefined]
+            ])
+        });
+    }
+
+    const declaredSpaces = new Set((resources.spaces ?? []).map((space) => space.name));
+    for (const site of resources.static_sites ?? []) {
+        if (!declaredSpaces.has(site.space) && !site.region && !config.region) {
+            warnings.push(
+                `static site "${site.name}" targets Space "${site.space}" which is not declared in this config and has no region`
+            );
+        }
+        const build = site.build ?? (site.workspace ? `yarn workspace ${site.workspace} build` : undefined);
+        planned.push({
+            kind: "static_site",
+            name: site.name,
+            detail: detail([
+                ["space", site.space],
+                ["dist", site.dist],
+                ["build", build],
+                ["workspace", site.workspace],
+                ["cwd", site.cwd ?? "monorepo root"],
+                ["delete_stale", site.delete_stale ? "true" : undefined]
             ])
         });
     }
@@ -436,7 +464,7 @@ export function annotatePlan(plan: GrapePlan, inventory: LiveInventory): GrapePl
     const warnings = [...plan.warnings];
     let notedSpaces = false;
     const resources = plan.resources.map((resource) => {
-        if (resource.kind === "stack" || resource.kind === "stack_step") {
+        if (resource.kind === "stack" || resource.kind === "stack_step" || resource.kind === "static_site") {
             return resource;
         }
         if (resource.kind === "space" && !inventory.spaces_listed) {

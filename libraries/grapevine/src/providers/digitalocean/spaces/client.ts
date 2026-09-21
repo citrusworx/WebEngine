@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DigitalOceanError, wrapDoError } from "../client.js";
-import { signSpacesRequest } from "./sigv4.js";
+import { canonicalUri, signSpacesRequest } from "./sigv4.js";
 
 export const SPACES_HOST_SUFFIX = "digitaloceanspaces.com";
 export const DEFAULT_SPACES_ACCESS_KEY_ENV = "DO_SPACES_ACCESS_KEY_ID";
@@ -62,10 +62,19 @@ export interface SpacesRequestOptions extends SpacesCredentialEnv {
     method: "GET" | "PUT" | "DELETE" | "HEAD";
     region: string;
     bucket?: string;
+    /** Object key. Omitted means the bucket root (`/`), used for create, list, and delete bucket. */
+    key?: string;
     query?: Record<string, string | undefined>;
     headers?: Record<string, string>;
-    body?: string;
+    body?: string | Uint8Array;
     credentials?: SpacesCredentials;
+}
+
+export function spacesObjectPath(key?: string): string {
+    if (!key?.trim()) {
+        return "/";
+    }
+    return `/${key.replace(/^\/+/, "")}`;
 }
 
 export async function spacesRequest(options: SpacesRequestOptions): Promise<{ status: number; body: string }> {
@@ -76,10 +85,11 @@ export async function spacesRequest(options: SpacesRequestOptions): Promise<{ st
             secretKeyEnv: options.secretKeyEnv
         });
     const host = spacesHost(options.region, options.bucket);
+    const path = spacesObjectPath(options.key);
     const signed = signSpacesRequest({
         method: options.method,
         host,
-        path: "/",
+        path,
         query: options.query,
         headers: options.headers,
         body: options.body,
@@ -88,7 +98,7 @@ export async function spacesRequest(options: SpacesRequestOptions): Promise<{ st
         region: options.region
     });
     const query = signed.queryString ? `?${signed.queryString}` : "";
-    const url = `https://${host}/${query}`;
+    const url = `https://${host}${canonicalUri(path)}${query}`;
 
     try {
         const response = await axios.request<string>({
