@@ -2514,8 +2514,137 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Er = null, Tr || Or();
 }, document.addEventListener("DOMContentLoaded", Er)) : Or());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/banner/banner-runtime.ts
 var Ar = {
+	root: typeof document < "u" ? document : {},
+	bannerSelector: "[banner]",
+	closeSelector: "[banner-close]"
+}, jr = "juice-banner:", Mr = (e) => Array.from(e), Nr = /* @__PURE__ */ new WeakSet(), Pr = (e) => Nr.has(e) ? !1 : (Nr.add(e), !0), Fr = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Ir = (e) => !e.hasAttribute("hidden"), Lr = (e) => {
+	let t = e.getAttribute("banner-tone");
+	return t === "error" || t === "warning";
+}, Rr = (e) => {
+	let t = e.getAttribute("banner-persist");
+	if (t !== "session" && t !== "local") return null;
+	let n = e.getAttribute("name")?.trim(), r = e.id?.trim(), i = n || r;
+	if (!i) return null;
+	let a = t === "local" ? typeof localStorage > "u" ? null : localStorage : typeof sessionStorage > "u" ? null : sessionStorage;
+	return a ? {
+		storage: a,
+		key: `${jr}${i}`
+	} : null;
+}, zr = (e) => {
+	let t = Rr(e);
+	if (!t) return !1;
+	try {
+		return t.storage.getItem(t.key) === "1";
+	} catch {
+		return !1;
+	}
+}, Br = (e, t) => {
+	let n = Rr(e);
+	if (n) try {
+		if (t) {
+			n.storage.setItem(n.key, "1");
+			return;
+		}
+		n.storage.removeItem(n.key);
+	} catch {}
+}, Vr = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		show: () => {},
+		dismiss: () => {}
+	};
+	let t = {
+		...Ar,
+		...e
+	}, n = t.root ?? document, r = n, i = () => Mr(n.querySelectorAll(t.bannerSelector)), a = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.bannerSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, o = (e) => e?.matches(t.bannerSelector) ? n instanceof Document ? !0 : n instanceof Node ? n.contains(e) : i().includes(e) : !1, s = (e) => {
+		if (e) {
+			if (o(e)) return e;
+			let t = a(e);
+			if (t && o(t)) return t;
+		}
+		let t = i().filter(o);
+		return t.find(Ir) ?? t[0] ?? null;
+	}, c = (e) => {
+		Mr(e.querySelectorAll(t.closeSelector)).filter((t) => a(t) === e).forEach((e) => {
+			Fr(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), !e.hasAttribute("aria-label") && !e.hasAttribute("aria-labelledby") && !e.textContent?.trim() && e.setAttribute("aria-label", "Dismiss");
+		});
+	}, l = (e) => {
+		let t = Lr(e) ? "alert" : "status";
+		e.getAttribute("role") !== t && e.setAttribute("role", t), c(e);
+	}, u = (e, t) => {
+		e.hidden !== !t && (e.hidden = !t);
+	}, d = (e) => {
+		let t = s(e);
+		t && (Br(t, !1), l(t), !Ir(t) && u(t, !0));
+	}, f = (e) => {
+		let t = s(e);
+		!t || !Ir(t) || (Br(t, !0), u(t, !1));
+	}, p = () => {
+		i().forEach((e) => {
+			o(e) && (zr(e) && Ir(e) && u(e, !1), l(e));
+		});
+	}, m = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = n.closest(t.closeSelector);
+		if (!(r instanceof HTMLElement)) return;
+		let i = a(r);
+		!i || !o(i) || Pr(e) && f(i);
+	}, h = (e) => {
+		if (!(e instanceof KeyboardEvent) || e.key !== "Enter" && e.key !== " ") return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = n.closest(t.closeSelector);
+		if (r instanceof HTMLElement && a(r) && !Fr(r)) {
+			if (!Pr(e)) return;
+			e.preventDefault(), f(r);
+		}
+	}, g = !1, _ = () => {
+		g || (g = !0, requestAnimationFrame(() => {
+			g = !1, p();
+		}));
+	}, v = typeof MutationObserver < "u" ? new MutationObserver(() => _()) : null;
+	return r.addEventListener("click", m), r.addEventListener("keydown", h), v && n instanceof Node && v.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"banner",
+			"banner-close",
+			"banner-tone",
+			"banner-persist",
+			"name",
+			"id",
+			"role",
+			"aria-label"
+		]
+	}), p(), {
+		destroy: () => {
+			r.removeEventListener("click", m), r.removeEventListener("keydown", h), v?.disconnect();
+		},
+		sync: p,
+		show: d,
+		dismiss: f
+	};
+}, Hr = (e = {}) => Vr(e), Ur = null, Wr = !1, Gr = null, Kr = () => {
+	Gr &&= (document.removeEventListener("DOMContentLoaded", Gr), null);
+}, qr = () => typeof window > "u" || typeof document > "u" ? null : (Wr = !1, Kr(), Ur ? (Ur.sync(), Ur) : (Ur = Vr(), Ur)), Jr = () => {
+	Wr = !0, Kr(), Ur?.destroy(), Ur = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Gr = () => {
+	Gr = null, Wr || qr();
+}, document.addEventListener("DOMContentLoaded", Gr)) : qr());
+//#endregion
+//#region src/tokens/index.ts
+var Yr = {
 	colors: {
 		families: [
 			"black",
@@ -2683,4 +2812,4 @@ var Ar = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, B as createAccordion, Sr as createCombobox, rt as createDrawer, Ie as createModal, T as createNavigation, Qt as createPopover, he as createTabs, yt as createToast, kn as createTooltip, Qn as createWizard, ee as initAccordion, Cr as initCombobox, it as initDrawer, Le as initModal, E as initNavigation, $t as initPopover, ge as initTabs, bt as initToast, An as initTooltip, $n as initWizard, re as startAccordionRuntime, Or as startComboboxRuntime, lt as startDrawerRuntime, He as startModalRuntime, O as startNavigationRuntime, an as startPopoverRuntime, xe as startTabsRuntime, Tt as startToastRuntime, Fn as startTooltipRuntime, ir as startWizardRuntime, ie as stopAccordionRuntime, kr as stopComboboxRuntime, ut as stopDrawerRuntime, Ue as stopModalRuntime, k as stopNavigationRuntime, on as stopPopoverRuntime, Se as stopTabsRuntime, Et as stopToastRuntime, In as stopTooltipRuntime, ar as stopWizardRuntime, Ar as tokens };
+export { v as Accordion, B as createAccordion, Vr as createBanner, Sr as createCombobox, rt as createDrawer, Ie as createModal, T as createNavigation, Qt as createPopover, he as createTabs, yt as createToast, kn as createTooltip, Qn as createWizard, ee as initAccordion, Hr as initBanner, Cr as initCombobox, it as initDrawer, Le as initModal, E as initNavigation, $t as initPopover, ge as initTabs, bt as initToast, An as initTooltip, $n as initWizard, re as startAccordionRuntime, qr as startBannerRuntime, Or as startComboboxRuntime, lt as startDrawerRuntime, He as startModalRuntime, O as startNavigationRuntime, an as startPopoverRuntime, xe as startTabsRuntime, Tt as startToastRuntime, Fn as startTooltipRuntime, ir as startWizardRuntime, ie as stopAccordionRuntime, Jr as stopBannerRuntime, kr as stopComboboxRuntime, ut as stopDrawerRuntime, Ue as stopModalRuntime, k as stopNavigationRuntime, on as stopPopoverRuntime, Se as stopTabsRuntime, Et as stopToastRuntime, In as stopTooltipRuntime, ar as stopWizardRuntime, Yr as tokens };

@@ -18,3 +18,5 @@ export { createWizard, initWizard, startWizardRuntime, stopWizardRuntime } from 
 export type { WizardController, WizardOptions } from "./src/wizard/wizard-runtime.js";
 export { createCombobox, initCombobox, startComboboxRuntime, stopComboboxRuntime } from "./src/combobox/combobox-runtime.js";
 export type { ComboboxController, ComboboxOptions } from "./src/combobox/combobox-runtime.js";
+export { createBanner, initBanner, startBannerRuntime, stopBannerRuntime } from "./src/banner/banner-runtime.js";
+export type { BannerController, BannerOptions } from "./src/banner/banner-runtime.js";
