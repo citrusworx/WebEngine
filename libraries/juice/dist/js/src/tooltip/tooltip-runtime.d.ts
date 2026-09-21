@@ -33,9 +33,10 @@
  * and capture scroll (rAF-throttled).
  *
  * Escape hides the open tip on bubble, but yields when an open
- * [modal-overlay], [drawer-overlay], or [popover-root] exists, or the
- * event is already defaultPrevented (same courtesy as toast / popover).
- * Opening one managed tooltip closes the others.
+ * [modal-overlay], [drawer-overlay], [popover-root], or [combobox-list]
+ * exists, or the event is already defaultPrevented (same courtesy as
+ * toast / popover). Toast does not block tooltip Escape — the tip can
+ * hide while toasts remain. Opening one managed tooltip closes the others.
  */
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 export type TooltipOptions = {

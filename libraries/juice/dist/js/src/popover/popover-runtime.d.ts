@@ -31,9 +31,9 @@
  *
  * Escape closes the open popover on bubble (after modal/drawer capture),
  * and also yields when an open [modal-overlay] or [drawer-overlay] exists
- * or the event is already defaultPrevented (same courtesy as toast).
- * Opening one managed popover closes the others. Modal / drawer are not
- * auto-closed.
+ * or the event is already defaultPrevented (those dialogs own Escape).
+ * Combobox / toast / tooltip yield to an open popover. Opening one managed
+ * popover closes the others. Modal / drawer are not auto-closed.
  */
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
 export type PopoverOptions = {
