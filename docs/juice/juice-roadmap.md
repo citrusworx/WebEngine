@@ -36,6 +36,9 @@ Pending Juice changesets on master (consume them at the next cut; Juice-only if 
 | `juice-switch-theme-chrome` | **minor** | Switch theme chrome roles (`--juice-switch-*`) |
 | `juice-switch-runtime` | **minor** | DOM-first APG switch runtime (`createSwitch`, toggle / setChecked) |
 | `juice-switch-runtime-docs` | **patch** | Switch runtime / maturity docs (slice C) |
+| `juice-slider-theme-chrome` | **minor** | Slider theme chrome roles (`--juice-slider-*`) |
+| `juice-slider-runtime` | **minor** | DOM-first APG slider runtime (`createSlider`, setValue / keyboard / pointer) |
+| `juice-slider-runtime-docs` | **patch** | Slider runtime / maturity docs (slice C) |
 
 Consumed Juice changesets (the 0.7.0 lane):
 
@@ -77,8 +80,8 @@ The visible layers today (0.8.0 plus unreleased master):
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
 * surface language A–C: themeable `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`
-* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, and switch auto-enhance when the JS entry is imported. Switch is on master and is not in the 0.8.0 npm cut
-* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, or Sig Switch factory)
+* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, and slider auto-enhance when the JS entry is imported. Switch and slider are on master and are not in the 0.8.0 npm cut
+* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, or Sig Slider factory)
 * contracts for themes, icons, and typography, including author type overrides
 * templates as a stress-test bed
 
@@ -89,14 +92,14 @@ The next strongest areas are now:
 * modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one)
 * motion wave 1 (P0 + P1)
 * surface utilities A–C
-* accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, and switch chrome plus DOM-first auto-enhance
+* accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, and slider chrome plus DOM-first auto-enhance
 * documented theme / icon / typography contracts
 * templates as design proofs
 
 The weakest areas are still:
 
 * remaining surface depth (structural `card="…"` recipes; `shadowTone`, `overlay`, and `variant` utilities are in)
-* component maturity beyond the thirteen auto-enhance runtimes
+* component maturity beyond the fourteen auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
 * Juice CLI and config / generator workflow
@@ -156,7 +159,8 @@ This is the stack that shipped in 0.8.0.
 
 This is the stack on master that is not in the 0.8.0 tarball.
 
-* **Switch A→B→C.** Shared `--juice-switch-*` roles for `[switch]` (#179). DOM-first APG switch runtime (#181): `createSwitch` / `initSwitch` / `startSwitchRuntime` / `stopSwitchRuntime`, auto-boot, `toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, `role="switch"` plus binary `aria-checked` on button hosts (checkbox-backed hosts stay honest with `:checked`). Click and Enter/Space toggle. Disabled / `aria-disabled` ignored. Authors must supply the accessible name. No focus trap, no Escape steal, no tri-state, no menuitemcheckbox, no Sig Switch factory. Runtime docs and maturity notes in this pass. Switch is the thirteenth Emerging auto-enhance runtime. Still unpublished vs 0.8.0.
+* **Switch A→B→C.** Shared `--juice-switch-*` roles for `[switch]` (#179). DOM-first APG switch runtime (#181): `createSwitch` / `initSwitch` / `startSwitchRuntime` / `stopSwitchRuntime`, auto-boot, `toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, `role="switch"` plus binary `aria-checked` on button hosts (checkbox-backed hosts stay honest with `:checked`). Click and Enter/Space toggle. Disabled / `aria-disabled` ignored. Authors must supply the accessible name. No focus trap, no Escape steal, no tri-state, no menuitemcheckbox, no Sig Switch factory. Runtime docs and maturity notes are on master. Switch is the thirteenth Emerging auto-enhance runtime. Still unpublished vs 0.8.0.
+* **Slider A→B→C.** Shared `--juice-slider-*` roles for `[slider]` / `[slider-fill]` / `[slider-thumb]` (#183). DOM-first APG slider runtime (#185): `createSlider` / `initSlider` / `startSliderRuntime` / `stopSliderRuntime`, auto-boot, `setValue` / `getValue` / `increment` / `decrement`, `role="slider"` plus `aria-valuemin` / `aria-valuemax` / `aria-valuenow` on `[slider-thumb]`, and `--juice-slider-ratio` on the host. Arrows / Home / End / PageUp / PageDown. Pointer jump and drag. Disabled / `aria-disabled` ignored. Authors must supply the accessible name. No Escape, no vertical, no multi-thumb, no native range restyle, no Sig Slider factory. Runtime docs and maturity notes in this pass. Slider is the fourteenth Emerging auto-enhance runtime. Still unpublished vs 0.8.0.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
@@ -188,7 +192,7 @@ Authors can compose visual character with the shipped utilities. Structural card
 
 ### 2. Components Are Uneven Beyond the Runtimes
 
-Accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, and switch have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, or Sig Switch factory. Switch is unpublished versus 0.8.0.
+Accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, and slider have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, or Sig Slider factory. Switch and slider are unpublished versus 0.8.0.
 
 That is not the same as a polished component library. Cards, buttons, forms, and nav variants are useful and still settling. Prop contracts for styling internal parts are still being figured out. Juice should not pretend the exported component surface is broader or more mature than it is.
 
@@ -216,7 +220,7 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 ### Closed / done on master (old P1–P3, plus 0.6.0, 0.7.0, and 0.8.0 publish)
 
-These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0. Those twelve stay Emerging. Switch A→B→C is done on master (unpublished vs 0.8.0). Switch is the thirteenth Emerging auto-enhance runtime.
+These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0. Those twelve stay Emerging. Switch A→B→C and slider A→B→C are done on master (unpublished vs 0.8.0). Switch is the thirteenth Emerging auto-enhance runtime. Slider is the fourteenth.
 
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
@@ -253,11 +257,13 @@ Banner **A→B→C shipped in 0.8.0**: theme chrome (`--juice-banner-*`), dismis
 
 Menu **A→B→C shipped in 0.8.0**: theme chrome (`--juice-menu-*`), APG menu-button runtime, and runtime / maturity docs. Valid `[menu-root]` markup auto-enhances. Menu is the twelfth Emerging auto-enhance runtime.
 
-Switch **A→B→C is done on master** (still unpublished vs 0.8.0): theme chrome (`--juice-switch-*`), APG switch runtime, and runtime / maturity docs. Valid `[switch]` markup auto-enhances. Switch is the thirteenth Emerging auto-enhance runtime. No tri-state. Authors must supply the accessible name. No Sig Switch factory. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, or Sig Switch factory stays later. Grow the next runtime only when that markup contract stays honest.
+Switch **A→B→C is done on master** (still unpublished vs 0.8.0): theme chrome (`--juice-switch-*`), APG switch runtime, and runtime / maturity docs. Valid `[switch]` markup auto-enhances. Switch is the thirteenth Emerging auto-enhance runtime. No tri-state. Authors must supply the accessible name. No Sig Switch factory.
+
+Slider **A→B→C is done on master** (still unpublished vs 0.8.0): theme chrome (`--juice-slider-*`), APG slider runtime, and runtime / maturity docs. Valid `[slider]` markup auto-enhances. Slider is the fourteenth Emerging auto-enhance runtime. Horizontal only. No vertical, no multi-thumb, no native `<input type="range">` restyle, and no Escape. Authors must supply the accessible name. No Sig Slider factory. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, or Sig Slider factory stays later. Grow the next runtime only when that markup contract stays honest.
 
 Short-term focus remains:
 
-* keep navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, and switch documented as Emerging until they settle
+* keep navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, and slider documented as Emerging until they settle
 * improve component authoring patterns
 * ensure anything newly exported is actually ready
 * grow the next runtime only when that markup contract stays honest
@@ -279,10 +285,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0 (chrome, runtime, docs). Switch A→B→C is done on master (chrome, runtime, docs; unpublished vs 0.8.0). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner / menu / switch Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0 (chrome, runtime, docs). Switch A→B→C and slider A→B→C are done on master (chrome, runtime, docs; unpublished vs 0.8.0). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner / menu / switch / slider Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard / tooltip / combobox / banner / polish / menu A→B→C in the 0.8.0 npm publish, and switch A→B→C on master (unpublished vs 0.8.0). Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard / tooltip / combobox / banner / polish / menu A→B→C in the 0.8.0 npm publish, and switch A→B→C plus slider A→B→C on master (unpublished vs 0.8.0). Do not invent a next version number; the next cut happens when new Juice changesets exist.
 
 ---
 
@@ -296,12 +302,12 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 **0.8.0 is the live npm cut** for wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C. Those twelve stay Emerging.
 
-Master is ahead of that cut. Switch A→B→C is on master and unpublished. Switch is the thirteenth Emerging auto-enhance runtime. Do not invent a next version number.
+Master is ahead of that cut. Switch A→B→C and slider A→B→C are on master and unpublished. Switch is the thirteenth Emerging auto-enhance runtime. Slider is the fourteenth. Do not invent a next version number.
 
 The next stage is post-0.8.0 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are in 0.8.0; switch A→B→C is done on master (still unpublished vs 0.8.0); grow the next runtime only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are in 0.8.0; switch A→B→C and slider A→B→C are done on master (still unpublished vs 0.8.0); grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.

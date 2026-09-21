@@ -123,6 +123,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Banner Runtime](./juice-banner-runtime.md)
 - [Menu Runtime](./juice-menu-runtime.md)
 - [Switch Runtime](./juice-switch-runtime.md)
+- [Slider Runtime](./juice-slider-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.8.0` live on npm)
 
