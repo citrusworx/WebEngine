@@ -691,6 +691,8 @@ describe("Juice build artifacts", () => {
         expect(aquaCss).toContain("--aqua-banner-success: var(--aqua-accent)");
         expect(aquaCss).toContain("--juice-banner-ink: var(--aqua-banner-ink)");
         expect(aquaCss).toContain("button[banner-close]");
+        expect(aquaCss).toContain("border-left: 4px solid var(--juice-banner-success)");
+        expect(aquaCss).toContain("[banner]:not([surfaceTone]):not([banner-tone])");
         expect(aquaCss).not.toMatch(/button\[banner-close\][^{]*\{[^}]*--aqua-button-background/);
         expect(aquaCss).not.toContain("--aqua-banner-panel-shadow");
 
@@ -698,15 +700,19 @@ describe("Juice build artifacts", () => {
         expect(kiwiCss).toContain("--kw-banner-warning: var(--kw-warm)");
         expect(kiwiCss).toContain("--juice-banner-close: var(--kw-banner-close)");
         expect(kiwiCss).toContain("button[banner-close]");
+        expect(kiwiCss).toContain("border-left: 4px solid var(--juice-banner-warning)");
         expect(kiwiCss).not.toMatch(/button\[banner-close\][^{]*\{[^}]*--kw-cta-background/);
 
         expect(mintCss).toContain("--cm-banner-panel: var(--cm-surface)");
         expect(mintCss).toContain("--juice-banner-ink: var(--cm-banner-ink)");
         expect(mintCss).toContain("button[banner-close]");
+        expect(mintCss).toContain("border-left: 4px solid var(--juice-banner-info)");
 
         expect(tideCss).toContain("--tide-banner-panel: var(--tide-surface-strong)");
         expect(tideCss).toContain("--juice-banner-ink: var(--tide-banner-ink)");
         expect(tideCss).toContain("button[banner-close]");
+        expect(tideCss).toContain("border-left: 4px solid var(--juice-banner-error)");
+        expect(tideCss).toContain("[banner]:not([surfaceTone]):not([banner-tone])");
         expect(tideCss).not.toMatch(/button\[banner-close\][^{]*\{[^}]*--tide-button-background/);
         expect(tideCss).not.toContain("--tide-banner-panel: var(--tide-page)");
     });

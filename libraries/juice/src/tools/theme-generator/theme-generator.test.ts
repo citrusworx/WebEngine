@@ -277,6 +277,10 @@ describe("Juice theme generator surface tone roles", () => {
             expect(css).toContain(`--juice-banner-${role}: var(--jx-banner-${role})`);
         }
 
+        expect(css).toContain("border-left: 4px solid var(--juice-banner-success)");
+        expect(css).toContain("[banner]:not([surfaceTone]):not([banner-tone])");
+        expect(css).not.toMatch(/\[banner\]\[banner-tone=["']?success["']?\][^{]*\{[^}]*border-left-color/);
+
         const closeBlocks = [...css.matchAll(/button\[banner-close\][^{]*\{[^}]+\}/g)].map(
             (match) => match[0]
         );
