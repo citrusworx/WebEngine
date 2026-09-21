@@ -387,7 +387,7 @@ describe('createCombobox', () => {
     outside?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(list?.hasAttribute('hidden')).toBe(true);
 
-    input?.focus();
+    controller.open();
     expect(list?.hasAttribute('hidden')).toBe(false);
 
     input?.dispatchEvent(
