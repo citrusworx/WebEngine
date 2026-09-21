@@ -170,3 +170,13 @@ export type {
     BreadcrumbController,
     BreadcrumbOptions
 } from "./src/breadcrumb/breadcrumb-runtime.js";
+export {
+    createProgress,
+    initProgress,
+    startProgressRuntime,
+    stopProgressRuntime
+} from "./src/progress/progress-runtime.js";
+export type {
+    ProgressController,
+    ProgressOptions
+} from "./src/progress/progress-runtime.js";

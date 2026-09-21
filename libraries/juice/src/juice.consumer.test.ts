@@ -761,6 +761,65 @@ describe("Juice consumer smoke", () => {
         document.body.innerHTML = "";
         controller.destroy();
         module.stopBreadcrumbRuntime();
+        module.stopProgressRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and sync the built progress runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopProgressRuntime();
+        document.body.innerHTML = `
+            <div progress id="upload" aria-valuenow="40" aria-valuetext="40 percent">
+                <span progress-fill></span>
+            </div>
+            <div progress="indeterminate" id="busy" aria-valuenow="15"></div>
+        `;
+
+        const controller = module.createProgress({ root: document.body });
+        const upload = document.getElementById("upload");
+        const busy = document.getElementById("busy");
+
+        expect(upload?.getAttribute("role")).toBe("progressbar");
+        expect(upload?.getAttribute("aria-valuemin")).toBe("0");
+        expect(upload?.getAttribute("aria-valuemax")).toBe("100");
+        expect(upload?.getAttribute("aria-valuenow")).toBe("40");
+        expect(upload?.getAttribute("aria-valuetext")).toBe("40 percent");
+        expect(upload?.style.getPropertyValue("--juice-progress-ratio").trim()).toBe("0.4");
+        expect(upload?.getAttribute("aria-modal")).toBeNull();
+        expect(busy?.getAttribute("progress")).toBe("indeterminate");
+        expect(busy?.hasAttribute("aria-valuenow")).toBe(false);
+        expect(controller.getValue(busy)).toBe(15);
+
+        controller.setValue(70, upload);
+        expect(upload?.getAttribute("aria-valuenow")).toBe("70");
+        expect(upload?.style.getPropertyValue("--juice-progress-ratio").trim()).toBe("0.7");
+        expect(busy?.hasAttribute("aria-valuenow")).toBe(false);
+
+        controller.setIndeterminate(true, upload);
+        expect(upload?.getAttribute("progress")).toBe("indeterminate");
+        expect(upload?.hasAttribute("aria-valuenow")).toBe(false);
+        expect(controller.getValue(upload)).toBe(70);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopProgressRuntime();
+        module.stopBreadcrumbRuntime();
         module.stopRadioRuntime();
         module.stopCheckboxRuntime();
         module.stopSliderRuntime();
