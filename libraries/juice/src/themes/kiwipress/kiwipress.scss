@@ -422,6 +422,22 @@
     --juice-radio-mark: var(--kw-radio-mark);
     --juice-radio-focus-ring: var(--kw-radio-focus-ring);
 
+    /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+       site nav bar and not a kiwi CTA. Surface stays transparent unless a
+       bar is wanted. Distinct from tabs, wizard steps, and pagination. */
+    --kw-breadcrumb-ink: var(--kw-text-muted);
+    --kw-breadcrumb-ink-current: var(--kw-heading);
+    --kw-breadcrumb-ink-hover: var(--kw-accent);
+    --kw-breadcrumb-separator: var(--kw-border);
+    --kw-breadcrumb-focus-ring: var(--kw-accent);
+    --kw-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--kw-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--kw-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--kw-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--kw-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--kw-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--kw-breadcrumb-surface);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -2057,6 +2073,53 @@
 [theme="kiwipress"] button[radio]:focus-visible,
 [theme="kiwipress"] [radio]:focus-visible {
     outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a kiwi CTA. Runtime is later. */
+[theme="kiwipress"] [breadcrumb],
+[theme="kiwipress"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="kiwipress"] [breadcrumb] a,
+[theme="kiwipress"] [breadcrumb-link],
+[theme="kiwipress"] a[breadcrumb-link],
+[theme="kiwipress"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="kiwipress"] [breadcrumb] a:hover,
+[theme="kiwipress"] [breadcrumb-link]:hover,
+[theme="kiwipress"] a[breadcrumb-link]:hover,
+[theme="kiwipress"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] [breadcrumb] [aria-current="page"],
+[theme="kiwipress"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="kiwipress"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="kiwipress"] [breadcrumb] a:focus-visible,
+[theme="kiwipress"] [breadcrumb-link]:focus-visible,
+[theme="kiwipress"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
     outline-offset: 2px;
 }
 

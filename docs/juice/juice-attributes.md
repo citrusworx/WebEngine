@@ -413,6 +413,19 @@ Radio is an APG radio in a radiogroup. It is not `[switch]`, not `[checkbox]`, n
 
 See [Radio Runtime](./juice-radio-runtime.md). Theme paint uses `--juice-radio-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
 
+### Breadcrumb
+
+- `breadcrumb` — trail root (boolean attr) on `<nav breadcrumb>` or `<ol breadcrumb>`. A boolean `[breadcrumb]` attribute is fine: there is no HTML global `breadcrumb` attribute
+- `breadcrumb-item` — one crumb
+- `breadcrumb-link` — optional. Anchors inside the trail are enough
+- `breadcrumb-separator` — optional explicit separator. When present, it replaces the generated chevron. Authors should aria-hide a custom glyph
+
+The separator is `::after` on every item except the last: a decorative chevron (empty content). Current page is `aria-current="page"` on the last item or its link. Do not style bare `[aria-current="page"]` outside the trail. `nav[type="breadcrumb"]` is an older layout pattern and is not this chrome.
+
+Breadcrumb is an APG-inspired navigation trail. It is not the site `[nav]` / navigation runtime, not tabs, not the wizard step tracker, and not pagination. Inline nav chrome — no overlay z-index. This slice is theme chrome only. Runtime B can sync `aria-current`. There is no Sig Breadcrumb factory.
+
+Theme paint uses `--juice-breadcrumb-*` roles (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`). Shipped themes bind `surface` to `transparent` so the trail stays inline. Point that role at a surface token when crumbs sit on a bar.
+
 ### Slider
 
 - `slider` — track host. Boolean attr, or `slider="horizontal"`. `slider="vertical"` is later; this slice does not paint or enhance a vertical axis. A boolean `[slider]` attribute is fine: there is no HTML global `slider` attribute. Do not restyle bare `[role="slider"]`

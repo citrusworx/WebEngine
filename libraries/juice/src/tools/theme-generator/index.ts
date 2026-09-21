@@ -712,6 +712,23 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-radio-mark: var(--jx-radio-mark);
     --juice-radio-focus-ring: var(--jx-radio-focus-ring);
 
+    /* Breadcrumb chrome — APG trail from existing --jx-* tokens.
+       Inline, not a site nav bar and not the CTA fill. Surface stays
+       transparent unless a bar is wanted. Distinct from tabs, wizard
+       steps, and pagination. */
+    --jx-breadcrumb-ink: var(--jx-text-muted);
+    --jx-breadcrumb-ink-current: var(--jx-heading);
+    --jx-breadcrumb-ink-hover: var(--jx-accent);
+    --jx-breadcrumb-separator: var(--jx-border);
+    --jx-breadcrumb-focus-ring: var(--jx-accent);
+    --jx-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--jx-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--jx-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--jx-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--jx-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--jx-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--jx-breadcrumb-surface);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1386,6 +1403,49 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [radio]:focus-visible,
 [theme="${config.id}"] button[radio]:focus-visible {
     outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [breadcrumb],
+[theme="${config.id}"] nav[breadcrumb] {
+    background: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="${config.id}"] [breadcrumb] a,
+[theme="${config.id}"] [breadcrumb-link],
+[theme="${config.id}"] a[breadcrumb-link],
+[theme="${config.id}"] button[breadcrumb-link] {
+    background: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="${config.id}"] [breadcrumb] a:hover,
+[theme="${config.id}"] [breadcrumb-link]:hover,
+[theme="${config.id}"] a[breadcrumb-link]:hover,
+[theme="${config.id}"] button[breadcrumb-link]:hover {
+    background: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [breadcrumb] [aria-current="page"],
+[theme="${config.id}"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="${config.id}"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="${config.id}"] [breadcrumb] a:focus-visible,
+[theme="${config.id}"] [breadcrumb-link]:focus-visible,
+[theme="${config.id}"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
     outline-offset: 2px;
 }
 

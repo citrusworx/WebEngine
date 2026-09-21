@@ -349,6 +349,22 @@
   --juice-radio-border-checked: var(--cm-radio-border-checked);
   --juice-radio-mark: var(--cm-radio-mark);
   --juice-radio-focus-ring: var(--cm-radio-focus-ring);
+  /* Breadcrumb chrome — thinner --cm-* set. Heading stands in for accent.
+     Inline trail, not a site nav bar and not heading-fill. Surface stays
+     transparent unless a bar is wanted. Distinct from tabs, wizard steps,
+     and pagination. */
+  --cm-breadcrumb-ink: var(--cm-text-muted);
+  --cm-breadcrumb-ink-current: var(--cm-heading);
+  --cm-breadcrumb-ink-hover: var(--cm-heading);
+  --cm-breadcrumb-separator: var(--cm-border);
+  --cm-breadcrumb-focus-ring: var(--cm-heading);
+  --cm-breadcrumb-surface: transparent;
+  --juice-breadcrumb-ink: var(--cm-breadcrumb-ink);
+  --juice-breadcrumb-ink-current: var(--cm-breadcrumb-ink-current);
+  --juice-breadcrumb-ink-hover: var(--cm-breadcrumb-ink-hover);
+  --juice-breadcrumb-separator: var(--cm-breadcrumb-separator);
+  --juice-breadcrumb-focus-ring: var(--cm-breadcrumb-focus-ring);
+  --juice-breadcrumb-surface: var(--cm-breadcrumb-surface);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -925,5 +941,49 @@
 [theme=citrusmint] button[radio]:focus-visible,
 [theme=citrusmint] [radio]:focus-visible {
   outline: 2px solid var(--juice-radio-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not heading-fill. Runtime is later. */
+[theme=citrusmint] [breadcrumb],
+[theme=citrusmint] nav[breadcrumb] {
+  background-color: var(--juice-breadcrumb-surface);
+  border: none;
+  box-shadow: none;
+  color: var(--juice-breadcrumb-ink);
+}
+
+[theme=citrusmint] [breadcrumb] a,
+[theme=citrusmint] [breadcrumb-link],
+[theme=citrusmint] a[breadcrumb-link],
+[theme=citrusmint] button[breadcrumb-link] {
+  background-color: transparent;
+  color: var(--juice-breadcrumb-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=citrusmint] [breadcrumb] a:hover,
+[theme=citrusmint] [breadcrumb-link]:hover,
+[theme=citrusmint] a[breadcrumb-link]:hover,
+[theme=citrusmint] button[breadcrumb-link]:hover {
+  background-color: transparent;
+  color: var(--juice-breadcrumb-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] [breadcrumb] [aria-current=page],
+[theme=citrusmint] [breadcrumb] [aria-current=page] :is(a, [breadcrumb-link]),
+[theme=citrusmint] [breadcrumb-link][aria-current=page] {
+  color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme=citrusmint] [breadcrumb] a:focus-visible,
+[theme=citrusmint] [breadcrumb-link]:focus-visible,
+[theme=citrusmint] button[breadcrumb-link]:focus-visible {
+  outline: 2px solid var(--juice-breadcrumb-focus-ring);
   outline-offset: 2px;
 }

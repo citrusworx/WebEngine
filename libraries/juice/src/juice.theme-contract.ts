@@ -195,6 +195,16 @@ export const REQUIRED_RADIO_ROLES = [
     "focus-ring",
 ] as const;
 
+/** Breadcrumb chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_BREADCRUMB_ROLES = [
+    "ink",
+    "ink-current",
+    "ink-hover",
+    "separator",
+    "focus-ring",
+    "surface",
+] as const;
+
 /** Wizard chrome — required on every shipped library theme and generated `--jx-*` themes. */
 export const REQUIRED_WIZARD_ROLES = [
     "shell",
@@ -307,6 +317,10 @@ export function requiredRadioBinds(): string[] {
     return REQUIRED_RADIO_ROLES.map((role) => `--juice-radio-${role}`);
 }
 
+export function requiredBreadcrumbBinds(): string[] {
+    return REQUIRED_BREADCRUMB_ROLES.map((role) => `--juice-breadcrumb-${role}`);
+}
+
 export function requiredWizardBinds(): string[] {
     return REQUIRED_WIZARD_ROLES.map((role) => `--juice-wizard-${role}`);
 }
@@ -352,6 +366,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredSliderBinds(),
         ...requiredCheckboxBinds(),
         ...requiredRadioBinds(),
+        ...requiredBreadcrumbBinds(),
         ...requiredWizardBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
@@ -387,10 +402,10 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, switch, slider, checkbox, radio, and wizard chrome use `--jx-modal-*` /
+ * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, switch, slider, checkbox, radio, breadcrumb, and wizard chrome use `--jx-modal-*` /
  * `--jx-drawer-*` / `--jx-toast-*` / `--jx-banner-*` / `--jx-popover-*` / `--jx-tooltip-*` /
  * `--jx-combobox-*` / `--jx-menu-*` / `--jx-switch-*` / `--jx-slider-*` / `--jx-checkbox-*` /
- * `--jx-radio-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
+ * `--jx-radio-*` / `--jx-breadcrumb-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -449,6 +464,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_RADIO_ROLES.map((role) => ({
             juice: `--juice-radio-${role}`,
             jx: `--jx-radio-${role}`,
+        })),
+        ...REQUIRED_BREADCRUMB_ROLES.map((role) => ({
+            juice: `--juice-breadcrumb-${role}`,
+            jx: `--jx-breadcrumb-${role}`,
         })),
         ...REQUIRED_WIZARD_ROLES.map((role) => ({
             juice: `--juice-wizard-${role}`,

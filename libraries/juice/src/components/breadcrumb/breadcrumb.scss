@@ -1,0 +1,240 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+
+// Breadcrumb chrome is structural. Color comes from the shared role contract:
+//   --juice-breadcrumb-ink
+//   --juice-breadcrumb-ink-current
+//   --juice-breadcrumb-ink-hover
+//   --juice-breadcrumb-separator
+//   --juice-breadcrumb-focus-ring
+//   --juice-breadcrumb-surface
+// Themes bind those names (and optional --aqua-breadcrumb-* / --kw-breadcrumb-* /
+// --cm-breadcrumb-* / --tide-breadcrumb-* / --jx-breadcrumb-* aliases) from
+// existing identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG-inspired Breadcrumb trail. Distinct from:
+//   - site [nav] / navigation runtime (menus, responsive nav)
+//   - nav[type="breadcrumb"] (older layout pattern in nav.scss; left alone)
+//   - tabs / wizard step tracker
+//   - nav[type="pagination"]
+//
+// Native collision: there is no HTML *global* `breadcrumb` attribute. A
+// boolean [breadcrumb] attribute has no platform behavior. Do not restyle
+// bare [aria-current="page"] outside this trail.
+//
+// Juice names:
+//   [breadcrumb]       trail root. Authors use <nav breadcrumb> or
+//                      <ol breadcrumb>. An inner ol/ul is reset when the
+//                      root is the nav.
+//   [breadcrumb-item]  one crumb. Separator is ::after on every item
+//                      except the last. The mark is a decorative chevron
+//                      (empty content) so it is not announced.
+//   [breadcrumb-link]  optional. Anchors inside the trail are enough;
+//                      this attr covers a non-anchor crumb control.
+//   [breadcrumb-separator]
+//                      optional explicit separator. When an item contains
+//                      one, or the next sibling is one, the generated
+//                      chevron is suppressed. Authors should aria-hide a
+//                      custom glyph. This slice does not invent ARIA.
+//
+// Current page: aria-current="page" on the last item or its link. Chrome
+// paints that as ink-current. Runtime B can sync it. Do not style
+// aria-current outside [breadcrumb].
+//
+// surface is the trail background. Shipped themes bind transparent so the
+// trail stays inline. Rebind it to a surface token when crumbs sit on a bar.
+//
+// z-index: inline / block nav chrome. No overlay band.
+
+@function -juice-breadcrumb-role($name, $fallback) {
+    @return var(
+        --juice-breadcrumb-#{$name},
+        var(--aqua-breadcrumb-#{$name}, var(--kw-breadcrumb-#{$name}, var(--cm-breadcrumb-#{$name}, var(--tide-breadcrumb-#{$name}, var(--jx-breadcrumb-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-breadcrumb-ink: -juice-breadcrumb-role(ink, #{$black-600});
+$_juice-breadcrumb-ink-current: -juice-breadcrumb-role(ink-current, #{$black-900});
+$_juice-breadcrumb-ink-hover: -juice-breadcrumb-role(ink-hover, #{$black-800});
+$_juice-breadcrumb-separator: -juice-breadcrumb-role(separator, #{$gray-700});
+$_juice-breadcrumb-surface: -juice-breadcrumb-role(surface, transparent);
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(nav) bars and :where(a) link color. Themes realize
+// color through the roles.
+
+[breadcrumb],
+[theme] [breadcrumb] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background-color: $_juice-breadcrumb-surface;
+    background-image: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: $_juice-breadcrumb-ink;
+    font: inherit;
+    line-height: 1.4;
+}
+
+[breadcrumb] > ol,
+[breadcrumb] > ul,
+[theme] [breadcrumb] > ol,
+[theme] [breadcrumb] > ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+}
+
+[breadcrumb-item],
+[theme] [breadcrumb-item] {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    color: $_juice-breadcrumb-ink;
+    white-space: nowrap;
+}
+
+[breadcrumb] a,
+[breadcrumb-link],
+a[breadcrumb-link],
+button[breadcrumb-link],
+[theme] [breadcrumb] a,
+[theme] [breadcrumb-link],
+[theme] a[breadcrumb-link],
+[theme] button[breadcrumb-link] {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0.125rem;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: $_juice-breadcrumb-ink;
+    font: inherit;
+    line-height: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+[breadcrumb] a:hover,
+[breadcrumb-link]:hover,
+a[breadcrumb-link]:hover,
+button[breadcrumb-link]:hover,
+[theme] [breadcrumb] a:hover,
+[theme] [breadcrumb-link]:hover,
+[theme] a[breadcrumb-link]:hover,
+[theme] button[breadcrumb-link]:hover {
+    color: $_juice-breadcrumb-ink-hover;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[breadcrumb] [aria-current="page"],
+[breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[breadcrumb-link][aria-current="page"],
+[theme] [breadcrumb] [aria-current="page"],
+[theme] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme] [breadcrumb-link][aria-current="page"] {
+    color: $_juice-breadcrumb-ink-current;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: default;
+}
+
+[breadcrumb] [aria-current="page"]:hover,
+[breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]):hover,
+[breadcrumb-link][aria-current="page"]:hover,
+[theme] [breadcrumb] [aria-current="page"]:hover,
+[theme] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]):hover,
+[theme] [breadcrumb-link][aria-current="page"]:hover {
+    color: $_juice-breadcrumb-ink-current;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+}
+
+[breadcrumb] a:focus-visible,
+[breadcrumb-link]:focus-visible,
+a[breadcrumb-link]:focus-visible,
+button[breadcrumb-link]:focus-visible,
+[theme] [breadcrumb] a:focus-visible,
+[theme] [breadcrumb-link]:focus-visible,
+[theme] a[breadcrumb-link]:focus-visible,
+[theme] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid -juice-breadcrumb-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[breadcrumb-item]:not(:last-child):not(:has([breadcrumb-separator])):not(:has(+ [breadcrumb-separator]))::after,
+[breadcrumb] > a:not(:last-child):not(:has(+ [breadcrumb-separator]))::after,
+[breadcrumb] > [breadcrumb-link]:not(:last-child):not(:has(+ [breadcrumb-separator]))::after,
+[theme] [breadcrumb-item]:not(:last-child):not(:has([breadcrumb-separator])):not(:has(+ [breadcrumb-separator]))::after,
+[theme] [breadcrumb] > a:not(:last-child):not(:has(+ [breadcrumb-separator]))::after,
+[theme] [breadcrumb] > [breadcrumb-link]:not(:last-child):not(:has(+ [breadcrumb-separator]))::after {
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.35rem;
+    height: 0.35rem;
+    margin-inline: 0.55rem 0.15rem;
+    border-top: 1.5px solid $_juice-breadcrumb-separator;
+    border-right: 1.5px solid $_juice-breadcrumb-separator;
+    transform: rotate(45deg);
+    pointer-events: none;
+}
+
+[breadcrumb-separator],
+[theme] [breadcrumb-separator] {
+    display: inline-flex;
+    align-items: center;
+    margin-inline: 0.45rem;
+    color: $_juice-breadcrumb-separator;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [breadcrumb] a,
+    [breadcrumb-link],
+    [theme] [breadcrumb] a,
+    [theme] [breadcrumb-link] {
+        transition: none;
+    }
+}

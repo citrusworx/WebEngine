@@ -539,6 +539,30 @@ describe("Juice build artifacts", () => {
         expect(css).not.toContain("--juice-radiogroup-");
     });
 
+    it("includes breadcrumb structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[breadcrumb]");
+        expect(css).toContain("[breadcrumb-item]");
+        expect(css).toContain("[breadcrumb-link]");
+        expect(css).toContain("[breadcrumb-separator]");
+        expect(css).toMatch(/\[theme\]\s+\[breadcrumb\]/);
+        expect(css).toMatch(/\[breadcrumb\]\s+\[aria-current=["']?page["']?\]/);
+        expect(css).toMatch(/\[breadcrumb-item\]:not\(:last-child\)/);
+        expect(css).toContain("--juice-breadcrumb-ink");
+        expect(css).toContain("--juice-breadcrumb-ink-current");
+        expect(css).toContain("--juice-breadcrumb-ink-hover");
+        expect(css).toContain("--juice-breadcrumb-separator");
+        expect(css).toContain("--juice-breadcrumb-focus-ring");
+        expect(css).toContain("--juice-breadcrumb-surface");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/(^|[,{])\s*\[aria-current=["']?page["']?\]/);
+        expect(css).not.toMatch(/\[breadcrumb\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[breadcrumb\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[breadcrumb\][^{]*\{[^}]*--juice-tabs-text/);
+        expect(css).not.toMatch(/nav\[type=["']?breadcrumb["']?\][^{]*--juice-breadcrumb-ink/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1109,6 +1133,46 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toMatch(/button\[radio\][^{]*\{[^}]*--tide-button-background/);
         expect(tideCss).not.toContain("--tide-radio-control: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-radio-mark: var(--tide-page)");
+    });
+
+    it("binds breadcrumb chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-breadcrumb-ink: var(--aqua-text-muted)");
+        expect(aquaCss).toContain("--aqua-breadcrumb-ink-current: var(--aqua-heading)");
+        expect(aquaCss).toContain("--aqua-breadcrumb-ink-hover: var(--aqua-accent)");
+        expect(aquaCss).toContain("--aqua-breadcrumb-surface: transparent");
+        expect(aquaCss).toContain("--juice-breadcrumb-focus-ring: var(--aqua-breadcrumb-focus-ring)");
+        expect(aquaCss).toContain("[breadcrumb]");
+        expect(aquaCss).toMatch(/\[aria-current=["']?page["']?\]/);
+        expect(aquaCss).not.toMatch(/(^|[,{])\s*\[aria-current=["']?page["']?\]/);
+        expect(aquaCss).not.toContain("--aqua-breadcrumb-surface: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-breadcrumb-ink: var(--aqua-accent)");
+
+        expect(kiwiCss).toContain("--kw-breadcrumb-ink: var(--kw-text-muted)");
+        expect(kiwiCss).toContain("--juice-breadcrumb-ink-hover: var(--kw-breadcrumb-ink-hover)");
+        expect(kiwiCss).toContain("--kw-breadcrumb-surface: transparent");
+        expect(kiwiCss).toContain("[breadcrumb-link]");
+        expect(kiwiCss).not.toMatch(/\[breadcrumb-link\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[breadcrumb-link\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-breadcrumb-ink: var(--cm-text-muted)");
+        expect(mintCss).toContain("--cm-breadcrumb-ink-hover: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-breadcrumb-focus-ring: var(--cm-breadcrumb-focus-ring)");
+        expect(mintCss).toContain("--cm-breadcrumb-surface: transparent");
+        expect(mintCss).toContain("[breadcrumb]");
+
+        expect(tideCss).toContain("--tide-breadcrumb-ink: var(--tide-text-muted)");
+        expect(tideCss).toContain("--tide-breadcrumb-ink-current: var(--tide-heading)");
+        expect(tideCss).toContain("--tide-breadcrumb-surface: transparent");
+        expect(tideCss).toContain("--juice-breadcrumb-separator: var(--tide-breadcrumb-separator)");
+        expect(tideCss).toContain("[breadcrumb]");
+        expect(tideCss).not.toMatch(/\[breadcrumb-link\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-breadcrumb-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-breadcrumb-ink-current: var(--tide-page)");
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
