@@ -1,16 +1,9 @@
-import { Categories } from "../categories/categories.js";
-import { Comments } from "../comments/comments.js";
 import { createNativeCms, type NativeCms } from "./native.js";
 import type { CmsPersistence } from "./persistence.js";
 import { NectarineStore } from "./store.js";
 import type { CmsMode } from "./types.js";
-import { Media } from "../media/media.js";
-import { Pages } from "../pages/pages.js";
-import { Posts } from "../posts/posts.js";
-import { Tags } from "../tags/tags.js";
-import { Users } from "../users/users.js";
 import { WPAuth } from "../core/WPAuth.js";
-import { WPSync, type WordPressClients } from "../core/WPSync.js";
+import { createWordPressClients, WPSync, type WordPressClients } from "../core/WPSync.js";
 import type { WPCoreConfig } from "../core/WPCore.js";
 
 export type KiwiPressConfig = Partial<WPCoreConfig> & {
@@ -43,15 +36,7 @@ export class KiwiPress {
 
         if (url) {
             const wordpressConfig = { ...config, url };
-            this.wp = {
-                posts: new Posts(wordpressConfig),
-                pages: new Pages(wordpressConfig),
-                users: new Users(wordpressConfig),
-                categories: new Categories(wordpressConfig),
-                tags: new Tags(wordpressConfig),
-                comments: new Comments(wordpressConfig),
-                media: new Media(wordpressConfig)
-            };
+            this.wp = createWordPressClients(wordpressConfig);
             this.sync = new WPSync(this.wp, this.store, url);
         } else if (this.mode === "wordpress") {
             throw new Error("KiwiPress requires a WordPress URL via config.url or process.env.WP_URL.");

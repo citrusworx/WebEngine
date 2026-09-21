@@ -1,7 +1,9 @@
 import { Categories } from "../categories/categories.js";
 import { Comments } from "../comments/comments.js";
+import { CustomPostType } from "../cpt/cpt.js";
 import { NectarineStore } from "../cms/store.js";
 import type { CmsCollection, TransferPreview, TransferResult } from "../cms/types.js";
+import type { WPCoreConfig } from "./WPCore.js";
 import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
@@ -15,7 +17,9 @@ export type WordPressClients = {
     tags: Tags;
     comments: Comments;
     media: Media;
+    cpt(restBase: string): CustomPostType;
 };
+export declare function createWordPressClients(config: Partial<WPCoreConfig>): WordPressClients;
 export declare class WPSync {
     private readonly wordpress;
     private readonly store;

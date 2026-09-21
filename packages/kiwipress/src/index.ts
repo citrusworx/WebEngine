@@ -35,3 +35,6 @@ export * from "./users/users.js";
 export * from "./media/routes.js";
 export * from "./media/media.js";
 export * from "./media/upload.js";
+export * from "./cpt/rest-base.js";
+export * from "./cpt/routes.js";
+export * from "./cpt/cpt.js";

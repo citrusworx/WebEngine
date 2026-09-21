@@ -1,25 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { NectarineStore } from "../cms/store.js";
-import { Posts } from "../posts/posts.js";
-import { Pages } from "../pages/pages.js";
-import { Users } from "../users/users.js";
-import { Categories } from "../categories/categories.js";
-import { Tags } from "../tags/tags.js";
-import { Comments } from "../comments/comments.js";
-import { Media } from "../media/media.js";
-import { WPSync } from "./WPSync.js";
+import { createWordPressClients, WPSync } from "./WPSync.js";
 
 function wordpressClients(url = "https://example.com") {
-    const config = { url, apiBase: "wp-json/wp/v2" };
-    return {
-        posts: new Posts(config),
-        pages: new Pages(config),
-        users: new Users(config),
-        categories: new Categories(config),
-        tags: new Tags(config),
-        comments: new Comments(config),
-        media: new Media(config)
-    };
+    return createWordPressClients({ url, apiBase: "wp-json/wp/v2" });
 }
 
 function wpPage(body: unknown, totalPages = 1) {

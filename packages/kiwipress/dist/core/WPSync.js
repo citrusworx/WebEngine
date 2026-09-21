@@ -1,4 +1,26 @@
+import { Categories } from "../categories/categories.js";
+import { Comments } from "../comments/comments.js";
+import { CustomPostType } from "../cpt/cpt.js";
 import { normalizeWordPressCollection } from "./normalize.js";
+import { Media } from "../media/media.js";
+import { Pages } from "../pages/pages.js";
+import { Posts } from "../posts/posts.js";
+import { Tags } from "../tags/tags.js";
+import { Users } from "../users/users.js";
+export function createWordPressClients(config) {
+    return {
+        posts: new Posts(config),
+        pages: new Pages(config),
+        users: new Users(config),
+        categories: new Categories(config),
+        tags: new Tags(config),
+        comments: new Comments(config),
+        media: new Media(config),
+        cpt(restBase) {
+            return new CustomPostType(config, restBase);
+        }
+    };
+}
 const DEFAULT_COLLECTIONS = [
     "posts",
     "pages",
