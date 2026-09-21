@@ -1,10 +1,4 @@
 import "@citrusworx/juiceui";
-import "@citrusworx/juiceui/styles";
-import "@citrusworx/juiceui/styles/themes/kiwipress";
-import "@citrusworx/juiceui/styles/themes/tide";
-import "@citrusworx/juiceui/styles/themes/citrusmint";
-import "@citrusworx/juiceui/styles/themes/aquaflux";
-import "./shell.css";
 
 const THEMES = ["kiwipress", "tide", "citrusmint", "aquaflux"] as const;
 
