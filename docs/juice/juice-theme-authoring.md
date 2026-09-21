@@ -75,6 +75,7 @@ A healthy Juice theme should own:
 - modal chrome roles (`--juice-modal-*`, bound from theme identity tokens)
 - drawer chrome roles (`--juice-drawer-*`, bound from theme identity tokens)
 - toast chrome roles (`--juice-toast-*`, bound from theme identity tokens)
+- banner chrome roles (`--juice-banner-*`, bound from theme identity tokens)
 - popover chrome roles (`--juice-popover-*`, bound from theme identity tokens)
 - tooltip chrome roles (`--juice-tooltip-*`, bound from theme identity tokens)
 - combobox chrome roles (`--juice-combobox-*`, bound from theme identity tokens)
@@ -225,6 +226,7 @@ The generated stylesheet currently defines:
 - modal chrome role bindings (`--jx-modal-*` / `--juice-modal-*`) and close-button CTA overrides for `[modal-close]`
 - drawer chrome role bindings (`--jx-drawer-*` / `--juice-drawer-*`) and close-button CTA overrides for `[drawer-close]`
 - toast chrome role bindings (`--jx-toast-*` / `--juice-toast-*`) and close-button CTA overrides for `[toast-close]`
+- banner chrome role bindings (`--jx-banner-*` / `--juice-banner-*`) and close-button CTA overrides for `[banner-close]`
 - popover chrome role bindings (`--jx-popover-*` / `--juice-popover-*`) and close-button CTA overrides for `[popover-close]`
 - tooltip chrome role bindings (`--jx-tooltip-*` / `--juice-tooltip-*`) for `[tooltip-root]` / `[tooltip-panel]`
 - combobox chrome role bindings (`--jx-combobox-*` / `--juice-combobox-*`) and trigger CTA overrides for `[combobox-trigger]`
@@ -291,6 +293,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 `[toast-region]` is a non-modal stack. It is not a dialog overlay, not a modal/drawer scrim, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The region stays in the DOM. Closed vs open for an individual `[toast]` uses the native `hidden` attribute so static open markup demos stay visible. Region position is `[toast-region]` / `[toast-region="top-right"]` (default), `"top-left"`, `"bottom-right"`, `"bottom-left"`. Status is bare `[toast]` (neutral) or `[toast="success|error|info|warning"]`. The toast runtime auto-enhances that markup (`show` / `dismiss`, `[toast-close]`, `toast-duration`) — see [Toast Runtime](./juice-toast-runtime.md).
 
 Tide must bind a dark panel (`--tide-surface-strong`), not a white glass toast.
+
+## Banner chrome roles
+
+Library themes bind the shared banner contract so `[banner]` / `[banner-close]` paint is theme-agnostic in `banner.scss`. Required names (`panel`, `panel-border`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`) are listed in the [Theme Contract](./juice-theme-contract.md). There is no panel-shadow role.
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-banner-*`, `--kw-banner-*`, `--cm-banner-*`, `--tide-banner-*`, …). App-owned generated themes use `--jx-banner-*` and bind `--juice-banner-*` from existing `--jx-*` surface/page/text/accent tokens. Do not invent a new hue family just for banner chrome. Status remaps those identity tokens (accent, warm, page-deep, secondary) for a left accent bar plus optional soft panel tint. Close is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[banner-close]` the same way.
+
+Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[banner]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Layout is `[banner]` / `[banner="full"]`. Status is optional `[banner-tone="info|success|warning|error"]` (bare `[banner]` is neutral). This is theme chrome only — there is no banner dismiss runtime yet.
+
+Tide must bind a dark panel (`--tide-surface-strong`), not a white glass banner.
 
 ## Popover chrome roles
 

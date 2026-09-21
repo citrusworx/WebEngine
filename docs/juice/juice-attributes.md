@@ -313,6 +313,17 @@ Toast is non-modal feedback. It is not a dialog overlay and not the surface `ove
 
 See [Toast Runtime](./juice-toast-runtime.md). Theme paint uses `--juice-toast-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`).
 
+### Banner
+
+- `banner` — inline alert / callout (`role="status"` in markup). Value `"full"` is edge-to-edge layout (width 100%, no radius). Bare `[banner]` is inset. Hide with the native `hidden` attribute
+- `banner-tone` — optional status paint; values `"info"` / `"success"` / `"warning"` / `"error"`. Bare `[banner]` without `banner-tone` is neutral. Do not put status on the `banner` attribute — that slot is layout (`full`)
+- `banner-body` — message content
+- `banner-close` — dismiss control (surface paint, not a CTA). Slice A is chrome only; runtime later toggles `hidden`
+
+Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Compose layout and status: `<div banner="full" banner-tone="warning">`.
+
+Theme paint uses `--juice-banner-*` roles (`panel`, `panel-border`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`). There is no panel-shadow role. This is theme chrome only — there is no banner dismiss runtime yet.
+
 ### Popover
 
 - `popover-root` — positioning wrapper / widget root. Hide with the native `hidden` attribute. Values `"top"` / `"bottom"` / `"left"` / `"right"` (bare or unspecified is bottom). The runtime positions the root and flips once to the opposite side if the preferred side overflows

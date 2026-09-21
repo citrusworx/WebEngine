@@ -35,6 +35,7 @@ Pending Juice changesets on master (consume them at the next cut; Juice-only if 
 | `juice-combobox-theme-chrome` | **minor** | Combobox theme chrome roles (`--juice-combobox-*`) |
 | `juice-combobox-runtime` | **minor** | DOM-first combobox listbox runtime (filter, keyboard, exclusive) |
 | `juice-combobox-runtime-docs` | **patch** | Combobox runtime / maturity docs (slice C) |
+| `juice-banner-theme-chrome` | **minor** | Banner theme chrome roles (`--juice-banner-*`) |
 
 Consumed Juice changesets (the 0.6.0 lane):
 

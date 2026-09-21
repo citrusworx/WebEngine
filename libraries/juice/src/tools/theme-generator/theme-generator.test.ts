@@ -9,6 +9,7 @@ import {
     REQUIRED_DRAWER_ROLES,
     REQUIRED_MODAL_ROLES,
     REQUIRED_TOAST_ROLES,
+    REQUIRED_BANNER_ROLES,
     REQUIRED_POPOVER_ROLES,
     REQUIRED_TABS_ROLES,
     REQUIRED_TOOLTIP_ROLES,
@@ -241,6 +242,42 @@ describe("Juice theme generator surface tone roles", () => {
         }
 
         const closeBlocks = [...css.matchAll(/button\[toast-close\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(closeBlocks.length).toBeGreaterThan(0);
+        for (const block of closeBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-banner-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-banner-panel: var(--jx-surface)");
+        expect(css).toContain("--jx-banner-panel-border: var(--jx-border)");
+        expect(css).toContain("--jx-banner-ink: var(--jx-text)");
+        expect(css).toContain("--jx-banner-close: var(--jx-surface)");
+        expect(css).toContain("--jx-banner-close-color: var(--jx-heading)");
+        expect(css).toContain("--jx-banner-close-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-banner-focus-ring: var(--jx-accent)");
+        expect(css).toContain("--jx-banner-success: var(--jx-accent)");
+        expect(css).toContain("--jx-banner-success-soft: var(--jx-accent-soft)");
+        expect(css).toContain("--jx-banner-error: var(--jx-page-deep)");
+        expect(css).toContain("--jx-banner-error-soft: color-mix(in srgb, var(--jx-page-deep) 12%, var(--jx-surface))");
+        expect(css).toContain("--jx-banner-info: var(--jx-accent-secondary)");
+        expect(css).toContain("--jx-banner-info-soft: var(--jx-accent-tint)");
+        expect(css).toContain("--jx-banner-warning: var(--jx-warm)");
+        expect(css).toContain("--jx-banner-warning-soft: var(--jx-warm-soft)");
+        expect(css).not.toContain("--jx-banner-panel-shadow");
+        expect(css).not.toContain("--juice-banner-panel-shadow");
+
+        for (const role of REQUIRED_BANNER_ROLES) {
+            expect(css).toContain(`--juice-banner-${role}: var(--jx-banner-${role})`);
+        }
+
+        const closeBlocks = [...css.matchAll(/button\[banner-close\][^{]*\{[^}]+\}/g)].map(
             (match) => match[0]
         );
 

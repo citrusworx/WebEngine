@@ -243,6 +243,46 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[toast-region\][^{]*\{[^}]*--juice-modal-overlay/);
     });
 
+    it("includes banner structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[banner]");
+        expect(css).toContain("[banner-body]");
+        expect(css).toContain("[banner-close]");
+        expect(css).toMatch(/\[theme\]\s+\[banner\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[banner-body\]/);
+        expect(css).toMatch(/\[theme\]\s+\[banner-close\]/);
+        expect(css).toMatch(/\[banner\]\[hidden\]/);
+        expect(css).toMatch(/\[banner=["']?full["']?\]/);
+        expect(css).toMatch(/\[banner-tone=["']?success["']?\]/);
+        expect(css).toMatch(/\[banner-tone=["']?error["']?\]/);
+        expect(css).toMatch(/\[banner-tone=["']?info["']?\]/);
+        expect(css).toMatch(/\[banner-tone=["']?warning["']?\]/);
+        expect(css).toMatch(/\[banner-close\]:focus-visible/);
+        expect(css).toContain("--juice-banner-panel");
+        expect(css).toContain("--juice-banner-panel-border");
+        expect(css).toContain("--juice-banner-ink");
+        expect(css).toContain("--juice-banner-close");
+        expect(css).toContain("--juice-banner-close-color");
+        expect(css).toContain("--juice-banner-close-hover");
+        expect(css).toContain("--juice-banner-focus-ring");
+        expect(css).toContain("--juice-banner-success");
+        expect(css).toContain("--juice-banner-success-soft");
+        expect(css).toContain("--juice-banner-error");
+        expect(css).toContain("--juice-banner-error-soft");
+        expect(css).toContain("--juice-banner-info");
+        expect(css).toContain("--juice-banner-info-soft");
+        expect(css).toContain("--juice-banner-warning");
+        expect(css).toContain("--juice-banner-warning-soft");
+        expect(css).not.toContain("--juice-banner-panel-shadow");
+        expect(css).not.toMatch(/\[banner-close\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[banner\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[banner\][^{]*\{[^}]*--juice-drawer-overlay/);
+        expect(css).not.toMatch(/\[banner\][^{]*\{[^}]*--juice-modal-overlay/);
+        expect(css).not.toMatch(/\[banner\][^{]*\{[^}]*--juice-toast-panel/);
+        expect(css).not.toMatch(/\[banner=["']?success["']?\]/);
+    });
+
     it("includes popover structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -641,6 +681,36 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-toast-panel: var(--tide-page)");
     });
 
+    it("binds banner chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-banner-panel: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-banner-success: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-banner-ink: var(--aqua-banner-ink)");
+        expect(aquaCss).toContain("button[banner-close]");
+        expect(aquaCss).not.toMatch(/button\[banner-close\][^{]*\{[^}]*--aqua-button-background/);
+        expect(aquaCss).not.toContain("--aqua-banner-panel-shadow");
+
+        expect(kiwiCss).toContain("--kw-banner-success: var(--kw-accent)");
+        expect(kiwiCss).toContain("--kw-banner-warning: var(--kw-warm)");
+        expect(kiwiCss).toContain("--juice-banner-close: var(--kw-banner-close)");
+        expect(kiwiCss).toContain("button[banner-close]");
+        expect(kiwiCss).not.toMatch(/button\[banner-close\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-banner-panel: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-banner-ink: var(--cm-banner-ink)");
+        expect(mintCss).toContain("button[banner-close]");
+
+        expect(tideCss).toContain("--tide-banner-panel: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-banner-ink: var(--tide-banner-ink)");
+        expect(tideCss).toContain("button[banner-close]");
+        expect(tideCss).not.toMatch(/button\[banner-close\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-banner-panel: var(--tide-page)");
+    });
+
     it("binds popover chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
@@ -789,6 +859,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-toast-panel: var(--tide-toast-panel)");
         expect(themeCss).toContain("--juice-toast-ink: var(--tide-toast-ink)");
         expect(themeCss).toContain("button[toast-close]");
+        expect(themeCss).toContain("--juice-banner-panel: var(--tide-banner-panel)");
+        expect(themeCss).toContain("--juice-banner-ink: var(--tide-banner-ink)");
+        expect(themeCss).toContain("button[banner-close]");
         expect(themeCss).toContain("--juice-popover-panel: var(--tide-popover-panel)");
         expect(themeCss).toContain("--juice-popover-ink: var(--tide-popover-ink)");
         expect(themeCss).toContain("button[popover-close]");

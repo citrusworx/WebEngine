@@ -159,6 +159,39 @@
     --juice-toast-warning: var(--cm-toast-warning);
     --juice-toast-warning-soft: var(--cm-toast-warning-soft);
 
+    /* Banner chrome — thinner --cm-* set plus wintergreen/lime already
+       used for shadow tone. Close is a surface control, not heading-fill. */
+    --cm-banner-panel: var(--cm-surface);
+    --cm-banner-panel-border: var(--cm-border);
+    --cm-banner-ink: var(--cm-text);
+    --cm-banner-close: var(--cm-surface);
+    --cm-banner-close-color: var(--cm-heading);
+    --cm-banner-close-hover: var(--cm-surface-muted);
+    --cm-banner-focus-ring: var(--cm-heading);
+    --cm-banner-success: var(--cm-heading);
+    --cm-banner-success-soft: var(--cm-surface-muted);
+    --cm-banner-error: #{$wintergreen-900};
+    --cm-banner-error-soft: color-mix(in srgb, #{$wintergreen-900} 10%, var(--cm-surface));
+    --cm-banner-info: var(--cm-text-muted);
+    --cm-banner-info-soft: color-mix(in srgb, var(--cm-text-muted) 12%, var(--cm-surface));
+    --cm-banner-warning: #{$lime-800};
+    --cm-banner-warning-soft: color-mix(in srgb, #{$lime-800} 10%, var(--cm-surface));
+    --juice-banner-panel: var(--cm-banner-panel);
+    --juice-banner-panel-border: var(--cm-banner-panel-border);
+    --juice-banner-ink: var(--cm-banner-ink);
+    --juice-banner-close: var(--cm-banner-close);
+    --juice-banner-close-color: var(--cm-banner-close-color);
+    --juice-banner-close-hover: var(--cm-banner-close-hover);
+    --juice-banner-focus-ring: var(--cm-banner-focus-ring);
+    --juice-banner-success: var(--cm-banner-success);
+    --juice-banner-success-soft: var(--cm-banner-success-soft);
+    --juice-banner-error: var(--cm-banner-error);
+    --juice-banner-error-soft: var(--cm-banner-error-soft);
+    --juice-banner-info: var(--cm-banner-info);
+    --juice-banner-info-soft: var(--cm-banner-info-soft);
+    --juice-banner-warning: var(--cm-banner-warning);
+    --juice-banner-warning-soft: var(--cm-banner-warning-soft);
+
     /* Popover chrome — thinner --cm-* set. Close is a surface control,
        not heading-fill. Distinct from modal/drawer/toast. */
     --cm-popover-panel: var(--cm-surface);
@@ -525,6 +558,70 @@
 [theme="citrusmint"] button[toast-close]:focus-visible,
 [theme="citrusmint"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Citrusmint buttons use heading fill;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="citrusmint"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    border: 1px solid var(--juice-banner-panel-border);
+    color: var(--juice-banner-ink);
+}
+
+[theme="citrusmint"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="citrusmint"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="citrusmint"] [banner][banner-tone="success"] {
+    border-left-color: var(--juice-banner-success);
+}
+
+[theme="citrusmint"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="citrusmint"] [banner][banner-tone="error"] {
+    border-left-color: var(--juice-banner-error);
+}
+
+[theme="citrusmint"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="citrusmint"] [banner][banner-tone="info"] {
+    border-left-color: var(--juice-banner-info);
+}
+
+[theme="citrusmint"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="citrusmint"] [banner][banner-tone="warning"] {
+    border-left-color: var(--juice-banner-warning);
+}
+
+[theme="citrusmint"] button[banner-close],
+[theme="citrusmint"] [banner-close] {
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="citrusmint"] button[banner-close]:hover,
+[theme="citrusmint"] [banner-close]:hover {
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+}
+
+[theme="citrusmint"] button[banner-close]:focus-visible,
+[theme="citrusmint"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
     outline-offset: 2px;
 }
 

@@ -207,6 +207,40 @@
     --juice-toast-warning: var(--kw-toast-warning);
     --juice-toast-warning-soft: var(--kw-toast-warning-soft);
 
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the kiwi CTA. Status remaps
+       kiwi / cornflower / marmalade identity (no new hue family). */
+    --kw-banner-panel: var(--kw-surface);
+    --kw-banner-panel-border: var(--kw-border);
+    --kw-banner-ink: var(--kw-text);
+    --kw-banner-close: var(--kw-surface);
+    --kw-banner-close-color: var(--kw-heading);
+    --kw-banner-close-hover: var(--kw-surface-muted);
+    --kw-banner-focus-ring: var(--kw-accent);
+    --kw-banner-success: var(--kw-accent);
+    --kw-banner-success-soft: var(--kw-accent-soft);
+    --kw-banner-error: var(--kw-surface-deep);
+    --kw-banner-error-soft: color-mix(in srgb, var(--kw-surface-deep) 10%, var(--kw-surface));
+    --kw-banner-info: var(--kw-tier-content);
+    --kw-banner-info-soft: var(--kw-tier-content-soft);
+    --kw-banner-warning: var(--kw-warm);
+    --kw-banner-warning-soft: var(--kw-warm-soft);
+    --juice-banner-panel: var(--kw-banner-panel);
+    --juice-banner-panel-border: var(--kw-banner-panel-border);
+    --juice-banner-ink: var(--kw-banner-ink);
+    --juice-banner-close: var(--kw-banner-close);
+    --juice-banner-close-color: var(--kw-banner-close-color);
+    --juice-banner-close-hover: var(--kw-banner-close-hover);
+    --juice-banner-focus-ring: var(--kw-banner-focus-ring);
+    --juice-banner-success: var(--kw-banner-success);
+    --juice-banner-success-soft: var(--kw-banner-success-soft);
+    --juice-banner-error: var(--kw-banner-error);
+    --juice-banner-error-soft: var(--kw-banner-error-soft);
+    --juice-banner-info: var(--kw-banner-info);
+    --juice-banner-info-soft: var(--kw-banner-info-soft);
+    --juice-banner-warning: var(--kw-banner-warning);
+    --juice-banner-warning-soft: var(--kw-banner-warning-soft);
+
     /* Popover chrome — anchored floating panel from existing tokens.
        Close is a surface control, not the kiwi CTA. */
     --kw-popover-panel: var(--kw-surface);
@@ -1581,6 +1615,71 @@
 [theme="kiwipress"] button[toast-close]:focus-visible,
 [theme="kiwipress"] [toast-close]:focus-visible {
     outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic KiwiPress buttons are kiwi CTAs;
+   [banner-close] stays a surface control. */
+[theme="kiwipress"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    border: 1px solid var(--juice-banner-panel-border);
+    color: var(--juice-banner-ink);
+}
+
+[theme="kiwipress"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="kiwipress"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="kiwipress"] [banner][banner-tone="success"] {
+    border-left-color: var(--juice-banner-success);
+}
+
+[theme="kiwipress"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="kiwipress"] [banner][banner-tone="error"] {
+    border-left-color: var(--juice-banner-error);
+}
+
+[theme="kiwipress"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="kiwipress"] [banner][banner-tone="info"] {
+    border-left-color: var(--juice-banner-info);
+}
+
+[theme="kiwipress"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="kiwipress"] [banner][banner-tone="warning"] {
+    border-left-color: var(--juice-banner-warning);
+}
+
+[theme="kiwipress"] button[banner-close],
+[theme="kiwipress"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[banner-close]:hover,
+[theme="kiwipress"] [banner-close]:hover {
+    background-color: var(--juice-banner-close-hover);
+    transform: none;
+}
+
+[theme="kiwipress"] button[banner-close]:focus-visible,
+[theme="kiwipress"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
     outline-offset: 2px;
 }
 

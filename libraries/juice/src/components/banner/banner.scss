@@ -1,3 +1,68 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+@use '../../tokens/color/green/green.scss' as *;
+@use '../../tokens/color/red/red.scss' as *;
+@use '../../tokens/color/blue/blue.scss' as *;
+@use '../../tokens/color/yellow/yellow.scss' as *;
+
+// Banner chrome is structural. Color comes from the shared role contract:
+//   --juice-banner-panel
+//   --juice-banner-panel-border
+//   --juice-banner-ink
+//   --juice-banner-close
+//   --juice-banner-close-color
+//   --juice-banner-close-hover
+//   --juice-banner-focus-ring
+// Status accents (left bar + optional soft panel tint):
+//   --juice-banner-success / --juice-banner-success-soft
+//   --juice-banner-error / --juice-banner-error-soft
+//   --juice-banner-info / --juice-banner-info-soft
+//   --juice-banner-warning / --juice-banner-warning-soft
+// Themes bind those names (and optional --aqua-banner-* / --kw-banner-* /
+// --cm-banner-* / --tide-banner-* / --jx-banner-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Banner is an inline alert / callout. It is not a toast stack, not a
+// dialog overlay, and not the surface `overlay="frost|tint"` utility.
+// There is no scrim, no region, and no z-index elevation in this cut.
+//
+// Layout vs status stay on separate attrs so `full` does not collide:
+//   [banner] / [banner="full"] — layout (bare is inset; full is edge-to-edge)
+//   [banner-tone="info|success|warning|error"] — optional status paint
+// Bare [banner] without banner-tone is neutral.
+//
+// Closed vs open uses the native `hidden` attribute (display: none).
+// Markup without [hidden] stays visible so static demos keep working.
+// Runtime (later) toggles [hidden] on [banner] and wires [banner-close].
+// Optional surfaceTone on [banner] is allowed; do not force it.
+
+@function -juice-banner-role($name, $fallback) {
+    @return var(
+        --juice-banner-#{$name},
+        var(--aqua-banner-#{$name}, var(--kw-banner-#{$name}, var(--cm-banner-#{$name}, var(--tide-banner-#{$name}, var(--jx-banner-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-banner-panel: -juice-banner-role(panel, #{$white-100});
+$_juice-banner-panel-border: -juice-banner-role(panel-border, #{rgba($gray-300, 0.85)});
+$_juice-banner-ink: -juice-banner-role(ink, #{$black-700});
+$_juice-banner-close: -juice-banner-role(close, #{$white-100});
+$_juice-banner-close-color: -juice-banner-role(close-color, #{$black-700});
+$_juice-banner-close-hover: -juice-banner-role(close-hover, #{$gray-100});
+$_juice-banner-success: -juice-banner-role(success, #{$green-700});
+$_juice-banner-success-soft: -juice-banner-role(success-soft, #{rgba($green-100, 0.92)});
+$_juice-banner-error: -juice-banner-role(error, #{$red-700});
+$_juice-banner-error-soft: -juice-banner-role(error-soft, #{rgba($red-100, 0.92)});
+$_juice-banner-info: -juice-banner-role(info, #{$blue-600});
+$_juice-banner-info-soft: -juice-banner-role(info-soft, #{rgba($blue-100, 0.92)});
+$_juice-banner-warning: -juice-banner-role(warning, #{$yellow-700});
+$_juice-banner-warning-soft: -juice-banner-role(warning-soft, #{rgba($yellow-100, 0.92)});
+
+// [theme] [banner…] must beat theme semantic defaults such as
+// [theme="…"] :where(div) / :where(section, article) and generic
+// :where(button) CTA paint. Themes realize color through the roles.
+
 [banner] {
     display: flex;
     align-items: center;
@@ -7,9 +72,117 @@
     box-sizing: border-box;
 }
 
+[banner],
+[theme] [banner]:not([surfaceTone]) {
+    background-color: $_juice-banner-panel;
+    border: 1px solid $_juice-banner-panel-border;
+    color: $_juice-banner-ink;
+}
+
 [banner="full"] {
     width: 100%;
     border-radius: 0;
     padding: 1rem 2rem;
     justify-content: center;
+}
+
+[banner][hidden],
+[theme] [banner][hidden] {
+    display: none;
+}
+
+[banner-body] {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.45;
+}
+
+[banner="full"] [banner-body] {
+    text-align: center;
+}
+
+[banner-body],
+[theme] [banner-body] {
+    color: $_juice-banner-ink;
+}
+
+[banner][banner-tone="success"],
+[theme] [banner][banner-tone="success"] {
+    border-left: 4px solid $_juice-banner-success;
+}
+
+[banner][banner-tone="success"]:not([surfaceTone]),
+[theme] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: $_juice-banner-success-soft;
+}
+
+[banner][banner-tone="error"],
+[theme] [banner][banner-tone="error"] {
+    border-left: 4px solid $_juice-banner-error;
+}
+
+[banner][banner-tone="error"]:not([surfaceTone]),
+[theme] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: $_juice-banner-error-soft;
+}
+
+[banner][banner-tone="info"],
+[theme] [banner][banner-tone="info"] {
+    border-left: 4px solid $_juice-banner-info;
+}
+
+[banner][banner-tone="info"]:not([surfaceTone]),
+[theme] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: $_juice-banner-info-soft;
+}
+
+[banner][banner-tone="warning"],
+[theme] [banner][banner-tone="warning"] {
+    border-left: 4px solid $_juice-banner-warning;
+}
+
+[banner][banner-tone="warning"]:not([surfaceTone]),
+[theme] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: $_juice-banner-warning-soft;
+}
+
+[banner-close],
+[theme] [banner-close] {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: $_juice-banner-close;
+    background-image: none;
+    color: $_juice-banner-close-color;
+    box-shadow: none;
+    transform: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+[banner-close]:hover,
+[theme] [banner-close]:hover {
+    background-color: $_juice-banner-close-hover;
+    background-image: none;
+    color: $_juice-banner-close-color;
+    transform: none;
+}
+
+[banner-close]:focus-visible,
+[theme] [banner-close]:focus-visible {
+    outline: 2px solid -juice-banner-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [banner-close],
+    [theme] [banner-close] {
+        transition: none;
+    }
 }
