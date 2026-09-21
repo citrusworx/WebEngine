@@ -644,6 +644,22 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-menu-opener: var(--jx-menu-opener);
     --juice-menu-opener-ink: var(--jx-menu-opener-ink);
 
+    /* Switch chrome — APG switch from existing --jx-* tokens.
+       The host is a surface track, not the CTA fill. Distinct from
+       checkbox and menuitemcheckbox. Idle track mixes text into
+       muted so the inverse thumb still reads when surfaces.muted
+       falls back to surfaces.default (same as --jx-surface). */
+    --jx-switch-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted));
+    --jx-switch-track-checked: var(--jx-accent);
+    --jx-switch-thumb: var(--jx-text-inverse);
+    --jx-switch-thumb-checked: var(--jx-text-inverse);
+    --jx-switch-focus-ring: var(--jx-accent);
+    --juice-switch-track: var(--jx-switch-track);
+    --juice-switch-track-checked: var(--jx-switch-track-checked);
+    --juice-switch-thumb: var(--jx-switch-thumb);
+    --juice-switch-thumb-checked: var(--jx-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--jx-switch-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1188,6 +1204,24 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 
 [theme="${config.id}"] [menu-label] {
     color: var(--juice-menu-ink);
+}
+
+[theme="${config.id}"] button[switch],
+[theme="${config.id}"] [switch] {
+    background: var(--juice-switch-track);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[switch][aria-checked="true"],
+[theme="${config.id}"] [switch][aria-checked="true"],
+[theme="${config.id}"] [switch]:checked {
+    background: var(--juice-switch-track-checked);
+}
+
+[theme="${config.id}"] [switch]:focus-visible,
+[theme="${config.id}"] button[switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
 }
 
 ${namedSurfaces}

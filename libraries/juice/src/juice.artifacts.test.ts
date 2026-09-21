@@ -430,6 +430,33 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[menu\][^{]*\{[^}]*--juice-drawer-overlay/);
     });
 
+    it("includes switch structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[switch]");
+        expect(css).toMatch(/\[theme\]\s+\[switch\]/);
+        expect(css).toMatch(/\[switch\]\[aria-checked=["']?true["']?\]/);
+        expect(css).toMatch(/\[switch\]:checked/);
+        expect(css).toMatch(/\[switch\]:focus-visible/);
+        expect(css).toMatch(/\[switch\]::after/);
+        expect(css).toContain("--juice-switch-track");
+        expect(css).toContain("--juice-switch-track-checked");
+        expect(css).toContain("--juice-switch-thumb");
+        expect(css).toContain("--juice-switch-thumb-checked");
+        expect(css).toContain("--juice-switch-focus-ring");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/\[role=["']?switch["']?\]/);
+        expect(css).not.toMatch(/\[switch-track\]/);
+        expect(css).not.toMatch(/\[switch-thumb\]/);
+        expect(css).not.toMatch(/\[switch-size/);
+        expect(css).not.toMatch(/\[switch\]\[scale/);
+        expect(css).not.toMatch(/\[switch=["']?on["']?\]/);
+        expect(css).not.toMatch(/\[switch\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[switch\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[switch\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[switch\][^{]*\{[^}]*--juice-menu-panel/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -875,6 +902,37 @@ describe("Juice build artifacts", () => {
         expect(tideCss).toContain("[menu]:not([surfaceTone])");
         expect(tideCss).not.toMatch(/button\[menu-button\][^{]*\{[^}]*--tide-button-background/);
         expect(tideCss).not.toContain("--tide-menu-panel: var(--tide-page)");
+    });
+
+    it("binds switch chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-switch-track: var(--aqua-surface-muted)");
+        expect(aquaCss).toContain("--aqua-switch-track-checked: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-switch-thumb: var(--aqua-switch-thumb)");
+        expect(aquaCss).toContain("button[switch]");
+        expect(aquaCss).not.toMatch(/button\[switch\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-switch-track: var(--kw-surface-muted)");
+        expect(kiwiCss).toContain("--juice-switch-track: var(--kw-switch-track)");
+        expect(kiwiCss).toContain("button[switch]");
+        expect(kiwiCss).not.toMatch(/button\[switch\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/button\[switch\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-switch-track: var(--cm-surface-muted)");
+        expect(mintCss).toContain("--cm-switch-track-checked: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-switch-focus-ring: var(--cm-switch-focus-ring)");
+        expect(mintCss).toContain("button[switch]");
+
+        expect(tideCss).toContain("--tide-switch-track: var(--tide-surface-muted)");
+        expect(tideCss).toContain("--juice-switch-track-checked: var(--tide-switch-track-checked)");
+        expect(tideCss).toContain("button[switch]");
+        expect(tideCss).not.toMatch(/button\[switch\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-switch-track: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-switch-thumb: var(--tide-page)");
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {

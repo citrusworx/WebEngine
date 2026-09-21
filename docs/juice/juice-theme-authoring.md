@@ -80,6 +80,7 @@ A healthy Juice theme should own:
 - tooltip chrome roles (`--juice-tooltip-*`, bound from theme identity tokens)
 - combobox chrome roles (`--juice-combobox-*`, bound from theme identity tokens)
 - menu chrome roles (`--juice-menu-*`, bound from theme identity tokens)
+- switch chrome roles (`--juice-switch-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -232,6 +233,7 @@ The generated stylesheet currently defines:
 - tooltip chrome role bindings (`--jx-tooltip-*` / `--juice-tooltip-*`) for `[tooltip-root]` / `[tooltip-panel]`
 - combobox chrome role bindings (`--jx-combobox-*` / `--juice-combobox-*`) and trigger CTA overrides for `[combobox-trigger]`
 - menu chrome role bindings (`--jx-menu-*` / `--juice-menu-*`) and opener CTA overrides for `[menu-button]`
+- switch chrome role bindings (`--jx-switch-*` / `--juice-switch-*`) and track CTA overrides for `[switch]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -345,6 +347,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for the APG Menu Button pattern — an opener toggles a menu of menuitems. It is not a popover, not a combobox, not a native `<select>` restyle, and not a menubar or context menu. A boolean `[menu]` attribute is fine (no HTML global `menu` attr; unlike `popover=""` it has no platform behavior). Do not use the HTML `<menu>` element. Use role in markup; attrs own Juice structure (`[menu-root]`, optional `[menu-button]`, `[menu]`, `[menuitem]`, optional `[menu-separator]` / `[menu-label]`). Do not style bare `[role="menu"]`. Optional `surfaceTone` on `[menu]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[menu]` (not the root). Placement is `[menu-root]` / `[menu-root="bottom"]` (default), `"top"`, `"left"`, `"right"` — CSS-absolute under the opener; no Floating UI. Core CSS paints the panel at z-index **1050** (same band as popover). The menu runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, roving tabindex, Escape with popover) — see [Menu Runtime](./juice-menu-runtime.md).
 
 Tide must bind a dark panel (`--tide-surface-strong`), not a white glass menu.
+
+## Switch chrome roles
+
+Library themes bind the shared switch contract so `[switch]` paint is theme-agnostic in `switch.scss`. Required names (`track`, `track-checked`, `thumb`, `thumb-checked`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-switch-*`, `--kw-switch-*`, `--cm-switch-*`, `--tide-switch-*`, …). App-owned generated themes use `--jx-switch-*` and bind `--juice-switch-*` from existing `--jx-*` surface/page/accent tokens. Do not invent a new hue family just for switch chrome. `[switch]` is a surface track, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[switch]` the same way.
+
+This is Juice chrome for the APG Switch pattern — a toggle with `role="switch"` and `aria-checked`. It is not a form checkbox, not a native `<input type="checkbox">` restyle as the only story, and not a menu `menuitemcheckbox`. A boolean `[switch]` attribute is fine (no HTML global `switch` attr). Primary host is `<button type="button" switch>`; a checkbox-backed host is allowed (`:checked` paints that path). Track and thumb are CSS pseudo-elements on `[switch]`; there are no child part attrs. Do not style bare `[role="switch"]`. Checked paint for static demos is `aria-checked="true"`. Inline control — no overlay z-index. Switch runtime (B) is later.
+
+Tide must bind a dark track (`--tide-surface-muted`), not a white pill.
 
 ## Wizard chrome roles
 

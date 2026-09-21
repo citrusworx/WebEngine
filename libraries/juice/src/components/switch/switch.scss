@@ -1,0 +1,152 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Switch chrome is structural. Color comes from the shared role contract:
+//   --juice-switch-track
+//   --juice-switch-track-checked
+//   --juice-switch-thumb
+//   --juice-switch-thumb-checked
+//   --juice-switch-focus-ring
+// Themes bind those names (and optional --aqua-switch-* / --kw-switch-* /
+// --cm-switch-* / --tide-switch-* / --jx-switch-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG Switch (toggle button with role="switch" and
+// aria-checked). Distinct from:
+//   - checkbox / tri-state form checkbox (later)
+//   - native <input type="checkbox"> restyle as the only story
+//   - menu menuitemcheckbox (out of scope)
+//
+// Native collision: there is no HTML *global* `switch` attribute. A boolean
+// [switch] attribute has no platform behavior on <button>. WebKit's checkbox
+// `switch` attr is an opt-in on <input type="checkbox">, not a global; Juice
+// [switch] on that host is a valid secondary story (appearance:none restyle).
+// Do not restyle bare [role="switch"] — attrs own Juice structure (same
+// rule as menu).
+//
+// Juice names:
+//   [switch]   the control root (boolean attr). Primary host is
+//              <button type="button" switch>. Runtime B will fill
+//              role="switch" and aria-checked. Visible labels live
+//              beside the control (wrapping <label>, aria-label, or
+//              aria-labelledby) — the host *is* the track.
+//
+// Track and thumb are CSS pseudo-elements on [switch] (the host is the
+// track; ::after is the thumb). There are no [switch-track] /
+// [switch-thumb] children. This slice does not size the control: no
+// switch-size, and scale="sm|lg" does not change track/thumb geometry
+// (scale is ordinary button padding; *-size is a layout attr).
+//
+// Checked paint: aria-checked="true" (button host, and the honest static
+// demo before runtime). :checked covers a checkbox-backed host. Do not
+// add switch="on".
+//
+// z-index: inline control — no floating overlay band.
+
+@function -juice-switch-role($name, $fallback) {
+    @return var(
+        --juice-switch-#{$name},
+        var(--aqua-switch-#{$name}, var(--kw-switch-#{$name}, var(--cm-switch-#{$name}, var(--tide-switch-#{$name}, var(--jx-switch-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-switch-track: -juice-switch-role(track, #{$gray-200});
+$_juice-switch-track-checked: -juice-switch-role(track-checked, #{$gray-700});
+$_juice-switch-thumb: -juice-switch-role(thumb, #{$white-100});
+$_juice-switch-thumb-checked: -juice-switch-role(thumb-checked, #{$white-100});
+
+// [theme] [switch] must beat theme semantic defaults such as
+// [theme="…"] :where(button) CTA paint. Themes realize color through
+// the roles.
+
+[switch],
+[theme] [switch] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 1.5rem;
+    margin: 0;
+    padding: 0.125rem;
+    border: none;
+    border-radius: 999px;
+    font: inherit;
+    line-height: 0;
+    cursor: pointer;
+    background-color: $_juice-switch-track;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    overflow: hidden;
+    transition: background-color 0.15s ease;
+}
+
+[switch]::after,
+[theme] [switch]::after {
+    content: "";
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 999px;
+    background-color: $_juice-switch-thumb;
+    background-image: none;
+    box-shadow: 0 1px 2px #{rgba($black-900, 0.18)};
+    transform: translateX(0);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+[switch][aria-checked="true"],
+[switch]:checked,
+[theme] [switch][aria-checked="true"],
+[theme] [switch]:checked {
+    background-color: $_juice-switch-track-checked;
+    background-image: none;
+}
+
+[switch][aria-checked="true"]::after,
+[switch]:checked::after,
+[theme] [switch][aria-checked="true"]::after,
+[theme] [switch]:checked::after {
+    background-color: $_juice-switch-thumb-checked;
+    transform: translateX(1.25rem);
+}
+
+[switch]:hover,
+[switch]:focus-visible,
+[theme] [switch]:hover,
+[theme] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[switch]:focus-visible,
+[theme] [switch]:focus-visible {
+    outline: 2px solid -juice-switch-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[switch]:disabled,
+[switch][aria-disabled="true"],
+[theme] [switch]:disabled,
+[theme] [switch][aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [switch],
+    [theme] [switch],
+    [switch]::after,
+    [theme] [switch]::after {
+        transition: none;
+    }
+}

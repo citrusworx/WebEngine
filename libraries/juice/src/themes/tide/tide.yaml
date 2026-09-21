@@ -101,6 +101,7 @@ authoring_rules:
   - Bind tooltip chrome roles (`--tide-tooltip-*` and `--juice-tooltip-*`) from Tide page/surface tokens so `[tooltip-panel]` stays a dark tip, not a white glass tooltip. No close button.
   - Bind combobox chrome roles (`--tide-combobox-*` and `--juice-combobox-*`) from Tide page/surface tokens so `[combobox-list]` stays a dark popup and `[combobox-trigger]` stays a surface control, not a CTA. Not a native `<select>` restyle.
   - Bind menu chrome roles (`--tide-menu-*` and `--juice-menu-*`) from Tide page/surface tokens so `[menu]` stays a dark panel and `[menu-button]` stays a surface control, not a CTA. APG menu button, not popover / combobox / native `<select>`.
+  - Bind switch chrome roles (`--tide-switch-*` and `--juice-switch-*`) from Tide page/surface/accent tokens so `[switch]` stays a dark track, not a white pill or a CTA. APG switch, not checkbox / menuitemcheckbox / native checkbox restyle as the only story.
   - Optional chrome roles (`item-border`, `trigger-accent`, `panel`, `open-glow`) paint FAQ pill rows; other themes may omit them.
   - Keep page intros in `main > header` so they stay type, not a competing glass surface.
 
