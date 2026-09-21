@@ -10,3 +10,8 @@ body {
 [app-shell] > main {
   flex: 1 1 auto;
 }
+
+/* Juice wizard chrome is a full-page shell. Contain in-page demos. */
+[app-shell] [wizard-shell] {
+  min-height: 28rem;
+}

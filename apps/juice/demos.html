@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Demos — Juice</title>
     <link rel="stylesheet" href="/src/juice.css" />
-    <meta name="description" content="Live Juice runtime demos. Stub page — coming in a later slice." />
+    <meta
+      name="description"
+      content="Live Juice Emerging runtime demos. Valid markup plus the JS entry. Auto-enhance. Honest Beta."
+    />
   </head>
   <body theme="kiwipress">
     <div app-shell stack>
@@ -23,7 +26,7 @@
             <a href="/reference.html">Reference</a>
           </div>
           <div nav-actions>
-            <button type="button" scale="sm" data-href="/">Back to landing</button>
+            <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
         <nav type="sidebar" hidden>
@@ -38,6 +41,7 @@
               <a href="/themes.html">Themes</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <button type="button" data-href="/getting-started.html">Get started</button>
           </div>
         </nav>
       </nav>
@@ -46,50 +50,595 @@
         <section hero>
           <div container>
             <span hero-eyebrow>
-              <span badge>Next slice</span>
+              <span badge>Honest Beta · Emerging runtimes</span>
             </span>
-            <h1 hero-title>Runtime demos</h1>
+            <h1 hero-title>Valid markup. Import the JS entry. Behavior starts.</h1>
             <p hero-subtitle>
-              Live accordion, tabs, modal, drawer, toast, and popover examples
-              across shipped themes. Not in this first slice — and combobox
-              waits until that runtime is further along.
+              These demos are DOM-first auto-enhance — not a component kit.
+              Write the Juice attributes, import <code>@citrusworx/juiceui</code>,
+              and the runtime wires the rest. Still Emerging. The 0.7.0 npm
+              promise runs through popover; wizard, tooltip, and combobox are
+              on master ahead of that cut.
             </p>
             <div hero-actions>
-              <button type="button" scale="lg" data-href="/">Return to landing</button>
+              <button type="button" scale="lg" data-href="#navigation">Jump to demos</button>
+              <button
+                type="button"
+                btn="outline"
+                scale="lg"
+                data-href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-runtime-behavior.md"
+              >
+                Runtime docs
+              </button>
             </div>
           </div>
         </section>
 
-        <section type="features" paddingY="roomy">
+        <section type="workflow" paddingY="roomy">
           <div container>
             <div section-header>
-              <h2>Planned, not promised here</h2>
+              <h2>Same structure. Four shipped faces.</h2>
               <p>
-                0.7.0 auto-enhances navigation, accordion, tabs, modal, drawer,
-                toast, and popover. Wizard and tooltip are on master ahead of
-                the public cut.
+                Switch KiwiPress, Tide, Citrusmint, or Aquaflux. Blush and
+                <code>_draft</code> stay unpublished. Choice is stored locally.
               </p>
             </div>
-            <aside panel padding="2rem" stack gap="1">
+            <div row wrap gap="1" centered>
+              <button type="button" data-theme="kiwipress">KiwiPress</button>
+              <button type="button" btn="outline" data-theme="tide">Tide</button>
+              <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
+              <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            </div>
+            <div row wrap gap="1" centered marginY="comfortable">
+              <button type="button" btn="outline" scale="sm" data-href="#navigation">Navigation</button>
+              <button type="button" btn="outline" scale="sm" data-href="#accordion">Accordion</button>
+              <button type="button" btn="outline" scale="sm" data-href="#tabs">Tabs</button>
+              <button type="button" btn="outline" scale="sm" data-href="#modal">Modal</button>
+              <button type="button" btn="outline" scale="sm" data-href="#drawer">Drawer</button>
+              <button type="button" btn="outline" scale="sm" data-href="#toast">Toast</button>
+              <button type="button" btn="outline" scale="sm" data-href="#popover">Popover</button>
+              <button type="button" btn="outline" scale="sm" data-href="#wizard">Wizard</button>
+              <button type="button" btn="outline" scale="sm" data-href="#tooltip">Tooltip</button>
+              <button type="button" btn="outline" scale="sm" data-href="#combobox">Combobox</button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="navigation">
+          <div container>
+            <div section-header>
+              <h2>Navigation</h2>
               <p>
-                This page stays a placeholder so the chrome and routes exist.
-                The JS entry is already imported, so demos can land as markup.
+                The site header is already a live runtime: <code>nav type="mobile"</code>
+                pairs with <code>nav type="sidebar"</code>. Resize below 960px and
+                open the menu. This replica uses the same contract without
+                <code>type="bar"</code> wrapping the toggle — the runtime hides
+                <code>nav[type="bar"]</code> and <code>nav[type="links"]</code> on
+                small viewports.
+              </p>
+            </div>
+            <aside panel padding="1.25rem" stack gap="1">
+              <nav>
+                <a href="#navigation" nav-brand logo>
+                  <span logo="text">Catalog</span>
+                </a>
+                <nav type="mobile"></nav>
+                <div nav-links>
+                  <a href="#accordion">Accordion</a>
+                  <a href="#tabs">Tabs</a>
+                  <a href="#modal">Modal</a>
+                </div>
+                <nav type="sidebar" hidden>
+                  <div stack gap="0.75rem" paddingX="1rem" paddingY="1rem">
+                    <a href="#navigation" nav-brand logo>
+                      <span logo="text">Catalog</span>
+                    </a>
+                    <a href="#accordion">Accordion</a>
+                    <a href="#tabs">Tabs</a>
+                    <a href="#modal">Modal</a>
+                  </div>
+                </nav>
+              </nav>
+              <p>
+                Openers are locality-paired. Depth stays in
+                <code>docs/juice/juice-navigation-runtime.md</code>.
               </p>
             </aside>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="accordion">
+          <div container>
+            <div section-header>
+              <h2>Accordion</h2>
+              <p>
+                <code>[accordion]</code> with <code>[accordion-item]</code> triggers
+                and native <code>hidden</code> on the panel. Multi-item roots stay
+                multi-open. Group FAQ stacks in a card or panel.
+              </p>
+            </div>
+            <article card padding="1.25rem" stack gap="0.75rem" width="100%">
+              <section accordion name="demo-faq">
+                <button
+                  type="button"
+                  id="demo-faq-billing-trigger"
+                  accordion-item
+                  aria-expanded="false"
+                  aria-controls="demo-faq-billing-panel"
+                >
+                  How do I update billing?
+                </button>
+                <div
+                  id="demo-faq-billing-panel"
+                  role="region"
+                  aria-labelledby="demo-faq-billing-trigger"
+                  hidden
+                >
+                  Update billing from the account dashboard. Juice does not own
+                  the form — only the disclosure chrome.
+                </div>
+
+                <button
+                  type="button"
+                  id="demo-faq-theme-trigger"
+                  accordion-item
+                  aria-expanded="false"
+                  aria-controls="demo-faq-theme-panel"
+                >
+                  Which themes are safe to ship?
+                </button>
+                <div
+                  id="demo-faq-theme-panel"
+                  role="region"
+                  aria-labelledby="demo-faq-theme-trigger"
+                  hidden
+                >
+                  KiwiPress, Tide, Citrusmint, and Aquaflux. Blush and anything
+                  under <code>_draft</code> stay unpublished.
+                </div>
+
+                <button
+                  type="button"
+                  id="demo-faq-js-trigger"
+                  accordion-item
+                  aria-expanded="false"
+                  aria-controls="demo-faq-js-panel"
+                >
+                  Do I have to call startAccordionRuntime()?
+                </button>
+                <div
+                  id="demo-faq-js-panel"
+                  role="region"
+                  aria-labelledby="demo-faq-js-trigger"
+                  hidden
+                >
+                  No. Importing the JS entry auto-starts it. Named start helpers
+                  are for tests and advanced hosts.
+                </div>
+              </section>
+            </article>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="tabs">
+          <div container>
+            <div section-header>
+              <h2>Tabs</h2>
+              <p>
+                A <code>[tabs]</code> root, <code>[tabs-list]</code> strip,
+                <code>[tab]</code> triggers, and <code>[tab-panel]</code> panels.
+                Selection dual-writes <code>[active]</code> and
+                <code>aria-selected</code>. Hidden panels use native
+                <code>hidden</code>.
+              </p>
+            </div>
+            <article card padding="1.25rem" stack gap="1" width="100%">
+              <div tabs name="demo-settings">
+                <div tabs-list>
+                  <button type="button" tab active>Account</button>
+                  <button type="button" tab>Billing</button>
+                  <button type="button" tab>Team</button>
+                </div>
+                <div tab-panel>
+                  Account panel. Juice paints the strip; your app owns the fields.
+                </div>
+                <div tab-panel hidden>
+                  Billing panel. Panels are siblings of the list, not nested in
+                  the triggers.
+                </div>
+                <div tab-panel hidden>
+                  Team panel. Keyboard: arrows, Home, End, and Tab leave the strip.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="modal">
+          <div container>
+            <div section-header>
+              <h2>Modal</h2>
+              <p>
+                Openers use <code>aria-controls</code> pointing at
+                <code>[modal-overlay]</code>. Close with the overlay close
+                control, Escape, or the backdrop. <code>modal-overlay="static"</code>
+                keeps the backdrop from dismissing.
+              </p>
+            </div>
+            <div row wrap gap="1">
+              <button type="button" aria-controls="demo-modal">Open account</button>
+              <button type="button" btn="outline" aria-controls="demo-modal-static">
+                Open static overlay
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div modal-overlay id="demo-modal" hidden>
+          <div modal role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
+            <button type="button" modal-close aria-label="Close">×</button>
+            <div modal-header>
+              <h2 id="demo-modal-title">Account</h2>
+            </div>
+            <div modal-body>
+              Update billing from the account dashboard. Focus stays trapped
+              until this overlay closes.
+            </div>
+          </div>
+        </div>
+        <div modal-overlay="static" id="demo-modal-static" hidden>
+          <div modal role="dialog" aria-modal="true" aria-labelledby="demo-modal-static-title">
+            <button type="button" modal-close aria-label="Close">×</button>
+            <div modal-header>
+              <h2 id="demo-modal-static-title">Static overlay</h2>
+            </div>
+            <div modal-body>
+              Backdrop clicks do nothing. Use Close or Escape.
+            </div>
+          </div>
+        </div>
+
+        <section type="features" paddingY="roomy" id="drawer">
+          <div container>
+            <div section-header>
+              <h2>Drawer</h2>
+              <p>
+                Edge is <code>[drawer]</code> / <code>[drawer="left"]</code> /
+                <code>[drawer="right"]</code>. Size is a separate
+                <code>[drawer-size="sm|lg"]</code> on the panel — not on the
+                edge attribute. Openers still use <code>aria-controls</code>.
+              </p>
+            </div>
+            <div row wrap gap="1">
+              <button type="button" aria-controls="demo-drawer-left">Open left, sm</button>
+              <button type="button" btn="outline" aria-controls="demo-drawer-right">
+                Open right, lg
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div drawer-overlay id="demo-drawer-left" hidden>
+          <div
+            drawer="left"
+            drawer-size="sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="demo-drawer-left-title"
+          >
+            <button type="button" drawer-close aria-label="Close">×</button>
+            <div drawer-header>
+              <h2 id="demo-drawer-left-title">Filters</h2>
+            </div>
+            <div drawer-body>
+              Left edge, <code>drawer-size="sm"</code>. Refine results from the
+              catalog.
+            </div>
+          </div>
+        </div>
+        <div drawer-overlay id="demo-drawer-right" hidden>
+          <div
+            drawer="right"
+            drawer-size="lg"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="demo-drawer-right-title"
+          >
+            <button type="button" drawer-close aria-label="Close">×</button>
+            <div drawer-header>
+              <h2 id="demo-drawer-right-title">Inspector</h2>
+            </div>
+            <div drawer-body>
+              Right edge (the default), <code>drawer-size="lg"</code>. Drawers
+              are exclusive with modals — one dialog overlay at a time.
+            </div>
+          </div>
+        </div>
+
+        <section type="workflow" paddingY="roomy" id="toast">
+          <div container>
+            <div section-header>
+              <h2>Toast</h2>
+              <p>
+                Authors place <code>[toast-region]</code> and <code>[toast]</code>
+                nodes. There is no <code>aria-controls</code> opener — show and
+                dismiss go through <code>createToast()</code>. Duration is
+                <code>toast-duration</code> in milliseconds;
+                <code>"0"</code> / <code>"Infinity"</code> is sticky. Not a dialog.
+              </p>
+            </div>
+            <div row wrap gap="1">
+              <button type="button" data-toast-show="demo-toast-success">Show success</button>
+              <button type="button" btn="outline" data-toast-show="demo-toast-error">
+                Show error
+              </button>
+              <button type="button" btn="outline" data-toast-show="demo-toast-sticky">
+                Show sticky
+              </button>
+              <button type="button" btn="outline" data-toast-dismiss="demo-toast-sticky">
+                Dismiss sticky
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div toast-region>
+          <div toast="success" id="demo-toast-success" toast-duration="3000" hidden>
+            <div toast-title>Saved</div>
+            <div toast-body>Your changes were written. Auto-dismisses in 3s.</div>
+            <button type="button" toast-close aria-label="Dismiss">×</button>
+          </div>
+          <div toast="error" id="demo-toast-error" hidden>
+            <div toast-title>Failed</div>
+            <div toast-body>Could not save. Default duration is 5s.</div>
+            <button type="button" toast-close aria-label="Dismiss">×</button>
+          </div>
+        </div>
+        <div toast-region="bottom-left">
+          <div toast="info" id="demo-toast-sticky" toast-duration="0" hidden>
+            <div toast-title>Pinned notice</div>
+            <div toast-body>
+              Bottom-left region. <code>toast-duration="0"</code> stays until
+              dismiss, close, or Escape.
+            </div>
+            <button type="button" toast-close aria-label="Dismiss">×</button>
+          </div>
+        </div>
+
+        <section type="features" paddingY="roomy" id="popover">
+          <div container>
+            <div section-header>
+              <h2>Popover</h2>
+              <p>
+                Use <code>[popover-root]</code> and <code>[popover-panel]</code>.
+                Never a bare <code>popover</code> attribute — that is the native
+                HTML Popover API. Openers use <code>aria-controls</code>.
+                Placement is <code>popover-root="bottom|top|left|right"</code>.
+              </p>
+            </div>
+            <div row wrap gap="1">
+              <button type="button" aria-controls="demo-pop">Open help</button>
+              <button type="button" btn="outline" aria-controls="demo-pop-top">
+                Open above
+              </button>
+            </div>
+            <div popover-root id="demo-pop" hidden>
+              <div popover-panel role="dialog">
+                <button type="button" popover-close aria-label="Close">×</button>
+                <div popover-header><h2>Help</h2></div>
+                <div popover-body>
+                  Account details live on this page. Background stays interactive.
+                </div>
+              </div>
+            </div>
+            <div popover-root="top" id="demo-pop-top" hidden>
+              <div popover-panel role="dialog">
+                <button type="button" popover-close aria-label="Close">×</button>
+                <div popover-header><h2>Placement</h2></div>
+                <div popover-body>
+                  <code>popover-root="top"</code>. The runtime flips on one axis
+                  if this side does not fit.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="wizard">
+          <div container>
+            <div section-header>
+              <h2>Wizard <span badge>On master</span></h2>
+              <p>
+                <code>[wizard-shell]</code>, <code>[step]</code> tracker items, and
+                <code>[step-page]</code> panels. Bare shell jumps to completed plus
+                current. Not the 0.7.0 public Beta promise. Not APG Tabs.
+              </p>
+            </div>
+            <div wizard-shell name="demo-onboard">
+              <div wizard-body>
+                <aside wizard-rail="left">
+                  <nav step-tracker>
+                    <ol steps>
+                      <li step="active" data-step="welcome">Welcome</li>
+                      <li step="pending" data-step="domain">Domain</li>
+                      <li step="pending" data-step="plan">Plan</li>
+                    </ol>
+                  </nav>
+                </aside>
+                <div wizard-content>
+                  <section step-page="welcome">
+                    <h3>Welcome</h3>
+                    <p>Structure first. Identity second. Provisioning stays in the app.</p>
+                  </section>
+                  <section step-page="domain" hidden>
+                    <h3>Domain</h3>
+                    <p>Pick a name. The runtime only moves steps — it does not validate.</p>
+                  </section>
+                  <section step-page="plan" hidden>
+                    <h3>Plan</h3>
+                    <p>Last step. Complete is enabled here; next is not.</p>
+                  </section>
+                  <div step-nav>
+                    <button type="button" wizard-prev>Back</button>
+                    <button type="button" wizard-next>Continue</button>
+                    <button type="button" wizard-complete>Finish</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="tooltip">
+          <div container>
+            <div section-header>
+              <h2>Tooltip <span badge>On master</span></h2>
+              <p>
+                Triggers prefer <code>aria-describedby</code> pointing at
+                <code>[tooltip-root]</code>. The surface is
+                <code>[tooltip-panel]</code> — never a bare <code>tooltip</code>
+                attribute, and not native <code>title</code>. Hover or focus the
+                controls. No focus trap.
+              </p>
+            </div>
+            <div row wrap gap="1">
+              <button type="button" aria-describedby="demo-tip">Save</button>
+              <button type="button" btn="outline" aria-describedby="demo-tip-bottom">
+                Publish
+              </button>
+            </div>
+            <div tooltip-root id="demo-tip" hidden>
+              <div tooltip-panel role="tooltip">Saves the current draft.</div>
+            </div>
+            <div tooltip-root="bottom" id="demo-tip-bottom" hidden>
+              <div tooltip-panel role="tooltip">Publishes to the live catalog.</div>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="combobox">
+          <div container>
+            <div section-header>
+              <h2>Combobox <span badge>On master</span></h2>
+              <p>
+                APG list autocomplete, manual selection.
+                <code>createCombobox</code> / <code>startComboboxRuntime</code>
+                auto-start from the package entry. Name the input with a
+                <code>label</code>. Filter by typing; arrows, Enter, and Escape
+                follow the listbox. Distinct from native <code>&lt;select&gt;</code>.
+              </p>
+            </div>
+            <aside panel padding="1.25rem" stack gap="1">
+              <label for="demo-fruit-input">Fruit</label>
+              <div combobox name="demo-fruit">
+                <input id="demo-fruit-input" combobox-input type="text" />
+                <button type="button" combobox-trigger aria-label="Show fruits"></button>
+                <ul combobox-list hidden>
+                  <li combobox-option>Apple</li>
+                  <li combobox-option>Banana</li>
+                  <li combobox-option data-value="apricot">Apricot</li>
+                  <li combobox-option>Cherry</li>
+                  <li combobox-option>Mango</li>
+                </ul>
+              </div>
+              <p>
+                Apricot commits <code>data-value="apricot"</code>. Other options
+                commit their text. Not in the 0.7.0 npm promise.
+              </p>
+            </aside>
+          </div>
+        </section>
+
+        <section type="pricing" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Honest Beta</h2>
+              <p>
+                Runtimes are Emerging. Valid markup should work after the JS
+                import, but the APIs can still move. CSS-first composition is
+                the strongest layer.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <h3>Auto-enhance on import</h3>
+                <p>
+                  Navigation, accordion, tabs, modal, drawer, toast, popover,
+                  wizard, tooltip, and combobox all boot from
+                  <code>import "@citrusworx/juiceui"</code>. Toast show/dismiss
+                  is the one demo that uses the documented
+                  <code>createToast()</code> helper.
+                </p>
+              </article>
+              <aside panel padding="2rem" stack gap="1">
+                <h3>Depth stays in docs/juice</h3>
+                <p>This page is live chrome, not a rewrite of the runtime docs.</p>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-runtime-behavior.md">Runtime behavior</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">Beta notes</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-combobox-runtime.md">Combobox runtime</a>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section cta>
+          <h2 cta-title>Pick a face, then keep composing in markup.</h2>
+          <p cta-subtitle>
+            Themes own identity. Juice owns structure. Runtimes stay optional.
+          </p>
+          <div cta-actions>
+            <button type="button" scale="lg" data-href="/themes.html">Themes</button>
+            <p cta-note>docs/juice remains the lookup set</p>
           </div>
         </section>
       </main>
 
       <footer paddingY="roomy">
         <div container>
-          <div center>
+          <div grid="4x1" gap="comfortable">
+            <div stack gap="cozy">
+              <h4>Juice</h4>
+              <p>
+                CSS-first, attribute-driven styling and composition from
+                CitrusWorx. Showcase for <code>@citrusworx/juiceui</code>.
+              </p>
+            </div>
+            <div stack gap="cozy">
+              <h4>Site</h4>
+              <ul stack gap="snug">
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Docs</h4>
+              <ul stack gap="snug">
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/docs/juice">docs/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-runtime-behavior.md">Runtime behavior</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">Beta notes</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Package</h4>
+              <ul stack gap="snug">
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+              </ul>
+            </div>
+          </div>
+          <div center marginY="comfortable">
             <nav type="footer">
               <ul row gap="2" centered>
                 <li><a href="/">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
                 <li><a href="/themes.html">Themes</a></li>
-                <li><a href="/reference.html">Reference</a></li>
               </ul>
             </nav>
             <p>CitrusWorx · WebEngine · Honest Beta</p>
