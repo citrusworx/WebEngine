@@ -92,16 +92,18 @@
                 <h3>Install</h3>
                 <p>
                   Add the published package with the CLI you already use —
-                  npm, pnpm, yarn, or bun — or consume the workspace package
-                  in this monorepo.
+                  npm, pnpm, yarn, or bun — consume the workspace package
+                  in this monorepo, or skip a bundler and load
+                  <code>dist/</code> from jsDelivr (CDN tab).
                 </p>
                 <div install-pm>
                   <div tabs name="install-juice-start">
-                    <div tabs-list aria-label="Package manager">
+                    <div tabs-list aria-label="Install method">
                       <button type="button" tab active>npm</button>
                       <button type="button" tab>pnpm</button>
                       <button type="button" tab>yarn</button>
                       <button type="button" tab>bun</button>
+                      <button type="button" tab>CDN</button>
                     </div>
                     <div tab-panel>
                       <pre><code>npm install @citrusworx/juiceui</code></pre>
@@ -115,8 +117,22 @@
                     <div tab-panel hidden>
                       <pre><code>bun add @citrusworx/juiceui</code></pre>
                     </div>
+                    <div tab-panel hidden>
+                      <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.css" /&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/themes/kiwipress.css" /&gt;
+&lt;script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.js"&gt;&lt;/script&gt;</code></pre>
+                    </div>
                   </div>
                 </div>
+                <p>
+                  There is no first-party Juice CDN. jsDelivr (and unpkg)
+                  serve the published npm files. Pin
+                  <code>@0.8.0</code>. The JS module is optional — it
+                  auto-enhances Emerging runtimes. Core plus a theme is
+                  enough for CSS-first pages. You can also copy
+                  <code>dist/index.css</code> and
+                  <code>dist/themes/kiwipress.css</code> next to your HTML.
+                </p>
               </article>
 
               <div grid="3x2" gap="comfortable">
@@ -335,7 +351,7 @@ import "@citrusworx/juiceui";</code></pre>
             <div stack gap="cozy">
               <h4>Package</h4>
               <ul stack gap="snug">
-                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
                 <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
               </ul>
             </div>

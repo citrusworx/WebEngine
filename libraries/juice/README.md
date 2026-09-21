@@ -142,6 +142,16 @@ If you are hosting Juice assets yourself, the main built files are:
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.
 
+There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@0.8.0`):
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/themes/kiwipress.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.8.0/dist/index.js"></script>
+```
+
+The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page.
+
 ## Example
 
 ```html
