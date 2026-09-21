@@ -2,7 +2,11 @@ import { z } from "zod";
 const tokenEnv = z.string().min(1).default("DO_TOKEN");
 export const credentialsSchema = z.object({
     source: z.literal("env").default("env"),
-    env: tokenEnv
+    env: tokenEnv,
+    /** Env var holding a Spaces access key. Defaults to DO_SPACES_ACCESS_KEY_ID at apply time. */
+    spaces_access_key_env: z.string().min(1).optional(),
+    /** Env var holding a Spaces secret key. Defaults to DO_SPACES_SECRET_ACCESS_KEY at apply time. */
+    spaces_secret_key_env: z.string().min(1).optional()
 });
 export const dropletBlueprintSchema = z.object({
     name: z.string().min(1),
@@ -154,6 +158,72 @@ export const databaseConnectionEnvSchema = z.object({
     database: z.string().min(1).optional(),
     uri: z.string().min(1).optional()
 });
+const spaceNameSchema = z
+    .string()
+    .min(3)
+    .max(63)
+    .regex(/^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/, "Space names must be DNS-style: 3–63 characters, lowercase letters, numbers, dots, and hyphens")
+    .refine((name) => !name.includes("..") && !name.includes(".-") && !name.includes("-."), {
+    message: "Space names cannot contain consecutive dots or mixed dot/hyphen"
+});
+export const spaceResourceSchema = z.object({
+    name: spaceNameSchema,
+    region: z.string().min(1).optional(),
+    /** Canned ACL sent as `x-amz-acl` on create. Omitted means private. Not updated on re-apply. */
+    acl: z.enum(["private", "public-read"]).optional()
+});
+export const certificateResourceSchema = z
+    .object({
+    name: z.string().min(1),
+    type: z.enum(["lets_encrypt", "custom"]).default("lets_encrypt"),
+    dns_names: z.array(z.string().min(1)).optional(),
+    private_key: z.string().min(1).optional(),
+    leaf_certificate: z.string().min(1).optional(),
+    certificate_chain: z.string().min(1).optional(),
+    private_key_env: z.string().min(1).optional(),
+    leaf_certificate_env: z.string().min(1).optional(),
+    certificate_chain_env: z.string().min(1).optional(),
+    /**
+     * When a same-apply CDN endpoint references this certificate, poll until
+     * `verified` before attaching (default true). Unused certificates are not waited on.
+     */
+    wait: z.boolean().optional()
+})
+    .refine((value) => value.type !== "lets_encrypt" || Boolean(value.dns_names && value.dns_names.length > 0), {
+    message: "lets_encrypt certificates require dns_names",
+    path: ["dns_names"]
+})
+    .refine((value) => value.type !== "custom" || Boolean(value.private_key || value.private_key_env), {
+    message: "custom certificates require private_key or private_key_env",
+    path: ["private_key"]
+})
+    .refine((value) => value.type !== "custom" || Boolean(value.leaf_certificate || value.leaf_certificate_env), {
+    message: "custom certificates require leaf_certificate or leaf_certificate_env",
+    path: ["leaf_certificate"]
+});
+export const cdnTtlSchema = z.union([
+    z.literal(60),
+    z.literal(600),
+    z.literal(3600),
+    z.literal(86400),
+    z.literal(604800)
+]);
+export const cdnResourceSchema = z
+    .object({
+    /** Space name from this config, or an existing Space. */
+    space: z.string().min(1).optional(),
+    /** Explicit origin hostname. Defaults to `{space}.{region}.digitaloceanspaces.com`. */
+    origin: z.string().min(1).optional(),
+    region: z.string().min(1).optional(),
+    ttl: cdnTtlSchema.optional(),
+    custom_domain: z.string().min(1).optional(),
+    /** Certificate `name` from this config or already on the account. */
+    certificate: z.string().min(1).optional(),
+    certificate_id: z.string().min(1).optional()
+})
+    .refine((value) => Boolean(value.origin || value.space), {
+    message: "cdn endpoint requires space or origin"
+});
 export const databaseResourceSchema = z.object({
     name: z.string().min(1),
     engine: z.string().min(1),
@@ -220,7 +290,10 @@ export const resourcesSchema = z.object({
     load_balancers: z.array(loadBalancerResourceSchema).optional(),
     alert_policies: z.array(alertPolicyResourceSchema).optional(),
     apps: z.array(appResourceSchema).optional(),
-    databases: z.array(databaseResourceSchema).optional()
+    databases: z.array(databaseResourceSchema).optional(),
+    spaces: z.array(spaceResourceSchema).optional(),
+    certificates: z.array(certificateResourceSchema).optional(),
+    cdn: z.array(cdnResourceSchema).optional()
 });
 export const grapeConfigSchema = z.object({
     version: z.string().optional().default("0.1"),
@@ -241,7 +314,9 @@ export const grapeConfigSchema = z.object({
         .object({
         vpc: z.union([z.boolean(), vpcResourceSchema]).optional(),
         domain: z.string().optional(),
+        /** Deprecated. Not applied. Declare `resources.certificates`. */
         ssl: z.boolean().optional(),
+        /** Deprecated. Not applied. Declare `resources.cdn`. */
         cdn: z.boolean().optional()
     })
         .optional(),

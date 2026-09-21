@@ -109,6 +109,19 @@ export function renderApply(result: ApplyResult): void {
     for (const app of result.apps) {
         lines.push(`  app             ${app.name}  id=${app.id}`);
     }
+    for (const space of result.spaces) {
+        const acl = space.acl ? `  acl=${space.acl}` : "";
+        lines.push(`  space           ${space.name}  region=${space.region}  origin=${space.origin}${acl}`);
+    }
+    for (const certificate of result.certificates) {
+        lines.push(
+            `  certificate     ${certificate.name}  id=${certificate.id}  type=${dash(certificate.type)}  state=${dash(certificate.state)}`
+        );
+    }
+    for (const endpoint of result.cdn) {
+        const custom = endpoint.custom_domain ? `  custom_domain=${endpoint.custom_domain}` : "";
+        lines.push(`  cdn             ${endpoint.origin}  id=${endpoint.id}  endpoint=${dash(endpoint.endpoint)}${custom}`);
+    }
     for (const stack of result.stacks) {
         lines.push(
             `  stack           ${stack.name}  droplet=${stack.droplet}  workdir=${stack.workdir}  files=${stack.files.length}`
@@ -145,8 +158,9 @@ export function renderApply(result: ApplyResult): void {
 
 function formatTarget(target: DestroyTarget): string {
     const id = target.id !== undefined ? `  id=${target.id}` : "";
+    const region = target.region ? `  region=${target.region}` : "";
     const reason = target.reason ? `  (${target.reason})` : "";
-    return `  ${target.kind.padEnd(14)}  ${target.name}${id}${reason}`;
+    return `  ${target.kind.padEnd(14)}  ${target.name}${id}${region}${reason}`;
 }
 
 export function renderDestroy(result: DestroyResult): void {
@@ -297,6 +311,76 @@ export function overlapWithConfig(plan: GrapePlan, inventory: LiveInventory): St
                 rows.push({ kind: "tag", name: resource.name, state: match ? "present" : "missing" });
                 break;
             }
+            case "space": {
+                if (!inventory.spaces_listed) {
+                    rows.push({
+                        kind: "space",
+                        name: resource.name,
+                        state: "missing",
+                        extra: "spaces credentials not set"
+                    });
+                    break;
+                }
+                const matches = inventory.spaces.filter((item) => item.name === resource.name);
+                if (matches.length === 1) {
+                    rows.push({ kind: "space", name: resource.name, state: "present" });
+                } else if (matches.length === 0) {
+                    rows.push({ kind: "space", name: resource.name, state: "missing" });
+                } else {
+                    rows.push({
+                        kind: "space",
+                        name: resource.name,
+                        state: "present",
+                        extra: `ambiguous (${matches.length} matches)`
+                    });
+                }
+                break;
+            }
+            case "certificate": {
+                const matches = inventory.certificates.filter((item) => item.name === resource.name);
+                if (matches.length === 1) {
+                    rows.push({
+                        kind: "certificate",
+                        name: resource.name,
+                        state: "present",
+                        id: matches[0].id,
+                        extra: matches[0].state ? `state=${matches[0].state}` : undefined
+                    });
+                } else if (matches.length === 0) {
+                    rows.push({ kind: "certificate", name: resource.name, state: "missing" });
+                } else {
+                    rows.push({
+                        kind: "certificate",
+                        name: resource.name,
+                        state: "present",
+                        extra: `ambiguous (${matches.length} matches)`
+                    });
+                }
+                break;
+            }
+            case "cdn": {
+                const origin = resource.detail.origin;
+                const matches = inventory.cdn.filter((item) => item.origin === origin);
+                if (matches.length === 1) {
+                    rows.push({
+                        kind: "cdn",
+                        name: resource.name,
+                        state: "present",
+                        id: matches[0].id,
+                        extra: `origin=${matches[0].origin}`
+                    });
+                } else if (matches.length === 0) {
+                    rows.push({ kind: "cdn", name: resource.name, state: "missing" });
+                } else {
+                    rows.push({
+                        kind: "cdn",
+                        name: resource.name,
+                        state: "present",
+                        extra: `ambiguous (${matches.length} matches)`
+                    });
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -382,6 +466,77 @@ export function renderLiveStatus(inventory: LiveInventory): void {
                     { key: "status", header: "STATUS" },
                     { key: "droplets", header: "DROPLETS" },
                     { key: "tags", header: "TAGS" }
+                ]
+            )
+        );
+    }
+
+    println();
+    println(
+        inventory.spaces_listed
+            ? `Spaces (${inventory.spaces.length})`
+            : "Spaces (not listed; set DO_SPACES_ACCESS_KEY_ID and DO_SPACES_SECRET_ACCESS_KEY)"
+    );
+    if (!inventory.spaces_listed || inventory.spaces.length === 0) {
+        if (inventory.spaces_listed) {
+            println("  (none)");
+        }
+    } else {
+        println(
+            formatTable(
+                inventory.spaces.map((space) => ({
+                    name: space.name,
+                    created: space.creation_date ?? "-"
+                })),
+                [
+                    { key: "name", header: "NAME" },
+                    { key: "created", header: "CREATED" }
+                ]
+            )
+        );
+    }
+
+    println();
+    println(`CDN endpoints (${inventory.cdn.length})`);
+    if (inventory.cdn.length === 0) {
+        println("  (none)");
+    } else {
+        println(
+            formatTable(
+                inventory.cdn.map((endpoint) => ({
+                    origin: endpoint.origin,
+                    id: endpoint.id,
+                    endpoint: endpoint.endpoint,
+                    domain: endpoint.custom_domain ?? "-"
+                })),
+                [
+                    { key: "origin", header: "ORIGIN" },
+                    { key: "id", header: "ID" },
+                    { key: "endpoint", header: "ENDPOINT" },
+                    { key: "domain", header: "CUSTOM DOMAIN" }
+                ]
+            )
+        );
+    }
+
+    println();
+    println(`Certificates (${inventory.certificates.length})`);
+    if (inventory.certificates.length === 0) {
+        println("  (none)");
+    } else {
+        println(
+            formatTable(
+                inventory.certificates.map((certificate) => ({
+                    name: certificate.name,
+                    id: certificate.id,
+                    type: certificate.type ?? "-",
+                    state: certificate.state ?? "-"
+                })),
+                [
+                    { key: "name", header: "NAME" },
+                    { key: "id", header: "ID" },
+                    { key: "type", header: "TYPE" },
+                    { key: "state", header: "STATE" }
                 ]
             )
         );

@@ -43,8 +43,13 @@ These DigitalOcean products have both HTTP helpers **and** a loop in `applyGrape
 | Load balancers | `resources.load_balancers` | `createLoadBalancer` | `POST /load_balancers` |
 | Alert policies | `resources.alert_policies` | `createAlertPolicy` | `POST /monitoring/alerts` |
 | App Platform | `resources.apps` | `createApp` | `POST /apps` |
+| Spaces | `resources.spaces` | `createSpace` | S3 `PUT /` on `{bucket}.{region}.digitaloceanspaces.com` |
+| Certificates | `resources.certificates` | `createCertificate` | `POST /certificates` |
+| CDN endpoints | `resources.cdn` | `createCdnEndpoint` | `POST /cdn/endpoints` |
 
 That is the apply surface. If it is not in this table, YAML will not provision it.
+
+Spaces bucket calls do **not** use `DO_TOKEN`. They use a Spaces key pair (`DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY`, or `credentials.spaces_access_key_env` / `spaces_secret_key_env`) and AWS Signature Version 4. The key needs DigitalOcean's **All (Buckets and Objects)** permission to create, list, and delete buckets. CDN and certificates use the API token.
 
 ## Droplets
 
@@ -159,15 +164,32 @@ Programmatic SDK-style helpers exist beyond the create loops:
 
 Call them from TypeScript if you need them. Do not invent YAML keys for them.
 
+## Spaces, CDN, and certificates
+
+Emerging, and the chosen path for a public static site such as Juice (`apps/juice`, `@citrusworx/juiceapp`). Starter: `examples/blueprints/05-static-site-spaces.yaml`.
+
+| Product | YAML | Notes |
+|---|---|---|
+| Space | `resources.spaces[]` with `name`, `region`, optional `acl` (`private` or `public-read`) | Create is `PUT /` with `x-amz-acl`. List is `GET /` on `{region}.digitaloceanspaces.com` (account-wide). Delete requires an empty bucket; Grapevine does not delete objects. |
+| Certificate | `resources.certificates[]` | `lets_encrypt` needs `dns_names`. `custom` needs PEM material inline or via `private_key_env` / `leaf_certificate_env` / `certificate_chain_env`. Key material is not copied onto `ApplyResult`. |
+| CDN | `resources.cdn[]` | `origin`, or `space` plus region. Optional `ttl` (60, 600, 3600, 86400, 604800), `custom_domain`, and `certificate` (name) or `certificate_id`. |
+
+Apply order for these three is Spaces, then certificates, then CDN. A same-apply CDN reference polls `GET /certificates/:id` until `verified` (or `error` / timeout) before `POST /cdn/endpoints`. Certificates that nothing references are left `pending`. This is not a general "wait until the CDN edge is live" helper, and it is not `waitForAppDeployment`.
+
+Destroy order removes the CDN endpoint before the certificate and the Space. A certificate still attached to a load balancer is removed only after load balancers in the same plan. Re-apply adopts a unique Space name, a unique certificate name, and a unique CDN origin. It does not change ACL, TTL, or custom domain.
+
+`networking.ssl` and `networking.cdn` still do nothing except warn. Declare the resource arrays.
+
+Juice follow-ups that this layer does not pretend to finish: idempotent updates, DNS from the CDN hostname, `yarn workspace @citrusworx/juiceapp build`, and uploading `dist/`.
+
 ## Not implemented as Grapevine resources
 
 | Area | Reality |
 |---|---|
 | Block storage volumes | Droplet field `volumes?: string[]` may be sent; no `POST /volumes` |
-| Managed databases | Only opaque `databases` inside App `spec` |
 | Kubernetes (DOKS) | No cluster APIs; `kubernetes_ids` only on firewall payload shape |
-| Spaces | Not present (`citrus-object` appears only in non-grape WordPress YAML) |
-| Projects, floating IPs, CDN, certificates | Not grape resources |
+| Projects, floating IPs | Not grape resources |
+| Object upload / static sync | Spaces exist; putting files in them does not |
 | Other clouds | Schema rejects anything but `digitalocean` |
 
 ## Client primitives

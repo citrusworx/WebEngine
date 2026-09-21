@@ -15,6 +15,13 @@ import { listSSHKeys, type SSHKeyResource } from "../providers/digitalocean/ssh/
 import { listAllTags, type Tag } from "../providers/digitalocean/tags/tags.js";
 import { listAllVPCs, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 import { listDatabases, type DatabaseResource } from "../providers/digitalocean/databases/databases.js";
+import { listCdnEndpoints, type CdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
+import { listCertificates, type CertificateResource } from "../providers/digitalocean/certificates/certificates.js";
+import {
+    listSpaces,
+    spacesCredentialsAreSet,
+    type SpaceBucket
+} from "../providers/digitalocean/spaces/spaces.js";
 
 export interface LiveInventory {
     droplets: DropletResource[];
@@ -27,6 +34,11 @@ export interface LiveInventory {
     alert_policies: AlertPolicy[];
     tags: Tag[];
     databases: DatabaseResource[];
+    spaces: SpaceBucket[];
+    cdn: CdnEndpoint[];
+    certificates: CertificateResource[];
+    /** False when Spaces keys were absent, so buckets were not listed. */
+    spaces_listed: boolean;
 }
 
 export function tokenIsSet(envName = "DO_TOKEN"): boolean {
@@ -39,6 +51,7 @@ export function tokenIsSet(envName = "DO_TOKEN"): boolean {
 }
 
 export async function fetchLiveInventory(): Promise<LiveInventory> {
+    const spacesListed = spacesCredentialsAreSet();
     const [
         droplets,
         vpcs,
@@ -49,7 +62,10 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         apps,
         alert_policies,
         tags,
-        databases
+        databases,
+        cdn,
+        certificates,
+        spaces
     ] = await Promise.all([
         listAllDroplets(),
         listAllVPCs(),
@@ -60,7 +76,10 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         listApps(),
         listAlertPolicies(),
         listAllTags(),
-        listDatabases()
+        listDatabases(),
+        listCdnEndpoints(),
+        listCertificates(),
+        spacesListed ? listSpaces() : Promise.resolve([])
     ]);
 
     return {
@@ -73,7 +92,11 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         apps,
         alert_policies,
         tags,
-        databases
+        databases,
+        spaces,
+        cdn,
+        certificates,
+        spaces_listed: spacesListed
     };
 }
 

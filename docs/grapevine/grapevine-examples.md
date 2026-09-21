@@ -14,6 +14,7 @@ From `libraries/grapevine/examples/blueprints/`:
 | `02-droplet-in-vpc.yaml` | tag, generated SSH key, VPC, droplet | Droplet |
 | `03-web-firewall.yaml` | firewall on an **existing** droplet id | Free |
 | `04-full-web-stack.yaml` | tag + SSH + VPC + droplet + firewall | Droplet |
+| `05-static-site-spaces.yaml` | Space + Let's Encrypt cert + CDN (no Vite upload) | Space + CDN |
 
 ```bash
 export DO_TOKEN=dop_v1_...

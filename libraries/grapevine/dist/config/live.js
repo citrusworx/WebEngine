@@ -9,6 +9,9 @@ import { listSSHKeys } from "../providers/digitalocean/ssh/ssh.js";
 import { listAllTags } from "../providers/digitalocean/tags/tags.js";
 import { listAllVPCs } from "../providers/digitalocean/vpc/vpc.js";
 import { listDatabases } from "../providers/digitalocean/databases/databases.js";
+import { listCdnEndpoints } from "../providers/digitalocean/cdn/cdn.js";
+import { listCertificates } from "../providers/digitalocean/certificates/certificates.js";
+import { listSpaces, spacesCredentialsAreSet } from "../providers/digitalocean/spaces/spaces.js";
 export function tokenIsSet(envName = "DO_TOKEN") {
     try {
         getDoToken(envName);
@@ -19,7 +22,8 @@ export function tokenIsSet(envName = "DO_TOKEN") {
     }
 }
 export async function fetchLiveInventory() {
-    const [droplets, vpcs, firewalls, domains, load_balancers, ssh_keys, apps, alert_policies, tags, databases] = await Promise.all([
+    const spacesListed = spacesCredentialsAreSet();
+    const [droplets, vpcs, firewalls, domains, load_balancers, ssh_keys, apps, alert_policies, tags, databases, cdn, certificates, spaces] = await Promise.all([
         listAllDroplets(),
         listAllVPCs(),
         listAllFirewalls(),
@@ -29,7 +33,10 @@ export async function fetchLiveInventory() {
         listApps(),
         listAlertPolicies(),
         listAllTags(),
-        listDatabases()
+        listDatabases(),
+        listCdnEndpoints(),
+        listCertificates(),
+        spacesListed ? listSpaces() : Promise.resolve([])
     ]);
     return {
         droplets,
@@ -41,7 +48,11 @@ export async function fetchLiveInventory() {
         apps,
         alert_policies,
         tags,
-        databases
+        databases,
+        spaces,
+        cdn,
+        certificates,
+        spaces_listed: spacesListed
     };
 }
 export function dropletAddresses(droplet) {

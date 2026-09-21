@@ -67,6 +67,43 @@ describe("planGrapeConfig", () => {
         ).toBe(true);
     });
 
+    it("plans a static site and warns on deprecated networking flags", () => {
+        const plan = planGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                networking: { ssl: true, cdn: true },
+                resources: {
+                    spaces: [{ name: "replace-space-name", acl: "public-read" }],
+                    certificates: [{ name: "juice-static", dns_names: ["static.example.com"] }],
+                    cdn: [
+                        {
+                            space: "replace-space-name",
+                            custom_domain: "static.example.com",
+                            certificate: "juice-static",
+                            ttl: 3600
+                        }
+                    ]
+                }
+            })
+        );
+        expect(plan.counts.spaces).toBe(1);
+        expect(plan.counts.certificates).toBe(1);
+        expect(plan.counts.cdn).toBe(1);
+        expect(plan.resources.map((resource) => `${resource.kind}:${resource.name}`)).toEqual([
+            "space:replace-space-name",
+            "certificate:juice-static",
+            "cdn:static.example.com"
+        ]);
+        expect(plan.resources.find((resource) => resource.kind === "cdn")?.detail.origin).toBe(
+            "replace-space-name.nyc3.digitaloceanspaces.com"
+        );
+        expect(plan.warnings).toEqual([
+            "networking.ssl is deprecated and is not applied. Declare resources.certificates instead.",
+            "networking.cdn is deprecated and is not applied. Declare resources.cdn for a Spaces CDN endpoint instead."
+        ]);
+    });
+
     it("warns that loose services are not applied", () => {
         const plan = planGrapeConfig(
             validateGrapeConfig({

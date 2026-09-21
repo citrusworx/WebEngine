@@ -278,7 +278,7 @@ Why it is bad:
 
 Better: `grape validate -c …`. Read the YAML. Assume creates will happen on apply.
 
-## 14. Inventing volume / k8s / Spaces resources
+## 14. Inventing volume / Kubernetes resources
 
 Bad:
 
@@ -288,8 +288,6 @@ resources:
     - name: data
   kubernetes:
     - name: prod
-  spaces:
-    - name: assets
 ```
 
 Why it is bad:
@@ -298,7 +296,9 @@ Why it is bad:
 - droplet `volumes: ["vol-id"]` only forwards ids
 - firewall `kubernetes_ids` is payload shape, not a cluster factory
 
-Better: create those products outside Grapevine, or call whatever helper actually exists (none, today, for Spaces/DOKS/volumes). Check [DigitalOcean guide](./grapevine-digitalocean.md).
+Spaces, CDN endpoints, and certificates **are** grape resources (`resources.spaces`, `resources.cdn`, `resources.certificates`). See `examples/blueprints/05-static-site-spaces.yaml`. That blueprint still does not build or upload a Vite `dist/`.
+
+Better: leave volumes and DOKS outside Grapevine. Check [DigitalOcean guide](./grapevine-digitalocean.md).
 
 ## 15. Relying on rollback
 

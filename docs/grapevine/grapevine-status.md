@@ -35,7 +35,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `provider: digitalocean` schema | Stable-ish | Literal only. Rejecting `aws` is the identity of the config. |
 | `loadGrapeConfig` path / URL | Stable-ish | YAML or JSON. Always pass `-c`. |
 | `grape validate` | Stable-ish | Zod + normalized counts. No DigitalOcean. |
-| Apply create order | Stable-ish | tags → SSH → VPC → databases → droplets (+ stack user_data) → firewalls → domains → LBs → alerts → apps. Tested with mocks. |
+| Apply create order | Stable-ish | tags → SSH → VPC → databases → droplets (+ stack user_data) → firewalls → domains → LBs → alerts → apps → Spaces → certificates → CDN. Tested with mocks. |
 | Same-apply `vpc:` / `droplets:` maps | Stable-ish | Process-local. Easy to misuse; behavior is consistent. |
 | `createDroplet` / `createVPC` / `createFireWall` | Stable-ish | Real POSTs through `doRequest`. |
 | `DO_TOKEN` / `credentials.env` | Stable-ish | Env only. Live `status`/`destroy` use `credentials.env` when `-c` is passed. |
@@ -44,6 +44,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Function CRUD (list/get/update/delete) | Emerging | Broad HTTP surface; `destroy` uses unique-name / tag matching. |
 | `grape status` | Emerging | Live tables (droplets/VPCs/firewalls/domains) plus optional config overlap. **Not drift.** |
 | App Platform / LB / alerts / domains in apply | Early | Create loops exist; little teaching or tests vs droplets/VPC/firewall. |
+| Spaces + CDN + certificates | Emerging | `resources.spaces`, `resources.cdn`, `resources.certificates`. Unique-name adopt on apply. CDN is deleted before certificates and Spaces. Let's Encrypt is polled only when a same-apply CDN entry references the cert. No Vite build or `dist/` upload. |
 | Managed databases + `stack` | Emerging | `resources.databases` POST `/databases`; `stack` generates droplet cloud-init. |
 | Images / Insight security | Early | Exported, not applied. |
 | `generate: true` SSH | Emerging | Writes OpenSSH private key to `.grape/ssh/<name>` (or `private_key_path`); apply reports the path. |
@@ -53,7 +54,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Destroy-from-YAML | Emerging | Conservative unique-name / `--tag` teardown; requires `--yes` off-TTY. |
 | grapeGUI / WebEngine dashboard | Draft | Absent. |
 | Second cloud provider | Draft | Schema forbids it. |
-| Volumes / DOKS / Spaces | Draft | Not grape resources. |
+| Volumes / DOKS | Draft | Not grape resources. Spaces moved to Emerging (see above). |
 
 ## What is shipped
 
@@ -73,6 +74,9 @@ The feature is more of a direction than a hardened part of the runtime.
 | Alert policies | `monitoring/monitoring.ts` | yes |
 | App Platform | `apps/apps.ts` | yes |
 | Managed databases | `databases/databases.ts` | yes |
+| Spaces | `spaces/spaces.ts` | yes (S3 SigV4; needs Spaces keys) |
+| CDN endpoints | `cdn/cdn.ts` | yes |
+| Certificates | `certificates/certificates.ts` | yes |
 | Stack / compose bootstrap | `config/stack.ts` | yes (droplet `user_data`) |
 | Images | `images/images.ts` | no |
 | Security (Insight) | `security/security.ts` | no |
@@ -85,7 +89,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Config field | Behavior |
 |---|---|
 | `services` | Zod allows `record`; apply warns unless the object is stack-shaped |
-| `networking.ssl` / `networking.cdn` | Schema only — no certificate or CDN calls |
+| `networking.ssl` / `networking.cdn` | Deprecated flags. Plan and apply warn. They do not create certificates or CDN endpoints — use `resources.certificates` and `resources.cdn` |
 | `monitoring.enabled` / `monitoring.alerts` | Not mapped to `createAlertPolicy` (use `resources.alert_policies`) |
 | `blueprint` at top level | Hoisted into `resources`, then applied |
 
@@ -98,15 +102,15 @@ The feature is more of a direction than a hardened part of the runtime.
 | WebEngine dashboard | Not this package |
 | `DigitalOcean` class with `.Droplet.create` | Flat function exports |
 | SSH provisioning (run scripts over SSH) | `user_data` on droplet create only |
-| State / plan / destroy | Create-oriented apply; deletes are manual APIs |
-| Drift detection | `grape status` counts only |
-| Dry-run | No |
+| State / plan / destroy | `grape plan` is a local dry-run. `grape destroy` matches unique live names. There is still no state file. Re-apply adopts Spaces, CDN origins, and certificate names; it does not update ACL, TTL, or custom domains |
+| Drift detection | `grape status` overlap is name presence, not a diff |
+| Dry-run | `grape plan` and `grape apply --dry-run` are local. They do not GET DigitalOcean |
 | Cost estimation | No |
 | Terraform / k8s / Docker drivers | No |
 | `grapevine init --config` | Invented CLI in an old infra README |
 | WordPress YAML as grape apply | Use `examples/blueprints/kiwipress-*` packs; `src/blueprints/wordpress/` is a pointer README |
 
-`NukeDroplet` / `deleteDroplet` exist as functions. They are not `grape destroy`.
+`NukeDroplet` / `deleteDroplet` still exist as functions. `grape destroy` is the YAML / `--tag` path; it is conservative and it does not empty Spaces.
 
 ## Strongest areas
 
@@ -127,7 +131,7 @@ These are already useful, but still need refinement before they feel fully settl
 - CLI apply (receipts, partial failure, duplicate creates)
 - applying domains / LBs / apps with the same teaching depth as droplets
 - documentation as a product surface
-- delete helpers wired to a real operator story (still not YAML destroy)
+- `grape destroy` (unique-name / tag teardown; not a full inverse of every create)
 
 These areas are what will most directly move Grapevine from “active development” toward a calmer 1.0 story — still DigitalOcean-first.
 
@@ -140,7 +144,8 @@ These should be treated more carefully in positioning:
 - drift / state / plan
 - grapeGUI
 - a second provider
-- volumes, DOKS, Spaces
+- volumes, DOKS
+- full idempotent re-apply, Vite `dist/` sync, and CDN edge wait (Spaces/CDN/certs exist; those gaps do not)
 
 These can absolutely be valuable later. They should not yet be the center of the Grapevine promise.
 
@@ -149,10 +154,10 @@ These can absolutely be valuable later. They should not yet be the center of the
 Grapevine does not reconcile a desired state.
 
 - `validate` parses a document.
-- `apply` POSTs creates in order.
-- `status` prints token presence and counts.
+- `apply` creates in order, and adopts a unique live name for some types (VPC, droplet, firewall, SSH key, Space, certificate, CDN origin).
+- `status` prints token presence, live tables, and optional name overlap. It is not drift.
 
-If you put `vpc: staging` without creating that VPC in the same run, you get a droplet without that `vpc_uuid`. If you apply twice, you get two create attempts.
+If you put `vpc: staging` without creating that VPC in the same run and it is not already a unique VPC of that name, you get a droplet without that `vpc_uuid`. A second apply still creates another tag, domain, database, or app. It skips a Space, certificate, or CDN origin that already matches uniquely, without updating it.
 
 ## Tests
 
@@ -166,7 +171,7 @@ Coverage is real and mostly mocked: schema, load, apply order, CLI parse/validat
 
 **Kiwi.** Optional. The `kiwi` CLI can delegate to `grape` on `PATH`. Grapevine does not import Kiwi.
 
-**Nectarine / Juice / Sig.js / Seltzer.** No special clients. You may put a Juice app on a droplet you created; Grapevine does not know what Juice is.
+**Nectarine / Juice / Sig.js / Seltzer.** No special clients. `05-static-site-spaces.yaml` can provision the DigitalOcean side of a public Juice static site (Space + CDN + certificate). Grapevine still does not build `@citrusworx/juiceapp` or upload `dist/`. What's next for Juice: idempotent re-apply across resource types, a general certificate/CDN wait (today's wait only covers Let's Encrypt when a same-apply CDN entry needs the id), and a build-and-sync step. App Platform is a different path and is not the Juice static-site choice.
 
 **`@citrusworx/types`.** Declared dependency. Unused in `libraries/grapevine/src`. Shared deployment types are not a second config format.
 
@@ -176,7 +181,7 @@ Coverage is real and mostly mocked: schema, load, apply order, CLI parse/validat
 
 If Grapevine is being described externally or internally, the most honest current positioning is:
 
-> Grapevine 0.2.1 is a DigitalOcean provisioning library: a Zod grape config, a create-only apply engine, a `grape` CLI (`validate` / `apply` / `status`), and function wrappers around DigitalOcean HTTP. It is not Terraform, not multi-cloud, and not a GUI.
+> Grapevine is a DigitalOcean provisioning library: a Zod grape config, an apply engine (create, plus unique-name adopt for some types), a `grape` CLI (`validate` / `plan` / `apply` / `status` / `destroy`), and function wrappers around DigitalOcean HTTP, including Spaces (S3), CDN, and certificates. It is not Terraform, not multi-cloud, and not a GUI. It does not build or upload the Juice static site.
 
 That framing matches the strongest current reality.
 

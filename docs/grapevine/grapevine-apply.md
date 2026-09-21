@@ -17,11 +17,12 @@ config (already validated)
         │
  tags → ssh_keys → vpcs → databases → droplets (+ stack user_data)
       → firewalls → domains → load_balancers → alert_policies → apps
+      → spaces → certificates → cdn
         │
  return ApplyResult
 ```
 
-Each resource loop is **create**. There is no get-or-create, no update, no delete, no refresh of live state.
+Most loops are **create**. Droplets, VPCs, firewalls, SSH keys, Spaces, certificates, and CDN origins also adopt a unique live name (or unique CDN origin) and skip create. That is not a full reconcile: ACL, TTL, custom domain, and droplet size are not updated. There is no state file and no rollback.
 
 ## 0. Preconditions
 
@@ -41,7 +42,7 @@ A token must exist. `resolveToken` reads `config.credentials.env` (default `DO_T
 | top-level `firewall` with any rules | a firewall named `firewall.name` or `digitalocean-firewall` |
 | top-level `ssh` | pushed onto `ssh_keys` |
 
-`networking.ssl` and `networking.cdn` are ignored here. Top-level `monitoring` is ignored here.
+`networking.ssl` and `networking.cdn` are deprecated booleans. Plan and apply warn and do not create anything from them. Use `resources.certificates` and `resources.cdn`. Top-level `monitoring` is ignored here.
 
 CLI `validate` and `grape status -c` also call `normalizeResources` for counts. Folding is not apply-only.
 
@@ -138,7 +139,23 @@ Then `createFireWall` (capital W — that is the export).
 
 ### Apps
 
-`createApp({ spec })`. Grapevine does not wait for a deployment to go active.
+`createApp({ spec })`. Grapevine does not wait for a deployment to go active. `waitForAppDeployment` is not implemented.
+
+### Spaces
+
+For each `resources.spaces` entry, region comes from the Space or `config.region` (missing region throws). Apply lists buckets with the Spaces key (`DO_SPACES_ACCESS_KEY_ID` / `DO_SPACES_SECRET_ACCESS_KEY`, overridable via `credentials.spaces_*_env`) and adopts a unique name. Otherwise `createSpace` sends `PUT /` to `{name}.{region}.digitaloceanspaces.com` with `x-amz-acl` (`private` when `acl` is omitted, or `public-read`). Re-apply does not change an existing ACL. Listing uses one regional host (the first Space's region, else the config region, else `nyc3`); DigitalOcean documents that list as account-wide.
+
+### Certificates
+
+`POST /certificates`. `lets_encrypt` sends `dns_names`. `custom` sends PEM fields from the document or from the named env vars. A unique existing name is adopted.
+
+If a `resources.cdn` entry references the certificate by name and `wait` is not `false`, apply polls until `state` is `verified` so the CDN create can send `certificate_id`. `error` fails immediately. A certificate nothing references is not waited on, even when Let's Encrypt leaves it `pending`. That wait is only for CDN attach. It does not wait for the CDN hostname to serve traffic.
+
+### CDN endpoints
+
+Origin is `origin`, or `{space}.{region}.digitaloceanspaces.com` using the CDN region, the same-apply Space region, or `config.region`. Apply lists `GET /cdn/endpoints` and adopts a unique origin without updating TTL or custom domain. Otherwise `POST /cdn/endpoints` with optional `ttl`, `certificate_id`, and `custom_domain`.
+
+Destroy removes CDN endpoints before certificates and Spaces. DigitalOcean will not delete a certificate or a Space that a CDN endpoint still references. Space delete also fails while the bucket has objects; destroy does not empty it.
 
 ## 5. Result
 
@@ -154,28 +171,33 @@ interface ApplyResult {
   load_balancers: Array<{ id: string; name?: string }>;
   alert_policies: Array<{ uuid: string; description: string }>;
   apps: Array<{ id: string; name: string }>;
+  spaces: AppliedSpace[]; // name, region, origin, optional acl — no Spaces secret
+  certificates: AppliedCertificate[]; // id, name, type, state — no PEM material
+  cdn: AppliedCdn[]; // id, origin, endpoint, custom_domain
   stacks: AppliedStack[];
   private_key_paths: string[];
   warnings: string[];
 }
 ```
 
-The CLI prints this as JSON after `Applied grape config`. Keep it if you will call delete helpers later — Grapevine will not.
+The CLI prints this as JSON after `Applied grape config`. `grape destroy -c` can later match unique names from the same file. It still does not read this JSON, and it does not roll back a failed apply.
 
 ## What apply does not do
 
 | Expectation | Reality |
 |---|---|
-| Dry-run / plan | No flag, no code path |
-| Idempotent apply | Second run creates again |
+| Full idempotent apply | Unique-name adopt for some types only. Second apply still creates tags, domains, databases, apps, and unmatched names. Adopted Spaces/CDN/certs are not updated |
 | Update an existing droplet | No PUT in this function |
-| Delete anything | Use `deleteDroplet` / `NukeDroplet` / … |
+| Empty a Space, then delete it | Destroy deletes an empty bucket only |
 | Rollback | Partial failure leaves earlier creates |
-| Import existing names | Maps are same-apply only |
-| Compare to live | That is not `grape status` either |
+| Import existing names | Same-apply maps, plus the unique-name adopt above. Ambiguous names throw on apply and are skipped on destroy |
+| Drift | `grape status` overlap is not a diff |
 | Run SSH commands | `user_data` on create only |
-| Provision volumes / DOKS / Spaces | Not in these loops |
-| Apply loose `services` / `monitoring` / ssl / cdn | Schema or warning only (`stack` is applied) |
+| Provision volumes / DOKS | Not in these loops |
+| Upload a Vite `dist/` or run the Juice build | Not in these loops. `05-static-site-spaces.yaml` only provisions Space + cert + CDN |
+| `waitForAppDeployment` or CDN edge wait | Not implemented. Certificate wait exists only for same-apply CDN attach |
+| Apply loose `services` / `monitoring` | Schema or warning only (`stack` is applied) |
+| Apply `networking.ssl` / `networking.cdn` | Warning only. Use `resources.certificates` and `resources.cdn` |
 
 `createDroplet` itself may send a `volumes` id list if you set it. Apply does not create those volumes first.
 
