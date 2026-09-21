@@ -84,6 +84,7 @@ A healthy Juice theme should own:
 - slider chrome roles (`--juice-slider-*`, bound from theme identity tokens)
 - checkbox chrome roles (`--juice-checkbox-*`, bound from theme identity tokens)
 - radio chrome roles (`--juice-radio-*`, bound from theme identity tokens)
+- breadcrumb chrome roles (`--juice-breadcrumb-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -240,6 +241,7 @@ The generated stylesheet currently defines:
 - slider chrome role bindings (`--jx-slider-*` / `--juice-slider-*`) and thumb CTA overrides for `[slider-thumb]`
 - checkbox chrome role bindings (`--jx-checkbox-*` / `--juice-checkbox-*`) and box CTA overrides for `[checkbox]`
 - radio chrome role bindings (`--jx-radio-*` / `--juice-radio-*`) and disc CTA overrides for `[radio]`
+- breadcrumb chrome role bindings (`--jx-breadcrumb-*` / `--juice-breadcrumb-*`) and link ink overrides for `[breadcrumb]` / `[breadcrumb-link]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -393,6 +395,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for the APG Radio pattern — one option in a radiogroup. It is not `[switch]`, not `[checkbox]`, and not a native `<input type="radio">` restyle as the only story. A boolean `[radio]` attribute is fine (no HTML global `radio` attr). Primary host is `<button type="button" radio>`; a native radio host is allowed (`:checked` paints that path). `[radiogroup]` is the group root and is layout only: no `--juice-radiogroup-*` roles. Authors use `stack` / `row` / `gap`. The disc is the host and the dot is `::after`. Do not style bare `[role="radio"]` or `[role="radiogroup"]`. Checked paint for static demos is `aria-checked="true"`. There is no ink role — labels sit beside the option. Inline control — no overlay z-index. The radio runtime auto-enhances exclusive selection and arrow-key keyboard inside `[radiogroup]` (`select` / `getChecked`, roving tabindex; orphans outside the group are ignored) — see [Radio Runtime](./juice-radio-runtime.md).
 
 Tide must bind a dark disc (`--tide-surface-strong`), not a white ring. The dot stays `--tide-accent`, not the page color.
+
+## Breadcrumb chrome roles
+
+Library themes bind the shared breadcrumb contract so `[breadcrumb]` / `[breadcrumb-item]` / `[breadcrumb-link]` paint is theme-agnostic in `breadcrumb.scss`. Required names (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-breadcrumb-*`, `--kw-breadcrumb-*`, `--cm-breadcrumb-*`, `--tide-breadcrumb-*`, …). App-owned generated themes use `--jx-breadcrumb-*` and bind `--juice-breadcrumb-*` from existing `--jx-*` text / heading / accent / border tokens. Do not invent a new hue family just for breadcrumb chrome. Crumb links are ink, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic link and `nav` bar styles on `[breadcrumb]` the same way. `surface` stays `transparent` so the trail is inline; rebind it to a surface token when crumbs sit on a bar.
+
+This is Juice chrome for an APG-inspired Breadcrumb trail. It is not the site `[nav]` / navigation runtime, not `nav[type="breadcrumb"]` (that older layout pattern stays in `nav.scss`), not tabs, not the wizard step tracker, and not pagination. A boolean `[breadcrumb]` attribute is fine (no HTML global `breadcrumb` attr). The root is `<nav breadcrumb>` or `<ol breadcrumb>`. `[breadcrumb-item]` is one crumb. Anchors inside the trail are enough; `[breadcrumb-link]` is optional. The separator is `::after` on every item except the last (a decorative chevron). `[breadcrumb-separator]` is optional and suppresses that chevron. Do not style bare `[aria-current="page"]`. Current-page paint is `aria-current="page"` on the last item or its link. Inline nav chrome — no overlay z-index. There is no breadcrumb runtime in this slice.
+
+Tide keeps a dark inline trail: ink is `--tide-text-muted`, current is `--tide-heading`, and surface stays `transparent` (not a light bar).
 
 ## Wizard chrome roles
 

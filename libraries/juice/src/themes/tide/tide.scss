@@ -431,6 +431,22 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-radio-mark: var(--tide-radio-mark);
     --juice-radio-focus-ring: var(--tide-radio-focus-ring);
 
+    /* Breadcrumb chrome — dark trail, not a light bar. Inline, not a site
+       nav and not a CTA. Surface stays transparent unless a bar is wanted.
+       Distinct from tabs, wizard steps, and pagination. */
+    --tide-breadcrumb-ink: var(--tide-text-muted);
+    --tide-breadcrumb-ink-current: var(--tide-heading);
+    --tide-breadcrumb-ink-hover: var(--tide-accent);
+    --tide-breadcrumb-separator: var(--tide-border);
+    --tide-breadcrumb-focus-ring: var(--tide-accent);
+    --tide-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--tide-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--tide-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--tide-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--tide-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--tide-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--tide-breadcrumb-surface);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
@@ -1235,5 +1251,54 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
 [theme="tide"] button[radio]:focus-visible,
 [theme="tide"] [radio]:focus-visible {
     outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail on the dark page, not a light bar and not a CTA.
+   Runtime is later. */
+[theme="tide"] [breadcrumb],
+[theme="tide"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="tide"] [breadcrumb] a,
+[theme="tide"] [breadcrumb-link],
+[theme="tide"] a[breadcrumb-link],
+[theme="tide"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="tide"] [breadcrumb] a:hover,
+[theme="tide"] [breadcrumb-link]:hover,
+[theme="tide"] a[breadcrumb-link]:hover,
+[theme="tide"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="tide"] [breadcrumb] [aria-current="page"],
+[theme="tide"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="tide"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="tide"] [breadcrumb] a:focus-visible,
+[theme="tide"] [breadcrumb-link]:focus-visible,
+[theme="tide"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
     outline-offset: 2px;
 }

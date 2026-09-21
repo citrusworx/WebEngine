@@ -19,6 +19,7 @@ import {
     REQUIRED_SLIDER_ROLES,
     REQUIRED_CHECKBOX_ROLES,
     REQUIRED_RADIO_ROLES,
+    REQUIRED_BREADCRUMB_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -552,6 +553,39 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(radioBlocks.length).toBeGreaterThan(0);
         for (const block of radioBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-breadcrumb-* from existing --jx-* text and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-breadcrumb-ink: var(--jx-text-muted)");
+        expect(css).toContain("--jx-breadcrumb-ink-current: var(--jx-heading)");
+        expect(css).toContain("--jx-breadcrumb-ink-hover: var(--jx-accent)");
+        expect(css).toContain("--jx-breadcrumb-separator: var(--jx-border)");
+        expect(css).toContain("--jx-breadcrumb-focus-ring: var(--jx-accent)");
+        expect(css).toContain("--jx-breadcrumb-surface: transparent");
+        expect(css).not.toContain("--jx-breadcrumb-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-breadcrumb-surface: var(--jx-surface)");
+
+        for (const role of REQUIRED_BREADCRUMB_ROLES) {
+            expect(css).toContain(`--juice-breadcrumb-${role}: var(--jx-breadcrumb-${role})`);
+        }
+
+        expect(css).toContain("[breadcrumb]");
+        expect(css).toContain("[breadcrumb-link]");
+        expect(css).toContain('[aria-current="page"]');
+        expect(css).not.toMatch(/(^|[,{])\s*\[aria-current=["']?page["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?navigation["']?\]/);
+
+        const linkBlocks = [...css.matchAll(/\[breadcrumb-link\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(linkBlocks.length).toBeGreaterThan(0);
+        for (const block of linkBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

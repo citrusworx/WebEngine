@@ -400,6 +400,21 @@
   --juice-radio-border-checked: var(--aqua-radio-border-checked);
   --juice-radio-mark: var(--aqua-radio-mark);
   --juice-radio-focus-ring: var(--aqua-radio-focus-ring);
+  /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+     site nav bar and not a CTA. Surface stays transparent unless a bar
+     is wanted. Distinct from tabs, wizard steps, and pagination. */
+  --aqua-breadcrumb-ink: var(--aqua-text-muted);
+  --aqua-breadcrumb-ink-current: var(--aqua-heading);
+  --aqua-breadcrumb-ink-hover: var(--aqua-accent);
+  --aqua-breadcrumb-separator: var(--aqua-border-strong);
+  --aqua-breadcrumb-focus-ring: var(--aqua-accent);
+  --aqua-breadcrumb-surface: transparent;
+  --juice-breadcrumb-ink: var(--aqua-breadcrumb-ink);
+  --juice-breadcrumb-ink-current: var(--aqua-breadcrumb-ink-current);
+  --juice-breadcrumb-ink-hover: var(--aqua-breadcrumb-ink-hover);
+  --juice-breadcrumb-separator: var(--aqua-breadcrumb-separator);
+  --juice-breadcrumb-focus-ring: var(--aqua-breadcrumb-focus-ring);
+  --juice-breadcrumb-surface: var(--aqua-breadcrumb-surface);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -1266,5 +1281,54 @@
 [theme=aquaflux] button[radio]:focus-visible,
 [theme=aquaflux] [radio]:focus-visible {
   outline: 2px solid var(--juice-radio-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme=aquaflux] [breadcrumb],
+[theme=aquaflux] nav[breadcrumb] {
+  background-image: none;
+  background-color: var(--juice-breadcrumb-surface);
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--juice-breadcrumb-ink);
+}
+
+[theme=aquaflux] [breadcrumb] a,
+[theme=aquaflux] [breadcrumb-link],
+[theme=aquaflux] a[breadcrumb-link],
+[theme=aquaflux] button[breadcrumb-link] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-breadcrumb-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=aquaflux] [breadcrumb] a:hover,
+[theme=aquaflux] [breadcrumb-link]:hover,
+[theme=aquaflux] a[breadcrumb-link]:hover,
+[theme=aquaflux] button[breadcrumb-link]:hover {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-breadcrumb-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] [breadcrumb] [aria-current=page],
+[theme=aquaflux] [breadcrumb] [aria-current=page] :is(a, [breadcrumb-link]),
+[theme=aquaflux] [breadcrumb-link][aria-current=page] {
+  color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme=aquaflux] [breadcrumb] a:focus-visible,
+[theme=aquaflux] [breadcrumb-link]:focus-visible,
+[theme=aquaflux] button[breadcrumb-link]:focus-visible {
+  outline: 2px solid var(--juice-breadcrumb-focus-ring);
   outline-offset: 2px;
 }
