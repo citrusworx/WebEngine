@@ -24,7 +24,7 @@ That must pass before publishing.
 - confirm `libraries/juice/CHANGELOG.md` describes user-facing changes clearly
 - confirm `dist/index.css`, `dist/index.js`, and `dist/icons/` are present after build
 - confirm artifact budgets still pass in `src/juice.artifacts.test.ts`
-- confirm interactive runtime tests still pass for navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, and slider behavior
+- confirm interactive runtime tests still pass for navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, and radio behavior
 - confirm any new assets are intentionally part of the published contract
 - confirm README examples and package entrypoints still match the build output
 
@@ -41,5 +41,5 @@ That must pass before publishing.
 - Do not publish Juice from a dirty worktree.
 - Do not bypass `verify` for “docs-only” changes if the package version is changing.
 - If browser targets or shipped asset directories change, update the README and artifact tests in the same change.
-- `sideEffects` must include `./dist/index.js` as well as the CSS entries. The JS entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, and slider; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
+- `sideEffects` must include `./dist/index.js` as well as the CSS entries. The JS entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, and radio; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
 - Keep `@citrusworx/sigjs` on a published caret range (currently `^0.3.0`), not `workspace:^`. This repo publishes with `changeset publish`, which uses `npm publish` and does not rewrite Yarn workspace protocol. Yarn still resolves `^0.3.0` to the local `libraries/sig` workspace during development.

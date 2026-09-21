@@ -169,7 +169,7 @@ The runtime owns clicks. The factory does not attach a private `onclick`, so a c
 - Panels use native `hidden`, never layout `content=`.
 - Arrow-key roving tabindex is out of scope.
 - Escape is contextual: it collapses the focused or last open item only when that accordion already owns the key. There is no global accordion Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- `Accordion()` is the only shipped Sig factory among the fourteen auto-enhance runtimes. Markup plus auto-enhance is still the contract.
+- `Accordion()` is the only shipped Sig factory among the sixteen auto-enhance runtimes. Markup plus auto-enhance is still the contract. Checkbox and radio count as two of those runtimes.
 
 ## Why This Matches Navigation
 
