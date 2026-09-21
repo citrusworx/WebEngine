@@ -40,8 +40,10 @@
  *                        (APG manual selection). Focus moves on.
  *
  * Select: input value becomes option text, or `data-value` when that
- * attribute is present. Chosen option gets `aria-selected="true"` and
- * `combobox-option="active"`; others are cleared. List closes.
+ * attribute is present. Chosen option gets `aria-selected="true"`;
+ * others are cleared. Closing (including after select, Tab, or
+ * Escape) clears `combobox-option="active"` and aria-activedescendant
+ * so a later Enter cannot commit a stale option.
  *
  * Trigger toggles the list. `aria-expanded` is written on the input
  * and, when present, the trigger. Opening one managed combobox closes
@@ -156,6 +158,9 @@ const isInputDisabled = (input: HTMLElement) => {
   }
   return input.getAttribute('aria-disabled') === 'true';
 };
+
+const isComposingKey = (event: KeyboardEvent) =>
+  event.isComposing || event.keyCode === 229;
 
 const noopController = (): ComboboxController => ({
   destroy: () => {},
@@ -341,13 +346,6 @@ export const createCombobox = (
     }
   };
 
-  const clearActiveDescendant = (combobox: HTMLElement) => {
-    const input = getInput(combobox);
-    if (input?.hasAttribute('aria-activedescendant')) {
-      input.removeAttribute('aria-activedescendant');
-    }
-  };
-
   const ensureComboboxAccessibility = (combobox: HTMLElement) => {
     const input = getInput(combobox);
     const list = getList(combobox);
@@ -408,7 +406,7 @@ export const createCombobox = (
     ensureComboboxAccessibility(combobox);
     setOpenState(combobox, false);
     setExpanded(combobox, false);
-    clearActiveDescendant(combobox);
+    setActiveOption(combobox, null);
     revealOptions(combobox);
   };
 
@@ -644,6 +642,7 @@ export const createCombobox = (
 
   const handleDocumentKeydown = (event: Event) => {
     if (!(event instanceof KeyboardEvent)) return;
+    if (isComposingKey(event)) return;
     const target = event.target;
     if (!(target instanceof Element)) return;
 

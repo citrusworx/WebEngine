@@ -263,7 +263,7 @@ describe('createCombobox', () => {
 
     expect(input?.value).toBe('Banana');
     expect(options[1]?.getAttribute('aria-selected')).toBe('true');
-    expect(options[1]?.getAttribute('combobox-option')).toBe('active');
+    expect(options[1]?.getAttribute('combobox-option')).not.toBe('active');
     expect(options[0]?.getAttribute('aria-selected')).toBe('false');
     expect(options[2]?.getAttribute('aria-selected')).toBe('false');
     expect(list?.hasAttribute('hidden')).toBe(true);
@@ -338,6 +338,80 @@ describe('createCombobox', () => {
     expect(list?.hasAttribute('hidden')).toBe(true);
     expect(input?.value).toBe('');
     expect(options[0]?.getAttribute('aria-selected')).not.toBe('true');
+    expect(options[0]?.getAttribute('combobox-option')).not.toBe('active');
+    expect(input?.hasAttribute('aria-activedescendant')).toBe(false);
+
+    input?.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Enter' })
+    );
+    expect(input?.value).toBe('');
+    expect(options[0]?.getAttribute('aria-selected')).not.toBe('true');
+
+    controller.destroy();
+  });
+
+  it('starts ArrowDown from the first option after a close', () => {
+    document.body.innerHTML = comboboxMarkup;
+    stopComboboxRuntime();
+
+    const controller = createCombobox({ root: document.body });
+    const input = document.querySelector<HTMLInputElement>('[combobox-input]');
+    const options = document.querySelectorAll<HTMLElement>('[combobox-option]');
+
+    input?.focus();
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' })
+    );
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' })
+    );
+    expect(options[1]?.getAttribute('combobox-option')).toBe('active');
+
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    );
+    expect(options[1]?.getAttribute('combobox-option')).not.toBe('active');
+
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' })
+    );
+    expect(options[0]?.getAttribute('combobox-option')).toBe('active');
+    expect(options[1]?.getAttribute('combobox-option')).not.toBe('active');
+
+    controller.destroy();
+  });
+
+  it('does not steal IME composition keys', () => {
+    document.body.innerHTML = comboboxMarkup;
+    stopComboboxRuntime();
+
+    const controller = createCombobox({ root: document.body });
+    const input = document.querySelector<HTMLInputElement>('[combobox-input]');
+    const options = document.querySelectorAll<HTMLElement>('[combobox-option]');
+
+    input?.focus();
+    const composing = new KeyboardEvent('keydown', {
+      bubbles: true,
+      key: 'ArrowDown',
+      cancelable: true,
+    });
+    Object.defineProperty(composing, 'isComposing', { value: true });
+    input?.dispatchEvent(composing);
+
+    expect(composing.defaultPrevented).toBe(false);
+    expect(options[0]?.getAttribute('combobox-option')).not.toBe('active');
+
+    const imeKey = new KeyboardEvent('keydown', {
+      bubbles: true,
+      key: 'Enter',
+      cancelable: true,
+    });
+    Object.defineProperty(imeKey, 'keyCode', { value: 229 });
+    input?.dispatchEvent(imeKey);
+
+    expect(imeKey.defaultPrevented).toBe(false);
+    expect(input?.value).toBe('');
 
     controller.destroy();
   });

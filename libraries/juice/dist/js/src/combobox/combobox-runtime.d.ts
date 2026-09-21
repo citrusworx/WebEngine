@@ -40,8 +40,10 @@
  *                        (APG manual selection). Focus moves on.
  *
  * Select: input value becomes option text, or `data-value` when that
- * attribute is present. Chosen option gets `aria-selected="true"` and
- * `combobox-option="active"`; others are cleared. List closes.
+ * attribute is present. Chosen option gets `aria-selected="true"`;
+ * others are cleared. Closing (including after select, Tab, or
+ * Escape) clears `combobox-option="active"` and aria-activedescendant
+ * so a later Enter cannot commit a stale option.
  *
  * Trigger toggles the list. `aria-expanded` is written on the input
  * and, when present, the trigger. Opening one managed combobox closes
