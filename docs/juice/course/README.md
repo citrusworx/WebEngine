@@ -51,7 +51,7 @@ Do not rewrite your notes from the reference pages into this folder. When a less
 
 ## What is real, and what is not promised
 
-Juice is an active alpha (`@citrusworx/juiceui` 0.7.0 in the [maturity matrix](../juice-maturity-matrix.md)). Lessons use shipped attributes and current theme contracts. Three labels keep that honest:
+Juice is an active alpha (`@citrusworx/juiceui` 0.8.0 in the [maturity matrix](../juice-maturity-matrix.md)). Lessons use shipped attributes and current theme contracts. Three labels keep that honest:
 
 - **Shipped:** present in `libraries/juice` and documented as usable today
 - **Emerging / draft:** useful, still evolving; do not treat the spelling as frozen

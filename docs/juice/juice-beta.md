@@ -1,6 +1,6 @@
 # Juice Beta
 
-Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.8.0` is the versioned Beta cut (wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C on top of the 0.7.0 stack). **0.7.0 remains the public npm cut** until someone runs `yarn release-packages` after this version lands. Menu is the twelfth Emerging auto-enhance runtime. All twelve stay **Emerging**. See [juice-roadmap.md](./juice-roadmap.md).
+Juice Beta is the first release line where the styling system, theme contract, and motion catalog are documented and gated for publish. `@citrusworx/juiceui@0.8.0` is the public Beta cut on npm (wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C on top of the 0.7.0 stack). Menu is the twelfth Emerging auto-enhance runtime. All twelve stay **Emerging**. 0.7.0 was the prior public cut. See [juice-roadmap.md](./juice-roadmap.md).
 
 ## What Beta includes
 
