@@ -34,6 +34,7 @@ Shipped:
 - named taxonomy transfer through `WPSync` (`taxonomies`)
 - WordPress type discovery (`WordPressTypes` / `kiwi.wordpress.types`) for `/wp/v2/types`
 - WordPress taxonomy discovery (`WordPressTaxonomies` / `kiwi.wordpress.taxonomies`) for `/wp/v2/taxonomies`
+- WordPress REST search (`WordPressSearch` / `kiwi.wordpress.search`) for `/wp/v2/search`
 - `KiwiPress.connect()` facade with `wordpress` (entry) and `nectarine` (destination) modes
 - opt-in `CmsPersistence` (`createFilePersistence`, `createPostgresPersistence` via Nectarine `PgSql`)
 - `registerKiwiPressGateway` for the `apps/kiwipress` Seltzer proxy
@@ -178,11 +179,11 @@ Featured images prefer `_embedded["wp:featuredmedia"][0].source_url`, then the e
 
 `KiwiPress.connect({ persistence })` then `await kiwi.ready()` hydrates once. Default remains in-memory.
 
-The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT or taxonomy client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection, and `CustomTaxonomy` / `kiwi.wordpress.taxonomy("genre")` does the same for terms. `WordPressTypes` / `kiwi.wordpress.types` reads `/wp/v2/types` so callers can discover CPT `rest_base` values; `WordPressTaxonomies` / `kiwi.wordpress.taxonomies` reads `/wp/v2/taxonomies`. `restBasesFromTypes()` maps the type catalog onto CPT rest bases for `transfer({ cpts })`. `restBasesFromTaxonomies()` maps the taxonomy catalog onto rest bases for `taxonomy()` / `transfer({ taxonomies })`, skipping built-in `categories` and `tags` by default (dedicated clients exist; pass `{ includeBuiltins: true }` to keep them).
+The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT or taxonomy client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection, and `CustomTaxonomy` / `kiwi.wordpress.taxonomy("genre")` does the same for terms. `WordPressTypes` / `kiwi.wordpress.types` reads `/wp/v2/types` so callers can discover CPT `rest_base` values; `WordPressTaxonomies` / `kiwi.wordpress.taxonomies` reads `/wp/v2/taxonomies`. `restBasesFromTypes()` maps the type catalog onto CPT rest bases for `transfer({ cpts })`. `restBasesFromTaxonomies()` maps the taxonomy catalog onto rest bases for `taxonomy()` / `transfer({ taxonomies })`, skipping built-in `categories` and `tags` by default (dedicated clients exist; pass `{ includeBuiltins: true }` to keep them). `WordPressSearch` / `kiwi.wordpress.search` is a read-only client for core `/wp/v2/search`. Hits are `SearchHit`s (`id`, `title`, `url`, `type`, `subtype`), not `ContentRecord`s — they are not full posts, not Elasticsearch, and not native store search.
 
 ## Route Layer
 
-KiwiPress routes are thin. They define a clean public path and translate WordPress query quirks inside handlers (`createAliasedQueryRoute`).
+KiwiPress routes are thin. They define a clean public path and translate WordPress query quirks inside handlers (`createAliasedQueryRoute`). Search follows that pattern: `/search/:term` becomes `?search=`, and extra REST args (`type`, `subtype`, `page`, `per_page`, `exclude`, `include`) are serialized onto the same collection query string.
 
 Inbound app routes live in `registerKiwiPressGateway`. Seltzer matches exact pathnames, so item updates use `?id=` rather than `/posts/:id`.
 
@@ -216,12 +217,13 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 ## Current Exported Surface
 
 - `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`, `createWordPressClients`
-- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`, `CustomTaxonomy`, `WordPressTypes`, `WordPressTaxonomies`
+- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`, `CustomTaxonomy`, `WordPressTypes`, `WordPressTaxonomies`, `WordPressSearch`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
 - `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
 - `normalizeWordPressItem`, `toNectarinePost`, `extractTextValue`, `extractTextParts`, `extractRaw`, `extractRendered`, `featuredImageFrom`, `resolveFeaturedImageUrl`, `withEditContext`, `editContextQuery`, `loadNectarineApi`
 - `restBasesFromTypes`, `normalizeWordPressType`
 - `restBasesFromTaxonomies`, `normalizeWordPressTaxonomy`
+- `SearchHit`, `normalizeSearchHit`, `buildSearchQuery`
 - `registerKiwiPressGateway`
 
 ## Non-Goals

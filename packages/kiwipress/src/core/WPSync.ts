@@ -23,6 +23,7 @@ import { Posts } from "../posts/posts.js";
 import { Tags } from "../tags/tags.js";
 import { CustomTaxonomy } from "../taxonomy/taxonomy.js";
 import { Users } from "../users/users.js";
+import { WordPressSearch } from "../search/search.js";
 import { WordPressTaxonomies } from "../wp-taxonomies/wp-taxonomies.js";
 import { WordPressTypes } from "../wp-types/wp-types.js";
 
@@ -36,6 +37,7 @@ export type WordPressClients = {
     media: Media;
     types: WordPressTypes;
     taxonomies: WordPressTaxonomies;
+    search: WordPressSearch;
     cpt(restBase: string): CustomPostType;
     taxonomy(restBase: string): CustomTaxonomy;
 };
@@ -51,6 +53,7 @@ export function createWordPressClients(config: Partial<WPCoreConfig>): WordPress
         media: new Media(config),
         types: new WordPressTypes(config),
         taxonomies: new WordPressTaxonomies(config),
+        search: new WordPressSearch(config),
         cpt(restBase: string) {
             return new CustomPostType(config, restBase);
         },
