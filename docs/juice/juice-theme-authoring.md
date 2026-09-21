@@ -81,6 +81,7 @@ A healthy Juice theme should own:
 - combobox chrome roles (`--juice-combobox-*`, bound from theme identity tokens)
 - menu chrome roles (`--juice-menu-*`, bound from theme identity tokens)
 - switch chrome roles (`--juice-switch-*`, bound from theme identity tokens)
+- slider chrome roles (`--juice-slider-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -234,6 +235,7 @@ The generated stylesheet currently defines:
 - combobox chrome role bindings (`--jx-combobox-*` / `--juice-combobox-*`) and trigger CTA overrides for `[combobox-trigger]`
 - menu chrome role bindings (`--jx-menu-*` / `--juice-menu-*`) and opener CTA overrides for `[menu-button]`
 - switch chrome role bindings (`--jx-switch-*` / `--juice-switch-*`) and track CTA overrides for `[switch]`
+- slider chrome role bindings (`--jx-slider-*` / `--juice-slider-*`) and thumb CTA overrides for `[slider-thumb]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -357,6 +359,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for the APG Switch pattern — a toggle with `role="switch"` and `aria-checked`. It is not a form checkbox as the only story, not a native `<input type="checkbox">` restyle as the only story, and not a menu `menuitemcheckbox`. A boolean `[switch]` attribute is fine (no HTML global `switch` attr). Primary host is `<button type="button" switch>`; a checkbox-backed host is allowed (`:checked` paints that path). Track and thumb are CSS pseudo-elements on `[switch]`; there are no child part attrs. Do not style bare `[role="switch"]`. Checked paint for static demos is `aria-checked="true"`. Inline control — no overlay z-index. The switch runtime auto-enhances that markup (`toggle` / `check` / `uncheck` / `setChecked`, binary `aria-checked`, no tri-state) — see [Switch Runtime](./juice-switch-runtime.md).
 
 Tide must bind a dark track (`--tide-surface-muted`), not a white pill.
+
+## Slider chrome roles
+
+Library themes bind the shared slider contract so `[slider]` / `[slider-fill]` / `[slider-thumb]` paint is theme-agnostic in `slider.scss`. Required names (`track`, `track-border`, `fill`, `thumb`, `thumb-border`, `thumb-shadow`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-slider-*`, `--kw-slider-*`, `--cm-slider-*`, `--tide-slider-*`, …). App-owned generated themes use `--jx-slider-*` and bind `--juice-slider-*` from existing `--jx-*` surface/page/accent tokens. Do not invent a new hue family just for slider chrome. `[slider-thumb]` is a surface control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[slider-thumb]` the same way.
+
+This is Juice chrome for the APG Slider pattern — a horizontal slider with a real thumb child. It is not a native `<input type="range">` restyle as the only story, not a progress meter, and not a scrollbar. A boolean `[slider]` attribute is fine (no HTML global `slider` attr); `slider="horizontal"` is the same story. `slider="vertical"` is later and is not painted. `[slider]` is the track host. There is no `[slider-track]` child. Do not style bare `[role="slider"]`. Integer `aria-valuenow` 0–100 (min/max omitted or `0` / `100`) paints the fill and thumb, on the host or on `[slider-thumb]` (the thumb wins). Other ranges use the structural `--juice-slider-ratio` paint hook on `[slider]` (not a theme role, not an author attribute). Inline control — no overlay z-index. Slider runtime (B) is later.
+
+Tide must bind a dark track (`--tide-surface-muted`), not a white groove. The thumb stays `--tide-heading`, not the page color.
 
 ## Wizard chrome roles
 

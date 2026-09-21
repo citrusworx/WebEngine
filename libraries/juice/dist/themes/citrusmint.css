@@ -302,6 +302,23 @@
   --juice-switch-thumb: var(--cm-switch-thumb);
   --juice-switch-thumb-checked: var(--cm-switch-thumb-checked);
   --juice-switch-focus-ring: var(--cm-switch-focus-ring);
+  /* Slider chrome — thinner --cm-* set. Heading stands in for accent.
+     Horizontal only. The track is a surface groove, not heading-fill.
+     Distinct from range input, progress, and scrollbar. */
+  --cm-slider-track: var(--cm-surface-muted);
+  --cm-slider-track-border: var(--cm-border);
+  --cm-slider-fill: var(--cm-heading);
+  --cm-slider-thumb: var(--cm-surface);
+  --cm-slider-thumb-border: var(--cm-border);
+  --cm-slider-thumb-shadow: 0 1px 2px color-mix(in srgb, var(--cm-heading) 22%, transparent);
+  --cm-slider-focus-ring: var(--cm-heading);
+  --juice-slider-track: var(--cm-slider-track);
+  --juice-slider-track-border: var(--cm-slider-track-border);
+  --juice-slider-fill: var(--cm-slider-fill);
+  --juice-slider-thumb: var(--cm-slider-thumb);
+  --juice-slider-thumb-border: var(--cm-slider-thumb-border);
+  --juice-slider-thumb-shadow: var(--cm-slider-thumb-shadow);
+  --juice-slider-focus-ring: var(--cm-slider-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -798,5 +815,38 @@
 [theme=citrusmint] button[switch]:focus-visible,
 [theme=citrusmint] [switch]:focus-visible {
   outline: 2px solid var(--juice-switch-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) heading-fill defaults.
+   Horizontal only. The thumb is a surface control, not heading-fill.
+   Runtime is later. */
+[theme=citrusmint] button[slider]:not([slider=vertical]),
+[theme=citrusmint] [slider]:not([slider=vertical]) {
+  background-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] button[slider-thumb],
+[theme=citrusmint] [slider-thumb] {
+  background-color: var(--juice-slider-thumb);
+  border-color: var(--juice-slider-thumb-border);
+  box-shadow: var(--juice-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+}
+
+[theme=citrusmint] button[slider-thumb]:hover,
+[theme=citrusmint] [slider-thumb]:hover,
+[theme=citrusmint] button[slider-thumb]:focus-visible,
+[theme=citrusmint] [slider-thumb]:focus-visible {
+  background-color: var(--juice-slider-thumb);
+  box-shadow: var(--juice-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+}
+
+[theme=citrusmint] button[slider-thumb]:focus-visible,
+[theme=citrusmint] [slider-thumb]:focus-visible {
+  outline: 2px solid var(--juice-slider-focus-ring);
   outline-offset: 2px;
 }

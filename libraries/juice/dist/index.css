@@ -99411,6 +99411,1151 @@ nav[type=actions] a:hover {
     margin-bottom: 2rem;
   }
 }
+[slider]:not([slider=vertical]),
+[theme] [slider]:not([slider=vertical]) {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 8rem;
+  height: 1.75rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  overflow: visible;
+  cursor: pointer;
+  -webkit-user-select: none;
+          user-select: none;
+  --juice-slider-ratio: 0;
+}
+
+[slider]:not([slider=vertical])::before,
+[theme] [slider]:not([slider=vertical])::before {
+  content: "";
+  position: absolute;
+  left: calc(1.25rem * 0.5);
+  right: calc(1.25rem * 0.5);
+  top: 50%;
+  height: 0.375rem;
+  box-sizing: border-box;
+  border: 1px solid var(--juice-slider-track-border, var(--aqua-slider-track-border, var(--kw-slider-track-border, var(--cm-slider-track-border, var(--tide-slider-track-border, var(--jx-slider-track-border, hsl(0, 0%, 85%)))))));
+  border-radius: 999px;
+  background-color: var(--juice-slider-track, var(--aqua-slider-track, var(--kw-slider-track, var(--cm-slider-track, var(--tide-slider-track, var(--jx-slider-track, hsl(0, 0%, 90%)))))));
+  background-image: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+[slider-fill],
+[theme] [slider-fill] {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 0;
+  height: 0.375rem;
+  width: calc(1.25rem * 0.5 + (100% - 1.25rem) * var(--juice-slider-ratio, 0));
+  box-sizing: border-box;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--juice-slider-fill, var(--aqua-slider-fill, var(--kw-slider-fill, var(--cm-slider-fill, var(--tide-slider-fill, var(--jx-slider-fill, hsl(0, 0%, 65%)))))));
+  background-image: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: width 0.15s ease, background-color 0.15s ease;
+}
+
+[slider-thumb],
+button[slider-thumb],
+[theme] [slider-thumb],
+[theme] button[slider-thumb] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  top: 50%;
+  left: calc(1.25rem * 0.5 + (100% - 1.25rem) * var(--juice-slider-ratio, 0));
+  z-index: 1;
+  display: block;
+  box-sizing: border-box;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--juice-slider-thumb-border, var(--aqua-slider-thumb-border, var(--kw-slider-thumb-border, var(--cm-slider-thumb-border, var(--tide-slider-thumb-border, var(--jx-slider-thumb-border, hsl(0, 0%, 85%)))))));
+  border-radius: 999px;
+  font: inherit;
+  line-height: 0;
+  cursor: pointer;
+  background-color: var(--juice-slider-thumb, var(--aqua-slider-thumb, var(--kw-slider-thumb, var(--cm-slider-thumb, var(--tide-slider-thumb, var(--jx-slider-thumb, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: var(--juice-slider-thumb-shadow, var(--aqua-slider-thumb-shadow, var(--kw-slider-thumb-shadow, var(--cm-slider-thumb-shadow, var(--tide-slider-thumb-shadow, var(--jx-slider-thumb-shadow, 0 1px 2px rgb(26 26 26 / 0.18)))))));
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[slider-thumb]:hover,
+[slider-thumb]:focus-visible,
+button[slider-thumb]:hover,
+button[slider-thumb]:focus-visible,
+[theme] [slider-thumb]:hover,
+[theme] [slider-thumb]:focus-visible,
+[theme] button[slider-thumb]:hover,
+[theme] button[slider-thumb]:focus-visible {
+  background-color: var(--juice-slider-thumb, var(--aqua-slider-thumb, var(--kw-slider-thumb, var(--cm-slider-thumb, var(--tide-slider-thumb, var(--jx-slider-thumb, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: var(--juice-slider-thumb-shadow, var(--aqua-slider-thumb-shadow, var(--kw-slider-thumb-shadow, var(--cm-slider-thumb-shadow, var(--tide-slider-thumb-shadow, var(--jx-slider-thumb-shadow, 0 1px 2px rgb(26 26 26 / 0.18)))))));
+  transform: translate(-50%, -50%);
+}
+
+[slider]:not([slider=vertical]):focus-visible,
+[slider-thumb]:focus-visible,
+button[slider-thumb]:focus-visible,
+[theme] [slider]:not([slider=vertical]):focus-visible,
+[theme] [slider-thumb]:focus-visible,
+[theme] button[slider-thumb]:focus-visible {
+  outline: 2px solid var(--juice-slider-focus-ring, var(--aqua-slider-focus-ring, var(--kw-slider-focus-ring, var(--cm-slider-focus-ring, var(--tide-slider-focus-ring, var(--jx-slider-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="0"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="0"] {
+  --juice-slider-ratio: 0;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="0"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="0"]) {
+  --juice-slider-ratio: 0;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="1"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="1"] {
+  --juice-slider-ratio: 0.01;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="1"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="1"]) {
+  --juice-slider-ratio: 0.01;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="2"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="2"] {
+  --juice-slider-ratio: 0.02;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="2"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="2"]) {
+  --juice-slider-ratio: 0.02;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="3"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="3"] {
+  --juice-slider-ratio: 0.03;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="3"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="3"]) {
+  --juice-slider-ratio: 0.03;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="4"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="4"] {
+  --juice-slider-ratio: 0.04;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="4"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="4"]) {
+  --juice-slider-ratio: 0.04;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="5"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="5"] {
+  --juice-slider-ratio: 0.05;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="5"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="5"]) {
+  --juice-slider-ratio: 0.05;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="6"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="6"] {
+  --juice-slider-ratio: 0.06;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="6"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="6"]) {
+  --juice-slider-ratio: 0.06;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="7"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="7"] {
+  --juice-slider-ratio: 0.07;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="7"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="7"]) {
+  --juice-slider-ratio: 0.07;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="8"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="8"] {
+  --juice-slider-ratio: 0.08;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="8"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="8"]) {
+  --juice-slider-ratio: 0.08;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="9"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="9"] {
+  --juice-slider-ratio: 0.09;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="9"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="9"]) {
+  --juice-slider-ratio: 0.09;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="10"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="10"] {
+  --juice-slider-ratio: 0.1;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="10"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="10"]) {
+  --juice-slider-ratio: 0.1;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="11"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="11"] {
+  --juice-slider-ratio: 0.11;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="11"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="11"]) {
+  --juice-slider-ratio: 0.11;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="12"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="12"] {
+  --juice-slider-ratio: 0.12;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="12"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="12"]) {
+  --juice-slider-ratio: 0.12;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="13"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="13"] {
+  --juice-slider-ratio: 0.13;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="13"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="13"]) {
+  --juice-slider-ratio: 0.13;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="14"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="14"] {
+  --juice-slider-ratio: 0.14;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="14"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="14"]) {
+  --juice-slider-ratio: 0.14;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="15"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="15"] {
+  --juice-slider-ratio: 0.15;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="15"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="15"]) {
+  --juice-slider-ratio: 0.15;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="16"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="16"] {
+  --juice-slider-ratio: 0.16;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="16"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="16"]) {
+  --juice-slider-ratio: 0.16;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="17"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="17"] {
+  --juice-slider-ratio: 0.17;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="17"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="17"]) {
+  --juice-slider-ratio: 0.17;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="18"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="18"] {
+  --juice-slider-ratio: 0.18;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="18"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="18"]) {
+  --juice-slider-ratio: 0.18;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="19"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="19"] {
+  --juice-slider-ratio: 0.19;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="19"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="19"]) {
+  --juice-slider-ratio: 0.19;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="20"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="20"] {
+  --juice-slider-ratio: 0.2;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="20"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="20"]) {
+  --juice-slider-ratio: 0.2;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="21"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="21"] {
+  --juice-slider-ratio: 0.21;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="21"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="21"]) {
+  --juice-slider-ratio: 0.21;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="22"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="22"] {
+  --juice-slider-ratio: 0.22;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="22"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="22"]) {
+  --juice-slider-ratio: 0.22;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="23"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="23"] {
+  --juice-slider-ratio: 0.23;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="23"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="23"]) {
+  --juice-slider-ratio: 0.23;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="24"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="24"] {
+  --juice-slider-ratio: 0.24;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="24"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="24"]) {
+  --juice-slider-ratio: 0.24;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="25"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="25"] {
+  --juice-slider-ratio: 0.25;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="25"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="25"]) {
+  --juice-slider-ratio: 0.25;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="26"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="26"] {
+  --juice-slider-ratio: 0.26;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="26"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="26"]) {
+  --juice-slider-ratio: 0.26;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="27"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="27"] {
+  --juice-slider-ratio: 0.27;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="27"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="27"]) {
+  --juice-slider-ratio: 0.27;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="28"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="28"] {
+  --juice-slider-ratio: 0.28;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="28"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="28"]) {
+  --juice-slider-ratio: 0.28;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="29"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="29"] {
+  --juice-slider-ratio: 0.29;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="29"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="29"]) {
+  --juice-slider-ratio: 0.29;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="30"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="30"] {
+  --juice-slider-ratio: 0.3;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="30"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="30"]) {
+  --juice-slider-ratio: 0.3;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="31"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="31"] {
+  --juice-slider-ratio: 0.31;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="31"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="31"]) {
+  --juice-slider-ratio: 0.31;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="32"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="32"] {
+  --juice-slider-ratio: 0.32;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="32"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="32"]) {
+  --juice-slider-ratio: 0.32;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="33"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="33"] {
+  --juice-slider-ratio: 0.33;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="33"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="33"]) {
+  --juice-slider-ratio: 0.33;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="34"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="34"] {
+  --juice-slider-ratio: 0.34;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="34"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="34"]) {
+  --juice-slider-ratio: 0.34;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="35"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="35"] {
+  --juice-slider-ratio: 0.35;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="35"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="35"]) {
+  --juice-slider-ratio: 0.35;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="36"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="36"] {
+  --juice-slider-ratio: 0.36;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="36"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="36"]) {
+  --juice-slider-ratio: 0.36;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="37"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="37"] {
+  --juice-slider-ratio: 0.37;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="37"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="37"]) {
+  --juice-slider-ratio: 0.37;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="38"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="38"] {
+  --juice-slider-ratio: 0.38;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="38"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="38"]) {
+  --juice-slider-ratio: 0.38;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="39"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="39"] {
+  --juice-slider-ratio: 0.39;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="39"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="39"]) {
+  --juice-slider-ratio: 0.39;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="40"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="40"] {
+  --juice-slider-ratio: 0.4;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="40"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="40"]) {
+  --juice-slider-ratio: 0.4;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="41"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="41"] {
+  --juice-slider-ratio: 0.41;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="41"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="41"]) {
+  --juice-slider-ratio: 0.41;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="42"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="42"] {
+  --juice-slider-ratio: 0.42;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="42"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="42"]) {
+  --juice-slider-ratio: 0.42;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="43"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="43"] {
+  --juice-slider-ratio: 0.43;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="43"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="43"]) {
+  --juice-slider-ratio: 0.43;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="44"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="44"] {
+  --juice-slider-ratio: 0.44;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="44"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="44"]) {
+  --juice-slider-ratio: 0.44;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="45"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="45"] {
+  --juice-slider-ratio: 0.45;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="45"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="45"]) {
+  --juice-slider-ratio: 0.45;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="46"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="46"] {
+  --juice-slider-ratio: 0.46;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="46"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="46"]) {
+  --juice-slider-ratio: 0.46;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="47"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="47"] {
+  --juice-slider-ratio: 0.47;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="47"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="47"]) {
+  --juice-slider-ratio: 0.47;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="48"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="48"] {
+  --juice-slider-ratio: 0.48;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="48"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="48"]) {
+  --juice-slider-ratio: 0.48;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="49"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="49"] {
+  --juice-slider-ratio: 0.49;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="49"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="49"]) {
+  --juice-slider-ratio: 0.49;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="50"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="50"] {
+  --juice-slider-ratio: 0.5;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="50"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="50"]) {
+  --juice-slider-ratio: 0.5;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="51"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="51"] {
+  --juice-slider-ratio: 0.51;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="51"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="51"]) {
+  --juice-slider-ratio: 0.51;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="52"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="52"] {
+  --juice-slider-ratio: 0.52;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="52"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="52"]) {
+  --juice-slider-ratio: 0.52;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="53"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="53"] {
+  --juice-slider-ratio: 0.53;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="53"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="53"]) {
+  --juice-slider-ratio: 0.53;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="54"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="54"] {
+  --juice-slider-ratio: 0.54;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="54"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="54"]) {
+  --juice-slider-ratio: 0.54;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="55"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="55"] {
+  --juice-slider-ratio: 0.55;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="55"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="55"]) {
+  --juice-slider-ratio: 0.55;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="56"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="56"] {
+  --juice-slider-ratio: 0.56;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="56"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="56"]) {
+  --juice-slider-ratio: 0.56;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="57"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="57"] {
+  --juice-slider-ratio: 0.57;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="57"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="57"]) {
+  --juice-slider-ratio: 0.57;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="58"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="58"] {
+  --juice-slider-ratio: 0.58;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="58"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="58"]) {
+  --juice-slider-ratio: 0.58;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="59"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="59"] {
+  --juice-slider-ratio: 0.59;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="59"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="59"]) {
+  --juice-slider-ratio: 0.59;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="60"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="60"] {
+  --juice-slider-ratio: 0.6;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="60"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="60"]) {
+  --juice-slider-ratio: 0.6;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="61"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="61"] {
+  --juice-slider-ratio: 0.61;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="61"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="61"]) {
+  --juice-slider-ratio: 0.61;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="62"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="62"] {
+  --juice-slider-ratio: 0.62;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="62"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="62"]) {
+  --juice-slider-ratio: 0.62;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="63"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="63"] {
+  --juice-slider-ratio: 0.63;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="63"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="63"]) {
+  --juice-slider-ratio: 0.63;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="64"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="64"] {
+  --juice-slider-ratio: 0.64;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="64"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="64"]) {
+  --juice-slider-ratio: 0.64;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="65"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="65"] {
+  --juice-slider-ratio: 0.65;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="65"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="65"]) {
+  --juice-slider-ratio: 0.65;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="66"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="66"] {
+  --juice-slider-ratio: 0.66;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="66"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="66"]) {
+  --juice-slider-ratio: 0.66;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="67"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="67"] {
+  --juice-slider-ratio: 0.67;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="67"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="67"]) {
+  --juice-slider-ratio: 0.67;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="68"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="68"] {
+  --juice-slider-ratio: 0.68;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="68"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="68"]) {
+  --juice-slider-ratio: 0.68;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="69"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="69"] {
+  --juice-slider-ratio: 0.69;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="69"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="69"]) {
+  --juice-slider-ratio: 0.69;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="70"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="70"] {
+  --juice-slider-ratio: 0.7;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="70"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="70"]) {
+  --juice-slider-ratio: 0.7;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="71"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="71"] {
+  --juice-slider-ratio: 0.71;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="71"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="71"]) {
+  --juice-slider-ratio: 0.71;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="72"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="72"] {
+  --juice-slider-ratio: 0.72;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="72"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="72"]) {
+  --juice-slider-ratio: 0.72;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="73"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="73"] {
+  --juice-slider-ratio: 0.73;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="73"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="73"]) {
+  --juice-slider-ratio: 0.73;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="74"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="74"] {
+  --juice-slider-ratio: 0.74;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="74"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="74"]) {
+  --juice-slider-ratio: 0.74;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="75"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="75"] {
+  --juice-slider-ratio: 0.75;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="75"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="75"]) {
+  --juice-slider-ratio: 0.75;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="76"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="76"] {
+  --juice-slider-ratio: 0.76;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="76"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="76"]) {
+  --juice-slider-ratio: 0.76;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="77"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="77"] {
+  --juice-slider-ratio: 0.77;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="77"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="77"]) {
+  --juice-slider-ratio: 0.77;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="78"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="78"] {
+  --juice-slider-ratio: 0.78;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="78"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="78"]) {
+  --juice-slider-ratio: 0.78;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="79"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="79"] {
+  --juice-slider-ratio: 0.79;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="79"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="79"]) {
+  --juice-slider-ratio: 0.79;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="80"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="80"] {
+  --juice-slider-ratio: 0.8;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="80"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="80"]) {
+  --juice-slider-ratio: 0.8;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="81"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="81"] {
+  --juice-slider-ratio: 0.81;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="81"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="81"]) {
+  --juice-slider-ratio: 0.81;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="82"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="82"] {
+  --juice-slider-ratio: 0.82;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="82"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="82"]) {
+  --juice-slider-ratio: 0.82;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="83"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="83"] {
+  --juice-slider-ratio: 0.83;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="83"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="83"]) {
+  --juice-slider-ratio: 0.83;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="84"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="84"] {
+  --juice-slider-ratio: 0.84;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="84"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="84"]) {
+  --juice-slider-ratio: 0.84;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="85"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="85"] {
+  --juice-slider-ratio: 0.85;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="85"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="85"]) {
+  --juice-slider-ratio: 0.85;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="86"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="86"] {
+  --juice-slider-ratio: 0.86;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="86"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="86"]) {
+  --juice-slider-ratio: 0.86;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="87"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="87"] {
+  --juice-slider-ratio: 0.87;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="87"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="87"]) {
+  --juice-slider-ratio: 0.87;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="88"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="88"] {
+  --juice-slider-ratio: 0.88;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="88"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="88"]) {
+  --juice-slider-ratio: 0.88;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="89"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="89"] {
+  --juice-slider-ratio: 0.89;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="89"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="89"]) {
+  --juice-slider-ratio: 0.89;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="90"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="90"] {
+  --juice-slider-ratio: 0.9;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="90"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="90"]) {
+  --juice-slider-ratio: 0.9;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="91"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="91"] {
+  --juice-slider-ratio: 0.91;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="91"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="91"]) {
+  --juice-slider-ratio: 0.91;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="92"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="92"] {
+  --juice-slider-ratio: 0.92;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="92"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="92"]) {
+  --juice-slider-ratio: 0.92;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="93"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="93"] {
+  --juice-slider-ratio: 0.93;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="93"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="93"]) {
+  --juice-slider-ratio: 0.93;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="94"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="94"] {
+  --juice-slider-ratio: 0.94;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="94"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="94"]) {
+  --juice-slider-ratio: 0.94;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="95"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="95"] {
+  --juice-slider-ratio: 0.95;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="95"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="95"]) {
+  --juice-slider-ratio: 0.95;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="96"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="96"] {
+  --juice-slider-ratio: 0.96;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="96"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="96"]) {
+  --juice-slider-ratio: 0.96;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="97"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="97"] {
+  --juice-slider-ratio: 0.97;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="97"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="97"]) {
+  --juice-slider-ratio: 0.97;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="98"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="98"] {
+  --juice-slider-ratio: 0.98;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="98"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="98"]) {
+  --juice-slider-ratio: 0.98;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="99"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="99"] {
+  --juice-slider-ratio: 0.99;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="99"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="99"]) {
+  --juice-slider-ratio: 0.99;
+}
+
+[slider]:not([slider=vertical])[aria-valuenow="100"]:not([aria-valuemin]):not([aria-valuemax]),
+[slider]:not([slider=vertical])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="100"] {
+  --juice-slider-ratio: 1;
+}
+
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuenow="100"]:not([aria-valuemin]):not([aria-valuemax])),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="100"]) {
+  --juice-slider-ratio: 1;
+}
+
+[slider]:not([slider=vertical]):disabled,
+[slider]:not([slider=vertical])[aria-disabled=true],
+[slider]:not([slider=vertical]):has([slider-thumb]:disabled),
+[slider]:not([slider=vertical]):has([slider-thumb][aria-disabled=true]),
+[theme] [slider]:not([slider=vertical]):disabled,
+[theme] [slider]:not([slider=vertical])[aria-disabled=true],
+[theme] [slider]:not([slider=vertical]):has([slider-thumb]:disabled),
+[theme] [slider]:not([slider=vertical]):has([slider-thumb][aria-disabled=true]) {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [slider]:not([slider=vertical])::before,
+  [theme] [slider]:not([slider=vertical])::before,
+  [slider-fill],
+  [theme] [slider-fill],
+  [slider-thumb],
+  [theme] [slider-thumb] {
+    transition: none;
+  }
+}
 [stats] {
   display: flex;
   flex-wrap: wrap;

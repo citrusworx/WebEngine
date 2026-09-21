@@ -660,6 +660,26 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-switch-thumb-checked: var(--jx-switch-thumb-checked);
     --juice-switch-focus-ring: var(--jx-switch-focus-ring);
 
+    /* Slider chrome — APG slider from existing --jx-* tokens.
+       Horizontal only. The track is a surface groove, not the CTA fill.
+       Distinct from range input, progress, and scrollbar. Idle track
+       mixes text into muted so the inverse thumb still reads when
+       surfaces.muted falls back to surfaces.default (same as --jx-surface). */
+    --jx-slider-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted));
+    --jx-slider-track-border: var(--jx-border);
+    --jx-slider-fill: var(--jx-accent);
+    --jx-slider-thumb: var(--jx-text-inverse);
+    --jx-slider-thumb-border: var(--jx-border);
+    --jx-slider-thumb-shadow: 0 1px 2px var(--jx-shadow);
+    --jx-slider-focus-ring: var(--jx-accent);
+    --juice-slider-track: var(--jx-slider-track);
+    --juice-slider-track-border: var(--jx-slider-track-border);
+    --juice-slider-fill: var(--jx-slider-fill);
+    --juice-slider-thumb: var(--jx-slider-thumb);
+    --juice-slider-thumb-border: var(--jx-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--jx-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--jx-slider-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1221,6 +1241,35 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [switch]:focus-visible,
 [theme="${config.id}"] button[switch]:focus-visible {
     outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] button[slider]:not([slider="vertical"]),
+[theme="${config.id}"] [slider]:not([slider="vertical"]) {
+    background: transparent;
+    box-shadow: none;
+}
+
+[theme="${config.id}"] button[slider-thumb],
+[theme="${config.id}"] [slider-thumb] {
+    background: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="${config.id}"] button[slider-thumb]:hover,
+[theme="${config.id}"] [slider-thumb]:hover,
+[theme="${config.id}"] button[slider-thumb]:focus-visible,
+[theme="${config.id}"] [slider-thumb]:focus-visible {
+    background: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="${config.id}"] [slider-thumb]:focus-visible,
+[theme="${config.id}"] button[slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
     outline-offset: 2px;
 }
 

@@ -378,6 +378,24 @@
     --juice-switch-thumb-checked: var(--aqua-switch-thumb-checked);
     --juice-switch-focus-ring: var(--aqua-switch-focus-ring);
 
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --aqua-slider-track: var(--aqua-surface-muted);
+    --aqua-slider-track-border: var(--aqua-border);
+    --aqua-slider-fill: var(--aqua-accent);
+    --aqua-slider-thumb: var(--aqua-page);
+    --aqua-slider-thumb-border: var(--aqua-border-strong);
+    --aqua-slider-thumb-shadow: 0 1px 2px var(--aqua-shadow);
+    --aqua-slider-focus-ring: var(--aqua-accent);
+    --juice-slider-track: var(--aqua-slider-track);
+    --juice-slider-track-border: var(--aqua-slider-track-border);
+    --juice-slider-fill: var(--aqua-slider-fill);
+    --juice-slider-thumb: var(--aqua-slider-thumb);
+    --juice-slider-thumb-border: var(--aqua-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--aqua-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--aqua-slider-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -1138,5 +1156,41 @@
 [theme="aquaflux"] button[switch]:focus-visible,
 [theme="aquaflux"] [switch]:focus-visible {
     outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme="aquaflux"] button[slider]:not([slider="vertical"]),
+[theme="aquaflux"] [slider]:not([slider="vertical"]) {
+    background-image: none;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[slider-thumb],
+[theme="aquaflux"] [slider-thumb] {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="aquaflux"] button[slider-thumb]:hover,
+[theme="aquaflux"] [slider-thumb]:hover,
+[theme="aquaflux"] button[slider-thumb]:focus-visible,
+[theme="aquaflux"] [slider-thumb]:focus-visible {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="aquaflux"] button[slider-thumb]:focus-visible,
+[theme="aquaflux"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
     outline-offset: 2px;
 }

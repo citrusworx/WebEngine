@@ -392,6 +392,20 @@ Switch is an APG switch (toggle). It is not a form checkbox as the only story, n
 
 See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switch-*` roles (`track`, `track-checked`, `thumb`, `thumb-checked`, `focus-ring`).
 
+### Slider
+
+- `slider` — track host. Boolean attr, or `slider="horizontal"`. `slider="vertical"` is later; this slice does not paint a vertical axis. A boolean `[slider]` attribute is fine: there is no HTML global `slider` attribute. Do not restyle bare `[role="slider"]`
+- `slider-fill` — completed portion of the range
+- `slider-thumb` — thumb child. Prefer this real element so runtime B can focus it
+
+There is no `[slider-track]` in this slice: `[slider]` is the track host. There is no `slider-value` attribute and no `slider-size`. `scale` does not change track or thumb geometry.
+
+Value paint aligns with ARIA so runtime B does not invent a second source of truth. Integer `aria-valuenow` from 0 through 100 paints the fill and thumb when `aria-valuemin` / `aria-valuemax` are omitted or are `0` / `100`. Put those attributes on `[slider]` or on `[slider-thumb]` (the thumb wins when both are set — that is the APG focus target). Other ranges set the structural paint hook `--juice-slider-ratio` (unitless 0–1) on `[slider]`. That hook is not a theme role and not an author attribute.
+
+Slider is an APG slider. It is not a native `<input type="range">` restyle as the only story (a range input cannot host a thumb child), not a progress meter (no thumb / not interactive), not a scrollbar, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. Runtime B (keyboard / pointer) is later. No Sig Slider factory.
+
+Theme paint uses `--juice-slider-*` roles (`track`, `track-border`, `fill`, `thumb`, `thumb-border`, `thumb-shadow`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

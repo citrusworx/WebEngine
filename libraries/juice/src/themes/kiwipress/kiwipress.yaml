@@ -87,7 +87,7 @@ recommended_use_cases:
 
 authoring_rules:
   - Use semantic HTML for meaning first.
-  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [drawer], [toast], [popover-root] / [popover-panel], [tooltip-root] / [tooltip-panel], [combobox], [menu-root] / [menu], [switch], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
+  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [drawer], [toast], [popover-root] / [popover-panel], [tooltip-root] / [tooltip-panel], [combobox], [menu-root] / [menu], [switch], [slider], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
   - Use Juice layout primitives (stack, row, grid, gap, container, span) and semantic spacing tokens (snug, cozy, comfortable, roomy, expansive) for structure and spacing.
   - Reserve [featured] for one [card="pricing"] per group.
   - Use [warm] as the occasional marmalade accent against the kiwi base; do not co-equal them.
@@ -100,6 +100,7 @@ authoring_rules:
   - Bind combobox chrome roles (`--kw-combobox-*` and `--juice-combobox-*`) from `--kw-*` surfaces so `[combobox-trigger]` is not a kiwi CTA. Not a native `<select>` restyle.
   - Bind menu chrome roles (`--kw-menu-*` and `--juice-menu-*`) from `--kw-*` surfaces so `[menu-button]` is not a kiwi CTA. APG menu button, not popover / combobox / native `<select>`.
   - Bind switch chrome roles (`--kw-switch-*` and `--juice-switch-*`) from `--kw-*` surfaces/accents so `[switch]` is not a kiwi CTA. APG switch, not checkbox / menuitemcheckbox / native checkbox restyle as the only story.
+  - Bind slider chrome roles (`--kw-slider-*` and `--juice-slider-*`) from `--kw-*` surfaces/accents so `[slider]` is a surface groove and `[slider-thumb]` is not a kiwi CTA. APG slider, horizontal only; not a range input, progress meter, or scrollbar.
 
 example:
   root: '<body theme="kiwipress">'

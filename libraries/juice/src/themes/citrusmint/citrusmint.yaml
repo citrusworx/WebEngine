@@ -67,6 +67,7 @@ authoring_rules:
   - Bind combobox chrome roles (`--cm-combobox-*` and `--juice-combobox-*`) from the existing `--cm-*` set so `[combobox-trigger]` stays a surface control, not heading-fill. Not a native `<select>` restyle.
   - Bind menu chrome roles (`--cm-menu-*` and `--juice-menu-*`) from the existing `--cm-*` set so `[menu-button]` stays a surface control, not heading-fill. APG menu button, not popover / combobox / native `<select>`.
   - Bind switch chrome roles (`--cm-switch-*` and `--juice-switch-*`) from the existing `--cm-*` set (heading stands in for accent) so `[switch]` stays a surface track, not heading-fill. APG switch, not checkbox / menuitemcheckbox / native checkbox restyle as the only story.
+  - Bind slider chrome roles (`--cm-slider-*` and `--juice-slider-*`) from the existing `--cm-*` set (heading stands in for accent) so `[slider]` stays a surface groove and `[slider-thumb]` stays a surface control, not heading-fill. APG slider, horizontal only; not a range input, progress meter, or scrollbar.
 
 example:
   root: '<body theme="citrusmint">'

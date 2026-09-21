@@ -1,0 +1,229 @@
+@use 'sass:math';
+@use 'sass:string';
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Slider chrome is structural. Color comes from the shared role contract:
+//   --juice-slider-track
+//   --juice-slider-track-border
+//   --juice-slider-fill
+//   --juice-slider-thumb
+//   --juice-slider-thumb-border
+//   --juice-slider-thumb-shadow
+//   --juice-slider-focus-ring
+// Themes bind those names (and optional --aqua-slider-* / --kw-slider-* /
+// --cm-slider-* / --tide-slider-* / --jx-slider-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG Slider. Distinct from:
+//   - native <input type="range"> as the only story (a range input cannot
+//     host a thumb child)
+//   - progress meter (no thumb / not interactive)
+//   - scrollbar
+//
+// Native collision: there is no HTML *global* `slider` attribute. A boolean
+// [slider] attribute, or slider="horizontal", has no platform behavior.
+// Do not restyle bare role=slider — attrs own Juice structure (same rule
+// as menu and switch).
+//
+// Juice names:
+//   [slider]       track host. Boolean or "horizontal". "vertical" is
+//                  later and is not painted here.
+//   [slider-fill]  completed portion. Optional; the thumb still positions
+//                  without it.
+//   [slider-thumb] thumb child. Real element so runtime B can focus it.
+//                  There is no separate track element: the host is the track.
+//
+// Value paint reads ARIA so runtime B does not grow a second attribute.
+// Integer aria-valuenow 0–100 sets the structural paint hook
+// --juice-slider-ratio (unitless 0–1, not a theme role) when
+// aria-valuemin / aria-valuemax are omitted or are 0 / 100. Those
+// attributes may sit on the host or on the thumb; the thumb wins when
+// both are set. Other ranges set --juice-slider-ratio on [slider].
+// There is no slider-value attribute.
+//
+// This slice does not size the control: no slider-size, and scale does
+// not change track/thumb geometry.
+//
+// z-index: inline control. The thumb uses z-index 1 so it stays above
+// the fill. That is in-control stacking, not an overlay band.
+
+@function -juice-slider-role($name, $fallback) {
+    @return var(
+        --juice-slider-#{$name},
+        var(--aqua-slider-#{$name}, var(--kw-slider-#{$name}, var(--cm-slider-#{$name}, var(--tide-slider-#{$name}, var(--jx-slider-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-slider-track: -juice-slider-role(track, #{$gray-200});
+$_juice-slider-track-border: -juice-slider-role(track-border, #{$gray-300});
+$_juice-slider-fill: -juice-slider-role(fill, #{$gray-700});
+$_juice-slider-thumb: -juice-slider-role(thumb, #{$white-100});
+$_juice-slider-thumb-border: -juice-slider-role(thumb-border, #{$gray-300});
+// Innermost fallback must stay comma-free. Nested var() treats commas as
+// fallback separators, so a legacy rgba() shadow would break unthemed paint.
+$_juice-slider-thumb-shadow: -juice-slider-role(
+    thumb-shadow,
+    #{string.unquote("0 1px 2px rgb(26 26 26 / 0.18)")}
+);
+
+$_juice-slider-thumb-size: 1.25rem;
+$_juice-slider-track-size: 0.375rem;
+// Thumb center travels from half the thumb to the far end, so the ends
+// stay inside the host. Fill width uses the same expression and stops
+// at the thumb center.
+$_juice-slider-position: calc(#{$_juice-slider-thumb-size} * 0.5 + (100% - #{$_juice-slider-thumb-size}) * var(--juice-slider-ratio, 0));
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(button) CTA paint. Themes realize color through
+// the roles. Vertical is excluded until a later slice.
+
+[slider]:not([slider="vertical"]),
+[theme] [slider]:not([slider="vertical"]) {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 8rem;
+    height: 1.75rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    overflow: visible;
+    cursor: pointer;
+    user-select: none;
+    --juice-slider-ratio: 0;
+}
+
+[slider]:not([slider="vertical"])::before,
+[theme] [slider]:not([slider="vertical"])::before {
+    content: "";
+    position: absolute;
+    left: calc(#{$_juice-slider-thumb-size} * 0.5);
+    right: calc(#{$_juice-slider-thumb-size} * 0.5);
+    top: 50%;
+    height: $_juice-slider-track-size;
+    box-sizing: border-box;
+    border: 1px solid $_juice-slider-track-border;
+    border-radius: 999px;
+    background-color: $_juice-slider-track;
+    background-image: none;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+[slider-fill],
+[theme] [slider-fill] {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    z-index: 0;
+    height: $_juice-slider-track-size;
+    width: $_juice-slider-position;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 999px;
+    background-color: $_juice-slider-fill;
+    background-image: none;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: width 0.15s ease, background-color 0.15s ease;
+}
+
+[slider-thumb],
+button[slider-thumb],
+[theme] [slider-thumb],
+[theme] button[slider-thumb] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: absolute;
+    top: 50%;
+    left: $_juice-slider-position;
+    z-index: 1;
+    display: block;
+    box-sizing: border-box;
+    width: $_juice-slider-thumb-size;
+    height: $_juice-slider-thumb-size;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid $_juice-slider-thumb-border;
+    border-radius: 999px;
+    font: inherit;
+    line-height: 0;
+    cursor: pointer;
+    background-color: $_juice-slider-thumb;
+    background-image: none;
+    box-shadow: $_juice-slider-thumb-shadow;
+    transform: translate(-50%, -50%);
+    transition: left 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[slider-thumb]:hover,
+[slider-thumb]:focus-visible,
+button[slider-thumb]:hover,
+button[slider-thumb]:focus-visible,
+[theme] [slider-thumb]:hover,
+[theme] [slider-thumb]:focus-visible,
+[theme] button[slider-thumb]:hover,
+[theme] button[slider-thumb]:focus-visible {
+    background-color: $_juice-slider-thumb;
+    background-image: none;
+    box-shadow: $_juice-slider-thumb-shadow;
+    transform: translate(-50%, -50%);
+}
+
+[slider]:not([slider="vertical"]):focus-visible,
+[slider-thumb]:focus-visible,
+button[slider-thumb]:focus-visible,
+[theme] [slider]:not([slider="vertical"]):focus-visible,
+[theme] [slider-thumb]:focus-visible,
+[theme] button[slider-thumb]:focus-visible {
+    outline: 2px solid -juice-slider-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+// Default range is 0–100 (APG defaults when min/max are omitted).
+// Thumb attributes win over a stale host value: the :has rules follow
+// the host rules and are more specific.
+@for $n from 0 through 100 {
+    [slider]:not([slider="vertical"])[aria-valuenow="#{$n}"]:not([aria-valuemin]):not([aria-valuemax]),
+    [slider]:not([slider="vertical"])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="#{$n}"] {
+        --juice-slider-ratio: #{math.div($n, 100)};
+    }
+
+    [slider]:not([slider="vertical"]):has([slider-thumb][aria-valuenow="#{$n}"]:not([aria-valuemin]):not([aria-valuemax])),
+    [slider]:not([slider="vertical"]):has([slider-thumb][aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="#{$n}"]) {
+        --juice-slider-ratio: #{math.div($n, 100)};
+    }
+}
+
+[slider]:not([slider="vertical"]):disabled,
+[slider]:not([slider="vertical"])[aria-disabled="true"],
+[slider]:not([slider="vertical"]):has([slider-thumb]:disabled),
+[slider]:not([slider="vertical"]):has([slider-thumb][aria-disabled="true"]),
+[theme] [slider]:not([slider="vertical"]):disabled,
+[theme] [slider]:not([slider="vertical"])[aria-disabled="true"],
+[theme] [slider]:not([slider="vertical"]):has([slider-thumb]:disabled),
+[theme] [slider]:not([slider="vertical"]):has([slider-thumb][aria-disabled="true"]) {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [slider]:not([slider="vertical"])::before,
+    [theme] [slider]:not([slider="vertical"])::before,
+    [slider-fill],
+    [theme] [slider-fill],
+    [slider-thumb],
+    [theme] [slider-thumb] {
+        transition: none;
+    }
+}
