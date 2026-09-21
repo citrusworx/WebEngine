@@ -86,11 +86,13 @@ But each should follow the same rule:
 
 ## Escape / layering
 
-When several Emerging surfaces are open, **one owner wins per Escape**. Highest band first. This is the keyboard contract, not the paint order — see [z-index bands](#z-index-bands).
+When several Emerging surfaces are open, **later bands yield** so a higher band owns Escape. Highest band first. This is the keyboard contract, not the paint order — see [z-index bands](#z-index-bands).
+
+The overlay band is the exception inside itself: modal and drawer do **not** yield to each other. If both overlays are open, one Escape closes both (separate capture handlers and per-runtime claims).
 
 | Order | Surface | Owns Escape when | Yields when |
 |---|---|---|---|
-| 1 | Modal / drawer | An open `[modal-overlay]:not([hidden])` or `[drawer-overlay]:not([hidden])` | Does not yield. Modal and drawer stay independently exclusive: both may be open at once. This pass does not make them exclusive across types. |
+| 1 | Modal / drawer | An open `[modal-overlay]:not([hidden])` or `[drawer-overlay]:not([hidden])` | Does not yield to later bands. Modal and drawer stay independently exclusive: both may be open at once, and they do not yield to each other — one Escape closes both. This pass does not make them exclusive across types. |
 | 2 | Popover | An open `[popover-root]:not([hidden])` | An open dialog overlay exists |
 | 3 | Combobox | An open `[combobox-list]:not([hidden])` | An open dialog overlay or open popover exists |
 | 4 | Toast / tooltip | See the interaction below | See the interaction below |

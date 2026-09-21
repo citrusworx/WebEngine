@@ -168,7 +168,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape closes the open overlay and returns focus to the opener. Drawer shares the highest Escape band with modal; popover, combobox, toast, and tooltip yield. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape closes the open overlay and returns focus to the opener. Drawer shares the highest Escape band with modal; if a modal overlay is also open, that same Escape closes both. Popover, combobox, toast, and tooltip yield. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Tab / Shift+Tab wrap inside the open dialog (focus trap)
 - Enter and Space activate non-button openers and `[drawer-close]` controls (native buttons already synthesize a click)
 
@@ -178,7 +178,7 @@ Arrow-key roving is intentionally out of scope.
 
 - No `Drawer()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
 - Orphan `aria-controls` that do not target `[drawer-overlay]` are ignored.
-- Opening is exclusive among drawers. Only one drawer overlay is open at a time. Modal and drawer stay independently exclusive: both may be open at once. Escape shares the highest band with modal. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Opening is exclusive among drawers. Only one drawer overlay is open at a time. Modal and drawer stay independently exclusive: both may be open at once, and one Escape then closes both. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Overlays use native `hidden`, never layout `content=`.
 - Centered modal / dialog behavior is not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md).
 - `drawer-overlay="static"` (or `closeOnBackdrop: false`) opts out of backdrop click only. Escape and `[drawer-close]` still dismiss.
