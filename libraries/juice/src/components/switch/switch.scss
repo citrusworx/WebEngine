@@ -34,8 +34,9 @@
 //
 // Track and thumb are CSS pseudo-elements on [switch] (the host is the
 // track; ::after is the thumb). There are no [switch-track] /
-// [switch-thumb] children. Do not invent switch-size in A: Juice control
-// sizing is `scale` on buttons; *-size is a layout attr (drawer / card).
+// [switch-thumb] children. This slice does not size the control: no
+// switch-size, and scale="sm|lg" does not change track/thumb geometry
+// (scale is ordinary button padding; *-size is a layout attr).
 //
 // Checked paint: aria-checked="true" (button host, and the honest static
 // demo before runtime). :checked covers a checkbox-backed host. Do not

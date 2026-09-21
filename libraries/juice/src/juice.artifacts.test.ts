@@ -449,6 +449,7 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[switch-track\]/);
         expect(css).not.toMatch(/\[switch-thumb\]/);
         expect(css).not.toMatch(/\[switch-size/);
+        expect(css).not.toMatch(/\[switch\]\[scale/);
         expect(css).not.toMatch(/\[switch=["']?on["']?\]/);
         expect(css).not.toMatch(/\[switch\][^{]*\{[^}]*--aqua-button-background/);
         expect(css).not.toMatch(/\[switch\][^{]*\{[^}]*z-index:\s*10/);

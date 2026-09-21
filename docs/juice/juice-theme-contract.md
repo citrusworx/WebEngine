@@ -329,7 +329,7 @@ This is **Juice chrome** for the APG **Switch** pattern (a toggle with `role="sw
 
 A boolean `[switch]` attribute is fine: there is no HTML global `switch` attribute. WebKit's checkbox `switch` attr is an opt-in on `<input type="checkbox">`, not a global; Juice `[switch]` on that host restyles with Juice chrome (`appearance: none`).
 
-Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children. Do not invent `switch-size` in this slice: Juice control sizing is `scale` on buttons; `*-size` is a layout attr. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
+Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children. This slice does not size the control: no `switch-size`, and `scale="sm|lg"` does not change track/thumb geometry (`scale` is ordinary button padding; `*-size` is a layout attr). Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
 
 Checked paint for static demos is `aria-checked="true"` so chrome and runtime B share one story. There is no `switch="on"`. Core CSS treats this as an **inline** control — no floating overlay z-index band. Thumb slide honors `prefers-reduced-motion`. Switch runtime (B) and maturity docs (C) are later.
 

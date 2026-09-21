@@ -434,6 +434,7 @@ describe("Juice theme generator surface tone roles", () => {
         expect(css).toContain('[aria-checked="true"]');
         expect(css).not.toMatch(/\[role=["']?switch["']?\]/);
         expect(css).not.toMatch(/\[switch-size/);
+        expect(css).not.toMatch(/\[switch\]\[scale/);
 
         const switchBlocks = [...css.matchAll(/button\[switch\][^{]*\{[^}]+\}/g)].map(
             (match) => match[0]
