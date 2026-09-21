@@ -31,10 +31,15 @@
  * (or the previously active item). ArrowUp opens onto the last enabled
  * item. Close on Escape (yields when an open [modal-overlay] or
  * [drawer-overlay] exists — menu sits with popover in the dialog-adjacent
- * band), outside click, Tab (closes without activating; focus moves on),
+ * band), outside click, Tab (closes without activating; focus returns
+ * to the opener so Tab's default can move to the next/previous control),
  * or after activating an item. Activating an item clicks it and restores
- * focus to the opener. Opening one managed menu closes the others. Modal
- * / drawer / popover are not auto-closed.
+ * focus to the opener. Disabled items are intercepted on capture so
+ * author click handlers never run. Opening one managed menu closes the
+ * others. Modal / drawer / popover are not auto-closed. ArrowUp/Down on
+ * a closed menu apply only to the opener. A controller claims opener
+ * clicks only when it can resolve a panel (custom `menuSelector` can
+ * coexist with the auto singleton).
  */
 export type MenuOptions = {
     root?: ParentNode;

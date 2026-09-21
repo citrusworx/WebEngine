@@ -31,10 +31,15 @@
  * (or the previously active item). ArrowUp opens onto the last enabled
  * item. Close on Escape (yields when an open [modal-overlay] or
  * [drawer-overlay] exists — menu sits with popover in the dialog-adjacent
- * band), outside click, Tab (closes without activating; focus moves on),
+ * band), outside click, Tab (closes without activating; focus returns
+ * to the opener so Tab's default can move to the next/previous control),
  * or after activating an item. Activating an item clicks it and restores
- * focus to the opener. Opening one managed menu closes the others. Modal
- * / drawer / popover are not auto-closed.
+ * focus to the opener. Disabled items are intercepted on capture so
+ * author click handlers never run. Opening one managed menu closes the
+ * others. Modal / drawer / popover are not auto-closed. ArrowUp/Down on
+ * a closed menu apply only to the opener. A controller claims opener
+ * clicks only when it can resolve a panel (custom `menuSelector` can
+ * coexist with the auto singleton).
  */
 
 import { createEventClaim } from '../shared/events.js';
@@ -567,6 +572,21 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
 
   const getOpenMenuRoot = () => getMenuRoots().find(isMenuOpen) ?? null;
 
+  const handleDisabledItemClickCapture = (event: Event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const menuRoot = resolveContainingRoot(target);
+    if (!menuRoot || !isManagedRoot(menuRoot)) return;
+
+    const item = resolveItemFromEvent(target, menuRoot);
+    if (!item || !isItemDisabled(item)) return;
+    if (!claimEvent(event)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+  };
+
   const handleDocumentClick = (event: Event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -575,11 +595,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     if (menuRoot && isManagedRoot(menuRoot)) {
       const item = resolveItemFromEvent(target, menuRoot);
       if (item) {
-        if (isItemDisabled(item)) {
-          if (!claimEvent(event)) return;
-          event.preventDefault();
-          return;
-        }
+        if (isItemDisabled(item)) return;
         if (!claimEvent(event)) return;
         lastActiveItems.set(menuRoot, item);
         hideMenu(menuRoot, true);
@@ -588,11 +604,19 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
 
       const opener = resolveOpenerFromEvent(target, menuRoot);
       if (opener) {
+        if (!getPanel(menuRoot)) return;
         if (!claimEvent(event)) return;
+        event.preventDefault();
         toggle(menuRoot);
         return;
       }
 
+      if (isInsidePanel(target, menuRoot)) return;
+
+      const nestedOpen = getOpenMenuRoot();
+      if (!nestedOpen || nestedOpen !== menuRoot) return;
+      if (!claimEvent(event)) return;
+      hideMenu(nestedOpen, false);
       return;
     }
 
@@ -623,7 +647,9 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     if (event.key === 'Tab') {
       if (!openMenu) return;
       if (!claimEvent(event)) return;
-      close(openMenu, false);
+      // Restore to the opener so Tab's default keeps sequential focus
+      // (hiding the focused menuitem would drop the tab origin).
+      close(openMenu, true);
       return;
     }
 
@@ -633,23 +659,31 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     const item = resolveItemFromEvent(target, menuRoot);
 
     if (event.key === 'ArrowDown') {
-      if (!claimEvent(event)) return;
-      event.preventDefault();
       if (!isMenuOpen(menuRoot)) {
-        open(opener ?? menuRoot, opener ? 'first' : 'previous');
+        if (!opener || !getPanel(menuRoot)) return;
+        if (!claimEvent(event)) return;
+        event.preventDefault();
+        open(opener, 'first');
         return;
       }
+      if (!item && !opener) return;
+      if (!claimEvent(event)) return;
+      event.preventDefault();
       moveActive(menuRoot, (index) => (index < 0 ? 0 : index + 1));
       return;
     }
 
     if (event.key === 'ArrowUp') {
-      if (!claimEvent(event)) return;
-      event.preventDefault();
       if (!isMenuOpen(menuRoot)) {
-        open(opener ?? menuRoot, opener ? 'last' : 'previous');
+        if (!opener || !getPanel(menuRoot)) return;
+        if (!claimEvent(event)) return;
+        event.preventDefault();
+        open(opener, 'last');
         return;
       }
+      if (!item && !opener) return;
+      if (!claimEvent(event)) return;
+      event.preventDefault();
       moveActive(menuRoot, (index, length) =>
         index < 0 ? length - 1 : index - 1
       );
@@ -659,6 +693,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     if (!isMenuOpen(menuRoot)) {
       if (
         opener &&
+        getPanel(menuRoot) &&
         !isNativeInteractive(opener) &&
         (event.key === 'Enter' || event.key === ' ')
       ) {
@@ -670,6 +705,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     }
 
     if (event.key === 'Home') {
+      if (!item && !opener) return;
       if (!claimEvent(event)) return;
       event.preventDefault();
       moveActive(menuRoot, () => 0);
@@ -677,6 +713,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     }
 
     if (event.key === 'End') {
+      if (!item && !opener) return;
       if (!claimEvent(event)) return;
       event.preventDefault();
       moveActive(menuRoot, (_index, length) => length - 1);
@@ -719,6 +756,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
       ? new MutationObserver(() => scheduleSync())
       : null;
 
+  document.addEventListener('click', handleDisabledItemClickCapture, true);
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('keydown', handleDocumentKeydown);
 
@@ -748,6 +786,11 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
 
   return {
     destroy: () => {
+      document.removeEventListener(
+        'click',
+        handleDisabledItemClickCapture,
+        true
+      );
       document.removeEventListener('click', handleDocumentClick);
       document.removeEventListener('keydown', handleDocumentKeydown);
       observer?.disconnect();

@@ -270,6 +270,7 @@ describe('createMenu', () => {
     expect(onClick).not.toHaveBeenCalled();
     expect(panel?.hasAttribute('hidden')).toBe(true);
     expect(item?.getAttribute('menuitem')).not.toBe('active');
+    expect(document.activeElement).toBe(opener);
 
     controller.destroy();
   });
@@ -500,10 +501,87 @@ describe('createMenu', () => {
     expect(locked?.getAttribute('menuitem')).not.toBe('active');
 
     locked?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(onClick).not.toHaveBeenCalled();
     expect(panel?.hasAttribute('hidden')).toBe(false);
 
     controller.select(locked);
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+    expect(panel?.hasAttribute('hidden')).toBe(false);
+
+    controller.destroy();
+  });
+
+  it('cancels native navigation when the opener is a link', () => {
+    document.body.innerHTML = `
+      <div menu-root>
+        <a href="#nope" menu-button id="link-open">File</a>
+        <div menu hidden>
+          <button type="button" menuitem>New</button>
+        </div>
+      </div>
+    `;
+    stopMenuRuntime();
+
+    const controller = createMenu({ root: document.body });
+    const opener = document.getElementById('link-open');
+    const panel = document.querySelector<HTMLElement>('[menu]');
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+    opener?.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(panel?.hasAttribute('hidden')).toBe(false);
+
+    controller.destroy();
+  });
+
+  it('does not open from ArrowDown on extra controls inside the root', () => {
+    document.body.innerHTML = `
+      <div menu-root>
+        <button type="button" menu-button id="file-open">File</button>
+        <input id="extra" type="text" />
+        <div menu hidden>
+          <button type="button" menuitem>New</button>
+        </div>
+      </div>
+    `;
+    stopMenuRuntime();
+
+    const controller = createMenu({ root: document.body });
+    const extra = document.getElementById('extra');
+    const panel = document.querySelector<HTMLElement>('[menu]');
+
+    extra?.focus();
+    extra?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' })
+    );
+
+    expect(panel?.hasAttribute('hidden')).toBe(true);
+    expect(document.activeElement).toBe(extra);
+
+    controller.destroy();
+  });
+
+  it('lets a custom menuSelector controller handle clicks the auto runtime cannot', () => {
+    document.body.innerHTML = `
+      <div menu-root>
+        <button type="button" menu-button id="custom-open">File</button>
+        <div data-panel hidden>
+          <button type="button" menuitem>New</button>
+        </div>
+      </div>
+    `;
+    stopMenuRuntime();
+    startMenuRuntime();
+
+    const controller = createMenu({
+      root: document.body,
+      menuSelector: '[data-panel]',
+    });
+    const opener = document.getElementById('custom-open');
+    const panel = document.querySelector<HTMLElement>('[data-panel]');
+
+    opener?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(panel?.hasAttribute('hidden')).toBe(false);
 
     controller.destroy();

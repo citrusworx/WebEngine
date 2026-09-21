@@ -2771,28 +2771,34 @@ var Lr = {
 		let t = e.target;
 		if (!(t instanceof Element)) return;
 		let n = i(t);
+		if (!n || !a(n)) return;
+		let r = P(t, n);
+		!r || !qr(r) || $(e) && (e.preventDefault(), e.stopPropagation(), e.stopImmediatePropagation());
+	}, R = (e) => {
+		let t = e.target;
+		if (!(t instanceof Element)) return;
+		let n = i(t);
 		if (n && a(n)) {
 			let r = P(t, n);
 			if (r) {
-				if (qr(r)) {
-					if (!$(e)) return;
-					e.preventDefault();
-					return;
-				}
-				if (!$(e)) return;
+				if (qr(r) || !$(e)) return;
 				Ur.set(n, r), w(n, !0);
 				return;
 			}
 			if (F(t, n)) {
-				if (!$(e)) return;
-				O(n);
+				if (!o(n) || !$(e)) return;
+				e.preventDefault(), O(n);
 				return;
 			}
+			if (s(t, n)) return;
+			let i = I();
+			if (!i || i !== n || !$(e)) return;
+			w(i, !1);
 			return;
 		}
 		let r = I();
 		r && $(e) && w(r, !1);
-	}, R = (e) => {
+	}, z = (e) => {
 		if (!(e instanceof KeyboardEvent)) return;
 		let t = e.target;
 		if (!(t instanceof Element)) return;
@@ -2804,63 +2810,65 @@ var Lr = {
 		}
 		if (e.key === "Tab") {
 			if (!r || !$(e)) return;
-			D(r, !1);
+			D(r, !0);
 			return;
 		}
 		if (!n || !a(n)) return;
-		let o = F(t, n), s = P(t, n);
+		let s = F(t, n), c = P(t, n);
 		if (e.key === "ArrowDown") {
-			if (!$(e)) return;
-			if (e.preventDefault(), !f(n)) {
-				E(o ?? n, o ? "first" : "previous");
+			if (!f(n)) {
+				if (!s || !o(n) || !$(e)) return;
+				e.preventDefault(), E(s, "first");
 				return;
 			}
-			j(n, (e) => e < 0 ? 0 : e + 1);
+			if (!c && !s || !$(e)) return;
+			e.preventDefault(), j(n, (e) => e < 0 ? 0 : e + 1);
 			return;
 		}
 		if (e.key === "ArrowUp") {
-			if (!$(e)) return;
-			if (e.preventDefault(), !f(n)) {
-				E(o ?? n, o ? "last" : "previous");
+			if (!f(n)) {
+				if (!s || !o(n) || !$(e)) return;
+				e.preventDefault(), E(s, "last");
 				return;
 			}
-			j(n, (e, t) => e < 0 ? t - 1 : e - 1);
+			if (!c && !s || !$(e)) return;
+			e.preventDefault(), j(n, (e, t) => e < 0 ? t - 1 : e - 1);
 			return;
 		}
 		if (!f(n)) {
-			if (o && !Kr(o) && (e.key === "Enter" || e.key === " ")) {
+			if (s && o(n) && !Kr(s) && (e.key === "Enter" || e.key === " ")) {
 				if (!$(e)) return;
 				e.preventDefault(), O(n);
 			}
 			return;
 		}
 		if (e.key === "Home") {
-			if (!$(e)) return;
+			if (!c && !s || !$(e)) return;
 			e.preventDefault(), j(n, () => 0);
 			return;
 		}
 		if (e.key === "End") {
-			if (!$(e)) return;
+			if (!c && !s || !$(e)) return;
 			e.preventDefault(), j(n, (e, t) => t - 1);
 			return;
 		}
 		if (!(e.key !== "Enter" && e.key !== " ")) {
-			if (s && !qr(s)) {
+			if (c && !qr(c)) {
 				if (!$(e)) return;
-				e.preventDefault(), s.click();
+				e.preventDefault(), c.click();
 				return;
 			}
-			if (o && !Kr(o) && (e.key === "Enter" || e.key === " ")) {
+			if (s && !Kr(s) && (e.key === "Enter" || e.key === " ")) {
 				if (!$(e)) return;
 				e.preventDefault(), O(n);
 			}
 		}
-	}, z = !1, B = () => {
-		z || (z = !0, requestAnimationFrame(() => {
-			z = !1, M();
+	}, B = !1, V = () => {
+		B || (B = !0, requestAnimationFrame(() => {
+			B = !1, M();
 		}));
-	}, V = typeof MutationObserver < "u" ? new MutationObserver(() => B()) : null;
-	return document.addEventListener("click", L), document.addEventListener("keydown", R), V && n instanceof Node && V.observe(n, {
+	}, H = typeof MutationObserver < "u" ? new MutationObserver(() => V()) : null;
+	return document.addEventListener("click", L, !0), document.addEventListener("click", R), document.addEventListener("keydown", z), H && n instanceof Node && H.observe(n, {
 		childList: !0,
 		subtree: !0,
 		attributes: !0,
@@ -2880,7 +2888,7 @@ var Lr = {
 		]
 	}), M(), {
 		destroy: () => {
-			document.removeEventListener("click", L), document.removeEventListener("keydown", R), V?.disconnect();
+			document.removeEventListener("click", L, !0), document.removeEventListener("click", R), document.removeEventListener("keydown", z), H?.disconnect();
 		},
 		sync: M,
 		open: E,
