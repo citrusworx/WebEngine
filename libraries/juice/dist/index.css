@@ -96673,7 +96673,8 @@ section[auto] > * {
 }
 
 [banner][banner-tone=success],
-[theme] [banner][banner-tone=success] {
+[theme] [banner][banner-tone=success],
+[theme] [banner][banner-tone=success]:not([surfaceTone]) {
   border-left: 4px solid var(--juice-banner-success, var(--aqua-banner-success, var(--kw-banner-success, var(--cm-banner-success, var(--tide-banner-success, var(--jx-banner-success, hsl(140, 50%, 65%)))))));
 }
 
@@ -96683,7 +96684,8 @@ section[auto] > * {
 }
 
 [banner][banner-tone=error],
-[theme] [banner][banner-tone=error] {
+[theme] [banner][banner-tone=error],
+[theme] [banner][banner-tone=error]:not([surfaceTone]) {
   border-left: 4px solid var(--juice-banner-error, var(--aqua-banner-error, var(--kw-banner-error, var(--cm-banner-error, var(--tide-banner-error, var(--jx-banner-error, hsl(0, 100%, 65%)))))));
 }
 
@@ -96693,7 +96695,8 @@ section[auto] > * {
 }
 
 [banner][banner-tone=info],
-[theme] [banner][banner-tone=info] {
+[theme] [banner][banner-tone=info],
+[theme] [banner][banner-tone=info]:not([surfaceTone]) {
   border-left: 4px solid var(--juice-banner-info, var(--aqua-banner-info, var(--kw-banner-info, var(--cm-banner-info, var(--tide-banner-info, var(--jx-banner-info, hsl(210, 80%, 40%)))))));
 }
 
@@ -96703,7 +96706,8 @@ section[auto] > * {
 }
 
 [banner][banner-tone=warning],
-[theme] [banner][banner-tone=warning] {
+[theme] [banner][banner-tone=warning],
+[theme] [banner][banner-tone=warning]:not([surfaceTone]) {
   border-left: 4px solid var(--juice-banner-warning, var(--aqua-banner-warning, var(--kw-banner-warning, var(--cm-banner-warning, var(--tide-banner-warning, var(--jx-banner-warning, hsl(60, 100%, 65%)))))));
 }
 

@@ -1637,8 +1637,11 @@
    [banner-close] stays a surface control. */
 [theme=kiwipress] [banner]:not([surfaceTone]) {
   background-color: var(--juice-banner-panel);
-  border: 1px solid var(--juice-banner-panel-border);
   color: var(--juice-banner-ink);
+}
+
+[theme=kiwipress] [banner]:not([surfaceTone]):not([banner-tone]) {
+  border: 1px solid var(--juice-banner-panel-border);
 }
 
 [theme=kiwipress] [banner-body] {
@@ -1650,7 +1653,7 @@
 }
 
 [theme=kiwipress] [banner][banner-tone=success] {
-  border-left-color: var(--juice-banner-success);
+  border-left: 4px solid var(--juice-banner-success);
 }
 
 [theme=kiwipress] [banner][banner-tone=error]:not([surfaceTone]) {
@@ -1658,7 +1661,7 @@
 }
 
 [theme=kiwipress] [banner][banner-tone=error] {
-  border-left-color: var(--juice-banner-error);
+  border-left: 4px solid var(--juice-banner-error);
 }
 
 [theme=kiwipress] [banner][banner-tone=info]:not([surfaceTone]) {
@@ -1666,7 +1669,7 @@
 }
 
 [theme=kiwipress] [banner][banner-tone=info] {
-  border-left-color: var(--juice-banner-info);
+  border-left: 4px solid var(--juice-banner-info);
 }
 
 [theme=kiwipress] [banner][banner-tone=warning]:not([surfaceTone]) {
@@ -1674,7 +1677,7 @@
 }
 
 [theme=kiwipress] [banner][banner-tone=warning] {
-  border-left-color: var(--juice-banner-warning);
+  border-left: 4px solid var(--juice-banner-warning);
 }
 
 [theme=kiwipress] button[banner-close],
