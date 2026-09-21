@@ -155,9 +155,9 @@ body {
 [sell-window-title] {
   flex: 1 1 7rem;
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.01em;
-  opacity: 0.72;
+  opacity: 1;
 }
 
 [sell-window-chrome] > [row] {
@@ -408,39 +408,55 @@ body {
 
 [sell] [cta] [install-pm] [tabs-list] {
   justify-content: center;
-  border-bottom-color: color-mix(in srgb, currentColor 28%, transparent);
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f8faf8;
 }
 
 [sell] [cta] [install-pm] [tabs-list] > button,
 [theme] [sell] [cta] [install-pm] [tabs-list] > button {
   background-color: transparent;
   background-image: none;
-  color: inherit;
+  color: #10261c;
   border: 0;
   border-bottom: 2px solid transparent;
-  border-radius: 0;
+  border-radius: 999px;
   box-shadow: none;
-  opacity: 0.72;
+  opacity: 1;
 }
 
 [sell] [cta] [install-pm] [tabs-list] > button:hover,
 [theme] [sell] [cta] [install-pm] [tabs-list] > button:hover {
-  background-color: transparent;
+  background-color: color-mix(in srgb, #10261c 8%, #fff);
   background-image: none;
-  color: inherit;
+  color: #10261c;
   box-shadow: none;
-  opacity: 0.92;
+  opacity: 1;
 }
 
 [sell] [cta] [install-pm] [tabs-list] > button[active],
 [sell] [cta] [install-pm] [tabs-list] > button[aria-selected="true"],
 [theme] [sell] [cta] [install-pm] [tabs-list] > button[active],
 [theme] [sell] [cta] [install-pm] [tabs-list] > button[aria-selected="true"] {
-  background-color: transparent;
+  background-color: #10261c;
   background-image: none;
-  color: inherit;
-  border-bottom-color: currentColor;
+  color: #f8faf8;
+  border-bottom-color: transparent;
   opacity: 1;
+}
+
+[install-pm] [tabs-list] > button:focus-visible,
+[install-pm] [data-copy-install]:focus-visible,
+[data-theme-group] [data-theme]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+[sell] [cta] [install-pm] [tabs-list] > button:focus-visible,
+[theme] [sell] [cta] [install-pm] [tabs-list] > button:focus-visible {
+  outline-color: #10261c;
 }
 
 [install-pm] [data-copy-install] {
@@ -449,19 +465,19 @@ body {
 
 [sell] [cta] [install-pm] [data-copy-install],
 [theme] [sell] [cta] [install-pm] [data-copy-install] {
-  background-color: transparent;
+  background-color: #f8faf8;
   background-image: none;
-  color: inherit;
-  border: 1px solid color-mix(in srgb, currentColor 32%, transparent);
+  color: #10261c;
+  border: 1px solid #10261c;
   min-height: 2.25rem;
   padding-inline: 1rem;
-  opacity: 0.88;
+  opacity: 1;
 }
 
 [sell] [cta] [install-pm] [data-copy-install]:hover,
 [theme] [sell] [cta] [install-pm] [data-copy-install]:hover {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
-  color: inherit;
+  background-color: #fff;
+  color: #10261c;
   opacity: 1;
 }
 
@@ -566,4 +582,110 @@ iframe[theme-frame] {
   width: 100%;
   height: 36rem;
   border: 0;
+}
+
+/*
+ * KiwiPress paints the footer near-black, then body text and headings
+ * with dark tokens, so column titles disappear and the credit line fails
+ * contrast. Citrusmint's footer paragraph is bright green on a light mint
+ * fill. Inherit the footer color where that already passes; otherwise use
+ * the theme's darker heading green.
+ */
+[theme="kiwipress"] [app-shell] footer :where(h4, p, a, li) {
+  color: inherit;
+}
+
+[theme="kiwipress"] [app-shell] footer a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+[theme="citrusmint"] [app-shell] footer :where(p) {
+  color: #006602;
+}
+
+[skip-link] {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 80;
+  padding: 0.6rem 0.95rem;
+  border-radius: 999px;
+  background: #10261c;
+  color: #f8faf8;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+[skip-link]:focus {
+  transform: translateY(0);
+  outline: 2px solid #f8faf8;
+  outline-offset: 3px;
+}
+
+[package-links] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.15rem;
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+}
+
+[package-links] a {
+  text-underline-offset: 0.18em;
+}
+
+[package-links] a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+[playground-layout] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+[playground-editor] {
+  width: 100%;
+  min-height: 28rem;
+  box-sizing: border-box;
+  padding: 0.9rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  background: #12151c;
+  color: #e7f6ec;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+[playground-editor]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+iframe[playground-preview] {
+  display: block;
+  width: 100%;
+  height: 32rem;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+[playground-hint],
+[playground-status] {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 960px) {
+  [playground-layout] {
+    grid-template-columns: 1fr;
+  }
 }

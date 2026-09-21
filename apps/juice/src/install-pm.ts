@@ -9,6 +9,7 @@ export const bindInstallCopy = (root: ParentNode = document) => {
     button.setAttribute("scale", "sm");
     button.setAttribute("data-copy-install", "");
     button.textContent = "Copy";
+    button.setAttribute("aria-label", "Copy install command");
     widget.append(button);
     button.addEventListener("click", async () => {
       const command = widget
@@ -20,11 +21,19 @@ export const bindInstallCopy = (root: ParentNode = document) => {
       try {
         await navigator.clipboard.writeText(command);
       } catch {
+        button.textContent = "Copy failed";
+        button.setAttribute("aria-label", "Copy install command failed");
+        window.setTimeout(() => {
+          button.textContent = "Copy";
+          button.setAttribute("aria-label", "Copy install command");
+        }, 1400);
         return;
       }
       button.textContent = "Copied";
+      button.setAttribute("aria-label", "Copied install command");
       window.setTimeout(() => {
         button.textContent = "Copy";
+        button.setAttribute("aria-label", "Copy install command");
       }, 1400);
     });
   }

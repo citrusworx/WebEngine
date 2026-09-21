@@ -36,6 +36,14 @@ const pageIdFromPath = (pathname: string): string => {
   return decodeURIComponent(match[1]);
 };
 
+const setMeta = (selector: string, content: string) => {
+  const meta = document.head.querySelector<HTMLMetaElement>(selector);
+  if (!meta) {
+    return;
+  }
+  meta.setAttribute("content", content);
+};
+
 const groupLabel = (groupId: string): string =>
   catalog.nav.find((group: DocNavGroup) => group.id === groupId)?.label ?? "Docs";
 
@@ -109,6 +117,12 @@ const renderPage = (page: DocPage) => {
     crumb.textContent = `Docs › ${groupLabel(page.group)} › ${page.title}`;
   }
   document.title = `${page.title} — Juice Docs`;
+  const description = `${page.title} in Juice Docs. On-site notes from docs/juice. Honest Beta.`;
+  setMeta('meta[name="description"]', description);
+  setMeta('meta[property="og:title"]', document.title);
+  setMeta('meta[property="og:description"]', description);
+  setMeta('meta[name="twitter:title"]', document.title);
+  setMeta('meta[name="twitter:description"]', description);
   renderNav(search?.value ?? "");
   renderToc(page);
   highlightTocFromHash();

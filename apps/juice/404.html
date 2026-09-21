@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page not found — Juice</title>
+    <link rel="stylesheet" href="/src/juice.css" />
+    <meta
+      name="description"
+      content="That Juice showcase route does not exist. Head back to the landing page, the docs, or the live demos."
+    />
+  </head>
+  <body theme="kiwipress">
+    <a href="#content" skip-link>Skip to content</a>
+    <div app-shell stack>
+      <nav sticky aria-label="Primary">
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+          <nav type="mobile"></nav>
+          <div nav-links>
+            <a href="/">Landing</a>
+            <a href="/getting-started.html">Getting started</a>
+            <a href="/demos.html">Demos</a>
+            <a href="/playground.html">Playground</a>
+            <a href="/themes.html">Themes</a>
+            <a href="/docs/">Docs</a>
+            <a href="/reference.html">Reference</a>
+          </div>
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/">Back to landing</button>
+          </div>
+        </div>
+        <nav type="sidebar" hidden aria-label="Primary">
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/playground.html">Playground</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/docs/">Docs</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+            <button type="button" data-href="/">Back to landing</button>
+          </div>
+        </nav>
+      </nav>
+
+      <main id="content" tabindex="-1">
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>404</span>
+            </span>
+            <h1 hero-title>This route is not on the menu.</h1>
+            <p hero-subtitle>
+              The Juice showcase does not have that page. The links below
+              return to the landing page, the docs reader, or the live demos.
+            </p>
+            <div row wrap gap="1">
+              <a href="/">Back to landing</a>
+              <a href="/docs/">Read the docs</a>
+              <a href="/demos.html">Browse demos</a>
+              <a href="/playground.html">Open the playground</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div center>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

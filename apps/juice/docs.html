@@ -11,6 +11,7 @@
     />
   </head>
   <body theme="kiwipress">
+    <a href="#content" skip-link>Skip to content</a>
     <div docs-shell stack>
       <header docs-topbar>
         <div docs-topbar-inner>
@@ -31,17 +32,28 @@
             <kbd id="doc-search-hint">⌘K</kbd>
           </label>
 
-          <a href="/" docs-back>Back to Juice</a>
+          <div docs-utilities>
+            <a href="/playground.html">Playground</a>
+            <a href="/" docs-back>Back to Juice</a>
+          </div>
         </div>
       </header>
 
       <div docs-frame>
         <aside docs-sidebar>
-          <button type="button" docs-nav-toggle id="doc-nav-toggle">Menu</button>
+          <button
+            type="button"
+            docs-nav-toggle
+            id="doc-nav-toggle"
+            aria-controls="doc-nav"
+            aria-expanded="true"
+          >
+            Docs menu
+          </button>
           <nav id="doc-nav" docs-nav aria-label="Documentation"></nav>
         </aside>
 
-        <main docs-main>
+        <main id="content" tabindex="-1" docs-main>
           <p docs-crumb id="doc-crumb">Docs</p>
           <article docs-window>
             <header docs-window-chrome>

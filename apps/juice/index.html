@@ -11,19 +11,21 @@
     />
   </head>
   <body theme="kiwipress">
+    <a href="#content" skip-link>Skip to content</a>
     <div app-shell stack>
-      <nav sticky>
+      <nav sticky aria-label="Primary">
         <div container>
-          <a href="/" nav-brand logo>
+          <a href="/" aria-current="page" nav-brand logo>
             <span logo="text">Juice</span>
           </a>
 
           <nav type="mobile"></nav>
 
           <div nav-links>
-            <a href="/" nav-link="active">Landing</a>
+            <a href="/" aria-current="page" nav-link="active">Landing</a>
             <a href="/getting-started.html">Getting started</a>
             <a href="/demos.html">Demos</a>
+            <a href="/playground.html">Playground</a>
             <a href="/themes.html">Themes</a>
             <a href="/docs/">Docs</a>
             <a href="/reference.html">Reference</a>
@@ -34,15 +36,16 @@
           </div>
         </div>
 
-        <nav type="sidebar" hidden>
+        <nav type="sidebar" hidden aria-label="Primary">
           <div stack gap="1" paddingX="1rem" paddingY="1rem">
-            <a href="/" nav-brand logo>
+            <a href="/" aria-current="page" nav-brand logo>
               <span logo="text">Juice</span>
             </a>
             <div stack gap="0.75rem">
-              <a href="/">Landing</a>
+              <a href="/" aria-current="page">Landing</a>
               <a href="/getting-started.html">Getting started</a>
               <a href="/demos.html">Demos</a>
+              <a href="/playground.html">Playground</a>
               <a href="/themes.html">Themes</a>
               <a href="/docs/">Docs</a>
               <a href="/reference.html">Reference</a>
@@ -52,7 +55,7 @@
         </nav>
       </nav>
 
-      <main sell>
+      <main id="content" tabindex="-1" sell>
         <section hero>
           <div container>
             <div sell-copy stack gap="1.25rem">
@@ -82,6 +85,11 @@
 
               <p sell-tertiary>
                 <a href="/demos.html">Emerging runtimes are optional — see demos</a>
+              </p>
+              <p package-links>
+                <a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm · @citrusworx/juiceui</a>
+                <a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">GitHub · libraries/juice</a>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/libraries/juice/CHANGELOG.md">Changelog</a>
               </p>
             </div>
 
@@ -233,11 +241,11 @@
                 <header sell-window-chrome>
                   <span sell-dots aria-hidden="true"></span>
                   <span sell-window-title>Harbor Press — live sample</span>
-                  <div row wrap gap="0.5rem">
-                    <button type="button" scale="sm" data-theme="kiwipress">KiwiPress</button>
-                    <button type="button" btn="outline" scale="sm" data-theme="tide">Tide</button>
-                    <button type="button" btn="outline" scale="sm" data-theme="citrusmint">Citrusmint</button>
-                    <button type="button" btn="outline" scale="sm" data-theme="aquaflux">Aquaflux</button>
+                  <div row wrap gap="0.5rem" role="radiogroup" aria-label="Theme" data-theme-group>
+                    <button type="button" role="radio" aria-checked="true" scale="sm" data-theme="kiwipress">KiwiPress</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="tide">Tide</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="citrusmint">Citrusmint</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="aquaflux">Aquaflux</button>
                   </div>
                 </header>
                 <div sell-canvas padding="2rem" stack gap="1">
@@ -456,6 +464,7 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <ul stack gap="snug">
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/playground.html">Playground</a></li>
                 <li><a href="/themes.html">Themes</a></li>
                 <li><a href="/docs/">Docs</a></li>
                 <li><a href="/reference.html">Reference</a></li>
@@ -475,15 +484,17 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <ul stack gap="snug">
                 <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.8.0</a></li>
                 <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/libraries/juice/CHANGELOG.md">Changelog</a></li>
               </ul>
             </div>
           </div>
           <div center marginY="comfortable">
             <nav type="footer">
               <ul row gap="2" centered>
-                <li><a href="/">Landing</a></li>
+                <li><a href="/" aria-current="page">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/playground.html">Playground</a></li>
                 <li><a href="/themes.html">Themes</a></li>
                 <li><a href="/docs/">Docs</a></li>
               </ul>
