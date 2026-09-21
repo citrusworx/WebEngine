@@ -6,7 +6,8 @@ export const CMS_COLLECTIONS = [
     "users",
     "categories",
     "tags",
-    "comments"
+    "comments",
+    "media"
 ] as const;
 
 export type CmsCollection = (typeof CMS_COLLECTIONS)[number];
@@ -80,15 +81,28 @@ export type CmsDocument = {
     types: CollectionTypeDefinition[];
 };
 
-export type TransferCounts = Record<CmsCollection, number>;
+export type TransferCounts = Record<CmsCollection, number> & {
+    [collection: string]: number;
+};
+
+export type TransferOptions = {
+    collections?: CmsCollection[];
+    includeMedia?: boolean;
+    cpts?: string[];
+};
+
+export type TransferRequest = CmsCollection[] | TransferOptions;
 
 export type TransferPreview = {
     collections: CmsCollection[];
+    cpts: string[];
     counts: TransferCounts;
 };
 
 export type TransferResult = {
     mode: "nectarine";
+    collections: CmsCollection[];
+    cpts: string[];
     counts: TransferCounts;
     records: ContentRecord[];
 };

@@ -7,7 +7,8 @@ export function emptySnapshot() {
         users: [],
         categories: [],
         tags: [],
-        comments: []
+        comments: [],
+        media: []
     };
 }
 export function emptyDocument() {

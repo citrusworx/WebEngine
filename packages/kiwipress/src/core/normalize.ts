@@ -1,5 +1,5 @@
 import type {
-    CmsCollection,
+    CollectionSlug,
     ContentRecord,
     ContentStatus,
     NectarinePost
@@ -75,8 +75,57 @@ function stringId(value: unknown): string {
     return "";
 }
 
+function embeddedFeaturedMediaUrl(item: Record<string, unknown>): string | undefined {
+    const embedded = asRecord(item._embedded);
+    const media = asCollection(embedded["wp:featuredmedia"]);
+    const first = asRecord(media[0]);
+
+    return typeof first.source_url === "string" && first.source_url ? first.source_url : undefined;
+}
+
+function featuredImageFrom(item: Record<string, unknown>): string | undefined {
+    if (typeof item.featured_image === "string" && item.featured_image) {
+        return item.featured_image;
+    }
+
+    if (typeof item.source_url === "string" && item.source_url) {
+        return item.source_url;
+    }
+
+    const embeddedUrl = embeddedFeaturedMediaUrl(item);
+    if (embeddedUrl) {
+        return embeddedUrl;
+    }
+
+    if (typeof item.featured_media === "number" && Number.isFinite(item.featured_media) && item.featured_media > 0) {
+        return String(item.featured_media);
+    }
+
+    if (typeof item.featured_media === "string" && item.featured_media) {
+        return item.featured_media;
+    }
+
+    return undefined;
+}
+
+function untitledLabel(collection: CollectionSlug): string {
+    if (collection === "media") {
+        return "Untitled media";
+    }
+
+    return `Untitled ${collection.replace(/s$/, "") || collection}`;
+}
+
+function itemStatus(collection: CollectionSlug, value: unknown): ContentStatus {
+    if (collection === "media" && String(value ?? "").toLowerCase() === "inherit") {
+        return "published";
+    }
+
+    return mapStatus(value);
+}
+
 export function normalizeWordPressItem(
-    collection: CmsCollection,
+    collection: CollectionSlug,
     value: unknown,
     sourceUrl?: string
 ): ContentRecord {
@@ -85,11 +134,14 @@ export function normalizeWordPressItem(
     const title =
         extractTextValue(item.title) ||
         extractTextValue(item.name) ||
+        extractTextValue(item.caption) ||
+        extractTextValue(item.alt_text) ||
         extractTextValue(item.slug) ||
-        `Untitled ${collection.slice(0, -1)}`;
+        untitledLabel(collection);
     const content =
         extractTextValue(item.content) ||
         extractTextValue(item.description) ||
+        extractTextValue(item.caption) ||
         extractTextValue(item.excerpt);
 
     return {
@@ -98,14 +150,9 @@ export function normalizeWordPressItem(
         title,
         content,
         slug: typeof item.slug === "string" ? item.slug : "",
-        status: mapStatus(item.status),
+        status: itemStatus(collection, item.status),
         authorId: stringId(item.author) || stringId(item.author_id) || undefined,
-        featuredImage:
-            typeof item.featured_image === "string"
-                ? item.featured_image
-                : typeof item.featured_media === "number"
-                    ? String(item.featured_media)
-                    : undefined,
+        featuredImage: featuredImageFrom(item),
         createdAt: typeof item.date === "string" ? item.date : typeof item.date_gmt === "string" ? item.date_gmt : undefined,
         updatedAt: typeof item.modified === "string" ? item.modified : undefined,
         source: {
@@ -119,13 +166,18 @@ export function normalizeWordPressItem(
             count: item.count,
             parent: item.parent,
             post: item.post,
+            featured_media: item.featured_media,
+            source_url: item.source_url,
+            alt_text: item.alt_text,
+            mime_type: item.mime_type,
+            media_type: item.media_type,
             raw: item
         }
     };
 }
 
 export function normalizeWordPressCollection(
-    collection: CmsCollection,
+    collection: CollectionSlug,
     value: unknown,
     sourceUrl?: string
 ): ContentRecord[] {

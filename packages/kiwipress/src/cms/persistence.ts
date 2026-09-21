@@ -23,7 +23,8 @@ export function emptySnapshot(): CmsSnapshot {
         users: [],
         categories: [],
         tags: [],
-        comments: []
+        comments: [],
+        media: []
     };
 }
 
