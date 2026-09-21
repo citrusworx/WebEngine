@@ -197,7 +197,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 - ArrowDown / ArrowUp open the list if needed, then move `combobox-option="active"` among visible options (no wrap). Focus stays on the input; `aria-activedescendant` tracks the active row
 - Home / End move to the first / last visible option while the list is open. Closed, those keys keep native input-cursor behavior
 - Enter selects the active option
-- Escape closes without changing the input value, but only when no open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists (those surfaces own Escape). See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape closes without changing the input value, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[menu-root] [menu]:not([hidden])` exists (those surfaces own Escape). See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Tab closes without committing the active option (APG manual selection). Focus moves on
 - IME composition keys are ignored
 - Enter / Space on a non-button trigger toggles the list
@@ -214,7 +214,7 @@ There is no focus trap. Tab is not wrapped. The runtime does not move focus into
 - Opening is exclusive among comboboxes. Only one managed list is open at a time.
 - Placement has no Floating UI. The list stays CSS-absolute under the field.
 - Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, and tooltip behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), and [Tooltip Runtime](./juice-tooltip-runtime.md).
-- Escape closes without commit only when no open modal/drawer overlay or popover exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape closes without commit only when no open modal/drawer overlay, popover, or menu exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 

@@ -121,6 +121,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Tooltip Runtime](./juice-tooltip-runtime.md)
 - [Combobox Runtime](./juice-combobox-runtime.md)
 - [Banner Runtime](./juice-banner-runtime.md)
+- [Menu Runtime](./juice-menu-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.7.0` live on npm)
 

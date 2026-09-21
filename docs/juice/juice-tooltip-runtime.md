@@ -178,7 +178,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape hides the open tip, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[combobox-list]` exists (those surfaces own Escape). Toast does not block tooltip Escape — the tip can hide while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape hides the open tip, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, or `[combobox-list]` exists (those surfaces own Escape). Toast does not block tooltip Escape — the tip can hide while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the tip
 - Hover (`mouseover` / `mouseout`) and keyboard focus (`focusin` / `focusout`) are the v1 show/hide path
 
@@ -195,7 +195,7 @@ Arrow-key roving is intentionally out of scope. Touch / first-tap is later.
 - Placement has no Floating UI. One opposite-side flip only; no shift or size middleware.
 - Touch / first-tap is later. v1 is hover and keyboard focus only.
 - Centered modal / dialog, edge-docked drawer, toast-stack, popover, and wizard behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), and [Wizard Runtime](./juice-wizard-runtime.md).
-- Escape hides the open tip only when no open modal/drawer overlay, popover-root, or combobox list exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape hides the open tip only when no open modal/drawer overlay, popover-root, menu, or combobox list exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 
