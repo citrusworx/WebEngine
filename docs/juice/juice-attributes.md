@@ -341,11 +341,11 @@ See [Tooltip Runtime](./juice-tooltip-runtime.md). Theme paint uses `--juice-too
 ### Combobox
 
 - `combobox` — composite root / widget root; required for the listbox runtime
-- `combobox-input` — text field (`role="combobox"`). Open on focus or typing
+- `combobox-input` — text field (`role="combobox"`). Open on focus or typing. Authors must supply an accessible name (`<label>`, `aria-label`, or `aria-labelledby`); the runtime does not
 - `combobox-trigger` — optional chevron button (surface paint, not a CTA). Toggles the list
 - `combobox-list` — popup listbox (`role="listbox"`). Hide with the native `hidden` attribute
 - `combobox-option` — option row (`role="option"`). Value `"active"` is keyboard / visual focus. Committed choice is `aria-selected="true"`
-- `name` — optional root label used as the slug for generated ids
+- `name` — optional root slug for generated ids. Not an accessible name
 
 Filter is a case-insensitive substring against option text and, when present, `data-value`. Non-matches get `hidden`. Select writes option text, or `data-value` when that attribute is present. Single-select only.
 

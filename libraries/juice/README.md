@@ -266,8 +266,9 @@ Juice keeps styling attribute-first, but interactive patterns still need accessi
   <div tooltip-panel role="tooltip">Saves the current draft.</div>
 </div>
 
+<label for="fruit-input">Fruit</label>
 <div combobox name="fruit">
-  <input combobox-input type="text" />
+  <input id="fruit-input" combobox-input type="text" />
   <button type="button" combobox-trigger aria-label="Show fruits"></button>
   <ul combobox-list hidden>
     <li combobox-option>Apple</li>

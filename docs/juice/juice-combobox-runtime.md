@@ -35,8 +35,9 @@ Combobox is an editable input plus a listbox popup (APG list autocomplete, manua
 The runtime is aligned with Juice’s combobox chrome:
 
 ```html
+<label for="fruit-input">Fruit</label>
 <div combobox name="fruit">
-  <input combobox-input type="text" />
+  <input id="fruit-input" combobox-input type="text" />
   <button type="button" combobox-trigger aria-label="Show fruits"></button>
   <ul combobox-list hidden>
     <li combobox-option>Apple</li>
@@ -47,6 +48,8 @@ The runtime is aligned with Juice’s combobox chrome:
 ```
 
 It requires a `[combobox]` root. Closed vs open is the native `hidden` attribute on `[combobox-list]`. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+
+Authors must name the input. Use a `<label>`, `aria-label`, or `aria-labelledby`. The root `name` is only an id slug. The runtime does not invent an accessible name.
 
 **Do not restyle or replace native `<select>`.** Combobox is Juice chrome: an input plus a listbox popup. Use role in markup; attrs own Juice structure.
 
