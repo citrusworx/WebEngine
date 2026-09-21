@@ -448,9 +448,9 @@ See [Slider Runtime](./juice-slider-runtime.md). Theme paint uses `--juice-slide
 
 Integer `aria-valuenow` from 0 through 100 on the host paints the fill when min/max are omitted or are `0` / `100`. Other ranges use the structural paint hook `--juice-progress-ratio` (unitless 0–1) on `[progress]`. That hook is not a theme role. Missing `aria-valuenow` is an empty determinate bar, not indeterminate. `progress="indeterminate"` slides `[progress-fill]` and wins over a stale value. `prefers-reduced-motion` stops that animation.
 
-Progress is an APG-inspired progressbar. It is not a slider, not a spinner-only loader, not a native `<progress>` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline status chrome — no overlay z-index. The host is usually not focusable. The runtime auto-enhances `[progress]` (`setValue` / `getValue` / `setIndeterminate`, `role="progressbar"`, min / max / now, `--juice-progress-ratio`). Indeterminate markup omits `aria-valuenow`. Authors supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`. Maturity docs are later. There is no Sig Progress factory.
+Progress is an APG-inspired progressbar. It is not a slider, not a spinner-only loader, not a native `<progress>` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline status chrome — no overlay z-index. The host is usually not focusable. The runtime auto-enhances `[progress]` (`setValue` / `getValue` / `setIndeterminate`, `role="progressbar"`, min / max / now, `--juice-progress-ratio`). Indeterminate markup omits `aria-valuenow`. Authors supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`. There is no Sig Progress factory.
 
-Theme paint uses `--juice-progress-*` roles (`track`, `track-border`, `fill`, `ink`, `focus-ring`).
+See [Progress Runtime](./juice-progress-runtime.md). Theme paint uses `--juice-progress-*` roles (`track`, `track-border`, `fill`, `ink`, `focus-ring`).
 
 ### Wizard
 
