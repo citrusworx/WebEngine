@@ -32,3 +32,5 @@ export { createRadio, initRadio, startRadioRuntime, stopRadioRuntime } from "./s
 export type { RadioController, RadioOptions } from "./src/radio/radio-runtime.js";
 export { createBreadcrumb, initBreadcrumb, startBreadcrumbRuntime, stopBreadcrumbRuntime } from "./src/breadcrumb/breadcrumb-runtime.js";
 export type { BreadcrumbController, BreadcrumbOptions } from "./src/breadcrumb/breadcrumb-runtime.js";
+export { createProgress, initProgress, startProgressRuntime, stopProgressRuntime } from "./src/progress/progress-runtime.js";
+export type { ProgressController, ProgressOptions } from "./src/progress/progress-runtime.js";
