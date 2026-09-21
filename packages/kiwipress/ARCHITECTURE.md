@@ -24,12 +24,15 @@ Shipped:
 - `Users`, `Posts`, `Pages`, `Categories`, `Tags`, and `Comments` with CRUD
 - `Media` with list/get, file create (raw binary or multipart), update, and delete
 - generic WordPress CPT client (`CustomPostType` / `kiwi.wordpress.cpt(restBase)`) for `/wp/v2/{restBase}`
+- generic WordPress taxonomy client (`CustomTaxonomy` / `kiwi.wordpress.taxonomy(restBase)`) for `/wp/v2/{restBase}`
 - route alias translation from clean KiwiPress shapes into WordPress query strings
 - response normalization onto `ContentRecord` / Nectarine post shapes
 - `loadNectarineApi` for nested or flat Nectarine API YAML
 - `WPSync` transfer from WordPress collections into a `NectarineStore`
 - media and named CPT transfer through `WPSync` (`includeMedia` / `cpts`)
+- named taxonomy transfer through `WPSync` (`taxonomies`)
 - WordPress type discovery (`WordPressTypes` / `kiwi.wordpress.types`) for `/wp/v2/types`
+- WordPress taxonomy discovery (`WordPressTaxonomies` / `kiwi.wordpress.taxonomies`) for `/wp/v2/taxonomies`
 - `KiwiPress.connect()` facade with `wordpress` (entry) and `nectarine` (destination) modes
 - opt-in `CmsPersistence` (`createFilePersistence`, `createPostgresPersistence` via Nectarine `PgSql`)
 - `registerKiwiPressGateway` for the `apps/kiwipress` Seltzer proxy
@@ -142,6 +145,7 @@ Operational data movement from WordPress into Nectarine-shaped records.
 - `preview()` / `transfer()` — default is still the six built-in collections (`posts`, `pages`, `users`, `categories`, `tags`, `comments`)
 - `media` is a first-class `CMS_COLLECTIONS` slug. Opt in with `transfer(["media"])` or `transfer({ includeMedia: true })`
 - named CPT rest bases opt in with `transfer({ cpts: ["books", "product"] })` (same shape for `preview`). Records land under that rest base; the type is registered if needed
+- named taxonomy rest bases opt in with `transfer({ taxonomies: ["genre"] })` (same shape for `preview`). Terms land under that rest base; the type is registered if needed. Default six collections are unchanged unless you pass `collections`
 - array form (`transfer(["posts"])`) is unchanged
 
 ### Native CMS
@@ -155,7 +159,7 @@ Operational data movement from WordPress into Nectarine-shaped records.
 
 `KiwiPress.connect({ persistence })` then `await kiwi.ready()` hydrates once. Default remains in-memory.
 
-The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection. `WordPressTypes` / `kiwi.wordpress.types` reads `/wp/v2/types` so callers can discover `rest_base` values. `restBasesFromTypes()` maps that catalog onto CPT rest bases for `transfer({ cpts })`.
+The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT or taxonomy client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection, and `CustomTaxonomy` / `kiwi.wordpress.taxonomy("genre")` does the same for terms. `WordPressTypes` / `kiwi.wordpress.types` reads `/wp/v2/types` so callers can discover CPT `rest_base` values; `WordPressTaxonomies` / `kiwi.wordpress.taxonomies` reads `/wp/v2/taxonomies`. `restBasesFromTypes()` maps the type catalog onto CPT rest bases for `transfer({ cpts })`. `restBasesFromTaxonomies()` maps the taxonomy catalog onto rest bases for `taxonomy()` / `transfer({ taxonomies })`, skipping built-in `categories` and `tags` by default (dedicated clients exist; pass `{ includeBuiltins: true }` to keep them).
 
 ## Route Layer
 
@@ -167,7 +171,7 @@ Inbound app routes live in `registerKiwiPressGateway`. Seltzer matches exact pat
 
 `loadNectarineApi` walks Nectarine API YAML — nested (`user.get.allUsers.api`) or flat (`get.allUsers.api`) — into `{ method, endpoint }` records.
 
-The live WordPress client still uses static `routes.ts` files because WordPress query aliases are not in those YAML files. The CPT client is the exception: `createCptRoutes(restBase)` builds the same `createWordPressRoute` / `createAliasedQueryRoute` shapes at runtime for any collection base. Native CMS paths follow the Nectarine contracts.
+The live WordPress client still uses static `routes.ts` files because WordPress query aliases are not in those YAML files. The CPT and taxonomy clients are the exception: `createCptRoutes(restBase)` and `createTaxonomyRoutes(restBase)` build the same `createWordPressRoute` / `createAliasedQueryRoute` shapes at runtime for any collection base. Native CMS paths follow the Nectarine contracts.
 
 ## Direction of Dependency
 
@@ -193,11 +197,12 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 ## Current Exported Surface
 
 - `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`, `createWordPressClients`
-- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`, `WordPressTypes`
+- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`, `CustomTaxonomy`, `WordPressTypes`, `WordPressTaxonomies`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
 - `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
 - `normalizeWordPressItem`, `toNectarinePost`, `loadNectarineApi`
 - `restBasesFromTypes`, `normalizeWordPressType`
+- `restBasesFromTaxonomies`, `normalizeWordPressTaxonomy`
 - `registerKiwiPressGateway`
 
 ## Non-Goals
