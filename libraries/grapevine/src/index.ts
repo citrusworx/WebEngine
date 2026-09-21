@@ -21,6 +21,8 @@ export {
     normalizeResources,
     unwrapDropletEntry,
     type ApplyResult,
+    type ApplyAction,
+    type ApplyReceiptItem,
     type AppliedSSHKey,
     type AppliedDatabase,
     type AppliedSpace,
@@ -31,6 +33,9 @@ export {
 } from "./config/apply.js";
 export {
     planGrapeConfig,
+    resolveGrapePlan,
+    annotatePlan,
+    LOCAL_PLAN_NOTE,
     countNormalized,
     type GrapePlan,
     type PlannedResource,

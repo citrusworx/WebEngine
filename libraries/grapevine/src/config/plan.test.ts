@@ -1,6 +1,16 @@
-import { describe, expect, it } from "vitest";
-import { planGrapeConfig } from "./plan.js";
+import { describe, expect, it, vi } from "vitest";
+import { annotatePlan, LOCAL_PLAN_NOTE, planGrapeConfig, resolveGrapePlan } from "./plan.js";
 import { validateGrapeConfig } from "./schema.js";
+import type { LiveInventory } from "./live.js";
+
+vi.mock("./live.js", async () => {
+    const actual = await vi.importActual<typeof import("./live.js")>("./live.js");
+    return {
+        ...actual,
+        tokenIsSet: vi.fn(() => false),
+        fetchLiveInventory: vi.fn()
+    };
+});
 
 describe("planGrapeConfig", () => {
     it("builds a local resource graph without needing a token", () => {
@@ -162,5 +172,67 @@ describe("planGrapeConfig", () => {
             health: "http://127.0.0.1/"
         });
         expect(plan.warnings).toEqual([]);
+        expect(plan.lookup).toBe("local");
+    });
+
+    it("stays local-only and says so when no token is set", async () => {
+        const { tokenIsSet, fetchLiveInventory } = await import("./live.js");
+        vi.mocked(tokenIsSet).mockReturnValue(false);
+        const plan = await resolveGrapePlan(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: { droplets: [{ name: "web", size: "s-1vcpu-1gb", image: "ubuntu-24-04-x64" }] }
+            })
+        );
+        expect(plan.lookup).toBe("local");
+        expect(plan.warnings).toContain(LOCAL_PLAN_NOTE);
+        expect(plan.resources[0]?.detail.action).toBeUndefined();
+        expect(fetchLiveInventory).not.toHaveBeenCalled();
+    });
+
+    it("marks create versus adopt from a live inventory without mutating", () => {
+        const plan = planGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    droplets: [
+                        { name: "web", size: "s-1vcpu-1gb", image: "ubuntu-24-04-x64" },
+                        { name: "new-web", size: "s-1vcpu-1gb", image: "ubuntu-24-04-x64" }
+                    ],
+                    spaces: [{ name: "juice-static" }],
+                    cdn: [{ space: "juice-static", ttl: 3600 }]
+                }
+            })
+        );
+        const inventory = {
+            droplets: [{ id: 1, name: "web", memory: 1024, status: "active", image: {}, size: {} }],
+            vpcs: [],
+            firewalls: [],
+            domains: [],
+            load_balancers: [],
+            ssh_keys: [],
+            apps: [],
+            alert_policies: [],
+            tags: [],
+            databases: [],
+            spaces: [{ name: "juice-static" }],
+            cdn: [
+                {
+                    id: "cdn-1",
+                    origin: "juice-static.nyc3.digitaloceanspaces.com",
+                    endpoint: "juice-static.nyc3.cdn.digitaloceanspaces.com"
+                }
+            ],
+            certificates: [],
+            spaces_listed: true
+        } satisfies LiveInventory;
+        const live = annotatePlan(plan, inventory);
+        expect(live.lookup).toBe("live");
+        expect(live.resources.find((resource) => resource.name === "web")?.detail.action).toBe("adopt");
+        expect(live.resources.find((resource) => resource.name === "new-web")?.detail.action).toBe("create");
+        expect(live.resources.find((resource) => resource.kind === "space")?.detail.action).toBe("adopt");
+        expect(live.resources.find((resource) => resource.kind === "cdn")?.detail.action).toBe("adopt");
     });
 });

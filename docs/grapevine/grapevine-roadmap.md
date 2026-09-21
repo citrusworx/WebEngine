@@ -16,9 +16,9 @@ The strongest part of Grapevine today is still the DigitalOcean-first model: one
 
 The weakest areas are still:
 
-- apply is create-only (no idempotency, no rollback, no plan)
+- apply adopts unique names and can update firewall rules and CDN TTL, but it does not roll back, resize droplets, or diff every field
 - `grape status` is not drift
-- several schema fields (`services`, `monitoring`, boolean `networking.ssl` / `networking.cdn`) look like product and do not provision. Spaces, CDN endpoints, and certificates are real resources; full re-apply and static upload are not
+- several schema fields (`services`, `monitoring`, boolean `networking.ssl` / `networking.cdn`) look like product and do not provision. Spaces, CDN endpoints, and certificates are real resources. Juice still needs a wait-until-live helper, a Vite build plus Spaces sync, and the site CNAME
 - tests beyond mocked HTTP
 
 Active development is the honest label. The DigitalOcean create path is real enough to teach in depth; it is not Terraform and not frozen.
@@ -35,9 +35,7 @@ What that means for the roadmap: Grapevine does not need a fake multi-cloud inte
 
 ### 2. Validate and apply are different jobs
 
-`grape validate` never calls DigitalOcean. `grape apply` always creates. That split is enough to CI-check documents and to keep billed calls explicit.
-
-A future `--dry-run` that pretends to know DigitalOcean uniqueness would be a step sideways unless it actually GETs live names. Teaching `validate` as the rehearsal is cheaper and already true.
+`grape validate` never calls DigitalOcean. `grape plan` lists the account when a token is set and marks create, adopt, or skip. With no token it stays local and says so. `grape apply` creates what is missing and adopts a unique live name. That split keeps validate free of HTTP and keeps mutations on apply.
 
 ### 3. Same-apply name maps are the composition model
 
@@ -47,7 +45,7 @@ The roadmap should not “fix” this by silently searching the account unless t
 
 ### 4. Functions are a larger surface than YAML
 
-List/get/update/delete exist for droplets, VPCs, firewalls, domains, LBs, apps, keys, tags, and more. Apply only POSTs.
+List/get/update/delete exist for droplets, VPCs, firewalls, domains, LBs, apps, keys, tags, and more. Apply lists before create, and the only updates it sends are a full firewall rule replace (attachments only added) and a CDN TTL.
 
 That is a real SDK kernel for operators who outgrow a one-shot stack. It is not a second config format.
 
@@ -61,11 +59,11 @@ The product story is a file plus a token. The roadmap should deepen that story (
 
 ## What is still holding Grapevine back
 
-### 1. Create-only apply surprises people
+### 1. Re-apply is adopt, not a full converge
 
-Re-apply as converge is the first habit from Terraform. Duplicate creates and partial failures are the first production scars.
+A second `grape apply` no longer creates another tag, droplet, domain, database, app, Space, certificate, or CDN endpoint when one unique match exists. Ambiguous names are skipped, on apply and on destroy.
 
-Until there is either skip-if-exists (opt-in, tested) or even stronger teaching (tutorial + anti-patterns — this docs pass), this will keep generating extra droplets.
+What still surprises people: droplet size and user data stay as they are, Space ACL and CDN custom domain are not updated, and a failed apply does not roll back. That is narrower than Terraform.
 
 ### 2. Generated SSH keys need an operator habit
 
@@ -97,7 +95,7 @@ If Grapevine is viewed as an IaC platform, its current maturity looks roughly li
 
 - DigitalOcean schema and client: strong
 - validate CLI: strong
-- apply as ordered creates: strong, with a sharp re-apply model
+- apply as ordered create-or-adopt: strong enough to re-run a Juice hosting file, still short of a field-level converge
 - function CRUD: useful and unevenly documented
 - status CLI: useful and easy to over-read
 - Docs as product surface: much stronger after the tutorial and topic pages
@@ -125,14 +123,11 @@ The next work that helps the most is not a new cloud. It is:
 
 This docs set is that work. Keep it aligned with `libraries/grapevine/src` when the code moves.
 
-### Priority 2. Make apply safer to re-run *or* louder when you must not
+### Priority 2. Keep re-apply boring, and do not invent a state file
 
-If the core is opened, pick one:
+Shipped: unique-name adopt (CDN by origin), skip on ambiguity, firewall rule replace, CDN TTL update, and a created/adopted/updated/skipped receipt. `grape plan` shows create vs adopt when a token is set.
 
-1. opt-in “skip existing tag/VPC by name” (narrow, tested)
-2. refuse duplicates with a Grapevine error that says “this is create-only” before DigitalOcean does
-
-Do not add a hidden state file in `~/.grapevine` unless it is versioned, documented, and optional. A surprise backend is worse than create-only.
+Still open: rollback, droplet resize, and any hidden state file. Do not add `~/.grapevine` state unless it is versioned, documented, and optional.
 
 ### Priority 3. Persist or refuse generated SSH keys
 
@@ -153,7 +148,7 @@ Highest value schema work:
 
 - fail `services` instead of warning, **or** document it as deprecated and remove it
 - map `resources.alert_policies` only (already) and remove unused top-level `monitoring`
-- boolean `networking.ssl` / `networking.cdn` now warn. Real resources are `resources.certificates` and `resources.cdn`. Still open: idempotent updates, CDN-edge wait, and uploading a Vite `dist/` (Juice follow-ups)
+- boolean `networking.ssl` / `networking.cdn` now warn. Real resources are `resources.certificates` and `resources.cdn`. Idempotent adopt for those resources is in. Still open for Juice: wait until the certificate and CDN edge are live, `yarn workspace @citrusworx/juiceapp build` plus a Spaces sync of `dist/`, and the CNAME from the site hostname to the CDN endpoint
 
 ### Priority 6. Stay complementary to CitrusWorx
 
@@ -169,8 +164,8 @@ A second provider only when a real adapter exists.
 2. SSH generate persistence or removal from apply YAML.
 3. Status help text / `credentials.env` consistency.
 4. Schema ghosts: `services` fail-closed or gone.
-5. Narrow skip-if-exists **or** a clearer duplicate error.
-6. Only then: `grape diff`, destroy-from-YAML, or a second provider — not all at once.
+5. Field-level converge only where an update is safe and tested (firewall rules and CDN TTL are the current pair).
+6. Juice follow-ups: wait-until-live, Vite build plus Spaces sync, site CNAME. Not a second cloud.
 
 ---
 
@@ -204,7 +199,7 @@ The next stage is not inventing Grapevine from scratch.
 
 The next stage is refinement:
 
-- make apply less surprising to re-run
+- keep re-apply honest about the fields it does not change
 - make generated keys usable
 - make status unable to pose as drift
 - keep DigitalOcean-only until another adapter is real

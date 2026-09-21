@@ -13,6 +13,7 @@ import { deleteDatabase } from "../providers/digitalocean/databases/databases.js
 import { deleteCdnEndpoint, resolveCdnOrigin } from "../providers/digitalocean/cdn/cdn.js";
 import { deleteCertificate } from "../providers/digitalocean/certificates/certificates.js";
 import { deleteSpace } from "../providers/digitalocean/spaces/spaces.js";
+import { lookupCdnByOrigin, lookupVPC, lookupWhere } from "./adopt.js";
 import { fetchLiveInventory, type LiveInventory } from "./live.js";
 
 export const DESTROY_ORDER = [
@@ -76,22 +77,24 @@ function uniqueMatch<T>(
     name: string,
     getName: (item: T) => string | undefined,
     kind: DestroyKind,
-    skipped: DestroyTarget[]
+    skipped: DestroyTarget[],
+    idOf: (item: T) => string | number | undefined = (item) =>
+        (item as { id?: string | number; uuid?: string }).id ?? (item as { uuid?: string }).uuid
 ): T | undefined {
-    const matches = items.filter((item) => getName(item) === name);
-    if (matches.length === 0) {
+    const found = lookupWhere(items, (item) => getName(item) === name, idOf);
+    if (found.status === "missing") {
         skipped.push({ kind, name, reason: "not found" });
         return undefined;
     }
-    if (matches.length > 1) {
+    if (found.status !== "unique" || !found.resource) {
         skipped.push({
             kind,
             name,
-            reason: `ambiguous: ${matches.length} live resources named "${name}"`
+            reason: `ambiguous: ${found.count} live resources named "${name}"`
         });
         return undefined;
     }
-    return matches[0];
+    return found.resource;
 }
 
 function addUniqueTarget(
@@ -180,14 +183,24 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
                 skipped.push({ kind: "cdn", name: label, reason: message });
                 continue;
             }
-            const match = uniqueMatch(inventory.cdn, origin, (item) => item.origin, "cdn", skipped);
-            if (match) {
-                addUniqueTarget(targets, skipped, {
-                    kind: "cdn",
-                    name: match.custom_domain || match.origin,
-                    id: match.id
-                });
+            const found = lookupCdnByOrigin(inventory.cdn, origin);
+            if (found.status === "missing") {
+                skipped.push({ kind: "cdn", name: origin, reason: "not found" });
+                continue;
             }
+            if (found.status !== "unique" || !found.resource) {
+                skipped.push({
+                    kind: "cdn",
+                    name: origin,
+                    reason: `ambiguous: ${found.count} live resources named "${origin}"`
+                });
+                continue;
+            }
+            addUniqueTarget(targets, skipped, {
+                kind: "cdn",
+                name: found.resource.custom_domain || found.resource.origin,
+                id: found.resource.id
+            });
         }
 
         for (const app of resources.apps ?? []) {
@@ -311,20 +324,43 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
         }
 
         for (const vpc of resources.vpcs ?? []) {
-            const match = uniqueMatch(inventory.vpcs, vpc.name, (item) => item.name, "vpc", skipped);
-            if (!match) {
+            const region = vpc.region ?? config.region ?? "";
+            const found = lookupVPC(inventory.vpcs, vpc.name, region);
+            if (found.status === "missing") {
+                skipped.push({ kind: "vpc", name: vpc.name, reason: "not found" });
                 continue;
             }
-            if (match.default) {
+            if (found.status === "ambiguous") {
                 skipped.push({
                     kind: "vpc",
-                    name: match.name,
-                    id: match.id,
+                    name: vpc.name,
+                    reason: `ambiguous: ${found.count} live resources named "${vpc.name}"`
+                });
+                continue;
+            }
+            if (found.status === "mismatch" || !found.resource) {
+                skipped.push({
+                    kind: "vpc",
+                    name: vpc.name,
+                    id: found.resource?.id,
+                    reason: found.reason ?? "region does not match"
+                });
+                continue;
+            }
+            if (found.resource.default) {
+                skipped.push({
+                    kind: "vpc",
+                    name: found.resource.name,
+                    id: found.resource.id,
                     reason: "refusing to delete the default VPC"
                 });
                 continue;
             }
-            addUniqueTarget(targets, skipped, { kind: "vpc", name: match.name, id: match.id });
+            addUniqueTarget(targets, skipped, {
+                kind: "vpc",
+                name: found.resource.name,
+                id: found.resource.id
+            });
         }
 
         for (const name of tagNamesFromConfig(config)) {
@@ -465,8 +501,10 @@ export async function destroyGrapeResources(options: DestroyOptions): Promise<De
 export const DESTROY_V1_NOTES = `v1 destroy support
   Matches unique live names from the config and/or droplets with --tag, plus
   firewalls clearly attached to those droplets (same tag, or droplet ids that
-  are a subset of the tagged set). Default VPCs and ambiguous names are skipped.
-  Local generated SSH private key files are not removed.
+  are a subset of the tagged set). Default VPCs, ambiguous names, and a VPC whose
+  region does not match the config are skipped. Local generated SSH private key
+  files are not removed. Apply uses the same unique-name, CDN-origin, and VPC
+  region checks and also skips instead of creating.
 
   Order: CDN endpoints → apps → alert policies → load balancers →
   certificates → firewalls → domains → droplets → databases → Spaces →

@@ -2,7 +2,7 @@ import { applyGrapeConfig } from "../config/apply.js";
 import { DESTROY_V1_NOTES, destroyGrapeResources, planDestroy } from "../config/destroy.js";
 import { loadGrapeConfig } from "../config/load.js";
 import { fetchLiveInventory, tokenIsSet } from "../config/live.js";
-import { planGrapeConfig } from "../config/plan.js";
+import { planGrapeConfig, resolveGrapePlan } from "../config/plan.js";
 import { CliError } from "./errors.js";
 import { confirmDestroy } from "./confirm.js";
 import { printJson, println } from "./format.js";
@@ -35,7 +35,7 @@ export async function handleValidate(options) {
 export async function handlePlan(options, heading) {
     const source = requireConfig(options.config);
     const config = await loadGrapeConfig(source);
-    const plan = planGrapeConfig(config);
+    const plan = await resolveGrapePlan(config);
     if (options.json) {
         printJson({ ...plan, source });
         return;

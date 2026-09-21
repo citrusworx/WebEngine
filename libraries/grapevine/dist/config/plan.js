@@ -1,8 +1,12 @@
-import { grapeConfigWarnings, normalizeResources, unwrapDropletEntry } from "./apply.js";
+import { getDoToken } from "../providers/digitalocean/client.js";
 import { resolveCdnOrigin } from "../providers/digitalocean/cdn/cdn.js";
+import { grapeConfigWarnings, normalizeResources, unwrapDropletEntry } from "./apply.js";
+import { lookupByName, lookupCdnByOrigin, lookupVPC, lookupWhere } from "./adopt.js";
+import { fetchLiveInventory, tokenIsSet } from "./live.js";
 import { resolvePrivateKeyPath } from "./ssh-private-key.js";
 import { getConfigSourceDir } from "./source.js";
 import { declaredStacks, resolveDeclaredStacks, stackPlanDetails } from "./stack.js";
+export const LOCAL_PLAN_NOTE = "Plan is local-only: no DigitalOcean token is set, so create vs adopt was not checked against the account.";
 export const RESOURCE_KINDS = [
     "tags",
     "ssh_keys",
@@ -281,9 +285,105 @@ export function planGrapeConfig(config, options = {}) {
         dry_run: true,
         provider: config.provider,
         region: config.region,
+        lookup: "local",
         counts: countResources(resources, stacks.length),
         resources: planned,
         warnings
     };
+}
+function withAction(resource, action, note) {
+    return {
+        ...resource,
+        detail: {
+            ...resource.detail,
+            action,
+            ...(note ? { note } : {})
+        }
+    };
+}
+function decide(found) {
+    if (found.status === "unique") {
+        return { action: "adopt" };
+    }
+    if (found.status === "missing") {
+        return { action: "create" };
+    }
+    if (found.status === "mismatch") {
+        return { action: "skip", note: found.reason ?? "not an exact match" };
+    }
+    return { action: "skip", note: found.reason ?? `ambiguous (${found.count})` };
+}
+function actionFor(resource, inventory, region) {
+    switch (resource.kind) {
+        case "tag":
+            return decide(lookupByName(inventory.tags, resource.name));
+        case "ssh_key":
+            return decide(lookupByName(inventory.ssh_keys, resource.name));
+        case "vpc":
+            return decide(lookupVPC(inventory.vpcs, resource.name, resource.detail.region ?? region ?? ""));
+        case "database":
+            return decide(lookupByName(inventory.databases, resource.name));
+        case "droplet":
+            return decide(lookupByName(inventory.droplets, resource.name));
+        case "firewall":
+            return decide(lookupByName(inventory.firewalls, resource.name));
+        case "domain":
+            return decide(lookupByName(inventory.domains, resource.name));
+        case "load_balancer":
+            return decide(lookupByName(inventory.load_balancers, resource.name));
+        case "alert_policy":
+            return decide(lookupWhere(inventory.alert_policies, (item) => item.description === resource.name, (item) => item.uuid));
+        case "app":
+            return decide(lookupWhere(inventory.apps, (item) => item.spec?.name === resource.name, (item) => item.id));
+        case "space":
+            return decide(lookupByName(inventory.spaces, resource.name));
+        case "certificate":
+            return decide(lookupByName(inventory.certificates, resource.name));
+        case "cdn": {
+            const origin = resource.detail.origin;
+            if (!origin) {
+                return { action: "skip", note: "origin could not be resolved" };
+            }
+            return decide(lookupCdnByOrigin(inventory.cdn, origin));
+        }
+        default:
+            return { action: "create" };
+    }
+}
+/** Read-only annotation. Does not create or update anything. */
+export function annotatePlan(plan, inventory) {
+    const warnings = [...plan.warnings];
+    let notedSpaces = false;
+    const resources = plan.resources.map((resource) => {
+        if (resource.kind === "stack" || resource.kind === "stack_step") {
+            return resource;
+        }
+        if (resource.kind === "space" && !inventory.spaces_listed) {
+            if (!notedSpaces) {
+                warnings.push("Spaces credentials are not set, so plan did not check whether Spaces already exist.");
+                notedSpaces = true;
+            }
+            return withAction(resource, "unchecked", "spaces not listed");
+        }
+        const decision = actionFor(resource, inventory, plan.region);
+        return withAction(resource, decision.action, decision.note);
+    });
+    return { ...plan, lookup: "live", resources, warnings };
+}
+/**
+ * `grape plan` / `grape apply --dry-run`.
+ * Lists the account when a token is set. Does not POST, PUT, or DELETE.
+ */
+export async function resolveGrapePlan(config, options = {}) {
+    const plan = planGrapeConfig(config, options);
+    const envName = config.credentials?.env ?? "DO_TOKEN";
+    if (!tokenIsSet(envName)) {
+        return { ...plan, warnings: [...plan.warnings, LOCAL_PLAN_NOTE] };
+    }
+    if (envName !== "DO_TOKEN") {
+        process.env.DO_TOKEN = getDoToken(envName);
+    }
+    const inventory = await fetchLiveInventory();
+    return annotatePlan(plan, inventory);
 }
 //# sourceMappingURL=plan.js.map

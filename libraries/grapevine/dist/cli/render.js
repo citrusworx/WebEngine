@@ -14,10 +14,14 @@ function formatDetail(resource) {
 export function renderPlan(plan, heading = "Plan  (dry-run, no DigitalOcean mutations)") {
     println(heading);
     println();
+    const lookup = plan.lookup === "live"
+        ? "live account (create vs adopt; no mutations)"
+        : "local-only (token not set; create vs adopt was not checked)";
     println(formatLabeled([
         ["Provider", plan.provider],
         ["Region", plan.region ?? "(none)"],
-        ["Would create", `${plan.resources.length} resource(s) (${countLine(plan.counts)})`]
+        ["Lookup", lookup],
+        ["Would apply", `${plan.resources.length} resource(s) (${countLine(plan.counts)})`]
     ]));
     println();
     if (plan.resources.length === 0) {
@@ -54,9 +58,58 @@ export function renderValidate(plan, source, heading = "Valid grape config") {
         println(`  ${resource.kind.padEnd(14)}  ${resource.name}`);
     }
 }
+function renderReceipt(result) {
+    const groups = [
+        ["Created", "created"],
+        ["Adopted", "adopted"],
+        ["Updated", "updated"],
+        ["Skipped", "skipped"]
+    ];
+    let printed = false;
+    for (const [label, action] of groups) {
+        const items = result.receipt.filter((item) => item.action === action);
+        if (items.length === 0) {
+            continue;
+        }
+        if (printed) {
+            println();
+        }
+        printed = true;
+        println(`${label} (${items.length})`);
+        for (const item of items) {
+            const id = item.id !== undefined ? `  id=${item.id}` : "";
+            const note = item.note ? `  (${item.note})` : "";
+            println(`  ${item.kind.padEnd(16)}  ${item.name}${id}${note}`);
+        }
+    }
+    if (!printed) {
+        println("No resources applied.");
+    }
+    return true;
+}
 export function renderApply(result) {
     println("Applied grape config");
     println();
+    if (result.receipt?.length) {
+        renderReceipt(result);
+        if (result.private_key_paths.length > 0) {
+            println();
+            println("Private keys written");
+            for (const keyPath of result.private_key_paths) {
+                println(`  ${keyPath}`);
+                println(`  ssh -i ${keyPath}`);
+            }
+            println("  (key material is never printed)");
+        }
+        if (result.warnings.length > 0) {
+            println();
+            println("Warnings");
+            for (const warning of result.warnings) {
+                println(`  - ${warning}`);
+            }
+        }
+        return;
+    }
     const lines = [];
     for (const tag of result.tags) {
         lines.push(`  tag             ${tag}`);

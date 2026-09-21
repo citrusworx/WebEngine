@@ -26,5 +26,12 @@ export interface CdnOriginInput {
 export declare function resolveCdnOrigin(input: CdnOriginInput): string;
 export declare function listCdnEndpoints(): Promise<CdnEndpoint[]>;
 export declare function getCdnEndpoint(id: string): Promise<CdnEndpoint>;
+/**
+ * PUT `/cdn/endpoints/:id` with only the fields passed in.
+ * Apply uses this for TTL. It does not send `custom_domain` or `certificate_id` on adopt.
+ */
+export declare function updateCdnEndpoint(id: string, patch: {
+    ttl?: CdnTtl | number;
+}): Promise<CdnEndpoint>;
 export declare function createCdnEndpoint(blueprint: CdnBlueprint): Promise<CdnEndpoint>;
 export declare function deleteCdnEndpoint(id: string): Promise<void>;
