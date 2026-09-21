@@ -1,0 +1,197 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Radio chrome is structural. Color comes from the shared role contract:
+//   --juice-radio-control
+//   --juice-radio-control-checked
+//   --juice-radio-border
+//   --juice-radio-border-checked
+//   --juice-radio-mark
+//   --juice-radio-focus-ring
+// Themes bind those names (and optional --aqua-radio-* / --kw-radio-* /
+// --cm-radio-* / --tide-radio-* / --jx-radio-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG Radio inside a radiogroup. Distinct from:
+//   - [switch] (toggle; already shipped)
+//   - [checkbox] (binary check; separate family)
+//   - native <input type="radio"> restyle as the only story
+//   - menu (out of scope)
+//
+// Native collision: there is no HTML *global* `radio` attribute. A boolean
+// [radio] attribute has no platform behavior. Do not restyle bare
+// [role="radio"] or [role="radiogroup"] — attrs own Juice structure.
+//
+// Juice names:
+//   [radiogroup]  group root. Runtime B fills role="radiogroup" and
+//                 exclusive selection. This slice does not paint group
+//                 chrome: no --juice-radiogroup-* roles. Authors lay
+//                 options out with stack / row / gap.
+//   [radio]       one option. Primary host is <button type="button" radio>.
+//                 A native <input type="radio" radio> is a valid secondary
+//                 story (:checked paints that path). Visible labels live
+//                 beside the control — the host *is* the disc.
+//
+// The disc is the host. The dot is ::after. There is no [radio-dot] child.
+// This slice does not size the control: no radio-size, and scale does not
+// change disc geometry. Group name / exclusive keyboard is runtime B.
+//
+// Checked paint: aria-checked="true" (button host, and the honest static
+// demo before runtime). :checked covers a native radio host.
+//
+// z-index: inline control — no floating overlay band.
+
+@function -juice-radio-role($name, $fallback) {
+    @return var(
+        --juice-radio-#{$name},
+        var(--aqua-radio-#{$name}, var(--kw-radio-#{$name}, var(--cm-radio-#{$name}, var(--tide-radio-#{$name}, var(--jx-radio-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-radio-control: -juice-radio-role(control, #{$white-100});
+$_juice-radio-control-checked: -juice-radio-role(control-checked, #{$white-100});
+$_juice-radio-border: -juice-radio-role(border, #{$gray-300});
+$_juice-radio-border-checked: -juice-radio-role(border-checked, #{$black-700});
+$_juice-radio-mark: -juice-radio-role(mark, #{$black-700});
+
+// [radiogroup] stays layout-owned. Reset native fieldset chrome so a
+// <fieldset radiogroup> does not draw a platform border. Do not set
+// display or gap — stack / row / gap own that.
+
+[radiogroup],
+[theme] [radiogroup] {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    min-inline-size: 0;
+}
+
+// [theme] [radio] must beat theme semantic defaults such as
+// [theme="…"] :where(button) CTA paint and :where(input) field chrome.
+// Themes realize color through the roles.
+
+[radio],
+button[radio],
+[theme] [radio],
+[theme] button[radio] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid $_juice-radio-border;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
+    cursor: pointer;
+    background-color: $_juice-radio-control;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    overflow: hidden;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+[radio]::after,
+button[radio]::after,
+[theme] [radio]::after,
+[theme] button[radio]::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: $_juice-radio-mark;
+    background-image: none;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+}
+
+[radio][aria-checked="true"],
+[radio]:checked,
+button[radio][aria-checked="true"],
+button[radio]:checked,
+[theme] [radio][aria-checked="true"],
+[theme] [radio]:checked,
+[theme] button[radio][aria-checked="true"],
+[theme] button[radio]:checked {
+    background-color: $_juice-radio-control-checked;
+    background-image: none;
+    border-color: $_juice-radio-border-checked;
+}
+
+[radio][aria-checked="true"]::after,
+[radio]:checked::after,
+button[radio][aria-checked="true"]::after,
+button[radio]:checked::after,
+[theme] [radio][aria-checked="true"]::after,
+[theme] [radio]:checked::after,
+[theme] button[radio][aria-checked="true"]::after,
+[theme] button[radio]:checked::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+[radio]:hover,
+[radio]:focus-visible,
+button[radio]:hover,
+button[radio]:focus-visible,
+[theme] [radio]:hover,
+[theme] [radio]:focus-visible,
+[theme] button[radio]:hover,
+[theme] button[radio]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[radio]:focus-visible,
+button[radio]:focus-visible,
+[theme] [radio]:focus-visible,
+[theme] button[radio]:focus-visible {
+    outline: 2px solid -juice-radio-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[radio]:disabled,
+[radio][aria-disabled="true"],
+button[radio]:disabled,
+button[radio][aria-disabled="true"],
+[theme] [radio]:disabled,
+[theme] [radio][aria-disabled="true"],
+[theme] button[radio]:disabled,
+[theme] button[radio][aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [radio],
+    button[radio],
+    [theme] [radio],
+    [theme] button[radio],
+    [radio]::after,
+    button[radio]::after,
+    [theme] [radio]::after,
+    [theme] button[radio]::after {
+        transition: none;
+    }
+}

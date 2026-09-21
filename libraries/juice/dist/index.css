@@ -97050,6 +97050,129 @@ button[full] {
     grid-template-columns: 1fr;
   }
 }
+[checkbox],
+button[checkbox],
+[theme] [checkbox],
+[theme] button[checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--juice-checkbox-border, var(--aqua-checkbox-border, var(--kw-checkbox-border, var(--cm-checkbox-border, var(--tide-checkbox-border, var(--jx-checkbox-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0.25rem;
+  font: inherit;
+  font-size: 0;
+  line-height: 0;
+  color: transparent;
+  cursor: pointer;
+  background-color: var(--juice-checkbox-control, var(--aqua-checkbox-control, var(--kw-checkbox-control, var(--cm-checkbox-control, var(--tide-checkbox-control, var(--jx-checkbox-control, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  overflow: hidden;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+[checkbox]::after,
+button[checkbox]::after,
+[theme] [checkbox]::after,
+[theme] button[checkbox]::after {
+  content: "";
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  display: block;
+  width: 0.3rem;
+  height: 0.55rem;
+  border: solid transparent;
+  border-width: 0 2px 2px 0;
+  box-sizing: border-box;
+  background: none;
+  transform: translate(-50%, -58%) rotate(45deg) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+}
+
+[checkbox][aria-checked=true],
+[checkbox]:checked,
+button[checkbox][aria-checked=true],
+button[checkbox]:checked,
+[theme] [checkbox][aria-checked=true],
+[theme] [checkbox]:checked,
+[theme] button[checkbox][aria-checked=true],
+[theme] button[checkbox]:checked {
+  background-color: var(--juice-checkbox-control-checked, var(--aqua-checkbox-control-checked, var(--kw-checkbox-control-checked, var(--cm-checkbox-control-checked, var(--tide-checkbox-control-checked, var(--jx-checkbox-control-checked, hsl(0, 0%, 20%)))))));
+  background-image: none;
+  border-color: var(--juice-checkbox-border-checked, var(--aqua-checkbox-border-checked, var(--kw-checkbox-border-checked, var(--cm-checkbox-border-checked, var(--tide-checkbox-border-checked, var(--jx-checkbox-border-checked, hsl(0, 0%, 20%)))))));
+}
+
+[checkbox][aria-checked=true]::after,
+[checkbox]:checked::after,
+button[checkbox][aria-checked=true]::after,
+button[checkbox]:checked::after,
+[theme] [checkbox][aria-checked=true]::after,
+[theme] [checkbox]:checked::after,
+[theme] button[checkbox][aria-checked=true]::after,
+[theme] button[checkbox]:checked::after {
+  border-color: var(--juice-checkbox-mark, var(--aqua-checkbox-mark, var(--kw-checkbox-mark, var(--cm-checkbox-mark, var(--tide-checkbox-mark, var(--jx-checkbox-mark, hsl(0, 0%, 100%)))))));
+  opacity: 1;
+  transform: translate(-50%, -58%) rotate(45deg) scale(1);
+}
+
+[checkbox]:hover,
+[checkbox]:focus-visible,
+button[checkbox]:hover,
+button[checkbox]:focus-visible,
+[theme] [checkbox]:hover,
+[theme] [checkbox]:focus-visible,
+[theme] button[checkbox]:hover,
+[theme] button[checkbox]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[checkbox]:focus-visible,
+button[checkbox]:focus-visible,
+[theme] [checkbox]:focus-visible,
+[theme] button[checkbox]:focus-visible {
+  outline: 2px solid var(--juice-checkbox-focus-ring, var(--aqua-checkbox-focus-ring, var(--kw-checkbox-focus-ring, var(--cm-checkbox-focus-ring, var(--tide-checkbox-focus-ring, var(--jx-checkbox-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[checkbox]:disabled,
+[checkbox][aria-disabled=true],
+button[checkbox]:disabled,
+button[checkbox][aria-disabled=true],
+[theme] [checkbox]:disabled,
+[theme] [checkbox][aria-disabled=true],
+[theme] button[checkbox]:disabled,
+[theme] button[checkbox][aria-disabled=true] {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [checkbox],
+  button[checkbox],
+  [theme] [checkbox],
+  [theme] button[checkbox],
+  [checkbox]::after,
+  button[checkbox]::after,
+  [theme] [checkbox]::after,
+  [theme] button[checkbox]::after {
+    transition: none;
+  }
+}
 [combobox],
 [theme] [combobox] {
   position: relative;
@@ -99307,6 +99430,138 @@ nav[type=actions] a:hover {
 @media (prefers-reduced-motion: reduce) {
   [popover-close],
   [theme] [popover-close] {
+    transition: none;
+  }
+}
+[radiogroup],
+[theme] [radiogroup] {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  min-inline-size: 0;
+}
+
+[radio],
+button[radio],
+[theme] [radio],
+[theme] button[radio] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--juice-radio-border, var(--aqua-radio-border, var(--kw-radio-border, var(--cm-radio-border, var(--tide-radio-border, var(--jx-radio-border, hsl(0, 0%, 85%)))))));
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0;
+  line-height: 0;
+  color: transparent;
+  cursor: pointer;
+  background-color: var(--juice-radio-control, var(--aqua-radio-control, var(--kw-radio-control, var(--cm-radio-control, var(--tide-radio-control, var(--jx-radio-control, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  overflow: hidden;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+[radio]::after,
+button[radio]::after,
+[theme] [radio]::after,
+[theme] button[radio]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background-color: var(--juice-radio-mark, var(--aqua-radio-mark, var(--kw-radio-mark, var(--cm-radio-mark, var(--tide-radio-mark, var(--jx-radio-mark, hsl(0, 0%, 20%)))))));
+  background-image: none;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+}
+
+[radio][aria-checked=true],
+[radio]:checked,
+button[radio][aria-checked=true],
+button[radio]:checked,
+[theme] [radio][aria-checked=true],
+[theme] [radio]:checked,
+[theme] button[radio][aria-checked=true],
+[theme] button[radio]:checked {
+  background-color: var(--juice-radio-control-checked, var(--aqua-radio-control-checked, var(--kw-radio-control-checked, var(--cm-radio-control-checked, var(--tide-radio-control-checked, var(--jx-radio-control-checked, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  border-color: var(--juice-radio-border-checked, var(--aqua-radio-border-checked, var(--kw-radio-border-checked, var(--cm-radio-border-checked, var(--tide-radio-border-checked, var(--jx-radio-border-checked, hsl(0, 0%, 20%)))))));
+}
+
+[radio][aria-checked=true]::after,
+[radio]:checked::after,
+button[radio][aria-checked=true]::after,
+button[radio]:checked::after,
+[theme] [radio][aria-checked=true]::after,
+[theme] [radio]:checked::after,
+[theme] button[radio][aria-checked=true]::after,
+[theme] button[radio]:checked::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+[radio]:hover,
+[radio]:focus-visible,
+button[radio]:hover,
+button[radio]:focus-visible,
+[theme] [radio]:hover,
+[theme] [radio]:focus-visible,
+[theme] button[radio]:hover,
+[theme] button[radio]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[radio]:focus-visible,
+button[radio]:focus-visible,
+[theme] [radio]:focus-visible,
+[theme] button[radio]:focus-visible {
+  outline: 2px solid var(--juice-radio-focus-ring, var(--aqua-radio-focus-ring, var(--kw-radio-focus-ring, var(--cm-radio-focus-ring, var(--tide-radio-focus-ring, var(--jx-radio-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[radio]:disabled,
+[radio][aria-disabled=true],
+button[radio]:disabled,
+button[radio][aria-disabled=true],
+[theme] [radio]:disabled,
+[theme] [radio][aria-disabled=true],
+[theme] button[radio]:disabled,
+[theme] button[radio][aria-disabled=true] {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [radio],
+  button[radio],
+  [theme] [radio],
+  [theme] button[radio],
+  [radio]::after,
+  button[radio]::after,
+  [theme] [radio]::after,
+  [theme] button[radio]::after {
     transition: none;
   }
 }
