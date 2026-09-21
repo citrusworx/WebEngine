@@ -396,18 +396,18 @@ See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switc
 
 - `checkbox` — the control root (boolean attr). Primary host is `<button type="button" checkbox>`. A native `<input type="checkbox" checkbox>` is allowed when you want `:checked` paint. A boolean `[checkbox]` attribute is fine: there is no HTML global `checkbox` attribute. Do not restyle bare `[role="checkbox"]`
 
-Checked paint is `aria-checked="true"` so chrome and a later runtime share one story. `:checked` covers the native host. The host is the box; `::after` is the checkmark. There is no `checkbox-size`, and `scale` does not change box geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name.
+Checked paint is `aria-checked="true"` so chrome and runtime share one story. `:checked` covers the native host. The host is the box; `::after` is the checkmark. There is no `checkbox-size`, and `scale` does not change box geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name.
 
-Checkbox is an APG checkbox (binary). It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. v1 does not paint `aria-checked="mixed"`. Inline control — no overlay z-index. Toggle runtime (B) is later. No Sig Checkbox factory.
+Checkbox is an APG checkbox (binary). It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. v1 does not paint `aria-checked="mixed"`. Inline control — no overlay z-index. The runtime auto-enhances `[checkbox]` markup (`toggle` / `check` / `uncheck` / `setChecked`). Maturity docs are later. No Sig Checkbox factory.
 
 Theme paint uses `--juice-checkbox-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
 
 ### Radio
 
-- `radiogroup` — group root. Layout only (`stack` / `row` / `gap`). No `--juice-radiogroup-*` roles. Runtime B fills `role="radiogroup"` and exclusive selection
+- `radiogroup` — group root. Layout only (`stack` / `row` / `gap`). No `--juice-radiogroup-*` roles. The runtime fills `role="radiogroup"` and exclusive selection
 - `radio` — one option (boolean attr). Primary host is `<button type="button" radio>`. A native `<input type="radio" radio>` is allowed when you want `:checked` paint. A boolean `[radio]` attribute is fine: there is no HTML global `radio` attribute. Do not restyle bare `[role="radio"]` or `[role="radiogroup"]`
 
-Checked paint is `aria-checked="true"`. `:checked` covers the native host. The host is the disc; `::after` is the dot. There is no `radio-size`, and `scale` does not change disc geometry. Visible labels live beside the option (`<label>`, `aria-label`, or `aria-labelledby`). Group `name` and exclusive keyboard are runtime B; this slice only paints.
+Checked paint is `aria-checked="true"`. `:checked` covers the native host. The host is the disc; `::after` is the dot. There is no `radio-size`, and `scale` does not change disc geometry. Visible labels live beside the option (`<label>`, `aria-label`, or `aria-labelledby`). Group `name` and exclusive keyboard belong to the radio runtime; this slice only paints.
 
 Radio is an APG radio in a radiogroup. It is not `[switch]`, not `[checkbox]`, not a native `<input type="radio">` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. No Sig Radio factory.
 

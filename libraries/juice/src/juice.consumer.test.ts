@@ -629,4 +629,102 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
     });
+
+    it("lets a consumer mount and interact with the built checkbox runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopCheckboxRuntime();
+        document.body.innerHTML = `
+            <button checkbox aria-label="Accept terms" id="demo-checkbox"></button>
+        `;
+
+        const controller = module.createCheckbox({ root: document.body });
+        const control = document.getElementById("demo-checkbox");
+
+        expect(control?.getAttribute("role")).toBe("checkbox");
+        expect(control?.getAttribute("aria-checked")).toBe("false");
+        expect(control?.getAttribute("type")).toBe("button");
+        expect(control?.getAttribute("aria-modal")).toBeNull();
+
+        control?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(control?.getAttribute("aria-checked")).toBe("true");
+        expect(controller.isChecked(control)).toBe(true);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopCheckboxRuntime();
+        module.stopRadioRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built radio runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopRadioRuntime();
+        document.body.innerHTML = `
+            <div radiogroup aria-label="Shipment" id="ship">
+                <button radio aria-label="Ground" id="ground"></button>
+                <button radio aria-label="Air" id="air"></button>
+            </div>
+        `;
+
+        const controller = module.createRadio({ root: document.body });
+        const group = document.getElementById("ship");
+        const ground = document.getElementById("ground");
+        const air = document.getElementById("air");
+
+        expect(group?.getAttribute("role")).toBe("radiogroup");
+        expect(ground?.getAttribute("role")).toBe("radio");
+        expect(ground?.getAttribute("aria-checked")).toBe("false");
+        expect(ground?.getAttribute("tabindex")).toBe("0");
+        expect(air?.getAttribute("aria-checked")).toBe("false");
+        expect(air?.getAttribute("tabindex")).toBe("-1");
+        expect(group?.getAttribute("aria-modal")).toBeNull();
+
+        air?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(air?.getAttribute("aria-checked")).toBe("true");
+        expect(ground?.getAttribute("aria-checked")).toBe("false");
+        expect(controller.getChecked(group)?.id).toBe("air");
+
+        air?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, key: "ArrowLeft" })
+        );
+
+        expect(ground?.getAttribute("aria-checked")).toBe("true");
+        expect(air?.getAttribute("aria-checked")).toBe("false");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
 });

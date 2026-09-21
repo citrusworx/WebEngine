@@ -26,3 +26,7 @@ export { createSwitch, initSwitch, startSwitchRuntime, stopSwitchRuntime } from 
 export type { SwitchController, SwitchOptions } from "./src/switch/switch-runtime.js";
 export { createSlider, initSlider, startSliderRuntime, stopSliderRuntime } from "./src/slider/slider-runtime.js";
 export type { SliderController, SliderOptions } from "./src/slider/slider-runtime.js";
+export { createCheckbox, initCheckbox, startCheckboxRuntime, stopCheckboxRuntime } from "./src/checkbox/checkbox-runtime.js";
+export type { CheckboxController, CheckboxOptions } from "./src/checkbox/checkbox-runtime.js";
+export { createRadio, initRadio, startRadioRuntime, stopRadioRuntime } from "./src/radio/radio-runtime.js";
+export type { RadioController, RadioOptions } from "./src/radio/radio-runtime.js";
