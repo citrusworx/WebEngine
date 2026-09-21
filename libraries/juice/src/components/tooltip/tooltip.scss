@@ -21,8 +21,8 @@
 // Tooltip is a thin cousin of popover: hover/focus only, no interactive
 // content, no close button, no focus trap, no status variants, no arrow
 // in this cut. It is not a popover, not a modal, not a drawer, not a
-// toast, and not the surface `overlay="frost|tint"` utility. Slice B
-// owns show on hover/focus.
+// toast, and not the surface `overlay="frost|tint"` utility. The
+// runtime owns show on hover/focus.
 //
 // Closed vs open uses the native `hidden` attribute on [tooltip-root]
 // (display: none). Markup without [hidden] stays visible so static demos
@@ -30,7 +30,7 @@
 // Optional surfaceTone on [tooltip-panel] is allowed; do not force it.
 //
 // Placement (default top). CSS stubs transform-origin + a small offset
-// for static demos. Runtime owns show/hide later:
+// for static demos. The runtime positions the root:
 //   [tooltip-root] / [tooltip-root="top"]
 //   [tooltip-root="bottom"]
 //   [tooltip-root="left"]

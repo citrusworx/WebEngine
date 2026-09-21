@@ -62,7 +62,7 @@ import "@citrusworx/juiceui/styles/themes/citrusmint";
 </body>
 ```
 
-`stack` and `gap` are Juice. `theme="citrusmint"` is identity. Neither is a Vue/React component. Importing `@citrusworx/juiceui` (the JS entry) also auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, and wizard runtimes for valid markup. You do not need that for this lesson.
+`stack` and `gap` are Juice. `theme="citrusmint"` is identity. Neither is a Vue/React component. Importing `@citrusworx/juiceui` (the JS entry) also auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, and tooltip runtimes for valid markup. You do not need that for this lesson.
 
 Juice is **stable-ish** as an attribute model and **emerging** as a theme and component system. See the [maturity matrix](../juice-maturity-matrix.md). Do not wait for a finished “Juice Design System 1.0” to start thinking in layers.
 

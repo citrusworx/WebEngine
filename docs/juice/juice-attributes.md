@@ -327,6 +327,17 @@ Popover is a non-modal anchored panel. It is not a modal dialog, not a drawer, n
 
 See [Popover Runtime](./juice-popover-runtime.md). Theme paint uses `--juice-popover-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`).
 
+### Tooltip
+
+- `tooltip-root` — positioning wrapper / widget root. Hide with the native `hidden` attribute. Values `"top"` / `"bottom"` / `"left"` / `"right"` (bare or unspecified is top). The runtime positions the root and flips once to the opposite side if the preferred side overflows
+- `tooltip-panel` — tip surface (`role="tooltip"`). Never a bare `tooltip` attribute, and not the native `title` attribute
+
+Triggers pair through `aria-describedby` pointing at the root `id` (preferred). `aria-controls` is also accepted. There is no extra Juice trigger attribute.
+
+Tooltip is a hover/focus tip. It is not a popover, not a modal dialog, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. There is no close button, no focus trap, and focus never moves into the tip.
+
+See [Tooltip Runtime](./juice-tooltip-runtime.md). Theme paint uses `--juice-tooltip-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
