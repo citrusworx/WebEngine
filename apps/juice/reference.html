@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reference — Juice</title>
+    <link rel="stylesheet" href="/src/juice.css" />
+    <meta name="description" content="Pointer page to Juice docs. This showcase does not rewrite the docs tree." />
+  </head>
+  <body theme="kiwipress">
+    <div app-shell stack>
+      <nav sticky>
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+          <nav type="mobile"></nav>
+          <div nav-links>
+            <a href="/">Landing</a>
+            <a href="/getting-started.html">Getting started</a>
+            <a href="/demos.html">Demos</a>
+            <a href="/themes.html">Themes</a>
+            <a href="/reference.html" nav-link="active">Reference</a>
+          </div>
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/">Back to landing</button>
+          </div>
+        </div>
+        <nav type="sidebar" hidden>
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+          </div>
+        </nav>
+      </nav>
+
+      <main>
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>docs/juice</span>
+            </span>
+            <h1 hero-title>Reference stays in the docs tree</h1>
+            <p hero-subtitle>
+              This site does not rewrite <code>docs/juice</code>. Use the
+              monorepo pages for attributes, theme contract, runtimes, and the
+              maturity matrix.
+            </p>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div grid="2x2" gap="comfortable">
+              <article card="feature" width="100%">
+                <h3>Getting started</h3>
+                <p><code>docs/juice/juice-getting-started.md</code></p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <h3>Maturity matrix</h3>
+                <p><code>docs/juice/juice-maturity-matrix.md</code></p>
+              </article>
+              <article card="feature" width="100%">
+                <h3>Attributes</h3>
+                <p><code>docs/juice/juice-attributes.md</code></p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <h3>Theme contract</h3>
+                <p><code>docs/juice/juice-theme-contract.md</code></p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div center>
+            <nav type="footer">
+              <ul row gap="2" centered>
+                <li><a href="/">Landing</a></li>
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </nav>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demos — Juice</title>
+    <link rel="stylesheet" href="/src/juice.css" />
+    <meta name="description" content="Live Juice runtime demos. Stub page — coming in a later slice." />
+  </head>
+  <body theme="kiwipress">
+    <div app-shell stack>
+      <nav sticky>
+        <div container>
+          <a href="/" nav-brand logo>
+            <span logo="text">Juice</span>
+          </a>
+          <nav type="mobile"></nav>
+          <div nav-links>
+            <a href="/">Landing</a>
+            <a href="/getting-started.html">Getting started</a>
+            <a href="/demos.html" nav-link="active">Demos</a>
+            <a href="/themes.html">Themes</a>
+            <a href="/reference.html">Reference</a>
+          </div>
+          <div nav-actions>
+            <button type="button" scale="sm" data-href="/">Back to landing</button>
+          </div>
+        </div>
+        <nav type="sidebar" hidden>
+          <div stack gap="1" paddingX="1rem" paddingY="1rem">
+            <a href="/" nav-brand logo>
+              <span logo="text">Juice</span>
+            </a>
+            <div stack gap="0.75rem">
+              <a href="/">Landing</a>
+              <a href="/getting-started.html">Getting started</a>
+              <a href="/demos.html">Demos</a>
+              <a href="/themes.html">Themes</a>
+              <a href="/reference.html">Reference</a>
+            </div>
+          </div>
+        </nav>
+      </nav>
+
+      <main>
+        <section hero>
+          <div container>
+            <span hero-eyebrow>
+              <span badge>Next slice</span>
+            </span>
+            <h1 hero-title>Runtime demos</h1>
+            <p hero-subtitle>
+              Live accordion, tabs, modal, drawer, toast, and popover examples
+              across shipped themes. Not in this first slice — and combobox
+              waits until that runtime is further along.
+            </p>
+            <div hero-actions>
+              <button type="button" scale="lg" data-href="/">Return to landing</button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Planned, not promised here</h2>
+              <p>
+                0.7.0 auto-enhances navigation, accordion, tabs, modal, drawer,
+                toast, and popover. Wizard and tooltip are on master ahead of
+                the public cut.
+              </p>
+            </div>
+            <aside panel padding="2rem" stack gap="1">
+              <p>
+                This page stays a placeholder so the chrome and routes exist.
+                The JS entry is already imported, so demos can land as markup.
+              </p>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer paddingY="roomy">
+        <div container>
+          <div center>
+            <nav type="footer">
+              <ul row gap="2" centered>
+                <li><a href="/">Landing</a></li>
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </nav>
+            <p>CitrusWorx · WebEngine · Honest Beta</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
