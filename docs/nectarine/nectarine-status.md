@@ -1,392 +1,182 @@
 # Nectarine Project Status
 
-Current state, roadmap, and future direction of Nectarine.
+What an outside reader can rely on. Capability claims in this file were checked against `libraries/nectarine/src`, its tests, and the published npm tarball. If another doc disagrees, this page wins.
 
-## Current Version: 0.0.1
+## Current published version: 0.4.0
 
-Nectarine is in **early alpha**. Core concepts are proven, but many features are still in development.
+| | |
+|---|---|
+| npm `@citrusworx/nectarine` | **0.4.0** (published 2026-09-15; also 0.0.2, 0.1.0, 0.2.0, 0.3.0) |
+| Workspace `libraries/nectarine/package.json` | **0.4.0** |
+| Maturity | **Hostable alpha** |
 
----
+Hostable alpha means a WebEngine or Blackwater host can load YAML, compile named DML/DDL, migrate, and query Postgres without embedding SQL. It does not mean a finished ORM, joins, or a stable 1.0 API.
 
-## What's Working ✓
+The workspace manifest was restored to **0.4.0** because that version was published without committing the bump. `libraries/nectarine/CHANGELOG.md` in git still ends at **0.3.0** for the same reason. Do not publish 0.4.0 again.
 
-### Core Schema System
-- ✓ YAML schema definitions
-- ✓ Field type support (int, string, varchar, text, date, timestamp, enum, etc.)
-- ✓ Constraints (PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, DEFAULT, AUTO_INCREMENT)
-- ✓ Automatic index creation for PRIMARY/UNIQUE/FOREIGN keys
+**Git may be ahead of the npm 0.4.0 tarball.** INSERT `onConflict` (Postgres `ON CONFLICT`; MySQL rejects it) is in this checkout and is not in the 0.4.0 pack. Pending Changesets are left in place so the next intentional `yarn version-packages` — not this docs pass — becomes **0.5.0**:
 
-### Database Adapters
-- ✓ PostgreSQL adapter
-- ✓ Basic MySQL support
-- ✓ MongoDB support (collections and aggregation)
-- ✓ Connection pooling (all adapters)
+- minor: `nectarine-on-conflict.md` (the unreleased surface)
+- minor: `nectarine-compiler-ops.md` (COUNT / EXISTS / JSONB `@>` / `?` / `->>`, already inside the 0.4.0 tarball, never consumed)
+- patches: `nectarine-on-conflict-dist.md`, `nectarine-mysql-json-escape.md`, `nectarine-ops-review-fixes.md`, `nectarine-align-npm-0-4-0.md`
 
-### Query System
-- ✓ SELECT queries (filtering, sorting, limiting)
-- ✓ INSERT queries (create operations)
-- ✓ UPDATE queries (modify operations)
-- ✓ DELETE queries (remove operations)
-- ✓ Parameter binding ($1, $2 style)
-- ✓ WHERE clauses and conditions
+The 0.5.0 changelog will repeat the COUNT/EXISTS/JSONB note because that changeset was not consumed at publish. That is bookkeeping, not a second feature. Do not run full-monorepo `yarn version-packages` to “clean this up”; master has unrelated pending changesets.
 
-### API contracts
-- ✓ YAML API definitions (`*API.yml`) per resource
-- ✓ WebEngine / Blackwater hosts with Seltzer (`transport.server: seltzer`)
-- ✓ HTTP method mapping in API YAML (GET, POST, PUT, PATCH, DELETE)
-- ✓ Path parameter shapes (`:id`, `:name`, etc.)
-- ✓ `listApiOperations` / `loadApiOperations` flatten `*API.yml` for Seltzer hosts
-- ✓ Product-read and waitlist GET + POST (`joinWaitlist`) Seltzer route auto-wiring from `*API.yml` (`generateRoutes` in Seltzer)
-- ✓ Remaining Blackwater resource **reads** auto-wire via engine `createNectarineReadRoutes` (`@citrusworx/webengine`; lesson `byId` stays the hand KiwiPress route)
-- ✓ YAML **writes** (POST/PUT/PATCH/DELETE) auto-wire via engine `createNectarineWriteRoutes` / `createNectarineRoutes`; product JSONB catalog writes (`insertPayload` / `updatePayload` / `deleteProduct`) and waitlist `joinWaitlist` stay host `execute` on the same helper (`createNectarineRoutes` + named YAML)
-- Express is **not** the generated or default server
-
-### Validation
-- ✓ Seltzer default `validate` stage: `.required` keys from `*API.yml` `body:` (`string.required`) on `ctx.body`; missing/empty → 400
-- ✓ `generateRoutes` copies `ApiOperation.body` (plus resource/name) onto `Route.contract`
-- ✓ Hosts/Nectarine swap that builtin with `Seltzer#replace("validate", …)` for richer contracts
-- Planned: Zod schema validation on the Seltzer-hosted path via `replace("validate", …)`
-- Schema field types (required, unique, enums) are the intended source of those richer rules
-- Hosts register health / KiwiPress content by hand; resource reads, YAML writes, and waitlist POST (`joinWaitlist`) use `generateRoutes`
-
-### Schema Distribution
-- ✓ Pre-built schemas: User, Blog, CMS, Store, Banking
-- ✓ Easy schema loading and composition
-- ✓ Schema extension and override support
+`0.x` minors can break import paths. Adapters are not exported from the package root (that split landed in 0.2.0).
 
 ---
 
-## What's In Development 🔄
+## What's working
 
-### Query Compiler
-- Current: Phonics compiler — canonical CRUD YAML plus Blackwater `type: SELECT` (normalized), schema YAML → `CREATE TABLE` / indexes, versioned migration YAML → gated `ALTER`. Adapters execute `(sql, params)` only. JSONB columns, `$N::jsonb` binds, and JSONB operators (`@>`, `?`, `->>`) are supported; `COUNT` / `EXISTS` / INSERT `ON CONFLICT` compile from YAML. JSONB is not being dropped.
-- Planned: Optimization layer, query planning; joins / `GROUP BY` / `LIMIT`
+### Config
 
-### Schema Registry
-- Current: File-based loading
-- Planned: Runtime schema registry, schema versioning
+- `loadNectarineConfig` reads `nectarine.config.yaml` and resource triads (`*Schema.yml`, `*Queries.yml`, `*API.yml`).
+- YAML names environment **keys**. `resolveCredentials()` reads values from the environment and returns null when a vendor’s keys are incomplete. `requireCredentials()` throws and lists the missing keys. Secrets are not written into the YAML.
 
-### Host pipeline
-- Current: WebEngine / Blackwater registers object-based Seltzer `Route` handlers; Seltzer `validate` enforces `.required` body fields from `Route.contract`
-- Planned: Zod-backed `replace("validate", …)` plus authorize; product JSONB writes stay host-owned (document bind + merge)
+### Phonics compiler
 
-### Relationship Loading
-- Current: Manual join definitions
-- Planned: Automatic relationship resolver, nested population
+Adapters do not build SQL. The compiler does.
 
-### Advanced Features
-- Current: Basic enum and array support
-- Planned: Full-text search, geospatial queries, graph relationships
+- Canonical CRUD YAML (`select` / `insert` / `update` / `delete`) and Blackwater `type: SELECT` (normalized onto the same model). `read` and `get` resolve to the same method map.
+- Filtering and `orderBy`. Placeholders are `$1`, `$2`, … Mixed-case identifiers are quoted.
+- `COUNT(*)` (`{ fn: count }` / `count: true`) and `EXISTS` (`exists: true`). These are in npm **0.4.0**.
+- JSONB columns, `$N::jsonb` binds, and JSONB `@>` / `?` / `->>`. These are in npm **0.4.0**. JSONB is not being removed.
+- DDL from schema YAML: `CREATE TABLE`, column `PRIMARY KEY` / `UNIQUE` / `NOT NULL` / `DEFAULT` / `REFERENCES`, and `CREATE INDEX` **only for indexes declared in the schema**. Postgres `ADD COLUMN IF NOT EXISTS` for new fields. There is no automatic `CREATE INDEX` for foreign keys. A schema `relationships:` block is not DDL.
+- Field types the DDL compiler accepts include int/integer, smallint, bigint, string/text/varchar/char, boolean, date/time/timestamp, json/jsonb, serial, sized decimal/numeric, and `enum(...)` (Postgres `CHECK`, MySQL `ENUM`).
 
----
+**Not compiled:** `LIMIT` / offset, joins, `GROUP BY`, JSONB `||` / `jsonb_set`, blog `queries:` maps (`models/blog/**/sql.yml`), arbitrary SQL casts. A `limit` key in YAML is not a paging clause.
 
-## What's Planned 📋
+### INSERT `onConflict` (git only, not npm 0.4.0)
 
-### Immediate (Next 2-4 weeks)
+`onConflict` compiles to Postgres `ON CONFLICT … DO NOTHING` or `DO UPDATE SET col = EXCLUDED.col`. The MySQL adapter throws at `query()` instead of emitting `ON DUPLICATE KEY UPDATE`. This ships in the next publish (**0.5.0**), not in 0.4.0.
 
-- [ ] **MySQL Full Support**
-  - Complete adapter implementation
-  - Type coercion for MySQL-specific types
-  - Example schemas (e-commerce with MySQL)
+### Migrator
 
-- [ ] **Query Optimization**
-  - Index usage analysis
-  - Query plan explanations
-  - Performance recommendations
+`applyMigrations` (npm since **0.3.0**):
 
-- [ ] **Relations System**
-  - Auto-population of related records
-  - Nested query support
-  - Circular reference handling
+1. Ledger table `nectarine_schema_migrations`
+2. `CREATE TABLE IF NOT EXISTS` from current `*Schema.yml`
+3. Pending versioned migration YAML, in order
+4. Additive Postgres `ADD COLUMN IF NOT EXISTS`
+5. `CREATE INDEX` after renames
 
-### Short Term (1-3 months)
+Ops are `renameColumn`, `dropColumn`, and `changeType`. `dropColumn` and `changeType` require `destructive: true` and a matching `confirm` token. There is no down migration.
 
-- [ ] **GraphQL Support**
-  - Auto-generate GraphQL schemas from Nectarine schemas
-  - GraphQL query resolver generation
-  - Mutation support
+### Adapters
 
-- [ ] **Caching Layer**
-  - Built-in query result caching
-  - Cache invalidation strategies
-  - Redis integration
+Optional peers, imported from subpaths. The package root does not load them (`src/index.ts`, `src/package-exports.test.ts`).
 
-- [ ] **Hooks System**
-  - Pre/post hooks on CRUD operations
-  - Custom business logic integration
-  - Audit logging hooks
+| Import | Driver | What it is |
+|---|---|---|
+| `@citrusworx/nectarine/adapters/pg` | peer `pg` | `pg.Pool`, `connect()` / `disconnect()`, `query(sql, params)` |
+| `@citrusworx/nectarine/adapters/ms` | peer `mysql2` | Pool on `connect()`. Rewrites `$N` and JSONB operators at `query()`. Rejects `ON CONFLICT`. |
+| `@citrusworx/nectarine/adapters/mg` | peer `mongodb` | `MongoClient` collection helpers. Not the SQL compiler. |
 
-- [ ] **Real-time Features**
-  - WebSocket support
-  - Live query subscriptions
-  - Change streams
+Postgres and MySQL use driver pools. MongoDB uses one `MongoClient` (the driver pools sockets). Nectarine does not add a fourth pool implementation.
 
-### Medium Term (3-6 months)
+### Hosting (Seltzer via WebEngine / Blackwater)
 
-- [ ] **Permissions & Authorization**
-  - Row-level security
-  - Column-level permissions
-  - Role-based access control (RBAC)
+Nectarine does not listen on HTTP and does not export `generateRoutes`.
 
-- [ ] **Audit Logging**
-  - Automatic change tracking
-  - User action logging
-  - Temporal queries (point-in-time)
+- `listApiOperations` / `loadApiOperations` flatten `*API.yml` for a host.
+- WebEngine `createNectarineRoutes` (and the read/write helpers) map those operations onto Seltzer routes. Blackwater product and waitlist routes use that path; lesson `byId`, health, and KiwiPress content routes stay hand-written.
+- Seltzer’s default `validate` stage checks `.required` body fields. Zod is not wired. A host can `replace("validate", …)` later. That replacement is not shipped here.
 
-- [ ] **Multi-tenant Support**
-  - Tenant isolation
-  - Cross-tenant queries
-  - Tenant-aware migrations
+### Examples
 
-- [ ] **API Documentation**
-  - Auto-generated OpenAPI/Swagger docs
-  - Interactive API explorer
-  - API versioning support
-
-### Long Term (6-12 months)
-
-- [ ] **Advanced Query Features**
-  - Full-text search
-  - Geospatial queries
-  - Complex aggregations
-
-- [ ] **Performance Monitoring**
-  - Query performance metrics
-  - Slowlog integration
-  - Index recommendations
-
-- [ ] **Backup & Restore**
-  - Automatic backup strategies
-  - Point-in-time recovery
-  - Cross-database migration
-
-- [ ] **CLI Tools**
-  - Schema scaffolding
-  - Migration generators
-  - Database seeding
+- Showcase: `libraries/nectarine/examples/showcase.ts` (`yarn workspace @citrusworx/nectarine example`) loads the fixture config and compiles canonical user CRUD. Dry-run does not need a database. `NECTARINE_EXAMPLE_LIVE=1` runs `SELECT 1`, not the named queries.
+- `libraries/nectarine/models/user` is the canonical compiler fixture. `models/blog` is sample YAML; its `queries:` maps are not compiled.
+- There are no CMS, Store, or Banking schema packs, and no schema-extend/override API.
 
 ---
 
-## Known Limitations
+## In development
 
-### Current Constraints
+Nothing in this list is an active milestone. Do not read it as “landing in the next few weeks.”
 
-1. **Single Table Per Model**
-   - Cannot inherit columns from parent models
-   - **Workaround**: Use composition with foreign keys
-
-2. **Limited Transaction Support**
-   - No cross-adapter transactions
-   - **Workaround**: Keep related operations in same adapter
-
-3. **No Built-in Caching**
-   - Every request queries the database
-   - **Workaround**: Implement Redis in your application
-
-4. **No Authentication Out-of-Box**
-   - No JWT/session handling (yet)
-   - **Workaround**: Guard Seltzer handlers (or a future pipeline stage) on the host
-
-5. **No Authorization Rules**
-   - All routes accessible if specified
-   - **Workaround**: Add checks in the Seltzer `Route` handler until host middleware/pipeline stages exist
-
-6. **Limited Aggregation**
-   - Basic aggregations only
-   - **Workaround**: Use raw MongoDB/SQL for complex queries
-
-7. **No down migrations**
-   - The migrator is forward-only (ledger + versioned YAML). No `migrateDown` / Flyway rollback.
-   - **Workaround**: Write a new versioned migration that restores the previous shape (and gate destructive ops)
-
-### Database-Specific Limitations
-
-**PostgreSQL**:
-- Array types partially supported
-- JSONB is first-class: named query YAML can select `payload`, bind `{ value: $N, cast: jsonb }`, and filter with `@>` / `?` / `->>`
-- Window functions need custom query definitions
-
-**MySQL**:
-- Limited transaction features
-- JSON support varies by version
-- Full-text search not yet integrated
-
-**MongoDB**:
-- Cannot query across collections easily
-- Transactions have limitations (single shard)
-- Schema enforcement is optional
+- Query planner, joins, `GROUP BY`, `LIMIT`
+- Richer validation on the Seltzer path (Zod or similar) via `replace("validate", …)` — not started in Nectarine
+- Runtime schema registry beyond file loading (versioned **migrations** already exist; a registry does not)
 
 ---
 
-## Performance Characteristics
+## Planned
 
-### Query Performance
+Still ideas. Not scheduled, not started.
 
-- **Small databases** (< 1M rows): All queries < 10ms
-- **Medium databases** (1M-100M rows): Needs indexes, < 100ms
-- **Large databases** (> 100M rows): Requires query optimization
+- GraphQL generated from schema YAML
+- Result caching / Redis
+- Pre/post CRUD hooks, audit log, row-level permissions, multi-tenant isolation
+- Real-time subscriptions
+- OpenAPI export, full-text search, geospatial queries
+- CLI scaffolding and down migrations
 
-### Connection Overhead
-
-- Pool initialization: ~100-500ms
-- Connection acquisition: < 1ms (cached)
-- Query execution: Depends on complexity
-
-### Memory Usage
-
-- Base server: ~50MB
-- Connection pool (20 connections): ~5-10MB
-- Worker process: ~30-40MB per
+MySQL and MongoDB stay peer adapters. “Full MySQL parity” (including `ON DUPLICATE KEY`) is not a committed milestone.
 
 ---
 
-## Comparison with Similar Tools
+## Known limitations
 
-### vs. Prisma
-
-| Feature | Nectarine | Prisma |
-|---------|-----------|--------|
-| Config Format | YAML | JavaScript |
-| Databases | 3+ | 10+ |
-| Schema Generation | Automatic | Manual |
-| Speed to First Query | Minutes | Hours |
-| Maturity | Alpha | Production |
-| Learning Curve | Shallow | Moderate |
-
-**Choose Nectarine if**: You want rapid backend prototyping with YAML config
-
-**Choose Prisma if**: You need production-grade ORM with extensive features
-
-### vs. Supabase
-
-| Feature | Nectarine | Supabase |
-|---------|-----------|----------|
-| Deployment | Self-hosted | Cloud |
-| Setup Time | Minutes | Minutes |
-| Cost | $0 (self-hosted) | $25-1000/month |
-| GraphQL | Planned | Built-in |
-| Auth | Manual | Built-in |
-| Real-time | Planned | Built-in |
-
-**Choose Nectarine if**: You want control and no vendor lock-in
-
-**Choose Supabase if**: You want managed infrastructure and auth
-
-### vs. Firebase
-
-| Feature | Nectarine | Firebase |
-|---------|-----------|----------|
-| Data Model | Relational | NoSQL |
-| SQL | Yes | No |
-| Transactions | Limited | Good |
-| Authentication | Manual | Built-in |
-| Cost | $0 | Pay-per-use |
-| Vendor Lock-in | No | Yes |
-
-**Choose Nectarine if**: You prefer relational databases and cheap hosting
-
-**Choose Firebase if**: You want managed infrastructure and real-time
+1. **One statement, no joins.** Related rows are a separate named query. Foreign keys are `REFERENCES` clauses, not an automatic loader.
+2. **No `LIMIT`.** Paging is not compiled.
+3. **Forward-only migrations.** Ship a new versioned file to undo a shape. Destructive ops need `destructive` plus `confirm`.
+4. **No cross-adapter transactions.**
+5. **No caching, auth, or authorization inside Nectarine.** Hosts guard Seltzer handlers themselves.
+6. **Blog `queries:` YAML is not the compiler grammar.**
+7. **`ON CONFLICT` is Postgres-only** and, until 0.5.0 is published, is source-tree only.
+8. **MongoDB does not run the SQL compiler.**
 
 ---
 
-## Contributing
+## Version history
 
-Nectarine is actively developed. Areas where help is needed:
+### 0.2.0 (npm, 2026-09-14)
 
-### Documentation
-- Add more schema examples
-- Database-specific guides for MySQL
-- Performance tuning guides
-- Video tutorials
+- `listApiOperations` / `loadApiOperations`
+- Blackwater `type: SELECT` normalized onto the phonics compiler
+- JSONB bind casts; MySQL `$N` → `?` rewrite
+- `CREATE TABLE` / indexes from `*Schema.yml`
+- Adapters removed from the package root; `pg` / `mysql2` / `mongodb` are optional peers
+- MIT license and public package metadata
 
-### Testing
-- Add comprehensive unit tests
-- Performance benchmarks
-- Database compatibility tests
-- Edge case coverage
+### 0.3.0 (npm, 2026-09-15)
 
-### Features
-- MySQL full support
-- GraphQL adapter
-- Caching layer
-- Permission system
+- `applyMigrations`, ledger, versioned `renameColumn` / `dropColumn` / `changeType`
+- Destructive ops require `destructive` and `confirm`
 
-### Database Support
-- TypeORM plugin
-- SQLite support
-- Oracle support
-- Elasticsearch integration
+### 0.4.0 (npm, 2026-09-15) — current published version
+
+The 0.4.0 tarball’s compiler comments include `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>`. They do **not** include `ON CONFLICT`. Git never received the version or changelog commit for this publish.
+
+### Unreleased (this git tree → next publish 0.5.0)
+
+- INSERT `onConflict` and the rebuilt `dist` that carries it
+- Changeset bookkeeping for the 0.4.0 compiler ops, which will be written into the 0.5.0 changelog when those files are finally consumed
+
+### Older npm tags
+
+0.0.2 and 0.1.0 are historical publish tags. They are not the current product.
 
 ---
 
-## Roadmap Summary
+## Roadmap summary
 
 ```
-v0.0.1 (Current)
-├─ Core schema system ✓
-├─ PostgreSQL adapter ✓
-├─ MongoDB adapter ✓
-├─ Basic query compiler ✓
-├─ nectarine.config.yaml ✓
-└─ Seltzer hosting (WebEngine / Blackwater) ✓
-   Route auto-wiring from API YAML → next engine step
-
-v0.1.0
-├─ MySQL full support
-├─ Query optimization
-├─ Relationship loader
-└─ Enhanced documentation
-
-v0.2.0
-├─ Auto-wired Seltzer routes from API YAML
-├─ Zod validation on the hosted path
-├─ GraphQL support (later)
-└─ Caching layer
+0.2.0   listApiOperations, DDL, JSONB binds, MySQL placeholder rewrite, adapter subpaths
+0.3.0   applyMigrations
+0.4.0   COUNT / EXISTS / JSONB operators   ← npm latest; workspace manifest matches
+0.5.0   ON CONFLICT (pending Changesets; not published)
+later   joins, GROUP BY, LIMIT, Zod-backed validate — not scheduled
 ```
 
----
-
-## Getting Help
-
-- **GitHub Issues**: Report bugs or request features
-- **Documentation**: See other guides in this folder
-- **Examples**: Check `nectarine-examples.md` for real-world usage
-- **Database Guides**: 
-  - PostgreSQL: `nectarine-postgresql.md`
-  - MongoDB: `nectarine-mongodb.md`
+1.0 is not the next tag. The release-gate label for kernel work is **0.4+ hostable alpha**. 1.0 waits on migrations plus a non-Blackwater consumer staying dull, and on the gaps above staying documented instead of implied.
 
 ---
 
-## Version History
+## Where to read next
 
-### v0.0.1 (Current)
-- Initial alpha release
-- Basic schema definitions
-- PostgreSQL & MongoDB support
-- Config loader (`nectarine.config.yaml`, `transport.server: seltzer`)
-- Seltzer as the WebEngine / Blackwater HTTP transport (not Express)
-- Zod planned as validation on the hosted path
-
----
-
-## Next Steps
-
-1. **Read the Getting Started Guide**: [nectarine-getting-started.md](./nectarine-getting-started.md)
-2. **Review Real Examples**: [nectarine-examples.md](./nectarine-examples.md)
-3. **Choose Your Database**: PostgreSQL or MongoDB guide
-4. **Build Your First Backend**: Follow the getting started guide
-5. **Join the Community**: Contribute feedback and improvements
-
----
-
-## Feedback & Suggestions
-
-If you're using Nectarine, we'd love to hear:
-- What's working well
-- What's missing
-- What needs improvement
-- Real-world use cases
-- Performance metrics
-- Bug reports
-
-Your feedback helps guide development priorities!
+- [Getting started](./nectarine-getting-started.md)
+- [Production (Blackwater)](./production.md)
+- [Release checklist](./release-checklist.md)
+- [Library release gates](../webengine/library-release-gates.md)
+- Package README: `libraries/nectarine/README.md`

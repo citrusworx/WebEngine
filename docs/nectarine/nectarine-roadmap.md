@@ -1,5 +1,7 @@
 # Nectarine Roadmap
 
+**Superseded as a status label.** This essay describes an earlier tree (empty `buildQuery`, no migrator) and calls the library “Early / Alpha.” That label is wrong for the current compiler. Maturity is **hostable alpha**. npm and the workspace manifest are **0.4.0**. Read [nectarine-status.md](./nectarine-status.md). The sections below are historical and are not the release claim.
+
 ## Current position
 
 Nectarine is no longer just an idea for “YAML that becomes a backend.”

@@ -17,6 +17,8 @@ A library is “ready to release” when an outside developer can:
 
 ## Shared bar (every package)
 
+Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([nectarine-status.md](../nectarine/nectarine-status.md)). These boxes stay open: they apply to every package, and this pass does not audit Juice, Sig, or Seltzer.
+
 - [ ] Honest status label in docs (alpha / beta / 0.x) matches the code
 - [ ] `package.json` `exports`, README entrypoints, and `dist/` agree
 - [ ] Package verify script green (`yarn workspace <pkg> verify` or documented equivalent)
@@ -87,14 +89,14 @@ A library is “ready to release” when an outside developer can:
 
 **Ready when:** (see [production.md](../nectarine/production.md), [release-checklist.md](../nectarine/release-checklist.md), [nectarine-kernel-contract.md](./nectarine-kernel-contract.md))
 
-- [ ] `loadNectarineConfig` is the only bootstrap story: YAML names env **keys**; secrets stay in the environment
-- [ ] Named DML from `*Queries.yml` and DDL from `*Schema.yml` go through the compiler; adapters only `query(sql, params)`
-- [ ] `applyMigrations` ledger + versioned phonics migrations; destructive ops require `destructive` + `confirm`
-- [ ] Postgres path is production-shaped (pool lifecycle; partial vendor env is a boot error); MySQL/Mongo documented as peer adapters
-- [ ] `listApiOperations` is stable for Seltzer / WebEngine; adapters are **not** loaded from the package root entry
-- [ ] `yarn verify:nectarine` (typecheck, build, tests, pack dry-run) is green
-- [ ] Showcase + at least one host reference (Blackwater or slim equivalent) stays green on the named-query path
-- [ ] Status docs do not oversell; leave “early alpha” until CREATE / migrate / query / boot are dull
+- [x] `loadNectarineConfig` is the only Nectarine bootstrap: YAML names env **keys**; secrets stay in the environment (`libraries/nectarine/src/config/loadConfig.ts`, `NectarineConfig.resolveCredentials` / `requireCredentials`, `loadConfig.test.ts`). Incomplete env returns null. Partial env is a boot error in the kernel module and in Blackwater (`engines/webengine/src/kernel/modules/nectarine-module.ts`, `apps/blackwatersound/back/src/context.ts`)
+- [x] Named DML from `*Queries.yml` and DDL from `*Schema.yml` go through the compiler. Postgres and MySQL adapters only `query(sql, params)` (`compiler/sql.ts`, `compiler/ddl.ts`, `compiler/no-hardcoded-sql.test.ts`, `adapters/pg/pgz.ts`, `adapters/ms/msqlz.ts`). MongoDB is collection helpers (`adapters/mg/mgz.ts`), not a SQL compiler
+- [x] `applyMigrations` ledger + versioned phonics migrations; destructive ops require `destructive` + `confirm` (`src/migrate/runner.ts`, `src/compiler/migration.ts`, `runner.test.ts`, `migration.test.ts`). Forward-only — no down migrations
+- [x] Postgres path uses a `pg.Pool` with connect checkout, idle-client errors, and `disconnect` (`adapters/pg/pgz.ts`). Partial vendor env fails boot (kernel + Blackwater, above). MySQL and MongoDB are peer subpath exports (`package.json` `exports`), not loaded from the package root
+- [x] `listApiOperations` is exported for Seltzer / WebEngine (`src/config/api.ts`, engine `createNectarineRoutes`). Adapters are **not** loaded from the package root (`src/index.ts`, `src/package-exports.test.ts`)
+- [ ] `yarn verify:nectarine` (typecheck, build, tests, pack dry-run) is green **on master CI**. The only `Nectarine Package` run on `master` (2026-09-15, run 35019588809, commit `da3d9ce7`) failed at `yarn install --immutable` before verify. Later green runs were on `cursor/blackwater-phase0-backend`, not `master`. A local run is noted in the honesty PR; this box stays open until a master workflow run is green
+- [ ] Showcase + at least one host reference (Blackwater or slim equivalent) stays green on the named-query path. Files exist (`libraries/nectarine/examples/showcase.ts`; Blackwater `apps/blackwatersound/back/src/db/postgres.ts` and `named-ddl.ts`; compiler fixtures `compiler.blackwater.test.ts`). Not ticked until this PR runs the showcase dry-run. Live showcase mode is `SELECT 1`, not the named queries. `yarn verify:nectarine` does not start Blackwater
+- [x] Status docs do not oversell. Label is **hostable alpha** at published **0.4.0** ([nectarine-status.md](../nectarine/nectarine-status.md)), not “early alpha” / 0.0.1. CREATE, `applyMigrations`, named query, and credential boot exist. Joins, `GROUP BY`, `LIMIT`, GraphQL, and Zod-on-the-hosted-path do not. INSERT `onConflict` is in git and not in the npm 0.4.0 tarball (next publish 0.5.0)
 
 **Release label:** **0.4+ hostable alpha** for kernel work; **1.0** after migrations + a non-Blackwater consumer.
 

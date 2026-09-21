@@ -2,7 +2,11 @@
 
 Use this before publishing `@citrusworx/nectarine`.
 
-`0.1.0` is already on npm (May 2026). Pending Changesets on this branch bump the next release to **0.2.0**.
+**npm `0.4.0` is already published** (2026-09-15). Workspace `libraries/nectarine/package.json` is **0.4.0** so it matches. That bump was missing from git after publish. Do not publish 0.4.0 again.
+
+Git is ahead of the 0.4.0 tarball. Pending Changesets stay in place on purpose. The highest bump is minor (INSERT `onConflict`, plus an unconsumed COUNT/EXISTS/JSONB note that already shipped in 0.4.0) with patches alongside. The next intentional `yarn version-packages` from this **0.4.0** baseline is **0.5.0**. Do not run `yarn version-packages` in an unrelated PR. It versions every package that has a pending changeset.
+
+**Never publish a version that git does not record.** Commit the `package.json` and `CHANGELOG.md` bump before `npm publish`. Publishing 0.4.0 without that commit is why this manifest had to be restored by hand.
 
 There is **no** Changesets GitHub Action and **no** `NPM_TOKEN` in this repo. Publish is manual, same as Juice (`yarn version-packages` then `yarn release-packages`). Do not invent CI credentials.
 
@@ -26,7 +30,7 @@ That must pass before publishing. It typechecks, rebuilds `dist/` (`prepack` run
 
 ## Release Review
 
-- confirm `libraries/nectarine/package.json` versioning is driven by Changesets (do not hand-edit `version`)
+- confirm `libraries/nectarine/package.json` versioning is driven by Changesets. Do not hand-edit `version` to invent the next release. The 0.4.0 manifest restore only recorded an already-published version. After that, the next number comes from `yarn version-packages`
 - confirm `LICENSE` is MIT and `license` / `publishConfig.access` are set
 - confirm `files` is `["dist"]` and every `exports` target exists after build
 - confirm `js-yaml` is a runtime `dependency` (not only a devDependency)
@@ -36,7 +40,7 @@ That must pass before publishing. It typechecks, rebuilds `dist/` (`prepack` run
 
 ## Publish Flow
 
-1. Land nectarine Changesets on the release branch (this branch currently has several pending nectarine notes plus this packaging changeset).
+1. Land nectarine Changesets on the release branch.
 2. Merge with CI passing (`Nectarine Package` workflow).
 3. From the repo root, apply versions:
 
@@ -44,15 +48,15 @@ That must pass before publishing. It typechecks, rebuilds `dist/` (`prepack` run
    yarn version-packages
    ```
 
-   That is `changeset version`. It will:
+   That is `changeset version`. From the restored **0.4.0** manifest it will:
 
-   - bump `@citrusworx/nectarine` **0.1.0 → 0.2.0** (highest pending bump is minor)
-   - write `libraries/nectarine/CHANGELOG.md`
-   - also version **every other package with a pending changeset** (today that includes `@citrusworx/seltzer`)
-   - patch internal dependents such as `@citrusworx/kiwipress` (`updateInternalDependencies`)
+   - bump `@citrusworx/nectarine` **0.4.0 → 0.5.0** (highest pending bump is minor)
+   - write `libraries/nectarine/CHANGELOG.md` (the unconsumed 0.4.0 COUNT/EXISTS/JSONB note will appear here)
+   - also version **every other package with a pending changeset**
+   - patch internal dependents (`updateInternalDependencies`)
 
 4. Review the generated Nectarine changelog and `package.json` version. Do not publish from a dirty worktree.
-5. Commit the version files Changesets wrote (`package.json`, `CHANGELOG.md`, deleted `.changeset/*.md`).
+5. Commit the version files Changesets wrote (`package.json`, `CHANGELOG.md`, deleted `.changeset/*.md`) **before** publishing. Never publish without that commit.
 6. Publish:
 
    **Nectarine only** (recommended until Seltzer is intentionally released from this branch):
@@ -76,6 +80,7 @@ That must pass before publishing. It typechecks, rebuilds `dist/` (`prepack` run
 
 ## Notes
 
+- Never publish without committing the version bump. A published number that git still shows as the previous version makes the next `yarn version-packages` reuse that number.
 - Do **not** run `npm publish` / `yarn npm publish` from CI in this repository until a documented workflow exists with a real org token.
 - `prepack` is the source of truth for `dist/`. Committed `dist/` is for workspace consumers; the packed tarball is always rebuilt.
 - Database drivers stay optional. Postgres consumers: `npm install @citrusworx/nectarine pg`. The MongoDB 7 peer wants Node 20.19+; the package `engines` floor is Node 18 for Postgres/MySQL.

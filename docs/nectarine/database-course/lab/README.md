@@ -45,7 +45,7 @@ Run `http-server.mjs` for the optional Seltzer bridge on port 3001. Request `/it
 
 Copy the whole lab directory, including `models/` and `sql/`, but not its `node_modules` or repository-specific lockfile. Replace the two `file:` dependencies in the copied package.json with explicit published versions, such as Nectarine `0.4.0` and Seltzer `0.8.1`, then run npm install there.
 
-That is a separate package baseline from the local source links tested here. Rerun the course tests before assuming identical behavior. The current repository manifest/source mismatch is documented in [the source map](../source-map.md), not hidden by a version bump.
+That is a separate package baseline from the local source links tested here. Rerun the course tests before assuming identical behavior. The workspace manifest now matches npm **0.4.0**. Git may still be ahead of that tarball (unreleased ON CONFLICT). The lab file dependency tests this checkout, not the published pack. See [the source map](../source-map.md).
 
 ## Limits of this verification
 

@@ -1,6 +1,8 @@
 # Nectarine + MySQL
 
-How `Mysql` actually works in `libraries/nectarine/src/adapters/ms/msqlz.ts`. Early adapter: a module-level `mysql2` pool plus `Mysql()` / `closeSql()`. There is no class, no YAML compiler, and no getting-started stack beyond what this page and the [tutorial](./nectarine-tutorial.md)’s Postgres path show.
+**This page describes a removed adapter shape** (import-time `mysql2` pool, `Mysql()` / `closeSql()`, no class). The current adapter is `createMysqlAdapter` in `libraries/nectarine/src/adapters/ms/msqlz.ts`: credentials from `loadNectarineConfig`, a pool opened in `connect()`, `$N` and JSONB operators rewritten in `query()`, and `ON CONFLICT` rejected. It is a peer adapter on a Postgres-first compiler, not a second compiler and not “early alpha.” See [status](./nectarine-status.md). Do not follow the steps below as the current API.
+
+How an older `Mysql` helper worked in `libraries/nectarine/src/adapters/ms/msqlz.ts`. That shape was a module-level `mysql2` pool plus `Mysql()` / `closeSql()`.
 
 Related:
 
@@ -10,7 +12,7 @@ Related:
 
 ## Status
 
-**Early / partial.** The function works. Product claims of “Active MySQL support” overstated it. Use this page, not a feature matrix, as the source of truth.
+**Historical.** The paragraphs under this heading describe the removed helper. Current maturity is a peer adapter (see the banner). Product claims of “Active MySQL support” still overstate parity with Postgres. Use [nectarine-status.md](./nectarine-status.md), not this page, as the source of truth.
 
 There are **no** `MS_*` helper functions. `MS_*` is the **environment prefix**. Query fragments are `mapInsert`, `mapGetter`, and `getValues`.
 

@@ -4,11 +4,11 @@ Nectarine is a config-driven backend library. Define models, schemas, queries, a
 
 Nectarine is a WebEngine native library but is fully independent. It can be used in any project. It does not spin up a server.
 
-**Version snapshot (September 16, 2026):** local manifest **0.3.0**; npm **0.4.0**. These are different baselines. See the course's [source and verification map](./database-course/source-map.md).
+**Version (September 21, 2026):** npm **0.4.0** and workspace `libraries/nectarine/package.json` **0.4.0**. Maturity is **hostable alpha**. Git may be ahead of that tarball (unreleased INSERT `onConflict`; next publish **0.5.0**). Capability claims live in [Project Status](./nectarine-status.md). The course [source map](./database-course/source-map.md) separates this checkout from the packed tarball.
 
 **Learn databases and SQL:** [Ask the data: databases and SQL through Nectarine](./database-course/README.md) is a complete beginner course with a runnable PostgreSQL lab, prediction exercises, answers, and clearly labeled future compiler designs. It assumes basic JavaScript.
 
-Older examples and release-number plans below include historical material. Use the course source map to distinguish verified compiler capabilities from proposed features.
+Older examples below include historical material. They are not a second status page.
 
 Production deploy bar for Blackwater + Seltzer: [Production](./production.md).
 
@@ -105,9 +105,9 @@ POST /api/users
 
 | Database | Status | Guide |
 |----------|--------|-------|
-| PostgreSQL | ✓ Active | [PostgreSQL Guide](./nectarine-postgresql.md) |
-| MySQL | ✓ Active | Coming soon |
-| MongoDB | ✓ Active | [MongoDB Guide](./nectarine-mongodb.md) |
+| PostgreSQL | Primary path | [PostgreSQL Guide](./nectarine-postgresql.md) |
+| MySQL | Peer adapter (Postgres SQL, rewritten at `query()`) | [MySQL notes](./nectarine-mysql.md) — the opening of that page describes a removed adapter |
+| MongoDB | Peer adapter (collection helpers, not the SQL compiler) | [MongoDB Guide](./nectarine-mongodb.md) |
 
 ---
 
@@ -146,10 +146,9 @@ yarn add @citrusworx/nectarine @citrusworx/seltzer
 ✓ **Database Support**: PostgreSQL, MySQL, MongoDB
 ✓ **Seltzer Hosted**: WebEngine / Blackwater serves HTTP with Seltzer
 ✓ **Validation Intent**: Zod is the planned validation layer on the hosted path
-✓ **Pre-built Schemas**: User, Blog, CMS, Store, Banking models included
-✓ **Query Compiler**: SELECT, INSERT, UPDATE, DELETE from query YAML; CREATE TABLE from schema YAML; versioned ALTER from migration YAML
-✓ **Relationships**: Foreign keys and relationships supported
-✓ **Flexible**: Extend and override as needed
+✓ **Example YAML**: `libraries/nectarine/models/user` is the compiler fixture. Blog `queries:` maps are not compiled. No CMS, Store, or Banking packs
+✓ **Query Compiler**: SELECT, INSERT, UPDATE, DELETE from query YAML; CREATE TABLE from schema YAML; versioned ALTER from migration YAML. No `LIMIT`, joins, or `GROUP BY`
+✓ **Foreign keys**: `REFERENCES` on a field is DDL. Schema `relationships:` is not, and nothing auto-loads related rows
 
 ---
 
@@ -183,7 +182,7 @@ Comment:
     author_id: int FOREIGN KEY REFERENCES users(id)
 ```
 
-Those YAML files are the CRUD contracts. The compiler emits named queries; Seltzer hosts matching routes (auto-wiring from API YAML is next):
+Those YAML files are the CRUD contracts. The compiler emits named queries. WebEngine / Blackwater host them with Seltzer (`createNectarineRoutes`):
 - 3 CREATE operations (users, posts, comments)
 - 3 READ operations (get all, get by ID)
 - 3 UPDATE operations
@@ -198,8 +197,8 @@ Those YAML files are the CRUD contracts. The compiler emits named queries; Seltz
 
 ✓ **Rapid Prototyping**: Build backends in minutes, not days
 ✓ **Startups**: Bootstrap quickly with minimal code
-✓ **GraphQL to REST**: Take GraphQL schema, generate REST API
-✓ **CMS Backends**: Content management with any database
+✓ **Named YAML APIs**: CRUD contracts in YAML, hosted by Seltzer. There is no GraphQL generator
+✓ **CMS-shaped data**: possible as schema YAML. There is no shipped CMS pack
 ✓ **APIs**: Build CRUD APIs without repeating patterns
 ✓ **Microservices**: Lightweight backends for microservice architecture
 
@@ -215,8 +214,8 @@ Those YAML files are the CRUD contracts. The compiler emits named queries; Seltz
 - PostgreSQL adapter
 - MongoDB adapter
 - MySQL adapter
-- Pre-built model schemas
-- Connection pooling
+- Example user/blog YAML (not distributable schema packs)
+- Postgres `pg.Pool` and a MySQL driver pool; MongoDB uses `MongoClient`
 
 ---
 
