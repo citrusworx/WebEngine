@@ -7,6 +7,7 @@ export * from "./core/WPDelete.js";
 export * from "./core/WPRead.js";
 export * from "./core/WPSync.js";
 export * from "./core/normalize.js";
+export * from "./core/query.js";
 export * from "./cms/types.js";
 export * from "./cms/type-registry.js";
 export * from "./cms/store.js";

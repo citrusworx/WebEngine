@@ -21,6 +21,33 @@ export type ContentSource = {
     id: string;
     url?: string;
 };
+/**
+ * Extra WordPress fields kept off the top-level `ContentRecord` shape.
+ * Dual text (`*Raw` / `*Rendered`) needs `context=edit` plus authentication.
+ * `wpMeta` is the WordPress REST `meta` object; `acf` is passed through when present.
+ */
+export type ContentRecordMeta = {
+    titleRaw?: string;
+    titleRendered?: string;
+    contentRaw?: string;
+    contentRendered?: string;
+    excerptRaw?: string;
+    excerptRendered?: string;
+    wpMeta?: Record<string, unknown>;
+    acf?: unknown;
+    email?: unknown;
+    name?: unknown;
+    count?: unknown;
+    parent?: unknown;
+    post?: unknown;
+    featured_media?: unknown;
+    source_url?: unknown;
+    alt_text?: unknown;
+    mime_type?: unknown;
+    media_type?: unknown;
+    raw?: Record<string, unknown>;
+    [key: string]: unknown;
+};
 export type ContentRecord = {
     id: string;
     collection: CollectionSlug;
@@ -33,7 +60,7 @@ export type ContentRecord = {
     createdAt?: string;
     updatedAt?: string;
     source: ContentSource;
-    meta: Record<string, unknown>;
+    meta: ContentRecordMeta;
 };
 export type NectarinePost = {
     id: string;

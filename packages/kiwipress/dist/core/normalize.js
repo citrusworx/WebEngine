@@ -4,18 +4,36 @@ function asRecord(value) {
     }
     return {};
 }
+/**
+ * Split a WordPress rendered-object (`{ raw, rendered }`) or a plain string.
+ * `text` is the best available value (raw, then rendered) for titles and compat.
+ */
+export function extractTextParts(value) {
+    if (typeof value === "string") {
+        return { text: value };
+    }
+    const candidate = asRecord(value);
+    const raw = typeof candidate.raw === "string" ? candidate.raw : undefined;
+    const rendered = typeof candidate.rendered === "string" ? candidate.rendered : undefined;
+    const text = raw !== undefined ? raw : rendered !== undefined ? rendered : "";
+    return {
+        ...(raw !== undefined ? { raw } : {}),
+        ...(rendered !== undefined ? { rendered } : {}),
+        text
+    };
+}
+export function extractRaw(value) {
+    return extractTextParts(value).raw ?? "";
+}
+export function extractRendered(value) {
+    return extractTextParts(value).rendered ?? "";
+}
+/** Best available text: `raw`, then `rendered`, then a plain string. */
 export function extractTextValue(value) {
     if (typeof value === "string") {
         return value;
     }
-    const candidate = asRecord(value);
-    if (typeof candidate.raw === "string") {
-        return candidate.raw;
-    }
-    if (typeof candidate.rendered === "string") {
-        return candidate.rendered;
-    }
-    return "";
+    return extractTextParts(value).text;
 }
 export function asCollection(value) {
     if (Array.isArray(value)) {
@@ -61,16 +79,22 @@ function embeddedFeaturedMediaUrl(item) {
     const first = asRecord(media[0]);
     return typeof first.source_url === "string" && first.source_url ? first.source_url : undefined;
 }
-function featuredImageFrom(item) {
+/**
+ * Featured image URL from a WordPress item.
+ * Prefers `_embedded["wp:featuredmedia"][0].source_url`, then the previous
+ * normalize fallbacks (`featured_image`, `source_url`, numeric `featured_media`).
+ */
+export function featuredImageFrom(value) {
+    const item = asRecord(value);
+    const embeddedUrl = embeddedFeaturedMediaUrl(item);
+    if (embeddedUrl) {
+        return embeddedUrl;
+    }
     if (typeof item.featured_image === "string" && item.featured_image) {
         return item.featured_image;
     }
     if (typeof item.source_url === "string" && item.source_url) {
         return item.source_url;
-    }
-    const embeddedUrl = embeddedFeaturedMediaUrl(item);
-    if (embeddedUrl) {
-        return embeddedUrl;
     }
     if (typeof item.featured_media === "number" && Number.isFinite(item.featured_media) && item.featured_media > 0) {
         return String(item.featured_media);
@@ -79,6 +103,21 @@ function featuredImageFrom(item) {
         return item.featured_media;
     }
     return undefined;
+}
+/**
+ * Resolve a featured-media id through `Media.getById` and return `source_url`.
+ * Returns undefined for empty/zero ids. Does not change `getAll()` behavior.
+ */
+export async function resolveFeaturedImageUrl(mediaClient, id) {
+    if (id === 0 || id === "0" || id === "") {
+        return undefined;
+    }
+    const response = await mediaClient.getById(id);
+    if (response == null) {
+        return undefined;
+    }
+    const first = asCollection(response)[0];
+    return featuredImageFrom(first ?? response);
 }
 function untitledLabel(collection) {
     if (collection === "media") {
@@ -91,6 +130,47 @@ function itemStatus(collection, value) {
         return "published";
     }
     return mapStatus(value);
+}
+function assignDualText(meta, value, rawKey, renderedKey) {
+    const parts = extractTextParts(value);
+    if (parts.raw !== undefined) {
+        meta[rawKey] = parts.raw;
+    }
+    if (parts.rendered !== undefined) {
+        meta[renderedKey] = parts.rendered;
+    }
+}
+function itemMeta(item) {
+    const meta = {
+        email: item.email,
+        name: item.name,
+        count: item.count,
+        parent: item.parent,
+        post: item.post,
+        featured_media: item.featured_media,
+        source_url: item.source_url,
+        alt_text: item.alt_text,
+        mime_type: item.mime_type,
+        media_type: item.media_type,
+        raw: item
+    };
+    if ("title" in item) {
+        assignDualText(meta, item.title, "titleRaw", "titleRendered");
+    }
+    if ("content" in item) {
+        assignDualText(meta, item.content, "contentRaw", "contentRendered");
+    }
+    if ("excerpt" in item) {
+        assignDualText(meta, item.excerpt, "excerptRaw", "excerptRendered");
+    }
+    const wpMeta = item.meta;
+    if (wpMeta && typeof wpMeta === "object" && !Array.isArray(wpMeta)) {
+        meta.wpMeta = wpMeta;
+    }
+    if ("acf" in item) {
+        meta.acf = item.acf;
+    }
+    return meta;
 }
 export function normalizeWordPressItem(collection, value, sourceUrl) {
     const item = asRecord(value);
@@ -121,19 +201,7 @@ export function normalizeWordPressItem(collection, value, sourceUrl) {
             id: id || title,
             url: sourceUrl
         },
-        meta: {
-            email: item.email,
-            name: item.name,
-            count: item.count,
-            parent: item.parent,
-            post: item.post,
-            featured_media: item.featured_media,
-            source_url: item.source_url,
-            alt_text: item.alt_text,
-            mime_type: item.mime_type,
-            media_type: item.media_type,
-            raw: item
-        }
+        meta: itemMeta(item)
     };
 }
 export function normalizeWordPressCollection(collection, value, sourceUrl) {

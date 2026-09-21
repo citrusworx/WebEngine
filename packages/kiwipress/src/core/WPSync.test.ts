@@ -33,8 +33,11 @@ describe("WPSync", () => {
                 id: 7,
                 slug: "entry",
                 status: "publish",
-                title: { rendered: "Entry" },
-                content: { rendered: "<p>Hi</p>" }
+                title: { raw: "Entry", rendered: "Entry" },
+                content: { raw: "<!-- wp:paragraph --><p>Hi</p>", rendered: "<p>Hi</p>" },
+                excerpt: { raw: "Hi", rendered: "<p>Hi</p>" },
+                meta: { custom_field: "1" },
+                acf: { hero: "yes" }
             }
         ]));
         vi.stubGlobal("fetch", fetchMock);
@@ -50,7 +53,16 @@ describe("WPSync", () => {
             title: "Entry",
             slug: "entry",
             status: "published",
-            source: { cms: "nectarine" }
+            source: { cms: "nectarine" },
+            meta: {
+                titleRaw: "Entry",
+                titleRendered: "Entry",
+                contentRaw: "<!-- wp:paragraph --><p>Hi</p>",
+                contentRendered: "<p>Hi</p>",
+                excerptRaw: "Hi",
+                wpMeta: { custom_field: "1" },
+                acf: { hero: "yes" }
+            }
         });
         expect(String(fetchMock.mock.calls[0]?.[0])).toContain("status=any");
         expect(String(fetchMock.mock.calls[0]?.[0])).toContain("context=edit");
@@ -240,6 +252,7 @@ describe("WPSync", () => {
             slug: "mug"
         });
         expect(String(fetchMock.mock.calls.find((call) => String(call[0]).includes("/books"))?.[0])).toContain("status=any");
+        expect(String(fetchMock.mock.calls.find((call) => String(call[0]).includes("/books"))?.[0])).toContain("context=edit");
         expect(fetchMock.mock.calls.some((call) => String(call[0]).includes("/wp-json/wp/v2/product"))).toBe(true);
     });
 

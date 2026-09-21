@@ -15,6 +15,7 @@ import type {
 } from "../cms/types.js";
 import { isCustomTypeSlug } from "../cms/type-registry.js";
 import { normalizeWordPressCollection } from "./normalize.js";
+import { withEditContext } from "./query.js";
 import type { WPCoreConfig } from "./WPCore.js";
 import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
@@ -250,7 +251,7 @@ export class WPSync {
         const collection = client.restBase.toLowerCase();
 
         return this.readAndNormalize(collection, () =>
-            client.listAll(client.restBase, { status: "any", context: "edit" })
+            client.listAll(client.restBase, withEditContext({ status: "any" }))
         );
     }
 
@@ -282,11 +283,11 @@ function transferQuery(collection: CmsCollection): Record<string, string> {
         case "posts":
         case "pages":
         case "media":
-            return { status: "any", context: "edit" };
+            return withEditContext({ status: "any" });
         case "comments":
-            return { status: "any", context: "edit" };
+            return withEditContext({ status: "any" });
         case "users":
-            return { context: "edit" };
+            return withEditContext();
         case "categories":
         case "tags":
             return { hide_empty: "false" };
