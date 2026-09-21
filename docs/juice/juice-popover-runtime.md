@@ -57,7 +57,7 @@ It requires a `[popover-root]` root. Closed vs open is the native `hidden` attri
 
 Prefer shipping `role="dialog"` and a labelled heading in markup. The runtime fills those if they are missing, plus opener `aria-expanded` / `aria-haspopup="dialog"` and an empty close name (`aria-label="Close"`). It does **not** set `aria-modal`. Authors may set it; the runtime does not, because the background stays interactive.
 
-Theme paint uses `--juice-popover-*` roles. Core CSS paints `[popover-root]` at **z-index 1050** (above modal/drawer `1000`, below toast `1100`). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[popover-root]` is an anchored positioning wrapper, not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Modal is a centered dialog; drawer is an edge-docked panel; toast is a corner snackbar; popover is a floating panel next to its opener.
+Theme paint uses `--juice-popover-*` roles. Core CSS paints `[popover-root]` at **z-index 1050** (above modal/drawer `1000`, below toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[popover-root]` is an anchored positioning wrapper, not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Modal is a centered dialog; drawer is an edge-docked panel; toast is a corner snackbar; popover is a floating panel next to its opener.
 
 ## Automatic Boot
 
@@ -179,7 +179,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape closes the open popover and returns focus to the opener, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape). Combobox, toast, and tooltip yield to an open popover.
+- Escape closes the open popover and returns focus to the opener, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape). Combobox, toast, and tooltip yield to an open popover. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Tab / Shift+Tab wrap inside the open panel (focus trap). The background is not inert
 - Enter and Space activate non-button openers and `[popover-close]` controls (native buttons already synthesize a click)
 
@@ -195,7 +195,7 @@ Arrow-key roving is intentionally out of scope. This is not `role="menu"`.
 - The panel is a non-modal dialog: `role="dialog"` without `aria-modal`. The background stays interactive.
 - Placement has no Floating UI. One opposite-side flip only; no shift or size middleware.
 - Centered modal / dialog, edge-docked drawer, and toast-stack behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Toast Runtime](./juice-toast-runtime.md).
-- Escape dismisses the open popover only when no open modal/drawer overlay exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape dismisses the open popover only when no open modal/drawer overlay exists. Combobox, toast, and tooltip yield to an open popover. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 
@@ -208,7 +208,7 @@ The popover runtime copies the navigation, accordion, tabs, modal, drawer, and t
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

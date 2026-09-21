@@ -162,7 +162,7 @@ The strip uses WAI-ARIA APG tabs with **horizontal automatic activation**: movin
 - Home / End jump to the first / last trigger
 - Enter and Space activate non-button `[tab]` triggers (native buttons already synthesize a click)
 
-Escape, ArrowUp, and ArrowDown are intentionally out of scope. There is no vertical orientation.
+Escape, ArrowUp, and ArrowDown are intentionally out of scope. There is no vertical orientation. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Limitations
 
@@ -170,7 +170,7 @@ Escape, ArrowUp, and ArrowDown are intentionally out of scope. There is no verti
 - Orphan `[tab]` / `[tab-panel]` nodes outside `[tabs]` are ignored.
 - Selection is exclusive per root. Multi-select tabs are not part of this runtime.
 - Panels use native `hidden`, never layout `content=`.
-- Keyboard is horizontal only.
+- Keyboard is horizontal only. Escape, ArrowUp, and ArrowDown are out of scope. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 
@@ -183,7 +183,7 @@ The tabs runtime copies the navigation and accordion lifecycle by convention:
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

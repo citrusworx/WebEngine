@@ -154,13 +154,22 @@ That keeps the runtime from reacting too aggressively while still updating quick
 - Enter and Space activate non-button `[accordion-item]` triggers (native buttons already synthesize a click)
 - Escape collapses the focused open item, or the last opened item, and returns focus to that trigger
 
-Arrow-key roving tabindex is intentionally out of scope.
+Arrow-key roving tabindex is intentionally out of scope. Escape is contextual, not global — see [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Coexistence With `Accordion()`
 
 The `Accordion()` factory emits markup and initial expanded state.
 
 The runtime owns clicks. The factory does not attach a private `onclick`, so a click cannot expand and immediately collapse.
+
+## Limitations
+
+- Exclusive accordion is not in scope. Multi-item roots stay multi-open.
+- Orphan `[accordion-item]` nodes outside `[accordion]` are ignored.
+- Panels use native `hidden`, never layout `content=`.
+- Arrow-key roving tabindex is out of scope.
+- Escape is contextual: it collapses the focused or last open item only when that accordion already owns the key. There is no global accordion Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- `Accordion()` is the only shipped Sig factory among the eleven auto-enhance runtimes. Markup plus auto-enhance is still the contract.
 
 ## Why This Matches Navigation
 
@@ -173,7 +182,7 @@ The accordion runtime copies the navigation lifecycle by convention:
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

@@ -56,7 +56,7 @@ It requires a `[banner]` root. Closed vs open is the native `hidden` attribute o
 
 **Persist:** optional `banner-persist="session|local"` plus a `name` or `id` key. Without persist, or without a key, dismiss is in-memory only.
 
-**Close:** `[banner-close]` inside the banner. Enter / Space also dismiss when the close control is not a native button. Escape is left to modal / drawer / popover / toast.
+**Close:** `[banner-close]` inside the banner. Enter / Space also dismiss when the close control is not a native button. Escape is never stolen — see [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 Prefer shipping `role="status"` (info / success / neutral) or `role="alert"` (error / warning) in markup. The runtime fills that if it is missing, plus an empty close name (`aria-label="Dismiss"`).
 
@@ -144,7 +144,7 @@ The runtime performs seven main jobs:
 4. Show / dismiss via native `hidden` on the banner (the node stays); `show()` never hides siblings and does not move focus into the banner
 5. Remember dismiss when `banner-persist="session|local"` plus a `name` or `id` is set (`juice-banner:<key>`). `show()` clears that key
 6. Handle click (`[banner-close]`) and keyboard (Enter / Space on non-button closes)
-7. Leave Escape to modal / drawer / popover / toast. Banner does not steal it
+7. Leave Escape to the overlay / popover / combobox / toast / tooltip yield order. Banner does not steal it. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 Banner is not exclusive. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, or combobox, and those runtimes do not close a banner.
 
@@ -177,7 +177,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 ## Keyboard
 
 - Enter and Space activate non-button `[banner-close]` controls (native buttons already synthesize a click)
-- Escape is not handled. Modal / drawer / popover / toast keep owning it
+- Escape is not handled. Banner never steals it. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the banner on show
 
 Arrow-key roving is intentionally out of scope. There is no auto-dismiss timer.
@@ -186,10 +186,11 @@ Arrow-key roving is intentionally out of scope. There is no auto-dismiss timer.
 
 - No `Banner()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
 - Banner is not a toast stack: no `[banner-region]`, no corner portal, no stacking runtime, and no auto-dismiss timer.
-- Banner is not a dialog: no focus trap, no `aria-modal`, no overlay, and no Escape steal.
+- Banner is not a dialog: no focus trap, no `aria-modal`, no overlay, and no Escape steal. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Roots use native `hidden`, never layout `content=`. The node stays in the DOM.
 - Persist needs `banner-persist="session|local"` plus a `name` or `id`. Without both, dismiss is in-memory only.
 - `show()` never hides siblings. Multiple banners can stay visible.
+- There is no z-index elevation. Banner is inline chrome. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 - Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, and combobox behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), and [Combobox Runtime](./juice-combobox-runtime.md).
 
 ## Why This Matches Navigation
@@ -203,7 +204,7 @@ The banner runtime copies the navigation, accordion, tabs, modal, drawer, toast,
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

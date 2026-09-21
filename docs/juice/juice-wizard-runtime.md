@@ -220,7 +220,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 - Enter and Space activate jumpable non-button `[step]` items and non-button `[wizard-prev]` / `[wizard-next]` controls (native buttons already synthesize a click)
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the page on change
-- Escape is not handled. Wizard is not a dialog
+- Escape is not handled. Wizard is not a dialog. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 Arrow-key roving is intentionally out of scope. This is not APG Tabs.
 
@@ -233,6 +233,8 @@ Arrow-key roving is intentionally out of scope. This is not APG Tabs.
 - Linear and default modes only constrain tracker clicks. Programmatic `next` / `prev` / `goTo` always work.
 - `[wizard-complete]` is enabled on the last step only. The runtime does not submit or provision.
 - A11y is `aria-current="step"` plus pages as `role="region"`. This is not APG Tabs.
+- Escape is out of scope. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- `[wizard-header]` sticky chrome is `z-index: 50`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 - Centered modal / dialog, edge-docked drawer, toast-stack, and popover behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), and [Popover Runtime](./juice-popover-runtime.md).
 
 ## Why This Matches Navigation
@@ -246,7 +248,7 @@ The wizard runtime copies the navigation, accordion, tabs, modal, drawer, toast,
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

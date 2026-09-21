@@ -65,7 +65,7 @@ Prefer shipping those roles in markup. The runtime fills them if they are missin
 
 When `[combobox]` has a `name` or `id`, that value becomes the slug used for generated ids (`fruit-list`, `fruit-option-1`).
 
-Theme paint uses `--juice-combobox-*` roles. Core CSS paints `[combobox-list]` at **z-index 1050** (same band as popover, below tooltip `1060` and toast `1100`). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[combobox]` is an input + listbox popup, not a native select, not a popover, not a tooltip, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it.
+Theme paint uses `--juice-combobox-*` roles. Core CSS paints `[combobox-list]` at **z-index 1050** (same band as popover, below tooltip `1060` and toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[combobox]` is an input + listbox popup, not a native select, not a popover, not a tooltip, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it.
 
 ## Automatic Boot
 
@@ -214,6 +214,7 @@ There is no focus trap. Tab is not wrapped. The runtime does not move focus into
 - Opening is exclusive among comboboxes. Only one managed list is open at a time.
 - Placement has no Floating UI. The list stays CSS-absolute under the field.
 - Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, and tooltip behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), and [Tooltip Runtime](./juice-tooltip-runtime.md).
+- Escape closes without commit only when no open modal/drawer overlay or popover exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 
@@ -226,7 +227,7 @@ The combobox runtime copies the navigation, accordion, tabs, modal, drawer, toas
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

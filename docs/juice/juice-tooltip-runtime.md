@@ -51,7 +51,7 @@ It requires a `[tooltip-root]` root. Closed vs open is the native `hidden` attri
 
 Prefer shipping `role="tooltip"` on the panel. The runtime fills that if it is missing, plus a missing root id, and it ensures the trigger `aria-describedby` token list includes that id.
 
-Theme paint uses `--juice-tooltip-*` roles. Core CSS paints `[tooltip-root]` at **z-index 1060** (slightly above popover `1050`, below toast `1100`). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[tooltip-root]` is an anchored positioning wrapper, not a dialog overlay, not a drawer, not a toast stack, not a popover, and not the surface `overlay="frost|tint"` utility. Popover is an interactive floating panel; tooltip is a hover/focus tip. Focus never moves into the tip.
+Theme paint uses `--juice-tooltip-*` roles. Core CSS paints `[tooltip-root]` at **z-index 1060** (slightly above popover `1050`, below toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[tooltip-root]` is an anchored positioning wrapper, not a dialog overlay, not a drawer, not a toast stack, not a popover, and not the surface `overlay="frost|tint"` utility. Popover is an interactive floating panel; tooltip is a hover/focus tip. Focus never moves into the tip.
 
 ## Automatic Boot
 
@@ -178,7 +178,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape hides the open tip, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[combobox-list]` exists (those surfaces own Escape). Toast does not block tooltip Escape — the tip can hide while toasts remain.
+- Escape hides the open tip, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[combobox-list]` exists (those surfaces own Escape). Toast does not block tooltip Escape — the tip can hide while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the tip
 - Hover (`mouseover` / `mouseout`) and keyboard focus (`focusin` / `focusout`) are the v1 show/hide path
 
@@ -208,7 +208,7 @@ The tooltip runtime copies the navigation, accordion, tabs, modal, drawer, toast
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

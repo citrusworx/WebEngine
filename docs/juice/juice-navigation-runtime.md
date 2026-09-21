@@ -231,13 +231,14 @@ This runtime is stronger than the original version, but it is still intentionall
 It does not yet handle:
 
 - focus trapping
-- escape-key close
+- escape-key close (Escape is out of scope; see [Runtime Behavior](./juice-runtime-behavior.md#escape--layering))
 - click-away close
 - animated open/close transitions
 - complex nested nav trees
 - richer keyboard interaction rules
+- a Sig Navigation factory (create / init / start / stop only)
 
-Those are possible future improvements, but they are not required for the core “works out-of-the-box” responsive nav feature.
+Those are possible future improvements, but they are not required for the core “works out-of-the-box” responsive nav feature. Sidebar chrome uses `z-index: 30`; that is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 
 ## Design Rule Going Forward
 

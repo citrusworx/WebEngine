@@ -38,6 +38,9 @@ Pending Juice changesets on master (consume them at the next cut; Juice-only if 
 | `juice-banner-theme-chrome` | **minor** | Banner theme chrome roles (`--juice-banner-*`) |
 | `juice-banner-runtime` | **minor** | DOM-first banner dismiss runtime (`show` / `dismiss`, persist) |
 | `juice-banner-runtime-docs` | **patch** | Banner runtime / maturity docs (slice C) |
+| `juice-escape-layering` | **patch** | Escape yield order across the eleven Emerging runtimes (polish A) |
+| `juice-runtime-shared-primitives` | **patch** | Internal shared runtime primitives under `src/js/src/shared/` (polish B) |
+| `juice-runtime-docs-maturity` | **patch** | Docs / Limitations / z-index / maturity consistency (polish C) |
 
 Consumed Juice changesets (the 0.6.0 lane):
 
@@ -137,6 +140,7 @@ This is the stack on master that is not in the 0.7.0 tarball.
 * **Tooltip A→B→C.** Shared `--juice-tooltip-*` roles for `[tooltip-root]` / `[tooltip-panel]` (#148). DOM-first hover/focus runtime (#149): `createTooltip` / `initTooltip` / `startTooltipRuntime` / `stopTooltipRuntime`, auto-boot, `show` / `hide`, pairing (`aria-describedby` preferred → root id; also `aria-controls`), show on mouseover/focusin, hide on mouseout/focusout with a 150ms grace delay, exclusive one tip, Escape (yields to open modal/drawer overlay or popover-root), no focus trap (focus never moves into the tip), dependency-free placement with one-axis flip (`position: fixed` from trigger rect + gap 8), z-index 1060. Touch / first-tap later — v1 is hover and keyboard focus. Distinct from popover (interactive) and native `title`. Never a bare `tooltip` attribute. Runtime docs and maturity notes in #151. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast/popover/wizard. No Sig Tooltip factory. Still unpublished vs 0.7.0.
 * **Combobox A→B→C.** Shared `--juice-combobox-*` roles for `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` (#152). DOM-first listbox runtime (#153): `createCombobox` / `initCombobox` / `startComboboxRuntime` / `stopComboboxRuntime`, auto-boot, `open` / `close` / `toggle` / `select`, case-insensitive substring filter on option text / `data-value` (non-matches get `hidden`), keyboard (ArrowUp/Down, Home/End, Enter selects, Escape closes, Tab closes without commit), `aria-activedescendant` plus `aria-expanded` on the input (and trigger), exclusive among comboboxes. Select writes option text or `data-value`; committed choice is `aria-selected` plus `combobox-option="active"` for keyboard focus. Placement is CSS-only (absolute under the field); no Floating UI. Distinct from native `<select>`. Runtime docs and maturity notes in this pass. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast/popover/wizard/tooltip. No Sig Combobox factory. No multi-select / async fetch. Still unpublished vs 0.7.0.
 * **Banner A→B→C.** Shared `--juice-banner-*` roles for `[banner]` / `[banner-body]` / `[banner-close]` (#160). DOM-first dismiss runtime (#161): `createBanner` / `initBanner` / `startBannerRuntime` / `stopBannerRuntime`, auto-boot, `show` / `dismiss`, `[banner-close]` click / keyboard, `role="status"` (or `role="alert"` for error/warning), optional `banner-persist="session|local"` with `name` / `id` (`juice-banner:<key>`). No focus trap, no Escape steal, no auto-dismiss timer. Distinct from toast stack and from modal/drawer. Runtime docs and maturity notes in this pass. No Sig Banner factory. Still unpublished vs 0.7.0.
+* **Eleven-runtime polish A→B→C.** Escape / layering (#166): modal/drawer → popover → combobox → toast/tooltip as implemented; banner never; accordion contextual; tabs / nav / wizard out of scope. Shared internals (#167) under `libraries/juice/src/js/src/shared/` (not a public API). Docs / Limitations / z-index / maturity consistency in this pass. The eleven stay **Emerging**. Wizard–banner remain unpublished vs 0.7.0.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
@@ -196,7 +200,7 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 ### Closed / done on master (old P1–P3, plus 0.6.0 and 0.7.0 publish)
 
-These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (unpublished vs 0.7.0).
+These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (unpublished vs 0.7.0). The eleven-runtime polish pass (Escape / layering, shared internals, docs consistency) is also closed on master. All eleven stay Emerging.
 
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
@@ -227,7 +231,9 @@ Tooltip **A→B→C is done on master** (still unpublished vs 0.7.0): theme chro
 
 Combobox **A→B→C is done on master** (still unpublished vs 0.7.0): theme chrome (`--juice-combobox-*`), listbox runtime, and runtime / maturity docs. Valid `[combobox]` markup auto-enhances. Combobox is the tenth Emerging auto-enhance runtime.
 
-Banner **A→B→C is done on master** (still unpublished vs 0.7.0): theme chrome (`--juice-banner-*`), dismiss runtime, and runtime / maturity docs. Valid `[banner]` markup auto-enhances. Banner is the eleventh Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, or Sig Banner factory stays later. Grow the next runtime only when that markup contract stays honest.
+Banner **A→B→C is done on master** (still unpublished vs 0.7.0): theme chrome (`--juice-banner-*`), dismiss runtime, and runtime / maturity docs. Valid `[banner]` markup auto-enhances. Banner is the eleventh Emerging auto-enhance runtime.
+
+**Eleven-runtime polish A→B→C is closed on master.** Escape / layering, shared internals, and docs / Limitations / z-index consistency. The eleven stay Emerging. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, or Sig Banner factory stays later. Grow the next runtime only when that markup contract stays honest.
 
 Short-term focus remains:
 
@@ -253,10 +259,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (chrome, runtime, docs). Eleven-runtime polish A→B→C is closed on master. Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, and wizard A→B→C plus tooltip A→B→C plus combobox A→B→C plus banner A→B→C on master. Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard A→B→C plus tooltip A→B→C plus combobox A→B→C plus banner A→B→C on master, and the eleven-runtime polish pass (Escape / layering, shared internals, docs consistency). Do not invent a next version number; the next cut happens when new Juice changesets exist.
 
 ---
 
@@ -268,12 +274,12 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 **0.7.0 is the live npm cut** for drawer, toast, and popover A→B→C.
 
-Master is ahead of that cut. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are on master and unpublished.
+Master is ahead of that cut. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are on master and unpublished. The eleven-runtime polish pass (Escape / layering, shared internals, docs consistency) is closed on master. All eleven stay Emerging.
 
 The next stage is post-0.7.0 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (still unpublished vs 0.7.0); grow the next runtime only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (still unpublished vs 0.7.0); eleven-runtime polish A→B→C is closed; grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.
