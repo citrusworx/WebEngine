@@ -1,13 +1,19 @@
 import { defineConfig } from "vite";
 import { fileURLToPath } from "node:url";
+import { juiceDocsPlugin } from "./vite-plugin-juice-docs";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
+const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
 
 export default defineConfig({
   root,
+  plugins: [juiceDocsPlugin()],
   server: {
     host: "0.0.0.0",
-    port: 5173
+    port: 5173,
+    fs: {
+      allow: [root, repoRoot]
+    }
   },
   preview: {
     host: "0.0.0.0",
@@ -21,7 +27,8 @@ export default defineConfig({
         demos: fileURLToPath(new URL("./demos.html", import.meta.url)),
         themes: fileURLToPath(new URL("./themes.html", import.meta.url)),
         themeFrame: fileURLToPath(new URL("./theme-frame.html", import.meta.url)),
-        reference: fileURLToPath(new URL("./reference.html", import.meta.url))
+        reference: fileURLToPath(new URL("./reference.html", import.meta.url)),
+        docs: fileURLToPath(new URL("./docs.html", import.meta.url))
       }
     }
   }
