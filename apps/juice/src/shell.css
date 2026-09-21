@@ -92,7 +92,7 @@ body {
 }
 
 [sell] h1[hero-title] {
-  max-width: 9.4em;
+  max-width: none;
   font-size: clamp(2.85rem, 6.4vw, 4.85rem);
   line-height: 0.96;
   letter-spacing: -0.045em;
@@ -137,8 +137,8 @@ body {
   align-items: center;
   gap: 0.7rem 0.85rem;
   padding: 0.7rem 1rem;
-  background: color-mix(in srgb, currentColor 7%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent);
 }
 
 [sell-dots] {
@@ -277,8 +277,10 @@ body {
   color: inherit;
   border: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 0.8rem;
-  line-height: 1.58;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 [sell-window="juice"] pre[sell-code],
@@ -353,10 +355,6 @@ body {
   [sell] [hero] > [container] {
     grid-template-columns: 1fr;
     gap: 2.25rem;
-  }
-
-  [sell] h1[hero-title] {
-    max-width: none;
   }
 
   [sell-compare] {
