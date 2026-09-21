@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Getting started — Juice</title>
     <link rel="stylesheet" href="/src/juice.css" />
-    <meta name="description" content="Getting started with Juice. This page is a stub for the next showcase slice." />
+    <meta
+      name="description"
+      content="Install Juice, import core CSS and a theme, set theme on the root, and compose a first page with attributes."
+    />
   </head>
   <body theme="kiwipress">
     <div app-shell stack>
@@ -38,6 +41,7 @@
               <a href="/themes.html">Themes</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <button type="button" data-href="/">Back to landing</button>
           </div>
         </nav>
       </nav>
@@ -46,53 +50,285 @@
         <section hero>
           <div container>
             <span hero-eyebrow>
-              <span badge>Next slice</span>
+              <span badge>Honest Beta · six steps</span>
             </span>
-            <h1 hero-title>Getting started</h1>
+            <h1 hero-title>Get Juice on a page, then compose in markup.</h1>
             <p hero-subtitle>
-              This page will walk through install, core + theme imports, and the
-              first attribute-composed page. Until then, the monorepo docs stay
-              the source of truth.
+              Juice is a CSS-first, attribute-driven styling system — not a
+              behavior framework. Import core, import a theme, set
+              <code>theme="…"</code>, and write structure as attributes.
+              Emerging runtimes are optional extras when you import the JS entry.
             </p>
             <div hero-actions>
-              <button type="button" scale="lg" data-href="/">Return to landing</button>
+              <button type="button" scale="lg" data-href="#first-page">See the first page</button>
+              <button
+                type="button"
+                btn="outline"
+                scale="lg"
+                data-href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md"
+              >
+                Full docs
+              </button>
             </div>
           </div>
         </section>
 
         <section type="features" paddingY="roomy">
           <div container>
+            <div section-header>
+              <h2>What to use first</h2>
+              <p>
+                The same six-step flow as
+                <code>docs/juice/juice-getting-started.md</code>. This page stays
+                short; the docs tree is still the source of truth.
+              </p>
+            </div>
+
+            <div grid="3x2" gap="comfortable">
+              <article card="feature" width="100%">
+                <span badge>1</span>
+                <h3>Install</h3>
+                <p>Add the published package, or consume the workspace package in this monorepo.</p>
+                <pre><code>yarn add @citrusworx/juiceui</code></pre>
+              </article>
+
+              <article card="feature" width="100%" warm>
+                <span badge>2</span>
+                <h3>Import core CSS</h3>
+                <p>Core is structure only. No theme identity ships in this file.</p>
+                <pre><code>import "@citrusworx/juiceui/styles";</code></pre>
+              </article>
+
+              <article card="feature" width="100%">
+                <span badge>3</span>
+                <h3>Import a theme</h3>
+                <p>
+                  Library themes: <code>kiwipress</code>, <code>tide</code>,
+                  <code>citrusmint</code>, <code>aquaflux</code>. Then set
+                  <code>theme="…"</code> on the root.
+                </p>
+                <pre><code>import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
+              </article>
+
+              <article card="feature" width="100%" warm>
+                <span badge>4</span>
+                <h3>Compose in markup</h3>
+                <p>
+                  Use <code>stack</code>, <code>row</code>, <code>grid</code>,
+                  <code>gap</code>, and hooks like <code>hero</code>,
+                  <code>card</code>, and <code>panel</code>.
+                </p>
+              </article>
+
+              <article card="feature" width="100%">
+                <span badge>5</span>
+                <h3>App CSS last</h3>
+                <p>
+                  Add app selectors only where brand-specific polish is truly
+                  needed. Do not wait on config to start.
+                </p>
+              </article>
+
+              <article card="feature" width="100%" warm>
+                <span badge>6</span>
+                <h3>JS is optional</h3>
+                <p>
+                  Importing <code>@citrusworx/juiceui</code> auto-enhances
+                  Emerging runtimes. Use Sig.js for app state. Neither is
+                  required for CSS-first composition.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="first-page">
+          <div container>
+            <div section-header>
+              <h2>Core plus a theme, then one attribute.</h2>
+              <p>
+                Same imports this showcase uses. Switch the face — the live
+                example below wears the active theme.
+              </p>
+            </div>
+
+            <div stack gap="comfortable">
+              <div row wrap gap="1" centered>
+                <button type="button" data-theme="kiwipress">KiwiPress</button>
+                <button type="button" btn="outline" data-theme="tide">Tide</button>
+                <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
+                <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+              </div>
+
+              <pre><code>import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/kiwipress";
+import "@citrusworx/juiceui";</code></pre>
+
+              <pre><code>&lt;body theme="kiwipress"&gt;…&lt;/body&gt;</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>A first page, live</h2>
+              <p>
+                Wrappers own placement. <code>hero</code>, <code>card</code>, and
+                <code>panel</code> own structure. The theme owns type and color.
+                No named app surfaces — those belong to generated product themes.
+              </p>
+            </div>
+
+            <div stack gap="comfortable">
+              <div stack gap="2">
+                <div hero padding="2rem" stack gap="1">
+                  <div center>
+                    <p>Publishing</p>
+                    <h2>Attribute-first UI with theme-owned identity</h2>
+                  </div>
+                  <div content center>
+                    <p>
+                      Juice keeps layout in markup. The theme defines type,
+                      color, and surface tone.
+                    </p>
+                  </div>
+                </div>
+
+                <div grid="2x1" gap="1">
+                  <article card padding="1.25rem" stack gap="0.75rem" width="100%">
+                    <h3>Structure</h3>
+                    <p>
+                      Use <code>stack</code>, <code>row</code>,
+                      <code>grid</code>, <code>gap</code>, and spacing
+                      attributes first.
+                    </p>
+                  </article>
+                  <aside panel padding="1.25rem" stack gap="0.75rem">
+                    <h3>Identity</h3>
+                    <p>
+                      This panel wears the library theme you selected above —
+                      KiwiPress, Tide, Citrusmint, or Aquaflux.
+                    </p>
+                  </aside>
+                </div>
+              </div>
+
+              <pre><code>&lt;main stack gap="2rem"&gt;
+  &lt;section hero padding="2rem" stack gap="1rem"&gt;
+    &lt;p&gt;Publishing&lt;/p&gt;
+    &lt;h1&gt;Attribute-first UI with theme-owned identity&lt;/h1&gt;
+    &lt;p&gt;Juice keeps layout in markup. The theme defines type, color, and surface tone.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section grid="2x1" gap="1rem"&gt;
+    &lt;article card padding="1.25rem" stack gap="0.75rem"&gt;
+      &lt;h2&gt;Structure&lt;/h2&gt;
+      &lt;p&gt;Use stack, row, grid, gap, and spacing attributes first.&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;aside panel padding="1.25rem" stack gap="0.75rem"&gt;
+      &lt;h2&gt;Identity&lt;/h2&gt;
+      &lt;p&gt;Use the theme for typography, colors, and semantic defaults.&lt;/p&gt;
+    &lt;/aside&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section type="pricing" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>The mental model</h2>
+              <p>
+                Juice attributes control structure. Theme CSS controls identity.
+                App CSS handles small exceptions. Sig.js or app code handles
+                behavior.
+              </p>
+            </div>
+
             <div grid="2x1" gap="comfortable">
               <article card="feature" width="100%">
-                <h2>What will live here</h2>
+                <h3>Let Juice own structure</h3>
                 <p>
-                  A short, honest onboarding page: import core CSS, import one
-                  library theme, set <code>theme="…"</code>, compose with
-                  <code>stack</code> / <code>row</code> / <code>grid</code>.
+                  Do not wait on config. Library themes are enough to start.
+                  App-owned theme generation is there when a product needs a
+                  real brand system.
                 </p>
               </article>
               <aside panel padding="2rem" stack gap="1">
-                <h2>Until it ships</h2>
-                <p>Read <code>docs/juice/juice-getting-started.md</code> in this repo.</p>
-                <button type="button" btn="outline" data-href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md">
-                  Open getting started docs
-                </button>
+                <h3>Depth stays in docs/juice</h3>
+                <p>
+                  Attributes, theme contract, runtimes, and the maturity matrix
+                  are not copied here.
+                </p>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md">Getting started</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-contract.md">Theme contract</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-best-practices.md">Best practices</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a>
+                </div>
               </aside>
             </div>
+          </div>
+        </section>
+
+        <section cta>
+          <h2 cta-title>Structure first. Identity second. Runtimes later.</h2>
+          <p cta-subtitle>
+            Live runtime demos are the next showcase slice. Until then, valid
+            markup plus the JS entry is enough for Emerging auto-enhance.
+          </p>
+          <div cta-actions>
+            <button type="button" scale="lg" data-href="/demos.html">Demos (stub)</button>
+            <p cta-note>docs/juice remains the lookup set</p>
           </div>
         </section>
       </main>
 
       <footer paddingY="roomy">
         <div container>
-          <div center>
+          <div grid="4x1" gap="comfortable">
+            <div stack gap="cozy">
+              <h4>Juice</h4>
+              <p>
+                CSS-first, attribute-driven styling and composition from
+                CitrusWorx. Showcase for <code>@citrusworx/juiceui</code>.
+              </p>
+            </div>
+            <div stack gap="cozy">
+              <h4>Site</h4>
+              <ul stack gap="snug">
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Docs</h4>
+              <ul stack gap="snug">
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/docs/juice">docs/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md">Getting started</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">Beta notes</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Package</h4>
+              <ul stack gap="snug">
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+              </ul>
+            </div>
+          </div>
+          <div center marginY="comfortable">
             <nav type="footer">
               <ul row gap="2" centered>
                 <li><a href="/">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
                 <li><a href="/themes.html">Themes</a></li>
-                <li><a href="/reference.html">Reference</a></li>
               </ul>
             </nav>
             <p>CitrusWorx · WebEngine · Honest Beta</p>

@@ -1,6 +1,6 @@
 # Juice showcase (`apps/juice`)
 
-Vanilla Vite + HTML / TypeScript site that consumes the workspace package `@citrusworx/juiceui`. First slice: site chrome and a landing page that mirrors the Honest Beta positioning in `docs/juice`.
+Vanilla Vite + HTML / TypeScript site that consumes the workspace package `@citrusworx/juiceui`. Landing plus a short Getting started page that mirrors `docs/juice/juice-getting-started.md`.
 
 Package name: `@citrusworx/juiceapp`.
 
@@ -31,19 +31,19 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 ## What this slice includes
 
 - Landing page: CSS-first + attribute-driven pitch, structure vs identity, Emerging runtimes, Honest Beta
+- Getting started: install → core CSS → theme import → `theme="…"` → first attribute-driven page, plus a live hero/card/panel demo under the active theme
 - Default theme: **KiwiPress** (richest product reference)
 - Cheap theme switcher: KiwiPress, Tide, Citrusmint, Aquaflux (never blush / `_draft`)
-- Chrome: Juice nav (including mobile + sidebar), footer, stub routes for Getting started / Demos / Themes / Reference
+- Chrome: Juice nav (including mobile + sidebar), footer, stub routes for Demos / Themes / Reference
 - JS entry imported so Emerging runtimes can auto-enhance when demo markup lands
 
 ## What this slice does not include
 
 - Full live demos for every runtime
-- Getting-started walkthrough content (docs stay in `docs/juice`)
 - Combobox demos
 - Animations / WebGL / Spline
+- Rewriting `docs/juice` into the site
 
 ## Next
 
-- Getting started page that stays short and points at `docs/juice/juice-getting-started.md`
 - Live runtime demos (nav, accordion, tabs, modal, drawer, toast, popover) across the four shipped themes
