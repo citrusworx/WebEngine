@@ -17,6 +17,8 @@ import {
     REQUIRED_MENU_ROLES,
     REQUIRED_SWITCH_ROLES,
     REQUIRED_SLIDER_ROLES,
+    REQUIRED_CHECKBOX_ROLES,
+    REQUIRED_RADIO_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -482,6 +484,74 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(thumbBlocks.length).toBeGreaterThan(0);
         for (const block of thumbBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-checkbox-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-checkbox-control: var(--jx-surface)");
+        expect(css).toContain("--jx-checkbox-control-checked: var(--jx-accent)");
+        expect(css).toContain("--jx-checkbox-border: var(--jx-border)");
+        expect(css).toContain("--jx-checkbox-border-checked: var(--jx-accent)");
+        expect(css).toContain("--jx-checkbox-mark: var(--jx-text-inverse)");
+        expect(css).toContain("--jx-checkbox-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-checkbox-control: var(--jx-accent)");
+        expect(css).not.toContain("--juice-radiogroup-");
+
+        for (const role of REQUIRED_CHECKBOX_ROLES) {
+            expect(css).toContain(`--juice-checkbox-${role}: var(--jx-checkbox-${role})`);
+        }
+
+        expect(css).toContain("button[checkbox]");
+        expect(css).toContain('[aria-checked="true"]');
+        expect(css).not.toMatch(/\[role=["']?checkbox["']?\]/);
+        expect(css).not.toMatch(/aria-checked=["']?mixed["']?/);
+        expect(css).not.toMatch(/\[checkbox-size/);
+        expect(css).not.toMatch(/\[checkbox\]\[scale/);
+
+        const checkboxBlocks = [...css.matchAll(/button\[checkbox\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(checkboxBlocks.length).toBeGreaterThan(0);
+        for (const block of checkboxBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-radio-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-radio-control: var(--jx-surface)");
+        expect(css).toContain("--jx-radio-control-checked: var(--jx-surface)");
+        expect(css).toContain("--jx-radio-border: var(--jx-border)");
+        expect(css).toContain("--jx-radio-border-checked: var(--jx-accent)");
+        expect(css).toContain("--jx-radio-mark: var(--jx-accent)");
+        expect(css).toContain("--jx-radio-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-radio-control: var(--jx-accent)");
+        expect(css).not.toContain("--juice-radiogroup-");
+
+        for (const role of REQUIRED_RADIO_ROLES) {
+            expect(css).toContain(`--juice-radio-${role}: var(--jx-radio-${role})`);
+        }
+
+        expect(css).toContain("button[radio]");
+        expect(css).toContain('[aria-checked="true"]');
+        expect(css).not.toMatch(/\[role=["']?radio["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?radiogroup["']?\]/);
+        expect(css).not.toMatch(/\[radio-size/);
+        expect(css).not.toMatch(/\[radio\]\[scale/);
+
+        const radioBlocks = [...css.matchAll(/button\[radio\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(radioBlocks.length).toBeGreaterThan(0);
+        for (const block of radioBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

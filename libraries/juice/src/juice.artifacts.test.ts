@@ -485,6 +485,60 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[slider\][^{]*\{[^}]*--juice-switch-track/);
     });
 
+    it("includes checkbox structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[checkbox]");
+        expect(css).toMatch(/\[theme\]\s+\[checkbox\]/);
+        expect(css).toMatch(/\[checkbox\]\[aria-checked=["']?true["']?\]/);
+        expect(css).toMatch(/\[checkbox\]:checked/);
+        expect(css).toMatch(/\[checkbox\]:focus-visible/);
+        expect(css).toMatch(/\[checkbox\]::after/);
+        expect(css).toContain("--juice-checkbox-control");
+        expect(css).toContain("--juice-checkbox-control-checked");
+        expect(css).toContain("--juice-checkbox-border");
+        expect(css).toContain("--juice-checkbox-border-checked");
+        expect(css).toContain("--juice-checkbox-mark");
+        expect(css).toContain("--juice-checkbox-focus-ring");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/\[role=["']?checkbox["']?\]/);
+        expect(css).not.toMatch(/aria-checked=["']?mixed["']?/);
+        expect(css).not.toMatch(/\[checkbox-size/);
+        expect(css).not.toMatch(/\[checkbox\]\[scale/);
+        expect(css).not.toMatch(/\[checkbox\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[checkbox\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[checkbox\][^{]*\{[^}]*--juice-switch-track/);
+        expect(css).not.toContain("--juice-radiogroup-");
+    });
+
+    it("includes radio structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[radio]");
+        expect(css).toContain("[radiogroup]");
+        expect(css).toMatch(/\[theme\]\s+\[radio\]/);
+        expect(css).toMatch(/\[theme\]\s+\[radiogroup\]/);
+        expect(css).toMatch(/\[radio\]\[aria-checked=["']?true["']?\]/);
+        expect(css).toMatch(/\[radio\]:checked/);
+        expect(css).toMatch(/\[radio\]:focus-visible/);
+        expect(css).toMatch(/\[radio\]::after/);
+        expect(css).toContain("--juice-radio-control");
+        expect(css).toContain("--juice-radio-control-checked");
+        expect(css).toContain("--juice-radio-border");
+        expect(css).toContain("--juice-radio-border-checked");
+        expect(css).toContain("--juice-radio-mark");
+        expect(css).toContain("--juice-radio-focus-ring");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/\[role=["']?radio["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?radiogroup["']?\]/);
+        expect(css).not.toMatch(/\[radio-size/);
+        expect(css).not.toMatch(/\[radio\]\[scale/);
+        expect(css).not.toMatch(/\[radio\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[radio\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[radio\][^{]*\{[^}]*--juice-checkbox-control/);
+        expect(css).not.toContain("--juice-radiogroup-");
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -992,6 +1046,69 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toMatch(/button\[slider-thumb\][^{]*\{[^}]*--tide-button-background/);
         expect(tideCss).not.toContain("--tide-slider-track: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-slider-thumb: var(--tide-page)");
+    });
+
+    it("binds checkbox chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-checkbox-control: var(--aqua-page)");
+        expect(aquaCss).toContain("--aqua-checkbox-control-checked: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-checkbox-mark: var(--aqua-checkbox-mark)");
+        expect(aquaCss).toContain("button[checkbox]");
+        expect(aquaCss).not.toMatch(/button\[checkbox\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-checkbox-control: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-checkbox-control: var(--kw-checkbox-control)");
+        expect(kiwiCss).toContain("button[checkbox]");
+        expect(kiwiCss).not.toMatch(/button\[checkbox\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/button\[checkbox\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-checkbox-control: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-checkbox-control-checked: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-checkbox-focus-ring: var(--cm-checkbox-focus-ring)");
+        expect(mintCss).toContain("button[checkbox]");
+
+        expect(tideCss).toContain("--tide-checkbox-control: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-checkbox-control-checked: var(--tide-checkbox-control-checked)");
+        expect(tideCss).toContain("button[checkbox]");
+        expect(tideCss).not.toMatch(/button\[checkbox\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-checkbox-control: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-checkbox-mark: var(--tide-page)");
+        expect(tideCss).not.toContain("--juice-radiogroup-");
+    });
+
+    it("binds radio chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-radio-control: var(--aqua-page)");
+        expect(aquaCss).toContain("--aqua-radio-mark: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-radio-border-checked: var(--aqua-radio-border-checked)");
+        expect(aquaCss).toContain("button[radio]");
+        expect(aquaCss).not.toMatch(/button\[radio\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-radio-control: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-radio-mark: var(--kw-radio-mark)");
+        expect(kiwiCss).toContain("button[radio]");
+        expect(kiwiCss).not.toMatch(/button\[radio\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/button\[radio\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-radio-control: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-radio-mark: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-radio-focus-ring: var(--cm-radio-focus-ring)");
+        expect(mintCss).toContain("button[radio]");
+
+        expect(tideCss).toContain("--tide-radio-control: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-radio-mark: var(--tide-radio-mark)");
+        expect(tideCss).toContain("button[radio]");
+        expect(tideCss).not.toMatch(/button\[radio\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-radio-control: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-radio-mark: var(--tide-page)");
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {

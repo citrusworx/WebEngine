@@ -340,6 +340,38 @@
     --juice-slider-thumb-shadow: var(--cm-slider-thumb-shadow);
     --juice-slider-focus-ring: var(--cm-slider-focus-ring);
 
+    /* Checkbox chrome — thinner --cm-* set. Heading stands in for accent.
+       The host is a surface box, not heading-fill. Binary only. Distinct
+       from switch and menuitemcheckbox. */
+    --cm-checkbox-control: var(--cm-surface);
+    --cm-checkbox-control-checked: var(--cm-heading);
+    --cm-checkbox-border: var(--cm-border);
+    --cm-checkbox-border-checked: var(--cm-heading);
+    --cm-checkbox-mark: var(--cm-surface);
+    --cm-checkbox-focus-ring: var(--cm-heading);
+    --juice-checkbox-control: var(--cm-checkbox-control);
+    --juice-checkbox-control-checked: var(--cm-checkbox-control-checked);
+    --juice-checkbox-border: var(--cm-checkbox-border);
+    --juice-checkbox-border-checked: var(--cm-checkbox-border-checked);
+    --juice-checkbox-mark: var(--cm-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--cm-checkbox-focus-ring);
+
+    /* Radio chrome — thinner --cm-* set. Heading stands in for accent.
+       The host is a surface disc, not heading-fill. The group is
+       layout-only. Distinct from switch and checkbox. */
+    --cm-radio-control: var(--cm-surface);
+    --cm-radio-control-checked: var(--cm-surface);
+    --cm-radio-border: var(--cm-border);
+    --cm-radio-border-checked: var(--cm-heading);
+    --cm-radio-mark: var(--cm-heading);
+    --cm-radio-focus-ring: var(--cm-heading);
+    --juice-radio-control: var(--cm-radio-control);
+    --juice-radio-control-checked: var(--cm-radio-control-checked);
+    --juice-radio-border: var(--cm-radio-border);
+    --juice-radio-border-checked: var(--cm-radio-border-checked);
+    --juice-radio-mark: var(--cm-radio-mark);
+    --juice-radio-focus-ring: var(--cm-radio-focus-ring);
+
     background-color: var(--cm-page);
     color: var(--cm-text);
     font-family: var(--cm-body-font);
@@ -869,5 +901,52 @@
 [theme="citrusmint"] button[slider-thumb]:focus-visible,
 [theme="citrusmint"] [slider-thumb]:focus-visible {
     outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) heading-fill defaults.
+   The host is a surface box, not heading-fill. Binary only. Runtime is later. */
+[theme="citrusmint"] button[checkbox],
+[theme="citrusmint"] [checkbox] {
+    background-color: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="citrusmint"] button[checkbox][aria-checked="true"],
+[theme="citrusmint"] [checkbox][aria-checked="true"],
+[theme="citrusmint"] [checkbox]:checked {
+    background-color: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="citrusmint"] button[checkbox]:focus-visible,
+[theme="citrusmint"] [checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) heading-fill defaults.
+   The host is a surface disc, not heading-fill. Group layout is author-owned.
+   Runtime is later. */
+[theme="citrusmint"] button[radio],
+[theme="citrusmint"] [radio] {
+    background-color: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="citrusmint"] button[radio][aria-checked="true"],
+[theme="citrusmint"] [radio][aria-checked="true"],
+[theme="citrusmint"] [radio]:checked {
+    background-color: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="citrusmint"] button[radio]:focus-visible,
+[theme="citrusmint"] [radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
     outline-offset: 2px;
 }

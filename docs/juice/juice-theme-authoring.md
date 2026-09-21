@@ -82,6 +82,8 @@ A healthy Juice theme should own:
 - menu chrome roles (`--juice-menu-*`, bound from theme identity tokens)
 - switch chrome roles (`--juice-switch-*`, bound from theme identity tokens)
 - slider chrome roles (`--juice-slider-*`, bound from theme identity tokens)
+- checkbox chrome roles (`--juice-checkbox-*`, bound from theme identity tokens)
+- radio chrome roles (`--juice-radio-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -236,6 +238,8 @@ The generated stylesheet currently defines:
 - menu chrome role bindings (`--jx-menu-*` / `--juice-menu-*`) and opener CTA overrides for `[menu-button]`
 - switch chrome role bindings (`--jx-switch-*` / `--juice-switch-*`) and track CTA overrides for `[switch]`
 - slider chrome role bindings (`--jx-slider-*` / `--juice-slider-*`) and thumb CTA overrides for `[slider-thumb]`
+- checkbox chrome role bindings (`--jx-checkbox-*` / `--juice-checkbox-*`) and box CTA overrides for `[checkbox]`
+- radio chrome role bindings (`--jx-radio-*` / `--juice-radio-*`) and disc CTA overrides for `[radio]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -369,6 +373,26 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for the APG Slider pattern — a horizontal slider with a real thumb child. It is not a native `<input type="range">` restyle as the only story, not a progress meter, and not a scrollbar. A boolean `[slider]` attribute is fine (no HTML global `slider` attr); `slider="horizontal"` is the same story. `slider="vertical"` is later and is not painted. `[slider]` is the track host. There is no `[slider-track]` child. Do not style bare `[role="slider"]`. Integer `aria-valuenow` 0–100 (min/max omitted or `0` / `100`) paints the fill and thumb, on the host or on `[slider-thumb]` (the thumb wins). Other ranges use the structural `--juice-slider-ratio` paint hook on `[slider]` (not a theme role, not an author attribute). Inline control — no overlay z-index. The slider runtime auto-enhances that markup (`setValue` / `getValue` / `increment` / `decrement`, `role="slider"` on `[slider-thumb]`, `--juice-slider-ratio` on the host) — see [Slider Runtime](./juice-slider-runtime.md).
 
 Tide must bind a dark track (`--tide-surface-muted`), not a white groove. The thumb stays `--tide-heading`, not the page color.
+
+## Checkbox chrome roles
+
+Library themes bind the shared checkbox contract so `[checkbox]` paint is theme-agnostic in `checkbox.scss`. Required names (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-checkbox-*`, `--kw-checkbox-*`, `--cm-checkbox-*`, `--tide-checkbox-*`, …). App-owned generated themes use `--jx-checkbox-*` and bind `--juice-checkbox-*` from existing `--jx-*` surface/page/accent tokens. Do not invent a new hue family just for checkbox chrome. `[checkbox]` is a surface box, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[checkbox]` the same way.
+
+This is Juice chrome for the APG Checkbox pattern — a binary check with `aria-checked`. It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, and not a menu `menuitemcheckbox`. A boolean `[checkbox]` attribute is fine (no HTML global `checkbox` attr). Primary host is `<button type="button" checkbox>`; a native checkbox host is allowed (`:checked` paints that path). The box is the host and the checkmark is `::after`. Do not style bare `[role="checkbox"]`. Checked paint for static demos is `aria-checked="true"`. v1 does not paint `aria-checked="mixed"`. There is no ink role — labels sit beside the control. Inline control — no overlay z-index. Checkbox toggle runtime (B) is later.
+
+Tide must bind a dark box (`--tide-surface-strong`), not a white square. The checkmark stays `--tide-heading`, not the page color.
+
+## Radio chrome roles
+
+Library themes bind the shared radio contract so `[radio]` paint is theme-agnostic in `radio.scss`. Required names (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-radio-*`, `--kw-radio-*`, `--cm-radio-*`, `--tide-radio-*`, …). App-owned generated themes use `--jx-radio-*` and bind `--juice-radio-*` from existing `--jx-*` surface/page/accent tokens. Do not invent a new hue family just for radio chrome. `[radio]` is a surface disc, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[radio]` the same way.
+
+This is Juice chrome for the APG Radio pattern — one option in a radiogroup. It is not `[switch]`, not `[checkbox]`, and not a native `<input type="radio">` restyle as the only story. A boolean `[radio]` attribute is fine (no HTML global `radio` attr). Primary host is `<button type="button" radio>`; a native radio host is allowed (`:checked` paints that path). `[radiogroup]` is the group root and is layout only: no `--juice-radiogroup-*` roles. Authors use `stack` / `row` / `gap`. The disc is the host and the dot is `::after`. Do not style bare `[role="radio"]` or `[role="radiogroup"]`. Checked paint for static demos is `aria-checked="true"`. There is no ink role — labels sit beside the option. Inline control — no overlay z-index. Exclusive keyboard (B) is later.
+
+Tide must bind a dark disc (`--tide-surface-strong`), not a white ring. The dot stays `--tide-accent`, not the page color.
 
 ## Wizard chrome roles
 

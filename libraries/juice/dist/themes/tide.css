@@ -359,6 +359,36 @@
   --juice-slider-thumb-border: var(--tide-slider-thumb-border);
   --juice-slider-thumb-shadow: var(--tide-slider-thumb-shadow);
   --juice-slider-focus-ring: var(--tide-slider-focus-ring);
+  /* Checkbox chrome — dark box, not a white square. The host is a
+     surface control, not a CTA. Binary only. Distinct from switch
+     and menuitemcheckbox. */
+  --tide-checkbox-control: var(--tide-surface-strong);
+  --tide-checkbox-control-checked: var(--tide-accent);
+  --tide-checkbox-border: var(--tide-border);
+  --tide-checkbox-border-checked: var(--tide-accent);
+  --tide-checkbox-mark: var(--tide-heading);
+  --tide-checkbox-focus-ring: var(--tide-accent);
+  --juice-checkbox-control: var(--tide-checkbox-control);
+  --juice-checkbox-control-checked: var(--tide-checkbox-control-checked);
+  --juice-checkbox-border: var(--tide-checkbox-border);
+  --juice-checkbox-border-checked: var(--tide-checkbox-border-checked);
+  --juice-checkbox-mark: var(--tide-checkbox-mark);
+  --juice-checkbox-focus-ring: var(--tide-checkbox-focus-ring);
+  /* Radio chrome — dark disc, not a white ring. The host is a surface
+     control, not a CTA. The group is layout-only. Distinct from switch
+     and checkbox. */
+  --tide-radio-control: var(--tide-surface-strong);
+  --tide-radio-control-checked: var(--tide-surface-strong);
+  --tide-radio-border: var(--tide-border);
+  --tide-radio-border-checked: var(--tide-accent);
+  --tide-radio-mark: var(--tide-accent);
+  --tide-radio-focus-ring: var(--tide-accent);
+  --juice-radio-control: var(--tide-radio-control);
+  --juice-radio-control-checked: var(--tide-radio-control-checked);
+  --juice-radio-border: var(--tide-radio-border);
+  --juice-radio-border-checked: var(--tide-radio-border-checked);
+  --juice-radio-mark: var(--tide-radio-mark);
+  --juice-radio-focus-ring: var(--tide-radio-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1100,5 +1130,73 @@
 [theme=tide] button[slider-thumb]:focus-visible,
 [theme=tide] [slider-thumb]:focus-visible {
   outline: 2px solid var(--juice-slider-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The box stays dark. The host is a surface control, not a CTA.
+   Binary only. Runtime is later. */
+[theme=tide] button[checkbox],
+[theme=tide] [checkbox] {
+  background-image: none;
+  background-color: var(--juice-checkbox-control);
+  border-color: var(--juice-checkbox-border);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[checkbox][aria-checked=true],
+[theme=tide] [checkbox][aria-checked=true],
+[theme=tide] [checkbox]:checked {
+  background-image: none;
+  background-color: var(--juice-checkbox-control-checked);
+  border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme=tide] button[checkbox]:hover,
+[theme=tide] [checkbox]:hover,
+[theme=tide] button[checkbox]:focus-visible,
+[theme=tide] [checkbox]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[checkbox]:focus-visible,
+[theme=tide] [checkbox]:focus-visible {
+  outline: 2px solid var(--juice-checkbox-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The disc stays dark. The host is a surface control, not a CTA.
+   Group layout is author-owned. Runtime is later. */
+[theme=tide] button[radio],
+[theme=tide] [radio] {
+  background-image: none;
+  background-color: var(--juice-radio-control);
+  border-color: var(--juice-radio-border);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[radio][aria-checked=true],
+[theme=tide] [radio][aria-checked=true],
+[theme=tide] [radio]:checked {
+  background-image: none;
+  background-color: var(--juice-radio-control-checked);
+  border-color: var(--juice-radio-border-checked);
+}
+
+[theme=tide] button[radio]:hover,
+[theme=tide] [radio]:hover,
+[theme=tide] button[radio]:focus-visible,
+[theme=tide] [radio]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[radio]:focus-visible,
+[theme=tide] [radio]:focus-visible {
+  outline: 2px solid var(--juice-radio-focus-ring);
   outline-offset: 2px;
 }

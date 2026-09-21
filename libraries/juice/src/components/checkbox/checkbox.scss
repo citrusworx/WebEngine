@@ -1,0 +1,182 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Checkbox chrome is structural. Color comes from the shared role contract:
+//   --juice-checkbox-control
+//   --juice-checkbox-control-checked
+//   --juice-checkbox-border
+//   --juice-checkbox-border-checked
+//   --juice-checkbox-mark
+//   --juice-checkbox-focus-ring
+// Themes bind those names (and optional --aqua-checkbox-* / --kw-checkbox-* /
+// --cm-checkbox-* / --tide-checkbox-* / --jx-checkbox-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG Checkbox (binary). Distinct from:
+//   - [switch] (toggle; already shipped)
+//   - native <input type="checkbox"> restyle as the only story
+//   - menu menuitemcheckbox (out of scope)
+//   - tri-state (aria-checked="mixed" is not painted in v1)
+//
+// Native collision: there is no HTML *global* `checkbox` attribute. A boolean
+// [checkbox] attribute has no platform behavior. Do not restyle bare
+// [role="checkbox"] — attrs own Juice structure (same rule as switch).
+//
+// Juice names:
+//   [checkbox]  the control root (boolean attr). Primary host is
+//               <button type="button" checkbox>. A native
+//               <input type="checkbox" checkbox> is a valid secondary
+//               story (:checked paints that path). Visible labels live
+//               beside the control (<label>, aria-label, or
+//               aria-labelledby) — the host *is* the box.
+//
+// The box is the host. The checkmark is ::after. There is no
+// [checkbox-box] child. This slice does not size the control: no
+// checkbox-size, and scale does not change box geometry.
+//
+// Checked paint: aria-checked="true" (button host, and the honest static
+// demo before runtime). :checked covers a native checkbox host.
+//
+// z-index: inline control — no floating overlay band.
+
+@function -juice-checkbox-role($name, $fallback) {
+    @return var(
+        --juice-checkbox-#{$name},
+        var(--aqua-checkbox-#{$name}, var(--kw-checkbox-#{$name}, var(--cm-checkbox-#{$name}, var(--tide-checkbox-#{$name}, var(--jx-checkbox-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-checkbox-control: -juice-checkbox-role(control, #{$white-100});
+$_juice-checkbox-control-checked: -juice-checkbox-role(control-checked, #{$black-700});
+$_juice-checkbox-border: -juice-checkbox-role(border, #{$gray-300});
+$_juice-checkbox-border-checked: -juice-checkbox-role(border-checked, #{$black-700});
+$_juice-checkbox-mark: -juice-checkbox-role(mark, #{$white-100});
+
+// [theme] [checkbox] must beat theme semantic defaults such as
+// [theme="…"] :where(button) CTA paint and :where(input) field chrome.
+// Themes realize color through the roles.
+
+[checkbox],
+button[checkbox],
+[theme] [checkbox],
+[theme] button[checkbox] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid $_juice-checkbox-border;
+    border-radius: 0.25rem;
+    font: inherit;
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
+    cursor: pointer;
+    background-color: $_juice-checkbox-control;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    overflow: hidden;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+[checkbox]::after,
+button[checkbox]::after,
+[theme] [checkbox]::after,
+[theme] button[checkbox]::after {
+    content: "";
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    display: block;
+    width: 0.3rem;
+    height: 0.55rem;
+    border: solid transparent;
+    border-width: 0 2px 2px 0;
+    box-sizing: border-box;
+    background: none;
+    transform: translate(-50%, -58%) rotate(45deg) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+}
+
+[checkbox][aria-checked="true"],
+[checkbox]:checked,
+button[checkbox][aria-checked="true"],
+button[checkbox]:checked,
+[theme] [checkbox][aria-checked="true"],
+[theme] [checkbox]:checked,
+[theme] button[checkbox][aria-checked="true"],
+[theme] button[checkbox]:checked {
+    background-color: $_juice-checkbox-control-checked;
+    background-image: none;
+    border-color: $_juice-checkbox-border-checked;
+}
+
+[checkbox][aria-checked="true"]::after,
+[checkbox]:checked::after,
+button[checkbox][aria-checked="true"]::after,
+button[checkbox]:checked::after,
+[theme] [checkbox][aria-checked="true"]::after,
+[theme] [checkbox]:checked::after,
+[theme] button[checkbox][aria-checked="true"]::after,
+[theme] button[checkbox]:checked::after {
+    border-color: $_juice-checkbox-mark;
+    opacity: 1;
+    transform: translate(-50%, -58%) rotate(45deg) scale(1);
+}
+
+[checkbox]:hover,
+[checkbox]:focus-visible,
+button[checkbox]:hover,
+button[checkbox]:focus-visible,
+[theme] [checkbox]:hover,
+[theme] [checkbox]:focus-visible,
+[theme] button[checkbox]:hover,
+[theme] button[checkbox]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[checkbox]:focus-visible,
+button[checkbox]:focus-visible,
+[theme] [checkbox]:focus-visible,
+[theme] button[checkbox]:focus-visible {
+    outline: 2px solid -juice-checkbox-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[checkbox]:disabled,
+[checkbox][aria-disabled="true"],
+button[checkbox]:disabled,
+button[checkbox][aria-disabled="true"],
+[theme] [checkbox]:disabled,
+[theme] [checkbox][aria-disabled="true"],
+[theme] button[checkbox]:disabled,
+[theme] button[checkbox][aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [checkbox],
+    button[checkbox],
+    [theme] [checkbox],
+    [theme] button[checkbox],
+    [checkbox]::after,
+    button[checkbox]::after,
+    [theme] [checkbox]::after,
+    [theme] button[checkbox]::after {
+        transition: none;
+    }
+}

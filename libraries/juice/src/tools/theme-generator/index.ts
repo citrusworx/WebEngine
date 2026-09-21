@@ -680,6 +680,38 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-slider-thumb-shadow: var(--jx-slider-thumb-shadow);
     --juice-slider-focus-ring: var(--jx-slider-focus-ring);
 
+    /* Checkbox chrome — APG checkbox from existing --jx-* tokens.
+       The host is a surface box, not the CTA fill. Binary only.
+       Distinct from switch and menuitemcheckbox. */
+    --jx-checkbox-control: var(--jx-surface);
+    --jx-checkbox-control-checked: var(--jx-accent);
+    --jx-checkbox-border: var(--jx-border);
+    --jx-checkbox-border-checked: var(--jx-accent);
+    --jx-checkbox-mark: var(--jx-text-inverse);
+    --jx-checkbox-focus-ring: var(--jx-accent);
+    --juice-checkbox-control: var(--jx-checkbox-control);
+    --juice-checkbox-control-checked: var(--jx-checkbox-control-checked);
+    --juice-checkbox-border: var(--jx-checkbox-border);
+    --juice-checkbox-border-checked: var(--jx-checkbox-border-checked);
+    --juice-checkbox-mark: var(--jx-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--jx-checkbox-focus-ring);
+
+    /* Radio chrome — APG radio from existing --jx-* tokens.
+       The host is a surface disc, not the CTA fill. Group layout
+       is author-owned. Distinct from switch and checkbox. */
+    --jx-radio-control: var(--jx-surface);
+    --jx-radio-control-checked: var(--jx-surface);
+    --jx-radio-border: var(--jx-border);
+    --jx-radio-border-checked: var(--jx-accent);
+    --jx-radio-mark: var(--jx-accent);
+    --jx-radio-focus-ring: var(--jx-accent);
+    --juice-radio-control: var(--jx-radio-control);
+    --juice-radio-control-checked: var(--jx-radio-control-checked);
+    --juice-radio-border: var(--jx-radio-border);
+    --juice-radio-border-checked: var(--jx-radio-border-checked);
+    --juice-radio-mark: var(--jx-radio-mark);
+    --juice-radio-focus-ring: var(--jx-radio-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1270,6 +1302,90 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [slider-thumb]:focus-visible,
 [theme="${config.id}"] button[slider-thumb]:focus-visible {
     outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] button[checkbox],
+[theme="${config.id}"] [checkbox] {
+    background: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] button[checkbox][aria-checked="true"],
+[theme="${config.id}"] [checkbox][aria-checked="true"],
+[theme="${config.id}"] [checkbox]:checked {
+    background: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="${config.id}"] button[checkbox]:hover,
+[theme="${config.id}"] [checkbox]:hover,
+[theme="${config.id}"] button[checkbox]:focus-visible,
+[theme="${config.id}"] [checkbox]:focus-visible {
+    background: var(--juice-checkbox-control);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] button[checkbox][aria-checked="true"]:hover,
+[theme="${config.id}"] [checkbox][aria-checked="true"]:hover,
+[theme="${config.id}"] [checkbox]:checked:hover,
+[theme="${config.id}"] button[checkbox][aria-checked="true"]:focus-visible,
+[theme="${config.id}"] [checkbox][aria-checked="true"]:focus-visible,
+[theme="${config.id}"] [checkbox]:checked:focus-visible {
+    background: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [checkbox]:focus-visible,
+[theme="${config.id}"] button[checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] button[radio],
+[theme="${config.id}"] [radio] {
+    background: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] button[radio][aria-checked="true"],
+[theme="${config.id}"] [radio][aria-checked="true"],
+[theme="${config.id}"] [radio]:checked {
+    background: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="${config.id}"] button[radio]:hover,
+[theme="${config.id}"] [radio]:hover,
+[theme="${config.id}"] button[radio]:focus-visible,
+[theme="${config.id}"] [radio]:focus-visible {
+    background: var(--juice-radio-control);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] button[radio][aria-checked="true"]:hover,
+[theme="${config.id}"] [radio][aria-checked="true"]:hover,
+[theme="${config.id}"] [radio]:checked:hover,
+[theme="${config.id}"] button[radio][aria-checked="true"]:focus-visible,
+[theme="${config.id}"] [radio][aria-checked="true"]:focus-visible,
+[theme="${config.id}"] [radio]:checked:focus-visible {
+    background: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [radio]:focus-visible,
+[theme="${config.id}"] button[radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
     outline-offset: 2px;
 }
 
