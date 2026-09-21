@@ -324,7 +324,7 @@ See [Toast Runtime](./juice-toast-runtime.md). Theme paint uses `--juice-toast-*
 
 Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Compose layout and status: `<div banner="full" banner-tone="warning">`. The runtime auto-enhances that markup (`show` / `dismiss`); there is no focus trap and no Escape steal.
 
-Theme paint uses `--juice-banner-*` roles (`panel`, `panel-border`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`). There is no panel-shadow role.
+See [Banner Runtime](./juice-banner-runtime.md). Theme paint uses `--juice-banner-*` roles (`panel`, `panel-border`, `ink`, `close`, `close-color`, `close-hover`, `focus-ring`, plus `success` / `success-soft`, `error` / `error-soft`, `info` / `info-soft`, `warning` / `warning-soft`). There is no panel-shadow role.
 
 ### Popover
 

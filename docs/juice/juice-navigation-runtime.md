@@ -257,4 +257,5 @@ That is the right mental model for:
 - wizards / multi-step shells
 - tooltips / hover-focus tips
 - comboboxes / list autocomplete
+- banners / inline alerts
 - other built-in responsive interactions

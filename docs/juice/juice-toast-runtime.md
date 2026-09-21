@@ -28,7 +28,7 @@ There is no `Toast()` Sig factory. Markup plus the runtime is the contract. Ther
 
 This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
-Toast is not a dialog. It is a non-modal stack.
+Toast is not a dialog. It is a non-modal stack. It is not an inline banner / callout.
 
 ## Markup Contract
 
@@ -182,7 +182,7 @@ Arrow-key roving is intentionally out of scope.
 - Orphan `[toast]` nodes that are not inside `[toast-region]` are ignored.
 - Toast is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed.
 - Individual toasts use native `hidden`, never layout `content=`. The region stays in the DOM.
-- Centered modal / dialog and edge-docked drawer behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md).
+- Centered modal / dialog, edge-docked drawer, and inline banner / callout behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Banner Runtime](./juice-banner-runtime.md).
 - Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay exists.
 
 ## Why This Matches Navigation

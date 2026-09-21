@@ -74,6 +74,7 @@ Examples:
 * popovers should use a `[popover-root]` wrapper, a `[popover-panel]` surface, and `aria-controls` openers — never a bare `popover` attribute
 * tooltips should use a `[tooltip-root]` wrapper, a `[tooltip-panel]` surface, and `aria-describedby` triggers — never a bare `tooltip` attribute or native `title`
 * comboboxes should use a `[combobox]` root, `[combobox-input]`, `[combobox-list]`, and `[combobox-option]` rows — not a native `<select>` restyle
+* banners should use a `[banner]` / `[banner="full"]` root, optional `[banner-tone]`, `[banner-body]`, and `[banner-close]` — not a toast stack
 * wizards should use a `[wizard-shell]` root, `[step]` tracker items, and `[step-page]` panels
 * nav components should still rely on `nav`
 * cards should not fake semantics unless needed
