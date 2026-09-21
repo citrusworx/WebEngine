@@ -35,6 +35,8 @@
 // Closed vs open uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
 // Runtime toggles [hidden] on [banner] and wires [banner-close].
+// Optional banner-persist="session|local" plus name/id remembers dismiss.
+// No Escape steal, no focus trap, no auto-dismiss timer.
 // Optional surfaceTone on [banner] is allowed; do not force it.
 
 @function -juice-banner-role($name, $fallback) {
