@@ -34,6 +34,9 @@ function compileFile(file: string): string {
 
 function stripSqlComments(sql: string): string {
     return sql
+        // CRLF must be replaced before lone CR, or each \r\n becomes two newlines.
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
         .split("\n")
         .filter((line) => !line.trim().startsWith("--"))
         .join("\n")
@@ -120,8 +123,12 @@ describe("Blackwater schema YAML DDL", () => {
             ],
             "postgres",
         );
-        const initSql = stripSqlComments(fs.readFileSync(initSqlPath, "utf8"));
+        const rawInitSql = fs.readFileSync(initSqlPath, "utf8");
+        const initSql = stripSqlComments(rawInitSql);
         expect(initSql).toBe(live);
+        const lfInitSql = rawInitSql.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+        expect(stripSqlComments(lfInitSql.replace(/\n/g, "\r\n"))).toBe(live);
+        expect(stripSqlComments(lfInitSql.replace(/\n/g, "\r"))).toBe(live);
         expect(initSql).toContain("payload JSONB NOT NULL");
         expect(initSql).not.toContain("ALTER TABLE");
     });
