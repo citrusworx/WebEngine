@@ -179,7 +179,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape closes the open popover and returns focus to the opener, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape). Combobox, toast, and tooltip yield to an open popover. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape closes the open popover and returns focus to the opener, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape). Menu sits in the same Escape band as popover. Combobox, toast, and tooltip yield to an open popover or an open menu. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Tab / Shift+Tab wrap inside the open panel (focus trap). The background is not inert
 - Enter and Space activate non-button openers and `[popover-close]` controls (native buttons already synthesize a click)
 
@@ -195,7 +195,7 @@ Arrow-key roving is intentionally out of scope. This is not `role="menu"`.
 - The panel is a non-modal dialog: `role="dialog"` without `aria-modal`. The background stays interactive.
 - Placement has no Floating UI. One opposite-side flip only; no shift or size middleware.
 - Centered modal / dialog, edge-docked drawer, and toast-stack behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Toast Runtime](./juice-toast-runtime.md).
-- Escape dismisses the open popover only when no open modal/drawer overlay exists. Combobox, toast, and tooltip yield to an open popover. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape dismisses the open popover only when no open modal/drawer overlay exists. Menu sits in the same Escape band. Combobox, toast, and tooltip yield to an open popover or an open menu. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 ## Why This Matches Navigation
 

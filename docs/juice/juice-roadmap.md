@@ -6,7 +6,7 @@
 
 **0.7.0 is the public cut.** Drawer A→B→C, toast A→B→C, and popover A→B→C (theme chrome, runtime, runtime / maturity docs) shipped in this lane. 0.6.0 was the prior public npm cut.
 
-**Master is ahead of 0.7.0.** Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C (theme chrome, runtime, runtime / maturity docs) live on master and are not in the published tarball. Do not run `yarn version-packages` or publish from this picture. Do not invent a next version number; the next cut happens when new Juice changesets are consumed.
+**Master is ahead of 0.7.0.** Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C (theme chrome, runtime, runtime / maturity docs) live on master and are not in the published tarball. Do not run `yarn version-packages` or publish from this picture. Do not invent a next version number; the next cut happens when new Juice changesets are consumed.
 
 Consumed Juice changesets (the 0.7.0 lane):
 
@@ -41,6 +41,9 @@ Pending Juice changesets on master (consume them at the next cut; Juice-only if 
 | `juice-escape-layering` | **patch** | Escape yield order across the eleven Emerging runtimes (polish A) |
 | `juice-runtime-shared-primitives` | **patch** | Internal shared runtime primitives under `src/js/src/shared/` (polish B) |
 | `juice-runtime-docs-maturity` | **patch** | Docs / Limitations / z-index / maturity consistency (polish C) |
+| `juice-menu-theme-chrome` | **minor** | Menu theme chrome roles (`--juice-menu-*`) |
+| `juice-menu-runtime` | **minor** | DOM-first APG menu-button runtime (`createMenu`, open/close/toggle/select, Escape with popover) |
+| `juice-menu-runtime-docs` | **patch** | Menu runtime / maturity docs (slice C) |
 
 Consumed Juice changesets (the 0.6.0 lane):
 
@@ -68,8 +71,8 @@ The visible layers today (0.7.0 plus unreleased master):
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
 * surface language A–C: themeable `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`
-* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner auto-enhance when the JS entry is imported
-* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, or Sig Banner factory)
+* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu auto-enhance when the JS entry is imported
+* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, or Sig Menu factory)
 * contracts for themes, icons, and typography, including author type overrides
 * templates as a stress-test bed
 
@@ -80,14 +83,14 @@ The next strongest areas are now:
 * modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one)
 * motion wave 1 (P0 + P1)
 * surface utilities A–C
-* accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner chrome plus DOM-first auto-enhance
+* accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu chrome plus DOM-first auto-enhance
 * documented theme / icon / typography contracts
 * templates as design proofs
 
 The weakest areas are still:
 
 * remaining surface depth (structural `card="…"` recipes; `shadowTone`, `overlay`, and `variant` utilities are in)
-* component maturity beyond the eleven auto-enhance runtimes
+* component maturity beyond the twelve auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
 * Juice CLI and config / generator workflow
@@ -141,7 +144,7 @@ This is the stack on master that is not in the 0.7.0 tarball.
 * **Combobox A→B→C.** Shared `--juice-combobox-*` roles for `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` (#152). DOM-first listbox runtime (#153): `createCombobox` / `initCombobox` / `startComboboxRuntime` / `stopComboboxRuntime`, auto-boot, `open` / `close` / `toggle` / `select`, case-insensitive substring filter on option text / `data-value` (non-matches get `hidden`), keyboard (ArrowUp/Down, Home/End, Enter selects, Escape closes, Tab closes without commit), `aria-activedescendant` plus `aria-expanded` on the input (and trigger), exclusive among comboboxes. Select writes option text or `data-value`; committed choice is `aria-selected` plus `combobox-option="active"` for keyboard focus. Placement is CSS-only (absolute under the field); no Floating UI. Distinct from native `<select>`. Runtime docs and maturity notes in this pass. Distinct from surface `overlay="frost|tint"` and from modal/drawer/toast/popover/wizard/tooltip. No Sig Combobox factory. No multi-select / async fetch. Still unpublished vs 0.7.0.
 * **Banner A→B→C.** Shared `--juice-banner-*` roles for `[banner]` / `[banner-body]` / `[banner-close]` (#160). DOM-first dismiss runtime (#161): `createBanner` / `initBanner` / `startBannerRuntime` / `stopBannerRuntime`, auto-boot, `show` / `dismiss`, `[banner-close]` click / keyboard, `role="status"` (or `role="alert"` for error/warning), optional `banner-persist="session|local"` with `name` / `id` (`juice-banner:<key>`). No focus trap, no Escape steal, no auto-dismiss timer. Distinct from toast stack and from modal/drawer. Runtime docs and maturity notes in this pass. No Sig Banner factory. Still unpublished vs 0.7.0.
 * **Eleven-runtime polish A→B→C.** Escape / layering (#166): modal/drawer → popover → combobox → toast/tooltip as implemented; banner never; accordion contextual; tabs / nav / wizard out of scope. Shared internals (#167) under `libraries/juice/src/js/src/shared/` (not a public API). Docs / Limitations / z-index / maturity consistency in this pass. The eleven stay **Emerging**. Wizard–banner remain unpublished vs 0.7.0.
-* **Menu A (theme chrome).** Shared `--juice-menu-*` roles for `[menu-root]` / `[menu]` / `[menuitem]` (APG Menu Button). Boolean `[menu]` attr (no HTML global `menu`; not the `<menu>` element). Placement CSS-absolute from the root (`top|bottom|left|right`); z-index 1050. Distinct from popover, combobox, native `<select>`, menubar, and context menu. No runtime, no Sig Menu factory. Slice B (menu-button runtime) and C (docs / maturity) later. Still unpublished vs 0.7.0.
+* **Menu A→B→C.** Shared `--juice-menu-*` roles for `[menu-root]` / `[menu]` / `[menuitem]` (#171). DOM-first APG menu-button runtime (#174): `createMenu` / `initMenu` / `startMenuRuntime` / `stopMenuRuntime`, auto-boot, `open` / `close` / `toggle` / `select`, opener pairing (`[menu-button]` or a plain control inside the root), roving tabindex on `[menuitem]`, exclusive among menus, Escape with popover (yields to modal/drawer; combobox / toast / tooltip yield to an open menu). Boolean `[menu]` attr (no HTML global `menu`; not the `<menu>` element). Placement CSS-absolute from the root (`top|bottom|left|right`); z-index 1050. Distinct from popover, combobox, native `<select>`, menubar, and context menu. No submenus, no typeahead, no Sig Menu factory. Runtime docs and maturity notes in this pass. Menu is the twelfth Emerging auto-enhance runtime. Still unpublished vs 0.7.0.
 
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
@@ -173,7 +176,7 @@ Authors can compose visual character with the shipped utilities. Structural card
 
 ### 2. Components Are Uneven Beyond the Runtimes
 
-Accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, or Sig Banner factory.
+Accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, or Sig Menu factory.
 
 That is not the same as a polished component library. Cards, buttons, forms, and nav variants are useful and still settling. Prop contracts for styling internal parts are still being figured out. Juice should not pretend the exported component surface is broader or more mature than it is.
 
@@ -201,7 +204,7 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 ### Closed / done on master (old P1–P3, plus 0.6.0 and 0.7.0 publish)
 
-These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (unpublished vs 0.7.0). The eleven-runtime polish pass (Escape / layering, shared internals, docs consistency) is also closed on master. All eleven stay Emerging.
+These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are done on master (unpublished vs 0.7.0). All twelve stay Emerging.
 
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
@@ -234,13 +237,13 @@ Combobox **A→B→C is done on master** (still unpublished vs 0.7.0): theme chr
 
 Banner **A→B→C is done on master** (still unpublished vs 0.7.0): theme chrome (`--juice-banner-*`), dismiss runtime, and runtime / maturity docs. Valid `[banner]` markup auto-enhances. Banner is the eleventh Emerging auto-enhance runtime.
 
-**Eleven-runtime polish A→B→C is closed on master.** Escape / layering, shared internals, and docs / Limitations / z-index consistency. The eleven stay Emerging.
+**Eleven-runtime polish A→B→C is closed on master.** Escape / layering, shared internals, and docs / Limitations / z-index consistency. Those eleven stay Emerging.
 
-Menu **A (theme chrome) is this lane.** Shared `--juice-menu-*` roles for `[menu-root]` / `[menu]` / `[menuitem]`. APG Menu Button, not popover / combobox / native `<select>`. Runtime (B) and docs (C) later. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, or Sig Menu factory stays later. Grow the next runtime only when that markup contract stays honest.
+Menu **A→B→C is done on master** (still unpublished vs 0.7.0): theme chrome (`--juice-menu-*`), APG menu-button runtime, and runtime / maturity docs. Valid `[menu-root]` markup auto-enhances. Menu is the twelfth Emerging auto-enhance runtime. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, or Sig Menu factory stays later. Grow the next runtime only when that markup contract stays honest.
 
 Short-term focus remains:
 
-* keep navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner documented as Emerging until they settle
+* keep navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu documented as Emerging until they settle
 * improve component authoring patterns
 * ensure anything newly exported is actually ready
 * grow the next runtime only when that markup contract stays honest
@@ -262,10 +265,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (chrome, runtime, docs). Eleven-runtime polish A→B→C is closed on master. Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are done on master (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner / menu Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard A→B→C plus tooltip A→B→C plus combobox A→B→C plus banner A→B→C on master, and the eleven-runtime polish pass (Escape / layering, shared internals, docs consistency). Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard A→B→C plus tooltip A→B→C plus combobox A→B→C plus banner A→B→C on master, the eleven-runtime polish pass (Escape / layering, shared internals, docs consistency), and menu A→B→C on master. Do not invent a next version number; the next cut happens when new Juice changesets exist.
 
 ---
 
@@ -277,12 +280,12 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 **0.7.0 is the live npm cut** for drawer, toast, and popover A→B→C.
 
-Master is ahead of that cut. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are on master and unpublished. The eleven-runtime polish pass (Escape / layering, shared internals, docs consistency) is closed on master. All eleven stay Emerging.
+Master is ahead of that cut. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are on master and unpublished. All twelve stay Emerging.
 
 The next stage is post-0.7.0 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, and banner A→B→C are done on master (still unpublished vs 0.7.0); eleven-runtime polish A→B→C is closed; grow the next runtime only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are done on master (still unpublished vs 0.7.0); grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.

@@ -170,7 +170,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape dismisses the most recently shown visible toast, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[combobox-list]`, or `[tooltip-root]` exists (those surfaces own Escape first). An open tip hides while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape dismisses the most recently shown visible toast, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, `[combobox-list]`, or `[tooltip-root]` exists (those surfaces own Escape first). An open tip hides while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Enter and Space activate non-button `[toast-close]` controls (native buttons already synthesize a click)
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the toast on show.
 
@@ -183,7 +183,7 @@ Arrow-key roving is intentionally out of scope.
 - Toast is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed.
 - Individual toasts use native `hidden`, never layout `content=`. The region stays in the DOM.
 - Centered modal / dialog, edge-docked drawer, and inline banner / callout behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Banner Runtime](./juice-banner-runtime.md).
-- Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay, popover, combobox list, or tooltip exists. Toast does not block tooltip Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay, popover, menu, combobox list, or tooltip exists. Toast does not block tooltip Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Region chrome is `z-index: 1100`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 
 ## Why This Matches Navigation

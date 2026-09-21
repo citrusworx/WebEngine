@@ -368,18 +368,19 @@ See [Combobox Runtime](./juice-combobox-runtime.md). Theme paint uses `--juice-c
 
 ### Menu
 
-- `menu-root` — composite wrapper (opener + panel). Values `"top"` / `"bottom"` / `"left"` / `"right"` (bare or unspecified is bottom). CSS-absolute placement of `[menu]`; no Floating UI
+- `menu-root` — composite wrapper (opener + panel); required for the menu-button runtime. Values `"top"` / `"bottom"` / `"left"` / `"right"` (bare or unspecified is bottom). CSS-absolute placement of `[menu]`; no Floating UI
 - `menu-button` — optional opener chrome (surface paint, not a CTA). Authors who want a themed CTA opener omit this attr and use a plain button inside `[menu-root]`
-- `menu` — the menu panel (`role="menu"` later). Hide with the native `hidden` attribute. A boolean `[menu]` attribute is fine: there is no HTML global `menu` attribute, and unlike `popover=""` it has no platform behavior. Do not use the HTML `<menu>` element
-- `menuitem` — item row (`role="menuitem"` later). Value `"active"` is keyboard / visual focus
-- `menu-separator` — non-interactive divider (`role="separator"` later)
+- `menu` — the menu panel (`role="menu"`). Hide with the native `hidden` attribute. A boolean `[menu]` attribute is fine: there is no HTML global `menu` attribute, and unlike `popover=""` it has no platform behavior. Do not use the HTML `<menu>` element
+- `menuitem` — item row (`role="menuitem"`). Value `"active"` is keyboard / visual focus (roving tabindex)
+- `menu-separator` — non-interactive divider (`role="separator"`)
 - `menu-label` — non-interactive group label
+- `name` — optional root slug for generated ids
 
-Pairing is wrapped: `[menu-root]` contains the opener and `[menu]`. APG pairing for the later runtime is opener `aria-haspopup="menu"` plus `aria-controls` pointing at the `[menu]` id. Closed vs open is `hidden` on `[menu]`, not the root.
+Pairing is wrapped: `[menu-root]` contains the opener and `[menu]`. The runtime fills opener `aria-haspopup="menu"` plus `aria-controls` pointing at the `[menu]` id. Closed vs open is `hidden` on `[menu]`, not the root.
 
-Menu is an APG menu button. It is not a popover, not a combobox, not a native `<select>`, not a menubar, and not the surface `overlay="frost|tint"` utility. Placement is CSS-only (absolute from the root). This slice is chrome only; the menu-button runtime is later.
+Menu is an APG menu button. It is not a popover, not a combobox, not a native `<select>`, not a menubar, not a context menu, and not the surface `overlay="frost|tint"` utility. Placement is CSS-only (absolute from the root). No submenus and no typeahead in v1. The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`); Escape sits with popover (yields to modal/drawer). There is no focus trap and no Sig Menu factory.
 
-Theme paint uses `--juice-menu-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`).
+See [Menu Runtime](./juice-menu-runtime.md). Theme paint uses `--juice-menu-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`).
 
 ### Wizard
 
