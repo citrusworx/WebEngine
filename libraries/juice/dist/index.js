@@ -3575,8 +3575,128 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Ga = null, Wa || qa();
 }, document.addEventListener("DOMContentLoaded", Ga)) : qa());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/progress/progress-runtime.ts
 var Ya = {
+	root: typeof document < "u" ? document : {},
+	progressSelector: "[progress]"
+}, Xa = (e) => Array.from(e), Za = (e, t, n) => Math.min(n, Math.max(t, e)), Qa = (e) => {
+	if (!Number.isFinite(e) || Object.is(e, -0)) return "0";
+	let t = Math.round(e * 1e6) / 1e6;
+	return String(t);
+}, $a = (e, t) => {
+	let n = e.getAttribute(t);
+	if (n == null) return null;
+	let r = n.trim();
+	if (r === "") return null;
+	let i = Number(r);
+	return Number.isFinite(i) ? i : null;
+}, eo = (e, t, n) => n === t ? 0 : Za((e - t) / (n - t), 0, 1), to = /* @__PURE__ */ new WeakMap(), no = (e) => {
+	let t = to.get(e);
+	return t || (t = {
+		value: null,
+		hidValueNow: !1
+	}, to.set(e, t)), t;
+}, ro = (e) => {
+	let t = $a(e, "aria-valuemin") ?? 0, n = $a(e, "aria-valuemax") ?? 100;
+	return {
+		min: t,
+		max: n < t ? t : n
+	};
+}, io = (e) => e.getAttribute("progress") === "indeterminate", ao = (e, t) => {
+	let { min: n, max: r } = ro(e), i = no(e), a = $a(e, "aria-valuenow"), o;
+	return o = t != null && Number.isFinite(t) ? Za(t, n, r) : a == null ? i.hidValueNow && i.value != null ? Za(i.value, n, r) : n : Za(a, n, r), {
+		min: n,
+		max: r,
+		value: o
+	};
+}, oo = () => ({
+	destroy: () => {},
+	sync: () => {},
+	setValue: () => {},
+	getValue: () => 0,
+	setIndeterminate: () => {},
+	isIndeterminate: () => !1
+}), so = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return oo();
+	let t = {
+		...Ya,
+		...e
+	}, n = t.root ?? document, r = !1, i = (e) => e?.matches(t.progressSelector) ? n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1 : !1, a = () => {
+		let e = Xa(n.querySelectorAll(t.progressSelector)).filter(i);
+		return n instanceof HTMLElement && i(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, o = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.progressSelector);
+		return !(n instanceof HTMLElement) || !i(n) ? null : n;
+	}, s = (e) => {
+		if (e) {
+			if (i(e)) return e;
+			let t = o(e);
+			if (t) return t;
+		}
+		return a().find((e) => i(e)) ?? null;
+	}, c = (e, t) => {
+		let n = io(e), { min: r, max: i, value: a } = ao(e, t), o = no(e);
+		o.value = a, o.hidValueNow = n, e.getAttribute("role") !== "progressbar" && e.setAttribute("role", "progressbar");
+		let s = Qa(r), c = Qa(i), l = Qa(a);
+		e.getAttribute("aria-valuemin") !== s && e.setAttribute("aria-valuemin", s), e.getAttribute("aria-valuemax") !== c && e.setAttribute("aria-valuemax", c), n ? e.hasAttribute("aria-valuenow") && e.removeAttribute("aria-valuenow") : e.getAttribute("aria-valuenow") !== l && e.setAttribute("aria-valuenow", l);
+		let u = Qa(eo(a, r, i));
+		e.style.getPropertyValue("--juice-progress-ratio").trim() !== u && e.style.setProperty("--juice-progress-ratio", u);
+	}, l = () => {
+		r || a().forEach((e) => {
+			i(e) && c(e);
+		});
+	}, u = (e, t) => {
+		if (!Number.isFinite(e)) return;
+		let n = s(t);
+		n && c(n, e);
+	}, d = (e) => {
+		let t = s(e);
+		return t ? ao(t).value : 0;
+	}, f = (e, t) => {
+		let n = s(t);
+		n && (e ? n.getAttribute("progress") !== "indeterminate" && n.setAttribute("progress", "indeterminate") : n.getAttribute("progress") !== "" && n.setAttribute("progress", ""), c(n));
+	}, p = (e) => {
+		let t = s(e);
+		return t ? io(t) : !1;
+	}, m = !1, h = 0, g = () => {
+		m || r || (m = !0, h = requestAnimationFrame(() => {
+			m = !1, l();
+		}));
+	}, _ = typeof MutationObserver < "u" ? new MutationObserver(() => g()) : null;
+	return _ && n instanceof Node && _.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"progress",
+			"role",
+			"aria-valuemin",
+			"aria-valuemax",
+			"aria-valuenow",
+			"aria-valuetext"
+		]
+	}), l(), {
+		destroy: () => {
+			r = !0, m &&= (cancelAnimationFrame(h), !1), _?.disconnect();
+		},
+		sync: l,
+		setValue: u,
+		getValue: d,
+		setIndeterminate: f,
+		isIndeterminate: p
+	};
+}, co = (e = {}) => so(e), lo = null, uo = !1, fo = null, po = () => {
+	!fo || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", fo), fo = null);
+}, mo = () => typeof window > "u" || typeof document > "u" ? null : (uo = !1, po(), lo ? (lo.sync(), lo) : (lo = so(), lo)), ho = () => {
+	uo = !0, po(), lo?.destroy(), lo = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (fo = () => {
+	fo = null, uo || mo();
+}, document.addEventListener("DOMContentLoaded", fo)) : mo());
+//#endregion
+//#region src/tokens/index.ts
+var go = {
 	colors: {
 		families: [
 			"black",
@@ -3744,4 +3864,4 @@ var Ya = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, qt as createPopover, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Jt as initPopover, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, $t as startPopoverRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, en as stopPopoverRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, Ya as tokens };
+export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, qt as createPopover, so as createProgress, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Jt as initPopover, co as initProgress, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, go as tokens };

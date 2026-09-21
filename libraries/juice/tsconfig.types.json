@@ -31,6 +31,7 @@
     "src/js/src/checkbox/checkbox-runtime.ts",
     "src/js/src/radio/radio-runtime.ts",
     "src/js/src/breadcrumb/breadcrumb-runtime.ts",
+    "src/js/src/progress/progress-runtime.ts",
     "src/js/src/shared/events.ts",
     "src/js/src/shared/focus.ts",
     "src/js/src/shared/ids.ts",
