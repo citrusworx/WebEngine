@@ -388,9 +388,9 @@ See [Menu Runtime](./juice-menu-runtime.md). Theme paint uses `--juice-menu-*` r
 
 Checked paint is `aria-checked="true"` so chrome and runtime share one story. There is no `switch="on"`. Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children, no `switch-size`, and `scale` does not change track/thumb geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name — the runtime does not invent one.
 
-Switch is an APG switch (toggle). It is not a form checkbox, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances button (and checkbox) `[switch]` markup (`toggle` / `check` / `uncheck` / `setChecked`); there is no focus trap and no Escape steal. No Sig Switch factory. Full runtime docs are later.
+Switch is an APG switch (toggle). It is not a form checkbox as the only story, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances button (and checkbox) `[switch]` markup (`toggle` / `check` / `uncheck` / `setChecked`); there is no focus trap, no Escape steal, and no tri-state. No Sig Switch factory.
 
-Theme paint uses `--juice-switch-*` roles (`track`, `track-checked`, `thumb`, `thumb-checked`, `focus-ring`).
+See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switch-*` roles (`track`, `track-checked`, `thumb`, `thumb-checked`, `focus-ring`).
 
 ### Wizard
 
