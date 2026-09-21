@@ -26,7 +26,7 @@ The user should not need to manually initialize checkbox behavior in their app c
 
 There is no `Checkbox()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve. It is on master and is not in the `@citrusworx/juiceui@0.8.0` npm cut. Switch and slider are unpublished on that same cut.
+This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Checkbox is an APG **Checkbox** (a binary check). It is not `[switch]`, not a menu `menuitemcheckbox`, and not a layered overlay. No tri-state, no focus trap, and no Escape handling in v1.
 
@@ -188,7 +188,7 @@ Arrow-key roving is intentionally out of scope. This is one control, not a group
 ## Limitations
 
 - No `Checkbox()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. It is on master and unpublished versus `@citrusworx/juiceui@0.8.0`, along with switch and slider.
+- This surface is Emerging, not Stable-ish.
 - v1 is binary. `aria-checked="mixed"` coerces to `"false"`. There is no tri-state.
 - Authors must supply an accessible name. The runtime does not invent `aria-label` text.
 - Only button hosts and `input type="checkbox"` hosts are enhanced. Other `[checkbox]` elements are ignored.

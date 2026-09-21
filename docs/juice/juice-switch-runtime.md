@@ -26,7 +26,7 @@ The user should not need to manually initialize switch behavior in their app cod
 
 There is no `Switch()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve. It is on master and is not in the `@citrusworx/juiceui@0.8.0` npm cut.
+This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Switch is an APG **Switch** (a binary toggle). It is not a form checkbox as the only story, not a menu `menuitemcheckbox`, and not a layered overlay. No tri-state, no focus trap, and no Escape handling in v1.
 
@@ -186,7 +186,7 @@ Arrow-key roving is intentionally out of scope. This is one control, not a list.
 ## Limitations
 
 - No `Switch()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. It is on master and unpublished versus `@citrusworx/juiceui@0.8.0`.
+- This surface is Emerging, not Stable-ish.
 - v1 is binary. `aria-checked="mixed"` coerces to `"false"`. There is no tri-state and no `switch="on"`.
 - Authors must supply an accessible name. The runtime does not invent `aria-label` text.
 - Only button hosts and `input type="checkbox"` hosts are enhanced. Other `[switch]` elements are ignored.

@@ -129,9 +129,9 @@ const readJuiceVersion = (): string => {
   try {
     const raw = readFileSync(join(repoRoot, "libraries/juice/package.json"), "utf8");
     const parsed = JSON.parse(raw) as { version?: string };
-    return parsed.version ?? "0.8.0";
+    return parsed.version ?? "0.9.0";
   } catch {
-    return "0.8.0";
+    return "0.9.0";
   }
 };
 

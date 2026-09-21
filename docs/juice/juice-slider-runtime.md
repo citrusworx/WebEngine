@@ -26,7 +26,7 @@ The user should not need to manually initialize slider behavior in their app cod
 
 There is no `Slider()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve. It is on master and is not in the `@citrusworx/juiceui@0.8.0` npm cut. Switch is unpublished on that same cut.
+This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Slider is an APG **Slider** (a horizontal single-thumb control). It is not a native `<input type="range">` restyle, not a progress meter, and not a scrollbar. No vertical orientation, no multi-thumb, no focus trap, and no Escape handling in v1.
 
@@ -192,7 +192,7 @@ The step is `1`. The page step is `10`. Those are v1 constants, not author attri
 ## Limitations
 
 - No `Slider()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. It is on master and unpublished versus `@citrusworx/juiceui@0.8.0`, along with switch.
+- This surface is Emerging, not Stable-ish.
 - v1 is horizontal and single-thumb. `[slider="vertical"]` is not painted and is not enhanced. Extra thumbs are ignored. There is no multi-thumb slider.
 - There is no native `<input type="range">` restyle. A range input cannot host a `[slider-thumb]`.
 - Authors must supply an accessible name. The runtime does not invent `aria-label` text, and it does not invent or rewrite `aria-valuetext`.
