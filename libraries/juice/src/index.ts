@@ -111,4 +111,14 @@ export type {
     BannerController,
     BannerOptions
 } from "./js/src/banner/banner-runtime.js";
+export {
+    createMenu,
+    initMenu,
+    startMenuRuntime,
+    stopMenuRuntime
+} from "./js/src/menu/menu-runtime.js";
+export type {
+    MenuController,
+    MenuOptions
+} from "./js/src/menu/menu-runtime.js";
 export { tokens } from "./tokens/index.js";

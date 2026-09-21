@@ -18,6 +18,10 @@ import {
   stopDrawerRuntime,
 } from './drawer/drawer-runtime.js';
 import {
+  createMenu,
+  stopMenuRuntime,
+} from './menu/menu-runtime.js';
+import {
   createModal,
   stopModalRuntime,
 } from './modal/modal-runtime.js';
@@ -37,7 +41,7 @@ import {
 /**
  * Escape / layering contract (highest owns Escape first):
  * 1. open [modal-overlay] / [drawer-overlay] — independently exclusive
- * 2. open [popover-root]
+ * 2. open [popover-root] ≈ open [menu] (dialog-adjacent band)
  * 3. open [combobox-list]
  * 4. most-recent visible [toast]
  * 5. open [tooltip-root] (toast does not block the tip)
@@ -82,6 +86,12 @@ const stackedMarkup = `
       <div popover-body>Help</div>
     </div>
   </div>
+  <div menu-root>
+    <button type="button" menu-button id="stack-menu-open" aria-haspopup="menu" aria-controls="stack-menu">File</button>
+    <div menu id="stack-menu">
+      <button type="button" menuitem>New</button>
+    </div>
+  </div>
   <div combobox id="stack-combo">
     <input combobox-input id="stack-combo-input" type="text" />
     <ul combobox-list id="stack-combo-list">
@@ -106,6 +116,7 @@ const mountStacked = () => {
   stopModalRuntime();
   stopDrawerRuntime();
   stopPopoverRuntime();
+  stopMenuRuntime();
   stopComboboxRuntime();
   stopToastRuntime();
   stopTooltipRuntime();
@@ -115,6 +126,7 @@ const mountStacked = () => {
     modal: createModal({ root: document.body }),
     drawer: createDrawer({ root: document.body }),
     popover: createPopover({ root: document.body }),
+    menu: createMenu({ root: document.body }),
     combobox: createCombobox({ root: document.body }),
     toast: createToast({ root: document.body, defaultDuration: 0 }),
     tooltip: createTooltip({ root: document.body, hideDelay: 0 }),
@@ -126,6 +138,7 @@ const destroyStacked = (controllers: ReturnType<typeof mountStacked>) => {
   controllers.modal.destroy();
   controllers.drawer.destroy();
   controllers.popover.destroy();
+  controllers.menu.destroy();
   controllers.combobox.destroy();
   controllers.toast.destroy();
   controllers.tooltip.destroy();
@@ -136,6 +149,7 @@ afterEach(() => {
   stopModalRuntime();
   stopDrawerRuntime();
   stopPopoverRuntime();
+  stopMenuRuntime();
   stopComboboxRuntime();
   stopToastRuntime();
   stopTooltipRuntime();
@@ -154,7 +168,7 @@ describe('Escape / layering contract', () => {
     destroyStacked(controllers);
   });
 
-  it('lets an open dialog overlay own Escape ahead of popover, combobox, toast, and tooltip', () => {
+  it('lets an open dialog overlay own Escape ahead of popover, menu, combobox, toast, and tooltip', () => {
     const controllers = mountStacked();
     document.getElementById('stack-drawer')?.setAttribute('hidden', '');
 
@@ -162,6 +176,7 @@ describe('Escape / layering contract', () => {
 
     expect(isHidden('stack-modal')).toBe(true);
     expect(isHidden('stack-pop')).toBe(false);
+    expect(isHidden('stack-menu')).toBe(false);
     expect(isHidden('stack-combo-list')).toBe(false);
     expect(isHidden('stack-toast')).toBe(false);
     expect(isHidden('stack-tip')).toBe(false);
@@ -172,6 +187,7 @@ describe('Escape / layering contract', () => {
 
     expect(isHidden('stack-drawer')).toBe(true);
     expect(isHidden('stack-pop')).toBe(false);
+    expect(isHidden('stack-menu')).toBe(false);
     expect(isHidden('stack-combo-list')).toBe(false);
     expect(isHidden('stack-toast')).toBe(false);
     expect(isHidden('stack-tip')).toBe(false);
@@ -184,6 +200,7 @@ describe('Escape / layering contract', () => {
     const controllers = mountStacked();
     document.getElementById('stack-modal')?.setAttribute('hidden', '');
     document.getElementById('stack-drawer')?.setAttribute('hidden', '');
+    document.getElementById('stack-menu')?.setAttribute('hidden', '');
 
     pressEscape();
 
@@ -196,11 +213,29 @@ describe('Escape / layering contract', () => {
     destroyStacked(controllers);
   });
 
-  it('lets an open combobox list own Escape after popover, ahead of toast and tooltip', () => {
+  it('lets an open menu own Escape after dialogs, same band as popover, ahead of combobox, toast, and tooltip', () => {
     const controllers = mountStacked();
     document.getElementById('stack-modal')?.setAttribute('hidden', '');
     document.getElementById('stack-drawer')?.setAttribute('hidden', '');
     document.getElementById('stack-pop')?.setAttribute('hidden', '');
+
+    pressEscape();
+
+    expect(isHidden('stack-menu')).toBe(true);
+    expect(isHidden('stack-combo-list')).toBe(false);
+    expect(isHidden('stack-toast')).toBe(false);
+    expect(isHidden('stack-tip')).toBe(false);
+    expect(isHidden('stack-banner')).toBe(false);
+
+    destroyStacked(controllers);
+  });
+
+  it('lets an open combobox list own Escape after popover and menu, ahead of toast and tooltip', () => {
+    const controllers = mountStacked();
+    document.getElementById('stack-modal')?.setAttribute('hidden', '');
+    document.getElementById('stack-drawer')?.setAttribute('hidden', '');
+    document.getElementById('stack-pop')?.setAttribute('hidden', '');
+    document.getElementById('stack-menu')?.setAttribute('hidden', '');
 
     const input = document.getElementById('stack-combo-input');
     input?.focus();
@@ -219,6 +254,7 @@ describe('Escape / layering contract', () => {
     document.getElementById('stack-modal')?.setAttribute('hidden', '');
     document.getElementById('stack-drawer')?.setAttribute('hidden', '');
     document.getElementById('stack-pop')?.setAttribute('hidden', '');
+    document.getElementById('stack-menu')?.setAttribute('hidden', '');
     document.getElementById('stack-combo-list')?.setAttribute('hidden', '');
 
     pressEscape();

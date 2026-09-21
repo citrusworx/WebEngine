@@ -297,7 +297,7 @@ describe('createToast', () => {
     controller.destroy();
   });
 
-  it('does not steal Escape from an open dialog, popover, combobox, or tooltip', () => {
+  it('does not steal Escape from an open dialog, popover, menu, combobox, or tooltip', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -341,6 +341,15 @@ describe('createToast', () => {
     expect(toast?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-pop')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div menu-root><div menu id="open-menu"><button type="button" menuitem>New</button></div></div>`
+    );
+
+    pressEscape();
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-menu')?.setAttribute('hidden', '');
     document.body.insertAdjacentHTML(
       'afterbegin',
       `<div combobox><ul combobox-list id="open-list"><li combobox-option>Apple</li></ul></div>`

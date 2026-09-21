@@ -318,7 +318,7 @@ describe('createCombobox', () => {
     controller.destroy();
   });
 
-  it('does not steal Escape from an open modal, drawer, or popover', () => {
+  it('does not steal Escape from an open modal, drawer, popover, or menu', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -362,6 +362,17 @@ describe('createCombobox', () => {
     expect(list?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-pop')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div menu-root><div menu id="open-menu"><button type="button" menuitem>New</button></div></div>`
+    );
+
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
+    );
+    expect(list?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-menu')?.setAttribute('hidden', '');
     input?.dispatchEvent(
       new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' })
     );
