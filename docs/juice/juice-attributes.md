@@ -440,6 +440,18 @@ Slider is an APG slider. It is not a native `<input type="range">` restyle as th
 
 See [Slider Runtime](./juice-slider-runtime.md). Theme paint uses `--juice-slider-*` roles (`track`, `track-border`, `fill`, `thumb`, `thumb-border`, `thumb-shadow`, `focus-ring`).
 
+### Progress
+
+- `progress` — track host. Boolean attr is determinate. `progress="indeterminate"` is the busy state. A boolean `[progress]` attribute is fine: there is no HTML global `progress` attribute. `[progress]` is an attribute selector, not the type selector `progress`. Authors write `<div progress>`, not `<progress>`. Do not restyle bare `[role="progressbar"]`
+- `progress-fill` — filled portion. Same idea as `slider-fill`. There is no `progress-bar` and no `progress-track`
+- `progress-label` — optional value text. Uses ink. Authors own the accessible name
+
+Integer `aria-valuenow` from 0 through 100 on the host paints the fill when min/max are omitted or are `0` / `100`. Other ranges use the structural paint hook `--juice-progress-ratio` (unitless 0–1) on `[progress]`. That hook is not a theme role. Missing `aria-valuenow` is an empty determinate bar, not indeterminate. `progress="indeterminate"` slides `[progress-fill]` and wins over a stale value. `prefers-reduced-motion` stops that animation.
+
+Progress is an APG-inspired progressbar. It is not a slider, not a spinner-only loader, not a native `<progress>` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline status chrome — no overlay z-index. The host is usually not focusable. This slice is theme chrome only. Runtime B syncs `aria-valuenow` and the indeterminate flag. There is no Sig Progress factory.
+
+Theme paint uses `--juice-progress-*` roles (`track`, `track-border`, `fill`, `ink`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

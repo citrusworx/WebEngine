@@ -365,6 +365,20 @@
   --juice-breadcrumb-separator: var(--cm-breadcrumb-separator);
   --juice-breadcrumb-focus-ring: var(--cm-breadcrumb-focus-ring);
   --juice-breadcrumb-surface: var(--cm-breadcrumb-surface);
+  /* Progress chrome — thinner --cm-* set. Heading stands in for accent
+     on the fill, same as slider. The track is a surface groove, not
+     heading-fill. Distinct from slider, spinner, and a native
+     <progress> restyle. Inline status — no overlay. */
+  --cm-progress-track: var(--cm-surface-muted);
+  --cm-progress-track-border: var(--cm-border);
+  --cm-progress-fill: var(--cm-heading);
+  --cm-progress-ink: var(--cm-text);
+  --cm-progress-focus-ring: var(--cm-heading);
+  --juice-progress-track: var(--cm-progress-track);
+  --juice-progress-track-border: var(--cm-progress-track-border);
+  --juice-progress-fill: var(--cm-progress-fill);
+  --juice-progress-ink: var(--cm-progress-ink);
+  --juice-progress-focus-ring: var(--cm-progress-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -985,5 +999,30 @@
 [theme=citrusmint] [breadcrumb-link]:focus-visible,
 [theme=citrusmint] button[breadcrumb-link]:focus-visible {
   outline: 2px solid var(--juice-breadcrumb-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Progress chrome. Beat generic fills. Heading paints the fill, not a
+   CTA. Runtime is later. */
+[theme=citrusmint] [progress] {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-progress-ink);
+}
+
+[theme=citrusmint] [progress-fill] {
+  background-color: var(--juice-progress-fill);
+  box-shadow: none;
+}
+
+[theme=citrusmint] [progress-label] {
+  background-color: transparent;
+  color: var(--juice-progress-ink);
+  box-shadow: none;
+}
+
+[theme=citrusmint] [progress]:focus-visible {
+  outline: 2px solid var(--juice-progress-focus-ring);
   outline-offset: 2px;
 }

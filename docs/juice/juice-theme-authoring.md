@@ -85,6 +85,7 @@ A healthy Juice theme should own:
 - checkbox chrome roles (`--juice-checkbox-*`, bound from theme identity tokens)
 - radio chrome roles (`--juice-radio-*`, bound from theme identity tokens)
 - breadcrumb chrome roles (`--juice-breadcrumb-*`, bound from theme identity tokens)
+- progress chrome roles (`--juice-progress-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -242,6 +243,7 @@ The generated stylesheet currently defines:
 - checkbox chrome role bindings (`--jx-checkbox-*` / `--juice-checkbox-*`) and box CTA overrides for `[checkbox]`
 - radio chrome role bindings (`--jx-radio-*` / `--juice-radio-*`) and disc CTA overrides for `[radio]`
 - breadcrumb chrome role bindings (`--jx-breadcrumb-*` / `--juice-breadcrumb-*`) and link ink overrides for `[breadcrumb]` / `[breadcrumb-link]`
+- progress chrome role bindings (`--jx-progress-*` / `--juice-progress-*`) and fill overrides for `[progress]` / `[progress-fill]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -405,6 +407,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for an APG-inspired Breadcrumb trail. It is not the site `[nav]` / navigation runtime, not `nav[type="breadcrumb"]` (that older layout pattern stays in `nav.scss`), not tabs, not the wizard step tracker, and not pagination. A boolean `[breadcrumb]` attribute is fine (no HTML global `breadcrumb` attr). The root is `<nav breadcrumb>` or `<ol breadcrumb>`. `[breadcrumb-item]` is one crumb. Anchors inside the trail are enough; `[breadcrumb-link]` is optional. The separator is `::after` on every item except the last (a decorative chevron). `[breadcrumb-separator]` is optional and suppresses that chevron. Do not style bare `[aria-current="page"]`. Current-page paint is `aria-current="page"` on the last item or its link. Inline nav chrome — no overlay z-index. The breadcrumb runtime auto-enhances that markup (`sync` / `setCurrent`, a single `aria-current="page"`, light landmark labeling; `<ol breadcrumb>` stays a list) — see [Breadcrumb Runtime](./juice-breadcrumb-runtime.md).
 
 Tide keeps a dark inline trail: ink is `--tide-text-muted`, current is `--tide-heading`, and surface stays `transparent` (not a light bar).
+
+## Progress chrome roles
+
+Library themes bind the shared progress contract so `[progress]` / `[progress-fill]` / `[progress-label]` paint is theme-agnostic in `progress.scss`. Required names (`track`, `track-border`, `fill`, `ink`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-progress-*`, `--kw-progress-*`, `--cm-progress-*`, `--tide-progress-*`, …). App-owned generated themes use `--jx-progress-*` and bind `--juice-progress-*` from existing `--jx-*` surface/page/text/accent tokens. Do not invent a new hue family just for progress chrome. The fill is accent (Citrusmint uses heading, same as slider fill), not the CTA button gradient. Ink is text. Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `div` fills on `[progress]` / `[progress-fill]` the same way.
+
+This is Juice chrome for an APG-inspired Progressbar. It is not a slider, not a spinner-only loader, and not a native `<progress>` restyle as the only story. A boolean `[progress]` attribute is fine (no HTML global `progress` attr). `[progress]` is an attribute selector, not the type selector `progress`. Authors write `<div progress>`, not `<progress>`. `[progress-fill]` is the filled portion. `[progress-label]` is optional ink. Do not style bare `[role="progressbar"]`. Determinate paint is integer `aria-valuenow` 0–100 on the host (min/max omitted or `0` / `100`). Other ranges use the structural `--juice-progress-ratio` paint hook (not a theme role). Missing `aria-valuenow` is an empty determinate bar. Indeterminate is `progress="indeterminate"` only; CSS slides the fill and `prefers-reduced-motion` stops that animation. The host is usually not focusable. Inline status chrome — no overlay z-index. There is no progress runtime in this slice.
+
+Tide must bind a dark track (`--tide-surface-muted`), not a white groove. The fill stays `--tide-accent`, not the page color.
 
 ## Wizard chrome roles
 

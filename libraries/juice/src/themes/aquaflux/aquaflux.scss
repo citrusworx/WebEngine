@@ -444,6 +444,20 @@
     --juice-breadcrumb-focus-ring: var(--aqua-breadcrumb-focus-ring);
     --juice-breadcrumb-surface: var(--aqua-breadcrumb-surface);
 
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a CTA. Distinct from slider, spinner, and
+       a native <progress> restyle. Inline status — no overlay. */
+    --aqua-progress-track: var(--aqua-surface-muted);
+    --aqua-progress-track-border: var(--aqua-border);
+    --aqua-progress-fill: var(--aqua-accent);
+    --aqua-progress-ink: var(--aqua-text);
+    --aqua-progress-focus-ring: var(--aqua-accent);
+    --juice-progress-track: var(--aqua-progress-track);
+    --juice-progress-track-border: var(--aqua-progress-track-border);
+    --juice-progress-fill: var(--aqua-progress-fill);
+    --juice-progress-ink: var(--aqua-progress-ink);
+    --juice-progress-focus-ring: var(--aqua-progress-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -1355,5 +1369,33 @@
 [theme="aquaflux"] [breadcrumb-link]:focus-visible,
 [theme="aquaflux"] button[breadcrumb-link]:focus-visible {
     outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme="aquaflux"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="aquaflux"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="aquaflux"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="aquaflux"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
     outline-offset: 2px;
 }
