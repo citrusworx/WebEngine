@@ -59,4 +59,50 @@ describe("normalize WordPress payloads", () => {
         expect(records[0]?.title).toBe("Drew");
         expect(records[0]?.meta.email).toBe("drew@example.com");
     });
+
+    it("maps media source_url onto featuredImage and keeps featured_media fields", () => {
+        const record = normalizeWordPressItem("media", {
+            id: 44,
+            slug: "hero",
+            status: "inherit",
+            title: { rendered: "Hero" },
+            alt_text: "A hero image",
+            mime_type: "image/png",
+            media_type: "image",
+            source_url: "https://example.com/wp-content/uploads/hero.png",
+            featured_media: 0
+        }, "https://example.com");
+
+        expect(record).toMatchObject({
+            id: "44",
+            collection: "media",
+            title: "Hero",
+            slug: "hero",
+            status: "published",
+            featuredImage: "https://example.com/wp-content/uploads/hero.png",
+            meta: {
+                source_url: "https://example.com/wp-content/uploads/hero.png",
+                alt_text: "A hero image",
+                mime_type: "image/png",
+                media_type: "image"
+            }
+        });
+    });
+
+    it("prefers an embedded featured-media URL over the numeric id", () => {
+        const record = normalizeWordPressItem("books", {
+            id: 9,
+            slug: "moby",
+            status: "publish",
+            title: { rendered: "Moby Dick" },
+            featured_media: 44,
+            _embedded: {
+                "wp:featuredmedia": [{ source_url: "https://example.com/cover.jpg" }]
+            }
+        });
+
+        expect(record.collection).toBe("books");
+        expect(record.featuredImage).toBe("https://example.com/cover.jpg");
+        expect(record.meta.featured_media).toBe(44);
+    });
 });

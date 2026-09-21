@@ -4,7 +4,8 @@ export const CMS_COLLECTIONS = [
     "users",
     "categories",
     "tags",
-    "comments"
+    "comments",
+    "media"
 ];
 export const DEFAULT_TYPE_STATUSES = ["draft", "published", "archived"];
 export const DEFAULT_TYPE_FIELDS = ["title", "slug", "status", "content", "meta"];

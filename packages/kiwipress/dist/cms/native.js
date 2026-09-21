@@ -101,6 +101,7 @@ export function createNativeCms(store) {
         categories: new NativeCollection(store, "categories"),
         tags: new NativeCollection(store, "tags"),
         comments: new NativeCollection(store, "comments"),
+        media: new NativeCollection(store, "media"),
         collection(slug) {
             return new NativeCollection(store, slug);
         }

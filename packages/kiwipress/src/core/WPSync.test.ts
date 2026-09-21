@@ -114,4 +114,140 @@ describe("WPSync", () => {
         expect(saved).toBe(1);
         expect(store.list("posts")[0]?.slug).toBe("saved");
     });
+
+    it("previews the default six collections without media or CPTs", async () => {
+        const fetchMock = vi.fn().mockResolvedValue(wpPage([]));
+        vi.stubGlobal("fetch", fetchMock);
+
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+        const preview = await sync.preview();
+
+        expect(preview.collections).toEqual([
+            "posts",
+            "pages",
+            "users",
+            "categories",
+            "tags",
+            "comments"
+        ]);
+        expect(preview.cpts).toEqual([]);
+        expect(preview.counts.media).toBe(0);
+        expect(fetchMock.mock.calls.map((call) => String(call[0]))).not.toEqual(
+            expect.arrayContaining([expect.stringContaining("/media")])
+        );
+        expect(fetchMock.mock.calls.map((call) => String(call[0]))).not.toEqual(
+            expect.arrayContaining([expect.stringContaining("/books")])
+        );
+    });
+
+    it("transfers media when includeMedia is set or media is in collections", async () => {
+        const fetchMock = vi.fn(async (url: string) => {
+            if (String(url).includes("/media")) {
+                return wpPage([{
+                    id: 44,
+                    slug: "hero",
+                    status: "inherit",
+                    title: { rendered: "Hero" },
+                    source_url: "https://example.com/hero.png",
+                    mime_type: "image/png",
+                    media_type: "image",
+                    alt_text: "Hero image"
+                }]);
+            }
+
+            return wpPage([]);
+        });
+        vi.stubGlobal("fetch", fetchMock);
+
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+        const preview = await sync.preview({ collections: ["posts"], includeMedia: true });
+        const result = await sync.transfer({ collections: ["media"] });
+
+        expect(preview.collections).toEqual(["posts", "media"]);
+        expect(preview.counts.media).toBe(1);
+        expect(result.counts.media).toBe(1);
+        expect(store.list("media")[0]).toMatchObject({
+            id: "44",
+            collection: "media",
+            title: "Hero",
+            featuredImage: "https://example.com/hero.png",
+            meta: {
+                source_url: "https://example.com/hero.png",
+                mime_type: "image/png"
+            }
+        });
+        expect(fetchMock.mock.calls.some((call) => String(call[0]).includes("/wp-json/wp/v2/media"))).toBe(true);
+        expect(String(fetchMock.mock.calls.find((call) => String(call[0]).includes("/media"))?.[0])).toContain("status=any");
+    });
+
+    it("transfers named CPT rest bases into matching native collections", async () => {
+        const fetchMock = vi.fn(async (url: string) => {
+            const href = String(url);
+            if (href.includes("/books")) {
+                return wpPage([{
+                    id: 9,
+                    slug: "moby",
+                    status: "publish",
+                    title: { rendered: "Moby Dick" },
+                    content: { rendered: "<p>Call me Ishmael.</p>" },
+                    featured_media: 44
+                }]);
+            }
+
+            if (href.includes("/product")) {
+                return wpPage([{
+                    id: 3,
+                    slug: "mug",
+                    status: "publish",
+                    title: { rendered: "Mug" }
+                }]);
+            }
+
+            return wpPage([]);
+        });
+        vi.stubGlobal("fetch", fetchMock);
+
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+        const preview = await sync.preview({ collections: ["posts"], cpts: ["books", "product"] });
+        const result = await sync.transfer({ collections: ["posts"], cpts: ["books", "product"] });
+
+        expect(preview.collections).toEqual(["posts"]);
+        expect(preview.cpts).toEqual(["books", "product"]);
+        expect(preview.counts.books).toBe(1);
+        expect(preview.counts.product).toBe(1);
+        expect(result.cpts).toEqual(["books", "product"]);
+        expect(result.counts.books).toBe(1);
+        expect(result.counts.product).toBe(1);
+        expect(store.getType("books")).toMatchObject({ slug: "books" });
+        expect(store.getType("product")).toMatchObject({ slug: "product" });
+        expect(store.list("books")[0]).toMatchObject({
+            id: "9",
+            collection: "books",
+            title: "Moby Dick",
+            slug: "moby",
+            featuredImage: "44"
+        });
+        expect(store.list("product")[0]).toMatchObject({
+            id: "3",
+            collection: "product",
+            slug: "mug"
+        });
+        expect(String(fetchMock.mock.calls.find((call) => String(call[0]).includes("/books"))?.[0])).toContain("status=any");
+        expect(fetchMock.mock.calls.some((call) => String(call[0]).includes("/wp-json/wp/v2/product"))).toBe(true);
+    });
+
+    it("rejects CPT rest bases that collide with built-in collections", async () => {
+        const store = new NectarineStore();
+        const sync = new WPSync(wordpressClients(), store, "https://example.com");
+
+        await expect(sync.transfer({ collections: [], cpts: ["posts"] })).rejects.toThrow(
+            /collides with a built-in WordPress collection/
+        );
+        await expect(sync.preview({ includeMedia: true, cpts: ["media"] })).rejects.toThrow(
+            /collides with a built-in WordPress collection/
+        );
+    });
 });

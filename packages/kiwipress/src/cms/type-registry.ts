@@ -16,7 +16,7 @@ const RESERVED_SLUGS = new Set<string>([
     PERSISTED_TYPES_COLLECTION
 ]);
 
-const SLUG_PATTERN = /^[a-z][a-z0-9-]{0,62}$/;
+const SLUG_PATTERN = /^[a-z][a-z0-9_-]{0,62}$/;
 const STATUS_PATTERN = /^[a-z][a-z0-9_-]{0,31}$/;
 
 export type TypeDefinitionInput = {
@@ -95,7 +95,7 @@ export function normalizeTypeDefinition(
         throw new Error(
             existing
                 ? `Invalid custom type slug "${slug || "(empty)"}".`
-                : "Type slug must be a lowercase letter, then letters, numbers, or hyphens, and cannot reuse a built-in collection."
+                : "Type slug must be a lowercase letter, then letters, numbers, hyphens, or underscores, and cannot reuse a built-in collection."
         );
     }
 

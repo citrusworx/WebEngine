@@ -1,5 +1,5 @@
 export type CmsMode = "wordpress" | "nectarine";
-export declare const CMS_COLLECTIONS: readonly ["posts", "pages", "users", "categories", "tags", "comments"];
+export declare const CMS_COLLECTIONS: readonly ["posts", "pages", "users", "categories", "tags", "comments", "media"];
 export type CmsCollection = (typeof CMS_COLLECTIONS)[number];
 /** Built-in WordPress-oriented collection, or a registered custom type slug. */
 export type CollectionSlug = CmsCollection | (string & {});
@@ -53,13 +53,24 @@ export type CmsDocument = {
     collections: CmsSnapshot;
     types: CollectionTypeDefinition[];
 };
-export type TransferCounts = Record<CmsCollection, number>;
+export type TransferCounts = Record<CmsCollection, number> & {
+    [collection: string]: number;
+};
+export type TransferOptions = {
+    collections?: CmsCollection[];
+    includeMedia?: boolean;
+    cpts?: string[];
+};
+export type TransferRequest = CmsCollection[] | TransferOptions;
 export type TransferPreview = {
     collections: CmsCollection[];
+    cpts: string[];
     counts: TransferCounts;
 };
 export type TransferResult = {
     mode: "nectarine";
+    collections: CmsCollection[];
+    cpts: string[];
     counts: TransferCounts;
     records: ContentRecord[];
 };

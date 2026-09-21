@@ -19,6 +19,7 @@ export type NativeCms = {
     categories: NativeCollection;
     tags: NativeCollection;
     comments: NativeCollection;
+    media: NativeCollection;
     collection(slug: string): NativeCollection;
 };
 export declare function createNativeCms(store: NectarineStore): NativeCms;

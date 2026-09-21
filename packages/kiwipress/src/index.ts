@@ -38,3 +38,5 @@ export * from "./media/upload.js";
 export * from "./cpt/rest-base.js";
 export * from "./cpt/routes.js";
 export * from "./cpt/cpt.js";
+export * from "./wp-types/routes.js";
+export * from "./wp-types/wp-types.js";

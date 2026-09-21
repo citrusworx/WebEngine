@@ -28,18 +28,18 @@ Shipped:
 - response normalization onto `ContentRecord` / Nectarine post shapes
 - `loadNectarineApi` for nested or flat Nectarine API YAML
 - `WPSync` transfer from WordPress collections into a `NectarineStore`
+- media and named CPT transfer through `WPSync` (`includeMedia` / `cpts`)
+- WordPress type discovery (`WordPressTypes` / `kiwi.wordpress.types`) for `/wp/v2/types`
 - `KiwiPress.connect()` facade with `wordpress` (entry) and `nectarine` (destination) modes
 - opt-in `CmsPersistence` (`createFilePersistence`, `createPostgresPersistence` via Nectarine `PgSql`)
 - `registerKiwiPressGateway` for the `apps/kiwipress` Seltzer proxy
 - live app at `apps/kiwipress` (marketing, wizard, dashboard Content + Types)
-- native custom type registry (definitions + items; not WordPress CPT sync)
+- native custom type registry (definitions + items)
 
 Not finished yet:
 
 - MySQL / Mongo persistence adapters
 - a full visual CMS UI (Echo)
-- media transfer into `NectarineStore`
-- WordPress custom post type sync
 - plugin adapters (WooCommerce, BuddyPress, MemberPress)
 
 ## The on-ramp
@@ -139,8 +139,10 @@ CRUD execution boundaries on top of `WPClient`. Domain objects extend `WPRead`. 
 
 Operational data movement from WordPress into Nectarine-shaped records.
 
-- `preview()` — counts without writing
-- `transfer()` — normalize, upsert into `NectarineStore`, then `flush()` if persistence is configured
+- `preview()` / `transfer()` — default is still the six built-in collections (`posts`, `pages`, `users`, `categories`, `tags`, `comments`)
+- `media` is a first-class `CMS_COLLECTIONS` slug. Opt in with `transfer(["media"])` or `transfer({ includeMedia: true })`
+- named CPT rest bases opt in with `transfer({ cpts: ["books", "product"] })` (same shape for `preview`). Records land under that rest base; the type is registered if needed
+- array form (`transfer(["posts"])`) is unchanged
 
 ### Native CMS
 
@@ -153,7 +155,7 @@ Operational data movement from WordPress into Nectarine-shaped records.
 
 `KiwiPress.connect({ persistence })` then `await kiwi.ready()` hydrates once. Default remains in-memory.
 
-The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection. Discovering types from `/wp/v2/types` and transferring CPT items through `WPSync` are still out of scope.
+The native `type-registry` (`kiwi.store.registerType` / `kiwi.native.collection`) is the in-process CMS. It is not the WordPress CPT client: `CustomPostType` / `kiwi.wordpress.cpt("books")` talks to a remote `/wp/v2/{restBase}` collection. `WordPressTypes` / `kiwi.wordpress.types` reads `/wp/v2/types` so callers can discover `rest_base` values. `restBasesFromTypes()` maps that catalog onto CPT rest bases for `transfer({ cpts })`.
 
 ## Route Layer
 
@@ -190,11 +192,12 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 
 ## Current Exported Surface
 
-- `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`
-- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`
+- `WPCore`, `WPAuth`, `WPClient`, `WPRead`, `WPCreate`, `WPUpdate`, `WPDelete`, `WPSync`, `createWordPressClients`
+- `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`, `WordPressTypes`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
 - `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
 - `normalizeWordPressItem`, `toNectarinePost`, `loadNectarineApi`
+- `restBasesFromTypes`, `normalizeWordPressType`
 - `registerKiwiPressGateway`
 
 ## Non-Goals

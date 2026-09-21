@@ -9,10 +9,13 @@ import {
 describe("custom type registry", () => {
     it("accepts custom slugs and rejects built-in or reserved names", () => {
         expect(isCustomTypeSlug("recipe")).toBe(true);
+        expect(isCustomTypeSlug("wp_block")).toBe(true);
         expect(isCustomTypeSlug("posts")).toBe(false);
+        expect(isCustomTypeSlug("media")).toBe(false);
         expect(isCustomTypeSlug("types")).toBe(false);
         expect(isCustomTypeSlug("Recipe")).toBe(false);
         expect(isCollectionSlug("posts")).toBe(true);
+        expect(isCollectionSlug("media")).toBe(true);
         expect(isCollectionSlug("recipe")).toBe(true);
         expect(isEditableGatewayCollection("pages")).toBe(true);
         expect(isEditableGatewayCollection("recipe")).toBe(true);
