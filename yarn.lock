@@ -801,7 +801,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/kiwipress@workspace:packages/kiwipress"
   dependencies:
-    "@citrusworx/nectarine": "npm:^0.3.0"
+    "@citrusworx/nectarine": "npm:^0.4.0"
     "@citrusworx/seltzer": "npm:^0.8.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^6.0.3"
@@ -837,7 +837,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/nectarine@npm:^0.3.0, @citrusworx/nectarine@workspace:*, @citrusworx/nectarine@workspace:libraries/nectarine":
+"@citrusworx/nectarine@npm:^0.4.0, @citrusworx/nectarine@workspace:*, @citrusworx/nectarine@workspace:libraries/nectarine":
   version: 0.0.0-use.local
   resolution: "@citrusworx/nectarine@workspace:libraries/nectarine"
   dependencies:
@@ -926,7 +926,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/webengine@workspace:engines/webengine"
   dependencies:
-    "@citrusworx/nectarine": "npm:^0.3.0"
+    "@citrusworx/nectarine": "npm:^0.4.0"
     "@citrusworx/seltzer": "npm:^0.8.1"
     "@citrusworx/types": "npm:^0.2.0"
     "@types/js-yaml": "npm:^4.0.9"

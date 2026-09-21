@@ -75,7 +75,7 @@ Seltzer should not become a WordPress runtime. Nectarine should not become a CMS
 import { KiwiPress, Posts, createFilePersistence } from "@citrusworx/kiwipress";
 ```
 
-Package version today: **0.4.3**. Depends on `@citrusworx/seltzer@^0.8.1` and `@citrusworx/nectarine@^0.3.0`. Requires Node 18+ for the WordPress client and persistence helpers (`fs`, `fetch`, optional `pg` / `undici`).
+Package version today: **0.4.3**. Depends on `@citrusworx/seltzer@^0.8.1` and `@citrusworx/nectarine@^0.4.0`. Requires Node 18+ for the WordPress client and persistence helpers (`fs`, `fetch`, optional `pg` / `undici`).
 
 WordPress client:
 

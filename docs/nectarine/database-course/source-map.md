@@ -2,7 +2,7 @@
 
 [Course](./README.md)
 
-This course follows the checkout after merge `d25673e`. The local [manifest](../../../libraries/nectarine/package.json) declares Nectarine **0.3.0**; npm reported **0.4.0** on September 16, 2026. The lab uses the local package through a file dependency. It does not claim to validate the separately published 0.4.0 artifact. Seltzer's local package is 0.8.1.
+This course follows the checkout after merge `d25673e`. The local [manifest](../../../libraries/nectarine/package.json) and npm are both **0.4.0** (the manifest was restored to the published version on September 21, 2026; it had been left at 0.3.0). Git source may still be ahead of the published 0.4.0 tarball (INSERT `onConflict` is unreleased). The lab uses the local package through a file dependency. It does not claim to validate that tarball. Seltzer's local package is 0.8.1.
 
 ## Follow a question through the code
 

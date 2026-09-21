@@ -6,6 +6,8 @@ Quick introduction to Nectarine YAML contracts hosted with Seltzer.
 
 Nectarine is a config-driven backend library. Define models, schemas, queries, and APIs in YAML. Nectarine supplies the config loader, query compiler, and database adapters. WebEngine / Blackwater hosts HTTP with **Seltzer**.
 
+**Maturity:** hostable alpha. Published npm and this workspace manifest are **0.4.0**. Git may include unreleased INSERT `onConflict` (next publish **0.5.0**). See [status](./nectarine-status.md).
+
 **Key Philosophy**:
 - Backend development should not require repetitive boilerplate
 - Models, schemas, queries, and APIs follow predictable patterns
@@ -38,28 +40,32 @@ Nectarine works with:
 - **MySQL** 5.7+ 
 - **MongoDB** 4.4+
 
-Install one and set connection environment variables.
+Install one driver. Connection **names** come from `database.<vendor>.env` in `nectarine.config.yaml`. The values come from the environment. The fixture uses `PG_*`, `MS_*`, and `MG_*` (not `MYSQL_*` or `MONGO_URI`).
 
 ### Environment Setup
 
 ```bash
-# For PostgreSQL
+# Names below match the fixture nectarine.config.yaml. Yours follow your YAML.
+# PostgreSQL
 export PG_USER=postgres
 export PG_HOST=localhost
 export PG_PASS=password
 export PG_DB=myapp
 export PG_PORT=5432
 
-# For MySQL
-export MYSQL_USER=root
-export MYSQL_HOST=localhost
-export MYSQL_PASS=password
-export MYSQL_DB=myapp
-export MYSQL_PORT=3306
+# MySQL
+export MS_USER=root
+export MS_HOST=localhost
+export MS_PASS=password
+export MS_DB=myapp
+export MS_PORT=3306
 
-# For MongoDB
-export MONGO_URI=mongodb://localhost:27017
-export MONGO_DB=myapp
+# MongoDB (user, password, host, port, database — the adapter builds the URI)
+export MG_USER=root
+export MG_PASS=password
+export MG_HOST=localhost
+export MG_PORT=27017
+export MG_DB=myapp
 ```
 
 ## Core Concepts

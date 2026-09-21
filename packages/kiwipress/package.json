@@ -28,7 +28,7 @@
         "zod": "^4.3.6"
     },
     "dependencies": {
-        "@citrusworx/nectarine": "^0.3.0",
+        "@citrusworx/nectarine": "^0.4.0",
         "@citrusworx/seltzer": "^0.8.1"
     }
 }

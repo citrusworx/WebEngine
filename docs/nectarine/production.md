@@ -2,12 +2,14 @@
 
 What is **production-ready today** for deploying Blackwater Sound’s backend with Nectarine and Seltzer.
 
+npm `@citrusworx/nectarine@0.4.0` is published. This repo’s `libraries/nectarine/package.json` is **0.4.0**. Git may be ahead of that tarball: INSERT `onConflict` compiles here and is not in the 0.4.0 pack. Pending Changesets make the next publish **0.5.0**. Blackwater in this monorepo depends on the workspace package, so it sees `onConflict` before that publish. Maturity label: **hostable alpha**. See [status](./nectarine-status.md).
+
 ## Ready today
 
 - **Config:** `loadNectarineConfig` reads `nectarine.config.yaml`. Env *key names* come from YAML; secrets come from the environment (`PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`, `PG_DB`).
 - **Named DML:** product + waitlist live paths call compiler-owned queries (`allPayloads`, `payloadsByCatalog`, `countPayloads`, `emailExists`, `joinWaitlist`, …). App code does not embed SQL.
 - **Schema-YAML DDL:** `migrate()` runs Nectarine `applyMigrations`: ledger table, `CREATE TABLE` from every Blackwater `*Schema.yml`, pending versioned migration YAML (rename / drop / type change, each in a Postgres transaction), additive `ADD COLUMN IF NOT EXISTS`, then `CREATE INDEX`.
-- **HTTP:** Seltzer 0.4 hosts object-based `Route` handlers. Handlers return `ResponseData` (`{ status?, headers?, body? }`). There is no writing `ctx.json`.
+- **HTTP:** Seltzer (workspace `@citrusworx/seltzer` 0.8.1) hosts object-based `Route` handlers. Handlers return `ResponseData` (`{ status?, headers?, body? }`). There is no writing `ctx.json`.
 - **Postgres:** Blackwater uses Nectarine `createPgAdapter` (`pg.Pool`, idle-client error handler, `connect()` / `disconnect()`). Boot connects before migrate. Failed boot closes the pool. `SIGTERM` / `SIGINT` drain the HTTP server then the pool.
 
 ## Required env (production)
@@ -98,6 +100,6 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 `ON CONFLICT`). They are not host SQL. Joins, `GROUP BY`, and `LIMIT` remain
 follow-ups.
 
-`@citrusworx/nectarine` is publish-ready via the existing Changesets scripts (`yarn version-packages` then `yarn workspace @citrusworx/nectarine npm publish`). There is no npm-token CI job; see [Release checklist](./release-checklist.md).
+npm **0.4.0** is already published. Do not publish it again. The next intentional publish is **0.5.0** after `yarn version-packages` consumes the pending Nectarine changesets (see [Release checklist](./release-checklist.md)). There is no npm-token CI job. Commit the version bump before publishing — the 0.4.0 publish skipped that commit.
 
 See also: [Nectarine ↔ WebEngine kernel contract](../webengine/nectarine-kernel-contract.md).

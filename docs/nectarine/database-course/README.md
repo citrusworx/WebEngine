@@ -28,7 +28,7 @@ Our project is a **community equipment library** with members, items, and loans.
 
 Nectarine's application convention is named YAML queries with bound values, not embedded SQL strings in backend handlers. Reading and writing SQL in an isolated teaching lab is how we understand what that compiler produces. The companion HTTP example uses named queries and contains no SQL assembly.
 
-The local manifest says **0.3.0**, while npm reports **0.4.0** as of September 16, 2026. This course identifies its baseline by source after merge `d25673e`, not by treating those numbers as interchangeable. See [the source map](./source-map.md).
+Workspace manifest and npm are both **0.4.0**. Git may still be ahead of the published tarball (unreleased INSERT `onConflict`). This course identifies its baseline by source after merge `d25673e`, not by treating the tarball and this checkout as interchangeable. See [the source map](./source-map.md).
 
 ## Learning path
 
