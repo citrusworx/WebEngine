@@ -56,11 +56,11 @@ It requires a `[toast-region]` root. Authors place that region in markup. The ru
 
 **Live polarity:** optional `toast-live="assertive"` on the region or a toast, or set `aria-live="assertive"` in markup.
 
-**Close:** `[toast-close]` inside the toast, or Escape for the most recently shown visible toast when no open modal/drawer overlay, popover, combobox list, or tooltip exists.
+**Close:** `[toast-close]` inside the toast, or Escape for the most recently shown visible toast when no open modal/drawer overlay, popover, combobox list, or tooltip exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 
 Prefer shipping `aria-live="polite"` on the region. The runtime fills missing live-region ARIA and toast roles if they are missing, plus an empty close name (`aria-label="Dismiss"`).
 
-Theme paint uses `--juice-toast-*` roles. See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[toast-region]` is a non-modal stack, not the surface `overlay="frost|tint"` utility, not `[modal-overlay]`, and not `[drawer-overlay]`. Modal is a centered dialog; drawer is an edge-docked panel; toast is a corner snackbar.
+Theme paint uses `--juice-toast-*` roles. Core CSS paints `[toast-region]` at **z-index 1100**. That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[toast-region]` is a non-modal stack, not the surface `overlay="frost|tint"` utility, not `[modal-overlay]`, and not `[drawer-overlay]`. Modal is a centered dialog; drawer is an edge-docked panel; toast is a corner snackbar.
 
 ## Automatic Boot
 
@@ -170,7 +170,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 ## Keyboard
 
-- Escape dismisses the most recently shown visible toast, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[combobox-list]`, or `[tooltip-root]` exists (those surfaces own Escape first). An open tip hides while toasts remain.
+- Escape dismisses the most recently shown visible toast, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[combobox-list]`, or `[tooltip-root]` exists (those surfaces own Escape first). An open tip hides while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Enter and Space activate non-button `[toast-close]` controls (native buttons already synthesize a click)
 - There is no focus trap. Tab is not wrapped. The runtime does not move focus into the toast on show.
 
@@ -183,7 +183,8 @@ Arrow-key roving is intentionally out of scope.
 - Toast is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed.
 - Individual toasts use native `hidden`, never layout `content=`. The region stays in the DOM.
 - Centered modal / dialog, edge-docked drawer, and inline banner / callout behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Banner Runtime](./juice-banner-runtime.md).
-- Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay, popover, combobox list, or tooltip exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Escape dismisses the most recent visible toast only, and only when no open modal/drawer overlay, popover, combobox list, or tooltip exists. Toast does not block tooltip Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- Region chrome is `z-index: 1100`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 
 ## Why This Matches Navigation
 
@@ -196,7 +197,7 @@ The toast runtime copies the navigation, accordion, tabs, modal, and drawer life
 - idempotent singleton `start*Runtime` / `stop*Runtime`
 - framework-agnostic
 
-It does not introduce a shared multi-feature runtime module.
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
 
 ## Design Rule Going Forward
 

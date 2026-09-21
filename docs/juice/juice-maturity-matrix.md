@@ -1,6 +1,6 @@
 # Juice Maturity Matrix
 
-This document tracks the current maturity of Juice across its major system areas. It reflects the **0.7.0** public cut on npm (drawer, toast, and popover A→B→C). Master is ahead with unpublished wizard, tooltip, combobox, and banner runtime work; maturity ratings below are unchanged. 0.6.0 was the prior public cut.
+This document tracks the current maturity of Juice across its major system areas. It reflects the **0.7.0** public cut on npm (drawer, toast, and popover A→B→C). Master is ahead with unpublished wizard, tooltip, combobox, and banner runtime work plus a closed eleven-runtime polish pass (Escape / layering, shared internals, docs consistency). Maturity ratings below stay **Emerging** — this pass does not bump anything to Stable-ish. 0.6.0 was the prior public cut.
 
 The goal is to make it easy to answer:
 
@@ -44,7 +44,7 @@ The feature is more of a direction or configuration surface than a hardened part
 | Page-level patterns | Emerging | Tutorials and patterns are now present, which makes Juice more teachable and reusable. |
 | Rules engine | Emerging | The philosophy is strong, but only lightly formalized in written protocol docs so far. |
 | Docs and onboarding | Emerging to Stable-ish | Much stronger now, with onboarding, best practices, tutorials, and patterns. |
-| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner runtimes in the browser. Useful and documented, but still likely to evolve. |
+| JS entrypoint | Emerging | Importing `@citrusworx/juiceui` auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner runtimes in the browser. Escape / layering is documented in [juice-runtime-behavior.md](./juice-runtime-behavior.md#escape--layering). Useful and documented, but still likely to evolve. |
 | Public component exports | Emerging | Ships the Sig `Accordion` factory plus create/init/start/stop helpers for navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner. Markup plus auto-enhance is the contract, not a large JS component library. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, or Sig Banner factory. |
 | Themes | Emerging | Bundled themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`) follow the `<id>.scss` + `<id>.yaml` contract; required `--juice-*` binds are listed in [Theme Contract](./juice-theme-contract.md). KiwiPress is the richest product reference. |
 | Motion (`motion` attribute) | Emerging | P0/P1 catalog documented in [juice-animations.md](./juice-animations.md); `prefers-reduced-motion` supported. |
