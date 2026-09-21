@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reference — Juice</title>
     <link rel="stylesheet" href="/src/juice.css" />
-    <meta name="description" content="Pointer page to Juice docs. This showcase does not rewrite the docs tree." />
+    <meta
+      name="description"
+      content="Browsable index into docs/juice. Short blurbs, monorepo links, and tiny live Juice samples. This showcase does not rewrite the docs tree. Honest Beta."
+    />
   </head>
   <body theme="kiwipress">
     <div app-shell stack>
@@ -23,7 +26,7 @@
             <a href="/reference.html" nav-link="active">Reference</a>
           </div>
           <div nav-actions>
-            <button type="button" scale="sm" data-href="/">Back to landing</button>
+            <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
         <nav type="sidebar" hidden>
@@ -38,6 +41,7 @@
               <a href="/themes.html">Themes</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <button type="button" data-href="/getting-started.html">Get started</button>
           </div>
         </nav>
       </nav>
@@ -46,51 +50,619 @@
         <section hero>
           <div container>
             <span hero-eyebrow>
-              <span badge>docs/juice</span>
+              <span badge>Honest Beta · docs/juice</span>
             </span>
-            <h1 hero-title>Reference stays in the docs tree</h1>
+            <h1 hero-title>Browse the lookup set. Do not rewrite it.</h1>
             <p hero-subtitle>
-              This site does not rewrite <code>docs/juice</code>. Use the
-              monorepo pages for attributes, theme contract, runtimes, and the
-              maturity matrix.
+              This hub indexes <code>docs/juice</code> — short blurbs, monorepo
+              links, and a few live Juice samples. Long contracts stay in the
+              docs tree. The course is the curriculum; these pages are the
+              lookup set.
             </p>
+            <div hero-actions>
+              <button type="button" scale="lg" data-href="#index">Jump to index</button>
+              <button
+                type="button"
+                btn="outline"
+                scale="lg"
+                data-href="https://github.com/citrusworx/WebEngine/tree/master/docs/juice"
+              >
+                Open docs/juice
+              </button>
+            </div>
           </div>
         </section>
 
-        <section type="features" paddingY="roomy">
+        <section type="workflow" paddingY="roomy" id="index">
           <div container>
-            <div grid="2x2" gap="comfortable">
-              <article card="feature" width="100%">
-                <h3>Getting started</h3>
-                <p><code>docs/juice/juice-getting-started.md</code></p>
-              </article>
-              <article card="feature" width="100%" warm>
-                <h3>Maturity matrix</h3>
-                <p><code>docs/juice/juice-maturity-matrix.md</code></p>
-              </article>
-              <article card="feature" width="100%">
+            <div section-header>
+              <h2>Same structure. Four shipped faces.</h2>
+              <p>
+                Samples on this page wear the active library theme. Switch
+                KiwiPress, Tide, Citrusmint, or Aquaflux. Blush and
+                <code>_draft</code> stay unpublished. Choice is stored locally.
+              </p>
+            </div>
+            <div row wrap gap="1" centered>
+              <button type="button" data-theme="kiwipress">KiwiPress</button>
+              <button type="button" btn="outline" data-theme="tide">Tide</button>
+              <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
+              <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            </div>
+            <div row wrap gap="1" centered marginY="comfortable">
+              <button type="button" btn="outline" scale="sm" data-href="#attributes">Attributes</button>
+              <button type="button" btn="outline" scale="sm" data-href="#layout">Layout</button>
+              <button type="button" btn="outline" scale="sm" data-href="#surfaces">Surfaces</button>
+              <button type="button" btn="outline" scale="sm" data-href="#typography">Typography</button>
+              <button type="button" btn="outline" scale="sm" data-href="#themes">Themes</button>
+              <button type="button" btn="outline" scale="sm" data-href="#responsive">Responsive</button>
+              <button type="button" btn="outline" scale="sm" data-href="#runtimes">Runtimes</button>
+              <button type="button" btn="outline" scale="sm" data-href="#practice">Practice</button>
+              <button type="button" btn="outline" scale="sm" data-href="#course">Course</button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="attributes">
+          <div container>
+            <div section-header>
+              <h2>Attributes and styles</h2>
+              <p>
+                Juice keeps intent in markup. Attributes are the styling API —
+                layout, type, color, spacing, sizing, shadows, icons, and
+                component hooks. Styles explains the three layers: Juice
+                attributes, theme CSS, and small app exceptions.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>Stable-ish</span>
                 <h3>Attributes</h3>
-                <p><code>docs/juice/juice-attributes.md</code></p>
+                <p>
+                  Catalog of shipped selectors by category. Start here when you
+                  need the spelling of <code>stack</code>, <code>gap</code>,
+                  <code>card</code>, or a token attribute.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-attributes.md">docs/juice/juice-attributes.md</a>
               </article>
-              <article card="feature" width="100%" warm>
-                <h3>Theme contract</h3>
-                <p><code>docs/juice/juice-theme-contract.md</code></p>
+              <article card="feature" width="100%" warm stack gap="0.75rem">
+                <span badge>Stable-ish</span>
+                <h3>Styles</h3>
+                <p>
+                  How to think about the public shape. Do not treat Juice as a
+                  utility-class clone or a component framework.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-styles.md">docs/juice/juice-styles.md</a>
               </article>
             </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="layout">
+          <div container>
+            <div section-header>
+              <h2>Layout and spacing</h2>
+              <p>
+                <code>stack</code>, <code>row</code>, <code>grid</code>, and
+                <code>gap</code> are the day-to-day primitives. Numeric
+                <code>gap="1"</code> is <code>1rem</code>. Named steps such as
+                <code>comfortable</code>, <code>cozy</code>, and
+                <code>snug</code> also ship. Layout Flow is the composition
+                guide; Spacing is the value table.
+              </p>
+            </div>
+            <div stack gap="comfortable">
+              <div grid="2x1" gap="comfortable">
+                <aside panel padding="1.25rem" stack gap="1">
+                  <span badge>Live sample</span>
+                  <h3>stack + gap</h3>
+                  <div stack gap="1">
+                    <aside panel padding="0.75rem">First child</aside>
+                    <aside panel padding="0.75rem">gap="1" → 1rem</aside>
+                    <aside panel padding="0.75rem">Third child</aside>
+                  </div>
+                </aside>
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Read next</h3>
+                  <p>Primitives first. Then flow. Then the spacing table.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-layout.md">Layout</a>
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-layout-flow.md">Layout Flow</a>
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-spacing.md">Spacing</a>
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-sizing.md">Sizing</a>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="surfaces">
+          <div container>
+            <div section-header>
+              <h2>Surfaces</h2>
+              <p>
+                <code>card</code>, <code>panel</code>, and <code>hero</code>
+                name structure. <code>surfaceTone</code> paints how a region
+                looks without replacing those hooks. Themes bind the tone
+                roles. Cards are Emerging; tones are Beta-stable.
+              </p>
+            </div>
+            <div stack gap="comfortable">
+              <div grid="3x1" gap="comfortable">
+                <article card="feature" width="100%" surfaceTone="soft">
+                  <span badge>soft</span>
+                  <h3>Frosted card</h3>
+                  <p>
+                    <code>card="feature"</code> with
+                    <code>surfaceTone="soft"</code>.
+                  </p>
+                </article>
+                <article card="feature" width="100%" surfaceTone="strong">
+                  <span badge>strong</span>
+                  <h3>Elevated card</h3>
+                  <p>
+                    <code>surfaceTone="strong"</code> is the more opaque fill.
+                  </p>
+                </article>
+                <aside panel padding="1.25rem" stack gap="0.75rem" surfaceTone="muted">
+                  <span badge>muted</span>
+                  <h3>Recessed panel</h3>
+                  <p>
+                    A quieter <code>panel</code> well.
+                    <code>surfaceTone="muted"</code>.
+                  </p>
+                </aside>
+              </div>
+              <div grid="2x1" gap="comfortable">
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Surface docs</h3>
+                  <p>
+                    Tones, <code>borderStrength</code>, blur, shadow tone,
+                    overlay, and variant recipes. Do not paste the full table
+                    here.
+                  </p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-surfaces.md">Surfaces</a>
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-surface-spec.md">Surface spec</a>
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-cards.md">Cards</a>
+                  </div>
+                </article>
+                <aside panel padding="1.25rem" stack gap="0.75rem">
+                  <h3>Card vs panel</h3>
+                  <p>
+                    Card is a content surface. Panel is a quieter supporting
+                    well. This page uses both. Themes own the paint.
+                  </p>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="typography">
+          <div container>
+            <div section-header>
+              <h2>Typography contract</h2>
+              <p>
+                Size scale, hierarchy roles, and when author
+                <code>font=</code> / <code>fontSize=</code> beat theme
+                defaults. Omit local type attributes so identity can apply —
+                then override when you need an exception. The face catalog is
+                a separate page.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <aside panel padding="2rem" stack gap="1">
+                <span badge>Live sample</span>
+                <h1>Heading one</h1>
+                <h2>Heading two</h2>
+                <h3>Heading three</h3>
+                <p>
+                  Body copy uses the theme pair. No local
+                  <code>font=</code> or <code>fontColor=</code> on this sample.
+                </p>
+              </aside>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <h3>Read the contract</h3>
+                <p>
+                  <code>fontSize</code> steps are <code>sm</code> through
+                  <code>xxl</code>. There is no <code>xs</code>. Author type
+                  attributes still win when you set them.
+                </p>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-typography-contract.md">Typography Contract</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-typography.md">Typography catalog</a>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="themes">
+          <div container>
+            <div section-header>
+              <h2>Theme contract, authoring, and manual</h2>
+              <p>
+                Juice owns structure. Themes own identity. The contract is the
+                required-versus-optional <code>--juice-*</code> checklist.
+                Authoring is how-to. The manual is the practical create /
+                migrate flow. The four shipped faces live on Themes — not
+                rewritten here.
+              </p>
+            </div>
+            <div grid="2x2" gap="comfortable">
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>Emerging</span>
+                <h3>Theme Contract</h3>
+                <p>
+                  Required binds, identity prefixes, and the theme ×
+                  role-family matrix. Machine-checked in the library.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-contract.md">docs/juice/juice-theme-contract.md</a>
+              </article>
+              <article card="feature" width="100%" warm stack gap="0.75rem">
+                <h3>Theme Authoring</h3>
+                <p>
+                  Voice, type pair, palette, semantic defaults, and named
+                  surfaces. Themes do not redefine layout primitives.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-authoring.md">docs/juice/juice-theme-authoring.md</a>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <h3>Theme Manual</h3>
+                <p>
+                  Create a brand theme, migrate ad hoc CSS, and decide what
+                  belongs in config versus app selectors.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-manual.md">docs/juice/juice-theme-manual.md</a>
+              </article>
+              <aside panel padding="1.25rem" stack gap="0.75rem">
+                <h3>See the four faces</h3>
+                <p>
+                  KiwiPress, Tide, Citrusmint, Aquaflux. Blush stays under
+                  <code>_draft</code>. Generator branding is Draft.
+                </p>
+                <a href="/themes.html">Themes gallery on this site</a>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="responsive">
+          <div container>
+            <div section-header>
+              <h2>Responsive reference</h2>
+              <p>
+                Built-in breakpoints, <code>row</code> collapse below 768px,
+                and container padding bands. Philosophy is the authoring
+                mindset. Prefer <code>row</code> + <code>gap</code> and avoid
+                fixed child widths unless intentional.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <aside panel padding="1.25rem" stack gap="1">
+                <span badge>Live sample</span>
+                <h3>row + wrap + gap</h3>
+                <p>These children stack when the row collapses on small viewports.</p>
+                <div row wrap gap="1">
+                  <span badge>xs 0</span>
+                  <span badge>sm 640</span>
+                  <span badge>md 768</span>
+                  <span badge>lg 1024</span>
+                </div>
+              </aside>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>Emerging</span>
+                <h3>Read next</h3>
+                <p>
+                  The reference lists what ships. The philosophy page is why
+                  Juice collapses instead of adding a second breakpoint API.
+                </p>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-responsive-reference.md">Responsive reference</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-responsive-philosophy.md">Responsive philosophy</a>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="runtimes">
+          <div container>
+            <div section-header>
+              <h2>Runtime docs</h2>
+              <p>
+                Importing <code>@citrusworx/juiceui</code> auto-enhances valid
+                markup. Still Emerging — not a component kit. Live examples
+                stay on Demos. Depth stays in the runtime pages.
+              </p>
+            </div>
+            <div stack gap="comfortable">
+              <div row wrap gap="1">
+                <button type="button" data-href="/demos.html">Open Demos</button>
+                <button
+                  type="button"
+                  btn="outline"
+                  data-href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-runtime-behavior.md"
+                >
+                  Runtime behavior
+                </button>
+              </div>
+              <div grid="2x2" gap="comfortable">
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Navigation</h3>
+                  <p>Bar, mobile toggle, and sidebar. This header uses that markup.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-navigation-runtime.md">Navigation runtime</a>
+                    <a href="/demos.html#navigation">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" warm stack gap="0.75rem">
+                  <h3>Accordion</h3>
+                  <p>Disclosure panels from <code>[accordion]</code> markup.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-accordion-runtime.md">Accordion runtime</a>
+                    <a href="/demos.html#accordion">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Tabs</h3>
+                  <p>Paired tab lists and panels. Hidden panels use native <code>hidden</code>.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-tabs-runtime.md">Tabs runtime</a>
+                    <a href="/demos.html#tabs">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" warm stack gap="0.75rem">
+                  <h3>Modal</h3>
+                  <p>Dialog overlay with Escape, focus trap, and exclusive open.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-modal-runtime.md">Modal runtime</a>
+                    <a href="/demos.html#modal">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Drawer</h3>
+                  <p>Edge panels on <code>[drawer-overlay]</code>. Size is a separate attribute.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-drawer-runtime.md">Drawer runtime</a>
+                    <a href="/demos.html#drawer">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" warm stack gap="0.75rem">
+                  <h3>Toast</h3>
+                  <p>Non-modal stack in a live region. Show and dismiss via <code>createToast()</code>.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-toast-runtime.md">Toast runtime</a>
+                    <a href="/demos.html#toast">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Popover</h3>
+                  <p>Anchored, non-modal panel. Never a bare <code>popover</code> attribute.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-popover-runtime.md">Popover runtime</a>
+                    <a href="/demos.html#popover">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" warm stack gap="0.75rem">
+                  <h3>Wizard <span badge>On master</span></h3>
+                  <p>Multi-step shell. On master ahead of the 0.7.0 npm cut.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-wizard-runtime.md">Wizard runtime</a>
+                    <a href="/demos.html#wizard">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" stack gap="0.75rem">
+                  <h3>Tooltip <span badge>On master</span></h3>
+                  <p>Hover or focus tip. Not native <code>title</code>. No focus trap.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-tooltip-runtime.md">Tooltip runtime</a>
+                    <a href="/demos.html#tooltip">Live demo</a>
+                  </div>
+                </article>
+                <article card="feature" width="100%" warm stack gap="0.75rem">
+                  <h3>Combobox <span badge>On master</span></h3>
+                  <p>APG list autocomplete. Distinct from native <code>&lt;select&gt;</code>.</p>
+                  <div stack gap="0.5rem">
+                    <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-combobox-runtime.md">Combobox runtime</a>
+                    <a href="/demos.html#combobox">Live demo</a>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="practice">
+          <div container>
+            <div section-header>
+              <h2>Practice, maturity, and status</h2>
+              <p>
+                How to compose well, how not to fight the system, and what
+                Beta actually promises. <code>@citrusworx/juiceui@0.7.0</code>
+                is the public cut. Master is ahead.
+              </p>
+            </div>
+            <div grid="2x2" gap="comfortable">
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <h3>Best practices</h3>
+                <p>
+                  Prefer composition over one-off wrappers. Juice owns
+                  structure. App code owns behavior and tiny exceptions.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-best-practices.md">docs/juice/juice-best-practices.md</a>
+              </article>
+              <article card="feature" width="100%" warm stack gap="0.75rem">
+                <h3>Anti-patterns</h3>
+                <p>
+                  Semantic elements as layout wrappers, desktop widths on
+                  collapsing rows, and other ways to fight Juice.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-anti-patterns.md">docs/juice/juice-anti-patterns.md</a>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <h3>Maturity matrix</h3>
+                <p>
+                  Stable-ish vs Emerging vs Early vs Draft. Layout and tokens
+                  are the strongest layers. Runtimes and themes are Emerging.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">docs/juice/juice-maturity-matrix.md</a>
+              </article>
+              <article card="feature" width="100%" warm stack gap="0.75rem">
+                <h3>Beta notes</h3>
+                <p>
+                  What the Beta line includes and what it does not promise
+                  yet. Config-driven branding and <code>_draft</code> stay out.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">docs/juice/juice-beta.md</a>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <h3>Roadmap</h3>
+                <p>
+                  0.7.0 on npm. Wizard, tooltip, combobox, and banner live on
+                  master ahead of the next cut.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-roadmap.md">docs/juice/juice-roadmap.md</a>
+              </article>
+              <aside panel padding="1.25rem" stack gap="0.75rem">
+                <h3>Also in the lookup set</h3>
+                <p>Suggested reading after the course — not a second start.</p>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-page-tutorial.md">Page tutorial</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-patterns.md">Patterns</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md">Getting started (docs)</a>
+                  <a href="/getting-started.html">Getting started (this site)</a>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="course">
+          <div container>
+            <div section-header>
+              <h2>Course: design systems through Juice</h2>
+              <p>
+                Do the course first if you want a curriculum. Harbor Press is
+                the running project. Start at “See it in 10 minutes,” then
+                come back to this hub when you need a spelling.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>Start here</span>
+                <h3>Design systems, understood through Juice</h3>
+                <p>
+                  A progressive course, not another encyclopedia. Tokens,
+                  surfaces, themes, and composition — mapped onto attributes
+                  Juice actually ships.
+                </p>
+                <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/course/README.md">docs/juice/course/README.md</a>
+              </article>
+              <aside panel padding="2rem" stack gap="1">
+                <h3>See it in 10 minutes</h3>
+                <p>
+                  Paste the Harbor Press hero + cards before any Foundations
+                  essays. Then Lesson 01, or jump back to the lookup set.
+                </p>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/course/00-first-look.md">00 — See it in 10 minutes</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/course/01-foundations.md">01 — Foundations</a>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section type="pricing" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Honest Beta</h2>
+              <p>
+                Juice Beta is a CSS-first, attribute-driven styling and
+                composition system. Layout, tokens, typography, and icons are
+                the strongest layers. Runtimes and library themes are
+                Emerging. This page is an index, not a rewrite.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <h3>Ready today</h3>
+                <p>
+                  Attribute-driven styling, layout primitives, spacing, color
+                  tokens, typography, and icons. Use those with confidence.
+                </p>
+              </article>
+              <article card="feature" width="100%" warm>
+                <h3>Still settling</h3>
+                <p>
+                  Cards, buttons, forms, nav, and the JS entry are Emerging.
+                  Config-driven branding is Draft. Juice is not a mature
+                  component framework and does not pretend to be one.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section cta>
+          <h2 cta-title>Need a live example? Open Demos.</h2>
+          <p cta-subtitle>
+            This hub points at the docs tree. Demos show Emerging runtimes.
+            Themes show the four shipped faces.
+          </p>
+          <div cta-actions>
+            <button type="button" scale="lg" data-href="/demos.html">Open demos</button>
+            <p cta-note>docs/juice remains the lookup set</p>
           </div>
         </section>
       </main>
 
       <footer paddingY="roomy">
         <div container>
-          <div center>
+          <div grid="4x1" gap="comfortable">
+            <div stack gap="cozy">
+              <h4>Juice</h4>
+              <p>
+                CSS-first, attribute-driven styling and composition from
+                CitrusWorx. Showcase for <code>@citrusworx/juiceui</code>.
+              </p>
+            </div>
+            <div stack gap="cozy">
+              <h4>Site</h4>
+              <ul stack gap="snug">
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Docs</h4>
+              <ul stack gap="snug">
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/docs/juice">docs/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/course/README.md">Course</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">Beta notes</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Package</h4>
+              <ul stack gap="snug">
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+              </ul>
+            </div>
+          </div>
+          <div center marginY="comfortable">
             <nav type="footer">
               <ul row gap="2" centered>
                 <li><a href="/">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
                 <li><a href="/themes.html">Themes</a></li>
-                <li><a href="/reference.html">Reference</a></li>
               </ul>
             </nav>
             <p>CitrusWorx · WebEngine · Honest Beta</p>
