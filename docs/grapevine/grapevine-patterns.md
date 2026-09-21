@@ -199,7 +199,7 @@ resources:
 
 `networking.domain: example.com` only appends `{ name }` if missing — no records.
 
-A more honest flow: apply the droplet, read `networks.v4` from `ApplyResult` or `getDroplet`, then apply a **second** document that only declares the domain — understanding that the second apply is another create, so the domain must not already exist.
+A more honest flow: apply the droplet, read `networks.v4` from `ApplyResult` or `getDroplet`, then apply a **second** document that only declares the domain. If that domain name already exists, apply adopts it and creates only records that are not already present. It does not change an existing record's data.
 
 ## Load balancer in front of known droplet ids
 

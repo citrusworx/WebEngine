@@ -405,12 +405,12 @@ grape status
 
 ## What to notice
 
-- **Validate is the rehearsal.** It cannot tell you the VPC name is taken.
-- **Apply is create-only.** The YAML is a request, not a desired-state document.
-- **Names resolve in one process.** `vpc: grapevine` and `droplets: [grapevine-web-01]` only see what this apply just created.
+- **Validate is the rehearsal.** It does not call DigitalOcean. `grape plan` does, when a token is set, and marks create vs adopt.
+- **Apply adopts a unique name.** A second apply does not create another copy. It also does not resize droplets or rewrite every field. The YAML is not Terraform state.
+- **Same-apply names still matter.** `vpc: grapevine` uses a VPC created or adopted in this run. A droplets-only file does not search the account for that name.
 - **Status is not drift.** File counts and account counts are different questions.
 - **The private key from `generate: true` is on disk** at `.grape/ssh/<name>` (or `private_key_path`). Apply JSON has the path, not the PEM. Use `ssh -i`.
-- **Deletes are extra.** `NukeDroplet`, `deleteFirewall`, `deleteVPC` exist. `grape destroy` does not.
+- **Deletes are `grape destroy`.** It matches the same unique names and skips ambiguous ones. `NukeDroplet` still exists for a single id.
 
 ## What this tutorial does not pretend
 

@@ -14,6 +14,7 @@ vi.mock("../providers/digitalocean/client.js", () => ({
 
 vi.mock("../providers/digitalocean/tags/tags.js", () => ({
     createTag: vi.fn(async (name: string) => ({ name })),
+    listAllTags: vi.fn(async () => []),
     tagResource: vi.fn()
 }));
 
@@ -66,12 +67,21 @@ vi.mock("../providers/digitalocean/firewall/firewall.js", () => ({
         inbound_rules: [],
         outbound_rules: []
     })),
-    listAllFirewalls: vi.fn(async () => [])
+    listAllFirewalls: vi.fn(async () => []),
+    updateFirewall: vi.fn(async (id: string, fw: { name: string }) => ({
+        id,
+        name: fw.name,
+        status: "succeeded",
+        inbound_rules: [],
+        outbound_rules: []
+    }))
 }));
 
 vi.mock("../providers/digitalocean/networking/domains.js", () => ({
     createDomain: vi.fn(async (domain: { name: string }) => domain),
-    createDomainRecord: vi.fn()
+    createDomainRecord: vi.fn(async () => ({ id: 1 })),
+    listAllDomains: vi.fn(async () => []),
+    listAllDomainRecords: vi.fn(async () => [])
 }));
 
 vi.mock("../providers/digitalocean/networking/load-balancer.js", () => ({
@@ -90,6 +100,8 @@ vi.mock("../providers/digitalocean/databases/databases.js", async (importOrigina
     const actual = await importOriginal<typeof import("../providers/digitalocean/databases/databases.js")>();
     return {
         ...actual,
+        listDatabases: vi.fn(async () => []),
+        getDatabase: vi.fn(),
         createDatabase: vi.fn(async (spec: { name: string; engine: string }) => ({
             id: "db-1",
             name: spec.name,
@@ -596,24 +608,29 @@ describe("apply grape config", () => {
         ]);
     });
 
-    it("fails when multiple account SSH keys share the blueprint name", async () => {
-        const { listSSHKeys } = await import("../providers/digitalocean/ssh/ssh.js");
+    it("skips an ambiguous SSH key name instead of uploading another", async () => {
+        const { listSSHKeys, uploadSSHKey } = await import("../providers/digitalocean/ssh/ssh.js");
         vi.mocked(listSSHKeys).mockResolvedValueOnce([
             { id: 11, name: "kiwipress", fingerprint: "aa", public_key: "ssh-ed25519 A" },
             { id: 22, name: "kiwipress", fingerprint: "bb", public_key: "ssh-ed25519 B" }
         ]);
 
-        await expect(
-            applyGrapeConfig(
-                validateGrapeConfig({
-                    provider: "digitalocean",
-                    region: "nyc3",
-                    resources: {
-                        ssh_keys: [{ name: "kiwipress", public_key: "ssh-ed25519 AAAA" }]
-                    }
-                })
-            )
-        ).rejects.toThrow(/SSH key "kiwipress" is ambiguous: 2 live resources named "kiwipress" \(ids: 11, 22\)/);
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    ssh_keys: [{ name: "kiwipress", public_key: "ssh-ed25519 AAAA" }]
+                }
+            })
+        );
+
+        expect(uploadSSHKey).not.toHaveBeenCalled();
+        expect(result.ssh_keys).toEqual([]);
+        expect(result.receipt).toEqual([
+            expect.objectContaining({ kind: "ssh_key", name: "kiwipress", action: "skipped", note: "ambiguous" })
+        ]);
+        expect(result.warnings[0]).toMatch(/ambiguous, 2 live matches \(ids: 11, 22\)/);
     });
 
     it("adopts a unique VPC in the target region and skips create", async () => {
@@ -656,8 +673,8 @@ describe("apply grape config", () => {
         expect(result.warnings).toEqual(['Adopting existing VPC "kiwipress" (id vpc-live)']);
     });
 
-    it("fails when a VPC name exists only in another region", async () => {
-        const { listAllVPCs } = await import("../providers/digitalocean/vpc/vpc.js");
+    it("skips a VPC that exists only in another region", async () => {
+        const { listAllVPCs, createVPC } = await import("../providers/digitalocean/vpc/vpc.js");
         vi.mocked(listAllVPCs).mockResolvedValueOnce([
             {
                 id: "vpc-sfo",
@@ -671,21 +688,24 @@ describe("apply grape config", () => {
             }
         ]);
 
-        await expect(
-            applyGrapeConfig(
-                validateGrapeConfig({
-                    provider: "digitalocean",
-                    region: "nyc3",
-                    resources: {
-                        vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }]
-                    }
-                })
-            )
-        ).rejects.toThrow(/VPC "kiwipress" exists in region "sfo3" \(id vpc-sfo\), not "nyc3"/);
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }]
+                }
+            })
+        );
+
+        expect(createVPC).not.toHaveBeenCalled();
+        expect(result.vpcs).toEqual([]);
+        expect(result.receipt[0]).toMatchObject({ kind: "vpc", name: "kiwipress", action: "skipped" });
+        expect(result.warnings[0]).toMatch(/exists in region "sfo3"/);
     });
 
-    it("fails when multiple VPCs share the blueprint name", async () => {
-        const { listAllVPCs } = await import("../providers/digitalocean/vpc/vpc.js");
+    it("skips when multiple VPCs share the blueprint name", async () => {
+        const { listAllVPCs, createVPC } = await import("../providers/digitalocean/vpc/vpc.js");
         vi.mocked(listAllVPCs).mockResolvedValueOnce([
             {
                 id: "vpc-a",
@@ -709,17 +729,20 @@ describe("apply grape config", () => {
             }
         ]);
 
-        await expect(
-            applyGrapeConfig(
-                validateGrapeConfig({
-                    provider: "digitalocean",
-                    region: "nyc3",
-                    resources: {
-                        vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }]
-                    }
-                })
-            )
-        ).rejects.toThrow(/VPC "kiwipress" is ambiguous: 2 live resources named "kiwipress" \(ids: vpc-a, vpc-b\)/);
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    vpcs: [{ name: "kiwipress", ip_range: "10.80.0.0/16" }]
+                }
+            })
+        );
+
+        expect(createVPC).not.toHaveBeenCalled();
+        expect(result.vpcs).toEqual([]);
+        expect(result.receipt[0]).toMatchObject({ kind: "vpc", action: "skipped", note: "ambiguous" });
+        expect(result.warnings[0]).toMatch(/ambiguous, 2 live matches \(ids: vpc-a, vpc-b\)/);
     });
 
     it("adopts a unique droplet and firewall and skips create", async () => {
@@ -740,8 +763,9 @@ describe("apply grape config", () => {
                 id: "fw-live",
                 name: "kiwipress",
                 status: "succeeded",
-                inbound_rules: [],
-                outbound_rules: []
+                inbound_rules: [{ protocol: "tcp", ports: "22", sources: { addresses: ["0.0.0.0/0"] } }],
+                outbound_rules: [],
+                droplet_ids: [321]
             }
         ]);
 

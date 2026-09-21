@@ -176,11 +176,11 @@ Emerging, and the chosen path for a public static site such as Juice (`apps/juic
 
 Apply order for these three is Spaces, then certificates, then CDN. A same-apply CDN reference polls `GET /certificates/:id` until `verified` (or `error` / timeout) before `POST /cdn/endpoints`. Certificates that nothing references are left `pending`. This is not a general "wait until the CDN edge is live" helper, and it is not `waitForAppDeployment`.
 
-Destroy order removes the CDN endpoint before the certificate and the Space. A certificate still attached to a load balancer is removed only after load balancers in the same plan. Re-apply adopts a unique Space name, a unique certificate name, and a unique CDN origin. It does not change ACL, TTL, or custom domain.
+Destroy order removes the CDN endpoint before the certificate and the Space. A certificate still attached to a load balancer is removed only after load balancers in the same plan. Re-apply adopts a unique Space name, a unique certificate name, and a unique CDN origin. It updates CDN TTL only. It does not change ACL or custom domain.
 
 `networking.ssl` and `networking.cdn` still do nothing except warn. Declare the resource arrays.
 
-Juice follow-ups that this layer does not pretend to finish: idempotent updates, DNS from the CDN hostname, `yarn workspace @citrusworx/juiceapp build`, and uploading `dist/`.
+Juice follow-ups that this layer does not pretend to finish: waiting until the certificate and CDN edge are live, the CNAME from the site hostname to the CDN endpoint, `yarn workspace @citrusworx/juiceapp build`, and uploading `dist/`.
 
 ## Not implemented as Grapevine resources
 

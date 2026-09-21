@@ -27,6 +27,18 @@ export async function getCdnEndpoint(id) {
     });
     return response.endpoint;
 }
+/**
+ * PUT `/cdn/endpoints/:id` with only the fields passed in.
+ * Apply uses this for TTL. It does not send `custom_domain` or `certificate_id` on adopt.
+ */
+export async function updateCdnEndpoint(id, patch) {
+    const response = await doRequest({
+        method: "PUT",
+        url: `/cdn/endpoints/${encodeURIComponent(id)}`,
+        data: cleanPayload({ ttl: patch.ttl })
+    });
+    return response.endpoint;
+}
 export async function createCdnEndpoint(blueprint) {
     const response = await doRequest({
         method: "POST",

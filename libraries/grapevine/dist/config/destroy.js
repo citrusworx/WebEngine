@@ -12,6 +12,7 @@ import { deleteDatabase } from "../providers/digitalocean/databases/databases.js
 import { deleteCdnEndpoint, resolveCdnOrigin } from "../providers/digitalocean/cdn/cdn.js";
 import { deleteCertificate } from "../providers/digitalocean/certificates/certificates.js";
 import { deleteSpace } from "../providers/digitalocean/spaces/spaces.js";
+import { lookupCdnByOrigin, lookupVPC, lookupWhere } from "./adopt.js";
 import { fetchLiveInventory } from "./live.js";
 export const DESTROY_ORDER = [
     "cdn",
@@ -34,21 +35,21 @@ function orderIndex(kind) {
 function sortTargets(targets) {
     return [...targets].sort((a, b) => orderIndex(a.kind) - orderIndex(b.kind));
 }
-function uniqueMatch(items, name, getName, kind, skipped) {
-    const matches = items.filter((item) => getName(item) === name);
-    if (matches.length === 0) {
+function uniqueMatch(items, name, getName, kind, skipped, idOf = (item) => item.id ?? item.uuid) {
+    const found = lookupWhere(items, (item) => getName(item) === name, idOf);
+    if (found.status === "missing") {
         skipped.push({ kind, name, reason: "not found" });
         return undefined;
     }
-    if (matches.length > 1) {
+    if (found.status !== "unique" || !found.resource) {
         skipped.push({
             kind,
             name,
-            reason: `ambiguous: ${matches.length} live resources named "${name}"`
+            reason: `ambiguous: ${found.count} live resources named "${name}"`
         });
         return undefined;
     }
-    return matches[0];
+    return found.resource;
 }
 function addUniqueTarget(targets, skipped, target) {
     const exists = targets.some((item) => item.kind === target.kind && item.id !== undefined && item.id === target.id);
@@ -119,14 +120,24 @@ export function planDestroy(inventory, options) {
                 skipped.push({ kind: "cdn", name: label, reason: message });
                 continue;
             }
-            const match = uniqueMatch(inventory.cdn, origin, (item) => item.origin, "cdn", skipped);
-            if (match) {
-                addUniqueTarget(targets, skipped, {
-                    kind: "cdn",
-                    name: match.custom_domain || match.origin,
-                    id: match.id
-                });
+            const found = lookupCdnByOrigin(inventory.cdn, origin);
+            if (found.status === "missing") {
+                skipped.push({ kind: "cdn", name: origin, reason: "not found" });
+                continue;
             }
+            if (found.status !== "unique" || !found.resource) {
+                skipped.push({
+                    kind: "cdn",
+                    name: origin,
+                    reason: `ambiguous: ${found.count} live resources named "${origin}"`
+                });
+                continue;
+            }
+            addUniqueTarget(targets, skipped, {
+                kind: "cdn",
+                name: found.resource.custom_domain || found.resource.origin,
+                id: found.resource.id
+            });
         }
         for (const app of resources.apps ?? []) {
             const match = uniqueMatch(inventory.apps, app.spec.name, (item) => item.spec?.name, "app", skipped);
@@ -220,20 +231,43 @@ export function planDestroy(inventory, options) {
             }
         }
         for (const vpc of resources.vpcs ?? []) {
-            const match = uniqueMatch(inventory.vpcs, vpc.name, (item) => item.name, "vpc", skipped);
-            if (!match) {
+            const region = vpc.region ?? config.region ?? "";
+            const found = lookupVPC(inventory.vpcs, vpc.name, region);
+            if (found.status === "missing") {
+                skipped.push({ kind: "vpc", name: vpc.name, reason: "not found" });
                 continue;
             }
-            if (match.default) {
+            if (found.status === "ambiguous") {
                 skipped.push({
                     kind: "vpc",
-                    name: match.name,
-                    id: match.id,
+                    name: vpc.name,
+                    reason: `ambiguous: ${found.count} live resources named "${vpc.name}"`
+                });
+                continue;
+            }
+            if (found.status === "mismatch" || !found.resource) {
+                skipped.push({
+                    kind: "vpc",
+                    name: vpc.name,
+                    id: found.resource?.id,
+                    reason: found.reason ?? "region does not match"
+                });
+                continue;
+            }
+            if (found.resource.default) {
+                skipped.push({
+                    kind: "vpc",
+                    name: found.resource.name,
+                    id: found.resource.id,
                     reason: "refusing to delete the default VPC"
                 });
                 continue;
             }
-            addUniqueTarget(targets, skipped, { kind: "vpc", name: match.name, id: match.id });
+            addUniqueTarget(targets, skipped, {
+                kind: "vpc",
+                name: found.resource.name,
+                id: found.resource.id
+            });
         }
         for (const name of tagNamesFromConfig(config)) {
             const match = uniqueMatch(inventory.tags, name, (item) => item.name, "tag", skipped);
@@ -361,8 +395,10 @@ export async function destroyGrapeResources(options) {
 export const DESTROY_V1_NOTES = `v1 destroy support
   Matches unique live names from the config and/or droplets with --tag, plus
   firewalls clearly attached to those droplets (same tag, or droplet ids that
-  are a subset of the tagged set). Default VPCs and ambiguous names are skipped.
-  Local generated SSH private key files are not removed.
+  are a subset of the tagged set). Default VPCs, ambiguous names, and a VPC whose
+  region does not match the config are skipped. Local generated SSH private key
+  files are not removed. Apply uses the same unique-name, CDN-origin, and VPC
+  region checks and also skips instead of creating.
 
   Order: CDN endpoints → apps → alert policies → load balancers →
   certificates → firewalls → domains → droplets → databases → Spaces →

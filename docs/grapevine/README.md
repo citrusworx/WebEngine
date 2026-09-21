@@ -11,7 +11,7 @@ The current model is:
 - **Blueprints** are YAML documents that hoist into `resources` (a droplet/VPC/firewall under `blueprint:` is folded in).
 - **Credentials** come from an env var (`DO_TOKEN` by default).
 
-Grapevine is strongest when you treat it as a typed DigitalOcean client plus a create-only apply engine. It is not a multi-cloud layer, not Terraform, and not a GUI.
+Grapevine is strongest when you treat it as a typed DigitalOcean client plus an apply engine that creates what is missing and adopts unique names. It is not a multi-cloud layer, not Terraform, and not a GUI.
 
 ## Who it is for
 
@@ -314,9 +314,9 @@ Convenience fields `networking.vpc`, `networking.domain`, `firewall`, `ssh` are 
 | `DigitalOcean.VPC.create` class | Functions, not a namespace class |
 | Apply `services.frontend.type: app` | Warning only |
 | SSH into the box and run commands | Not implemented (`user_data` at create only) |
-| State file / full update | No state file. `grape destroy` matches unique names. Re-apply does not update adopted resources |
-| Drift / reconcile | `grape status` overlap is not a diff |
-| Live dry-run | `grape plan` does not call DigitalOcean |
+| State file / full update | No state file. Re-apply adopts unique names. Firewall rules and CDN TTL can update. Droplet size, ACL, and custom domain do not |
+| Drift / reconcile | `grape status` overlap is not a diff. `grape plan` create/adopt/skip is name presence |
+| Live dry-run | `grape plan` lists the account when a token is set and does not mutate. With no token it stays local and says so |
 | Volumes / DOKS as grape resources | No first-class apply types. Spaces, CDN, and certificates are `resources.spaces`, `resources.cdn`, and `resources.certificates` |
 | Juice static upload | `05-static-site-spaces.yaml` provisions hosting only. It does not build `@citrusworx/juiceapp` or upload `dist/` |
 | Marketplace of blueprints | `examples/blueprints/` only |
@@ -327,7 +327,7 @@ Convenience fields `networking.vpc`, `networking.domain`, `firewall`, `ssh` are 
 1. [Getting Started](./grapevine-getting-started.md) — token, first validate/apply
 2. [Tutorial](./grapevine-tutorial.md) — guided stack: validate → apply → status on real blueprints
 3. [Configuration](./grapevine-config.md) — schema fields that apply actually uses
-4. [Apply lifecycle](./grapevine-apply.md) — order, name maps, no rollback, no idempotency
+4. [Apply lifecycle](./grapevine-apply.md) — order, adopt vs create, receipt, no rollback
 5. [Blueprints](./grapevine-blueprints.md) — in-repo starters vs hoist vs WordPress sketches
 6. [DigitalOcean guide](./grapevine-digitalocean.md) — regions, droplets, firewalls, SSH, provider surface
 7. [Secrets and env](./grapevine-secrets.md) — `DO_TOKEN`, custom env names, generated keys

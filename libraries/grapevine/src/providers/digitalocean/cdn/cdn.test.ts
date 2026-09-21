@@ -4,7 +4,8 @@ import {
     createCdnEndpoint,
     deleteCdnEndpoint,
     listCdnEndpoints,
-    resolveCdnOrigin
+    resolveCdnOrigin,
+    updateCdnEndpoint
 } from "./cdn.js";
 
 vi.mock("../client.js", () => ({
@@ -56,6 +57,14 @@ describe("digitalocean cdn", () => {
                 certificate_id: "cert-1",
                 custom_domain: "static.example.com"
             }
+        });
+
+        mockedRequest.mockResolvedValueOnce({ endpoint: { ...endpoint, ttl: 60 } });
+        await updateCdnEndpoint("cdn-1", { ttl: 60 });
+        expect(mockedRequest).toHaveBeenCalledWith({
+            method: "PUT",
+            url: "/cdn/endpoints/cdn-1",
+            data: { ttl: 60 }
         });
 
         mockedRequest.mockResolvedValueOnce(undefined);

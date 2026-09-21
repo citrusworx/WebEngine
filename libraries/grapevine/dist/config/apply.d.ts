@@ -41,6 +41,14 @@ export interface AppliedStack {
     steps: string[];
     user_data_generated: boolean;
 }
+export type ApplyAction = "created" | "adopted" | "updated" | "skipped";
+export interface ApplyReceiptItem {
+    kind: string;
+    name: string;
+    action: ApplyAction;
+    id?: string | number;
+    note?: string;
+}
 export interface ApplyResult {
     tags: string[];
     ssh_keys: AppliedSSHKey[];
@@ -73,6 +81,12 @@ export interface ApplyResult {
     stacks: AppliedStack[];
     /** Absolute paths of private keys written during this apply (generate: true). */
     private_key_paths: string[];
+    /**
+     * Created, adopted, updated, and skipped resources.
+     * The typed arrays above include created and adopted resources so later steps
+     * can use their ids. Skipped resources appear only here.
+     */
+    receipt: ApplyReceiptItem[];
     warnings: string[];
 }
 export declare function unwrapDropletEntry(entry: GrapeDropletEntry): DropletBlueprintConfig;

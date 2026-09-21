@@ -89,6 +89,36 @@ function mappedRule(
     };
 }
 
+function sortedCopy(values?: string[]): string[] {
+    return [...(values ?? [])].sort();
+}
+
+function peerKey(peer?: FirewallRuleSources): string {
+    if (!peer) {
+        return "";
+    }
+    return JSON.stringify({
+        addresses: sortedCopy(peer.addresses),
+        droplet_ids: [...(peer.droplet_ids ?? [])].sort((left, right) => left - right),
+        load_balancer_uids: sortedCopy(peer.load_balancer_uids),
+        kubernetes_ids: sortedCopy(peer.kubernetes_ids),
+        tags: sortedCopy(peer.tags)
+    });
+}
+
+/** Stable identity for a full rule list. Order does not matter. */
+export function firewallRulesKey(rules?: FirewallRule[]): string {
+    const items = (rules ?? []).map(
+        (rule) => `${rule.protocol}|${rule.ports ?? ""}|${peerKey(rule.sources)}|${peerKey(rule.destinations)}`
+    );
+    items.sort();
+    return items.join("\n");
+}
+
+export function firewallRulesEqual(left?: FirewallRule[], right?: FirewallRule[]): boolean {
+    return firewallRulesKey(left) === firewallRulesKey(right);
+}
+
 /** Map convenience inbound/outbound rules to DigitalOcean `inbound_rules` / `outbound_rules`. */
 export function normalizeFirewallRules(rules?: ConvenienceFirewallRule[]): FirewallRule[] | undefined {
     if (!rules?.length) {

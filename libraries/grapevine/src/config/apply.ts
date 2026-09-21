@@ -1,6 +1,12 @@
 import { getDoToken } from "../providers/digitalocean/client.js";
-import { createApp, type AppSpec } from "../providers/digitalocean/apps/apps.js";
-import { createCdnEndpoint, listCdnEndpoints, resolveCdnOrigin, type CdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
+import { createApp, listApps, type AppSpec } from "../providers/digitalocean/apps/apps.js";
+import {
+    createCdnEndpoint,
+    listCdnEndpoints,
+    resolveCdnOrigin,
+    updateCdnEndpoint,
+    type CdnEndpoint
+} from "../providers/digitalocean/cdn/cdn.js";
 import {
     createCertificate,
     listCertificates,
@@ -10,20 +16,41 @@ import {
 import { createSpace, listSpaces, spaceOriginHostname, type SpaceCallOptions } from "../providers/digitalocean/spaces/spaces.js";
 import {
     createDatabase,
+    getDatabase,
+    listDatabases,
     pickDatabaseConnection,
     waitForDatabase,
     type DatabaseResource
 } from "../providers/digitalocean/databases/databases.js";
 import { createDroplet, listAllDroplets, type DropletBlueprint, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
-import { createFireWall, listAllFirewalls, type FireWall } from "../providers/digitalocean/firewall/firewall.js";
-import { createAlertPolicy } from "../providers/digitalocean/monitoring/monitoring.js";
-import { createDomain, createDomainRecord } from "../providers/digitalocean/networking/domains.js";
-import { createLoadBalancer } from "../providers/digitalocean/networking/load-balancer.js";
+import {
+    createFireWall,
+    listAllFirewalls,
+    updateFirewall,
+    type FireWall,
+    type FireWallResponse
+} from "../providers/digitalocean/firewall/firewall.js";
+import { createAlertPolicy, listAlertPolicies } from "../providers/digitalocean/monitoring/monitoring.js";
+import {
+    createDomain,
+    createDomainRecord,
+    listAllDomainRecords,
+    listAllDomains,
+    type DomainRecord
+} from "../providers/digitalocean/networking/domains.js";
+import { createLoadBalancer, listAllLoadBalancers } from "../providers/digitalocean/networking/load-balancer.js";
 import { createSSHKey, listSSHKeys, uploadSSHKey, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
-import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
+import { createTag, listAllTags, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC, listAllVPCs, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
-import { adoptCdnByOrigin, adoptDroplet, adoptFirewall, adoptSSHKey, adoptVPC, findUniqueByName } from "./adopt.js";
-import { normalizeFirewallRules } from "./firewall-rules.js";
+import {
+    lookupByName,
+    lookupCdnByOrigin,
+    lookupSSHKey,
+    lookupVPC,
+    lookupWhere,
+    type LookupResult
+} from "./adopt.js";
+import { firewallRulesEqual, normalizeFirewallRules } from "./firewall-rules.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
 import { persistGeneratedPrivateKey, readExistingPrivateKeyPublic, resolvePrivateKeyPath } from "./ssh-private-key.js";
 import { getConfigSourceDir, type GrapeRunOptions } from "./source.js";
@@ -80,6 +107,16 @@ export interface AppliedStack {
     user_data_generated: boolean;
 }
 
+export type ApplyAction = "created" | "adopted" | "updated" | "skipped";
+
+export interface ApplyReceiptItem {
+    kind: string;
+    name: string;
+    action: ApplyAction;
+    id?: string | number;
+    note?: string;
+}
+
 export interface ApplyResult {
     tags: string[];
     ssh_keys: AppliedSSHKey[];
@@ -97,6 +134,12 @@ export interface ApplyResult {
     stacks: AppliedStack[];
     /** Absolute paths of private keys written during this apply (generate: true). */
     private_key_paths: string[];
+    /**
+     * Created, adopted, updated, and skipped resources.
+     * The typed arrays above include created and adopted resources so later steps
+     * can use their ids. Skipped resources appear only here.
+     */
+    receipt: ApplyReceiptItem[];
     warnings: string[];
 }
 
@@ -278,6 +321,7 @@ export async function applyGrapeConfig(
         cdn: [],
         stacks: [],
         private_key_paths: [],
+        receipt: [],
         warnings
     };
 
@@ -285,10 +329,21 @@ export async function applyGrapeConfig(
     const dropletIds = new Map<string, number>();
     const sshKeyIds: Array<string | number> = [];
 
+    const liveTags = (resources.tags ?? []).length > 0 ? await listAllTags() : [];
     for (const tag of resources.tags ?? []) {
         const name = typeof tag === "string" ? tag : tag.name;
-        await createTag(name);
-        result.tags.push(name);
+        const found = lookupByName(liveTags, name);
+        if (skipLookup(result, "tag", name, found, "tag")) {
+            continue;
+        }
+        if (found.status === "unique") {
+            result.tags.push(name);
+            record(result, { kind: "tag", name, action: "adopted" }, `Adopting existing tag "${name}"`);
+        } else {
+            await createTag(name);
+            result.tags.push(name);
+            record(result, { kind: "tag", name, action: "created" });
+        }
         if (typeof tag !== "string" && tag.resources?.length) {
             await tagResource(name, tag.resources);
         }
@@ -298,6 +353,11 @@ export async function applyGrapeConfig(
     const liveVpcs = (resources.vpcs ?? []).length > 0 ? await listAllVPCs() : [];
     const liveDroplets = (resources.droplets ?? []).length > 0 ? await listAllDroplets() : [];
     const liveFirewalls = (resources.firewalls ?? []).length > 0 ? await listAllFirewalls() : [];
+    const liveDatabases = (resources.databases ?? []).length > 0 ? await listDatabases() : [];
+    const liveDomains = (resources.domains ?? []).length > 0 ? await listAllDomains() : [];
+    const liveLoadBalancers = (resources.load_balancers ?? []).length > 0 ? await listAllLoadBalancers() : [];
+    const liveAlerts = (resources.alert_policies ?? []).length > 0 ? await listAlertPolicies() : [];
+    const liveApps = (resources.apps ?? []).length > 0 ? await listApps() : [];
 
     for (const key of resources.ssh_keys ?? []) {
         let publicKey = key.public_key ?? key.publicKey;
@@ -315,11 +375,19 @@ export async function applyGrapeConfig(
             }
         }
 
-        const adopted = adoptSSHKey(accountKeys, key.name, reusedPrivateKey ? publicKey : undefined);
-        if (adopted) {
+        const foundKey = lookupSSHKey(accountKeys, key.name, reusedPrivateKey ? publicKey : undefined);
+        if (skipLookup(result, "ssh_key", key.name, foundKey, "SSH key")) {
+            continue;
+        }
+        if (foundKey.status === "unique" && foundKey.resource) {
+            const adopted = foundKey.resource;
             result.ssh_keys.push(privateKeyPath ? { ...adopted, private_key_path: privateKeyPath } : adopted);
             sshKeyIds.push(adopted.id);
-            warnings.push(`Adopting existing SSH key "${adopted.name}" (id ${adopted.id})`);
+            record(
+                result,
+                { kind: "ssh_key", name: adopted.name, action: "adopted", id: adopted.id },
+                `Adopting existing SSH key "${adopted.name}" (id ${adopted.id})`
+            );
             continue;
         }
 
@@ -336,15 +404,24 @@ export async function applyGrapeConfig(
         const uploaded = await uploadSSHKey({ name: key.name, public_key: publicKey });
         result.ssh_keys.push(privateKeyPath ? { ...uploaded, private_key_path: privateKeyPath } : uploaded);
         sshKeyIds.push(uploaded.id);
+        record(result, { kind: "ssh_key", name: uploaded.name, action: "created", id: uploaded.id });
     }
 
     for (const vpc of resources.vpcs ?? []) {
         const region = vpc.region ?? config.region ?? "";
-        const adopted = adoptVPC(liveVpcs, vpc.name, region);
-        if (adopted) {
+        const found = lookupVPC(liveVpcs, vpc.name, region);
+        if (skipLookup(result, "vpc", vpc.name, found, "VPC")) {
+            continue;
+        }
+        if (found.status === "unique" && found.resource) {
+            const adopted = found.resource;
             result.vpcs.push(adopted);
             vpcIds.set(adopted.name, adopted.id);
-            warnings.push(`Adopting existing VPC "${adopted.name}" (id ${adopted.id})`);
+            record(
+                result,
+                { kind: "vpc", name: adopted.name, action: "adopted", id: adopted.id },
+                `Adopting existing VPC "${adopted.name}" (id ${adopted.id})`
+            );
             continue;
         }
         const created = await createVPC({
@@ -355,36 +432,58 @@ export async function applyGrapeConfig(
         });
         result.vpcs.push(created);
         vpcIds.set(created.name, created.id);
+        record(result, { kind: "vpc", name: created.name, action: "created", id: created.id });
     }
 
     const envOverlay: Record<string, string> = {};
     for (const database of resources.databases ?? []) {
+        const found = lookupByName(liveDatabases, database.name);
+        if (skipLookup(result, "database", database.name, found, "database")) {
+            continue;
+        }
         const vpcUuid =
             database.private_network_uuid ??
             database.vpc_uuid ??
             (database.vpc ? vpcIds.get(database.vpc) : undefined);
-        let created = await createDatabase({
-            name: database.name,
-            engine: database.engine,
-            version: database.version,
-            region: database.region ?? config.region ?? "",
-            size: database.size,
-            num_nodes: database.num_nodes,
-            tags: database.tags,
-            private_network_uuid: vpcUuid,
-            project_id: database.project_id
-        });
-        if (created.status !== "online" && database.wait !== false) {
-            created = await waitForDatabase(created.id);
+        let current: DatabaseResource;
+        if (found.status === "unique" && found.resource) {
+            current = found.resource;
+            if (database.connection_env) {
+                current = await getDatabase(current.id);
+            }
+            if (current.status !== "online" && database.wait !== false) {
+                current = await waitForDatabase(current.id);
+            }
+            record(
+                result,
+                { kind: "database", name: current.name, action: "adopted", id: current.id },
+                `Adopting existing database "${current.name}" (id ${current.id}); engine, size, and region are not changed`
+            );
+        } else {
+            current = await createDatabase({
+                name: database.name,
+                engine: database.engine,
+                version: database.version,
+                region: database.region ?? config.region ?? "",
+                size: database.size,
+                num_nodes: database.num_nodes,
+                tags: database.tags,
+                private_network_uuid: vpcUuid,
+                project_id: database.project_id
+            });
+            if (current.status !== "online" && database.wait !== false) {
+                current = await waitForDatabase(current.id);
+            }
+            record(result, { kind: "database", name: current.name, action: "created", id: current.id });
         }
         const preferPrivate = database.private !== false;
-        Object.assign(envOverlay, connectionEnvOverlay(database.connection_env, created, preferPrivate));
-        const connection = pickDatabaseConnection(created, preferPrivate);
+        Object.assign(envOverlay, connectionEnvOverlay(database.connection_env, current, preferPrivate));
+        const connection = pickDatabaseConnection(current, preferPrivate);
         result.databases.push({
-            id: created.id,
-            name: created.name,
-            engine: created.engine,
-            status: created.status,
+            id: current.id,
+            name: current.name,
+            engine: current.engine,
+            status: current.status,
             host: connection?.host
         });
     }
@@ -401,27 +500,50 @@ export async function applyGrapeConfig(
         const vpcUuid = fields.vpc_uuid ?? (vpc ? vpcIds.get(vpc) : undefined);
         const stack = stacksByDroplet.get(grapeBlueprint.name);
         let userData = fields.user_data;
+        let resolvedStack: ReturnType<typeof resolveStack> | undefined;
         if (stack) {
-            const resolved = resolveStack(stack, { baseDir, envOverlay });
-            userData = mergeUserData(fields.user_data, generateStackUserData(resolved));
-            result.stacks.push({
-                name: resolved.name,
-                droplet: resolved.droplet,
-                workdir: resolved.workdir,
-                files: resolved.files.map((file) => file.dest),
-                steps: resolved.steps,
-                user_data_generated: true
-            });
+            resolvedStack = resolveStack(stack, { baseDir, envOverlay });
+            userData = mergeUserData(fields.user_data, generateStackUserData(resolvedStack));
         }
-        const existing = adoptDroplet(liveDroplets, grapeBlueprint.name);
-        if (existing) {
+        const foundDroplet = lookupByName(liveDroplets, grapeBlueprint.name);
+        if (skipLookup(result, "droplet", grapeBlueprint.name, foundDroplet, "droplet")) {
+            if (resolvedStack) {
+                record(
+                    result,
+                    {
+                        kind: "stack",
+                        name: resolvedStack.name,
+                        action: "skipped",
+                        note: "droplet was skipped"
+                    },
+                    `Skipping stack "${resolvedStack.name}" because droplet "${grapeBlueprint.name}" was skipped`
+                );
+            }
+            continue;
+        }
+        if (foundDroplet.status === "unique" && foundDroplet.resource) {
+            const existing = foundDroplet.resource;
             result.droplets.push(existing);
             if (existing.id !== undefined) {
                 dropletIds.set(existing.name, existing.id);
             }
-            warnings.push(
+            record(
+                result,
+                { kind: "droplet", name: existing.name, action: "adopted", id: existing.id },
                 `Adopting existing droplet "${existing.name}" (id ${existing.id}); skipping create`
             );
+            if (resolvedStack) {
+                record(
+                    result,
+                    {
+                        kind: "stack",
+                        name: resolvedStack.name,
+                        action: "skipped",
+                        note: "user_data is sent only when the droplet is created"
+                    },
+                    `Skipping stack user_data for "${resolvedStack.name}"; droplet "${existing.name}" already exists and is not rebuilt`
+                );
+            }
             continue;
         }
         const blueprint: DropletBlueprint = {
@@ -436,10 +558,25 @@ export async function applyGrapeConfig(
         if (created.id !== undefined) {
             dropletIds.set(created.name, created.id);
         }
+        record(result, { kind: "droplet", name: created.name, action: "created", id: created.id });
+        if (resolvedStack) {
+            result.stacks.push({
+                name: resolvedStack.name,
+                droplet: resolvedStack.droplet,
+                workdir: resolvedStack.workdir,
+                files: resolvedStack.files.map((file) => file.dest),
+                steps: resolvedStack.steps,
+                user_data_generated: true
+            });
+            record(result, { kind: "stack", name: resolvedStack.name, action: "created" });
+        }
     }
 
+    const declaredDropletNames = new Set(
+        (resources.droplets ?? []).map((entry) => unwrapDropletEntry(entry).name)
+    );
     for (const stack of stacks) {
-        if (!result.stacks.some((applied) => applied.droplet === stack.droplet)) {
+        if (!declaredDropletNames.has(stack.droplet)) {
             throw new Error(
                 `stack "${stack.name ?? stack.droplet}" targets droplet "${stack.droplet}" which is not declared in this config`
             );
@@ -453,42 +590,128 @@ export async function applyGrapeConfig(
                 .map((name) => dropletIds.get(name))
                 .filter((id): id is number => typeof id === "number")
         ];
-        const existing = adoptFirewall(liveFirewalls, firewall.name);
-        if (existing) {
-            result.firewalls.push({ id: existing.id, name: existing.name });
-            warnings.push(`Adopting existing firewall "${existing.name}" (id ${existing.id}); skipping create`);
+        const inbound = normalizeFirewallRules(firewall.inbound_rules ?? firewall.inbound);
+        const outbound = normalizeFirewallRules(firewall.outbound_rules ?? firewall.outbound);
+        const foundFirewall = lookupByName(liveFirewalls, firewall.name);
+        if (skipLookup(result, "firewall", firewall.name, foundFirewall, "firewall")) {
+            continue;
+        }
+        if (foundFirewall.status === "unique" && foundFirewall.resource) {
+            const existing = foundFirewall.resource;
+            const updated = await adoptFirewall(existing, {
+                name: firewall.name,
+                droplet_ids,
+                tags: firewall.tags,
+                inbound_rules: inbound,
+                outbound_rules: outbound
+            });
+            result.firewalls.push({ id: updated.id, name: updated.name });
+            if (updated.changed) {
+                record(
+                    result,
+                    {
+                        kind: "firewall",
+                        name: updated.name,
+                        action: "updated",
+                        id: updated.id,
+                        note: "rules replaced; droplet and tag attachments only added"
+                    },
+                    `Updating firewall "${updated.name}" (id ${updated.id}) rules to match the config. Droplet and tag attachments are only added, never removed. Name, and any other fields, are left alone.`
+                );
+            } else {
+                record(
+                    result,
+                    { kind: "firewall", name: existing.name, action: "adopted", id: existing.id },
+                    `Adopting existing firewall "${existing.name}" (id ${existing.id}); skipping create`
+                );
+            }
             continue;
         }
         const payload: FireWall = {
             name: firewall.name,
             droplet_ids,
             tags: firewall.tags,
-            inbound_rules: normalizeFirewallRules(firewall.inbound_rules ?? firewall.inbound),
-            outbound_rules: normalizeFirewallRules(firewall.outbound_rules ?? firewall.outbound)
+            inbound_rules: inbound,
+            outbound_rules: outbound
         };
         const created = await createFireWall(payload);
         result.firewalls.push({ id: created.id, name: created.name });
+        record(result, { kind: "firewall", name: created.name, action: "created", id: created.id });
     }
 
     for (const domain of resources.domains ?? []) {
-        await createDomain({ name: domain.name, ip_address: domain.ip_address });
+        const found = lookupByName(liveDomains, domain.name);
+        if (skipLookup(result, "domain", domain.name, found, "domain")) {
+            continue;
+        }
+        let domainAction: ApplyAction = "created";
+        if (found.status === "unique") {
+            domainAction = "adopted";
+            record(
+                result,
+                { kind: "domain", name: domain.name, action: "adopted" },
+                `Adopting existing domain "${domain.name}"; the apex address is not changed`
+            );
+        } else {
+            await createDomain({ name: domain.name, ip_address: domain.ip_address });
+            record(result, { kind: "domain", name: domain.name, action: "created" });
+        }
+        const liveRecords = domainAction === "adopted" ? await listAllDomainRecords(domain.name) : [];
         let records = 0;
-        for (const record of domain.records ?? []) {
-            await createDomainRecord(domain.name, record);
-            records += 1;
+        for (const entry of domain.records ?? []) {
+            const outcome = await ensureDomainRecord(domain.name, entry, liveRecords, result);
+            if (outcome === "created" || outcome === "adopted") {
+                records += 1;
+            }
         }
         result.domains.push({ name: domain.name, records });
     }
 
     for (const lb of resources.load_balancers ?? []) {
+        const found = lookupByName(liveLoadBalancers, lb.name);
+        if (skipLookup(result, "load_balancer", lb.name, found, "load balancer")) {
+            continue;
+        }
+        if (found.status === "unique" && found.resource?.id) {
+            result.load_balancers.push({ id: found.resource.id, name: found.resource.name ?? lb.name });
+            record(
+                result,
+                { kind: "load_balancer", name: lb.name, action: "adopted", id: found.resource.id },
+                `Adopting existing load balancer "${lb.name}" (id ${found.resource.id}); forwarding rules are not changed`
+            );
+            continue;
+        }
         const created = await createLoadBalancer({
             ...lb,
             region: lb.region ?? config.region
         });
         result.load_balancers.push({ id: created.id, name: created.name });
+        record(result, { kind: "load_balancer", name: created.name ?? lb.name, action: "created", id: created.id });
     }
 
     for (const policy of resources.alert_policies ?? []) {
+        const found = lookupWhere(
+            liveAlerts,
+            (item) => item.description === policy.description,
+            (item) => item.uuid
+        );
+        if (skipLookup(result, "alert_policy", policy.description, found, "alert policy")) {
+            continue;
+        }
+        if (found.status === "unique" && found.resource) {
+            result.alert_policies.push({ uuid: found.resource.uuid, description: found.resource.description });
+            record(
+                result,
+                {
+                    kind: "alert_policy",
+                    name: found.resource.description,
+                    action: "adopted",
+                    id: found.resource.uuid
+                },
+                `Adopting existing alert policy "${found.resource.description}" (uuid ${found.resource.uuid}); thresholds are not changed`
+            );
+            continue;
+        }
         const created = await createAlertPolicy({
             alerts: policy.alerts ?? { email: [] },
             compare: policy.compare,
@@ -501,11 +724,35 @@ export async function applyGrapeConfig(
             window: policy.window
         });
         result.alert_policies.push({ uuid: created.uuid, description: created.description });
+        record(result, {
+            kind: "alert_policy",
+            name: created.description,
+            action: "created",
+            id: created.uuid
+        });
     }
 
     for (const app of resources.apps ?? []) {
+        const found = lookupWhere(
+            liveApps,
+            (item) => item.spec?.name === app.spec.name,
+            (item) => item.id
+        );
+        if (skipLookup(result, "app", app.spec.name, found, "app")) {
+            continue;
+        }
+        if (found.status === "unique" && found.resource) {
+            result.apps.push({ id: found.resource.id, name: found.resource.spec.name });
+            record(
+                result,
+                { kind: "app", name: found.resource.spec.name, action: "adopted", id: found.resource.id },
+                `Adopting existing app "${found.resource.spec.name}" (id ${found.resource.id}); the spec is not updated`
+            );
+            continue;
+        }
         const created = await createApp({ spec: app.spec as AppSpec });
         result.apps.push({ id: created.id, name: created.spec.name });
+        record(result, { kind: "app", name: created.spec.name, action: "created", id: created.id });
     }
 
     const spaceRegions = new Map<string, string>();
@@ -519,15 +766,22 @@ export async function applyGrapeConfig(
                 throw new Error(`Space "${space.name}" is missing region`);
             }
             spaceRegions.set(space.name, region);
-            const existing = findUniqueByName("Space", space.name, liveSpaces);
-            if (existing) {
+            const found = lookupByName(liveSpaces, space.name);
+            if (skipLookup(result, "space", space.name, found, "Space")) {
+                continue;
+            }
+            if (found.status === "unique" && found.resource) {
                 result.spaces.push({
-                    name: existing.name,
+                    name: found.resource.name,
                     region,
-                    origin: spaceOriginHostname(existing.name, region),
+                    origin: spaceOriginHostname(found.resource.name, region),
                     acl: space.acl
                 });
-                warnings.push(`Adopting existing Space "${existing.name}"; region and ACL are not changed`);
+                record(
+                    result,
+                    { kind: "space", name: found.resource.name, action: "adopted" },
+                    `Adopting existing Space "${found.resource.name}"; region and ACL are not changed`
+                );
                 continue;
             }
             const created = await createSpace({ name: space.name, region, acl: space.acl }, spaceOptions);
@@ -537,6 +791,7 @@ export async function applyGrapeConfig(
                 origin: created.origin,
                 acl: created.acl
             });
+            record(result, { kind: "space", name: created.name, action: "created" });
         }
     }
 
@@ -557,12 +812,21 @@ export async function applyGrapeConfig(
     }
 
     for (const certificate of resources.certificates ?? []) {
-        const adopted = findUniqueByName("Certificate", certificate.name, liveCertificates ?? []);
+        const found = lookupByName(liveCertificates ?? [], certificate.name);
+        if (skipLookup(result, "certificate", certificate.name, found, "certificate")) {
+            continue;
+        }
         let current: CertificateResource;
-        if (adopted) {
-            current = adopted;
-            warnings.push(`Adopting existing certificate "${adopted.name}" (id ${adopted.id})`);
+        let createdCertificate = false;
+        if (found.status === "unique" && found.resource) {
+            current = found.resource;
+            record(
+                result,
+                { kind: "certificate", name: current.name, action: "adopted", id: current.id },
+                `Adopting existing certificate "${current.name}" (id ${current.id})`
+            );
         } else {
+            createdCertificate = true;
             current = await createCertificate({
                 name: certificate.name,
                 type: certificate.type,
@@ -583,6 +847,10 @@ export async function applyGrapeConfig(
                     "certificate_chain"
                 )
             });
+        }
+
+        if (createdCertificate) {
+            record(result, { kind: "certificate", name: current.name, action: "created", id: current.id });
         }
 
         const referenced = referencedCertificates.has(certificate.name);
@@ -617,26 +885,55 @@ export async function applyGrapeConfig(
                 spaceRegion: endpoint.space ? spaceRegions.get(endpoint.space) : undefined,
                 fallbackRegion: config.region
             });
-            const existing = adoptCdnByOrigin(liveCdn, origin);
-            if (existing) {
-                result.cdn.push(toAppliedCdn(existing));
-                warnings.push(
-                    `Adopting existing CDN endpoint for origin "${origin}" (id ${existing.id}); TTL and custom domain are not updated`
-                );
+            const foundCdn = lookupCdnByOrigin(liveCdn, origin);
+            if (skipLookup(result, "cdn", origin, foundCdn, "CDN endpoint")) {
+                continue;
+            }
+            if (foundCdn.status === "unique" && foundCdn.resource) {
+                let current = foundCdn.resource;
+                const ttlChanges = endpoint.ttl !== undefined && endpoint.ttl !== current.ttl;
+                if (ttlChanges) {
+                    current = await updateCdnEndpoint(current.id, { ttl: endpoint.ttl });
+                    record(
+                        result,
+                        {
+                            kind: "cdn",
+                            name: origin,
+                            action: "updated",
+                            id: current.id,
+                            note: "ttl only"
+                        },
+                        `Adopting existing CDN endpoint for origin "${origin}" (id ${current.id}); updated TTL to ${endpoint.ttl}. Custom domain and certificate are not changed`
+                    );
+                } else {
+                    record(
+                        result,
+                        { kind: "cdn", name: origin, action: "adopted", id: current.id },
+                        `Adopting existing CDN endpoint for origin "${origin}" (id ${current.id}); custom domain and certificate are not changed`
+                    );
+                }
+                result.cdn.push(toAppliedCdn(current));
                 continue;
             }
 
             let certificateId = endpoint.certificate_id ?? (endpoint.certificate ? certificateIds.get(endpoint.certificate) : undefined);
             if (endpoint.certificate && !certificateId) {
-                const match = findUniqueByName("Certificate", endpoint.certificate, await loadCertificates());
-                if (!match) {
+                const match = lookupByName(await loadCertificates(), endpoint.certificate);
+                if (match.status === "ambiguous") {
+                    skipLookup(result, "cdn", origin, match, "CDN endpoint");
+                    warnings.push(
+                        `Skipping CDN create for origin "${origin}" because certificate "${endpoint.certificate}" is ambiguous`
+                    );
+                    continue;
+                }
+                if (match.status !== "unique" || !match.resource) {
                     throw new Error(
                         `CDN endpoint references certificate "${endpoint.certificate}" which was not created in this apply and was not found on the account`
                     );
                 }
-                certificateId = match.id;
-                if (match.state !== "verified") {
-                    const ready = await waitForCertificate(match.id);
+                certificateId = match.resource.id;
+                if (match.resource.state !== "verified") {
+                    const ready = await waitForCertificate(match.resource.id);
                     certificateId = ready.id;
                 }
             }
@@ -648,10 +945,132 @@ export async function applyGrapeConfig(
                 custom_domain: endpoint.custom_domain
             });
             result.cdn.push(toAppliedCdn(created));
+            record(result, { kind: "cdn", name: origin, action: "created", id: created.id });
         }
     }
 
     return result;
+}
+
+function record(result: ApplyResult, item: ApplyReceiptItem, warning?: string): void {
+    result.receipt.push(item);
+    if (warning) {
+        result.warnings.push(warning);
+    }
+}
+
+function skipLookup(
+    result: ApplyResult,
+    kind: string,
+    name: string,
+    found: LookupResult<unknown>,
+    label: string
+): boolean {
+    if (found.status === "ambiguous") {
+        const ids = found.ids.length ? ` (ids: ${found.ids.join(", ")})` : "";
+        const message = `Skipping ${label} "${name}": ambiguous, ${found.count} live matches${ids}`;
+        record(result, { kind, name, action: "skipped", note: "ambiguous" }, message);
+        return true;
+    }
+    if (found.status === "mismatch") {
+        const message = `Skipping ${label} "${name}": ${found.reason ?? "not an exact match"}`;
+        record(result, { kind, name, action: "skipped", note: found.reason }, message);
+        return true;
+    }
+    return false;
+}
+
+function unionNumbers(left?: number[], right?: number[]): number[] {
+    return [...new Set([...(left ?? []), ...(right ?? [])])];
+}
+
+function unionStrings(left?: string[], right?: string[]): string[] {
+    return [...new Set([...(left ?? []), ...(right ?? [])])];
+}
+
+function sameNumberSet(left?: number[], right?: number[]): boolean {
+    const a = [...(left ?? [])].sort((one, two) => one - two);
+    const b = [...(right ?? [])].sort((one, two) => one - two);
+    return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+function sameStringSet(left?: string[], right?: string[]): boolean {
+    const a = [...(left ?? [])].sort();
+    const b = [...(right ?? [])].sort();
+    return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/**
+ * Replace inbound/outbound rules with the config's full lists.
+ * Droplet ids and tags are a union: attachments are added, never removed.
+ * The firewall name is not changed.
+ */
+async function adoptFirewall(
+    existing: FireWallResponse,
+    desired: FireWall
+): Promise<{ id: string; name: string; changed: boolean }> {
+    const inbound = desired.inbound_rules ?? existing.inbound_rules;
+    const outbound = desired.outbound_rules ?? existing.outbound_rules;
+    const dropletIds = unionNumbers(existing.droplet_ids, desired.droplet_ids);
+    const tags = unionStrings(existing.tags, desired.tags);
+    const rulesSame =
+        firewallRulesEqual(existing.inbound_rules, inbound) &&
+        firewallRulesEqual(existing.outbound_rules, outbound);
+    const attachmentsSame = sameNumberSet(existing.droplet_ids, dropletIds) && sameStringSet(existing.tags, tags);
+    if (rulesSame && attachmentsSame) {
+        return { id: existing.id, name: existing.name, changed: false };
+    }
+    const updated = await updateFirewall(existing.id, {
+        name: existing.name,
+        inbound_rules: inbound,
+        outbound_rules: outbound,
+        droplet_ids: dropletIds,
+        tags
+    });
+    return { id: updated.id, name: updated.name, changed: true };
+}
+
+function domainRecordIdentity(entry: { type: string; name: string; data: string }): string {
+    return `${entry.type.trim().toUpperCase()} ${entry.name.trim()} ${entry.data.trim()}`;
+}
+
+async function ensureDomainRecord(
+    domain: string,
+    entry: DomainRecord,
+    liveRecords: DomainRecord[],
+    result: ApplyResult
+): Promise<ApplyAction> {
+    const identity = domainRecordIdentity(entry);
+    const label = `${entry.type} ${entry.name}`;
+    const receiptName = `${domain} ${label}`;
+    const sameName = liveRecords.filter(
+        (item) =>
+            item.type?.trim().toUpperCase() === entry.type.trim().toUpperCase() && item.name?.trim() === entry.name.trim()
+    );
+    const exact = sameName.filter((item) => item.data?.trim() === entry.data.trim());
+    if (exact.length === 1) {
+        record(result, { kind: "domain_record", name: receiptName, action: "adopted", id: exact[0]?.id });
+        return "adopted";
+    }
+    if (exact.length > 1) {
+        record(
+            result,
+            { kind: "domain_record", name: receiptName, action: "skipped", note: "ambiguous" },
+            `Skipping domain record ${identity} on "${domain}": ${exact.length} live records already match`
+        );
+        return "skipped";
+    }
+    if (sameName.length > 0) {
+        record(
+            result,
+            { kind: "domain_record", name: receiptName, action: "skipped", note: "data differs" },
+            `Skipping domain record ${label} on "${domain}": a record with that type and name exists with different data and is not updated`
+        );
+        return "skipped";
+    }
+    const created = await createDomainRecord(domain, entry);
+    record(result, { kind: "domain_record", name: receiptName, action: "created", id: created.id });
+    return "created";
 }
 
 function toAppliedCdn(endpoint: CdnEndpoint): AppliedCdn {

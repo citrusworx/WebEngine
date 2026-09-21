@@ -44,6 +44,12 @@ vi.mock("../providers/digitalocean/cdn/cdn.js", async () => {
     return {
         ...actual,
         listCdnEndpoints: vi.fn(async () => []),
+        updateCdnEndpoint: vi.fn(async (id: string, patch: { ttl?: number }) => ({
+            id,
+            origin: "replace-space-name.nyc3.digitaloceanspaces.com",
+            endpoint: "replace-space-name.nyc3.cdn.digitaloceanspaces.com",
+            ttl: patch.ttl
+        })),
         createCdnEndpoint: vi.fn(async (spec: { origin: string; custom_domain?: string }) => ({
             id: "cdn-1",
             origin: spec.origin,
@@ -136,7 +142,9 @@ describe("apply spaces, certificates, and cdn", () => {
 
     it("adopts a uniquely named Space and CDN endpoint instead of creating them again", async () => {
         const { listSpaces, createSpace } = await import("../providers/digitalocean/spaces/spaces.js");
-        const { listCdnEndpoints, createCdnEndpoint } = await import("../providers/digitalocean/cdn/cdn.js");
+        const { listCdnEndpoints, createCdnEndpoint, updateCdnEndpoint } = await import(
+            "../providers/digitalocean/cdn/cdn.js"
+        );
         vi.mocked(listSpaces).mockResolvedValueOnce([{ name: "replace-space-name" }]);
         vi.mocked(listCdnEndpoints).mockResolvedValueOnce([
             {
@@ -149,6 +157,7 @@ describe("apply spaces, certificates, and cdn", () => {
         const result = await applyGrapeConfig(validateGrapeConfig(staticSite));
         expect(createSpace).not.toHaveBeenCalled();
         expect(createCdnEndpoint).not.toHaveBeenCalled();
+        expect(updateCdnEndpoint).toHaveBeenCalledWith("cdn-live", { ttl: 3600 });
         expect(result.spaces[0]?.name).toBe("replace-space-name");
         expect(result.cdn[0]?.id).toBe("cdn-live");
         expect(result.warnings.some((warning) => warning.includes("Adopting existing Space"))).toBe(true);

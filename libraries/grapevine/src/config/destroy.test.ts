@@ -406,6 +406,38 @@ describe("destroyGrapeResources", () => {
         expect(plan.skipped[0]?.reason).toMatch(/Spaces credentials are not set/);
     });
 
+    it("skips a VPC whose region does not match the config", () => {
+        const plan = planDestroy(
+            inventory({
+                vpcs: [
+                    {
+                        id: "vpc-sfo",
+                        name: "main",
+                        description: "",
+                        region: "sfo3",
+                        ip_range: "10.0.0.0/16",
+                        default: false,
+                        urn: "do:vpc:vpc-sfo",
+                        created_at: ""
+                    }
+                ]
+            }),
+            {
+                config: validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: { vpcs: [{ name: "main" }] }
+                })
+            }
+        );
+        expect(plan.targets).toEqual([]);
+        expect(plan.skipped[0]).toMatchObject({
+            kind: "vpc",
+            name: "main",
+            reason: expect.stringContaining('region "sfo3"')
+        });
+    });
+
     it("skips an ambiguous CDN origin", () => {
         const plan = planDestroy(
             inventory({

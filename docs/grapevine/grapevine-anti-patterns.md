@@ -4,7 +4,7 @@
 
 This document collects the most common ways to fight Grapevine instead of working with it.
 
-These are useful because most “it created a second droplet,” “vpc wasn’t attached,” and “I thought AWS was supported” failures come from a few repeated mistakes — usually Terraform, dashboard, or multi-cloud habits brought into a DigitalOcean **create-only** apply engine.
+These are useful because most “it created a second droplet,” “vpc wasn’t attached,” and “I thought AWS was supported” failures come from a few repeated mistakes — usually Terraform, dashboard, or multi-cloud habits brought into a DigitalOcean apply engine that adopts unique names and does not diff every field.
 
 ## 1. Editing live infra by hand, then expecting `grape apply` to catch up
 
@@ -16,18 +16,17 @@ Bad:
 
 Why it is bad:
 
-- apply does not read live state
-- apply does not update or delete
-- the second apply tries to **create** another tag, key, VPC, droplet, and firewall
+- a second apply adopts the unique name and does not resize the droplet, change the VPC, or delete the extra port you opened
+- firewall rules in the file replace the live rule list; droplet attachments are only added
 - `grape status` will not show a diff; it will show account totals or file counts
 
 Better:
 
 - Treat the UI as read-only for grape-managed resources
-- Need a change? Delete with `NukeDroplet` / `deleteFirewall` / `deleteVPC` (or the UI), then apply a new document
-- Need to attach a firewall to an existing box? Use `03` with `droplet_ids`, or `addRulesToFirewall` in TypeScript
+- Need a resize or a rebuild? Do that in the DigitalOcean UI or with the function helpers. Apply will not
+- `grape plan` (with a token) shows create vs adopt. It does not show a field diff
 
-The file is a create request, not Terraform state.
+The file is an apply request, not Terraform state.
 
 ## 2. Re-applying the same file to “converge”
 
@@ -38,17 +37,18 @@ grape apply -c ./01-vpc-and-tag.yaml
 grape apply -c ./01-vpc-and-tag.yaml
 ```
 
-Why it is bad:
+What happens:
 
-- there is no idempotency
-- DigitalOcean may reject duplicate tag/VPC names
-- you may get a second resource with a disambiguated name, or a hard error after a partial create
+- a unique tag or VPC name is adopted. Apply does not POST another one
+- two live resources with that name are skipped, with a warning. Apply does not pick one
+- fields apply does not update (droplet size, user data, and the rest listed in the apply doc) stay as they are
 
 Better:
 
 ```bash
 grape validate -c ./01-vpc-and-tag.yaml
-grape apply -c ./01-vpc-and-tag.yaml   # once
+grape plan -c ./01-vpc-and-tag.yaml    # create vs adopt when DO_TOKEN is set
+grape apply -c ./01-vpc-and-tag.yaml
 grape status                           # account glance, not a reconcile
 ```
 
@@ -82,9 +82,9 @@ droplets:
     vpc_uuid: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 ```
 
-or include the `vpcs:` entry in the same file you apply (and do not already have that VPC).
+or include the `vpcs:` entry in the same file. A unique live VPC of that name in the target region is adopted, and the droplet uses its id.
 
-The same bug exists for `firewalls[].droplets: [web-01]`.
+The same limit exists for `firewalls[].droplets: [web-01]` when that droplet is not declared or adopted in this file. A numeric `droplet_ids` entry still works.
 
 ## 4. Treating Grapevine like Terraform / Pulumi / CDK
 
@@ -98,19 +98,17 @@ grape destroy -c ./grape.config.yaml
 
 Why it is bad:
 
-- those flags and commands do not exist
-- there is no state backend
-- deletes are `deleteDroplet` / `NukeDroplet` / UI
+- `--auto-approve` is not a flag. Destroy asks, or takes `--yes` when stdin is not a TTY
+- there is no state backend. Apply adopts unique names; it does not store Terraform state
+- plan with a token shows create vs adopt. It is not a field-level diff
 
 Better:
 
 ```bash
 grape validate -c ./grape.config.yaml
+grape plan -c ./grape.config.yaml
 grape apply -c ./grape.config.yaml
-```
-
-```ts
-await NukeDroplet(id);
+grape destroy -c ./grape.config.yaml --yes
 ```
 
 ## 5. Setting `provider: aws` (or gcp, azure, linode)

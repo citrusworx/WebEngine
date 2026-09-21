@@ -56,19 +56,57 @@ export function formatAmbiguousError(kind: string, name: string, matches: NamedR
     return `${kind} "${name}" is ambiguous: ${matches.length} live resources named "${name}" (ids: ${ids})`;
 }
 
+export interface LookupResult<T> {
+    status: "missing" | "unique" | "ambiguous" | "mismatch";
+    resource?: T;
+    count: number;
+    ids: string[];
+    /** Set when status is mismatch or ambiguous. */
+    reason?: string;
+}
+
+export function lookupWhere<T>(
+    items: T[],
+    predicate: (item: T) => boolean,
+    idOf: (item: T) => string | number | undefined
+): LookupResult<T> {
+    const matches = items.filter(predicate);
+    if (matches.length === 0) {
+        return { status: "missing", count: 0, ids: [] };
+    }
+    const ids = matches.map((item) => {
+        const id = idOf(item);
+        return id !== undefined ? String(id) : "(missing id)";
+    });
+    if (matches.length > 1) {
+        return {
+            status: "ambiguous",
+            count: matches.length,
+            ids,
+            reason: `ambiguous: ${matches.length} live resources`
+        };
+    }
+    return { status: "unique", resource: matches[0], count: 1, ids };
+}
+
+export function lookupByName<T extends NamedResource>(items: T[], name: string): LookupResult<T> {
+    return lookupWhere(
+        items,
+        (item) => item.name === name,
+        (item) => item.id
+    );
+}
+
 export function findUniqueByName<T extends NamedResource>(
     kind: string,
     name: string,
     items: T[]
 ): T | undefined {
-    const matches = items.filter((item) => item.name === name);
-    if (matches.length === 0) {
-        return undefined;
+    const found = lookupByName(items, name);
+    if (found.status === "ambiguous") {
+        throw new Error(formatAmbiguousError(kind, name, items.filter((item) => item.name === name)));
     }
-    if (matches.length > 1) {
-        throw new Error(formatAmbiguousError(kind, name, matches));
-    }
-    return matches[0];
+    return found.resource;
 }
 
 /**
@@ -92,21 +130,101 @@ export function adoptSSHKey(
     return findUniqueByName("SSH key", name, keys);
 }
 
+/**
+ * Name match, then fingerprint when a public key is known.
+ * Ambiguous results are returned, not thrown, so apply can warn and skip.
+ */
+export function lookupSSHKey(
+    keys: SSHKeyResource[],
+    name: string,
+    publicKey?: string
+): LookupResult<SSHKeyResource> {
+    if (publicKey) {
+        const fingerprintMatches = keys.filter((key) => sshKeyMatchesPublicKey(key, publicKey));
+        if (fingerprintMatches.length > 1) {
+            return {
+                status: "ambiguous",
+                count: fingerprintMatches.length,
+                ids: fingerprintMatches.map((key) => String(key.id)),
+                reason: formatAmbiguousError("SSH key", name, fingerprintMatches)
+            };
+        }
+        if (fingerprintMatches.length === 1) {
+            return {
+                status: "unique",
+                resource: fingerprintMatches[0],
+                count: 1,
+                ids: [String(fingerprintMatches[0].id)]
+            };
+        }
+    }
+    const named = lookupByName(keys, name);
+    if (named.status === "ambiguous") {
+        return { ...named, reason: formatAmbiguousError("SSH key", name, keys.filter((key) => key.name === name)) };
+    }
+    return named;
+}
+
+export function lookupVPC(vpcs: VPCResponse[], name: string, region: string): LookupResult<VPCResponse> {
+    const named = lookupByName(vpcs, name);
+    if (named.status !== "unique" || !named.resource) {
+        if (named.status === "ambiguous") {
+            return {
+                ...named,
+                reason: formatAmbiguousError(
+                    "VPC",
+                    name,
+                    vpcs.filter((vpc) => vpc.name === name)
+                )
+            };
+        }
+        return named;
+    }
+    if (region && named.resource.region !== region) {
+        return {
+            status: "mismatch",
+            resource: named.resource,
+            count: 1,
+            ids: [named.resource.id],
+            reason: `exists in region "${named.resource.region}" (id ${named.resource.id}), not "${region}"`
+        };
+    }
+    return named;
+}
+
+export function lookupCdnByOrigin(endpoints: CdnEndpoint[], origin: string): LookupResult<CdnEndpoint> {
+    const found = lookupWhere(
+        endpoints,
+        (endpoint) => endpoint.origin === origin,
+        (endpoint) => endpoint.id
+    );
+    if (found.status === "ambiguous") {
+        return {
+            ...found,
+            reason: formatAmbiguousError(
+                "CDN endpoint",
+                origin,
+                endpoints
+                    .filter((endpoint) => endpoint.origin === origin)
+                    .map((endpoint) => ({ id: endpoint.id, name: endpoint.origin }))
+            )
+        };
+    }
+    return found;
+}
+
 export function adoptVPC(vpcs: VPCResponse[], name: string, region: string): VPCResponse | undefined {
-    const named = vpcs.filter((vpc) => vpc.name === name);
-    if (named.length === 0) {
-        return undefined;
+    const found = lookupVPC(vpcs, name, region);
+    if (found.status === "ambiguous") {
+        throw new Error(found.reason ?? formatAmbiguousError("VPC", name, vpcs.filter((vpc) => vpc.name === name)));
     }
-    if (named.length > 1) {
-        throw new Error(formatAmbiguousError("VPC", name, named));
-    }
-    const match = named[0];
-    if (match.region !== region) {
+    if (found.status === "mismatch") {
         throw new Error(
-            `VPC "${name}" exists in region "${match.region}" (id ${match.id}), not "${region}"`
+            found.reason ??
+                `VPC "${name}" exists in region "${found.resource?.region}" (id ${found.resource?.id}), not "${region}"`
         );
     }
-    return match;
+    return found.resource;
 }
 
 export function adoptDroplet(droplets: DropletResource[], name: string): DropletResource | undefined {
@@ -118,18 +236,18 @@ export function adoptFirewall(firewalls: FireWallResponse[], name: string): Fire
 }
 
 export function adoptCdnByOrigin(endpoints: CdnEndpoint[], origin: string): CdnEndpoint | undefined {
-    const matches = endpoints.filter((endpoint) => endpoint.origin === origin);
-    if (matches.length === 0) {
-        return undefined;
-    }
-    if (matches.length > 1) {
+    const found = lookupCdnByOrigin(endpoints, origin);
+    if (found.status === "ambiguous") {
         throw new Error(
-            formatAmbiguousError(
-                "CDN endpoint",
-                origin,
-                matches.map((endpoint) => ({ id: endpoint.id, name: endpoint.origin }))
-            )
+            found.reason ??
+                formatAmbiguousError(
+                    "CDN endpoint",
+                    origin,
+                    endpoints
+                        .filter((endpoint) => endpoint.origin === origin)
+                        .map((endpoint) => ({ id: endpoint.id, name: endpoint.origin }))
+                )
         );
     }
-    return matches[0];
+    return found.resource;
 }

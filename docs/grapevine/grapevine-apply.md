@@ -22,7 +22,13 @@ config (already validated)
  return ApplyResult
 ```
 
-Most loops are **create**. Droplets, VPCs, firewalls, SSH keys, Spaces, certificates, and CDN origins also adopt a unique live name (or unique CDN origin) and skip create. That is not a full reconcile: ACL, TTL, custom domain, and droplet size are not updated. There is no state file and no rollback.
+Each loop lists the live account first (when that resource type is declared) and matches by **unique name**. CDN endpoints match by **unique origin**. Certificates match by **unique name**.
+
+- One exact match: **adopt** (skip create). Firewall rules are replaced to match the config, and a CDN `ttl` is updated when it differs. Droplet and tag attachments on an existing firewall are only added, never removed.
+- No match: **create**.
+- More than one match, or a VPC whose region does not match: **skip** and warn. Apply does not create a second resource and does not guess. Destroy uses the same checks.
+
+That is idempotent re-apply for the Juice static-hosting set (tags, SSH keys, VPCs, droplets, firewalls, domains, Spaces, certificates, CDN) and for databases, apps, load balancers, and alert policies. It is not a full reconcile. Droplet size, user data, Space ACL, certificate material, custom domain, load-balancer rules, app spec, and alert thresholds are not updated. There is no state file and no rollback.
 
 ## 0. Preconditions
 
@@ -64,96 +70,105 @@ Three structures exist for the rest of the run:
 - `dropletIds: Map<name, number>` — filled as droplets are created
 - `sshKeyIds: Array<id>` — filled as keys are uploaded
 
-They are discarded when the function returns. They are not written to disk. A second apply starts empty.
+They are discarded when the function returns. They are not written to disk. A second apply fills them again by listing the account and adopting unique names, not by reading a state file.
 
 ## 4. Create loops
 
 ### Tags
 
-For each entry, `createTag(name)` then, if the entry is an object with `resources`, `tagResource(name, resources)`.
+List `GET /tags`. A unique name is adopted and `POST /tags` is skipped. An object tag with `resources` still calls `tagResource` (additive attach of ids you already have). Ambiguous names are skipped.
 
 String tags have no attachment step. Object tags can attach **existing** DigitalOcean resources by id/type. They cannot attach “the droplet I am about to create” — droplets have no id yet.
 
 ### SSH keys
 
-For each key:
+List account keys first.
 
-1. `public_key ?? publicKey`
-2. else if `generate`, `createSSHKey(name)`, persist the private key, use `publicKey`
-3. else throw `SSH key "<name>" is missing public_key (or set generate: true)`
-4. `uploadSSHKey({ name, public_key })`
+1. If `generate` and a private key file already exists, reuse its public key (fingerprint can adopt an account key whose name differs).
+2. A unique name, or a unique fingerprint, is adopted. `uploadSSHKey` is not called.
+3. Ambiguous names or fingerprints are skipped. Apply does not upload another key.
+4. Otherwise `public_key ?? publicKey`, or `generate` writes a new key, then `uploadSSHKey`.
 
-When `generate` is true, the OpenSSH private key is written (mode `0600`) to `private_key_path` or `.grape/ssh/<name>` under the process cwd **before** upload. Existing files are refused. The uploaded resource (id, fingerprint, public_key, name) is pushed to `result.ssh_keys` with `private_key_path` set. The absolute path is also appended to `result.private_key_paths` and a warning. Key material is never added to `ApplyResult`.
+When `generate` creates a new key, the OpenSSH private key is written (mode `0600`) to `private_key_path` or `.grape/ssh/<name>` under the process cwd **before** upload. Existing files are reused, not overwritten. The uploaded or adopted resource is pushed to `result.ssh_keys`. A newly written path is appended to `result.private_key_paths`. Key material is never added to `ApplyResult`.
 
 ### VPCs
 
-`createVPC({ name, description, region, ip_range })` with `region` from the VPC or `config.region` or `""`. The created `id` is stored under `created.name`.
+List VPCs. A unique name in the target region (`vpc.region` or `config.region`) is adopted. `ip_range` is not changed. A unique name in a different region is skipped (not adopted, not created). Ambiguous names are skipped.
 
-If DigitalOcean returns a different name than you sent, the map key is whatever came back.
+Otherwise `createVPC({ name, description, region, ip_range })`. The `id` is stored under `created.name`.
 
 ### Databases
 
-For each `resources.databases` entry:
+List `GET /databases`. A unique name is adopted. Engine, size, and region are not changed. If `connection_env` is set, apply `GET /databases/:id` so the connection can be mapped. If `status !== "online"` and `wait !== false`, it still polls until online. Passwords stay off `ApplyResult`.
 
-1. Resolve `private_network_uuid` from the field, `vpc_uuid`, or `vpcIds.get(vpc)`
-2. `createDatabase` → POST `/databases`
-3. If `status !== "online"` and `wait !== false`, poll `GET /databases/:id` until online
-4. If `connection_env` is set, map the private connection onto stack env keys (passwords stay off `ApplyResult`)
+Otherwise `createDatabase` → POST `/databases`, then the same wait.
 
 ### Droplets
 
-For each entry:
+List droplets. A unique name is adopted. Size, image, region, and `user_data` are not changed. A `stack` that targets an adopted droplet is skipped: cloud-init is sent only on create.
+
+Otherwise:
 
 1. `unwrapDropletEntry` (flat or `{ blueprint: { droplet } }`)
-2. `vpc_uuid` from the field, or `vpcIds.get(vpc)` if `vpc` was a name
+2. `vpc_uuid` from the field, or `vpcIds.get(vpc)` if `vpc` was a name created or adopted in this run
 3. `region` from the droplet or `config.region` or `""`
 4. `ssh_keys` from the droplet, or **all** `sshKeyIds` from this run if the droplet omitted the field
-5. If a `stack` targets this droplet, generate cloud-init `user_data` (compose/env/bootstrap) and merge with any existing `user_data`
+5. If a `stack` targets this droplet, generate cloud-init `user_data` and merge it
 6. `createDroplet(blueprint)` → POST `/droplets`
-7. if `created.id` is defined, `dropletIds.set(created.name, created.id)`
 
-Unresolved `vpc: some-name` becomes `vpc_uuid: undefined` and the droplet lands on DigitalOcean’s default network behavior for a missing VPC — it does **not** search the account for a VPC with that name.
+Ambiguous droplet names are skipped, and the stack for that droplet is skipped with them.
+
+Unresolved `vpc: some-name` (not created or adopted in this run) becomes `vpc_uuid: undefined`.
 
 ### Firewalls
 
-`droplet_ids` is the union of numeric `droplet_ids` and names in `droplets` that exist in `dropletIds`. Unknown names are dropped (`.filter` of undefined). Apply will still POST the firewall, possibly attached to fewer droplets than you expected.
+List firewalls. A unique name is adopted.
 
-Rules: `inbound_rules ?? inbound`, `outbound_rules ?? outbound`, then `normalizeRules`:
+- Inbound and outbound rules are replaced with the config’s full normalized lists when they differ (`PUT /firewalls/:id`).
+- `droplet_ids` and `tags` are a union of the live firewall and this config. Attachments are added, never removed.
+- The firewall name is not changed.
+- If rules and attachments already match, the PUT is skipped.
 
-- `ports` stringified
-- string source lists split into `addresses` / `tags` (`tag:` prefix) / `droplet_ids` (`droplet:` prefix + `Number(...)`)
+Ambiguous names are skipped. There is no create in that case.
 
-Then `createFireWall` (capital W — that is the export).
+On create, `droplet_ids` is the union of numeric `droplet_ids` and names in `droplets` that exist in `dropletIds`. Unknown names are dropped. Rules go through `normalizeFirewallRules` (`ports` expanded; string sources split into `addresses` / `tag:` / `droplet:`). Then `createFireWall` (capital W — that is the export).
 
 ### Domains
 
-`createDomain({ name, ip_address })`, then each `records[]` via `createDomainRecord`. Result records the domain name and a record count, not record ids.
+List domains. A unique name is adopted and `POST /domains` is skipped. The apex `ip_address` is not changed.
+
+Records are matched by type + name + data:
+
+- one exact record: adopt, no POST
+- several exact records: skip, no POST
+- same type and name with different data: skip, and do not update the data
+- otherwise `createDomainRecord`
 
 ### Load balancers
 
-`createLoadBalancer({ …lb, region: lb.region ?? config.region })`. No name→id map for later steps. Firewalls have already run, so they cannot auto-attach this LB’s uid in the same apply.
+List load balancers. A unique name is adopted. Forwarding rules and other fields are not changed. Otherwise `createLoadBalancer`. No name→id map for later steps. Firewalls have already run, so they cannot auto-attach this LB’s uid in the same apply.
 
 ### Alert policies
 
-`createAlertPolicy` with `alerts` defaulting to `{ email: [] }` if omitted.
+List policies and match `description` (the same key destroy uses). A unique description is adopted. Thresholds are not changed. Otherwise `createAlertPolicy`, with `alerts` defaulting to `{ email: [] }` if omitted.
 
 ### Apps
 
-`createApp({ spec })`. Grapevine does not wait for a deployment to go active. `waitForAppDeployment` is not implemented.
+List apps and match `spec.name`. A unique name is adopted. The spec is not updated (that would redeploy). Otherwise `createApp({ spec })`. Grapevine does not wait for a deployment to go active. `waitForAppDeployment` is not implemented.
 
 ### Spaces
 
-For each `resources.spaces` entry, region comes from the Space or `config.region` (missing region throws). Apply lists buckets with the Spaces key (`DO_SPACES_ACCESS_KEY_ID` / `DO_SPACES_SECRET_ACCESS_KEY`, overridable via `credentials.spaces_*_env`) and adopts a unique name. Otherwise `createSpace` sends `PUT /` to `{name}.{region}.digitaloceanspaces.com` with `x-amz-acl` (`private` when `acl` is omitted, or `public-read`). Re-apply does not change an existing ACL. Listing uses one regional host (the first Space's region, else the config region, else `nyc3`); DigitalOcean documents that list as account-wide.
+For each `resources.spaces` entry, region comes from the Space or `config.region` (missing region throws). Apply lists buckets with the Spaces key (`DO_SPACES_ACCESS_KEY_ID` / `DO_SPACES_SECRET_ACCESS_KEY`, overridable via `credentials.spaces_*_env`) and adopts a unique name. Otherwise `createSpace` sends `PUT /` to `{name}.{region}.digitaloceanspaces.com` with `x-amz-acl` (`private` when `acl` is omitted, or `public-read`). Re-apply does not change an existing ACL. Ambiguous names are skipped. Listing uses one regional host (the first Space's region, else the config region, else `nyc3`); DigitalOcean documents that list as account-wide.
 
 ### Certificates
 
-`POST /certificates`. `lets_encrypt` sends `dns_names`. `custom` sends PEM fields from the document or from the named env vars. A unique existing name is adopted.
+List `GET /certificates`. A unique name is adopted. PEM material and DNS names are not replaced. Ambiguous names are skipped. Otherwise `POST /certificates`. `lets_encrypt` sends `dns_names`. `custom` sends PEM fields from the document or from the named env vars.
 
-If a `resources.cdn` entry references the certificate by name and `wait` is not `false`, apply polls until `state` is `verified` so the CDN create can send `certificate_id`. `error` fails immediately. A certificate nothing references is not waited on, even when Let's Encrypt leaves it `pending`. That wait is only for CDN attach. It does not wait for the CDN hostname to serve traffic.
+If a `resources.cdn` entry references the certificate by name and `wait` is not `false`, apply polls until `state` is `verified` so a **new** CDN endpoint can send `certificate_id`. `error` fails immediately. A certificate nothing references is not waited on, even when Let's Encrypt leaves it `pending`. That wait is only for CDN attach. It does not wait until the CDN edge serves traffic.
 
 ### CDN endpoints
 
-Origin is `origin`, or `{space}.{region}.digitaloceanspaces.com` using the CDN region, the same-apply Space region, or `config.region`. Apply lists `GET /cdn/endpoints` and adopts a unique origin without updating TTL or custom domain. Otherwise `POST /cdn/endpoints` with optional `ttl`, `certificate_id`, and `custom_domain`.
+Origin is `origin`, or `{space}.{region}.digitaloceanspaces.com` using the CDN region, the same-apply Space region, or `config.region`. Apply lists `GET /cdn/endpoints` and adopts a unique origin. If `ttl` is set and differs, apply `PUT`s **only** `ttl`. Custom domain and `certificate_id` are not changed on an existing endpoint. Ambiguous origins are skipped. Otherwise `POST /cdn/endpoints` with optional `ttl`, `certificate_id`, and `custom_domain`.
 
 Destroy removes CDN endpoints before certificates and Spaces. DigitalOcean will not delete a certificate or a Space that a CDN endpoint still references. Space delete also fails while the bucket has objects; destroy does not empty it.
 
@@ -176,26 +191,32 @@ interface ApplyResult {
   cdn: AppliedCdn[]; // id, origin, endpoint, custom_domain
   stacks: AppliedStack[];
   private_key_paths: string[];
+  receipt: ApplyReceiptItem[]; // created | adopted | updated | skipped
   warnings: string[];
 }
 ```
 
-The CLI prints this as JSON after `Applied grape config`. `grape destroy -c` can later match unique names from the same file. It still does not read this JSON, and it does not roll back a failed apply.
+`receipt` is the created / adopted / updated / skipped list. The typed arrays include created and adopted resources so later steps can use their ids. Skipped resources appear only on `receipt`.
+
+The CLI prints Created, Adopted, Updated, and Skipped sections (or JSON, which includes `receipt`). `grape destroy -c` matches the same unique names, CDN origins, and VPC regions. It still does not read this JSON, and it does not roll back a failed apply.
+
+`grape plan` and `grape apply --dry-run` do not POST, PUT, or DELETE. When `DO_TOKEN` (or `credentials.env`) is set, plan lists the account and marks each resource `action=create`, `action=adopt`, or `action=skip`. When no token is set, plan stays local and says so. `grape validate` stays local and does not list the account.
 
 ## What apply does not do
 
 | Expectation | Reality |
 |---|---|
-| Full idempotent apply | Unique-name adopt for some types only. Second apply still creates tags, domains, databases, apps, and unmatched names. Adopted Spaces/CDN/certs are not updated |
-| Update an existing droplet | No PUT in this function |
+| Update droplet size, image, or user data | Adopt skips create. No resize, no rebuild, no second cloud-init |
+| Change Space ACL, certificate material, CDN custom domain, app spec, LB rules, or alert thresholds | Not updated. A second apply adopts the unique name and leaves those fields alone |
 | Empty a Space, then delete it | Destroy deletes an empty bucket only |
 | Rollback | Partial failure leaves earlier creates |
-| Import existing names | Same-apply maps, plus the unique-name adopt above. Ambiguous names throw on apply and are skipped on destroy |
-| Drift | `grape status` overlap is not a diff |
-| Run SSH commands | `user_data` on create only |
+| Guess among duplicate names | Apply and destroy both skip ambiguous matches |
+| Drift | `grape status` overlap is not a diff. Plan's create/adopt/skip is name presence, not a field diff |
+| Run SSH commands | `user_data` on droplet create only |
 | Provision volumes / DOKS | Not in these loops |
 | Upload a Vite `dist/` or run the Juice build | Not in these loops. `05-static-site-spaces.yaml` only provisions Space + cert + CDN |
-| `waitForAppDeployment` or CDN edge wait | Not implemented. Certificate wait exists only for same-apply CDN attach |
+| Create the site CNAME to the CDN hostname | Domain records you declare are created if missing. Apply does not invent the CDN CNAME for you |
+| `waitForAppDeployment` or wait until the CDN edge is live | Not implemented. Certificate wait exists only so a same-apply CDN create can send `certificate_id` |
 | Apply loose `services` / `monitoring` | Schema or warning only (`stack` is applied) |
 | Apply `networking.ssl` / `networking.cdn` | Warning only. Use `resources.certificates` and `resources.cdn` |
 
@@ -211,7 +232,7 @@ SSH misconfiguration throws a plain `Error` before `uploadSSHKey`.
 
 ## Apply vs function calls
 
-Use `applyGrapeConfig` when the document is the source of truth for **this create**.
+Use `applyGrapeConfig` when the document is the source of truth for this apply. A second run adopts unique names instead of creating them again.
 
 Use `createDroplet` / `createFireWall` / … when you already have ids, when you need GET/PUT/DELETE, or when you are writing a one-off script. Those helpers are a larger surface than apply — list/get/update/delete exist for most resources — but they do not honor grape YAML.
 
@@ -219,7 +240,7 @@ Use `createDroplet` / `createFireWall` / … when you already have ids, when you
 
 ## Tests that lock this down
 
-`libraries/grapevine/src/config/apply.test.ts` mocks every create helper and checks:
+`libraries/grapevine/src/config/idempotent-apply.test.ts` mocks list/get/create and checks that a second apply does not POST create when the unique name (or CDN origin) already exists. `apply.test.ts` still checks:
 
 - `normalizeResources` for `networking` / `firewall`
 - order tags → VPC → droplet (`vpc_uuid`, `ssh_keys`) → firewall (name → id, rule normalization) → domain

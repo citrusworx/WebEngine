@@ -13,5 +13,8 @@ export interface ConvenienceFirewallRule {
  */
 export declare function expandFirewallPorts(protocol: string, ports?: string | number): string[] | undefined;
 export declare function sourceFromList(values?: string[] | FirewallRuleSources): FirewallRuleSources | undefined;
+/** Stable identity for a full rule list. Order does not matter. */
+export declare function firewallRulesKey(rules?: FirewallRule[]): string;
+export declare function firewallRulesEqual(left?: FirewallRule[], right?: FirewallRule[]): boolean;
 /** Map convenience inbound/outbound rules to DigitalOcean `inbound_rules` / `outbound_rules`. */
 export declare function normalizeFirewallRules(rules?: ConvenienceFirewallRule[]): FirewallRule[] | undefined;
