@@ -422,9 +422,9 @@ See [Radio Runtime](./juice-radio-runtime.md). Theme paint uses `--juice-radio-*
 
 The separator is `::after` on every item except the last: a decorative chevron (empty content). Current page is `aria-current="page"` on the last item or its link. Do not style bare `[aria-current="page"]` outside the trail. `nav[type="breadcrumb"]` is an older layout pattern and is not this chrome.
 
-Breadcrumb is an APG-inspired navigation trail. It is not the site `[nav]` / navigation runtime, not tabs, not the wizard step tracker, and not pagination. Inline nav chrome — no overlay z-index. This slice is theme chrome only. Runtime B can sync `aria-current`. There is no Sig Breadcrumb factory.
+Breadcrumb is an APG-inspired navigation trail. It is not the site `[nav]` / navigation runtime, not tabs, not the wizard step tracker, and not pagination. Inline nav chrome — no overlay z-index. The runtime auto-enhances `[breadcrumb]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Breadcrumb`, and a single `aria-current="page"` stays on the trail. It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol breadcrumb>` stays a list. No Sig Breadcrumb factory.
 
-Theme paint uses `--juice-breadcrumb-*` roles (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`). Shipped themes bind `surface` to `transparent` so the trail stays inline. Point that role at a surface token when crumbs sit on a bar.
+See [Breadcrumb Runtime](./juice-breadcrumb-runtime.md). Theme paint uses `--juice-breadcrumb-*` roles (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`). Shipped themes bind `surface` to `transparent` so the trail stays inline. Point that role at a surface token when crumbs sit on a bar.
 
 ### Slider
 
