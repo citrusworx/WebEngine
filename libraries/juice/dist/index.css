@@ -96939,6 +96939,136 @@ button[full] {
     grid-template-columns: 1fr;
   }
 }
+[combobox],
+[theme] [combobox] {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: min(16rem, 100%);
+}
+
+[combobox-input],
+[theme] [combobox-input] {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  line-height: 1.4;
+  background-color: var(--juice-combobox-input, var(--aqua-combobox-input, var(--kw-combobox-input, var(--cm-combobox-input, var(--tide-combobox-input, var(--jx-combobox-input, hsl(0, 0%, 100%)))))));
+  border: 1px solid var(--juice-combobox-input-border, var(--aqua-combobox-input-border, var(--kw-combobox-input-border, var(--cm-combobox-input-border, var(--tide-combobox-input-border, var(--jx-combobox-input-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+  color: var(--juice-combobox-input-ink, var(--aqua-combobox-input-ink, var(--kw-combobox-input-ink, var(--cm-combobox-input-ink, var(--tide-combobox-input-ink, var(--jx-combobox-input-ink, hsl(0, 0%, 20%)))))));
+}
+
+[combobox]:has([combobox-trigger]) [combobox-input],
+[theme] [combobox]:has([combobox-trigger]) [combobox-input] {
+  padding-right: 2.25rem;
+}
+
+[combobox-input]:focus-visible,
+[theme] [combobox-input]:focus-visible {
+  outline: 2px solid var(--juice-combobox-focus-ring, var(--aqua-combobox-focus-ring, var(--kw-combobox-focus-ring, var(--cm-combobox-focus-ring, var(--tide-combobox-focus-ring, var(--jx-combobox-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[combobox-trigger],
+[theme] [combobox-trigger] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.25rem;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0 0.5rem 0.5rem 0;
+  cursor: pointer;
+  background-color: var(--juice-combobox-trigger, var(--aqua-combobox-trigger, var(--kw-combobox-trigger, var(--cm-combobox-trigger, var(--tide-combobox-trigger, var(--jx-combobox-trigger, transparent))))));
+  background-image: none;
+  color: var(--juice-combobox-trigger-ink, var(--aqua-combobox-trigger-ink, var(--kw-combobox-trigger-ink, var(--cm-combobox-trigger-ink, var(--tide-combobox-trigger-ink, var(--jx-combobox-trigger-ink, hsl(0, 0%, 20%)))))));
+  box-shadow: none;
+  transform: none;
+}
+
+[combobox-trigger]::after,
+[theme] [combobox-trigger]::after {
+  content: "";
+  display: block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: -0.15rem;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  border-color: currentColor;
+  transform: rotate(45deg);
+}
+
+[combobox-trigger]:focus-visible,
+[theme] [combobox-trigger]:focus-visible {
+  outline: 2px solid var(--juice-combobox-focus-ring, var(--aqua-combobox-focus-ring, var(--kw-combobox-focus-ring, var(--cm-combobox-focus-ring, var(--tide-combobox-focus-ring, var(--jx-combobox-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[combobox-list] {
+  position: absolute;
+  z-index: 1050;
+  left: 0;
+  right: 0;
+  top: 100%;
+  box-sizing: border-box;
+  margin: 0.25rem 0 0;
+  padding: 0.25rem;
+  list-style: none;
+  border-radius: 0.5rem;
+  max-height: min(16rem, 50vh);
+  overflow: auto;
+}
+
+[combobox-list],
+[theme] [combobox-list]:not([surfaceTone]) {
+  background-color: var(--juice-combobox-list, var(--aqua-combobox-list, var(--kw-combobox-list, var(--cm-combobox-list, var(--tide-combobox-list, var(--jx-combobox-list, hsl(0, 0%, 100%)))))));
+  border: 1px solid var(--juice-combobox-list-border, var(--aqua-combobox-list-border, var(--kw-combobox-list-border, var(--cm-combobox-list-border, var(--tide-combobox-list-border, var(--jx-combobox-list-border, rgba(216.75, 216.75, 216.75, 0.85)))))));
+  box-shadow: var(--juice-combobox-list-shadow, var(--aqua-combobox-list-shadow, var(--kw-combobox-list-shadow, var(--cm-combobox-list-shadow, var(--tide-combobox-list-shadow, var(--jx-combobox-list-shadow, 0 18px 40px -24px rgba(25.5, 25.5, 25.5, 0.28)))))));
+}
+
+[combobox-list][hidden],
+[theme] [combobox-list][hidden] {
+  display: none;
+}
+
+[combobox-option],
+[theme] [combobox-option] {
+  display: block;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  background-color: var(--juice-combobox-option, var(--aqua-combobox-option, var(--kw-combobox-option, var(--cm-combobox-option, var(--tide-combobox-option, var(--jx-combobox-option, transparent))))));
+  color: var(--juice-combobox-option-ink, var(--aqua-combobox-option-ink, var(--kw-combobox-option-ink, var(--cm-combobox-option-ink, var(--tide-combobox-option-ink, var(--jx-combobox-option-ink, hsl(0, 0%, 20%)))))));
+  cursor: pointer;
+}
+
+[combobox-option]:hover,
+[theme] [combobox-option]:hover {
+  background-color: var(--juice-combobox-option-hover, var(--aqua-combobox-option-hover, var(--kw-combobox-option-hover, var(--cm-combobox-option-hover, var(--tide-combobox-option-hover, var(--jx-combobox-option-hover, hsl(0, 0%, 95%)))))));
+}
+
+[combobox-option][aria-selected=true],
+[combobox-option=active],
+[theme] [combobox-option][aria-selected=true],
+[theme] [combobox-option=active] {
+  background-color: var(--juice-combobox-option-selected, var(--aqua-combobox-option-selected, var(--kw-combobox-option-selected, var(--cm-combobox-option-selected, var(--tide-combobox-option-selected, var(--jx-combobox-option-selected, hsl(0, 0%, 90%)))))));
+}
+
 [cta] {
   display: flex;
   flex-direction: column;

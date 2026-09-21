@@ -12,6 +12,7 @@ import {
     REQUIRED_POPOVER_ROLES,
     REQUIRED_TABS_ROLES,
     REQUIRED_TOOLTIP_ROLES,
+    REQUIRED_COMBOBOX_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -292,6 +293,42 @@ describe("Juice theme generator surface tone roles", () => {
         expect(css).toContain("[tooltip-panel]:not([surfaceTone])");
         expect(css).not.toMatch(/\[tooltip\](?![-a-z])/);
         expect(css).not.toContain("[tooltip-close]");
+    });
+
+    it("binds --juice-combobox-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-combobox-input: var(--jx-surface)");
+        expect(css).toContain("--jx-combobox-input-border: var(--jx-border)");
+        expect(css).toContain("--jx-combobox-input-ink: var(--jx-text)");
+        expect(css).toContain("--jx-combobox-list: var(--jx-surface)");
+        expect(css).toContain("--jx-combobox-list-border: var(--jx-border)");
+        expect(css).toContain("--jx-combobox-list-shadow: var(--jx-shadow-strong)");
+        expect(css).toContain("--jx-combobox-option: transparent");
+        expect(css).toContain("--jx-combobox-option-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-combobox-option-selected: var(--jx-accent-tint)");
+        expect(css).toContain("--jx-combobox-option-ink: var(--jx-text)");
+        expect(css).toContain("--jx-combobox-trigger: transparent");
+        expect(css).toContain("--jx-combobox-trigger-ink: var(--jx-heading)");
+        expect(css).toContain("--jx-combobox-focus-ring: var(--jx-accent)");
+
+        for (const role of REQUIRED_COMBOBOX_ROLES) {
+            expect(css).toContain(`--juice-combobox-${role}: var(--jx-combobox-${role})`);
+        }
+
+        expect(css).toContain("[combobox-list]:not([surfaceTone])");
+        expect(css).toContain("button[combobox-trigger]");
+        expect(css).not.toMatch(/select\[combobox/);
+
+        const triggerBlocks = [...css.matchAll(/button\[combobox-trigger\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(triggerBlocks.length).toBeGreaterThan(0);
+        for (const block of triggerBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
     });
 
     it("binds --juice-wizard-* from existing --jx-* surfaces and accents", () => {

@@ -1,0 +1,202 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Combobox chrome is structural. Color comes from the shared role contract:
+//   --juice-combobox-input
+//   --juice-combobox-input-border
+//   --juice-combobox-input-ink
+//   --juice-combobox-list
+//   --juice-combobox-list-border
+//   --juice-combobox-list-shadow
+//   --juice-combobox-option
+//   --juice-combobox-option-hover
+//   --juice-combobox-option-selected
+//   --juice-combobox-option-ink
+//   --juice-combobox-trigger
+//   --juice-combobox-trigger-ink
+//   --juice-combobox-focus-ring
+// Themes bind those names (and optional --aqua-combobox-* / --kw-combobox-* /
+// --cm-combobox-* / --tide-combobox-* / --jx-combobox-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, not a native <select> restyle. Do not restyle or replace
+// <select>. Juice names are:
+//   [combobox]          composite root
+//   [combobox-input]    text field (`role="combobox"` in markup)
+//   [combobox-trigger]  optional chevron button (surface control, not CTA)
+//   [combobox-list]     popup list (`role="listbox"` in markup)
+//   [combobox-option]   option row (`role="option"` in markup)
+// Use role in markup; attrs own Juice structure. Do not style [role="listbox"]
+// or a bare [listbox] attribute.
+//
+// Combobox is an input + listbox popup. It is not a native select, not a
+// popover, not a tooltip, not a dialog overlay, and not the surface
+// `overlay="frost|tint"` utility. Slice B owns filtering, aria-expanded,
+// aria-activedescendant, and keyboard.
+//
+// Closed vs open uses the native `hidden` attribute on [combobox-list]
+// (display: none). Markup without [hidden] stays visible so static demos
+// keep working. Optional surfaceTone on [combobox-list] is allowed; do
+// not force it.
+//
+// Selected / active paint hooks for static demos:
+//   [combobox-option][aria-selected="true"]
+//   [combobox-option="active"]
+//
+// z-index 1050 matches popover so the list floats like an anchored panel,
+// below tooltip (1060) and toast (1100). Modal/drawer stay at 1000.
+
+@function -juice-combobox-role($name, $fallback) {
+    @return var(
+        --juice-combobox-#{$name},
+        var(--aqua-combobox-#{$name}, var(--kw-combobox-#{$name}, var(--cm-combobox-#{$name}, var(--tide-combobox-#{$name}, var(--jx-combobox-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-combobox-input: -juice-combobox-role(input, #{$white-100});
+$_juice-combobox-input-border: -juice-combobox-role(input-border, #{rgba($gray-300, 0.85)});
+$_juice-combobox-input-ink: -juice-combobox-role(input-ink, #{$black-700});
+$_juice-combobox-list: -juice-combobox-role(list, #{$white-100});
+$_juice-combobox-list-border: -juice-combobox-role(list-border, #{rgba($gray-300, 0.85)});
+$_juice-combobox-list-shadow: -juice-combobox-role(list-shadow, 0 18px 40px -24px #{rgba($black-900, 0.28)});
+$_juice-combobox-option: -juice-combobox-role(option, transparent);
+$_juice-combobox-option-hover: -juice-combobox-role(option-hover, #{$gray-100});
+$_juice-combobox-option-selected: -juice-combobox-role(option-selected, #{$gray-200});
+$_juice-combobox-option-ink: -juice-combobox-role(option-ink, #{$black-700});
+$_juice-combobox-trigger: -juice-combobox-role(trigger, transparent);
+$_juice-combobox-trigger-ink: -juice-combobox-role(trigger-ink, #{$black-700});
+
+// [theme] [combobox-…] must beat theme semantic defaults such as
+// [theme="…"] :where(div) / :where(input, button, ul) and generic
+// :where(button) CTA paint. Themes realize color through the roles.
+
+[combobox],
+[theme] [combobox] {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: min(16rem, 100%);
+}
+
+[combobox-input],
+[theme] [combobox-input] {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    line-height: 1.4;
+    background-color: $_juice-combobox-input;
+    border: 1px solid $_juice-combobox-input-border;
+    color: $_juice-combobox-input-ink;
+}
+
+[combobox]:has([combobox-trigger]) [combobox-input],
+[theme] [combobox]:has([combobox-trigger]) [combobox-input] {
+    padding-right: 2.25rem;
+}
+
+[combobox-input]:focus-visible,
+[theme] [combobox-input]:focus-visible {
+    outline: 2px solid -juice-combobox-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[combobox-trigger],
+[theme] [combobox-trigger] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2.25rem;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0 0.5rem 0.5rem 0;
+    cursor: pointer;
+    background-color: $_juice-combobox-trigger;
+    background-image: none;
+    color: $_juice-combobox-trigger-ink;
+    box-shadow: none;
+    transform: none;
+}
+
+[combobox-trigger]::after,
+[theme] [combobox-trigger]::after {
+    content: "";
+    display: block;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-top: -0.15rem;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    border-color: currentColor;
+    transform: rotate(45deg);
+}
+
+[combobox-trigger]:focus-visible,
+[theme] [combobox-trigger]:focus-visible {
+    outline: 2px solid -juice-combobox-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[combobox-list] {
+    position: absolute;
+    z-index: 1050;
+    left: 0;
+    right: 0;
+    top: 100%;
+    box-sizing: border-box;
+    margin: 0.25rem 0 0;
+    padding: 0.25rem;
+    list-style: none;
+    border-radius: 0.5rem;
+    max-height: min(16rem, 50vh);
+    overflow: auto;
+}
+
+[combobox-list],
+[theme] [combobox-list]:not([surfaceTone]) {
+    background-color: $_juice-combobox-list;
+    border: 1px solid $_juice-combobox-list-border;
+    box-shadow: $_juice-combobox-list-shadow;
+}
+
+[combobox-list][hidden],
+[theme] [combobox-list][hidden] {
+    display: none;
+}
+
+[combobox-option],
+[theme] [combobox-option] {
+    display: block;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.375rem;
+    background-color: $_juice-combobox-option;
+    color: $_juice-combobox-option-ink;
+    cursor: pointer;
+}
+
+[combobox-option]:hover,
+[theme] [combobox-option]:hover {
+    background-color: $_juice-combobox-option-hover;
+}
+
+[combobox-option][aria-selected="true"],
+[combobox-option="active"],
+[theme] [combobox-option][aria-selected="true"],
+[theme] [combobox-option="active"] {
+    background-color: $_juice-combobox-option-selected;
+}

@@ -77,6 +77,7 @@ A healthy Juice theme should own:
 - toast chrome roles (`--juice-toast-*`, bound from theme identity tokens)
 - popover chrome roles (`--juice-popover-*`, bound from theme identity tokens)
 - tooltip chrome roles (`--juice-tooltip-*`, bound from theme identity tokens)
+- combobox chrome roles (`--juice-combobox-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -226,6 +227,7 @@ The generated stylesheet currently defines:
 - toast chrome role bindings (`--jx-toast-*` / `--juice-toast-*`) and close-button CTA overrides for `[toast-close]`
 - popover chrome role bindings (`--jx-popover-*` / `--juice-popover-*`) and close-button CTA overrides for `[popover-close]`
 - tooltip chrome role bindings (`--jx-tooltip-*` / `--juice-tooltip-*`) for `[tooltip-root]` / `[tooltip-panel]`
+- combobox chrome role bindings (`--jx-combobox-*` / `--juice-combobox-*`) and trigger CTA overrides for `[combobox-trigger]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -309,6 +311,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome, not the native HTML `title` attribute — do not restyle or replace `title`. The surface is `[tooltip-panel]`; do not use a bare `[tooltip]` attribute. Tooltip is a thin cousin of popover: hover/focus only, no interactive content, no focus trap. It is not a popover, not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[tooltip-panel]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[tooltip-root]`. Placement is `[tooltip-root]` / `[tooltip-root="top"]` (default), `"bottom"`, `"left"`, `"right"`. Core CSS paints the root at z-index **1060** (slightly above popover 1050, below toast 1100). The tooltip runtime auto-enhances that markup (`show` / `hide`, Escape, one-axis flip) — see [Tooltip Runtime](./juice-tooltip-runtime.md).
 
 Tide must bind a dark tip (`--tide-surface-strong`), not a white glass tooltip.
+
+## Combobox chrome roles
+
+Library themes bind the shared combobox contract so `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` paint is theme-agnostic in `combobox.scss`. Required names (`input`, `input-border`, `input-ink`, `list`, `list-border`, `list-shadow`, `option`, `option-hover`, `option-selected`, `option-ink`, `trigger`, `trigger-ink`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-combobox-*`, `--kw-combobox-*`, `--cm-combobox-*`, `--tide-combobox-*`, …). App-owned generated themes use `--jx-combobox-*` and bind `--juice-combobox-*` from existing `--jx-*` surface/page/text tokens. Do not invent a new hue family just for combobox chrome. Trigger is a surface/text control, not the CTA button gradient: Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` CTA styles on `[combobox-trigger]` the same way.
+
+This is Juice chrome, not a native `<select>` restyle — do not restyle or replace `<select>`. Combobox is an input + listbox popup. Use role in markup; attrs own Juice structure (`[combobox]`, `[combobox-input]`, optional `[combobox-trigger]`, `[combobox-list]`, `[combobox-option]`). It is not a popover, not a tooltip, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute on `[combobox-list]`. Core CSS paints the list at z-index **1050** (same band as popover). This is theme chrome only — there is no combobox runtime yet.
+
+Tide must bind a dark field and dark list (`--tide-surface-strong`), not a white glass combobox.
 
 ## Wizard chrome roles
 

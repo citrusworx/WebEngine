@@ -276,6 +276,35 @@
     --juice-tooltip-panel-shadow: var(--aqua-tooltip-panel-shadow);
     --juice-tooltip-ink: var(--aqua-tooltip-ink);
 
+    /* Combobox chrome — input + listbox popup from existing tokens.
+       Trigger is a surface control, not a CTA. Distinct from select. */
+    --aqua-combobox-input: var(--aqua-surface-strong);
+    --aqua-combobox-input-border: var(--aqua-border-strong);
+    --aqua-combobox-input-ink: var(--aqua-text);
+    --aqua-combobox-list: var(--aqua-surface-strong);
+    --aqua-combobox-list-border: var(--aqua-border);
+    --aqua-combobox-list-shadow: 0 18px 40px -24px var(--aqua-shadow);
+    --aqua-combobox-option: transparent;
+    --aqua-combobox-option-hover: var(--aqua-surface-muted);
+    --aqua-combobox-option-selected: var(--aqua-highlight);
+    --aqua-combobox-option-ink: var(--aqua-text);
+    --aqua-combobox-trigger: transparent;
+    --aqua-combobox-trigger-ink: var(--aqua-heading);
+    --aqua-combobox-focus-ring: var(--aqua-accent);
+    --juice-combobox-input: var(--aqua-combobox-input);
+    --juice-combobox-input-border: var(--aqua-combobox-input-border);
+    --juice-combobox-input-ink: var(--aqua-combobox-input-ink);
+    --juice-combobox-list: var(--aqua-combobox-list);
+    --juice-combobox-list-border: var(--aqua-combobox-list-border);
+    --juice-combobox-list-shadow: var(--aqua-combobox-list-shadow);
+    --juice-combobox-option: var(--aqua-combobox-option);
+    --juice-combobox-option-hover: var(--aqua-combobox-option-hover);
+    --juice-combobox-option-selected: var(--aqua-combobox-option-selected);
+    --juice-combobox-option-ink: var(--aqua-combobox-option-ink);
+    --juice-combobox-trigger: var(--aqua-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--aqua-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--aqua-combobox-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -844,4 +873,49 @@
     border: 1px solid var(--juice-tooltip-panel-border);
     box-shadow: var(--juice-tooltip-panel-shadow);
     color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme="aquaflux"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="aquaflux"] button[combobox-trigger],
+[theme="aquaflux"] [combobox-trigger] {
+    background-image: none;
+    background-color: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] [combobox-input]:focus-visible,
+[theme="aquaflux"] button[combobox-trigger]:focus-visible,
+[theme="aquaflux"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="aquaflux"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="aquaflux"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="aquaflux"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="aquaflux"] [combobox-option][aria-selected="true"],
+[theme="aquaflux"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
 }

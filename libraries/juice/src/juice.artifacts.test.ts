@@ -304,6 +304,48 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[title\]/);
     });
 
+    it("includes combobox structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[combobox]");
+        expect(css).toContain("[combobox-input]");
+        expect(css).toContain("[combobox-trigger]");
+        expect(css).toContain("[combobox-list]");
+        expect(css).toContain("[combobox-option]");
+        expect(css).toMatch(/\[theme\]\s+\[combobox\](?![-a-z])/);
+        expect(css).toMatch(/\[theme\]\s+\[combobox-input\]/);
+        expect(css).toMatch(/\[theme\]\s+\[combobox-trigger\]/);
+        expect(css).toMatch(/\[theme\]\s+\[combobox-list\]:not\(\[surfaceTone\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[combobox-option\]/);
+        expect(css).toMatch(/\[combobox-list\]\[hidden\]/);
+        expect(css).toMatch(/\[combobox-option\]\[aria-selected=["']?true["']?\]/);
+        expect(css).toMatch(/\[combobox-option=["']?active["']?\]/);
+        expect(css).toMatch(/\[combobox-input\]:focus-visible/);
+        expect(css).toMatch(/\[combobox-trigger\]:focus-visible/);
+        expect(css).toContain("z-index: 1050");
+        expect(css).toContain("--juice-combobox-input");
+        expect(css).toContain("--juice-combobox-input-border");
+        expect(css).toContain("--juice-combobox-input-ink");
+        expect(css).toContain("--juice-combobox-list");
+        expect(css).toContain("--juice-combobox-list-border");
+        expect(css).toContain("--juice-combobox-list-shadow");
+        expect(css).toContain("--juice-combobox-option");
+        expect(css).toContain("--juice-combobox-option-hover");
+        expect(css).toContain("--juice-combobox-option-selected");
+        expect(css).toContain("--juice-combobox-option-ink");
+        expect(css).toContain("--juice-combobox-trigger");
+        expect(css).toContain("--juice-combobox-trigger-ink");
+        expect(css).toContain("--juice-combobox-focus-ring");
+        expect(css).not.toMatch(/select\[combobox/);
+        expect(css).not.toMatch(/\[role=["']?listbox["']?\]/);
+        expect(css).not.toMatch(/\[combobox-trigger\][^{]*\{[^}]*--aqua-button-background/);
+        expect(css).not.toMatch(/\[combobox\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[combobox-list\][^{]*\{[^}]*--juice-popover-panel/);
+        expect(css).not.toMatch(/\[combobox-list\][^{]*\{[^}]*--juice-tooltip-panel/);
+        expect(css).not.toMatch(/\[combobox-list\][^{]*\{[^}]*--juice-modal-overlay/);
+        expect(css).not.toMatch(/\[combobox-list\][^{]*\{[^}]*--juice-drawer-overlay/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -650,6 +692,40 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-tooltip-panel: var(--tide-page)");
     });
 
+    it("binds combobox chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-combobox-input: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-combobox-list: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--juice-combobox-input-ink: var(--aqua-combobox-input-ink)");
+        expect(aquaCss).toContain("button[combobox-trigger]");
+        expect(aquaCss).toContain("[combobox-list]:not([surfaceTone])");
+        expect(aquaCss).not.toMatch(/button\[combobox-trigger\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-combobox-input: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-combobox-list: var(--kw-combobox-list)");
+        expect(kiwiCss).toContain("button[combobox-trigger]");
+        expect(kiwiCss).toContain("[combobox-list]:not([surfaceTone])");
+        expect(kiwiCss).not.toMatch(/button\[combobox-trigger\][^{]*\{[^}]*--kw-cta-background/);
+
+        expect(mintCss).toContain("--cm-combobox-input: var(--cm-surface)");
+        expect(mintCss).toContain("--juice-combobox-input-ink: var(--cm-combobox-input-ink)");
+        expect(mintCss).toContain("button[combobox-trigger]");
+        expect(mintCss).toContain("[combobox-list]:not([surfaceTone])");
+
+        expect(tideCss).toContain("--tide-combobox-input: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-combobox-list: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--juice-combobox-input-ink: var(--tide-combobox-input-ink)");
+        expect(tideCss).toContain("button[combobox-trigger]");
+        expect(tideCss).toContain("[combobox-list]:not([surfaceTone])");
+        expect(tideCss).not.toMatch(/button\[combobox-trigger\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-combobox-list: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-combobox-input: var(--tide-page)");
+    });
+
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
@@ -720,6 +796,9 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("--juice-wizard-panel: var(--tide-wizard-panel)");
         expect(themeCss).toContain("--juice-tooltip-panel: var(--tide-tooltip-panel)");
         expect(themeCss).toContain("--juice-tooltip-ink: var(--tide-tooltip-ink)");
+        expect(themeCss).toContain("--juice-combobox-input: var(--tide-combobox-input)");
+        expect(themeCss).toContain("--juice-combobox-list: var(--tide-combobox-list)");
+        expect(themeCss).toContain("button[combobox-trigger]");
         expect(themeCss).toContain("button[tab]");
         expect(themeCss).not.toMatch(/button\[tab\][^{]*\{[^}]*--tide-button-background/);
         expect(themeCss).toContain("input:focus-visible");
