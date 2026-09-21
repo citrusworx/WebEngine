@@ -16,6 +16,7 @@ import {
     REQUIRED_COMBOBOX_ROLES,
     REQUIRED_MENU_ROLES,
     REQUIRED_SWITCH_ROLES,
+    REQUIRED_SLIDER_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -442,6 +443,45 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(switchBlocks.length).toBeGreaterThan(0);
         for (const block of switchBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-slider-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-slider-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted))");
+        expect(css).toContain("--jx-slider-track-border: var(--jx-border)");
+        expect(css).toContain("--jx-slider-fill: var(--jx-accent)");
+        expect(css).toContain("--jx-slider-thumb: var(--jx-text-inverse)");
+        expect(css).toContain("--jx-slider-thumb-border: var(--jx-border)");
+        expect(css).toContain("--jx-slider-thumb-shadow: 0 1px 2px var(--jx-shadow)");
+        expect(css).toContain("--jx-slider-focus-ring: var(--jx-accent)");
+
+        expect(css).toContain("--jx-surface: #fffdf8");
+        expect(css).toContain("--jx-surface-muted: #fffdf8");
+        expect(css).not.toContain("--jx-slider-track: var(--jx-surface-muted)");
+        expect(css).not.toContain("--jx-slider-thumb: var(--jx-surface)");
+        expect(css).not.toContain("--jx-slider-thumb: var(--jx-page)");
+
+        for (const role of REQUIRED_SLIDER_ROLES) {
+            expect(css).toContain(`--juice-slider-${role}: var(--jx-slider-${role})`);
+        }
+
+        expect(css).toContain("button[slider-thumb]");
+        expect(css).toContain('[slider]:not([slider="vertical"])');
+        expect(css).not.toMatch(/\[role=["']?slider["']?\]/);
+        expect(css).not.toMatch(/\[slider-track\]/);
+        expect(css).not.toMatch(/\[slider-value/);
+        expect(css).not.toMatch(/\[slider-size/);
+
+        const thumbBlocks = [...css.matchAll(/button\[slider-thumb\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(thumbBlocks.length).toBeGreaterThan(0);
+        for (const block of thumbBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

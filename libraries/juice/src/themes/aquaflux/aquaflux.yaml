@@ -90,6 +90,7 @@ authoring_rules:
   - Bind combobox chrome roles (`--aqua-combobox-*` and `--juice-combobox-*`) from existing page/surface tokens so `[combobox-trigger]` stays a surface control, not a CTA. Not a native `<select>` restyle.
   - Bind menu chrome roles (`--aqua-menu-*` and `--juice-menu-*`) from existing page/surface tokens so `[menu-button]` stays a surface control, not a CTA. APG menu button, not popover / combobox / native `<select>`.
   - Bind switch chrome roles (`--aqua-switch-*` and `--juice-switch-*`) from existing page/surface/accent tokens so `[switch]` stays a surface track, not a CTA. APG switch, not checkbox / menuitemcheckbox / native checkbox restyle as the only story.
+  - Bind slider chrome roles (`--aqua-slider-*` and `--juice-slider-*`) from existing page/surface/accent tokens so `[slider]` stays a surface groove and `[slider-thumb]` stays a surface control, not a CTA. APG slider, horizontal only; not a range input, progress meter, or scrollbar.
 
 example:
   root: '<body theme="aquaflux">'

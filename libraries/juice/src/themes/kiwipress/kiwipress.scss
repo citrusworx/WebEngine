@@ -372,6 +372,24 @@
     --juice-switch-thumb-checked: var(--kw-switch-thumb-checked);
     --juice-switch-focus-ring: var(--kw-switch-focus-ring);
 
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a kiwi CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --kw-slider-track: var(--kw-surface-muted);
+    --kw-slider-track-border: var(--kw-border);
+    --kw-slider-fill: var(--kw-accent);
+    --kw-slider-thumb: var(--kw-surface);
+    --kw-slider-thumb-border: var(--kw-border);
+    --kw-slider-thumb-shadow: 0 1px 2px var(--kw-shadow-strong);
+    --kw-slider-focus-ring: var(--kw-accent);
+    --juice-slider-track: var(--kw-slider-track);
+    --juice-slider-track-border: var(--kw-slider-track-border);
+    --juice-slider-fill: var(--kw-slider-fill);
+    --juice-slider-thumb: var(--kw-slider-thumb);
+    --juice-slider-thumb-border: var(--kw-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--kw-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--kw-slider-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1885,6 +1903,39 @@
 [theme="kiwipress"] button[switch]:focus-visible,
 [theme="kiwipress"] [switch]:focus-visible {
     outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a kiwi CTA.
+   Runtime is later. */
+[theme="kiwipress"] button[slider]:not([slider="vertical"]),
+[theme="kiwipress"] [slider]:not([slider="vertical"]) {
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[slider-thumb],
+[theme="kiwipress"] [slider-thumb] {
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="kiwipress"] button[slider-thumb]:hover,
+[theme="kiwipress"] [slider-thumb]:hover,
+[theme="kiwipress"] button[slider-thumb]:focus-visible,
+[theme="kiwipress"] [slider-thumb]:focus-visible {
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="kiwipress"] button[slider-thumb]:focus-visible,
+[theme="kiwipress"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
     outline-offset: 2px;
 }
 

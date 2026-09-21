@@ -342,6 +342,23 @@
   --juice-switch-thumb: var(--tide-switch-thumb);
   --juice-switch-thumb-checked: var(--tide-switch-thumb-checked);
   --juice-switch-focus-ring: var(--tide-switch-focus-ring);
+  /* Slider chrome — dark track, not a white groove. Horizontal only.
+     The thumb is a surface control, not a CTA. Distinct from range
+     input, progress, and scrollbar. */
+  --tide-slider-track: var(--tide-surface-muted);
+  --tide-slider-track-border: var(--tide-border);
+  --tide-slider-fill: var(--tide-accent);
+  --tide-slider-thumb: var(--tide-heading);
+  --tide-slider-thumb-border: var(--tide-border);
+  --tide-slider-thumb-shadow: 0 1px 2px var(--tide-shadow);
+  --tide-slider-focus-ring: var(--tide-accent);
+  --juice-slider-track: var(--tide-slider-track);
+  --juice-slider-track-border: var(--tide-slider-track-border);
+  --juice-slider-fill: var(--tide-slider-fill);
+  --juice-slider-thumb: var(--tide-slider-thumb);
+  --juice-slider-thumb-border: var(--tide-slider-thumb-border);
+  --juice-slider-thumb-shadow: var(--tide-slider-thumb-shadow);
+  --juice-slider-focus-ring: var(--tide-slider-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1047,5 +1064,41 @@
 [theme=tide] button[switch]:focus-visible,
 [theme=tide] [switch]:focus-visible {
   outline: 2px solid var(--juice-switch-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Track stays dark. The thumb is a surface control, not a CTA.
+   Horizontal only. Runtime is later. */
+[theme=tide] button[slider]:not([slider=vertical]),
+[theme=tide] [slider]:not([slider=vertical]) {
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[slider-thumb],
+[theme=tide] [slider-thumb] {
+  background-image: none;
+  background-color: var(--juice-slider-thumb);
+  border-color: var(--juice-slider-thumb-border);
+  box-shadow: var(--juice-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+}
+
+[theme=tide] button[slider-thumb]:hover,
+[theme=tide] [slider-thumb]:hover,
+[theme=tide] button[slider-thumb]:focus-visible,
+[theme=tide] [slider-thumb]:focus-visible {
+  background-image: none;
+  background-color: var(--juice-slider-thumb);
+  box-shadow: var(--juice-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+}
+
+[theme=tide] button[slider-thumb]:focus-visible,
+[theme=tide] [slider-thumb]:focus-visible {
+  outline: 2px solid var(--juice-slider-focus-ring);
   outline-offset: 2px;
 }
