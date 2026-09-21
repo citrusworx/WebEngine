@@ -36,6 +36,11 @@
  * popover closes the others. Modal / drawer are not auto-closed.
  */
 
+import { createEventClaim } from '../shared/events.js';
+import { moveFocusInto, wrapTabFocus } from '../shared/focus.js';
+import { controlIds, resolveElementById } from '../shared/ids.js';
+import { hasOpenDialogOverlay } from '../shared/overlays.js';
+
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
 
 export type PopoverOptions = {
@@ -81,29 +86,9 @@ const ROOT_ID_PREFIX = 'juice-popover-root';
 const PANEL_ID_PREFIX = 'juice-popover-panel';
 const TITLE_ID_PREFIX = 'juice-popover-title';
 
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'textarea:not([disabled])',
-  'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
-
-const handledEvents = new WeakSet<Event>();
+const claimEvent = createEventClaim();
 const focusRestorers = new WeakMap<HTMLElement, HTMLElement>();
 const placementAnchors = new WeakMap<HTMLElement, HTMLElement>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
-
-const escapeId = (value: string) =>
-  typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
-    ? CSS.escape(value)
-    : value;
 
 const slugFromName = (name: string) =>
   name
@@ -118,35 +103,7 @@ const isNativeInteractive = (element: HTMLElement) => {
   return false;
 };
 
-const controlIds = (element: HTMLElement) =>
-  (element.getAttribute('aria-controls') ?? '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
 const isPopoverOpen = (popover: HTMLElement) => !popover.hasAttribute('hidden');
-
-const isFocusableCandidate = (element: HTMLElement) => {
-  if (element.closest('[hidden]')) return false;
-  if (element.getAttribute('aria-hidden') === 'true') return false;
-  if (element instanceof HTMLButtonElement && element.disabled) return false;
-  if (element instanceof HTMLInputElement && element.disabled) return false;
-  return true;
-};
-
-const getFocusable = (container: HTMLElement) =>
-  asArray(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    isFocusableCandidate
-  );
-
-const hasOpenDialogOverlay = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(
-    document.querySelector(
-      '[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])'
-    )
-  );
-};
 
 const readPlacement = (popover: HTMLElement): PopoverPlacement => {
   const raw = popover.getAttribute('popover-root');
@@ -296,15 +253,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     return popover instanceof HTMLElement ? popover : null;
   };
 
-  const resolveById = (id: string) => {
-    const escaped = escapeId(id);
-    if (root instanceof Document || root instanceof Element) {
-      const local = root.querySelector<HTMLElement>(`#${escaped}`);
-      if (local) return local;
-    }
-    const global = document.getElementById(id);
-    return global instanceof HTMLElement ? global : null;
-  };
+  const resolveById = (id: string) => resolveElementById(id, root);
 
   const isManagedPopover = (element: HTMLElement | null | undefined) => {
     if (!element?.matches(settings.rootSelector)) return false;
@@ -495,19 +444,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
   };
 
   const moveFocusIn = (popover: HTMLElement) => {
-    const panel = getPanel(popover);
-    const autofocus = panel.querySelector<HTMLElement>('[autofocus]');
-    const focusable = getFocusable(panel);
-    const target =
-      (autofocus && isFocusableCandidate(autofocus) ? autofocus : null) ??
-      focusable[0] ??
-      panel;
-
-    if (target === panel && !panel.hasAttribute('tabindex')) {
-      panel.setAttribute('tabindex', '-1');
-    }
-
-    target.focus();
+    moveFocusInto(getPanel(popover));
   };
 
   const clearPlacement = (popover: HTMLElement) => {
@@ -704,45 +641,8 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     close(openPopover, false);
   };
 
-  const trapFocus = (event: KeyboardEvent, popover: HTMLElement) => {
-    if (event.key !== 'Tab') return false;
-
-    const panel = getPanel(popover);
-    const focusable = getFocusable(panel);
-    const current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-
-    if (focusable.length === 0) {
-      event.preventDefault();
-      if (!panel.hasAttribute('tabindex')) {
-        panel.setAttribute('tabindex', '-1');
-      }
-      panel.focus();
-      return true;
-    }
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (event.shiftKey) {
-      if (!current || current === first || !panel.contains(current)) {
-        event.preventDefault();
-        last.focus();
-        return true;
-      }
-      return true;
-    }
-
-    if (!current || current === last || !panel.contains(current)) {
-      event.preventDefault();
-      first.focus();
-      return true;
-    }
-
-    return true;
-  };
+  const trapFocus = (event: KeyboardEvent, popover: HTMLElement) =>
+    wrapTabFocus(event, getPanel(popover));
 
   const handleDocumentKeydown = (event: Event) => {
     if (!(event instanceof KeyboardEvent)) return;

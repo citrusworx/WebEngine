@@ -29,6 +29,14 @@
  * role="status" for polite; role="alert" for toast="error" or assertive.
  */
 
+import { createEventClaim } from '../shared/events.js';
+import {
+  hasOpenComboboxList,
+  hasOpenDialogOverlay,
+  hasOpenPopover,
+  hasOpenTooltip,
+} from '../shared/overlays.js';
+
 export type ToastOptions = {
   root?: ParentNode;
   regionSelector?: string;
@@ -67,13 +75,7 @@ type TimerState = {
   paused: boolean;
 };
 
-const handledEvents = new WeakSet<Event>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
+const claimEvent = createEventClaim();
 
 const isNativeInteractive = (element: HTMLElement) => {
   if (element instanceof HTMLButtonElement) return true;
@@ -94,30 +96,6 @@ const parseDuration = (raw: string | null, fallback: number) => {
   const parsed = Number(trimmed);
   if (Number.isNaN(parsed)) return fallback;
   return parsed;
-};
-
-const hasOpenDialogOverlay = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(
-    document.querySelector(
-      '[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])'
-    )
-  );
-};
-
-const hasOpenPopover = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.querySelector('[popover-root]:not([hidden])'));
-};
-
-const hasOpenComboboxList = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.querySelector('[combobox-list]:not([hidden])'));
-};
-
-const hasOpenTooltip = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.querySelector('[tooltip-root]:not([hidden])'));
 };
 
 const shouldYieldEscape = () =>

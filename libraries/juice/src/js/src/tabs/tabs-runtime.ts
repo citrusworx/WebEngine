@@ -1,3 +1,6 @@
+import { createEventClaim } from '../shared/events.js';
+import { escapeId } from '../shared/ids.js';
+
 export type TabsOptions = {
   root?: ParentNode;
   tabsSelector?: string;
@@ -29,13 +32,7 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const TRIGGER_ID_PREFIX = 'juice-tabs-trigger';
 const PANEL_ID_PREFIX = 'juice-tabs-panel';
 
-const handledEvents = new WeakSet<Event>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
+const claimEvent = createEventClaim();
 
 const isNativeInteractiveTrigger = (element: HTMLElement) => {
   if (element instanceof HTMLButtonElement) return true;
@@ -57,11 +54,6 @@ const isEditableTarget = (target: EventTarget | null) => {
   if (target instanceof HTMLSelectElement) return true;
   return target.isContentEditable;
 };
-
-const escapeId = (value: string) =>
-  typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
-    ? CSS.escape(value)
-    : value;
 
 export const createTabs = (options: TabsOptions = {}): TabsController => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {

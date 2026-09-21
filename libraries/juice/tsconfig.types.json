@@ -25,6 +25,10 @@
     "src/js/src/wizard/wizard-runtime.ts",
     "src/js/src/combobox/combobox-runtime.ts",
     "src/js/src/banner/banner-runtime.ts",
+    "src/js/src/shared/events.ts",
+    "src/js/src/shared/focus.ts",
+    "src/js/src/shared/ids.ts",
+    "src/js/src/shared/overlays.ts",
     "src/tokens/**/*.ts",
     "src/themes/**/*.ts",
     "src/jsx.d.ts"

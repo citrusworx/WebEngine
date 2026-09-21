@@ -24,6 +24,8 @@
  * aria-label="Dismiss".
  */
 
+import { createEventClaim } from '../shared/events.js';
+
 export type BannerOptions = {
   root?: ParentNode;
   bannerSelector?: string;
@@ -51,13 +53,7 @@ const STORAGE_PREFIX = 'juice-banner:';
 const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
   Array.from(nodes);
 
-const handledEvents = new WeakSet<Event>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
+const claimEvent = createEventClaim();
 
 const isNativeInteractive = (element: HTMLElement) => {
   if (element instanceof HTMLButtonElement) return true;

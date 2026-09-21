@@ -94,7 +94,7 @@ When several Emerging surfaces are open, Escape is owned in this order (highest 
 6. **Banner** — never steals Escape. Dismiss stays on `[banner-close]`.
 7. **Accordion** — Escape collapses the focused or last open item only when that accordion context already owns the key. There is no global accordion Escape. Tabs, navigation, and wizard leave Escape out of scope (tabs explicitly ignores it).
 
-Yield checks live in the individual runtimes. Shared helpers are a later extract.
+Yield checks use internal shared overlay queries (`libraries/juice/src/js/src/shared/`); the public contract is unchanged.
 
 ## Summary
 

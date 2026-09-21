@@ -29,6 +29,9 @@
  *   [step-page] as role="region" labelled by its step when unlabeled
  */
 
+import { createEventClaim } from '../shared/events.js';
+import { escapeId } from '../shared/ids.js';
+
 export type WizardOptions = {
   root?: ParentNode;
   shellSelector?: string;
@@ -73,13 +76,7 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const STEP_ID_PREFIX = 'juice-wizard-step';
 const PAGE_ID_PREFIX = 'juice-wizard-page';
 
-const handledEvents = new WeakSet<Event>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
+const claimEvent = createEventClaim();
 
 const isNativeInteractive = (element: HTMLElement) => {
   if (element instanceof HTMLButtonElement) return true;
@@ -96,11 +93,6 @@ const slugFromName = (name: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'wizard';
-
-const escapeId = (value: string) =>
-  typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
-    ? CSS.escape(value)
-    : value;
 
 const documentOrder = (left: HTMLElement, right: HTMLElement) => {
   const position = left.compareDocumentPosition(right);

@@ -39,6 +39,14 @@
  * hide while toasts remain. Opening one managed tooltip closes the others.
  */
 
+import { createEventClaim } from '../shared/events.js';
+import { controlIds, resolveElementById, tokenIds } from '../shared/ids.js';
+import {
+  hasOpenComboboxList,
+  hasOpenDialogOverlay,
+  hasOpenPopover,
+} from '../shared/overlays.js';
+
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
 export type TooltipOptions = {
@@ -82,19 +90,8 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 
 const ROOT_ID_PREFIX = 'juice-tooltip-root';
 
-const handledEvents = new WeakSet<Event>();
+const claimEvent = createEventClaim();
 const placementAnchors = new WeakMap<HTMLElement, HTMLElement>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
-
-const escapeId = (value: string) =>
-  typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
-    ? CSS.escape(value)
-    : value;
 
 const slugFromName = (name: string) =>
   name
@@ -103,17 +100,8 @@ const slugFromName = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'tooltip';
 
-const tokenIds = (value: string | null | undefined) =>
-  (value ?? '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
 const describedIds = (element: HTMLElement) =>
   tokenIds(element.getAttribute('aria-describedby'));
-
-const controlIds = (element: HTMLElement) =>
-  tokenIds(element.getAttribute('aria-controls'));
 
 const includeToken = (value: string | null | undefined, id: string) => {
   const tokens = tokenIds(value);
@@ -122,25 +110,6 @@ const includeToken = (value: string | null | undefined, id: string) => {
 };
 
 const isTooltipOpen = (tooltip: HTMLElement) => !tooltip.hasAttribute('hidden');
-
-const hasOpenDialogOverlay = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(
-    document.querySelector(
-      '[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])'
-    )
-  );
-};
-
-const hasOpenPopover = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.querySelector('[popover-root]:not([hidden])'));
-};
-
-const hasOpenComboboxList = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.querySelector('[combobox-list]:not([hidden])'));
-};
 
 const shouldYieldEscape = () =>
   hasOpenDialogOverlay() || hasOpenPopover() || hasOpenComboboxList();
@@ -299,15 +268,7 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
     return tooltip instanceof HTMLElement ? tooltip : null;
   };
 
-  const resolveById = (id: string) => {
-    const escaped = escapeId(id);
-    if (root instanceof Document || root instanceof Element) {
-      const local = root.querySelector<HTMLElement>(`#${escaped}`);
-      if (local) return local;
-    }
-    const global = document.getElementById(id);
-    return global instanceof HTMLElement ? global : null;
-  };
+  const resolveById = (id: string) => resolveElementById(id, root);
 
   const isManagedTooltip = (element: HTMLElement | null | undefined) => {
     if (!element?.matches(settings.rootSelector)) return false;
