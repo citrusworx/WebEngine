@@ -18,9 +18,16 @@ Juice is not a behavior framework. Pair it with Sig.js or app code when the UI n
 
 ## Install
 
+Add the published package with the CLI you already use:
+
 ```bash
+npm install @citrusworx/juiceui
+pnpm add @citrusworx/juiceui
 yarn add @citrusworx/juiceui
+bun add @citrusworx/juiceui
 ```
+
+Monorepo contributors already have the workspace package linked — you do not add it again. Workspace scripts such as `yarn workspace @citrusworx/juiceui generate:themes` stay yarn because this repo is a Yarn workspace.
 
 ## Import the core stylesheet
 

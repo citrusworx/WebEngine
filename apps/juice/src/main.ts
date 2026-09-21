@@ -1,4 +1,5 @@
 import { createToast } from "@citrusworx/juiceui";
+import { bindInstallCopy } from "./install-pm";
 
 const THEMES = ["kiwipress", "tide", "citrusmint", "aquaflux"] as const;
 
@@ -52,6 +53,8 @@ document.querySelectorAll<HTMLElement>("[data-href]").forEach((element) => {
     window.location.assign(href);
   });
 });
+
+bindInstallCopy();
 
 const toastController = createToast();
 

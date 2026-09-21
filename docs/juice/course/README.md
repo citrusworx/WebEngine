@@ -31,7 +31,7 @@ You do not need prior Juice, Sig.js, or WebEngine experience. You should be comf
 
 - HTML structure and semantic elements (`main`, `section`, `nav`, `form`)
 - CSS ideas: cascade, inheritance, flex/grid, custom properties
-- optional: Node.js and yarn if you want to install `@citrusworx/juiceui` and preview markup
+- optional: Node.js and a package manager (npm, pnpm, yarn, or bun) if you want to install `@citrusworx/juiceui` and preview markup
 
 You can complete the course as a reading-and-markup study. A local stylesheet import makes the worked examples visible; it is not required to understand the argument.
 
@@ -150,7 +150,7 @@ Copy the two built files next to your HTML. Do not hunt through `src/`:
 cp libraries/juice/dist/index.css .
 cp libraries/juice/dist/themes/citrusmint.css .
 
-# or after yarn add / npm install @citrusworx/juiceui
+# or after adding @citrusworx/juiceui (npm / pnpm / yarn / bun)
 cp node_modules/@citrusworx/juiceui/dist/index.css .
 cp node_modules/@citrusworx/juiceui/dist/themes/citrusmint.css .
 ```

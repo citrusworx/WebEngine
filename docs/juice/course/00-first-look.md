@@ -48,7 +48,7 @@ cp libraries/juice/dist/index.css harbor-press/
 cp libraries/juice/dist/themes/citrusmint.css harbor-press/
 ```
 
-After `yarn add @citrusworx/juiceui` (or npm) in some other folder:
+After adding `@citrusworx/juiceui` with npm, pnpm, yarn, or bun in some other folder:
 
 ```bash
 cp node_modules/@citrusworx/juiceui/dist/index.css .
