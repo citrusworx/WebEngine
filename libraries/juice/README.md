@@ -28,7 +28,10 @@ Those are useful for monorepo development, but they are not part of the public A
 ## Install
 
 ```bash
+npm install @citrusworx/juiceui
+pnpm add @citrusworx/juiceui
 yarn add @citrusworx/juiceui
+bun add @citrusworx/juiceui
 ```
 
 ## Use the stylesheet

@@ -236,6 +236,64 @@ const codeWindowTitle = (lang: string | undefined): string => {
   }
 };
 
+const JUICEUI_INSTALL_LINE =
+  /^(npm install|pnpm add|yarn add|bun add)\s+@citrusworx\/juiceui$/;
+
+type JuiceuiInstallCommand = {
+  label: string;
+  command: string;
+};
+
+const parseJuiceuiInstallCommands = (text: string): JuiceuiInstallCommand[] | null => {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith("#"));
+
+  if (lines.length < 2) {
+    return null;
+  }
+
+  const commands: JuiceuiInstallCommand[] = [];
+  const seen = new Set<string>();
+
+  for (const line of lines) {
+    if (!JUICEUI_INSTALL_LINE.test(line)) {
+      return null;
+    }
+    if (seen.has(line)) {
+      continue;
+    }
+    seen.add(line);
+    const label = line.split(/\s+/)[0] ?? line;
+    commands.push({ label, command: line });
+  }
+
+  return commands.length >= 2 ? commands : null;
+};
+
+const renderInstallPmTabs = (commands: JuiceuiInstallCommand[], name: string): string => {
+  const triggers = commands
+    .map(
+      (pm, index) =>
+        `<button type="button" tab${index === 0 ? " active" : ""}>${escapeHtml(pm.label)}</button>`
+    )
+    .join("");
+  const panels = commands
+    .map((pm, index) => {
+      const payload = `<pre><code class="language-bash">${escapeHtml(pm.command)}</code></pre>`;
+      const window = windowChrome("install.sh", payload, "doc-md-window--code");
+      return `<div tab-panel${index === 0 ? "" : " hidden"}>${window}</div>`;
+    })
+    .join("");
+  return `<div install-pm>
+  <div tabs name="${escapeAttr(name)}">
+    <div tabs-list aria-label="Package manager">${triggers}</div>
+    ${panels}
+  </div>
+</div>`;
+};
+
 const windowChrome = (title: string, payload: string, extraClass = ""): string => {
   const cls = extraClass ? ` doc-md-window ${extraClass}` : " doc-md-window";
   return `<div class="${cls.trim()}">
@@ -366,6 +424,7 @@ const renderMarkdown = (
 ): { html: string; toc: DocHeading[] } => {
   const toc: DocHeading[] = [];
   const usedIds = new Set<string>();
+  let installBlock = 0;
 
   const marked = new Marked();
   marked.use({
@@ -378,6 +437,15 @@ const renderMarkdown = (
         return `<h${token.depth} id="${id}">${text}</h${token.depth}>\n`;
       },
       code({ text, lang }: Tokens.Code) {
+        const fence = (lang ?? "").trim().split(/\s+/)[0] ?? "";
+        if (["bash", "sh", "shell", "zsh"].includes(fence)) {
+          const install = parseJuiceuiInstallCommands(text);
+          if (install) {
+            installBlock += 1;
+            const name = `install-${pageId.replace(/[^\w]+/g, "-")}-${installBlock}`;
+            return renderInstallPmTabs(install, name);
+          }
+        }
         const title = codeWindowTitle(lang);
         const langClass = lang ? ` class="language-${escapeAttr(lang.split(/\s+/)[0] ?? "")}"` : "";
         const payload = `<pre><code${langClass}>${escapeHtml(text)}</code></pre>`;

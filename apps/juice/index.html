@@ -398,7 +398,28 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
 
         <section cta>
           <h2 cta-title>Install Juice. Compose a page.</h2>
-          <pre sell-command><code>yarn add @citrusworx/juiceui</code></pre>
+          <div install-pm>
+            <div tabs name="install-juice-landing">
+              <div tabs-list aria-label="Package manager">
+                <button type="button" tab active>npm</button>
+                <button type="button" tab>pnpm</button>
+                <button type="button" tab>yarn</button>
+                <button type="button" tab>bun</button>
+              </div>
+              <div tab-panel>
+                <pre sell-command><code>npm install @citrusworx/juiceui</code></pre>
+              </div>
+              <div tab-panel hidden>
+                <pre sell-command><code>pnpm add @citrusworx/juiceui</code></pre>
+              </div>
+              <div tab-panel hidden>
+                <pre sell-command><code>yarn add @citrusworx/juiceui</code></pre>
+              </div>
+              <div tab-panel hidden>
+                <pre sell-command><code>bun add @citrusworx/juiceui</code></pre>
+              </div>
+            </div>
+          </div>
           <p cta-subtitle>
             Then import core, import a theme, set <code>theme="…"</code>,
             and write structure as attributes.

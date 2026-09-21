@@ -86,15 +86,41 @@
               </p>
             </div>
 
-            <div grid="3x2" gap="comfortable">
+            <div stack gap="comfortable">
               <article card="feature" width="100%">
                 <span badge>1</span>
                 <h3>Install</h3>
-                <p>Add the published package, or consume the workspace package in this monorepo.</p>
-                <pre><code>yarn add @citrusworx/juiceui</code></pre>
+                <p>
+                  Add the published package with the CLI you already use —
+                  npm, pnpm, yarn, or bun — or consume the workspace package
+                  in this monorepo.
+                </p>
+                <div install-pm>
+                  <div tabs name="install-juice-start">
+                    <div tabs-list aria-label="Package manager">
+                      <button type="button" tab active>npm</button>
+                      <button type="button" tab>pnpm</button>
+                      <button type="button" tab>yarn</button>
+                      <button type="button" tab>bun</button>
+                    </div>
+                    <div tab-panel>
+                      <pre><code>npm install @citrusworx/juiceui</code></pre>
+                    </div>
+                    <div tab-panel hidden>
+                      <pre><code>pnpm add @citrusworx/juiceui</code></pre>
+                    </div>
+                    <div tab-panel hidden>
+                      <pre><code>yarn add @citrusworx/juiceui</code></pre>
+                    </div>
+                    <div tab-panel hidden>
+                      <pre><code>bun add @citrusworx/juiceui</code></pre>
+                    </div>
+                  </div>
+                </div>
               </article>
 
-              <article card="feature" width="100%" warm>
+              <div grid="3x2" gap="comfortable">
+                <article card="feature" width="100%" warm>
                 <span badge>2</span>
                 <h3>Import core CSS</h3>
                 <p>Core is structure only. No theme identity ships in this file.</p>
@@ -140,6 +166,7 @@
                   required for CSS-first composition.
                 </p>
               </article>
+              </div>
             </div>
           </div>
         </section>

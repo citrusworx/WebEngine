@@ -1,4 +1,6 @@
+import "@citrusworx/juiceui";
 import { catalog } from "virtual:juice-docs";
+import { bindInstallCopy } from "./install-pm";
 import type { DocNavGroup, DocNavItem, DocPage } from "./docs/types";
 import "./docs.css";
 
@@ -110,6 +112,7 @@ const renderPage = (page: DocPage) => {
   renderNav(search?.value ?? "");
   renderToc(page);
   highlightTocFromHash();
+  bindInstallCopy(article ?? document);
 };
 
 const highlightTocFromHash = () => {
