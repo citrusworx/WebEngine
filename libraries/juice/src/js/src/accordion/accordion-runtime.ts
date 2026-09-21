@@ -1,3 +1,6 @@
+import { createEventClaim } from '../shared/events.js';
+import { escapeId } from '../shared/ids.js';
+
 export type AccordionOptions = {
   root?: ParentNode;
   accordionSelector?: string;
@@ -33,13 +36,7 @@ const isNativeInteractiveTrigger = (element: HTMLElement) => {
   return false;
 };
 
-const handledEvents = new WeakSet<Event>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
+const claimEvent = createEventClaim();
 
 const slugFromName = (name: string) =>
   name
@@ -122,11 +119,7 @@ export const createAccordion = (
 
     const controls = trigger.getAttribute('aria-controls');
     if (controls) {
-      const escaped =
-        typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
-          ? CSS.escape(controls)
-          : controls;
-      const byId = accordion.querySelector<HTMLElement>(`#${escaped}`);
+      const byId = accordion.querySelector<HTMLElement>(`#${escapeId(controls)}`);
       if (byId) return byId;
     }
 

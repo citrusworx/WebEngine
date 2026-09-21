@@ -11,6 +11,10 @@
  * `closeOnBackdrop` is false.
  */
 
+import { createEventClaim } from '../shared/events.js';
+import { getFocusable, moveFocusInto, wrapTabFocus } from '../shared/focus.js';
+import { controlIds, resolveElementById } from '../shared/ids.js';
+
 export type DrawerOptions = {
   root?: ParentNode;
   overlaySelector?: string;
@@ -45,28 +49,8 @@ const OVERLAY_ID_PREFIX = 'juice-drawer-overlay';
 const DIALOG_ID_PREFIX = 'juice-drawer-dialog';
 const TITLE_ID_PREFIX = 'juice-drawer-title';
 
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'textarea:not([disabled])',
-  'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
-
-const handledEvents = new WeakSet<Event>();
+const claimEvent = createEventClaim();
 const focusRestorers = new WeakMap<HTMLElement, HTMLElement>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
-
-const escapeId = (value: string) =>
-  typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
-    ? CSS.escape(value)
-    : value;
 
 const slugFromName = (name: string) =>
   name
@@ -81,26 +65,7 @@ const isNativeInteractive = (element: HTMLElement) => {
   return false;
 };
 
-const controlIds = (element: HTMLElement) =>
-  (element.getAttribute('aria-controls') ?? '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
 const isOverlayOpen = (overlay: HTMLElement) => !overlay.hasAttribute('hidden');
-
-const isFocusableCandidate = (element: HTMLElement) => {
-  if (element.closest('[hidden]')) return false;
-  if (element.getAttribute('aria-hidden') === 'true') return false;
-  if (element instanceof HTMLButtonElement && element.disabled) return false;
-  if (element instanceof HTMLInputElement && element.disabled) return false;
-  return true;
-};
-
-const getFocusable = (container: HTMLElement) =>
-  asArray(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    isFocusableCandidate
-  );
 
 export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -133,15 +98,7 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
     return overlay instanceof HTMLElement ? overlay : null;
   };
 
-  const resolveById = (id: string) => {
-    const escaped = escapeId(id);
-    if (root instanceof Document || root instanceof Element) {
-      const local = root.querySelector<HTMLElement>(`#${escaped}`);
-      if (local) return local;
-    }
-    const global = document.getElementById(id);
-    return global instanceof HTMLElement ? global : null;
-  };
+  const resolveById = (id: string) => resolveElementById(id, root);
 
   const isManagedOverlay = (element: HTMLElement | null | undefined) => {
     if (!element?.matches(settings.overlaySelector)) return false;
@@ -337,19 +294,7 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   };
 
   const moveFocusIn = (overlay: HTMLElement) => {
-    const dialog = getDialog(overlay);
-    const autofocus = dialog.querySelector<HTMLElement>('[autofocus]');
-    const focusable = getFocusable(dialog);
-    const target =
-      (autofocus && isFocusableCandidate(autofocus) ? autofocus : null) ??
-      focusable[0] ??
-      dialog;
-
-    if (target === dialog && !dialog.hasAttribute('tabindex')) {
-      dialog.setAttribute('tabindex', '-1');
-    }
-
-    target.focus();
+    moveFocusInto(getDialog(overlay));
   };
 
   const setOpenState = (overlay: HTMLElement, open: boolean) => {
@@ -488,45 +433,8 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
 
   const getOpenOverlay = () => getOverlays().find(isOverlayOpen) ?? null;
 
-  const trapFocus = (event: KeyboardEvent, overlay: HTMLElement) => {
-    if (event.key !== 'Tab') return false;
-
-    const dialog = getDialog(overlay);
-    const focusable = getFocusable(dialog);
-    const current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-
-    if (focusable.length === 0) {
-      event.preventDefault();
-      if (!dialog.hasAttribute('tabindex')) {
-        dialog.setAttribute('tabindex', '-1');
-      }
-      dialog.focus();
-      return true;
-    }
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (event.shiftKey) {
-      if (!current || current === first || !dialog.contains(current)) {
-        event.preventDefault();
-        last.focus();
-        return true;
-      }
-      return true;
-    }
-
-    if (!current || current === last || !dialog.contains(current)) {
-      event.preventDefault();
-      first.focus();
-      return true;
-    }
-
-    return true;
-  };
+  const trapFocus = (event: KeyboardEvent, overlay: HTMLElement) =>
+    wrapTabFocus(event, getDialog(overlay));
 
   const handleRootKeydown = (event: Event) => {
     if (!(event instanceof KeyboardEvent)) return;

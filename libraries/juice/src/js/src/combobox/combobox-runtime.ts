@@ -53,6 +53,9 @@
  * under the field at z-index 1050).
  */
 
+import { createEventClaim } from '../shared/events.js';
+import { hasOpenDialogOverlay, hasOpenPopover } from '../shared/overlays.js';
+
 export type ComboboxOptions = {
   root?: ParentNode;
   rootSelector?: string;
@@ -117,13 +120,7 @@ const assignUniqueId = (
   return element.id;
 };
 
-const handledEvents = new WeakSet<Event>();
-
-const claimEvent = (event: Event) => {
-  if (handledEvents.has(event)) return false;
-  handledEvents.add(event);
-  return true;
-};
+const claimEvent = createEventClaim();
 
 const slugFromName = (name: string) =>
   name
@@ -163,20 +160,6 @@ const isInputDisabled = (input: HTMLElement) => {
 
 const isComposingKey = (event: KeyboardEvent) =>
   event.isComposing || event.keyCode === 229;
-
-const hasOpenDialogOverlay = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(
-    document.querySelector(
-      '[modal-overlay]:not([hidden]), [drawer-overlay]:not([hidden])'
-    )
-  );
-};
-
-const hasOpenPopover = () => {
-  if (typeof document === 'undefined') return false;
-  return Boolean(document.querySelector('[popover-root]:not([hidden])'));
-};
 
 const shouldYieldEscape = () => hasOpenDialogOverlay() || hasOpenPopover();
 
