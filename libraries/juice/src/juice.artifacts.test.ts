@@ -1393,6 +1393,14 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initSlider");
         expect(module).toHaveProperty("startSliderRuntime");
         expect(module).toHaveProperty("stopSliderRuntime");
+        expect(module).toHaveProperty("createCheckbox");
+        expect(module).toHaveProperty("initCheckbox");
+        expect(module).toHaveProperty("startCheckboxRuntime");
+        expect(module).toHaveProperty("stopCheckboxRuntime");
+        expect(module).toHaveProperty("createRadio");
+        expect(module).toHaveProperty("initRadio");
+        expect(module).toHaveProperty("startRadioRuntime");
+        expect(module).toHaveProperty("stopRadioRuntime");
         expect(module).toHaveProperty("tokens");
     });
 
