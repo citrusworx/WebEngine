@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" theme-frame-root theme="kiwipress">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theme preview — Juice</title>
+    <script>
+      (() => {
+        const themes = ["kiwipress", "tide", "citrusmint", "aquaflux"];
+        const requested = new URLSearchParams(location.search).get("theme");
+        document.documentElement.setAttribute(
+          "theme",
+          themes.includes(requested) ? requested : "kiwipress"
+        );
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/juice.css" />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <div stack gap="1" padding="1.25rem">
+      <section hero>
+        <span badge>Same structure</span>
+        <h2>Theme-owned identity</h2>
+        <p>
+          Fonts, palette, and surfaces come from the theme. Layout stays Juice.
+        </p>
+        <div row wrap gap="1" centered>
+          <button type="button">Primary</button>
+          <button type="button" btn="outline">Outline</button>
+        </div>
+      </section>
+      <div grid="2x1" gap="1">
+        <article card padding="1.25rem" stack gap="0.75rem" width="100%">
+          <h3>Card</h3>
+          <p>A content surface. Juice names it; the theme paints it.</p>
+        </article>
+        <aside panel padding="1.25rem" stack gap="0.75rem">
+          <h3>Panel</h3>
+          <p>A quieter supporting well. Same attributes under every face.</p>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

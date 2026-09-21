@@ -49,3 +49,25 @@ body {
 [theme] [combobox-option][hidden] {
   display: none;
 }
+
+/*
+ * Gallery previews load as isolated documents so nested theme="id"
+ * does not fight the page switcher. Tide's theme root is 100vh —
+ * contain that, and compact hero padding so the sample fits a card.
+ */
+[theme-frame-root][theme] {
+  min-height: 0;
+}
+
+[theme-frame-root] [hero],
+[theme-sample] [hero] {
+  padding: 1.5rem 1.25rem;
+  gap: 1rem;
+}
+
+iframe[theme-frame] {
+  display: block;
+  width: 100%;
+  height: 36rem;
+  border: 0;
+}

@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Themes — Juice</title>
     <link rel="stylesheet" href="/src/juice.css" />
-    <meta name="description" content="Shipped Juice library themes. Stub page with the landing theme switcher." />
+    <meta
+      name="description"
+      content="Browse the four shipped Juice library themes. Juice owns structure. Themes own identity. Honest Beta."
+    />
   </head>
   <body theme="kiwipress">
     <div app-shell stack>
@@ -23,7 +26,7 @@
             <a href="/reference.html">Reference</a>
           </div>
           <div nav-actions>
-            <button type="button" scale="sm" data-href="/">Back to landing</button>
+            <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
         <nav type="sidebar" hidden>
@@ -38,6 +41,7 @@
               <a href="/themes.html">Themes</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <button type="button" data-href="/getting-started.html">Get started</button>
           </div>
         </nav>
       </nav>
@@ -46,21 +50,69 @@
         <section hero>
           <div container>
             <span hero-eyebrow>
-              <span badge>Library themes</span>
+              <span badge>Honest Beta · Emerging themes</span>
             </span>
             <h1 hero-title>Four shipped faces. Same structure.</h1>
             <p hero-subtitle>
-              Safe to use: KiwiPress, Tide, Citrusmint, Aquaflux. Blush and
-              anything under <code>_draft</code> stay unpublished.
+              Juice owns layout, spacing, and the composition vocabulary.
+              Themes own identity — fonts, palette, surfaces, and semantic
+              defaults. Safe to use: KiwiPress, Tide, Citrusmint, Aquaflux.
+              Blush and anything under <code>_draft</code> stay unpublished.
             </p>
+            <div hero-actions>
+              <button type="button" scale="lg" data-href="#gallery">See all four</button>
+              <button type="button" btn="outline" scale="lg" data-href="/getting-started.html">
+                Import a theme
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy">
+          <div container>
+            <div section-header>
+              <h2>Juice owns structure. Themes own identity.</h2>
+              <p>
+                A design system that ships one look is a theme pretending to be
+                a system. Juice keeps the shared language; each face decides
+                how that language should feel.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%">
+                <i icon="layer-group" lib="solid" iconSize="lg"></i>
+                <h3>Structure</h3>
+                <p>
+                  <code>stack</code>, <code>row</code>, <code>grid</code>,
+                  <code>gap</code>, and hooks like <code>hero</code>,
+                  <code>card</code>, <code>panel</code>, <code>badge</code>,
+                  and <code>cta</code> stay in Juice. Themes do not redefine
+                  layout primitives.
+                </p>
+              </article>
+              <aside panel padding="2rem" stack gap="0.75rem">
+                <i icon="swatchbook" lib="solid" iconSize="lg"></i>
+                <h3>Identity</h3>
+                <p>
+                  Type pair, page atmosphere, accent, surface recipes, and
+                  semantic defaults live in the theme. Swap
+                  <code>theme="…"</code> — the markup does not change.
+                </p>
+              </aside>
+            </div>
           </div>
         </section>
 
         <section type="workflow" paddingY="roomy">
           <div container>
             <div section-header>
-              <h2>Try a face on this page</h2>
-              <p>The landing uses the same switch. Choice is stored locally.</p>
+              <h2>Restyle this page</h2>
+              <p>
+                The site switcher stores the choice locally. Chrome, the live
+                sample, and the identity lab all wear it. The four-up gallery
+                below stays pinned so you can compare faces without losing the
+                set.
+              </p>
             </div>
             <div row wrap gap="1" centered>
               <button type="button" data-theme="kiwipress">KiwiPress</button>
@@ -68,43 +120,372 @@
               <button type="button" btn="outline" data-theme="citrusmint">Citrusmint</button>
               <button type="button" btn="outline" data-theme="aquaflux">Aquaflux</button>
             </div>
+            <div row wrap gap="1" centered marginY="comfortable">
+              <button type="button" btn="outline" scale="sm" data-href="#gallery">Gallery</button>
+              <button type="button" btn="outline" scale="sm" data-href="#live-sample">Live sample</button>
+              <button type="button" btn="outline" scale="sm" data-href="#identity">Identity</button>
+              <button type="button" btn="outline" scale="sm" data-href="#import">Import</button>
+              <button type="button" btn="outline" scale="sm" data-href="#docs">Docs</button>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="gallery">
+          <div container>
+            <div section-header>
+              <h2>Same composition. Four library themes.</h2>
+              <p>
+                Hero, card, panel, badge, and buttons — identical markup in
+                each frame. KiwiPress is the richest product reference. Tide is
+                the dark product / SaaS face. Citrusmint is the course and
+                tutorial wash. Aquaflux is cool hospitality, not Tide.
+              </p>
+            </div>
+            <div grid="2x2" gap="comfortable">
+              <article card="feature" width="100%" stack gap="1">
+                <span badge>kiwipress</span>
+                <h3>KiwiPress</h3>
+                <p>
+                  Confident publishing. Kiwi-green accents, marmalade
+                  highlights, cool slate surfaces.
+                </p>
+                <iframe
+                  theme-frame
+                  title="KiwiPress composition"
+                  src="/theme-frame.html?theme=kiwipress"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="kiwipress">Wear this face</button>
+              </article>
+              <article card="feature" width="100%" stack gap="1" warm>
+                <span badge>tide</span>
+                <h3>Tide</h3>
+                <p>
+                  Dark product / SaaS. Teal and lagoon tokens — not Aquaflux
+                  blue / purple.
+                </p>
+                <iframe
+                  theme-frame
+                  title="Tide composition"
+                  src="/theme-frame.html?theme=tide"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="tide">Wear this face</button>
+              </article>
+              <article card="feature" width="100%" stack gap="1">
+                <span badge>citrusmint</span>
+                <h3>Citrusmint</h3>
+                <p>
+                  Mint / citrus marketing. Calm wellness wash. The course and
+                  tutorial face.
+                </p>
+                <iframe
+                  theme-frame
+                  title="Citrusmint composition"
+                  src="/theme-frame.html?theme=citrusmint"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="citrusmint">Wear this face</button>
+              </article>
+              <article card="feature" width="100%" stack gap="1" warm>
+                <span badge>aquaflux</span>
+                <h3>Aquaflux</h3>
+                <p>
+                  Light hospitality / wellness. Luminous water-toned surfaces
+                  and a blue / purple accent.
+                </p>
+                <iframe
+                  theme-frame
+                  title="Aquaflux composition"
+                  src="/theme-frame.html?theme=aquaflux"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="aquaflux">Wear this face</button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="live-sample">
+          <div container>
+            <div section-header>
+              <h2>Live sample under the active face</h2>
+              <p>
+                The same composition as the gallery frames, wearing whatever
+                you picked above. This is the page switcher doing its job —
+                not a second theme system.
+              </p>
+            </div>
+            <div theme-sample stack gap="1">
+              <section hero>
+                <span badge>Same structure</span>
+                <h2>Theme-owned identity</h2>
+                <p>
+                  Fonts, palette, and surfaces come from the theme. Layout stays Juice.
+                </p>
+                <div row wrap gap="1" centered>
+                  <button type="button">Primary</button>
+                  <button type="button" btn="outline">Outline</button>
+                </div>
+              </section>
+              <div grid="2x1" gap="1">
+                <article card padding="1.25rem" stack gap="0.75rem" width="100%">
+                  <h3>Card</h3>
+                  <p>A content surface. Juice names it; the theme paints it.</p>
+                </article>
+                <aside panel padding="1.25rem" stack gap="0.75rem">
+                  <h3>Panel</h3>
+                  <p>A quieter supporting well. Same attributes under every face.</p>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="identity">
+          <div container>
+            <div section-header>
+              <h2>Surface, type, and color identity</h2>
+              <p>
+                These samples use Juice attributes only. No extra fonts, no
+                outside UI kit. Switch the page face and watch the recipes
+                retint.
+              </p>
+            </div>
+            <div stack gap="comfortable">
+              <h3>Surfaces</h3>
+              <div grid="3x1" gap="comfortable">
+                <article card="feature" width="100%" surfaceTone="soft">
+                  <span badge>soft</span>
+                  <h3>Hero-adjacent frost</h3>
+                  <p>
+                    <code>surfaceTone="soft"</code> reads the theme’s frost
+                    roles, not a hardcoded white glass.
+                  </p>
+                </article>
+                <article card="feature" width="100%" surfaceTone="strong">
+                  <span badge>strong</span>
+                  <h3>Elevated panel</h3>
+                  <p>
+                    <code>surfaceTone="strong"</code> is the more opaque, raised
+                    fill. Tide stays dark here.
+                  </p>
+                </article>
+                <aside panel padding="1.25rem" stack gap="0.75rem" surfaceTone="muted">
+                  <span badge>muted</span>
+                  <h3>Recessed well</h3>
+                  <p>
+                    <code>surfaceTone="muted"</code> is the quieter wash. Named
+                    surfaces are a separate, optional recipe.
+                  </p>
+                </aside>
+              </div>
+
+              <div grid="2x1" gap="comfortable">
+                <article card="feature" width="100%">
+                  <h3>Card</h3>
+                  <p>Default <code>card="feature"</code> wearing the active theme.</p>
+                  <div row wrap gap="0.75rem">
+                    <span badge>badge</span>
+                    <span badge warm>warm</span>
+                  </div>
+                </article>
+                <aside panel padding="1.25rem" stack gap="0.75rem">
+                  <h3>Panel</h3>
+                  <p>
+                    Supporting copy. Aquaflux ships <code>aqua-panel</code>;
+                    Tide ships <code>tide-panel</code>. This sample stays on
+                    the shared <code>panel</code> hook.
+                  </p>
+                </aside>
+              </div>
+
+              <h3>Typography</h3>
+              <aside panel padding="2rem" stack gap="1">
+                <h1>Heading one</h1>
+                <h2>Heading two</h2>
+                <h3>Heading three</h3>
+                <p>
+                  Body copy uses the theme pair. Omit local
+                  <code>font=</code> / <code>fontColor=</code> so identity can
+                  apply. Author type attributes still win when you need an
+                  exception.
+                </p>
+              </aside>
+
+              <h3>Color and controls</h3>
+              <div stack gap="1">
+                <div row wrap gap="1">
+                  <button type="button">Primary</button>
+                  <button type="button" btn="outline">Outline</button>
+                  <button type="button" btn="flat">Flat</button>
+                  <button type="button" btn="text">Text</button>
+                </div>
+                <div cta>
+                  <h2 cta-title>A CTA is a surface, not a new layout.</h2>
+                  <p cta-subtitle>
+                    The theme paints this band. Juice still owns the slots.
+                  </p>
+                  <div cta-actions>
+                    <button type="button" scale="lg">Primary action</button>
+                    <p cta-note>Buttons are Emerging. Themes are Emerging too.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="import">
+          <div container>
+            <div section-header>
+              <h2>Import core, import a theme, set theme="id"</h2>
+              <p>
+                Core CSS has no theme rules. This showcase imports all four
+                shipped faces so the switcher can swap the root attribute. A
+                product usually imports one. The full install path stays on
+                Getting started — not duplicated here.
+              </p>
+            </div>
+            <div stack gap="comfortable">
+              <pre><code>import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
+              <pre><code>&lt;body theme="kiwipress"&gt;…&lt;/body&gt;</code></pre>
+              <div row wrap gap="1">
+                <button type="button" data-href="/getting-started.html">Getting started</button>
+                <button
+                  type="button"
+                  btn="outline"
+                  data-href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-getting-started.md"
+                >
+                  docs/juice getting started
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section type="pricing" paddingY="roomy" id="docs">
+          <div container>
+            <div section-header>
+              <h2>Depth stays in docs/juice</h2>
+              <p>
+                This page is a gallery, not a rewrite of the theme contract.
+                Named surfaces, chrome roles, and generator shape live in the
+                docs tree.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <h3>What a theme may add</h3>
+                <p>
+                  Aquaflux exposes <code>aqua-card</code>,
+                  <code>aqua-panel</code>, and <code>aqua-hero</code>. Tide
+                  exposes <code>tide-card</code> and <code>tide-panel</code>.
+                  KiwiPress paints Juice primitives instead. Citrusmint ships
+                  none. Use those names only when the theme documents them.
+                </p>
+              </article>
+              <aside panel padding="2rem" stack gap="1">
+                <h3>Read next</h3>
+                <div stack gap="0.5rem">
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-contract.md">Theme Contract</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-authoring.md">Theme Authoring</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-manual.md">Theme Manual</a>
+                  <a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-typography-contract.md">Typography Contract</a>
+                </div>
+              </aside>
+            </div>
           </div>
         </section>
 
         <section type="features" paddingY="roomy">
           <div container>
-            <div grid="2x2" gap="comfortable">
+            <div section-header>
+              <h2>Honest Beta</h2>
+              <p>
+                Library themes are Emerging — usable, still settling. Config-driven
+                branding and the generator pipeline are Draft. Do not wait on
+                YAML to start composing.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
               <article card="feature" width="100%">
-                <h3>KiwiPress</h3>
-                <p>Richest product reference. Default for this showcase.</p>
+                <h3>Shipped today</h3>
+                <p>
+                  <code>aquaflux</code>, <code>kiwipress</code>,
+                  <code>citrusmint</code>, and <code>tide</code> as separate
+                  CSS entrypoints. Activate with <code>theme="…"</code> after
+                  importing core + that theme.
+                </p>
               </article>
               <article card="feature" width="100%" warm>
-                <h3>Tide</h3>
-                <p>Dark product / SaaS identity. Teal and lagoon tokens.</p>
-              </article>
-              <article card="feature" width="100%">
-                <h3>Citrusmint</h3>
-                <p>The course and tutorial face. Mint wash, calm marketing.</p>
-              </article>
-              <article card="feature" width="100%" warm>
-                <h3>Aquaflux</h3>
-                <p>Cool blue / purple library theme. Same structure contract.</p>
+                <h3>Not a face</h3>
+                <p>
+                  Blush lives under <code>src/themes/_draft/</code>. It is
+                  YAML-only, unpublished, and not a reference. Package exports
+                  still block <code>_draft</code>.
+                </p>
               </article>
             </div>
+          </div>
+        </section>
+
+        <section cta>
+          <h2 cta-title>Pick a face, then keep composing in markup.</h2>
+          <p cta-subtitle>
+            Structure first. Identity second. Runtimes stay optional.
+          </p>
+          <div cta-actions>
+            <button type="button" scale="lg" data-href="/getting-started.html">Getting started</button>
+            <p cta-note>docs/juice remains the lookup set</p>
           </div>
         </section>
       </main>
 
       <footer paddingY="roomy">
         <div container>
-          <div center>
+          <div grid="4x1" gap="comfortable">
+            <div stack gap="cozy">
+              <h4>Juice</h4>
+              <p>
+                CSS-first, attribute-driven styling and composition from
+                CitrusWorx. Showcase for <code>@citrusworx/juiceui</code>.
+              </p>
+            </div>
+            <div stack gap="cozy">
+              <h4>Site</h4>
+              <ul stack gap="snug">
+                <li><a href="/getting-started.html">Getting started</a></li>
+                <li><a href="/demos.html">Demos</a></li>
+                <li><a href="/themes.html">Themes</a></li>
+                <li><a href="/reference.html">Reference</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Docs</h4>
+              <ul stack gap="snug">
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/docs/juice">docs/juice</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-theme-contract.md">Theme contract</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-maturity-matrix.md">Maturity matrix</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/blob/master/docs/juice/juice-beta.md">Beta notes</a></li>
+              </ul>
+            </div>
+            <div stack gap="cozy">
+              <h4>Package</h4>
+              <ul stack gap="snug">
+                <li><a href="https://www.npmjs.com/package/@citrusworx/juiceui">npm 0.7.0</a></li>
+                <li><a href="https://github.com/citrusworx/WebEngine/tree/master/libraries/juice">libraries/juice</a></li>
+              </ul>
+            </div>
+          </div>
+          <div center marginY="comfortable">
             <nav type="footer">
               <ul row gap="2" centered>
                 <li><a href="/">Landing</a></li>
                 <li><a href="/getting-started.html">Getting started</a></li>
                 <li><a href="/demos.html">Demos</a></li>
                 <li><a href="/themes.html">Themes</a></li>
-                <li><a href="/reference.html">Reference</a></li>
               </ul>
             </nav>
             <p>CitrusWorx · WebEngine · Honest Beta</p>
