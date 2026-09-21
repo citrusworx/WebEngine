@@ -1,0 +1,203 @@
+@use 'sass:math';
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+
+// Progress chrome is structural. Color comes from the shared role contract:
+//   --juice-progress-track
+//   --juice-progress-track-border
+//   --juice-progress-fill
+//   --juice-progress-ink
+//   --juice-progress-focus-ring
+// Themes bind those names (and optional --aqua-progress-* / --kw-progress-* /
+// --cm-progress-* / --tide-progress-* / --jx-progress-* aliases) from
+// existing identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG-inspired Progressbar. Distinct from:
+//   - slider (interactive value, thumb)
+//   - spinner-only loaders (no bar)
+//   - native <progress> restyle as the only story
+//
+// Native collision: there is no HTML *global* `progress` attribute.
+// [progress] is an attribute selector, not the type selector `progress`.
+// Authors should write <div progress>, not <progress>. Do not restyle the
+// HTML <progress> element alone. <progress progress> matches the attribute
+// (appearance is reset) but the UA does not show a [progress-fill] child,
+// so the Juice fill does not paint there. Native value / max are not the
+// paint hook.
+//
+// Juice names:
+//   [progress]       track host. Boolean (determinate) or
+//                    progress="indeterminate". role="progressbar" is
+//                    later, from the runtime. Do not style bare
+//                    [role="progressbar"].
+//   [progress-fill]  filled portion. Required for a visible value,
+//                    same idea as [slider-fill]. There is no
+//                    [progress-bar] and no [progress-track]: the host
+//                    is the track (::before is the groove).
+//   [progress-label] optional value / status text. Uses ink. Not
+//                    announced by chrome; authors own the accessible name.
+//
+// Determinate paint reads ARIA so runtime B does not grow a second
+// attribute. Integer aria-valuenow 0–100 on the host sets the structural
+// paint hook --juice-progress-ratio (unitless 0–1, not a theme role) when
+// aria-valuemin / aria-valuemax are omitted or are 0 / 100. Other ranges
+// set --juice-progress-ratio on [progress]. Missing aria-valuenow is an
+// empty determinate bar (ratio 0), not indeterminate. There is no
+// progress-value attribute.
+//
+// Indeterminate is progress="indeterminate" only. That flag wins over a
+// stale aria-valuenow for paint. CSS slides [progress-fill]. Runtime B
+// should omit aria-valuenow while indeterminate (APG) and keep the flag.
+// This slice does not sync ARIA.
+//
+// The host is usually not focusable. focus-ring paints only on
+// :focus-visible when an author focuses the host. No tabindex here.
+//
+// This slice does not size the control: no progress-size, and scale does
+// not change bar geometry.
+//
+// z-index: inline status chrome. No overlay band.
+
+@function -juice-progress-role($name, $fallback) {
+    @return var(
+        --juice-progress-#{$name},
+        var(--aqua-progress-#{$name}, var(--kw-progress-#{$name}, var(--cm-progress-#{$name}, var(--tide-progress-#{$name}, var(--jx-progress-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-progress-track: -juice-progress-role(track, #{$gray-200});
+$_juice-progress-track-border: -juice-progress-role(track-border, #{$gray-300});
+$_juice-progress-fill: -juice-progress-role(fill, #{$gray-700});
+$_juice-progress-ink: -juice-progress-role(ink, #{$black-600});
+
+$_juice-progress-size: 0.5rem;
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(div) fills. Themes realize color through the roles.
+
+[progress],
+[theme] [progress] {
+    display: grid;
+    row-gap: 0.35rem;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 8rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    appearance: none;
+    -webkit-appearance: none;
+    color: $_juice-progress-ink;
+    font: inherit;
+    line-height: 1.3;
+    cursor: default;
+    --juice-progress-ratio: 0;
+}
+
+[progress]::before,
+[theme] [progress]::before {
+    content: "";
+    grid-column: 1;
+    grid-row: 1;
+    height: $_juice-progress-size;
+    box-sizing: border-box;
+    border: 1px solid $_juice-progress-track-border;
+    border-radius: 999px;
+    background-color: $_juice-progress-track;
+    background-image: none;
+    pointer-events: none;
+}
+
+[progress-label],
+[theme] [progress-label] {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-progress-ink;
+    font: inherit;
+    line-height: inherit;
+}
+
+[progress]:has([progress-label])::before,
+[theme] [progress]:has([progress-label])::before,
+[progress]:has([progress-label]) [progress-fill],
+[theme] [progress]:has([progress-label]) [progress-fill] {
+    grid-row: 2;
+}
+
+[progress-fill],
+[theme] [progress-fill] {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    height: $_juice-progress-size;
+    width: calc(100% * var(--juice-progress-ratio, 0));
+    box-sizing: border-box;
+    border: none;
+    border-radius: 999px;
+    background-color: $_juice-progress-fill;
+    background-image: none;
+    pointer-events: none;
+    transition: width 0.2s ease, background-color 0.15s ease;
+}
+
+// Indeterminate slides the fill. The host clips that motion so the bar
+// stays inline. Determinate hosts do not clip, so a label is not cut.
+[progress="indeterminate"],
+[theme] [progress="indeterminate"] {
+    overflow: hidden;
+}
+
+[progress="indeterminate"] [progress-fill],
+[theme] [progress="indeterminate"] [progress-fill] {
+    width: 40%;
+    transition: none;
+    animation: juice-progress-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes juice-progress-indeterminate {
+    0% {
+        transform: translateX(-120%);
+    }
+
+    100% {
+        transform: translateX(280%);
+    }
+}
+
+[progress]:focus-visible,
+[theme] [progress]:focus-visible {
+    outline: 2px solid -juice-progress-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+// Default range is 0–100 (APG defaults when min/max are omitted).
+// Value lives on the host. Indeterminate ignores a stale aria-valuenow.
+@for $n from 0 through 100 {
+    [progress]:not([progress="indeterminate"])[aria-valuenow="#{$n}"]:not([aria-valuemin]):not([aria-valuemax]),
+    [progress]:not([progress="indeterminate"])[aria-valuemin="0"][aria-valuemax="100"][aria-valuenow="#{$n}"] {
+        --juice-progress-ratio: #{math.div($n, 100)};
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [progress-fill],
+    [theme] [progress-fill],
+    [progress="indeterminate"] [progress-fill],
+    [theme] [progress="indeterminate"] [progress-fill] {
+        transition: none;
+        animation: none;
+        transform: none;
+    }
+}

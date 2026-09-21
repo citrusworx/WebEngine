@@ -20,6 +20,7 @@ import {
     REQUIRED_CHECKBOX_ROLES,
     REQUIRED_RADIO_ROLES,
     REQUIRED_BREADCRUMB_ROLES,
+    REQUIRED_PROGRESS_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -586,6 +587,41 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(linkBlocks.length).toBeGreaterThan(0);
         for (const block of linkBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-progress-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-progress-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted))");
+        expect(css).toContain("--jx-progress-track-border: var(--jx-border)");
+        expect(css).toContain("--jx-progress-fill: var(--jx-accent)");
+        expect(css).toContain("--jx-progress-ink: var(--jx-text)");
+        expect(css).toContain("--jx-progress-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-progress-track: var(--jx-accent)");
+        expect(css).not.toContain("--jx-progress-ink: var(--jx-accent)");
+        expect(css).not.toContain("--juice-progress-ratio:");
+
+        for (const role of REQUIRED_PROGRESS_ROLES) {
+            expect(css).toContain(`--juice-progress-${role}: var(--jx-progress-${role})`);
+        }
+
+        expect(css).toContain("[progress]");
+        expect(css).toContain("[progress-fill]");
+        expect(css).toContain("[progress-label]");
+        expect(css).not.toMatch(/\[role=["']?progressbar["']?\]/);
+        expect(css).not.toMatch(/\[progress-bar\]/);
+        expect(css).not.toMatch(/\[progress-track\]/);
+        expect(css).not.toMatch(/(^|[,}\n])progress\s*[,{]/);
+
+        const fillBlocks = [...css.matchAll(/\[progress-fill\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(fillBlocks.length).toBeGreaterThan(0);
+        for (const block of fillBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

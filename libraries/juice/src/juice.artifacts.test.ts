@@ -563,6 +563,36 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/nav\[type=["']?breadcrumb["']?\][^{]*--juice-breadcrumb-ink/);
     });
 
+    it("includes progress structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[progress]");
+        expect(css).toContain("[progress-fill]");
+        expect(css).toContain("[progress-label]");
+        expect(css).toMatch(/\[theme\]\s+\[progress\]/);
+        expect(css).toMatch(/\[progress=["']?indeterminate["']?\]/);
+        expect(css).toMatch(/\[progress\]:not\(\[progress=indeterminate\]\)\[aria-valuenow=["']?40["']?\]/);
+        expect(css).toMatch(/\[aria-valuemin=["']?0["']?\]/);
+        expect(css).toMatch(/\[aria-valuemax=["']?100["']?\]/);
+        expect(css).toContain("--juice-progress-track");
+        expect(css).toContain("--juice-progress-track-border");
+        expect(css).toContain("--juice-progress-fill");
+        expect(css).toContain("--juice-progress-ink");
+        expect(css).toContain("--juice-progress-focus-ring");
+        expect(css).toContain("--juice-progress-ratio");
+        expect(css).toContain("juice-progress-indeterminate");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/\[role=["']?progressbar["']?\]/);
+        expect(css).not.toMatch(/\[progress-bar\]/);
+        expect(css).not.toMatch(/\[progress-track\]/);
+        expect(css).not.toMatch(/\[progress-value/);
+        expect(css).not.toMatch(/\[progress-size/);
+        expect(css).not.toMatch(/(^|[,}\n])progress\s*[,{]/);
+        expect(css).not.toMatch(/\[progress\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[progress\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[progress\][^{]*\{[^}]*--juice-slider-fill/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1173,6 +1203,43 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toMatch(/\[breadcrumb-link\][^{]*\{[^}]*--tide-button-background/);
         expect(tideCss).not.toContain("--tide-breadcrumb-surface: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-breadcrumb-ink-current: var(--tide-page)");
+    });
+
+    it("binds progress chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-progress-track: var(--aqua-surface-muted)");
+        expect(aquaCss).toContain("--aqua-progress-fill: var(--aqua-accent)");
+        expect(aquaCss).toContain("--aqua-progress-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--juice-progress-focus-ring: var(--aqua-progress-focus-ring)");
+        expect(aquaCss).toContain("[progress-fill]");
+        expect(aquaCss).not.toContain("--aqua-progress-track: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-progress-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toMatch(/\[progress-fill\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-progress-track: var(--kw-surface-muted)");
+        expect(kiwiCss).toContain("--juice-progress-fill: var(--kw-progress-fill)");
+        expect(kiwiCss).toContain("--kw-progress-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("[progress-fill]");
+        expect(kiwiCss).not.toMatch(/\[progress-fill\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[progress-fill\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-progress-track: var(--cm-surface-muted)");
+        expect(mintCss).toContain("--cm-progress-fill: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-progress-focus-ring: var(--cm-progress-focus-ring)");
+        expect(mintCss).toContain("[progress]");
+
+        expect(tideCss).toContain("--tide-progress-track: var(--tide-surface-muted)");
+        expect(tideCss).toContain("--tide-progress-fill: var(--tide-accent)");
+        expect(tideCss).toContain("--juice-progress-ink: var(--tide-progress-ink)");
+        expect(tideCss).toContain("[progress]");
+        expect(tideCss).not.toMatch(/\[progress-fill\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-progress-track: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-progress-fill: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-progress-ink: var(--tide-page)");
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {

@@ -447,6 +447,20 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-breadcrumb-focus-ring: var(--tide-breadcrumb-focus-ring);
     --juice-breadcrumb-surface: var(--tide-breadcrumb-surface);
 
+    /* Progress chrome — dark track, not a white groove. Fill stays
+       accent. Distinct from slider, spinner, and a native <progress>
+       restyle. Inline status — no overlay. */
+    --tide-progress-track: var(--tide-surface-muted);
+    --tide-progress-track-border: var(--tide-border);
+    --tide-progress-fill: var(--tide-accent);
+    --tide-progress-ink: var(--tide-text);
+    --tide-progress-focus-ring: var(--tide-accent);
+    --juice-progress-track: var(--tide-progress-track);
+    --juice-progress-track-border: var(--tide-progress-track-border);
+    --juice-progress-fill: var(--tide-progress-fill);
+    --juice-progress-ink: var(--tide-progress-ink);
+    --juice-progress-focus-ring: var(--tide-progress-focus-ring);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
@@ -1300,5 +1314,33 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
 [theme="tide"] [breadcrumb-link]:focus-visible,
 [theme="tide"] button[breadcrumb-link]:focus-visible {
     outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Dark track, not a white groove and not a CTA.
+   Runtime is later. */
+[theme="tide"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="tide"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="tide"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="tide"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
     outline-offset: 2px;
 }

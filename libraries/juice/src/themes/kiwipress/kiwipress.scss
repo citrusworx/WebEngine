@@ -438,6 +438,20 @@
     --juice-breadcrumb-focus-ring: var(--kw-breadcrumb-focus-ring);
     --juice-breadcrumb-surface: var(--kw-breadcrumb-surface);
 
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a kiwi CTA. Distinct from slider, spinner,
+       and a native <progress> restyle. Inline status — no overlay. */
+    --kw-progress-track: var(--kw-surface-muted);
+    --kw-progress-track-border: var(--kw-border);
+    --kw-progress-fill: var(--kw-accent);
+    --kw-progress-ink: var(--kw-text);
+    --kw-progress-focus-ring: var(--kw-accent);
+    --juice-progress-track: var(--kw-progress-track);
+    --juice-progress-track-border: var(--kw-progress-track-border);
+    --juice-progress-fill: var(--kw-progress-fill);
+    --juice-progress-ink: var(--kw-progress-ink);
+    --juice-progress-focus-ring: var(--kw-progress-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -2120,6 +2134,34 @@
 [theme="kiwipress"] [breadcrumb-link]:focus-visible,
 [theme="kiwipress"] button[breadcrumb-link]:focus-visible {
     outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat generic fills. The track is a surface groove,
+   not a kiwi CTA. Runtime is later. */
+[theme="kiwipress"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="kiwipress"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
     outline-offset: 2px;
 }
 

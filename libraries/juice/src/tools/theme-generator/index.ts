@@ -729,6 +729,22 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-breadcrumb-focus-ring: var(--jx-breadcrumb-focus-ring);
     --juice-breadcrumb-surface: var(--jx-breadcrumb-surface);
 
+    /* Progress chrome — APG progressbar from existing --jx-* tokens.
+       The track is a surface groove, not the CTA fill. Distinct from
+       slider, spinner, and a native <progress> restyle. Idle track
+       mixes text into muted so the groove still reads when
+       surfaces.muted falls back to surfaces.default (same as --jx-surface). */
+    --jx-progress-track: color-mix(in srgb, var(--jx-text) 18%, var(--jx-surface-muted));
+    --jx-progress-track-border: var(--jx-border);
+    --jx-progress-fill: var(--jx-accent);
+    --jx-progress-ink: var(--jx-text);
+    --jx-progress-focus-ring: var(--jx-accent);
+    --juice-progress-track: var(--jx-progress-track);
+    --juice-progress-track-border: var(--jx-progress-track-border);
+    --juice-progress-fill: var(--jx-progress-fill);
+    --juice-progress-ink: var(--jx-progress-ink);
+    --juice-progress-focus-ring: var(--jx-progress-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1446,6 +1462,29 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [breadcrumb-link]:focus-visible,
 [theme="${config.id}"] button[breadcrumb-link]:focus-visible {
     outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [progress] {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="${config.id}"] [progress-fill] {
+    background: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [progress-label] {
+    background: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
     outline-offset: 2px;
 }
 

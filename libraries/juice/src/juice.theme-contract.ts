@@ -205,6 +205,15 @@ export const REQUIRED_BREADCRUMB_ROLES = [
     "surface",
 ] as const;
 
+/** Progress chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_PROGRESS_ROLES = [
+    "track",
+    "track-border",
+    "fill",
+    "ink",
+    "focus-ring",
+] as const;
+
 /** Wizard chrome — required on every shipped library theme and generated `--jx-*` themes. */
 export const REQUIRED_WIZARD_ROLES = [
     "shell",
@@ -321,6 +330,10 @@ export function requiredBreadcrumbBinds(): string[] {
     return REQUIRED_BREADCRUMB_ROLES.map((role) => `--juice-breadcrumb-${role}`);
 }
 
+export function requiredProgressBinds(): string[] {
+    return REQUIRED_PROGRESS_ROLES.map((role) => `--juice-progress-${role}`);
+}
+
 export function requiredWizardBinds(): string[] {
     return REQUIRED_WIZARD_ROLES.map((role) => `--juice-wizard-${role}`);
 }
@@ -367,6 +380,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredCheckboxBinds(),
         ...requiredRadioBinds(),
         ...requiredBreadcrumbBinds(),
+        ...requiredProgressBinds(),
         ...requiredWizardBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
@@ -402,10 +416,10 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, switch, slider, checkbox, radio, breadcrumb, and wizard chrome use `--jx-modal-*` /
+ * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, switch, slider, checkbox, radio, breadcrumb, progress, and wizard chrome use `--jx-modal-*` /
  * `--jx-drawer-*` / `--jx-toast-*` / `--jx-banner-*` / `--jx-popover-*` / `--jx-tooltip-*` /
  * `--jx-combobox-*` / `--jx-menu-*` / `--jx-switch-*` / `--jx-slider-*` / `--jx-checkbox-*` /
- * `--jx-radio-*` / `--jx-breadcrumb-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
+ * `--jx-radio-*` / `--jx-breadcrumb-*` / `--jx-progress-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -468,6 +482,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_BREADCRUMB_ROLES.map((role) => ({
             juice: `--juice-breadcrumb-${role}`,
             jx: `--jx-breadcrumb-${role}`,
+        })),
+        ...REQUIRED_PROGRESS_ROLES.map((role) => ({
+            juice: `--juice-progress-${role}`,
+            jx: `--jx-progress-${role}`,
         })),
         ...REQUIRED_WIZARD_ROLES.map((role) => ({
             juice: `--juice-wizard-${role}`,
