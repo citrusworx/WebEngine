@@ -26,7 +26,7 @@ The user should not need to manually initialize radio behavior in their app code
 
 There is no `Radio()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve. It is on master and is not in the `@citrusworx/juiceui@0.8.0` npm cut. Switch, slider, and checkbox are unpublished on that same cut.
+This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Radio is an APG **Radio Group** (one selected option). It is not `[switch]`, not `[checkbox]`, and not a layered overlay. No tri-state, no focus trap, and no Escape handling in v1. Radios outside a `[radiogroup]` are ignored.
 
@@ -198,7 +198,7 @@ The group can start with nothing checked. The first arrow from an enabled radio 
 ## Limitations
 
 - No `Radio()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. It is on master and unpublished versus `@citrusworx/juiceui@0.8.0`, along with switch, slider, and checkbox.
+- This surface is Emerging, not Stable-ish.
 - v1 is exclusive and binary. `aria-checked="mixed"` coerces to `"false"`. There is no tri-state.
 - Orphan `[radio]` elements outside a `[radiogroup]` are ignored. There is no solo exclusive group.
 - A radio belongs to its nearest `[radiogroup]`. Nested groups stay independent. Exclusivity is that group, not the native input `name`.

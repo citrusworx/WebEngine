@@ -26,7 +26,7 @@ The user should not need to manually initialize breadcrumb behavior in their app
 
 There is no `Breadcrumb()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve. It is on master and is not in the `@citrusworx/juiceui@0.8.0` npm cut. Switch, slider, checkbox, and radio are unpublished on that same cut.
+This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Breadcrumb is a light APG-inspired **Breadcrumb** trail. It is not the site `[nav]` / navigation runtime, not `nav[type="breadcrumb"]`, not tabs, not the wizard step tracker, and not pagination. It is not a router. v1 does not listen to history, clicks, or the keyboard. No focus trap and no Escape handling.
 
@@ -203,7 +203,7 @@ Authors own whether a crumb is a link. The runtime does not remove `href` from t
 ## Limitations
 
 - No `Breadcrumb()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. It is on master and unpublished versus `@citrusworx/juiceui@0.8.0`, along with switch, slider, checkbox, and radio.
+- This surface is Emerging, not Stable-ish.
 - This is not a router. v1 does not listen to history, clicks, or the keyboard, and `setCurrent()` does not navigate.
 - The only invented name is `aria-label="Breadcrumb"` on an unlabeled navigation landmark. Crumb names stay author-owned.
 - `<nav breadcrumb>` does not get a redundant `role="navigation"`. `<ol>`, `<ul>`, and `<menu>` stay lists and are not labeled. An author role is never overwritten. Ancestor navs are not relabeled.

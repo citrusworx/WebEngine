@@ -26,7 +26,7 @@ The user should not need to manually initialize progress behavior in their app c
 
 There is no `Progress()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve. It is on master and is not in the `@citrusworx/juiceui@0.8.0` npm cut. Switch, slider, checkbox, radio, and breadcrumb are unpublished on that same cut.
+This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Progress is an APG-inspired **Progressbar**. It is not a slider, not a spinner-only loader, and not a native `<progress>` restyle. It is not interactive. No keyboard, no pointer handling, no focus trap, and no Escape handling in v1.
 
@@ -192,7 +192,7 @@ Authors own whether the host is focusable. The runtime does not make it a contro
 ## Limitations
 
 - No `Progress()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. It is on master and unpublished versus `@citrusworx/juiceui@0.8.0`, along with switch, slider, checkbox, radio, and breadcrumb.
+- This surface is Emerging, not Stable-ish.
 - This is not a slider. There is no thumb, no keyboard stepping, and no pointer drag.
 - There is no native `<progress>` restyle as the only story. Native `value` / `max` are not the value hook. Authors write `<div progress>`.
 - Authors must supply an accessible name. The runtime does not invent `aria-label` text, does not copy `[progress-label]`, and does not invent or rewrite `aria-valuetext`.
