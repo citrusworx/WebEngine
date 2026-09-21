@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Juice — CSS-first, attribute-driven UI</title>
+    <title>Juice — Write structure in markup</title>
     <link rel="stylesheet" href="/src/juice.css" />
     <meta
       name="description"
-      content="Juice is a CSS-first, attribute-driven styling and composition system. Juice owns structure. Themes own identity. Honest Beta."
+      content="Juice is a CSS-first, attribute-driven styling and composition system. Write stack, gap, hero, and card instead of class soup. Juice owns structure. Themes own identity. Honest Beta."
     />
   </head>
   <body theme="kiwipress">
@@ -56,93 +56,201 @@
         <section hero>
           <div container>
             <span hero-eyebrow>
-              <span badge>Honest Beta · @citrusworx/juiceui 0.7.0</span>
+              <span badge>Honest Beta · @citrusworx/juiceui</span>
             </span>
 
-            <h1 hero-title>CSS-first. Attribute-driven. Not a component framework.</h1>
+            <h1 hero-title>Write the layout you mean.</h1>
 
             <p hero-subtitle>
-              Juice is a styling and composition system. Markup holds structure.
-              Themes hold brand. A small JS entry auto-enhances Emerging runtimes
-              when the markup is already valid.
+              Juice is a CSS-first, attribute-driven styling and composition
+              system. Markup holds structure — <code>stack</code>,
+              <code>row</code>, <code>grid</code>, <code>gap</code>,
+              <code>hero</code>, <code>card</code>. Themes hold brand. Import
+              CSS, set <code>theme="…"</code>, and compose.
             </p>
 
             <div hero-actions>
-              <button type="button" scale="lg" data-href="/getting-started.html">Get started</button>
-              <button type="button" btn="outline" scale="lg" data-href="/demos.html">See demos</button>
+              <button type="button" scale="lg" data-href="/getting-started.html">
+                Get started
+              </button>
+              <button type="button" btn="outline" scale="lg" data-href="/docs/">
+                Read the docs
+              </button>
+              <button type="button" btn="outline" scale="lg" data-href="/demos.html">
+                See demos
+              </button>
             </div>
 
             <div hero-meta>
               <div stats>
                 <div stat>
+                  <div stat-value>Attributes</div>
+                  <div stat-label>HTML with intent, not class soup</div>
+                </div>
+                <div stat>
+                  <div stat-value>Themes</div>
+                  <div stat-label>Identity stays out of the markup</div>
+                </div>
+                <div stat>
                   <div stat-value>CSS-first</div>
-                  <div stat-label>Attributes, not class soup</div>
-                </div>
-                <div stat>
-                  <div stat-value>4 themes</div>
-                  <div stat-label>KiwiPress, Tide, Citrusmint, Aquaflux</div>
-                </div>
-                <div stat>
-                  <div stat-value>Emerging</div>
-                  <div stat-label>DOM-first auto-enhance runtimes</div>
+                  <div stat-label>Structure paints before any JS runs</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section type="features" paddingY="roomy">
+        <section type="features" paddingY="roomy" id="attributes">
           <div container>
             <div section-header>
-              <h2>Compose in markup. Leave identity to the theme.</h2>
+              <h2>Write structure in markup.</h2>
               <p>
-                Juice is strongest as a shared structural language — not a utility-class
-                clone, and not a heavyweight React runtime.
+                Juice attributes name the job: a column, a row, a stage, a
+                surface. You read the page the way you read HTML — not as a
+                string of utilities, and not as a pile of one-off class names.
               </p>
             </div>
 
-            <div grid="3x1" gap="comfortable">
-              <article card="feature" width="100%">
-                <i icon="code" lib="solid" iconSize="lg"></i>
-                <h3>CSS-first</h3>
-                <p>
-                  Import the core stylesheet, add a theme, set
-                  <code>theme="…"</code> on the root. Layout and surfaces work
-                  before any JavaScript runs.
-                </p>
-              </article>
+            <div stack gap="comfortable">
+              <div grid="2x1" gap="comfortable">
+                <aside panel padding="1.5rem" stack gap="1" width="100%">
+                  <span badge>Typical utilities</span>
+                  <h3>Class-heavy CSS</h3>
+                  <p>
+                    A competent utility layout. Readable if you know the
+                    dialect. The structure is still encoded as CSS class names.
+                  </p>
+                  <pre padding="1rem"><code>&lt;section class="flex flex-col gap-4 p-8"&gt;
+  &lt;h2 class="text-2xl font-semibold"&gt;Harbor Press&lt;/h2&gt;
+  &lt;p class="text-base text-slate-600"&gt;
+    Short-run books and a catalog that still fits on one shelf.
+  &lt;/p&gt;
+  &lt;div class="grid grid-cols-2 gap-4"&gt;
+    &lt;article class="flex flex-col gap-3 rounded-lg border p-5"&gt;
+      &lt;h3 class="text-lg font-medium"&gt;The Inlet&lt;/h3&gt;
+      &lt;p class="text-sm text-slate-500"&gt;Essays on harbors and tide tables.&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;article class="flex flex-col gap-3 rounded-lg border p-5"&gt;
+      &lt;h3 class="text-lg font-medium"&gt;Letterpress Hours&lt;/h3&gt;
+      &lt;p class="text-sm text-slate-500"&gt;A shop diary from a one-room bindery.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+                </aside>
 
-              <article card="feature" width="100%" warm>
-                <i icon="layer-group" lib="solid" iconSize="lg"></i>
-                <h3>Attribute-driven</h3>
-                <p>
-                  <code>stack</code>, <code>row</code>, <code>grid</code>,
-                  <code>gap</code>, <code>hero</code>, <code>card</code>, and
-                  <code>cta</code> stay in the markup. Wrappers own placement.
-                  Components own structure.
-                </p>
-              </article>
+                <article card="feature" padding="1.5rem" stack gap="1" width="100%">
+                  <span badge>Juice</span>
+                  <h3>Attributes with intent</h3>
+                  <p>
+                    Same layout job. The markup says <code>stack</code>,
+                    <code>gap</code>, <code>grid</code>, and <code>card</code>
+                    — the structure you mean.
+                  </p>
+                  <pre padding="1rem"><code>&lt;section stack gap="1" padding="2rem"&gt;
+  &lt;h2&gt;Harbor Press&lt;/h2&gt;
+  &lt;p&gt;
+    Short-run books and a catalog that still fits on one shelf.
+  &lt;/p&gt;
+  &lt;div grid="2x1" gap="1"&gt;
+    &lt;article card padding="1.25rem" stack gap="0.75rem"&gt;
+      &lt;h3&gt;The Inlet&lt;/h3&gt;
+      &lt;p&gt;Essays on harbors and tide tables.&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;article card padding="1.25rem" stack gap="0.75rem"&gt;
+      &lt;h3&gt;Letterpress Hours&lt;/h3&gt;
+      &lt;p&gt;A shop diary from a one-room bindery.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+                </article>
+              </div>
 
-              <article card="feature" width="100%">
-                <i icon="swatchbook" lib="solid" iconSize="lg"></i>
-                <h3>Composition</h3>
-                <p>
-                  Juice owns shared structure, spacing, responsive behavior, and
-                  primitive surface hooks. App CSS stays small and intentional.
-                </p>
-              </article>
+              <div stack gap="1">
+                <div center>
+                  <p>
+                    The Juice version, live on this page — pure attributes,
+                    wearing the active theme.
+                  </p>
+                </div>
+
+                <div
+                  panel
+                  padding="1.5rem"
+                  stack
+                  gap="1"
+                  id="live-sample"
+                >
+                  <section stack gap="1" padding="2rem">
+                    <h2>Harbor Press</h2>
+                    <p>
+                      Short-run books and a catalog that still fits on one
+                      shelf.
+                    </p>
+                    <div grid="2x1" gap="1">
+                      <article card padding="1.25rem" stack gap="0.75rem" width="100%">
+                        <h3>The Inlet</h3>
+                        <p>Essays on harbors and tide tables.</p>
+                      </article>
+                      <article card padding="1.25rem" stack gap="0.75rem" width="100%">
+                        <h3>Letterpress Hours</h3>
+                        <p>A shop diary from a one-room bindery.</p>
+                      </article>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              <div grid="2x2" gap="comfortable">
+                <article card="feature" width="100%">
+                  <i icon="layer-group" lib="solid" iconSize="lg"></i>
+                  <h3>Portable structure</h3>
+                  <p>
+                    <code>stack</code>, <code>row</code>, <code>grid</code>, and
+                    <code>gap</code> are a shared language. Take the same
+                    composition across products instead of reinventing layout
+                    in each codebase.
+                  </p>
+                </article>
+                <article card="feature" width="100%" warm>
+                  <i icon="swatchbook" lib="solid" iconSize="lg"></i>
+                  <h3>Themeable identity</h3>
+                  <p>
+                    Type, color, and surface tone live in the theme. Swap
+                    <code>theme="…"</code> and the page keeps its structure.
+                    Juice owns the skeleton; the face is not baked in.
+                  </p>
+                </article>
+                <article card="feature" width="100%" warm>
+                  <i icon="table-columns" lib="solid" iconSize="lg"></i>
+                  <h3>Fewer one-off CSS decisions</h3>
+                  <p>
+                    Spacing, surfaces, and page hooks are already in the
+                    vocabulary. App CSS stays small and intentional — polish,
+                    not a second layout system.
+                  </p>
+                </article>
+                <article card="feature" width="100%">
+                  <i icon="code" lib="solid" iconSize="lg"></i>
+                  <h3>Works with your stack</h3>
+                  <p>
+                    Vanilla HTML, Vite, Sig.js, or whatever you already ship.
+                    Juice is a stylesheet plus attributes — not a React runtime
+                    and not a component framework you have to buy into.
+                  </p>
+                </article>
+              </div>
             </div>
           </div>
         </section>
 
-        <section type="workflow" paddingY="roomy">
+        <section type="workflow" paddingY="roomy" id="themes">
           <div container>
             <div section-header>
-              <h2>Juice owns structure. Themes own identity.</h2>
+              <h2>Themes own identity.</h2>
               <p>
-                The same landing markup can wear KiwiPress, Tide, Citrusmint, or
-                Aquaflux. Core CSS has no theme rules. Activate a theme with one
-                attribute.
+                The sample above is the same markup under every face. Juice
+                keeps layout, spacing, and composition. KiwiPress, Tide,
+                Citrusmint, and Aquaflux decide how that language should feel.
               </p>
             </div>
 
@@ -156,112 +264,60 @@
 
               <div grid="2x1" gap="comfortable">
                 <article card="feature" width="100%">
-                  <h3>Structure</h3>
+                  <h3>Structure stays in Juice</h3>
                   <p>
-                    Layout primitives, spacing, page hooks, and component
-                    vocabulary stay in Juice. This page is mostly attributes.
+                    Layout primitives, spacing, page hooks, and the composition
+                    vocabulary do not change when you restyle. This landing is
+                    mostly attributes.
                   </p>
                 </article>
                 <aside panel padding="2rem" stack gap="0.75rem">
-                  <h3>Identity</h3>
+                  <h3>Identity stays in the theme</h3>
                   <p>
-                    Typography voice, color relationships, and semantic defaults
-                    live in the theme. KiwiPress is the richest product
-                    reference; Tide is the dark product / SaaS face.
+                    Typography voice, color relationships, and semantic
+                    defaults live in the theme CSS. Core has no theme rules.
+                    Activate a face with one attribute.
                   </p>
+                  <a href="/themes.html">Browse the four shipped themes</a>
                 </aside>
               </div>
 
-              <pre><code>import "@citrusworx/juiceui/styles";
-import "@citrusworx/juiceui/styles/themes/kiwipress";
-import "@citrusworx/juiceui";</code></pre>
+              <pre padding="1rem"><code>import "@citrusworx/juiceui/styles";
+import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
             </div>
           </div>
         </section>
 
-        <section type="features" paddingY="roomy">
+        <section type="pricing" paddingY="roomy" id="beta">
           <div container>
             <div section-header>
-              <h2>Emerging runtimes, DOM-first</h2>
-              <p>
-                Importing the JS entry auto-enhances valid markup. Useful and
-                documented — still Emerging, not a finished component library.
-              </p>
-            </div>
-
-            <div grid="4x1" gap="comfortable">
-              <article card="feature" width="100%">
-                <i icon="bars" lib="solid" iconSize="lg"></i>
-                <h3>Navigation</h3>
-                <p>Bar, mobile toggle, and sidebar. This header uses that markup.</p>
-              </article>
-              <article card="feature" width="100%" warm>
-                <i icon="layer-group" lib="solid" iconSize="lg"></i>
-                <h3>Accordion</h3>
-                <p>Disclosure panels from <code>[accordion]</code> markup.</p>
-              </article>
-              <article card="feature" width="100%">
-                <i icon="folder" lib="solid" iconSize="lg"></i>
-                <h3>Tabs</h3>
-                <p>Paired tab lists and panels, auto-started in the browser.</p>
-              </article>
-              <article card="feature" width="100%" warm>
-                <i icon="window-maximize" lib="solid" iconSize="lg"></i>
-                <h3>Modal</h3>
-                <p>Dialog overlay with Escape, focus trap, and exclusive open.</p>
-              </article>
-              <article card="feature" width="100%">
-                <i icon="table-columns" lib="solid" iconSize="lg"></i>
-                <h3>Drawer</h3>
-                <p>Edge panels on <code>[drawer-overlay]</code>.</p>
-              </article>
-              <article card="feature" width="100%" warm>
-                <i icon="bell" lib="solid" iconSize="lg"></i>
-                <h3>Toast</h3>
-                <p>Non-modal stack in a live region. Not a dialog.</p>
-              </article>
-              <article card="feature" width="100%">
-                <i icon="comment-dots" lib="solid" iconSize="lg"></i>
-                <h3>Popover</h3>
-                <p>Anchored, non-modal panel with placement flip.</p>
-              </article>
-              <article card="feature" width="100%" warm>
-                <i icon="flask" lib="solid" iconSize="lg"></i>
-                <h3>On master</h3>
-                <p>
-                  Wizard and tooltip exist on master ahead of the 0.7.0 npm cut.
-                  They are not the public Beta promise.
-                </p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section type="pricing" paddingY="roomy">
-          <div container>
-            <div section-header>
-              <h2>Honest Beta</h2>
+              <h2>Honest Beta. Strong enough to adopt.</h2>
               <p>
                 Juice Beta is a CSS-first, attribute-driven styling and
-                composition system with strong layout, token, typography, icon,
-                and page-structure support, a documented theme contract, and a
-                supported subset of motion attributes.
+                composition system — layout, tokens, typography, icons, and
+                page structure, with a documented theme contract. Use it for
+                structure today. Do not wait on a finished component library.
               </p>
             </div>
 
             <div grid="2x1" gap="comfortable">
               <article card="feature" width="100%">
-                <h3>Ready today</h3>
+                <span badge>Stable-ish</span>
+                <h3>The reason to start</h3>
                 <p>
-                  Attribute-driven styling, layout primitives, spacing, color
-                  tokens, typography, and icons are the strongest layers. Use
-                  those with confidence.
+                  Attribute-driven styling, layout primitives
+                  (<code>stack</code>, <code>row</code>, <code>grid</code>,
+                  <code>gap</code>), spacing, color tokens, typography, and
+                  icons. This is the core identity of Juice, and it already
+                  works in real markup.
                 </p>
               </article>
               <article card="feature" width="100%" warm>
-                <h3>Still settling</h3>
+                <span badge>Emerging</span>
+                <h3>Useful, still settling</h3>
                 <p>
-                  Cards, buttons, forms, nav, and the JS entry are Emerging.
+                  Cards, buttons, forms, nav, bundled themes, and the JS
+                  entry are present and documented — APIs can still move.
                   Config-driven branding is Draft. Juice is not a mature
                   component framework and does not pretend to be one.
                 </p>
@@ -270,15 +326,35 @@ import "@citrusworx/juiceui";</code></pre>
           </div>
         </section>
 
+        <section type="features" paddingY="roomy" id="runtimes">
+          <div container>
+            <div panel padding="2rem" stack gap="1">
+              <h2>Runtimes are optional power.</h2>
+              <p>
+                Importing <code>@citrusworx/juiceui</code> auto-enhances valid
+                markup — navigation, disclosure, dialogs, and similar patterns.
+                That is a bonus on top of CSS-first composition, not the
+                reason to adopt Juice. Those runtimes are Emerging.
+              </p>
+              <div row wrap gap="1">
+                <a href="/demos.html">See live demos</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section cta>
-          <h2 cta-title>Start with structure, then pick a face.</h2>
+          <h2 cta-title>Install Juice. Compose a page.</h2>
           <p cta-subtitle>
-            Install, import core, import a theme, set <code>theme="…"</code>,
-            and compose. Depth lives in <a href="/docs/">Juice Docs</a>.
+            <code>yarn add @citrusworx/juiceui</code>
+            — then import core, import a theme, set <code>theme="…"</code>,
+            and write structure as attributes.
           </p>
           <div cta-actions>
-            <button type="button" scale="lg" data-href="/getting-started.html">Getting started</button>
-            <p cta-note>Workspace package · Vite · vanilla HTML / TS</p>
+            <button type="button" scale="lg" data-href="/getting-started.html">
+              Getting started
+            </button>
+            <p cta-note>Published as @citrusworx/juiceui · Honest Beta</p>
           </div>
         </section>
       </main>
@@ -290,7 +366,7 @@ import "@citrusworx/juiceui";</code></pre>
               <h4>Juice</h4>
               <p>
                 CSS-first, attribute-driven styling and composition from
-                CitrusWorx. Showcase for <code>@citrusworx/juiceui</code>.
+                CitrusWorx. Adopt the structure. Bring your own face.
               </p>
             </div>
             <div stack gap="cozy">
