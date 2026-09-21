@@ -256,4 +256,5 @@ That is the right mental model for:
 - popovers
 - wizards / multi-step shells
 - tooltips / hover-focus tips
+- comboboxes / list autocomplete
 - other built-in responsive interactions

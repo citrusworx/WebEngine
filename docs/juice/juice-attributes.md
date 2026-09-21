@@ -338,6 +338,21 @@ Tooltip is a hover/focus tip. It is not a popover, not a modal dialog, not a dra
 
 See [Tooltip Runtime](./juice-tooltip-runtime.md). Theme paint uses `--juice-tooltip-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`).
 
+### Combobox
+
+- `combobox` — composite root / widget root; required for the listbox runtime
+- `combobox-input` — text field (`role="combobox"`). Open on focus or typing
+- `combobox-trigger` — optional chevron button (surface paint, not a CTA). Toggles the list
+- `combobox-list` — popup listbox (`role="listbox"`). Hide with the native `hidden` attribute
+- `combobox-option` — option row (`role="option"`). Value `"active"` is keyboard / visual focus. Committed choice is `aria-selected="true"`
+- `name` — optional root label used as the slug for generated ids
+
+Filter is a case-insensitive substring against option text and, when present, `data-value`. Non-matches get `hidden`. Select writes option text, or `data-value` when that attribute is present. Single-select only.
+
+Combobox is an input + listbox popup. It is not a native `<select>`, not a popover, not a tooltip, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Placement is CSS-only (absolute under the field).
+
+See [Combobox Runtime](./juice-combobox-runtime.md). Theme paint uses `--juice-combobox-*` roles (`input`, `input-border`, `input-ink`, `list`, `list-border`, `list-shadow`, `option`, `option-hover`, `option-selected`, `option-ink`, `trigger`, `trigger-ink`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

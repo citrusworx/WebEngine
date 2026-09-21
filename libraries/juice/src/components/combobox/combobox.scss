@@ -32,7 +32,7 @@
 //
 // Combobox is an input + listbox popup. It is not a native select, not a
 // popover, not a tooltip, not a dialog overlay, and not the surface
-// `overlay="frost|tint"` utility. Slice B owns filtering, aria-expanded,
+// `overlay="frost|tint"` utility. The runtime owns filtering, aria-expanded,
 // aria-activedescendant, and keyboard.
 //
 // Closed vs open uses the native `hidden` attribute on [combobox-list]
