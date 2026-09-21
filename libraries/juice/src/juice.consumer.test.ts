@@ -52,6 +52,7 @@ describe("Juice consumer smoke", () => {
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -96,6 +97,7 @@ describe("Juice consumer smoke", () => {
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -136,6 +138,7 @@ describe("Juice consumer smoke", () => {
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -178,6 +181,7 @@ describe("Juice consumer smoke", () => {
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
@@ -221,6 +225,7 @@ describe("Juice consumer smoke", () => {
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
         module.stopTabsRuntime();
@@ -263,6 +268,7 @@ describe("Juice consumer smoke", () => {
         module.stopPopoverRuntime();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
         module.stopModalRuntime();
@@ -312,6 +318,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         module.stopWizardRuntime();
         module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
         module.stopPopoverRuntime();
         module.stopToastRuntime();
         module.stopDrawerRuntime();
@@ -348,6 +355,58 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopTooltipRuntime();
+        module.stopComboboxRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built combobox runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopComboboxRuntime();
+        document.body.innerHTML = `
+            <div combobox>
+                <input combobox-input type="text" />
+                <button type="button" combobox-trigger aria-label="Show options"></button>
+                <ul combobox-list hidden>
+                    <li combobox-option>Apple</li>
+                    <li combobox-option>Banana</li>
+                </ul>
+            </div>
+        `;
+
+        const controller = module.createCombobox({ root: document.body });
+        const input = document.querySelector("[combobox-input]");
+        const list = document.querySelector("[combobox-list]");
+        const option = document.querySelector("[combobox-option]");
+
+        expect(input?.getAttribute("role")).toBe("combobox");
+        expect(input?.getAttribute("aria-autocomplete")).toBe("list");
+        expect(list?.getAttribute("role")).toBe("listbox");
+        expect(list?.hasAttribute("hidden")).toBe(true);
+        expect(option?.getAttribute("role")).toBe("option");
+
+        input?.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+
+        expect(list?.hasAttribute("hidden")).toBe(false);
+        expect(input?.getAttribute("aria-expanded")).toBe("true");
+
+        option?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect((input as HTMLInputElement | null)?.value).toBe("Apple");
+        expect(option?.getAttribute("aria-selected")).toBe("true");
+        expect(list?.hasAttribute("hidden")).toBe(true);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopComboboxRuntime();
         module.stopTooltipRuntime();
         module.stopWizardRuntime();
         module.stopPopoverRuntime();

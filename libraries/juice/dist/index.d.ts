@@ -17,4 +17,6 @@ export { createTooltip, initTooltip, startTooltipRuntime, stopTooltipRuntime } f
 export type { TooltipController, TooltipOptions, TooltipPlacement } from "./js/src/tooltip/tooltip-runtime.js";
 export { createWizard, initWizard, startWizardRuntime, stopWizardRuntime } from "./js/src/wizard/wizard-runtime.js";
 export type { WizardController, WizardOptions } from "./js/src/wizard/wizard-runtime.js";
+export { createCombobox, initCombobox, startComboboxRuntime, stopComboboxRuntime } from "./js/src/combobox/combobox-runtime.js";
+export type { ComboboxController, ComboboxOptions } from "./js/src/combobox/combobox-runtime.js";
 export { tokens } from "./tokens/index.js";

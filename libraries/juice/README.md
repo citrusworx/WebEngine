@@ -105,6 +105,10 @@ import {
   initTooltip,
   startTooltipRuntime,
   stopTooltipRuntime,
+  createCombobox,
+  initCombobox,
+  startComboboxRuntime,
+  stopComboboxRuntime,
   createNavigation,
   initNavigation,
   startNavigationRuntime,
@@ -115,7 +119,7 @@ import {
 
 The top-level JS entrypoint is intentionally small. Those named exports are the stable runtime API Juice currently promises.
 
-Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, and tooltip runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, and `[tooltip-root]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md), and [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md).
+Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox runtimes in the browser. Valid `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, and `[combobox]` markup work without app init. See [docs/juice/juice-accordion-runtime.md](../../docs/juice/juice-accordion-runtime.md), [docs/juice/juice-tabs-runtime.md](../../docs/juice/juice-tabs-runtime.md), [docs/juice/juice-modal-runtime.md](../../docs/juice/juice-modal-runtime.md), [docs/juice/juice-drawer-runtime.md](../../docs/juice/juice-drawer-runtime.md), [docs/juice/juice-toast-runtime.md](../../docs/juice/juice-toast-runtime.md), [docs/juice/juice-popover-runtime.md](../../docs/juice/juice-popover-runtime.md), [docs/juice/juice-wizard-runtime.md](../../docs/juice/juice-wizard-runtime.md), and [docs/juice/juice-tooltip-runtime.md](../../docs/juice/juice-tooltip-runtime.md).
 
 ## Use the built files directly
 
