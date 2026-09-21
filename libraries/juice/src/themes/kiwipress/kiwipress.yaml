@@ -87,7 +87,7 @@ recommended_use_cases:
 
 authoring_rules:
   - Use semantic HTML for meaning first.
-  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [drawer], [toast], [popover-root] / [popover-panel], [tooltip-root] / [tooltip-panel], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
+  - Use Juice component primitives ([hero], [card], [cta], [panel], [modal], [drawer], [toast], [popover-root] / [popover-panel], [tooltip-root] / [tooltip-panel], [combobox], [badge], [stat], [workflow], [search-panel], [tabs], [plan], [section-header]) — do not invent theme-specific attribute components.
   - Use Juice layout primitives (stack, row, grid, gap, container, span) and semantic spacing tokens (snug, cozy, comfortable, roomy, expansive) for structure and spacing.
   - Reserve [featured] for one [card="pricing"] per group.
   - Use [warm] as the occasional marmalade accent against the kiwi base; do not co-equal them.
@@ -97,6 +97,7 @@ authoring_rules:
   - Bind popover chrome roles (`--kw-popover-*` and `--juice-popover-*`) from `--kw-*` surfaces so `[popover-close]` is not a kiwi CTA.
   - Bind wizard chrome roles (`--kw-wizard-*` and `--juice-wizard-*`) from `--kw-*` surfaces/accents so the onboarding shell, rails, and step indicators retint; product extras (logo, badge, pill, feature-icon) stay KiwiPress-local.
   - Bind tooltip chrome roles (`--kw-tooltip-*` and `--juice-tooltip-*`) from `--kw-*` surfaces so `[tooltip-panel]` retints without a new hue family. No close button.
+  - Bind combobox chrome roles (`--kw-combobox-*` and `--juice-combobox-*`) from `--kw-*` surfaces so `[combobox-trigger]` is not a kiwi CTA. Not a native `<select>` restyle.
 
 example:
   root: '<body theme="kiwipress">'

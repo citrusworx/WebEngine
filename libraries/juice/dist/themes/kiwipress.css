@@ -2,7 +2,7 @@
 /*
   KiwiPress is a Juice theme.
   The theme paints Juice's component primitives — it does not define them.
-  Structure (hero, card, cta, panel, modal, drawer, toast, popover, tooltip, badge, stat, workflow, search-panel,
+  Structure (hero, card, cta, panel, modal, drawer, toast, popover, tooltip, combobox, badge, stat, workflow, search-panel,
   tabs, plan, section-header) lives in src/components. The theme only owns:
   - color relationships
   - typography voice
@@ -246,6 +246,34 @@
   --juice-tooltip-panel-border: var(--kw-tooltip-panel-border);
   --juice-tooltip-panel-shadow: var(--kw-tooltip-panel-shadow);
   --juice-tooltip-ink: var(--kw-tooltip-ink);
+  /* Combobox chrome — input + listbox popup from existing tokens.
+     Trigger is a surface control, not a kiwi CTA. Distinct from select. */
+  --kw-combobox-input: var(--kw-surface);
+  --kw-combobox-input-border: var(--kw-border);
+  --kw-combobox-input-ink: var(--kw-text);
+  --kw-combobox-list: var(--kw-surface);
+  --kw-combobox-list-border: var(--kw-border);
+  --kw-combobox-list-shadow: 0 18px 40px -24px var(--kw-shadow-strong);
+  --kw-combobox-option: transparent;
+  --kw-combobox-option-hover: var(--kw-surface-muted);
+  --kw-combobox-option-selected: var(--kw-accent-soft);
+  --kw-combobox-option-ink: var(--kw-text);
+  --kw-combobox-trigger: transparent;
+  --kw-combobox-trigger-ink: var(--kw-heading);
+  --kw-combobox-focus-ring: var(--kw-accent);
+  --juice-combobox-input: var(--kw-combobox-input);
+  --juice-combobox-input-border: var(--kw-combobox-input-border);
+  --juice-combobox-input-ink: var(--kw-combobox-input-ink);
+  --juice-combobox-list: var(--kw-combobox-list);
+  --juice-combobox-list-border: var(--kw-combobox-list-border);
+  --juice-combobox-list-shadow: var(--kw-combobox-list-shadow);
+  --juice-combobox-option: var(--kw-combobox-option);
+  --juice-combobox-option-hover: var(--kw-combobox-option-hover);
+  --juice-combobox-option-selected: var(--kw-combobox-option-selected);
+  --juice-combobox-option-ink: var(--kw-combobox-option-ink);
+  --juice-combobox-trigger: var(--kw-combobox-trigger);
+  --juice-combobox-trigger-ink: var(--kw-combobox-trigger-ink);
+  --juice-combobox-focus-ring: var(--kw-combobox-focus-ring);
   background-color: var(--kw-page);
   color: var(--kw-text);
   font-family: var(--kw-body-font);
@@ -1614,6 +1642,50 @@
   border: 1px solid var(--juice-tooltip-panel-border);
   box-shadow: var(--juice-tooltip-panel-shadow);
   color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control, not a kiwi CTA.
+   Optional surfaceTone on [combobox-list] is allowed. */
+[theme=kiwipress] [combobox-input] {
+  background-color: var(--juice-combobox-input);
+  border: 1px solid var(--juice-combobox-input-border);
+  color: var(--juice-combobox-input-ink);
+}
+
+[theme=kiwipress] button[combobox-trigger],
+[theme=kiwipress] [combobox-trigger] {
+  background-color: var(--juice-combobox-trigger);
+  color: var(--juice-combobox-trigger-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=kiwipress] [combobox-input]:focus-visible,
+[theme=kiwipress] button[combobox-trigger]:focus-visible,
+[theme=kiwipress] [combobox-trigger]:focus-visible {
+  outline: 2px solid var(--juice-combobox-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=kiwipress] [combobox-list]:not([surfaceTone]) {
+  background-color: var(--juice-combobox-list);
+  border: 1px solid var(--juice-combobox-list-border);
+  box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme=kiwipress] [combobox-option] {
+  background-color: var(--juice-combobox-option);
+  color: var(--juice-combobox-option-ink);
+}
+
+[theme=kiwipress] [combobox-option]:hover {
+  background-color: var(--juice-combobox-option-hover);
+}
+
+[theme=kiwipress] [combobox-option][aria-selected=true],
+[theme=kiwipress] [combobox-option=active] {
+  background-color: var(--juice-combobox-option-selected);
 }
 
 /* Accordion wrappers are structural, not default section surfaces.

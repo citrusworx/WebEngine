@@ -87,6 +87,7 @@ authoring_rules:
   - Bind popover chrome roles (`--aqua-popover-*` and `--juice-popover-*`) from existing page/surface tokens so `[popover-close]` stays a surface control, not a CTA.
   - Bind wizard chrome roles (`--aqua-wizard-*` and `--juice-wizard-*`) from existing page/surface/accent tokens so the onboarding shell, rails, and step indicators retint without a new hue family.
   - Bind tooltip chrome roles (`--aqua-tooltip-*` and `--juice-tooltip-*`) from existing page/surface tokens so `[tooltip-panel]` retints without a new hue family. No close button.
+  - Bind combobox chrome roles (`--aqua-combobox-*` and `--juice-combobox-*`) from existing page/surface tokens so `[combobox-trigger]` stays a surface control, not a CTA. Not a native `<select>` restyle.
 
 example:
   root: '<body theme="aquaflux">'

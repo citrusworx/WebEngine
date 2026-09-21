@@ -555,6 +555,35 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-tooltip-panel-shadow: var(--jx-tooltip-panel-shadow);
     --juice-tooltip-ink: var(--jx-tooltip-ink);
 
+    /* Combobox chrome — input + listbox popup from existing --jx-* tokens.
+       Trigger is a surface control, not the CTA fill. Distinct from select. */
+    --jx-combobox-input: var(--jx-surface);
+    --jx-combobox-input-border: var(--jx-border);
+    --jx-combobox-input-ink: var(--jx-text);
+    --jx-combobox-list: var(--jx-surface);
+    --jx-combobox-list-border: var(--jx-border);
+    --jx-combobox-list-shadow: var(--jx-shadow-strong);
+    --jx-combobox-option: transparent;
+    --jx-combobox-option-hover: var(--jx-surface-muted);
+    --jx-combobox-option-selected: var(--jx-accent-tint);
+    --jx-combobox-option-ink: var(--jx-text);
+    --jx-combobox-trigger: transparent;
+    --jx-combobox-trigger-ink: var(--jx-heading);
+    --jx-combobox-focus-ring: var(--jx-accent);
+    --juice-combobox-input: var(--jx-combobox-input);
+    --juice-combobox-input-border: var(--jx-combobox-input-border);
+    --juice-combobox-input-ink: var(--jx-combobox-input-ink);
+    --juice-combobox-list: var(--jx-combobox-list);
+    --juice-combobox-list-border: var(--jx-combobox-list-border);
+    --juice-combobox-list-shadow: var(--jx-combobox-list-shadow);
+    --juice-combobox-option: var(--jx-combobox-option);
+    --juice-combobox-option-hover: var(--jx-combobox-option-hover);
+    --juice-combobox-option-selected: var(--jx-combobox-option-selected);
+    --juice-combobox-option-ink: var(--jx-combobox-option-ink);
+    --juice-combobox-trigger: var(--jx-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--jx-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--jx-combobox-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -953,6 +982,46 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     border: 1px solid var(--juice-tooltip-panel-border);
     box-shadow: var(--juice-tooltip-panel-shadow);
     color: var(--juice-tooltip-ink);
+}
+
+[theme="${config.id}"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="${config.id}"] button[combobox-trigger],
+[theme="${config.id}"] [combobox-trigger] {
+    background: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [combobox-input]:focus-visible,
+[theme="${config.id}"] button[combobox-trigger]:focus-visible,
+[theme="${config.id}"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="${config.id}"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="${config.id}"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="${config.id}"] [combobox-option][aria-selected="true"],
+[theme="${config.id}"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
 }
 
 ${namedSurfaces}
