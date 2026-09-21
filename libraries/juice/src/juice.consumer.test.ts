@@ -563,6 +563,59 @@ describe("Juice consumer smoke", () => {
         document.body.innerHTML = "";
         controller.destroy();
         module.stopSwitchRuntime();
+        module.stopSliderRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built slider runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopSliderRuntime();
+        document.body.innerHTML = `
+            <div slider id="volume">
+                <div slider-fill></div>
+                <div slider-thumb id="volume-thumb" aria-label="Volume"></div>
+            </div>
+        `;
+
+        const controller = module.createSlider({ root: document.body });
+        const thumb = document.getElementById("volume-thumb");
+        const host = document.getElementById("volume");
+
+        expect(thumb?.getAttribute("role")).toBe("slider");
+        expect(thumb?.getAttribute("aria-valuemin")).toBe("0");
+        expect(thumb?.getAttribute("aria-valuemax")).toBe("100");
+        expect(thumb?.getAttribute("aria-valuenow")).toBe("0");
+        expect(thumb?.getAttribute("aria-orientation")).toBe("horizontal");
+        expect(thumb?.getAttribute("tabindex")).toBe("0");
+        expect(host?.getAttribute("role")).toBeNull();
+        expect(thumb?.getAttribute("aria-modal")).toBeNull();
+
+        thumb?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, key: "ArrowRight" })
+        );
+
+        expect(thumb?.getAttribute("aria-valuenow")).toBe("1");
+        expect(controller.getValue(thumb)).toBe(1);
+        expect(host?.style.getPropertyValue("--juice-slider-ratio").trim()).toBe(
+            "0.01"
+        );
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
         module.stopMenuRuntime();
         module.stopBannerRuntime();
         module.stopComboboxRuntime();

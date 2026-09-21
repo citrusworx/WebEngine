@@ -130,3 +130,13 @@ export type {
     SwitchController,
     SwitchOptions
 } from "./src/switch/switch-runtime.js";
+export {
+    createSlider,
+    initSlider,
+    startSliderRuntime,
+    stopSliderRuntime
+} from "./src/slider/slider-runtime.js";
+export type {
+    SliderController,
+    SliderOptions
+} from "./src/slider/slider-runtime.js";

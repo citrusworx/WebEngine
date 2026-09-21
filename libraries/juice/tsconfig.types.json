@@ -27,6 +27,7 @@
     "src/js/src/banner/banner-runtime.ts",
     "src/js/src/menu/menu-runtime.ts",
     "src/js/src/switch/switch-runtime.ts",
+    "src/js/src/slider/slider-runtime.ts",
     "src/js/src/shared/events.ts",
     "src/js/src/shared/focus.ts",
     "src/js/src/shared/ids.ts",
