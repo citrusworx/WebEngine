@@ -5,6 +5,7 @@ import { sanitizeRestBase } from "../cpt/rest-base.js";
 import { isCmsCollection } from "../cms/persistence.js";
 import { isCustomTypeSlug } from "../cms/type-registry.js";
 import { normalizeWordPressCollection } from "./normalize.js";
+import { withEditContext } from "./query.js";
 import { Media } from "../media/media.js";
 import { Pages } from "../pages/pages.js";
 import { Posts } from "../posts/posts.js";
@@ -177,7 +178,7 @@ export class WPSync {
     async readCpt(restBase) {
         const client = this.wordpress.cpt(restBase);
         const collection = client.restBase.toLowerCase();
-        return this.readAndNormalize(collection, () => client.listAll(client.restBase, { status: "any", context: "edit" }));
+        return this.readAndNormalize(collection, () => client.listAll(client.restBase, withEditContext({ status: "any" })));
     }
     async readTaxonomy(restBase) {
         const client = this.wordpress.taxonomy(restBase);
@@ -200,11 +201,11 @@ function transferQuery(collection) {
         case "posts":
         case "pages":
         case "media":
-            return { status: "any", context: "edit" };
+            return withEditContext({ status: "any" });
         case "comments":
-            return { status: "any", context: "edit" };
+            return withEditContext({ status: "any" });
         case "users":
-            return { context: "edit" };
+            return withEditContext();
         case "categories":
         case "tags":
             return { hide_empty: "false" };

@@ -1,5 +1,5 @@
 import type { WordPressPayload } from "../types/api.js";
-import type { CollectionSlug, ContentRecord, ContentStatus } from "./types.js";
+import type { CollectionSlug, ContentRecord, ContentRecordMeta, ContentStatus } from "./types.js";
 import { NectarineStore } from "./store.js";
 
 function slugFromTitle(title: string): string {
@@ -22,9 +22,9 @@ function asStatus(value: unknown, fallback: ContentStatus | (string & {}) = "dra
     return fallback;
 }
 
-function asMeta(value: unknown): Record<string, unknown> {
+function asMeta(value: unknown): ContentRecordMeta {
     if (value && typeof value === "object" && !Array.isArray(value)) {
-        return { ...(value as Record<string, unknown>) };
+        return { ...(value as ContentRecordMeta) };
     }
 
     return {};

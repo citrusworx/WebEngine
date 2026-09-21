@@ -27,6 +27,7 @@ Shipped:
 - generic WordPress taxonomy client (`CustomTaxonomy` / `kiwi.wordpress.taxonomy(restBase)`) for `/wp/v2/{restBase}`
 - route alias translation from clean KiwiPress shapes into WordPress query strings
 - response normalization onto `ContentRecord` / Nectarine post shapes
+- dual raw/rendered text on `ContentRecord.meta`, plus WordPress `meta` / `acf` pass-through
 - `loadNectarineApi` for nested or flat Nectarine API YAML
 - `WPSync` transfer from WordPress collections into a `NectarineStore`
 - media and named CPT transfer through `WPSync` (`includeMedia` / `cpts`)
@@ -147,6 +148,24 @@ Operational data movement from WordPress into Nectarine-shaped records.
 - named CPT rest bases opt in with `transfer({ cpts: ["books", "product"] })` (same shape for `preview`). Records land under that rest base; the type is registered if needed
 - named taxonomy rest bases opt in with `transfer({ taxonomies: ["genre"] })` (same shape for `preview`). Terms land under that rest base; the type is registered if needed. Default six collections are unchanged unless you pass `collections`
 - array form (`transfer(["posts"])`) is unchanged
+- transfer queries that already used `context=edit` go through `withEditContext()` so raw title/content is available when credentials allow it. Public `getAll()` stays view-context.
+
+### Raw vs rendered text
+
+WordPress REST returns `title` / `content` / `excerpt` as `{ raw, rendered }` **only** when the request uses `context=edit` and is authenticated. View context (the `getAll()` default) usually has `rendered` only.
+
+`ContentRecord.title` / `content` still store the best-available string (`raw`, then `rendered`) so sync and UI keep working. Dual values live on `meta`:
+
+- `titleRaw` / `titleRendered`
+- `contentRaw` / `contentRendered`
+- `excerptRaw` / `excerptRendered` when WordPress sent an excerpt
+- `wpMeta` — the WordPress REST `meta` object, when present
+- `acf` — passed through when the payload has an `acf` key (no ACF SDK)
+- `raw` — the original item, unchanged
+
+Use `withEditContext(query)` (or `editContextQuery()`) when you want raw fields. Do not pass that helper as a silent default on public reads.
+
+Featured images prefer `_embedded["wp:featuredmedia"][0].source_url`, then the existing normalize fallbacks. `resolveFeaturedImageUrl(mediaClient, id)` is an optional `Media.getById` lookup.
 
 ### Native CMS
 
@@ -200,7 +219,7 @@ The live WordPress client still uses static `routes.ts` files because WordPress 
 - `Users`, `Posts`, `Pages`, `Categories`, `Tags`, `Comments`, `Media`, `CustomPostType`, `CustomTaxonomy`, `WordPressTypes`, `WordPressTaxonomies`
 - `KiwiPress`, `NectarineStore`, `NativeCollection`
 - `CmsPersistence`, `createFilePersistence`, `createPostgresPersistence`, `persistenceFromEnv`
-- `normalizeWordPressItem`, `toNectarinePost`, `loadNectarineApi`
+- `normalizeWordPressItem`, `toNectarinePost`, `extractTextValue`, `extractTextParts`, `extractRaw`, `extractRendered`, `featuredImageFrom`, `resolveFeaturedImageUrl`, `withEditContext`, `editContextQuery`, `loadNectarineApi`
 - `restBasesFromTypes`, `normalizeWordPressType`
 - `restBasesFromTaxonomies`, `normalizeWordPressTaxonomy`
 - `registerKiwiPressGateway`
