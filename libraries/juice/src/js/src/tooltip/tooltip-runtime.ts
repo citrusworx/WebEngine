@@ -33,10 +33,12 @@
  * and capture scroll (rAF-throttled).
  *
  * Escape hides the open tip on bubble, but yields when an open
- * [modal-overlay], [drawer-overlay], [popover-root], or [combobox-list]
- * exists, or the event is already defaultPrevented (same courtesy as
- * toast / popover). Toast does not block tooltip Escape — the tip can
- * hide while toasts remain. Opening one managed tooltip closes the others.
+ * [modal-overlay], [drawer-overlay], [popover-root], [menu], or
+ * [combobox-list] exists, or the event is already defaultPrevented
+ * (same courtesy as toast / popover). Menu sits with popover in the
+ * dialog-adjacent band. Toast does not block tooltip Escape — the tip
+ * can hide while toasts remain. Opening one managed tooltip closes the
+ * others.
  */
 
 import { createEventClaim } from '../shared/events.js';
@@ -44,6 +46,7 @@ import { controlIds, resolveElementById, tokenIds } from '../shared/ids.js';
 import {
   hasOpenComboboxList,
   hasOpenDialogOverlay,
+  hasOpenMenu,
   hasOpenPopover,
 } from '../shared/overlays.js';
 
@@ -112,7 +115,10 @@ const includeToken = (value: string | null | undefined, id: string) => {
 const isTooltipOpen = (tooltip: HTMLElement) => !tooltip.hasAttribute('hidden');
 
 const shouldYieldEscape = () =>
-  hasOpenDialogOverlay() || hasOpenPopover() || hasOpenComboboxList();
+  hasOpenDialogOverlay() ||
+  hasOpenPopover() ||
+  hasOpenMenu() ||
+  hasOpenComboboxList();
 
 const readPlacement = (tooltip: HTMLElement): TooltipPlacement => {
   const raw = tooltip.getAttribute('tooltip-root');

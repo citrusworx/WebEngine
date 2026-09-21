@@ -230,7 +230,7 @@ describe('createTooltip', () => {
     controller.destroy();
   });
 
-  it('closes on Escape and yields to modal, drawer, popover, and combobox', () => {
+  it('closes on Escape and yields to modal, drawer, popover, menu, and combobox', () => {
     document.body.innerHTML = `
       <div modal-overlay id="open-modal">
         <div modal><h2>Account</h2></div>
@@ -272,6 +272,15 @@ describe('createTooltip', () => {
     expect(tip?.hasAttribute('hidden')).toBe(false);
 
     document.getElementById('open-pop')?.setAttribute('hidden', '');
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<div menu-root><div menu id="open-menu"><button type="button" menuitem>New</button></div></div>`
+    );
+
+    pressEscape();
+    expect(tip?.hasAttribute('hidden')).toBe(false);
+
+    document.getElementById('open-menu')?.setAttribute('hidden', '');
     document.body.insertAdjacentHTML(
       'afterbegin',
       `<div combobox><ul combobox-list id="open-list"><li combobox-option>Apple</li></ul></div>`

@@ -54,6 +54,7 @@ describe("Juice consumer smoke", () => {
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
         module.stopBannerRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -100,6 +101,7 @@ describe("Juice consumer smoke", () => {
         module.stopTooltipRuntime();
         module.stopComboboxRuntime();
         module.stopBannerRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -144,6 +146,7 @@ describe("Juice consumer smoke", () => {
         module.stopBannerRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -188,6 +191,7 @@ describe("Juice consumer smoke", () => {
         module.stopBannerRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -235,6 +239,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -280,6 +285,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -332,6 +338,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -372,6 +379,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -425,6 +433,7 @@ describe("Juice consumer smoke", () => {
         module.stopModalRuntime();
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
+        module.stopMenuRuntime();
         module.stopNavigationRuntime();
     });
 
@@ -457,6 +466,54 @@ describe("Juice consumer smoke", () => {
 
         document.body.innerHTML = "";
         controller.destroy();
+        module.stopBannerRuntime();
+        module.stopMenuRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and interact with the built menu runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopMenuRuntime();
+        document.body.innerHTML = `
+            <div menu-root>
+                <button type="button" menu-button id="demo-open">File</button>
+                <div menu hidden>
+                    <button type="button" menuitem>New</button>
+                    <button type="button" menuitem>Open…</button>
+                </div>
+            </div>
+        `;
+
+        const controller = module.createMenu({ root: document.body });
+        const opener = document.getElementById("demo-open");
+        const panel = document.querySelector("[menu]");
+        const item = document.querySelector("[menuitem]");
+
+        expect(panel?.getAttribute("role")).toBe("menu");
+        expect(panel?.getAttribute("aria-modal")).toBeNull();
+        expect(item?.getAttribute("role")).toBe("menuitem");
+        expect(opener?.getAttribute("aria-haspopup")).toBe("menu");
+        expect(opener?.getAttribute("aria-expanded")).toBe("false");
+        expect(panel?.hasAttribute("hidden")).toBe(true);
+
+        opener?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+        expect(panel?.hasAttribute("hidden")).toBe(false);
+        expect(opener?.getAttribute("aria-expanded")).toBe("true");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopMenuRuntime();
         module.stopBannerRuntime();
         module.stopComboboxRuntime();
         module.stopTooltipRuntime();
