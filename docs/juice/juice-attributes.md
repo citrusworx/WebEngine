@@ -394,17 +394,17 @@ See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switc
 
 ### Slider
 
-- `slider` — track host. Boolean attr, or `slider="horizontal"`. `slider="vertical"` is later; this slice does not paint a vertical axis. A boolean `[slider]` attribute is fine: there is no HTML global `slider` attribute. Do not restyle bare `[role="slider"]`
-- `slider-fill` — completed portion of the range
-- `slider-thumb` — thumb child. Prefer this real element so runtime B can focus it
+- `slider` — track host. Boolean attr, or `slider="horizontal"`. `slider="vertical"` is later; this slice does not paint or enhance a vertical axis. A boolean `[slider]` attribute is fine: there is no HTML global `slider` attribute. Do not restyle bare `[role="slider"]`
+- `slider-fill` — completed portion of the range. Optional
+- `slider-thumb` — thumb child. Required for the runtime. The thumb is the APG slider: sync writes `role="slider"`, `aria-valuemin` / `aria-valuemax` / `aria-valuenow`, and `aria-orientation="horizontal"`
 
-There is no `[slider-track]` in this slice: `[slider]` is the track host. There is no `slider-value` attribute and no `slider-size`. `scale` does not change track or thumb geometry.
+There is no `[slider-track]`: `[slider]` is the track host. There is no `slider-value` attribute and no `slider-size`. `scale` does not change track or thumb geometry.
 
-Value paint aligns with ARIA so runtime B does not invent a second source of truth. Integer `aria-valuenow` from 0 through 100 paints the fill and thumb when `aria-valuemin` / `aria-valuemax` are omitted or are `0` / `100`. Put those attributes on `[slider]` or on `[slider-thumb]` (the thumb wins when both are set — that is the APG focus target). Other ranges set the structural paint hook `--juice-slider-ratio` (unitless 0–1) on `[slider]`. That hook is not a theme role and not an author attribute.
+Value paint aligns with ARIA. Integer `aria-valuenow` from 0 through 100 paints the fill and thumb when `aria-valuemin` / `aria-valuemax` are omitted or are `0` / `100`. Put those attributes on `[slider]` or on `[slider-thumb]` (the thumb wins when both are set — that is the APG focus target). The runtime also writes the structural paint hook `--juice-slider-ratio` (unitless 0–1) on `[slider]` for every range. That hook is not a theme role and not an author attribute. Authors must supply the accessible name — the runtime does not invent one, and it does not invent or rewrite `aria-valuetext`.
 
-Slider is an APG slider. It is not a native `<input type="range">` restyle as the only story (a range input cannot host a thumb child), not a progress meter (no thumb / not interactive), not a scrollbar, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. Runtime B (keyboard / pointer) is later. No Sig Slider factory.
+Slider is an APG slider. It is not a native `<input type="range">` restyle as the only story (a range input cannot host a thumb child), not a progress meter (no thumb / not interactive), not a scrollbar, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances horizontal `[slider]` markup that owns a `[slider-thumb]` (`setValue` / `getValue` / `increment` / `decrement`, arrows / Home / End / PageUp / PageDown, pointer jump and drag). v1 is horizontal and single-thumb: no vertical, no multi-thumb, no focus trap, and no Escape. No Sig Slider factory.
 
-Theme paint uses `--juice-slider-*` roles (`track`, `track-border`, `fill`, `thumb`, `thumb-border`, `thumb-shadow`, `focus-ring`).
+See [Slider Runtime](./juice-slider-runtime.md). Theme paint uses `--juice-slider-*` roles (`track`, `track-border`, `fill`, `thumb`, `thumb-border`, `thumb-shadow`, `focus-ring`).
 
 ### Wizard
 
