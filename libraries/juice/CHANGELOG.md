@@ -1,5 +1,24 @@
 # @citrusworx/juiceui
 
+## 0.9.0
+
+### Minor Changes
+
+- **Switch theme chrome and APG switch runtime.** Shared `--juice-switch-*` roles paint `[switch]`. The DOM-first runtime auto-enhances valid markup (`createSwitch` / `initSwitch` / `startSwitchRuntime` / `stopSwitchRuntime`): `toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, `role="switch"` plus binary `aria-checked` on button hosts (checkbox-backed hosts stay honest with `:checked`). Click and Enter/Space toggle. Disabled / `aria-disabled` ignored. Authors must supply the accessible name. No focus trap, no Escape steal, no tri-state. No Sig Switch factory.
+- **Slider theme chrome and APG slider runtime.** Shared `--juice-slider-*` roles paint `[slider]` / `[slider-fill]` / `[slider-thumb]`. The DOM-first runtime auto-enhances valid markup (`createSlider` / `initSlider` / `startSliderRuntime` / `stopSliderRuntime`): `setValue` / `getValue` / `increment` / `decrement`, `role="slider"` plus `aria-valuemin` / `aria-valuemax` / `aria-valuenow` on `[slider-thumb]`, and `--juice-slider-ratio` on the host. Arrows / Home / End / PageUp / PageDown. Pointer jump and drag. Horizontal only. Disabled / `aria-disabled` ignored. Authors must supply the accessible name. No Escape, no vertical, no multi-thumb, no native range restyle. No Sig Slider factory.
+- **Checkbox and radio theme chrome and APG runtimes.** Shared `--juice-checkbox-*` roles paint `[checkbox]`. Shared `--juice-radio-*` roles paint `[radio]` inside layout-only `[radiogroup]` (no `--juice-radiogroup-*`). Checkbox (`createCheckbox` / `initCheckbox` / `startCheckboxRuntime` / `stopCheckboxRuntime`): `toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, `role="checkbox"` plus binary `aria-checked` on button hosts (native checkbox hosts stay honest with `:checked`). Radio (`createRadio` / `initRadio` / `startRadioRuntime` / `stopRadioRuntime`): `select` / `getChecked`, exclusive selection, roving tabindex. Click, Enter, and Space select. Arrows move among enabled options and wrap. Orphans outside `[radiogroup]` are ignored. Checkbox and radio are two runtimes. Binary only. No tri-state, no Escape. Authors must supply the accessible name. No Sig Checkbox or Sig Radio factory.
+- **Breadcrumb theme chrome and light trail runtime.** Shared `--juice-breadcrumb-*` roles paint `[breadcrumb]` / `[breadcrumb-item]` / `[breadcrumb-link]`. The DOM-first runtime auto-enhances valid markup (`createBreadcrumb` / `initBreadcrumb` / `startBreadcrumbRuntime` / `stopBreadcrumbRuntime`): `sync` / `setCurrent`. An unlabeled navigation landmark is named `Breadcrumb`. `<nav>` does not get a redundant role. `<ol breadcrumb>` stays a list. A single `aria-current="page"` is kept (author current wins; otherwise the last crumb). It does not remove `href`, trap focus, steal Escape, or listen to history. Not a router. No Sig Breadcrumb factory.
+- **Progress theme chrome and APG progress runtime.** Shared `--juice-progress-*` roles paint `[progress]` / `[progress-fill]` / optional `[progress-label]`. The DOM-first runtime auto-enhances valid markup (`createProgress` / `initProgress` / `startProgressRuntime` / `stopProgressRuntime`): `setValue` / `getValue` / `setIndeterminate` / `isIndeterminate`. `role="progressbar"` plus `aria-valuemin` / `aria-valuemax` / `aria-valuenow` and `--juice-progress-ratio` on the host. Determinate is the boolean attribute. A missing or non-numeric `aria-valuenow` is min (an empty bar), not indeterminate. Values clamp. Indeterminate is `progress="indeterminate"` only: that flag clears `aria-valuenow` and restores the last determinate value when the flag clears. Authors must supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`. No keyboard, no focus trap, no Escape, no native `<progress>` restyle. No Sig Progress factory.
+
+### Patch Changes
+
+- Document the APG switch runtime as an Emerging auto-enhance (`docs/juice/juice-switch-runtime.md`).
+- Document the APG slider runtime as an Emerging auto-enhance (`docs/juice/juice-slider-runtime.md`).
+- Document the APG checkbox and radio runtimes as Emerging auto-enhances (`docs/juice/juice-checkbox-runtime.md`, `docs/juice/juice-radio-runtime.md`).
+- Document the light breadcrumb runtime as an Emerging auto-enhance (`docs/juice/juice-breadcrumb-runtime.md`).
+- Document the APG progress runtime as an Emerging auto-enhance (`docs/juice/juice-progress-runtime.md`).
+- Align Juice docs with the live `@citrusworx/juiceui@0.8.0` npm cut (wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C). The eighteen stay **Emerging**.
+
 ## 0.8.0
 
 ### Minor Changes
