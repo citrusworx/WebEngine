@@ -359,6 +359,19 @@
     --juice-menu-opener: var(--kw-menu-opener);
     --juice-menu-opener-ink: var(--kw-menu-opener-ink);
 
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a kiwi CTA. Distinct from checkbox / menuitemcheckbox. */
+    --kw-switch-track: var(--kw-surface-muted);
+    --kw-switch-track-checked: var(--kw-accent);
+    --kw-switch-thumb: var(--kw-surface);
+    --kw-switch-thumb-checked: var(--kw-page);
+    --kw-switch-focus-ring: var(--kw-accent);
+    --juice-switch-track: var(--kw-switch-track);
+    --juice-switch-track-checked: var(--kw-switch-track-checked);
+    --juice-switch-thumb: var(--kw-switch-thumb);
+    --juice-switch-thumb-checked: var(--kw-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--kw-switch-focus-ring);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -1844,6 +1857,35 @@
 
 [theme="kiwipress"] [menu-label] {
     color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a kiwi CTA. Runtime is later. */
+[theme="kiwipress"] button[switch],
+[theme="kiwipress"] [switch] {
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[switch][aria-checked="true"],
+[theme="kiwipress"] [switch][aria-checked="true"],
+[theme="kiwipress"] [switch]:checked {
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="kiwipress"] button[switch]:hover,
+[theme="kiwipress"] [switch]:hover,
+[theme="kiwipress"] button[switch]:focus-visible,
+[theme="kiwipress"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[switch]:focus-visible,
+[theme="kiwipress"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
 }
 
 /* Accordion wrappers are structural, not default section surfaces.

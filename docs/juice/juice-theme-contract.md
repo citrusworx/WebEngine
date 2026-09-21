@@ -2,7 +2,7 @@
 
 Canonical required-versus-optional checklist for Juice themes.
 
-[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), toast theme chrome (`--juice-toast-*`), banner theme chrome (`--juice-banner-*`), popover theme chrome (`--juice-popover-*`), tooltip theme chrome (`--juice-tooltip-*`), combobox theme chrome (`--juice-combobox-*`), menu theme chrome (`--juice-menu-*`), and wizard theme chrome (`--juice-wizard-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md). Banner is an inline alert / callout runtime on `[banner]` — see [Banner Runtime](./juice-banner-runtime.md). Popover is an anchored non-modal dialog runtime on `[popover-root]` — see [Popover Runtime](./juice-popover-runtime.md). Tooltip is a hover/focus tip runtime on `[tooltip-root]` — see [Tooltip Runtime](./juice-tooltip-runtime.md). Combobox is an input + listbox popup runtime on `[combobox]` — see [Combobox Runtime](./juice-combobox-runtime.md). Menu is an APG menu-button runtime on `[menu-root]` / `[menu]` — see [Menu Runtime](./juice-menu-runtime.md). Wizard is a multi-step shell runtime on `[wizard-shell]` — see [Wizard Runtime](./juice-wizard-runtime.md).
+[Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md) keep how-to detail. This page is the list those docs point at. It documents what already ships after Tide, surface language A–C (`surfaceTone`, `borderStrength`, standalone `blur`), remaining depth slices A–C (`shadowTone`, `overlay`, `variant`), modal theme chrome (`--juice-modal-*`), drawer theme chrome (`--juice-drawer-*`), toast theme chrome (`--juice-toast-*`), banner theme chrome (`--juice-banner-*`), popover theme chrome (`--juice-popover-*`), tooltip theme chrome (`--juice-tooltip-*`), combobox theme chrome (`--juice-combobox-*`), menu theme chrome (`--juice-menu-*`), switch theme chrome (`--juice-switch-*`), and wizard theme chrome (`--juice-wizard-*`). `libraries/juice/src/juice.theme-contract.test.ts` is the machine check. Dialog behavior is documented in [Modal Runtime](./juice-modal-runtime.md) and [Drawer Runtime](./juice-drawer-runtime.md). Toast is a non-modal stack runtime on `[toast-region]` — see [Toast Runtime](./juice-toast-runtime.md). Banner is an inline alert / callout runtime on `[banner]` — see [Banner Runtime](./juice-banner-runtime.md). Popover is an anchored non-modal dialog runtime on `[popover-root]` — see [Popover Runtime](./juice-popover-runtime.md). Tooltip is a hover/focus tip runtime on `[tooltip-root]` — see [Tooltip Runtime](./juice-tooltip-runtime.md). Combobox is an input + listbox popup runtime on `[combobox]` — see [Combobox Runtime](./juice-combobox-runtime.md). Menu is an APG menu-button runtime on `[menu-root]` / `[menu]` — see [Menu Runtime](./juice-menu-runtime.md). Switch is APG switch chrome on `[switch]` (runtime later). Wizard is a multi-step shell runtime on `[wizard-shell]` — see [Wizard Runtime](./juice-wizard-runtime.md).
 
 ## 1. Layer rule
 
@@ -75,7 +75,7 @@ Library companion YAML (`<id>.yaml` next to `<id>.scss`) is an identity record, 
 
 ## 4. Required `--juice-*` binds
 
-Set every name in this section on `[theme="…"]` for every shipped library theme. Bind from existing identity tokens. Do not invent a new hue family for chrome. Accordion triggers, tab triggers, `[modal-close]`, `[drawer-close]`, `[toast-close]`, `[banner-close]`, `[popover-close]`, `[combobox-trigger]`, `[menu-button]`, and wizard step indicators stay surface/text controls, not the CTA button gradient.
+Set every name in this section on `[theme="…"]` for every shipped library theme. Bind from existing identity tokens. Do not invent a new hue family for chrome. Accordion triggers, tab triggers, `[modal-close]`, `[drawer-close]`, `[toast-close]`, `[banner-close]`, `[popover-close]`, `[combobox-trigger]`, `[menu-button]`, and `[switch]` stay surface/text controls, not the CTA button gradient. Wizard step indicators stay surfaces the same way.
 
 Core CSS reads `--juice-*`. Identity aliases (`--aqua-*`, `--kw-*`, `--cm-*`, `--tide-*`, `--jx-*`) are how themes name the same values.
 
@@ -311,6 +311,30 @@ Pairing is wrapped: `[menu-root]` contains the opener and `[menu]`. Closed vs op
 
 Tide must stay a dark panel, not a white glass menu.
 
+### Switch chrome
+
+Structural APG switch (toggle) paint. Required names:
+
+| Role | Job |
+|---|---|
+| `--juice-switch-track` | idle track fill |
+| `--juice-switch-track-checked` | on / checked track fill |
+| `--juice-switch-thumb` | idle thumb fill |
+| `--juice-switch-thumb-checked` | on / checked thumb fill |
+| `--juice-switch-focus-ring` | control focus outline |
+
+Consumed by `switch.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-switch-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[switch]` stays a surface track, not the CTA button gradient.
+
+This is **Juice chrome** for the APG **Switch** pattern (a toggle with `role="switch"` and `aria-checked`). It is **not** a form checkbox (tri-state later), **not** a native `<input type="checkbox">` restyle as the only story, and **not** a menu `menuitemcheckbox`. Juice name is `[switch]` (boolean attr) on the control root. Primary host is `<button type="button" switch>`. A checkbox-backed host (`<input type="checkbox" switch>`) is allowed; `:checked` paints that path. Use role in markup; attrs own Juice structure. Do not style bare `[role="switch"]`.
+
+A boolean `[switch]` attribute is fine: there is no HTML global `switch` attribute. WebKit's checkbox `switch` attr is an opt-in on `<input type="checkbox">`, not a global; Juice `[switch]` on that host restyles with Juice chrome (`appearance: none`).
+
+Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children. Do not invent `switch-size` in this slice: Juice control sizing is `scale` on buttons; `*-size` is a layout attr. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
+
+Checked paint for static demos is `aria-checked="true"` so chrome and runtime B share one story. There is no `switch="on"`. Core CSS treats this as an **inline** control — no floating overlay z-index band. Thumb slide honors `prefers-reduced-motion`. Switch runtime (B) and maturity docs (C) are later.
+
+Tide must stay a dark track, not a white pill.
+
 ### Wizard chrome
 
 Structural multi-step onboarding paint. Required names:
@@ -432,7 +456,7 @@ Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-
 
 Tide binds `--juice-tabs-panel` from `--tide-tabs-panel`. It does not bind `--juice-tabs-panel-rule`. Other shipped themes bind neither.
 
-Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/wizard/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
+Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/wizard/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
 
 ## 6. Identity-prefix alias convention
 
@@ -444,7 +468,7 @@ Generated app themes currently bind required accordion/tabs/modal/drawer/toast/b
 | Tide | `--tide-*` | `--tide-border-strong` → `--juice-border-strength-bold-color` |
 | Generated app themes | `--jx-*` | `--jx-trigger` → `--juice-accordion-trigger` |
 
-`--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values. Core accordion/tabs/modal/drawer/toast/popover/tooltip/combobox/menu/wizard helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Do not add a fifth library prefix.
+`--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values. Core accordion/tabs/modal/drawer/toast/popover/tooltip/combobox/menu/switch/wizard helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Do not add a fifth library prefix.
 
 ## 7. Not theme roles
 
@@ -484,6 +508,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Tooltip chrome | bind | bind | bind | bind |
 | Combobox chrome | bind | bind | bind | bind |
 | Menu chrome | bind | bind | bind | bind |
+| Switch chrome | bind | bind | bind | bind |
 | Wizard chrome | bind | bind | bind | bind |
 | Surface tones (`soft` / `strong` / `muted` × bg, border, shadow, blur) | bind | bind | bind | bind |
 | Border strength (`soft` / `bold` × width, color) | bind | bind | bind | bind |
@@ -494,7 +519,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role |
 | `variant` recipes | not a theme role | not a theme role | not a theme role | not a theme role |
 
-Generated `--jx-*` themes bind the fifteen required families and omit the optional accordion/tabs hooks.
+Generated `--jx-*` themes bind the sixteen required families and omit the optional accordion/tabs hooks.
 
 ## 9. Authoring checklist
 
@@ -503,15 +528,15 @@ A new theme is done when:
 1. Identity is recorded: `id`, `name`, `selector` (`theme="<id>"`), body + heading typography, and palette groups for page, text, accents, and surfaces.
 2. Named surfaces exist only when each has a one-sentence job; Juice `[hero]` / `[card]` / `[panel]` still do the structure.
 3. Identity tokens use one prefix (`--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` for a library theme, `--jx-*` for a generated app theme).
-4. `[theme="<id>"]` binds every **required** `--juice-*` name in section 4 from those existing tokens — no new hue family, no CTA paint on accordion/tab triggers, `[modal-close]`, `[drawer-close]`, `[toast-close]`, `[banner-close]`, `[popover-close]`, `[combobox-trigger]`, or `[menu-button]`. Wizard chrome binds from the same identity tokens; step indicators are surfaces, not CTA buttons. Tooltip chrome binds the lean `--juice-tooltip-*` set (panel / panel-border / panel-shadow / ink) from those tokens; there is no close control. Combobox chrome binds the `--juice-combobox-*` set (input / list / option / trigger / focus-ring) from those tokens; it is not a native `<select>` restyle. Menu chrome binds the `--juice-menu-*` set (panel / item / separator / opener / focus-ring) from those tokens; it is an APG menu button, not a popover, combobox, or native `<select>`. Banner chrome binds the lean `--juice-banner-*` set (panel / panel-border / ink / close / status accents — no panel-shadow) from those tokens; layout is `[banner]` / `[banner="full"]`, status is `[banner-tone]`.
+4. `[theme="<id>"]` binds every **required** `--juice-*` name in section 4 from those existing tokens — no new hue family, no CTA paint on accordion/tab triggers, `[modal-close]`, `[drawer-close]`, `[toast-close]`, `[banner-close]`, `[popover-close]`, `[combobox-trigger]`, `[menu-button]`, or `[switch]`. Wizard chrome binds from the same identity tokens; step indicators are surfaces, not CTA buttons. Tooltip chrome binds the lean `--juice-tooltip-*` set (panel / panel-border / panel-shadow / ink) from those tokens; there is no close control. Combobox chrome binds the `--juice-combobox-*` set (input / list / option / trigger / focus-ring) from those tokens; it is not a native `<select>` restyle. Menu chrome binds the `--juice-menu-*` set (panel / item / separator / opener / focus-ring) from those tokens; it is an APG menu button, not a popover, combobox, or native `<select>`. Switch chrome binds the `--juice-switch-*` set (track / track-checked / thumb / thumb-checked / focus-ring) from those tokens; it is an APG switch, not a checkbox, menuitemcheckbox, or native checkbox restyle as the only story. Banner chrome binds the lean `--juice-banner-*` set (panel / panel-border / ink / close / status accents — no panel-shadow) from those tokens; layout is `[banner]` / `[banner="full"]`, status is `[banner-tone]`.
 5. Optional accordion/tabs hooks are bound only when the chrome needs them (Tide FAQ pills). Omitting them is valid.
 6. Standalone `blur="sm|md"` and `variant="monochromatic|glass|tinted"` are left to core. No second per-theme blur scale or `--juice-variant-*` family.
 7. Semantic defaults and named-surface recipes stay on the identity layer. `stack` / `row` / `grid` / `gap` are untouched.
 8. The app imports core CSS plus the theme stylesheet and sets `theme="<id>"` on the root.
-9. Swapping `theme` on unchanged markup retints accordion, tabs, modal chrome, drawer chrome, toast chrome, banner chrome, popover chrome, tooltip chrome, combobox chrome, menu chrome, wizard chrome, `surfaceTone`, `borderStrength`, `shadowTone`, `overlay`, and `variant` recipes without fighting layout.
+9. Swapping `theme` on unchanged markup retints accordion, tabs, modal chrome, drawer chrome, toast chrome, banner chrome, popover chrome, tooltip chrome, combobox chrome, menu chrome, switch chrome, wizard chrome, `surfaceTone`, `borderStrength`, `shadowTone`, `overlay`, and `variant` recipes without fighting layout.
 
 How to generate, import, and map tokens is in [Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md).
 
 ## Status
 
-This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, and menu A (theme chrome): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, and `--juice-wizard-*`. Menu runtime (B) and maturity docs (C) are later. Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, and switch A (theme chrome): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, and `--juice-wizard-*`. Switch runtime (B) and maturity docs (C) are later. Blush, CLI, and publish are out of scope here.

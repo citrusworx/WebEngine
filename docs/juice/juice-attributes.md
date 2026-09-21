@@ -382,6 +382,16 @@ Menu is an APG menu button. It is not a popover, not a combobox, not a native `<
 
 See [Menu Runtime](./juice-menu-runtime.md). Theme paint uses `--juice-menu-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`).
 
+### Switch
+
+- `switch` — the control root (boolean attr). Primary host is `<button type="button" switch>`. Runtime B will fill `role="switch"` and `aria-checked`. A boolean `[switch]` attribute is fine: there is no HTML global `switch` attribute. WebKit's checkbox `switch` attr is an opt-in on `<input type="checkbox">`, not a global; Juice `[switch]` on that host is a valid secondary story (`:checked` paints it). Do not restyle bare `[role="switch"]`
+
+Checked paint for static demos is `aria-checked="true"` so chrome and runtime share one story. There is no `switch="on"`. Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children and no `switch-size`. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`).
+
+Switch is an APG switch (toggle). It is not a form checkbox, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. Runtime B is later. No Sig Switch factory.
+
+Theme paint uses `--juice-switch-*` roles (`track`, `track-checked`, `thumb`, `thumb-checked`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

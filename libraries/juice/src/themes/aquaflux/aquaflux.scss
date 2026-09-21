@@ -365,6 +365,19 @@
     --juice-menu-opener: var(--aqua-menu-opener);
     --juice-menu-opener-ink: var(--aqua-menu-opener-ink);
 
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --aqua-switch-track: var(--aqua-surface-muted);
+    --aqua-switch-track-checked: var(--aqua-accent);
+    --aqua-switch-thumb: var(--aqua-page);
+    --aqua-switch-thumb-checked: var(--aqua-page);
+    --aqua-switch-focus-ring: var(--aqua-accent);
+    --juice-switch-track: var(--aqua-switch-track);
+    --juice-switch-track-checked: var(--aqua-switch-track-checked);
+    --juice-switch-thumb: var(--aqua-switch-thumb);
+    --juice-switch-thumb-checked: var(--aqua-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--aqua-switch-focus-ring);
+
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
     color: var(--aqua-text);
@@ -1095,4 +1108,35 @@
 
 [theme="aquaflux"] [menu-label] {
     color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme="aquaflux"] button[switch],
+[theme="aquaflux"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[switch][aria-checked="true"],
+[theme="aquaflux"] [switch][aria-checked="true"],
+[theme="aquaflux"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="aquaflux"] button[switch]:hover,
+[theme="aquaflux"] [switch]:hover,
+[theme="aquaflux"] button[switch]:focus-visible,
+[theme="aquaflux"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="aquaflux"] button[switch]:focus-visible,
+[theme="aquaflux"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
 }

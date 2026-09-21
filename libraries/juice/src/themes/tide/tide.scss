@@ -368,6 +368,19 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-menu-opener: var(--tide-menu-opener);
     --juice-menu-opener-ink: var(--tide-menu-opener-ink);
 
+    /* Switch chrome — dark track, not a white pill. The host is a
+       surface control, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --tide-switch-track: var(--tide-surface-muted);
+    --tide-switch-track-checked: var(--tide-accent);
+    --tide-switch-thumb: var(--tide-heading);
+    --tide-switch-thumb-checked: var(--tide-heading);
+    --tide-switch-focus-ring: var(--tide-accent);
+    --juice-switch-track: var(--tide-switch-track);
+    --juice-switch-track-checked: var(--tide-switch-track-checked);
+    --juice-switch-thumb: var(--tide-switch-thumb);
+    --juice-switch-thumb-checked: var(--tide-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--tide-switch-focus-ring);
+
     min-height: 100vh;
     background-color: var(--tide-page);
     background-image: var(--tide-page-background);
@@ -1037,4 +1050,36 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
 
 [theme="tide"] [menu-label] {
     color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   Track stays dark. The host is a surface control, not a CTA.
+   Runtime is later. */
+[theme="tide"] button[switch],
+[theme="tide"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="tide"] button[switch][aria-checked="true"],
+[theme="tide"] [switch][aria-checked="true"],
+[theme="tide"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="tide"] button[switch]:hover,
+[theme="tide"] [switch]:hover,
+[theme="tide"] button[switch]:focus-visible,
+[theme="tide"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="tide"] button[switch]:focus-visible,
+[theme="tide"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
 }

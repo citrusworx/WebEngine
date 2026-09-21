@@ -289,6 +289,19 @@
   --juice-menu-focus-ring: var(--cm-menu-focus-ring);
   --juice-menu-opener: var(--cm-menu-opener);
   --juice-menu-opener-ink: var(--cm-menu-opener-ink);
+  /* Switch chrome — thinner --cm-* set. Heading stands in for accent.
+     The host is a surface track, not heading-fill. Distinct from
+     checkbox / menuitemcheckbox. */
+  --cm-switch-track: var(--cm-surface-muted);
+  --cm-switch-track-checked: var(--cm-heading);
+  --cm-switch-thumb: var(--cm-surface);
+  --cm-switch-thumb-checked: var(--cm-surface);
+  --cm-switch-focus-ring: var(--cm-heading);
+  --juice-switch-track: var(--cm-switch-track);
+  --juice-switch-track-checked: var(--cm-switch-track-checked);
+  --juice-switch-thumb: var(--cm-switch-thumb);
+  --juice-switch-thumb-checked: var(--cm-switch-thumb-checked);
+  --juice-switch-focus-ring: var(--cm-switch-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -765,4 +778,25 @@
 
 [theme=citrusmint] [menu-label] {
   color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) heading-fill defaults.
+   The host is a surface track, not heading-fill. Runtime is later. */
+[theme=citrusmint] button[switch],
+[theme=citrusmint] [switch] {
+  background-color: var(--juice-switch-track);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] button[switch][aria-checked=true],
+[theme=citrusmint] [switch][aria-checked=true],
+[theme=citrusmint] [switch]:checked {
+  background-color: var(--juice-switch-track-checked);
+}
+
+[theme=citrusmint] button[switch]:focus-visible,
+[theme=citrusmint] [switch]:focus-visible {
+  outline: 2px solid var(--juice-switch-focus-ring);
+  outline-offset: 2px;
 }

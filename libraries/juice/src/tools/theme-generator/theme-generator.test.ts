@@ -15,6 +15,7 @@ import {
     REQUIRED_TOOLTIP_ROLES,
     REQUIRED_COMBOBOX_ROLES,
     REQUIRED_MENU_ROLES,
+    REQUIRED_SWITCH_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -404,6 +405,35 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(openerBlocks.length).toBeGreaterThan(0);
         for (const block of openerBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-switch-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-switch-track: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-switch-track-checked: var(--jx-accent)");
+        expect(css).toContain("--jx-switch-thumb: var(--jx-surface)");
+        expect(css).toContain("--jx-switch-thumb-checked: var(--jx-text-inverse)");
+        expect(css).toContain("--jx-switch-focus-ring: var(--jx-accent)");
+
+        for (const role of REQUIRED_SWITCH_ROLES) {
+            expect(css).toContain(`--juice-switch-${role}: var(--jx-switch-${role})`);
+        }
+
+        expect(css).toContain("button[switch]");
+        expect(css).toContain('[aria-checked="true"]');
+        expect(css).not.toMatch(/\[role=["']?switch["']?\]/);
+        expect(css).not.toMatch(/\[switch-size/);
+
+        const switchBlocks = [...css.matchAll(/button\[switch\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(switchBlocks.length).toBeGreaterThan(0);
+        for (const block of switchBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }
