@@ -1465,6 +1465,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initRadio");
         expect(module).toHaveProperty("startRadioRuntime");
         expect(module).toHaveProperty("stopRadioRuntime");
+        expect(module).toHaveProperty("createBreadcrumb");
+        expect(module).toHaveProperty("initBreadcrumb");
+        expect(module).toHaveProperty("startBreadcrumbRuntime");
+        expect(module).toHaveProperty("stopBreadcrumbRuntime");
         expect(module).toHaveProperty("tokens");
     });
 
