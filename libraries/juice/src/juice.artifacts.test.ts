@@ -982,6 +982,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initWizard");
         expect(module).toHaveProperty("startWizardRuntime");
         expect(module).toHaveProperty("stopWizardRuntime");
+        expect(module).toHaveProperty("createCombobox");
+        expect(module).toHaveProperty("initCombobox");
+        expect(module).toHaveProperty("startComboboxRuntime");
+        expect(module).toHaveProperty("stopComboboxRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

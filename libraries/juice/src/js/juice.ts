@@ -90,3 +90,13 @@ export type {
     WizardController,
     WizardOptions
 } from "./src/wizard/wizard-runtime.js";
+export {
+    createCombobox,
+    initCombobox,
+    startComboboxRuntime,
+    stopComboboxRuntime
+} from "./src/combobox/combobox-runtime.js";
+export type {
+    ComboboxController,
+    ComboboxOptions
+} from "./src/combobox/combobox-runtime.js";
