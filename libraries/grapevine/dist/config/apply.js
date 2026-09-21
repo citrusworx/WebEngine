@@ -1,6 +1,6 @@
 import { getDoToken } from "../providers/digitalocean/client.js";
-import { createApp, listApps } from "../providers/digitalocean/apps/apps.js";
-import { createCdnEndpoint, listCdnEndpoints, resolveCdnOrigin, updateCdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
+import { createApp, listApps, waitForAppDeployment } from "../providers/digitalocean/apps/apps.js";
+import { cdnEndpointIsLive, createCdnEndpoint, listCdnEndpoints, resolveCdnOrigin, updateCdnEndpoint, waitForCdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
 import { createCertificate, listCertificates, waitForCertificate } from "../providers/digitalocean/certificates/certificates.js";
 import { createSpace, listSpaces, spaceOriginHostname } from "../providers/digitalocean/spaces/spaces.js";
 import { createDatabase, getDatabase, listDatabases, pickDatabaseConnection, waitForDatabase } from "../providers/digitalocean/databases/databases.js";
@@ -15,6 +15,7 @@ import { createVPC, listAllVPCs } from "../providers/digitalocean/vpc/vpc.js";
 import { lookupByName, lookupCdnByOrigin, lookupSSHKey, lookupVPC, lookupWhere } from "./adopt.js";
 import { firewallRulesEqual, normalizeFirewallRules } from "./firewall-rules.js";
 import { persistGeneratedPrivateKey, readExistingPrivateKeyPublic, resolvePrivateKeyPath } from "./ssh-private-key.js";
+import { publishStaticSites } from "./static-publish.js";
 import { getConfigSourceDir } from "./source.js";
 import { declaredStacks, generateStackUserData, mergeUserData, resolveStack, servicesNeedsLegacyWarning } from "./stack.js";
 export function unwrapDropletEntry(entry) {
@@ -37,7 +38,8 @@ export function normalizeResources(config) {
         databases: [...(config.resources?.databases ?? [])],
         spaces: [...(config.resources?.spaces ?? [])],
         certificates: [...(config.resources?.certificates ?? [])],
-        cdn: [...(config.resources?.cdn ?? [])]
+        cdn: [...(config.resources?.cdn ?? [])],
+        static_sites: [...(config.resources?.static_sites ?? [])]
     };
     if (config.networking?.vpc) {
         if (config.networking.vpc === true) {
@@ -168,6 +170,7 @@ export async function applyGrapeConfig(config, options = {}) {
         spaces: [],
         certificates: [],
         cdn: [],
+        static_sites: [],
         stacks: [],
         private_key_paths: [],
         receipt: [],
@@ -521,13 +524,23 @@ export async function applyGrapeConfig(config, options = {}) {
             continue;
         }
         if (found.status === "unique" && found.resource) {
-            result.apps.push({ id: found.resource.id, name: found.resource.spec.name });
-            record(result, { kind: "app", name: found.resource.spec.name, action: "adopted", id: found.resource.id }, `Adopting existing app "${found.resource.spec.name}" (id ${found.resource.id}); the spec is not updated`);
+            const ready = app.wait === true
+                ? await waitForAppDeployment(found.resource.id, {
+                    timeoutMs: waitMs(app.wait_seconds, 10 * 60 * 1000)
+                })
+                : found.resource;
+            result.apps.push({ id: ready.id, name: ready.spec.name });
+            record(result, { kind: "app", name: ready.spec.name, action: "adopted", id: ready.id }, `Adopting existing app "${ready.spec.name}" (id ${ready.id}); the spec is not updated`);
             continue;
         }
         const created = await createApp({ spec: app.spec });
-        result.apps.push({ id: created.id, name: created.spec.name });
-        record(result, { kind: "app", name: created.spec.name, action: "created", id: created.id });
+        const ready = app.wait === true
+            ? await waitForAppDeployment(created.id, {
+                timeoutMs: waitMs(app.wait_seconds, 10 * 60 * 1000)
+            })
+            : created;
+        result.apps.push({ id: ready.id, name: ready.spec.name });
+        record(result, { kind: "app", name: ready.spec.name, action: "created", id: ready.id });
     }
     const spaceRegions = new Map();
     const spaceOptions = spacesCallOptions(config);
@@ -601,15 +614,15 @@ export async function applyGrapeConfig(config, options = {}) {
         if (createdCertificate) {
             record(result, { kind: "certificate", name: current.name, action: "created", id: current.id });
         }
-        const referenced = referencedCertificates.has(certificate.name);
-        if (referenced && current.state !== "verified" && certificate.wait !== false) {
-            current = await waitForCertificate(current.id);
-        }
-        else if (referenced && current.state !== "verified" && certificate.wait === false) {
-            warnings.push(`Certificate "${current.name}" is ${current.state ?? "not verified"}; CDN attach will use it because wait is false`);
-        }
-        else if (!referenced && current.state === "pending") {
-            warnings.push(`Certificate "${current.name}" is pending Let's Encrypt issuance. Apply waits only when a resources.cdn entry references it.`);
+        if (current.state !== "verified") {
+            if (certificate.wait === false) {
+                warnings.push(`Certificate "${current.name}" is ${current.state ?? "not verified"}; wait is false, so apply did not poll it`);
+            }
+            else {
+                current = await waitForCertificate(current.id, {
+                    timeoutMs: waitMs(certificate.wait_seconds, 5 * 60 * 1000)
+                });
+            }
         }
         certificateIds.set(current.name, current.id);
         result.certificates.push({
@@ -649,10 +662,14 @@ export async function applyGrapeConfig(config, options = {}) {
                 else {
                     record(result, { kind: "cdn", name: origin, action: "adopted", id: current.id }, `Adopting existing CDN endpoint for origin "${origin}" (id ${current.id}); custom domain and certificate are not changed`);
                 }
+                current = await ensureCdnUsable(current, endpoint.wait, endpoint.wait_seconds, warnings, origin);
                 result.cdn.push(toAppliedCdn(current));
                 continue;
             }
             let certificateId = endpoint.certificate_id ?? (endpoint.certificate ? certificateIds.get(endpoint.certificate) : undefined);
+            let certificateState = endpoint.certificate
+                ? result.certificates.find((item) => item.name === endpoint.certificate)?.state
+                : undefined;
             if (endpoint.certificate && !certificateId) {
                 const match = lookupByName(await loadCertificates(), endpoint.certificate);
                 if (match.status === "ambiguous") {
@@ -664,22 +681,69 @@ export async function applyGrapeConfig(config, options = {}) {
                     throw new Error(`CDN endpoint references certificate "${endpoint.certificate}" which was not created in this apply and was not found on the account`);
                 }
                 certificateId = match.resource.id;
-                if (match.resource.state !== "verified") {
-                    const ready = await waitForCertificate(match.resource.id);
-                    certificateId = ready.id;
+                certificateState = match.resource.state;
+            }
+            if (certificateId && certificateState !== "verified") {
+                const certConfig = (resources.certificates ?? []).find((item) => item.name === endpoint.certificate);
+                const ready = await waitForCertificate(certificateId, {
+                    timeoutMs: waitMs(endpoint.wait_seconds ?? certConfig?.wait_seconds, 5 * 60 * 1000)
+                });
+                certificateId = ready.id;
+                const known = result.certificates.find((item) => item.id === certificateId || item.name === endpoint.certificate);
+                if (known) {
+                    known.state = ready.state;
                 }
             }
-            const created = await createCdnEndpoint({
+            const created = await ensureCdnUsable(await createCdnEndpoint({
                 origin,
                 ttl: endpoint.ttl,
                 certificate_id: certificateId,
                 custom_domain: endpoint.custom_domain
-            });
+            }), endpoint.wait, endpoint.wait_seconds, warnings, origin);
             result.cdn.push(toAppliedCdn(created));
             record(result, { kind: "cdn", name: origin, action: "created", id: created.id });
         }
     }
+    const staticSites = resources.static_sites ?? [];
+    if (staticSites.length > 0) {
+        const published = await publishStaticSites(staticSites, {
+            baseDir,
+            spaces: result.spaces,
+            spaceOptions,
+            requireAppliedSpace: true,
+            fallbackRegion: config.region,
+            spaceAcls: new Map((resources.spaces ?? []).map((space) => [space.name, space.acl]))
+        });
+        result.static_sites.push(...published);
+        for (const site of published) {
+            record(result, {
+                kind: "static_site",
+                name: site.name,
+                action: "updated",
+                note: `${site.uploaded} uploaded, ${site.deleted} deleted`
+            });
+        }
+    }
     return result;
+}
+function waitMs(seconds, fallbackMs) {
+    return seconds === undefined ? fallbackMs : seconds * 1000;
+}
+/**
+ * Poll when the CDN object has no usable hostname yet.
+ * A hostname already on the create/adopt payload is treated as live (no extra GET).
+ */
+async function ensureCdnUsable(endpoint, wait, waitSeconds, warnings, origin) {
+    if (cdnEndpointIsLive(endpoint)) {
+        return endpoint;
+    }
+    if (wait === false) {
+        warnings.push(`CDN endpoint for origin "${origin}" has no hostname yet; wait is false, so apply did not poll it`);
+        return endpoint;
+    }
+    return waitForCdnEndpoint(endpoint.id, {
+        timeoutMs: waitMs(waitSeconds, 5 * 60 * 1000)
+    });
 }
 function record(result, item, warning) {
     result.receipt.push(item);

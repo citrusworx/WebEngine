@@ -10,7 +10,8 @@ They follow a live smoke-test path: tag and VPC first (no droplet cost), then a 
 | [`02-droplet-in-vpc.yaml`](./02-droplet-in-vpc.yaml) | Tag, generated SSH key, VPC, droplet `grapevine-web-01` | Droplet (`s-1vcpu-1gb`) |
 | [`03-web-firewall.yaml`](./03-web-firewall.yaml) | Firewall attached to an **existing** droplet | Free |
 | [`04-full-web-stack.yaml`](./04-full-web-stack.yaml) | Tag + SSH + VPC + droplet + firewall in one apply | Droplet (`s-1vcpu-1gb`) |
-| [`05-static-site-spaces.yaml`](./05-static-site-spaces.yaml) | Space + Let's Encrypt certificate + CDN endpoint for a static site (Juice-style) | Space storage + CDN (no droplet) |
+| [`05-static-site-spaces.yaml`](./05-static-site-spaces.yaml) | Space + Let's Encrypt certificate + CDN endpoint (no build or upload) | Space storage + CDN (no droplet) |
+| [`06-juice-static.yaml`](./06-juice-static.yaml) | Same hosting plus `static_sites` build and `dist/` upload for Juice | Space storage + CDN (no droplet) |
 | [`kiwipress-compose/`](./kiwipress-compose/) | KiwiPress compose: VPC + droplet + firewall + Docker Compose stack | Droplet (`s-2vcpu-4gb`) |
 | [`kiwipress-managed/`](./kiwipress-managed/) | Managed MySQL + Postgres + droplet compose app layer | Droplet + 2× managed DB |
 
@@ -41,9 +42,9 @@ They follow a live smoke-test path: tag and VPC first (no droplet cost), then a 
    grape apply -c ./01-vpc-and-tag.yaml
    ```
 
-`validate` checks the Grapevine schema only. `apply` calls the DigitalOcean API in dependency order (tags → SSH keys → VPCs → databases → droplets → firewalls → domains → load balancers → alerts → apps → Spaces → certificates → CDN). KiwiPress packs also generate droplet `user_data` from the `stack` section.
+`validate` checks the Grapevine schema only. `apply` calls the DigitalOcean API in dependency order (tags → SSH keys → VPCs → databases → droplets → firewalls → domains → load balancers → alerts → apps → Spaces → certificates → CDN → static site build/upload). KiwiPress packs also generate droplet `user_data` from the `stack` section.
 
-`05-static-site-spaces.yaml` is the static-site path (Spaces + CDN + a certificate), aimed at a public Vite build such as `apps/juice` (`@citrusworx/juiceapp`). It does **not** run `yarn workspace @citrusworx/juiceapp build` and it does **not** upload `dist/`. Replace `replace-space-name`, `example.com`, and `static.example.com` before apply. Spaces calls need `DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY` in addition to `DO_TOKEN`. `grape validate` and `grape plan` do not need those tokens.
+`05-static-site-spaces.yaml` provisions the Space, certificate, and CDN only. `06-juice-static.yaml` is the Juice template: the same resources plus `resources.static_sites`, which runs `yarn workspace @citrusworx/juiceapp build` from the monorepo root and uploads `apps/juice/dist`. `grape publish -c` runs that build and upload without creating other resources. Neither file creates the site CNAME; point `static.example.com` at the CDN `endpoint` hostname yourself. Replace placeholder names before apply. Spaces calls need `DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY` in addition to `DO_TOKEN`. `grape validate` and `grape plan` do not need those tokens.
 
 Each KiwiPress pack has its own README (`kiwipress-compose/README.md`, `kiwipress-managed/README.md`) for compose assets, env placeholders, and what is deferred (wizard API).
 

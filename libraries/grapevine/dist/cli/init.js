@@ -35,8 +35,15 @@ const CATALOG = [
     {
         id: "05-static-site-spaces",
         file: "05-static-site-spaces.yaml",
-        summary: "Space + Let's Encrypt certificate + CDN for a static site (Juice-style; no upload)",
-        aliases: ["05", "static-site", "spaces", "juice"],
+        summary: "Space + Let's Encrypt certificate + CDN (no Vite build or upload)",
+        aliases: ["05", "static-site", "spaces"],
+        kind: "file"
+    },
+    {
+        id: "06-juice-static",
+        file: "06-juice-static.yaml",
+        summary: "Juice template: Space + certificate + CDN + Vite build and dist upload",
+        aliases: ["06", "juice", "juice-static"],
         kind: "file"
     },
     {

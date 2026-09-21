@@ -1,4 +1,6 @@
 import { applyGrapeConfig } from "../config/apply.js";
+import { declaredSpaceIndex, publishStaticSites } from "../config/static-publish.js";
+import { getConfigSourceDir } from "../config/source.js";
 import { DESTROY_V1_NOTES, destroyGrapeResources, planDestroy } from "../config/destroy.js";
 import { loadGrapeConfig } from "../config/load.js";
 import { fetchLiveInventory, tokenIsSet } from "../config/live.js";
@@ -85,6 +87,68 @@ export async function handleApply(options: CommandOptions): Promise<void> {
         return;
     }
     renderApply(result);
+}
+
+export async function handlePublish(options: CommandOptions): Promise<void> {
+    const source = requireConfig(options.config);
+    const config = await loadGrapeConfig(source);
+    const sites = config.resources?.static_sites ?? [];
+    if (sites.length === 0) {
+        throw new CliError("No resources.static_sites in this config. Declare one to build and upload dist/.");
+    }
+
+    if (options.dryRun) {
+        const preview = sites.map((site) => ({
+            name: site.name,
+            space: site.space,
+            dist: site.dist,
+            build: site.build ?? (site.workspace ? `yarn workspace ${site.workspace} build` : null),
+            cwd: site.cwd ?? null
+        }));
+        if (options.json) {
+            printJson({ dry_run: true, static_sites: preview });
+            return;
+        }
+        println("Publish dry-run  (no build, no Spaces upload)");
+        println();
+        for (const site of preview) {
+            println(`  ${site.name}`);
+            println(`    build  ${site.build ?? "(missing)"}`);
+            println(`    dist   ${site.dist}`);
+            println(`    space  ${site.space}`);
+            println(`    cwd    ${site.cwd ?? "monorepo root (package.json workspaces, else process cwd)"}`);
+        }
+        println();
+        println("DNS CNAME to the CDN hostname is still operator-owned. grape publish does not create it.");
+        return;
+    }
+
+    const declared = declaredSpaceIndex(config);
+    const published = await publishStaticSites(sites, {
+        baseDir: getConfigSourceDir(config),
+        spaces: declared.spaces,
+        spaceAcls: declared.acls,
+        fallbackRegion: config.region,
+        requireAppliedSpace: false,
+        spaceOptions: {
+            accessKeyEnv: config.credentials?.spaces_access_key_env,
+            secretKeyEnv: config.credentials?.spaces_secret_key_env
+        }
+    });
+    if (options.json) {
+        printJson({ static_sites: published });
+        return;
+    }
+    println("Published");
+    for (const site of published) {
+        println(
+            `  static_site     ${site.name}  space=${site.space}  uploaded=${site.uploaded}  deleted=${site.deleted}`
+        );
+        println(`    cwd ${site.cwd}`);
+        println(`    dist ${site.dist}`);
+    }
+    println();
+    println("DNS CNAME to the CDN hostname is still operator-owned. grape publish does not create it.");
 }
 
 export async function handleDestroy(options: CommandOptions): Promise<void> {

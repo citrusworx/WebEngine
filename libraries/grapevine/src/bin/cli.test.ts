@@ -208,6 +208,7 @@ describe("grape CLI", () => {
         expect(text).toContain("destroy");
         expect(text).toContain("status");
         expect(text).toContain("init");
+        expect(text).toContain("publish");
     });
 
     it("prints per-command help", async () => {
@@ -275,6 +276,37 @@ describe("grape CLI", () => {
         expect(text).toContain("Private keys written");
         expect(text).toContain("/tmp/.grape/ssh/grapevine");
         expect(text).toContain("ssh -i /tmp/.grape/ssh/grapevine");
+    });
+
+    it("publish --dry-run prints the Juice build without uploading", async () => {
+        const dir = await mkdtemp(path.join(tmpdir(), "grape-publish-"));
+        const file = path.join(dir, "grape.config.yaml");
+        await writeFile(
+            file,
+            `
+provider: digitalocean
+region: nyc3
+resources:
+  spaces:
+    - name: juice-showcase
+      acl: public-read
+  static_sites:
+    - name: juice
+      workspace: "@citrusworx/juiceapp"
+      build: "yarn workspace @citrusworx/juiceapp build"
+      dist: apps/juice/dist
+      space: juice-showcase
+`.trim(),
+            "utf8"
+        );
+        const code = await runCli(["publish", "--dry-run", "-c", file]);
+        expect(code).toBe(0);
+        const text = logs.join("");
+        expect(text).toMatch(/dry-run/i);
+        expect(text).toContain("yarn workspace @citrusworx/juiceapp build");
+        expect(text).toContain("apps/juice/dist");
+        expect(text).toContain("juice-showcase");
+        expect(text).toMatch(/CNAME/i);
     });
 
     it("apply --json prints structured apply output including private_key_paths", async () => {

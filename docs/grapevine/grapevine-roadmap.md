@@ -18,7 +18,7 @@ The weakest areas are still:
 
 - apply adopts unique names and can update firewall rules and CDN TTL, but it does not roll back, resize droplets, or diff every field
 - `grape status` is not drift
-- several schema fields (`services`, `monitoring`, boolean `networking.ssl` / `networking.cdn`) look like product and do not provision. Spaces, CDN endpoints, and certificates are real resources. Juice still needs a wait-until-live helper, a Vite build plus Spaces sync, and the site CNAME
+- several schema fields (`services`, `monitoring`, boolean `networking.ssl` / `networking.cdn`) look like product and do not provision. Spaces, CDN endpoints, certificates, certificate/CDN waits, and static-site build plus Spaces sync are real and still Emerging. The site CNAME to the CDN hostname is still operator-owned
 - tests beyond mocked HTTP
 
 Active development is the honest label. The DigitalOcean create path is real enough to teach in depth; it is not Terraform and not frozen.
@@ -99,7 +99,7 @@ If Grapevine is viewed as an IaC platform, its current maturity looks roughly li
 - function CRUD: useful and unevenly documented
 - status CLI: useful and easy to over-read
 - Docs as product surface: much stronger after the tutorial and topic pages
-- State / drift: not started. `grape destroy` exists and is still conservative. Spaces/CDN/certs are emerging, not a finished Juice host
+- State / drift: not started. `grape destroy` exists and is still conservative. Spaces/CDN/certs plus static publish are Emerging, not a finished multi-cloud host. The Juice CNAME is still deferred
 - Multi-cloud / GUI: not started, and not the current goal
 
 In practical terms:
@@ -148,7 +148,7 @@ Highest value schema work:
 
 - fail `services` instead of warning, **or** document it as deprecated and remove it
 - map `resources.alert_policies` only (already) and remove unused top-level `monitoring`
-- boolean `networking.ssl` / `networking.cdn` now warn. Real resources are `resources.certificates` and `resources.cdn`. Idempotent adopt for those resources is in. Still open for Juice: wait until the certificate and CDN edge are live, `yarn workspace @citrusworx/juiceapp build` plus a Spaces sync of `dist/`, and the CNAME from the site hostname to the CDN endpoint
+- boolean `networking.ssl` / `networking.cdn` now warn. Real resources are `resources.certificates` and `resources.cdn`. Idempotent adopt for those resources is in. Certificate and CDN hostname waits, plus `resources.static_sites` (Vite build and Spaces sync), are Emerging. Still open for Juice: the CNAME from the site hostname to the CDN endpoint. That record is operator-owned and is not created by apply or publish
 
 ### Priority 6. Stay complementary to CitrusWorx
 
@@ -165,7 +165,7 @@ A second provider only when a real adapter exists.
 3. Status help text / `credentials.env` consistency.
 4. Schema ghosts: `services` fail-closed or gone.
 5. Field-level converge only where an update is safe and tested (firewall rules and CDN TTL are the current pair).
-6. Juice follow-ups: wait-until-live, Vite build plus Spaces sync, site CNAME. Not a second cloud.
+6. Juice follow-up still open: site CNAME to the CDN hostname. Wait-until-live and Vite build plus Spaces sync are Emerging, not a second cloud.
 
 ---
 

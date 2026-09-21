@@ -118,8 +118,10 @@ import {
 | Domains | `createDomain`, `listAllDomains`, `createDomainRecord`, `updateDomainRecord`, `deleteDomain` |
 | LB | `createLoadBalancer`, `listAllLoadBalancers`, `addDropletsToLoadBalancer`, `deleteLoadBalancer` |
 | Monitoring | `createAlertPolicy`, `listAlertPolicies`, `updateAlertPolicy`, `deleteAlertPolicy` |
-| Apps | `createApp`, `createAppFromBlueprint`, `listApps`, `updateApp`, `deleteApp`, `createDeployment` |
+| Apps | `createApp`, `createAppFromBlueprint`, `listApps`, `updateApp`, `deleteApp`, `createDeployment`, `waitForAppDeployment` |
 | Databases | `createDatabase`, `listDatabases`, `getDatabase`, `waitForDatabase`, `deleteDatabase` |
+| Spaces objects | `putSpaceObject`, `listSpaceObjects`, `deleteSpaceObject` (bucket create/list/delete stay on `createSpace` / `listSpaces` / `deleteSpace`) |
+| CDN / certificates | `createCdnEndpoint`, `waitForCdnEndpoint`, `createCertificate`, `waitForCertificate` |
 | Images | `listAllImages`, `createCustomImage`, `updateImage`, `deleteImage` |
 | Security | `createScan`, `listScans`, `getLatestScans`, `createSuppression`, … |
 | Actions | `getDropletActions`, `getAction`, `logDropletActions` |
@@ -141,6 +143,7 @@ Use the `grape` binary:
 grape validate -c <path|url>
 grape plan     -c <path|url>
 grape apply    -c <path|url> [--dry-run] [--json]
+grape publish  -c <path|url> [--dry-run] [--json]
 grape destroy  [-c <path|url>] [--tag <tag>] [--yes] [--dry-run]
 grape status   [-c <path|url>] [--json]
 grape init     [blueprint] [--list] [--force]

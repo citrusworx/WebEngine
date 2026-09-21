@@ -13,7 +13,8 @@ export {
     type DatabaseResourceConfig,
     type SpaceResourceConfig,
     type CertificateResourceConfig,
-    type CdnResourceConfig
+    type CdnResourceConfig,
+    type StaticSiteResourceConfig
 } from "./config/schema.js";
 export { loadGrapeConfig, parseConfigText, readConfigSource, isRemoteConfigSource } from "./config/load.js";
 export {
@@ -29,8 +30,16 @@ export {
     type AppliedCertificate,
     type AppliedCdn,
     type AppliedStack,
+    type StaticSitePublishResult,
     type GrapeRunOptions
 } from "./config/apply.js";
+export {
+    publishStaticSites,
+    runBuildCommand,
+    syncDistToSpace,
+    resolveStaticSiteBuild,
+    resolveStaticSiteCwd
+} from "./config/static-publish.js";
 export {
     planGrapeConfig,
     resolveGrapePlan,

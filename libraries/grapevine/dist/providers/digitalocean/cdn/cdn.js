@@ -1,4 +1,5 @@
 import { doRequest } from "../client.js";
+import { pollUntil } from "../wait.js";
 import { cleanPayload } from "../utilities.js";
 import { spaceOriginHostname } from "../spaces/spaces.js";
 /** DigitalOcean allows only these CDN edge TTLs. */
@@ -56,6 +57,49 @@ export async function deleteCdnEndpoint(id) {
     await doRequest({
         method: "DELETE",
         url: `/cdn/endpoints/${encodeURIComponent(id)}`
+    });
+}
+/** Default CDN hostname poll: 5 minutes, every 5 seconds. */
+export const DEFAULT_CDN_WAIT_MS = 5 * 60 * 1000;
+export const DEFAULT_CDN_POLL_MS = 5_000;
+/**
+ * A CDN endpoint is usable once DigitalOcean has assigned the `endpoint` hostname.
+ * The public v2 object has no status field; a non-empty hostname is the ready signal.
+ * If `status` is present, only `active` or `online` (with a hostname) counts as live.
+ */
+export function cdnEndpointIsLive(endpoint) {
+    const hostname = endpoint.endpoint?.trim();
+    if (!hostname) {
+        return false;
+    }
+    const status = endpoint.status?.trim().toLowerCase();
+    if (!status) {
+        return true;
+    }
+    return status === "active" || status === "online";
+}
+function cdnTerminalError(endpoint) {
+    const status = endpoint.status?.trim().toLowerCase();
+    if (status === "error" || status === "failed") {
+        return `DigitalOcean CDN endpoint ${endpoint.id} entered status "${endpoint.status}"`;
+    }
+    return undefined;
+}
+/**
+ * Poll GET /cdn/endpoints/:id until the endpoint hostname is present
+ * (and status, when returned, is active). Bounded; never loops forever.
+ */
+export async function waitForCdnEndpoint(id, options = {}) {
+    const timeoutMs = options.timeoutMs ?? DEFAULT_CDN_WAIT_MS;
+    const intervalMs = options.intervalMs ?? DEFAULT_CDN_POLL_MS;
+    return pollUntil({
+        timeoutMs,
+        intervalMs,
+        sleep: options.sleep,
+        read: () => getCdnEndpoint(id),
+        done: cdnEndpointIsLive,
+        failure: cdnTerminalError,
+        timeoutError: (current) => `Timed out waiting for DigitalOcean CDN endpoint ${id} to become usable (last endpoint: ${current.endpoint?.trim() || "missing"}${current.status ? `, status ${current.status}` : ""})`
     });
 }
 //# sourceMappingURL=cdn.js.map

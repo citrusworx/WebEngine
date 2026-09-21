@@ -294,7 +294,7 @@ Why it is bad:
 - droplet `volumes: ["vol-id"]` only forwards ids
 - firewall `kubernetes_ids` is payload shape, not a cluster factory
 
-Spaces, CDN endpoints, and certificates **are** grape resources (`resources.spaces`, `resources.cdn`, `resources.certificates`). See `examples/blueprints/05-static-site-spaces.yaml`. That blueprint still does not build or upload a Vite `dist/`.
+Spaces, CDN endpoints, and certificates **are** grape resources (`resources.spaces`, `resources.cdn`, `resources.certificates`). `05-static-site-spaces.yaml` provisions them. `06-juice-static.yaml` also builds and uploads a Vite `dist/` via `resources.static_sites`. The site CNAME is still yours to create.
 
 Better: leave volumes and DOKS outside Grapevine. Check [DigitalOcean guide](./grapevine-digitalocean.md).
 

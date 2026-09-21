@@ -169,7 +169,14 @@ export const appResourceSchema = z.object({
         static_sites: z.array(z.record(z.string(), z.unknown())).optional(),
         databases: z.array(z.record(z.string(), z.unknown())).optional(),
         domains: z.array(z.record(z.string(), z.unknown())).optional()
-    })
+    }),
+    /**
+     * Poll until the App Platform deployment is ACTIVE. Default false.
+     * The Juice static site path is Spaces, not App Platform.
+     */
+    wait: z.boolean().optional(),
+    /** Seconds to poll before failing when `wait` is true. Default 600. */
+    wait_seconds: z.number().int().positive().optional()
 });
 
 export const databaseConnectionEnvSchema = z.object({
@@ -212,10 +219,13 @@ export const certificateResourceSchema = z
         leaf_certificate_env: z.string().min(1).optional(),
         certificate_chain_env: z.string().min(1).optional(),
         /**
-         * When a same-apply CDN endpoint references this certificate, poll until
-         * `verified` before attaching (default true). Unused certificates are not waited on.
+         * Poll until `state` is `verified` after create or adopt (default true).
+         * `false` skips that poll. A CDN create that still needs this certificate
+         * waits anyway, because DigitalOcean requires a verified `certificate_id`.
          */
-        wait: z.boolean().optional()
+        wait: z.boolean().optional(),
+        /** Seconds to poll before failing. Default 300. */
+        wait_seconds: z.number().int().positive().optional()
     })
     .refine((value) => value.type !== "lets_encrypt" || Boolean(value.dns_names && value.dns_names.length > 0), {
         message: "lets_encrypt certificates require dns_names",
@@ -252,10 +262,61 @@ export const cdnResourceSchema = z
         custom_domain: z.string().min(1).optional(),
         /** Certificate `name` from this config or already on the account. */
         certificate: z.string().min(1).optional(),
-        certificate_id: z.string().min(1).optional()
+        certificate_id: z.string().min(1).optional(),
+        /**
+         * After create or adopt, poll until the CDN `endpoint` hostname is set
+         * (default true). This does not create the site CNAME.
+         */
+        wait: z.boolean().optional(),
+        /** Seconds to poll before failing. Default 300. */
+        wait_seconds: z.number().int().positive().optional()
     })
     .refine((value) => Boolean(value.origin || value.space), {
         message: "cdn endpoint requires space or origin"
+    });
+
+export const staticSiteResourceSchema = z
+    .object({
+        name: z.string().min(1),
+        /**
+         * Yarn workspace name (for example `@citrusworx/juiceapp`).
+         * When `build` is omitted, apply runs `yarn workspace <workspace> build`.
+         */
+        workspace: z.string().min(1).optional(),
+        /** Shell command. Runs with `cwd` as the working directory. */
+        build: z.string().min(1).optional(),
+        /**
+         * Directory to upload, relative to `cwd` unless absolute.
+         * For Juice this is `apps/juice/dist` after the Vite build.
+         */
+        dist: z.string().min(1),
+        /** Space name from this apply, or an existing Space for `grape publish`. */
+        space: spaceNameSchema,
+        /** Used when the Space is not declared in this config. */
+        region: z.string().min(1).optional(),
+        /**
+         * Build working directory. Absolute, or relative to the grape config file.
+         * When omitted, apply uses the nearest parent of `process.cwd()` whose
+         * package.json declares `workspaces`, otherwise `process.cwd()`.
+         * Run `grape` from the monorepo root if that detection should be the repo root.
+         */
+        cwd: z.string().min(1).optional(),
+        /** Object key prefix inside the Space. No leading slash. */
+        prefix: z.string().min(1).optional(),
+        /**
+         * Object ACL (`x-amz-acl`). Defaults to the declared Space `acl` when
+         * that Space is in this config. Omitted means private objects.
+         */
+        acl: z.enum(["private", "public-read"]).optional(),
+        /**
+         * Delete objects under the prefix that this dist did not upload.
+         * Default false: overwrite keys, leave everything else.
+         */
+        delete_stale: z.boolean().optional()
+    })
+    .refine((value) => Boolean(value.build?.trim() || value.workspace?.trim()), {
+        message: "static site requires build or workspace",
+        path: ["build"]
     });
 
 export const databaseResourceSchema = z.object({
@@ -339,7 +400,9 @@ export const resourcesSchema = z.object({
     databases: z.array(databaseResourceSchema).optional(),
     spaces: z.array(spaceResourceSchema).optional(),
     certificates: z.array(certificateResourceSchema).optional(),
-    cdn: z.array(cdnResourceSchema).optional()
+    cdn: z.array(cdnResourceSchema).optional(),
+    /** Build a workspace and upload `dist/` into a Space. Not a DigitalOcean resource type. */
+    static_sites: z.array(staticSiteResourceSchema).optional()
 });
 
 export const grapeConfigSchema = z.object({
@@ -398,6 +461,7 @@ export type DatabaseResourceConfig = z.infer<typeof databaseResourceSchema>;
 export type SpaceResourceConfig = z.infer<typeof spaceResourceSchema>;
 export type CertificateResourceConfig = z.infer<typeof certificateResourceSchema>;
 export type CdnResourceConfig = z.infer<typeof cdnResourceSchema>;
+export type StaticSiteResourceConfig = z.infer<typeof staticSiteResourceSchema>;
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
     return value && typeof value === "object" && !Array.isArray(value)

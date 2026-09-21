@@ -1,4 +1,5 @@
 import { doRequest } from "../client.js";
+import { pollUntil } from "../wait.js";
 import { cleanPayload } from "../utilities.js";
 
 export type CertificateType = "custom" | "lets_encrypt";
@@ -69,36 +70,32 @@ export interface WaitForCertificateOptions {
     sleep?: (ms: number) => Promise<void>;
 }
 
-const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+/** Default Let's Encrypt poll: 5 minutes, every 5 seconds. */
+export const DEFAULT_CERTIFICATE_WAIT_MS = 5 * 60 * 1000;
+export const DEFAULT_CERTIFICATE_POLL_MS = 5_000;
 
 /**
  * Poll GET /certificates/:id until `state` is `verified`.
- * Let's Encrypt certificates are created as `pending`. Used when a same-apply
- * CDN endpoint needs the certificate id. This does not wait for the CDN edge.
+ * Let's Encrypt certificates are created as `pending`. `error` fails immediately.
+ * The loop is bounded by `timeoutMs` and by `ceil(timeoutMs / intervalMs)` reads.
  */
 export async function waitForCertificate(
     id: string,
     options: WaitForCertificateOptions = {}
 ): Promise<CertificateResource> {
-    const timeoutMs = options.timeoutMs ?? 5 * 60 * 1000;
-    const intervalMs = options.intervalMs ?? 5_000;
-    const sleep = options.sleep ?? defaultSleep;
-    const started = Date.now();
-
-    let current = await getCertificate(id);
-    while (current.state !== "verified") {
-        if (current.state === "error") {
-            throw new Error(
-                `DigitalOcean certificate "${current.name}" (${id}) entered state "error"`
-            );
-        }
-        if (Date.now() - started > timeoutMs) {
-            throw new Error(
-                `Timed out waiting for DigitalOcean certificate "${current.name}" (${id}) to become verified (last state: ${current.state ?? "unknown"})`
-            );
-        }
-        await sleep(intervalMs);
-        current = await getCertificate(id);
-    }
-    return current;
+    const timeoutMs = options.timeoutMs ?? DEFAULT_CERTIFICATE_WAIT_MS;
+    const intervalMs = options.intervalMs ?? DEFAULT_CERTIFICATE_POLL_MS;
+    return pollUntil({
+        timeoutMs,
+        intervalMs,
+        sleep: options.sleep,
+        read: () => getCertificate(id),
+        done: (current) => current.state === "verified",
+        failure: (current) =>
+            current.state === "error"
+                ? `DigitalOcean certificate "${current.name}" (${id}) entered state "error"`
+                : undefined,
+        timeoutError: (current) =>
+            `Timed out waiting for DigitalOcean certificate "${current.name}" (${id}) to become verified (last state: ${current.state ?? "unknown"})`
+    });
 }

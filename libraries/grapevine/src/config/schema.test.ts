@@ -65,6 +65,35 @@ describe("grape config schema", () => {
         expect(parsed.resources.cdn?.[0]?.ttl).toBe(3600);
     });
 
+    it("accepts a Juice static_sites publish block", () => {
+        const parsed = validateGrapeConfig({
+            provider: "digitalocean",
+            region: "nyc3",
+            resources: {
+                spaces: [{ name: "juice-showcase", acl: "public-read" }],
+                static_sites: [
+                    {
+                        name: "juice",
+                        workspace: "@citrusworx/juiceapp",
+                        dist: "apps/juice/dist",
+                        space: "juice-showcase"
+                    }
+                ]
+            }
+        });
+        expect(parsed.resources.static_sites?.[0]?.workspace).toBe("@citrusworx/juiceapp");
+    });
+
+    it("rejects a static site with neither build nor workspace", () => {
+        const result = safeValidateGrapeConfig({
+            provider: "digitalocean",
+            resources: {
+                static_sites: [{ name: "juice", dist: "apps/juice/dist", space: "juice-showcase" }]
+            }
+        });
+        expect(result.success).toBe(false);
+    });
+
     it("rejects a Let's Encrypt certificate without dns names", () => {
         const result = safeValidateGrapeConfig({
             provider: "digitalocean",

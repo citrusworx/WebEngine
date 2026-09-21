@@ -10,7 +10,8 @@ export interface SpacesSignatureInput {
     path?: string;
     query?: Record<string, string | undefined>;
     headers?: Record<string, string>;
-    body?: string;
+    /** UTF-8 string or raw object bytes. Omitted means an empty payload hash. */
+    body?: string | Uint8Array;
     accessKeyId: string;
     secretAccessKey: string;
     region: string;
@@ -47,8 +48,14 @@ export function canonicalQueryString(query: Record<string, string | undefined> =
         .join("&");
 }
 
-function sha256Hex(value: string): string {
-    return createHash("sha256").update(value, "utf8").digest("hex");
+function sha256Hex(value: string | Uint8Array): string {
+    const hash = createHash("sha256");
+    if (typeof value === "string") {
+        hash.update(value, "utf8");
+    } else {
+        hash.update(value);
+    }
+    return hash.digest("hex");
 }
 
 function hmac(key: Buffer | string, value: string): Buffer {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DigitalOceanError, wrapDoError } from "../client.js";
-import { signSpacesRequest } from "./sigv4.js";
+import { canonicalUri, signSpacesRequest } from "./sigv4.js";
 export const SPACES_HOST_SUFFIX = "digitaloceanspaces.com";
 export const DEFAULT_SPACES_ACCESS_KEY_ENV = "DO_SPACES_ACCESS_KEY_ID";
 export const DEFAULT_SPACES_SECRET_KEY_ENV = "DO_SPACES_SECRET_ACCESS_KEY";
@@ -40,6 +40,12 @@ export function parseSpacesError(body) {
         requestId: xmlTag(body, "RequestId")
     };
 }
+export function spacesObjectPath(key) {
+    if (!key?.trim()) {
+        return "/";
+    }
+    return `/${key.replace(/^\/+/, "")}`;
+}
 export async function spacesRequest(options) {
     const credentials = options.credentials ??
         getSpacesCredentials({
@@ -47,10 +53,11 @@ export async function spacesRequest(options) {
             secretKeyEnv: options.secretKeyEnv
         });
     const host = spacesHost(options.region, options.bucket);
+    const path = spacesObjectPath(options.key);
     const signed = signSpacesRequest({
         method: options.method,
         host,
-        path: "/",
+        path,
         query: options.query,
         headers: options.headers,
         body: options.body,
@@ -59,7 +66,7 @@ export async function spacesRequest(options) {
         region: options.region
     });
     const query = signed.queryString ? `?${signed.queryString}` : "";
-    const url = `https://${host}/${query}`;
+    const url = `https://${host}${canonicalUri(path)}${query}`;
     try {
         const response = await axios.request({
             method: options.method,

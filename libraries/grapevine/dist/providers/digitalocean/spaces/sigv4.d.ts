@@ -6,7 +6,8 @@ export interface SpacesSignatureInput {
     path?: string;
     query?: Record<string, string | undefined>;
     headers?: Record<string, string>;
-    body?: string;
+    /** UTF-8 string or raw object bytes. Omitted means an empty payload hash. */
+    body?: string | Uint8Array;
     accessKeyId: string;
     secretAccessKey: string;
     region: string;

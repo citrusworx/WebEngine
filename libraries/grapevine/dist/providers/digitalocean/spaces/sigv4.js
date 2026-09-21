@@ -20,7 +20,14 @@ export function canonicalQueryString(query = {}) {
         .join("&");
 }
 function sha256Hex(value) {
-    return createHash("sha256").update(value, "utf8").digest("hex");
+    const hash = createHash("sha256");
+    if (typeof value === "string") {
+        hash.update(value, "utf8");
+    }
+    else {
+        hash.update(value);
+    }
+    return hash.digest("hex");
 }
 function hmac(key, value) {
     return createHmac("sha256", key).update(value, "utf8").digest();

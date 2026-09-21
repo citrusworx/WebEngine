@@ -154,7 +154,7 @@ List policies and match `description` (the same key destroy uses). A unique desc
 
 ### Apps
 
-List apps and match `spec.name`. A unique name is adopted. The spec is not updated (that would redeploy). Otherwise `createApp({ spec })`. Grapevine does not wait for a deployment to go active. `waitForAppDeployment` is not implemented.
+List apps and match `spec.name`. A unique name is adopted. The spec is not updated (that would redeploy). Otherwise `createApp({ spec })`. Waiting for a deployment is opt-in: `wait: true` calls `waitForAppDeployment` until `active_deployment.phase` is `ACTIVE` (default off; `wait_seconds` defaults to 600). Juice static hosting does not use App Platform.
 
 ### Spaces
 
@@ -164,13 +164,29 @@ For each `resources.spaces` entry, region comes from the Space or `config.region
 
 List `GET /certificates`. A unique name is adopted. PEM material and DNS names are not replaced. Ambiguous names are skipped. Otherwise `POST /certificates`. `lets_encrypt` sends `dns_names`. `custom` sends PEM fields from the document or from the named env vars.
 
-If a `resources.cdn` entry references the certificate by name and `wait` is not `false`, apply polls until `state` is `verified` so a **new** CDN endpoint can send `certificate_id`. `error` fails immediately. A certificate nothing references is not waited on, even when Let's Encrypt leaves it `pending`. That wait is only for CDN attach. It does not wait until the CDN edge serves traffic.
+After create or adopt, apply polls `GET /certificates/:id` until `state` is `verified`, unless `wait: false`. `wait_seconds` sets the timeout (default 300). `error` fails immediately. The loop is bounded by that timeout and by the number of polls, so it cannot spin forever. A CDN **create** that needs `certificate_id` waits until the certificate is verified even when that certificate set `wait: false`, because DigitalOcean will not attach an unverified id. This wait does not check DNS and does not mean the custom domain serves traffic.
 
 ### CDN endpoints
 
 Origin is `origin`, or `{space}.{region}.digitaloceanspaces.com` using the CDN region, the same-apply Space region, or `config.region`. Apply lists `GET /cdn/endpoints` and adopts a unique origin. If `ttl` is set and differs, apply `PUT`s **only** `ttl`. Custom domain and `certificate_id` are not changed on an existing endpoint. Ambiguous origins are skipped. Otherwise `POST /cdn/endpoints` with optional `ttl`, `certificate_id`, and `custom_domain`.
 
-Destroy removes CDN endpoints before certificates and Spaces. DigitalOcean will not delete a certificate or a Space that a CDN endpoint still references. Space delete also fails while the bucket has objects; destroy does not empty it.
+After create or adopt, if the endpoint object has no usable hostname yet, apply polls `GET /cdn/endpoints/:id` until `endpoint` is set (`wait` defaults true, `wait_seconds` defaults to 300). The documented v2 CDN object has no status field; a non-empty `endpoint` hostname is the ready signal. If a response includes `status`, only `active` or `online` (with a hostname) counts as live, and `error` / `failed` fail immediately. A hostname already present on the create or list payload is treated as live and is not polled again. This does not create the site CNAME.
+
+### Static sites
+
+After the Space exists (created or adopted), each `resources.static_sites` entry:
+
+1. Runs `build` from the working directory described below. If `build` is omitted and `workspace` is set, the command is `yarn workspace <workspace> build`.
+2. Reads `dist` (relative to that directory unless absolute) and `PutObject`s each file into the Space. Content-Type comes from the extension. Object ACL follows the site `acl`, else the Space `acl` in this config (`public-read` or `private`).
+3. Overwrites keys. `delete_stale: true` lists objects under the optional `prefix` and deletes keys this dist did not upload. Default is overwrite only.
+
+**cwd.** `cwd` on the site, when set, is absolute or relative to the grape config file. When omitted, the build runs in the nearest parent of `process.cwd()` whose `package.json` has a `workspaces` field (the monorepo root). If none is found, the build runs in `process.cwd()`. Run `grape` from the repository root when you want that default to be the monorepo.
+
+`grape publish -c` runs only this build and upload. It does not create the Space, certificate, or CDN endpoint. The Space must already exist (or the upload fails). `--dry-run` prints the command and paths and does not spawn or upload.
+
+Re-apply runs the build and upload again. A Space that was skipped (ambiguous name) fails the static site step instead of uploading to an unclear bucket.
+
+Destroy removes CDN endpoints before certificates and Spaces. DigitalOcean will not delete a certificate or a Space that a CDN endpoint still references. Space delete also fails while the bucket has objects; destroy does not empty it. `delete_stale` is only for publish, not destroy.
 
 ## 5. Result
 
@@ -189,6 +205,7 @@ interface ApplyResult {
   spaces: AppliedSpace[]; // name, region, origin, optional acl — no Spaces secret
   certificates: AppliedCertificate[]; // id, name, type, state — no PEM material
   cdn: AppliedCdn[]; // id, origin, endpoint, custom_domain
+  static_sites: StaticSitePublishResult[]; // name, space, uploaded, deleted — no Spaces secret
   stacks: AppliedStack[];
   private_key_paths: string[];
   receipt: ApplyReceiptItem[]; // created | adopted | updated | skipped
@@ -214,9 +231,10 @@ The CLI prints Created, Adopted, Updated, and Skipped sections (or JSON, which i
 | Drift | `grape status` overlap is not a diff. Plan's create/adopt/skip is name presence, not a field diff |
 | Run SSH commands | `user_data` on droplet create only |
 | Provision volumes / DOKS | Not in these loops |
-| Upload a Vite `dist/` or run the Juice build | Not in these loops. `05-static-site-spaces.yaml` only provisions Space + cert + CDN |
-| Create the site CNAME to the CDN hostname | Domain records you declare are created if missing. Apply does not invent the CDN CNAME for you |
-| `waitForAppDeployment` or wait until the CDN edge is live | Not implemented. Certificate wait exists only so a same-apply CDN create can send `certificate_id` |
+| Upload a Vite `dist/` without declaring `static_sites` | `05-static-site-spaces.yaml` still only provisions Space + cert + CDN. `06-juice-static.yaml` and `resources.static_sites` build and upload |
+| Create the site CNAME to the CDN hostname | Domain records you declare are created if missing. Apply does not invent the CDN CNAME. Point the hostname at the printed `endpoint` yourself |
+| Wait until the custom domain answers HTTPS | Certificate `verified` and a CDN hostname are necessary, not a DNS check. The CNAME is still operator-owned |
+| App Platform deploy wait by default | `waitForAppDeployment` runs only when `resources.apps[].wait` is true |
 | Apply loose `services` / `monitoring` | Schema or warning only (`stack` is applied) |
 | Apply `networking.ssl` / `networking.cdn` | Warning only. Use `resources.certificates` and `resources.cdn` |
 
