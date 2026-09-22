@@ -1,0 +1,1520 @@
+@charset "UTF-8";
+/*
+    Sunset Motel sources: ivory, coral (candy apple), denim blue (cornflower), dark cocoa (brown).
+    Derived roles feed the retro-sunset-motel theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+/*
+    Sunset Motel is a fully expressed Juice theme contract.
+    The theme owns:
+    - color relationships
+    - typography voice
+    - semantic element defaults
+    - named themed surfaces
+
+    Juice still owns:
+    - layout
+    - spacing
+    - structural primitives
+*/
+[theme=retro-sunset-motel] {
+  /* Foundation */
+  --ssm-page: rgb(248.625, 244.8, 240.975);
+  --ssm-page-tint: rgb(255, 249.2625, 248.115);
+  --ssm-page-deep: hsl(30, 59%, 14%);
+  --ssm-surface: rgba(248.625, 244.8, 240.975, 0.78);
+  --ssm-surface-strong: rgba(248.625, 244.8, 240.975, 0.92);
+  --ssm-surface-muted: rgba(255, 249.2625, 248.115, 0.78);
+  --ssm-surface-deep: hsl(30, 59%, 17%);
+  --ssm-border: rgba(56.4825, 103.95075, 224.0175, 0.26);
+  --ssm-border-strong: rgba(255, 42.5, 0, 0.38);
+  --ssm-shadow: rgba(56.763, 35.7, 14.637, 0.12);
+  /* Typography */
+  --ssm-text: hsl(30, 59%, 17%);
+  --ssm-text-muted: rgb(128.37975, 104.0655, 83.27025);
+  --ssm-heading: hsl(30, 59%, 14%);
+  --ssm-body-font: "Lato", sans-serif;
+  --ssm-heading-font: "Archivo Black", sans-serif;
+  /* Accent system */
+  --ssm-accent: hsl(10, 100%, 50%);
+  --ssm-accent-soft: hsl(10, 100%, 80%);
+  --ssm-accent-strong: hsl(10, 100%, 30%);
+  --ssm-highlight: rgb(195.44475, 209.685225, 245.70525);
+  /* Surface recipes */
+  --ssm-page-background:
+      radial-gradient(circle at top left, rgba(195.44475, 209.685225, 245.70525, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(208.67925, 219.755175, 247.77075, 0.45), transparent 30%),
+      linear-gradient(180deg, rgb(248.625, 244.8, 240.975) 0%, rgb(255, 249.2625, 248.115) 100%);
+  --ssm-button-background: linear-gradient(135deg, hsl(10, 100%, 50%), hsl(223, 73%, 35%));
+  --ssm-card-background:
+      linear-gradient(180deg, rgba(248.625, 244.8, 240.975, 0.96) 0%, rgba(255, 249.2625, 248.115, 0.88) 100%);
+  --ssm-panel-background:
+      linear-gradient(180deg, rgba(248.625, 244.8, 240.975, 0.98) 0%, rgba(255, 249.2625, 248.115, 0.72) 100%);
+  --ssm-hero-background:
+      radial-gradient(circle at top left, rgba(56.4825, 103.95075, 224.0175, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(30.9825, 78.45075, 198.5175, 0.28), transparent 32%),
+      linear-gradient(135deg, hsl(30, 59%, 14%) 0%, hsl(10, 100%, 20%) 54%, hsl(10, 100%, 30%) 100%);
+  --ssm-stage-background:
+      radial-gradient(circle at 18% 20%, rgba(195.44475, 209.685225, 245.70525, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(255, 170, 153, 0.2), transparent 24%),
+      linear-gradient(145deg, hsl(30, 59%, 14%) 0%, hsl(30, 59%, 17%) 52%, hsl(10, 100%, 30%) 100%);
+  --ssm-stage-outline: rgba(248.625, 244.8, 240.975, 0.14);
+  --ssm-stage-shadow: rgba(56.763, 35.7, 14.637, 0.34);
+  --ssm-chip-background: rgba(248.625, 244.8, 240.975, 0.96);
+  --ssm-buybox-background:
+      linear-gradient(180deg, rgba(248.625, 244.8, 240.975, 0.98) 0%, rgba(255, 249.2625, 248.115, 0.82) 100%);
+  --ssm-buybox-shadow: 0 32px 70px -42px rgba(56.763, 35.7, 14.637, 0.24);
+  --ssm-spec-background:
+      linear-gradient(180deg, rgba(255, 249.2625, 248.115, 0.95) 0%, rgba(248.625, 244.8, 240.975, 0.98) 100%);
+  /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+     Bound from existing Sunset Motel tokens; no new hue family. */
+  --ssm-trigger: var(--ssm-surface-strong);
+  --ssm-trigger-hover: var(--ssm-surface-muted);
+  --ssm-trigger-open: var(--ssm-highlight);
+  --ssm-chevron: var(--ssm-accent);
+  --ssm-panel-rule: var(--ssm-border);
+  --ssm-focus-ring: var(--ssm-accent);
+  --juice-accordion-trigger: var(--ssm-trigger);
+  --juice-accordion-trigger-hover: var(--ssm-trigger-hover);
+  --juice-accordion-trigger-open: var(--ssm-trigger-open);
+  --juice-accordion-chevron: var(--ssm-chevron);
+  --juice-accordion-panel-rule: var(--ssm-panel-rule);
+  --juice-accordion-focus-ring: var(--ssm-focus-ring);
+  /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+  --ssm-tabs-trigger: transparent;
+  --ssm-tabs-trigger-hover: transparent;
+  --ssm-tabs-trigger-active: transparent;
+  --ssm-tabs-text: var(--ssm-text-muted);
+  --ssm-tabs-text-hover: var(--ssm-heading);
+  --ssm-tabs-text-active: var(--ssm-accent);
+  --ssm-tabs-indicator: var(--ssm-accent);
+  --ssm-tabs-list-rule: var(--ssm-border);
+  --ssm-tabs-focus-ring: var(--ssm-accent);
+  --juice-tabs-trigger: var(--ssm-tabs-trigger);
+  --juice-tabs-trigger-hover: var(--ssm-tabs-trigger-hover);
+  --juice-tabs-trigger-active: var(--ssm-tabs-trigger-active);
+  --juice-tabs-text: var(--ssm-tabs-text);
+  --juice-tabs-text-hover: var(--ssm-tabs-text-hover);
+  --juice-tabs-text-active: var(--ssm-tabs-text-active);
+  --juice-tabs-indicator: var(--ssm-tabs-indicator);
+  --juice-tabs-list-rule: var(--ssm-tabs-list-rule);
+  --juice-tabs-focus-ring: var(--ssm-tabs-focus-ring);
+  /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+  --juice-surface-soft-bg: var(--ssm-surface);
+  --juice-surface-soft-border: var(--ssm-border);
+  --juice-surface-soft-shadow: 0 18px 40px -28px var(--ssm-shadow);
+  --juice-surface-soft-blur: 14px;
+  --juice-surface-strong-bg: var(--ssm-surface-strong);
+  --juice-surface-strong-border: var(--ssm-border-strong);
+  --juice-surface-strong-shadow: 0 24px 56px -24px var(--ssm-shadow);
+  --juice-surface-strong-blur: 0px;
+  --juice-surface-muted-bg: var(--ssm-surface-muted);
+  --juice-surface-muted-border: var(--ssm-border);
+  --juice-surface-muted-shadow: none;
+  --juice-surface-muted-blur: 0px;
+  /* Border strength — existing --ssm-border tokens; 1px hairline vs 2px rule. */
+  --juice-border-strength-soft-width: 1px;
+  --juice-border-strength-soft-color: var(--ssm-border);
+  --juice-border-strength-bold-width: 2px;
+  --juice-border-strength-bold-color: var(--ssm-border-strong);
+  /* Shadow tone — existing blue / purple identity; no new hue family. */
+  --juice-shadow-tone-cool-color: var(--ssm-shadow);
+  --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--ssm-shadow);
+  --juice-shadow-tone-warm-color: color-mix(in srgb, var(--ssm-accent-strong) 16%, transparent);
+  --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--ssm-accent-strong) 16%, transparent);
+  /* Overlay — frost veil / page-tint wash; existing tokens only. */
+  --juice-overlay-frost-wash: color-mix(in srgb, var(--ssm-page) 42%, transparent);
+  --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+  --juice-overlay-tint-wash: color-mix(in srgb, var(--ssm-page-tint) 38%, transparent);
+  --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+  /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+     control, not the CTA gradient. Distinct from overlay="frost|tint". */
+  --ssm-modal-overlay: color-mix(in srgb, var(--ssm-page-deep) 62%, transparent);
+  --ssm-modal-panel: var(--ssm-surface-strong);
+  --ssm-modal-panel-border: var(--ssm-border);
+  --ssm-modal-panel-shadow: 0 24px 56px -24px var(--ssm-shadow);
+  --ssm-modal-close: var(--ssm-surface-strong);
+  --ssm-modal-close-color: var(--ssm-heading);
+  --ssm-modal-close-hover: var(--ssm-surface-muted);
+  --ssm-modal-focus-ring: var(--ssm-accent);
+  --juice-modal-overlay: var(--ssm-modal-overlay);
+  --juice-modal-panel: var(--ssm-modal-panel);
+  --juice-modal-panel-border: var(--ssm-modal-panel-border);
+  --juice-modal-panel-shadow: var(--ssm-modal-panel-shadow);
+  --juice-modal-close: var(--ssm-modal-close);
+  --juice-modal-close-color: var(--ssm-modal-close-color);
+  --juice-modal-close-hover: var(--ssm-modal-close-hover);
+  --juice-modal-focus-ring: var(--ssm-modal-focus-ring);
+  /* Drawer chrome — same identity tokens as modal. Close is a surface
+     control, not the CTA gradient. Distinct from overlay="frost|tint". */
+  --ssm-drawer-overlay: color-mix(in srgb, var(--ssm-page-deep) 62%, transparent);
+  --ssm-drawer-panel: var(--ssm-surface-strong);
+  --ssm-drawer-panel-border: var(--ssm-border);
+  --ssm-drawer-panel-shadow: 0 24px 56px -24px var(--ssm-shadow);
+  --ssm-drawer-close: var(--ssm-surface-strong);
+  --ssm-drawer-close-color: var(--ssm-heading);
+  --ssm-drawer-close-hover: var(--ssm-surface-muted);
+  --ssm-drawer-focus-ring: var(--ssm-accent);
+  --juice-drawer-overlay: var(--ssm-drawer-overlay);
+  --juice-drawer-panel: var(--ssm-drawer-panel);
+  --juice-drawer-panel-border: var(--ssm-drawer-panel-border);
+  --juice-drawer-panel-shadow: var(--ssm-drawer-panel-shadow);
+  --juice-drawer-close: var(--ssm-drawer-close);
+  --juice-drawer-close-color: var(--ssm-drawer-close-color);
+  --juice-drawer-close-hover: var(--ssm-drawer-close-hover);
+  --juice-drawer-focus-ring: var(--ssm-drawer-focus-ring);
+  /* Toast chrome — non-modal stack + panel from existing tokens.
+     Close is a surface control, not the CTA gradient. Status accents
+     remap Sunset Motel identity (no new red/green family): accent /
+     page-deep / accent-soft / accent-strong. */
+  --ssm-toast-panel: var(--ssm-surface-strong);
+  --ssm-toast-panel-border: var(--ssm-border);
+  --ssm-toast-panel-shadow: 0 18px 40px -24px var(--ssm-shadow);
+  --ssm-toast-ink: var(--ssm-text);
+  --ssm-toast-close: var(--ssm-surface-strong);
+  --ssm-toast-close-color: var(--ssm-heading);
+  --ssm-toast-close-hover: var(--ssm-surface-muted);
+  --ssm-toast-focus-ring: var(--ssm-accent);
+  --ssm-toast-success: var(--ssm-accent);
+  --ssm-toast-success-soft: color-mix(in srgb, var(--ssm-accent) 14%, var(--ssm-surface-strong));
+  --ssm-toast-error: var(--ssm-page-deep);
+  --ssm-toast-error-soft: color-mix(in srgb, var(--ssm-page-deep) 12%, var(--ssm-surface-strong));
+  --ssm-toast-info: var(--ssm-accent-soft);
+  --ssm-toast-info-soft: color-mix(in srgb, var(--ssm-accent-soft) 18%, var(--ssm-surface-strong));
+  --ssm-toast-warning: var(--ssm-accent-strong);
+  --ssm-toast-warning-soft: color-mix(in srgb, var(--ssm-accent-strong) 12%, var(--ssm-surface-strong));
+  --juice-toast-panel: var(--ssm-toast-panel);
+  --juice-toast-panel-border: var(--ssm-toast-panel-border);
+  --juice-toast-panel-shadow: var(--ssm-toast-panel-shadow);
+  --juice-toast-ink: var(--ssm-toast-ink);
+  --juice-toast-close: var(--ssm-toast-close);
+  --juice-toast-close-color: var(--ssm-toast-close-color);
+  --juice-toast-close-hover: var(--ssm-toast-close-hover);
+  --juice-toast-focus-ring: var(--ssm-toast-focus-ring);
+  --juice-toast-success: var(--ssm-toast-success);
+  --juice-toast-success-soft: var(--ssm-toast-success-soft);
+  --juice-toast-error: var(--ssm-toast-error);
+  --juice-toast-error-soft: var(--ssm-toast-error-soft);
+  --juice-toast-info: var(--ssm-toast-info);
+  --juice-toast-info-soft: var(--ssm-toast-info-soft);
+  --juice-toast-warning: var(--ssm-toast-warning);
+  --juice-toast-warning-soft: var(--ssm-toast-warning-soft);
+  /* Banner chrome — inline alert / callout from existing tokens.
+     Close is a surface control, not the CTA gradient. Status remaps
+     Sunset Motel identity (no new red/green family). Distinct from toast. */
+  --ssm-banner-panel: var(--ssm-surface-strong);
+  --ssm-banner-panel-border: var(--ssm-border);
+  --ssm-banner-ink: var(--ssm-text);
+  --ssm-banner-close: var(--ssm-surface-strong);
+  --ssm-banner-close-color: var(--ssm-heading);
+  --ssm-banner-close-hover: var(--ssm-surface-muted);
+  --ssm-banner-focus-ring: var(--ssm-accent);
+  --ssm-banner-success: var(--ssm-accent);
+  --ssm-banner-success-soft: color-mix(in srgb, var(--ssm-accent) 14%, var(--ssm-surface-strong));
+  --ssm-banner-error: var(--ssm-page-deep);
+  --ssm-banner-error-soft: color-mix(in srgb, var(--ssm-page-deep) 12%, var(--ssm-surface-strong));
+  --ssm-banner-info: var(--ssm-accent-soft);
+  --ssm-banner-info-soft: color-mix(in srgb, var(--ssm-accent-soft) 18%, var(--ssm-surface-strong));
+  --ssm-banner-warning: var(--ssm-accent-strong);
+  --ssm-banner-warning-soft: color-mix(in srgb, var(--ssm-accent-strong) 12%, var(--ssm-surface-strong));
+  --juice-banner-panel: var(--ssm-banner-panel);
+  --juice-banner-panel-border: var(--ssm-banner-panel-border);
+  --juice-banner-ink: var(--ssm-banner-ink);
+  --juice-banner-close: var(--ssm-banner-close);
+  --juice-banner-close-color: var(--ssm-banner-close-color);
+  --juice-banner-close-hover: var(--ssm-banner-close-hover);
+  --juice-banner-focus-ring: var(--ssm-banner-focus-ring);
+  --juice-banner-success: var(--ssm-banner-success);
+  --juice-banner-success-soft: var(--ssm-banner-success-soft);
+  --juice-banner-error: var(--ssm-banner-error);
+  --juice-banner-error-soft: var(--ssm-banner-error-soft);
+  --juice-banner-info: var(--ssm-banner-info);
+  --juice-banner-info-soft: var(--ssm-banner-info-soft);
+  --juice-banner-warning: var(--ssm-banner-warning);
+  --juice-banner-warning-soft: var(--ssm-banner-warning-soft);
+  /* Popover chrome — anchored floating panel from existing tokens.
+     Close is a surface control, not the CTA gradient. Distinct from
+     modal/drawer/toast and overlay="frost|tint". */
+  --ssm-popover-panel: var(--ssm-surface-strong);
+  --ssm-popover-panel-border: var(--ssm-border);
+  --ssm-popover-panel-shadow: 0 18px 40px -24px var(--ssm-shadow);
+  --ssm-popover-ink: var(--ssm-text);
+  --ssm-popover-close: var(--ssm-surface-strong);
+  --ssm-popover-close-color: var(--ssm-heading);
+  --ssm-popover-close-hover: var(--ssm-surface-muted);
+  --ssm-popover-focus-ring: var(--ssm-accent);
+  --juice-popover-panel: var(--ssm-popover-panel);
+  --juice-popover-panel-border: var(--ssm-popover-panel-border);
+  --juice-popover-panel-shadow: var(--ssm-popover-panel-shadow);
+  --juice-popover-ink: var(--ssm-popover-ink);
+  --juice-popover-close: var(--ssm-popover-close);
+  --juice-popover-close-color: var(--ssm-popover-close-color);
+  --juice-popover-close-hover: var(--ssm-popover-close-hover);
+  --juice-popover-focus-ring: var(--ssm-popover-focus-ring);
+  /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+     Distinct from modal/drawer/popover. No new hue family. */
+  --ssm-wizard-shell: var(--ssm-page);
+  --ssm-wizard-header: var(--ssm-surface-strong);
+  --ssm-wizard-header-border: var(--ssm-border);
+  --ssm-wizard-rail: var(--ssm-surface-muted);
+  --ssm-wizard-rail-border: var(--ssm-border);
+  --ssm-wizard-step: var(--ssm-surface-strong);
+  --ssm-wizard-step-border: var(--ssm-border);
+  --ssm-wizard-step-ink: var(--ssm-text-muted);
+  --ssm-wizard-step-current: var(--ssm-accent);
+  --ssm-wizard-step-complete: var(--ssm-accent-strong);
+  --ssm-wizard-step-on: var(--ssm-page);
+  --ssm-wizard-step-connector: var(--ssm-border);
+  --ssm-wizard-panel: var(--ssm-surface-strong);
+  --ssm-wizard-panel-border: var(--ssm-border);
+  --ssm-wizard-focus-ring: var(--ssm-accent);
+  --juice-wizard-shell: var(--ssm-wizard-shell);
+  --juice-wizard-header: var(--ssm-wizard-header);
+  --juice-wizard-header-border: var(--ssm-wizard-header-border);
+  --juice-wizard-rail: var(--ssm-wizard-rail);
+  --juice-wizard-rail-border: var(--ssm-wizard-rail-border);
+  --juice-wizard-step: var(--ssm-wizard-step);
+  --juice-wizard-step-border: var(--ssm-wizard-step-border);
+  --juice-wizard-step-ink: var(--ssm-wizard-step-ink);
+  --juice-wizard-step-current: var(--ssm-wizard-step-current);
+  --juice-wizard-step-complete: var(--ssm-wizard-step-complete);
+  --juice-wizard-step-on: var(--ssm-wizard-step-on);
+  --juice-wizard-step-connector: var(--ssm-wizard-step-connector);
+  --juice-wizard-panel: var(--ssm-wizard-panel);
+  --juice-wizard-panel-border: var(--ssm-wizard-panel-border);
+  --juice-wizard-focus-ring: var(--ssm-wizard-focus-ring);
+  /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+     no status, no new hue family. Distinct from popover. */
+  --ssm-tooltip-panel: var(--ssm-surface-strong);
+  --ssm-tooltip-panel-border: var(--ssm-border);
+  --ssm-tooltip-panel-shadow: 0 12px 28px -20px var(--ssm-shadow);
+  --ssm-tooltip-ink: var(--ssm-text);
+  --juice-tooltip-panel: var(--ssm-tooltip-panel);
+  --juice-tooltip-panel-border: var(--ssm-tooltip-panel-border);
+  --juice-tooltip-panel-shadow: var(--ssm-tooltip-panel-shadow);
+  --juice-tooltip-ink: var(--ssm-tooltip-ink);
+  /* Combobox chrome — input + listbox popup from existing tokens.
+     Trigger is a surface control, not a CTA. Distinct from select. */
+  --ssm-combobox-input: var(--ssm-surface-strong);
+  --ssm-combobox-input-border: var(--ssm-border-strong);
+  --ssm-combobox-input-ink: var(--ssm-text);
+  --ssm-combobox-list: var(--ssm-surface-strong);
+  --ssm-combobox-list-border: var(--ssm-border);
+  --ssm-combobox-list-shadow: 0 18px 40px -24px var(--ssm-shadow);
+  --ssm-combobox-option: transparent;
+  --ssm-combobox-option-hover: var(--ssm-surface-muted);
+  --ssm-combobox-option-selected: var(--ssm-highlight);
+  --ssm-combobox-option-ink: var(--ssm-text);
+  --ssm-combobox-trigger: transparent;
+  --ssm-combobox-trigger-ink: var(--ssm-heading);
+  --ssm-combobox-focus-ring: var(--ssm-accent);
+  --juice-combobox-input: var(--ssm-combobox-input);
+  --juice-combobox-input-border: var(--ssm-combobox-input-border);
+  --juice-combobox-input-ink: var(--ssm-combobox-input-ink);
+  --juice-combobox-list: var(--ssm-combobox-list);
+  --juice-combobox-list-border: var(--ssm-combobox-list-border);
+  --juice-combobox-list-shadow: var(--ssm-combobox-list-shadow);
+  --juice-combobox-option: var(--ssm-combobox-option);
+  --juice-combobox-option-hover: var(--ssm-combobox-option-hover);
+  --juice-combobox-option-selected: var(--ssm-combobox-option-selected);
+  --juice-combobox-option-ink: var(--ssm-combobox-option-ink);
+  --juice-combobox-trigger: var(--ssm-combobox-trigger);
+  --juice-combobox-trigger-ink: var(--ssm-combobox-trigger-ink);
+  --juice-combobox-focus-ring: var(--ssm-combobox-focus-ring);
+  /* Menu chrome — APG menu button from existing tokens. Opener is a
+     surface control, not a CTA. Distinct from popover / combobox /
+     native select. */
+  --ssm-menu-panel: var(--ssm-surface-strong);
+  --ssm-menu-panel-border: var(--ssm-border);
+  --ssm-menu-panel-shadow: 0 18px 40px -24px var(--ssm-shadow);
+  --ssm-menu-ink: var(--ssm-text);
+  --ssm-menu-item: transparent;
+  --ssm-menu-item-hover: var(--ssm-surface-muted);
+  --ssm-menu-item-active: var(--ssm-highlight);
+  --ssm-menu-separator: var(--ssm-border);
+  --ssm-menu-focus-ring: var(--ssm-accent);
+  --ssm-menu-opener: var(--ssm-surface-strong);
+  --ssm-menu-opener-ink: var(--ssm-heading);
+  --juice-menu-panel: var(--ssm-menu-panel);
+  --juice-menu-panel-border: var(--ssm-menu-panel-border);
+  --juice-menu-panel-shadow: var(--ssm-menu-panel-shadow);
+  --juice-menu-ink: var(--ssm-menu-ink);
+  --juice-menu-item: var(--ssm-menu-item);
+  --juice-menu-item-hover: var(--ssm-menu-item-hover);
+  --juice-menu-item-active: var(--ssm-menu-item-active);
+  --juice-menu-separator: var(--ssm-menu-separator);
+  --juice-menu-focus-ring: var(--ssm-menu-focus-ring);
+  --juice-menu-opener: var(--ssm-menu-opener);
+  --juice-menu-opener-ink: var(--ssm-menu-opener-ink);
+  /* Switch chrome — APG switch from existing tokens. The host is a
+     surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+  --ssm-switch-track: var(--ssm-surface-muted);
+  --ssm-switch-track-checked: var(--ssm-accent);
+  --ssm-switch-thumb: var(--ssm-page);
+  --ssm-switch-thumb-checked: var(--ssm-page);
+  --ssm-switch-focus-ring: var(--ssm-accent);
+  --juice-switch-track: var(--ssm-switch-track);
+  --juice-switch-track-checked: var(--ssm-switch-track-checked);
+  --juice-switch-thumb: var(--ssm-switch-thumb);
+  --juice-switch-thumb-checked: var(--ssm-switch-thumb-checked);
+  --juice-switch-focus-ring: var(--ssm-switch-focus-ring);
+  /* Slider chrome — APG slider from existing tokens. Horizontal only.
+     The track is a surface groove, not a CTA. Distinct from range
+     input, progress, and scrollbar. */
+  --ssm-slider-track: var(--ssm-surface-muted);
+  --ssm-slider-track-border: var(--ssm-border);
+  --ssm-slider-fill: var(--ssm-accent);
+  --ssm-slider-thumb: var(--ssm-page);
+  --ssm-slider-thumb-border: var(--ssm-border-strong);
+  --ssm-slider-thumb-shadow: 0 1px 2px var(--ssm-shadow);
+  --ssm-slider-focus-ring: var(--ssm-accent);
+  --juice-slider-track: var(--ssm-slider-track);
+  --juice-slider-track-border: var(--ssm-slider-track-border);
+  --juice-slider-fill: var(--ssm-slider-fill);
+  --juice-slider-thumb: var(--ssm-slider-thumb);
+  --juice-slider-thumb-border: var(--ssm-slider-thumb-border);
+  --juice-slider-thumb-shadow: var(--ssm-slider-thumb-shadow);
+  --juice-slider-focus-ring: var(--ssm-slider-focus-ring);
+  /* Checkbox chrome — APG checkbox from existing tokens. The host is a
+     surface box, not a CTA. Binary only. Distinct from switch and
+     menuitemcheckbox. */
+  --ssm-checkbox-control: var(--ssm-page);
+  --ssm-checkbox-control-checked: var(--ssm-accent);
+  --ssm-checkbox-border: var(--ssm-border-strong);
+  --ssm-checkbox-border-checked: var(--ssm-accent);
+  --ssm-checkbox-mark: var(--ssm-page);
+  --ssm-checkbox-focus-ring: var(--ssm-accent);
+  --juice-checkbox-control: var(--ssm-checkbox-control);
+  --juice-checkbox-control-checked: var(--ssm-checkbox-control-checked);
+  --juice-checkbox-border: var(--ssm-checkbox-border);
+  --juice-checkbox-border-checked: var(--ssm-checkbox-border-checked);
+  --juice-checkbox-mark: var(--ssm-checkbox-mark);
+  --juice-checkbox-focus-ring: var(--ssm-checkbox-focus-ring);
+  /* Radio chrome — APG radio from existing tokens. The host is a surface
+     disc, not a CTA. The group is layout-only. Distinct from switch
+     and checkbox. */
+  --ssm-radio-control: var(--ssm-page);
+  --ssm-radio-control-checked: var(--ssm-page);
+  --ssm-radio-border: var(--ssm-border-strong);
+  --ssm-radio-border-checked: var(--ssm-accent);
+  --ssm-radio-mark: var(--ssm-accent);
+  --ssm-radio-focus-ring: var(--ssm-accent);
+  --juice-radio-control: var(--ssm-radio-control);
+  --juice-radio-control-checked: var(--ssm-radio-control-checked);
+  --juice-radio-border: var(--ssm-radio-border);
+  --juice-radio-border-checked: var(--ssm-radio-border-checked);
+  --juice-radio-mark: var(--ssm-radio-mark);
+  --juice-radio-focus-ring: var(--ssm-radio-focus-ring);
+  /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+     site nav bar and not a CTA. Surface stays transparent unless a bar
+     is wanted. Distinct from tabs, wizard steps, and pagination. */
+  --ssm-breadcrumb-ink: var(--ssm-text-muted);
+  --ssm-breadcrumb-ink-current: var(--ssm-heading);
+  --ssm-breadcrumb-ink-hover: var(--ssm-accent);
+  --ssm-breadcrumb-separator: var(--ssm-border-strong);
+  --ssm-breadcrumb-focus-ring: var(--ssm-accent);
+  --ssm-breadcrumb-surface: transparent;
+  --juice-breadcrumb-ink: var(--ssm-breadcrumb-ink);
+  --juice-breadcrumb-ink-current: var(--ssm-breadcrumb-ink-current);
+  --juice-breadcrumb-ink-hover: var(--ssm-breadcrumb-ink-hover);
+  --juice-breadcrumb-separator: var(--ssm-breadcrumb-separator);
+  --juice-breadcrumb-focus-ring: var(--ssm-breadcrumb-focus-ring);
+  --juice-breadcrumb-surface: var(--ssm-breadcrumb-surface);
+  /* Progress chrome — APG progressbar from existing tokens. The track
+     is a surface groove, not a CTA. Distinct from slider, spinner, and
+     a native <progress> restyle. Inline status — no overlay. */
+  --ssm-progress-track: var(--ssm-surface-muted);
+  --ssm-progress-track-border: var(--ssm-border);
+  --ssm-progress-fill: var(--ssm-accent);
+  --ssm-progress-ink: var(--ssm-text);
+  --ssm-progress-focus-ring: var(--ssm-accent);
+  --juice-progress-track: var(--ssm-progress-track);
+  --juice-progress-track-border: var(--ssm-progress-track-border);
+  --juice-progress-fill: var(--ssm-progress-fill);
+  --juice-progress-ink: var(--ssm-progress-ink);
+  --juice-progress-focus-ring: var(--ssm-progress-focus-ring);
+  /* Pagination chrome — APG page set from existing tokens. Page controls
+     are surfaces, not a CTA. The trail stays transparent. Current fill
+     is accent; ink on that fill is page. Distinct from breadcrumb,
+     nav[type="pagination"], tabs, and wizard steps. */
+  --ssm-pagination-surface: var(--ssm-surface);
+  --ssm-pagination-surface-hover: var(--ssm-surface-muted);
+  --ssm-pagination-surface-current: var(--ssm-accent);
+  --ssm-pagination-ink: var(--ssm-text);
+  --ssm-pagination-ink-hover: var(--ssm-accent);
+  --ssm-pagination-ink-current: var(--ssm-page);
+  --ssm-pagination-ink-disabled: var(--ssm-text-muted);
+  --ssm-pagination-border: var(--ssm-border);
+  --ssm-pagination-focus-ring: var(--ssm-accent);
+  --ssm-pagination-ellipsis: var(--ssm-text-muted);
+  --juice-pagination-surface: var(--ssm-pagination-surface);
+  --juice-pagination-surface-hover: var(--ssm-pagination-surface-hover);
+  --juice-pagination-surface-current: var(--ssm-pagination-surface-current);
+  --juice-pagination-ink: var(--ssm-pagination-ink);
+  --juice-pagination-ink-hover: var(--ssm-pagination-ink-hover);
+  --juice-pagination-ink-current: var(--ssm-pagination-ink-current);
+  --juice-pagination-ink-disabled: var(--ssm-pagination-ink-disabled);
+  --juice-pagination-border: var(--ssm-pagination-border);
+  --juice-pagination-focus-ring: var(--ssm-pagination-focus-ring);
+  --juice-pagination-ellipsis: var(--ssm-pagination-ellipsis);
+  background-color: var(--ssm-page);
+  background-image: var(--ssm-page-background);
+  color: var(--ssm-text);
+  font-family: var(--ssm-body-font);
+}
+
+/* Theme root behavior */
+[theme=retro-sunset-motel] :where(main) {
+  background: transparent;
+  color: inherit;
+}
+
+[theme=retro-sunset-motel] :where(div) {
+  background-color: transparent;
+  color: inherit;
+}
+
+/* Semantic element defaults */
+[theme=retro-sunset-motel] :where(section, article, aside, nav, header, footer, form) {
+  background-color: var(--ssm-surface);
+  color: var(--ssm-text);
+  border: 1px solid var(--ssm-border);
+  box-shadow: 0 24px 60px -36px var(--ssm-shadow);
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+}
+
+[theme=retro-sunset-motel] :where(nav[type=bar], nav[type=sidebar]) {
+  background-color: var(--ssm-surface-strong);
+}
+
+/* Typography hierarchy */
+[theme=retro-sunset-motel] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--ssm-heading);
+  font-family: var(--ssm-heading-font);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+[theme=retro-sunset-motel] :where(p, span, li, label, dt, dd, blockquote) {
+  color: var(--ssm-text);
+  font-family: var(--ssm-body-font);
+}
+
+[theme=retro-sunset-motel] :where(small, figcaption) {
+  color: var(--ssm-text-muted);
+  font-family: var(--ssm-body-font);
+}
+
+[theme=retro-sunset-motel] :where(strong, b) {
+  color: var(--ssm-heading);
+}
+
+/* Links and emphasis */
+[theme=retro-sunset-motel] :where(a) {
+  color: var(--ssm-accent-strong);
+  text-decoration-color: rgba(153, 25.5, 0, 0.35);
+}
+
+[theme=retro-sunset-motel] :where(a:hover, a:focus-visible) {
+  color: var(--ssm-accent);
+}
+
+/* Controls */
+[theme=retro-sunset-motel] :where(button, input, textarea, select) {
+  background-color: var(--ssm-surface-strong);
+  color: var(--ssm-text);
+  border: 1px solid var(--ssm-border-strong);
+  font-family: var(--ssm-body-font);
+  box-shadow: 0 14px 32px -26px var(--ssm-shadow);
+}
+
+[theme=retro-sunset-motel] :where(button) {
+  background-image: var(--ssm-button-background);
+  color: rgb(248.625, 244.8, 240.975);
+  border-color: transparent;
+}
+
+[theme=retro-sunset-motel] :where(button:hover, button:focus-visible) {
+  box-shadow: 0 18px 38px -24px rgba(56.763, 35.7, 14.637, 0.24);
+}
+
+[theme=retro-sunset-motel] :where(input::placeholder, textarea::placeholder) {
+  color: var(--ssm-text-muted);
+}
+
+[theme=retro-sunset-motel] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+  outline: 2px solid rgba(56.4825, 103.95075, 224.0175, 0.28);
+  outline-offset: 2px;
+}
+
+[theme=retro-sunset-motel] :where(code, pre) {
+  background-color: rgba(255, 249.2625, 248.115, 0.9);
+  color: var(--ssm-heading);
+  border: 1px solid var(--ssm-border);
+}
+
+[theme=retro-sunset-motel] :where(hr) {
+  border: none;
+  border-top: 1px solid var(--ssm-border);
+}
+
+[theme=retro-sunset-motel] :where(ul, ol) {
+  color: var(--ssm-text);
+}
+
+/* Named themed surfaces */
+[theme=retro-sunset-motel][ssm-card],
+[theme=retro-sunset-motel] [ssm-card] {
+  background: var(--ssm-card-background);
+  color: var(--ssm-text);
+  border: 1px solid var(--ssm-border-strong);
+  box-shadow: 0 28px 70px -42px var(--ssm-shadow);
+}
+
+[theme=retro-sunset-motel][ssm-card] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-sunset-motel] [ssm-card] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel][ssm-card] :where(p, span, li, small),
+[theme=retro-sunset-motel] [ssm-card] :where(p, span, li, small) {
+  color: var(--ssm-text-muted);
+}
+
+[theme=retro-sunset-motel][ssm-card] :where(strong, b),
+[theme=retro-sunset-motel] [ssm-card] :where(strong, b) {
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel][ssm-panel],
+[theme=retro-sunset-motel] [ssm-panel] {
+  background: var(--ssm-panel-background);
+  color: var(--ssm-text);
+  border: 1px solid var(--ssm-border);
+  box-shadow: 0 22px 56px -40px var(--ssm-shadow);
+}
+
+[theme=retro-sunset-motel][ssm-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-sunset-motel] [ssm-panel] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel][ssm-panel] :where(p, span, li, small),
+[theme=retro-sunset-motel] [ssm-panel] :where(p, span, li, small) {
+  color: var(--ssm-text);
+}
+
+[theme=retro-sunset-motel][ssm-panel] :where(strong, b),
+[theme=retro-sunset-motel] [ssm-panel] :where(strong, b) {
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel][ssm-hero],
+[theme=retro-sunset-motel] [ssm-hero] {
+  background: var(--ssm-hero-background);
+  color: rgb(248.625, 244.8, 240.975);
+  border: 1px solid rgba(248.625, 244.8, 240.975, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(56.763, 35.7, 14.637, 0.45);
+}
+
+[theme=retro-sunset-motel][ssm-hero] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-sunset-motel] [ssm-hero] :where(h1, h2, h3, h4, h5, h6) {
+  color: rgb(248.625, 244.8, 240.975);
+}
+
+[theme=retro-sunset-motel][ssm-hero] :where(p, span, li, small, a),
+[theme=retro-sunset-motel] [ssm-hero] :where(p, span, li, small, a) {
+  color: rgba(248.625, 244.8, 240.975, 0.86);
+}
+
+[theme=retro-sunset-motel][ssm-hero] :where(button),
+[theme=retro-sunset-motel] [ssm-hero] :where(button) {
+  background: rgb(248.625, 244.8, 240.975);
+  color: var(--ssm-heading);
+  border-color: transparent;
+}
+
+[theme=retro-sunset-motel][ssm-stage],
+[theme=retro-sunset-motel] [ssm-stage] {
+  background: var(--ssm-stage-background);
+  color: rgb(248.625, 244.8, 240.975);
+  border: 1px solid var(--ssm-stage-outline);
+  box-shadow: 0 44px 100px -54px var(--ssm-stage-shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+[theme=retro-sunset-motel][ssm-stage]::before,
+[theme=retro-sunset-motel] [ssm-stage]::before {
+  content: "";
+  position: absolute;
+  inset: 1.25rem;
+  border: 1px solid rgba(248.625, 244.8, 240.975, 0.08);
+  border-radius: 1.25rem;
+  pointer-events: none;
+}
+
+[theme=retro-sunset-motel][ssm-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme=retro-sunset-motel] [ssm-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+  color: rgb(248.625, 244.8, 240.975);
+}
+
+[theme=retro-sunset-motel][ssm-stage] :where(p, span, li, small, a),
+[theme=retro-sunset-motel] [ssm-stage] :where(p, span, li, small, a) {
+  color: rgba(248.625, 244.8, 240.975, 0.86);
+}
+
+[theme=retro-sunset-motel][ssm-chip],
+[theme=retro-sunset-motel] [ssm-chip] {
+  background: var(--ssm-chip-background);
+  color: var(--ssm-heading);
+  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(56.763, 35.7, 14.637, 0.18);
+}
+
+[theme=retro-sunset-motel][ssm-buybox],
+[theme=retro-sunset-motel] [ssm-buybox] {
+  background: var(--ssm-buybox-background);
+  color: var(--ssm-text);
+  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.3);
+  box-shadow: var(--ssm-buybox-shadow);
+}
+
+[theme=retro-sunset-motel][ssm-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme=retro-sunset-motel] [ssm-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel][ssm-spec],
+[theme=retro-sunset-motel] [ssm-spec] {
+  background: var(--ssm-spec-background);
+  color: var(--ssm-text);
+  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(56.763, 35.7, 14.637, 0.15);
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme=retro-sunset-motel][ssm-hero] :where([ssm-card], [ssm-panel]),
+[theme=retro-sunset-motel] [ssm-hero] :where([ssm-card], [ssm-panel]) {
+  color: var(--ssm-text);
+}
+
+[theme=retro-sunset-motel][ssm-hero] :where([ssm-card], [ssm-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme=retro-sunset-motel] [ssm-hero] :where([ssm-card], [ssm-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel][ssm-hero] :where([ssm-card], [ssm-panel]) :where(p, span, li, small, a),
+[theme=retro-sunset-motel] [ssm-hero] :where([ssm-card], [ssm-panel]) :where(p, span, li, small, a) {
+  color: var(--ssm-text-muted);
+}
+
+/* Accordion wrappers are structural, not named surfaces.
+   Group FAQ stacks in [ssm-card] / [ssm-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme=retro-sunset-motel] :where([accordion]) {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+}
+
+/* Generic Sunset Motel buttons use --ssm-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
+[theme=retro-sunset-motel] button[accordion-item] {
+  background-image: none;
+  background-color: var(--juice-accordion-trigger);
+  color: var(--ssm-heading);
+  border: 1px solid var(--ssm-border);
+  box-shadow: 0 14px 32px -26px var(--ssm-shadow);
+}
+
+[theme=retro-sunset-motel] button[accordion-item]::after {
+  border-color: var(--juice-accordion-chevron);
+}
+
+[theme=retro-sunset-motel] button[accordion-item]:hover {
+  border-color: var(--ssm-border-strong);
+  background-color: var(--juice-accordion-trigger-hover);
+  color: var(--ssm-heading);
+}
+
+[theme=retro-sunset-motel] button[accordion-item]:focus-visible {
+  outline: 2px solid var(--juice-accordion-focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 14px 32px -26px var(--ssm-shadow);
+}
+
+[theme=retro-sunset-motel] button[accordion-item][aria-expanded=true] {
+  background-color: var(--juice-accordion-trigger-open);
+  background-image: none;
+  color: var(--ssm-heading);
+  border-color: var(--ssm-border-strong);
+}
+
+[theme=retro-sunset-motel] [accordion] [role=region] {
+  color: var(--ssm-text);
+  background-color: var(--ssm-surface-muted);
+  border: 1px solid var(--juice-accordion-panel-rule);
+  border-radius: 0.75rem;
+  /* Slice A framed the panel; skip the shared inset rule. */
+  box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Sunset Motel buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme=retro-sunset-motel] :where([tabs]) {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+}
+
+[theme=retro-sunset-motel] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme=retro-sunset-motel] [tabs-list] {
+  border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme=retro-sunset-motel] button[tab],
+[theme=retro-sunset-motel] [tabs] > button,
+[theme=retro-sunset-motel] [tabs-list] > button {
+  background-image: none;
+  background-color: var(--juice-tabs-trigger);
+  color: var(--juice-tabs-text);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[tab]:hover,
+[theme=retro-sunset-motel] [tabs] > button:hover,
+[theme=retro-sunset-motel] [tabs-list] > button:hover {
+  background-image: none;
+  background-color: var(--juice-tabs-trigger-hover);
+  color: var(--juice-tabs-text-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[tab]:focus-visible,
+[theme=retro-sunset-motel] [tabs] > button:focus-visible,
+[theme=retro-sunset-motel] [tabs-list] > button:focus-visible {
+  outline: 2px solid var(--juice-tabs-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=retro-sunset-motel] button[tab][active],
+[theme=retro-sunset-motel] button[tab][aria-selected=true],
+[theme=retro-sunset-motel] [tabs] > button[active],
+[theme=retro-sunset-motel] [tabs] > button[aria-selected=true],
+[theme=retro-sunset-motel] [tabs-list] > button[active],
+[theme=retro-sunset-motel] [tabs-list] > button[aria-selected=true] {
+  background-image: none;
+  background-color: var(--juice-tabs-trigger-active);
+  color: var(--juice-tabs-text-active);
+  border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme=retro-sunset-motel] [tab-panel] {
+  color: var(--ssm-text);
+}
+
+/* Modal chrome. Generic Sunset Motel buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme=retro-sunset-motel] [modal-overlay] {
+  background-color: var(--juice-modal-overlay);
+}
+
+[theme=retro-sunset-motel] [modal]:not([surfaceTone]) {
+  background-color: var(--juice-modal-panel);
+  border: 1px solid var(--juice-modal-panel-border);
+  box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme=retro-sunset-motel] button[modal-close],
+[theme=retro-sunset-motel] [modal-close] {
+  background-image: none;
+  background-color: var(--juice-modal-close);
+  color: var(--juice-modal-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[modal-close]:hover,
+[theme=retro-sunset-motel] [modal-close]:hover {
+  background-image: none;
+  background-color: var(--juice-modal-close-hover);
+  color: var(--juice-modal-close-color);
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[modal-close]:focus-visible,
+[theme=retro-sunset-motel] [modal-close]:focus-visible {
+  outline: 2px solid var(--juice-modal-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Sunset Motel buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme=retro-sunset-motel] [drawer-overlay] {
+  background-color: var(--juice-drawer-overlay);
+}
+
+[theme=retro-sunset-motel] [drawer]:not([surfaceTone]) {
+  background-color: var(--juice-drawer-panel);
+  border: 1px solid var(--juice-drawer-panel-border);
+  box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme=retro-sunset-motel] button[drawer-close],
+[theme=retro-sunset-motel] [drawer-close] {
+  background-image: none;
+  background-color: var(--juice-drawer-close);
+  color: var(--juice-drawer-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[drawer-close]:hover,
+[theme=retro-sunset-motel] [drawer-close]:hover {
+  background-image: none;
+  background-color: var(--juice-drawer-close-hover);
+  color: var(--juice-drawer-close-color);
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[drawer-close]:focus-visible,
+[theme=retro-sunset-motel] [drawer-close]:focus-visible {
+  outline: 2px solid var(--juice-drawer-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Sunset Motel buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme=retro-sunset-motel] [toast]:not([surfaceTone]) {
+  background-color: var(--juice-toast-panel);
+  border: 1px solid var(--juice-toast-panel-border);
+  box-shadow: var(--juice-toast-panel-shadow);
+  color: var(--juice-toast-ink);
+}
+
+[theme=retro-sunset-motel] [toast-title],
+[theme=retro-sunset-motel] [toast-body] {
+  color: var(--juice-toast-ink);
+}
+
+[theme=retro-sunset-motel] [toast=success]:not([surfaceTone]) {
+  background-color: var(--juice-toast-success-soft);
+}
+
+[theme=retro-sunset-motel] [toast=success] {
+  border-left-color: var(--juice-toast-success);
+}
+
+[theme=retro-sunset-motel] [toast=success] [toast-title] {
+  color: var(--juice-toast-success);
+}
+
+[theme=retro-sunset-motel] [toast=error]:not([surfaceTone]) {
+  background-color: var(--juice-toast-error-soft);
+}
+
+[theme=retro-sunset-motel] [toast=error] {
+  border-left-color: var(--juice-toast-error);
+}
+
+[theme=retro-sunset-motel] [toast=error] [toast-title] {
+  color: var(--juice-toast-error);
+}
+
+[theme=retro-sunset-motel] [toast=info]:not([surfaceTone]) {
+  background-color: var(--juice-toast-info-soft);
+}
+
+[theme=retro-sunset-motel] [toast=info] {
+  border-left-color: var(--juice-toast-info);
+}
+
+[theme=retro-sunset-motel] [toast=info] [toast-title] {
+  color: var(--juice-toast-info);
+}
+
+[theme=retro-sunset-motel] [toast=warning]:not([surfaceTone]) {
+  background-color: var(--juice-toast-warning-soft);
+}
+
+[theme=retro-sunset-motel] [toast=warning] {
+  border-left-color: var(--juice-toast-warning);
+}
+
+[theme=retro-sunset-motel] [toast=warning] [toast-title] {
+  color: var(--juice-toast-warning);
+}
+
+[theme=retro-sunset-motel] button[toast-close],
+[theme=retro-sunset-motel] [toast-close] {
+  background-image: none;
+  background-color: var(--juice-toast-close);
+  color: var(--juice-toast-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[toast-close]:hover,
+[theme=retro-sunset-motel] [toast-close]:hover {
+  background-image: none;
+  background-color: var(--juice-toast-close-hover);
+  color: var(--juice-toast-close-color);
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[toast-close]:focus-visible,
+[theme=retro-sunset-motel] [toast-close]:focus-visible {
+  outline: 2px solid var(--juice-toast-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Sunset Motel buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme=retro-sunset-motel] [banner]:not([surfaceTone]) {
+  background-color: var(--juice-banner-panel);
+  color: var(--juice-banner-ink);
+}
+
+[theme=retro-sunset-motel] [banner]:not([surfaceTone]):not([banner-tone]) {
+  border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme=retro-sunset-motel] [banner-body] {
+  color: var(--juice-banner-ink);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=success]:not([surfaceTone]) {
+  background-color: var(--juice-banner-success-soft);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=success] {
+  border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=error]:not([surfaceTone]) {
+  background-color: var(--juice-banner-error-soft);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=error] {
+  border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=info]:not([surfaceTone]) {
+  background-color: var(--juice-banner-info-soft);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=info] {
+  border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=warning]:not([surfaceTone]) {
+  background-color: var(--juice-banner-warning-soft);
+}
+
+[theme=retro-sunset-motel] [banner][banner-tone=warning] {
+  border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme=retro-sunset-motel] button[banner-close],
+[theme=retro-sunset-motel] [banner-close] {
+  background-image: none;
+  background-color: var(--juice-banner-close);
+  color: var(--juice-banner-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[banner-close]:hover,
+[theme=retro-sunset-motel] [banner-close]:hover {
+  background-image: none;
+  background-color: var(--juice-banner-close-hover);
+  color: var(--juice-banner-close-color);
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[banner-close]:focus-visible,
+[theme=retro-sunset-motel] [banner-close]:focus-visible {
+  outline: 2px solid var(--juice-banner-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Sunset Motel buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme=retro-sunset-motel] [popover-panel]:not([surfaceTone]) {
+  background-color: var(--juice-popover-panel);
+  border: 1px solid var(--juice-popover-panel-border);
+  box-shadow: var(--juice-popover-panel-shadow);
+  color: var(--juice-popover-ink);
+}
+
+[theme=retro-sunset-motel] [popover-header],
+[theme=retro-sunset-motel] [popover-body] {
+  color: var(--juice-popover-ink);
+}
+
+[theme=retro-sunset-motel] button[popover-close],
+[theme=retro-sunset-motel] [popover-close] {
+  background-image: none;
+  background-color: var(--juice-popover-close);
+  color: var(--juice-popover-close-color);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[popover-close]:hover,
+[theme=retro-sunset-motel] [popover-close]:hover {
+  background-image: none;
+  background-color: var(--juice-popover-close-hover);
+  color: var(--juice-popover-close-color);
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[popover-close]:focus-visible,
+[theme=retro-sunset-motel] [popover-close]:focus-visible {
+  outline: 2px solid var(--juice-popover-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme=retro-sunset-motel] [tooltip-panel]:not([surfaceTone]) {
+  background-color: var(--juice-tooltip-panel);
+  border: 1px solid var(--juice-tooltip-panel-border);
+  box-shadow: var(--juice-tooltip-panel-shadow);
+  color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme=retro-sunset-motel] [combobox-input] {
+  background-color: var(--juice-combobox-input);
+  border: 1px solid var(--juice-combobox-input-border);
+  color: var(--juice-combobox-input-ink);
+}
+
+[theme=retro-sunset-motel] button[combobox-trigger],
+[theme=retro-sunset-motel] [combobox-trigger] {
+  background-image: none;
+  background-color: var(--juice-combobox-trigger);
+  color: var(--juice-combobox-trigger-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] [combobox-input]:focus-visible,
+[theme=retro-sunset-motel] button[combobox-trigger]:focus-visible,
+[theme=retro-sunset-motel] [combobox-trigger]:focus-visible {
+  outline: 2px solid var(--juice-combobox-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-sunset-motel] [combobox-list]:not([surfaceTone]) {
+  background-color: var(--juice-combobox-list);
+  border: 1px solid var(--juice-combobox-list-border);
+  box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme=retro-sunset-motel] [combobox-option] {
+  background-color: var(--juice-combobox-option);
+  color: var(--juice-combobox-option-ink);
+}
+
+[theme=retro-sunset-motel] [combobox-option]:hover {
+  background-color: var(--juice-combobox-option-hover);
+}
+
+[theme=retro-sunset-motel] [combobox-option][aria-selected=true],
+[theme=retro-sunset-motel] [combobox-option=active] {
+  background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme=retro-sunset-motel] [menu]:not([surfaceTone]) {
+  background-color: var(--juice-menu-panel);
+  border: 1px solid var(--juice-menu-panel-border);
+  box-shadow: var(--juice-menu-panel-shadow);
+  color: var(--juice-menu-ink);
+}
+
+[theme=retro-sunset-motel] button[menu-button],
+[theme=retro-sunset-motel] [menu-button] {
+  background-image: none;
+  background-color: var(--juice-menu-opener);
+  color: var(--juice-menu-opener-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[menu-button]:focus-visible,
+[theme=retro-sunset-motel] [menu-button]:focus-visible,
+[theme=retro-sunset-motel] [menuitem]:focus-visible {
+  outline: 2px solid var(--juice-menu-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-sunset-motel] [menuitem] {
+  background-color: var(--juice-menu-item);
+  color: var(--juice-menu-ink);
+}
+
+[theme=retro-sunset-motel] [menuitem]:hover {
+  background-color: var(--juice-menu-item-hover);
+}
+
+[theme=retro-sunset-motel] [menuitem=active] {
+  background-color: var(--juice-menu-item-active);
+}
+
+[theme=retro-sunset-motel] [menu-separator] {
+  border-top-color: var(--juice-menu-separator);
+}
+
+[theme=retro-sunset-motel] [menu-label] {
+  color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme=retro-sunset-motel] button[switch],
+[theme=retro-sunset-motel] [switch] {
+  background-image: none;
+  background-color: var(--juice-switch-track);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[switch][aria-checked=true],
+[theme=retro-sunset-motel] [switch][aria-checked=true],
+[theme=retro-sunset-motel] [switch]:checked {
+  background-image: none;
+  background-color: var(--juice-switch-track-checked);
+}
+
+[theme=retro-sunset-motel] button[switch]:hover,
+[theme=retro-sunset-motel] [switch]:hover,
+[theme=retro-sunset-motel] button[switch]:focus-visible,
+[theme=retro-sunset-motel] [switch]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[switch]:focus-visible,
+[theme=retro-sunset-motel] [switch]:focus-visible {
+  outline: 2px solid var(--juice-switch-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme=retro-sunset-motel] button[slider]:not([slider=vertical]),
+[theme=retro-sunset-motel] [slider]:not([slider=vertical]) {
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[slider-thumb],
+[theme=retro-sunset-motel] [slider-thumb] {
+  background-image: none;
+  background-color: var(--juice-slider-thumb);
+  border-color: var(--juice-slider-thumb-border);
+  box-shadow: var(--juice-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+}
+
+[theme=retro-sunset-motel] button[slider-thumb]:hover,
+[theme=retro-sunset-motel] [slider-thumb]:hover,
+[theme=retro-sunset-motel] button[slider-thumb]:focus-visible,
+[theme=retro-sunset-motel] [slider-thumb]:focus-visible {
+  background-image: none;
+  background-color: var(--juice-slider-thumb);
+  box-shadow: var(--juice-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+}
+
+[theme=retro-sunset-motel] button[slider-thumb]:focus-visible,
+[theme=retro-sunset-motel] [slider-thumb]:focus-visible {
+  outline: 2px solid var(--juice-slider-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface box, not a CTA. Binary only. Runtime is later. */
+[theme=retro-sunset-motel] button[checkbox],
+[theme=retro-sunset-motel] [checkbox] {
+  background-image: none;
+  background-color: var(--juice-checkbox-control);
+  border-color: var(--juice-checkbox-border);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[checkbox][aria-checked=true],
+[theme=retro-sunset-motel] [checkbox][aria-checked=true],
+[theme=retro-sunset-motel] [checkbox]:checked {
+  background-image: none;
+  background-color: var(--juice-checkbox-control-checked);
+  border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme=retro-sunset-motel] button[checkbox]:hover,
+[theme=retro-sunset-motel] [checkbox]:hover,
+[theme=retro-sunset-motel] button[checkbox]:focus-visible,
+[theme=retro-sunset-motel] [checkbox]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[checkbox]:focus-visible,
+[theme=retro-sunset-motel] [checkbox]:focus-visible {
+  outline: 2px solid var(--juice-checkbox-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface disc, not a CTA. Group layout is author-owned.
+   Runtime is later. */
+[theme=retro-sunset-motel] button[radio],
+[theme=retro-sunset-motel] [radio] {
+  background-image: none;
+  background-color: var(--juice-radio-control);
+  border-color: var(--juice-radio-border);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[radio][aria-checked=true],
+[theme=retro-sunset-motel] [radio][aria-checked=true],
+[theme=retro-sunset-motel] [radio]:checked {
+  background-image: none;
+  background-color: var(--juice-radio-control-checked);
+  border-color: var(--juice-radio-border-checked);
+}
+
+[theme=retro-sunset-motel] button[radio]:hover,
+[theme=retro-sunset-motel] [radio]:hover,
+[theme=retro-sunset-motel] button[radio]:focus-visible,
+[theme=retro-sunset-motel] [radio]:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] button[radio]:focus-visible,
+[theme=retro-sunset-motel] [radio]:focus-visible {
+  outline: 2px solid var(--juice-radio-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme=retro-sunset-motel] [breadcrumb],
+[theme=retro-sunset-motel] nav[breadcrumb] {
+  background-image: none;
+  background-color: var(--juice-breadcrumb-surface);
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--juice-breadcrumb-ink);
+}
+
+[theme=retro-sunset-motel] [breadcrumb] a,
+[theme=retro-sunset-motel] [breadcrumb-link],
+[theme=retro-sunset-motel] a[breadcrumb-link],
+[theme=retro-sunset-motel] button[breadcrumb-link] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-breadcrumb-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=retro-sunset-motel] [breadcrumb] a:hover,
+[theme=retro-sunset-motel] [breadcrumb-link]:hover,
+[theme=retro-sunset-motel] a[breadcrumb-link]:hover,
+[theme=retro-sunset-motel] button[breadcrumb-link]:hover {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-breadcrumb-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] [breadcrumb] [aria-current=page],
+[theme=retro-sunset-motel] [breadcrumb] [aria-current=page] :is(a, [breadcrumb-link]),
+[theme=retro-sunset-motel] [breadcrumb-link][aria-current=page] {
+  color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme=retro-sunset-motel] [breadcrumb] a:focus-visible,
+[theme=retro-sunset-motel] [breadcrumb-link]:focus-visible,
+[theme=retro-sunset-motel] button[breadcrumb-link]:focus-visible {
+  outline: 2px solid var(--juice-breadcrumb-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme=retro-sunset-motel] [progress] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-progress-ink);
+}
+
+[theme=retro-sunset-motel] [progress-fill] {
+  background-image: none;
+  background-color: var(--juice-progress-fill);
+  box-shadow: none;
+}
+
+[theme=retro-sunset-motel] [progress-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-progress-ink);
+  box-shadow: none;
+}
+
+[theme=retro-sunset-motel] [progress]:focus-visible {
+  outline: 2px solid var(--juice-progress-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
+   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
+   Runtime is later. */
+[theme=retro-sunset-motel] [pagination],
+[theme=retro-sunset-motel] nav[pagination] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--juice-pagination-ink);
+}
+
+[theme=retro-sunset-motel] [pagination] a,
+[theme=retro-sunset-motel] [pagination-link],
+[theme=retro-sunset-motel] a[pagination-link],
+[theme=retro-sunset-motel] button[pagination-link],
+[theme=retro-sunset-motel] button[pagination-prev],
+[theme=retro-sunset-motel] button[pagination-next] {
+  background-image: none;
+  background-color: var(--juice-pagination-surface);
+  border-color: var(--juice-pagination-border);
+  color: var(--juice-pagination-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=retro-sunset-motel] [pagination] a:hover,
+[theme=retro-sunset-motel] [pagination-link]:hover,
+[theme=retro-sunset-motel] button[pagination-link]:hover,
+[theme=retro-sunset-motel] button[pagination-prev]:hover,
+[theme=retro-sunset-motel] button[pagination-next]:hover {
+  background-image: none;
+  background-color: var(--juice-pagination-surface-hover);
+  color: var(--juice-pagination-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] [pagination] [aria-current=page],
+[theme=retro-sunset-motel] [pagination] [aria-current=page] :is(a, button, [pagination-link]),
+[theme=retro-sunset-motel] [pagination-link][aria-current=page] {
+  background-image: none;
+  background-color: var(--juice-pagination-surface-current);
+  color: var(--juice-pagination-ink-current);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled=true]),
+[theme=retro-sunset-motel] [pagination] [aria-disabled=true] :is(a, button, [pagination-link]) {
+  background-image: none;
+  background-color: var(--juice-pagination-surface);
+  color: var(--juice-pagination-ink-disabled);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-sunset-motel] [pagination] a:focus-visible,
+[theme=retro-sunset-motel] [pagination-link]:focus-visible,
+[theme=retro-sunset-motel] button[pagination-link]:focus-visible,
+[theme=retro-sunset-motel] button[pagination-prev]:focus-visible,
+[theme=retro-sunset-motel] button[pagination-next]:focus-visible {
+  outline: 2px solid var(--juice-pagination-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Palette-aware CTA ink. Component controls keep their own ink roles. */
+[theme=retro-sunset-motel] :where(button) {
+  color: hsl(0, 0%, 100%);
+}
+
+/* Stable bundle aliases used by shared application chrome. */
+[theme=retro-sunset-motel] {
+  --retro-page: var(--ssm-page);
+  --retro-page-tint: var(--ssm-page-tint);
+  --retro-page-deep: var(--ssm-page-deep);
+  --retro-surface: var(--ssm-surface);
+  --retro-surface-strong: var(--ssm-surface-strong);
+  --retro-surface-muted: var(--ssm-surface-muted);
+  --retro-surface-deep: var(--ssm-surface-deep);
+  --retro-border: var(--ssm-border);
+  --retro-border-strong: var(--ssm-border-strong);
+  --retro-shadow: var(--ssm-shadow);
+  --retro-text: var(--ssm-text);
+  --retro-text-muted: var(--ssm-text-muted);
+  --retro-heading: var(--ssm-heading);
+  --retro-body-font: var(--ssm-body-font);
+  --retro-heading-font: var(--ssm-heading-font);
+  --retro-accent: var(--ssm-accent);
+  --retro-accent-soft: var(--ssm-accent-soft);
+  --retro-accent-strong: var(--ssm-accent-strong);
+  --retro-highlight: var(--ssm-highlight);
+  --retro-page-background: var(--ssm-page-background);
+  --retro-button-background: var(--ssm-button-background);
+  --retro-card-background: var(--ssm-card-background);
+  --retro-panel-background: var(--ssm-panel-background);
+  --retro-hero-background: var(--ssm-hero-background);
+  --retro-stage-background: var(--ssm-stage-background);
+  --retro-stage-outline: var(--ssm-stage-outline);
+  --retro-stage-shadow: var(--ssm-stage-shadow);
+  --retro-theme-page: rgb(248.625, 244.8, 240.975);
+  --retro-theme-highlight: rgb(195.44475, 209.685225, 245.70525);
+  --juice-color-page: var(--ssm-page);
+  --juice-color-surface: var(--ssm-surface-strong);
+  --juice-color-text: var(--ssm-text);
+  --juice-color-text-muted: var(--ssm-text-muted);
+  --juice-color-heading: var(--ssm-heading);
+  --juice-color-accent: var(--ssm-accent);
+  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-border: var(--ssm-border);
+  --juice-color-highlight: var(--ssm-highlight);
+}
