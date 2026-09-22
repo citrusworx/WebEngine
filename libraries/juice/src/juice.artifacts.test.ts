@@ -1620,6 +1620,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initProgress");
         expect(module).toHaveProperty("startProgressRuntime");
         expect(module).toHaveProperty("stopProgressRuntime");
+        expect(module).toHaveProperty("createPagination");
+        expect(module).toHaveProperty("initPagination");
+        expect(module).toHaveProperty("startPaginationRuntime");
+        expect(module).toHaveProperty("stopPaginationRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

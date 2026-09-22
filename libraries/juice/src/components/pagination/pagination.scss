@@ -51,7 +51,8 @@
 //
 // Disabled prev/next: aria-disabled="true", native disabled, or [disabled].
 // Chrome paints ink-disabled and keeps the idle surface. Hover does not
-// brighten that control. Runtime B can sync the flag. This slice does not.
+// brighten that control. The runtime syncs that flag at inferable ends
+// and keeps author-owned disabled.
 //
 // z-index: inline nav chrome. No overlay band.
 
