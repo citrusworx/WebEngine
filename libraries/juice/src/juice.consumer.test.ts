@@ -819,6 +819,79 @@ describe("Juice consumer smoke", () => {
         document.body.innerHTML = "";
         controller.destroy();
         module.stopProgressRuntime();
+        module.stopPaginationRuntime();
+        module.stopBreadcrumbRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer mount and sync the built pagination runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopPaginationRuntime();
+        document.body.innerHTML = `
+            <nav pagination id="pages">
+                <a pagination-prev href="?p=1" id="prev">Prev</a>
+                <a href="?p=1" id="p1" aria-current="page">1</a>
+                <a href="?p=2" id="p2" aria-current="page">2</a>
+                <a pagination-next href="?p=3" id="next">Next</a>
+            </nav>
+        `;
+
+        const controller = module.createPagination({ root: document.body });
+        const pages = document.getElementById("pages");
+        const prev = document.getElementById("prev");
+        const p1 = document.getElementById("p1");
+        const p2 = document.getElementById("p2");
+        const next = document.getElementById("next");
+
+        expect(pages?.getAttribute("aria-label")).toBe("Pagination");
+        expect(pages?.hasAttribute("role")).toBe(false);
+        expect(p1?.getAttribute("aria-current")).toBe("page");
+        expect(p2?.hasAttribute("aria-current")).toBe(false);
+        expect(p1?.getAttribute("href")).toBe("?p=1");
+        expect(prev?.getAttribute("aria-disabled")).toBe("true");
+        expect(next?.hasAttribute("aria-disabled")).toBe(false);
+        expect(pages?.getAttribute("aria-modal")).toBeNull();
+
+        controller.setCurrent(1);
+        expect(p2?.getAttribute("aria-current")).toBe("page");
+        expect(p1?.hasAttribute("aria-current")).toBe(false);
+        expect(prev?.hasAttribute("aria-disabled")).toBe(false);
+        expect(next?.getAttribute("aria-disabled")).toBe("true");
+
+        p1?.focus();
+        p1?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowRight" })
+        );
+        expect(document.activeElement).toBe(p2);
+
+        const enter = new KeyboardEvent("keydown", {
+            bubbles: true,
+            cancelable: true,
+            key: "Enter"
+        });
+        p2?.dispatchEvent(enter);
+        expect(enter.defaultPrevented).toBe(false);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopPaginationRuntime();
+        module.stopProgressRuntime();
         module.stopBreadcrumbRuntime();
         module.stopRadioRuntime();
         module.stopCheckboxRuntime();
