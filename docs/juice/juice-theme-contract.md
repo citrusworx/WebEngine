@@ -12,7 +12,7 @@ A theme decides brand voice, type pair, page/text/accent/surface color, semantic
 
 ## 2. Shipped references
 
-Treat these four library themes as equal references. Each lives at `libraries/juice/src/themes/<id>/` as `<id>.scss` + `<id>.yaml` and ships as `@citrusworx/juiceui/styles/themes/<id>`.
+Treat these library themes as equal references. Each lives at `libraries/juice/src/themes/<id>/` as `<id>.scss` + `<id>.yaml` and ships as `@citrusworx/juiceui/styles/themes/<id>`.
 
 | id | Character | Identity prefix |
 |---|---|---|
@@ -20,6 +20,16 @@ Treat these four library themes as equal references. Each lives at `libraries/ju
 | `kiwipress` | richest product / publishing reference | `--kw-*` |
 | `citrusmint` | mint / citrus marketing | `--cm-*` |
 | `tide` | dark product / SaaS, teal/lagoon | `--tide-*` |
+| `retro-afterburn` | charcoal, steel blue, safety orange | `--afb-*` |
+| `retro-arcade-glow` | violet, magenta, hot pink, bright yellow | `--acg-*` |
+| `retro-boardwalk` | coral, sunshine yellow, mint, ocean blue | `--bdw-*` |
+| `retro-denim-dial` | denim blue with a warm-orange accent | `--dnd-*` |
+| `retro-forest-radio` | midnight navy, forest green, mustard, fog | `--frr-*` |
+| `retro-orchard-club` | olive, sage, chartreuse, brick red | `--orc-*` |
+| `retro-poolside-pop` | tomato red, orange, cream, bright cyan | `--psp-*` |
+| `retro-signal-garden` | signal red, butter yellow, garden green, black | `--sgn-*` |
+| `retro-sunset-motel` | ivory, coral, denim blue, dark cocoa | `--ssm-*` |
+| `retro-violet-parlor` | indigo, violet, apricot, cream | `--vpr-*` |
 
 **Blush** remains `_draft` (`src/themes/_draft/blush/`). It is YAML-only, unpublished, and not a reference for this contract. Package `exports` still block `@citrusworx/juiceui/themes/_draft/*`.
 
@@ -106,7 +116,7 @@ Consumed by `accordion.scss`. Aquaflux, KiwiPress, Citrusmint, Tide, and generat
 | `--juice-tabs-list-rule` | strip bottom rule |
 | `--juice-tabs-focus-ring` | focus outline |
 
-Consumed by `tabs.scss`. Same four library themes plus generated `--jx-tabs-*`.
+Consumed by `tabs.scss`. Same shipped library themes plus generated `--jx-tabs-*`.
 
 ### Modal chrome
 

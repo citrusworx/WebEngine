@@ -1,0 +1,1539 @@
+@use '../../tokens/color/retro-denim-dial/retro-denim-dial.scss' as *;
+
+/*
+    Denim Dial is a fully expressed Juice theme contract.
+    The theme owns:
+    - color relationships
+    - typography voice
+    - semantic element defaults
+    - named themed surfaces
+    
+    Juice still owns:
+    - layout
+    - spacing
+    - structural primitives
+*/
+
+[theme="retro-denim-dial"] {
+    /* Foundation */
+    --dnd-page: #{$dnd-page};
+    --dnd-page-tint: #{$dnd-page-tint};
+    --dnd-page-deep: #{$dnd-deep};
+    --dnd-surface: #{rgba($dnd-page, 0.78)};
+    --dnd-surface-strong: #{rgba($dnd-page, 0.92)};
+    --dnd-surface-muted: #{rgba($dnd-page-tint, 0.78)};
+    --dnd-surface-deep: #{$dnd-text};
+    --dnd-border: #{rgba($dnd-border-color, 0.26)};
+    --dnd-border-strong: #{rgba($dnd-accent, 0.38)};
+    --dnd-shadow: #{rgba($dnd-deep, 0.12)};
+
+    /* Typography */
+    --dnd-text: #{$dnd-text};
+    --dnd-text-muted: #{$dnd-text-muted};
+    --dnd-heading: #{$dnd-deep};
+    --dnd-body-font: "Lato", sans-serif;
+    --dnd-heading-font: "Archivo Black", sans-serif;
+
+    /* Accent system */
+    --dnd-accent: #{$dnd-accent};
+    --dnd-accent-soft: #{$dnd-accent-soft};
+    --dnd-accent-strong: #{$dnd-accent-strong};
+    --dnd-highlight: #{$dnd-highlight};
+
+    /* Surface recipes */
+    --dnd-page-background:
+        radial-gradient(circle at top left, #{rgba($dnd-highlight, 0.72)}, transparent 38%),
+        radial-gradient(circle at top right, #{rgba($dnd-secondary-soft, 0.45)}, transparent 30%),
+        linear-gradient(180deg, #{$dnd-page} 0%, #{$dnd-page-tint} 100%);
+    --dnd-button-background: linear-gradient(135deg, #{$dnd-accent}, #{$dnd-secondary-strong});
+    --dnd-card-background:
+        linear-gradient(180deg, #{rgba($dnd-page, 0.96)} 0%, #{rgba($dnd-page-tint, 0.88)} 100%);
+    --dnd-panel-background:
+        linear-gradient(180deg, #{rgba($dnd-page, 0.98)} 0%, #{rgba($dnd-page-tint, 0.72)} 100%);
+    --dnd-hero-background:
+        radial-gradient(circle at top left, #{rgba($dnd-highlight-strong, 0.38)}, transparent 30%),
+        radial-gradient(circle at bottom right, #{rgba($dnd-secondary, 0.28)}, transparent 32%),
+        linear-gradient(135deg, #{$dnd-deep} 0%, #{$dnd-accent-deep} 54%, #{$dnd-accent-strong} 100%);
+    --dnd-stage-background:
+        radial-gradient(circle at 18% 20%, #{rgba($dnd-highlight, 0.22)}, transparent 22%),
+        radial-gradient(circle at 78% 22%, #{rgba($dnd-accent-soft, 0.2)}, transparent 24%),
+        linear-gradient(145deg, #{$dnd-deep} 0%, #{$dnd-text} 52%, #{$dnd-accent-strong} 100%);
+    --dnd-stage-outline: #{rgba($dnd-page, 0.14)};
+    --dnd-stage-shadow: #{rgba($dnd-deep, 0.34)};
+    --dnd-chip-background: #{rgba($dnd-page, 0.96)};
+    --dnd-buybox-background:
+        linear-gradient(180deg, #{rgba($dnd-page, 0.98)} 0%, #{rgba($dnd-page-tint, 0.82)} 100%);
+    --dnd-buybox-shadow: 0 32px 70px -42px #{rgba($dnd-deep, 0.24)};
+    --dnd-spec-background:
+        linear-gradient(180deg, #{rgba($dnd-page-tint, 0.95)} 0%, #{rgba($dnd-page, 0.98)} 100%);
+
+    /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+       Bound from existing Denim Dial tokens; no new hue family. */
+    --dnd-trigger: var(--dnd-surface-strong);
+    --dnd-trigger-hover: var(--dnd-surface-muted);
+    --dnd-trigger-open: var(--dnd-highlight);
+    --dnd-chevron: var(--dnd-accent);
+    --dnd-panel-rule: var(--dnd-border);
+    --dnd-focus-ring: var(--dnd-accent);
+    --juice-accordion-trigger: var(--dnd-trigger);
+    --juice-accordion-trigger-hover: var(--dnd-trigger-hover);
+    --juice-accordion-trigger-open: var(--dnd-trigger-open);
+    --juice-accordion-chevron: var(--dnd-chevron);
+    --juice-accordion-panel-rule: var(--dnd-panel-rule);
+    --juice-accordion-focus-ring: var(--dnd-focus-ring);
+
+    /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+    --dnd-tabs-trigger: transparent;
+    --dnd-tabs-trigger-hover: transparent;
+    --dnd-tabs-trigger-active: transparent;
+    --dnd-tabs-text: var(--dnd-text-muted);
+    --dnd-tabs-text-hover: var(--dnd-heading);
+    --dnd-tabs-text-active: var(--dnd-accent);
+    --dnd-tabs-indicator: var(--dnd-accent);
+    --dnd-tabs-list-rule: var(--dnd-border);
+    --dnd-tabs-focus-ring: var(--dnd-accent);
+    --juice-tabs-trigger: var(--dnd-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--dnd-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--dnd-tabs-trigger-active);
+    --juice-tabs-text: var(--dnd-tabs-text);
+    --juice-tabs-text-hover: var(--dnd-tabs-text-hover);
+    --juice-tabs-text-active: var(--dnd-tabs-text-active);
+    --juice-tabs-indicator: var(--dnd-tabs-indicator);
+    --juice-tabs-list-rule: var(--dnd-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--dnd-tabs-focus-ring);
+
+    /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+    --juice-surface-soft-bg: var(--dnd-surface);
+    --juice-surface-soft-border: var(--dnd-border);
+    --juice-surface-soft-shadow: 0 18px 40px -28px var(--dnd-shadow);
+    --juice-surface-soft-blur: 14px;
+    --juice-surface-strong-bg: var(--dnd-surface-strong);
+    --juice-surface-strong-border: var(--dnd-border-strong);
+    --juice-surface-strong-shadow: 0 24px 56px -24px var(--dnd-shadow);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--dnd-surface-muted);
+    --juice-surface-muted-border: var(--dnd-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
+    /* Border strength — existing --dnd-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--dnd-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--dnd-border-strong);
+
+    /* Shadow tone — existing blue / purple identity; no new hue family. */
+    --juice-shadow-tone-cool-color: var(--dnd-shadow);
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--dnd-shadow);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--dnd-accent-strong) 16%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--dnd-accent-strong) 16%, transparent);
+
+    /* Overlay — frost veil / page-tint wash; existing tokens only. */
+    --juice-overlay-frost-wash: color-mix(in srgb, var(--dnd-page) 42%, transparent);
+    --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+    --juice-overlay-tint-wash: color-mix(in srgb, var(--dnd-page-tint) 38%, transparent);
+    --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+
+    /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --dnd-modal-overlay: color-mix(in srgb, var(--dnd-page-deep) 62%, transparent);
+    --dnd-modal-panel: var(--dnd-surface-strong);
+    --dnd-modal-panel-border: var(--dnd-border);
+    --dnd-modal-panel-shadow: 0 24px 56px -24px var(--dnd-shadow);
+    --dnd-modal-close: var(--dnd-surface-strong);
+    --dnd-modal-close-color: var(--dnd-heading);
+    --dnd-modal-close-hover: var(--dnd-surface-muted);
+    --dnd-modal-focus-ring: var(--dnd-accent);
+    --juice-modal-overlay: var(--dnd-modal-overlay);
+    --juice-modal-panel: var(--dnd-modal-panel);
+    --juice-modal-panel-border: var(--dnd-modal-panel-border);
+    --juice-modal-panel-shadow: var(--dnd-modal-panel-shadow);
+    --juice-modal-close: var(--dnd-modal-close);
+    --juice-modal-close-color: var(--dnd-modal-close-color);
+    --juice-modal-close-hover: var(--dnd-modal-close-hover);
+    --juice-modal-focus-ring: var(--dnd-modal-focus-ring);
+
+    /* Drawer chrome — same identity tokens as modal. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --dnd-drawer-overlay: color-mix(in srgb, var(--dnd-page-deep) 62%, transparent);
+    --dnd-drawer-panel: var(--dnd-surface-strong);
+    --dnd-drawer-panel-border: var(--dnd-border);
+    --dnd-drawer-panel-shadow: 0 24px 56px -24px var(--dnd-shadow);
+    --dnd-drawer-close: var(--dnd-surface-strong);
+    --dnd-drawer-close-color: var(--dnd-heading);
+    --dnd-drawer-close-hover: var(--dnd-surface-muted);
+    --dnd-drawer-focus-ring: var(--dnd-accent);
+    --juice-drawer-overlay: var(--dnd-drawer-overlay);
+    --juice-drawer-panel: var(--dnd-drawer-panel);
+    --juice-drawer-panel-border: var(--dnd-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--dnd-drawer-panel-shadow);
+    --juice-drawer-close: var(--dnd-drawer-close);
+    --juice-drawer-close-color: var(--dnd-drawer-close-color);
+    --juice-drawer-close-hover: var(--dnd-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--dnd-drawer-focus-ring);
+
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Status accents
+       remap Denim Dial identity (no new red/green family): accent /
+       page-deep / accent-soft / accent-strong. */
+    --dnd-toast-panel: var(--dnd-surface-strong);
+    --dnd-toast-panel-border: var(--dnd-border);
+    --dnd-toast-panel-shadow: 0 18px 40px -24px var(--dnd-shadow);
+    --dnd-toast-ink: var(--dnd-text);
+    --dnd-toast-close: var(--dnd-surface-strong);
+    --dnd-toast-close-color: var(--dnd-heading);
+    --dnd-toast-close-hover: var(--dnd-surface-muted);
+    --dnd-toast-focus-ring: var(--dnd-accent);
+    --dnd-toast-success: var(--dnd-accent);
+    --dnd-toast-success-soft: color-mix(in srgb, var(--dnd-accent) 14%, var(--dnd-surface-strong));
+    --dnd-toast-error: var(--dnd-page-deep);
+    --dnd-toast-error-soft: color-mix(in srgb, var(--dnd-page-deep) 12%, var(--dnd-surface-strong));
+    --dnd-toast-info: var(--dnd-accent-soft);
+    --dnd-toast-info-soft: color-mix(in srgb, var(--dnd-accent-soft) 18%, var(--dnd-surface-strong));
+    --dnd-toast-warning: var(--dnd-accent-strong);
+    --dnd-toast-warning-soft: color-mix(in srgb, var(--dnd-accent-strong) 12%, var(--dnd-surface-strong));
+    --juice-toast-panel: var(--dnd-toast-panel);
+    --juice-toast-panel-border: var(--dnd-toast-panel-border);
+    --juice-toast-panel-shadow: var(--dnd-toast-panel-shadow);
+    --juice-toast-ink: var(--dnd-toast-ink);
+    --juice-toast-close: var(--dnd-toast-close);
+    --juice-toast-close-color: var(--dnd-toast-close-color);
+    --juice-toast-close-hover: var(--dnd-toast-close-hover);
+    --juice-toast-focus-ring: var(--dnd-toast-focus-ring);
+    --juice-toast-success: var(--dnd-toast-success);
+    --juice-toast-success-soft: var(--dnd-toast-success-soft);
+    --juice-toast-error: var(--dnd-toast-error);
+    --juice-toast-error-soft: var(--dnd-toast-error-soft);
+    --juice-toast-info: var(--dnd-toast-info);
+    --juice-toast-info-soft: var(--dnd-toast-info-soft);
+    --juice-toast-warning: var(--dnd-toast-warning);
+    --juice-toast-warning-soft: var(--dnd-toast-warning-soft);
+
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the CTA gradient. Status remaps
+       Denim Dial identity (no new red/green family). Distinct from toast. */
+    --dnd-banner-panel: var(--dnd-surface-strong);
+    --dnd-banner-panel-border: var(--dnd-border);
+    --dnd-banner-ink: var(--dnd-text);
+    --dnd-banner-close: var(--dnd-surface-strong);
+    --dnd-banner-close-color: var(--dnd-heading);
+    --dnd-banner-close-hover: var(--dnd-surface-muted);
+    --dnd-banner-focus-ring: var(--dnd-accent);
+    --dnd-banner-success: var(--dnd-accent);
+    --dnd-banner-success-soft: color-mix(in srgb, var(--dnd-accent) 14%, var(--dnd-surface-strong));
+    --dnd-banner-error: var(--dnd-page-deep);
+    --dnd-banner-error-soft: color-mix(in srgb, var(--dnd-page-deep) 12%, var(--dnd-surface-strong));
+    --dnd-banner-info: var(--dnd-accent-soft);
+    --dnd-banner-info-soft: color-mix(in srgb, var(--dnd-accent-soft) 18%, var(--dnd-surface-strong));
+    --dnd-banner-warning: var(--dnd-accent-strong);
+    --dnd-banner-warning-soft: color-mix(in srgb, var(--dnd-accent-strong) 12%, var(--dnd-surface-strong));
+    --juice-banner-panel: var(--dnd-banner-panel);
+    --juice-banner-panel-border: var(--dnd-banner-panel-border);
+    --juice-banner-ink: var(--dnd-banner-ink);
+    --juice-banner-close: var(--dnd-banner-close);
+    --juice-banner-close-color: var(--dnd-banner-close-color);
+    --juice-banner-close-hover: var(--dnd-banner-close-hover);
+    --juice-banner-focus-ring: var(--dnd-banner-focus-ring);
+    --juice-banner-success: var(--dnd-banner-success);
+    --juice-banner-success-soft: var(--dnd-banner-success-soft);
+    --juice-banner-error: var(--dnd-banner-error);
+    --juice-banner-error-soft: var(--dnd-banner-error-soft);
+    --juice-banner-info: var(--dnd-banner-info);
+    --juice-banner-info-soft: var(--dnd-banner-info-soft);
+    --juice-banner-warning: var(--dnd-banner-warning);
+    --juice-banner-warning-soft: var(--dnd-banner-warning-soft);
+
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Distinct from
+       modal/drawer/toast and overlay="frost|tint". */
+    --dnd-popover-panel: var(--dnd-surface-strong);
+    --dnd-popover-panel-border: var(--dnd-border);
+    --dnd-popover-panel-shadow: 0 18px 40px -24px var(--dnd-shadow);
+    --dnd-popover-ink: var(--dnd-text);
+    --dnd-popover-close: var(--dnd-surface-strong);
+    --dnd-popover-close-color: var(--dnd-heading);
+    --dnd-popover-close-hover: var(--dnd-surface-muted);
+    --dnd-popover-focus-ring: var(--dnd-accent);
+    --juice-popover-panel: var(--dnd-popover-panel);
+    --juice-popover-panel-border: var(--dnd-popover-panel-border);
+    --juice-popover-panel-shadow: var(--dnd-popover-panel-shadow);
+    --juice-popover-ink: var(--dnd-popover-ink);
+    --juice-popover-close: var(--dnd-popover-close);
+    --juice-popover-close-color: var(--dnd-popover-close-color);
+    --juice-popover-close-hover: var(--dnd-popover-close-hover);
+    --juice-popover-focus-ring: var(--dnd-popover-focus-ring);
+
+    /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+       Distinct from modal/drawer/popover. No new hue family. */
+    --dnd-wizard-shell: var(--dnd-page);
+    --dnd-wizard-header: var(--dnd-surface-strong);
+    --dnd-wizard-header-border: var(--dnd-border);
+    --dnd-wizard-rail: var(--dnd-surface-muted);
+    --dnd-wizard-rail-border: var(--dnd-border);
+    --dnd-wizard-step: var(--dnd-surface-strong);
+    --dnd-wizard-step-border: var(--dnd-border);
+    --dnd-wizard-step-ink: var(--dnd-text-muted);
+    --dnd-wizard-step-current: var(--dnd-accent);
+    --dnd-wizard-step-complete: var(--dnd-accent-strong);
+    --dnd-wizard-step-on: var(--dnd-page);
+    --dnd-wizard-step-connector: var(--dnd-border);
+    --dnd-wizard-panel: var(--dnd-surface-strong);
+    --dnd-wizard-panel-border: var(--dnd-border);
+    --dnd-wizard-focus-ring: var(--dnd-accent);
+    --juice-wizard-shell: var(--dnd-wizard-shell);
+    --juice-wizard-header: var(--dnd-wizard-header);
+    --juice-wizard-header-border: var(--dnd-wizard-header-border);
+    --juice-wizard-rail: var(--dnd-wizard-rail);
+    --juice-wizard-rail-border: var(--dnd-wizard-rail-border);
+    --juice-wizard-step: var(--dnd-wizard-step);
+    --juice-wizard-step-border: var(--dnd-wizard-step-border);
+    --juice-wizard-step-ink: var(--dnd-wizard-step-ink);
+    --juice-wizard-step-current: var(--dnd-wizard-step-current);
+    --juice-wizard-step-complete: var(--dnd-wizard-step-complete);
+    --juice-wizard-step-on: var(--dnd-wizard-step-on);
+    --juice-wizard-step-connector: var(--dnd-wizard-step-connector);
+    --juice-wizard-panel: var(--dnd-wizard-panel);
+    --juice-wizard-panel-border: var(--dnd-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--dnd-wizard-focus-ring);
+
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --dnd-tooltip-panel: var(--dnd-surface-strong);
+    --dnd-tooltip-panel-border: var(--dnd-border);
+    --dnd-tooltip-panel-shadow: 0 12px 28px -20px var(--dnd-shadow);
+    --dnd-tooltip-ink: var(--dnd-text);
+    --juice-tooltip-panel: var(--dnd-tooltip-panel);
+    --juice-tooltip-panel-border: var(--dnd-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--dnd-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--dnd-tooltip-ink);
+
+    /* Combobox chrome — input + listbox popup from existing tokens.
+       Trigger is a surface control, not a CTA. Distinct from select. */
+    --dnd-combobox-input: var(--dnd-surface-strong);
+    --dnd-combobox-input-border: var(--dnd-border-strong);
+    --dnd-combobox-input-ink: var(--dnd-text);
+    --dnd-combobox-list: var(--dnd-surface-strong);
+    --dnd-combobox-list-border: var(--dnd-border);
+    --dnd-combobox-list-shadow: 0 18px 40px -24px var(--dnd-shadow);
+    --dnd-combobox-option: transparent;
+    --dnd-combobox-option-hover: var(--dnd-surface-muted);
+    --dnd-combobox-option-selected: var(--dnd-highlight);
+    --dnd-combobox-option-ink: var(--dnd-text);
+    --dnd-combobox-trigger: transparent;
+    --dnd-combobox-trigger-ink: var(--dnd-heading);
+    --dnd-combobox-focus-ring: var(--dnd-accent);
+    --juice-combobox-input: var(--dnd-combobox-input);
+    --juice-combobox-input-border: var(--dnd-combobox-input-border);
+    --juice-combobox-input-ink: var(--dnd-combobox-input-ink);
+    --juice-combobox-list: var(--dnd-combobox-list);
+    --juice-combobox-list-border: var(--dnd-combobox-list-border);
+    --juice-combobox-list-shadow: var(--dnd-combobox-list-shadow);
+    --juice-combobox-option: var(--dnd-combobox-option);
+    --juice-combobox-option-hover: var(--dnd-combobox-option-hover);
+    --juice-combobox-option-selected: var(--dnd-combobox-option-selected);
+    --juice-combobox-option-ink: var(--dnd-combobox-option-ink);
+    --juice-combobox-trigger: var(--dnd-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--dnd-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--dnd-combobox-focus-ring);
+
+    /* Menu chrome — APG menu button from existing tokens. Opener is a
+       surface control, not a CTA. Distinct from popover / combobox /
+       native select. */
+    --dnd-menu-panel: var(--dnd-surface-strong);
+    --dnd-menu-panel-border: var(--dnd-border);
+    --dnd-menu-panel-shadow: 0 18px 40px -24px var(--dnd-shadow);
+    --dnd-menu-ink: var(--dnd-text);
+    --dnd-menu-item: transparent;
+    --dnd-menu-item-hover: var(--dnd-surface-muted);
+    --dnd-menu-item-active: var(--dnd-highlight);
+    --dnd-menu-separator: var(--dnd-border);
+    --dnd-menu-focus-ring: var(--dnd-accent);
+    --dnd-menu-opener: var(--dnd-surface-strong);
+    --dnd-menu-opener-ink: var(--dnd-heading);
+    --juice-menu-panel: var(--dnd-menu-panel);
+    --juice-menu-panel-border: var(--dnd-menu-panel-border);
+    --juice-menu-panel-shadow: var(--dnd-menu-panel-shadow);
+    --juice-menu-ink: var(--dnd-menu-ink);
+    --juice-menu-item: var(--dnd-menu-item);
+    --juice-menu-item-hover: var(--dnd-menu-item-hover);
+    --juice-menu-item-active: var(--dnd-menu-item-active);
+    --juice-menu-separator: var(--dnd-menu-separator);
+    --juice-menu-focus-ring: var(--dnd-menu-focus-ring);
+    --juice-menu-opener: var(--dnd-menu-opener);
+    --juice-menu-opener-ink: var(--dnd-menu-opener-ink);
+
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --dnd-switch-track: var(--dnd-surface-muted);
+    --dnd-switch-track-checked: var(--dnd-accent);
+    --dnd-switch-thumb: var(--dnd-page);
+    --dnd-switch-thumb-checked: var(--dnd-page);
+    --dnd-switch-focus-ring: var(--dnd-accent);
+    --juice-switch-track: var(--dnd-switch-track);
+    --juice-switch-track-checked: var(--dnd-switch-track-checked);
+    --juice-switch-thumb: var(--dnd-switch-thumb);
+    --juice-switch-thumb-checked: var(--dnd-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--dnd-switch-focus-ring);
+
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --dnd-slider-track: var(--dnd-surface-muted);
+    --dnd-slider-track-border: var(--dnd-border);
+    --dnd-slider-fill: var(--dnd-accent);
+    --dnd-slider-thumb: var(--dnd-page);
+    --dnd-slider-thumb-border: var(--dnd-border-strong);
+    --dnd-slider-thumb-shadow: 0 1px 2px var(--dnd-shadow);
+    --dnd-slider-focus-ring: var(--dnd-accent);
+    --juice-slider-track: var(--dnd-slider-track);
+    --juice-slider-track-border: var(--dnd-slider-track-border);
+    --juice-slider-fill: var(--dnd-slider-fill);
+    --juice-slider-thumb: var(--dnd-slider-thumb);
+    --juice-slider-thumb-border: var(--dnd-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--dnd-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--dnd-slider-focus-ring);
+
+    /* Checkbox chrome — APG checkbox from existing tokens. The host is a
+       surface box, not a CTA. Binary only. Distinct from switch and
+       menuitemcheckbox. */
+    --dnd-checkbox-control: var(--dnd-page);
+    --dnd-checkbox-control-checked: var(--dnd-accent);
+    --dnd-checkbox-border: var(--dnd-border-strong);
+    --dnd-checkbox-border-checked: var(--dnd-accent);
+    --dnd-checkbox-mark: var(--dnd-page);
+    --dnd-checkbox-focus-ring: var(--dnd-accent);
+    --juice-checkbox-control: var(--dnd-checkbox-control);
+    --juice-checkbox-control-checked: var(--dnd-checkbox-control-checked);
+    --juice-checkbox-border: var(--dnd-checkbox-border);
+    --juice-checkbox-border-checked: var(--dnd-checkbox-border-checked);
+    --juice-checkbox-mark: var(--dnd-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--dnd-checkbox-focus-ring);
+
+    /* Radio chrome — APG radio from existing tokens. The host is a surface
+       disc, not a CTA. The group is layout-only. Distinct from switch
+       and checkbox. */
+    --dnd-radio-control: var(--dnd-page);
+    --dnd-radio-control-checked: var(--dnd-page);
+    --dnd-radio-border: var(--dnd-border-strong);
+    --dnd-radio-border-checked: var(--dnd-accent);
+    --dnd-radio-mark: var(--dnd-accent);
+    --dnd-radio-focus-ring: var(--dnd-accent);
+    --juice-radio-control: var(--dnd-radio-control);
+    --juice-radio-control-checked: var(--dnd-radio-control-checked);
+    --juice-radio-border: var(--dnd-radio-border);
+    --juice-radio-border-checked: var(--dnd-radio-border-checked);
+    --juice-radio-mark: var(--dnd-radio-mark);
+    --juice-radio-focus-ring: var(--dnd-radio-focus-ring);
+
+    /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+       site nav bar and not a CTA. Surface stays transparent unless a bar
+       is wanted. Distinct from tabs, wizard steps, and pagination. */
+    --dnd-breadcrumb-ink: var(--dnd-text-muted);
+    --dnd-breadcrumb-ink-current: var(--dnd-heading);
+    --dnd-breadcrumb-ink-hover: var(--dnd-accent);
+    --dnd-breadcrumb-separator: var(--dnd-border-strong);
+    --dnd-breadcrumb-focus-ring: var(--dnd-accent);
+    --dnd-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--dnd-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--dnd-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--dnd-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--dnd-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--dnd-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--dnd-breadcrumb-surface);
+
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a CTA. Distinct from slider, spinner, and
+       a native <progress> restyle. Inline status — no overlay. */
+    --dnd-progress-track: var(--dnd-surface-muted);
+    --dnd-progress-track-border: var(--dnd-border);
+    --dnd-progress-fill: var(--dnd-accent);
+    --dnd-progress-ink: var(--dnd-text);
+    --dnd-progress-focus-ring: var(--dnd-accent);
+    --juice-progress-track: var(--dnd-progress-track);
+    --juice-progress-track-border: var(--dnd-progress-track-border);
+    --juice-progress-fill: var(--dnd-progress-fill);
+    --juice-progress-ink: var(--dnd-progress-ink);
+    --juice-progress-focus-ring: var(--dnd-progress-focus-ring);
+
+    /* Pagination chrome — APG page set from existing tokens. Page controls
+       are surfaces, not a CTA. The trail stays transparent. Current fill
+       is accent; ink on that fill is page. Distinct from breadcrumb,
+       nav[type="pagination"], tabs, and wizard steps. */
+    --dnd-pagination-surface: var(--dnd-surface);
+    --dnd-pagination-surface-hover: var(--dnd-surface-muted);
+    --dnd-pagination-surface-current: var(--dnd-accent);
+    --dnd-pagination-ink: var(--dnd-text);
+    --dnd-pagination-ink-hover: var(--dnd-accent);
+    --dnd-pagination-ink-current: var(--dnd-page);
+    --dnd-pagination-ink-disabled: var(--dnd-text-muted);
+    --dnd-pagination-border: var(--dnd-border);
+    --dnd-pagination-focus-ring: var(--dnd-accent);
+    --dnd-pagination-ellipsis: var(--dnd-text-muted);
+    --juice-pagination-surface: var(--dnd-pagination-surface);
+    --juice-pagination-surface-hover: var(--dnd-pagination-surface-hover);
+    --juice-pagination-surface-current: var(--dnd-pagination-surface-current);
+    --juice-pagination-ink: var(--dnd-pagination-ink);
+    --juice-pagination-ink-hover: var(--dnd-pagination-ink-hover);
+    --juice-pagination-ink-current: var(--dnd-pagination-ink-current);
+    --juice-pagination-ink-disabled: var(--dnd-pagination-ink-disabled);
+    --juice-pagination-border: var(--dnd-pagination-border);
+    --juice-pagination-focus-ring: var(--dnd-pagination-focus-ring);
+    --juice-pagination-ellipsis: var(--dnd-pagination-ellipsis);
+
+    background-color: var(--dnd-page);
+    background-image: var(--dnd-page-background);
+    color: var(--dnd-text);
+    font-family: var(--dnd-body-font);
+}
+
+/* Theme root behavior */
+[theme="retro-denim-dial"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="retro-denim-dial"] :where(div) {
+    background-color: transparent;
+    color: inherit;
+}
+
+/* Semantic element defaults */
+[theme="retro-denim-dial"] :where(section, article, aside, nav, header, footer, form) {
+    background-color: var(--dnd-surface);
+    color: var(--dnd-text);
+    border: 1px solid var(--dnd-border);
+    box-shadow: 0 24px 60px -36px var(--dnd-shadow);
+    backdrop-filter: blur(14px);
+}
+
+[theme="retro-denim-dial"] :where(nav[type="bar"], nav[type="sidebar"]) {
+    background-color: var(--dnd-surface-strong);
+}
+
+/* Typography hierarchy */
+[theme="retro-denim-dial"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--dnd-heading);
+    font-family: var(--dnd-heading-font);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+}
+
+[theme="retro-denim-dial"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--dnd-text);
+    font-family: var(--dnd-body-font);
+}
+
+[theme="retro-denim-dial"] :where(small, figcaption) {
+    color: var(--dnd-text-muted);
+    font-family: var(--dnd-body-font);
+}
+
+[theme="retro-denim-dial"] :where(strong, b) {
+    color: var(--dnd-heading);
+}
+
+/* Links and emphasis */
+[theme="retro-denim-dial"] :where(a) {
+    color: var(--dnd-accent-strong);
+    text-decoration-color: #{rgba($dnd-accent-strong, 0.35)};
+}
+
+[theme="retro-denim-dial"] :where(a:hover, a:focus-visible) {
+    color: var(--dnd-accent);
+}
+
+/* Controls */
+[theme="retro-denim-dial"] :where(button, input, textarea, select) {
+    background-color: var(--dnd-surface-strong);
+    color: var(--dnd-text);
+    border: 1px solid var(--dnd-border-strong);
+    font-family: var(--dnd-body-font);
+    box-shadow: 0 14px 32px -26px var(--dnd-shadow);
+}
+
+[theme="retro-denim-dial"] :where(button) {
+    background-image: var(--dnd-button-background);
+    color: #{$dnd-page};
+    border-color: transparent;
+}
+
+[theme="retro-denim-dial"] :where(button:hover, button:focus-visible) {
+    box-shadow: 0 18px 38px -24px #{rgba($dnd-deep, 0.24)};
+}
+
+[theme="retro-denim-dial"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--dnd-text-muted);
+}
+
+[theme="retro-denim-dial"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid #{rgba($dnd-border-color, 0.28)};
+    outline-offset: 2px;
+}
+
+[theme="retro-denim-dial"] :where(code, pre) {
+    background-color: #{rgba($dnd-page-tint, 0.9)};
+    color: var(--dnd-heading);
+    border: 1px solid var(--dnd-border);
+}
+
+[theme="retro-denim-dial"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--dnd-border);
+}
+
+[theme="retro-denim-dial"] :where(ul, ol) {
+    color: var(--dnd-text);
+}
+
+/* Named themed surfaces */
+[theme="retro-denim-dial"][dnd-card],
+[theme="retro-denim-dial"] [dnd-card] {
+    background: var(--dnd-card-background);
+    color: var(--dnd-text);
+    border: 1px solid var(--dnd-border-strong);
+    box-shadow: 0 28px 70px -42px var(--dnd-shadow);
+}
+
+[theme="retro-denim-dial"][dnd-card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-denim-dial"] [dnd-card] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"][dnd-card] :where(p, span, li, small),
+[theme="retro-denim-dial"] [dnd-card] :where(p, span, li, small) {
+    color: var(--dnd-text-muted);
+}
+
+[theme="retro-denim-dial"][dnd-card] :where(strong, b),
+[theme="retro-denim-dial"] [dnd-card] :where(strong, b) {
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"][dnd-panel],
+[theme="retro-denim-dial"] [dnd-panel] {
+    background: var(--dnd-panel-background);
+    color: var(--dnd-text);
+    border: 1px solid var(--dnd-border);
+    box-shadow: 0 22px 56px -40px var(--dnd-shadow);
+}
+
+[theme="retro-denim-dial"][dnd-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-denim-dial"] [dnd-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"][dnd-panel] :where(p, span, li, small),
+[theme="retro-denim-dial"] [dnd-panel] :where(p, span, li, small) {
+    color: var(--dnd-text);
+}
+
+[theme="retro-denim-dial"][dnd-panel] :where(strong, b),
+[theme="retro-denim-dial"] [dnd-panel] :where(strong, b) {
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"][dnd-hero],
+[theme="retro-denim-dial"] [dnd-hero] {
+    background: var(--dnd-hero-background);
+    color: #{$dnd-page};
+    border: 1px solid #{rgba($dnd-page, 0.16)};
+    box-shadow: 0 36px 90px -48px #{rgba($dnd-deep, 0.45)};
+}
+
+[theme="retro-denim-dial"][dnd-hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-denim-dial"] [dnd-hero] :where(h1, h2, h3, h4, h5, h6) {
+    color: #{$dnd-page};
+}
+
+[theme="retro-denim-dial"][dnd-hero] :where(p, span, li, small, a),
+[theme="retro-denim-dial"] [dnd-hero] :where(p, span, li, small, a) {
+    color: #{rgba($dnd-page, 0.86)};
+}
+
+[theme="retro-denim-dial"][dnd-hero] :where(button),
+[theme="retro-denim-dial"] [dnd-hero] :where(button) {
+    background: #{$dnd-page};
+    color: var(--dnd-heading);
+    border-color: transparent;
+}
+
+[theme="retro-denim-dial"][dnd-stage],
+[theme="retro-denim-dial"] [dnd-stage] {
+    background: var(--dnd-stage-background);
+    color: #{$dnd-page};
+    border: 1px solid var(--dnd-stage-outline);
+    box-shadow: 0 44px 100px -54px var(--dnd-stage-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+[theme="retro-denim-dial"][dnd-stage]::before,
+[theme="retro-denim-dial"] [dnd-stage]::before {
+    content: "";
+    position: absolute;
+    inset: 1.25rem;
+    border: 1px solid #{rgba($dnd-page, 0.08)};
+    border-radius: 1.25rem;
+    pointer-events: none;
+}
+
+[theme="retro-denim-dial"][dnd-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-denim-dial"] [dnd-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: #{$dnd-page};
+}
+
+[theme="retro-denim-dial"][dnd-stage] :where(p, span, li, small, a),
+[theme="retro-denim-dial"] [dnd-stage] :where(p, span, li, small, a) {
+    color: #{rgba($dnd-page, 0.86)};
+}
+
+[theme="retro-denim-dial"][dnd-chip],
+[theme="retro-denim-dial"] [dnd-chip] {
+    background: var(--dnd-chip-background);
+    color: var(--dnd-heading);
+    border: 1px solid #{rgba($dnd-highlight-strong, 0.34)};
+    box-shadow: 0 18px 40px -30px #{rgba($dnd-deep, 0.18)};
+}
+
+[theme="retro-denim-dial"][dnd-buybox],
+[theme="retro-denim-dial"] [dnd-buybox] {
+    background: var(--dnd-buybox-background);
+    color: var(--dnd-text);
+    border: 1px solid #{rgba($dnd-highlight-strong, 0.3)};
+    box-shadow: var(--dnd-buybox-shadow);
+}
+
+[theme="retro-denim-dial"][dnd-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-denim-dial"] [dnd-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"][dnd-spec],
+[theme="retro-denim-dial"] [dnd-spec] {
+    background: var(--dnd-spec-background);
+    color: var(--dnd-text);
+    border: 1px solid #{rgba($dnd-highlight-strong, 0.26)};
+    box-shadow: 0 20px 46px -34px #{rgba($dnd-deep, 0.15)};
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme="retro-denim-dial"][dnd-hero] :where([dnd-card], [dnd-panel]),
+[theme="retro-denim-dial"] [dnd-hero] :where([dnd-card], [dnd-panel]) {
+    color: var(--dnd-text);
+}
+
+[theme="retro-denim-dial"][dnd-hero] :where([dnd-card], [dnd-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-denim-dial"] [dnd-hero] :where([dnd-card], [dnd-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"][dnd-hero] :where([dnd-card], [dnd-panel]) :where(p, span, li, small, a),
+[theme="retro-denim-dial"] [dnd-hero] :where([dnd-card], [dnd-panel]) :where(p, span, li, small, a) {
+    color: var(--dnd-text-muted);
+}
+
+/* Accordion wrappers are structural, not named surfaces.
+   Group FAQ stacks in [dnd-card] / [dnd-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme="retro-denim-dial"] :where([accordion]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+/* Generic Denim Dial buttons use --dnd-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
+[theme="retro-denim-dial"] button[accordion-item] {
+    background-image: none;
+    background-color: var(--juice-accordion-trigger);
+    color: var(--dnd-heading);
+    border: 1px solid var(--dnd-border);
+    box-shadow: 0 14px 32px -26px var(--dnd-shadow);
+}
+
+[theme="retro-denim-dial"] button[accordion-item]::after {
+    border-color: var(--juice-accordion-chevron);
+}
+
+[theme="retro-denim-dial"] button[accordion-item]:hover {
+    border-color: var(--dnd-border-strong);
+    background-color: var(--juice-accordion-trigger-hover);
+    color: var(--dnd-heading);
+}
+
+[theme="retro-denim-dial"] button[accordion-item]:focus-visible {
+    outline: 2px solid var(--juice-accordion-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 14px 32px -26px var(--dnd-shadow);
+}
+
+[theme="retro-denim-dial"] button[accordion-item][aria-expanded="true"] {
+    background-color: var(--juice-accordion-trigger-open);
+    background-image: none;
+    color: var(--dnd-heading);
+    border-color: var(--dnd-border-strong);
+}
+
+[theme="retro-denim-dial"] [accordion] [role="region"] {
+    color: var(--dnd-text);
+    background-color: var(--dnd-surface-muted);
+    border: 1px solid var(--juice-accordion-panel-rule);
+    border-radius: 0.75rem;
+    /* Slice A framed the panel; skip the shared inset rule. */
+    box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Denim Dial buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme="retro-denim-dial"] :where([tabs]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+[theme="retro-denim-dial"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="retro-denim-dial"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="retro-denim-dial"] button[tab],
+[theme="retro-denim-dial"] [tabs] > button,
+[theme="retro-denim-dial"] [tabs-list] > button {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[tab]:hover,
+[theme="retro-denim-dial"] [tabs] > button:hover,
+[theme="retro-denim-dial"] [tabs-list] > button:hover {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[tab]:focus-visible,
+[theme="retro-denim-dial"] [tabs] > button:focus-visible,
+[theme="retro-denim-dial"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-denim-dial"] button[tab][active],
+[theme="retro-denim-dial"] button[tab][aria-selected="true"],
+[theme="retro-denim-dial"] [tabs] > button[active],
+[theme="retro-denim-dial"] [tabs] > button[aria-selected="true"],
+[theme="retro-denim-dial"] [tabs-list] > button[active],
+[theme="retro-denim-dial"] [tabs-list] > button[aria-selected="true"] {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="retro-denim-dial"] [tab-panel] {
+    color: var(--dnd-text);
+}
+
+/* Modal chrome. Generic Denim Dial buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme="retro-denim-dial"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="retro-denim-dial"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="retro-denim-dial"] button[modal-close],
+[theme="retro-denim-dial"] [modal-close] {
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[modal-close]:hover,
+[theme="retro-denim-dial"] [modal-close]:hover {
+    background-image: none;
+    background-color: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[modal-close]:focus-visible,
+[theme="retro-denim-dial"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Denim Dial buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="retro-denim-dial"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="retro-denim-dial"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="retro-denim-dial"] button[drawer-close],
+[theme="retro-denim-dial"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[drawer-close]:hover,
+[theme="retro-denim-dial"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[drawer-close]:focus-visible,
+[theme="retro-denim-dial"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Denim Dial buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme="retro-denim-dial"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-denim-dial"] [toast-title],
+[theme="retro-denim-dial"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-denim-dial"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="retro-denim-dial"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="retro-denim-dial"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="retro-denim-dial"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="retro-denim-dial"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="retro-denim-dial"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="retro-denim-dial"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="retro-denim-dial"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="retro-denim-dial"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="retro-denim-dial"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="retro-denim-dial"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="retro-denim-dial"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="retro-denim-dial"] button[toast-close],
+[theme="retro-denim-dial"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[toast-close]:hover,
+[theme="retro-denim-dial"] [toast-close]:hover {
+    background-image: none;
+    background-color: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[toast-close]:focus-visible,
+[theme="retro-denim-dial"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Denim Dial buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="retro-denim-dial"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-denim-dial"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="retro-denim-dial"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="retro-denim-dial"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="retro-denim-dial"] button[banner-close],
+[theme="retro-denim-dial"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[banner-close]:hover,
+[theme="retro-denim-dial"] [banner-close]:hover {
+    background-image: none;
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[banner-close]:focus-visible,
+[theme="retro-denim-dial"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Denim Dial buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme="retro-denim-dial"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-denim-dial"] [popover-header],
+[theme="retro-denim-dial"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-denim-dial"] button[popover-close],
+[theme="retro-denim-dial"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[popover-close]:hover,
+[theme="retro-denim-dial"] [popover-close]:hover {
+    background-image: none;
+    background-color: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[popover-close]:focus-visible,
+[theme="retro-denim-dial"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="retro-denim-dial"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme="retro-denim-dial"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="retro-denim-dial"] button[combobox-trigger],
+[theme="retro-denim-dial"] [combobox-trigger] {
+    background-image: none;
+    background-color: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] [combobox-input]:focus-visible,
+[theme="retro-denim-dial"] button[combobox-trigger]:focus-visible,
+[theme="retro-denim-dial"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-denim-dial"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="retro-denim-dial"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="retro-denim-dial"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="retro-denim-dial"] [combobox-option][aria-selected="true"],
+[theme="retro-denim-dial"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme="retro-denim-dial"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-denim-dial"] button[menu-button],
+[theme="retro-denim-dial"] [menu-button] {
+    background-image: none;
+    background-color: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[menu-button]:focus-visible,
+[theme="retro-denim-dial"] [menu-button]:focus-visible,
+[theme="retro-denim-dial"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-denim-dial"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-denim-dial"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="retro-denim-dial"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="retro-denim-dial"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="retro-denim-dial"] [menu-label] {
+    color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme="retro-denim-dial"] button[switch],
+[theme="retro-denim-dial"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[switch][aria-checked="true"],
+[theme="retro-denim-dial"] [switch][aria-checked="true"],
+[theme="retro-denim-dial"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="retro-denim-dial"] button[switch]:hover,
+[theme="retro-denim-dial"] [switch]:hover,
+[theme="retro-denim-dial"] button[switch]:focus-visible,
+[theme="retro-denim-dial"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[switch]:focus-visible,
+[theme="retro-denim-dial"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme="retro-denim-dial"] button[slider]:not([slider="vertical"]),
+[theme="retro-denim-dial"] [slider]:not([slider="vertical"]) {
+    background-image: none;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[slider-thumb],
+[theme="retro-denim-dial"] [slider-thumb] {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-denim-dial"] button[slider-thumb]:hover,
+[theme="retro-denim-dial"] [slider-thumb]:hover,
+[theme="retro-denim-dial"] button[slider-thumb]:focus-visible,
+[theme="retro-denim-dial"] [slider-thumb]:focus-visible {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-denim-dial"] button[slider-thumb]:focus-visible,
+[theme="retro-denim-dial"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface box, not a CTA. Binary only. Runtime is later. */
+[theme="retro-denim-dial"] button[checkbox],
+[theme="retro-denim-dial"] [checkbox] {
+    background-image: none;
+    background-color: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[checkbox][aria-checked="true"],
+[theme="retro-denim-dial"] [checkbox][aria-checked="true"],
+[theme="retro-denim-dial"] [checkbox]:checked {
+    background-image: none;
+    background-color: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="retro-denim-dial"] button[checkbox]:hover,
+[theme="retro-denim-dial"] [checkbox]:hover,
+[theme="retro-denim-dial"] button[checkbox]:focus-visible,
+[theme="retro-denim-dial"] [checkbox]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[checkbox]:focus-visible,
+[theme="retro-denim-dial"] [checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface disc, not a CTA. Group layout is author-owned.
+   Runtime is later. */
+[theme="retro-denim-dial"] button[radio],
+[theme="retro-denim-dial"] [radio] {
+    background-image: none;
+    background-color: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[radio][aria-checked="true"],
+[theme="retro-denim-dial"] [radio][aria-checked="true"],
+[theme="retro-denim-dial"] [radio]:checked {
+    background-image: none;
+    background-color: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="retro-denim-dial"] button[radio]:hover,
+[theme="retro-denim-dial"] [radio]:hover,
+[theme="retro-denim-dial"] button[radio]:focus-visible,
+[theme="retro-denim-dial"] [radio]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[radio]:focus-visible,
+[theme="retro-denim-dial"] [radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme="retro-denim-dial"] [breadcrumb],
+[theme="retro-denim-dial"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="retro-denim-dial"] [breadcrumb] a,
+[theme="retro-denim-dial"] [breadcrumb-link],
+[theme="retro-denim-dial"] a[breadcrumb-link],
+[theme="retro-denim-dial"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-denim-dial"] [breadcrumb] a:hover,
+[theme="retro-denim-dial"] [breadcrumb-link]:hover,
+[theme="retro-denim-dial"] a[breadcrumb-link]:hover,
+[theme="retro-denim-dial"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] [breadcrumb] [aria-current="page"],
+[theme="retro-denim-dial"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="retro-denim-dial"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="retro-denim-dial"] [breadcrumb] a:focus-visible,
+[theme="retro-denim-dial"] [breadcrumb-link]:focus-visible,
+[theme="retro-denim-dial"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme="retro-denim-dial"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="retro-denim-dial"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="retro-denim-dial"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="retro-denim-dial"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+
+
+/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
+   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
+   Runtime is later. */
+[theme="retro-denim-dial"] [pagination],
+[theme="retro-denim-dial"] nav[pagination] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-pagination-ink);
+}
+
+[theme="retro-denim-dial"] [pagination] a,
+[theme="retro-denim-dial"] [pagination-link],
+[theme="retro-denim-dial"] a[pagination-link],
+[theme="retro-denim-dial"] button[pagination-link],
+[theme="retro-denim-dial"] button[pagination-prev],
+[theme="retro-denim-dial"] button[pagination-next] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    border-color: var(--juice-pagination-border);
+    color: var(--juice-pagination-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-denim-dial"] [pagination] a:hover,
+[theme="retro-denim-dial"] [pagination-link]:hover,
+[theme="retro-denim-dial"] button[pagination-link]:hover,
+[theme="retro-denim-dial"] button[pagination-prev]:hover,
+[theme="retro-denim-dial"] button[pagination-next]:hover {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-hover);
+    color: var(--juice-pagination-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] [pagination] [aria-current="page"],
+[theme="retro-denim-dial"] [pagination] [aria-current="page"] :is(a, button, [pagination-link]),
+[theme="retro-denim-dial"] [pagination-link][aria-current="page"] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-current);
+    color: var(--juice-pagination-ink-current);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled="true"]),
+[theme="retro-denim-dial"] [pagination] [aria-disabled="true"] :is(a, button, [pagination-link]) {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    color: var(--juice-pagination-ink-disabled);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] [pagination] a:focus-visible,
+[theme="retro-denim-dial"] [pagination-link]:focus-visible,
+[theme="retro-denim-dial"] button[pagination-link]:focus-visible,
+[theme="retro-denim-dial"] button[pagination-prev]:focus-visible,
+[theme="retro-denim-dial"] button[pagination-next]:focus-visible {
+    outline: 2px solid var(--juice-pagination-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Palette-aware CTA ink. Component controls keep their own ink roles. */
+[theme="retro-denim-dial"] :where(button) {
+    color: #{$dnd-on-accent};
+}
+/* Stable bundle aliases used by shared application chrome. */
+[theme="retro-denim-dial"] {
+    --retro-page: var(--dnd-page);
+    --retro-page-tint: var(--dnd-page-tint);
+    --retro-page-deep: var(--dnd-page-deep);
+    --retro-surface: var(--dnd-surface);
+    --retro-surface-strong: var(--dnd-surface-strong);
+    --retro-surface-muted: var(--dnd-surface-muted);
+    --retro-surface-deep: var(--dnd-surface-deep);
+    --retro-border: var(--dnd-border);
+    --retro-border-strong: var(--dnd-border-strong);
+    --retro-shadow: var(--dnd-shadow);
+    --retro-text: var(--dnd-text);
+    --retro-text-muted: var(--dnd-text-muted);
+    --retro-heading: var(--dnd-heading);
+    --retro-body-font: var(--dnd-body-font);
+    --retro-heading-font: var(--dnd-heading-font);
+    --retro-accent: var(--dnd-accent);
+    --retro-accent-soft: var(--dnd-accent-soft);
+    --retro-accent-strong: var(--dnd-accent-strong);
+    --retro-highlight: var(--dnd-highlight);
+    --retro-page-background: var(--dnd-page-background);
+    --retro-button-background: var(--dnd-button-background);
+    --retro-card-background: var(--dnd-card-background);
+    --retro-panel-background: var(--dnd-panel-background);
+    --retro-hero-background: var(--dnd-hero-background);
+    --retro-stage-background: var(--dnd-stage-background);
+    --retro-stage-outline: var(--dnd-stage-outline);
+    --retro-stage-shadow: var(--dnd-stage-shadow);
+    --retro-theme-page: #{$dnd-page};
+    --retro-theme-highlight: #{$dnd-highlight};
+    --juice-color-page: var(--dnd-page);
+    --juice-color-surface: var(--dnd-surface-strong);
+    --juice-color-text: var(--dnd-text);
+    --juice-color-text-muted: var(--dnd-text-muted);
+    --juice-color-heading: var(--dnd-heading);
+    --juice-color-accent: var(--dnd-accent);
+    --juice-color-on-accent: #{$dnd-on-accent};
+    --juice-color-border: var(--dnd-border);
+    --juice-color-highlight: var(--dnd-highlight);
+}

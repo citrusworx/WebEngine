@@ -1,0 +1,36 @@
+@use 'sass:color';
+@use '../red/red.scss' as *;
+@use '../yellow/swatch/dandelion/dandelion.scss' as *;
+@use '../green/green.scss' as *;
+@use '../black/black.scss' as *;
+@use '../white/white.scss' as *;
+@use '../gray/swatch/slate/slate.scss' as *;
+
+/*
+    Signal Garden sources: signal red (candy apple), butter yellow (dandelion), garden green (kiwi), black.
+    Derived roles feed the retro-signal-garden theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$sgn-source-1: $candyapple-600;
+$sgn-source-2: $dandelion-400;
+$sgn-source-3: $kiwi-600;
+$sgn-source-4: $black-900;
+
+$sgn-page: color.mix($dandelion-100, $white-100, 40%);
+$sgn-page-tint: color.mix($kiwi-100, $white-100, 35%);
+$sgn-deep: $sgn-source-4;
+$sgn-text: $black-800;
+$sgn-text-muted: $slate-700;
+$sgn-border-color: $black-400;
+$sgn-accent: $sgn-source-1;
+$sgn-accent-soft: $candyapple-300;
+$sgn-accent-strong: $candyapple-800;
+$sgn-accent-deep: $candyapple-900;
+$sgn-highlight: $dandelion-300;
+$sgn-highlight-strong: $sgn-source-2;
+$sgn-secondary: $sgn-source-3;
+$sgn-secondary-soft: $kiwi-200;
+$sgn-secondary-strong: $kiwi-800;
+$sgn-on-accent: $white-100;
+

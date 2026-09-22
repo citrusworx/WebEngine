@@ -1,0 +1,34 @@
+@use 'sass:color';
+@use '../gray/gray.scss' as *;
+@use '../blue/blue.scss' as *;
+@use '../orange/orange.scss' as *;
+@use '../white/white.scss' as *;
+
+/*
+    Afterburn sources: charcoal (slate), steel blue (cornflower), safety orange, light steel page.
+    Derived roles feed the retro-afterburn theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$afb-source-1: $slate-900;
+$afb-source-2: $cornflower-600;
+$afb-source-3: $orange-600;
+$afb-source-4: $slate-100;
+
+$afb-page: $afb-source-4;
+$afb-page-tint: color.mix($cornflower-200, $white-100, 32%);
+$afb-deep: $afb-source-1;
+$afb-text: $slate-800;
+$afb-text-muted: $slate-600;
+$afb-border-color: $cornflower-400;
+$afb-accent: $afb-source-3;
+$afb-accent-soft: color.mix($orange-300, $white-100, 70%);
+$afb-accent-strong: $orange-800;
+$afb-accent-deep: $orange-900;
+$afb-highlight: color.mix($cornflower-300, $white-100, 45%);
+$afb-highlight-strong: $cornflower-300;
+$afb-secondary: $afb-source-2;
+$afb-secondary-soft: color.mix($cornflower-200, $white-100, 40%);
+$afb-secondary-strong: $cornflower-700;
+$afb-on-accent: $white-100;
+

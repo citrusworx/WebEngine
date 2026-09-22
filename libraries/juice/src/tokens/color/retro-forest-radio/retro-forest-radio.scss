@@ -1,0 +1,36 @@
+@use 'sass:color';
+@use '../blue/blue.scss' as *;
+@use '../green/green.scss' as *;
+@use '../yellow/swatch/dandelion/dandelion.scss' as *;
+@use '../gray/gray.scss' as *;
+@use '../black/black.scss' as *;
+@use '../white/white.scss' as *;
+
+/*
+    Forest Radio sources: midnight navy (royal blue), forest green (kiwi), mustard gold (dandelion), soft fog (concrete).
+    Derived roles feed the retro-forest-radio theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$frr-source-1: $royalblue-900;
+$frr-source-2: $kiwi-800;
+$frr-source-3: $dandelion-600;
+$frr-source-4: $concrete-200;
+
+$frr-page: $concrete-100;
+$frr-page-tint: color.mix($kiwi-100, $frr-source-4, 40%);
+$frr-deep: $frr-source-1;
+$frr-text: color.mix($royalblue-800, $black-800, 40%);
+$frr-text-muted: $slate-700;
+$frr-border-color: $kiwi-600;
+$frr-accent: $kiwi-700;
+$frr-accent-soft: $kiwi-300;
+$frr-accent-strong: $frr-source-2;
+$frr-accent-deep: $kiwi-900;
+$frr-highlight: $dandelion-300;
+$frr-highlight-strong: $frr-source-3;
+$frr-secondary: $frr-source-3;
+$frr-secondary-soft: $dandelion-200;
+$frr-secondary-strong: $dandelion-800;
+$frr-on-accent: $white-100;
+

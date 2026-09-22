@@ -53,7 +53,7 @@ import "@citrusworx/juiceui/styles/themes/aquaflux";
 
 ```html
 <body theme="aquaflux">
-  <!-- or theme="kiwipress" | theme="citrusmint" | theme="tide" -->
+  <!-- or theme="kiwipress" | theme="citrusmint" | theme="tide" | theme="retro-afterburn" -->
 </body>
 ```
 
@@ -164,7 +164,7 @@ Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer,
 If you are hosting Juice assets yourself, the main built files are:
 
 - `dist/index.css` (core)
-- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`, `dist/themes/tide.css`
+- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`, `dist/themes/tide.css`, plus `dist/themes/retro-*.css` for the retro family
 - `dist/index.js`
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.

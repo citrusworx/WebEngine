@@ -1,0 +1,106 @@
+id: retro-arcade-glow
+name: Arcade Glow
+selector: theme="retro-arcade-glow"
+version: 1
+summary: Electric arcade theme driven by violet, magenta, hot pink, and bright yellow.
+
+philosophy:
+  role: "Identity layer for kinetic, playful, nightlife-oriented interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+    - named themed surfaces
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: fast, vivid, digital
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: loud, condensed, high-impact
+
+palette:
+  source:
+    color_1: acg-source-1
+    color_2: acg-source-2
+    color_3: acg-source-3
+    color_4: acg-source-4
+  page:
+    base: acg-page
+    tint: acg-page-tint
+    deep: acg-deep
+  text:
+    default: acg-text
+    muted: acg-text-muted
+    heading: acg-heading
+  accents:
+    primary: acg-accent
+    secondary: acg-secondary
+    soft: acg-accent-soft
+    highlight: acg-highlight
+    on_accent: acg-on-accent
+  surfaces:
+    default: acg-page / acg-page-tint translucent blend
+    strong: acg-page elevated surface
+    muted: acg-page-tint softened panel
+    hero: acg-deep to acg-accent-strong atmospheric gradient
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+named_surfaces:
+  - name: acg-card
+    purpose: Elevated content card for primary modules and grouped information.
+  - name: acg-panel
+    purpose: Softer supporting panel for quieter informational blocks.
+  - name: acg-hero
+    purpose: High-contrast marquee surface for hero and lead sections.
+  - name: acg-stage
+    purpose: Deep presentation surface for media, products, and visual focal points.
+
+recommended_use_cases:
+  - gaming products
+  - nightlife venues
+  - music events
+  - youth fashion
+  - creative technology
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Let Juice layout primitives handle structure and responsiveness.
+  - Use acg-card and acg-panel for supporting surfaces.
+  - Use acg-hero sparingly for the strongest section on the page.
+  - Keep the four source colors recognizable while using derived tokens for accessible text and controls.
+  - Bind accordion and tabs chrome from existing surface and accent tokens so triggers stay controls, not CTA buttons.
+  - Bind modal and drawer chrome from existing page and surface tokens so close actions stay surface controls.
+  - Bind toast and banner status roles from existing identity tokens without introducing unrelated hue families.
+  - Bind popover, tooltip, combobox, and menu chrome from existing page and surface tokens.
+  - Bind switch, slider, checkbox, and radio chrome from existing surface and accent tokens.
+  - Bind breadcrumb and progress chrome from existing text, border, and accent tokens.
+  - Bind pagination chrome from existing surface, text, and accent tokens so page controls stay surfaces, not CTA buttons.
+  - Keep --juice-* aliases inside the theme contract and theme-specific --acg-* tokens as the source of truth.
+
+example:
+  root: '<body theme="retro-arcade-glow">'
+  surfaces:
+    - '<section acg-hero>...</section>'
+    - '<article acg-card>...</article>'
+    - '<aside acg-panel>...</aside>'
+    - '<div acg-stage>...</div>'

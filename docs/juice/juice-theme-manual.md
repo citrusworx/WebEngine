@@ -68,7 +68,7 @@ Required `--juice-*` accordion, tabs, modal, drawer, toast, popover, tooltip, co
 libraries/juice/src/themes/my-theme/
 ```
 
-Shipped library themes today: `aquaflux`, `kiwipress`, `citrusmint`, and `tide`. Remaining drafts live under `src/themes/_draft/` (currently blush).
+Shipped library themes today: `aquaflux`, `kiwipress`, `citrusmint`, `tide`, and the retro family (`retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, `retro-violet-parlor`). Remaining drafts live under `src/themes/_draft/` (currently blush).
 
 ### App-owned theme
 

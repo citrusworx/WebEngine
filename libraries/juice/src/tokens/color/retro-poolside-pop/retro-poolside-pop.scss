@@ -1,0 +1,35 @@
+@use 'sass:color';
+@use '../red/red.scss' as *;
+@use '../orange/orange.scss' as *;
+@use '../blue/blue.scss' as *;
+@use '../white/white.scss' as *;
+@use '../gray/swatch/slate/slate.scss' as *;
+
+/*
+    Poolside Pop sources: tomato red (scarlett), orange, cream, bright cyan (morning blue).
+    Derived roles feed the retro-poolside-pop theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$psp-source-1: $scarlett-600;
+$psp-source-2: $orange-500;
+$psp-source-3: color.mix($peach-100, $white-100, 60%);
+$psp-source-4: $morningblue-400;
+
+$psp-page: $psp-source-3;
+$psp-page-tint: color.mix($orange-100, $white-100, 50%);
+$psp-deep: $scarlett-900;
+$psp-text: $scarlett-800;
+$psp-text-muted: color.mix($scarlett-700, $slate-600, 40%);
+$psp-border-color: $orange-400;
+$psp-accent: $psp-source-1;
+$psp-accent-soft: $scarlett-300;
+$psp-accent-strong: $scarlett-800;
+$psp-accent-deep: $psp-deep;
+$psp-highlight: $morningblue-300;
+$psp-highlight-strong: $psp-source-4;
+$psp-secondary: $psp-source-2;
+$psp-secondary-soft: $orange-200;
+$psp-secondary-strong: $orange-700;
+$psp-on-accent: $white-100;
+

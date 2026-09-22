@@ -13,6 +13,16 @@ export const SHIPPED_LIBRARY_THEMES = [
     { id: "kiwipress", prefix: "kw" },
     { id: "citrusmint", prefix: "cm" },
     { id: "tide", prefix: "tide" },
+    { id: "retro-afterburn", prefix: "afb" },
+    { id: "retro-arcade-glow", prefix: "acg" },
+    { id: "retro-boardwalk", prefix: "bdw" },
+    { id: "retro-denim-dial", prefix: "dnd" },
+    { id: "retro-forest-radio", prefix: "frr" },
+    { id: "retro-orchard-club", prefix: "orc" },
+    { id: "retro-poolside-pop", prefix: "psp" },
+    { id: "retro-signal-garden", prefix: "sgn" },
+    { id: "retro-sunset-motel", prefix: "ssm" },
+    { id: "retro-violet-parlor", prefix: "vpr" },
 ] as const;
 
 export type ShippedLibraryThemeId = (typeof SHIPPED_LIBRARY_THEMES)[number]["id"];

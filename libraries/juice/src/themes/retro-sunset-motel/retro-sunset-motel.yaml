@@ -1,0 +1,106 @@
+id: retro-sunset-motel
+name: Sunset Motel
+selector: theme="retro-sunset-motel"
+version: 1
+summary: Warm hospitality theme pairing ivory and coral with denim blue and dark cocoa.
+
+philosophy:
+  role: "Identity layer for nostalgic, relaxed, destination-led interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+    - named themed surfaces
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: warm, literary, welcoming
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: confident, cinematic, editorial
+
+palette:
+  source:
+    color_1: ssm-source-1
+    color_2: ssm-source-2
+    color_3: ssm-source-3
+    color_4: ssm-source-4
+  page:
+    base: ssm-page
+    tint: ssm-page-tint
+    deep: ssm-deep
+  text:
+    default: ssm-text
+    muted: ssm-text-muted
+    heading: ssm-heading
+  accents:
+    primary: ssm-accent
+    secondary: ssm-secondary
+    soft: ssm-accent-soft
+    highlight: ssm-highlight
+    on_accent: ssm-on-accent
+  surfaces:
+    default: ssm-page / ssm-page-tint translucent blend
+    strong: ssm-page elevated surface
+    muted: ssm-page-tint softened panel
+    hero: ssm-deep to ssm-accent-strong atmospheric gradient
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+named_surfaces:
+  - name: ssm-card
+    purpose: Elevated content card for primary modules and grouped information.
+  - name: ssm-panel
+    purpose: Softer supporting panel for quieter informational blocks.
+  - name: ssm-hero
+    purpose: High-contrast marquee surface for hero and lead sections.
+  - name: ssm-stage
+    purpose: Deep presentation surface for media, products, and visual focal points.
+
+recommended_use_cases:
+  - boutique motels
+  - restaurants
+  - travel publications
+  - interior studios
+  - lifestyle brands
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Let Juice layout primitives handle structure and responsiveness.
+  - Use ssm-card and ssm-panel for supporting surfaces.
+  - Use ssm-hero sparingly for the strongest section on the page.
+  - Keep the four source colors recognizable while using derived tokens for accessible text and controls.
+  - Bind accordion and tabs chrome from existing surface and accent tokens so triggers stay controls, not CTA buttons.
+  - Bind modal and drawer chrome from existing page and surface tokens so close actions stay surface controls.
+  - Bind toast and banner status roles from existing identity tokens without introducing unrelated hue families.
+  - Bind popover, tooltip, combobox, and menu chrome from existing page and surface tokens.
+  - Bind switch, slider, checkbox, and radio chrome from existing surface and accent tokens.
+  - Bind breadcrumb and progress chrome from existing text, border, and accent tokens.
+  - Bind pagination chrome from existing surface, text, and accent tokens so page controls stay surfaces, not CTA buttons.
+  - Keep --juice-* aliases inside the theme contract and theme-specific --ssm-* tokens as the source of truth.
+
+example:
+  root: '<body theme="retro-sunset-motel">'
+  surfaces:
+    - '<section ssm-hero>...</section>'
+    - '<article ssm-card>...</article>'
+    - '<aside ssm-panel>...</aside>'
+    - '<div ssm-stage>...</div>'

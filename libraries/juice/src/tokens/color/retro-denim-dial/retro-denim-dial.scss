@@ -1,0 +1,34 @@
+@use 'sass:color';
+@use '../blue/blue.scss' as *;
+@use '../orange/orange.scss' as *;
+@use '../white/white.scss' as *;
+@use '../gray/swatch/slate/slate.scss' as *;
+
+/*
+    Denim Dial sources: deep denim (royal blue), steel denim (cornflower), warm orange (marmalade), light denim page.
+    Derived roles feed the retro-denim-dial theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$dnd-source-1: $royalblue-700;
+$dnd-source-2: $cornflower-500;
+$dnd-source-3: $marmalade-700;
+$dnd-source-4: color.mix($slate-100, $white-100, 70%);
+
+$dnd-page: $dnd-source-4;
+$dnd-page-tint: color.mix($cornflower-200, $white-100, 30%);
+$dnd-deep: $royalblue-900;
+$dnd-text: $royalblue-800;
+$dnd-text-muted: $cornflower-700;
+$dnd-border-color: $cornflower-400;
+$dnd-accent: $dnd-source-3;
+$dnd-accent-soft: $marmalade-300;
+$dnd-accent-strong: $marmalade-800;
+$dnd-accent-deep: $marmalade-900;
+$dnd-highlight: color.mix($cornflower-200, $white-100, 50%);
+$dnd-highlight-strong: $cornflower-400;
+$dnd-secondary: $dnd-source-2;
+$dnd-secondary-soft: color.mix($cornflower-200, $white-100, 35%);
+$dnd-secondary-strong: $dnd-source-1;
+$dnd-on-accent: $white-100;
+

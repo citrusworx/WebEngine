@@ -1529,7 +1529,17 @@ describe("Juice package contract", () => {
             "./dist/themes/aquaflux.css",
             "./dist/themes/kiwipress.css",
             "./dist/themes/citrusmint.css",
-            "./dist/themes/tide.css"
+            "./dist/themes/tide.css",
+            "./dist/themes/retro-afterburn.css",
+            "./dist/themes/retro-arcade-glow.css",
+            "./dist/themes/retro-boardwalk.css",
+            "./dist/themes/retro-denim-dial.css",
+            "./dist/themes/retro-forest-radio.css",
+            "./dist/themes/retro-orchard-club.css",
+            "./dist/themes/retro-poolside-pop.css",
+            "./dist/themes/retro-signal-garden.css",
+            "./dist/themes/retro-sunset-motel.css",
+            "./dist/themes/retro-violet-parlor.css"
         ]);
         expect(readFileSync(join(DIST_DIR, "index.js"), "utf-8")).toContain("DOMContentLoaded");
     });

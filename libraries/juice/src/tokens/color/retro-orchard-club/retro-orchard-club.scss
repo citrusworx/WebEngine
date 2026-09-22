@@ -1,0 +1,34 @@
+@use 'sass:color';
+@use '../green/green.scss' as *;
+@use '../red/red.scss' as *;
+@use '../white/white.scss' as *;
+@use '../gray/swatch/slate/slate.scss' as *;
+
+/*
+    Orchard Club sources: olive (lime), sage (kiwi), pale chartreuse (lime), brick red.
+    Derived roles feed the retro-orchard-club theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$orc-source-1: $lime-800;
+$orc-source-2: $kiwi-500;
+$orc-source-3: $lime-400;
+$orc-source-4: $brickred-700;
+
+$orc-page: color.mix($lime-100, $white-100, 45%);
+$orc-page-tint: color.mix($kiwi-200, $white-100, 40%);
+$orc-deep: $lime-900;
+$orc-text: $orc-source-1;
+$orc-text-muted: color.mix($lime-700, $slate-700, 50%);
+$orc-border-color: $lime-500;
+$orc-accent: $orc-source-4;
+$orc-accent-soft: $brickred-300;
+$orc-accent-strong: $brickred-800;
+$orc-accent-deep: $brickred-900;
+$orc-highlight: $lime-300;
+$orc-highlight-strong: $orc-source-3;
+$orc-secondary: $kiwi-600;
+$orc-secondary-soft: $kiwi-200;
+$orc-secondary-strong: $kiwi-800;
+$orc-on-accent: $white-100;
+

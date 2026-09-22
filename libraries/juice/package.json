@@ -38,6 +38,46 @@
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/tide.css"
         },
+        "./themes/retro-afterburn.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-afterburn.css"
+        },
+        "./themes/retro-arcade-glow.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-arcade-glow.css"
+        },
+        "./themes/retro-boardwalk.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-boardwalk.css"
+        },
+        "./themes/retro-denim-dial.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-denim-dial.css"
+        },
+        "./themes/retro-forest-radio.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-forest-radio.css"
+        },
+        "./themes/retro-orchard-club.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-orchard-club.css"
+        },
+        "./themes/retro-poolside-pop.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-poolside-pop.css"
+        },
+        "./themes/retro-signal-garden.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-signal-garden.css"
+        },
+        "./themes/retro-sunset-motel.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-sunset-motel.css"
+        },
+        "./themes/retro-violet-parlor.css": {
+            "types": "./dist/themes/index.d.ts",
+            "default": "./dist/themes/retro-violet-parlor.css"
+        },
         "./styles/themes/aquaflux": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/themes/aquaflux.css"

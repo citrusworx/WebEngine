@@ -1,0 +1,1539 @@
+@use '../../tokens/color/retro-poolside-pop/retro-poolside-pop.scss' as *;
+
+/*
+    Poolside Pop is a fully expressed Juice theme contract.
+    The theme owns:
+    - color relationships
+    - typography voice
+    - semantic element defaults
+    - named themed surfaces
+    
+    Juice still owns:
+    - layout
+    - spacing
+    - structural primitives
+*/
+
+[theme="retro-poolside-pop"] {
+    /* Foundation */
+    --psp-page: #{$psp-page};
+    --psp-page-tint: #{$psp-page-tint};
+    --psp-page-deep: #{$psp-deep};
+    --psp-surface: #{rgba($psp-page, 0.78)};
+    --psp-surface-strong: #{rgba($psp-page, 0.92)};
+    --psp-surface-muted: #{rgba($psp-page-tint, 0.78)};
+    --psp-surface-deep: #{$psp-text};
+    --psp-border: #{rgba($psp-border-color, 0.26)};
+    --psp-border-strong: #{rgba($psp-accent, 0.38)};
+    --psp-shadow: #{rgba($psp-deep, 0.12)};
+
+    /* Typography */
+    --psp-text: #{$psp-text};
+    --psp-text-muted: #{$psp-text-muted};
+    --psp-heading: #{$psp-deep};
+    --psp-body-font: "Lato", sans-serif;
+    --psp-heading-font: "Archivo Black", sans-serif;
+
+    /* Accent system */
+    --psp-accent: #{$psp-accent};
+    --psp-accent-soft: #{$psp-accent-soft};
+    --psp-accent-strong: #{$psp-accent-strong};
+    --psp-highlight: #{$psp-highlight};
+
+    /* Surface recipes */
+    --psp-page-background:
+        radial-gradient(circle at top left, #{rgba($psp-highlight, 0.72)}, transparent 38%),
+        radial-gradient(circle at top right, #{rgba($psp-secondary-soft, 0.45)}, transparent 30%),
+        linear-gradient(180deg, #{$psp-page} 0%, #{$psp-page-tint} 100%);
+    --psp-button-background: linear-gradient(135deg, #{$psp-accent}, #{$psp-secondary-strong});
+    --psp-card-background:
+        linear-gradient(180deg, #{rgba($psp-page, 0.96)} 0%, #{rgba($psp-page-tint, 0.88)} 100%);
+    --psp-panel-background:
+        linear-gradient(180deg, #{rgba($psp-page, 0.98)} 0%, #{rgba($psp-page-tint, 0.72)} 100%);
+    --psp-hero-background:
+        radial-gradient(circle at top left, #{rgba($psp-highlight-strong, 0.38)}, transparent 30%),
+        radial-gradient(circle at bottom right, #{rgba($psp-secondary, 0.28)}, transparent 32%),
+        linear-gradient(135deg, #{$psp-deep} 0%, #{$psp-accent-deep} 54%, #{$psp-accent-strong} 100%);
+    --psp-stage-background:
+        radial-gradient(circle at 18% 20%, #{rgba($psp-highlight, 0.22)}, transparent 22%),
+        radial-gradient(circle at 78% 22%, #{rgba($psp-accent-soft, 0.2)}, transparent 24%),
+        linear-gradient(145deg, #{$psp-deep} 0%, #{$psp-text} 52%, #{$psp-accent-strong} 100%);
+    --psp-stage-outline: #{rgba($psp-page, 0.14)};
+    --psp-stage-shadow: #{rgba($psp-deep, 0.34)};
+    --psp-chip-background: #{rgba($psp-page, 0.96)};
+    --psp-buybox-background:
+        linear-gradient(180deg, #{rgba($psp-page, 0.98)} 0%, #{rgba($psp-page-tint, 0.82)} 100%);
+    --psp-buybox-shadow: 0 32px 70px -42px #{rgba($psp-deep, 0.24)};
+    --psp-spec-background:
+        linear-gradient(180deg, #{rgba($psp-page-tint, 0.95)} 0%, #{rgba($psp-page, 0.98)} 100%);
+
+    /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+       Bound from existing Poolside Pop tokens; no new hue family. */
+    --psp-trigger: var(--psp-surface-strong);
+    --psp-trigger-hover: var(--psp-surface-muted);
+    --psp-trigger-open: var(--psp-highlight);
+    --psp-chevron: var(--psp-accent);
+    --psp-panel-rule: var(--psp-border);
+    --psp-focus-ring: var(--psp-accent);
+    --juice-accordion-trigger: var(--psp-trigger);
+    --juice-accordion-trigger-hover: var(--psp-trigger-hover);
+    --juice-accordion-trigger-open: var(--psp-trigger-open);
+    --juice-accordion-chevron: var(--psp-chevron);
+    --juice-accordion-panel-rule: var(--psp-panel-rule);
+    --juice-accordion-focus-ring: var(--psp-focus-ring);
+
+    /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+    --psp-tabs-trigger: transparent;
+    --psp-tabs-trigger-hover: transparent;
+    --psp-tabs-trigger-active: transparent;
+    --psp-tabs-text: var(--psp-text-muted);
+    --psp-tabs-text-hover: var(--psp-heading);
+    --psp-tabs-text-active: var(--psp-accent);
+    --psp-tabs-indicator: var(--psp-accent);
+    --psp-tabs-list-rule: var(--psp-border);
+    --psp-tabs-focus-ring: var(--psp-accent);
+    --juice-tabs-trigger: var(--psp-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--psp-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--psp-tabs-trigger-active);
+    --juice-tabs-text: var(--psp-tabs-text);
+    --juice-tabs-text-hover: var(--psp-tabs-text-hover);
+    --juice-tabs-text-active: var(--psp-tabs-text-active);
+    --juice-tabs-indicator: var(--psp-tabs-indicator);
+    --juice-tabs-list-rule: var(--psp-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--psp-tabs-focus-ring);
+
+    /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+    --juice-surface-soft-bg: var(--psp-surface);
+    --juice-surface-soft-border: var(--psp-border);
+    --juice-surface-soft-shadow: 0 18px 40px -28px var(--psp-shadow);
+    --juice-surface-soft-blur: 14px;
+    --juice-surface-strong-bg: var(--psp-surface-strong);
+    --juice-surface-strong-border: var(--psp-border-strong);
+    --juice-surface-strong-shadow: 0 24px 56px -24px var(--psp-shadow);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--psp-surface-muted);
+    --juice-surface-muted-border: var(--psp-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
+    /* Border strength — existing --psp-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--psp-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--psp-border-strong);
+
+    /* Shadow tone — existing blue / purple identity; no new hue family. */
+    --juice-shadow-tone-cool-color: var(--psp-shadow);
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--psp-shadow);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--psp-accent-strong) 16%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--psp-accent-strong) 16%, transparent);
+
+    /* Overlay — frost veil / page-tint wash; existing tokens only. */
+    --juice-overlay-frost-wash: color-mix(in srgb, var(--psp-page) 42%, transparent);
+    --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+    --juice-overlay-tint-wash: color-mix(in srgb, var(--psp-page-tint) 38%, transparent);
+    --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+
+    /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --psp-modal-overlay: color-mix(in srgb, var(--psp-page-deep) 62%, transparent);
+    --psp-modal-panel: var(--psp-surface-strong);
+    --psp-modal-panel-border: var(--psp-border);
+    --psp-modal-panel-shadow: 0 24px 56px -24px var(--psp-shadow);
+    --psp-modal-close: var(--psp-surface-strong);
+    --psp-modal-close-color: var(--psp-heading);
+    --psp-modal-close-hover: var(--psp-surface-muted);
+    --psp-modal-focus-ring: var(--psp-accent);
+    --juice-modal-overlay: var(--psp-modal-overlay);
+    --juice-modal-panel: var(--psp-modal-panel);
+    --juice-modal-panel-border: var(--psp-modal-panel-border);
+    --juice-modal-panel-shadow: var(--psp-modal-panel-shadow);
+    --juice-modal-close: var(--psp-modal-close);
+    --juice-modal-close-color: var(--psp-modal-close-color);
+    --juice-modal-close-hover: var(--psp-modal-close-hover);
+    --juice-modal-focus-ring: var(--psp-modal-focus-ring);
+
+    /* Drawer chrome — same identity tokens as modal. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --psp-drawer-overlay: color-mix(in srgb, var(--psp-page-deep) 62%, transparent);
+    --psp-drawer-panel: var(--psp-surface-strong);
+    --psp-drawer-panel-border: var(--psp-border);
+    --psp-drawer-panel-shadow: 0 24px 56px -24px var(--psp-shadow);
+    --psp-drawer-close: var(--psp-surface-strong);
+    --psp-drawer-close-color: var(--psp-heading);
+    --psp-drawer-close-hover: var(--psp-surface-muted);
+    --psp-drawer-focus-ring: var(--psp-accent);
+    --juice-drawer-overlay: var(--psp-drawer-overlay);
+    --juice-drawer-panel: var(--psp-drawer-panel);
+    --juice-drawer-panel-border: var(--psp-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--psp-drawer-panel-shadow);
+    --juice-drawer-close: var(--psp-drawer-close);
+    --juice-drawer-close-color: var(--psp-drawer-close-color);
+    --juice-drawer-close-hover: var(--psp-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--psp-drawer-focus-ring);
+
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Status accents
+       remap Poolside Pop identity (no new red/green family): accent /
+       page-deep / accent-soft / accent-strong. */
+    --psp-toast-panel: var(--psp-surface-strong);
+    --psp-toast-panel-border: var(--psp-border);
+    --psp-toast-panel-shadow: 0 18px 40px -24px var(--psp-shadow);
+    --psp-toast-ink: var(--psp-text);
+    --psp-toast-close: var(--psp-surface-strong);
+    --psp-toast-close-color: var(--psp-heading);
+    --psp-toast-close-hover: var(--psp-surface-muted);
+    --psp-toast-focus-ring: var(--psp-accent);
+    --psp-toast-success: var(--psp-accent);
+    --psp-toast-success-soft: color-mix(in srgb, var(--psp-accent) 14%, var(--psp-surface-strong));
+    --psp-toast-error: var(--psp-page-deep);
+    --psp-toast-error-soft: color-mix(in srgb, var(--psp-page-deep) 12%, var(--psp-surface-strong));
+    --psp-toast-info: var(--psp-accent-soft);
+    --psp-toast-info-soft: color-mix(in srgb, var(--psp-accent-soft) 18%, var(--psp-surface-strong));
+    --psp-toast-warning: var(--psp-accent-strong);
+    --psp-toast-warning-soft: color-mix(in srgb, var(--psp-accent-strong) 12%, var(--psp-surface-strong));
+    --juice-toast-panel: var(--psp-toast-panel);
+    --juice-toast-panel-border: var(--psp-toast-panel-border);
+    --juice-toast-panel-shadow: var(--psp-toast-panel-shadow);
+    --juice-toast-ink: var(--psp-toast-ink);
+    --juice-toast-close: var(--psp-toast-close);
+    --juice-toast-close-color: var(--psp-toast-close-color);
+    --juice-toast-close-hover: var(--psp-toast-close-hover);
+    --juice-toast-focus-ring: var(--psp-toast-focus-ring);
+    --juice-toast-success: var(--psp-toast-success);
+    --juice-toast-success-soft: var(--psp-toast-success-soft);
+    --juice-toast-error: var(--psp-toast-error);
+    --juice-toast-error-soft: var(--psp-toast-error-soft);
+    --juice-toast-info: var(--psp-toast-info);
+    --juice-toast-info-soft: var(--psp-toast-info-soft);
+    --juice-toast-warning: var(--psp-toast-warning);
+    --juice-toast-warning-soft: var(--psp-toast-warning-soft);
+
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the CTA gradient. Status remaps
+       Poolside Pop identity (no new red/green family). Distinct from toast. */
+    --psp-banner-panel: var(--psp-surface-strong);
+    --psp-banner-panel-border: var(--psp-border);
+    --psp-banner-ink: var(--psp-text);
+    --psp-banner-close: var(--psp-surface-strong);
+    --psp-banner-close-color: var(--psp-heading);
+    --psp-banner-close-hover: var(--psp-surface-muted);
+    --psp-banner-focus-ring: var(--psp-accent);
+    --psp-banner-success: var(--psp-accent);
+    --psp-banner-success-soft: color-mix(in srgb, var(--psp-accent) 14%, var(--psp-surface-strong));
+    --psp-banner-error: var(--psp-page-deep);
+    --psp-banner-error-soft: color-mix(in srgb, var(--psp-page-deep) 12%, var(--psp-surface-strong));
+    --psp-banner-info: var(--psp-accent-soft);
+    --psp-banner-info-soft: color-mix(in srgb, var(--psp-accent-soft) 18%, var(--psp-surface-strong));
+    --psp-banner-warning: var(--psp-accent-strong);
+    --psp-banner-warning-soft: color-mix(in srgb, var(--psp-accent-strong) 12%, var(--psp-surface-strong));
+    --juice-banner-panel: var(--psp-banner-panel);
+    --juice-banner-panel-border: var(--psp-banner-panel-border);
+    --juice-banner-ink: var(--psp-banner-ink);
+    --juice-banner-close: var(--psp-banner-close);
+    --juice-banner-close-color: var(--psp-banner-close-color);
+    --juice-banner-close-hover: var(--psp-banner-close-hover);
+    --juice-banner-focus-ring: var(--psp-banner-focus-ring);
+    --juice-banner-success: var(--psp-banner-success);
+    --juice-banner-success-soft: var(--psp-banner-success-soft);
+    --juice-banner-error: var(--psp-banner-error);
+    --juice-banner-error-soft: var(--psp-banner-error-soft);
+    --juice-banner-info: var(--psp-banner-info);
+    --juice-banner-info-soft: var(--psp-banner-info-soft);
+    --juice-banner-warning: var(--psp-banner-warning);
+    --juice-banner-warning-soft: var(--psp-banner-warning-soft);
+
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Distinct from
+       modal/drawer/toast and overlay="frost|tint". */
+    --psp-popover-panel: var(--psp-surface-strong);
+    --psp-popover-panel-border: var(--psp-border);
+    --psp-popover-panel-shadow: 0 18px 40px -24px var(--psp-shadow);
+    --psp-popover-ink: var(--psp-text);
+    --psp-popover-close: var(--psp-surface-strong);
+    --psp-popover-close-color: var(--psp-heading);
+    --psp-popover-close-hover: var(--psp-surface-muted);
+    --psp-popover-focus-ring: var(--psp-accent);
+    --juice-popover-panel: var(--psp-popover-panel);
+    --juice-popover-panel-border: var(--psp-popover-panel-border);
+    --juice-popover-panel-shadow: var(--psp-popover-panel-shadow);
+    --juice-popover-ink: var(--psp-popover-ink);
+    --juice-popover-close: var(--psp-popover-close);
+    --juice-popover-close-color: var(--psp-popover-close-color);
+    --juice-popover-close-hover: var(--psp-popover-close-hover);
+    --juice-popover-focus-ring: var(--psp-popover-focus-ring);
+
+    /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+       Distinct from modal/drawer/popover. No new hue family. */
+    --psp-wizard-shell: var(--psp-page);
+    --psp-wizard-header: var(--psp-surface-strong);
+    --psp-wizard-header-border: var(--psp-border);
+    --psp-wizard-rail: var(--psp-surface-muted);
+    --psp-wizard-rail-border: var(--psp-border);
+    --psp-wizard-step: var(--psp-surface-strong);
+    --psp-wizard-step-border: var(--psp-border);
+    --psp-wizard-step-ink: var(--psp-text-muted);
+    --psp-wizard-step-current: var(--psp-accent);
+    --psp-wizard-step-complete: var(--psp-accent-strong);
+    --psp-wizard-step-on: var(--psp-page);
+    --psp-wizard-step-connector: var(--psp-border);
+    --psp-wizard-panel: var(--psp-surface-strong);
+    --psp-wizard-panel-border: var(--psp-border);
+    --psp-wizard-focus-ring: var(--psp-accent);
+    --juice-wizard-shell: var(--psp-wizard-shell);
+    --juice-wizard-header: var(--psp-wizard-header);
+    --juice-wizard-header-border: var(--psp-wizard-header-border);
+    --juice-wizard-rail: var(--psp-wizard-rail);
+    --juice-wizard-rail-border: var(--psp-wizard-rail-border);
+    --juice-wizard-step: var(--psp-wizard-step);
+    --juice-wizard-step-border: var(--psp-wizard-step-border);
+    --juice-wizard-step-ink: var(--psp-wizard-step-ink);
+    --juice-wizard-step-current: var(--psp-wizard-step-current);
+    --juice-wizard-step-complete: var(--psp-wizard-step-complete);
+    --juice-wizard-step-on: var(--psp-wizard-step-on);
+    --juice-wizard-step-connector: var(--psp-wizard-step-connector);
+    --juice-wizard-panel: var(--psp-wizard-panel);
+    --juice-wizard-panel-border: var(--psp-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--psp-wizard-focus-ring);
+
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --psp-tooltip-panel: var(--psp-surface-strong);
+    --psp-tooltip-panel-border: var(--psp-border);
+    --psp-tooltip-panel-shadow: 0 12px 28px -20px var(--psp-shadow);
+    --psp-tooltip-ink: var(--psp-text);
+    --juice-tooltip-panel: var(--psp-tooltip-panel);
+    --juice-tooltip-panel-border: var(--psp-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--psp-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--psp-tooltip-ink);
+
+    /* Combobox chrome — input + listbox popup from existing tokens.
+       Trigger is a surface control, not a CTA. Distinct from select. */
+    --psp-combobox-input: var(--psp-surface-strong);
+    --psp-combobox-input-border: var(--psp-border-strong);
+    --psp-combobox-input-ink: var(--psp-text);
+    --psp-combobox-list: var(--psp-surface-strong);
+    --psp-combobox-list-border: var(--psp-border);
+    --psp-combobox-list-shadow: 0 18px 40px -24px var(--psp-shadow);
+    --psp-combobox-option: transparent;
+    --psp-combobox-option-hover: var(--psp-surface-muted);
+    --psp-combobox-option-selected: var(--psp-highlight);
+    --psp-combobox-option-ink: var(--psp-text);
+    --psp-combobox-trigger: transparent;
+    --psp-combobox-trigger-ink: var(--psp-heading);
+    --psp-combobox-focus-ring: var(--psp-accent);
+    --juice-combobox-input: var(--psp-combobox-input);
+    --juice-combobox-input-border: var(--psp-combobox-input-border);
+    --juice-combobox-input-ink: var(--psp-combobox-input-ink);
+    --juice-combobox-list: var(--psp-combobox-list);
+    --juice-combobox-list-border: var(--psp-combobox-list-border);
+    --juice-combobox-list-shadow: var(--psp-combobox-list-shadow);
+    --juice-combobox-option: var(--psp-combobox-option);
+    --juice-combobox-option-hover: var(--psp-combobox-option-hover);
+    --juice-combobox-option-selected: var(--psp-combobox-option-selected);
+    --juice-combobox-option-ink: var(--psp-combobox-option-ink);
+    --juice-combobox-trigger: var(--psp-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--psp-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--psp-combobox-focus-ring);
+
+    /* Menu chrome — APG menu button from existing tokens. Opener is a
+       surface control, not a CTA. Distinct from popover / combobox /
+       native select. */
+    --psp-menu-panel: var(--psp-surface-strong);
+    --psp-menu-panel-border: var(--psp-border);
+    --psp-menu-panel-shadow: 0 18px 40px -24px var(--psp-shadow);
+    --psp-menu-ink: var(--psp-text);
+    --psp-menu-item: transparent;
+    --psp-menu-item-hover: var(--psp-surface-muted);
+    --psp-menu-item-active: var(--psp-highlight);
+    --psp-menu-separator: var(--psp-border);
+    --psp-menu-focus-ring: var(--psp-accent);
+    --psp-menu-opener: var(--psp-surface-strong);
+    --psp-menu-opener-ink: var(--psp-heading);
+    --juice-menu-panel: var(--psp-menu-panel);
+    --juice-menu-panel-border: var(--psp-menu-panel-border);
+    --juice-menu-panel-shadow: var(--psp-menu-panel-shadow);
+    --juice-menu-ink: var(--psp-menu-ink);
+    --juice-menu-item: var(--psp-menu-item);
+    --juice-menu-item-hover: var(--psp-menu-item-hover);
+    --juice-menu-item-active: var(--psp-menu-item-active);
+    --juice-menu-separator: var(--psp-menu-separator);
+    --juice-menu-focus-ring: var(--psp-menu-focus-ring);
+    --juice-menu-opener: var(--psp-menu-opener);
+    --juice-menu-opener-ink: var(--psp-menu-opener-ink);
+
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --psp-switch-track: var(--psp-surface-muted);
+    --psp-switch-track-checked: var(--psp-accent);
+    --psp-switch-thumb: var(--psp-page);
+    --psp-switch-thumb-checked: var(--psp-page);
+    --psp-switch-focus-ring: var(--psp-accent);
+    --juice-switch-track: var(--psp-switch-track);
+    --juice-switch-track-checked: var(--psp-switch-track-checked);
+    --juice-switch-thumb: var(--psp-switch-thumb);
+    --juice-switch-thumb-checked: var(--psp-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--psp-switch-focus-ring);
+
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --psp-slider-track: var(--psp-surface-muted);
+    --psp-slider-track-border: var(--psp-border);
+    --psp-slider-fill: var(--psp-accent);
+    --psp-slider-thumb: var(--psp-page);
+    --psp-slider-thumb-border: var(--psp-border-strong);
+    --psp-slider-thumb-shadow: 0 1px 2px var(--psp-shadow);
+    --psp-slider-focus-ring: var(--psp-accent);
+    --juice-slider-track: var(--psp-slider-track);
+    --juice-slider-track-border: var(--psp-slider-track-border);
+    --juice-slider-fill: var(--psp-slider-fill);
+    --juice-slider-thumb: var(--psp-slider-thumb);
+    --juice-slider-thumb-border: var(--psp-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--psp-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--psp-slider-focus-ring);
+
+    /* Checkbox chrome — APG checkbox from existing tokens. The host is a
+       surface box, not a CTA. Binary only. Distinct from switch and
+       menuitemcheckbox. */
+    --psp-checkbox-control: var(--psp-page);
+    --psp-checkbox-control-checked: var(--psp-accent);
+    --psp-checkbox-border: var(--psp-border-strong);
+    --psp-checkbox-border-checked: var(--psp-accent);
+    --psp-checkbox-mark: var(--psp-page);
+    --psp-checkbox-focus-ring: var(--psp-accent);
+    --juice-checkbox-control: var(--psp-checkbox-control);
+    --juice-checkbox-control-checked: var(--psp-checkbox-control-checked);
+    --juice-checkbox-border: var(--psp-checkbox-border);
+    --juice-checkbox-border-checked: var(--psp-checkbox-border-checked);
+    --juice-checkbox-mark: var(--psp-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--psp-checkbox-focus-ring);
+
+    /* Radio chrome — APG radio from existing tokens. The host is a surface
+       disc, not a CTA. The group is layout-only. Distinct from switch
+       and checkbox. */
+    --psp-radio-control: var(--psp-page);
+    --psp-radio-control-checked: var(--psp-page);
+    --psp-radio-border: var(--psp-border-strong);
+    --psp-radio-border-checked: var(--psp-accent);
+    --psp-radio-mark: var(--psp-accent);
+    --psp-radio-focus-ring: var(--psp-accent);
+    --juice-radio-control: var(--psp-radio-control);
+    --juice-radio-control-checked: var(--psp-radio-control-checked);
+    --juice-radio-border: var(--psp-radio-border);
+    --juice-radio-border-checked: var(--psp-radio-border-checked);
+    --juice-radio-mark: var(--psp-radio-mark);
+    --juice-radio-focus-ring: var(--psp-radio-focus-ring);
+
+    /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+       site nav bar and not a CTA. Surface stays transparent unless a bar
+       is wanted. Distinct from tabs, wizard steps, and pagination. */
+    --psp-breadcrumb-ink: var(--psp-text-muted);
+    --psp-breadcrumb-ink-current: var(--psp-heading);
+    --psp-breadcrumb-ink-hover: var(--psp-accent);
+    --psp-breadcrumb-separator: var(--psp-border-strong);
+    --psp-breadcrumb-focus-ring: var(--psp-accent);
+    --psp-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--psp-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--psp-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--psp-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--psp-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--psp-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--psp-breadcrumb-surface);
+
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a CTA. Distinct from slider, spinner, and
+       a native <progress> restyle. Inline status — no overlay. */
+    --psp-progress-track: var(--psp-surface-muted);
+    --psp-progress-track-border: var(--psp-border);
+    --psp-progress-fill: var(--psp-accent);
+    --psp-progress-ink: var(--psp-text);
+    --psp-progress-focus-ring: var(--psp-accent);
+    --juice-progress-track: var(--psp-progress-track);
+    --juice-progress-track-border: var(--psp-progress-track-border);
+    --juice-progress-fill: var(--psp-progress-fill);
+    --juice-progress-ink: var(--psp-progress-ink);
+    --juice-progress-focus-ring: var(--psp-progress-focus-ring);
+
+    /* Pagination chrome — APG page set from existing tokens. Page controls
+       are surfaces, not a CTA. The trail stays transparent. Current fill
+       is accent; ink on that fill is page. Distinct from breadcrumb,
+       nav[type="pagination"], tabs, and wizard steps. */
+    --psp-pagination-surface: var(--psp-surface);
+    --psp-pagination-surface-hover: var(--psp-surface-muted);
+    --psp-pagination-surface-current: var(--psp-accent);
+    --psp-pagination-ink: var(--psp-text);
+    --psp-pagination-ink-hover: var(--psp-accent);
+    --psp-pagination-ink-current: var(--psp-page);
+    --psp-pagination-ink-disabled: var(--psp-text-muted);
+    --psp-pagination-border: var(--psp-border);
+    --psp-pagination-focus-ring: var(--psp-accent);
+    --psp-pagination-ellipsis: var(--psp-text-muted);
+    --juice-pagination-surface: var(--psp-pagination-surface);
+    --juice-pagination-surface-hover: var(--psp-pagination-surface-hover);
+    --juice-pagination-surface-current: var(--psp-pagination-surface-current);
+    --juice-pagination-ink: var(--psp-pagination-ink);
+    --juice-pagination-ink-hover: var(--psp-pagination-ink-hover);
+    --juice-pagination-ink-current: var(--psp-pagination-ink-current);
+    --juice-pagination-ink-disabled: var(--psp-pagination-ink-disabled);
+    --juice-pagination-border: var(--psp-pagination-border);
+    --juice-pagination-focus-ring: var(--psp-pagination-focus-ring);
+    --juice-pagination-ellipsis: var(--psp-pagination-ellipsis);
+
+    background-color: var(--psp-page);
+    background-image: var(--psp-page-background);
+    color: var(--psp-text);
+    font-family: var(--psp-body-font);
+}
+
+/* Theme root behavior */
+[theme="retro-poolside-pop"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="retro-poolside-pop"] :where(div) {
+    background-color: transparent;
+    color: inherit;
+}
+
+/* Semantic element defaults */
+[theme="retro-poolside-pop"] :where(section, article, aside, nav, header, footer, form) {
+    background-color: var(--psp-surface);
+    color: var(--psp-text);
+    border: 1px solid var(--psp-border);
+    box-shadow: 0 24px 60px -36px var(--psp-shadow);
+    backdrop-filter: blur(14px);
+}
+
+[theme="retro-poolside-pop"] :where(nav[type="bar"], nav[type="sidebar"]) {
+    background-color: var(--psp-surface-strong);
+}
+
+/* Typography hierarchy */
+[theme="retro-poolside-pop"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--psp-heading);
+    font-family: var(--psp-heading-font);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+}
+
+[theme="retro-poolside-pop"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--psp-text);
+    font-family: var(--psp-body-font);
+}
+
+[theme="retro-poolside-pop"] :where(small, figcaption) {
+    color: var(--psp-text-muted);
+    font-family: var(--psp-body-font);
+}
+
+[theme="retro-poolside-pop"] :where(strong, b) {
+    color: var(--psp-heading);
+}
+
+/* Links and emphasis */
+[theme="retro-poolside-pop"] :where(a) {
+    color: var(--psp-accent-strong);
+    text-decoration-color: #{rgba($psp-accent-strong, 0.35)};
+}
+
+[theme="retro-poolside-pop"] :where(a:hover, a:focus-visible) {
+    color: var(--psp-accent);
+}
+
+/* Controls */
+[theme="retro-poolside-pop"] :where(button, input, textarea, select) {
+    background-color: var(--psp-surface-strong);
+    color: var(--psp-text);
+    border: 1px solid var(--psp-border-strong);
+    font-family: var(--psp-body-font);
+    box-shadow: 0 14px 32px -26px var(--psp-shadow);
+}
+
+[theme="retro-poolside-pop"] :where(button) {
+    background-image: var(--psp-button-background);
+    color: #{$psp-page};
+    border-color: transparent;
+}
+
+[theme="retro-poolside-pop"] :where(button:hover, button:focus-visible) {
+    box-shadow: 0 18px 38px -24px #{rgba($psp-deep, 0.24)};
+}
+
+[theme="retro-poolside-pop"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--psp-text-muted);
+}
+
+[theme="retro-poolside-pop"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid #{rgba($psp-border-color, 0.28)};
+    outline-offset: 2px;
+}
+
+[theme="retro-poolside-pop"] :where(code, pre) {
+    background-color: #{rgba($psp-page-tint, 0.9)};
+    color: var(--psp-heading);
+    border: 1px solid var(--psp-border);
+}
+
+[theme="retro-poolside-pop"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--psp-border);
+}
+
+[theme="retro-poolside-pop"] :where(ul, ol) {
+    color: var(--psp-text);
+}
+
+/* Named themed surfaces */
+[theme="retro-poolside-pop"][psp-card],
+[theme="retro-poolside-pop"] [psp-card] {
+    background: var(--psp-card-background);
+    color: var(--psp-text);
+    border: 1px solid var(--psp-border-strong);
+    box-shadow: 0 28px 70px -42px var(--psp-shadow);
+}
+
+[theme="retro-poolside-pop"][psp-card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-poolside-pop"] [psp-card] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"][psp-card] :where(p, span, li, small),
+[theme="retro-poolside-pop"] [psp-card] :where(p, span, li, small) {
+    color: var(--psp-text-muted);
+}
+
+[theme="retro-poolside-pop"][psp-card] :where(strong, b),
+[theme="retro-poolside-pop"] [psp-card] :where(strong, b) {
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"][psp-panel],
+[theme="retro-poolside-pop"] [psp-panel] {
+    background: var(--psp-panel-background);
+    color: var(--psp-text);
+    border: 1px solid var(--psp-border);
+    box-shadow: 0 22px 56px -40px var(--psp-shadow);
+}
+
+[theme="retro-poolside-pop"][psp-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-poolside-pop"] [psp-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"][psp-panel] :where(p, span, li, small),
+[theme="retro-poolside-pop"] [psp-panel] :where(p, span, li, small) {
+    color: var(--psp-text);
+}
+
+[theme="retro-poolside-pop"][psp-panel] :where(strong, b),
+[theme="retro-poolside-pop"] [psp-panel] :where(strong, b) {
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"][psp-hero],
+[theme="retro-poolside-pop"] [psp-hero] {
+    background: var(--psp-hero-background);
+    color: #{$psp-page};
+    border: 1px solid #{rgba($psp-page, 0.16)};
+    box-shadow: 0 36px 90px -48px #{rgba($psp-deep, 0.45)};
+}
+
+[theme="retro-poolside-pop"][psp-hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-poolside-pop"] [psp-hero] :where(h1, h2, h3, h4, h5, h6) {
+    color: #{$psp-page};
+}
+
+[theme="retro-poolside-pop"][psp-hero] :where(p, span, li, small, a),
+[theme="retro-poolside-pop"] [psp-hero] :where(p, span, li, small, a) {
+    color: #{rgba($psp-page, 0.86)};
+}
+
+[theme="retro-poolside-pop"][psp-hero] :where(button),
+[theme="retro-poolside-pop"] [psp-hero] :where(button) {
+    background: #{$psp-page};
+    color: var(--psp-heading);
+    border-color: transparent;
+}
+
+[theme="retro-poolside-pop"][psp-stage],
+[theme="retro-poolside-pop"] [psp-stage] {
+    background: var(--psp-stage-background);
+    color: #{$psp-page};
+    border: 1px solid var(--psp-stage-outline);
+    box-shadow: 0 44px 100px -54px var(--psp-stage-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+[theme="retro-poolside-pop"][psp-stage]::before,
+[theme="retro-poolside-pop"] [psp-stage]::before {
+    content: "";
+    position: absolute;
+    inset: 1.25rem;
+    border: 1px solid #{rgba($psp-page, 0.08)};
+    border-radius: 1.25rem;
+    pointer-events: none;
+}
+
+[theme="retro-poolside-pop"][psp-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-poolside-pop"] [psp-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: #{$psp-page};
+}
+
+[theme="retro-poolside-pop"][psp-stage] :where(p, span, li, small, a),
+[theme="retro-poolside-pop"] [psp-stage] :where(p, span, li, small, a) {
+    color: #{rgba($psp-page, 0.86)};
+}
+
+[theme="retro-poolside-pop"][psp-chip],
+[theme="retro-poolside-pop"] [psp-chip] {
+    background: var(--psp-chip-background);
+    color: var(--psp-heading);
+    border: 1px solid #{rgba($psp-highlight-strong, 0.34)};
+    box-shadow: 0 18px 40px -30px #{rgba($psp-deep, 0.18)};
+}
+
+[theme="retro-poolside-pop"][psp-buybox],
+[theme="retro-poolside-pop"] [psp-buybox] {
+    background: var(--psp-buybox-background);
+    color: var(--psp-text);
+    border: 1px solid #{rgba($psp-highlight-strong, 0.3)};
+    box-shadow: var(--psp-buybox-shadow);
+}
+
+[theme="retro-poolside-pop"][psp-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-poolside-pop"] [psp-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"][psp-spec],
+[theme="retro-poolside-pop"] [psp-spec] {
+    background: var(--psp-spec-background);
+    color: var(--psp-text);
+    border: 1px solid #{rgba($psp-highlight-strong, 0.26)};
+    box-shadow: 0 20px 46px -34px #{rgba($psp-deep, 0.15)};
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme="retro-poolside-pop"][psp-hero] :where([psp-card], [psp-panel]),
+[theme="retro-poolside-pop"] [psp-hero] :where([psp-card], [psp-panel]) {
+    color: var(--psp-text);
+}
+
+[theme="retro-poolside-pop"][psp-hero] :where([psp-card], [psp-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-poolside-pop"] [psp-hero] :where([psp-card], [psp-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"][psp-hero] :where([psp-card], [psp-panel]) :where(p, span, li, small, a),
+[theme="retro-poolside-pop"] [psp-hero] :where([psp-card], [psp-panel]) :where(p, span, li, small, a) {
+    color: var(--psp-text-muted);
+}
+
+/* Accordion wrappers are structural, not named surfaces.
+   Group FAQ stacks in [psp-card] / [psp-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme="retro-poolside-pop"] :where([accordion]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+/* Generic Poolside Pop buttons use --psp-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
+[theme="retro-poolside-pop"] button[accordion-item] {
+    background-image: none;
+    background-color: var(--juice-accordion-trigger);
+    color: var(--psp-heading);
+    border: 1px solid var(--psp-border);
+    box-shadow: 0 14px 32px -26px var(--psp-shadow);
+}
+
+[theme="retro-poolside-pop"] button[accordion-item]::after {
+    border-color: var(--juice-accordion-chevron);
+}
+
+[theme="retro-poolside-pop"] button[accordion-item]:hover {
+    border-color: var(--psp-border-strong);
+    background-color: var(--juice-accordion-trigger-hover);
+    color: var(--psp-heading);
+}
+
+[theme="retro-poolside-pop"] button[accordion-item]:focus-visible {
+    outline: 2px solid var(--juice-accordion-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 14px 32px -26px var(--psp-shadow);
+}
+
+[theme="retro-poolside-pop"] button[accordion-item][aria-expanded="true"] {
+    background-color: var(--juice-accordion-trigger-open);
+    background-image: none;
+    color: var(--psp-heading);
+    border-color: var(--psp-border-strong);
+}
+
+[theme="retro-poolside-pop"] [accordion] [role="region"] {
+    color: var(--psp-text);
+    background-color: var(--psp-surface-muted);
+    border: 1px solid var(--juice-accordion-panel-rule);
+    border-radius: 0.75rem;
+    /* Slice A framed the panel; skip the shared inset rule. */
+    box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Poolside Pop buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme="retro-poolside-pop"] :where([tabs]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+[theme="retro-poolside-pop"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="retro-poolside-pop"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="retro-poolside-pop"] button[tab],
+[theme="retro-poolside-pop"] [tabs] > button,
+[theme="retro-poolside-pop"] [tabs-list] > button {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[tab]:hover,
+[theme="retro-poolside-pop"] [tabs] > button:hover,
+[theme="retro-poolside-pop"] [tabs-list] > button:hover {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[tab]:focus-visible,
+[theme="retro-poolside-pop"] [tabs] > button:focus-visible,
+[theme="retro-poolside-pop"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-poolside-pop"] button[tab][active],
+[theme="retro-poolside-pop"] button[tab][aria-selected="true"],
+[theme="retro-poolside-pop"] [tabs] > button[active],
+[theme="retro-poolside-pop"] [tabs] > button[aria-selected="true"],
+[theme="retro-poolside-pop"] [tabs-list] > button[active],
+[theme="retro-poolside-pop"] [tabs-list] > button[aria-selected="true"] {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="retro-poolside-pop"] [tab-panel] {
+    color: var(--psp-text);
+}
+
+/* Modal chrome. Generic Poolside Pop buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme="retro-poolside-pop"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="retro-poolside-pop"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="retro-poolside-pop"] button[modal-close],
+[theme="retro-poolside-pop"] [modal-close] {
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[modal-close]:hover,
+[theme="retro-poolside-pop"] [modal-close]:hover {
+    background-image: none;
+    background-color: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[modal-close]:focus-visible,
+[theme="retro-poolside-pop"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Poolside Pop buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="retro-poolside-pop"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="retro-poolside-pop"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="retro-poolside-pop"] button[drawer-close],
+[theme="retro-poolside-pop"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[drawer-close]:hover,
+[theme="retro-poolside-pop"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[drawer-close]:focus-visible,
+[theme="retro-poolside-pop"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Poolside Pop buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme="retro-poolside-pop"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-poolside-pop"] [toast-title],
+[theme="retro-poolside-pop"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-poolside-pop"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="retro-poolside-pop"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="retro-poolside-pop"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="retro-poolside-pop"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="retro-poolside-pop"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="retro-poolside-pop"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="retro-poolside-pop"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="retro-poolside-pop"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="retro-poolside-pop"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="retro-poolside-pop"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="retro-poolside-pop"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="retro-poolside-pop"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="retro-poolside-pop"] button[toast-close],
+[theme="retro-poolside-pop"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[toast-close]:hover,
+[theme="retro-poolside-pop"] [toast-close]:hover {
+    background-image: none;
+    background-color: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[toast-close]:focus-visible,
+[theme="retro-poolside-pop"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Poolside Pop buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="retro-poolside-pop"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-poolside-pop"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="retro-poolside-pop"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="retro-poolside-pop"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="retro-poolside-pop"] button[banner-close],
+[theme="retro-poolside-pop"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[banner-close]:hover,
+[theme="retro-poolside-pop"] [banner-close]:hover {
+    background-image: none;
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[banner-close]:focus-visible,
+[theme="retro-poolside-pop"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Poolside Pop buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme="retro-poolside-pop"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-poolside-pop"] [popover-header],
+[theme="retro-poolside-pop"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-poolside-pop"] button[popover-close],
+[theme="retro-poolside-pop"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[popover-close]:hover,
+[theme="retro-poolside-pop"] [popover-close]:hover {
+    background-image: none;
+    background-color: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[popover-close]:focus-visible,
+[theme="retro-poolside-pop"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="retro-poolside-pop"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme="retro-poolside-pop"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="retro-poolside-pop"] button[combobox-trigger],
+[theme="retro-poolside-pop"] [combobox-trigger] {
+    background-image: none;
+    background-color: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] [combobox-input]:focus-visible,
+[theme="retro-poolside-pop"] button[combobox-trigger]:focus-visible,
+[theme="retro-poolside-pop"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-poolside-pop"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="retro-poolside-pop"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="retro-poolside-pop"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="retro-poolside-pop"] [combobox-option][aria-selected="true"],
+[theme="retro-poolside-pop"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme="retro-poolside-pop"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-poolside-pop"] button[menu-button],
+[theme="retro-poolside-pop"] [menu-button] {
+    background-image: none;
+    background-color: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[menu-button]:focus-visible,
+[theme="retro-poolside-pop"] [menu-button]:focus-visible,
+[theme="retro-poolside-pop"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-poolside-pop"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-poolside-pop"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="retro-poolside-pop"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="retro-poolside-pop"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="retro-poolside-pop"] [menu-label] {
+    color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme="retro-poolside-pop"] button[switch],
+[theme="retro-poolside-pop"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[switch][aria-checked="true"],
+[theme="retro-poolside-pop"] [switch][aria-checked="true"],
+[theme="retro-poolside-pop"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="retro-poolside-pop"] button[switch]:hover,
+[theme="retro-poolside-pop"] [switch]:hover,
+[theme="retro-poolside-pop"] button[switch]:focus-visible,
+[theme="retro-poolside-pop"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[switch]:focus-visible,
+[theme="retro-poolside-pop"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme="retro-poolside-pop"] button[slider]:not([slider="vertical"]),
+[theme="retro-poolside-pop"] [slider]:not([slider="vertical"]) {
+    background-image: none;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[slider-thumb],
+[theme="retro-poolside-pop"] [slider-thumb] {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-poolside-pop"] button[slider-thumb]:hover,
+[theme="retro-poolside-pop"] [slider-thumb]:hover,
+[theme="retro-poolside-pop"] button[slider-thumb]:focus-visible,
+[theme="retro-poolside-pop"] [slider-thumb]:focus-visible {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-poolside-pop"] button[slider-thumb]:focus-visible,
+[theme="retro-poolside-pop"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface box, not a CTA. Binary only. Runtime is later. */
+[theme="retro-poolside-pop"] button[checkbox],
+[theme="retro-poolside-pop"] [checkbox] {
+    background-image: none;
+    background-color: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[checkbox][aria-checked="true"],
+[theme="retro-poolside-pop"] [checkbox][aria-checked="true"],
+[theme="retro-poolside-pop"] [checkbox]:checked {
+    background-image: none;
+    background-color: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="retro-poolside-pop"] button[checkbox]:hover,
+[theme="retro-poolside-pop"] [checkbox]:hover,
+[theme="retro-poolside-pop"] button[checkbox]:focus-visible,
+[theme="retro-poolside-pop"] [checkbox]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[checkbox]:focus-visible,
+[theme="retro-poolside-pop"] [checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface disc, not a CTA. Group layout is author-owned.
+   Runtime is later. */
+[theme="retro-poolside-pop"] button[radio],
+[theme="retro-poolside-pop"] [radio] {
+    background-image: none;
+    background-color: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[radio][aria-checked="true"],
+[theme="retro-poolside-pop"] [radio][aria-checked="true"],
+[theme="retro-poolside-pop"] [radio]:checked {
+    background-image: none;
+    background-color: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="retro-poolside-pop"] button[radio]:hover,
+[theme="retro-poolside-pop"] [radio]:hover,
+[theme="retro-poolside-pop"] button[radio]:focus-visible,
+[theme="retro-poolside-pop"] [radio]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[radio]:focus-visible,
+[theme="retro-poolside-pop"] [radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme="retro-poolside-pop"] [breadcrumb],
+[theme="retro-poolside-pop"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="retro-poolside-pop"] [breadcrumb] a,
+[theme="retro-poolside-pop"] [breadcrumb-link],
+[theme="retro-poolside-pop"] a[breadcrumb-link],
+[theme="retro-poolside-pop"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-poolside-pop"] [breadcrumb] a:hover,
+[theme="retro-poolside-pop"] [breadcrumb-link]:hover,
+[theme="retro-poolside-pop"] a[breadcrumb-link]:hover,
+[theme="retro-poolside-pop"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] [breadcrumb] [aria-current="page"],
+[theme="retro-poolside-pop"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="retro-poolside-pop"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="retro-poolside-pop"] [breadcrumb] a:focus-visible,
+[theme="retro-poolside-pop"] [breadcrumb-link]:focus-visible,
+[theme="retro-poolside-pop"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme="retro-poolside-pop"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="retro-poolside-pop"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="retro-poolside-pop"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="retro-poolside-pop"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+
+
+/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
+   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
+   Runtime is later. */
+[theme="retro-poolside-pop"] [pagination],
+[theme="retro-poolside-pop"] nav[pagination] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-pagination-ink);
+}
+
+[theme="retro-poolside-pop"] [pagination] a,
+[theme="retro-poolside-pop"] [pagination-link],
+[theme="retro-poolside-pop"] a[pagination-link],
+[theme="retro-poolside-pop"] button[pagination-link],
+[theme="retro-poolside-pop"] button[pagination-prev],
+[theme="retro-poolside-pop"] button[pagination-next] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    border-color: var(--juice-pagination-border);
+    color: var(--juice-pagination-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-poolside-pop"] [pagination] a:hover,
+[theme="retro-poolside-pop"] [pagination-link]:hover,
+[theme="retro-poolside-pop"] button[pagination-link]:hover,
+[theme="retro-poolside-pop"] button[pagination-prev]:hover,
+[theme="retro-poolside-pop"] button[pagination-next]:hover {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-hover);
+    color: var(--juice-pagination-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] [pagination] [aria-current="page"],
+[theme="retro-poolside-pop"] [pagination] [aria-current="page"] :is(a, button, [pagination-link]),
+[theme="retro-poolside-pop"] [pagination-link][aria-current="page"] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-current);
+    color: var(--juice-pagination-ink-current);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled="true"]),
+[theme="retro-poolside-pop"] [pagination] [aria-disabled="true"] :is(a, button, [pagination-link]) {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    color: var(--juice-pagination-ink-disabled);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] [pagination] a:focus-visible,
+[theme="retro-poolside-pop"] [pagination-link]:focus-visible,
+[theme="retro-poolside-pop"] button[pagination-link]:focus-visible,
+[theme="retro-poolside-pop"] button[pagination-prev]:focus-visible,
+[theme="retro-poolside-pop"] button[pagination-next]:focus-visible {
+    outline: 2px solid var(--juice-pagination-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Palette-aware CTA ink. Component controls keep their own ink roles. */
+[theme="retro-poolside-pop"] :where(button) {
+    color: #{$psp-on-accent};
+}
+/* Stable bundle aliases used by shared application chrome. */
+[theme="retro-poolside-pop"] {
+    --retro-page: var(--psp-page);
+    --retro-page-tint: var(--psp-page-tint);
+    --retro-page-deep: var(--psp-page-deep);
+    --retro-surface: var(--psp-surface);
+    --retro-surface-strong: var(--psp-surface-strong);
+    --retro-surface-muted: var(--psp-surface-muted);
+    --retro-surface-deep: var(--psp-surface-deep);
+    --retro-border: var(--psp-border);
+    --retro-border-strong: var(--psp-border-strong);
+    --retro-shadow: var(--psp-shadow);
+    --retro-text: var(--psp-text);
+    --retro-text-muted: var(--psp-text-muted);
+    --retro-heading: var(--psp-heading);
+    --retro-body-font: var(--psp-body-font);
+    --retro-heading-font: var(--psp-heading-font);
+    --retro-accent: var(--psp-accent);
+    --retro-accent-soft: var(--psp-accent-soft);
+    --retro-accent-strong: var(--psp-accent-strong);
+    --retro-highlight: var(--psp-highlight);
+    --retro-page-background: var(--psp-page-background);
+    --retro-button-background: var(--psp-button-background);
+    --retro-card-background: var(--psp-card-background);
+    --retro-panel-background: var(--psp-panel-background);
+    --retro-hero-background: var(--psp-hero-background);
+    --retro-stage-background: var(--psp-stage-background);
+    --retro-stage-outline: var(--psp-stage-outline);
+    --retro-stage-shadow: var(--psp-stage-shadow);
+    --retro-theme-page: #{$psp-page};
+    --retro-theme-highlight: #{$psp-highlight};
+    --juice-color-page: var(--psp-page);
+    --juice-color-surface: var(--psp-surface-strong);
+    --juice-color-text: var(--psp-text);
+    --juice-color-text-muted: var(--psp-text-muted);
+    --juice-color-heading: var(--psp-heading);
+    --juice-color-accent: var(--psp-accent);
+    --juice-color-on-accent: #{$psp-on-accent};
+    --juice-color-border: var(--psp-border);
+    --juice-color-highlight: var(--psp-highlight);
+}

@@ -1,0 +1,36 @@
+@use 'sass:color';
+@use '../white/white.scss' as *;
+@use '../orange/orange.scss' as *;
+@use '../red/red.scss' as *;
+@use '../blue/blue.scss' as *;
+@use '../brown/brown.scss' as *;
+@use '../gray/swatch/slate/slate.scss' as *;
+
+/*
+    Sunset Motel sources: ivory, coral (candy apple), denim blue (cornflower), dark cocoa (brown).
+    Derived roles feed the retro-sunset-motel theme contract.
+    No separate hue family — mixes stay inside these swatches.
+*/
+
+$ssm-source-1: color.mix($peach-100, $white-200, 50%);
+$ssm-source-2: $candyapple-500;
+$ssm-source-3: $cornflower-600;
+$ssm-source-4: $brown-900;
+
+$ssm-page: $ssm-source-1;
+$ssm-page-tint: color.mix($candyapple-100, $white-100, 45%);
+$ssm-deep: $ssm-source-4;
+$ssm-text: $brown-800;
+$ssm-text-muted: color.mix($brown-600, $slate-600, 50%);
+$ssm-border-color: $cornflower-400;
+$ssm-accent: $candyapple-600;
+$ssm-accent-soft: $candyapple-300;
+$ssm-accent-strong: $candyapple-800;
+$ssm-accent-deep: $candyapple-900;
+$ssm-highlight: color.mix($cornflower-200, $white-100, 45%);
+$ssm-highlight-strong: $cornflower-400;
+$ssm-secondary: $ssm-source-3;
+$ssm-secondary-soft: color.mix($cornflower-200, $white-100, 35%);
+$ssm-secondary-strong: $cornflower-800;
+$ssm-on-accent: $white-100;
+
