@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../tokens/color/retro-afterburn/retro-afterburn.scss' as *;
 
 /*
@@ -15,24 +16,29 @@
 */
 
 [theme="retro-afterburn"] {
-    /* Foundation */
+    /* Foundation.
+       Stepped dark frost from existing page / page-tint / deep / secondary / highlight.
+       Alpha-only copies of page collapsed on the charcoal floor, so each step is a
+       distinct mix: page → muted → default → strong, with deep as a solid near-black band. */
     --afb-page: #{$afb-page};
     --afb-page-tint: #{$afb-page-tint};
     --afb-page-deep: #{$afb-deep};
-    --afb-surface: #{rgba($afb-page, 0.78)};
-    --afb-surface-strong: #{rgba($afb-page, 0.92)};
-    --afb-surface-muted: #{rgba($afb-page-tint, 0.78)};
-    --afb-surface-deep: #{$afb-text};
+    --afb-surface: #{color.mix($afb-page-tint, $afb-secondary, 80%)};
+    --afb-surface-strong: #{color.mix($afb-page-tint, $afb-highlight, 78%)};
+    --afb-surface-muted: #{color.mix(color.mix($afb-page, $afb-secondary, 80%), $afb-deep, 78%)};
+    --afb-surface-deep: #{color.mix($afb-deep, $afb-page, 92%)};
     --afb-border: #{rgba($afb-border-color, 0.26)};
     --afb-border-strong: #{rgba($afb-accent, 0.38)};
-    --afb-shadow: #{rgba($afb-deep, 0.12)};
+    --afb-shadow: #{rgba($afb-deep, 0.36)};
 
-    /* Typography */
+    /* Typography — soft < muted < body < heading. Inverse is deep ink for accent surfaces. */
     --afb-text: #{$afb-text};
     --afb-text-muted: #{$afb-text-muted};
+    --afb-text-soft: #{$afb-text-soft};
+    --afb-text-inverse: #{$afb-text-inverse};
     --afb-heading: #{$afb-heading};
-    --afb-body-font: "Lato", sans-serif;
-    --afb-heading-font: "Archivo Black", sans-serif;
+    --afb-body-font: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --afb-heading-font: "Archivo Black", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
     /* Accent system */
     --afb-accent: #{$afb-accent};
@@ -47,9 +53,9 @@
         linear-gradient(180deg, #{$afb-page} 0%, #{$afb-page-tint} 100%);
     --afb-button-background: linear-gradient(135deg, #{$afb-accent}, #{$afb-accent-strong});
     --afb-card-background:
-        linear-gradient(180deg, #{rgba($afb-page, 0.96)} 0%, #{rgba($afb-page-tint, 0.88)} 100%);
+        linear-gradient(180deg, #{color.mix($afb-page-tint, $afb-highlight, 72%)} 0%, #{color.mix($afb-page-tint, $afb-secondary, 64%)} 100%);
     --afb-panel-background:
-        linear-gradient(180deg, #{rgba($afb-page, 0.98)} 0%, #{rgba($afb-page-tint, 0.72)} 100%);
+        linear-gradient(180deg, #{color.mix($afb-page, $afb-secondary, 86%)} 0%, #{color.mix($afb-deep, $afb-page-tint, 55%)} 100%);
     --afb-hero-background:
         radial-gradient(circle at top left, #{rgba($afb-highlight-strong, 0.38)}, transparent 30%),
         radial-gradient(circle at bottom right, #{rgba($afb-secondary, 0.28)}, transparent 32%),
@@ -60,12 +66,12 @@
         linear-gradient(145deg, #{$afb-deep} 0%, #{$afb-text} 52%, #{$afb-accent-strong} 100%);
     --afb-stage-outline: #{rgba($afb-page, 0.14)};
     --afb-stage-shadow: #{rgba($afb-deep, 0.34)};
-    --afb-chip-background: #{rgba($afb-page, 0.96)};
+    --afb-chip-background: #{color.mix($afb-page-tint, $afb-highlight, 84%)};
     --afb-buybox-background:
-        linear-gradient(180deg, #{rgba($afb-page, 0.98)} 0%, #{rgba($afb-page-tint, 0.82)} 100%);
+        linear-gradient(180deg, #{color.mix($afb-page-tint, $afb-highlight, 80%)} 0%, #{color.mix($afb-page, $afb-secondary, 70%)} 100%);
     --afb-buybox-shadow: 0 32px 70px -42px #{rgba($afb-deep, 0.24)};
     --afb-spec-background:
-        linear-gradient(180deg, #{rgba($afb-page-tint, 0.95)} 0%, #{rgba($afb-page, 0.98)} 100%);
+        linear-gradient(180deg, #{color.mix($afb-page-tint, $afb-secondary, 90%)} 0%, #{color.mix($afb-page, $afb-deep, 70%)} 100%);
 
     /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
        Bound from existing Afterburn tokens; no new hue family. */
@@ -98,7 +104,7 @@
     --afb-tabs-trigger: transparent;
     --afb-tabs-trigger-hover: transparent;
     --afb-tabs-trigger-active: transparent;
-    --afb-tabs-text: var(--afb-text-muted);
+    --afb-tabs-text: var(--afb-text-soft);
     --afb-tabs-text-hover: var(--afb-heading);
     --afb-tabs-text-active: var(--afb-accent);
     --afb-tabs-indicator: var(--afb-accent);
@@ -116,7 +122,7 @@
     --juice-tabs-focus-ring: var(--afb-tabs-focus-ring);
     --juice-tabs-panel: var(--afb-tabs-panel);
 
-    /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+    /* Surface tone roles — soft = default frost, strong = elevated, muted = recess. */
     --juice-surface-soft-bg: var(--afb-surface);
     --juice-surface-soft-border: var(--afb-border);
     --juice-surface-soft-shadow: 0 18px 40px -28px var(--afb-shadow);
@@ -286,7 +292,7 @@
     --afb-wizard-rail-border: var(--afb-border);
     --afb-wizard-step: var(--afb-surface-strong);
     --afb-wizard-step-border: var(--afb-border);
-    --afb-wizard-step-ink: var(--afb-text-muted);
+    --afb-wizard-step-ink: var(--afb-text-soft);
     --afb-wizard-step-current: var(--afb-accent);
     --afb-wizard-step-complete: var(--afb-accent-strong);
     --afb-wizard-step-on: var(--afb-page);
@@ -497,6 +503,7 @@
     background-image: var(--afb-page-background);
     color: var(--afb-text);
     font-family: var(--afb-body-font);
+    line-height: 1.6;
 }
 
 /* Theme root behavior */
@@ -510,17 +517,64 @@
     color: inherit;
 }
 
-/* Semantic element defaults */
-[theme="retro-afterburn"] :where(section, article, aside, nav, header, footer, form) {
+/* Semantic defaults — KiwiPress denseness on a dark floor.
+   Section/article stay on the quiet recess. Nav (especially bar/sidebar)
+   is the elevated strong step. Footer is the deep band, not another frost box. */
+[theme="retro-afterburn"] :where(section, article) {
+    background-color: var(--afb-surface-muted);
+    color: var(--afb-text);
+    border: 1px solid var(--afb-border);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+}
+
+[theme="retro-afterburn"] :where(aside, form) {
     background-color: var(--afb-surface);
     color: var(--afb-text);
     border: 1px solid var(--afb-border);
-    box-shadow: 0 24px 60px -36px var(--afb-shadow);
+    box-shadow: 0 18px 40px -28px var(--afb-shadow);
+    backdrop-filter: blur(12px);
+}
+
+[theme="retro-afterburn"] :where(header) {
+    background-color: var(--afb-surface-muted);
+    color: var(--afb-text);
+    border: none;
+    border-bottom: 1px solid var(--afb-border);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+}
+
+[theme="retro-afterburn"] :where(main > header) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--afb-text);
+}
+
+[theme="retro-afterburn"] :where(nav) {
+    background-color: var(--afb-surface-strong);
+    color: var(--afb-text);
+    border: none;
+    border-bottom: 1px solid var(--afb-border);
+    box-shadow: 0 18px 40px -28px var(--afb-shadow);
     backdrop-filter: blur(14px);
 }
 
 [theme="retro-afterburn"] :where(nav[type="bar"], nav[type="sidebar"]) {
     background-color: var(--afb-surface-strong);
+    border: 1px solid var(--afb-border-strong);
+}
+
+[theme="retro-afterburn"] :where(footer) {
+    background-color: var(--afb-surface-deep);
+    color: var(--afb-text);
+    border: none;
+    border-top: 1px solid var(--afb-border-strong);
+    box-shadow: none;
+    backdrop-filter: none;
 }
 
 /* Typography hierarchy */
@@ -529,17 +583,19 @@
     font-family: var(--afb-heading-font);
     font-weight: 900;
     letter-spacing: -0.03em;
-    line-height: 0.95;
+    line-height: 1.08;
 }
 
 [theme="retro-afterburn"] :where(p, span, li, label, dt, dd, blockquote) {
     color: var(--afb-text);
     font-family: var(--afb-body-font);
+    line-height: 1.6;
 }
 
 [theme="retro-afterburn"] :where(small, figcaption) {
-    color: var(--afb-text-muted);
+    color: var(--afb-text-soft);
     font-family: var(--afb-body-font);
+    line-height: 1.55;
 }
 
 [theme="retro-afterburn"] :where(strong, b) {
@@ -601,7 +657,7 @@
 }
 
 [theme="retro-afterburn"] :where(input::placeholder, textarea::placeholder) {
-    color: var(--afb-text-muted);
+    color: var(--afb-text-soft);
 }
 
 [theme="retro-afterburn"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
@@ -624,7 +680,11 @@
     color: var(--afb-text);
 }
 
-/* Named themed surfaces */
+/* Named surfaces and Juice primitives share one recipe each.
+   [card]/[afb-card] elevated, [panel]/[afb-panel] quiet, [hero]/[afb-hero] marquee.
+   Captions stay on soft; card body secondary stays muted. */
+[theme="retro-afterburn"][card],
+[theme="retro-afterburn"] [card],
 [theme="retro-afterburn"][afb-card],
 [theme="retro-afterburn"] [afb-card] {
     background: var(--afb-card-background);
@@ -633,21 +693,29 @@
     box-shadow: 0 28px 70px -42px var(--afb-shadow);
 }
 
+[theme="retro-afterburn"][card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-afterburn"] [card] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"][afb-card] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"] [afb-card] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--afb-heading);
 }
 
-[theme="retro-afterburn"][afb-card] :where(p, span, li, small),
-[theme="retro-afterburn"] [afb-card] :where(p, span, li, small) {
+[theme="retro-afterburn"][card] :where(p, span, li),
+[theme="retro-afterburn"] [card] :where(p, span, li),
+[theme="retro-afterburn"][afb-card] :where(p, span, li),
+[theme="retro-afterburn"] [afb-card] :where(p, span, li) {
     color: var(--afb-text-muted);
 }
 
+[theme="retro-afterburn"][card] :where(strong, b),
+[theme="retro-afterburn"] [card] :where(strong, b),
 [theme="retro-afterburn"][afb-card] :where(strong, b),
 [theme="retro-afterburn"] [afb-card] :where(strong, b) {
     color: var(--afb-heading);
 }
 
+[theme="retro-afterburn"][panel],
+[theme="retro-afterburn"] [panel],
 [theme="retro-afterburn"][afb-panel],
 [theme="retro-afterburn"] [afb-panel] {
     background: var(--afb-panel-background);
@@ -656,42 +724,94 @@
     box-shadow: 0 22px 56px -40px var(--afb-shadow);
 }
 
+[theme="retro-afterburn"][panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-afterburn"] [panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"][afb-panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"] [afb-panel] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--afb-heading);
 }
 
-[theme="retro-afterburn"][afb-panel] :where(p, span, li, small),
-[theme="retro-afterburn"] [afb-panel] :where(p, span, li, small) {
+[theme="retro-afterburn"][panel] :where(p, span, li),
+[theme="retro-afterburn"] [panel] :where(p, span, li),
+[theme="retro-afterburn"][afb-panel] :where(p, span, li),
+[theme="retro-afterburn"] [afb-panel] :where(p, span, li) {
     color: var(--afb-text);
 }
 
+[theme="retro-afterburn"][panel] :where(strong, b),
+[theme="retro-afterburn"] [panel] :where(strong, b),
 [theme="retro-afterburn"][afb-panel] :where(strong, b),
 [theme="retro-afterburn"] [afb-panel] :where(strong, b) {
     color: var(--afb-heading);
 }
 
+[theme="retro-afterburn"][hero],
+[theme="retro-afterburn"] [hero],
 [theme="retro-afterburn"][afb-hero],
 [theme="retro-afterburn"] [afb-hero] {
     background: var(--afb-hero-background);
-    color: #{$afb-page};
+    color: var(--afb-text-inverse);
     border: 1px solid #{rgba($afb-page, 0.16)};
     box-shadow: 0 36px 90px -48px #{rgba($afb-deep, 0.45)};
 }
 
+[theme="retro-afterburn"][hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-afterburn"] [hero] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"][afb-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"] [afb-hero] :where(h1, h2, h3, h4, h5, h6) {
-    color: #{$afb-page};
+    color: var(--afb-text-inverse);
 }
 
-[theme="retro-afterburn"][afb-hero] :where(p, span, li, small, a),
-[theme="retro-afterburn"] [afb-hero] :where(p, span, li, small, a) {
-    color: #{rgba($afb-page, 0.86)};
+[theme="retro-afterburn"][hero] :where(p, span, li, a),
+[theme="retro-afterburn"] [hero] :where(p, span, li, a),
+[theme="retro-afterburn"][afb-hero] :where(p, span, li, a),
+[theme="retro-afterburn"] [afb-hero] :where(p, span, li, a) {
+    color: var(--afb-text-inverse);
 }
 
+[theme="retro-afterburn"][hero] :where(small, figcaption),
+[theme="retro-afterburn"] [hero] :where(small, figcaption),
+[theme="retro-afterburn"][afb-hero] :where(small, figcaption),
+[theme="retro-afterburn"] [afb-hero] :where(small, figcaption) {
+    color: color-mix(in srgb, var(--afb-text-inverse) 72%, var(--afb-accent-soft));
+}
+
+[theme="retro-afterburn"][hero] :where(button),
+[theme="retro-afterburn"] [hero] :where(button),
 [theme="retro-afterburn"][afb-hero] :where(button),
 [theme="retro-afterburn"] [afb-hero] :where(button) {
-    background: #{$afb-page};
+    background: var(--afb-text-inverse);
+    color: var(--afb-heading);
+    border-color: transparent;
+}
+
+/* [cta] uses the in-family accent → accent-strong recipe. Inverse ink on the orange band. */
+[theme="retro-afterburn"][cta],
+[theme="retro-afterburn"] [cta] {
+    background: var(--afb-button-background);
+    color: var(--afb-text-inverse);
+    border: 1px solid transparent;
+    box-shadow: 0 28px 70px -42px var(--afb-shadow);
+}
+
+[theme="retro-afterburn"][cta] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-afterburn"] [cta] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--afb-text-inverse);
+}
+
+[theme="retro-afterburn"][cta] :where(p, span, li, a),
+[theme="retro-afterburn"] [cta] :where(p, span, li, a) {
+    color: var(--afb-text-inverse);
+}
+
+[theme="retro-afterburn"][cta] :where(small, figcaption),
+[theme="retro-afterburn"] [cta] :where(small, figcaption) {
+    color: color-mix(in srgb, var(--afb-text-inverse) 72%, var(--afb-accent-soft));
+}
+
+[theme="retro-afterburn"][cta] :where(button),
+[theme="retro-afterburn"] [cta] :where(button) {
+    background: var(--afb-text-inverse);
     color: var(--afb-heading);
     border-color: transparent;
 }
@@ -699,7 +819,7 @@
 [theme="retro-afterburn"][afb-stage],
 [theme="retro-afterburn"] [afb-stage] {
     background: var(--afb-stage-background);
-    color: #{$afb-page};
+    color: var(--afb-text-inverse);
     border: 1px solid var(--afb-stage-outline);
     box-shadow: 0 44px 100px -54px var(--afb-stage-shadow);
     overflow: hidden;
@@ -718,12 +838,17 @@
 
 [theme="retro-afterburn"][afb-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme="retro-afterburn"] [afb-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-    color: #{$afb-page};
+    color: var(--afb-text-inverse);
 }
 
-[theme="retro-afterburn"][afb-stage] :where(p, span, li, small, a),
-[theme="retro-afterburn"] [afb-stage] :where(p, span, li, small, a) {
-    color: #{rgba($afb-page, 0.86)};
+[theme="retro-afterburn"][afb-stage] :where(p, span, li, a),
+[theme="retro-afterburn"] [afb-stage] :where(p, span, li, a) {
+    color: var(--afb-text-inverse);
+}
+
+[theme="retro-afterburn"][afb-stage] :where(small, figcaption),
+[theme="retro-afterburn"] [afb-stage] :where(small, figcaption) {
+    color: color-mix(in srgb, var(--afb-text-inverse) 72%, var(--afb-accent-soft));
 }
 
 [theme="retro-afterburn"][afb-chip],
@@ -756,19 +881,32 @@
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
-[theme="retro-afterburn"][afb-hero] :where([afb-card], [afb-panel]),
-[theme="retro-afterburn"] [afb-hero] :where([afb-card], [afb-panel]) {
+[theme="retro-afterburn"][hero] :where([card], [panel], [afb-card], [afb-panel]),
+[theme="retro-afterburn"] [hero] :where([card], [panel], [afb-card], [afb-panel]),
+[theme="retro-afterburn"][afb-hero] :where([card], [panel], [afb-card], [afb-panel]),
+[theme="retro-afterburn"] [afb-hero] :where([card], [panel], [afb-card], [afb-panel]) {
     color: var(--afb-text);
 }
 
-[theme="retro-afterburn"][afb-hero] :where([afb-card], [afb-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
-[theme="retro-afterburn"] [afb-hero] :where([afb-card], [afb-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+[theme="retro-afterburn"][hero] :where([card], [panel], [afb-card], [afb-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-afterburn"] [hero] :where([card], [panel], [afb-card], [afb-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-afterburn"][afb-hero] :where([card], [panel], [afb-card], [afb-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-afterburn"] [afb-hero] :where([card], [panel], [afb-card], [afb-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
     color: var(--afb-heading);
 }
 
-[theme="retro-afterburn"][afb-hero] :where([afb-card], [afb-panel]) :where(p, span, li, small, a),
-[theme="retro-afterburn"] [afb-hero] :where([afb-card], [afb-panel]) :where(p, span, li, small, a) {
+[theme="retro-afterburn"][hero] :where([card], [panel], [afb-card], [afb-panel]) :where(p, span, li, a),
+[theme="retro-afterburn"] [hero] :where([card], [panel], [afb-card], [afb-panel]) :where(p, span, li, a),
+[theme="retro-afterburn"][afb-hero] :where([card], [panel], [afb-card], [afb-panel]) :where(p, span, li, a),
+[theme="retro-afterburn"] [afb-hero] :where([card], [panel], [afb-card], [afb-panel]) :where(p, span, li, a) {
     color: var(--afb-text-muted);
+}
+
+[theme="retro-afterburn"][hero] :where([card], [panel], [afb-card], [afb-panel]) :where(small, figcaption),
+[theme="retro-afterburn"] [hero] :where([card], [panel], [afb-card], [afb-panel]) :where(small, figcaption),
+[theme="retro-afterburn"][afb-hero] :where([card], [panel], [afb-card], [afb-panel]) :where(small, figcaption),
+[theme="retro-afterburn"] [afb-hero] :where([card], [panel], [afb-card], [afb-panel]) :where(small, figcaption) {
+    color: var(--afb-text-soft);
 }
 
 /* Accordion wrappers are structural, not named surfaces.
@@ -1546,6 +1684,8 @@
     --retro-shadow: var(--afb-shadow);
     --retro-text: var(--afb-text);
     --retro-text-muted: var(--afb-text-muted);
+    --retro-text-soft: var(--afb-text-soft);
+    --retro-text-inverse: var(--afb-text-inverse);
     --retro-heading: var(--afb-heading);
     --retro-body-font: var(--afb-body-font);
     --retro-heading-font: var(--afb-heading-font);
