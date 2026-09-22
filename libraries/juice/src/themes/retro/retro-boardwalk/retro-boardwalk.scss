@@ -1,0 +1,1445 @@
+@use '../../tokens/color/retro-boardwalk/retro-boardwalk.scss' as *;
+
+/*
+    Boardwalk is a fully expressed Juice theme contract.
+    The theme owns:
+    - color relationships
+    - typography voice
+    - semantic element defaults
+    - named themed surfaces
+    
+    Juice still owns:
+    - layout
+    - spacing
+    - structural primitives
+*/
+
+[theme="retro-boardwalk"] {
+    /* Foundation */
+    --bdw-page: #{$bdw-page};
+    --bdw-page-tint: #{$bdw-page-tint};
+    --bdw-page-deep: #{$bdw-deep};
+    --bdw-surface: #{rgba($bdw-page, 0.78)};
+    --bdw-surface-strong: #{rgba($bdw-page, 0.92)};
+    --bdw-surface-muted: #{rgba($bdw-page-tint, 0.78)};
+    --bdw-surface-deep: #{$bdw-text};
+    --bdw-border: #{rgba($bdw-border-color, 0.26)};
+    --bdw-border-strong: #{rgba($bdw-accent, 0.38)};
+    --bdw-shadow: #{rgba($bdw-deep, 0.12)};
+
+    /* Typography */
+    --bdw-text: #{$bdw-text};
+    --bdw-text-muted: #{$bdw-text-muted};
+    --bdw-heading: #{$bdw-deep};
+    --bdw-body-font: "Lato", sans-serif;
+    --bdw-heading-font: "Archivo Black", sans-serif;
+
+    /* Accent system */
+    --bdw-accent: #{$bdw-accent};
+    --bdw-accent-soft: #{$bdw-accent-soft};
+    --bdw-accent-strong: #{$bdw-accent-strong};
+    --bdw-highlight: #{$bdw-highlight};
+
+    /* Surface recipes */
+    --bdw-page-background:
+        radial-gradient(circle at top left, #{rgba($bdw-highlight, 0.72)}, transparent 38%),
+        radial-gradient(circle at top right, #{rgba($bdw-secondary-soft, 0.45)}, transparent 30%),
+        linear-gradient(180deg, #{$bdw-page} 0%, #{$bdw-page-tint} 100%);
+    --bdw-button-background: linear-gradient(135deg, #{$bdw-accent}, #{$bdw-secondary-strong});
+    --bdw-card-background:
+        linear-gradient(180deg, #{rgba($bdw-page, 0.96)} 0%, #{rgba($bdw-page-tint, 0.88)} 100%);
+    --bdw-panel-background:
+        linear-gradient(180deg, #{rgba($bdw-page, 0.98)} 0%, #{rgba($bdw-page-tint, 0.72)} 100%);
+    --bdw-hero-background:
+        radial-gradient(circle at top left, #{rgba($bdw-highlight-strong, 0.38)}, transparent 30%),
+        radial-gradient(circle at bottom right, #{rgba($bdw-secondary, 0.28)}, transparent 32%),
+        linear-gradient(135deg, #{$bdw-deep} 0%, #{$bdw-accent-deep} 54%, #{$bdw-accent-strong} 100%);
+    --bdw-stage-background:
+        radial-gradient(circle at 18% 20%, #{rgba($bdw-highlight, 0.22)}, transparent 22%),
+        radial-gradient(circle at 78% 22%, #{rgba($bdw-accent-soft, 0.2)}, transparent 24%),
+        linear-gradient(145deg, #{$bdw-deep} 0%, #{$bdw-text} 52%, #{$bdw-accent-strong} 100%);
+    --bdw-stage-outline: #{rgba($bdw-page, 0.14)};
+    --bdw-stage-shadow: #{rgba($bdw-deep, 0.34)};
+    --bdw-chip-background: #{rgba($bdw-page, 0.96)};
+    --bdw-buybox-background:
+        linear-gradient(180deg, #{rgba($bdw-page, 0.98)} 0%, #{rgba($bdw-page-tint, 0.82)} 100%);
+    --bdw-buybox-shadow: 0 32px 70px -42px #{rgba($bdw-deep, 0.24)};
+    --bdw-spec-background:
+        linear-gradient(180deg, #{rgba($bdw-page-tint, 0.95)} 0%, #{rgba($bdw-page, 0.98)} 100%);
+
+    /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+       Bound from existing Boardwalk tokens; no new hue family. */
+    --bdw-trigger: var(--bdw-surface-strong);
+    --bdw-trigger-hover: var(--bdw-surface-muted);
+    --bdw-trigger-open: var(--bdw-highlight);
+    --bdw-chevron: var(--bdw-accent);
+    --bdw-panel-rule: var(--bdw-border);
+    --bdw-focus-ring: var(--bdw-accent);
+    --juice-accordion-trigger: var(--bdw-trigger);
+    --juice-accordion-trigger-hover: var(--bdw-trigger-hover);
+    --juice-accordion-trigger-open: var(--bdw-trigger-open);
+    --juice-accordion-chevron: var(--bdw-chevron);
+    --juice-accordion-panel-rule: var(--bdw-panel-rule);
+    --juice-accordion-focus-ring: var(--bdw-focus-ring);
+
+    /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+    --bdw-tabs-trigger: transparent;
+    --bdw-tabs-trigger-hover: transparent;
+    --bdw-tabs-trigger-active: transparent;
+    --bdw-tabs-text: var(--bdw-text-muted);
+    --bdw-tabs-text-hover: var(--bdw-heading);
+    --bdw-tabs-text-active: var(--bdw-accent);
+    --bdw-tabs-indicator: var(--bdw-accent);
+    --bdw-tabs-list-rule: var(--bdw-border);
+    --bdw-tabs-focus-ring: var(--bdw-accent);
+    --juice-tabs-trigger: var(--bdw-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--bdw-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--bdw-tabs-trigger-active);
+    --juice-tabs-text: var(--bdw-tabs-text);
+    --juice-tabs-text-hover: var(--bdw-tabs-text-hover);
+    --juice-tabs-text-active: var(--bdw-tabs-text-active);
+    --juice-tabs-indicator: var(--bdw-tabs-indicator);
+    --juice-tabs-list-rule: var(--bdw-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--bdw-tabs-focus-ring);
+
+    /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+    --juice-surface-soft-bg: var(--bdw-surface);
+    --juice-surface-soft-border: var(--bdw-border);
+    --juice-surface-soft-shadow: 0 18px 40px -28px var(--bdw-shadow);
+    --juice-surface-soft-blur: 14px;
+    --juice-surface-strong-bg: var(--bdw-surface-strong);
+    --juice-surface-strong-border: var(--bdw-border-strong);
+    --juice-surface-strong-shadow: 0 24px 56px -24px var(--bdw-shadow);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--bdw-surface-muted);
+    --juice-surface-muted-border: var(--bdw-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
+    /* Border strength — existing --bdw-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--bdw-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--bdw-border-strong);
+
+    /* Shadow tone — existing blue / purple identity; no new hue family. */
+    --juice-shadow-tone-cool-color: var(--bdw-shadow);
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--bdw-shadow);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--bdw-accent-strong) 16%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--bdw-accent-strong) 16%, transparent);
+
+    /* Overlay — frost veil / page-tint wash; existing tokens only. */
+    --juice-overlay-frost-wash: color-mix(in srgb, var(--bdw-page) 42%, transparent);
+    --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+    --juice-overlay-tint-wash: color-mix(in srgb, var(--bdw-page-tint) 38%, transparent);
+    --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+
+    /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --bdw-modal-overlay: color-mix(in srgb, var(--bdw-page-deep) 62%, transparent);
+    --bdw-modal-panel: var(--bdw-surface-strong);
+    --bdw-modal-panel-border: var(--bdw-border);
+    --bdw-modal-panel-shadow: 0 24px 56px -24px var(--bdw-shadow);
+    --bdw-modal-close: var(--bdw-surface-strong);
+    --bdw-modal-close-color: var(--bdw-heading);
+    --bdw-modal-close-hover: var(--bdw-surface-muted);
+    --bdw-modal-focus-ring: var(--bdw-accent);
+    --juice-modal-overlay: var(--bdw-modal-overlay);
+    --juice-modal-panel: var(--bdw-modal-panel);
+    --juice-modal-panel-border: var(--bdw-modal-panel-border);
+    --juice-modal-panel-shadow: var(--bdw-modal-panel-shadow);
+    --juice-modal-close: var(--bdw-modal-close);
+    --juice-modal-close-color: var(--bdw-modal-close-color);
+    --juice-modal-close-hover: var(--bdw-modal-close-hover);
+    --juice-modal-focus-ring: var(--bdw-modal-focus-ring);
+
+    /* Drawer chrome — same identity tokens as modal. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --bdw-drawer-overlay: color-mix(in srgb, var(--bdw-page-deep) 62%, transparent);
+    --bdw-drawer-panel: var(--bdw-surface-strong);
+    --bdw-drawer-panel-border: var(--bdw-border);
+    --bdw-drawer-panel-shadow: 0 24px 56px -24px var(--bdw-shadow);
+    --bdw-drawer-close: var(--bdw-surface-strong);
+    --bdw-drawer-close-color: var(--bdw-heading);
+    --bdw-drawer-close-hover: var(--bdw-surface-muted);
+    --bdw-drawer-focus-ring: var(--bdw-accent);
+    --juice-drawer-overlay: var(--bdw-drawer-overlay);
+    --juice-drawer-panel: var(--bdw-drawer-panel);
+    --juice-drawer-panel-border: var(--bdw-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--bdw-drawer-panel-shadow);
+    --juice-drawer-close: var(--bdw-drawer-close);
+    --juice-drawer-close-color: var(--bdw-drawer-close-color);
+    --juice-drawer-close-hover: var(--bdw-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--bdw-drawer-focus-ring);
+
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Status accents
+       remap Boardwalk identity (no new red/green family): accent /
+       page-deep / accent-soft / accent-strong. */
+    --bdw-toast-panel: var(--bdw-surface-strong);
+    --bdw-toast-panel-border: var(--bdw-border);
+    --bdw-toast-panel-shadow: 0 18px 40px -24px var(--bdw-shadow);
+    --bdw-toast-ink: var(--bdw-text);
+    --bdw-toast-close: var(--bdw-surface-strong);
+    --bdw-toast-close-color: var(--bdw-heading);
+    --bdw-toast-close-hover: var(--bdw-surface-muted);
+    --bdw-toast-focus-ring: var(--bdw-accent);
+    --bdw-toast-success: var(--bdw-accent);
+    --bdw-toast-success-soft: color-mix(in srgb, var(--bdw-accent) 14%, var(--bdw-surface-strong));
+    --bdw-toast-error: var(--bdw-page-deep);
+    --bdw-toast-error-soft: color-mix(in srgb, var(--bdw-page-deep) 12%, var(--bdw-surface-strong));
+    --bdw-toast-info: var(--bdw-accent-soft);
+    --bdw-toast-info-soft: color-mix(in srgb, var(--bdw-accent-soft) 18%, var(--bdw-surface-strong));
+    --bdw-toast-warning: var(--bdw-accent-strong);
+    --bdw-toast-warning-soft: color-mix(in srgb, var(--bdw-accent-strong) 12%, var(--bdw-surface-strong));
+    --juice-toast-panel: var(--bdw-toast-panel);
+    --juice-toast-panel-border: var(--bdw-toast-panel-border);
+    --juice-toast-panel-shadow: var(--bdw-toast-panel-shadow);
+    --juice-toast-ink: var(--bdw-toast-ink);
+    --juice-toast-close: var(--bdw-toast-close);
+    --juice-toast-close-color: var(--bdw-toast-close-color);
+    --juice-toast-close-hover: var(--bdw-toast-close-hover);
+    --juice-toast-focus-ring: var(--bdw-toast-focus-ring);
+    --juice-toast-success: var(--bdw-toast-success);
+    --juice-toast-success-soft: var(--bdw-toast-success-soft);
+    --juice-toast-error: var(--bdw-toast-error);
+    --juice-toast-error-soft: var(--bdw-toast-error-soft);
+    --juice-toast-info: var(--bdw-toast-info);
+    --juice-toast-info-soft: var(--bdw-toast-info-soft);
+    --juice-toast-warning: var(--bdw-toast-warning);
+    --juice-toast-warning-soft: var(--bdw-toast-warning-soft);
+
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the CTA gradient. Status remaps
+       Boardwalk identity (no new red/green family). Distinct from toast. */
+    --bdw-banner-panel: var(--bdw-surface-strong);
+    --bdw-banner-panel-border: var(--bdw-border);
+    --bdw-banner-ink: var(--bdw-text);
+    --bdw-banner-close: var(--bdw-surface-strong);
+    --bdw-banner-close-color: var(--bdw-heading);
+    --bdw-banner-close-hover: var(--bdw-surface-muted);
+    --bdw-banner-focus-ring: var(--bdw-accent);
+    --bdw-banner-success: var(--bdw-accent);
+    --bdw-banner-success-soft: color-mix(in srgb, var(--bdw-accent) 14%, var(--bdw-surface-strong));
+    --bdw-banner-error: var(--bdw-page-deep);
+    --bdw-banner-error-soft: color-mix(in srgb, var(--bdw-page-deep) 12%, var(--bdw-surface-strong));
+    --bdw-banner-info: var(--bdw-accent-soft);
+    --bdw-banner-info-soft: color-mix(in srgb, var(--bdw-accent-soft) 18%, var(--bdw-surface-strong));
+    --bdw-banner-warning: var(--bdw-accent-strong);
+    --bdw-banner-warning-soft: color-mix(in srgb, var(--bdw-accent-strong) 12%, var(--bdw-surface-strong));
+    --juice-banner-panel: var(--bdw-banner-panel);
+    --juice-banner-panel-border: var(--bdw-banner-panel-border);
+    --juice-banner-ink: var(--bdw-banner-ink);
+    --juice-banner-close: var(--bdw-banner-close);
+    --juice-banner-close-color: var(--bdw-banner-close-color);
+    --juice-banner-close-hover: var(--bdw-banner-close-hover);
+    --juice-banner-focus-ring: var(--bdw-banner-focus-ring);
+    --juice-banner-success: var(--bdw-banner-success);
+    --juice-banner-success-soft: var(--bdw-banner-success-soft);
+    --juice-banner-error: var(--bdw-banner-error);
+    --juice-banner-error-soft: var(--bdw-banner-error-soft);
+    --juice-banner-info: var(--bdw-banner-info);
+    --juice-banner-info-soft: var(--bdw-banner-info-soft);
+    --juice-banner-warning: var(--bdw-banner-warning);
+    --juice-banner-warning-soft: var(--bdw-banner-warning-soft);
+
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Distinct from
+       modal/drawer/toast and overlay="frost|tint". */
+    --bdw-popover-panel: var(--bdw-surface-strong);
+    --bdw-popover-panel-border: var(--bdw-border);
+    --bdw-popover-panel-shadow: 0 18px 40px -24px var(--bdw-shadow);
+    --bdw-popover-ink: var(--bdw-text);
+    --bdw-popover-close: var(--bdw-surface-strong);
+    --bdw-popover-close-color: var(--bdw-heading);
+    --bdw-popover-close-hover: var(--bdw-surface-muted);
+    --bdw-popover-focus-ring: var(--bdw-accent);
+    --juice-popover-panel: var(--bdw-popover-panel);
+    --juice-popover-panel-border: var(--bdw-popover-panel-border);
+    --juice-popover-panel-shadow: var(--bdw-popover-panel-shadow);
+    --juice-popover-ink: var(--bdw-popover-ink);
+    --juice-popover-close: var(--bdw-popover-close);
+    --juice-popover-close-color: var(--bdw-popover-close-color);
+    --juice-popover-close-hover: var(--bdw-popover-close-hover);
+    --juice-popover-focus-ring: var(--bdw-popover-focus-ring);
+
+    /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+       Distinct from modal/drawer/popover. No new hue family. */
+    --bdw-wizard-shell: var(--bdw-page);
+    --bdw-wizard-header: var(--bdw-surface-strong);
+    --bdw-wizard-header-border: var(--bdw-border);
+    --bdw-wizard-rail: var(--bdw-surface-muted);
+    --bdw-wizard-rail-border: var(--bdw-border);
+    --bdw-wizard-step: var(--bdw-surface-strong);
+    --bdw-wizard-step-border: var(--bdw-border);
+    --bdw-wizard-step-ink: var(--bdw-text-muted);
+    --bdw-wizard-step-current: var(--bdw-accent);
+    --bdw-wizard-step-complete: var(--bdw-accent-strong);
+    --bdw-wizard-step-on: var(--bdw-page);
+    --bdw-wizard-step-connector: var(--bdw-border);
+    --bdw-wizard-panel: var(--bdw-surface-strong);
+    --bdw-wizard-panel-border: var(--bdw-border);
+    --bdw-wizard-focus-ring: var(--bdw-accent);
+    --juice-wizard-shell: var(--bdw-wizard-shell);
+    --juice-wizard-header: var(--bdw-wizard-header);
+    --juice-wizard-header-border: var(--bdw-wizard-header-border);
+    --juice-wizard-rail: var(--bdw-wizard-rail);
+    --juice-wizard-rail-border: var(--bdw-wizard-rail-border);
+    --juice-wizard-step: var(--bdw-wizard-step);
+    --juice-wizard-step-border: var(--bdw-wizard-step-border);
+    --juice-wizard-step-ink: var(--bdw-wizard-step-ink);
+    --juice-wizard-step-current: var(--bdw-wizard-step-current);
+    --juice-wizard-step-complete: var(--bdw-wizard-step-complete);
+    --juice-wizard-step-on: var(--bdw-wizard-step-on);
+    --juice-wizard-step-connector: var(--bdw-wizard-step-connector);
+    --juice-wizard-panel: var(--bdw-wizard-panel);
+    --juice-wizard-panel-border: var(--bdw-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--bdw-wizard-focus-ring);
+
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --bdw-tooltip-panel: var(--bdw-surface-strong);
+    --bdw-tooltip-panel-border: var(--bdw-border);
+    --bdw-tooltip-panel-shadow: 0 12px 28px -20px var(--bdw-shadow);
+    --bdw-tooltip-ink: var(--bdw-text);
+    --juice-tooltip-panel: var(--bdw-tooltip-panel);
+    --juice-tooltip-panel-border: var(--bdw-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--bdw-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--bdw-tooltip-ink);
+
+    /* Combobox chrome — input + listbox popup from existing tokens.
+       Trigger is a surface control, not a CTA. Distinct from select. */
+    --bdw-combobox-input: var(--bdw-surface-strong);
+    --bdw-combobox-input-border: var(--bdw-border-strong);
+    --bdw-combobox-input-ink: var(--bdw-text);
+    --bdw-combobox-list: var(--bdw-surface-strong);
+    --bdw-combobox-list-border: var(--bdw-border);
+    --bdw-combobox-list-shadow: 0 18px 40px -24px var(--bdw-shadow);
+    --bdw-combobox-option: transparent;
+    --bdw-combobox-option-hover: var(--bdw-surface-muted);
+    --bdw-combobox-option-selected: var(--bdw-highlight);
+    --bdw-combobox-option-ink: var(--bdw-text);
+    --bdw-combobox-trigger: transparent;
+    --bdw-combobox-trigger-ink: var(--bdw-heading);
+    --bdw-combobox-focus-ring: var(--bdw-accent);
+    --juice-combobox-input: var(--bdw-combobox-input);
+    --juice-combobox-input-border: var(--bdw-combobox-input-border);
+    --juice-combobox-input-ink: var(--bdw-combobox-input-ink);
+    --juice-combobox-list: var(--bdw-combobox-list);
+    --juice-combobox-list-border: var(--bdw-combobox-list-border);
+    --juice-combobox-list-shadow: var(--bdw-combobox-list-shadow);
+    --juice-combobox-option: var(--bdw-combobox-option);
+    --juice-combobox-option-hover: var(--bdw-combobox-option-hover);
+    --juice-combobox-option-selected: var(--bdw-combobox-option-selected);
+    --juice-combobox-option-ink: var(--bdw-combobox-option-ink);
+    --juice-combobox-trigger: var(--bdw-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--bdw-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--bdw-combobox-focus-ring);
+
+    /* Menu chrome — APG menu button from existing tokens. Opener is a
+       surface control, not a CTA. Distinct from popover / combobox /
+       native select. */
+    --bdw-menu-panel: var(--bdw-surface-strong);
+    --bdw-menu-panel-border: var(--bdw-border);
+    --bdw-menu-panel-shadow: 0 18px 40px -24px var(--bdw-shadow);
+    --bdw-menu-ink: var(--bdw-text);
+    --bdw-menu-item: transparent;
+    --bdw-menu-item-hover: var(--bdw-surface-muted);
+    --bdw-menu-item-active: var(--bdw-highlight);
+    --bdw-menu-separator: var(--bdw-border);
+    --bdw-menu-focus-ring: var(--bdw-accent);
+    --bdw-menu-opener: var(--bdw-surface-strong);
+    --bdw-menu-opener-ink: var(--bdw-heading);
+    --juice-menu-panel: var(--bdw-menu-panel);
+    --juice-menu-panel-border: var(--bdw-menu-panel-border);
+    --juice-menu-panel-shadow: var(--bdw-menu-panel-shadow);
+    --juice-menu-ink: var(--bdw-menu-ink);
+    --juice-menu-item: var(--bdw-menu-item);
+    --juice-menu-item-hover: var(--bdw-menu-item-hover);
+    --juice-menu-item-active: var(--bdw-menu-item-active);
+    --juice-menu-separator: var(--bdw-menu-separator);
+    --juice-menu-focus-ring: var(--bdw-menu-focus-ring);
+    --juice-menu-opener: var(--bdw-menu-opener);
+    --juice-menu-opener-ink: var(--bdw-menu-opener-ink);
+
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --bdw-switch-track: var(--bdw-surface-muted);
+    --bdw-switch-track-checked: var(--bdw-accent);
+    --bdw-switch-thumb: var(--bdw-page);
+    --bdw-switch-thumb-checked: var(--bdw-page);
+    --bdw-switch-focus-ring: var(--bdw-accent);
+    --juice-switch-track: var(--bdw-switch-track);
+    --juice-switch-track-checked: var(--bdw-switch-track-checked);
+    --juice-switch-thumb: var(--bdw-switch-thumb);
+    --juice-switch-thumb-checked: var(--bdw-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--bdw-switch-focus-ring);
+
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --bdw-slider-track: var(--bdw-surface-muted);
+    --bdw-slider-track-border: var(--bdw-border);
+    --bdw-slider-fill: var(--bdw-accent);
+    --bdw-slider-thumb: var(--bdw-page);
+    --bdw-slider-thumb-border: var(--bdw-border-strong);
+    --bdw-slider-thumb-shadow: 0 1px 2px var(--bdw-shadow);
+    --bdw-slider-focus-ring: var(--bdw-accent);
+    --juice-slider-track: var(--bdw-slider-track);
+    --juice-slider-track-border: var(--bdw-slider-track-border);
+    --juice-slider-fill: var(--bdw-slider-fill);
+    --juice-slider-thumb: var(--bdw-slider-thumb);
+    --juice-slider-thumb-border: var(--bdw-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--bdw-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--bdw-slider-focus-ring);
+
+    /* Checkbox chrome — APG checkbox from existing tokens. The host is a
+       surface box, not a CTA. Binary only. Distinct from switch and
+       menuitemcheckbox. */
+    --bdw-checkbox-control: var(--bdw-page);
+    --bdw-checkbox-control-checked: var(--bdw-accent);
+    --bdw-checkbox-border: var(--bdw-border-strong);
+    --bdw-checkbox-border-checked: var(--bdw-accent);
+    --bdw-checkbox-mark: var(--bdw-page);
+    --bdw-checkbox-focus-ring: var(--bdw-accent);
+    --juice-checkbox-control: var(--bdw-checkbox-control);
+    --juice-checkbox-control-checked: var(--bdw-checkbox-control-checked);
+    --juice-checkbox-border: var(--bdw-checkbox-border);
+    --juice-checkbox-border-checked: var(--bdw-checkbox-border-checked);
+    --juice-checkbox-mark: var(--bdw-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--bdw-checkbox-focus-ring);
+
+    /* Radio chrome — APG radio from existing tokens. The host is a surface
+       disc, not a CTA. The group is layout-only. Distinct from switch
+       and checkbox. */
+    --bdw-radio-control: var(--bdw-page);
+    --bdw-radio-control-checked: var(--bdw-page);
+    --bdw-radio-border: var(--bdw-border-strong);
+    --bdw-radio-border-checked: var(--bdw-accent);
+    --bdw-radio-mark: var(--bdw-accent);
+    --bdw-radio-focus-ring: var(--bdw-accent);
+    --juice-radio-control: var(--bdw-radio-control);
+    --juice-radio-control-checked: var(--bdw-radio-control-checked);
+    --juice-radio-border: var(--bdw-radio-border);
+    --juice-radio-border-checked: var(--bdw-radio-border-checked);
+    --juice-radio-mark: var(--bdw-radio-mark);
+    --juice-radio-focus-ring: var(--bdw-radio-focus-ring);
+
+    /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+       site nav bar and not a CTA. Surface stays transparent unless a bar
+       is wanted. Distinct from tabs, wizard steps, and pagination. */
+    --bdw-breadcrumb-ink: var(--bdw-text-muted);
+    --bdw-breadcrumb-ink-current: var(--bdw-heading);
+    --bdw-breadcrumb-ink-hover: var(--bdw-accent);
+    --bdw-breadcrumb-separator: var(--bdw-border-strong);
+    --bdw-breadcrumb-focus-ring: var(--bdw-accent);
+    --bdw-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--bdw-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--bdw-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--bdw-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--bdw-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--bdw-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--bdw-breadcrumb-surface);
+
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a CTA. Distinct from slider, spinner, and
+       a native <progress> restyle. Inline status — no overlay. */
+    --bdw-progress-track: var(--bdw-surface-muted);
+    --bdw-progress-track-border: var(--bdw-border);
+    --bdw-progress-fill: var(--bdw-accent);
+    --bdw-progress-ink: var(--bdw-text);
+    --bdw-progress-focus-ring: var(--bdw-accent);
+    --juice-progress-track: var(--bdw-progress-track);
+    --juice-progress-track-border: var(--bdw-progress-track-border);
+    --juice-progress-fill: var(--bdw-progress-fill);
+    --juice-progress-ink: var(--bdw-progress-ink);
+    --juice-progress-focus-ring: var(--bdw-progress-focus-ring);
+
+    background-color: var(--bdw-page);
+    background-image: var(--bdw-page-background);
+    color: var(--bdw-text);
+    font-family: var(--bdw-body-font);
+}
+
+/* Theme root behavior */
+[theme="retro-boardwalk"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="retro-boardwalk"] :where(div) {
+    background-color: transparent;
+    color: inherit;
+}
+
+/* Semantic element defaults */
+[theme="retro-boardwalk"] :where(section, article, aside, nav, header, footer, form) {
+    background-color: var(--bdw-surface);
+    color: var(--bdw-text);
+    border: 1px solid var(--bdw-border);
+    box-shadow: 0 24px 60px -36px var(--bdw-shadow);
+    backdrop-filter: blur(14px);
+}
+
+[theme="retro-boardwalk"] :where(nav[type="bar"], nav[type="sidebar"]) {
+    background-color: var(--bdw-surface-strong);
+}
+
+/* Typography hierarchy */
+[theme="retro-boardwalk"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--bdw-heading);
+    font-family: var(--bdw-heading-font);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+}
+
+[theme="retro-boardwalk"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--bdw-text);
+    font-family: var(--bdw-body-font);
+}
+
+[theme="retro-boardwalk"] :where(small, figcaption) {
+    color: var(--bdw-text-muted);
+    font-family: var(--bdw-body-font);
+}
+
+[theme="retro-boardwalk"] :where(strong, b) {
+    color: var(--bdw-heading);
+}
+
+/* Links and emphasis */
+[theme="retro-boardwalk"] :where(a) {
+    color: var(--bdw-accent-strong);
+    text-decoration-color: #{rgba($bdw-accent-strong, 0.35)};
+}
+
+[theme="retro-boardwalk"] :where(a:hover, a:focus-visible) {
+    color: var(--bdw-accent);
+}
+
+/* Controls */
+[theme="retro-boardwalk"] :where(button, input, textarea, select) {
+    background-color: var(--bdw-surface-strong);
+    color: var(--bdw-text);
+    border: 1px solid var(--bdw-border-strong);
+    font-family: var(--bdw-body-font);
+    box-shadow: 0 14px 32px -26px var(--bdw-shadow);
+}
+
+[theme="retro-boardwalk"] :where(button) {
+    background-image: var(--bdw-button-background);
+    color: #{$bdw-page};
+    border-color: transparent;
+}
+
+[theme="retro-boardwalk"] :where(button:hover, button:focus-visible) {
+    box-shadow: 0 18px 38px -24px #{rgba($bdw-deep, 0.24)};
+}
+
+[theme="retro-boardwalk"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--bdw-text-muted);
+}
+
+[theme="retro-boardwalk"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid #{rgba($bdw-border-color, 0.28)};
+    outline-offset: 2px;
+}
+
+[theme="retro-boardwalk"] :where(code, pre) {
+    background-color: #{rgba($bdw-page-tint, 0.9)};
+    color: var(--bdw-heading);
+    border: 1px solid var(--bdw-border);
+}
+
+[theme="retro-boardwalk"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--bdw-border);
+}
+
+[theme="retro-boardwalk"] :where(ul, ol) {
+    color: var(--bdw-text);
+}
+
+/* Named themed surfaces */
+[theme="retro-boardwalk"][bdw-card],
+[theme="retro-boardwalk"] [bdw-card] {
+    background: var(--bdw-card-background);
+    color: var(--bdw-text);
+    border: 1px solid var(--bdw-border-strong);
+    box-shadow: 0 28px 70px -42px var(--bdw-shadow);
+}
+
+[theme="retro-boardwalk"][bdw-card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [bdw-card] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"][bdw-card] :where(p, span, li, small),
+[theme="retro-boardwalk"] [bdw-card] :where(p, span, li, small) {
+    color: var(--bdw-text-muted);
+}
+
+[theme="retro-boardwalk"][bdw-card] :where(strong, b),
+[theme="retro-boardwalk"] [bdw-card] :where(strong, b) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"][bdw-panel],
+[theme="retro-boardwalk"] [bdw-panel] {
+    background: var(--bdw-panel-background);
+    color: var(--bdw-text);
+    border: 1px solid var(--bdw-border);
+    box-shadow: 0 22px 56px -40px var(--bdw-shadow);
+}
+
+[theme="retro-boardwalk"][bdw-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [bdw-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"][bdw-panel] :where(p, span, li, small),
+[theme="retro-boardwalk"] [bdw-panel] :where(p, span, li, small) {
+    color: var(--bdw-text);
+}
+
+[theme="retro-boardwalk"][bdw-panel] :where(strong, b),
+[theme="retro-boardwalk"] [bdw-panel] :where(strong, b) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"][bdw-hero],
+[theme="retro-boardwalk"] [bdw-hero] {
+    background: var(--bdw-hero-background);
+    color: #{$bdw-page};
+    border: 1px solid #{rgba($bdw-page, 0.16)};
+    box-shadow: 0 36px 90px -48px #{rgba($bdw-deep, 0.45)};
+}
+
+[theme="retro-boardwalk"][bdw-hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [bdw-hero] :where(h1, h2, h3, h4, h5, h6) {
+    color: #{$bdw-page};
+}
+
+[theme="retro-boardwalk"][bdw-hero] :where(p, span, li, small, a),
+[theme="retro-boardwalk"] [bdw-hero] :where(p, span, li, small, a) {
+    color: #{rgba($bdw-page, 0.86)};
+}
+
+[theme="retro-boardwalk"][bdw-hero] :where(button),
+[theme="retro-boardwalk"] [bdw-hero] :where(button) {
+    background: #{$bdw-page};
+    color: var(--bdw-heading);
+    border-color: transparent;
+}
+
+[theme="retro-boardwalk"][bdw-stage],
+[theme="retro-boardwalk"] [bdw-stage] {
+    background: var(--bdw-stage-background);
+    color: #{$bdw-page};
+    border: 1px solid var(--bdw-stage-outline);
+    box-shadow: 0 44px 100px -54px var(--bdw-stage-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+[theme="retro-boardwalk"][bdw-stage]::before,
+[theme="retro-boardwalk"] [bdw-stage]::before {
+    content: "";
+    position: absolute;
+    inset: 1.25rem;
+    border: 1px solid #{rgba($bdw-page, 0.08)};
+    border-radius: 1.25rem;
+    pointer-events: none;
+}
+
+[theme="retro-boardwalk"][bdw-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-boardwalk"] [bdw-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: #{$bdw-page};
+}
+
+[theme="retro-boardwalk"][bdw-stage] :where(p, span, li, small, a),
+[theme="retro-boardwalk"] [bdw-stage] :where(p, span, li, small, a) {
+    color: #{rgba($bdw-page, 0.86)};
+}
+
+[theme="retro-boardwalk"][bdw-chip],
+[theme="retro-boardwalk"] [bdw-chip] {
+    background: var(--bdw-chip-background);
+    color: var(--bdw-heading);
+    border: 1px solid #{rgba($bdw-highlight-strong, 0.34)};
+    box-shadow: 0 18px 40px -30px #{rgba($bdw-deep, 0.18)};
+}
+
+[theme="retro-boardwalk"][bdw-buybox],
+[theme="retro-boardwalk"] [bdw-buybox] {
+    background: var(--bdw-buybox-background);
+    color: var(--bdw-text);
+    border: 1px solid #{rgba($bdw-highlight-strong, 0.3)};
+    box-shadow: var(--bdw-buybox-shadow);
+}
+
+[theme="retro-boardwalk"][bdw-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-boardwalk"] [bdw-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"][bdw-spec],
+[theme="retro-boardwalk"] [bdw-spec] {
+    background: var(--bdw-spec-background);
+    color: var(--bdw-text);
+    border: 1px solid #{rgba($bdw-highlight-strong, 0.26)};
+    box-shadow: 0 20px 46px -34px #{rgba($bdw-deep, 0.15)};
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme="retro-boardwalk"][bdw-hero] :where([bdw-card], [bdw-panel]),
+[theme="retro-boardwalk"] [bdw-hero] :where([bdw-card], [bdw-panel]) {
+    color: var(--bdw-text);
+}
+
+[theme="retro-boardwalk"][bdw-hero] :where([bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-boardwalk"] [bdw-hero] :where([bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"][bdw-hero] :where([bdw-card], [bdw-panel]) :where(p, span, li, small, a),
+[theme="retro-boardwalk"] [bdw-hero] :where([bdw-card], [bdw-panel]) :where(p, span, li, small, a) {
+    color: var(--bdw-text-muted);
+}
+
+/* Accordion wrappers are structural, not named surfaces.
+   Group FAQ stacks in [bdw-card] / [bdw-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme="retro-boardwalk"] :where([accordion]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+/* Generic Boardwalk buttons use --bdw-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
+[theme="retro-boardwalk"] button[accordion-item] {
+    background-image: none;
+    background-color: var(--juice-accordion-trigger);
+    color: var(--bdw-heading);
+    border: 1px solid var(--bdw-border);
+    box-shadow: 0 14px 32px -26px var(--bdw-shadow);
+}
+
+[theme="retro-boardwalk"] button[accordion-item]::after {
+    border-color: var(--juice-accordion-chevron);
+}
+
+[theme="retro-boardwalk"] button[accordion-item]:hover {
+    border-color: var(--bdw-border-strong);
+    background-color: var(--juice-accordion-trigger-hover);
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"] button[accordion-item]:focus-visible {
+    outline: 2px solid var(--juice-accordion-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 14px 32px -26px var(--bdw-shadow);
+}
+
+[theme="retro-boardwalk"] button[accordion-item][aria-expanded="true"] {
+    background-color: var(--juice-accordion-trigger-open);
+    background-image: none;
+    color: var(--bdw-heading);
+    border-color: var(--bdw-border-strong);
+}
+
+[theme="retro-boardwalk"] [accordion] [role="region"] {
+    color: var(--bdw-text);
+    background-color: var(--bdw-surface-muted);
+    border: 1px solid var(--juice-accordion-panel-rule);
+    border-radius: 0.75rem;
+    /* Slice A framed the panel; skip the shared inset rule. */
+    box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Boardwalk buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme="retro-boardwalk"] :where([tabs]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+[theme="retro-boardwalk"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="retro-boardwalk"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="retro-boardwalk"] button[tab],
+[theme="retro-boardwalk"] [tabs] > button,
+[theme="retro-boardwalk"] [tabs-list] > button {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[tab]:hover,
+[theme="retro-boardwalk"] [tabs] > button:hover,
+[theme="retro-boardwalk"] [tabs-list] > button:hover {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[tab]:focus-visible,
+[theme="retro-boardwalk"] [tabs] > button:focus-visible,
+[theme="retro-boardwalk"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-boardwalk"] button[tab][active],
+[theme="retro-boardwalk"] button[tab][aria-selected="true"],
+[theme="retro-boardwalk"] [tabs] > button[active],
+[theme="retro-boardwalk"] [tabs] > button[aria-selected="true"],
+[theme="retro-boardwalk"] [tabs-list] > button[active],
+[theme="retro-boardwalk"] [tabs-list] > button[aria-selected="true"] {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="retro-boardwalk"] [tab-panel] {
+    color: var(--bdw-text);
+}
+
+/* Modal chrome. Generic Boardwalk buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme="retro-boardwalk"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="retro-boardwalk"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="retro-boardwalk"] button[modal-close],
+[theme="retro-boardwalk"] [modal-close] {
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[modal-close]:hover,
+[theme="retro-boardwalk"] [modal-close]:hover {
+    background-image: none;
+    background-color: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[modal-close]:focus-visible,
+[theme="retro-boardwalk"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Boardwalk buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="retro-boardwalk"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="retro-boardwalk"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="retro-boardwalk"] button[drawer-close],
+[theme="retro-boardwalk"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[drawer-close]:hover,
+[theme="retro-boardwalk"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[drawer-close]:focus-visible,
+[theme="retro-boardwalk"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Boardwalk buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme="retro-boardwalk"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-boardwalk"] [toast-title],
+[theme="retro-boardwalk"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-boardwalk"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="retro-boardwalk"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="retro-boardwalk"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="retro-boardwalk"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="retro-boardwalk"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="retro-boardwalk"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="retro-boardwalk"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="retro-boardwalk"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="retro-boardwalk"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="retro-boardwalk"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="retro-boardwalk"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="retro-boardwalk"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="retro-boardwalk"] button[toast-close],
+[theme="retro-boardwalk"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[toast-close]:hover,
+[theme="retro-boardwalk"] [toast-close]:hover {
+    background-image: none;
+    background-color: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[toast-close]:focus-visible,
+[theme="retro-boardwalk"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Boardwalk buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="retro-boardwalk"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-boardwalk"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="retro-boardwalk"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="retro-boardwalk"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="retro-boardwalk"] button[banner-close],
+[theme="retro-boardwalk"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[banner-close]:hover,
+[theme="retro-boardwalk"] [banner-close]:hover {
+    background-image: none;
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[banner-close]:focus-visible,
+[theme="retro-boardwalk"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Boardwalk buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme="retro-boardwalk"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-boardwalk"] [popover-header],
+[theme="retro-boardwalk"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-boardwalk"] button[popover-close],
+[theme="retro-boardwalk"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[popover-close]:hover,
+[theme="retro-boardwalk"] [popover-close]:hover {
+    background-image: none;
+    background-color: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[popover-close]:focus-visible,
+[theme="retro-boardwalk"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="retro-boardwalk"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme="retro-boardwalk"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="retro-boardwalk"] button[combobox-trigger],
+[theme="retro-boardwalk"] [combobox-trigger] {
+    background-image: none;
+    background-color: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] [combobox-input]:focus-visible,
+[theme="retro-boardwalk"] button[combobox-trigger]:focus-visible,
+[theme="retro-boardwalk"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-boardwalk"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="retro-boardwalk"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="retro-boardwalk"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="retro-boardwalk"] [combobox-option][aria-selected="true"],
+[theme="retro-boardwalk"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme="retro-boardwalk"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-boardwalk"] button[menu-button],
+[theme="retro-boardwalk"] [menu-button] {
+    background-image: none;
+    background-color: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[menu-button]:focus-visible,
+[theme="retro-boardwalk"] [menu-button]:focus-visible,
+[theme="retro-boardwalk"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-boardwalk"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-boardwalk"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="retro-boardwalk"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="retro-boardwalk"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="retro-boardwalk"] [menu-label] {
+    color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme="retro-boardwalk"] button[switch],
+[theme="retro-boardwalk"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[switch][aria-checked="true"],
+[theme="retro-boardwalk"] [switch][aria-checked="true"],
+[theme="retro-boardwalk"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="retro-boardwalk"] button[switch]:hover,
+[theme="retro-boardwalk"] [switch]:hover,
+[theme="retro-boardwalk"] button[switch]:focus-visible,
+[theme="retro-boardwalk"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[switch]:focus-visible,
+[theme="retro-boardwalk"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme="retro-boardwalk"] button[slider]:not([slider="vertical"]),
+[theme="retro-boardwalk"] [slider]:not([slider="vertical"]) {
+    background-image: none;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[slider-thumb],
+[theme="retro-boardwalk"] [slider-thumb] {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-boardwalk"] button[slider-thumb]:hover,
+[theme="retro-boardwalk"] [slider-thumb]:hover,
+[theme="retro-boardwalk"] button[slider-thumb]:focus-visible,
+[theme="retro-boardwalk"] [slider-thumb]:focus-visible {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-boardwalk"] button[slider-thumb]:focus-visible,
+[theme="retro-boardwalk"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface box, not a CTA. Binary only. Runtime is later. */
+[theme="retro-boardwalk"] button[checkbox],
+[theme="retro-boardwalk"] [checkbox] {
+    background-image: none;
+    background-color: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[checkbox][aria-checked="true"],
+[theme="retro-boardwalk"] [checkbox][aria-checked="true"],
+[theme="retro-boardwalk"] [checkbox]:checked {
+    background-image: none;
+    background-color: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="retro-boardwalk"] button[checkbox]:hover,
+[theme="retro-boardwalk"] [checkbox]:hover,
+[theme="retro-boardwalk"] button[checkbox]:focus-visible,
+[theme="retro-boardwalk"] [checkbox]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[checkbox]:focus-visible,
+[theme="retro-boardwalk"] [checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface disc, not a CTA. Group layout is author-owned.
+   Runtime is later. */
+[theme="retro-boardwalk"] button[radio],
+[theme="retro-boardwalk"] [radio] {
+    background-image: none;
+    background-color: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[radio][aria-checked="true"],
+[theme="retro-boardwalk"] [radio][aria-checked="true"],
+[theme="retro-boardwalk"] [radio]:checked {
+    background-image: none;
+    background-color: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="retro-boardwalk"] button[radio]:hover,
+[theme="retro-boardwalk"] [radio]:hover,
+[theme="retro-boardwalk"] button[radio]:focus-visible,
+[theme="retro-boardwalk"] [radio]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] button[radio]:focus-visible,
+[theme="retro-boardwalk"] [radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme="retro-boardwalk"] [breadcrumb],
+[theme="retro-boardwalk"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="retro-boardwalk"] [breadcrumb] a,
+[theme="retro-boardwalk"] [breadcrumb-link],
+[theme="retro-boardwalk"] a[breadcrumb-link],
+[theme="retro-boardwalk"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-boardwalk"] [breadcrumb] a:hover,
+[theme="retro-boardwalk"] [breadcrumb-link]:hover,
+[theme="retro-boardwalk"] a[breadcrumb-link]:hover,
+[theme="retro-boardwalk"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-boardwalk"] [breadcrumb] [aria-current="page"],
+[theme="retro-boardwalk"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="retro-boardwalk"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="retro-boardwalk"] [breadcrumb] a:focus-visible,
+[theme="retro-boardwalk"] [breadcrumb-link]:focus-visible,
+[theme="retro-boardwalk"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme="retro-boardwalk"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="retro-boardwalk"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="retro-boardwalk"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="retro-boardwalk"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+
+/* Palette-aware CTA ink. Component controls keep their own ink roles. */
+[theme="retro-boardwalk"] :where(button) {
+    color: #{$bdw-on-accent};
+}
+/* Stable bundle aliases used by shared application chrome. */
+[theme="retro-boardwalk"] {
+    --retro-page: var(--bdw-page);
+    --retro-page-tint: var(--bdw-page-tint);
+    --retro-page-deep: var(--bdw-page-deep);
+    --retro-surface: var(--bdw-surface);
+    --retro-surface-strong: var(--bdw-surface-strong);
+    --retro-surface-muted: var(--bdw-surface-muted);
+    --retro-surface-deep: var(--bdw-surface-deep);
+    --retro-border: var(--bdw-border);
+    --retro-border-strong: var(--bdw-border-strong);
+    --retro-shadow: var(--bdw-shadow);
+    --retro-text: var(--bdw-text);
+    --retro-text-muted: var(--bdw-text-muted);
+    --retro-heading: var(--bdw-heading);
+    --retro-body-font: var(--bdw-body-font);
+    --retro-heading-font: var(--bdw-heading-font);
+    --retro-accent: var(--bdw-accent);
+    --retro-accent-soft: var(--bdw-accent-soft);
+    --retro-accent-strong: var(--bdw-accent-strong);
+    --retro-highlight: var(--bdw-highlight);
+    --retro-page-background: var(--bdw-page-background);
+    --retro-button-background: var(--bdw-button-background);
+    --retro-card-background: var(--bdw-card-background);
+    --retro-panel-background: var(--bdw-panel-background);
+    --retro-hero-background: var(--bdw-hero-background);
+    --retro-stage-background: var(--bdw-stage-background);
+    --retro-stage-outline: var(--bdw-stage-outline);
+    --retro-stage-shadow: var(--bdw-stage-shadow);
+    --retro-theme-page: #{$bdw-page};
+    --retro-theme-highlight: #{$bdw-highlight};
+    --juice-color-page: var(--bdw-page);
+    --juice-color-surface: var(--bdw-surface-strong);
+    --juice-color-text: var(--bdw-text);
+    --juice-color-text-muted: var(--bdw-text-muted);
+    --juice-color-heading: var(--bdw-heading);
+    --juice-color-accent: var(--bdw-accent);
+    --juice-color-on-accent: #{$bdw-on-accent};
+    --juice-color-border: var(--bdw-border);
+    --juice-color-highlight: var(--bdw-highlight);
+}

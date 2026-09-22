@@ -1,0 +1,105 @@
+id: retro-forest-radio
+name: Forest Radio
+selector: theme="retro-forest-radio"
+version: 1
+summary: Heritage broadcast theme built from midnight navy, forest green, mustard gold, and soft fog.
+
+philosophy:
+  role: "Identity layer for grounded, storied, outdoors-minded interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+    - named themed surfaces
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: measured, dependable, warm
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: heritage, authoritative, editorial
+
+palette:
+  source:
+    color_1: frr-source-1
+    color_2: frr-source-2
+    color_3: frr-source-3
+    color_4: frr-source-4
+  page:
+    base: frr-page
+    tint: frr-page-tint
+    deep: frr-deep
+  text:
+    default: frr-text
+    muted: frr-text-muted
+    heading: frr-heading
+  accents:
+    primary: frr-accent
+    secondary: frr-secondary
+    soft: frr-accent-soft
+    highlight: frr-highlight
+    on_accent: frr-on-accent
+  surfaces:
+    default: frr-page / frr-page-tint translucent blend
+    strong: frr-page elevated surface
+    muted: frr-page-tint softened panel
+    hero: frr-deep to frr-accent-strong atmospheric gradient
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+named_surfaces:
+  - name: frr-card
+    purpose: Elevated content card for primary modules and grouped information.
+  - name: frr-panel
+    purpose: Softer supporting panel for quieter informational blocks.
+  - name: frr-hero
+    purpose: High-contrast marquee surface for hero and lead sections.
+  - name: frr-stage
+    purpose: Deep presentation surface for media, products, and visual focal points.
+
+recommended_use_cases:
+  - outdoor brands
+  - record labels
+  - heritage retailers
+  - cafes
+  - cultural organizations
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Let Juice layout primitives handle structure and responsiveness.
+  - Use frr-card and frr-panel for supporting surfaces.
+  - Use frr-hero sparingly for the strongest section on the page.
+  - Keep the four source colors recognizable while using derived tokens for accessible text and controls.
+  - Bind accordion and tabs chrome from existing surface and accent tokens so triggers stay controls, not CTA buttons.
+  - Bind modal and drawer chrome from existing page and surface tokens so close actions stay surface controls.
+  - Bind toast and banner status roles from existing identity tokens without introducing unrelated hue families.
+  - Bind popover, tooltip, combobox, and menu chrome from existing page and surface tokens.
+  - Bind switch, slider, checkbox, and radio chrome from existing surface and accent tokens.
+  - Bind breadcrumb and progress chrome from existing text, border, and accent tokens.
+  - Keep --juice-* aliases inside the theme contract and theme-specific --frr-* tokens as the source of truth.
+
+example:
+  root: '<body theme="retro-forest-radio">'
+  surfaces:
+    - '<section frr-hero>...</section>'
+    - '<article frr-card>...</article>'
+    - '<aside frr-panel>...</aside>'
+    - '<div frr-stage>...</div>'

@@ -1,0 +1,105 @@
+id: retro-violet-parlor
+name: Violet Parlor
+selector: theme="retro-violet-parlor"
+version: 1
+summary: Plush editorial theme pairing deep indigo and violet with apricot and cream.
+
+philosophy:
+  role: "Identity layer for expressive, polished, boutique interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+    - named themed surfaces
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: warm, composed, editorial
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: dramatic, cultured, display-forward
+
+palette:
+  source:
+    color_1: vpr-source-1
+    color_2: vpr-source-2
+    color_3: vpr-source-3
+    color_4: vpr-source-4
+  page:
+    base: vpr-page
+    tint: vpr-page-tint
+    deep: vpr-deep
+  text:
+    default: vpr-text
+    muted: vpr-text-muted
+    heading: vpr-heading
+  accents:
+    primary: vpr-accent
+    secondary: vpr-secondary
+    soft: vpr-accent-soft
+    highlight: vpr-highlight
+    on_accent: vpr-on-accent
+  surfaces:
+    default: vpr-page / vpr-page-tint translucent blend
+    strong: vpr-page elevated surface
+    muted: vpr-page-tint softened panel
+    hero: vpr-deep to vpr-accent-strong atmospheric gradient
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+named_surfaces:
+  - name: vpr-card
+    purpose: Elevated content card for primary modules and grouped information.
+  - name: vpr-panel
+    purpose: Softer supporting panel for quieter informational blocks.
+  - name: vpr-hero
+    purpose: High-contrast marquee surface for hero and lead sections.
+  - name: vpr-stage
+    purpose: Deep presentation surface for media, products, and visual focal points.
+
+recommended_use_cases:
+  - boutique retail
+  - salons and beauty brands
+  - cocktail bars
+  - creative studios
+  - event sites
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Let Juice layout primitives handle structure and responsiveness.
+  - Use vpr-card and vpr-panel for supporting surfaces.
+  - Use vpr-hero sparingly for the strongest section on the page.
+  - Keep the four source colors recognizable while using derived tokens for accessible text and controls.
+  - Bind accordion and tabs chrome from existing surface and accent tokens so triggers stay controls, not CTA buttons.
+  - Bind modal and drawer chrome from existing page and surface tokens so close actions stay surface controls.
+  - Bind toast and banner status roles from existing identity tokens without introducing unrelated hue families.
+  - Bind popover, tooltip, combobox, and menu chrome from existing page and surface tokens.
+  - Bind switch, slider, checkbox, and radio chrome from existing surface and accent tokens.
+  - Bind breadcrumb and progress chrome from existing text, border, and accent tokens.
+  - Keep --juice-* aliases inside the theme contract and theme-specific --vpr-* tokens as the source of truth.
+
+example:
+  root: '<body theme="retro-violet-parlor">'
+  surfaces:
+    - '<section vpr-hero>...</section>'
+    - '<article vpr-card>...</article>'
+    - '<aside vpr-panel>...</aside>'
+    - '<div vpr-stage>...</div>'

@@ -1,0 +1,1445 @@
+@use '../../tokens/color/retro-orchard-club/retro-orchard-club.scss' as *;
+
+/*
+    Orchard Club is a fully expressed Juice theme contract.
+    The theme owns:
+    - color relationships
+    - typography voice
+    - semantic element defaults
+    - named themed surfaces
+    
+    Juice still owns:
+    - layout
+    - spacing
+    - structural primitives
+*/
+
+[theme="retro-orchard-club"] {
+    /* Foundation */
+    --orc-page: #{$orc-page};
+    --orc-page-tint: #{$orc-page-tint};
+    --orc-page-deep: #{$orc-deep};
+    --orc-surface: #{rgba($orc-page, 0.78)};
+    --orc-surface-strong: #{rgba($orc-page, 0.92)};
+    --orc-surface-muted: #{rgba($orc-page-tint, 0.78)};
+    --orc-surface-deep: #{$orc-text};
+    --orc-border: #{rgba($orc-border-color, 0.26)};
+    --orc-border-strong: #{rgba($orc-accent, 0.38)};
+    --orc-shadow: #{rgba($orc-deep, 0.12)};
+
+    /* Typography */
+    --orc-text: #{$orc-text};
+    --orc-text-muted: #{$orc-text-muted};
+    --orc-heading: #{$orc-deep};
+    --orc-body-font: "Lato", sans-serif;
+    --orc-heading-font: "Archivo Black", sans-serif;
+
+    /* Accent system */
+    --orc-accent: #{$orc-accent};
+    --orc-accent-soft: #{$orc-accent-soft};
+    --orc-accent-strong: #{$orc-accent-strong};
+    --orc-highlight: #{$orc-highlight};
+
+    /* Surface recipes */
+    --orc-page-background:
+        radial-gradient(circle at top left, #{rgba($orc-highlight, 0.72)}, transparent 38%),
+        radial-gradient(circle at top right, #{rgba($orc-secondary-soft, 0.45)}, transparent 30%),
+        linear-gradient(180deg, #{$orc-page} 0%, #{$orc-page-tint} 100%);
+    --orc-button-background: linear-gradient(135deg, #{$orc-accent}, #{$orc-secondary-strong});
+    --orc-card-background:
+        linear-gradient(180deg, #{rgba($orc-page, 0.96)} 0%, #{rgba($orc-page-tint, 0.88)} 100%);
+    --orc-panel-background:
+        linear-gradient(180deg, #{rgba($orc-page, 0.98)} 0%, #{rgba($orc-page-tint, 0.72)} 100%);
+    --orc-hero-background:
+        radial-gradient(circle at top left, #{rgba($orc-highlight-strong, 0.38)}, transparent 30%),
+        radial-gradient(circle at bottom right, #{rgba($orc-secondary, 0.28)}, transparent 32%),
+        linear-gradient(135deg, #{$orc-deep} 0%, #{$orc-accent-deep} 54%, #{$orc-accent-strong} 100%);
+    --orc-stage-background:
+        radial-gradient(circle at 18% 20%, #{rgba($orc-highlight, 0.22)}, transparent 22%),
+        radial-gradient(circle at 78% 22%, #{rgba($orc-accent-soft, 0.2)}, transparent 24%),
+        linear-gradient(145deg, #{$orc-deep} 0%, #{$orc-text} 52%, #{$orc-accent-strong} 100%);
+    --orc-stage-outline: #{rgba($orc-page, 0.14)};
+    --orc-stage-shadow: #{rgba($orc-deep, 0.34)};
+    --orc-chip-background: #{rgba($orc-page, 0.96)};
+    --orc-buybox-background:
+        linear-gradient(180deg, #{rgba($orc-page, 0.98)} 0%, #{rgba($orc-page-tint, 0.82)} 100%);
+    --orc-buybox-shadow: 0 32px 70px -42px #{rgba($orc-deep, 0.24)};
+    --orc-spec-background:
+        linear-gradient(180deg, #{rgba($orc-page-tint, 0.95)} 0%, #{rgba($orc-page, 0.98)} 100%);
+
+    /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+       Bound from existing Orchard Club tokens; no new hue family. */
+    --orc-trigger: var(--orc-surface-strong);
+    --orc-trigger-hover: var(--orc-surface-muted);
+    --orc-trigger-open: var(--orc-highlight);
+    --orc-chevron: var(--orc-accent);
+    --orc-panel-rule: var(--orc-border);
+    --orc-focus-ring: var(--orc-accent);
+    --juice-accordion-trigger: var(--orc-trigger);
+    --juice-accordion-trigger-hover: var(--orc-trigger-hover);
+    --juice-accordion-trigger-open: var(--orc-trigger-open);
+    --juice-accordion-chevron: var(--orc-chevron);
+    --juice-accordion-panel-rule: var(--orc-panel-rule);
+    --juice-accordion-focus-ring: var(--orc-focus-ring);
+
+    /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+    --orc-tabs-trigger: transparent;
+    --orc-tabs-trigger-hover: transparent;
+    --orc-tabs-trigger-active: transparent;
+    --orc-tabs-text: var(--orc-text-muted);
+    --orc-tabs-text-hover: var(--orc-heading);
+    --orc-tabs-text-active: var(--orc-accent);
+    --orc-tabs-indicator: var(--orc-accent);
+    --orc-tabs-list-rule: var(--orc-border);
+    --orc-tabs-focus-ring: var(--orc-accent);
+    --juice-tabs-trigger: var(--orc-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--orc-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--orc-tabs-trigger-active);
+    --juice-tabs-text: var(--orc-tabs-text);
+    --juice-tabs-text-hover: var(--orc-tabs-text-hover);
+    --juice-tabs-text-active: var(--orc-tabs-text-active);
+    --juice-tabs-indicator: var(--orc-tabs-indicator);
+    --juice-tabs-list-rule: var(--orc-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--orc-tabs-focus-ring);
+
+    /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+    --juice-surface-soft-bg: var(--orc-surface);
+    --juice-surface-soft-border: var(--orc-border);
+    --juice-surface-soft-shadow: 0 18px 40px -28px var(--orc-shadow);
+    --juice-surface-soft-blur: 14px;
+    --juice-surface-strong-bg: var(--orc-surface-strong);
+    --juice-surface-strong-border: var(--orc-border-strong);
+    --juice-surface-strong-shadow: 0 24px 56px -24px var(--orc-shadow);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--orc-surface-muted);
+    --juice-surface-muted-border: var(--orc-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
+    /* Border strength — existing --orc-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--orc-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--orc-border-strong);
+
+    /* Shadow tone — existing blue / purple identity; no new hue family. */
+    --juice-shadow-tone-cool-color: var(--orc-shadow);
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--orc-shadow);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--orc-accent-strong) 16%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--orc-accent-strong) 16%, transparent);
+
+    /* Overlay — frost veil / page-tint wash; existing tokens only. */
+    --juice-overlay-frost-wash: color-mix(in srgb, var(--orc-page) 42%, transparent);
+    --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+    --juice-overlay-tint-wash: color-mix(in srgb, var(--orc-page-tint) 38%, transparent);
+    --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+
+    /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --orc-modal-overlay: color-mix(in srgb, var(--orc-page-deep) 62%, transparent);
+    --orc-modal-panel: var(--orc-surface-strong);
+    --orc-modal-panel-border: var(--orc-border);
+    --orc-modal-panel-shadow: 0 24px 56px -24px var(--orc-shadow);
+    --orc-modal-close: var(--orc-surface-strong);
+    --orc-modal-close-color: var(--orc-heading);
+    --orc-modal-close-hover: var(--orc-surface-muted);
+    --orc-modal-focus-ring: var(--orc-accent);
+    --juice-modal-overlay: var(--orc-modal-overlay);
+    --juice-modal-panel: var(--orc-modal-panel);
+    --juice-modal-panel-border: var(--orc-modal-panel-border);
+    --juice-modal-panel-shadow: var(--orc-modal-panel-shadow);
+    --juice-modal-close: var(--orc-modal-close);
+    --juice-modal-close-color: var(--orc-modal-close-color);
+    --juice-modal-close-hover: var(--orc-modal-close-hover);
+    --juice-modal-focus-ring: var(--orc-modal-focus-ring);
+
+    /* Drawer chrome — same identity tokens as modal. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --orc-drawer-overlay: color-mix(in srgb, var(--orc-page-deep) 62%, transparent);
+    --orc-drawer-panel: var(--orc-surface-strong);
+    --orc-drawer-panel-border: var(--orc-border);
+    --orc-drawer-panel-shadow: 0 24px 56px -24px var(--orc-shadow);
+    --orc-drawer-close: var(--orc-surface-strong);
+    --orc-drawer-close-color: var(--orc-heading);
+    --orc-drawer-close-hover: var(--orc-surface-muted);
+    --orc-drawer-focus-ring: var(--orc-accent);
+    --juice-drawer-overlay: var(--orc-drawer-overlay);
+    --juice-drawer-panel: var(--orc-drawer-panel);
+    --juice-drawer-panel-border: var(--orc-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--orc-drawer-panel-shadow);
+    --juice-drawer-close: var(--orc-drawer-close);
+    --juice-drawer-close-color: var(--orc-drawer-close-color);
+    --juice-drawer-close-hover: var(--orc-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--orc-drawer-focus-ring);
+
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Status accents
+       remap Orchard Club identity (no new red/green family): accent /
+       page-deep / accent-soft / accent-strong. */
+    --orc-toast-panel: var(--orc-surface-strong);
+    --orc-toast-panel-border: var(--orc-border);
+    --orc-toast-panel-shadow: 0 18px 40px -24px var(--orc-shadow);
+    --orc-toast-ink: var(--orc-text);
+    --orc-toast-close: var(--orc-surface-strong);
+    --orc-toast-close-color: var(--orc-heading);
+    --orc-toast-close-hover: var(--orc-surface-muted);
+    --orc-toast-focus-ring: var(--orc-accent);
+    --orc-toast-success: var(--orc-accent);
+    --orc-toast-success-soft: color-mix(in srgb, var(--orc-accent) 14%, var(--orc-surface-strong));
+    --orc-toast-error: var(--orc-page-deep);
+    --orc-toast-error-soft: color-mix(in srgb, var(--orc-page-deep) 12%, var(--orc-surface-strong));
+    --orc-toast-info: var(--orc-accent-soft);
+    --orc-toast-info-soft: color-mix(in srgb, var(--orc-accent-soft) 18%, var(--orc-surface-strong));
+    --orc-toast-warning: var(--orc-accent-strong);
+    --orc-toast-warning-soft: color-mix(in srgb, var(--orc-accent-strong) 12%, var(--orc-surface-strong));
+    --juice-toast-panel: var(--orc-toast-panel);
+    --juice-toast-panel-border: var(--orc-toast-panel-border);
+    --juice-toast-panel-shadow: var(--orc-toast-panel-shadow);
+    --juice-toast-ink: var(--orc-toast-ink);
+    --juice-toast-close: var(--orc-toast-close);
+    --juice-toast-close-color: var(--orc-toast-close-color);
+    --juice-toast-close-hover: var(--orc-toast-close-hover);
+    --juice-toast-focus-ring: var(--orc-toast-focus-ring);
+    --juice-toast-success: var(--orc-toast-success);
+    --juice-toast-success-soft: var(--orc-toast-success-soft);
+    --juice-toast-error: var(--orc-toast-error);
+    --juice-toast-error-soft: var(--orc-toast-error-soft);
+    --juice-toast-info: var(--orc-toast-info);
+    --juice-toast-info-soft: var(--orc-toast-info-soft);
+    --juice-toast-warning: var(--orc-toast-warning);
+    --juice-toast-warning-soft: var(--orc-toast-warning-soft);
+
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the CTA gradient. Status remaps
+       Orchard Club identity (no new red/green family). Distinct from toast. */
+    --orc-banner-panel: var(--orc-surface-strong);
+    --orc-banner-panel-border: var(--orc-border);
+    --orc-banner-ink: var(--orc-text);
+    --orc-banner-close: var(--orc-surface-strong);
+    --orc-banner-close-color: var(--orc-heading);
+    --orc-banner-close-hover: var(--orc-surface-muted);
+    --orc-banner-focus-ring: var(--orc-accent);
+    --orc-banner-success: var(--orc-accent);
+    --orc-banner-success-soft: color-mix(in srgb, var(--orc-accent) 14%, var(--orc-surface-strong));
+    --orc-banner-error: var(--orc-page-deep);
+    --orc-banner-error-soft: color-mix(in srgb, var(--orc-page-deep) 12%, var(--orc-surface-strong));
+    --orc-banner-info: var(--orc-accent-soft);
+    --orc-banner-info-soft: color-mix(in srgb, var(--orc-accent-soft) 18%, var(--orc-surface-strong));
+    --orc-banner-warning: var(--orc-accent-strong);
+    --orc-banner-warning-soft: color-mix(in srgb, var(--orc-accent-strong) 12%, var(--orc-surface-strong));
+    --juice-banner-panel: var(--orc-banner-panel);
+    --juice-banner-panel-border: var(--orc-banner-panel-border);
+    --juice-banner-ink: var(--orc-banner-ink);
+    --juice-banner-close: var(--orc-banner-close);
+    --juice-banner-close-color: var(--orc-banner-close-color);
+    --juice-banner-close-hover: var(--orc-banner-close-hover);
+    --juice-banner-focus-ring: var(--orc-banner-focus-ring);
+    --juice-banner-success: var(--orc-banner-success);
+    --juice-banner-success-soft: var(--orc-banner-success-soft);
+    --juice-banner-error: var(--orc-banner-error);
+    --juice-banner-error-soft: var(--orc-banner-error-soft);
+    --juice-banner-info: var(--orc-banner-info);
+    --juice-banner-info-soft: var(--orc-banner-info-soft);
+    --juice-banner-warning: var(--orc-banner-warning);
+    --juice-banner-warning-soft: var(--orc-banner-warning-soft);
+
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Distinct from
+       modal/drawer/toast and overlay="frost|tint". */
+    --orc-popover-panel: var(--orc-surface-strong);
+    --orc-popover-panel-border: var(--orc-border);
+    --orc-popover-panel-shadow: 0 18px 40px -24px var(--orc-shadow);
+    --orc-popover-ink: var(--orc-text);
+    --orc-popover-close: var(--orc-surface-strong);
+    --orc-popover-close-color: var(--orc-heading);
+    --orc-popover-close-hover: var(--orc-surface-muted);
+    --orc-popover-focus-ring: var(--orc-accent);
+    --juice-popover-panel: var(--orc-popover-panel);
+    --juice-popover-panel-border: var(--orc-popover-panel-border);
+    --juice-popover-panel-shadow: var(--orc-popover-panel-shadow);
+    --juice-popover-ink: var(--orc-popover-ink);
+    --juice-popover-close: var(--orc-popover-close);
+    --juice-popover-close-color: var(--orc-popover-close-color);
+    --juice-popover-close-hover: var(--orc-popover-close-hover);
+    --juice-popover-focus-ring: var(--orc-popover-focus-ring);
+
+    /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+       Distinct from modal/drawer/popover. No new hue family. */
+    --orc-wizard-shell: var(--orc-page);
+    --orc-wizard-header: var(--orc-surface-strong);
+    --orc-wizard-header-border: var(--orc-border);
+    --orc-wizard-rail: var(--orc-surface-muted);
+    --orc-wizard-rail-border: var(--orc-border);
+    --orc-wizard-step: var(--orc-surface-strong);
+    --orc-wizard-step-border: var(--orc-border);
+    --orc-wizard-step-ink: var(--orc-text-muted);
+    --orc-wizard-step-current: var(--orc-accent);
+    --orc-wizard-step-complete: var(--orc-accent-strong);
+    --orc-wizard-step-on: var(--orc-page);
+    --orc-wizard-step-connector: var(--orc-border);
+    --orc-wizard-panel: var(--orc-surface-strong);
+    --orc-wizard-panel-border: var(--orc-border);
+    --orc-wizard-focus-ring: var(--orc-accent);
+    --juice-wizard-shell: var(--orc-wizard-shell);
+    --juice-wizard-header: var(--orc-wizard-header);
+    --juice-wizard-header-border: var(--orc-wizard-header-border);
+    --juice-wizard-rail: var(--orc-wizard-rail);
+    --juice-wizard-rail-border: var(--orc-wizard-rail-border);
+    --juice-wizard-step: var(--orc-wizard-step);
+    --juice-wizard-step-border: var(--orc-wizard-step-border);
+    --juice-wizard-step-ink: var(--orc-wizard-step-ink);
+    --juice-wizard-step-current: var(--orc-wizard-step-current);
+    --juice-wizard-step-complete: var(--orc-wizard-step-complete);
+    --juice-wizard-step-on: var(--orc-wizard-step-on);
+    --juice-wizard-step-connector: var(--orc-wizard-step-connector);
+    --juice-wizard-panel: var(--orc-wizard-panel);
+    --juice-wizard-panel-border: var(--orc-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--orc-wizard-focus-ring);
+
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --orc-tooltip-panel: var(--orc-surface-strong);
+    --orc-tooltip-panel-border: var(--orc-border);
+    --orc-tooltip-panel-shadow: 0 12px 28px -20px var(--orc-shadow);
+    --orc-tooltip-ink: var(--orc-text);
+    --juice-tooltip-panel: var(--orc-tooltip-panel);
+    --juice-tooltip-panel-border: var(--orc-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--orc-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--orc-tooltip-ink);
+
+    /* Combobox chrome — input + listbox popup from existing tokens.
+       Trigger is a surface control, not a CTA. Distinct from select. */
+    --orc-combobox-input: var(--orc-surface-strong);
+    --orc-combobox-input-border: var(--orc-border-strong);
+    --orc-combobox-input-ink: var(--orc-text);
+    --orc-combobox-list: var(--orc-surface-strong);
+    --orc-combobox-list-border: var(--orc-border);
+    --orc-combobox-list-shadow: 0 18px 40px -24px var(--orc-shadow);
+    --orc-combobox-option: transparent;
+    --orc-combobox-option-hover: var(--orc-surface-muted);
+    --orc-combobox-option-selected: var(--orc-highlight);
+    --orc-combobox-option-ink: var(--orc-text);
+    --orc-combobox-trigger: transparent;
+    --orc-combobox-trigger-ink: var(--orc-heading);
+    --orc-combobox-focus-ring: var(--orc-accent);
+    --juice-combobox-input: var(--orc-combobox-input);
+    --juice-combobox-input-border: var(--orc-combobox-input-border);
+    --juice-combobox-input-ink: var(--orc-combobox-input-ink);
+    --juice-combobox-list: var(--orc-combobox-list);
+    --juice-combobox-list-border: var(--orc-combobox-list-border);
+    --juice-combobox-list-shadow: var(--orc-combobox-list-shadow);
+    --juice-combobox-option: var(--orc-combobox-option);
+    --juice-combobox-option-hover: var(--orc-combobox-option-hover);
+    --juice-combobox-option-selected: var(--orc-combobox-option-selected);
+    --juice-combobox-option-ink: var(--orc-combobox-option-ink);
+    --juice-combobox-trigger: var(--orc-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--orc-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--orc-combobox-focus-ring);
+
+    /* Menu chrome — APG menu button from existing tokens. Opener is a
+       surface control, not a CTA. Distinct from popover / combobox /
+       native select. */
+    --orc-menu-panel: var(--orc-surface-strong);
+    --orc-menu-panel-border: var(--orc-border);
+    --orc-menu-panel-shadow: 0 18px 40px -24px var(--orc-shadow);
+    --orc-menu-ink: var(--orc-text);
+    --orc-menu-item: transparent;
+    --orc-menu-item-hover: var(--orc-surface-muted);
+    --orc-menu-item-active: var(--orc-highlight);
+    --orc-menu-separator: var(--orc-border);
+    --orc-menu-focus-ring: var(--orc-accent);
+    --orc-menu-opener: var(--orc-surface-strong);
+    --orc-menu-opener-ink: var(--orc-heading);
+    --juice-menu-panel: var(--orc-menu-panel);
+    --juice-menu-panel-border: var(--orc-menu-panel-border);
+    --juice-menu-panel-shadow: var(--orc-menu-panel-shadow);
+    --juice-menu-ink: var(--orc-menu-ink);
+    --juice-menu-item: var(--orc-menu-item);
+    --juice-menu-item-hover: var(--orc-menu-item-hover);
+    --juice-menu-item-active: var(--orc-menu-item-active);
+    --juice-menu-separator: var(--orc-menu-separator);
+    --juice-menu-focus-ring: var(--orc-menu-focus-ring);
+    --juice-menu-opener: var(--orc-menu-opener);
+    --juice-menu-opener-ink: var(--orc-menu-opener-ink);
+
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --orc-switch-track: var(--orc-surface-muted);
+    --orc-switch-track-checked: var(--orc-accent);
+    --orc-switch-thumb: var(--orc-page);
+    --orc-switch-thumb-checked: var(--orc-page);
+    --orc-switch-focus-ring: var(--orc-accent);
+    --juice-switch-track: var(--orc-switch-track);
+    --juice-switch-track-checked: var(--orc-switch-track-checked);
+    --juice-switch-thumb: var(--orc-switch-thumb);
+    --juice-switch-thumb-checked: var(--orc-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--orc-switch-focus-ring);
+
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --orc-slider-track: var(--orc-surface-muted);
+    --orc-slider-track-border: var(--orc-border);
+    --orc-slider-fill: var(--orc-accent);
+    --orc-slider-thumb: var(--orc-page);
+    --orc-slider-thumb-border: var(--orc-border-strong);
+    --orc-slider-thumb-shadow: 0 1px 2px var(--orc-shadow);
+    --orc-slider-focus-ring: var(--orc-accent);
+    --juice-slider-track: var(--orc-slider-track);
+    --juice-slider-track-border: var(--orc-slider-track-border);
+    --juice-slider-fill: var(--orc-slider-fill);
+    --juice-slider-thumb: var(--orc-slider-thumb);
+    --juice-slider-thumb-border: var(--orc-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--orc-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--orc-slider-focus-ring);
+
+    /* Checkbox chrome — APG checkbox from existing tokens. The host is a
+       surface box, not a CTA. Binary only. Distinct from switch and
+       menuitemcheckbox. */
+    --orc-checkbox-control: var(--orc-page);
+    --orc-checkbox-control-checked: var(--orc-accent);
+    --orc-checkbox-border: var(--orc-border-strong);
+    --orc-checkbox-border-checked: var(--orc-accent);
+    --orc-checkbox-mark: var(--orc-page);
+    --orc-checkbox-focus-ring: var(--orc-accent);
+    --juice-checkbox-control: var(--orc-checkbox-control);
+    --juice-checkbox-control-checked: var(--orc-checkbox-control-checked);
+    --juice-checkbox-border: var(--orc-checkbox-border);
+    --juice-checkbox-border-checked: var(--orc-checkbox-border-checked);
+    --juice-checkbox-mark: var(--orc-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--orc-checkbox-focus-ring);
+
+    /* Radio chrome — APG radio from existing tokens. The host is a surface
+       disc, not a CTA. The group is layout-only. Distinct from switch
+       and checkbox. */
+    --orc-radio-control: var(--orc-page);
+    --orc-radio-control-checked: var(--orc-page);
+    --orc-radio-border: var(--orc-border-strong);
+    --orc-radio-border-checked: var(--orc-accent);
+    --orc-radio-mark: var(--orc-accent);
+    --orc-radio-focus-ring: var(--orc-accent);
+    --juice-radio-control: var(--orc-radio-control);
+    --juice-radio-control-checked: var(--orc-radio-control-checked);
+    --juice-radio-border: var(--orc-radio-border);
+    --juice-radio-border-checked: var(--orc-radio-border-checked);
+    --juice-radio-mark: var(--orc-radio-mark);
+    --juice-radio-focus-ring: var(--orc-radio-focus-ring);
+
+    /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+       site nav bar and not a CTA. Surface stays transparent unless a bar
+       is wanted. Distinct from tabs, wizard steps, and pagination. */
+    --orc-breadcrumb-ink: var(--orc-text-muted);
+    --orc-breadcrumb-ink-current: var(--orc-heading);
+    --orc-breadcrumb-ink-hover: var(--orc-accent);
+    --orc-breadcrumb-separator: var(--orc-border-strong);
+    --orc-breadcrumb-focus-ring: var(--orc-accent);
+    --orc-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--orc-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--orc-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--orc-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--orc-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--orc-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--orc-breadcrumb-surface);
+
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a CTA. Distinct from slider, spinner, and
+       a native <progress> restyle. Inline status — no overlay. */
+    --orc-progress-track: var(--orc-surface-muted);
+    --orc-progress-track-border: var(--orc-border);
+    --orc-progress-fill: var(--orc-accent);
+    --orc-progress-ink: var(--orc-text);
+    --orc-progress-focus-ring: var(--orc-accent);
+    --juice-progress-track: var(--orc-progress-track);
+    --juice-progress-track-border: var(--orc-progress-track-border);
+    --juice-progress-fill: var(--orc-progress-fill);
+    --juice-progress-ink: var(--orc-progress-ink);
+    --juice-progress-focus-ring: var(--orc-progress-focus-ring);
+
+    background-color: var(--orc-page);
+    background-image: var(--orc-page-background);
+    color: var(--orc-text);
+    font-family: var(--orc-body-font);
+}
+
+/* Theme root behavior */
+[theme="retro-orchard-club"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="retro-orchard-club"] :where(div) {
+    background-color: transparent;
+    color: inherit;
+}
+
+/* Semantic element defaults */
+[theme="retro-orchard-club"] :where(section, article, aside, nav, header, footer, form) {
+    background-color: var(--orc-surface);
+    color: var(--orc-text);
+    border: 1px solid var(--orc-border);
+    box-shadow: 0 24px 60px -36px var(--orc-shadow);
+    backdrop-filter: blur(14px);
+}
+
+[theme="retro-orchard-club"] :where(nav[type="bar"], nav[type="sidebar"]) {
+    background-color: var(--orc-surface-strong);
+}
+
+/* Typography hierarchy */
+[theme="retro-orchard-club"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--orc-heading);
+    font-family: var(--orc-heading-font);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+}
+
+[theme="retro-orchard-club"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--orc-text);
+    font-family: var(--orc-body-font);
+}
+
+[theme="retro-orchard-club"] :where(small, figcaption) {
+    color: var(--orc-text-muted);
+    font-family: var(--orc-body-font);
+}
+
+[theme="retro-orchard-club"] :where(strong, b) {
+    color: var(--orc-heading);
+}
+
+/* Links and emphasis */
+[theme="retro-orchard-club"] :where(a) {
+    color: var(--orc-accent-strong);
+    text-decoration-color: #{rgba($orc-accent-strong, 0.35)};
+}
+
+[theme="retro-orchard-club"] :where(a:hover, a:focus-visible) {
+    color: var(--orc-accent);
+}
+
+/* Controls */
+[theme="retro-orchard-club"] :where(button, input, textarea, select) {
+    background-color: var(--orc-surface-strong);
+    color: var(--orc-text);
+    border: 1px solid var(--orc-border-strong);
+    font-family: var(--orc-body-font);
+    box-shadow: 0 14px 32px -26px var(--orc-shadow);
+}
+
+[theme="retro-orchard-club"] :where(button) {
+    background-image: var(--orc-button-background);
+    color: #{$orc-page};
+    border-color: transparent;
+}
+
+[theme="retro-orchard-club"] :where(button:hover, button:focus-visible) {
+    box-shadow: 0 18px 38px -24px #{rgba($orc-deep, 0.24)};
+}
+
+[theme="retro-orchard-club"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--orc-text-muted);
+}
+
+[theme="retro-orchard-club"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid #{rgba($orc-border-color, 0.28)};
+    outline-offset: 2px;
+}
+
+[theme="retro-orchard-club"] :where(code, pre) {
+    background-color: #{rgba($orc-page-tint, 0.9)};
+    color: var(--orc-heading);
+    border: 1px solid var(--orc-border);
+}
+
+[theme="retro-orchard-club"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--orc-border);
+}
+
+[theme="retro-orchard-club"] :where(ul, ol) {
+    color: var(--orc-text);
+}
+
+/* Named themed surfaces */
+[theme="retro-orchard-club"][orc-card],
+[theme="retro-orchard-club"] [orc-card] {
+    background: var(--orc-card-background);
+    color: var(--orc-text);
+    border: 1px solid var(--orc-border-strong);
+    box-shadow: 0 28px 70px -42px var(--orc-shadow);
+}
+
+[theme="retro-orchard-club"][orc-card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-orchard-club"] [orc-card] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"][orc-card] :where(p, span, li, small),
+[theme="retro-orchard-club"] [orc-card] :where(p, span, li, small) {
+    color: var(--orc-text-muted);
+}
+
+[theme="retro-orchard-club"][orc-card] :where(strong, b),
+[theme="retro-orchard-club"] [orc-card] :where(strong, b) {
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"][orc-panel],
+[theme="retro-orchard-club"] [orc-panel] {
+    background: var(--orc-panel-background);
+    color: var(--orc-text);
+    border: 1px solid var(--orc-border);
+    box-shadow: 0 22px 56px -40px var(--orc-shadow);
+}
+
+[theme="retro-orchard-club"][orc-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-orchard-club"] [orc-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"][orc-panel] :where(p, span, li, small),
+[theme="retro-orchard-club"] [orc-panel] :where(p, span, li, small) {
+    color: var(--orc-text);
+}
+
+[theme="retro-orchard-club"][orc-panel] :where(strong, b),
+[theme="retro-orchard-club"] [orc-panel] :where(strong, b) {
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"][orc-hero],
+[theme="retro-orchard-club"] [orc-hero] {
+    background: var(--orc-hero-background);
+    color: #{$orc-page};
+    border: 1px solid #{rgba($orc-page, 0.16)};
+    box-shadow: 0 36px 90px -48px #{rgba($orc-deep, 0.45)};
+}
+
+[theme="retro-orchard-club"][orc-hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-orchard-club"] [orc-hero] :where(h1, h2, h3, h4, h5, h6) {
+    color: #{$orc-page};
+}
+
+[theme="retro-orchard-club"][orc-hero] :where(p, span, li, small, a),
+[theme="retro-orchard-club"] [orc-hero] :where(p, span, li, small, a) {
+    color: #{rgba($orc-page, 0.86)};
+}
+
+[theme="retro-orchard-club"][orc-hero] :where(button),
+[theme="retro-orchard-club"] [orc-hero] :where(button) {
+    background: #{$orc-page};
+    color: var(--orc-heading);
+    border-color: transparent;
+}
+
+[theme="retro-orchard-club"][orc-stage],
+[theme="retro-orchard-club"] [orc-stage] {
+    background: var(--orc-stage-background);
+    color: #{$orc-page};
+    border: 1px solid var(--orc-stage-outline);
+    box-shadow: 0 44px 100px -54px var(--orc-stage-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+[theme="retro-orchard-club"][orc-stage]::before,
+[theme="retro-orchard-club"] [orc-stage]::before {
+    content: "";
+    position: absolute;
+    inset: 1.25rem;
+    border: 1px solid #{rgba($orc-page, 0.08)};
+    border-radius: 1.25rem;
+    pointer-events: none;
+}
+
+[theme="retro-orchard-club"][orc-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-orchard-club"] [orc-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: #{$orc-page};
+}
+
+[theme="retro-orchard-club"][orc-stage] :where(p, span, li, small, a),
+[theme="retro-orchard-club"] [orc-stage] :where(p, span, li, small, a) {
+    color: #{rgba($orc-page, 0.86)};
+}
+
+[theme="retro-orchard-club"][orc-chip],
+[theme="retro-orchard-club"] [orc-chip] {
+    background: var(--orc-chip-background);
+    color: var(--orc-heading);
+    border: 1px solid #{rgba($orc-highlight-strong, 0.34)};
+    box-shadow: 0 18px 40px -30px #{rgba($orc-deep, 0.18)};
+}
+
+[theme="retro-orchard-club"][orc-buybox],
+[theme="retro-orchard-club"] [orc-buybox] {
+    background: var(--orc-buybox-background);
+    color: var(--orc-text);
+    border: 1px solid #{rgba($orc-highlight-strong, 0.3)};
+    box-shadow: var(--orc-buybox-shadow);
+}
+
+[theme="retro-orchard-club"][orc-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-orchard-club"] [orc-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"][orc-spec],
+[theme="retro-orchard-club"] [orc-spec] {
+    background: var(--orc-spec-background);
+    color: var(--orc-text);
+    border: 1px solid #{rgba($orc-highlight-strong, 0.26)};
+    box-shadow: 0 20px 46px -34px #{rgba($orc-deep, 0.15)};
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme="retro-orchard-club"][orc-hero] :where([orc-card], [orc-panel]),
+[theme="retro-orchard-club"] [orc-hero] :where([orc-card], [orc-panel]) {
+    color: var(--orc-text);
+}
+
+[theme="retro-orchard-club"][orc-hero] :where([orc-card], [orc-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-orchard-club"] [orc-hero] :where([orc-card], [orc-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"][orc-hero] :where([orc-card], [orc-panel]) :where(p, span, li, small, a),
+[theme="retro-orchard-club"] [orc-hero] :where([orc-card], [orc-panel]) :where(p, span, li, small, a) {
+    color: var(--orc-text-muted);
+}
+
+/* Accordion wrappers are structural, not named surfaces.
+   Group FAQ stacks in [orc-card] / [orc-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme="retro-orchard-club"] :where([accordion]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+/* Generic Orchard Club buttons use --orc-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
+[theme="retro-orchard-club"] button[accordion-item] {
+    background-image: none;
+    background-color: var(--juice-accordion-trigger);
+    color: var(--orc-heading);
+    border: 1px solid var(--orc-border);
+    box-shadow: 0 14px 32px -26px var(--orc-shadow);
+}
+
+[theme="retro-orchard-club"] button[accordion-item]::after {
+    border-color: var(--juice-accordion-chevron);
+}
+
+[theme="retro-orchard-club"] button[accordion-item]:hover {
+    border-color: var(--orc-border-strong);
+    background-color: var(--juice-accordion-trigger-hover);
+    color: var(--orc-heading);
+}
+
+[theme="retro-orchard-club"] button[accordion-item]:focus-visible {
+    outline: 2px solid var(--juice-accordion-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 14px 32px -26px var(--orc-shadow);
+}
+
+[theme="retro-orchard-club"] button[accordion-item][aria-expanded="true"] {
+    background-color: var(--juice-accordion-trigger-open);
+    background-image: none;
+    color: var(--orc-heading);
+    border-color: var(--orc-border-strong);
+}
+
+[theme="retro-orchard-club"] [accordion] [role="region"] {
+    color: var(--orc-text);
+    background-color: var(--orc-surface-muted);
+    border: 1px solid var(--juice-accordion-panel-rule);
+    border-radius: 0.75rem;
+    /* Slice A framed the panel; skip the shared inset rule. */
+    box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Orchard Club buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme="retro-orchard-club"] :where([tabs]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+[theme="retro-orchard-club"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="retro-orchard-club"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="retro-orchard-club"] button[tab],
+[theme="retro-orchard-club"] [tabs] > button,
+[theme="retro-orchard-club"] [tabs-list] > button {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[tab]:hover,
+[theme="retro-orchard-club"] [tabs] > button:hover,
+[theme="retro-orchard-club"] [tabs-list] > button:hover {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[tab]:focus-visible,
+[theme="retro-orchard-club"] [tabs] > button:focus-visible,
+[theme="retro-orchard-club"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-orchard-club"] button[tab][active],
+[theme="retro-orchard-club"] button[tab][aria-selected="true"],
+[theme="retro-orchard-club"] [tabs] > button[active],
+[theme="retro-orchard-club"] [tabs] > button[aria-selected="true"],
+[theme="retro-orchard-club"] [tabs-list] > button[active],
+[theme="retro-orchard-club"] [tabs-list] > button[aria-selected="true"] {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="retro-orchard-club"] [tab-panel] {
+    color: var(--orc-text);
+}
+
+/* Modal chrome. Generic Orchard Club buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme="retro-orchard-club"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="retro-orchard-club"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="retro-orchard-club"] button[modal-close],
+[theme="retro-orchard-club"] [modal-close] {
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[modal-close]:hover,
+[theme="retro-orchard-club"] [modal-close]:hover {
+    background-image: none;
+    background-color: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[modal-close]:focus-visible,
+[theme="retro-orchard-club"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Orchard Club buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="retro-orchard-club"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="retro-orchard-club"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="retro-orchard-club"] button[drawer-close],
+[theme="retro-orchard-club"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[drawer-close]:hover,
+[theme="retro-orchard-club"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[drawer-close]:focus-visible,
+[theme="retro-orchard-club"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Orchard Club buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme="retro-orchard-club"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-orchard-club"] [toast-title],
+[theme="retro-orchard-club"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-orchard-club"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="retro-orchard-club"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="retro-orchard-club"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="retro-orchard-club"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="retro-orchard-club"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="retro-orchard-club"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="retro-orchard-club"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="retro-orchard-club"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="retro-orchard-club"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="retro-orchard-club"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="retro-orchard-club"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="retro-orchard-club"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="retro-orchard-club"] button[toast-close],
+[theme="retro-orchard-club"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[toast-close]:hover,
+[theme="retro-orchard-club"] [toast-close]:hover {
+    background-image: none;
+    background-color: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[toast-close]:focus-visible,
+[theme="retro-orchard-club"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Orchard Club buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="retro-orchard-club"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-orchard-club"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="retro-orchard-club"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="retro-orchard-club"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="retro-orchard-club"] button[banner-close],
+[theme="retro-orchard-club"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[banner-close]:hover,
+[theme="retro-orchard-club"] [banner-close]:hover {
+    background-image: none;
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[banner-close]:focus-visible,
+[theme="retro-orchard-club"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Orchard Club buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme="retro-orchard-club"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-orchard-club"] [popover-header],
+[theme="retro-orchard-club"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-orchard-club"] button[popover-close],
+[theme="retro-orchard-club"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[popover-close]:hover,
+[theme="retro-orchard-club"] [popover-close]:hover {
+    background-image: none;
+    background-color: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[popover-close]:focus-visible,
+[theme="retro-orchard-club"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="retro-orchard-club"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme="retro-orchard-club"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="retro-orchard-club"] button[combobox-trigger],
+[theme="retro-orchard-club"] [combobox-trigger] {
+    background-image: none;
+    background-color: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] [combobox-input]:focus-visible,
+[theme="retro-orchard-club"] button[combobox-trigger]:focus-visible,
+[theme="retro-orchard-club"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-orchard-club"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="retro-orchard-club"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="retro-orchard-club"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="retro-orchard-club"] [combobox-option][aria-selected="true"],
+[theme="retro-orchard-club"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme="retro-orchard-club"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-orchard-club"] button[menu-button],
+[theme="retro-orchard-club"] [menu-button] {
+    background-image: none;
+    background-color: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[menu-button]:focus-visible,
+[theme="retro-orchard-club"] [menu-button]:focus-visible,
+[theme="retro-orchard-club"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-orchard-club"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-orchard-club"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="retro-orchard-club"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="retro-orchard-club"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="retro-orchard-club"] [menu-label] {
+    color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme="retro-orchard-club"] button[switch],
+[theme="retro-orchard-club"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[switch][aria-checked="true"],
+[theme="retro-orchard-club"] [switch][aria-checked="true"],
+[theme="retro-orchard-club"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="retro-orchard-club"] button[switch]:hover,
+[theme="retro-orchard-club"] [switch]:hover,
+[theme="retro-orchard-club"] button[switch]:focus-visible,
+[theme="retro-orchard-club"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[switch]:focus-visible,
+[theme="retro-orchard-club"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme="retro-orchard-club"] button[slider]:not([slider="vertical"]),
+[theme="retro-orchard-club"] [slider]:not([slider="vertical"]) {
+    background-image: none;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[slider-thumb],
+[theme="retro-orchard-club"] [slider-thumb] {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-orchard-club"] button[slider-thumb]:hover,
+[theme="retro-orchard-club"] [slider-thumb]:hover,
+[theme="retro-orchard-club"] button[slider-thumb]:focus-visible,
+[theme="retro-orchard-club"] [slider-thumb]:focus-visible {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-orchard-club"] button[slider-thumb]:focus-visible,
+[theme="retro-orchard-club"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface box, not a CTA. Binary only. Runtime is later. */
+[theme="retro-orchard-club"] button[checkbox],
+[theme="retro-orchard-club"] [checkbox] {
+    background-image: none;
+    background-color: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[checkbox][aria-checked="true"],
+[theme="retro-orchard-club"] [checkbox][aria-checked="true"],
+[theme="retro-orchard-club"] [checkbox]:checked {
+    background-image: none;
+    background-color: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="retro-orchard-club"] button[checkbox]:hover,
+[theme="retro-orchard-club"] [checkbox]:hover,
+[theme="retro-orchard-club"] button[checkbox]:focus-visible,
+[theme="retro-orchard-club"] [checkbox]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[checkbox]:focus-visible,
+[theme="retro-orchard-club"] [checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface disc, not a CTA. Group layout is author-owned.
+   Runtime is later. */
+[theme="retro-orchard-club"] button[radio],
+[theme="retro-orchard-club"] [radio] {
+    background-image: none;
+    background-color: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[radio][aria-checked="true"],
+[theme="retro-orchard-club"] [radio][aria-checked="true"],
+[theme="retro-orchard-club"] [radio]:checked {
+    background-image: none;
+    background-color: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="retro-orchard-club"] button[radio]:hover,
+[theme="retro-orchard-club"] [radio]:hover,
+[theme="retro-orchard-club"] button[radio]:focus-visible,
+[theme="retro-orchard-club"] [radio]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] button[radio]:focus-visible,
+[theme="retro-orchard-club"] [radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme="retro-orchard-club"] [breadcrumb],
+[theme="retro-orchard-club"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="retro-orchard-club"] [breadcrumb] a,
+[theme="retro-orchard-club"] [breadcrumb-link],
+[theme="retro-orchard-club"] a[breadcrumb-link],
+[theme="retro-orchard-club"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-orchard-club"] [breadcrumb] a:hover,
+[theme="retro-orchard-club"] [breadcrumb-link]:hover,
+[theme="retro-orchard-club"] a[breadcrumb-link]:hover,
+[theme="retro-orchard-club"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-orchard-club"] [breadcrumb] [aria-current="page"],
+[theme="retro-orchard-club"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="retro-orchard-club"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="retro-orchard-club"] [breadcrumb] a:focus-visible,
+[theme="retro-orchard-club"] [breadcrumb-link]:focus-visible,
+[theme="retro-orchard-club"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme="retro-orchard-club"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="retro-orchard-club"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="retro-orchard-club"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="retro-orchard-club"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+
+/* Palette-aware CTA ink. Component controls keep their own ink roles. */
+[theme="retro-orchard-club"] :where(button) {
+    color: #{$orc-on-accent};
+}
+/* Stable bundle aliases used by shared application chrome. */
+[theme="retro-orchard-club"] {
+    --retro-page: var(--orc-page);
+    --retro-page-tint: var(--orc-page-tint);
+    --retro-page-deep: var(--orc-page-deep);
+    --retro-surface: var(--orc-surface);
+    --retro-surface-strong: var(--orc-surface-strong);
+    --retro-surface-muted: var(--orc-surface-muted);
+    --retro-surface-deep: var(--orc-surface-deep);
+    --retro-border: var(--orc-border);
+    --retro-border-strong: var(--orc-border-strong);
+    --retro-shadow: var(--orc-shadow);
+    --retro-text: var(--orc-text);
+    --retro-text-muted: var(--orc-text-muted);
+    --retro-heading: var(--orc-heading);
+    --retro-body-font: var(--orc-body-font);
+    --retro-heading-font: var(--orc-heading-font);
+    --retro-accent: var(--orc-accent);
+    --retro-accent-soft: var(--orc-accent-soft);
+    --retro-accent-strong: var(--orc-accent-strong);
+    --retro-highlight: var(--orc-highlight);
+    --retro-page-background: var(--orc-page-background);
+    --retro-button-background: var(--orc-button-background);
+    --retro-card-background: var(--orc-card-background);
+    --retro-panel-background: var(--orc-panel-background);
+    --retro-hero-background: var(--orc-hero-background);
+    --retro-stage-background: var(--orc-stage-background);
+    --retro-stage-outline: var(--orc-stage-outline);
+    --retro-stage-shadow: var(--orc-stage-shadow);
+    --retro-theme-page: #{$orc-page};
+    --retro-theme-highlight: #{$orc-highlight};
+    --juice-color-page: var(--orc-page);
+    --juice-color-surface: var(--orc-surface-strong);
+    --juice-color-text: var(--orc-text);
+    --juice-color-text-muted: var(--orc-text-muted);
+    --juice-color-heading: var(--orc-heading);
+    --juice-color-accent: var(--orc-accent);
+    --juice-color-on-accent: #{$orc-on-accent};
+    --juice-color-border: var(--orc-border);
+    --juice-color-highlight: var(--orc-highlight);
+}

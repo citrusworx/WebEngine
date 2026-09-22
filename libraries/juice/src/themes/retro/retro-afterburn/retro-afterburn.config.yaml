@@ -1,0 +1,105 @@
+id: retro-afterburn
+name: Afterburn
+selector: theme="retro-afterburn"
+version: 1
+summary: High-energy retro-industrial theme built around charcoal, steel blue, and safety orange.
+
+philosophy:
+  role: "Identity layer for bold, mechanical, late-night interfaces."
+  owns:
+    - typography tone
+    - color relationships
+    - semantic element defaults
+    - named themed surfaces
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - container and content framing
+
+typography:
+  body:
+    family: Lato
+    fallback: sans-serif
+    tone: direct, sturdy, highly readable
+  heading:
+    family: Archivo Black
+    fallback: sans-serif
+    tone: compressed, confident, poster-like
+
+palette:
+  source:
+    color_1: afb-source-1
+    color_2: afb-source-2
+    color_3: afb-source-3
+    color_4: afb-source-4
+  page:
+    base: afb-page
+    tint: afb-page-tint
+    deep: afb-deep
+  text:
+    default: afb-text
+    muted: afb-text-muted
+    heading: afb-heading
+  accents:
+    primary: afb-accent
+    secondary: afb-secondary
+    soft: afb-accent-soft
+    highlight: afb-highlight
+    on_accent: afb-on-accent
+  surfaces:
+    default: afb-page / afb-page-tint translucent blend
+    strong: afb-page elevated surface
+    muted: afb-page-tint softened panel
+    hero: afb-deep to afb-accent-strong atmospheric gradient
+
+semantic_elements:
+  default_surface_targets:
+    - section
+    - article
+    - aside
+    - nav
+    - header
+    - footer
+    - form
+  div_behavior: transparent by default
+  main_behavior: transparent by default
+
+named_surfaces:
+  - name: afb-card
+    purpose: Elevated content card for primary modules and grouped information.
+  - name: afb-panel
+    purpose: Softer supporting panel for quieter informational blocks.
+  - name: afb-hero
+    purpose: High-contrast marquee surface for hero and lead sections.
+  - name: afb-stage
+    purpose: Deep presentation surface for media, products, and visual focal points.
+
+recommended_use_cases:
+  - automotive brands
+  - music players
+  - industrial dashboards
+  - nightlife venues
+  - bold editorial sites
+
+authoring_rules:
+  - Use semantic HTML for meaning first.
+  - Let Juice layout primitives handle structure and responsiveness.
+  - Use afb-card and afb-panel for supporting surfaces.
+  - Use afb-hero sparingly for the strongest section on the page.
+  - Keep the four source colors recognizable while using derived tokens for accessible text and controls.
+  - Bind accordion and tabs chrome from existing surface and accent tokens so triggers stay controls, not CTA buttons.
+  - Bind modal and drawer chrome from existing page and surface tokens so close actions stay surface controls.
+  - Bind toast and banner status roles from existing identity tokens without introducing unrelated hue families.
+  - Bind popover, tooltip, combobox, and menu chrome from existing page and surface tokens.
+  - Bind switch, slider, checkbox, and radio chrome from existing surface and accent tokens.
+  - Bind breadcrumb and progress chrome from existing text, border, and accent tokens.
+  - Keep --juice-* aliases inside the theme contract and theme-specific --afb-* tokens as the source of truth.
+
+example:
+  root: '<body theme="retro-afterburn">'
+  surfaces:
+    - '<section afb-hero>...</section>'
+    - '<article afb-card>...</article>'
+    - '<aside afb-panel>...</aside>'
+    - '<div afb-stage>...</div>'
