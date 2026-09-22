@@ -12,7 +12,7 @@ A theme decides brand voice, type pair, page/text/accent/surface color, semantic
 
 ## 2. Shipped references
 
-Treat these four library themes as equal references. Each lives at `libraries/juice/src/themes/<id>/` as `<id>.scss` + `<id>.yaml` and ships as `@citrusworx/juiceui/styles/themes/<id>`.
+Treat these library themes as equal references. Each lives at `libraries/juice/src/themes/<id>/` as `<id>.scss` + `<id>.yaml` and ships as `@citrusworx/juiceui/styles/themes/<id>`. The retro themes are ten separate entrypoints. There is no `retro.css` bundle.
 
 | id | Character | Identity prefix |
 |---|---|---|
@@ -20,6 +20,16 @@ Treat these four library themes as equal references. Each lives at `libraries/ju
 | `kiwipress` | richest product / publishing reference | `--kw-*` |
 | `citrusmint` | mint / citrus marketing | `--cm-*` |
 | `tide` | dark product / SaaS, teal/lagoon | `--tide-*` |
+| `retro-afterburn` | charcoal, steel blue, safety orange | `--afb-*` |
+| `retro-arcade-glow` | violet, magenta, hot pink, bright yellow | `--acg-*` |
+| `retro-boardwalk` | coral, sunshine yellow, mint, ocean blue | `--bdw-*` |
+| `retro-denim-dial` | denim blue with a warm-orange accent | `--dnd-*` |
+| `retro-forest-radio` | midnight navy, forest green, mustard, fog | `--frr-*` |
+| `retro-orchard-club` | olive, sage, chartreuse, brick red | `--orc-*` |
+| `retro-poolside-pop` | tomato red, orange, cream, bright cyan | `--psp-*` |
+| `retro-signal-garden` | signal red, butter yellow, garden green, black | `--sgn-*` |
+| `retro-sunset-motel` | ivory, coral, denim blue, dark cocoa | `--ssm-*` |
+| `retro-violet-parlor` | deep indigo, violet, apricot, cream | `--vpr-*` |
 
 **Blush** remains `_draft` (`src/themes/_draft/blush/`). It is YAML-only, unpublished, and not a reference for this contract. Package `exports` still block `@citrusworx/juiceui/themes/_draft/*`.
 
@@ -90,7 +100,7 @@ Core CSS reads `--juice-*`. Identity aliases (`--aqua-*`, `--kw-*`, `--cm-*`, `-
 | `--juice-accordion-panel-rule` | panel divider |
 | `--juice-accordion-focus-ring` | focus outline |
 
-Consumed by `accordion.scss`. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-*` themes all bind this set.
+Consumed by `accordion.scss`. Every shipped library theme and generated `--jx-*` themes all bind this set.
 
 ### Tabs core
 
@@ -106,7 +116,7 @@ Consumed by `accordion.scss`. Aquaflux, KiwiPress, Citrusmint, Tide, and generat
 | `--juice-tabs-list-rule` | strip bottom rule |
 | `--juice-tabs-focus-ring` | focus outline |
 
-Consumed by `tabs.scss`. Same four library themes plus generated `--jx-tabs-*`.
+Consumed by `tabs.scss`. Every shipped library theme plus generated `--jx-tabs-*`.
 
 ### Modal chrome
 
@@ -123,7 +133,7 @@ Structural dialog paint. Required names:
 | `--juice-modal-close-hover` | close-button hover fill |
 | `--juice-modal-focus-ring` | close-button focus outline |
 
-Consumed by `modal.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-modal-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
+Consumed by `modal.scss` with light fallbacks. Every shipped library theme and generated `--jx-modal-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
 
 This is **not** the surface `overlay="frost|tint"` utility. `[modal-overlay]` is a dialog scrim. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Openers pair through `aria-controls`. The dialog runtime auto-enhances that markup — see [Modal Runtime](./juice-modal-runtime.md).
 
@@ -144,7 +154,7 @@ Structural sliding-panel paint. Required names:
 | `--juice-drawer-close-hover` | close-button hover fill |
 | `--juice-drawer-focus-ring` | close-button focus outline |
 
-Consumed by `drawer.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-drawer-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
+Consumed by `drawer.scss` with light fallbacks. Every shipped library theme and generated `--jx-drawer-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
 
 This is **not** the surface `overlay="frost|tint"` utility. `[drawer-overlay]` is a drawer scrim. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. Openers pair through `aria-controls`. The dialog runtime auto-enhances that markup — see [Drawer Runtime](./juice-drawer-runtime.md).
 
@@ -175,7 +185,7 @@ Structural non-modal feedback paint. Required names:
 | `--juice-toast-warning` | warning accent |
 | `--juice-toast-warning-soft` | warning soft panel tint |
 
-Consumed by `toast.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-toast-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Status remaps identity tokens (accent, warm, page-deep, secondary) — not a second semantic palette. Close stays a surface control, not the CTA button gradient.
+Consumed by `toast.scss` with light fallbacks. Every shipped library theme and generated `--jx-toast-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Status remaps identity tokens (accent, warm, page-deep, secondary) — not a second semantic palette. Close stays a surface control, not the CTA button gradient.
 
 This is **not** a dialog overlay and **not** the surface `overlay="frost|tint"` utility. There is no toast scrim. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The stack (`[toast-region]`) stays in the DOM. Closed vs open for an individual `[toast]` uses the native `hidden` attribute so static open markup demos stay visible. The toast runtime auto-enhances that markup — see [Toast Runtime](./juice-toast-runtime.md).
 
@@ -205,7 +215,7 @@ Structural inline-alert / callout paint. Required names:
 | `--juice-banner-warning` | warning accent |
 | `--juice-banner-warning-soft` | warning soft panel tint |
 
-Consumed by `banner.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-banner-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Status remaps identity tokens (accent, warm, page-deep, secondary) — not a second semantic palette. Close stays a surface control, not the CTA button gradient. There is no `--juice-banner-panel-shadow`; banner is inline, not an elevated snackbar.
+Consumed by `banner.scss` with light fallbacks. Every shipped library theme and generated `--jx-banner-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Status remaps identity tokens (accent, warm, page-deep, secondary) — not a second semantic palette. Close stays a surface control, not the CTA button gradient. There is no `--juice-banner-panel-shadow`; banner is inline, not an elevated snackbar.
 
 Banner is an **inline alert / callout**. It is **not** a toast stack, **not** a dialog overlay, and **not** the surface `overlay="frost|tint"` utility. There is no scrim and no `[banner-region]`. Optional `surfaceTone` on `[banner]` is allowed; do not force it. Closed vs open uses the native `hidden` attribute so static open markup demos stay visible. The banner runtime auto-enhances that markup (`show` / `dismiss`, `[banner-close]`, optional `banner-persist`) — see [Banner Runtime](./juice-banner-runtime.md).
 
@@ -228,7 +238,7 @@ Structural anchored-panel paint. Required names:
 | `--juice-popover-close-hover` | close-button hover fill |
 | `--juice-popover-focus-ring` | close-button focus outline |
 
-Consumed by `popover.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-popover-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
+Consumed by `popover.scss` with light fallbacks. Every shipped library theme and generated `--jx-popover-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Close stays a surface control, not the CTA button gradient.
 
 This is **Juice chrome**, not the native HTML Popover API. Never use a bare `popover` attribute for the panel — `popover=""` / `popover="manual"` activates the platform API. Juice names are `[popover-root]` (positioning wrapper), `[popover-panel]` (the surface), optional `[popover-header]` / `[popover-body]`, and `[popover-close]`.
 
@@ -247,7 +257,7 @@ Structural hover/focus tip paint. Required names:
 | `--juice-tooltip-panel-shadow` | tip elevation |
 | `--juice-tooltip-ink` | tip text |
 
-Consumed by `tooltip.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-tooltip-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family.
+Consumed by `tooltip.scss` with light fallbacks. Every shipped library theme and generated `--jx-tooltip-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family.
 
 This is **Juice chrome**, not the native HTML `title` attribute. Do not restyle or replace `title`. Juice names are `[tooltip-root]` (positioning wrapper) and `[tooltip-panel]` (the tip surface, `role="tooltip"` in markup). Do not use a bare `[tooltip]` attribute.
 
@@ -275,7 +285,7 @@ Structural input + listbox-popup paint. Required names:
 | `--juice-combobox-trigger-ink` | optional chevron-button ink |
 | `--juice-combobox-focus-ring` | input / trigger focus outline |
 
-Consumed by `combobox.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-combobox-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Trigger stays a surface control, not the CTA button gradient.
+Consumed by `combobox.scss` with light fallbacks. Every shipped library theme and generated `--jx-combobox-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. Trigger stays a surface control, not the CTA button gradient.
 
 This is **Juice chrome**, not a native `<select>` restyle. Do not restyle or replace `<select>`. Juice names are `[combobox]` (composite root), `[combobox-input]` (text field, `role="combobox"` in markup), optional `[combobox-trigger]` (chevron button), `[combobox-list]` (popup, `role="listbox"` in markup), and `[combobox-option]` (row, `role="option"` in markup). Use role in markup; attrs own Juice structure. Do not style `[role="listbox"]`.
 
@@ -301,7 +311,7 @@ Structural APG menu-button paint. Required names:
 | `--juice-menu-opener` | optional `[menu-button]` fill |
 | `--juice-menu-opener-ink` | optional `[menu-button]` ink |
 
-Consumed by `menu.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-menu-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. `[menu-button]` stays a surface control, not the CTA button gradient.
+Consumed by `menu.scss` with light fallbacks. Every shipped library theme and generated `--jx-menu-*` themes all bind this set from existing surface / page / text tokens. Do not invent a new hue family. `[menu-button]` stays a surface control, not the CTA button gradient.
 
 This is **Juice chrome** for the APG **Menu Button** pattern (an opener toggles a menu of menuitems). It is **not** a popover, **not** a combobox, **not** a native `<select>` restyle, and **not** a menubar or context menu (those stay later). Juice names are `[menu-root]` (composite wrapper), optional `[menu-button]` (opener chrome), `[menu]` (the panel), `[menuitem]` (row), optional `[menu-separator]`, and optional `[menu-label]`. Use role in markup; attrs own Juice structure. Do not style bare `[role="menu"]` or `[role="menuitem"]`.
 
@@ -323,7 +333,7 @@ Structural APG switch (toggle) paint. Required names:
 | `--juice-switch-thumb-checked` | on / checked thumb fill |
 | `--juice-switch-focus-ring` | control focus outline |
 
-Consumed by `switch.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-switch-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[switch]` stays a surface track, not the CTA button gradient.
+Consumed by `switch.scss` with light fallbacks. Every shipped library theme and generated `--jx-switch-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[switch]` stays a surface track, not the CTA button gradient.
 
 This is **Juice chrome** for the APG **Switch** pattern (a toggle with `role="switch"` and `aria-checked`). It is **not** a tri-state form checkbox, **not** a native `<input type="checkbox">` restyle as the only story, and **not** a menu `menuitemcheckbox`. Juice name is `[switch]` (boolean attr) on the control root. Primary host is `<button type="button" switch>`. A checkbox-backed host (`<input type="checkbox" switch>`) is allowed; `:checked` paints that path. Use role in markup; attrs own Juice structure. Do not style bare `[role="switch"]`.
 
@@ -349,7 +359,7 @@ Structural APG slider paint. Horizontal only. Required names:
 | `--juice-slider-thumb-shadow` | thumb shadow |
 | `--juice-slider-focus-ring` | host / thumb focus outline |
 
-Consumed by `slider.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-slider-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[slider-thumb]` stays a surface control, not the CTA button gradient.
+Consumed by `slider.scss` with light fallbacks. Every shipped library theme and generated `--jx-slider-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[slider-thumb]` stays a surface control, not the CTA button gradient.
 
 This is **Juice chrome** for the APG **Slider** pattern (a horizontal slider with `aria-valuenow` / `aria-valuemin` / `aria-valuemax`). It is **not** a native `<input type="range">` restyle as the only story, **not** a progress meter, and **not** a scrollbar. Juice names are `[slider]` (track host), `[slider-fill]` (completed portion), and `[slider-thumb]` (thumb child). Use role in markup; attrs own Juice structure. Do not style bare `[role="slider"]`.
 
@@ -372,7 +382,7 @@ Structural APG checkbox paint. Binary only. Required names:
 | `--juice-checkbox-mark` | checkmark |
 | `--juice-checkbox-focus-ring` | control focus outline |
 
-Consumed by `checkbox.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-checkbox-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[checkbox]` stays a surface box, not the CTA button gradient. There is no ink role: the label sits beside the control and is author-owned.
+Consumed by `checkbox.scss` with light fallbacks. Every shipped library theme and generated `--jx-checkbox-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[checkbox]` stays a surface box, not the CTA button gradient. There is no ink role: the label sits beside the control and is author-owned.
 
 This is **Juice chrome** for the APG **Checkbox** pattern (a binary check with `aria-checked`). It is **not** `[switch]`, **not** a native `<input type="checkbox">` restyle as the only story, and **not** a menu `menuitemcheckbox`. Juice name is `[checkbox]` (boolean attr) on the control root. Primary host is `<button type="button" checkbox>`. A native host (`<input type="checkbox" checkbox>`) is allowed; `:checked` paints that path. Use role in markup; attrs own Juice structure. Do not style bare `[role="checkbox"]`.
 
@@ -397,7 +407,7 @@ Structural APG radio paint. Required names:
 | `--juice-radio-mark` | inner dot |
 | `--juice-radio-focus-ring` | control focus outline |
 
-Consumed by `radio.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-radio-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[radio]` stays a surface disc, not the CTA button gradient. There is no ink role: the label sits beside the option and is author-owned.
+Consumed by `radio.scss` with light fallbacks. Every shipped library theme and generated `--jx-radio-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. `[radio]` stays a surface disc, not the CTA button gradient. There is no ink role: the label sits beside the option and is author-owned.
 
 `[radiogroup]` is the group root and is **layout only**. There is no `--juice-radiogroup-*` family. Authors stack options with `stack` / `row` / `gap`. Core CSS resets native fieldset chrome (`margin`, `padding`, `border`) and does not set a gap.
 
@@ -424,7 +434,7 @@ Structural APG-inspired breadcrumb paint. Required names:
 | `--juice-breadcrumb-focus-ring` | link focus outline |
 | `--juice-breadcrumb-surface` | trail background |
 
-Consumed by `breadcrumb.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-breadcrumb-*` themes all bind this set from existing text / heading / accent / border tokens. Do not invent a new hue family. Crumb links stay ink, not the CTA button gradient.
+Consumed by `breadcrumb.scss` with light fallbacks. Every shipped library theme and generated `--jx-breadcrumb-*` themes all bind this set from existing text / heading / accent / border tokens. Do not invent a new hue family. Crumb links stay ink, not the CTA button gradient.
 
 `surface` is the trail background. Shipped themes bind `transparent` so the trail stays inline. Point that role at an existing surface token when crumbs sit on a bar.
 
@@ -448,7 +458,7 @@ Structural APG-inspired progressbar paint. Determinate and indeterminate. Requir
 | `--juice-progress-ink` | optional value label |
 | `--juice-progress-focus-ring` | host focus outline when something is focused |
 
-Consumed by `progress.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-progress-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. The fill is an accent (Citrusmint uses heading, same as slider fill), not the CTA button gradient. Ink is text, not the accent.
+Consumed by `progress.scss` with light fallbacks. Every shipped library theme and generated `--jx-progress-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. The fill is an accent (Citrusmint uses heading, same as slider fill), not the CTA button gradient. Ink is text, not the accent.
 
 This is **Juice chrome** for an APG-inspired **Progressbar**. It is **not** a slider (no thumb, not interactive), **not** a spinner-only loader, and **not** a native `<progress>` restyle as the only story. Juice names are `[progress]` (track host), `[progress-fill]` (filled portion), and optional `[progress-label]`. There is no `[progress-bar]` and no `[progress-track]` — the host is the track. Use role in markup; attrs own Juice structure. Do not style bare `[role="progressbar"]`.
 
@@ -477,7 +487,7 @@ Structural APG-inspired pagination paint. Required names:
 | `--juice-pagination-focus-ring` | control focus outline |
 | `--juice-pagination-ellipsis` | gap marker |
 
-Consumed by `pagination.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-pagination-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Idle controls are surfaces, not the CTA button gradient. The current page is an accent fill (Citrusmint uses heading, same as slider fill). Ink on that fill is page text (Tide uses heading; generated themes use inverse text). Disabled ink is muted text.
+Consumed by `pagination.scss` with light fallbacks. Every shipped library theme and generated `--jx-pagination-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family. Idle controls are surfaces, not the CTA button gradient. The current page is an accent fill (Citrusmint uses heading, same as slider fill). Ink on that fill is page text (Tide uses heading; generated themes use inverse text). Disabled ink is muted text.
 
 This is **Juice chrome** for an APG-inspired **Pagination** control. It is **not** the site `[nav]` / navigation runtime, **not** `nav[type="pagination"]` (that older layout pattern stays in `nav.scss`), **not** a breadcrumb trail, **not** tabs, and **not** the wizard step tracker. Juice names are `[pagination]` (root: `<nav pagination>` or `<ol pagination>`), `[pagination-item]` (one cell, layout only), optional `[pagination-link]` (anchors and buttons inside the control are enough), `[pagination-prev]`, `[pagination-next]`, optional `[pagination-ellipsis]`, and optional `[pagination-status]`. The trail background stays transparent. `surface` is the page control, not a bar. Use `aria-current` in markup; attrs own Juice structure. Do not style bare `[aria-current="page"]`.
 
@@ -509,7 +519,7 @@ Structural multi-step onboarding paint. Required names:
 | `--juice-wizard-panel-border` | those panel hairlines (and summary dividers) |
 | `--juice-wizard-focus-ring` | focus outline on step controls |
 
-Consumed by `wizard.scss` with light fallbacks. Aquaflux, KiwiPress, Citrusmint, Tide, and generated `--jx-wizard-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family.
+Consumed by `wizard.scss` with light fallbacks. Every shipped library theme and generated `--jx-wizard-*` themes all bind this set from existing surface / page / text / accent tokens. Do not invent a new hue family.
 
 Step progress paint uses the existing `[step="pending"|"active"|"completed"]` values already in KiwiPress markup. Bare `[step]` paints as pending. A completed step's connector uses `--juice-wizard-step-current`. The wizard runtime auto-enhances `[wizard-shell]` markup (`createWizard` / `initWizard` / `startWizardRuntime` / `stopWizardRuntime`) and writes those step attrs plus one visible `[step-page]` with native `hidden` — see [Wizard Runtime](./juice-wizard-runtime.md).
 
@@ -583,7 +593,7 @@ Core paints via `background-image` (a `linear-gradient` of the wash), not `backg
 
 ## 5. Optional hooks
 
-Core consumes these with transparent / no-op fallbacks. Aquaflux, KiwiPress, and Citrusmint omit them. Tide binds several for dark FAQ pill chrome.
+Core consumes these with transparent / no-op fallbacks. Aquaflux, KiwiPress, and Citrusmint omit them. Tide and each retro library theme bind the accordion set and `--juice-tabs-panel`.
 
 ### Accordion (optional)
 
@@ -597,7 +607,7 @@ Core consumes these with transparent / no-op fallbacks. Aquaflux, KiwiPress, and
 | `--juice-accordion-chevron-size` | CSS chevron silhouette size |
 | `--juice-accordion-chevron-weight` | CSS chevron stroke |
 
-Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-panel-well`, `--tide-open-glow`, plus chevron size `0.7rem` / weight `2.5px`).
+Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-panel-well`, `--tide-open-glow`, plus chevron size `0.7rem` / weight `2.5px`). Each retro theme binds the same seven hooks from its own identity prefix (`--afb-*`, `--acg-*`, `--bdw-*`, `--dnd-*`, `--frr-*`, `--orc-*`, `--psp-*`, `--sgn-*`, `--ssm-*`, `--vpr-*`).
 
 ### Tabs (optional)
 
@@ -606,7 +616,7 @@ Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-
 | `--juice-tabs-panel` | panel fill |
 | `--juice-tabs-panel-rule` | inset panel divider |
 
-Tide binds `--juice-tabs-panel` from `--tide-tabs-panel`. It does not bind `--juice-tabs-panel-rule`. Other shipped themes bind neither.
+Tide binds `--juice-tabs-panel` from `--tide-tabs-panel`. Each retro theme binds `--juice-tabs-panel` from its own `--*-tabs-panel` alias. None of them bind `--juice-tabs-panel-rule`. Aquaflux, KiwiPress, and Citrusmint bind neither optional tabs hook.
 
 Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/wizard/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
 
@@ -618,9 +628,19 @@ Generated app themes currently bind required accordion/tabs/modal/drawer/toast/b
 | KiwiPress | `--kw-*` | `--kw-tabs-text-active` → `--juice-tabs-text-active` |
 | Citrusmint | `--cm-*` | `--cm-surface` → `--juice-surface-strong-bg` |
 | Tide | `--tide-*` | `--tide-border-strong` → `--juice-border-strength-bold-color` |
+| Afterburn | `--afb-*` | `--afb-trigger` → `--juice-accordion-trigger` |
+| Arcade Glow | `--acg-*` | `--acg-trigger` → `--juice-accordion-trigger` |
+| Boardwalk | `--bdw-*` | `--bdw-trigger` → `--juice-accordion-trigger` |
+| Denim Dial | `--dnd-*` | `--dnd-trigger` → `--juice-accordion-trigger` |
+| Forest Radio | `--frr-*` | `--frr-trigger` → `--juice-accordion-trigger` |
+| Orchard Club | `--orc-*` | `--orc-trigger` → `--juice-accordion-trigger` |
+| Poolside Pop | `--psp-*` | `--psp-trigger` → `--juice-accordion-trigger` |
+| Signal Garden | `--sgn-*` | `--sgn-trigger` → `--juice-accordion-trigger` |
+| Sunset Motel | `--ssm-*` | `--ssm-trigger` → `--juice-accordion-trigger` |
+| Violet Parlor | `--vpr-*` | `--vpr-trigger` → `--juice-accordion-trigger` |
 | Generated app themes | `--jx-*` | `--jx-trigger` → `--juice-accordion-trigger` |
 
-`--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values. Core accordion/tabs/modal/drawer/toast/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/wizard helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Do not add a fifth library prefix.
+`--juice-*` is what core CSS reads. Prefix aliases are theme-local names for the same values. Core accordion/tabs/modal/drawer/toast/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/wizard helpers also fall back through `--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` / `--jx-*` if a `--juice-*` bind is missing, but shipped themes must still set the `--juice-*` names. Retro identity prefixes stay on the theme stylesheet. Do not add them to that core fallback chain.
 
 ## 7. Not theme roles
 
@@ -648,34 +668,36 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 
 ## 8. Theme × role-family matrix
 
-| Family | aquaflux | kiwipress | citrusmint | tide |
-|---|---|---|---|---|
-| Accordion core | bind | bind | bind | bind |
-| Tabs core | bind | bind | bind | bind |
-| Modal chrome | bind | bind | bind | bind |
-| Drawer chrome | bind | bind | bind | bind |
-| Toast chrome | bind | bind | bind | bind |
-| Banner chrome | bind | bind | bind | bind |
-| Popover chrome | bind | bind | bind | bind |
-| Tooltip chrome | bind | bind | bind | bind |
-| Combobox chrome | bind | bind | bind | bind |
-| Menu chrome | bind | bind | bind | bind |
-| Switch chrome | bind | bind | bind | bind |
-| Slider chrome | bind | bind | bind | bind |
-| Checkbox chrome | bind | bind | bind | bind |
-| Radio chrome | bind | bind | bind | bind |
-| Breadcrumb chrome | bind | bind | bind | bind |
-| Progress chrome | bind | bind | bind | bind |
-| Pagination chrome | bind | bind | bind | bind |
-| Wizard chrome | bind | bind | bind | bind |
-| Surface tones (`soft` / `strong` / `muted` × bg, border, shadow, blur) | bind | bind | bind | bind |
-| Border strength (`soft` / `bold` × width, color) | bind | bind | bind | bind |
-| Shadow tone (`cool` / `warm` × color, shadow) | bind | bind | bind | bind |
-| Overlay (`frost` / `tint` × wash, layer) | bind | bind | bind | bind |
-| Accordion optional | omit (core no-op) | omit | omit | bind all seven |
-| Tabs optional | omit | omit | omit | `--juice-tabs-panel` only |
-| Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role |
-| `variant` recipes | not a theme role | not a theme role | not a theme role | not a theme role |
+| Family | aquaflux | kiwipress | citrusmint | tide | retro-* |
+|---|---|---|---|---|---|
+| Accordion core | bind | bind | bind | bind | bind |
+| Tabs core | bind | bind | bind | bind | bind |
+| Modal chrome | bind | bind | bind | bind | bind |
+| Drawer chrome | bind | bind | bind | bind | bind |
+| Toast chrome | bind | bind | bind | bind | bind |
+| Banner chrome | bind | bind | bind | bind | bind |
+| Popover chrome | bind | bind | bind | bind | bind |
+| Tooltip chrome | bind | bind | bind | bind | bind |
+| Combobox chrome | bind | bind | bind | bind | bind |
+| Menu chrome | bind | bind | bind | bind | bind |
+| Switch chrome | bind | bind | bind | bind | bind |
+| Slider chrome | bind | bind | bind | bind | bind |
+| Checkbox chrome | bind | bind | bind | bind | bind |
+| Radio chrome | bind | bind | bind | bind | bind |
+| Breadcrumb chrome | bind | bind | bind | bind | bind |
+| Progress chrome | bind | bind | bind | bind | bind |
+| Pagination chrome | bind | bind | bind | bind | bind |
+| Wizard chrome | bind | bind | bind | bind | bind |
+| Surface tones (`soft` / `strong` / `muted` × bg, border, shadow, blur) | bind | bind | bind | bind | bind |
+| Border strength (`soft` / `bold` × width, color) | bind | bind | bind | bind | bind |
+| Shadow tone (`cool` / `warm` × color, shadow) | bind | bind | bind | bind | bind |
+| Overlay (`frost` / `tint` × wash, layer) | bind | bind | bind | bind | bind |
+| Accordion optional | omit (core no-op) | omit | omit | bind all seven | bind all seven |
+| Tabs optional | omit | omit | omit | `--juice-tabs-panel` only | `--juice-tabs-panel` only |
+| Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role | not a theme role |
+| `variant` recipes | not a theme role | not a theme role | not a theme role | not a theme role | not a theme role |
+
+The `retro-*` column is the same for `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, and `retro-violet-parlor`.
 
 Generated `--jx-*` themes bind the twenty-two required families and omit the optional accordion/tabs hooks. Radiogroup has no role family. Breadcrumb `surface` is required and ships `transparent` (inline trail, not a bar). Progress `focus-ring` is required and paints only on `:focus-visible` (the bar is usually not focusable). `--juice-progress-ratio` is a structural paint hook, not a theme role. Pagination `surface` is the page control, not a bar; the trail stays transparent. `surface-current` is the current page. `ink-disabled` paints `aria-disabled`, native `disabled`, and `[disabled]`.
 
@@ -685,9 +707,9 @@ A new theme is done when:
 
 1. Identity is recorded: `id`, `name`, `selector` (`theme="<id>"`), body + heading typography, and palette groups for page, text, accents, and surfaces.
 2. Named surfaces exist only when each has a one-sentence job; Juice `[hero]` / `[card]` / `[panel]` still do the structure.
-3. Identity tokens use one prefix (`--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*` for a library theme, `--jx-*` for a generated app theme).
+3. Identity tokens use one prefix (`--aqua-*` / `--kw-*` / `--cm-*` / `--tide-*`, or a retro prefix such as `--afb-*` / `--acg-*` / `--bdw-*` / `--dnd-*` / `--frr-*` / `--orc-*` / `--psp-*` / `--sgn-*` / `--ssm-*` / `--vpr-*`, for a library theme; `--jx-*` for a generated app theme).
 4. `[theme="<id>"]` binds every **required** `--juice-*` name in section 4 from those existing tokens — no new hue family, no CTA paint on accordion/tab triggers, `[modal-close]`, `[drawer-close]`, `[toast-close]`, `[banner-close]`, `[popover-close]`, `[combobox-trigger]`, `[menu-button]`, `[switch]`, `[checkbox]`, or `[radio]`. Checkbox chrome binds the `--juice-checkbox-*` set (control / control-checked / border / border-checked / mark / focus-ring) from those tokens; it is a binary APG checkbox, not a switch, menuitemcheckbox, or tri-state. Radio chrome binds the `--juice-radio-*` set (control / control-checked / border / border-checked / mark / focus-ring) from those tokens; it is an APG radio, and `[radiogroup]` stays layout-only (no `--juice-radiogroup-*`). Breadcrumb chrome binds the `--juice-breadcrumb-*` set (ink / ink-current / ink-hover / separator / focus-ring / surface) from those tokens; it is an APG-inspired trail, not site nav, tabs, a wizard step tracker, or pagination. `surface` stays `transparent` unless crumbs sit on a bar. Crumb links stay ink, not a CTA. Progress chrome binds the `--juice-progress-*` set (track / track-border / fill / ink / focus-ring) from those tokens; it is an APG-inspired progressbar (`[progress]` / `[progress-fill]`, `progress="indeterminate"` for the busy state), not a slider, a spinner, or a native `<progress>` restyle as the only story. The fill is accent, not a CTA. Ink is text. Pagination chrome binds the `--juice-pagination-*` set (surface / surface-hover / surface-current / ink / ink-hover / ink-current / ink-disabled / border / focus-ring / ellipsis) from those tokens; it is an APG-inspired page set (`[pagination]` / `[pagination-item]` / `[pagination-prev]` / `[pagination-next]`, optional ellipsis and status), not site nav, `nav[type="pagination"]`, a breadcrumb, tabs, or a wizard step tracker. Idle controls are surfaces, not a CTA. The current page is accent (Citrusmint uses heading). Disabled ink is muted text. Slider chrome binds the `--juice-slider-*` set (track / track-border / fill / thumb / thumb-border / thumb-shadow / focus-ring) from those tokens; it is an APG slider (horizontal only), not a range input, progress meter, or scrollbar. `[slider-thumb]` stays a surface control, not a CTA. Wizard chrome binds from the same identity tokens; step indicators are surfaces, not CTA buttons. Tooltip chrome binds the lean `--juice-tooltip-*` set (panel / panel-border / panel-shadow / ink) from those tokens; there is no close control. Combobox chrome binds the `--juice-combobox-*` set (input / list / option / trigger / focus-ring) from those tokens; it is not a native `<select>` restyle. Menu chrome binds the `--juice-menu-*` set (panel / item / separator / opener / focus-ring) from those tokens; it is an APG menu button, not a popover, combobox, or native `<select>`. Switch chrome binds the `--juice-switch-*` set (track / track-checked / thumb / thumb-checked / focus-ring) from those tokens; it is an APG switch, not a checkbox, menuitemcheckbox, or native checkbox restyle as the only story. Banner chrome binds the lean `--juice-banner-*` set (panel / panel-border / ink / close / status accents — no panel-shadow) from those tokens; layout is `[banner]` / `[banner="full"]`, status is `[banner-tone]`.
-5. Optional accordion/tabs hooks are bound only when the chrome needs them (Tide FAQ pills). Omitting them is valid.
+5. Optional accordion/tabs hooks are bound only when the chrome needs them (Tide FAQ pills, and the retro themes). Omitting them is valid.
 6. Standalone `blur="sm|md"` and `variant="monochromatic|glass|tinted"` are left to core. No second per-theme blur scale or `--juice-variant-*` family.
 7. Semantic defaults and named-surface recipes stay on the identity layer. `stack` / `row` / `grid` / `gap` are untouched.
 8. The app imports core CSS plus the theme stylesheet and sets `theme="<id>"` on the root.

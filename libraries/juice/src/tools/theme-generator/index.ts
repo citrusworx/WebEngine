@@ -1592,6 +1592,17 @@ async function discoverThemeConfigPaths(): Promise<string[]> {
         }
 
         const configPath = join(THEMES_ROOT, entry.name, `${entry.name}.config.yaml`);
+        const handScssPath = join(THEMES_ROOT, entry.name, `${entry.name}.scss`);
+
+        try {
+            await fs.access(handScssPath);
+            // Hand-authored library themes (Tide, the retro set) ship `<id>.scss`.
+            // Their YAML is the theme contract, not a generator palette. Skip it so
+            // the build does not emit a second stylesheet for the same id.
+            continue;
+        } catch {
+            // Config-only themes still generate into src/.generated/themes/.
+        }
 
         try {
             await fs.access(configPath);

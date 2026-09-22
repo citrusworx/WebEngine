@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { SHIPPED_LIBRARY_THEMES } from "./juice.theme-contract.js";
 
 const PACKAGE_ROOT = process.cwd();
 const DIST_DIR = join(PACKAGE_ROOT, "dist");
@@ -1354,8 +1355,9 @@ describe("Juice build artifacts", () => {
         const themePath = join(DIST_DIR, "themes", "tide.css");
         const draftPath = join(DIST_DIR, "themes", "_draft", "tide.css");
 
-        expect(bundledThemeIds).toEqual(expect.arrayContaining(["aquaflux", "citrusmint", "kiwipress", "tide"]));
+        expect(bundledThemeIds).toEqual(expect.arrayContaining(SHIPPED_LIBRARY_THEMES.map(({ id }) => id)));
         expect(bundledThemeIds).not.toContain("_draft");
+        expect(bundledThemeIds).not.toContain("retro");
         expect(existsSync(themePath)).toBe(true);
         expect(existsSync(draftPath)).toBe(false);
 
@@ -1408,6 +1410,29 @@ describe("Juice build artifacts", () => {
         expect(themeCss).toContain("main > header");
     });
 
+    it("ships each retro theme as its own stylesheet, not a retro.css bundle or a draft", () => {
+        const retroIds = SHIPPED_LIBRARY_THEMES.map(({ id }) => id).filter((id) => id.startsWith("retro-"));
+
+        expect(retroIds).toHaveLength(10);
+        expect(existsSync(join(DIST_DIR, "themes", "retro.css"))).toBe(false);
+        expect(existsSync(join(PACKAGE_ROOT, "src", "themes", "retro", "retro.scss"))).toBe(false);
+        expect(existsSync(join(PACKAGE_ROOT, "src", "themes", "_draft", "retro.scss.barrel-unused"))).toBe(false);
+
+        for (const id of retroIds) {
+            const themePath = join(DIST_DIR, "themes", `${id}.css`);
+            const draftPath = join(DIST_DIR, "themes", "_draft", `${id}.css`);
+            const sourcePath = join(PACKAGE_ROOT, "src", "themes", id, `${id}.scss`);
+
+            expect(existsSync(themePath), themePath).toBe(true);
+            expect(existsSync(draftPath), draftPath).toBe(false);
+            expect(existsSync(sourcePath), sourcePath).toBe(true);
+            expect(existsSync(join(PACKAGE_ROOT, "src", "themes", "_draft", id))).toBe(false);
+            expect(statSync(themePath).size).toBeLessThan(500_000);
+            expect(readFileSync(sourcePath, "utf-8")).toContain(`@use '../../tokens/color/${id}/${id}.scss'`);
+            expect(readFileSync(themePath, "utf-8")).toMatch(new RegExp(`\\[theme=["']?${id}["']?\\]`));
+        }
+    });
+
     it("keeps draft theme paths out of the public package export map", () => {
         const pkg = readPackageJson();
         const exportsMap = pkg.exports ?? {};
@@ -1420,6 +1445,18 @@ describe("Juice build artifacts", () => {
             types: "./dist/themes/index.d.ts",
             default: "./dist/themes/tide.css"
         });
+        for (const { id } of SHIPPED_LIBRARY_THEMES) {
+            expect(exportsMap[`./themes/${id}.css`]).toEqual({
+                types: "./dist/themes/index.d.ts",
+                default: `./dist/themes/${id}.css`
+            });
+            expect(exportsMap[`./styles/themes/${id}`]).toEqual({
+                types: "./dist/themes/index.d.ts",
+                default: `./dist/themes/${id}.css`
+            });
+        }
+        expect(exportsMap["./themes/retro.css"]).toBeUndefined();
+        expect(exportsMap["./styles/themes/retro"]).toBeUndefined();
         expect(exportsMap["./themes/_draft"]).toBeNull();
         expect(exportsMap["./themes/_draft/*"]).toBeNull();
         expect(exportsMap["./themes/_draft/*.css"]).toBeNull();
@@ -1526,10 +1563,7 @@ describe("Juice package contract", () => {
             "./dist/index.js",
             "./dist/index.css",
             "./dist/themes/*.css",
-            "./dist/themes/aquaflux.css",
-            "./dist/themes/kiwipress.css",
-            "./dist/themes/citrusmint.css",
-            "./dist/themes/tide.css"
+            ...SHIPPED_LIBRARY_THEMES.map(({ id }) => `./dist/themes/${id}.css`)
         ]);
         expect(readFileSync(join(DIST_DIR, "index.js"), "utf-8")).toContain("DOMContentLoaded");
     });

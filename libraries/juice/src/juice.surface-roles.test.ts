@@ -176,7 +176,7 @@ describe("Surface tone role contract", () => {
         expect(scss).toMatch(/\[surfaceTone\]\[variant="monochromatic"\][^{]*\{[^}]*box-shadow/);
     });
 
-    it("binds the same surface tone roles in aquaflux, kiwipress, citrusmint, and tide", () => {
+    it("binds the same surface tone roles in every shipped library theme", () => {
         for (const { id } of THEMES) {
             const scss = readThemeScss(id);
             const rootBlock = scss.split(`[theme="${id}"]`)[1] ?? "";

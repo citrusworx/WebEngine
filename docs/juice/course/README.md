@@ -139,7 +139,7 @@ import "@citrusworx/juiceui/styles/themes/citrusmint";
 <body theme="citrusmint"></body>
 ```
 
-`@citrusworx/juiceui/styles` is core CSS (`dist/index.css`). `@citrusworx/juiceui/styles/themes/citrusmint` is the theme (`dist/themes/citrusmint.css`). Library themes `tide`, `aquaflux`, and `kiwipress` use the same `./styles/themes/<id>` shape.
+`@citrusworx/juiceui/styles` is core CSS (`dist/index.css`). `@citrusworx/juiceui/styles/themes/citrusmint` is the theme (`dist/themes/citrusmint.css`). Library themes `tide`, `aquaflux`, `kiwipress`, `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, and `retro-violet-parlor` use the same `./styles/themes/<id>` shape.
 
 ### Standalone HTML
 

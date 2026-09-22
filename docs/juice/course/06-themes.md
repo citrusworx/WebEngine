@@ -42,8 +42,18 @@ Under `libraries/juice/src/themes/<id>/` as `<id>.scss` + `<id>.yaml`:
 | `citrusmint` | mint / citrus marketing |
 | `kiwipress` | richest current product reference |
 | `tide` | dark SaaS, lagoon/teal — not Aquaflux |
+| `retro-afterburn` | charcoal, steel blue, safety orange |
+| `retro-arcade-glow` | violet, magenta, hot pink, bright yellow |
+| `retro-boardwalk` | coral, sunshine yellow, mint, ocean blue |
+| `retro-denim-dial` | denim blue with a warm-orange accent |
+| `retro-forest-radio` | midnight navy, forest green, mustard, fog |
+| `retro-orchard-club` | olive, sage, chartreuse, brick red |
+| `retro-poolside-pop` | tomato red, orange, cream, bright cyan |
+| `retro-signal-garden` | signal red, butter yellow, garden green, black |
+| `retro-sunset-motel` | ivory, coral, denim blue, dark cocoa |
+| `retro-violet-parlor` | deep indigo, violet, apricot, cream |
 
-Drafts such as blush live under `src/themes/_draft/` and do not ship as package exports.
+Each retro id is its own stylesheet (`dist/themes/<id>.css`). There is no `retro.css` bundle. Drafts such as blush live under `src/themes/_draft/` and do not ship as package exports.
 
 Import is always **core + theme**:
 

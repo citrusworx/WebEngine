@@ -146,6 +146,7 @@ Theme data currently exists as YAML definitions in `src/themes`, for example:
 - `src/themes/kiwipress/kiwipress.yaml`
 - `src/themes/citrusmint/citrusmint.yaml`
 - `src/themes/tide/tide.yaml` (+ `tide.scss`, compiled to `dist/themes/tide.css`)
+- `src/themes/retro-afterburn/retro-afterburn.yaml` and the other retro themes (`retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, `retro-violet-parlor`), each compiled to `dist/themes/<id>.css`
 - `src/themes/_draft/blush/blush.yaml`
 
 At the moment, themes are better understood as early configuration/schema artifacts than a complete runtime theming system. The docs should treat them that way until the JS and CSS integration is wired through.
