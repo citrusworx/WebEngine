@@ -108,6 +108,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Styles](./juice-styles.md)
 - [Typography Contract](./juice-typography-contract.md) — size scale, hierarchy roles, theme fonts vs `font=`
 - [Theme Contract](./juice-theme-contract.md) — required-versus-optional `--juice-*` checklist
+- [Theme Quality](./juice-theme-quality.md) — identity density and visual ship bar (separate from role binds)
 - [Theme Authoring](./juice-theme-authoring.md)
 - [Theme Manual](./juice-theme-manual.md)
 - [Navigation Runtime](./juice-navigation-runtime.md)
