@@ -428,6 +428,30 @@
   --juice-progress-fill: var(--aqua-progress-fill);
   --juice-progress-ink: var(--aqua-progress-ink);
   --juice-progress-focus-ring: var(--aqua-progress-focus-ring);
+  /* Pagination chrome — APG page set from existing tokens. Page controls
+     are surfaces, not a CTA. The trail stays transparent. Current fill
+     is accent; ink on that fill is page. Distinct from breadcrumb,
+     nav[type="pagination"], tabs, and wizard steps. */
+  --aqua-pagination-surface: var(--aqua-surface);
+  --aqua-pagination-surface-hover: var(--aqua-surface-muted);
+  --aqua-pagination-surface-current: var(--aqua-accent);
+  --aqua-pagination-ink: var(--aqua-text);
+  --aqua-pagination-ink-hover: var(--aqua-accent);
+  --aqua-pagination-ink-current: var(--aqua-page);
+  --aqua-pagination-ink-disabled: var(--aqua-text-muted);
+  --aqua-pagination-border: var(--aqua-border);
+  --aqua-pagination-focus-ring: var(--aqua-accent);
+  --aqua-pagination-ellipsis: var(--aqua-text-muted);
+  --juice-pagination-surface: var(--aqua-pagination-surface);
+  --juice-pagination-surface-hover: var(--aqua-pagination-surface-hover);
+  --juice-pagination-surface-current: var(--aqua-pagination-surface-current);
+  --juice-pagination-ink: var(--aqua-pagination-ink);
+  --juice-pagination-ink-hover: var(--aqua-pagination-ink-hover);
+  --juice-pagination-ink-current: var(--aqua-pagination-ink-current);
+  --juice-pagination-ink-disabled: var(--aqua-pagination-ink-disabled);
+  --juice-pagination-border: var(--aqua-pagination-border);
+  --juice-pagination-focus-ring: var(--aqua-pagination-focus-ring);
+  --juice-pagination-ellipsis: var(--aqua-pagination-ellipsis);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -1371,5 +1395,74 @@
 
 [theme=aquaflux] [progress]:focus-visible {
   outline: 2px solid var(--juice-progress-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
+   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
+   Runtime is later. */
+[theme=aquaflux] [pagination],
+[theme=aquaflux] nav[pagination] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--juice-pagination-ink);
+}
+
+[theme=aquaflux] [pagination] a,
+[theme=aquaflux] [pagination-link],
+[theme=aquaflux] a[pagination-link],
+[theme=aquaflux] button[pagination-link],
+[theme=aquaflux] button[pagination-prev],
+[theme=aquaflux] button[pagination-next] {
+  background-image: none;
+  background-color: var(--juice-pagination-surface);
+  border-color: var(--juice-pagination-border);
+  color: var(--juice-pagination-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=aquaflux] [pagination] a:hover,
+[theme=aquaflux] [pagination-link]:hover,
+[theme=aquaflux] button[pagination-link]:hover,
+[theme=aquaflux] button[pagination-prev]:hover,
+[theme=aquaflux] button[pagination-next]:hover {
+  background-image: none;
+  background-color: var(--juice-pagination-surface-hover);
+  color: var(--juice-pagination-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] [pagination] [aria-current=page],
+[theme=aquaflux] [pagination] [aria-current=page] :is(a, button, [pagination-link]),
+[theme=aquaflux] [pagination-link][aria-current=page] {
+  background-image: none;
+  background-color: var(--juice-pagination-surface-current);
+  color: var(--juice-pagination-ink-current);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled=true]),
+[theme=aquaflux] [pagination] [aria-disabled=true] :is(a, button, [pagination-link]) {
+  background-image: none;
+  background-color: var(--juice-pagination-surface);
+  color: var(--juice-pagination-ink-disabled);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] [pagination] a:focus-visible,
+[theme=aquaflux] [pagination-link]:focus-visible,
+[theme=aquaflux] button[pagination-link]:focus-visible,
+[theme=aquaflux] button[pagination-prev]:focus-visible,
+[theme=aquaflux] button[pagination-next]:focus-visible {
+  outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
 }
