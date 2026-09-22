@@ -88,7 +88,7 @@ The visible layers today (0.9.0 plus unreleased master):
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
-* four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
+* fourteen shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`, `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, `retro-violet-parlor`), with core CSS separate from theme identity. The ten retro themes are on master and unpublished versus 0.9.0. Each is `dist/themes/<id>.css`; there is no `retro.css` bundle
 * surface language A–C: themeable `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`
 * Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination auto-enhance when the JS entry is imported. Pagination is on master and is not in the 0.9.0 npm cut. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set
 * a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, or Sig Pagination factory)
@@ -99,7 +99,7 @@ The strongest parts of Juice today are still layout, spacing, color tokens, typo
 
 The next strongest areas are now:
 
-* modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one)
+* modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one; ten retro themes ship as separate entrypoints)
 * motion wave 1 (P0 + P1)
 * surface utilities A–C
 * accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination chrome plus DOM-first auto-enhance
@@ -117,7 +117,7 @@ The weakest areas are still:
 
 Theme-contract slice C is vacant: there is no remaining SCSS/YAML hole on the shipped set. Author type attrs already beat theme semantic defaults. Those are not open holes.
 
-Tide is a shipped dark product/SaaS theme under `src/themes/tide/`. Accordion and tabs roles are bound there, and package exports include `@citrusworx/juiceui/styles/themes/tide`. Blush stays under `src/themes/_draft/`.
+Tide is a shipped dark product/SaaS theme under `src/themes/tide/`. Accordion and tabs roles are bound there, and package exports include `@citrusworx/juiceui/styles/themes/tide`. The ten retro themes ship the same way: `src/themes/<id>/<id>.scss`, `dist/themes/<id>.css`, and `@citrusworx/juiceui/styles/themes/<id>`. Blush stays under `src/themes/_draft/`.
 
 For the honest Beta promise, see [Juice Beta](./juice-beta.md) and the [maturity matrix](./juice-maturity-matrix.md).
 
@@ -142,7 +142,7 @@ This is the stack that shipped in 0.6.0.
 
 * **Tide shipped as the fourth library theme** (PR #95, `juice-ship-tide-theme`). Import `@citrusworx/juiceui/styles/themes/tide` and activate with `theme="tide"`. Dark product/SaaS identity, teal/lagoon tokens, accordion and tabs chrome, named `tide-card` / `tide-panel` surfaces. Blush remains a YAML-only draft.
 * **Surface language A→B→C.** Themeable `surfaceTone` `soft|strong|muted` (#97), `borderStrength` `soft|bold` (#99), standalone `blur` `sm|md` (#102). A–C utilities are done. Remaining depth slices A (`shadowTone` `cool|warm`), B (`overlay` `frost|tint`), and C (`variant` `monochromatic|glass|tinted`) are in. Structural `card="…"` recipes stay later.
-* **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, the retro library themes, or the theme generator drops a required accordion, tabs, modal, surface-tone, border-strength, shadow-tone, or overlay bind. Modal theme chrome (slice A), dialog runtime (slice B), and runtime docs (slice C) are in.
+* **Theme contract.** Canonical required-versus-optional checklist (#104) plus automated `--juice-*` bind tests (#105). `yarn workspace @citrusworx/juiceui verify` fails if aquaflux, kiwipress, citrusmint, tide, or the theme generator drops a required accordion, tabs, modal, surface-tone, border-strength, shadow-tone, or overlay bind. Modal theme chrome (slice A), dialog runtime (slice B), and runtime docs (slice C) are in.
 * **Modal / dialog A→B→C.** Shared `--juice-modal-*` roles for `[modal-overlay]` / `[modal]` / `[modal-close]` (#118 / #119). DOM-first dialog runtime (#121): `createModal` / `initModal` / `startModalRuntime` / `stopModalRuntime`, auto-boot, Escape, focus trap, exclusive open, backdrop click (`modal-overlay="static"` opts out). Runtime docs and maturity notes shipped with the cut. Distinct from surface `overlay="frost|tint"`. No Sig Modal factory.
 * **Typography and icon polish.** Icon authoring contract (#108): default `[icon]` size is `1rem`, `iconSize` (`xxs`…`xxl`) is first-class, `width` / `height` stay the custom-size escape hatch. Typography authoring contract (#110). Author `font` / `fontColor` / `fontWeight` / `lineHeight` beat theme `h1`–`h6` / `p` defaults via `[theme] [attr]` companions (#112), same pattern as `surfaceTone`.
 
@@ -218,7 +218,7 @@ That is not the same as a polished component library. Cards, buttons, forms, and
 
 ### 3. Blush Is Still Draft
 
-Tide is a fourth shipped library theme. Blush is further back (YAML-only, no emitted CSS). Package `exports` and the published tarball still do not expose `_draft`.
+Tide is a shipped library theme. The ten retro themes (`retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, `retro-violet-parlor`) are shipped library themes on master, each under `src/themes/<id>/`. Blush is further back (YAML-only, no emitted CSS). Package `exports` and the published tarball still do not expose `_draft`.
 
 ### 4. Templates Still Expose Proportional Weaknesses
 
@@ -226,7 +226,7 @@ Juice can express many aesthetics, but dense layouts still reveal weaknesses in 
 
 ### 5. CLI and Generator Remain a Separate Track
 
-The Juice CLI (`tooling/cli/juice`) and config-driven generation from `juice.config.yaml` are draft. They must not block the next runtime / component work. The theme contract on the four shipped references is already documented and tested; the generator workflow is a different problem.
+The Juice CLI (`tooling/cli/juice`) and config-driven generation from `juice.config.yaml` are draft. They must not block the next runtime / component work. The theme contract on the shipped references (including the ten retro themes) is already documented and tested; the generator workflow is a different problem.
 
 ### 6. Optional Later Type Size-Step
 

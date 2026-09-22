@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Signal Garden sources: signal red (candy apple), butter yellow (dandelion), garden green (kiwi), black.
-    Derived roles feed the retro-signal-garden theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Signal Garden is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-signal-garden] {
   /* Foundation */
-  --sgn-page: rgb(255, 251.6, 214.2);
-  --sgn-page-tint: rgb(248.5383, 254.3217, 251.62278);
-  --sgn-page-deep: hsl(0, 0%, 10%);
-  --sgn-surface: rgba(255, 251.6, 214.2, 0.78);
-  --sgn-surface-strong: rgba(255, 251.6, 214.2, 0.92);
-  --sgn-surface-muted: rgba(248.5383, 254.3217, 251.62278, 0.78);
-  --sgn-surface-deep: hsl(0, 0%, 15%);
-  --sgn-border: rgba(89.25, 89.25, 89.25, 0.26);
-  --sgn-border-strong: rgba(255, 42.5, 0, 0.38);
-  --sgn-shadow: rgba(25.5, 25.5, 25.5, 0.12);
+  --sgn-page: #f7f4e8;
+  --sgn-page-tint: #efe9d6;
+  --sgn-page-deep: #111111;
+  --sgn-surface: rgba(247, 244, 232, 0.78);
+  --sgn-surface-strong: rgba(247, 244, 232, 0.92);
+  --sgn-surface-muted: rgba(239, 233, 214, 0.78);
+  --sgn-surface-deep: #141414;
+  --sgn-border: rgba(110, 110, 110, 0.26);
+  --sgn-border-strong: rgba(227, 28, 35, 0.38);
+  --sgn-shadow: rgba(17, 17, 17, 0.12);
   /* Typography */
-  --sgn-text: hsl(0, 0%, 15%);
-  --sgn-text-muted: hsl(215, 14%, 34%);
-  --sgn-heading: hsl(0, 0%, 10%);
+  --sgn-text: #141414;
+  --sgn-text-muted: #5a5a5a;
+  --sgn-heading: #111111;
   --sgn-body-font: "Lato", sans-serif;
   --sgn-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --sgn-accent: hsl(10, 100%, 50%);
-  --sgn-accent-soft: hsl(10, 100%, 80%);
-  --sgn-accent-strong: hsl(10, 100%, 30%);
-  --sgn-highlight: hsl(55, 100%, 60%);
+  --sgn-accent: #e31c23;
+  --sgn-accent-soft: #f06368;
+  --sgn-accent-strong: #c4161c;
+  --sgn-highlight: #f5d76e;
   /* Surface recipes */
   --sgn-page-background:
-      radial-gradient(circle at top left, rgba(255, 238, 51, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(209.1, 249.9, 228.82, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(255, 251.6, 214.2) 0%, rgb(248.5383, 254.3217, 251.62278) 100%);
-  --sgn-button-background: linear-gradient(135deg, hsl(10, 100%, 50%), hsl(163, 94%, 24%));
+      radial-gradient(circle at top left, rgba(245, 215, 110, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(107, 196, 122, 0.45), transparent 30%),
+      linear-gradient(180deg, #f7f4e8 0%, #efe9d6 100%);
+  --sgn-button-background: linear-gradient(135deg, #e31c23, #217a31);
   --sgn-card-background:
-      linear-gradient(180deg, rgba(255, 251.6, 214.2, 0.96) 0%, rgba(248.5383, 254.3217, 251.62278, 0.88) 100%);
+      linear-gradient(180deg, rgba(247, 244, 232, 0.96) 0%, rgba(239, 233, 214, 0.88) 100%);
   --sgn-panel-background:
-      linear-gradient(180deg, rgba(255, 251.6, 214.2, 0.98) 0%, rgba(248.5383, 254.3217, 251.62278, 0.72) 100%);
+      linear-gradient(180deg, rgba(247, 244, 232, 0.98) 0%, rgba(239, 233, 214, 0.72) 100%);
   --sgn-hero-background:
-      radial-gradient(circle at top left, rgba(255, 235.875, 25.5, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(15.912, 182.988, 127.296, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(0, 0%, 10%) 0%, hsl(10, 100%, 20%) 54%, hsl(10, 100%, 30%) 100%);
+      radial-gradient(circle at top left, rgba(224, 188, 46, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(47, 158, 68, 0.28), transparent 32%),
+      linear-gradient(135deg, #111111 0%, #8c1014 54%, #c4161c 100%);
   --sgn-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(255, 238, 51, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 170, 153, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(0, 0%, 10%) 0%, hsl(0, 0%, 15%) 52%, hsl(10, 100%, 30%) 100%);
-  --sgn-stage-outline: rgba(255, 251.6, 214.2, 0.14);
-  --sgn-stage-shadow: rgba(25.5, 25.5, 25.5, 0.34);
-  --sgn-chip-background: rgba(255, 251.6, 214.2, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(245, 215, 110, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(240, 99, 104, 0.2), transparent 24%),
+      linear-gradient(145deg, #111111 0%, #141414 52%, #c4161c 100%);
+  --sgn-stage-outline: rgba(247, 244, 232, 0.14);
+  --sgn-stage-shadow: rgba(17, 17, 17, 0.34);
+  --sgn-chip-background: rgba(247, 244, 232, 0.96);
   --sgn-buybox-background:
-      linear-gradient(180deg, rgba(255, 251.6, 214.2, 0.98) 0%, rgba(248.5383, 254.3217, 251.62278, 0.82) 100%);
-  --sgn-buybox-shadow: 0 32px 70px -42px rgba(25.5, 25.5, 25.5, 0.24);
+      linear-gradient(180deg, rgba(247, 244, 232, 0.98) 0%, rgba(239, 233, 214, 0.82) 100%);
+  --sgn-buybox-shadow: 0 32px 70px -42px rgba(17, 17, 17, 0.24);
   --sgn-spec-background:
-      linear-gradient(180deg, rgba(248.5383, 254.3217, 251.62278, 0.95) 0%, rgba(255, 251.6, 214.2, 0.98) 100%);
+      linear-gradient(180deg, rgba(239, 233, 214, 0.95) 0%, rgba(247, 244, 232, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Signal Garden tokens; no new hue family. */
   --sgn-trigger: var(--sgn-surface-strong);
@@ -74,12 +69,24 @@
   --sgn-chevron: var(--sgn-accent);
   --sgn-panel-rule: var(--sgn-border);
   --sgn-focus-ring: var(--sgn-accent);
+  --sgn-item-border: var(--sgn-border);
+  --sgn-item-border-open: var(--sgn-border);
+  --sgn-trigger-accent: var(--sgn-accent);
+  --sgn-panel-well: var(--sgn-surface-muted);
+  --sgn-open-glow: 0 14px 32px -26px var(--sgn-shadow);
   --juice-accordion-trigger: var(--sgn-trigger);
   --juice-accordion-trigger-hover: var(--sgn-trigger-hover);
   --juice-accordion-trigger-open: var(--sgn-trigger-open);
   --juice-accordion-chevron: var(--sgn-chevron);
   --juice-accordion-panel-rule: var(--sgn-panel-rule);
   --juice-accordion-focus-ring: var(--sgn-focus-ring);
+  --juice-accordion-item-border: var(--sgn-item-border);
+  --juice-accordion-item-border-open: var(--sgn-item-border-open);
+  --juice-accordion-trigger-accent: var(--sgn-trigger-accent);
+  --juice-accordion-panel: var(--sgn-panel-well);
+  --juice-accordion-open-glow: var(--sgn-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --sgn-tabs-trigger: transparent;
   --sgn-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --sgn-tabs-indicator: var(--sgn-accent);
   --sgn-tabs-list-rule: var(--sgn-border);
   --sgn-tabs-focus-ring: var(--sgn-accent);
+  --sgn-tabs-panel: var(--sgn-panel-well);
   --juice-tabs-trigger: var(--sgn-tabs-trigger);
   --juice-tabs-trigger-hover: var(--sgn-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--sgn-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--sgn-tabs-indicator);
   --juice-tabs-list-rule: var(--sgn-tabs-list-rule);
   --juice-tabs-focus-ring: var(--sgn-tabs-focus-ring);
+  --juice-tabs-panel: var(--sgn-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--sgn-surface);
   --juice-surface-soft-border: var(--sgn-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--sgn-progress-fill);
   --juice-progress-ink: var(--sgn-progress-ink);
   --juice-progress-focus-ring: var(--sgn-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --sgn-pagination-surface: var(--sgn-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --sgn-pagination-surface: var(--sgn-surface-strong);
   --sgn-pagination-surface-hover: var(--sgn-surface-muted);
   --sgn-pagination-surface-current: var(--sgn-accent);
   --sgn-pagination-ink: var(--sgn-text);
   --sgn-pagination-ink-hover: var(--sgn-accent);
-  --sgn-pagination-ink-current: var(--sgn-page);
+  --sgn-pagination-ink-current: var(--sgn-heading);
   --sgn-pagination-ink-disabled: var(--sgn-text-muted);
   --sgn-pagination-border: var(--sgn-border);
   --sgn-pagination-focus-ring: var(--sgn-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-signal-garden] :where(a) {
   color: var(--sgn-accent-strong);
-  text-decoration-color: rgba(153, 25.5, 0, 0.35);
+  text-decoration-color: rgba(196, 22, 28, 0.35);
 }
 
 [theme=retro-signal-garden] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-signal-garden] :where(button) {
   background-image: var(--sgn-button-background);
-  color: rgb(255, 251.6, 214.2);
+  color: #f7f4e8;
   border-color: transparent;
 }
 
 [theme=retro-signal-garden] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(25.5, 25.5, 25.5, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(17, 17, 17, 0.24);
 }
 
 [theme=retro-signal-garden] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-signal-garden] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(89.25, 89.25, 89.25, 0.28);
+  outline: 2px solid rgba(110, 110, 110, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-signal-garden] :where(code, pre) {
-  background-color: rgba(248.5383, 254.3217, 251.62278, 0.9);
+  background-color: rgba(239, 233, 214, 0.9);
   color: var(--sgn-heading);
   border: 1px solid var(--sgn-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-signal-garden][sgn-hero],
 [theme=retro-signal-garden] [sgn-hero] {
   background: var(--sgn-hero-background);
-  color: rgb(255, 251.6, 214.2);
-  border: 1px solid rgba(255, 251.6, 214.2, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(25.5, 25.5, 25.5, 0.45);
+  color: #f7f4e8;
+  border: 1px solid rgba(247, 244, 232, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(17, 17, 17, 0.45);
 }
 
 [theme=retro-signal-garden][sgn-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-signal-garden] [sgn-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(255, 251.6, 214.2);
+  color: #f7f4e8;
 }
 
 [theme=retro-signal-garden][sgn-hero] :where(p, span, li, small, a),
 [theme=retro-signal-garden] [sgn-hero] :where(p, span, li, small, a) {
-  color: rgba(255, 251.6, 214.2, 0.86);
+  color: rgba(247, 244, 232, 0.86);
 }
 
 [theme=retro-signal-garden][sgn-hero] :where(button),
 [theme=retro-signal-garden] [sgn-hero] :where(button) {
-  background: rgb(255, 251.6, 214.2);
+  background: #f7f4e8;
   color: var(--sgn-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-signal-garden][sgn-stage],
 [theme=retro-signal-garden] [sgn-stage] {
   background: var(--sgn-stage-background);
-  color: rgb(255, 251.6, 214.2);
+  color: #f7f4e8;
   border: 1px solid var(--sgn-stage-outline);
   box-shadow: 0 44px 100px -54px var(--sgn-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(255, 251.6, 214.2, 0.08);
+  border: 1px solid rgba(247, 244, 232, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-signal-garden][sgn-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-signal-garden] [sgn-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(255, 251.6, 214.2);
+  color: #f7f4e8;
 }
 
 [theme=retro-signal-garden][sgn-stage] :where(p, span, li, small, a),
 [theme=retro-signal-garden] [sgn-stage] :where(p, span, li, small, a) {
-  color: rgba(255, 251.6, 214.2, 0.86);
+  color: rgba(247, 244, 232, 0.86);
 }
 
 [theme=retro-signal-garden][sgn-chip],
 [theme=retro-signal-garden] [sgn-chip] {
   background: var(--sgn-chip-background);
   color: var(--sgn-heading);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(25.5, 25.5, 25.5, 0.18);
+  border: 1px solid rgba(224, 188, 46, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(17, 17, 17, 0.18);
 }
 
 [theme=retro-signal-garden][sgn-buybox],
 [theme=retro-signal-garden] [sgn-buybox] {
   background: var(--sgn-buybox-background);
   color: var(--sgn-text);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.3);
+  border: 1px solid rgba(224, 188, 46, 0.3);
   box-shadow: var(--sgn-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-signal-garden] [sgn-spec] {
   background: var(--sgn-spec-background);
   color: var(--sgn-text);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(25.5, 25.5, 25.5, 0.15);
+  border: 1px solid rgba(224, 188, 46, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(17, 17, 17, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-signal-garden] [pagination],
 [theme=retro-signal-garden] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-signal-garden] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #fff8f8;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--sgn-stage-background);
   --retro-stage-outline: var(--sgn-stage-outline);
   --retro-stage-shadow: var(--sgn-stage-shadow);
-  --retro-theme-page: rgb(255, 251.6, 214.2);
-  --retro-theme-highlight: hsl(55, 100%, 60%);
+  --retro-theme-page: #f7f4e8;
+  --retro-theme-highlight: #f5d76e;
   --juice-color-page: var(--sgn-page);
   --juice-color-surface: var(--sgn-surface-strong);
   --juice-color-text: var(--sgn-text);
   --juice-color-text-muted: var(--sgn-text-muted);
   --juice-color-heading: var(--sgn-heading);
   --juice-color-accent: var(--sgn-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #fff8f8;
   --juice-color-border: var(--sgn-border);
   --juice-color-highlight: var(--sgn-highlight);
 }

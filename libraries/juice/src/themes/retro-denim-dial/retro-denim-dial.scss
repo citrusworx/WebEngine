@@ -75,12 +75,24 @@
     --dnd-chevron: var(--dnd-accent);
     --dnd-panel-rule: var(--dnd-border);
     --dnd-focus-ring: var(--dnd-accent);
+    --dnd-item-border: var(--dnd-border);
+    --dnd-item-border-open: var(--dnd-border);
+    --dnd-trigger-accent: var(--dnd-accent);
+    --dnd-panel-well: var(--dnd-surface-muted);
+    --dnd-open-glow: 0 14px 32px -26px var(--dnd-shadow);
     --juice-accordion-trigger: var(--dnd-trigger);
     --juice-accordion-trigger-hover: var(--dnd-trigger-hover);
     --juice-accordion-trigger-open: var(--dnd-trigger-open);
     --juice-accordion-chevron: var(--dnd-chevron);
     --juice-accordion-panel-rule: var(--dnd-panel-rule);
     --juice-accordion-focus-ring: var(--dnd-focus-ring);
+    --juice-accordion-item-border: var(--dnd-item-border);
+    --juice-accordion-item-border-open: var(--dnd-item-border-open);
+    --juice-accordion-trigger-accent: var(--dnd-trigger-accent);
+    --juice-accordion-panel: var(--dnd-panel-well);
+    --juice-accordion-open-glow: var(--dnd-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
     /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
     --dnd-tabs-trigger: transparent;
@@ -92,6 +104,7 @@
     --dnd-tabs-indicator: var(--dnd-accent);
     --dnd-tabs-list-rule: var(--dnd-border);
     --dnd-tabs-focus-ring: var(--dnd-accent);
+    --dnd-tabs-panel: var(--dnd-panel-well);
     --juice-tabs-trigger: var(--dnd-tabs-trigger);
     --juice-tabs-trigger-hover: var(--dnd-tabs-trigger-hover);
     --juice-tabs-trigger-active: var(--dnd-tabs-trigger-active);
@@ -101,6 +114,7 @@
     --juice-tabs-indicator: var(--dnd-tabs-indicator);
     --juice-tabs-list-rule: var(--dnd-tabs-list-rule);
     --juice-tabs-focus-ring: var(--dnd-tabs-focus-ring);
+    --juice-tabs-panel: var(--dnd-tabs-panel);
 
     /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
     --juice-surface-soft-bg: var(--dnd-surface);
@@ -455,16 +469,15 @@
     --juice-progress-ink: var(--dnd-progress-ink);
     --juice-progress-focus-ring: var(--dnd-progress-focus-ring);
 
-    /* Pagination chrome — APG page set from existing tokens. Page controls
-       are surfaces, not a CTA. The trail stays transparent. Current fill
-       is accent; ink on that fill is page. Distinct from breadcrumb,
-       nav[type="pagination"], tabs, and wizard steps. */
-    --dnd-pagination-surface: var(--dnd-surface);
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --dnd-pagination-surface: var(--dnd-surface-strong);
     --dnd-pagination-surface-hover: var(--dnd-surface-muted);
     --dnd-pagination-surface-current: var(--dnd-accent);
     --dnd-pagination-ink: var(--dnd-text);
     --dnd-pagination-ink-hover: var(--dnd-accent);
-    --dnd-pagination-ink-current: var(--dnd-page);
+    --dnd-pagination-ink-current: var(--dnd-heading);
     --dnd-pagination-ink-disabled: var(--dnd-text-muted);
     --dnd-pagination-border: var(--dnd-border);
     --dnd-pagination-focus-ring: var(--dnd-accent);
@@ -1422,11 +1435,8 @@
     outline-offset: 2px;
 }
 
-
-
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme="retro-denim-dial"] [pagination],
 [theme="retro-denim-dial"] nav[pagination] {
     background-image: none;
@@ -1491,6 +1501,7 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme="retro-denim-dial"] :where(button) {

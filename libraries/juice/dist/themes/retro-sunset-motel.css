@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Sunset Motel sources: ivory, coral (candy apple), denim blue (cornflower), dark cocoa (brown).
-    Derived roles feed the retro-sunset-motel theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Sunset Motel is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-sunset-motel] {
   /* Foundation */
-  --ssm-page: rgb(248.625, 244.8, 240.975);
-  --ssm-page-tint: rgb(255, 249.2625, 248.115);
-  --ssm-page-deep: hsl(30, 59%, 14%);
-  --ssm-surface: rgba(248.625, 244.8, 240.975, 0.78);
-  --ssm-surface-strong: rgba(248.625, 244.8, 240.975, 0.92);
-  --ssm-surface-muted: rgba(255, 249.2625, 248.115, 0.78);
-  --ssm-surface-deep: hsl(30, 59%, 17%);
-  --ssm-border: rgba(56.4825, 103.95075, 224.0175, 0.26);
-  --ssm-border-strong: rgba(255, 42.5, 0, 0.38);
-  --ssm-shadow: rgba(56.763, 35.7, 14.637, 0.12);
+  --ssm-page: #fff8f1;
+  --ssm-page-tint: #ffefe3;
+  --ssm-page-deep: #3b2418;
+  --ssm-surface: rgba(255, 248, 241, 0.78);
+  --ssm-surface-strong: rgba(255, 248, 241, 0.92);
+  --ssm-surface-muted: rgba(255, 239, 227, 0.78);
+  --ssm-surface-deep: #2a1c16;
+  --ssm-border: rgba(184, 154, 136, 0.26);
+  --ssm-border-strong: rgba(232, 121, 106, 0.38);
+  --ssm-shadow: rgba(59, 36, 24, 0.12);
   /* Typography */
-  --ssm-text: hsl(30, 59%, 17%);
-  --ssm-text-muted: rgb(128.37975, 104.0655, 83.27025);
-  --ssm-heading: hsl(30, 59%, 14%);
+  --ssm-text: #2a1c16;
+  --ssm-text-muted: #7a5f52;
+  --ssm-heading: #3b2418;
   --ssm-body-font: "Lato", sans-serif;
   --ssm-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --ssm-accent: hsl(10, 100%, 50%);
-  --ssm-accent-soft: hsl(10, 100%, 80%);
-  --ssm-accent-strong: hsl(10, 100%, 30%);
-  --ssm-highlight: rgb(195.44475, 209.685225, 245.70525);
+  --ssm-accent: #e8796a;
+  --ssm-accent-soft: #f0a89e;
+  --ssm-accent-strong: #d16558;
+  --ssm-highlight: #c4a484;
   /* Surface recipes */
   --ssm-page-background:
-      radial-gradient(circle at top left, rgba(195.44475, 209.685225, 245.70525, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(208.67925, 219.755175, 247.77075, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(248.625, 244.8, 240.975) 0%, rgb(255, 249.2625, 248.115) 100%);
-  --ssm-button-background: linear-gradient(135deg, hsl(10, 100%, 50%), hsl(223, 73%, 35%));
+      radial-gradient(circle at top left, rgba(196, 164, 132, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(109, 137, 168, 0.45), transparent 30%),
+      linear-gradient(180deg, #fff8f1 0%, #ffefe3 100%);
+  --ssm-button-background: linear-gradient(135deg, #e8796a, #2c4463);
   --ssm-card-background:
-      linear-gradient(180deg, rgba(248.625, 244.8, 240.975, 0.96) 0%, rgba(255, 249.2625, 248.115, 0.88) 100%);
+      linear-gradient(180deg, rgba(255, 248, 241, 0.96) 0%, rgba(255, 239, 227, 0.88) 100%);
   --ssm-panel-background:
-      linear-gradient(180deg, rgba(248.625, 244.8, 240.975, 0.98) 0%, rgba(255, 249.2625, 248.115, 0.72) 100%);
+      linear-gradient(180deg, rgba(255, 248, 241, 0.98) 0%, rgba(255, 239, 227, 0.72) 100%);
   --ssm-hero-background:
-      radial-gradient(circle at top left, rgba(56.4825, 103.95075, 224.0175, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(30.9825, 78.45075, 198.5175, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(30, 59%, 14%) 0%, hsl(10, 100%, 20%) 54%, hsl(10, 100%, 30%) 100%);
+      radial-gradient(circle at top left, rgba(168, 136, 104, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(61, 90, 128, 0.28), transparent 32%),
+      linear-gradient(135deg, #3b2418 0%, #a34c41 54%, #d16558 100%);
   --ssm-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(195.44475, 209.685225, 245.70525, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 170, 153, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(30, 59%, 14%) 0%, hsl(30, 59%, 17%) 52%, hsl(10, 100%, 30%) 100%);
-  --ssm-stage-outline: rgba(248.625, 244.8, 240.975, 0.14);
-  --ssm-stage-shadow: rgba(56.763, 35.7, 14.637, 0.34);
-  --ssm-chip-background: rgba(248.625, 244.8, 240.975, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(196, 164, 132, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(240, 168, 158, 0.2), transparent 24%),
+      linear-gradient(145deg, #3b2418 0%, #2a1c16 52%, #d16558 100%);
+  --ssm-stage-outline: rgba(255, 248, 241, 0.14);
+  --ssm-stage-shadow: rgba(59, 36, 24, 0.34);
+  --ssm-chip-background: rgba(255, 248, 241, 0.96);
   --ssm-buybox-background:
-      linear-gradient(180deg, rgba(248.625, 244.8, 240.975, 0.98) 0%, rgba(255, 249.2625, 248.115, 0.82) 100%);
-  --ssm-buybox-shadow: 0 32px 70px -42px rgba(56.763, 35.7, 14.637, 0.24);
+      linear-gradient(180deg, rgba(255, 248, 241, 0.98) 0%, rgba(255, 239, 227, 0.82) 100%);
+  --ssm-buybox-shadow: 0 32px 70px -42px rgba(59, 36, 24, 0.24);
   --ssm-spec-background:
-      linear-gradient(180deg, rgba(255, 249.2625, 248.115, 0.95) 0%, rgba(248.625, 244.8, 240.975, 0.98) 100%);
+      linear-gradient(180deg, rgba(255, 239, 227, 0.95) 0%, rgba(255, 248, 241, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Sunset Motel tokens; no new hue family. */
   --ssm-trigger: var(--ssm-surface-strong);
@@ -74,12 +69,24 @@
   --ssm-chevron: var(--ssm-accent);
   --ssm-panel-rule: var(--ssm-border);
   --ssm-focus-ring: var(--ssm-accent);
+  --ssm-item-border: var(--ssm-border);
+  --ssm-item-border-open: var(--ssm-border);
+  --ssm-trigger-accent: var(--ssm-accent);
+  --ssm-panel-well: var(--ssm-surface-muted);
+  --ssm-open-glow: 0 14px 32px -26px var(--ssm-shadow);
   --juice-accordion-trigger: var(--ssm-trigger);
   --juice-accordion-trigger-hover: var(--ssm-trigger-hover);
   --juice-accordion-trigger-open: var(--ssm-trigger-open);
   --juice-accordion-chevron: var(--ssm-chevron);
   --juice-accordion-panel-rule: var(--ssm-panel-rule);
   --juice-accordion-focus-ring: var(--ssm-focus-ring);
+  --juice-accordion-item-border: var(--ssm-item-border);
+  --juice-accordion-item-border-open: var(--ssm-item-border-open);
+  --juice-accordion-trigger-accent: var(--ssm-trigger-accent);
+  --juice-accordion-panel: var(--ssm-panel-well);
+  --juice-accordion-open-glow: var(--ssm-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --ssm-tabs-trigger: transparent;
   --ssm-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --ssm-tabs-indicator: var(--ssm-accent);
   --ssm-tabs-list-rule: var(--ssm-border);
   --ssm-tabs-focus-ring: var(--ssm-accent);
+  --ssm-tabs-panel: var(--ssm-panel-well);
   --juice-tabs-trigger: var(--ssm-tabs-trigger);
   --juice-tabs-trigger-hover: var(--ssm-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--ssm-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--ssm-tabs-indicator);
   --juice-tabs-list-rule: var(--ssm-tabs-list-rule);
   --juice-tabs-focus-ring: var(--ssm-tabs-focus-ring);
+  --juice-tabs-panel: var(--ssm-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--ssm-surface);
   --juice-surface-soft-border: var(--ssm-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--ssm-progress-fill);
   --juice-progress-ink: var(--ssm-progress-ink);
   --juice-progress-focus-ring: var(--ssm-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --ssm-pagination-surface: var(--ssm-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --ssm-pagination-surface: var(--ssm-surface-strong);
   --ssm-pagination-surface-hover: var(--ssm-surface-muted);
   --ssm-pagination-surface-current: var(--ssm-accent);
   --ssm-pagination-ink: var(--ssm-text);
   --ssm-pagination-ink-hover: var(--ssm-accent);
-  --ssm-pagination-ink-current: var(--ssm-page);
+  --ssm-pagination-ink-current: var(--ssm-heading);
   --ssm-pagination-ink-disabled: var(--ssm-text-muted);
   --ssm-pagination-border: var(--ssm-border);
   --ssm-pagination-focus-ring: var(--ssm-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-sunset-motel] :where(a) {
   color: var(--ssm-accent-strong);
-  text-decoration-color: rgba(153, 25.5, 0, 0.35);
+  text-decoration-color: rgba(209, 101, 88, 0.35);
 }
 
 [theme=retro-sunset-motel] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-sunset-motel] :where(button) {
   background-image: var(--ssm-button-background);
-  color: rgb(248.625, 244.8, 240.975);
+  color: #fff8f1;
   border-color: transparent;
 }
 
 [theme=retro-sunset-motel] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(56.763, 35.7, 14.637, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(59, 36, 24, 0.24);
 }
 
 [theme=retro-sunset-motel] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-sunset-motel] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(56.4825, 103.95075, 224.0175, 0.28);
+  outline: 2px solid rgba(184, 154, 136, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-sunset-motel] :where(code, pre) {
-  background-color: rgba(255, 249.2625, 248.115, 0.9);
+  background-color: rgba(255, 239, 227, 0.9);
   color: var(--ssm-heading);
   border: 1px solid var(--ssm-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-sunset-motel][ssm-hero],
 [theme=retro-sunset-motel] [ssm-hero] {
   background: var(--ssm-hero-background);
-  color: rgb(248.625, 244.8, 240.975);
-  border: 1px solid rgba(248.625, 244.8, 240.975, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(56.763, 35.7, 14.637, 0.45);
+  color: #fff8f1;
+  border: 1px solid rgba(255, 248, 241, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(59, 36, 24, 0.45);
 }
 
 [theme=retro-sunset-motel][ssm-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-sunset-motel] [ssm-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(248.625, 244.8, 240.975);
+  color: #fff8f1;
 }
 
 [theme=retro-sunset-motel][ssm-hero] :where(p, span, li, small, a),
 [theme=retro-sunset-motel] [ssm-hero] :where(p, span, li, small, a) {
-  color: rgba(248.625, 244.8, 240.975, 0.86);
+  color: rgba(255, 248, 241, 0.86);
 }
 
 [theme=retro-sunset-motel][ssm-hero] :where(button),
 [theme=retro-sunset-motel] [ssm-hero] :where(button) {
-  background: rgb(248.625, 244.8, 240.975);
+  background: #fff8f1;
   color: var(--ssm-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-sunset-motel][ssm-stage],
 [theme=retro-sunset-motel] [ssm-stage] {
   background: var(--ssm-stage-background);
-  color: rgb(248.625, 244.8, 240.975);
+  color: #fff8f1;
   border: 1px solid var(--ssm-stage-outline);
   box-shadow: 0 44px 100px -54px var(--ssm-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(248.625, 244.8, 240.975, 0.08);
+  border: 1px solid rgba(255, 248, 241, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-sunset-motel][ssm-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-sunset-motel] [ssm-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(248.625, 244.8, 240.975);
+  color: #fff8f1;
 }
 
 [theme=retro-sunset-motel][ssm-stage] :where(p, span, li, small, a),
 [theme=retro-sunset-motel] [ssm-stage] :where(p, span, li, small, a) {
-  color: rgba(248.625, 244.8, 240.975, 0.86);
+  color: rgba(255, 248, 241, 0.86);
 }
 
 [theme=retro-sunset-motel][ssm-chip],
 [theme=retro-sunset-motel] [ssm-chip] {
   background: var(--ssm-chip-background);
   color: var(--ssm-heading);
-  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(56.763, 35.7, 14.637, 0.18);
+  border: 1px solid rgba(168, 136, 104, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(59, 36, 24, 0.18);
 }
 
 [theme=retro-sunset-motel][ssm-buybox],
 [theme=retro-sunset-motel] [ssm-buybox] {
   background: var(--ssm-buybox-background);
   color: var(--ssm-text);
-  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.3);
+  border: 1px solid rgba(168, 136, 104, 0.3);
   box-shadow: var(--ssm-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-sunset-motel] [ssm-spec] {
   background: var(--ssm-spec-background);
   color: var(--ssm-text);
-  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(56.763, 35.7, 14.637, 0.15);
+  border: 1px solid rgba(168, 136, 104, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(59, 36, 24, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-sunset-motel] [pagination],
 [theme=retro-sunset-motel] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-sunset-motel] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #2a100d;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--ssm-stage-background);
   --retro-stage-outline: var(--ssm-stage-outline);
   --retro-stage-shadow: var(--ssm-stage-shadow);
-  --retro-theme-page: rgb(248.625, 244.8, 240.975);
-  --retro-theme-highlight: rgb(195.44475, 209.685225, 245.70525);
+  --retro-theme-page: #fff8f1;
+  --retro-theme-highlight: #c4a484;
   --juice-color-page: var(--ssm-page);
   --juice-color-surface: var(--ssm-surface-strong);
   --juice-color-text: var(--ssm-text);
   --juice-color-text-muted: var(--ssm-text-muted);
   --juice-color-heading: var(--ssm-heading);
   --juice-color-accent: var(--ssm-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #2a100d;
   --juice-color-border: var(--ssm-border);
   --juice-color-highlight: var(--ssm-highlight);
 }

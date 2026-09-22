@@ -36,7 +36,7 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 
 - [ ] Promises in [juice-beta.md](../juice/juice-beta.md) are true and gated by `yarn workspace @citrusworx/juiceui verify`
 - [ ] Core areas remain **Stable-ish** per [juice-maturity-matrix.md](../juice/juice-maturity-matrix.md): layout, spacing, color, typography, icons
-- [ ] Shipped themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`) install via documented entrypoints; `_draft` themes are never in public `exports` / tarball
+- [ ] Shipped themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`, `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, `retro-violet-parlor`) install via documented entrypoints; `_draft` themes are never in public `exports` / tarball
 - [ ] Navigation, accordion, and tabs auto-enhance are documented and tested; `sideEffects` includes the JS entry so bundlers do not drop auto-start
 - [ ] Artifact budgets and runtime/e2e tests pass ([release-checklist.md](../juice/release-checklist.md))
 - [ ] Forms, cards, and responsive behavior are labeled **Emerging** with known limits (no fake “complete design system” claim)

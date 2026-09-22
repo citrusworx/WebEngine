@@ -1,36 +1,20 @@
-@use 'sass:color';
-@use '../pink/pink.scss' as *;
-@use '../blue/blue.scss' as *;
-@use '../yellow/swatch/dandelion/dandelion.scss' as *;
-@use '../black/black.scss' as *;
-@use '../white/white.scss' as *;
-@use '../gray/swatch/slate/slate.scss' as *;
+// Juice color tokens for retro-arcade-glow (restored after incomplete Codex import).
+// Theme-specific identity values — not a full 100–900 swatch family.
 
-/*
-    Arcade Glow sources: violet, magenta (bubblegum), hot pink, bright yellow (dandelion).
-    Derived roles feed the retro-arcade-glow theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-
-$acg-source-1: color.mix($royalblue-700, $bubblegum-700, 45%);
-$acg-source-2: $bubblegum-500;
-$acg-source-3: $pink-500;
-$acg-source-4: $dandelion-400;
-
-$acg-page: color.mix($dandelion-100, $white-100, 35%);
-$acg-page-tint: color.mix($bubblegum-200, $white-100, 28%);
-$acg-deep: color.mix($bubblegum-900, $black-900, 70%);
-$acg-text: color.mix($bubblegum-900, $black-800, 55%);
-$acg-text-muted: color.mix($bubblegum-700, $slate-700, 45%);
-$acg-border-color: $bubblegum-400;
-$acg-accent: $acg-source-2;
-$acg-accent-soft: color.mix($pink-300, $white-100, 50%);
-$acg-accent-strong: $bubblegum-800;
-$acg-accent-deep: $bubblegum-900;
-$acg-highlight: $dandelion-300;
-$acg-highlight-strong: $acg-source-4;
-$acg-secondary: $acg-source-3;
-$acg-secondary-soft: $pink-200;
-$acg-secondary-strong: $pink-700;
-$acg-on-accent: $white-100;
-
+$acg-page: #14081f;
+$acg-page-tint: #1f0f30;
+$acg-deep: #0a0414;
+$acg-text: #f3e9ff;
+$acg-text-muted: #b59ccc;
+$acg-heading: #ffe6ff;
+$acg-accent: #ff2bd6;
+$acg-accent-soft: #ff7ae6;
+$acg-accent-strong: #e01fbc;
+$acg-accent-deep: #a01488;
+$acg-secondary: #7b2cff;
+$acg-secondary-soft: #a66bff;
+$acg-secondary-strong: #5a12d6;
+$acg-highlight: #ffe600;
+$acg-highlight-strong: #f0c400;
+$acg-border-color: #9b7ec9;
+$acg-on-accent: #1a0518;

@@ -1,35 +1,20 @@
-@use 'sass:color';
-@use '../red/red.scss' as *;
-@use '../yellow/swatch/dandelion/dandelion.scss' as *;
-@use '../green/green.scss' as *;
-@use '../blue/blue.scss' as *;
-@use '../white/white.scss' as *;
+// Juice color tokens for retro-boardwalk (restored after incomplete Codex import).
+// Theme-specific identity values — not a full 100–900 swatch family.
 
-/*
-    Boardwalk sources: coral (candy apple), sunshine yellow (dandelion), mint (kiwi), ocean blue (morning blue).
-    Derived roles feed the retro-boardwalk theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-
-$bdw-source-1: $candyapple-500;
-$bdw-source-2: $dandelion-400;
-$bdw-source-3: $kiwi-400;
-$bdw-source-4: $morningblue-600;
-
-$bdw-page: color.mix($morningblue-100, $white-100, 40%);
-$bdw-page-tint: color.mix($kiwi-200, $white-100, 35%);
-$bdw-deep: $morningblue-900;
-$bdw-text: $morningblue-800;
-$bdw-text-muted: $bdw-source-4;
-$bdw-border-color: $morningblue-300;
-$bdw-accent: $candyapple-600;
-$bdw-accent-soft: color.mix($candyapple-300, $white-100, 60%);
-$bdw-accent-strong: $candyapple-800;
-$bdw-accent-deep: $candyapple-900;
-$bdw-highlight: $dandelion-300;
-$bdw-highlight-strong: $bdw-source-2;
-$bdw-secondary: $kiwi-500;
-$bdw-secondary-soft: $kiwi-200;
-$bdw-secondary-strong: $kiwi-700;
-$bdw-on-accent: $white-100;
-
+$bdw-page: #fff8f0;
+$bdw-page-tint: #fff1e4;
+$bdw-deep: #1c3d5a;
+$bdw-text: #1e2a36;
+$bdw-text-muted: #5c6b7a;
+$bdw-heading: #14324a;
+$bdw-accent: #ff6f61;
+$bdw-accent-soft: #ff9a90;
+$bdw-accent-strong: #e85a4c;
+$bdw-accent-deep: #c4453a;
+$bdw-secondary: #2bbbad;
+$bdw-secondary-soft: #6ed4ca;
+$bdw-secondary-strong: #1f9a8e;
+$bdw-highlight: #ffd166;
+$bdw-highlight-strong: #f0b429;
+$bdw-border-color: #8aa0b2;
+$bdw-on-accent: #2a0f0c;

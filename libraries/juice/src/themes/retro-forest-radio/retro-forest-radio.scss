@@ -75,12 +75,24 @@
     --frr-chevron: var(--frr-accent);
     --frr-panel-rule: var(--frr-border);
     --frr-focus-ring: var(--frr-accent);
+    --frr-item-border: var(--frr-border);
+    --frr-item-border-open: var(--frr-border);
+    --frr-trigger-accent: var(--frr-accent);
+    --frr-panel-well: var(--frr-surface-muted);
+    --frr-open-glow: 0 14px 32px -26px var(--frr-shadow);
     --juice-accordion-trigger: var(--frr-trigger);
     --juice-accordion-trigger-hover: var(--frr-trigger-hover);
     --juice-accordion-trigger-open: var(--frr-trigger-open);
     --juice-accordion-chevron: var(--frr-chevron);
     --juice-accordion-panel-rule: var(--frr-panel-rule);
     --juice-accordion-focus-ring: var(--frr-focus-ring);
+    --juice-accordion-item-border: var(--frr-item-border);
+    --juice-accordion-item-border-open: var(--frr-item-border-open);
+    --juice-accordion-trigger-accent: var(--frr-trigger-accent);
+    --juice-accordion-panel: var(--frr-panel-well);
+    --juice-accordion-open-glow: var(--frr-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
     /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
     --frr-tabs-trigger: transparent;
@@ -92,6 +104,7 @@
     --frr-tabs-indicator: var(--frr-accent);
     --frr-tabs-list-rule: var(--frr-border);
     --frr-tabs-focus-ring: var(--frr-accent);
+    --frr-tabs-panel: var(--frr-panel-well);
     --juice-tabs-trigger: var(--frr-tabs-trigger);
     --juice-tabs-trigger-hover: var(--frr-tabs-trigger-hover);
     --juice-tabs-trigger-active: var(--frr-tabs-trigger-active);
@@ -101,6 +114,7 @@
     --juice-tabs-indicator: var(--frr-tabs-indicator);
     --juice-tabs-list-rule: var(--frr-tabs-list-rule);
     --juice-tabs-focus-ring: var(--frr-tabs-focus-ring);
+    --juice-tabs-panel: var(--frr-tabs-panel);
 
     /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
     --juice-surface-soft-bg: var(--frr-surface);
@@ -455,16 +469,15 @@
     --juice-progress-ink: var(--frr-progress-ink);
     --juice-progress-focus-ring: var(--frr-progress-focus-ring);
 
-    /* Pagination chrome — APG page set from existing tokens. Page controls
-       are surfaces, not a CTA. The trail stays transparent. Current fill
-       is accent; ink on that fill is page. Distinct from breadcrumb,
-       nav[type="pagination"], tabs, and wizard steps. */
-    --frr-pagination-surface: var(--frr-surface);
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --frr-pagination-surface: var(--frr-surface-strong);
     --frr-pagination-surface-hover: var(--frr-surface-muted);
     --frr-pagination-surface-current: var(--frr-accent);
     --frr-pagination-ink: var(--frr-text);
     --frr-pagination-ink-hover: var(--frr-accent);
-    --frr-pagination-ink-current: var(--frr-page);
+    --frr-pagination-ink-current: var(--frr-heading);
     --frr-pagination-ink-disabled: var(--frr-text-muted);
     --frr-pagination-border: var(--frr-border);
     --frr-pagination-focus-ring: var(--frr-accent);
@@ -1422,11 +1435,8 @@
     outline-offset: 2px;
 }
 
-
-
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme="retro-forest-radio"] [pagination],
 [theme="retro-forest-radio"] nav[pagination] {
     background-image: none;
@@ -1491,6 +1501,7 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme="retro-forest-radio"] :where(button) {

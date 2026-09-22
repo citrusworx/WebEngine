@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Arcade Glow sources: violet, magenta (bubblegum), hot pink, bright yellow (dandelion).
-    Derived roles feed the retro-arcade-glow theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Arcade Glow is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-arcade-glow] {
   /* Foundation */
-  --acg-page: rgb(255, 252.025, 219.3);
-  --acg-page-tint: rgb(255, 226.44, 250.24);
-  --acg-page-deep: rgb(79.05, 7.65, 67.15);
-  --acg-surface: rgba(255, 252.025, 219.3, 0.78);
-  --acg-surface-strong: rgba(255, 252.025, 219.3, 0.92);
-  --acg-surface-muted: rgba(255, 226.44, 250.24, 0.78);
-  --acg-surface-deep: rgb(73.3125, 17.2125, 63.9625);
-  --acg-border: rgba(255, 51, 221, 0.26);
-  --acg-border-strong: rgba(255, 0, 212.5, 0.38);
-  --acg-shadow: rgba(79.05, 7.65, 67.15, 0.12);
+  --acg-page: #14081f;
+  --acg-page-tint: #1f0f30;
+  --acg-page-deep: #0a0414;
+  --acg-surface: rgba(20, 8, 31, 0.78);
+  --acg-surface-strong: rgba(20, 8, 31, 0.92);
+  --acg-surface-muted: rgba(31, 15, 48, 0.78);
+  --acg-surface-deep: #f3e9ff;
+  --acg-border: rgba(155, 126, 201, 0.26);
+  --acg-border-strong: rgba(255, 43, 214, 0.38);
+  --acg-shadow: rgba(10, 4, 20, 0.12);
   /* Typography */
-  --acg-text: rgb(73.3125, 17.2125, 63.9625);
-  --acg-text-muted: rgb(109.8591, 46.57235, 111.7359);
-  --acg-heading: rgb(79.05, 7.65, 67.15);
+  --acg-text: #f3e9ff;
+  --acg-text-muted: #b59ccc;
+  --acg-heading: #0a0414;
   --acg-body-font: "Lato", sans-serif;
   --acg-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --acg-accent: hsl(310, 100%, 50%);
-  --acg-accent-soft: rgb(255, 216.75, 255);
-  --acg-accent-strong: hsl(310, 100%, 25%);
-  --acg-highlight: hsl(55, 100%, 60%);
+  --acg-accent: #ff2bd6;
+  --acg-accent-soft: #ff7ae6;
+  --acg-accent-strong: #e01fbc;
+  --acg-highlight: #ffe600;
   /* Surface recipes */
   --acg-page-background:
-      radial-gradient(circle at top left, rgba(255, 238, 51, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(255, 204, 255, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(255, 252.025, 219.3) 0%, rgb(255, 226.44, 250.24) 100%);
-  --acg-button-background: linear-gradient(135deg, hsl(310, 100%, 50%), hsl(300, 100%, 65%));
+      radial-gradient(circle at top left, rgba(255, 230, 0, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(166, 107, 255, 0.45), transparent 30%),
+      linear-gradient(180deg, #14081f 0%, #1f0f30 100%);
+  --acg-button-background: linear-gradient(135deg, #ff2bd6, #5a12d6);
   --acg-card-background:
-      linear-gradient(180deg, rgba(255, 252.025, 219.3, 0.96) 0%, rgba(255, 226.44, 250.24, 0.88) 100%);
+      linear-gradient(180deg, rgba(20, 8, 31, 0.96) 0%, rgba(31, 15, 48, 0.88) 100%);
   --acg-panel-background:
-      linear-gradient(180deg, rgba(255, 252.025, 219.3, 0.98) 0%, rgba(255, 226.44, 250.24, 0.72) 100%);
+      linear-gradient(180deg, rgba(20, 8, 31, 0.98) 0%, rgba(31, 15, 48, 0.72) 100%);
   --acg-hero-background:
-      radial-gradient(circle at top left, rgba(255, 235.875, 25.5, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(255, 127.5, 255, 0.28), transparent 32%),
-      linear-gradient(135deg, rgb(79.05, 7.65, 67.15) 0%, hsl(310, 100%, 20%) 54%, hsl(310, 100%, 25%) 100%);
+      radial-gradient(circle at top left, rgba(240, 196, 0, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(123, 44, 255, 0.28), transparent 32%),
+      linear-gradient(135deg, #0a0414 0%, #a01488 54%, #e01fbc 100%);
   --acg-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(255, 238, 51, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 216.75, 255, 0.2), transparent 24%),
-      linear-gradient(145deg, rgb(79.05, 7.65, 67.15) 0%, rgb(73.3125, 17.2125, 63.9625) 52%, hsl(310, 100%, 25%) 100%);
-  --acg-stage-outline: rgba(255, 252.025, 219.3, 0.14);
-  --acg-stage-shadow: rgba(79.05, 7.65, 67.15, 0.34);
-  --acg-chip-background: rgba(255, 252.025, 219.3, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(255, 230, 0, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(255, 122, 230, 0.2), transparent 24%),
+      linear-gradient(145deg, #0a0414 0%, #f3e9ff 52%, #e01fbc 100%);
+  --acg-stage-outline: rgba(20, 8, 31, 0.14);
+  --acg-stage-shadow: rgba(10, 4, 20, 0.34);
+  --acg-chip-background: rgba(20, 8, 31, 0.96);
   --acg-buybox-background:
-      linear-gradient(180deg, rgba(255, 252.025, 219.3, 0.98) 0%, rgba(255, 226.44, 250.24, 0.82) 100%);
-  --acg-buybox-shadow: 0 32px 70px -42px rgba(79.05, 7.65, 67.15, 0.24);
+      linear-gradient(180deg, rgba(20, 8, 31, 0.98) 0%, rgba(31, 15, 48, 0.82) 100%);
+  --acg-buybox-shadow: 0 32px 70px -42px rgba(10, 4, 20, 0.24);
   --acg-spec-background:
-      linear-gradient(180deg, rgba(255, 226.44, 250.24, 0.95) 0%, rgba(255, 252.025, 219.3, 0.98) 100%);
+      linear-gradient(180deg, rgba(31, 15, 48, 0.95) 0%, rgba(20, 8, 31, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Arcade Glow tokens; no new hue family. */
   --acg-trigger: var(--acg-surface-strong);
@@ -74,12 +69,24 @@
   --acg-chevron: var(--acg-accent);
   --acg-panel-rule: var(--acg-border);
   --acg-focus-ring: var(--acg-accent);
+  --acg-item-border: var(--acg-border);
+  --acg-item-border-open: var(--acg-border);
+  --acg-trigger-accent: var(--acg-accent);
+  --acg-panel-well: var(--acg-surface-muted);
+  --acg-open-glow: 0 14px 32px -26px var(--acg-shadow);
   --juice-accordion-trigger: var(--acg-trigger);
   --juice-accordion-trigger-hover: var(--acg-trigger-hover);
   --juice-accordion-trigger-open: var(--acg-trigger-open);
   --juice-accordion-chevron: var(--acg-chevron);
   --juice-accordion-panel-rule: var(--acg-panel-rule);
   --juice-accordion-focus-ring: var(--acg-focus-ring);
+  --juice-accordion-item-border: var(--acg-item-border);
+  --juice-accordion-item-border-open: var(--acg-item-border-open);
+  --juice-accordion-trigger-accent: var(--acg-trigger-accent);
+  --juice-accordion-panel: var(--acg-panel-well);
+  --juice-accordion-open-glow: var(--acg-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --acg-tabs-trigger: transparent;
   --acg-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --acg-tabs-indicator: var(--acg-accent);
   --acg-tabs-list-rule: var(--acg-border);
   --acg-tabs-focus-ring: var(--acg-accent);
+  --acg-tabs-panel: var(--acg-panel-well);
   --juice-tabs-trigger: var(--acg-tabs-trigger);
   --juice-tabs-trigger-hover: var(--acg-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--acg-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--acg-tabs-indicator);
   --juice-tabs-list-rule: var(--acg-tabs-list-rule);
   --juice-tabs-focus-ring: var(--acg-tabs-focus-ring);
+  --juice-tabs-panel: var(--acg-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--acg-surface);
   --juice-surface-soft-border: var(--acg-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--acg-progress-fill);
   --juice-progress-ink: var(--acg-progress-ink);
   --juice-progress-focus-ring: var(--acg-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --acg-pagination-surface: var(--acg-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --acg-pagination-surface: var(--acg-surface-strong);
   --acg-pagination-surface-hover: var(--acg-surface-muted);
   --acg-pagination-surface-current: var(--acg-accent);
   --acg-pagination-ink: var(--acg-text);
   --acg-pagination-ink-hover: var(--acg-accent);
-  --acg-pagination-ink-current: var(--acg-page);
+  --acg-pagination-ink-current: var(--acg-heading);
   --acg-pagination-ink-disabled: var(--acg-text-muted);
   --acg-pagination-border: var(--acg-border);
   --acg-pagination-focus-ring: var(--acg-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-arcade-glow] :where(a) {
   color: var(--acg-accent-strong);
-  text-decoration-color: rgba(127.5, 0, 106.25, 0.35);
+  text-decoration-color: rgba(224, 31, 188, 0.35);
 }
 
 [theme=retro-arcade-glow] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-arcade-glow] :where(button) {
   background-image: var(--acg-button-background);
-  color: rgb(255, 252.025, 219.3);
+  color: #14081f;
   border-color: transparent;
 }
 
 [theme=retro-arcade-glow] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(79.05, 7.65, 67.15, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(10, 4, 20, 0.24);
 }
 
 [theme=retro-arcade-glow] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-arcade-glow] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(255, 51, 221, 0.28);
+  outline: 2px solid rgba(155, 126, 201, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-arcade-glow] :where(code, pre) {
-  background-color: rgba(255, 226.44, 250.24, 0.9);
+  background-color: rgba(31, 15, 48, 0.9);
   color: var(--acg-heading);
   border: 1px solid var(--acg-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-arcade-glow][acg-hero],
 [theme=retro-arcade-glow] [acg-hero] {
   background: var(--acg-hero-background);
-  color: rgb(255, 252.025, 219.3);
-  border: 1px solid rgba(255, 252.025, 219.3, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(79.05, 7.65, 67.15, 0.45);
+  color: #14081f;
+  border: 1px solid rgba(20, 8, 31, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(10, 4, 20, 0.45);
 }
 
 [theme=retro-arcade-glow][acg-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow] [acg-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(255, 252.025, 219.3);
+  color: #14081f;
 }
 
 [theme=retro-arcade-glow][acg-hero] :where(p, span, li, small, a),
 [theme=retro-arcade-glow] [acg-hero] :where(p, span, li, small, a) {
-  color: rgba(255, 252.025, 219.3, 0.86);
+  color: rgba(20, 8, 31, 0.86);
 }
 
 [theme=retro-arcade-glow][acg-hero] :where(button),
 [theme=retro-arcade-glow] [acg-hero] :where(button) {
-  background: rgb(255, 252.025, 219.3);
+  background: #14081f;
   color: var(--acg-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-arcade-glow][acg-stage],
 [theme=retro-arcade-glow] [acg-stage] {
   background: var(--acg-stage-background);
-  color: rgb(255, 252.025, 219.3);
+  color: #14081f;
   border: 1px solid var(--acg-stage-outline);
   box-shadow: 0 44px 100px -54px var(--acg-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(255, 252.025, 219.3, 0.08);
+  border: 1px solid rgba(20, 8, 31, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-arcade-glow][acg-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-arcade-glow] [acg-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(255, 252.025, 219.3);
+  color: #14081f;
 }
 
 [theme=retro-arcade-glow][acg-stage] :where(p, span, li, small, a),
 [theme=retro-arcade-glow] [acg-stage] :where(p, span, li, small, a) {
-  color: rgba(255, 252.025, 219.3, 0.86);
+  color: rgba(20, 8, 31, 0.86);
 }
 
 [theme=retro-arcade-glow][acg-chip],
 [theme=retro-arcade-glow] [acg-chip] {
   background: var(--acg-chip-background);
   color: var(--acg-heading);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(79.05, 7.65, 67.15, 0.18);
+  border: 1px solid rgba(240, 196, 0, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(10, 4, 20, 0.18);
 }
 
 [theme=retro-arcade-glow][acg-buybox],
 [theme=retro-arcade-glow] [acg-buybox] {
   background: var(--acg-buybox-background);
   color: var(--acg-text);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.3);
+  border: 1px solid rgba(240, 196, 0, 0.3);
   box-shadow: var(--acg-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-arcade-glow] [acg-spec] {
   background: var(--acg-spec-background);
   color: var(--acg-text);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(79.05, 7.65, 67.15, 0.15);
+  border: 1px solid rgba(240, 196, 0, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(10, 4, 20, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-arcade-glow] [pagination],
 [theme=retro-arcade-glow] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-arcade-glow] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #1a0518;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--acg-stage-background);
   --retro-stage-outline: var(--acg-stage-outline);
   --retro-stage-shadow: var(--acg-stage-shadow);
-  --retro-theme-page: rgb(255, 252.025, 219.3);
-  --retro-theme-highlight: hsl(55, 100%, 60%);
+  --retro-theme-page: #14081f;
+  --retro-theme-highlight: #ffe600;
   --juice-color-page: var(--acg-page);
   --juice-color-surface: var(--acg-surface-strong);
   --juice-color-text: var(--acg-text);
   --juice-color-text-muted: var(--acg-text-muted);
   --juice-color-heading: var(--acg-heading);
   --juice-color-accent: var(--acg-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #1a0518;
   --juice-color-border: var(--acg-border);
   --juice-color-highlight: var(--acg-highlight);
 }

@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Poolside Pop sources: tomato red (scarlett), orange, cream, bright cyan (morning blue).
-    Derived roles feed the retro-poolside-pop theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Poolside Pop is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-poolside-pop] {
   /* Foundation */
-  --psp-page: rgb(255, 250.41, 245.82);
-  --psp-page-tint: rgb(255, 249.9, 247.35);
-  --psp-page-deep: hsl(5, 100%, 15%);
-  --psp-surface: rgba(255, 250.41, 245.82, 0.78);
-  --psp-surface-strong: rgba(255, 250.41, 245.82, 0.92);
-  --psp-surface-muted: rgba(255, 249.9, 247.35, 0.78);
-  --psp-surface-deep: hsl(5, 100%, 25%);
-  --psp-border: rgba(255, 170, 127.5, 0.26);
-  --psp-border-strong: rgba(229.5, 19.125, 0, 0.38);
-  --psp-shadow: rgba(76.5, 6.375, 0, 0.12);
+  --psp-page: #fff6ea;
+  --psp-page-tint: #ffecd6;
+  --psp-page-deep: #0b3a4a;
+  --psp-surface: rgba(255, 246, 234, 0.78);
+  --psp-surface-strong: rgba(255, 246, 234, 0.92);
+  --psp-surface-muted: rgba(255, 236, 214, 0.78);
+  --psp-surface-deep: #2a1a12;
+  --psp-border: rgba(196, 168, 144, 0.26);
+  --psp-border-strong: rgba(230, 57, 43, 0.38);
+  --psp-shadow: rgba(11, 58, 74, 0.12);
   /* Typography */
-  --psp-text: hsl(5, 100%, 25%);
-  --psp-text-muted: rgb(135.4458, 74.2186, 76.7142);
-  --psp-heading: hsl(5, 100%, 15%);
+  --psp-text: #2a1a12;
+  --psp-text-muted: #7a5c4c;
+  --psp-heading: #0b3a4a;
   --psp-body-font: "Lato", sans-serif;
   --psp-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --psp-accent: hsl(5, 100%, 45%);
-  --psp-accent-soft: hsl(5, 100%, 75%);
-  --psp-accent-strong: hsl(5, 100%, 25%);
-  --psp-highlight: hsl(191, 77%, 70%);
+  --psp-accent: #e6392b;
+  --psp-accent-soft: #f0786c;
+  --psp-accent-strong: #c92f22;
+  --psp-highlight: #00c2d4;
   /* Surface recipes */
   --psp-page-background:
-      radial-gradient(circle at top left, rgba(119.595, 215.8065, 237.405, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(255, 221, 204, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(255, 250.41, 245.82) 0%, rgb(255, 249.9, 247.35) 100%);
-  --psp-button-background: linear-gradient(135deg, hsl(5, 100%, 45%), hsl(20, 100%, 40%));
+      radial-gradient(circle at top left, rgba(0, 194, 212, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(255, 179, 92, 0.45), transparent 30%),
+      linear-gradient(180deg, #fff6ea 0%, #ffecd6 100%);
+  --psp-button-background: linear-gradient(135deg, #e6392b, #d97400);
   --psp-card-background:
-      linear-gradient(180deg, rgba(255, 250.41, 245.82, 0.96) 0%, rgba(255, 249.9, 247.35, 0.88) 100%);
+      linear-gradient(180deg, rgba(255, 246, 234, 0.96) 0%, rgba(255, 236, 214, 0.88) 100%);
   --psp-panel-background:
-      linear-gradient(180deg, rgba(255, 250.41, 245.82, 0.98) 0%, rgba(255, 249.9, 247.35, 0.72) 100%);
+      linear-gradient(180deg, rgba(255, 246, 234, 0.98) 0%, rgba(255, 236, 214, 0.72) 100%);
   --psp-hero-background:
-      radial-gradient(circle at top left, rgba(74.46, 202.742, 231.54, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(255, 119, 51, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(5, 100%, 15%) 0%, hsl(5, 100%, 15%) 54%, hsl(5, 100%, 25%) 100%);
+      radial-gradient(circle at top left, rgba(0, 154, 171, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(255, 140, 26, 0.28), transparent 32%),
+      linear-gradient(135deg, #0b3a4a 0%, #8f2118 54%, #c92f22 100%);
   --psp-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(119.595, 215.8065, 237.405, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 138.125, 127.5, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(5, 100%, 15%) 0%, hsl(5, 100%, 25%) 52%, hsl(5, 100%, 25%) 100%);
-  --psp-stage-outline: rgba(255, 250.41, 245.82, 0.14);
-  --psp-stage-shadow: rgba(76.5, 6.375, 0, 0.34);
-  --psp-chip-background: rgba(255, 250.41, 245.82, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(0, 194, 212, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(240, 120, 108, 0.2), transparent 24%),
+      linear-gradient(145deg, #0b3a4a 0%, #2a1a12 52%, #c92f22 100%);
+  --psp-stage-outline: rgba(255, 246, 234, 0.14);
+  --psp-stage-shadow: rgba(11, 58, 74, 0.34);
+  --psp-chip-background: rgba(255, 246, 234, 0.96);
   --psp-buybox-background:
-      linear-gradient(180deg, rgba(255, 250.41, 245.82, 0.98) 0%, rgba(255, 249.9, 247.35, 0.82) 100%);
-  --psp-buybox-shadow: 0 32px 70px -42px rgba(76.5, 6.375, 0, 0.24);
+      linear-gradient(180deg, rgba(255, 246, 234, 0.98) 0%, rgba(255, 236, 214, 0.82) 100%);
+  --psp-buybox-shadow: 0 32px 70px -42px rgba(11, 58, 74, 0.24);
   --psp-spec-background:
-      linear-gradient(180deg, rgba(255, 249.9, 247.35, 0.95) 0%, rgba(255, 250.41, 245.82, 0.98) 100%);
+      linear-gradient(180deg, rgba(255, 236, 214, 0.95) 0%, rgba(255, 246, 234, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Poolside Pop tokens; no new hue family. */
   --psp-trigger: var(--psp-surface-strong);
@@ -74,12 +69,24 @@
   --psp-chevron: var(--psp-accent);
   --psp-panel-rule: var(--psp-border);
   --psp-focus-ring: var(--psp-accent);
+  --psp-item-border: var(--psp-border);
+  --psp-item-border-open: var(--psp-border);
+  --psp-trigger-accent: var(--psp-accent);
+  --psp-panel-well: var(--psp-surface-muted);
+  --psp-open-glow: 0 14px 32px -26px var(--psp-shadow);
   --juice-accordion-trigger: var(--psp-trigger);
   --juice-accordion-trigger-hover: var(--psp-trigger-hover);
   --juice-accordion-trigger-open: var(--psp-trigger-open);
   --juice-accordion-chevron: var(--psp-chevron);
   --juice-accordion-panel-rule: var(--psp-panel-rule);
   --juice-accordion-focus-ring: var(--psp-focus-ring);
+  --juice-accordion-item-border: var(--psp-item-border);
+  --juice-accordion-item-border-open: var(--psp-item-border-open);
+  --juice-accordion-trigger-accent: var(--psp-trigger-accent);
+  --juice-accordion-panel: var(--psp-panel-well);
+  --juice-accordion-open-glow: var(--psp-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --psp-tabs-trigger: transparent;
   --psp-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --psp-tabs-indicator: var(--psp-accent);
   --psp-tabs-list-rule: var(--psp-border);
   --psp-tabs-focus-ring: var(--psp-accent);
+  --psp-tabs-panel: var(--psp-panel-well);
   --juice-tabs-trigger: var(--psp-tabs-trigger);
   --juice-tabs-trigger-hover: var(--psp-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--psp-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--psp-tabs-indicator);
   --juice-tabs-list-rule: var(--psp-tabs-list-rule);
   --juice-tabs-focus-ring: var(--psp-tabs-focus-ring);
+  --juice-tabs-panel: var(--psp-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--psp-surface);
   --juice-surface-soft-border: var(--psp-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--psp-progress-fill);
   --juice-progress-ink: var(--psp-progress-ink);
   --juice-progress-focus-ring: var(--psp-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --psp-pagination-surface: var(--psp-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --psp-pagination-surface: var(--psp-surface-strong);
   --psp-pagination-surface-hover: var(--psp-surface-muted);
   --psp-pagination-surface-current: var(--psp-accent);
   --psp-pagination-ink: var(--psp-text);
   --psp-pagination-ink-hover: var(--psp-accent);
-  --psp-pagination-ink-current: var(--psp-page);
+  --psp-pagination-ink-current: var(--psp-heading);
   --psp-pagination-ink-disabled: var(--psp-text-muted);
   --psp-pagination-border: var(--psp-border);
   --psp-pagination-focus-ring: var(--psp-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-poolside-pop] :where(a) {
   color: var(--psp-accent-strong);
-  text-decoration-color: rgba(127.5, 10.625, 0, 0.35);
+  text-decoration-color: rgba(201, 47, 34, 0.35);
 }
 
 [theme=retro-poolside-pop] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-poolside-pop] :where(button) {
   background-image: var(--psp-button-background);
-  color: rgb(255, 250.41, 245.82);
+  color: #fff6ea;
   border-color: transparent;
 }
 
 [theme=retro-poolside-pop] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(76.5, 6.375, 0, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(11, 58, 74, 0.24);
 }
 
 [theme=retro-poolside-pop] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-poolside-pop] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(255, 170, 127.5, 0.28);
+  outline: 2px solid rgba(196, 168, 144, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-poolside-pop] :where(code, pre) {
-  background-color: rgba(255, 249.9, 247.35, 0.9);
+  background-color: rgba(255, 236, 214, 0.9);
   color: var(--psp-heading);
   border: 1px solid var(--psp-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-poolside-pop][psp-hero],
 [theme=retro-poolside-pop] [psp-hero] {
   background: var(--psp-hero-background);
-  color: rgb(255, 250.41, 245.82);
-  border: 1px solid rgba(255, 250.41, 245.82, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(76.5, 6.375, 0, 0.45);
+  color: #fff6ea;
+  border: 1px solid rgba(255, 246, 234, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(11, 58, 74, 0.45);
 }
 
 [theme=retro-poolside-pop][psp-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-poolside-pop] [psp-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(255, 250.41, 245.82);
+  color: #fff6ea;
 }
 
 [theme=retro-poolside-pop][psp-hero] :where(p, span, li, small, a),
 [theme=retro-poolside-pop] [psp-hero] :where(p, span, li, small, a) {
-  color: rgba(255, 250.41, 245.82, 0.86);
+  color: rgba(255, 246, 234, 0.86);
 }
 
 [theme=retro-poolside-pop][psp-hero] :where(button),
 [theme=retro-poolside-pop] [psp-hero] :where(button) {
-  background: rgb(255, 250.41, 245.82);
+  background: #fff6ea;
   color: var(--psp-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-poolside-pop][psp-stage],
 [theme=retro-poolside-pop] [psp-stage] {
   background: var(--psp-stage-background);
-  color: rgb(255, 250.41, 245.82);
+  color: #fff6ea;
   border: 1px solid var(--psp-stage-outline);
   box-shadow: 0 44px 100px -54px var(--psp-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(255, 250.41, 245.82, 0.08);
+  border: 1px solid rgba(255, 246, 234, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-poolside-pop][psp-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-poolside-pop] [psp-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(255, 250.41, 245.82);
+  color: #fff6ea;
 }
 
 [theme=retro-poolside-pop][psp-stage] :where(p, span, li, small, a),
 [theme=retro-poolside-pop] [psp-stage] :where(p, span, li, small, a) {
-  color: rgba(255, 250.41, 245.82, 0.86);
+  color: rgba(255, 246, 234, 0.86);
 }
 
 [theme=retro-poolside-pop][psp-chip],
 [theme=retro-poolside-pop] [psp-chip] {
   background: var(--psp-chip-background);
   color: var(--psp-heading);
-  border: 1px solid rgba(74.46, 202.742, 231.54, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(76.5, 6.375, 0, 0.18);
+  border: 1px solid rgba(0, 154, 171, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(11, 58, 74, 0.18);
 }
 
 [theme=retro-poolside-pop][psp-buybox],
 [theme=retro-poolside-pop] [psp-buybox] {
   background: var(--psp-buybox-background);
   color: var(--psp-text);
-  border: 1px solid rgba(74.46, 202.742, 231.54, 0.3);
+  border: 1px solid rgba(0, 154, 171, 0.3);
   box-shadow: var(--psp-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-poolside-pop] [psp-spec] {
   background: var(--psp-spec-background);
   color: var(--psp-text);
-  border: 1px solid rgba(74.46, 202.742, 231.54, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(76.5, 6.375, 0, 0.15);
+  border: 1px solid rgba(0, 154, 171, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(11, 58, 74, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-poolside-pop] [pagination],
 [theme=retro-poolside-pop] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-poolside-pop] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #2a0806;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--psp-stage-background);
   --retro-stage-outline: var(--psp-stage-outline);
   --retro-stage-shadow: var(--psp-stage-shadow);
-  --retro-theme-page: rgb(255, 250.41, 245.82);
-  --retro-theme-highlight: hsl(191, 77%, 70%);
+  --retro-theme-page: #fff6ea;
+  --retro-theme-highlight: #00c2d4;
   --juice-color-page: var(--psp-page);
   --juice-color-surface: var(--psp-surface-strong);
   --juice-color-text: var(--psp-text);
   --juice-color-text-muted: var(--psp-text-muted);
   --juice-color-heading: var(--psp-heading);
   --juice-color-accent: var(--psp-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #2a0806;
   --juice-color-border: var(--psp-border);
   --juice-color-highlight: var(--psp-highlight);
 }

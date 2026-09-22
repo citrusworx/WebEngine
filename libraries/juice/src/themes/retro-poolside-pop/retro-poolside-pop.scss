@@ -75,12 +75,24 @@
     --psp-chevron: var(--psp-accent);
     --psp-panel-rule: var(--psp-border);
     --psp-focus-ring: var(--psp-accent);
+    --psp-item-border: var(--psp-border);
+    --psp-item-border-open: var(--psp-border);
+    --psp-trigger-accent: var(--psp-accent);
+    --psp-panel-well: var(--psp-surface-muted);
+    --psp-open-glow: 0 14px 32px -26px var(--psp-shadow);
     --juice-accordion-trigger: var(--psp-trigger);
     --juice-accordion-trigger-hover: var(--psp-trigger-hover);
     --juice-accordion-trigger-open: var(--psp-trigger-open);
     --juice-accordion-chevron: var(--psp-chevron);
     --juice-accordion-panel-rule: var(--psp-panel-rule);
     --juice-accordion-focus-ring: var(--psp-focus-ring);
+    --juice-accordion-item-border: var(--psp-item-border);
+    --juice-accordion-item-border-open: var(--psp-item-border-open);
+    --juice-accordion-trigger-accent: var(--psp-trigger-accent);
+    --juice-accordion-panel: var(--psp-panel-well);
+    --juice-accordion-open-glow: var(--psp-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
     /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
     --psp-tabs-trigger: transparent;
@@ -92,6 +104,7 @@
     --psp-tabs-indicator: var(--psp-accent);
     --psp-tabs-list-rule: var(--psp-border);
     --psp-tabs-focus-ring: var(--psp-accent);
+    --psp-tabs-panel: var(--psp-panel-well);
     --juice-tabs-trigger: var(--psp-tabs-trigger);
     --juice-tabs-trigger-hover: var(--psp-tabs-trigger-hover);
     --juice-tabs-trigger-active: var(--psp-tabs-trigger-active);
@@ -101,6 +114,7 @@
     --juice-tabs-indicator: var(--psp-tabs-indicator);
     --juice-tabs-list-rule: var(--psp-tabs-list-rule);
     --juice-tabs-focus-ring: var(--psp-tabs-focus-ring);
+    --juice-tabs-panel: var(--psp-tabs-panel);
 
     /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
     --juice-surface-soft-bg: var(--psp-surface);
@@ -455,16 +469,15 @@
     --juice-progress-ink: var(--psp-progress-ink);
     --juice-progress-focus-ring: var(--psp-progress-focus-ring);
 
-    /* Pagination chrome — APG page set from existing tokens. Page controls
-       are surfaces, not a CTA. The trail stays transparent. Current fill
-       is accent; ink on that fill is page. Distinct from breadcrumb,
-       nav[type="pagination"], tabs, and wizard steps. */
-    --psp-pagination-surface: var(--psp-surface);
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --psp-pagination-surface: var(--psp-surface-strong);
     --psp-pagination-surface-hover: var(--psp-surface-muted);
     --psp-pagination-surface-current: var(--psp-accent);
     --psp-pagination-ink: var(--psp-text);
     --psp-pagination-ink-hover: var(--psp-accent);
-    --psp-pagination-ink-current: var(--psp-page);
+    --psp-pagination-ink-current: var(--psp-heading);
     --psp-pagination-ink-disabled: var(--psp-text-muted);
     --psp-pagination-border: var(--psp-border);
     --psp-pagination-focus-ring: var(--psp-accent);
@@ -1422,11 +1435,8 @@
     outline-offset: 2px;
 }
 
-
-
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme="retro-poolside-pop"] [pagination],
 [theme="retro-poolside-pop"] nav[pagination] {
     background-image: none;
@@ -1491,6 +1501,7 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme="retro-poolside-pop"] :where(button) {

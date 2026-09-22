@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Orchard Club sources: olive (lime), sage (kiwi), pale chartreuse (lime), brick red.
-    Derived roles feed the retro-orchard-club theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Orchard Club is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-orchard-club] {
   /* Foundation */
-  --orc-page: rgb(241.11525, 251.5575, 235.4925);
-  --orc-page-tint: rgb(236.64, 252.96, 244.528);
-  --orc-page-deep: hsl(99, 70%, 15%);
-  --orc-surface: rgba(241.11525, 251.5575, 235.4925, 0.78);
-  --orc-surface-strong: rgba(241.11525, 251.5575, 235.4925, 0.92);
-  --orc-surface-muted: rgba(236.64, 252.96, 244.528, 0.78);
-  --orc-surface-deep: hsl(99, 70%, 20%);
-  --orc-border: rgba(100.725, 216.75, 38.25, 0.26);
-  --orc-border-strong: rgba(178.5, 0, 0, 0.38);
-  --orc-shadow: rgba(30.2175, 65.025, 11.475, 0.12);
+  --orc-page: #f3f4eb;
+  --orc-page-tint: #e8ebd9;
+  --orc-page-deep: #2a2f1c;
+  --orc-surface: rgba(243, 244, 235, 0.78);
+  --orc-surface-strong: rgba(243, 244, 235, 0.92);
+  --orc-surface-muted: rgba(232, 235, 217, 0.78);
+  --orc-surface-deep: #1f2418;
+  --orc-border: rgba(143, 148, 124, 0.26);
+  --orc-border-strong: rgba(179, 58, 43, 0.38);
+  --orc-shadow: rgba(42, 47, 28, 0.12);
   /* Typography */
-  --orc-text: hsl(99, 70%, 20%);
-  --orc-text-muted: rgb(67.4985, 107.3635, 60.894);
-  --orc-heading: hsl(99, 70%, 15%);
+  --orc-text: #1f2418;
+  --orc-text-muted: #5f6554;
+  --orc-heading: #2a2f1c;
   --orc-body-font: "Lato", sans-serif;
   --orc-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --orc-accent: hsl(0, 100%, 35%);
-  --orc-accent-soft: hsl(0, 70%, 75%);
-  --orc-accent-strong: hsl(0, 70%, 25%);
-  --orc-highlight: hsl(99, 70%, 70%);
+  --orc-accent: #b33a2b;
+  --orc-accent-soft: #d66a5c;
+  --orc-accent-strong: #9a2f22;
+  --orc-highlight: #c5d46a;
   /* Surface recipes */
   --orc-page-background:
-      radial-gradient(circle at top left, rgba(162.435, 232.05, 124.95, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(209.1, 249.9, 228.82, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(241.11525, 251.5575, 235.4925) 0%, rgb(236.64, 252.96, 244.528) 100%);
-  --orc-button-background: linear-gradient(135deg, hsl(0, 100%, 35%), hsl(163, 94%, 24%));
+      radial-gradient(circle at top left, rgba(197, 212, 106, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(151, 165, 110, 0.45), transparent 30%),
+      linear-gradient(180deg, #f3f4eb 0%, #e8ebd9 100%);
+  --orc-button-background: linear-gradient(135deg, #b33a2b, #4f5c2c);
   --orc-card-background:
-      linear-gradient(180deg, rgba(241.11525, 251.5575, 235.4925, 0.96) 0%, rgba(236.64, 252.96, 244.528, 0.88) 100%);
+      linear-gradient(180deg, rgba(243, 244, 235, 0.96) 0%, rgba(232, 235, 217, 0.88) 100%);
   --orc-panel-background:
-      linear-gradient(180deg, rgba(241.11525, 251.5575, 235.4925, 0.98) 0%, rgba(236.64, 252.96, 244.528, 0.72) 100%);
+      linear-gradient(180deg, rgba(243, 244, 235, 0.98) 0%, rgba(232, 235, 217, 0.72) 100%);
   --orc-hero-background:
-      radial-gradient(circle at top left, rgba(131.58, 224.4, 81.6, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(15.912, 182.988, 127.296, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(99, 70%, 15%) 0%, hsl(0, 70%, 15%) 54%, hsl(0, 70%, 25%) 100%);
+      radial-gradient(circle at top left, rgba(168, 184, 74, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(107, 124, 61, 0.28), transparent 32%),
+      linear-gradient(135deg, #2a2f1c 0%, #6e2118 54%, #9a2f22 100%);
   --orc-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(162.435, 232.05, 124.95, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(235.875, 146.625, 146.625, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(99, 70%, 15%) 0%, hsl(99, 70%, 20%) 52%, hsl(0, 70%, 25%) 100%);
-  --orc-stage-outline: rgba(241.11525, 251.5575, 235.4925, 0.14);
-  --orc-stage-shadow: rgba(30.2175, 65.025, 11.475, 0.34);
-  --orc-chip-background: rgba(241.11525, 251.5575, 235.4925, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(197, 212, 106, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(214, 106, 92, 0.2), transparent 24%),
+      linear-gradient(145deg, #2a2f1c 0%, #1f2418 52%, #9a2f22 100%);
+  --orc-stage-outline: rgba(243, 244, 235, 0.14);
+  --orc-stage-shadow: rgba(42, 47, 28, 0.34);
+  --orc-chip-background: rgba(243, 244, 235, 0.96);
   --orc-buybox-background:
-      linear-gradient(180deg, rgba(241.11525, 251.5575, 235.4925, 0.98) 0%, rgba(236.64, 252.96, 244.528, 0.82) 100%);
-  --orc-buybox-shadow: 0 32px 70px -42px rgba(30.2175, 65.025, 11.475, 0.24);
+      linear-gradient(180deg, rgba(243, 244, 235, 0.98) 0%, rgba(232, 235, 217, 0.82) 100%);
+  --orc-buybox-shadow: 0 32px 70px -42px rgba(42, 47, 28, 0.24);
   --orc-spec-background:
-      linear-gradient(180deg, rgba(236.64, 252.96, 244.528, 0.95) 0%, rgba(241.11525, 251.5575, 235.4925, 0.98) 100%);
+      linear-gradient(180deg, rgba(232, 235, 217, 0.95) 0%, rgba(243, 244, 235, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Orchard Club tokens; no new hue family. */
   --orc-trigger: var(--orc-surface-strong);
@@ -74,12 +69,24 @@
   --orc-chevron: var(--orc-accent);
   --orc-panel-rule: var(--orc-border);
   --orc-focus-ring: var(--orc-accent);
+  --orc-item-border: var(--orc-border);
+  --orc-item-border-open: var(--orc-border);
+  --orc-trigger-accent: var(--orc-accent);
+  --orc-panel-well: var(--orc-surface-muted);
+  --orc-open-glow: 0 14px 32px -26px var(--orc-shadow);
   --juice-accordion-trigger: var(--orc-trigger);
   --juice-accordion-trigger-hover: var(--orc-trigger-hover);
   --juice-accordion-trigger-open: var(--orc-trigger-open);
   --juice-accordion-chevron: var(--orc-chevron);
   --juice-accordion-panel-rule: var(--orc-panel-rule);
   --juice-accordion-focus-ring: var(--orc-focus-ring);
+  --juice-accordion-item-border: var(--orc-item-border);
+  --juice-accordion-item-border-open: var(--orc-item-border-open);
+  --juice-accordion-trigger-accent: var(--orc-trigger-accent);
+  --juice-accordion-panel: var(--orc-panel-well);
+  --juice-accordion-open-glow: var(--orc-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --orc-tabs-trigger: transparent;
   --orc-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --orc-tabs-indicator: var(--orc-accent);
   --orc-tabs-list-rule: var(--orc-border);
   --orc-tabs-focus-ring: var(--orc-accent);
+  --orc-tabs-panel: var(--orc-panel-well);
   --juice-tabs-trigger: var(--orc-tabs-trigger);
   --juice-tabs-trigger-hover: var(--orc-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--orc-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--orc-tabs-indicator);
   --juice-tabs-list-rule: var(--orc-tabs-list-rule);
   --juice-tabs-focus-ring: var(--orc-tabs-focus-ring);
+  --juice-tabs-panel: var(--orc-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--orc-surface);
   --juice-surface-soft-border: var(--orc-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--orc-progress-fill);
   --juice-progress-ink: var(--orc-progress-ink);
   --juice-progress-focus-ring: var(--orc-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --orc-pagination-surface: var(--orc-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --orc-pagination-surface: var(--orc-surface-strong);
   --orc-pagination-surface-hover: var(--orc-surface-muted);
   --orc-pagination-surface-current: var(--orc-accent);
   --orc-pagination-ink: var(--orc-text);
   --orc-pagination-ink-hover: var(--orc-accent);
-  --orc-pagination-ink-current: var(--orc-page);
+  --orc-pagination-ink-current: var(--orc-heading);
   --orc-pagination-ink-disabled: var(--orc-text-muted);
   --orc-pagination-border: var(--orc-border);
   --orc-pagination-focus-ring: var(--orc-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-orchard-club] :where(a) {
   color: var(--orc-accent-strong);
-  text-decoration-color: rgba(108.375, 19.125, 19.125, 0.35);
+  text-decoration-color: rgba(154, 47, 34, 0.35);
 }
 
 [theme=retro-orchard-club] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-orchard-club] :where(button) {
   background-image: var(--orc-button-background);
-  color: rgb(241.11525, 251.5575, 235.4925);
+  color: #f3f4eb;
   border-color: transparent;
 }
 
 [theme=retro-orchard-club] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(30.2175, 65.025, 11.475, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(42, 47, 28, 0.24);
 }
 
 [theme=retro-orchard-club] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-orchard-club] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(100.725, 216.75, 38.25, 0.28);
+  outline: 2px solid rgba(143, 148, 124, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-orchard-club] :where(code, pre) {
-  background-color: rgba(236.64, 252.96, 244.528, 0.9);
+  background-color: rgba(232, 235, 217, 0.9);
   color: var(--orc-heading);
   border: 1px solid var(--orc-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-orchard-club][orc-hero],
 [theme=retro-orchard-club] [orc-hero] {
   background: var(--orc-hero-background);
-  color: rgb(241.11525, 251.5575, 235.4925);
-  border: 1px solid rgba(241.11525, 251.5575, 235.4925, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(30.2175, 65.025, 11.475, 0.45);
+  color: #f3f4eb;
+  border: 1px solid rgba(243, 244, 235, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(42, 47, 28, 0.45);
 }
 
 [theme=retro-orchard-club][orc-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-orchard-club] [orc-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(241.11525, 251.5575, 235.4925);
+  color: #f3f4eb;
 }
 
 [theme=retro-orchard-club][orc-hero] :where(p, span, li, small, a),
 [theme=retro-orchard-club] [orc-hero] :where(p, span, li, small, a) {
-  color: rgba(241.11525, 251.5575, 235.4925, 0.86);
+  color: rgba(243, 244, 235, 0.86);
 }
 
 [theme=retro-orchard-club][orc-hero] :where(button),
 [theme=retro-orchard-club] [orc-hero] :where(button) {
-  background: rgb(241.11525, 251.5575, 235.4925);
+  background: #f3f4eb;
   color: var(--orc-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-orchard-club][orc-stage],
 [theme=retro-orchard-club] [orc-stage] {
   background: var(--orc-stage-background);
-  color: rgb(241.11525, 251.5575, 235.4925);
+  color: #f3f4eb;
   border: 1px solid var(--orc-stage-outline);
   box-shadow: 0 44px 100px -54px var(--orc-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(241.11525, 251.5575, 235.4925, 0.08);
+  border: 1px solid rgba(243, 244, 235, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-orchard-club][orc-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-orchard-club] [orc-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(241.11525, 251.5575, 235.4925);
+  color: #f3f4eb;
 }
 
 [theme=retro-orchard-club][orc-stage] :where(p, span, li, small, a),
 [theme=retro-orchard-club] [orc-stage] :where(p, span, li, small, a) {
-  color: rgba(241.11525, 251.5575, 235.4925, 0.86);
+  color: rgba(243, 244, 235, 0.86);
 }
 
 [theme=retro-orchard-club][orc-chip],
 [theme=retro-orchard-club] [orc-chip] {
   background: var(--orc-chip-background);
   color: var(--orc-heading);
-  border: 1px solid rgba(131.58, 224.4, 81.6, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(30.2175, 65.025, 11.475, 0.18);
+  border: 1px solid rgba(168, 184, 74, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(42, 47, 28, 0.18);
 }
 
 [theme=retro-orchard-club][orc-buybox],
 [theme=retro-orchard-club] [orc-buybox] {
   background: var(--orc-buybox-background);
   color: var(--orc-text);
-  border: 1px solid rgba(131.58, 224.4, 81.6, 0.3);
+  border: 1px solid rgba(168, 184, 74, 0.3);
   box-shadow: var(--orc-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-orchard-club] [orc-spec] {
   background: var(--orc-spec-background);
   color: var(--orc-text);
-  border: 1px solid rgba(131.58, 224.4, 81.6, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(30.2175, 65.025, 11.475, 0.15);
+  border: 1px solid rgba(168, 184, 74, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(42, 47, 28, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-orchard-club] [pagination],
 [theme=retro-orchard-club] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-orchard-club] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #2a0e0a;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--orc-stage-background);
   --retro-stage-outline: var(--orc-stage-outline);
   --retro-stage-shadow: var(--orc-stage-shadow);
-  --retro-theme-page: rgb(241.11525, 251.5575, 235.4925);
-  --retro-theme-highlight: hsl(99, 70%, 70%);
+  --retro-theme-page: #f3f4eb;
+  --retro-theme-highlight: #c5d46a;
   --juice-color-page: var(--orc-page);
   --juice-color-surface: var(--orc-surface-strong);
   --juice-color-text: var(--orc-text);
   --juice-color-text-muted: var(--orc-text-muted);
   --juice-color-heading: var(--orc-heading);
   --juice-color-accent: var(--orc-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #2a0e0a;
   --juice-color-border: var(--orc-border);
   --juice-color-highlight: var(--orc-highlight);
 }

@@ -75,12 +75,24 @@
     --orc-chevron: var(--orc-accent);
     --orc-panel-rule: var(--orc-border);
     --orc-focus-ring: var(--orc-accent);
+    --orc-item-border: var(--orc-border);
+    --orc-item-border-open: var(--orc-border);
+    --orc-trigger-accent: var(--orc-accent);
+    --orc-panel-well: var(--orc-surface-muted);
+    --orc-open-glow: 0 14px 32px -26px var(--orc-shadow);
     --juice-accordion-trigger: var(--orc-trigger);
     --juice-accordion-trigger-hover: var(--orc-trigger-hover);
     --juice-accordion-trigger-open: var(--orc-trigger-open);
     --juice-accordion-chevron: var(--orc-chevron);
     --juice-accordion-panel-rule: var(--orc-panel-rule);
     --juice-accordion-focus-ring: var(--orc-focus-ring);
+    --juice-accordion-item-border: var(--orc-item-border);
+    --juice-accordion-item-border-open: var(--orc-item-border-open);
+    --juice-accordion-trigger-accent: var(--orc-trigger-accent);
+    --juice-accordion-panel: var(--orc-panel-well);
+    --juice-accordion-open-glow: var(--orc-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
     /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
     --orc-tabs-trigger: transparent;
@@ -92,6 +104,7 @@
     --orc-tabs-indicator: var(--orc-accent);
     --orc-tabs-list-rule: var(--orc-border);
     --orc-tabs-focus-ring: var(--orc-accent);
+    --orc-tabs-panel: var(--orc-panel-well);
     --juice-tabs-trigger: var(--orc-tabs-trigger);
     --juice-tabs-trigger-hover: var(--orc-tabs-trigger-hover);
     --juice-tabs-trigger-active: var(--orc-tabs-trigger-active);
@@ -101,6 +114,7 @@
     --juice-tabs-indicator: var(--orc-tabs-indicator);
     --juice-tabs-list-rule: var(--orc-tabs-list-rule);
     --juice-tabs-focus-ring: var(--orc-tabs-focus-ring);
+    --juice-tabs-panel: var(--orc-tabs-panel);
 
     /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
     --juice-surface-soft-bg: var(--orc-surface);
@@ -455,16 +469,15 @@
     --juice-progress-ink: var(--orc-progress-ink);
     --juice-progress-focus-ring: var(--orc-progress-focus-ring);
 
-    /* Pagination chrome — APG page set from existing tokens. Page controls
-       are surfaces, not a CTA. The trail stays transparent. Current fill
-       is accent; ink on that fill is page. Distinct from breadcrumb,
-       nav[type="pagination"], tabs, and wizard steps. */
-    --orc-pagination-surface: var(--orc-surface);
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --orc-pagination-surface: var(--orc-surface-strong);
     --orc-pagination-surface-hover: var(--orc-surface-muted);
     --orc-pagination-surface-current: var(--orc-accent);
     --orc-pagination-ink: var(--orc-text);
     --orc-pagination-ink-hover: var(--orc-accent);
-    --orc-pagination-ink-current: var(--orc-page);
+    --orc-pagination-ink-current: var(--orc-heading);
     --orc-pagination-ink-disabled: var(--orc-text-muted);
     --orc-pagination-border: var(--orc-border);
     --orc-pagination-focus-ring: var(--orc-accent);
@@ -1422,11 +1435,8 @@
     outline-offset: 2px;
 }
 
-
-
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme="retro-orchard-club"] [pagination],
 [theme="retro-orchard-club"] nav[pagination] {
     background-image: none;
@@ -1491,6 +1501,7 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme="retro-orchard-club"] :where(button) {

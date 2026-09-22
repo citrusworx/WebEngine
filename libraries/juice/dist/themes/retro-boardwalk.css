@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Boardwalk sources: coral (candy apple), sunshine yellow (dandelion), mint (kiwi), ocean blue (morning blue).
-    Derived roles feed the retro-boardwalk theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Boardwalk is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-boardwalk] {
   /* Foundation */
-  --bdw-page: rgb(236.946, 249.7742, 252.654);
-  --bdw-page-tint: rgb(238.935, 253.215, 245.837);
-  --bdw-page-deep: hsl(191, 77%, 20%);
-  --bdw-surface: rgba(236.946, 249.7742, 252.654, 0.78);
-  --bdw-surface-strong: rgba(236.946, 249.7742, 252.654, 0.92);
-  --bdw-surface-muted: rgba(238.935, 253.215, 245.837, 0.78);
-  --bdw-surface-deep: hsl(191, 77%, 25%);
-  --bdw-border: rgba(119.595, 215.8065, 237.405, 0.26);
-  --bdw-border-strong: rgba(255, 42.5, 0, 0.38);
-  --bdw-shadow: rgba(11.73, 75.871, 90.27, 0.12);
+  --bdw-page: #fff8f0;
+  --bdw-page-tint: #fff1e4;
+  --bdw-page-deep: #1c3d5a;
+  --bdw-surface: rgba(255, 248, 240, 0.78);
+  --bdw-surface-strong: rgba(255, 248, 240, 0.92);
+  --bdw-surface-muted: rgba(255, 241, 228, 0.78);
+  --bdw-surface-deep: #1e2a36;
+  --bdw-border: rgba(138, 160, 178, 0.26);
+  --bdw-border-strong: rgba(255, 111, 97, 0.38);
+  --bdw-shadow: rgba(28, 61, 90, 0.12);
   /* Typography */
-  --bdw-text: hsl(191, 77%, 25%);
-  --bdw-text-muted: hsl(191, 77%, 40%);
-  --bdw-heading: hsl(191, 77%, 20%);
+  --bdw-text: #1e2a36;
+  --bdw-text-muted: #5c6b7a;
+  --bdw-heading: #1c3d5a;
   --bdw-body-font: "Lato", sans-serif;
   --bdw-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --bdw-accent: hsl(10, 100%, 50%);
-  --bdw-accent-soft: rgb(255, 204, 193.8);
-  --bdw-accent-strong: hsl(10, 100%, 30%);
-  --bdw-highlight: hsl(55, 100%, 60%);
+  --bdw-accent: #ff6f61;
+  --bdw-accent-soft: #ff9a90;
+  --bdw-accent-strong: #e85a4c;
+  --bdw-highlight: #ffd166;
   /* Surface recipes */
   --bdw-page-background:
-      radial-gradient(circle at top left, rgba(255, 238, 51, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(209.1, 249.9, 228.82, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(236.946, 249.7742, 252.654) 0%, rgb(238.935, 253.215, 245.837) 100%);
-  --bdw-button-background: linear-gradient(135deg, hsl(10, 100%, 50%), hsl(161, 94%, 30%));
+      radial-gradient(circle at top left, rgba(255, 209, 102, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(110, 212, 202, 0.45), transparent 30%),
+      linear-gradient(180deg, #fff8f0 0%, #fff1e4 100%);
+  --bdw-button-background: linear-gradient(135deg, #ff6f61, #1f9a8e);
   --bdw-card-background:
-      linear-gradient(180deg, rgba(236.946, 249.7742, 252.654, 0.96) 0%, rgba(238.935, 253.215, 245.837, 0.88) 100%);
+      linear-gradient(180deg, rgba(255, 248, 240, 0.96) 0%, rgba(255, 241, 228, 0.88) 100%);
   --bdw-panel-background:
-      linear-gradient(180deg, rgba(236.946, 249.7742, 252.654, 0.98) 0%, rgba(238.935, 253.215, 245.837, 0.72) 100%);
+      linear-gradient(180deg, rgba(255, 248, 240, 0.98) 0%, rgba(255, 241, 228, 0.72) 100%);
   --bdw-hero-background:
-      radial-gradient(circle at top left, rgba(255, 235.875, 25.5, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(54.264, 210.936, 153.4896, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(191, 77%, 20%) 0%, hsl(10, 100%, 20%) 54%, hsl(10, 100%, 30%) 100%);
+      radial-gradient(circle at top left, rgba(240, 180, 41, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(43, 187, 173, 0.28), transparent 32%),
+      linear-gradient(135deg, #1c3d5a 0%, #c4453a 54%, #e85a4c 100%);
   --bdw-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(255, 238, 51, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 204, 193.8, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(191, 77%, 20%) 0%, hsl(191, 77%, 25%) 52%, hsl(10, 100%, 30%) 100%);
-  --bdw-stage-outline: rgba(236.946, 249.7742, 252.654, 0.14);
-  --bdw-stage-shadow: rgba(11.73, 75.871, 90.27, 0.34);
-  --bdw-chip-background: rgba(236.946, 249.7742, 252.654, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(255, 209, 102, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(255, 154, 144, 0.2), transparent 24%),
+      linear-gradient(145deg, #1c3d5a 0%, #1e2a36 52%, #e85a4c 100%);
+  --bdw-stage-outline: rgba(255, 248, 240, 0.14);
+  --bdw-stage-shadow: rgba(28, 61, 90, 0.34);
+  --bdw-chip-background: rgba(255, 248, 240, 0.96);
   --bdw-buybox-background:
-      linear-gradient(180deg, rgba(236.946, 249.7742, 252.654, 0.98) 0%, rgba(238.935, 253.215, 245.837, 0.82) 100%);
-  --bdw-buybox-shadow: 0 32px 70px -42px rgba(11.73, 75.871, 90.27, 0.24);
+      linear-gradient(180deg, rgba(255, 248, 240, 0.98) 0%, rgba(255, 241, 228, 0.82) 100%);
+  --bdw-buybox-shadow: 0 32px 70px -42px rgba(28, 61, 90, 0.24);
   --bdw-spec-background:
-      linear-gradient(180deg, rgba(238.935, 253.215, 245.837, 0.95) 0%, rgba(236.946, 249.7742, 252.654, 0.98) 100%);
+      linear-gradient(180deg, rgba(255, 241, 228, 0.95) 0%, rgba(255, 248, 240, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Boardwalk tokens; no new hue family. */
   --bdw-trigger: var(--bdw-surface-strong);
@@ -74,12 +69,24 @@
   --bdw-chevron: var(--bdw-accent);
   --bdw-panel-rule: var(--bdw-border);
   --bdw-focus-ring: var(--bdw-accent);
+  --bdw-item-border: var(--bdw-border);
+  --bdw-item-border-open: var(--bdw-border);
+  --bdw-trigger-accent: var(--bdw-accent);
+  --bdw-panel-well: var(--bdw-surface-muted);
+  --bdw-open-glow: 0 14px 32px -26px var(--bdw-shadow);
   --juice-accordion-trigger: var(--bdw-trigger);
   --juice-accordion-trigger-hover: var(--bdw-trigger-hover);
   --juice-accordion-trigger-open: var(--bdw-trigger-open);
   --juice-accordion-chevron: var(--bdw-chevron);
   --juice-accordion-panel-rule: var(--bdw-panel-rule);
   --juice-accordion-focus-ring: var(--bdw-focus-ring);
+  --juice-accordion-item-border: var(--bdw-item-border);
+  --juice-accordion-item-border-open: var(--bdw-item-border-open);
+  --juice-accordion-trigger-accent: var(--bdw-trigger-accent);
+  --juice-accordion-panel: var(--bdw-panel-well);
+  --juice-accordion-open-glow: var(--bdw-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --bdw-tabs-trigger: transparent;
   --bdw-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --bdw-tabs-indicator: var(--bdw-accent);
   --bdw-tabs-list-rule: var(--bdw-border);
   --bdw-tabs-focus-ring: var(--bdw-accent);
+  --bdw-tabs-panel: var(--bdw-panel-well);
   --juice-tabs-trigger: var(--bdw-tabs-trigger);
   --juice-tabs-trigger-hover: var(--bdw-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--bdw-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--bdw-tabs-indicator);
   --juice-tabs-list-rule: var(--bdw-tabs-list-rule);
   --juice-tabs-focus-ring: var(--bdw-tabs-focus-ring);
+  --juice-tabs-panel: var(--bdw-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--bdw-surface);
   --juice-surface-soft-border: var(--bdw-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--bdw-progress-fill);
   --juice-progress-ink: var(--bdw-progress-ink);
   --juice-progress-focus-ring: var(--bdw-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --bdw-pagination-surface: var(--bdw-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --bdw-pagination-surface: var(--bdw-surface-strong);
   --bdw-pagination-surface-hover: var(--bdw-surface-muted);
   --bdw-pagination-surface-current: var(--bdw-accent);
   --bdw-pagination-ink: var(--bdw-text);
   --bdw-pagination-ink-hover: var(--bdw-accent);
-  --bdw-pagination-ink-current: var(--bdw-page);
+  --bdw-pagination-ink-current: var(--bdw-heading);
   --bdw-pagination-ink-disabled: var(--bdw-text-muted);
   --bdw-pagination-border: var(--bdw-border);
   --bdw-pagination-focus-ring: var(--bdw-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-boardwalk] :where(a) {
   color: var(--bdw-accent-strong);
-  text-decoration-color: rgba(153, 25.5, 0, 0.35);
+  text-decoration-color: rgba(232, 90, 76, 0.35);
 }
 
 [theme=retro-boardwalk] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-boardwalk] :where(button) {
   background-image: var(--bdw-button-background);
-  color: rgb(236.946, 249.7742, 252.654);
+  color: #fff8f0;
   border-color: transparent;
 }
 
 [theme=retro-boardwalk] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(11.73, 75.871, 90.27, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(28, 61, 90, 0.24);
 }
 
 [theme=retro-boardwalk] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-boardwalk] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(119.595, 215.8065, 237.405, 0.28);
+  outline: 2px solid rgba(138, 160, 178, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-boardwalk] :where(code, pre) {
-  background-color: rgba(238.935, 253.215, 245.837, 0.9);
+  background-color: rgba(255, 241, 228, 0.9);
   color: var(--bdw-heading);
   border: 1px solid var(--bdw-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-boardwalk][bdw-hero],
 [theme=retro-boardwalk] [bdw-hero] {
   background: var(--bdw-hero-background);
-  color: rgb(236.946, 249.7742, 252.654);
-  border: 1px solid rgba(236.946, 249.7742, 252.654, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(11.73, 75.871, 90.27, 0.45);
+  color: #fff8f0;
+  border: 1px solid rgba(255, 248, 240, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(28, 61, 90, 0.45);
 }
 
 [theme=retro-boardwalk][bdw-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-boardwalk] [bdw-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(236.946, 249.7742, 252.654);
+  color: #fff8f0;
 }
 
 [theme=retro-boardwalk][bdw-hero] :where(p, span, li, small, a),
 [theme=retro-boardwalk] [bdw-hero] :where(p, span, li, small, a) {
-  color: rgba(236.946, 249.7742, 252.654, 0.86);
+  color: rgba(255, 248, 240, 0.86);
 }
 
 [theme=retro-boardwalk][bdw-hero] :where(button),
 [theme=retro-boardwalk] [bdw-hero] :where(button) {
-  background: rgb(236.946, 249.7742, 252.654);
+  background: #fff8f0;
   color: var(--bdw-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-boardwalk][bdw-stage],
 [theme=retro-boardwalk] [bdw-stage] {
   background: var(--bdw-stage-background);
-  color: rgb(236.946, 249.7742, 252.654);
+  color: #fff8f0;
   border: 1px solid var(--bdw-stage-outline);
   box-shadow: 0 44px 100px -54px var(--bdw-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(236.946, 249.7742, 252.654, 0.08);
+  border: 1px solid rgba(255, 248, 240, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-boardwalk][bdw-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-boardwalk] [bdw-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(236.946, 249.7742, 252.654);
+  color: #fff8f0;
 }
 
 [theme=retro-boardwalk][bdw-stage] :where(p, span, li, small, a),
 [theme=retro-boardwalk] [bdw-stage] :where(p, span, li, small, a) {
-  color: rgba(236.946, 249.7742, 252.654, 0.86);
+  color: rgba(255, 248, 240, 0.86);
 }
 
 [theme=retro-boardwalk][bdw-chip],
 [theme=retro-boardwalk] [bdw-chip] {
   background: var(--bdw-chip-background);
   color: var(--bdw-heading);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(11.73, 75.871, 90.27, 0.18);
+  border: 1px solid rgba(240, 180, 41, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(28, 61, 90, 0.18);
 }
 
 [theme=retro-boardwalk][bdw-buybox],
 [theme=retro-boardwalk] [bdw-buybox] {
   background: var(--bdw-buybox-background);
   color: var(--bdw-text);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.3);
+  border: 1px solid rgba(240, 180, 41, 0.3);
   box-shadow: var(--bdw-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-boardwalk] [bdw-spec] {
   background: var(--bdw-spec-background);
   color: var(--bdw-text);
-  border: 1px solid rgba(255, 235.875, 25.5, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(11.73, 75.871, 90.27, 0.15);
+  border: 1px solid rgba(240, 180, 41, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(28, 61, 90, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-boardwalk] [pagination],
 [theme=retro-boardwalk] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-boardwalk] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #2a0f0c;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--bdw-stage-background);
   --retro-stage-outline: var(--bdw-stage-outline);
   --retro-stage-shadow: var(--bdw-stage-shadow);
-  --retro-theme-page: rgb(236.946, 249.7742, 252.654);
-  --retro-theme-highlight: hsl(55, 100%, 60%);
+  --retro-theme-page: #fff8f0;
+  --retro-theme-highlight: #ffd166;
   --juice-color-page: var(--bdw-page);
   --juice-color-surface: var(--bdw-surface-strong);
   --juice-color-text: var(--bdw-text);
   --juice-color-text-muted: var(--bdw-text-muted);
   --juice-color-heading: var(--bdw-heading);
   --juice-color-accent: var(--bdw-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #2a0f0c;
   --juice-color-border: var(--bdw-border);
   --juice-color-highlight: var(--bdw-highlight);
 }

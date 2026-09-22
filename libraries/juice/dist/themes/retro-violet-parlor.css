@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Violet Parlor sources: deep indigo (royal blue), violet (bubblegum), apricot (peach), cream.
-    Derived roles feed the retro-violet-parlor theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Violet Parlor is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-violet-parlor] {
   /* Foundation */
-  --vpr-page: rgb(255, 250.7925, 246.585);
-  --vpr-page-tint: rgb(255, 244.8, 234.6);
-  --vpr-page-deep: hsl(223, 100%, 22%);
-  --vpr-surface: rgba(255, 250.7925, 246.585, 0.78);
-  --vpr-surface-strong: rgba(255, 250.7925, 246.585, 0.92);
-  --vpr-surface-muted: rgba(255, 244.8, 234.6, 0.78);
-  --vpr-surface-deep: hsl(223, 100%, 28%);
-  --vpr-border: rgba(255, 51, 221, 0.26);
-  --vpr-border-strong: rgba(204, 0, 170, 0.38);
-  --vpr-shadow: rgba(0, 31.79, 112.2, 0.12);
+  --vpr-page: #f7f0e8;
+  --vpr-page-tint: #efe4d6;
+  --vpr-page-deep: #1a1030;
+  --vpr-surface: rgba(247, 240, 232, 0.78);
+  --vpr-surface-strong: rgba(247, 240, 232, 0.92);
+  --vpr-surface-muted: rgba(239, 228, 214, 0.78);
+  --vpr-surface-deep: #1c1428;
+  --vpr-border: rgba(154, 143, 176, 0.26);
+  --vpr-border-strong: rgba(107, 63, 160, 0.38);
+  --vpr-shadow: rgba(26, 16, 48, 0.12);
   /* Typography */
-  --vpr-text: hsl(223, 100%, 28%);
-  --vpr-text-muted: rgb(53.3715, 85.7905, 165.9285);
-  --vpr-heading: hsl(223, 100%, 22%);
+  --vpr-text: #1c1428;
+  --vpr-text-muted: #6a5f78;
+  --vpr-heading: #1a1030;
   --vpr-body-font: "Lato", sans-serif;
   --vpr-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --vpr-accent: hsl(310, 100%, 40%);
-  --vpr-accent-soft: rgb(255, 170.85, 240.975);
-  --vpr-accent-strong: hsl(310, 100%, 25%);
-  --vpr-highlight: hsl(30, 100%, 85%);
+  --vpr-accent: #6b3fa0;
+  --vpr-accent-soft: #9a72c4;
+  --vpr-accent-strong: #563288;
+  --vpr-highlight: #4b3f8c;
   /* Surface recipes */
   --vpr-page-background:
-      radial-gradient(circle at top left, rgba(255, 216.75, 178.5, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(255, 229.5, 204, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(255, 250.7925, 246.585) 0%, rgb(255, 244.8, 234.6) 100%);
-  --vpr-button-background: linear-gradient(135deg, hsl(310, 100%, 40%), hsl(30, 100%, 55%));
+      radial-gradient(circle at top left, rgba(75, 63, 140, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(245, 192, 140, 0.45), transparent 30%),
+      linear-gradient(180deg, #f7f0e8 0%, #efe4d6 100%);
+  --vpr-button-background: linear-gradient(135deg, #6b3fa0, #d4843a);
   --vpr-card-background:
-      linear-gradient(180deg, rgba(255, 250.7925, 246.585, 0.96) 0%, rgba(255, 244.8, 234.6, 0.88) 100%);
+      linear-gradient(180deg, rgba(247, 240, 232, 0.96) 0%, rgba(239, 228, 214, 0.88) 100%);
   --vpr-panel-background:
-      linear-gradient(180deg, rgba(255, 250.7925, 246.585, 0.98) 0%, rgba(255, 244.8, 234.6, 0.72) 100%);
+      linear-gradient(180deg, rgba(247, 240, 232, 0.98) 0%, rgba(239, 228, 214, 0.72) 100%);
   --vpr-hero-background:
-      radial-gradient(circle at top left, rgba(255, 191.25, 127.5, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(255, 165.75, 76.5, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(223, 100%, 22%) 0%, hsl(310, 100%, 20%) 54%, hsl(310, 100%, 25%) 100%);
+      radial-gradient(circle at top left, rgba(53, 44, 106, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(240, 160, 90, 0.28), transparent 32%),
+      linear-gradient(135deg, #1a1030 0%, #3c2260 54%, #563288 100%);
   --vpr-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(255, 216.75, 178.5, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 170.85, 240.975, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(223, 100%, 22%) 0%, hsl(223, 100%, 28%) 52%, hsl(310, 100%, 25%) 100%);
-  --vpr-stage-outline: rgba(255, 250.7925, 246.585, 0.14);
-  --vpr-stage-shadow: rgba(0, 31.79, 112.2, 0.34);
-  --vpr-chip-background: rgba(255, 250.7925, 246.585, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(75, 63, 140, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(154, 114, 196, 0.2), transparent 24%),
+      linear-gradient(145deg, #1a1030 0%, #1c1428 52%, #563288 100%);
+  --vpr-stage-outline: rgba(247, 240, 232, 0.14);
+  --vpr-stage-shadow: rgba(26, 16, 48, 0.34);
+  --vpr-chip-background: rgba(247, 240, 232, 0.96);
   --vpr-buybox-background:
-      linear-gradient(180deg, rgba(255, 250.7925, 246.585, 0.98) 0%, rgba(255, 244.8, 234.6, 0.82) 100%);
-  --vpr-buybox-shadow: 0 32px 70px -42px rgba(0, 31.79, 112.2, 0.24);
+      linear-gradient(180deg, rgba(247, 240, 232, 0.98) 0%, rgba(239, 228, 214, 0.82) 100%);
+  --vpr-buybox-shadow: 0 32px 70px -42px rgba(26, 16, 48, 0.24);
   --vpr-spec-background:
-      linear-gradient(180deg, rgba(255, 244.8, 234.6, 0.95) 0%, rgba(255, 250.7925, 246.585, 0.98) 100%);
+      linear-gradient(180deg, rgba(239, 228, 214, 0.95) 0%, rgba(247, 240, 232, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Violet Parlor tokens; no new hue family. */
   --vpr-trigger: var(--vpr-surface-strong);
@@ -74,12 +69,24 @@
   --vpr-chevron: var(--vpr-accent);
   --vpr-panel-rule: var(--vpr-border);
   --vpr-focus-ring: var(--vpr-accent);
+  --vpr-item-border: var(--vpr-border);
+  --vpr-item-border-open: var(--vpr-border);
+  --vpr-trigger-accent: var(--vpr-accent);
+  --vpr-panel-well: var(--vpr-surface-muted);
+  --vpr-open-glow: 0 14px 32px -26px var(--vpr-shadow);
   --juice-accordion-trigger: var(--vpr-trigger);
   --juice-accordion-trigger-hover: var(--vpr-trigger-hover);
   --juice-accordion-trigger-open: var(--vpr-trigger-open);
   --juice-accordion-chevron: var(--vpr-chevron);
   --juice-accordion-panel-rule: var(--vpr-panel-rule);
   --juice-accordion-focus-ring: var(--vpr-focus-ring);
+  --juice-accordion-item-border: var(--vpr-item-border);
+  --juice-accordion-item-border-open: var(--vpr-item-border-open);
+  --juice-accordion-trigger-accent: var(--vpr-trigger-accent);
+  --juice-accordion-panel: var(--vpr-panel-well);
+  --juice-accordion-open-glow: var(--vpr-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --vpr-tabs-trigger: transparent;
   --vpr-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --vpr-tabs-indicator: var(--vpr-accent);
   --vpr-tabs-list-rule: var(--vpr-border);
   --vpr-tabs-focus-ring: var(--vpr-accent);
+  --vpr-tabs-panel: var(--vpr-panel-well);
   --juice-tabs-trigger: var(--vpr-tabs-trigger);
   --juice-tabs-trigger-hover: var(--vpr-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--vpr-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--vpr-tabs-indicator);
   --juice-tabs-list-rule: var(--vpr-tabs-list-rule);
   --juice-tabs-focus-ring: var(--vpr-tabs-focus-ring);
+  --juice-tabs-panel: var(--vpr-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--vpr-surface);
   --juice-surface-soft-border: var(--vpr-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--vpr-progress-fill);
   --juice-progress-ink: var(--vpr-progress-ink);
   --juice-progress-focus-ring: var(--vpr-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --vpr-pagination-surface: var(--vpr-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --vpr-pagination-surface: var(--vpr-surface-strong);
   --vpr-pagination-surface-hover: var(--vpr-surface-muted);
   --vpr-pagination-surface-current: var(--vpr-accent);
   --vpr-pagination-ink: var(--vpr-text);
   --vpr-pagination-ink-hover: var(--vpr-accent);
-  --vpr-pagination-ink-current: var(--vpr-page);
+  --vpr-pagination-ink-current: var(--vpr-heading);
   --vpr-pagination-ink-disabled: var(--vpr-text-muted);
   --vpr-pagination-border: var(--vpr-border);
   --vpr-pagination-focus-ring: var(--vpr-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-violet-parlor] :where(a) {
   color: var(--vpr-accent-strong);
-  text-decoration-color: rgba(127.5, 0, 106.25, 0.35);
+  text-decoration-color: rgba(86, 50, 136, 0.35);
 }
 
 [theme=retro-violet-parlor] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-violet-parlor] :where(button) {
   background-image: var(--vpr-button-background);
-  color: rgb(255, 250.7925, 246.585);
+  color: #f7f0e8;
   border-color: transparent;
 }
 
 [theme=retro-violet-parlor] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(0, 31.79, 112.2, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(26, 16, 48, 0.24);
 }
 
 [theme=retro-violet-parlor] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-violet-parlor] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(255, 51, 221, 0.28);
+  outline: 2px solid rgba(154, 143, 176, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-violet-parlor] :where(code, pre) {
-  background-color: rgba(255, 244.8, 234.6, 0.9);
+  background-color: rgba(239, 228, 214, 0.9);
   color: var(--vpr-heading);
   border: 1px solid var(--vpr-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-violet-parlor][vpr-hero],
 [theme=retro-violet-parlor] [vpr-hero] {
   background: var(--vpr-hero-background);
-  color: rgb(255, 250.7925, 246.585);
-  border: 1px solid rgba(255, 250.7925, 246.585, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(0, 31.79, 112.2, 0.45);
+  color: #f7f0e8;
+  border: 1px solid rgba(247, 240, 232, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(26, 16, 48, 0.45);
 }
 
 [theme=retro-violet-parlor][vpr-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-violet-parlor] [vpr-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(255, 250.7925, 246.585);
+  color: #f7f0e8;
 }
 
 [theme=retro-violet-parlor][vpr-hero] :where(p, span, li, small, a),
 [theme=retro-violet-parlor] [vpr-hero] :where(p, span, li, small, a) {
-  color: rgba(255, 250.7925, 246.585, 0.86);
+  color: rgba(247, 240, 232, 0.86);
 }
 
 [theme=retro-violet-parlor][vpr-hero] :where(button),
 [theme=retro-violet-parlor] [vpr-hero] :where(button) {
-  background: rgb(255, 250.7925, 246.585);
+  background: #f7f0e8;
   color: var(--vpr-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-violet-parlor][vpr-stage],
 [theme=retro-violet-parlor] [vpr-stage] {
   background: var(--vpr-stage-background);
-  color: rgb(255, 250.7925, 246.585);
+  color: #f7f0e8;
   border: 1px solid var(--vpr-stage-outline);
   box-shadow: 0 44px 100px -54px var(--vpr-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(255, 250.7925, 246.585, 0.08);
+  border: 1px solid rgba(247, 240, 232, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-violet-parlor][vpr-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-violet-parlor] [vpr-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(255, 250.7925, 246.585);
+  color: #f7f0e8;
 }
 
 [theme=retro-violet-parlor][vpr-stage] :where(p, span, li, small, a),
 [theme=retro-violet-parlor] [vpr-stage] :where(p, span, li, small, a) {
-  color: rgba(255, 250.7925, 246.585, 0.86);
+  color: rgba(247, 240, 232, 0.86);
 }
 
 [theme=retro-violet-parlor][vpr-chip],
 [theme=retro-violet-parlor] [vpr-chip] {
   background: var(--vpr-chip-background);
   color: var(--vpr-heading);
-  border: 1px solid rgba(255, 191.25, 127.5, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(0, 31.79, 112.2, 0.18);
+  border: 1px solid rgba(53, 44, 106, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(26, 16, 48, 0.18);
 }
 
 [theme=retro-violet-parlor][vpr-buybox],
 [theme=retro-violet-parlor] [vpr-buybox] {
   background: var(--vpr-buybox-background);
   color: var(--vpr-text);
-  border: 1px solid rgba(255, 191.25, 127.5, 0.3);
+  border: 1px solid rgba(53, 44, 106, 0.3);
   box-shadow: var(--vpr-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-violet-parlor] [vpr-spec] {
   background: var(--vpr-spec-background);
   color: var(--vpr-text);
-  border: 1px solid rgba(255, 191.25, 127.5, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(0, 31.79, 112.2, 0.15);
+  border: 1px solid rgba(53, 44, 106, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(26, 16, 48, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-violet-parlor] [pagination],
 [theme=retro-violet-parlor] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-violet-parlor] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #f8f2ff;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--vpr-stage-background);
   --retro-stage-outline: var(--vpr-stage-outline);
   --retro-stage-shadow: var(--vpr-stage-shadow);
-  --retro-theme-page: rgb(255, 250.7925, 246.585);
-  --retro-theme-highlight: hsl(30, 100%, 85%);
+  --retro-theme-page: #f7f0e8;
+  --retro-theme-highlight: #4b3f8c;
   --juice-color-page: var(--vpr-page);
   --juice-color-surface: var(--vpr-surface-strong);
   --juice-color-text: var(--vpr-text);
   --juice-color-text-muted: var(--vpr-text-muted);
   --juice-color-heading: var(--vpr-heading);
   --juice-color-accent: var(--vpr-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #f8f2ff;
   --juice-color-border: var(--vpr-border);
   --juice-color-highlight: var(--vpr-highlight);
 }

@@ -94,7 +94,6 @@ authoring_rules:
   - Bind popover, tooltip, combobox, and menu chrome from existing page and surface tokens.
   - Bind switch, slider, checkbox, and radio chrome from existing surface and accent tokens.
   - Bind breadcrumb and progress chrome from existing text, border, and accent tokens.
-  - Bind pagination chrome from existing surface, text, and accent tokens so page controls stay surfaces, not CTA buttons.
   - Keep --juice-* aliases inside the theme contract and theme-specific --orc-* tokens as the source of truth.
 
 example:

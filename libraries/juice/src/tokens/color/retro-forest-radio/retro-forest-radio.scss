@@ -1,36 +1,20 @@
-@use 'sass:color';
-@use '../blue/blue.scss' as *;
-@use '../green/green.scss' as *;
-@use '../yellow/swatch/dandelion/dandelion.scss' as *;
-@use '../gray/gray.scss' as *;
-@use '../black/black.scss' as *;
-@use '../white/white.scss' as *;
+// Juice color tokens for retro-forest-radio (restored after incomplete Codex import).
+// Theme-specific identity values — not a full 100–900 swatch family.
 
-/*
-    Forest Radio sources: midnight navy (royal blue), forest green (kiwi), mustard gold (dandelion), soft fog (concrete).
-    Derived roles feed the retro-forest-radio theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-
-$frr-source-1: $royalblue-900;
-$frr-source-2: $kiwi-800;
-$frr-source-3: $dandelion-600;
-$frr-source-4: $concrete-200;
-
-$frr-page: $concrete-100;
-$frr-page-tint: color.mix($kiwi-100, $frr-source-4, 40%);
-$frr-deep: $frr-source-1;
-$frr-text: color.mix($royalblue-800, $black-800, 40%);
-$frr-text-muted: $slate-700;
-$frr-border-color: $kiwi-600;
-$frr-accent: $kiwi-700;
-$frr-accent-soft: $kiwi-300;
-$frr-accent-strong: $frr-source-2;
-$frr-accent-deep: $kiwi-900;
-$frr-highlight: $dandelion-300;
-$frr-highlight-strong: $frr-source-3;
-$frr-secondary: $frr-source-3;
-$frr-secondary-soft: $dandelion-200;
-$frr-secondary-strong: $dandelion-800;
-$frr-on-accent: $white-100;
-
+$frr-page: #f4f1e8;
+$frr-page-tint: #ebe6d8;
+$frr-deep: #0f1c2e;
+$frr-text: #1a2418;
+$frr-text-muted: #5c6558;
+$frr-heading: #142218;
+$frr-accent: #c4a035;
+$frr-accent-soft: #d9bc6a;
+$frr-accent-strong: #a88620;
+$frr-accent-deep: #7a6216;
+$frr-secondary: #2f6b4f;
+$frr-secondary-soft: #5f9478;
+$frr-secondary-strong: #21523b;
+$frr-highlight: #3d5a80;
+$frr-highlight-strong: #2a4160;
+$frr-border-color: #8a8778;
+$frr-on-accent: #1f1805;

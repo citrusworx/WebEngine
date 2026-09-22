@@ -1,35 +1,20 @@
-@use 'sass:color';
-@use '../blue/blue.scss' as *;
-@use '../pink/pink.scss' as *;
-@use '../orange/orange.scss' as *;
-@use '../white/white.scss' as *;
-@use '../gray/swatch/slate/slate.scss' as *;
+// Juice color tokens for retro-violet-parlor (restored after incomplete Codex import).
+// Theme-specific identity values — not a full 100–900 swatch family.
 
-/*
-    Violet Parlor sources: deep indigo (royal blue), violet (bubblegum), apricot (peach), cream.
-    Derived roles feed the retro-violet-parlor theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-
-$vpr-source-1: $royalblue-800;
-$vpr-source-2: $bubblegum-600;
-$vpr-source-3: $peach-500;
-$vpr-source-4: color.mix($peach-100, $white-100, 55%);
-
-$vpr-page: $vpr-source-4;
-$vpr-page-tint: color.mix($peach-200, $white-100, 40%);
-$vpr-deep: $royalblue-900;
-$vpr-text: $vpr-source-1;
-$vpr-text-muted: color.mix($royalblue-600, $slate-600, 50%);
-$vpr-border-color: $bubblegum-400;
-$vpr-accent: $vpr-source-2;
-$vpr-accent-soft: color.mix($bubblegum-300, $white-100, 55%);
-$vpr-accent-strong: $bubblegum-800;
-$vpr-accent-deep: $bubblegum-900;
-$vpr-highlight: $peach-300;
-$vpr-highlight-strong: $vpr-source-3;
-$vpr-secondary: $peach-600;
-$vpr-secondary-soft: $peach-200;
-$vpr-secondary-strong: $peach-800;
-$vpr-on-accent: $white-100;
-
+$vpr-page: #f7f0e8;
+$vpr-page-tint: #efe4d6;
+$vpr-deep: #1a1030;
+$vpr-text: #1c1428;
+$vpr-text-muted: #6a5f78;
+$vpr-heading: #120c22;
+$vpr-accent: #6b3fa0;
+$vpr-accent-soft: #9a72c4;
+$vpr-accent-strong: #563288;
+$vpr-accent-deep: #3c2260;
+$vpr-secondary: #f0a05a;
+$vpr-secondary-soft: #f5c08c;
+$vpr-secondary-strong: #d4843a;
+$vpr-highlight: #4b3f8c;
+$vpr-highlight-strong: #352c6a;
+$vpr-border-color: #9a8fb0;
+$vpr-on-accent: #f8f2ff;

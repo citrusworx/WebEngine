@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Forest Radio sources: midnight navy (royal blue), forest green (kiwi), mustard gold (dandelion), soft fog (concrete).
-    Derived roles feed the retro-forest-radio theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Forest Radio is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-forest-radio] {
   /* Foundation */
-  --frr-page: hsl(0, 5%, 95%);
-  --frr-page-tint: rgb(233.0802, 238.1598, 235.07532);
-  --frr-page-deep: hsl(223, 100%, 22%);
-  --frr-surface: rgba(242.8875, 241.6125, 241.6125, 0.78);
-  --frr-surface-strong: rgba(242.8875, 241.6125, 241.6125, 0.92);
-  --frr-surface-muted: rgba(233.0802, 238.1598, 235.07532, 0.78);
-  --frr-surface-deep: rgb(22.95, 39.134, 80.07);
-  --frr-border: rgba(15.912, 182.988, 127.296, 0.26);
-  --frr-border-strong: rgba(4.59, 148.41, 102.867, 0.38);
-  --frr-shadow: rgba(0, 31.79, 112.2, 0.12);
+  --frr-page: #f4f1e8;
+  --frr-page-tint: #ebe6d8;
+  --frr-page-deep: #0f1c2e;
+  --frr-surface: rgba(244, 241, 232, 0.78);
+  --frr-surface-strong: rgba(244, 241, 232, 0.92);
+  --frr-surface-muted: rgba(235, 230, 216, 0.78);
+  --frr-surface-deep: #1a2418;
+  --frr-border: rgba(138, 135, 120, 0.26);
+  --frr-border-strong: rgba(196, 160, 53, 0.38);
+  --frr-shadow: rgba(15, 28, 46, 0.12);
   /* Typography */
-  --frr-text: rgb(22.95, 39.134, 80.07);
-  --frr-text-muted: hsl(215, 14%, 34%);
-  --frr-heading: hsl(223, 100%, 22%);
+  --frr-text: #1a2418;
+  --frr-text-muted: #5c6558;
+  --frr-heading: #0f1c2e;
   --frr-body-font: "Lato", sans-serif;
   --frr-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --frr-accent: hsl(161, 94%, 30%);
-  --frr-accent-soft: hsl(152, 76%, 80%);
-  --frr-accent-strong: hsl(163, 94%, 24%);
-  --frr-highlight: hsl(55, 100%, 60%);
+  --frr-accent: #c4a035;
+  --frr-accent-soft: #d9bc6a;
+  --frr-accent-strong: #a88620;
+  --frr-highlight: #3d5a80;
   /* Surface recipes */
   --frr-page-background:
-      radial-gradient(circle at top left, rgba(255, 238, 51, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(255, 242.25, 102, 0.45), transparent 30%),
-      linear-gradient(180deg, hsl(0, 5%, 95%) 0%, rgb(233.0802, 238.1598, 235.07532) 100%);
-  --frr-button-background: linear-gradient(135deg, hsl(161, 94%, 30%), hsl(55, 100%, 30%));
+      radial-gradient(circle at top left, rgba(61, 90, 128, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(95, 148, 120, 0.45), transparent 30%),
+      linear-gradient(180deg, #f4f1e8 0%, #ebe6d8 100%);
+  --frr-button-background: linear-gradient(135deg, #c4a035, #21523b);
   --frr-card-background:
-      linear-gradient(180deg, rgba(242.8875, 241.6125, 241.6125, 0.96) 0%, rgba(233.0802, 238.1598, 235.07532, 0.88) 100%);
+      linear-gradient(180deg, rgba(244, 241, 232, 0.96) 0%, rgba(235, 230, 216, 0.88) 100%);
   --frr-panel-background:
-      linear-gradient(180deg, rgba(242.8875, 241.6125, 241.6125, 0.98) 0%, rgba(233.0802, 238.1598, 235.07532, 0.72) 100%);
+      linear-gradient(180deg, rgba(244, 241, 232, 0.98) 0%, rgba(235, 230, 216, 0.72) 100%);
   --frr-hero-background:
-      radial-gradient(circle at top left, rgba(229.5, 210.375, 0, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(229.5, 210.375, 0, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(223, 100%, 22%) 0%, hsl(163, 88%, 20%) 54%, hsl(163, 94%, 24%) 100%);
+      radial-gradient(circle at top left, rgba(42, 65, 96, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(47, 107, 79, 0.28), transparent 32%),
+      linear-gradient(135deg, #0f1c2e 0%, #7a6216 54%, #a88620 100%);
   --frr-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(255, 238, 51, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(165.24, 242.76, 206.584, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(223, 100%, 22%) 0%, rgb(22.95, 39.134, 80.07) 52%, hsl(163, 94%, 24%) 100%);
-  --frr-stage-outline: rgba(242.8875, 241.6125, 241.6125, 0.14);
-  --frr-stage-shadow: rgba(0, 31.79, 112.2, 0.34);
-  --frr-chip-background: rgba(242.8875, 241.6125, 241.6125, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(61, 90, 128, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(217, 188, 106, 0.2), transparent 24%),
+      linear-gradient(145deg, #0f1c2e 0%, #1a2418 52%, #a88620 100%);
+  --frr-stage-outline: rgba(244, 241, 232, 0.14);
+  --frr-stage-shadow: rgba(15, 28, 46, 0.34);
+  --frr-chip-background: rgba(244, 241, 232, 0.96);
   --frr-buybox-background:
-      linear-gradient(180deg, rgba(242.8875, 241.6125, 241.6125, 0.98) 0%, rgba(233.0802, 238.1598, 235.07532, 0.82) 100%);
-  --frr-buybox-shadow: 0 32px 70px -42px rgba(0, 31.79, 112.2, 0.24);
+      linear-gradient(180deg, rgba(244, 241, 232, 0.98) 0%, rgba(235, 230, 216, 0.82) 100%);
+  --frr-buybox-shadow: 0 32px 70px -42px rgba(15, 28, 46, 0.24);
   --frr-spec-background:
-      linear-gradient(180deg, rgba(233.0802, 238.1598, 235.07532, 0.95) 0%, rgba(242.8875, 241.6125, 241.6125, 0.98) 100%);
+      linear-gradient(180deg, rgba(235, 230, 216, 0.95) 0%, rgba(244, 241, 232, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Forest Radio tokens; no new hue family. */
   --frr-trigger: var(--frr-surface-strong);
@@ -74,12 +69,24 @@
   --frr-chevron: var(--frr-accent);
   --frr-panel-rule: var(--frr-border);
   --frr-focus-ring: var(--frr-accent);
+  --frr-item-border: var(--frr-border);
+  --frr-item-border-open: var(--frr-border);
+  --frr-trigger-accent: var(--frr-accent);
+  --frr-panel-well: var(--frr-surface-muted);
+  --frr-open-glow: 0 14px 32px -26px var(--frr-shadow);
   --juice-accordion-trigger: var(--frr-trigger);
   --juice-accordion-trigger-hover: var(--frr-trigger-hover);
   --juice-accordion-trigger-open: var(--frr-trigger-open);
   --juice-accordion-chevron: var(--frr-chevron);
   --juice-accordion-panel-rule: var(--frr-panel-rule);
   --juice-accordion-focus-ring: var(--frr-focus-ring);
+  --juice-accordion-item-border: var(--frr-item-border);
+  --juice-accordion-item-border-open: var(--frr-item-border-open);
+  --juice-accordion-trigger-accent: var(--frr-trigger-accent);
+  --juice-accordion-panel: var(--frr-panel-well);
+  --juice-accordion-open-glow: var(--frr-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --frr-tabs-trigger: transparent;
   --frr-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --frr-tabs-indicator: var(--frr-accent);
   --frr-tabs-list-rule: var(--frr-border);
   --frr-tabs-focus-ring: var(--frr-accent);
+  --frr-tabs-panel: var(--frr-panel-well);
   --juice-tabs-trigger: var(--frr-tabs-trigger);
   --juice-tabs-trigger-hover: var(--frr-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--frr-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--frr-tabs-indicator);
   --juice-tabs-list-rule: var(--frr-tabs-list-rule);
   --juice-tabs-focus-ring: var(--frr-tabs-focus-ring);
+  --juice-tabs-panel: var(--frr-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--frr-surface);
   --juice-surface-soft-border: var(--frr-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--frr-progress-fill);
   --juice-progress-ink: var(--frr-progress-ink);
   --juice-progress-focus-ring: var(--frr-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --frr-pagination-surface: var(--frr-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --frr-pagination-surface: var(--frr-surface-strong);
   --frr-pagination-surface-hover: var(--frr-surface-muted);
   --frr-pagination-surface-current: var(--frr-accent);
   --frr-pagination-ink: var(--frr-text);
   --frr-pagination-ink-hover: var(--frr-accent);
-  --frr-pagination-ink-current: var(--frr-page);
+  --frr-pagination-ink-current: var(--frr-heading);
   --frr-pagination-ink-disabled: var(--frr-text-muted);
   --frr-pagination-border: var(--frr-border);
   --frr-pagination-focus-ring: var(--frr-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-forest-radio] :where(a) {
   color: var(--frr-accent-strong);
-  text-decoration-color: rgba(3.672, 118.728, 86.1288, 0.35);
+  text-decoration-color: rgba(168, 134, 32, 0.35);
 }
 
 [theme=retro-forest-radio] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-forest-radio] :where(button) {
   background-image: var(--frr-button-background);
-  color: hsl(0, 5%, 95%);
+  color: #f4f1e8;
   border-color: transparent;
 }
 
 [theme=retro-forest-radio] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(0, 31.79, 112.2, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(15, 28, 46, 0.24);
 }
 
 [theme=retro-forest-radio] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-forest-radio] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(15.912, 182.988, 127.296, 0.28);
+  outline: 2px solid rgba(138, 135, 120, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-forest-radio] :where(code, pre) {
-  background-color: rgba(233.0802, 238.1598, 235.07532, 0.9);
+  background-color: rgba(235, 230, 216, 0.9);
   color: var(--frr-heading);
   border: 1px solid var(--frr-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-forest-radio][frr-hero],
 [theme=retro-forest-radio] [frr-hero] {
   background: var(--frr-hero-background);
-  color: hsl(0, 5%, 95%);
-  border: 1px solid rgba(242.8875, 241.6125, 241.6125, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(0, 31.79, 112.2, 0.45);
+  color: #f4f1e8;
+  border: 1px solid rgba(244, 241, 232, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(15, 28, 46, 0.45);
 }
 
 [theme=retro-forest-radio][frr-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-forest-radio] [frr-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: hsl(0, 5%, 95%);
+  color: #f4f1e8;
 }
 
 [theme=retro-forest-radio][frr-hero] :where(p, span, li, small, a),
 [theme=retro-forest-radio] [frr-hero] :where(p, span, li, small, a) {
-  color: rgba(242.8875, 241.6125, 241.6125, 0.86);
+  color: rgba(244, 241, 232, 0.86);
 }
 
 [theme=retro-forest-radio][frr-hero] :where(button),
 [theme=retro-forest-radio] [frr-hero] :where(button) {
-  background: hsl(0, 5%, 95%);
+  background: #f4f1e8;
   color: var(--frr-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-forest-radio][frr-stage],
 [theme=retro-forest-radio] [frr-stage] {
   background: var(--frr-stage-background);
-  color: hsl(0, 5%, 95%);
+  color: #f4f1e8;
   border: 1px solid var(--frr-stage-outline);
   box-shadow: 0 44px 100px -54px var(--frr-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(242.8875, 241.6125, 241.6125, 0.08);
+  border: 1px solid rgba(244, 241, 232, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-forest-radio][frr-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-forest-radio] [frr-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: hsl(0, 5%, 95%);
+  color: #f4f1e8;
 }
 
 [theme=retro-forest-radio][frr-stage] :where(p, span, li, small, a),
 [theme=retro-forest-radio] [frr-stage] :where(p, span, li, small, a) {
-  color: rgba(242.8875, 241.6125, 241.6125, 0.86);
+  color: rgba(244, 241, 232, 0.86);
 }
 
 [theme=retro-forest-radio][frr-chip],
 [theme=retro-forest-radio] [frr-chip] {
   background: var(--frr-chip-background);
   color: var(--frr-heading);
-  border: 1px solid rgba(229.5, 210.375, 0, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(0, 31.79, 112.2, 0.18);
+  border: 1px solid rgba(42, 65, 96, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(15, 28, 46, 0.18);
 }
 
 [theme=retro-forest-radio][frr-buybox],
 [theme=retro-forest-radio] [frr-buybox] {
   background: var(--frr-buybox-background);
   color: var(--frr-text);
-  border: 1px solid rgba(229.5, 210.375, 0, 0.3);
+  border: 1px solid rgba(42, 65, 96, 0.3);
   box-shadow: var(--frr-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-forest-radio] [frr-spec] {
   background: var(--frr-spec-background);
   color: var(--frr-text);
-  border: 1px solid rgba(229.5, 210.375, 0, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(0, 31.79, 112.2, 0.15);
+  border: 1px solid rgba(42, 65, 96, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(15, 28, 46, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-forest-radio] [pagination],
 [theme=retro-forest-radio] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-forest-radio] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #1f1805;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--frr-stage-background);
   --retro-stage-outline: var(--frr-stage-outline);
   --retro-stage-shadow: var(--frr-stage-shadow);
-  --retro-theme-page: hsl(0, 5%, 95%);
-  --retro-theme-highlight: hsl(55, 100%, 60%);
+  --retro-theme-page: #f4f1e8;
+  --retro-theme-highlight: #3d5a80;
   --juice-color-page: var(--frr-page);
   --juice-color-surface: var(--frr-surface-strong);
   --juice-color-text: var(--frr-text);
   --juice-color-text-muted: var(--frr-text-muted);
   --juice-color-heading: var(--frr-heading);
   --juice-color-accent: var(--frr-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #1f1805;
   --juice-color-border: var(--frr-border);
   --juice-color-highlight: var(--frr-highlight);
 }

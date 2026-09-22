@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Denim Dial sources: deep denim (royal blue), steel denim (cornflower), warm orange (marmalade), light denim page.
-    Derived roles feed the retro-denim-dial theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Denim Dial is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-denim-dial] {
   /* Foundation */
-  --dnd-page: rgb(250.716, 251.43, 252.144);
-  --dnd-page-tint: rgb(215.2965, 224.79015, 248.8035);
-  --dnd-page-deep: hsl(223, 100%, 22%);
-  --dnd-surface: rgba(250.716, 251.43, 252.144, 0.78);
-  --dnd-surface-strong: rgba(250.716, 251.43, 252.144, 0.92);
-  --dnd-surface-muted: rgba(215.2965, 224.79015, 248.8035, 0.78);
-  --dnd-surface-deep: hsl(223, 100%, 28%);
-  --dnd-border: rgba(56.4825, 103.95075, 224.0175, 0.26);
-  --dnd-border-strong: rgba(218.79, 119.306, 5.61, 0.38);
-  --dnd-shadow: rgba(0, 31.79, 112.2, 0.12);
+  --dnd-page: #eef2f7;
+  --dnd-page-tint: #e2e8f1;
+  --dnd-page-deep: #1c2b3a;
+  --dnd-surface: rgba(238, 242, 247, 0.78);
+  --dnd-surface-strong: rgba(238, 242, 247, 0.92);
+  --dnd-surface-muted: rgba(226, 232, 241, 0.78);
+  --dnd-surface-deep: #1a2430;
+  --dnd-border: rgba(125, 143, 163, 0.26);
+  --dnd-border-strong: rgba(240, 138, 36, 0.38);
+  --dnd-shadow: rgba(28, 43, 58, 0.12);
   /* Typography */
-  --dnd-text: hsl(223, 100%, 28%);
-  --dnd-text-muted: hsl(223, 73%, 40%);
-  --dnd-heading: hsl(223, 100%, 22%);
+  --dnd-text: #1a2430;
+  --dnd-text-muted: #5a6a7c;
+  --dnd-heading: #1c2b3a;
   --dnd-body-font: "Lato", sans-serif;
   --dnd-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --dnd-accent: hsl(32, 95%, 44%);
-  --dnd-accent-soft: hsl(48, 96%, 76%);
-  --dnd-accent-strong: hsl(26, 90%, 37%);
-  --dnd-highlight: rgb(188.8275, 204.65025, 244.6725);
+  --dnd-accent: #f08a24;
+  --dnd-accent-soft: #f5b066;
+  --dnd-accent-strong: #d97512;
+  --dnd-highlight: #5b8db8;
   /* Surface recipes */
   --dnd-page-background:
-      radial-gradient(circle at top left, rgba(188.8275, 204.65025, 244.6725, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(208.67925, 219.755175, 247.77075, 0.45), transparent 30%),
-      linear-gradient(180deg, rgb(250.716, 251.43, 252.144) 0%, rgb(215.2965, 224.79015, 248.8035) 100%);
-  --dnd-button-background: linear-gradient(135deg, hsl(32, 95%, 44%), hsl(223, 100%, 34%));
+      radial-gradient(circle at top left, rgba(91, 141, 184, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(109, 140, 176, 0.45), transparent 30%),
+      linear-gradient(180deg, #eef2f7 0%, #e2e8f1 100%);
+  --dnd-button-background: linear-gradient(135deg, #f08a24, #2a476c);
   --dnd-card-background:
-      linear-gradient(180deg, rgba(250.716, 251.43, 252.144, 0.96) 0%, rgba(215.2965, 224.79015, 248.8035, 0.88) 100%);
+      linear-gradient(180deg, rgba(238, 242, 247, 0.96) 0%, rgba(226, 232, 241, 0.88) 100%);
   --dnd-panel-background:
-      linear-gradient(180deg, rgba(250.716, 251.43, 252.144, 0.98) 0%, rgba(215.2965, 224.79015, 248.8035, 0.72) 100%);
+      linear-gradient(180deg, rgba(238, 242, 247, 0.98) 0%, rgba(226, 232, 241, 0.72) 100%);
   --dnd-hero-background:
-      radial-gradient(circle at top left, rgba(56.4825, 103.95075, 224.0175, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(34.425, 87.1675, 220.575, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(223, 100%, 22%) 0%, hsl(23, 83%, 31%) 54%, hsl(26, 90%, 37%) 100%);
+      radial-gradient(circle at top left, rgba(63, 111, 153, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(59, 95, 138, 0.28), transparent 32%),
+      linear-gradient(135deg, #1c2b3a 0%, #a85a0e 54%, #d97512 100%);
   --dnd-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(188.8275, 204.65025, 244.6725, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(252.552, 229.0512, 135.048, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(223, 100%, 22%) 0%, hsl(223, 100%, 28%) 52%, hsl(26, 90%, 37%) 100%);
-  --dnd-stage-outline: rgba(250.716, 251.43, 252.144, 0.14);
-  --dnd-stage-shadow: rgba(0, 31.79, 112.2, 0.34);
-  --dnd-chip-background: rgba(250.716, 251.43, 252.144, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(91, 141, 184, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(245, 176, 102, 0.2), transparent 24%),
+      linear-gradient(145deg, #1c2b3a 0%, #1a2430 52%, #d97512 100%);
+  --dnd-stage-outline: rgba(238, 242, 247, 0.14);
+  --dnd-stage-shadow: rgba(28, 43, 58, 0.34);
+  --dnd-chip-background: rgba(238, 242, 247, 0.96);
   --dnd-buybox-background:
-      linear-gradient(180deg, rgba(250.716, 251.43, 252.144, 0.98) 0%, rgba(215.2965, 224.79015, 248.8035, 0.82) 100%);
-  --dnd-buybox-shadow: 0 32px 70px -42px rgba(0, 31.79, 112.2, 0.24);
+      linear-gradient(180deg, rgba(238, 242, 247, 0.98) 0%, rgba(226, 232, 241, 0.82) 100%);
+  --dnd-buybox-shadow: 0 32px 70px -42px rgba(28, 43, 58, 0.24);
   --dnd-spec-background:
-      linear-gradient(180deg, rgba(215.2965, 224.79015, 248.8035, 0.95) 0%, rgba(250.716, 251.43, 252.144, 0.98) 100%);
+      linear-gradient(180deg, rgba(226, 232, 241, 0.95) 0%, rgba(238, 242, 247, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Denim Dial tokens; no new hue family. */
   --dnd-trigger: var(--dnd-surface-strong);
@@ -74,12 +69,24 @@
   --dnd-chevron: var(--dnd-accent);
   --dnd-panel-rule: var(--dnd-border);
   --dnd-focus-ring: var(--dnd-accent);
+  --dnd-item-border: var(--dnd-border);
+  --dnd-item-border-open: var(--dnd-border);
+  --dnd-trigger-accent: var(--dnd-accent);
+  --dnd-panel-well: var(--dnd-surface-muted);
+  --dnd-open-glow: 0 14px 32px -26px var(--dnd-shadow);
   --juice-accordion-trigger: var(--dnd-trigger);
   --juice-accordion-trigger-hover: var(--dnd-trigger-hover);
   --juice-accordion-trigger-open: var(--dnd-trigger-open);
   --juice-accordion-chevron: var(--dnd-chevron);
   --juice-accordion-panel-rule: var(--dnd-panel-rule);
   --juice-accordion-focus-ring: var(--dnd-focus-ring);
+  --juice-accordion-item-border: var(--dnd-item-border);
+  --juice-accordion-item-border-open: var(--dnd-item-border-open);
+  --juice-accordion-trigger-accent: var(--dnd-trigger-accent);
+  --juice-accordion-panel: var(--dnd-panel-well);
+  --juice-accordion-open-glow: var(--dnd-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --dnd-tabs-trigger: transparent;
   --dnd-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --dnd-tabs-indicator: var(--dnd-accent);
   --dnd-tabs-list-rule: var(--dnd-border);
   --dnd-tabs-focus-ring: var(--dnd-accent);
+  --dnd-tabs-panel: var(--dnd-panel-well);
   --juice-tabs-trigger: var(--dnd-tabs-trigger);
   --juice-tabs-trigger-hover: var(--dnd-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--dnd-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--dnd-tabs-indicator);
   --juice-tabs-list-rule: var(--dnd-tabs-list-rule);
   --juice-tabs-focus-ring: var(--dnd-tabs-focus-ring);
+  --juice-tabs-panel: var(--dnd-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--dnd-surface);
   --juice-surface-soft-border: var(--dnd-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--dnd-progress-fill);
   --juice-progress-ink: var(--dnd-progress-ink);
   --juice-progress-focus-ring: var(--dnd-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --dnd-pagination-surface: var(--dnd-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --dnd-pagination-surface: var(--dnd-surface-strong);
   --dnd-pagination-surface-hover: var(--dnd-surface-muted);
   --dnd-pagination-surface-current: var(--dnd-accent);
   --dnd-pagination-ink: var(--dnd-text);
   --dnd-pagination-ink-hover: var(--dnd-accent);
-  --dnd-pagination-ink-current: var(--dnd-page);
+  --dnd-pagination-ink-current: var(--dnd-heading);
   --dnd-pagination-ink-disabled: var(--dnd-text-muted);
   --dnd-pagination-border: var(--dnd-border);
   --dnd-pagination-focus-ring: var(--dnd-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-denim-dial] :where(a) {
   color: var(--dnd-accent-strong);
-  text-decoration-color: rgba(179.265, 83.028, 9.435, 0.35);
+  text-decoration-color: rgba(217, 117, 18, 0.35);
 }
 
 [theme=retro-denim-dial] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-denim-dial] :where(button) {
   background-image: var(--dnd-button-background);
-  color: rgb(250.716, 251.43, 252.144);
+  color: #eef2f7;
   border-color: transparent;
 }
 
 [theme=retro-denim-dial] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(0, 31.79, 112.2, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(28, 43, 58, 0.24);
 }
 
 [theme=retro-denim-dial] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-denim-dial] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(56.4825, 103.95075, 224.0175, 0.28);
+  outline: 2px solid rgba(125, 143, 163, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-denim-dial] :where(code, pre) {
-  background-color: rgba(215.2965, 224.79015, 248.8035, 0.9);
+  background-color: rgba(226, 232, 241, 0.9);
   color: var(--dnd-heading);
   border: 1px solid var(--dnd-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-denim-dial][dnd-hero],
 [theme=retro-denim-dial] [dnd-hero] {
   background: var(--dnd-hero-background);
-  color: rgb(250.716, 251.43, 252.144);
-  border: 1px solid rgba(250.716, 251.43, 252.144, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(0, 31.79, 112.2, 0.45);
+  color: #eef2f7;
+  border: 1px solid rgba(238, 242, 247, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(28, 43, 58, 0.45);
 }
 
 [theme=retro-denim-dial][dnd-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-denim-dial] [dnd-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: rgb(250.716, 251.43, 252.144);
+  color: #eef2f7;
 }
 
 [theme=retro-denim-dial][dnd-hero] :where(p, span, li, small, a),
 [theme=retro-denim-dial] [dnd-hero] :where(p, span, li, small, a) {
-  color: rgba(250.716, 251.43, 252.144, 0.86);
+  color: rgba(238, 242, 247, 0.86);
 }
 
 [theme=retro-denim-dial][dnd-hero] :where(button),
 [theme=retro-denim-dial] [dnd-hero] :where(button) {
-  background: rgb(250.716, 251.43, 252.144);
+  background: #eef2f7;
   color: var(--dnd-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-denim-dial][dnd-stage],
 [theme=retro-denim-dial] [dnd-stage] {
   background: var(--dnd-stage-background);
-  color: rgb(250.716, 251.43, 252.144);
+  color: #eef2f7;
   border: 1px solid var(--dnd-stage-outline);
   box-shadow: 0 44px 100px -54px var(--dnd-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(250.716, 251.43, 252.144, 0.08);
+  border: 1px solid rgba(238, 242, 247, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-denim-dial][dnd-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-denim-dial] [dnd-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: rgb(250.716, 251.43, 252.144);
+  color: #eef2f7;
 }
 
 [theme=retro-denim-dial][dnd-stage] :where(p, span, li, small, a),
 [theme=retro-denim-dial] [dnd-stage] :where(p, span, li, small, a) {
-  color: rgba(250.716, 251.43, 252.144, 0.86);
+  color: rgba(238, 242, 247, 0.86);
 }
 
 [theme=retro-denim-dial][dnd-chip],
 [theme=retro-denim-dial] [dnd-chip] {
   background: var(--dnd-chip-background);
   color: var(--dnd-heading);
-  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(0, 31.79, 112.2, 0.18);
+  border: 1px solid rgba(63, 111, 153, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(28, 43, 58, 0.18);
 }
 
 [theme=retro-denim-dial][dnd-buybox],
 [theme=retro-denim-dial] [dnd-buybox] {
   background: var(--dnd-buybox-background);
   color: var(--dnd-text);
-  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.3);
+  border: 1px solid rgba(63, 111, 153, 0.3);
   box-shadow: var(--dnd-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-denim-dial] [dnd-spec] {
   background: var(--dnd-spec-background);
   color: var(--dnd-text);
-  border: 1px solid rgba(56.4825, 103.95075, 224.0175, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(0, 31.79, 112.2, 0.15);
+  border: 1px solid rgba(63, 111, 153, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(28, 43, 58, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-denim-dial] [pagination],
 [theme=retro-denim-dial] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-denim-dial] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #2a1605;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--dnd-stage-background);
   --retro-stage-outline: var(--dnd-stage-outline);
   --retro-stage-shadow: var(--dnd-stage-shadow);
-  --retro-theme-page: rgb(250.716, 251.43, 252.144);
-  --retro-theme-highlight: rgb(188.8275, 204.65025, 244.6725);
+  --retro-theme-page: #eef2f7;
+  --retro-theme-highlight: #5b8db8;
   --juice-color-page: var(--dnd-page);
   --juice-color-surface: var(--dnd-surface-strong);
   --juice-color-text: var(--dnd-text);
   --juice-color-text-muted: var(--dnd-text-muted);
   --juice-color-heading: var(--dnd-heading);
   --juice-color-accent: var(--dnd-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #2a1605;
   --juice-color-border: var(--dnd-border);
   --juice-color-highlight: var(--dnd-highlight);
 }

@@ -25,7 +25,7 @@ Required regions:
 
 Required system work (not just HTML volume):
 
-- Import Juice **core + one theme**. Library `citrusmint` / `tide` / `aquaflux` / `kiwipress` is acceptable. An app-owned generated theme is better if you can run the generator; a complete YAML sketch counts if you cannot.
+- Import Juice **core + one theme**. Library `citrusmint` / `tide` / `aquaflux` / `kiwipress` / any `retro-*` library theme is acceptable. An app-owned generated theme is better if you can run the generator; a complete YAML sketch counts if you cannot.
 - Prefer theme identity for page/heading/body. Local token attributes are allowed where you are making a *local* decision.
 - No invented Juice attributes. If you need something unspecified (`adapt`), leave it out and say so. Shipped `variant="monochromatic|glass|tinted"` is allowed.
 - At most **one** app CSS file with a short comment at the top stating what it is allowed to do.

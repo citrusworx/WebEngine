@@ -75,12 +75,24 @@
     --bdw-chevron: var(--bdw-accent);
     --bdw-panel-rule: var(--bdw-border);
     --bdw-focus-ring: var(--bdw-accent);
+    --bdw-item-border: var(--bdw-border);
+    --bdw-item-border-open: var(--bdw-border);
+    --bdw-trigger-accent: var(--bdw-accent);
+    --bdw-panel-well: var(--bdw-surface-muted);
+    --bdw-open-glow: 0 14px 32px -26px var(--bdw-shadow);
     --juice-accordion-trigger: var(--bdw-trigger);
     --juice-accordion-trigger-hover: var(--bdw-trigger-hover);
     --juice-accordion-trigger-open: var(--bdw-trigger-open);
     --juice-accordion-chevron: var(--bdw-chevron);
     --juice-accordion-panel-rule: var(--bdw-panel-rule);
     --juice-accordion-focus-ring: var(--bdw-focus-ring);
+    --juice-accordion-item-border: var(--bdw-item-border);
+    --juice-accordion-item-border-open: var(--bdw-item-border-open);
+    --juice-accordion-trigger-accent: var(--bdw-trigger-accent);
+    --juice-accordion-panel: var(--bdw-panel-well);
+    --juice-accordion-open-glow: var(--bdw-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
     /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
     --bdw-tabs-trigger: transparent;
@@ -92,6 +104,7 @@
     --bdw-tabs-indicator: var(--bdw-accent);
     --bdw-tabs-list-rule: var(--bdw-border);
     --bdw-tabs-focus-ring: var(--bdw-accent);
+    --bdw-tabs-panel: var(--bdw-panel-well);
     --juice-tabs-trigger: var(--bdw-tabs-trigger);
     --juice-tabs-trigger-hover: var(--bdw-tabs-trigger-hover);
     --juice-tabs-trigger-active: var(--bdw-tabs-trigger-active);
@@ -101,6 +114,7 @@
     --juice-tabs-indicator: var(--bdw-tabs-indicator);
     --juice-tabs-list-rule: var(--bdw-tabs-list-rule);
     --juice-tabs-focus-ring: var(--bdw-tabs-focus-ring);
+    --juice-tabs-panel: var(--bdw-tabs-panel);
 
     /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
     --juice-surface-soft-bg: var(--bdw-surface);
@@ -455,16 +469,15 @@
     --juice-progress-ink: var(--bdw-progress-ink);
     --juice-progress-focus-ring: var(--bdw-progress-focus-ring);
 
-    /* Pagination chrome — APG page set from existing tokens. Page controls
-       are surfaces, not a CTA. The trail stays transparent. Current fill
-       is accent; ink on that fill is page. Distinct from breadcrumb,
-       nav[type="pagination"], tabs, and wizard steps. */
-    --bdw-pagination-surface: var(--bdw-surface);
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --bdw-pagination-surface: var(--bdw-surface-strong);
     --bdw-pagination-surface-hover: var(--bdw-surface-muted);
     --bdw-pagination-surface-current: var(--bdw-accent);
     --bdw-pagination-ink: var(--bdw-text);
     --bdw-pagination-ink-hover: var(--bdw-accent);
-    --bdw-pagination-ink-current: var(--bdw-page);
+    --bdw-pagination-ink-current: var(--bdw-heading);
     --bdw-pagination-ink-disabled: var(--bdw-text-muted);
     --bdw-pagination-border: var(--bdw-border);
     --bdw-pagination-focus-ring: var(--bdw-accent);
@@ -1422,11 +1435,8 @@
     outline-offset: 2px;
 }
 
-
-
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme="retro-boardwalk"] [pagination],
 [theme="retro-boardwalk"] nav[pagination] {
     background-image: none;
@@ -1491,6 +1501,7 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme="retro-boardwalk"] :where(button) {

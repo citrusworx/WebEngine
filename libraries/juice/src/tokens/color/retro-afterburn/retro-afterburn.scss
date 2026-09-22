@@ -1,34 +1,20 @@
-@use 'sass:color';
-@use '../gray/gray.scss' as *;
-@use '../blue/blue.scss' as *;
-@use '../orange/orange.scss' as *;
-@use '../white/white.scss' as *;
+// Juice color tokens for retro-afterburn (restored after incomplete Codex import).
+// Theme-specific identity values — not a full 100–900 swatch family.
 
-/*
-    Afterburn sources: charcoal (slate), steel blue (cornflower), safety orange, light steel page.
-    Derived roles feed the retro-afterburn theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-
-$afb-source-1: $slate-900;
-$afb-source-2: $cornflower-600;
-$afb-source-3: $orange-600;
-$afb-source-4: $slate-100;
-
-$afb-page: $afb-source-4;
-$afb-page-tint: color.mix($cornflower-200, $white-100, 32%);
-$afb-deep: $afb-source-1;
-$afb-text: $slate-800;
-$afb-text-muted: $slate-600;
-$afb-border-color: $cornflower-400;
-$afb-accent: $afb-source-3;
-$afb-accent-soft: color.mix($orange-300, $white-100, 70%);
-$afb-accent-strong: $orange-800;
-$afb-accent-deep: $orange-900;
-$afb-highlight: color.mix($cornflower-300, $white-100, 45%);
-$afb-highlight-strong: $cornflower-300;
-$afb-secondary: $afb-source-2;
-$afb-secondary-soft: color.mix($cornflower-200, $white-100, 40%);
-$afb-secondary-strong: $cornflower-700;
-$afb-on-accent: $white-100;
-
+$afb-page: #1a1d24;
+$afb-page-tint: #242933;
+$afb-deep: #0d0f14;
+$afb-text: #e8eaef;
+$afb-text-muted: #9aa3b2;
+$afb-heading: #f4f6fa;
+$afb-accent: #ff6a00;
+$afb-accent-soft: #ff9a4d;
+$afb-accent-strong: #e85d00;
+$afb-accent-deep: #b34700;
+$afb-secondary: #4a6fa5;
+$afb-secondary-soft: #7a98c2;
+$afb-secondary-strong: #345687;
+$afb-highlight: #5b8def;
+$afb-highlight-strong: #3d6fd4;
+$afb-border-color: #8b93a7;
+$afb-on-accent: #140c05;

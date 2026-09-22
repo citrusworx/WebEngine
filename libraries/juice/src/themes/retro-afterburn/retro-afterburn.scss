@@ -75,12 +75,24 @@
     --afb-chevron: var(--afb-accent);
     --afb-panel-rule: var(--afb-border);
     --afb-focus-ring: var(--afb-accent);
+    --afb-item-border: var(--afb-border);
+    --afb-item-border-open: var(--afb-border);
+    --afb-trigger-accent: var(--afb-accent);
+    --afb-panel-well: var(--afb-surface-muted);
+    --afb-open-glow: 0 14px 32px -26px var(--afb-shadow);
     --juice-accordion-trigger: var(--afb-trigger);
     --juice-accordion-trigger-hover: var(--afb-trigger-hover);
     --juice-accordion-trigger-open: var(--afb-trigger-open);
     --juice-accordion-chevron: var(--afb-chevron);
     --juice-accordion-panel-rule: var(--afb-panel-rule);
     --juice-accordion-focus-ring: var(--afb-focus-ring);
+    --juice-accordion-item-border: var(--afb-item-border);
+    --juice-accordion-item-border-open: var(--afb-item-border-open);
+    --juice-accordion-trigger-accent: var(--afb-trigger-accent);
+    --juice-accordion-panel: var(--afb-panel-well);
+    --juice-accordion-open-glow: var(--afb-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
 
     /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
     --afb-tabs-trigger: transparent;
@@ -92,6 +104,7 @@
     --afb-tabs-indicator: var(--afb-accent);
     --afb-tabs-list-rule: var(--afb-border);
     --afb-tabs-focus-ring: var(--afb-accent);
+    --afb-tabs-panel: var(--afb-panel-well);
     --juice-tabs-trigger: var(--afb-tabs-trigger);
     --juice-tabs-trigger-hover: var(--afb-tabs-trigger-hover);
     --juice-tabs-trigger-active: var(--afb-tabs-trigger-active);
@@ -101,6 +114,7 @@
     --juice-tabs-indicator: var(--afb-tabs-indicator);
     --juice-tabs-list-rule: var(--afb-tabs-list-rule);
     --juice-tabs-focus-ring: var(--afb-tabs-focus-ring);
+    --juice-tabs-panel: var(--afb-tabs-panel);
 
     /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
     --juice-surface-soft-bg: var(--afb-surface);
@@ -455,16 +469,15 @@
     --juice-progress-ink: var(--afb-progress-ink);
     --juice-progress-focus-ring: var(--afb-progress-focus-ring);
 
-    /* Pagination chrome — APG page set from existing tokens. Page controls
-       are surfaces, not a CTA. The trail stays transparent. Current fill
-       is accent; ink on that fill is page. Distinct from breadcrumb,
-       nav[type="pagination"], tabs, and wizard steps. */
-    --afb-pagination-surface: var(--afb-surface);
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --afb-pagination-surface: var(--afb-surface-strong);
     --afb-pagination-surface-hover: var(--afb-surface-muted);
     --afb-pagination-surface-current: var(--afb-accent);
     --afb-pagination-ink: var(--afb-text);
     --afb-pagination-ink-hover: var(--afb-accent);
-    --afb-pagination-ink-current: var(--afb-page);
+    --afb-pagination-ink-current: var(--afb-heading);
     --afb-pagination-ink-disabled: var(--afb-text-muted);
     --afb-pagination-border: var(--afb-border);
     --afb-pagination-focus-ring: var(--afb-accent);
@@ -1422,11 +1435,8 @@
     outline-offset: 2px;
 }
 
-
-
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme="retro-afterburn"] [pagination],
 [theme="retro-afterburn"] nav[pagination] {
     background-image: none;
@@ -1491,6 +1501,7 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme="retro-afterburn"] :where(button) {

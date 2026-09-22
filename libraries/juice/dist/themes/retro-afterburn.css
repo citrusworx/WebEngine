@@ -1,10 +1,5 @@
 @charset "UTF-8";
 /*
-    Afterburn sources: charcoal (slate), steel blue (cornflower), safety orange, light steel page.
-    Derived roles feed the retro-afterburn theme contract.
-    No separate hue family — mixes stay inside these swatches.
-*/
-/*
     Afterburn is a fully expressed Juice theme contract.
     The theme owns:
     - color relationships
@@ -19,53 +14,53 @@
 */
 [theme=retro-afterburn] {
   /* Foundation */
-  --afb-page: hsl(210, 20%, 98%);
-  --afb-page-tint: rgb(212.6496, 222.77616, 248.3904);
-  --afb-page-deep: hsl(215, 28%, 17%);
-  --afb-surface: rgba(248.88, 249.9, 250.92, 0.78);
-  --afb-surface-strong: rgba(248.88, 249.9, 250.92, 0.92);
-  --afb-surface-muted: rgba(212.6496, 222.77616, 248.3904, 0.78);
-  --afb-surface-deep: hsl(217, 19%, 27%);
-  --afb-border: rgba(56.4825, 103.95075, 224.0175, 0.26);
-  --afb-border-strong: rgba(255, 85, 0, 0.38);
-  --afb-shadow: rgba(31.212, 41.327, 55.488, 0.12);
+  --afb-page: #1a1d24;
+  --afb-page-tint: #242933;
+  --afb-page-deep: #0d0f14;
+  --afb-surface: rgba(26, 29, 36, 0.78);
+  --afb-surface-strong: rgba(26, 29, 36, 0.92);
+  --afb-surface-muted: rgba(36, 41, 51, 0.78);
+  --afb-surface-deep: #e8eaef;
+  --afb-border: rgba(139, 147, 167, 0.26);
+  --afb-border-strong: rgba(255, 106, 0, 0.38);
+  --afb-shadow: rgba(13, 15, 20, 0.12);
   /* Typography */
-  --afb-text: hsl(217, 19%, 27%);
-  --afb-text-muted: hsl(220, 9%, 46%);
-  --afb-heading: hsl(215, 28%, 17%);
+  --afb-text: #e8eaef;
+  --afb-text-muted: #9aa3b2;
+  --afb-heading: #0d0f14;
   --afb-body-font: "Lato", sans-serif;
   --afb-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
-  --afb-accent: hsl(20, 100%, 50%);
-  --afb-accent-soft: rgb(255, 219.3, 201.45);
-  --afb-accent-strong: hsl(20, 100%, 35%);
-  --afb-highlight: rgb(175.593, 194.5803, 242.607);
+  --afb-accent: #ff6a00;
+  --afb-accent-soft: #ff9a4d;
+  --afb-accent-strong: #e85d00;
+  --afb-highlight: #5b8def;
   /* Surface recipes */
   --afb-page-background:
-      radial-gradient(circle at top left, rgba(175.593, 194.5803, 242.607, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(202.062, 214.7202, 246.738, 0.45), transparent 30%),
-      linear-gradient(180deg, hsl(210, 20%, 98%) 0%, rgb(212.6496, 222.77616, 248.3904) 100%);
-  --afb-button-background: linear-gradient(135deg, hsl(20, 100%, 50%), hsl(223, 73%, 40%));
+      radial-gradient(circle at top left, rgba(91, 141, 239, 0.72), transparent 38%),
+      radial-gradient(circle at top right, rgba(122, 152, 194, 0.45), transparent 30%),
+      linear-gradient(180deg, #1a1d24 0%, #242933 100%);
+  --afb-button-background: linear-gradient(135deg, #ff6a00, #345687);
   --afb-card-background:
-      linear-gradient(180deg, rgba(248.88, 249.9, 250.92, 0.96) 0%, rgba(212.6496, 222.77616, 248.3904, 0.88) 100%);
+      linear-gradient(180deg, rgba(26, 29, 36, 0.96) 0%, rgba(36, 41, 51, 0.88) 100%);
   --afb-panel-background:
-      linear-gradient(180deg, rgba(248.88, 249.9, 250.92, 0.98) 0%, rgba(212.6496, 222.77616, 248.3904, 0.72) 100%);
+      linear-gradient(180deg, rgba(26, 29, 36, 0.98) 0%, rgba(36, 41, 51, 0.72) 100%);
   --afb-hero-background:
-      radial-gradient(circle at top left, rgba(78.54, 120.734, 227.46, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(30.9825, 78.45075, 198.5175, 0.28), transparent 32%),
-      linear-gradient(135deg, hsl(215, 28%, 17%) 0%, hsl(20, 100%, 25%) 54%, hsl(20, 100%, 35%) 100%);
+      radial-gradient(circle at top left, rgba(61, 111, 212, 0.38), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(74, 111, 165, 0.28), transparent 32%),
+      linear-gradient(135deg, #0d0f14 0%, #b34700 54%, #e85d00 100%);
   --afb-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(175.593, 194.5803, 242.607, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 219.3, 201.45, 0.2), transparent 24%),
-      linear-gradient(145deg, hsl(215, 28%, 17%) 0%, hsl(217, 19%, 27%) 52%, hsl(20, 100%, 35%) 100%);
-  --afb-stage-outline: rgba(248.88, 249.9, 250.92, 0.14);
-  --afb-stage-shadow: rgba(31.212, 41.327, 55.488, 0.34);
-  --afb-chip-background: rgba(248.88, 249.9, 250.92, 0.96);
+      radial-gradient(circle at 18% 20%, rgba(91, 141, 239, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 22%, rgba(255, 154, 77, 0.2), transparent 24%),
+      linear-gradient(145deg, #0d0f14 0%, #e8eaef 52%, #e85d00 100%);
+  --afb-stage-outline: rgba(26, 29, 36, 0.14);
+  --afb-stage-shadow: rgba(13, 15, 20, 0.34);
+  --afb-chip-background: rgba(26, 29, 36, 0.96);
   --afb-buybox-background:
-      linear-gradient(180deg, rgba(248.88, 249.9, 250.92, 0.98) 0%, rgba(212.6496, 222.77616, 248.3904, 0.82) 100%);
-  --afb-buybox-shadow: 0 32px 70px -42px rgba(31.212, 41.327, 55.488, 0.24);
+      linear-gradient(180deg, rgba(26, 29, 36, 0.98) 0%, rgba(36, 41, 51, 0.82) 100%);
+  --afb-buybox-shadow: 0 32px 70px -42px rgba(13, 15, 20, 0.24);
   --afb-spec-background:
-      linear-gradient(180deg, rgba(212.6496, 222.77616, 248.3904, 0.95) 0%, rgba(248.88, 249.9, 250.92, 0.98) 100%);
+      linear-gradient(180deg, rgba(36, 41, 51, 0.95) 0%, rgba(26, 29, 36, 0.98) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Afterburn tokens; no new hue family. */
   --afb-trigger: var(--afb-surface-strong);
@@ -74,12 +69,24 @@
   --afb-chevron: var(--afb-accent);
   --afb-panel-rule: var(--afb-border);
   --afb-focus-ring: var(--afb-accent);
+  --afb-item-border: var(--afb-border);
+  --afb-item-border-open: var(--afb-border);
+  --afb-trigger-accent: var(--afb-accent);
+  --afb-panel-well: var(--afb-surface-muted);
+  --afb-open-glow: 0 14px 32px -26px var(--afb-shadow);
   --juice-accordion-trigger: var(--afb-trigger);
   --juice-accordion-trigger-hover: var(--afb-trigger-hover);
   --juice-accordion-trigger-open: var(--afb-trigger-open);
   --juice-accordion-chevron: var(--afb-chevron);
   --juice-accordion-panel-rule: var(--afb-panel-rule);
   --juice-accordion-focus-ring: var(--afb-focus-ring);
+  --juice-accordion-item-border: var(--afb-item-border);
+  --juice-accordion-item-border-open: var(--afb-item-border-open);
+  --juice-accordion-trigger-accent: var(--afb-trigger-accent);
+  --juice-accordion-panel: var(--afb-panel-well);
+  --juice-accordion-open-glow: var(--afb-open-glow);
+  --juice-accordion-chevron-size: 0.7rem;
+  --juice-accordion-chevron-weight: 2.5px;
   /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
   --afb-tabs-trigger: transparent;
   --afb-tabs-trigger-hover: transparent;
@@ -90,6 +97,7 @@
   --afb-tabs-indicator: var(--afb-accent);
   --afb-tabs-list-rule: var(--afb-border);
   --afb-tabs-focus-ring: var(--afb-accent);
+  --afb-tabs-panel: var(--afb-panel-well);
   --juice-tabs-trigger: var(--afb-tabs-trigger);
   --juice-tabs-trigger-hover: var(--afb-tabs-trigger-hover);
   --juice-tabs-trigger-active: var(--afb-tabs-trigger-active);
@@ -99,6 +107,7 @@
   --juice-tabs-indicator: var(--afb-tabs-indicator);
   --juice-tabs-list-rule: var(--afb-tabs-list-rule);
   --juice-tabs-focus-ring: var(--afb-tabs-focus-ring);
+  --juice-tabs-panel: var(--afb-tabs-panel);
   /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
   --juice-surface-soft-bg: var(--afb-surface);
   --juice-surface-soft-border: var(--afb-border);
@@ -433,16 +442,15 @@
   --juice-progress-fill: var(--afb-progress-fill);
   --juice-progress-ink: var(--afb-progress-ink);
   --juice-progress-focus-ring: var(--afb-progress-focus-ring);
-  /* Pagination chrome — APG page set from existing tokens. Page controls
-     are surfaces, not a CTA. The trail stays transparent. Current fill
-     is accent; ink on that fill is page. Distinct from breadcrumb,
-     nav[type="pagination"], tabs, and wizard steps. */
-  --afb-pagination-surface: var(--afb-surface);
+  /* Pagination chrome — chips, not a CTA bar.
+     Current fill stays accent; ink on that fill is heading.
+     Distinct from breadcrumb, tabs, and wizard steps. */
+  --afb-pagination-surface: var(--afb-surface-strong);
   --afb-pagination-surface-hover: var(--afb-surface-muted);
   --afb-pagination-surface-current: var(--afb-accent);
   --afb-pagination-ink: var(--afb-text);
   --afb-pagination-ink-hover: var(--afb-accent);
-  --afb-pagination-ink-current: var(--afb-page);
+  --afb-pagination-ink-current: var(--afb-heading);
   --afb-pagination-ink-disabled: var(--afb-text-muted);
   --afb-pagination-border: var(--afb-border);
   --afb-pagination-focus-ring: var(--afb-accent);
@@ -514,7 +522,7 @@
 /* Links and emphasis */
 [theme=retro-afterburn] :where(a) {
   color: var(--afb-accent-strong);
-  text-decoration-color: rgba(178.5, 59.5, 0, 0.35);
+  text-decoration-color: rgba(232, 93, 0, 0.35);
 }
 
 [theme=retro-afterburn] :where(a:hover, a:focus-visible) {
@@ -532,12 +540,12 @@
 
 [theme=retro-afterburn] :where(button) {
   background-image: var(--afb-button-background);
-  color: hsl(210, 20%, 98%);
+  color: #1a1d24;
   border-color: transparent;
 }
 
 [theme=retro-afterburn] :where(button:hover, button:focus-visible) {
-  box-shadow: 0 18px 38px -24px rgba(31.212, 41.327, 55.488, 0.24);
+  box-shadow: 0 18px 38px -24px rgba(13, 15, 20, 0.24);
 }
 
 [theme=retro-afterburn] :where(input::placeholder, textarea::placeholder) {
@@ -545,12 +553,12 @@
 }
 
 [theme=retro-afterburn] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid rgba(56.4825, 103.95075, 224.0175, 0.28);
+  outline: 2px solid rgba(139, 147, 167, 0.28);
   outline-offset: 2px;
 }
 
 [theme=retro-afterburn] :where(code, pre) {
-  background-color: rgba(212.6496, 222.77616, 248.3904, 0.9);
+  background-color: rgba(36, 41, 51, 0.9);
   color: var(--afb-heading);
   border: 1px solid var(--afb-border);
 }
@@ -614,24 +622,24 @@
 [theme=retro-afterburn][afb-hero],
 [theme=retro-afterburn] [afb-hero] {
   background: var(--afb-hero-background);
-  color: hsl(210, 20%, 98%);
-  border: 1px solid rgba(248.88, 249.9, 250.92, 0.16);
-  box-shadow: 0 36px 90px -48px rgba(31.212, 41.327, 55.488, 0.45);
+  color: #1a1d24;
+  border: 1px solid rgba(26, 29, 36, 0.16);
+  box-shadow: 0 36px 90px -48px rgba(13, 15, 20, 0.45);
 }
 
 [theme=retro-afterburn][afb-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-afterburn] [afb-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: hsl(210, 20%, 98%);
+  color: #1a1d24;
 }
 
 [theme=retro-afterburn][afb-hero] :where(p, span, li, small, a),
 [theme=retro-afterburn] [afb-hero] :where(p, span, li, small, a) {
-  color: rgba(248.88, 249.9, 250.92, 0.86);
+  color: rgba(26, 29, 36, 0.86);
 }
 
 [theme=retro-afterburn][afb-hero] :where(button),
 [theme=retro-afterburn] [afb-hero] :where(button) {
-  background: hsl(210, 20%, 98%);
+  background: #1a1d24;
   color: var(--afb-heading);
   border-color: transparent;
 }
@@ -639,7 +647,7 @@
 [theme=retro-afterburn][afb-stage],
 [theme=retro-afterburn] [afb-stage] {
   background: var(--afb-stage-background);
-  color: hsl(210, 20%, 98%);
+  color: #1a1d24;
   border: 1px solid var(--afb-stage-outline);
   box-shadow: 0 44px 100px -54px var(--afb-stage-shadow);
   overflow: hidden;
@@ -651,34 +659,34 @@
   content: "";
   position: absolute;
   inset: 1.25rem;
-  border: 1px solid rgba(248.88, 249.9, 250.92, 0.08);
+  border: 1px solid rgba(26, 29, 36, 0.08);
   border-radius: 1.25rem;
   pointer-events: none;
 }
 
 [theme=retro-afterburn][afb-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-afterburn] [afb-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: hsl(210, 20%, 98%);
+  color: #1a1d24;
 }
 
 [theme=retro-afterburn][afb-stage] :where(p, span, li, small, a),
 [theme=retro-afterburn] [afb-stage] :where(p, span, li, small, a) {
-  color: rgba(248.88, 249.9, 250.92, 0.86);
+  color: rgba(26, 29, 36, 0.86);
 }
 
 [theme=retro-afterburn][afb-chip],
 [theme=retro-afterburn] [afb-chip] {
   background: var(--afb-chip-background);
   color: var(--afb-heading);
-  border: 1px solid rgba(78.54, 120.734, 227.46, 0.34);
-  box-shadow: 0 18px 40px -30px rgba(31.212, 41.327, 55.488, 0.18);
+  border: 1px solid rgba(61, 111, 212, 0.34);
+  box-shadow: 0 18px 40px -30px rgba(13, 15, 20, 0.18);
 }
 
 [theme=retro-afterburn][afb-buybox],
 [theme=retro-afterburn] [afb-buybox] {
   background: var(--afb-buybox-background);
   color: var(--afb-text);
-  border: 1px solid rgba(78.54, 120.734, 227.46, 0.3);
+  border: 1px solid rgba(61, 111, 212, 0.3);
   box-shadow: var(--afb-buybox-shadow);
 }
 
@@ -691,8 +699,8 @@
 [theme=retro-afterburn] [afb-spec] {
   background: var(--afb-spec-background);
   color: var(--afb-text);
-  border: 1px solid rgba(78.54, 120.734, 227.46, 0.26);
-  box-shadow: 0 20px 46px -34px rgba(31.212, 41.327, 55.488, 0.15);
+  border: 1px solid rgba(61, 111, 212, 0.26);
+  box-shadow: 0 20px 46px -34px rgba(13, 15, 20, 0.15);
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
@@ -1403,9 +1411,8 @@
   outline-offset: 2px;
 }
 
-/* Pagination chrome. Beat [theme] :where(nav) bars, link color, and button
-   CTAs. Page controls are surfaces, not a CTA. The trail stays inline.
-   Runtime is later. */
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
 [theme=retro-afterburn] [pagination],
 [theme=retro-afterburn] nav[pagination] {
   background-image: none;
@@ -1474,7 +1481,7 @@
 
 /* Palette-aware CTA ink. Component controls keep their own ink roles. */
 [theme=retro-afterburn] :where(button) {
-  color: hsl(0, 0%, 100%);
+  color: #140c05;
 }
 
 /* Stable bundle aliases used by shared application chrome. */
@@ -1506,15 +1513,15 @@
   --retro-stage-background: var(--afb-stage-background);
   --retro-stage-outline: var(--afb-stage-outline);
   --retro-stage-shadow: var(--afb-stage-shadow);
-  --retro-theme-page: hsl(210, 20%, 98%);
-  --retro-theme-highlight: rgb(175.593, 194.5803, 242.607);
+  --retro-theme-page: #1a1d24;
+  --retro-theme-highlight: #5b8def;
   --juice-color-page: var(--afb-page);
   --juice-color-surface: var(--afb-surface-strong);
   --juice-color-text: var(--afb-text);
   --juice-color-text-muted: var(--afb-text-muted);
   --juice-color-heading: var(--afb-heading);
   --juice-color-accent: var(--afb-accent);
-  --juice-color-on-accent: hsl(0, 0%, 100%);
+  --juice-color-on-accent: #140c05;
   --juice-color-border: var(--afb-border);
   --juice-color-highlight: var(--afb-highlight);
 }
