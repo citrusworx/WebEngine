@@ -13,7 +13,20 @@ export const SHIPPED_LIBRARY_THEMES = [
     { id: "kiwipress", prefix: "kw" },
     { id: "citrusmint", prefix: "cm" },
     { id: "tide", prefix: "tide" },
+    { id: "retro-afterburn", prefix: "afb" },
+    { id: "retro-arcade-glow", prefix: "acg" },
+    { id: "retro-boardwalk", prefix: "bdw" },
+    { id: "retro-denim-dial", prefix: "dnd" },
+    { id: "retro-forest-radio", prefix: "frr" },
+    { id: "retro-orchard-club", prefix: "orc" },
+    { id: "retro-poolside-pop", prefix: "psp" },
+    { id: "retro-signal-garden", prefix: "sgn" },
+    { id: "retro-sunset-motel", prefix: "ssm" },
+    { id: "retro-violet-parlor", prefix: "vpr" },
 ] as const;
+
+/** Aquaflux, KiwiPress, and Citrusmint omit optional accordion/tabs hooks. Tide and the retro themes bind them. */
+export const LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME = ["aquaflux", "kiwipress", "citrusmint"] as const;
 
 export type ShippedLibraryThemeId = (typeof SHIPPED_LIBRARY_THEMES)[number]["id"];
 
@@ -260,7 +273,8 @@ export const SURFACE_VARIANTS = ["monochromatic", "glass", "tinted"] as const;
 
 /**
  * Optional accordion hooks consumed with transparent / no-op fallbacks.
- * Tide binds all of these. Other shipped themes omit them.
+ * Tide and the retro library themes bind all of these.
+ * Aquaflux, KiwiPress, and Citrusmint omit them.
  */
 export const OPTIONAL_ACCORDION_ROLE_HOOKS = [
     "item-border",
@@ -277,7 +291,7 @@ export const OPTIONAL_ACCORDION_ROLES = [
     ...OPTIONAL_ACCORDION_CHEVRON_METRICS,
 ] as const;
 
-/** Optional tabs hooks. Tide binds `panel` only. Other shipped themes bind neither. */
+/** Optional tabs hooks. Tide and the retro library themes bind `panel` only. Aquaflux, KiwiPress, and Citrusmint bind neither. */
 export const OPTIONAL_TABS_ROLES = ["panel", "panel-rule"] as const;
 export const TIDE_OPTIONAL_TABS_ROLES = ["panel"] as const;
 

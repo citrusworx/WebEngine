@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
     OPTIONAL_ACCORDION_ROLE_HOOKS,
     REQUIRED_ACCORDION_ROLES,
+    LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME,
     SHIPPED_LIBRARY_THEMES,
 } from "./juice.theme-contract.js";
 
@@ -14,7 +15,9 @@ const ACCORDION_ROLES = REQUIRED_ACCORDION_ROLES;
 const OPTIONAL_ACCORDION_ROLES = OPTIONAL_ACCORDION_ROLE_HOOKS;
 const THEMES = SHIPPED_LIBRARY_THEMES;
 
-const THEMES_WITHOUT_OPTIONAL_CHROME = THEMES.filter((theme) => theme.id !== "tide");
+const THEMES_WITHOUT_OPTIONAL_CHROME = THEMES.filter((theme) =>
+    (LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME as readonly string[]).includes(theme.id)
+);
 
 function readThemeScss(id: string) {
     return readFileSync(join(SRC_ROOT, "themes", id, `${id}.scss`), "utf-8");
@@ -56,7 +59,7 @@ describe("Accordion theme role contract", () => {
         expect(scss).toContain("rotate(45deg)");
     });
 
-    it("binds the same accordion roles in aquaflux, kiwipress, citrusmint, and tide", () => {
+    it("binds the same accordion roles in every shipped library theme", () => {
         for (const { id, prefix } of THEMES) {
             const scss = readThemeScss(id);
             const rootBlock = scss.split(`[theme="${id}"]`)[1] ?? "";

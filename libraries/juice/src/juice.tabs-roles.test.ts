@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
     OPTIONAL_TABS_ROLES,
     REQUIRED_TABS_ROLES,
+    LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME,
     SHIPPED_LIBRARY_THEMES,
 } from "./juice.theme-contract.js";
 
@@ -13,7 +14,9 @@ const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), ".");
 const TABS_ROLES = REQUIRED_TABS_ROLES;
 const THEMES = SHIPPED_LIBRARY_THEMES;
 
-const THEMES_WITHOUT_OPTIONAL_PANEL = THEMES.filter((theme) => theme.id !== "tide");
+const THEMES_WITHOUT_OPTIONAL_PANEL = THEMES.filter((theme) =>
+    (LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME as readonly string[]).includes(theme.id)
+);
 
 function readThemeScss(id: string) {
     return readFileSync(join(SRC_ROOT, "themes", id, `${id}.scss`), "utf-8");
@@ -76,7 +79,7 @@ describe("Tabs theme role contract", () => {
         expect(scss).not.toContain('content: "hidden"');
     });
 
-    it("binds the same tabs roles in aquaflux, kiwipress, citrusmint, and tide", () => {
+    it("binds the same tabs roles in every shipped library theme", () => {
         for (const { id, prefix } of THEMES) {
             const scss = readThemeScss(id);
             const rootBlock = scss.split(`[theme="${id}"]`)[1] ?? "";

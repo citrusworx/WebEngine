@@ -63,7 +63,7 @@ Juice core is intentionally separate from theme identity.
 
 You should import either:
 
-- a library theme (`aquaflux`, `kiwipress`, `citrusmint`, or `tide`), or
+- a library theme (`aquaflux`, `kiwipress`, `citrusmint`, `tide`, `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, or `retro-violet-parlor`), or
 - an app-generated theme
 
 Example with a library theme:

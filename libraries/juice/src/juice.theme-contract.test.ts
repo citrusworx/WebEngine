@@ -10,6 +10,7 @@ import {
     optionalTabsBinds,
     requiredGeneratedJxJuiceBinds,
     requiredJuiceBinds,
+    LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME,
     SHIPPED_LIBRARY_THEMES,
     STANDALONE_BLUR_ROLES,
     SURFACE_VARIANTS,
@@ -85,7 +86,7 @@ describe("Juice theme contract", () => {
     it("does not require optional accordion or tabs hooks on aquaflux, kiwipress, or citrusmint", () => {
         const optional = [...optionalAccordionBinds(), ...optionalTabsBinds()];
 
-        for (const { id } of SHIPPED_LIBRARY_THEMES.filter((theme) => theme.id !== "tide")) {
+        for (const id of LIBRARY_THEMES_OMITTING_OPTIONAL_CHROME) {
             const declared = declaredCustomProperties(readThemeCss(id));
             const unexpected = optional.filter((name) => declared.has(name));
 

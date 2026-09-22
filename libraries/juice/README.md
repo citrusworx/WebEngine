@@ -53,7 +53,7 @@ import "@citrusworx/juiceui/styles/themes/aquaflux";
 
 ```html
 <body theme="aquaflux">
-  <!-- or theme="kiwipress" | theme="citrusmint" | theme="tide" -->
+  <!-- or theme="kiwipress" | theme="citrusmint" | theme="tide" | theme="retro-afterburn" | theme="retro-arcade-glow" | theme="retro-boardwalk" | theme="retro-denim-dial" | theme="retro-forest-radio" | theme="retro-orchard-club" | theme="retro-poolside-pop" | theme="retro-signal-garden" | theme="retro-sunset-motel" | theme="retro-violet-parlor" -->
 </body>
 ```
 
@@ -164,7 +164,7 @@ Importing that entry auto-starts the navigation, accordion, tabs, modal, drawer,
 If you are hosting Juice assets yourself, the main built files are:
 
 - `dist/index.css` (core)
-- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`, `dist/themes/tide.css`
+- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`, `dist/themes/tide.css`, `dist/themes/retro-afterburn.css`, `dist/themes/retro-arcade-glow.css`, `dist/themes/retro-boardwalk.css`, `dist/themes/retro-denim-dial.css`, `dist/themes/retro-forest-radio.css`, `dist/themes/retro-orchard-club.css`, `dist/themes/retro-poolside-pop.css`, `dist/themes/retro-signal-garden.css`, `dist/themes/retro-sunset-motel.css`, `dist/themes/retro-violet-parlor.css`
 - `dist/index.js`
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.

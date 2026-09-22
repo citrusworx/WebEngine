@@ -40,7 +40,7 @@ These live in:
 libraries/juice/src/themes/<id>/
 ```
 
-They can be authored manually and discovered by the Juice build. Shipped today: `aquaflux`, `kiwipress`, `citrusmint`, and `tide`. Remaining drafts live under `src/themes/_draft/` (currently blush).
+They can be authored manually and discovered by the Juice build. Shipped today: `aquaflux`, `kiwipress`, `citrusmint`, `tide`, `retro-afterburn`, `retro-arcade-glow`, `retro-boardwalk`, `retro-denim-dial`, `retro-forest-radio`, `retro-orchard-club`, `retro-poolside-pop`, `retro-signal-garden`, `retro-sunset-motel`, and `retro-violet-parlor`. Each retro theme is its own `src/themes/<id>/<id>.scss` entrypoint (compiled to `dist/themes/<id>.css`), not a single `retro.css` bundle. Remaining drafts live under `src/themes/_draft/` (currently blush).
 
 ### 2. App-owned themes
 
