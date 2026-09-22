@@ -13,23 +13,28 @@
     - structural primitives
 */
 [theme=retro-arcade-glow] {
-  /* Foundation */
+  /* Foundation.
+     Stepped dark frost from existing page / page-tint / deep / secondary / highlight.
+     Alpha-only copies of page collapsed on the violet floor, so each step is a
+     distinct mix: page → muted → default → strong, with deep as a solid near-black band. */
   --acg-page: #14081f;
   --acg-page-tint: #1f0f30;
   --acg-page-deep: #0a0414;
-  --acg-surface: rgba(20, 8, 31, 0.78);
-  --acg-surface-strong: rgba(20, 8, 31, 0.92);
-  --acg-surface-muted: rgba(31, 15, 48, 0.78);
-  --acg-surface-deep: #f3e9ff;
+  --acg-surface: rgb(49.4, 20.8, 89.4);
+  --acg-surface-strong: rgb(80.28, 62.3, 37.44);
+  --acg-surface-muted: rgb(33.868, 12.736, 63.524);
+  --acg-surface-deep: rgb(10.8, 4.32, 20.88);
   --acg-border: rgba(155, 126, 201, 0.26);
   --acg-border-strong: rgba(255, 43, 214, 0.38);
   --acg-shadow: rgba(10, 4, 20, 0.12);
-  /* Typography */
+  /* Typography — soft < muted < body < heading. Inverse is deep ink for accent surfaces. */
   --acg-text: #f3e9ff;
   --acg-text-muted: #b59ccc;
+  --acg-text-soft: #957db0;
+  --acg-text-inverse: #0a0414;
   --acg-heading: #ffe6ff;
-  --acg-body-font: "Lato", sans-serif;
-  --acg-heading-font: "Archivo Black", sans-serif;
+  --acg-body-font: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --acg-heading-font: "Archivo Black", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   /* Accent system */
   --acg-accent: #ff2bd6;
   --acg-accent-soft: #ff7ae6;
@@ -42,9 +47,9 @@
       linear-gradient(180deg, #14081f 0%, #1f0f30 100%);
   --acg-button-background: linear-gradient(135deg, #ff2bd6, #e01fbc);
   --acg-card-background:
-      linear-gradient(180deg, rgba(20, 8, 31, 0.96) 0%, rgba(31, 15, 48, 0.88) 100%);
+      linear-gradient(180deg, rgb(93.72, 75.2, 34.56) 0%, rgb(64.12, 25.44, 122.52) 100%);
   --acg-panel-background:
-      linear-gradient(180deg, rgba(20, 8, 31, 0.98) 0%, rgba(31, 15, 48, 0.72) 100%);
+      linear-gradient(180deg, rgb(34.42, 13.04, 62.36) 0%, rgb(19.45, 8.95, 32.6) 100%);
   --acg-hero-background:
       radial-gradient(circle at top left, rgba(240, 196, 0, 0.38), transparent 30%),
       radial-gradient(circle at bottom right, rgba(123, 44, 255, 0.28), transparent 32%),
@@ -55,12 +60,12 @@
       linear-gradient(145deg, #0a0414 0%, #f3e9ff 52%, #e01fbc 100%);
   --acg-stage-outline: rgba(20, 8, 31, 0.14);
   --acg-stage-shadow: rgba(10, 4, 20, 0.34);
-  --acg-chip-background: rgba(20, 8, 31, 0.96);
+  --acg-chip-background: rgb(66.84, 49.4, 40.32);
   --acg-buybox-background:
-      linear-gradient(180deg, rgba(20, 8, 31, 0.98) 0%, rgba(31, 15, 48, 0.82) 100%);
+      linear-gradient(180deg, rgb(75.8, 58, 38.4) 0%, rgb(50.9, 18.8, 98.2) 100%);
   --acg-buybox-shadow: 0 32px 70px -42px rgba(10, 4, 20, 0.24);
   --acg-spec-background:
-      linear-gradient(180deg, rgba(31, 15, 48, 0.95) 0%, rgba(20, 8, 31, 0.98) 100%);
+      linear-gradient(180deg, rgb(40.2, 17.9, 68.7) 0%, rgb(17, 6.8, 27.7) 100%);
   /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
      Bound from existing Arcade Glow tokens; no new hue family. */
   --acg-trigger: var(--acg-surface-strong);
@@ -91,7 +96,7 @@
   --acg-tabs-trigger: transparent;
   --acg-tabs-trigger-hover: transparent;
   --acg-tabs-trigger-active: transparent;
-  --acg-tabs-text: var(--acg-text-muted);
+  --acg-tabs-text: var(--acg-text-soft);
   --acg-tabs-text-hover: var(--acg-heading);
   --acg-tabs-text-active: var(--acg-accent);
   --acg-tabs-indicator: var(--acg-accent);
@@ -108,7 +113,7 @@
   --juice-tabs-list-rule: var(--acg-tabs-list-rule);
   --juice-tabs-focus-ring: var(--acg-tabs-focus-ring);
   --juice-tabs-panel: var(--acg-tabs-panel);
-  /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+  /* Surface tone roles — soft = default frost, strong = elevated, muted = recess. */
   --juice-surface-soft-bg: var(--acg-surface);
   --juice-surface-soft-border: var(--acg-border);
   --juice-surface-soft-shadow: 0 18px 40px -28px var(--acg-shadow);
@@ -269,7 +274,7 @@
   --acg-wizard-rail-border: var(--acg-border);
   --acg-wizard-step: var(--acg-surface-strong);
   --acg-wizard-step-border: var(--acg-border);
-  --acg-wizard-step-ink: var(--acg-text-muted);
+  --acg-wizard-step-ink: var(--acg-text-soft);
   --acg-wizard-step-current: var(--acg-accent);
   --acg-wizard-step-complete: var(--acg-accent-strong);
   --acg-wizard-step-on: var(--acg-page);
@@ -469,6 +474,7 @@
   background-image: var(--acg-page-background);
   color: var(--acg-text);
   font-family: var(--acg-body-font);
+  line-height: 1.6;
 }
 
 /* Theme root behavior */
@@ -482,18 +488,70 @@
   color: inherit;
 }
 
-/* Semantic element defaults */
-[theme=retro-arcade-glow] :where(section, article, aside, nav, header, footer, form) {
+/* Semantic defaults — KiwiPress denseness on a dark floor.
+   Section/article stay on the quiet recess. Nav (especially bar/sidebar)
+   is the elevated strong step. Footer is the deep band, not another frost box. */
+[theme=retro-arcade-glow] :where(section, article) {
+  background-color: var(--acg-surface-muted);
+  color: var(--acg-text);
+  border: 1px solid var(--acg-border);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+}
+
+[theme=retro-arcade-glow] :where(aside, form) {
   background-color: var(--acg-surface);
   color: var(--acg-text);
   border: 1px solid var(--acg-border);
-  box-shadow: 0 24px 60px -36px var(--acg-shadow);
+  box-shadow: 0 18px 40px -28px var(--acg-shadow);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+}
+
+[theme=retro-arcade-glow] :where(header) {
+  background-color: var(--acg-surface-muted);
+  color: var(--acg-text);
+  border: none;
+  border-bottom: 1px solid var(--acg-border);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+}
+
+[theme=retro-arcade-glow] :where(main > header) {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--acg-text);
+}
+
+[theme=retro-arcade-glow] :where(nav) {
+  background-color: var(--acg-surface-strong);
+  color: var(--acg-text);
+  border: none;
+  border-bottom: 1px solid var(--acg-border);
+  box-shadow: 0 18px 40px -28px var(--acg-shadow);
   -webkit-backdrop-filter: blur(14px);
           backdrop-filter: blur(14px);
 }
 
 [theme=retro-arcade-glow] :where(nav[type=bar], nav[type=sidebar]) {
   background-color: var(--acg-surface-strong);
+  border: 1px solid var(--acg-border-strong);
+}
+
+[theme=retro-arcade-glow] :where(footer) {
+  background-color: var(--acg-surface-deep);
+  color: var(--acg-text);
+  border: none;
+  border-top: 1px solid var(--acg-border-strong);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
 }
 
 /* Typography hierarchy */
@@ -502,17 +560,19 @@
   font-family: var(--acg-heading-font);
   font-weight: 900;
   letter-spacing: -0.03em;
-  line-height: 0.95;
+  line-height: 1.08;
 }
 
 [theme=retro-arcade-glow] :where(p, span, li, label, dt, dd, blockquote) {
   color: var(--acg-text);
   font-family: var(--acg-body-font);
+  line-height: 1.6;
 }
 
 [theme=retro-arcade-glow] :where(small, figcaption) {
-  color: var(--acg-text-muted);
+  color: var(--acg-text-soft);
   font-family: var(--acg-body-font);
+  line-height: 1.55;
 }
 
 [theme=retro-arcade-glow] :where(strong, b) {
@@ -574,7 +634,7 @@
 }
 
 [theme=retro-arcade-glow] :where(input::placeholder, textarea::placeholder) {
-  color: var(--acg-text-muted);
+  color: var(--acg-text-soft);
 }
 
 [theme=retro-arcade-glow] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
@@ -597,7 +657,11 @@
   color: var(--acg-text);
 }
 
-/* Named themed surfaces */
+/* Named surfaces and Juice primitives share one recipe each.
+   [card]/[acg-card] elevated, [panel]/[acg-panel] quiet, [hero]/[acg-hero] marquee.
+   Captions stay on soft; card body secondary stays muted. */
+[theme=retro-arcade-glow][card],
+[theme=retro-arcade-glow] [card],
 [theme=retro-arcade-glow][acg-card],
 [theme=retro-arcade-glow] [acg-card] {
   background: var(--acg-card-background);
@@ -606,21 +670,29 @@
   box-shadow: 0 28px 70px -42px var(--acg-shadow);
 }
 
+[theme=retro-arcade-glow][card] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-arcade-glow] [card] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow][acg-card] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow] [acg-card] :where(h1, h2, h3, h4, h5, h6) {
   color: var(--acg-heading);
 }
 
-[theme=retro-arcade-glow][acg-card] :where(p, span, li, small),
-[theme=retro-arcade-glow] [acg-card] :where(p, span, li, small) {
+[theme=retro-arcade-glow][card] :where(p, span, li),
+[theme=retro-arcade-glow] [card] :where(p, span, li),
+[theme=retro-arcade-glow][acg-card] :where(p, span, li),
+[theme=retro-arcade-glow] [acg-card] :where(p, span, li) {
   color: var(--acg-text-muted);
 }
 
+[theme=retro-arcade-glow][card] :where(strong, b),
+[theme=retro-arcade-glow] [card] :where(strong, b),
 [theme=retro-arcade-glow][acg-card] :where(strong, b),
 [theme=retro-arcade-glow] [acg-card] :where(strong, b) {
   color: var(--acg-heading);
 }
 
+[theme=retro-arcade-glow][panel],
+[theme=retro-arcade-glow] [panel],
 [theme=retro-arcade-glow][acg-panel],
 [theme=retro-arcade-glow] [acg-panel] {
   background: var(--acg-panel-background);
@@ -629,42 +701,94 @@
   box-shadow: 0 22px 56px -40px var(--acg-shadow);
 }
 
+[theme=retro-arcade-glow][panel] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-arcade-glow] [panel] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow][acg-panel] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow] [acg-panel] :where(h1, h2, h3, h4, h5, h6) {
   color: var(--acg-heading);
 }
 
-[theme=retro-arcade-glow][acg-panel] :where(p, span, li, small),
-[theme=retro-arcade-glow] [acg-panel] :where(p, span, li, small) {
+[theme=retro-arcade-glow][panel] :where(p, span, li),
+[theme=retro-arcade-glow] [panel] :where(p, span, li),
+[theme=retro-arcade-glow][acg-panel] :where(p, span, li),
+[theme=retro-arcade-glow] [acg-panel] :where(p, span, li) {
   color: var(--acg-text);
 }
 
+[theme=retro-arcade-glow][panel] :where(strong, b),
+[theme=retro-arcade-glow] [panel] :where(strong, b),
 [theme=retro-arcade-glow][acg-panel] :where(strong, b),
 [theme=retro-arcade-glow] [acg-panel] :where(strong, b) {
   color: var(--acg-heading);
 }
 
+[theme=retro-arcade-glow][hero],
+[theme=retro-arcade-glow] [hero],
 [theme=retro-arcade-glow][acg-hero],
 [theme=retro-arcade-glow] [acg-hero] {
   background: var(--acg-hero-background);
-  color: #14081f;
+  color: var(--acg-text-inverse);
   border: 1px solid rgba(20, 8, 31, 0.16);
   box-shadow: 0 36px 90px -48px rgba(10, 4, 20, 0.45);
 }
 
+[theme=retro-arcade-glow][hero] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-arcade-glow] [hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow][acg-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow] [acg-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: #14081f;
+  color: var(--acg-text-inverse);
 }
 
-[theme=retro-arcade-glow][acg-hero] :where(p, span, li, small, a),
-[theme=retro-arcade-glow] [acg-hero] :where(p, span, li, small, a) {
-  color: rgba(20, 8, 31, 0.86);
+[theme=retro-arcade-glow][hero] :where(p, span, li, a),
+[theme=retro-arcade-glow] [hero] :where(p, span, li, a),
+[theme=retro-arcade-glow][acg-hero] :where(p, span, li, a),
+[theme=retro-arcade-glow] [acg-hero] :where(p, span, li, a) {
+  color: var(--acg-text-inverse);
 }
 
+[theme=retro-arcade-glow][hero] :where(small, figcaption),
+[theme=retro-arcade-glow] [hero] :where(small, figcaption),
+[theme=retro-arcade-glow][acg-hero] :where(small, figcaption),
+[theme=retro-arcade-glow] [acg-hero] :where(small, figcaption) {
+  color: color-mix(in srgb, var(--acg-text-inverse) 72%, var(--acg-accent-soft));
+}
+
+[theme=retro-arcade-glow][hero] :where(button),
+[theme=retro-arcade-glow] [hero] :where(button),
 [theme=retro-arcade-glow][acg-hero] :where(button),
 [theme=retro-arcade-glow] [acg-hero] :where(button) {
-  background: #14081f;
+  background: var(--acg-text-inverse);
+  color: var(--acg-heading);
+  border-color: transparent;
+}
+
+/* [cta] uses the in-family accent → accent-strong recipe. Inverse ink on the magenta band. */
+[theme=retro-arcade-glow][cta],
+[theme=retro-arcade-glow] [cta] {
+  background: var(--acg-button-background);
+  color: var(--acg-text-inverse);
+  border: 1px solid transparent;
+  box-shadow: 0 28px 70px -42px var(--acg-shadow);
+}
+
+[theme=retro-arcade-glow][cta] :where(h1, h2, h3, h4, h5, h6),
+[theme=retro-arcade-glow] [cta] :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--acg-text-inverse);
+}
+
+[theme=retro-arcade-glow][cta] :where(p, span, li, a),
+[theme=retro-arcade-glow] [cta] :where(p, span, li, a) {
+  color: var(--acg-text-inverse);
+}
+
+[theme=retro-arcade-glow][cta] :where(small, figcaption),
+[theme=retro-arcade-glow] [cta] :where(small, figcaption) {
+  color: color-mix(in srgb, var(--acg-text-inverse) 72%, var(--acg-accent-soft));
+}
+
+[theme=retro-arcade-glow][cta] :where(button),
+[theme=retro-arcade-glow] [cta] :where(button) {
+  background: var(--acg-text-inverse);
   color: var(--acg-heading);
   border-color: transparent;
 }
@@ -672,7 +796,7 @@
 [theme=retro-arcade-glow][acg-stage],
 [theme=retro-arcade-glow] [acg-stage] {
   background: var(--acg-stage-background);
-  color: #14081f;
+  color: var(--acg-text-inverse);
   border: 1px solid var(--acg-stage-outline);
   box-shadow: 0 44px 100px -54px var(--acg-stage-shadow);
   overflow: hidden;
@@ -691,12 +815,17 @@
 
 [theme=retro-arcade-glow][acg-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-arcade-glow] [acg-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: #14081f;
+  color: var(--acg-text-inverse);
 }
 
-[theme=retro-arcade-glow][acg-stage] :where(p, span, li, small, a),
-[theme=retro-arcade-glow] [acg-stage] :where(p, span, li, small, a) {
-  color: rgba(20, 8, 31, 0.86);
+[theme=retro-arcade-glow][acg-stage] :where(p, span, li, a),
+[theme=retro-arcade-glow] [acg-stage] :where(p, span, li, a) {
+  color: var(--acg-text-inverse);
+}
+
+[theme=retro-arcade-glow][acg-stage] :where(small, figcaption),
+[theme=retro-arcade-glow] [acg-stage] :where(small, figcaption) {
+  color: color-mix(in srgb, var(--acg-text-inverse) 72%, var(--acg-accent-soft));
 }
 
 [theme=retro-arcade-glow][acg-chip],
@@ -729,19 +858,32 @@
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
-[theme=retro-arcade-glow][acg-hero] :where([acg-card], [acg-panel]),
-[theme=retro-arcade-glow] [acg-hero] :where([acg-card], [acg-panel]) {
+[theme=retro-arcade-glow][hero] :where([card], [panel], [acg-card], [acg-panel]),
+[theme=retro-arcade-glow] [hero] :where([card], [panel], [acg-card], [acg-panel]),
+[theme=retro-arcade-glow][acg-hero] :where([card], [panel], [acg-card], [acg-panel]),
+[theme=retro-arcade-glow] [acg-hero] :where([card], [panel], [acg-card], [acg-panel]) {
   color: var(--acg-text);
 }
 
-[theme=retro-arcade-glow][acg-hero] :where([acg-card], [acg-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
-[theme=retro-arcade-glow] [acg-hero] :where([acg-card], [acg-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+[theme=retro-arcade-glow][hero] :where([card], [panel], [acg-card], [acg-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme=retro-arcade-glow] [hero] :where([card], [panel], [acg-card], [acg-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme=retro-arcade-glow][acg-hero] :where([card], [panel], [acg-card], [acg-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme=retro-arcade-glow] [acg-hero] :where([card], [panel], [acg-card], [acg-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
   color: var(--acg-heading);
 }
 
-[theme=retro-arcade-glow][acg-hero] :where([acg-card], [acg-panel]) :where(p, span, li, small, a),
-[theme=retro-arcade-glow] [acg-hero] :where([acg-card], [acg-panel]) :where(p, span, li, small, a) {
+[theme=retro-arcade-glow][hero] :where([card], [panel], [acg-card], [acg-panel]) :where(p, span, li, a),
+[theme=retro-arcade-glow] [hero] :where([card], [panel], [acg-card], [acg-panel]) :where(p, span, li, a),
+[theme=retro-arcade-glow][acg-hero] :where([card], [panel], [acg-card], [acg-panel]) :where(p, span, li, a),
+[theme=retro-arcade-glow] [acg-hero] :where([card], [panel], [acg-card], [acg-panel]) :where(p, span, li, a) {
   color: var(--acg-text-muted);
+}
+
+[theme=retro-arcade-glow][hero] :where([card], [panel], [acg-card], [acg-panel]) :where(small, figcaption),
+[theme=retro-arcade-glow] [hero] :where([card], [panel], [acg-card], [acg-panel]) :where(small, figcaption),
+[theme=retro-arcade-glow][acg-hero] :where([card], [panel], [acg-card], [acg-panel]) :where(small, figcaption),
+[theme=retro-arcade-glow] [acg-hero] :where([card], [panel], [acg-card], [acg-panel]) :where(small, figcaption) {
+  color: var(--acg-text-soft);
 }
 
 /* Accordion wrappers are structural, not named surfaces.
@@ -1523,6 +1665,8 @@
   --retro-shadow: var(--acg-shadow);
   --retro-text: var(--acg-text);
   --retro-text-muted: var(--acg-text-muted);
+  --retro-text-soft: var(--acg-text-soft);
+  --retro-text-inverse: var(--acg-text-inverse);
   --retro-heading: var(--acg-heading);
   --retro-body-font: var(--acg-body-font);
   --retro-heading-font: var(--acg-heading-font);

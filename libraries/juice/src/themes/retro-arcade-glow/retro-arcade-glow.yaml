@@ -11,6 +11,7 @@ philosophy:
     - color relationships
     - semantic element defaults
     - named themed surfaces
+    - paint on Juice primitives (hero, card, panel, cta)
   does_not_own:
     - layout
     - spacing
@@ -20,12 +21,16 @@ philosophy:
 typography:
   body:
     family: Lato
-    fallback: sans-serif
+    fallback: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
     tone: fast, vivid, digital
+    line_height: 1.6
   heading:
     family: Archivo Black
-    fallback: sans-serif
+    fallback: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
     tone: loud, condensed, high-impact
+    weight: 900
+    line_height: 1.08
+    tracking: "-0.03em"
 
 palette:
   source:
@@ -40,7 +45,11 @@ palette:
   text:
     default: acg-text
     muted: acg-text-muted
+    soft: acg-text-soft
+    inverse: acg-text-inverse
     heading: acg-heading
+    ladder: soft < muted < body < heading
+    inverse_note: deep ink for accent and bright surfaces; on_accent stays the button ink
   accents:
     primary: acg-accent
     secondary: acg-secondary
@@ -48,20 +57,23 @@ palette:
     highlight: acg-highlight
     on_accent: acg-on-accent
   surfaces:
-    default: acg-page / acg-page-tint translucent blend
-    strong: acg-page elevated surface
-    muted: acg-page-tint softened panel
+    page: acg-page violet floor
+    muted: page mixed toward secondary and deep — quieter recess
+    default: page-tint mixed toward secondary — content frost
+    strong: page-tint mixed toward highlight — elevated nav and chrome
+    deep: near acg-deep solid inverted band, not the light text color
     hero: acg-deep to acg-accent-strong atmospheric gradient
+    card: highlight-lifted elevated gradient
+    panel: quieter violet well
+    cta: acg-accent to acg-accent-strong in-family gradient
 
 semantic_elements:
-  default_surface_targets:
-    - section
-    - article
-    - aside
-    - nav
-    - header
-    - footer
-    - form
+  section_article_behavior: quieter muted frost, not the nav fill
+  aside_behavior: default content surface
+  form_behavior: default content surface
+  header_behavior: quiet muted band; main > header stays type-only
+  nav_behavior: stronger elevated surface, especially nav[type=bar] and nav[type=sidebar]
+  footer_behavior: deep inverted band with light body ink
   div_behavior: transparent by default
   main_behavior: transparent by default
 
@@ -85,9 +97,13 @@ recommended_use_cases:
 authoring_rules:
   - Use semantic HTML for meaning first.
   - Let Juice layout primitives handle structure and responsiveness.
-  - Use acg-card and acg-panel for supporting surfaces.
-  - Use acg-hero sparingly for the strongest section on the page.
+  - Paint Juice primitives [hero], [card], [panel], and [cta]. [acg-card], [acg-panel], [acg-hero], and [acg-stage] share those recipes and stay valid aliases.
+  - Keep the ink ladder readable: soft for small, figcaption, idle tabs, and placeholders; muted for secondary card copy; body for reading text; heading for titles. Do not bind heading to deep.
+  - Use inverse (deep ink) on accent and bright surfaces. Keep on-accent for primary button ink.
+  - Keep surfaces stepped: page, muted, default, strong, deep. Do not paint section, nav, and footer with the same frost.
+  - Use acg-hero and [hero] sparingly for the strongest section on the page.
   - Keep the four source colors recognizable while using derived tokens for accessible text and controls.
+  - Keep CTA fill in-family (accent to accent-strong). Outline and secondary clear background-image.
   - Bind accordion and tabs chrome from existing surface and accent tokens so triggers stay controls, not CTA buttons.
   - Bind modal and drawer chrome from existing page and surface tokens so close actions stay surface controls.
   - Bind toast and banner status roles from existing identity tokens without introducing unrelated hue families.
@@ -99,7 +115,11 @@ authoring_rules:
 example:
   root: '<body theme="retro-arcade-glow">'
   surfaces:
+    - '<section hero>...</section>'
     - '<section acg-hero>...</section>'
+    - '<article card>...</article>'
     - '<article acg-card>...</article>'
+    - '<aside panel>...</aside>'
     - '<aside acg-panel>...</aside>'
+    - '<section cta>...</section>'
     - '<div acg-stage>...</div>'

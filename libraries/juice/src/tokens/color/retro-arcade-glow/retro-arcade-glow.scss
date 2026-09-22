@@ -6,6 +6,10 @@ $acg-page-tint: #1f0f30;
 $acg-deep: #0a0414;
 $acg-text: #f3e9ff;
 $acg-text-muted: #b59ccc;
+// Tertiary ink. Quieter than muted (lower luminance) so the ladder reads soft < muted < body < heading.
+$acg-text-soft: #957db0;
+// Dark ink for accent / bright surfaces. Aligns with deep; $acg-on-accent stays the button ink.
+$acg-text-inverse: $acg-deep;
 $acg-heading: #ffe6ff;
 $acg-accent: #ff2bd6;
 $acg-accent-soft: #ff7ae6;
