@@ -23,9 +23,9 @@
     --afb-page: #{$afb-page};
     --afb-page-tint: #{$afb-page-tint};
     --afb-page-deep: #{$afb-deep};
-    --afb-surface: #{color.mix($afb-page-tint, $afb-secondary, 80%)};
-    --afb-surface-strong: #{color.mix($afb-page-tint, $afb-highlight, 78%)};
-    --afb-surface-muted: #{color.mix(color.mix($afb-page, $afb-secondary, 80%), $afb-deep, 78%)};
+    --afb-surface: #{color.mix($afb-page-tint, $afb-secondary, 88%)};
+    --afb-surface-strong: #{color.mix($afb-page-tint, $afb-highlight, 86%)};
+    --afb-surface-muted: #{color.mix(color.mix($afb-page, $afb-secondary, 88%), $afb-deep, 84%)};
     --afb-surface-deep: #{color.mix($afb-deep, $afb-page, 92%)};
     --afb-border: #{rgba($afb-border-color, 0.26)};
     --afb-border-strong: #{rgba($afb-accent, 0.38)};
@@ -48,22 +48,23 @@
 
     /* Surface recipes */
     --afb-page-background:
-        radial-gradient(circle at top left, #{rgba($afb-highlight, 0.72)}, transparent 38%),
-        radial-gradient(circle at top right, #{rgba($afb-secondary-soft, 0.45)}, transparent 30%),
+        radial-gradient(circle at top left, #{rgba($afb-highlight, 0.16)}, transparent 46%),
+        radial-gradient(circle at top right, #{rgba($afb-accent, 0.12)}, transparent 36%),
         linear-gradient(180deg, #{$afb-page} 0%, #{$afb-page-tint} 100%);
     --afb-button-background: linear-gradient(135deg, #{$afb-accent}, #{$afb-accent-strong});
     --afb-card-background:
-        linear-gradient(180deg, #{color.mix($afb-page-tint, $afb-highlight, 72%)} 0%, #{color.mix($afb-page-tint, $afb-secondary, 64%)} 100%);
+        linear-gradient(180deg, #{color.mix($afb-page-tint, $afb-highlight, 90%)} 0%, #{color.mix($afb-page, $afb-secondary, 86%)} 100%);
     --afb-panel-background:
         linear-gradient(180deg, #{color.mix($afb-page, $afb-secondary, 86%)} 0%, #{color.mix($afb-deep, $afb-page-tint, 55%)} 100%);
+    /* Charcoal field with a corner ember. Light ink sits on this; inverse stays on solid accent CTAs. */
     --afb-hero-background:
-        radial-gradient(circle at top left, #{rgba($afb-highlight-strong, 0.38)}, transparent 30%),
-        radial-gradient(circle at bottom right, #{rgba($afb-secondary, 0.28)}, transparent 32%),
-        linear-gradient(135deg, #{$afb-deep} 0%, #{$afb-accent-deep} 54%, #{$afb-accent-strong} 100%);
+        radial-gradient(circle at 8% -8%, #{rgba($afb-highlight, 0.18)}, transparent 42%),
+        radial-gradient(circle at 108% 120%, #{rgba($afb-accent, 0.34)}, transparent 46%),
+        linear-gradient(160deg, #{$afb-deep} 0%, #{color.mix($afb-page, $afb-accent-deep, 86%)} 58%, #{color.mix($afb-page, $afb-accent, 76%)} 100%);
     --afb-stage-background:
-        radial-gradient(circle at 18% 20%, #{rgba($afb-highlight, 0.22)}, transparent 22%),
-        radial-gradient(circle at 78% 22%, #{rgba($afb-accent-soft, 0.2)}, transparent 24%),
-        linear-gradient(145deg, #{$afb-deep} 0%, #{$afb-text} 52%, #{$afb-accent-strong} 100%);
+        radial-gradient(circle at 18% 20%, #{rgba($afb-highlight, 0.14)}, transparent 28%),
+        radial-gradient(circle at 84% 86%, #{rgba($afb-accent, 0.26)}, transparent 34%),
+        linear-gradient(145deg, #{$afb-deep} 0%, #{color.mix($afb-page, $afb-accent-deep, 80%)} 100%);
     --afb-stage-outline: #{rgba($afb-page, 0.14)};
     --afb-stage-shadow: #{rgba($afb-deep, 0.34)};
     --afb-chip-background: #{color.mix($afb-page-tint, $afb-highlight, 84%)};
@@ -104,9 +105,9 @@
     --afb-tabs-trigger: transparent;
     --afb-tabs-trigger-hover: transparent;
     --afb-tabs-trigger-active: transparent;
-    --afb-tabs-text: var(--afb-text-soft);
+    --afb-tabs-text: var(--afb-text);
     --afb-tabs-text-hover: var(--afb-heading);
-    --afb-tabs-text-active: var(--afb-accent);
+    --afb-tabs-text-active: var(--afb-accent-soft);
     --afb-tabs-indicator: var(--afb-accent);
     --afb-tabs-list-rule: var(--afb-border);
     --afb-tabs-focus-ring: var(--afb-accent);
@@ -604,12 +605,12 @@
 
 /* Links and emphasis */
 [theme="retro-afterburn"] :where(a) {
-    color: var(--afb-accent-strong);
-    text-decoration-color: #{rgba($afb-accent-strong, 0.35)};
+    color: var(--afb-accent-soft);
+    text-decoration-color: #{rgba($afb-accent-soft, 0.45)};
 }
 
 [theme="retro-afterburn"] :where(a:hover, a:focus-visible) {
-    color: var(--afb-accent);
+    color: var(--afb-heading);
 }
 
 /* Controls */
@@ -647,12 +648,13 @@
 [theme="retro-afterburn"] :where(button[btn="outline"]) {
     background-image: none;
     background-color: transparent;
-    color: var(--afb-accent);
+    color: var(--afb-heading);
     border: 2px solid var(--afb-accent);
 }
 
 [theme="retro-afterburn"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--afb-accent-soft);
+    background-color: var(--afb-accent);
+    color: #{$afb-on-accent};
     box-shadow: none;
 }
 
@@ -750,8 +752,8 @@
 [theme="retro-afterburn"][afb-hero],
 [theme="retro-afterburn"] [afb-hero] {
     background: var(--afb-hero-background);
-    color: var(--afb-text-inverse);
-    border: 1px solid #{rgba($afb-page, 0.16)};
+    color: var(--afb-text);
+    border: 1px solid #{rgba($afb-accent, 0.28)};
     box-shadow: 0 36px 90px -48px #{rgba($afb-deep, 0.45)};
 }
 
@@ -759,30 +761,28 @@
 [theme="retro-afterburn"] [hero] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"][afb-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-afterburn"] [afb-hero] :where(h1, h2, h3, h4, h5, h6) {
-    color: var(--afb-text-inverse);
+    color: var(--afb-heading);
 }
 
-[theme="retro-afterburn"][hero] :where(p, span, li, a),
-[theme="retro-afterburn"] [hero] :where(p, span, li, a),
-[theme="retro-afterburn"][afb-hero] :where(p, span, li, a),
-[theme="retro-afterburn"] [afb-hero] :where(p, span, li, a) {
-    color: var(--afb-text-inverse);
+[theme="retro-afterburn"][hero] :where(p, span, li),
+[theme="retro-afterburn"] [hero] :where(p, span, li),
+[theme="retro-afterburn"][afb-hero] :where(p, span, li),
+[theme="retro-afterburn"] [afb-hero] :where(p, span, li) {
+    color: var(--afb-text);
+}
+
+[theme="retro-afterburn"][hero] :where(a),
+[theme="retro-afterburn"] [hero] :where(a),
+[theme="retro-afterburn"][afb-hero] :where(a),
+[theme="retro-afterburn"] [afb-hero] :where(a) {
+    color: var(--afb-accent-soft);
 }
 
 [theme="retro-afterburn"][hero] :where(small, figcaption),
 [theme="retro-afterburn"] [hero] :where(small, figcaption),
 [theme="retro-afterburn"][afb-hero] :where(small, figcaption),
 [theme="retro-afterburn"] [afb-hero] :where(small, figcaption) {
-    color: color-mix(in srgb, var(--afb-text-inverse) 72%, var(--afb-accent-soft));
-}
-
-[theme="retro-afterburn"][hero] :where(button),
-[theme="retro-afterburn"] [hero] :where(button),
-[theme="retro-afterburn"][afb-hero] :where(button),
-[theme="retro-afterburn"] [afb-hero] :where(button) {
-    background: var(--afb-text-inverse);
-    color: var(--afb-heading);
-    border-color: transparent;
+    color: var(--afb-text-muted);
 }
 
 /* [cta] uses the in-family accent → accent-strong recipe. Inverse ink on the orange band. */
@@ -819,7 +819,7 @@
 [theme="retro-afterburn"][afb-stage],
 [theme="retro-afterburn"] [afb-stage] {
     background: var(--afb-stage-background);
-    color: var(--afb-text-inverse);
+    color: var(--afb-text);
     border: 1px solid var(--afb-stage-outline);
     box-shadow: 0 44px 100px -54px var(--afb-stage-shadow);
     overflow: hidden;
@@ -838,17 +838,22 @@
 
 [theme="retro-afterburn"][afb-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme="retro-afterburn"] [afb-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-    color: var(--afb-text-inverse);
+    color: var(--afb-heading);
 }
 
-[theme="retro-afterburn"][afb-stage] :where(p, span, li, a),
-[theme="retro-afterburn"] [afb-stage] :where(p, span, li, a) {
-    color: var(--afb-text-inverse);
+[theme="retro-afterburn"][afb-stage] :where(p, span, li),
+[theme="retro-afterburn"] [afb-stage] :where(p, span, li) {
+    color: var(--afb-text);
+}
+
+[theme="retro-afterburn"][afb-stage] :where(a),
+[theme="retro-afterburn"] [afb-stage] :where(a) {
+    color: var(--afb-accent-soft);
 }
 
 [theme="retro-afterburn"][afb-stage] :where(small, figcaption),
 [theme="retro-afterburn"] [afb-stage] :where(small, figcaption) {
-    color: color-mix(in srgb, var(--afb-text-inverse) 72%, var(--afb-accent-soft));
+    color: var(--afb-text-muted);
 }
 
 [theme="retro-afterburn"][afb-chip],
@@ -1666,8 +1671,8 @@
 }
 
 
-/* Palette-aware CTA ink. Component controls keep their own ink roles. */
-[theme="retro-afterburn"] :where(button) {
+/* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */
+[theme="retro-afterburn"] :where(button:not([btn])) {
     color: #{$afb-on-accent};
 }
 /* Stable bundle aliases used by shared application chrome. */

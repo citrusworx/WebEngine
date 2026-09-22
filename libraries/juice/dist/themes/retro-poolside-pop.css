@@ -564,12 +564,13 @@
 [theme=retro-poolside-pop] :where(button[btn=outline]) {
   background-image: none;
   background-color: transparent;
-  color: var(--psp-accent);
+  color: var(--psp-heading);
   border: 2px solid var(--psp-accent);
 }
 
 [theme=retro-poolside-pop] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
-  background-color: var(--psp-accent-soft);
+  background-color: var(--psp-accent);
+  color: #2a0806;
   box-shadow: none;
 }
 
@@ -1504,8 +1505,8 @@
   outline-offset: 2px;
 }
 
-/* Palette-aware CTA ink. Component controls keep their own ink roles. */
-[theme=retro-poolside-pop] :where(button) {
+/* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */
+[theme=retro-poolside-pop] :where(button:not([btn])) {
   color: #2a0806;
 }
 

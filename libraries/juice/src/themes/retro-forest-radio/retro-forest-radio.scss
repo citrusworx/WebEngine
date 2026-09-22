@@ -591,12 +591,13 @@
 [theme="retro-forest-radio"] :where(button[btn="outline"]) {
     background-image: none;
     background-color: transparent;
-    color: var(--frr-accent);
+    color: var(--frr-heading);
     border: 2px solid var(--frr-accent);
 }
 
 [theme="retro-forest-radio"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--frr-accent-soft);
+    background-color: var(--frr-accent);
+    color: #{$frr-on-accent};
     box-shadow: none;
 }
 
@@ -1528,8 +1529,8 @@
 }
 
 
-/* Palette-aware CTA ink. Component controls keep their own ink roles. */
-[theme="retro-forest-radio"] :where(button) {
+/* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */
+[theme="retro-forest-radio"] :where(button:not([btn])) {
     color: #{$frr-on-accent};
 }
 /* Stable bundle aliases used by shared application chrome. */

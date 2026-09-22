@@ -49,7 +49,7 @@ palette:
     inverse: acg-text-inverse
     heading: acg-heading
     ladder: soft < muted < body < heading
-    inverse_note: deep ink for accent and bright surfaces; on_accent stays the button ink
+    inverse_note: deep ink for solid accent CTAs and primary buttons; hero and stage copy stay on the light ladder
   accents:
     primary: acg-accent
     secondary: acg-secondary
@@ -62,7 +62,7 @@ palette:
     default: page-tint mixed toward secondary — content frost
     strong: page-tint mixed toward highlight — elevated nav and chrome
     deep: near acg-deep solid inverted band, not the light text color
-    hero: acg-deep to acg-accent-strong atmospheric gradient
+    hero: violet field with a restrained magenta glow and light ink
     card: highlight-lifted elevated gradient
     panel: quieter violet well
     cta: acg-accent to acg-accent-strong in-family gradient
@@ -99,7 +99,7 @@ authoring_rules:
   - Let Juice layout primitives handle structure and responsiveness.
   - Paint Juice primitives [hero], [card], [panel], and [cta]. [acg-card], [acg-panel], [acg-hero], and [acg-stage] share those recipes and stay valid aliases.
   - Keep the ink ladder readable: soft for small, figcaption, idle tabs, and placeholders; muted for secondary card copy; body for reading text; heading for titles. Do not bind heading to deep.
-  - Use inverse (deep ink) on accent and bright surfaces. Keep on-accent for primary button ink.
+  - Use inverse (deep ink) on solid accent CTAs. Keep on-accent for primary button ink. Hero and stage copy use the light ladder so dark surfaces stay readable.
   - Keep surfaces stepped: page, muted, default, strong, deep. Do not paint section, nav, and footer with the same frost.
   - Use acg-hero and [hero] sparingly for the strongest section on the page.
   - Keep the four source colors recognizable while using derived tokens for accessible text and controls.

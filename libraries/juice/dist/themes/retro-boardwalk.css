@@ -564,12 +564,13 @@
 [theme=retro-boardwalk] :where(button[btn=outline]) {
   background-image: none;
   background-color: transparent;
-  color: var(--bdw-accent);
+  color: var(--bdw-heading);
   border: 2px solid var(--bdw-accent);
 }
 
 [theme=retro-boardwalk] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
-  background-color: var(--bdw-accent-soft);
+  background-color: var(--bdw-accent);
+  color: #2a0f0c;
   box-shadow: none;
 }
 
@@ -1504,8 +1505,8 @@
   outline-offset: 2px;
 }
 
-/* Palette-aware CTA ink. Component controls keep their own ink roles. */
-[theme=retro-boardwalk] :where(button) {
+/* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */
+[theme=retro-boardwalk] :where(button:not([btn])) {
   color: #2a0f0c;
 }
 
