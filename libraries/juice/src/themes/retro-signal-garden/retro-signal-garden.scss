@@ -30,7 +30,7 @@
     /* Typography */
     --sgn-text: #{$sgn-text};
     --sgn-text-muted: #{$sgn-text-muted};
-    --sgn-heading: #{$sgn-deep};
+    --sgn-heading: #{$sgn-heading};
     --sgn-body-font: "Lato", sans-serif;
     --sgn-heading-font: "Archivo Black", sans-serif;
 
@@ -45,7 +45,7 @@
         radial-gradient(circle at top left, #{rgba($sgn-highlight, 0.72)}, transparent 38%),
         radial-gradient(circle at top right, #{rgba($sgn-secondary-soft, 0.45)}, transparent 30%),
         linear-gradient(180deg, #{$sgn-page} 0%, #{$sgn-page-tint} 100%);
-    --sgn-button-background: linear-gradient(135deg, #{$sgn-accent}, #{$sgn-secondary-strong});
+    --sgn-button-background: linear-gradient(135deg, #{$sgn-accent}, #{$sgn-accent-strong});
     --sgn-card-background:
         linear-gradient(180deg, #{rgba($sgn-page, 0.96)} 0%, #{rgba($sgn-page-tint, 0.88)} 100%);
     --sgn-panel-background:
@@ -573,6 +573,31 @@
 
 [theme="retro-signal-garden"] :where(button:hover, button:focus-visible) {
     box-shadow: 0 18px 38px -24px #{rgba($sgn-deep, 0.24)};
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme="retro-signal-garden"] :where(button[btn="secondary"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--sgn-text-muted);
+    border: 1px solid var(--sgn-border);
+}
+
+[theme="retro-signal-garden"] :where(button[btn="secondary"]:hover, button[btn="secondary"]:focus-visible) {
+    background-color: var(--sgn-surface-muted);
+    box-shadow: none;
+}
+
+[theme="retro-signal-garden"] :where(button[btn="outline"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--sgn-accent);
+    border: 2px solid var(--sgn-accent);
+}
+
+[theme="retro-signal-garden"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
+    background-color: var(--sgn-accent-soft);
+    box-shadow: none;
 }
 
 [theme="retro-signal-garden"] :where(input::placeholder, textarea::placeholder) {

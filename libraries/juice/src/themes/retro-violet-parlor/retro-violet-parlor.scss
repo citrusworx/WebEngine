@@ -30,7 +30,7 @@
     /* Typography */
     --vpr-text: #{$vpr-text};
     --vpr-text-muted: #{$vpr-text-muted};
-    --vpr-heading: #{$vpr-deep};
+    --vpr-heading: #{$vpr-heading};
     --vpr-body-font: "Lato", sans-serif;
     --vpr-heading-font: "Archivo Black", sans-serif;
 
@@ -45,7 +45,7 @@
         radial-gradient(circle at top left, #{rgba($vpr-highlight, 0.72)}, transparent 38%),
         radial-gradient(circle at top right, #{rgba($vpr-secondary-soft, 0.45)}, transparent 30%),
         linear-gradient(180deg, #{$vpr-page} 0%, #{$vpr-page-tint} 100%);
-    --vpr-button-background: linear-gradient(135deg, #{$vpr-accent}, #{$vpr-secondary-strong});
+    --vpr-button-background: linear-gradient(135deg, #{$vpr-accent}, #{$vpr-accent-strong});
     --vpr-card-background:
         linear-gradient(180deg, #{rgba($vpr-page, 0.96)} 0%, #{rgba($vpr-page-tint, 0.88)} 100%);
     --vpr-panel-background:
@@ -573,6 +573,31 @@
 
 [theme="retro-violet-parlor"] :where(button:hover, button:focus-visible) {
     box-shadow: 0 18px 38px -24px #{rgba($vpr-deep, 0.24)};
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme="retro-violet-parlor"] :where(button[btn="secondary"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--vpr-text-muted);
+    border: 1px solid var(--vpr-border);
+}
+
+[theme="retro-violet-parlor"] :where(button[btn="secondary"]:hover, button[btn="secondary"]:focus-visible) {
+    background-color: var(--vpr-surface-muted);
+    box-shadow: none;
+}
+
+[theme="retro-violet-parlor"] :where(button[btn="outline"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--vpr-accent);
+    border: 2px solid var(--vpr-accent);
+}
+
+[theme="retro-violet-parlor"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
+    background-color: var(--vpr-accent-soft);
+    box-shadow: none;
 }
 
 [theme="retro-violet-parlor"] :where(input::placeholder, textarea::placeholder) {

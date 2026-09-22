@@ -30,7 +30,7 @@
     /* Typography */
     --acg-text: #{$acg-text};
     --acg-text-muted: #{$acg-text-muted};
-    --acg-heading: #{$acg-deep};
+    --acg-heading: #{$acg-heading};
     --acg-body-font: "Lato", sans-serif;
     --acg-heading-font: "Archivo Black", sans-serif;
 
@@ -45,7 +45,7 @@
         radial-gradient(circle at top left, #{rgba($acg-highlight, 0.72)}, transparent 38%),
         radial-gradient(circle at top right, #{rgba($acg-secondary-soft, 0.45)}, transparent 30%),
         linear-gradient(180deg, #{$acg-page} 0%, #{$acg-page-tint} 100%);
-    --acg-button-background: linear-gradient(135deg, #{$acg-accent}, #{$acg-secondary-strong});
+    --acg-button-background: linear-gradient(135deg, #{$acg-accent}, #{$acg-accent-strong});
     --acg-card-background:
         linear-gradient(180deg, #{rgba($acg-page, 0.96)} 0%, #{rgba($acg-page-tint, 0.88)} 100%);
     --acg-panel-background:
@@ -573,6 +573,31 @@
 
 [theme="retro-arcade-glow"] :where(button:hover, button:focus-visible) {
     box-shadow: 0 18px 38px -24px #{rgba($acg-deep, 0.24)};
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme="retro-arcade-glow"] :where(button[btn="secondary"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--acg-text-muted);
+    border: 1px solid var(--acg-border);
+}
+
+[theme="retro-arcade-glow"] :where(button[btn="secondary"]:hover, button[btn="secondary"]:focus-visible) {
+    background-color: var(--acg-surface-muted);
+    box-shadow: none;
+}
+
+[theme="retro-arcade-glow"] :where(button[btn="outline"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--acg-accent);
+    border: 2px solid var(--acg-accent);
+}
+
+[theme="retro-arcade-glow"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
+    background-color: var(--acg-accent-soft);
+    box-shadow: none;
 }
 
 [theme="retro-arcade-glow"] :where(input::placeholder, textarea::placeholder) {
