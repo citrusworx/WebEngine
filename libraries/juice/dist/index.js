@@ -3695,8 +3695,214 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	fo = null, uo || mo();
 }, document.addEventListener("DOMContentLoaded", fo)) : mo());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/pagination/pagination-runtime.ts
 var go = {
+	root: typeof document < "u" ? document : {},
+	paginationSelector: "[pagination]",
+	itemSelector: "[pagination-item]"
+}, _o = new Set([
+	"OL",
+	"UL",
+	"MENU"
+]), vo = new Set(["ArrowRight", "ArrowDown"]), yo = new Set(["ArrowLeft", "ArrowUp"]), bo = "a, button, [pagination-link]", xo = (e) => Array.from(e), So = A(), Co = /* @__PURE__ */ new WeakSet(), wo = /* @__PURE__ */ new WeakSet(), To = (e) => {
+	let t = e.getAttribute("aria-label");
+	if (t !== null && t.trim() !== "") return !0;
+	let n = e.getAttribute("aria-labelledby");
+	if (n !== null && n.trim() !== "") return !0;
+	let r = e.getAttribute("title");
+	return r !== null && r.trim() !== "";
+}, Eo = (e) => {
+	let t = e.getAttribute("role");
+	return t ? t === "navigation" : e.tagName === "NAV";
+}, Do = (e) => e instanceof HTMLElement ? e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement ? !0 : e.isContentEditable : !1, Oo = (e) => e.getAttribute("aria-disabled") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled ? !0 : e.hasAttribute("disabled"), ko = (e) => {
+	let t = [e.textContent, e.getAttribute("aria-label")];
+	for (let e of t) {
+		let t = e?.trim() ?? "";
+		if (/^\d+$/.test(t)) return Number(t);
+	}
+	return null;
+}, Ao = () => ({
+	destroy: () => {},
+	sync: () => {},
+	setCurrent: () => {}
+}), jo = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return Ao();
+	let t = {
+		...go,
+		...e
+	}, n = t.root ?? document, r = n, i = [
+		t.itemSelector,
+		"[pagination-prev]",
+		"[pagination-next]",
+		"[pagination-ellipsis]",
+		"[pagination-status]",
+		"[pagination-link]",
+		"a",
+		"button"
+	].join(", "), a = (e) => e?.matches(t.paginationSelector) ? n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1 : !1, o = () => {
+		let e = xo(n.querySelectorAll(t.paginationSelector)).filter(a);
+		return n instanceof HTMLElement && a(n) ? [n, ...e] : e;
+	}, s = (e, n) => n.closest(t.paginationSelector) === e, c = (e, t, n) => {
+		if (t.matches(n)) return !0;
+		let r = t.querySelector(n);
+		return !!(r && s(e, r));
+	}, l = (e, t) => c(e, t, "[pagination-ellipsis]") ? "ellipsis" : c(e, t, "[pagination-status]") ? "status" : c(e, t, "[pagination-prev]") ? "prev" : c(e, t, "[pagination-next]") ? "next" : "page", u = (e, t) => t.matches(bo) && !t.matches("[pagination-ellipsis], [pagination-status]") ? t : xo(t.querySelectorAll(bo)).find((t) => s(e, t) && !t.closest("[pagination-ellipsis], [pagination-status]")) ?? t, d = (e) => {
+		let t = xo(e.querySelectorAll(i)).filter((t) => s(e, t)), n = [];
+		return t.forEach((t) => {
+			n.some((e) => e.element.contains(t)) || n.push({
+				element: t,
+				kind: l(e, t),
+				target: u(e, t)
+			});
+		}), n;
+	}, f = (e) => {
+		let t = xo(e.querySelectorAll("[aria-current=\"page\"]")).filter((t) => s(e, t));
+		return e.getAttribute("aria-current") === "page" ? [e, ...t] : t;
+	}, p = (e) => {
+		e.getAttribute("aria-current") !== "page" && e.setAttribute("aria-current", "page");
+	}, m = (e, t) => {
+		f(e).forEach((e) => {
+			e !== t && e.removeAttribute("aria-current");
+		});
+	}, h = (e) => {
+		let t = e.getAttribute("role"), n = _o.has(e.tagName);
+		!t && !n && e.tagName !== "NAV" && e.setAttribute("role", "navigation"), Eo(e) && !To(e) && e.setAttribute("aria-label", "Pagination");
+	}, g = (e) => Oo(e.target) || e.element !== e.target && Oo(e.element), _ = (e) => {
+		let t = e.target;
+		if (!Co.has(t)) {
+			if (wo.has(t)) {
+				g(e) || wo.delete(t);
+				return;
+			}
+			g(e) && wo.add(t);
+		}
+	}, v = (e, t) => {
+		if (!wo.has(e)) {
+			if (t) {
+				Co.add(e), e.getAttribute("aria-disabled") !== "true" && e.setAttribute("aria-disabled", "true"), e instanceof HTMLButtonElement && !e.disabled && (e.disabled = !0);
+				return;
+			}
+			Co.has(e) && (Co.delete(e), e.getAttribute("aria-disabled") === "true" && e.removeAttribute("aria-disabled"), e instanceof HTMLButtonElement && e.disabled && (e.disabled = !1));
+		}
+	}, y = (e, t) => {
+		let n = f(e);
+		if (n.length > 0) {
+			m(e, n[0]);
+			return;
+		}
+		let r = t.find((e) => e.kind === "page");
+		r && p(r.target);
+	}, b = (e, t) => {
+		let n = t.filter((e) => e.kind === "page"), r = f(e)[0] ?? null, i = r ? n.find((e) => e.element === r || e.target === r || e.element.contains(r)) ?? null : null, a = !1, o = !1;
+		if (i) {
+			let e = t.indexOf(i), r = t.some((t, n) => t.kind === "ellipsis" && n < e), s = t.some((t, n) => t.kind === "ellipsis" && n > e);
+			a = i === n[0] && !r, o = i === n[n.length - 1] && !s, (ko(i.target) === 1 || ko(i.element) === 1) && (a = !0);
+		}
+		let s = !!i;
+		t.forEach((e) => {
+			if (e.kind !== "prev" && e.kind !== "next") return;
+			_(e);
+			let t = s && (e.kind === "prev" ? a : o);
+			v(e.target, t);
+		});
+	}, x = (e) => {
+		if (!a(e)) return;
+		h(e);
+		let t = d(e);
+		y(e, t), b(e, t);
+	}, S = () => {
+		o().forEach((e) => {
+			x(e);
+		});
+	}, C = (e) => {
+		if (e) {
+			if (a(e)) return e;
+			let n = e.closest(t.paginationSelector);
+			return n instanceof HTMLElement && a(n) ? n : null;
+		}
+		return o()[0] ?? null;
+	}, w = (e, t) => {
+		let n = e instanceof HTMLElement ? e : null, r = C(t ?? n);
+		if (!r) return;
+		let i = d(r).filter((e) => e.kind === "page"), a = typeof e == "number" ? Number.isInteger(e) ? i[e] ?? null : null : i.find((t) => t.element === e || t.target === e || t.element.contains(e)) ?? null;
+		if (!a || !r.contains(a.element)) return;
+		let o = n && n !== a.element && a.element.contains(n) && n.matches(bo) ? n : a.target;
+		m(r, o), p(o), x(r);
+	}, T = (e) => {
+		let t = /* @__PURE__ */ new Set();
+		return d(e).filter((e) => e.kind !== "page" && e.kind !== "prev" && e.kind !== "next" || t.has(e.target) ? !1 : (t.add(e.target), !0));
+	}, E = (e) => {
+		let t = e.closest(bo);
+		return !(t instanceof HTMLElement) || t.matches("[pagination-ellipsis], [pagination-status]") || t.closest("[pagination-ellipsis], [pagination-status]") ? null : t;
+	}, D = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = E(n);
+		if (!r) return;
+		let i = r.closest(t.paginationSelector);
+		if (!(i instanceof HTMLElement) || !a(i)) return;
+		let o = d(i).find((e) => e.target === r);
+		(Oo(r) || o && g(o)) && So(e) && e.preventDefault();
+	}, O = (e) => {
+		if (!(e instanceof KeyboardEvent) || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
+		let n = e.target;
+		if (!(n instanceof Element) || Do(n)) return;
+		let r = E(n);
+		if (!r) return;
+		let i = r.closest(t.paginationSelector);
+		if (!(i instanceof HTMLElement) || !a(i)) return;
+		let o = T(i), s = o.findIndex((e) => e.target === r);
+		if (s < 0) return;
+		let c = (e) => !g(e), l;
+		if (e.key === "Home") l = o.find(c);
+		else if (e.key === "End") l = [...o].reverse().find(c);
+		else if (vo.has(e.key)) l = o.slice(s + 1).find(c);
+		else if (yo.has(e.key)) l = o.slice(0, s).reverse().find(c);
+		else return;
+		So(e) && (e.preventDefault(), l && l.target !== r && l.target.focus());
+	}, k = !1, A = !1, j = 0, M = () => {
+		k || A || (A = !0, j = requestAnimationFrame(() => {
+			A = !1, k || S();
+		}));
+	}, N = typeof MutationObserver < "u" ? new MutationObserver(() => M()) : null;
+	return r.addEventListener("click", D), r.addEventListener("keydown", O), N && n instanceof Node && N.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"pagination",
+			"pagination-item",
+			"pagination-link",
+			"pagination-prev",
+			"pagination-next",
+			"pagination-ellipsis",
+			"pagination-status",
+			"aria-current",
+			"aria-label",
+			"aria-labelledby",
+			"aria-disabled",
+			"disabled",
+			"role",
+			"title"
+		]
+	}), S(), {
+		destroy: () => {
+			k = !0, A &&= (cancelAnimationFrame(j), !1), N?.disconnect(), r.removeEventListener("click", D), r.removeEventListener("keydown", O);
+		},
+		sync: S,
+		setCurrent: w
+	};
+}, Mo = (e = {}) => jo(e), No = null, Po = !1, Fo = null, Io = () => {
+	!Fo || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", Fo), Fo = null);
+}, Lo = () => typeof window > "u" || typeof document > "u" ? null : (Po = !1, Io(), No ? (No.sync(), No) : (No = jo(), No)), Ro = () => {
+	Po = !0, Io(), No?.destroy(), No = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Fo = () => {
+	Fo = null, Po || Lo();
+}, document.addEventListener("DOMContentLoaded", Fo)) : Lo());
+//#endregion
+//#region src/tokens/index.ts
+var zo = {
 	colors: {
 		families: [
 			"black",
@@ -3864,4 +4070,4 @@ var go = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, qt as createPopover, so as createProgress, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Jt as initPopover, co as initProgress, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, go as tokens };
+export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, zo as tokens };
