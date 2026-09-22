@@ -10,6 +10,8 @@ Juice owns structure. Themes own identity.
 
 A theme decides brand voice, type pair, page/text/accent/surface color, semantic defaults, named surfaces, and chrome paint. It does not redefine `stack`, `row`, `grid`, `gap`, padding, sizing primitives, or responsive layout. Authors consume the type pair through the [Typography Contract](./juice-typography-contract.md).
 
+Role completeness is not identity quality. Required binds on this page prove chrome roles exist; they do not prove headings are readable, surfaces are stepped, or CTAs stay in-family. Ship and promote against the [Theme Quality](./juice-theme-quality.md) bar as well.
+
 ## 2. Shipped references
 
 Treat these library themes as equal references. Each lives at `libraries/juice/src/themes/<id>/` as `<id>.scss` + `<id>.yaml` and ships as `@citrusworx/juiceui/styles/themes/<id>`. The retro themes are ten separate entrypoints. There is no `retro.css` bundle.
@@ -714,8 +716,9 @@ A new theme is done when:
 7. Semantic defaults and named-surface recipes stay on the identity layer. `stack` / `row` / `grid` / `gap` are untouched.
 8. The app imports core CSS plus the theme stylesheet and sets `theme="<id>"` on the root.
 9. Swapping `theme` on unchanged markup retints accordion, tabs, modal chrome, drawer chrome, toast chrome, banner chrome, popover chrome, tooltip chrome, combobox chrome, menu chrome, switch chrome, slider chrome, checkbox chrome, radio chrome, breadcrumb chrome, progress chrome, pagination chrome, wizard chrome, `surfaceTone`, `borderStrength`, `shadowTone`, `overlay`, and `variant` recipes without fighting layout.
+10. Identity quality passes [Theme Quality](./juice-theme-quality.md) (ink ladder, surface stack, in-family accent/CTA, typography pair, semantic defaults, Showcase visual QA). Role binds alone are not enough.
 
-How to generate, import, and map tokens is in [Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md).
+How to generate, import, and map tokens is in [Theme authoring](./juice-theme-authoring.md) and the [theme manual](./juice-theme-manual.md). Quality (density, anti-regression) is in [Theme Quality](./juice-theme-quality.md).
 
 ## Status
 

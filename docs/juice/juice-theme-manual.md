@@ -233,6 +233,8 @@ Before calling a theme "done," walk the numbered list in the [Theme Contract](./
 - the theme still leaves Juice layout visible
 - the app does not need to fight the theme to compose normal pages
 
+Coherent palette, fonts, and named surfaces are necessary but not sufficient. Before ship or promote from `_draft`, also pass [Theme Quality](./juice-theme-quality.md): ink ladder (including soft), distinct surface stack, in-family accent/CTA, outline/secondary cleared of primary `background-image`, readable type pair metrics, and Showcase visual QA. Role-bind tests alone do not cover those.
+
 ## Blackwater Sound as current reference
 
 Blackwater Sound is the strongest current example of the modern theme model:
