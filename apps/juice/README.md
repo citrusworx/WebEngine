@@ -32,7 +32,7 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 
 - Landing page: product-marketing adoption pitch for the attribute system (split hero + live anatomy, windowed utilities-vs-Juice comparison, live sample with theme faces in the chrome, Honest Beta, runtimes as optional)
 - Getting started: install (npm / pnpm / yarn / bun / CDN) → core CSS → theme import → `theme="…"` → first attribute-driven page, plus a live hero/card/panel demo under the active theme
-- Demos: live navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, and menu (markup + JS auto-enhance; toast show/dismiss via `createToast()`)
+- Demos: live navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress (markup + JS auto-enhance; toast show/dismiss via `createToast()`)
 - Themes: four shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux) as a gallery — same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into Juice Docs theme pages
 - Reference: browsable index into Juice Docs (attributes, layout, surfaces, typography, theme docs, responsive, runtimes, practice / status, course) with short blurbs, on-site docs links, and tiny live Juice samples
 - Docs: windowed on-site reader for the whole `docs/juice` tree (sidebar, TOC, markdown pipeline). Open `/docs/`

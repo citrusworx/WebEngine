@@ -63,7 +63,9 @@
               Write the Juice attributes, import <code>@citrusworx/juiceui</code>,
               and the runtime wires the rest. Still Emerging.
               <code>@citrusworx/juiceui@0.9.0</code> is the public npm cut:
-              eighteen auto-enhance runtimes through progress.
+              eighteen auto-enhance runtimes through progress. Switch, slider,
+              checkbox, radio, breadcrumb, and progress joined the prior
+              twelve in this cut. All stay Emerging.
             </p>
             <div hero-actions>
               <button type="button" scale="lg" data-href="#navigation">Jump to demos</button>
@@ -107,6 +109,12 @@
               <button type="button" btn="outline" scale="sm" data-href="#combobox">Combobox</button>
               <button type="button" btn="outline" scale="sm" data-href="#banner">Banner</button>
               <button type="button" btn="outline" scale="sm" data-href="#menu">Menu</button>
+              <button type="button" btn="outline" scale="sm" data-href="#switch">Switch</button>
+              <button type="button" btn="outline" scale="sm" data-href="#slider">Slider</button>
+              <button type="button" btn="outline" scale="sm" data-href="#checkbox">Checkbox</button>
+              <button type="button" btn="outline" scale="sm" data-href="#radio">Radio</button>
+              <button type="button" btn="outline" scale="sm" data-href="#breadcrumb">Breadcrumb</button>
+              <button type="button" btn="outline" scale="sm" data-href="#progress">Progress</button>
             </div>
           </div>
         </section>
@@ -634,6 +642,234 @@
           </div>
         </section>
 
+        <section type="features" paddingY="roomy" id="switch">
+          <div container>
+            <div section-header>
+              <h2>Switch</h2>
+              <p>
+                APG switch. Boolean <code>[switch]</code> on a
+                <code>&lt;button type="button"&gt;</code>. The host is the
+                track. Click, Enter, and Space toggle. Binary
+                <code>aria-checked</code> only — no tri-state. A checkbox
+                host is the secondary story. Still Emerging.
+              </p>
+            </div>
+            <div stack gap="1">
+              <label row gap="0.75rem">
+                <button type="button" switch></button>
+                Notifications
+              </label>
+              <label row gap="0.75rem">
+                <button type="button" switch aria-checked="true"></button>
+                Alerts
+              </label>
+              <label row gap="0.75rem">
+                <input type="checkbox" switch />
+                Nightly backup
+              </label>
+            </div>
+            <p marginY="comfortable">
+              The label beside the control is the accessible name. The
+              runtime does not invent one. <code>aria-checked="mixed"</code>
+              coerces to off.
+            </p>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="slider">
+          <div container>
+            <div section-header>
+              <h2>Slider</h2>
+              <p>
+                APG slider. Horizontal <code>[slider]</code> owns a
+                <code>[slider-thumb]</code>. <code>[slider-fill]</code> is
+                optional. Arrows, Home, End, Page Up, and Page Down move the
+                value. Pointer jumps and drags. Not a native
+                <code>&lt;input type="range"&gt;</code>. Still Emerging.
+              </p>
+            </div>
+            <div stack gap="1.25rem">
+              <label stack gap="0.5rem">
+                Volume
+                <div slider aria-valuenow="40">
+                  <div slider-fill></div>
+                  <div slider-thumb aria-label="Volume"></div>
+                </div>
+              </label>
+              <label stack gap="0.5rem">
+                Temperature
+                <div slider aria-valuemin="10" aria-valuemax="30" aria-valuenow="20">
+                  <div slider-fill></div>
+                  <div slider-thumb aria-label="Temperature" aria-valuetext="20 degrees"></div>
+                </div>
+              </label>
+            </div>
+            <p marginY="comfortable">
+              Missing bounds default to 0 and 100. Thumb values win over the
+              host. The runtime writes <code>role="slider"</code> and
+              <code>--juice-slider-ratio</code>. It does not rewrite
+              <code>aria-valuetext</code>. Vertical and multi-thumb are out.
+            </p>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="checkbox">
+          <div container>
+            <div section-header>
+              <h2>Checkbox</h2>
+              <p>
+                APG checkbox. Boolean <code>[checkbox]</code> on a button.
+                The host is the box. Click, Enter, and Space toggle. Binary
+                only — not <code>[switch]</code>, and not a menu
+                <code>menuitemcheckbox</code>. Still Emerging.
+              </p>
+            </div>
+            <div stack gap="1">
+              <label row gap="0.75rem">
+                <button type="button" checkbox></button>
+                Accept terms
+              </label>
+              <label row gap="0.75rem">
+                <button type="button" checkbox aria-checked="true"></button>
+                Remember me
+              </label>
+              <label row gap="0.75rem">
+                <input type="checkbox" checkbox />
+                Send a copy
+              </label>
+            </div>
+            <p marginY="comfortable">
+              A wrapping label names the control. Native
+              <code>&lt;input type="checkbox" checkbox&gt;</code> is the
+              secondary host: paint follows <code>:checked</code>, and the
+              runtime keeps <code>aria-checked</code> in step.
+            </p>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="radio">
+          <div container>
+            <div section-header>
+              <h2>Radio</h2>
+              <p>
+                APG radio group. <code>[radio]</code> options live inside
+                <code>[radiogroup]</code>. Selection is exclusive. Arrows move
+                and wrap. Enter, Space, and click select. Orphans outside a
+                group are ignored. Checkbox and radio are two runtimes.
+                Still Emerging.
+              </p>
+            </div>
+            <div grid="2x1" gap="comfortable">
+              <div radiogroup aria-label="Shipping" stack gap="0.75rem">
+                <label row gap="0.75rem">
+                  <button type="button" radio></button>
+                  Ground
+                </label>
+                <label row gap="0.75rem">
+                  <button type="button" radio aria-checked="true"></button>
+                  Air
+                </label>
+                <label row gap="0.75rem">
+                  <button type="button" radio></button>
+                  Overnight
+                </label>
+              </div>
+              <fieldset radiogroup aria-label="Payment" stack gap="0.75rem">
+                <label row gap="0.75rem">
+                  <input type="radio" radio />
+                  Card
+                </label>
+                <label row gap="0.75rem">
+                  <input type="radio" radio aria-checked="true" />
+                  Cash
+                </label>
+              </fieldset>
+            </div>
+            <p marginY="comfortable">
+              The group name is the author <code>aria-label</code>. Each
+              option takes its name from the wrapping label. Exclusivity is
+              the nearest <code>[radiogroup]</code>, not a native
+              <code>name</code>.
+            </p>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="breadcrumb">
+          <div container>
+            <div section-header>
+              <h2>Breadcrumb</h2>
+              <p>
+                Light trail. <code>[breadcrumb]</code> with
+                <code>[breadcrumb-item]</code> crumbs. An unlabeled
+                <code>&lt;nav&gt;</code> is named Breadcrumb. One
+                <code>aria-current="page"</code> stays — author current wins,
+                otherwise the last crumb. Not site <code>[nav]</code>, not a
+                router, and not a wizard step tracker. Still Emerging.
+              </p>
+            </div>
+            <div stack gap="1.25rem">
+              <nav breadcrumb>
+                <span breadcrumb-item><a href="#breadcrumb">Home</a></span>
+                <span breadcrumb-item><a href="#breadcrumb">Docs</a></span>
+                <span breadcrumb-item>
+                  <a href="#breadcrumb" aria-current="page">Breadcrumb</a>
+                </span>
+              </nav>
+              <ol breadcrumb>
+                <li breadcrumb-item><a href="#breadcrumb">Home</a></li>
+                <li breadcrumb-item>This page</li>
+              </ol>
+            </div>
+            <p marginY="comfortable">
+              <code>&lt;nav breadcrumb&gt;</code> stays a navigation landmark.
+              <code>&lt;ol breadcrumb&gt;</code> stays a list — the runtime
+              does not add <code>role="navigation"</code> or a landmark name
+              on a list. It does not remove <code>href</code>.
+            </p>
+          </div>
+        </section>
+
+        <section type="workflow" paddingY="roomy" id="progress">
+          <div container>
+            <div section-header>
+              <h2>Progress</h2>
+              <p>
+                APG progressbar. Authors write <code>&lt;div progress&gt;</code>,
+                not <code>&lt;progress&gt;</code>. Determinate sync writes
+                <code>aria-valuenow</code> and <code>--juice-progress-ratio</code>.
+                <code>progress="indeterminate"</code> clears the current value
+                and slides the fill. No keyboard and no pointer. Still Emerging.
+              </p>
+            </div>
+            <div stack gap="1.25rem">
+              <div progress aria-label="Upload" aria-valuenow="62">
+                <span progress-fill></span>
+                <span progress-label>Uploading</span>
+              </div>
+              <div
+                progress
+                aria-label="Temperature"
+                aria-valuemin="10"
+                aria-valuemax="30"
+                aria-valuenow="20"
+                aria-valuetext="20 degrees"
+              >
+                <span progress-fill></span>
+              </div>
+              <div progress="indeterminate" aria-label="Working">
+                <span progress-fill></span>
+                <span progress-label>Working</span>
+              </div>
+            </div>
+            <p marginY="comfortable">
+              A missing <code>aria-valuenow</code> is an empty determinate
+              bar, not indeterminate. The visible label is author text. The
+              runtime does not copy it into the accessible name or
+              <code>aria-valuetext</code>.
+            </p>
+          </div>
+        </section>
+
         <section type="pricing" paddingY="roomy">
           <div container>
             <div section-header>
@@ -649,7 +885,8 @@
                 <h3>Auto-enhance on import</h3>
                 <p>
                   Navigation, accordion, tabs, modal, drawer, toast, popover,
-                  wizard, tooltip, combobox, banner, and menu all boot from
+                  wizard, tooltip, combobox, banner, menu, switch, slider,
+                  checkbox, radio, breadcrumb, and progress all boot from
                   <code>import "@citrusworx/juiceui"</code>. Toast show/dismiss
                   is the one demo that uses the documented
                   <code>createToast()</code> helper.
@@ -665,6 +902,12 @@
                   <a href="/docs/juice-combobox-runtime.html">Combobox runtime</a>
                   <a href="/docs/juice-banner-runtime.html">Banner runtime</a>
                   <a href="/docs/juice-menu-runtime.html">Menu runtime</a>
+                  <a href="/docs/juice-switch-runtime.html">Switch runtime</a>
+                  <a href="/docs/juice-slider-runtime.html">Slider runtime</a>
+                  <a href="/docs/juice-checkbox-runtime.html">Checkbox runtime</a>
+                  <a href="/docs/juice-radio-runtime.html">Radio runtime</a>
+                  <a href="/docs/juice-breadcrumb-runtime.html">Breadcrumb runtime</a>
+                  <a href="/docs/juice-progress-runtime.html">Progress runtime</a>
                 </div>
               </aside>
             </div>
