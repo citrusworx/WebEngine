@@ -1,0 +1,1550 @@
+@use '../../../tokens/color/retro-violet-parlor/retro-violet-parlor.scss' as *;
+
+/*
+    Violet Parlor is a fully expressed Juice theme contract.
+    The theme owns:
+    - color relationships
+    - typography voice
+    - semantic element defaults
+    - named themed surfaces
+    
+    Juice still owns:
+    - layout
+    - spacing
+    - structural primitives
+*/
+
+[theme="retro-violet-parlor"] {
+    /* Foundation */
+    --vpr-page: #{$vpr-page};
+    --vpr-page-tint: #{$vpr-page-tint};
+    --vpr-page-deep: #{$vpr-deep};
+    --vpr-surface: #{rgba($vpr-page, 0.78)};
+    --vpr-surface-strong: #{rgba($vpr-page, 0.92)};
+    --vpr-surface-muted: #{rgba($vpr-page-tint, 0.78)};
+    --vpr-surface-deep: #{$vpr-text};
+    --vpr-border: #{rgba($vpr-border-color, 0.26)};
+    --vpr-border-strong: #{rgba($vpr-accent, 0.38)};
+    --vpr-shadow: #{rgba($vpr-deep, 0.12)};
+
+    /* Typography */
+    --vpr-text: #{$vpr-text};
+    --vpr-text-muted: #{$vpr-text-muted};
+    --vpr-heading: #{$vpr-deep};
+    --vpr-body-font: "Lato", sans-serif;
+    --vpr-heading-font: "Archivo Black", sans-serif;
+
+    /* Accent system */
+    --vpr-accent: #{$vpr-accent};
+    --vpr-accent-soft: #{$vpr-accent-soft};
+    --vpr-accent-strong: #{$vpr-accent-strong};
+    --vpr-highlight: #{$vpr-highlight};
+
+    /* Surface recipes */
+    --vpr-page-background:
+        radial-gradient(circle at top left, #{rgba($vpr-highlight, 0.72)}, transparent 38%),
+        radial-gradient(circle at top right, #{rgba($vpr-secondary-soft, 0.45)}, transparent 30%),
+        linear-gradient(180deg, #{$vpr-page} 0%, #{$vpr-page-tint} 100%);
+    --vpr-button-background: linear-gradient(135deg, #{$vpr-accent}, #{$vpr-secondary-strong});
+    --vpr-card-background:
+        linear-gradient(180deg, #{rgba($vpr-page, 0.96)} 0%, #{rgba($vpr-page-tint, 0.88)} 100%);
+    --vpr-panel-background:
+        linear-gradient(180deg, #{rgba($vpr-page, 0.98)} 0%, #{rgba($vpr-page-tint, 0.72)} 100%);
+    --vpr-hero-background:
+        radial-gradient(circle at top left, #{rgba($vpr-highlight-strong, 0.38)}, transparent 30%),
+        radial-gradient(circle at bottom right, #{rgba($vpr-secondary, 0.28)}, transparent 32%),
+        linear-gradient(135deg, #{$vpr-deep} 0%, #{$vpr-accent-deep} 54%, #{$vpr-accent-strong} 100%);
+    --vpr-stage-background:
+        radial-gradient(circle at 18% 20%, #{rgba($vpr-highlight, 0.22)}, transparent 22%),
+        radial-gradient(circle at 78% 22%, #{rgba($vpr-accent-soft, 0.2)}, transparent 24%),
+        linear-gradient(145deg, #{$vpr-deep} 0%, #{$vpr-text} 52%, #{$vpr-accent-strong} 100%);
+    --vpr-stage-outline: #{rgba($vpr-page, 0.14)};
+    --vpr-stage-shadow: #{rgba($vpr-deep, 0.34)};
+    --vpr-chip-background: #{rgba($vpr-page, 0.96)};
+    --vpr-buybox-background:
+        linear-gradient(180deg, #{rgba($vpr-page, 0.98)} 0%, #{rgba($vpr-page-tint, 0.82)} 100%);
+    --vpr-buybox-shadow: 0 32px 70px -42px #{rgba($vpr-deep, 0.24)};
+    --vpr-spec-background:
+        linear-gradient(180deg, #{rgba($vpr-page-tint, 0.95)} 0%, #{rgba($vpr-page, 0.98)} 100%);
+
+    /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
+       Bound from existing Violet Parlor tokens; no new hue family. */
+    --vpr-trigger: var(--vpr-surface-strong);
+    --vpr-trigger-hover: var(--vpr-surface-muted);
+    --vpr-trigger-open: var(--vpr-highlight);
+    --vpr-chevron: var(--vpr-accent);
+    --vpr-panel-rule: var(--vpr-border);
+    --vpr-focus-ring: var(--vpr-accent);
+    --vpr-item-border: var(--vpr-border);
+    --vpr-item-border-open: var(--vpr-border);
+    --vpr-trigger-accent: var(--vpr-accent);
+    --vpr-panel-well: var(--vpr-surface-muted);
+    --vpr-open-glow: 0 14px 32px -26px var(--vpr-shadow);
+    --juice-accordion-trigger: var(--vpr-trigger);
+    --juice-accordion-trigger-hover: var(--vpr-trigger-hover);
+    --juice-accordion-trigger-open: var(--vpr-trigger-open);
+    --juice-accordion-chevron: var(--vpr-chevron);
+    --juice-accordion-panel-rule: var(--vpr-panel-rule);
+    --juice-accordion-focus-ring: var(--vpr-focus-ring);
+    --juice-accordion-item-border: var(--vpr-item-border);
+    --juice-accordion-item-border-open: var(--vpr-item-border-open);
+    --juice-accordion-trigger-accent: var(--vpr-trigger-accent);
+    --juice-accordion-panel: var(--vpr-panel-well);
+    --juice-accordion-open-glow: var(--vpr-open-glow);
+    --juice-accordion-chevron-size: 0.7rem;
+    --juice-accordion-chevron-weight: 2.5px;
+
+    /* Tabs chrome roles — surface/text controls, not the CTA gradient. */
+    --vpr-tabs-trigger: transparent;
+    --vpr-tabs-trigger-hover: transparent;
+    --vpr-tabs-trigger-active: transparent;
+    --vpr-tabs-text: var(--vpr-text-muted);
+    --vpr-tabs-text-hover: var(--vpr-heading);
+    --vpr-tabs-text-active: var(--vpr-accent);
+    --vpr-tabs-indicator: var(--vpr-accent);
+    --vpr-tabs-list-rule: var(--vpr-border);
+    --vpr-tabs-focus-ring: var(--vpr-accent);
+    --vpr-tabs-panel: var(--vpr-panel-well);
+    --juice-tabs-trigger: var(--vpr-tabs-trigger);
+    --juice-tabs-trigger-hover: var(--vpr-tabs-trigger-hover);
+    --juice-tabs-trigger-active: var(--vpr-tabs-trigger-active);
+    --juice-tabs-text: var(--vpr-tabs-text);
+    --juice-tabs-text-hover: var(--vpr-tabs-text-hover);
+    --juice-tabs-text-active: var(--vpr-tabs-text-active);
+    --juice-tabs-indicator: var(--vpr-tabs-indicator);
+    --juice-tabs-list-rule: var(--vpr-tabs-list-rule);
+    --juice-tabs-focus-ring: var(--vpr-tabs-focus-ring);
+    --juice-tabs-panel: var(--vpr-tabs-panel);
+
+    /* Surface tone roles — frosted / elevated / recessed from existing tokens. */
+    --juice-surface-soft-bg: var(--vpr-surface);
+    --juice-surface-soft-border: var(--vpr-border);
+    --juice-surface-soft-shadow: 0 18px 40px -28px var(--vpr-shadow);
+    --juice-surface-soft-blur: 14px;
+    --juice-surface-strong-bg: var(--vpr-surface-strong);
+    --juice-surface-strong-border: var(--vpr-border-strong);
+    --juice-surface-strong-shadow: 0 24px 56px -24px var(--vpr-shadow);
+    --juice-surface-strong-blur: 0px;
+    --juice-surface-muted-bg: var(--vpr-surface-muted);
+    --juice-surface-muted-border: var(--vpr-border);
+    --juice-surface-muted-shadow: none;
+    --juice-surface-muted-blur: 0px;
+
+    /* Border strength — existing --vpr-border tokens; 1px hairline vs 2px rule. */
+    --juice-border-strength-soft-width: 1px;
+    --juice-border-strength-soft-color: var(--vpr-border);
+    --juice-border-strength-bold-width: 2px;
+    --juice-border-strength-bold-color: var(--vpr-border-strong);
+
+    /* Shadow tone — existing blue / purple identity; no new hue family. */
+    --juice-shadow-tone-cool-color: var(--vpr-shadow);
+    --juice-shadow-tone-cool-shadow: 0 18px 40px -28px var(--vpr-shadow);
+    --juice-shadow-tone-warm-color: color-mix(in srgb, var(--vpr-accent-strong) 16%, transparent);
+    --juice-shadow-tone-warm-shadow: 0 18px 40px -28px color-mix(in srgb, var(--vpr-accent-strong) 16%, transparent);
+
+    /* Overlay — frost veil / page-tint wash; existing tokens only. */
+    --juice-overlay-frost-wash: color-mix(in srgb, var(--vpr-page) 42%, transparent);
+    --juice-overlay-frost-layer: linear-gradient(var(--juice-overlay-frost-wash), var(--juice-overlay-frost-wash));
+    --juice-overlay-tint-wash: color-mix(in srgb, var(--vpr-page-tint) 38%, transparent);
+    --juice-overlay-tint-layer: linear-gradient(var(--juice-overlay-tint-wash), var(--juice-overlay-tint-wash));
+
+    /* Modal chrome — dimming scrim + elevated panel. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --vpr-modal-overlay: color-mix(in srgb, var(--vpr-page-deep) 62%, transparent);
+    --vpr-modal-panel: var(--vpr-surface-strong);
+    --vpr-modal-panel-border: var(--vpr-border);
+    --vpr-modal-panel-shadow: 0 24px 56px -24px var(--vpr-shadow);
+    --vpr-modal-close: var(--vpr-surface-strong);
+    --vpr-modal-close-color: var(--vpr-heading);
+    --vpr-modal-close-hover: var(--vpr-surface-muted);
+    --vpr-modal-focus-ring: var(--vpr-accent);
+    --juice-modal-overlay: var(--vpr-modal-overlay);
+    --juice-modal-panel: var(--vpr-modal-panel);
+    --juice-modal-panel-border: var(--vpr-modal-panel-border);
+    --juice-modal-panel-shadow: var(--vpr-modal-panel-shadow);
+    --juice-modal-close: var(--vpr-modal-close);
+    --juice-modal-close-color: var(--vpr-modal-close-color);
+    --juice-modal-close-hover: var(--vpr-modal-close-hover);
+    --juice-modal-focus-ring: var(--vpr-modal-focus-ring);
+
+    /* Drawer chrome — same identity tokens as modal. Close is a surface
+       control, not the CTA gradient. Distinct from overlay="frost|tint". */
+    --vpr-drawer-overlay: color-mix(in srgb, var(--vpr-page-deep) 62%, transparent);
+    --vpr-drawer-panel: var(--vpr-surface-strong);
+    --vpr-drawer-panel-border: var(--vpr-border);
+    --vpr-drawer-panel-shadow: 0 24px 56px -24px var(--vpr-shadow);
+    --vpr-drawer-close: var(--vpr-surface-strong);
+    --vpr-drawer-close-color: var(--vpr-heading);
+    --vpr-drawer-close-hover: var(--vpr-surface-muted);
+    --vpr-drawer-focus-ring: var(--vpr-accent);
+    --juice-drawer-overlay: var(--vpr-drawer-overlay);
+    --juice-drawer-panel: var(--vpr-drawer-panel);
+    --juice-drawer-panel-border: var(--vpr-drawer-panel-border);
+    --juice-drawer-panel-shadow: var(--vpr-drawer-panel-shadow);
+    --juice-drawer-close: var(--vpr-drawer-close);
+    --juice-drawer-close-color: var(--vpr-drawer-close-color);
+    --juice-drawer-close-hover: var(--vpr-drawer-close-hover);
+    --juice-drawer-focus-ring: var(--vpr-drawer-focus-ring);
+
+    /* Toast chrome — non-modal stack + panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Status accents
+       remap Violet Parlor identity (no new red/green family): accent /
+       page-deep / accent-soft / accent-strong. */
+    --vpr-toast-panel: var(--vpr-surface-strong);
+    --vpr-toast-panel-border: var(--vpr-border);
+    --vpr-toast-panel-shadow: 0 18px 40px -24px var(--vpr-shadow);
+    --vpr-toast-ink: var(--vpr-text);
+    --vpr-toast-close: var(--vpr-surface-strong);
+    --vpr-toast-close-color: var(--vpr-heading);
+    --vpr-toast-close-hover: var(--vpr-surface-muted);
+    --vpr-toast-focus-ring: var(--vpr-accent);
+    --vpr-toast-success: var(--vpr-accent);
+    --vpr-toast-success-soft: color-mix(in srgb, var(--vpr-accent) 14%, var(--vpr-surface-strong));
+    --vpr-toast-error: var(--vpr-page-deep);
+    --vpr-toast-error-soft: color-mix(in srgb, var(--vpr-page-deep) 12%, var(--vpr-surface-strong));
+    --vpr-toast-info: var(--vpr-accent-soft);
+    --vpr-toast-info-soft: color-mix(in srgb, var(--vpr-accent-soft) 18%, var(--vpr-surface-strong));
+    --vpr-toast-warning: var(--vpr-accent-strong);
+    --vpr-toast-warning-soft: color-mix(in srgb, var(--vpr-accent-strong) 12%, var(--vpr-surface-strong));
+    --juice-toast-panel: var(--vpr-toast-panel);
+    --juice-toast-panel-border: var(--vpr-toast-panel-border);
+    --juice-toast-panel-shadow: var(--vpr-toast-panel-shadow);
+    --juice-toast-ink: var(--vpr-toast-ink);
+    --juice-toast-close: var(--vpr-toast-close);
+    --juice-toast-close-color: var(--vpr-toast-close-color);
+    --juice-toast-close-hover: var(--vpr-toast-close-hover);
+    --juice-toast-focus-ring: var(--vpr-toast-focus-ring);
+    --juice-toast-success: var(--vpr-toast-success);
+    --juice-toast-success-soft: var(--vpr-toast-success-soft);
+    --juice-toast-error: var(--vpr-toast-error);
+    --juice-toast-error-soft: var(--vpr-toast-error-soft);
+    --juice-toast-info: var(--vpr-toast-info);
+    --juice-toast-info-soft: var(--vpr-toast-info-soft);
+    --juice-toast-warning: var(--vpr-toast-warning);
+    --juice-toast-warning-soft: var(--vpr-toast-warning-soft);
+
+    /* Banner chrome — inline alert / callout from existing tokens.
+       Close is a surface control, not the CTA gradient. Status remaps
+       Violet Parlor identity (no new red/green family). Distinct from toast. */
+    --vpr-banner-panel: var(--vpr-surface-strong);
+    --vpr-banner-panel-border: var(--vpr-border);
+    --vpr-banner-ink: var(--vpr-text);
+    --vpr-banner-close: var(--vpr-surface-strong);
+    --vpr-banner-close-color: var(--vpr-heading);
+    --vpr-banner-close-hover: var(--vpr-surface-muted);
+    --vpr-banner-focus-ring: var(--vpr-accent);
+    --vpr-banner-success: var(--vpr-accent);
+    --vpr-banner-success-soft: color-mix(in srgb, var(--vpr-accent) 14%, var(--vpr-surface-strong));
+    --vpr-banner-error: var(--vpr-page-deep);
+    --vpr-banner-error-soft: color-mix(in srgb, var(--vpr-page-deep) 12%, var(--vpr-surface-strong));
+    --vpr-banner-info: var(--vpr-accent-soft);
+    --vpr-banner-info-soft: color-mix(in srgb, var(--vpr-accent-soft) 18%, var(--vpr-surface-strong));
+    --vpr-banner-warning: var(--vpr-accent-strong);
+    --vpr-banner-warning-soft: color-mix(in srgb, var(--vpr-accent-strong) 12%, var(--vpr-surface-strong));
+    --juice-banner-panel: var(--vpr-banner-panel);
+    --juice-banner-panel-border: var(--vpr-banner-panel-border);
+    --juice-banner-ink: var(--vpr-banner-ink);
+    --juice-banner-close: var(--vpr-banner-close);
+    --juice-banner-close-color: var(--vpr-banner-close-color);
+    --juice-banner-close-hover: var(--vpr-banner-close-hover);
+    --juice-banner-focus-ring: var(--vpr-banner-focus-ring);
+    --juice-banner-success: var(--vpr-banner-success);
+    --juice-banner-success-soft: var(--vpr-banner-success-soft);
+    --juice-banner-error: var(--vpr-banner-error);
+    --juice-banner-error-soft: var(--vpr-banner-error-soft);
+    --juice-banner-info: var(--vpr-banner-info);
+    --juice-banner-info-soft: var(--vpr-banner-info-soft);
+    --juice-banner-warning: var(--vpr-banner-warning);
+    --juice-banner-warning-soft: var(--vpr-banner-warning-soft);
+
+    /* Popover chrome — anchored floating panel from existing tokens.
+       Close is a surface control, not the CTA gradient. Distinct from
+       modal/drawer/toast and overlay="frost|tint". */
+    --vpr-popover-panel: var(--vpr-surface-strong);
+    --vpr-popover-panel-border: var(--vpr-border);
+    --vpr-popover-panel-shadow: 0 18px 40px -24px var(--vpr-shadow);
+    --vpr-popover-ink: var(--vpr-text);
+    --vpr-popover-close: var(--vpr-surface-strong);
+    --vpr-popover-close-color: var(--vpr-heading);
+    --vpr-popover-close-hover: var(--vpr-surface-muted);
+    --vpr-popover-focus-ring: var(--vpr-accent);
+    --juice-popover-panel: var(--vpr-popover-panel);
+    --juice-popover-panel-border: var(--vpr-popover-panel-border);
+    --juice-popover-panel-shadow: var(--vpr-popover-panel-shadow);
+    --juice-popover-ink: var(--vpr-popover-ink);
+    --juice-popover-close: var(--vpr-popover-close);
+    --juice-popover-close-color: var(--vpr-popover-close-color);
+    --juice-popover-close-hover: var(--vpr-popover-close-hover);
+    --juice-popover-focus-ring: var(--vpr-popover-focus-ring);
+
+    /* Wizard chrome — onboarding shell / rails / steps from existing tokens.
+       Distinct from modal/drawer/popover. No new hue family. */
+    --vpr-wizard-shell: var(--vpr-page);
+    --vpr-wizard-header: var(--vpr-surface-strong);
+    --vpr-wizard-header-border: var(--vpr-border);
+    --vpr-wizard-rail: var(--vpr-surface-muted);
+    --vpr-wizard-rail-border: var(--vpr-border);
+    --vpr-wizard-step: var(--vpr-surface-strong);
+    --vpr-wizard-step-border: var(--vpr-border);
+    --vpr-wizard-step-ink: var(--vpr-text-muted);
+    --vpr-wizard-step-current: var(--vpr-accent);
+    --vpr-wizard-step-complete: var(--vpr-accent-strong);
+    --vpr-wizard-step-on: var(--vpr-page);
+    --vpr-wizard-step-connector: var(--vpr-border);
+    --vpr-wizard-panel: var(--vpr-surface-strong);
+    --vpr-wizard-panel-border: var(--vpr-border);
+    --vpr-wizard-focus-ring: var(--vpr-accent);
+    --juice-wizard-shell: var(--vpr-wizard-shell);
+    --juice-wizard-header: var(--vpr-wizard-header);
+    --juice-wizard-header-border: var(--vpr-wizard-header-border);
+    --juice-wizard-rail: var(--vpr-wizard-rail);
+    --juice-wizard-rail-border: var(--vpr-wizard-rail-border);
+    --juice-wizard-step: var(--vpr-wizard-step);
+    --juice-wizard-step-border: var(--vpr-wizard-step-border);
+    --juice-wizard-step-ink: var(--vpr-wizard-step-ink);
+    --juice-wizard-step-current: var(--vpr-wizard-step-current);
+    --juice-wizard-step-complete: var(--vpr-wizard-step-complete);
+    --juice-wizard-step-on: var(--vpr-wizard-step-on);
+    --juice-wizard-step-connector: var(--vpr-wizard-step-connector);
+    --juice-wizard-panel: var(--vpr-wizard-panel);
+    --juice-wizard-panel-border: var(--vpr-wizard-panel-border);
+    --juice-wizard-focus-ring: var(--vpr-wizard-focus-ring);
+
+    /* Tooltip chrome — hover/focus tip from existing tokens. No close,
+       no status, no new hue family. Distinct from popover. */
+    --vpr-tooltip-panel: var(--vpr-surface-strong);
+    --vpr-tooltip-panel-border: var(--vpr-border);
+    --vpr-tooltip-panel-shadow: 0 12px 28px -20px var(--vpr-shadow);
+    --vpr-tooltip-ink: var(--vpr-text);
+    --juice-tooltip-panel: var(--vpr-tooltip-panel);
+    --juice-tooltip-panel-border: var(--vpr-tooltip-panel-border);
+    --juice-tooltip-panel-shadow: var(--vpr-tooltip-panel-shadow);
+    --juice-tooltip-ink: var(--vpr-tooltip-ink);
+
+    /* Combobox chrome — input + listbox popup from existing tokens.
+       Trigger is a surface control, not a CTA. Distinct from select. */
+    --vpr-combobox-input: var(--vpr-surface-strong);
+    --vpr-combobox-input-border: var(--vpr-border-strong);
+    --vpr-combobox-input-ink: var(--vpr-text);
+    --vpr-combobox-list: var(--vpr-surface-strong);
+    --vpr-combobox-list-border: var(--vpr-border);
+    --vpr-combobox-list-shadow: 0 18px 40px -24px var(--vpr-shadow);
+    --vpr-combobox-option: transparent;
+    --vpr-combobox-option-hover: var(--vpr-surface-muted);
+    --vpr-combobox-option-selected: var(--vpr-highlight);
+    --vpr-combobox-option-ink: var(--vpr-text);
+    --vpr-combobox-trigger: transparent;
+    --vpr-combobox-trigger-ink: var(--vpr-heading);
+    --vpr-combobox-focus-ring: var(--vpr-accent);
+    --juice-combobox-input: var(--vpr-combobox-input);
+    --juice-combobox-input-border: var(--vpr-combobox-input-border);
+    --juice-combobox-input-ink: var(--vpr-combobox-input-ink);
+    --juice-combobox-list: var(--vpr-combobox-list);
+    --juice-combobox-list-border: var(--vpr-combobox-list-border);
+    --juice-combobox-list-shadow: var(--vpr-combobox-list-shadow);
+    --juice-combobox-option: var(--vpr-combobox-option);
+    --juice-combobox-option-hover: var(--vpr-combobox-option-hover);
+    --juice-combobox-option-selected: var(--vpr-combobox-option-selected);
+    --juice-combobox-option-ink: var(--vpr-combobox-option-ink);
+    --juice-combobox-trigger: var(--vpr-combobox-trigger);
+    --juice-combobox-trigger-ink: var(--vpr-combobox-trigger-ink);
+    --juice-combobox-focus-ring: var(--vpr-combobox-focus-ring);
+
+    /* Menu chrome — APG menu button from existing tokens. Opener is a
+       surface control, not a CTA. Distinct from popover / combobox /
+       native select. */
+    --vpr-menu-panel: var(--vpr-surface-strong);
+    --vpr-menu-panel-border: var(--vpr-border);
+    --vpr-menu-panel-shadow: 0 18px 40px -24px var(--vpr-shadow);
+    --vpr-menu-ink: var(--vpr-text);
+    --vpr-menu-item: transparent;
+    --vpr-menu-item-hover: var(--vpr-surface-muted);
+    --vpr-menu-item-active: var(--vpr-highlight);
+    --vpr-menu-separator: var(--vpr-border);
+    --vpr-menu-focus-ring: var(--vpr-accent);
+    --vpr-menu-opener: var(--vpr-surface-strong);
+    --vpr-menu-opener-ink: var(--vpr-heading);
+    --juice-menu-panel: var(--vpr-menu-panel);
+    --juice-menu-panel-border: var(--vpr-menu-panel-border);
+    --juice-menu-panel-shadow: var(--vpr-menu-panel-shadow);
+    --juice-menu-ink: var(--vpr-menu-ink);
+    --juice-menu-item: var(--vpr-menu-item);
+    --juice-menu-item-hover: var(--vpr-menu-item-hover);
+    --juice-menu-item-active: var(--vpr-menu-item-active);
+    --juice-menu-separator: var(--vpr-menu-separator);
+    --juice-menu-focus-ring: var(--vpr-menu-focus-ring);
+    --juice-menu-opener: var(--vpr-menu-opener);
+    --juice-menu-opener-ink: var(--vpr-menu-opener-ink);
+
+    /* Switch chrome — APG switch from existing tokens. The host is a
+       surface track, not a CTA. Distinct from checkbox / menuitemcheckbox. */
+    --vpr-switch-track: var(--vpr-surface-muted);
+    --vpr-switch-track-checked: var(--vpr-accent);
+    --vpr-switch-thumb: var(--vpr-page);
+    --vpr-switch-thumb-checked: var(--vpr-page);
+    --vpr-switch-focus-ring: var(--vpr-accent);
+    --juice-switch-track: var(--vpr-switch-track);
+    --juice-switch-track-checked: var(--vpr-switch-track-checked);
+    --juice-switch-thumb: var(--vpr-switch-thumb);
+    --juice-switch-thumb-checked: var(--vpr-switch-thumb-checked);
+    --juice-switch-focus-ring: var(--vpr-switch-focus-ring);
+
+    /* Slider chrome — APG slider from existing tokens. Horizontal only.
+       The track is a surface groove, not a CTA. Distinct from range
+       input, progress, and scrollbar. */
+    --vpr-slider-track: var(--vpr-surface-muted);
+    --vpr-slider-track-border: var(--vpr-border);
+    --vpr-slider-fill: var(--vpr-accent);
+    --vpr-slider-thumb: var(--vpr-page);
+    --vpr-slider-thumb-border: var(--vpr-border-strong);
+    --vpr-slider-thumb-shadow: 0 1px 2px var(--vpr-shadow);
+    --vpr-slider-focus-ring: var(--vpr-accent);
+    --juice-slider-track: var(--vpr-slider-track);
+    --juice-slider-track-border: var(--vpr-slider-track-border);
+    --juice-slider-fill: var(--vpr-slider-fill);
+    --juice-slider-thumb: var(--vpr-slider-thumb);
+    --juice-slider-thumb-border: var(--vpr-slider-thumb-border);
+    --juice-slider-thumb-shadow: var(--vpr-slider-thumb-shadow);
+    --juice-slider-focus-ring: var(--vpr-slider-focus-ring);
+
+    /* Checkbox chrome — APG checkbox from existing tokens. The host is a
+       surface box, not a CTA. Binary only. Distinct from switch and
+       menuitemcheckbox. */
+    --vpr-checkbox-control: var(--vpr-page);
+    --vpr-checkbox-control-checked: var(--vpr-accent);
+    --vpr-checkbox-border: var(--vpr-border-strong);
+    --vpr-checkbox-border-checked: var(--vpr-accent);
+    --vpr-checkbox-mark: var(--vpr-page);
+    --vpr-checkbox-focus-ring: var(--vpr-accent);
+    --juice-checkbox-control: var(--vpr-checkbox-control);
+    --juice-checkbox-control-checked: var(--vpr-checkbox-control-checked);
+    --juice-checkbox-border: var(--vpr-checkbox-border);
+    --juice-checkbox-border-checked: var(--vpr-checkbox-border-checked);
+    --juice-checkbox-mark: var(--vpr-checkbox-mark);
+    --juice-checkbox-focus-ring: var(--vpr-checkbox-focus-ring);
+
+    /* Radio chrome — APG radio from existing tokens. The host is a surface
+       disc, not a CTA. The group is layout-only. Distinct from switch
+       and checkbox. */
+    --vpr-radio-control: var(--vpr-page);
+    --vpr-radio-control-checked: var(--vpr-page);
+    --vpr-radio-border: var(--vpr-border-strong);
+    --vpr-radio-border-checked: var(--vpr-accent);
+    --vpr-radio-mark: var(--vpr-accent);
+    --vpr-radio-focus-ring: var(--vpr-accent);
+    --juice-radio-control: var(--vpr-radio-control);
+    --juice-radio-control-checked: var(--vpr-radio-control-checked);
+    --juice-radio-border: var(--vpr-radio-border);
+    --juice-radio-border-checked: var(--vpr-radio-border-checked);
+    --juice-radio-mark: var(--vpr-radio-mark);
+    --juice-radio-focus-ring: var(--vpr-radio-focus-ring);
+
+    /* Breadcrumb chrome — APG trail from existing tokens. Inline, not a
+       site nav bar and not a CTA. Surface stays transparent unless a bar
+       is wanted. Distinct from tabs, wizard steps, and pagination. */
+    --vpr-breadcrumb-ink: var(--vpr-text-muted);
+    --vpr-breadcrumb-ink-current: var(--vpr-heading);
+    --vpr-breadcrumb-ink-hover: var(--vpr-accent);
+    --vpr-breadcrumb-separator: var(--vpr-border-strong);
+    --vpr-breadcrumb-focus-ring: var(--vpr-accent);
+    --vpr-breadcrumb-surface: transparent;
+    --juice-breadcrumb-ink: var(--vpr-breadcrumb-ink);
+    --juice-breadcrumb-ink-current: var(--vpr-breadcrumb-ink-current);
+    --juice-breadcrumb-ink-hover: var(--vpr-breadcrumb-ink-hover);
+    --juice-breadcrumb-separator: var(--vpr-breadcrumb-separator);
+    --juice-breadcrumb-focus-ring: var(--vpr-breadcrumb-focus-ring);
+    --juice-breadcrumb-surface: var(--vpr-breadcrumb-surface);
+
+    /* Progress chrome — APG progressbar from existing tokens. The track
+       is a surface groove, not a CTA. Distinct from slider, spinner, and
+       a native <progress> restyle. Inline status — no overlay. */
+    --vpr-progress-track: var(--vpr-surface-muted);
+    --vpr-progress-track-border: var(--vpr-border);
+    --vpr-progress-fill: var(--vpr-accent);
+    --vpr-progress-ink: var(--vpr-text);
+    --vpr-progress-focus-ring: var(--vpr-accent);
+    --juice-progress-track: var(--vpr-progress-track);
+    --juice-progress-track-border: var(--vpr-progress-track-border);
+    --juice-progress-fill: var(--vpr-progress-fill);
+    --juice-progress-ink: var(--vpr-progress-ink);
+    --juice-progress-focus-ring: var(--vpr-progress-focus-ring);
+
+    /* Pagination chrome — chips, not a CTA bar.
+       Current fill stays accent; ink on that fill is heading.
+       Distinct from breadcrumb, tabs, and wizard steps. */
+    --vpr-pagination-surface: var(--vpr-surface-strong);
+    --vpr-pagination-surface-hover: var(--vpr-surface-muted);
+    --vpr-pagination-surface-current: var(--vpr-accent);
+    --vpr-pagination-ink: var(--vpr-text);
+    --vpr-pagination-ink-hover: var(--vpr-accent);
+    --vpr-pagination-ink-current: var(--vpr-heading);
+    --vpr-pagination-ink-disabled: var(--vpr-text-muted);
+    --vpr-pagination-border: var(--vpr-border);
+    --vpr-pagination-focus-ring: var(--vpr-accent);
+    --vpr-pagination-ellipsis: var(--vpr-text-muted);
+    --juice-pagination-surface: var(--vpr-pagination-surface);
+    --juice-pagination-surface-hover: var(--vpr-pagination-surface-hover);
+    --juice-pagination-surface-current: var(--vpr-pagination-surface-current);
+    --juice-pagination-ink: var(--vpr-pagination-ink);
+    --juice-pagination-ink-hover: var(--vpr-pagination-ink-hover);
+    --juice-pagination-ink-current: var(--vpr-pagination-ink-current);
+    --juice-pagination-ink-disabled: var(--vpr-pagination-ink-disabled);
+    --juice-pagination-border: var(--vpr-pagination-border);
+    --juice-pagination-focus-ring: var(--vpr-pagination-focus-ring);
+    --juice-pagination-ellipsis: var(--vpr-pagination-ellipsis);
+
+    background-color: var(--vpr-page);
+    background-image: var(--vpr-page-background);
+    color: var(--vpr-text);
+    font-family: var(--vpr-body-font);
+}
+
+/* Theme root behavior */
+[theme="retro-violet-parlor"] :where(main) {
+    background: transparent;
+    color: inherit;
+}
+
+[theme="retro-violet-parlor"] :where(div) {
+    background-color: transparent;
+    color: inherit;
+}
+
+/* Semantic element defaults */
+[theme="retro-violet-parlor"] :where(section, article, aside, nav, header, footer, form) {
+    background-color: var(--vpr-surface);
+    color: var(--vpr-text);
+    border: 1px solid var(--vpr-border);
+    box-shadow: 0 24px 60px -36px var(--vpr-shadow);
+    backdrop-filter: blur(14px);
+}
+
+[theme="retro-violet-parlor"] :where(nav[type="bar"], nav[type="sidebar"]) {
+    background-color: var(--vpr-surface-strong);
+}
+
+/* Typography hierarchy */
+[theme="retro-violet-parlor"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--vpr-heading);
+    font-family: var(--vpr-heading-font);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+}
+
+[theme="retro-violet-parlor"] :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--vpr-text);
+    font-family: var(--vpr-body-font);
+}
+
+[theme="retro-violet-parlor"] :where(small, figcaption) {
+    color: var(--vpr-text-muted);
+    font-family: var(--vpr-body-font);
+}
+
+[theme="retro-violet-parlor"] :where(strong, b) {
+    color: var(--vpr-heading);
+}
+
+/* Links and emphasis */
+[theme="retro-violet-parlor"] :where(a) {
+    color: var(--vpr-accent-strong);
+    text-decoration-color: #{rgba($vpr-accent-strong, 0.35)};
+}
+
+[theme="retro-violet-parlor"] :where(a:hover, a:focus-visible) {
+    color: var(--vpr-accent);
+}
+
+/* Controls */
+[theme="retro-violet-parlor"] :where(button, input, textarea, select) {
+    background-color: var(--vpr-surface-strong);
+    color: var(--vpr-text);
+    border: 1px solid var(--vpr-border-strong);
+    font-family: var(--vpr-body-font);
+    box-shadow: 0 14px 32px -26px var(--vpr-shadow);
+}
+
+[theme="retro-violet-parlor"] :where(button) {
+    background-image: var(--vpr-button-background);
+    color: #{$vpr-page};
+    border-color: transparent;
+}
+
+[theme="retro-violet-parlor"] :where(button:hover, button:focus-visible) {
+    box-shadow: 0 18px 38px -24px #{rgba($vpr-deep, 0.24)};
+}
+
+[theme="retro-violet-parlor"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--vpr-text-muted);
+}
+
+[theme="retro-violet-parlor"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 2px solid #{rgba($vpr-border-color, 0.28)};
+    outline-offset: 2px;
+}
+
+[theme="retro-violet-parlor"] :where(code, pre) {
+    background-color: #{rgba($vpr-page-tint, 0.9)};
+    color: var(--vpr-heading);
+    border: 1px solid var(--vpr-border);
+}
+
+[theme="retro-violet-parlor"] :where(hr) {
+    border: none;
+    border-top: 1px solid var(--vpr-border);
+}
+
+[theme="retro-violet-parlor"] :where(ul, ol) {
+    color: var(--vpr-text);
+}
+
+/* Named themed surfaces */
+[theme="retro-violet-parlor"][vpr-card],
+[theme="retro-violet-parlor"] [vpr-card] {
+    background: var(--vpr-card-background);
+    color: var(--vpr-text);
+    border: 1px solid var(--vpr-border-strong);
+    box-shadow: 0 28px 70px -42px var(--vpr-shadow);
+}
+
+[theme="retro-violet-parlor"][vpr-card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-violet-parlor"] [vpr-card] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"][vpr-card] :where(p, span, li, small),
+[theme="retro-violet-parlor"] [vpr-card] :where(p, span, li, small) {
+    color: var(--vpr-text-muted);
+}
+
+[theme="retro-violet-parlor"][vpr-card] :where(strong, b),
+[theme="retro-violet-parlor"] [vpr-card] :where(strong, b) {
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"][vpr-panel],
+[theme="retro-violet-parlor"] [vpr-panel] {
+    background: var(--vpr-panel-background);
+    color: var(--vpr-text);
+    border: 1px solid var(--vpr-border);
+    box-shadow: 0 22px 56px -40px var(--vpr-shadow);
+}
+
+[theme="retro-violet-parlor"][vpr-panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-violet-parlor"] [vpr-panel] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"][vpr-panel] :where(p, span, li, small),
+[theme="retro-violet-parlor"] [vpr-panel] :where(p, span, li, small) {
+    color: var(--vpr-text);
+}
+
+[theme="retro-violet-parlor"][vpr-panel] :where(strong, b),
+[theme="retro-violet-parlor"] [vpr-panel] :where(strong, b) {
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"][vpr-hero],
+[theme="retro-violet-parlor"] [vpr-hero] {
+    background: var(--vpr-hero-background);
+    color: #{$vpr-page};
+    border: 1px solid #{rgba($vpr-page, 0.16)};
+    box-shadow: 0 36px 90px -48px #{rgba($vpr-deep, 0.45)};
+}
+
+[theme="retro-violet-parlor"][vpr-hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-violet-parlor"] [vpr-hero] :where(h1, h2, h3, h4, h5, h6) {
+    color: #{$vpr-page};
+}
+
+[theme="retro-violet-parlor"][vpr-hero] :where(p, span, li, small, a),
+[theme="retro-violet-parlor"] [vpr-hero] :where(p, span, li, small, a) {
+    color: #{rgba($vpr-page, 0.86)};
+}
+
+[theme="retro-violet-parlor"][vpr-hero] :where(button),
+[theme="retro-violet-parlor"] [vpr-hero] :where(button) {
+    background: #{$vpr-page};
+    color: var(--vpr-heading);
+    border-color: transparent;
+}
+
+[theme="retro-violet-parlor"][vpr-stage],
+[theme="retro-violet-parlor"] [vpr-stage] {
+    background: var(--vpr-stage-background);
+    color: #{$vpr-page};
+    border: 1px solid var(--vpr-stage-outline);
+    box-shadow: 0 44px 100px -54px var(--vpr-stage-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+[theme="retro-violet-parlor"][vpr-stage]::before,
+[theme="retro-violet-parlor"] [vpr-stage]::before {
+    content: "";
+    position: absolute;
+    inset: 1.25rem;
+    border: 1px solid #{rgba($vpr-page, 0.08)};
+    border-radius: 1.25rem;
+    pointer-events: none;
+}
+
+[theme="retro-violet-parlor"][vpr-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-violet-parlor"] [vpr-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: #{$vpr-page};
+}
+
+[theme="retro-violet-parlor"][vpr-stage] :where(p, span, li, small, a),
+[theme="retro-violet-parlor"] [vpr-stage] :where(p, span, li, small, a) {
+    color: #{rgba($vpr-page, 0.86)};
+}
+
+[theme="retro-violet-parlor"][vpr-chip],
+[theme="retro-violet-parlor"] [vpr-chip] {
+    background: var(--vpr-chip-background);
+    color: var(--vpr-heading);
+    border: 1px solid #{rgba($vpr-highlight-strong, 0.34)};
+    box-shadow: 0 18px 40px -30px #{rgba($vpr-deep, 0.18)};
+}
+
+[theme="retro-violet-parlor"][vpr-buybox],
+[theme="retro-violet-parlor"] [vpr-buybox] {
+    background: var(--vpr-buybox-background);
+    color: var(--vpr-text);
+    border: 1px solid #{rgba($vpr-highlight-strong, 0.3)};
+    box-shadow: var(--vpr-buybox-shadow);
+}
+
+[theme="retro-violet-parlor"][vpr-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-violet-parlor"] [vpr-buybox] :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"][vpr-spec],
+[theme="retro-violet-parlor"] [vpr-spec] {
+    background: var(--vpr-spec-background);
+    color: var(--vpr-text);
+    border: 1px solid #{rgba($vpr-highlight-strong, 0.26)};
+    box-shadow: 0 20px 46px -34px #{rgba($vpr-deep, 0.15)};
+}
+
+/* Nested surfaces inside the hero should retain their own readable contrast. */
+[theme="retro-violet-parlor"][vpr-hero] :where([vpr-card], [vpr-panel]),
+[theme="retro-violet-parlor"] [vpr-hero] :where([vpr-card], [vpr-panel]) {
+    color: var(--vpr-text);
+}
+
+[theme="retro-violet-parlor"][vpr-hero] :where([vpr-card], [vpr-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-violet-parlor"] [vpr-hero] :where([vpr-card], [vpr-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"][vpr-hero] :where([vpr-card], [vpr-panel]) :where(p, span, li, small, a),
+[theme="retro-violet-parlor"] [vpr-hero] :where([vpr-card], [vpr-panel]) :where(p, span, li, small, a) {
+    color: var(--vpr-text-muted);
+}
+
+/* Accordion wrappers are structural, not named surfaces.
+   Group FAQ stacks in [vpr-card] / [vpr-panel] instead.
+   Fill / chevron / focus / panel-rule come from --juice-accordion-* roles. */
+[theme="retro-violet-parlor"] :where([accordion]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+/* Generic Violet Parlor buttons use --vpr-button-background (CTA gradient).
+   Accordion triggers are surface controls, not primary actions.
+   Slice A extras (heading ink, hairline, shadow) stay here; fills use roles. */
+[theme="retro-violet-parlor"] button[accordion-item] {
+    background-image: none;
+    background-color: var(--juice-accordion-trigger);
+    color: var(--vpr-heading);
+    border: 1px solid var(--vpr-border);
+    box-shadow: 0 14px 32px -26px var(--vpr-shadow);
+}
+
+[theme="retro-violet-parlor"] button[accordion-item]::after {
+    border-color: var(--juice-accordion-chevron);
+}
+
+[theme="retro-violet-parlor"] button[accordion-item]:hover {
+    border-color: var(--vpr-border-strong);
+    background-color: var(--juice-accordion-trigger-hover);
+    color: var(--vpr-heading);
+}
+
+[theme="retro-violet-parlor"] button[accordion-item]:focus-visible {
+    outline: 2px solid var(--juice-accordion-focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 14px 32px -26px var(--vpr-shadow);
+}
+
+[theme="retro-violet-parlor"] button[accordion-item][aria-expanded="true"] {
+    background-color: var(--juice-accordion-trigger-open);
+    background-image: none;
+    color: var(--vpr-heading);
+    border-color: var(--vpr-border-strong);
+}
+
+[theme="retro-violet-parlor"] [accordion] [role="region"] {
+    color: var(--vpr-text);
+    background-color: var(--vpr-surface-muted);
+    border: 1px solid var(--juice-accordion-panel-rule);
+    border-radius: 0.75rem;
+    /* Slice A framed the panel; skip the shared inset rule. */
+    box-shadow: none;
+}
+
+/* Tabs wrappers are structural. Generic Violet Parlor buttons use the CTA gradient;
+   tab triggers stay surface/text controls. */
+[theme="retro-violet-parlor"] :where([tabs]) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+[theme="retro-violet-parlor"] [tabs]:not(:has([tabs-list], [tab-panel])),
+[theme="retro-violet-parlor"] [tabs-list] {
+    border-bottom-color: var(--juice-tabs-list-rule);
+}
+
+[theme="retro-violet-parlor"] button[tab],
+[theme="retro-violet-parlor"] [tabs] > button,
+[theme="retro-violet-parlor"] [tabs-list] > button {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger);
+    color: var(--juice-tabs-text);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[tab]:hover,
+[theme="retro-violet-parlor"] [tabs] > button:hover,
+[theme="retro-violet-parlor"] [tabs-list] > button:hover {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-hover);
+    color: var(--juice-tabs-text-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[tab]:focus-visible,
+[theme="retro-violet-parlor"] [tabs] > button:focus-visible,
+[theme="retro-violet-parlor"] [tabs-list] > button:focus-visible {
+    outline: 2px solid var(--juice-tabs-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-violet-parlor"] button[tab][active],
+[theme="retro-violet-parlor"] button[tab][aria-selected="true"],
+[theme="retro-violet-parlor"] [tabs] > button[active],
+[theme="retro-violet-parlor"] [tabs] > button[aria-selected="true"],
+[theme="retro-violet-parlor"] [tabs-list] > button[active],
+[theme="retro-violet-parlor"] [tabs-list] > button[aria-selected="true"] {
+    background-image: none;
+    background-color: var(--juice-tabs-trigger-active);
+    color: var(--juice-tabs-text-active);
+    border-bottom-color: var(--juice-tabs-indicator);
+}
+
+[theme="retro-violet-parlor"] [tab-panel] {
+    color: var(--vpr-text);
+}
+
+/* Modal chrome. Generic Violet Parlor buttons use the CTA gradient;
+   [modal-close] stays a surface control. Runtime is slice B. */
+[theme="retro-violet-parlor"] [modal-overlay] {
+    background-color: var(--juice-modal-overlay);
+}
+
+[theme="retro-violet-parlor"] [modal]:not([surfaceTone]) {
+    background-color: var(--juice-modal-panel);
+    border: 1px solid var(--juice-modal-panel-border);
+    box-shadow: var(--juice-modal-panel-shadow);
+}
+
+[theme="retro-violet-parlor"] button[modal-close],
+[theme="retro-violet-parlor"] [modal-close] {
+    background-image: none;
+    background-color: var(--juice-modal-close);
+    color: var(--juice-modal-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[modal-close]:hover,
+[theme="retro-violet-parlor"] [modal-close]:hover {
+    background-image: none;
+    background-color: var(--juice-modal-close-hover);
+    color: var(--juice-modal-close-color);
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[modal-close]:focus-visible,
+[theme="retro-violet-parlor"] [modal-close]:focus-visible {
+    outline: 2px solid var(--juice-modal-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Drawer chrome. Generic Violet Parlor buttons use the CTA gradient;
+   [drawer-close] stays a surface control. Runtime is later. */
+[theme="retro-violet-parlor"] [drawer-overlay] {
+    background-color: var(--juice-drawer-overlay);
+}
+
+[theme="retro-violet-parlor"] [drawer]:not([surfaceTone]) {
+    background-color: var(--juice-drawer-panel);
+    border: 1px solid var(--juice-drawer-panel-border);
+    box-shadow: var(--juice-drawer-panel-shadow);
+}
+
+[theme="retro-violet-parlor"] button[drawer-close],
+[theme="retro-violet-parlor"] [drawer-close] {
+    background-image: none;
+    background-color: var(--juice-drawer-close);
+    color: var(--juice-drawer-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[drawer-close]:hover,
+[theme="retro-violet-parlor"] [drawer-close]:hover {
+    background-image: none;
+    background-color: var(--juice-drawer-close-hover);
+    color: var(--juice-drawer-close-color);
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[drawer-close]:focus-visible,
+[theme="retro-violet-parlor"] [drawer-close]:focus-visible {
+    outline: 2px solid var(--juice-drawer-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Toast chrome. Generic Violet Parlor buttons use the CTA gradient;
+   [toast-close] stays a surface control. Runtime is later. */
+[theme="retro-violet-parlor"] [toast]:not([surfaceTone]) {
+    background-color: var(--juice-toast-panel);
+    border: 1px solid var(--juice-toast-panel-border);
+    box-shadow: var(--juice-toast-panel-shadow);
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-violet-parlor"] [toast-title],
+[theme="retro-violet-parlor"] [toast-body] {
+    color: var(--juice-toast-ink);
+}
+
+[theme="retro-violet-parlor"] [toast="success"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-success-soft);
+}
+
+[theme="retro-violet-parlor"] [toast="success"] {
+    border-left-color: var(--juice-toast-success);
+}
+
+[theme="retro-violet-parlor"] [toast="success"] [toast-title] {
+    color: var(--juice-toast-success);
+}
+
+[theme="retro-violet-parlor"] [toast="error"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-error-soft);
+}
+
+[theme="retro-violet-parlor"] [toast="error"] {
+    border-left-color: var(--juice-toast-error);
+}
+
+[theme="retro-violet-parlor"] [toast="error"] [toast-title] {
+    color: var(--juice-toast-error);
+}
+
+[theme="retro-violet-parlor"] [toast="info"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-info-soft);
+}
+
+[theme="retro-violet-parlor"] [toast="info"] {
+    border-left-color: var(--juice-toast-info);
+}
+
+[theme="retro-violet-parlor"] [toast="info"] [toast-title] {
+    color: var(--juice-toast-info);
+}
+
+[theme="retro-violet-parlor"] [toast="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-toast-warning-soft);
+}
+
+[theme="retro-violet-parlor"] [toast="warning"] {
+    border-left-color: var(--juice-toast-warning);
+}
+
+[theme="retro-violet-parlor"] [toast="warning"] [toast-title] {
+    color: var(--juice-toast-warning);
+}
+
+[theme="retro-violet-parlor"] button[toast-close],
+[theme="retro-violet-parlor"] [toast-close] {
+    background-image: none;
+    background-color: var(--juice-toast-close);
+    color: var(--juice-toast-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[toast-close]:hover,
+[theme="retro-violet-parlor"] [toast-close]:hover {
+    background-image: none;
+    background-color: var(--juice-toast-close-hover);
+    color: var(--juice-toast-close-color);
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[toast-close]:focus-visible,
+[theme="retro-violet-parlor"] [toast-close]:focus-visible {
+    outline: 2px solid var(--juice-toast-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Banner chrome. Generic Violet Parlor buttons use the CTA gradient;
+   [banner-close] stays a surface control. Runtime is later. */
+[theme="retro-violet-parlor"] [banner]:not([surfaceTone]) {
+    background-color: var(--juice-banner-panel);
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-violet-parlor"] [banner]:not([surfaceTone]):not([banner-tone]) {
+    border: 1px solid var(--juice-banner-panel-border);
+}
+
+[theme="retro-violet-parlor"] [banner-body] {
+    color: var(--juice-banner-ink);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="success"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-success-soft);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="success"] {
+    border-left: 4px solid var(--juice-banner-success);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="error"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-error-soft);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="error"] {
+    border-left: 4px solid var(--juice-banner-error);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="info"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-info-soft);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="info"] {
+    border-left: 4px solid var(--juice-banner-info);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="warning"]:not([surfaceTone]) {
+    background-color: var(--juice-banner-warning-soft);
+}
+
+[theme="retro-violet-parlor"] [banner][banner-tone="warning"] {
+    border-left: 4px solid var(--juice-banner-warning);
+}
+
+[theme="retro-violet-parlor"] button[banner-close],
+[theme="retro-violet-parlor"] [banner-close] {
+    background-image: none;
+    background-color: var(--juice-banner-close);
+    color: var(--juice-banner-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[banner-close]:hover,
+[theme="retro-violet-parlor"] [banner-close]:hover {
+    background-image: none;
+    background-color: var(--juice-banner-close-hover);
+    color: var(--juice-banner-close-color);
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[banner-close]:focus-visible,
+[theme="retro-violet-parlor"] [banner-close]:focus-visible {
+    outline: 2px solid var(--juice-banner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Popover chrome. Generic Violet Parlor buttons use the CTA gradient;
+   [popover-close] stays a surface control. Runtime is later. */
+[theme="retro-violet-parlor"] [popover-panel]:not([surfaceTone]) {
+    background-color: var(--juice-popover-panel);
+    border: 1px solid var(--juice-popover-panel-border);
+    box-shadow: var(--juice-popover-panel-shadow);
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-violet-parlor"] [popover-header],
+[theme="retro-violet-parlor"] [popover-body] {
+    color: var(--juice-popover-ink);
+}
+
+[theme="retro-violet-parlor"] button[popover-close],
+[theme="retro-violet-parlor"] [popover-close] {
+    background-image: none;
+    background-color: var(--juice-popover-close);
+    color: var(--juice-popover-close-color);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[popover-close]:hover,
+[theme="retro-violet-parlor"] [popover-close]:hover {
+    background-image: none;
+    background-color: var(--juice-popover-close-hover);
+    color: var(--juice-popover-close-color);
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[popover-close]:focus-visible,
+[theme="retro-violet-parlor"] [popover-close]:focus-visible {
+    outline: 2px solid var(--juice-popover-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Tooltip chrome. Beat [theme] :where(div) defaults. Optional
+   surfaceTone on [tooltip-panel] is allowed. Runtime is later. */
+[theme="retro-violet-parlor"] [tooltip-panel]:not([surfaceTone]) {
+    background-color: var(--juice-tooltip-panel);
+    border: 1px solid var(--juice-tooltip-panel-border);
+    box-shadow: var(--juice-tooltip-panel-shadow);
+    color: var(--juice-tooltip-ink);
+}
+
+/* Combobox chrome. Beat [theme] :where(input, button) defaults.
+   [combobox-trigger] stays a surface control. Optional surfaceTone
+   on [combobox-list] is allowed. Runtime is later. */
+[theme="retro-violet-parlor"] [combobox-input] {
+    background-color: var(--juice-combobox-input);
+    border: 1px solid var(--juice-combobox-input-border);
+    color: var(--juice-combobox-input-ink);
+}
+
+[theme="retro-violet-parlor"] button[combobox-trigger],
+[theme="retro-violet-parlor"] [combobox-trigger] {
+    background-image: none;
+    background-color: var(--juice-combobox-trigger);
+    color: var(--juice-combobox-trigger-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] [combobox-input]:focus-visible,
+[theme="retro-violet-parlor"] button[combobox-trigger]:focus-visible,
+[theme="retro-violet-parlor"] [combobox-trigger]:focus-visible {
+    outline: 2px solid var(--juice-combobox-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-violet-parlor"] [combobox-list]:not([surfaceTone]) {
+    background-color: var(--juice-combobox-list);
+    border: 1px solid var(--juice-combobox-list-border);
+    box-shadow: var(--juice-combobox-list-shadow);
+}
+
+[theme="retro-violet-parlor"] [combobox-option] {
+    background-color: var(--juice-combobox-option);
+    color: var(--juice-combobox-option-ink);
+}
+
+[theme="retro-violet-parlor"] [combobox-option]:hover {
+    background-color: var(--juice-combobox-option-hover);
+}
+
+[theme="retro-violet-parlor"] [combobox-option][aria-selected="true"],
+[theme="retro-violet-parlor"] [combobox-option="active"] {
+    background-color: var(--juice-combobox-option-selected);
+}
+
+/* Menu chrome. Beat [theme] :where(div, button) defaults.
+   [menu-button] stays a surface control. Optional surfaceTone
+   on [menu] is allowed. Runtime is later. */
+[theme="retro-violet-parlor"] [menu]:not([surfaceTone]) {
+    background-color: var(--juice-menu-panel);
+    border: 1px solid var(--juice-menu-panel-border);
+    box-shadow: var(--juice-menu-panel-shadow);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-violet-parlor"] button[menu-button],
+[theme="retro-violet-parlor"] [menu-button] {
+    background-image: none;
+    background-color: var(--juice-menu-opener);
+    color: var(--juice-menu-opener-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[menu-button]:focus-visible,
+[theme="retro-violet-parlor"] [menu-button]:focus-visible,
+[theme="retro-violet-parlor"] [menuitem]:focus-visible {
+    outline: 2px solid var(--juice-menu-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-violet-parlor"] [menuitem] {
+    background-color: var(--juice-menu-item);
+    color: var(--juice-menu-ink);
+}
+
+[theme="retro-violet-parlor"] [menuitem]:hover {
+    background-color: var(--juice-menu-item-hover);
+}
+
+[theme="retro-violet-parlor"] [menuitem="active"] {
+    background-color: var(--juice-menu-item-active);
+}
+
+[theme="retro-violet-parlor"] [menu-separator] {
+    border-top-color: var(--juice-menu-separator);
+}
+
+[theme="retro-violet-parlor"] [menu-label] {
+    color: var(--juice-menu-ink);
+}
+
+/* Switch chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface track, not a CTA. Runtime is later. */
+[theme="retro-violet-parlor"] button[switch],
+[theme="retro-violet-parlor"] [switch] {
+    background-image: none;
+    background-color: var(--juice-switch-track);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[switch][aria-checked="true"],
+[theme="retro-violet-parlor"] [switch][aria-checked="true"],
+[theme="retro-violet-parlor"] [switch]:checked {
+    background-image: none;
+    background-color: var(--juice-switch-track-checked);
+}
+
+[theme="retro-violet-parlor"] button[switch]:hover,
+[theme="retro-violet-parlor"] [switch]:hover,
+[theme="retro-violet-parlor"] button[switch]:focus-visible,
+[theme="retro-violet-parlor"] [switch]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[switch]:focus-visible,
+[theme="retro-violet-parlor"] [switch]:focus-visible {
+    outline: 2px solid var(--juice-switch-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Slider chrome. Beat [theme] :where(button) CTA defaults.
+   Horizontal only. The thumb is a surface control, not a CTA.
+   Runtime is later. */
+[theme="retro-violet-parlor"] button[slider]:not([slider="vertical"]),
+[theme="retro-violet-parlor"] [slider]:not([slider="vertical"]) {
+    background-image: none;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[slider-thumb],
+[theme="retro-violet-parlor"] [slider-thumb] {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    border-color: var(--juice-slider-thumb-border);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-violet-parlor"] button[slider-thumb]:hover,
+[theme="retro-violet-parlor"] [slider-thumb]:hover,
+[theme="retro-violet-parlor"] button[slider-thumb]:focus-visible,
+[theme="retro-violet-parlor"] [slider-thumb]:focus-visible {
+    background-image: none;
+    background-color: var(--juice-slider-thumb);
+    box-shadow: var(--juice-slider-thumb-shadow);
+    transform: translate(-50%, -50%);
+}
+
+[theme="retro-violet-parlor"] button[slider-thumb]:focus-visible,
+[theme="retro-violet-parlor"] [slider-thumb]:focus-visible {
+    outline: 2px solid var(--juice-slider-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Checkbox chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface box, not a CTA. Binary only. Runtime is later. */
+[theme="retro-violet-parlor"] button[checkbox],
+[theme="retro-violet-parlor"] [checkbox] {
+    background-image: none;
+    background-color: var(--juice-checkbox-control);
+    border-color: var(--juice-checkbox-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[checkbox][aria-checked="true"],
+[theme="retro-violet-parlor"] [checkbox][aria-checked="true"],
+[theme="retro-violet-parlor"] [checkbox]:checked {
+    background-image: none;
+    background-color: var(--juice-checkbox-control-checked);
+    border-color: var(--juice-checkbox-border-checked);
+}
+
+[theme="retro-violet-parlor"] button[checkbox]:hover,
+[theme="retro-violet-parlor"] [checkbox]:hover,
+[theme="retro-violet-parlor"] button[checkbox]:focus-visible,
+[theme="retro-violet-parlor"] [checkbox]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[checkbox]:focus-visible,
+[theme="retro-violet-parlor"] [checkbox]:focus-visible {
+    outline: 2px solid var(--juice-checkbox-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Radio chrome. Beat [theme] :where(button) CTA defaults.
+   The host is a surface disc, not a CTA. Group layout is author-owned.
+   Runtime is later. */
+[theme="retro-violet-parlor"] button[radio],
+[theme="retro-violet-parlor"] [radio] {
+    background-image: none;
+    background-color: var(--juice-radio-control);
+    border-color: var(--juice-radio-border);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[radio][aria-checked="true"],
+[theme="retro-violet-parlor"] [radio][aria-checked="true"],
+[theme="retro-violet-parlor"] [radio]:checked {
+    background-image: none;
+    background-color: var(--juice-radio-control-checked);
+    border-color: var(--juice-radio-border-checked);
+}
+
+[theme="retro-violet-parlor"] button[radio]:hover,
+[theme="retro-violet-parlor"] [radio]:hover,
+[theme="retro-violet-parlor"] button[radio]:focus-visible,
+[theme="retro-violet-parlor"] [radio]:focus-visible {
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] button[radio]:focus-visible,
+[theme="retro-violet-parlor"] [radio]:focus-visible {
+    outline: 2px solid var(--juice-radio-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Breadcrumb chrome. Beat [theme] :where(nav) bars and :where(a) link color.
+   Inline trail, not a site nav and not a CTA. Runtime is later. */
+[theme="retro-violet-parlor"] [breadcrumb],
+[theme="retro-violet-parlor"] nav[breadcrumb] {
+    background-image: none;
+    background-color: var(--juice-breadcrumb-surface);
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-breadcrumb-ink);
+}
+
+[theme="retro-violet-parlor"] [breadcrumb] a,
+[theme="retro-violet-parlor"] [breadcrumb-link],
+[theme="retro-violet-parlor"] a[breadcrumb-link],
+[theme="retro-violet-parlor"] button[breadcrumb-link] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-violet-parlor"] [breadcrumb] a:hover,
+[theme="retro-violet-parlor"] [breadcrumb-link]:hover,
+[theme="retro-violet-parlor"] a[breadcrumb-link]:hover,
+[theme="retro-violet-parlor"] button[breadcrumb-link]:hover {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-breadcrumb-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] [breadcrumb] [aria-current="page"],
+[theme="retro-violet-parlor"] [breadcrumb] [aria-current="page"] :is(a, [breadcrumb-link]),
+[theme="retro-violet-parlor"] [breadcrumb-link][aria-current="page"] {
+    color: var(--juice-breadcrumb-ink-current);
+}
+
+[theme="retro-violet-parlor"] [breadcrumb] a:focus-visible,
+[theme="retro-violet-parlor"] [breadcrumb-link]:focus-visible,
+[theme="retro-violet-parlor"] button[breadcrumb-link]:focus-visible {
+    outline: 2px solid var(--juice-breadcrumb-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Progress chrome. Beat [theme] :where(div) fills.
+   The track is a surface groove, not a CTA. Runtime is later. */
+[theme="retro-violet-parlor"] [progress] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-progress-ink);
+}
+
+[theme="retro-violet-parlor"] [progress-fill] {
+    background-image: none;
+    background-color: var(--juice-progress-fill);
+    box-shadow: none;
+}
+
+[theme="retro-violet-parlor"] [progress-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-progress-ink);
+    box-shadow: none;
+}
+
+[theme="retro-violet-parlor"] [progress]:focus-visible {
+    outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Pagination chrome. Chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
+[theme="retro-violet-parlor"] [pagination],
+[theme="retro-violet-parlor"] nav[pagination] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-pagination-ink);
+}
+
+[theme="retro-violet-parlor"] [pagination] a,
+[theme="retro-violet-parlor"] [pagination-link],
+[theme="retro-violet-parlor"] a[pagination-link],
+[theme="retro-violet-parlor"] button[pagination-link],
+[theme="retro-violet-parlor"] button[pagination-prev],
+[theme="retro-violet-parlor"] button[pagination-next] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    border-color: var(--juice-pagination-border);
+    color: var(--juice-pagination-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-violet-parlor"] [pagination] a:hover,
+[theme="retro-violet-parlor"] [pagination-link]:hover,
+[theme="retro-violet-parlor"] button[pagination-link]:hover,
+[theme="retro-violet-parlor"] button[pagination-prev]:hover,
+[theme="retro-violet-parlor"] button[pagination-next]:hover {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-hover);
+    color: var(--juice-pagination-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] [pagination] [aria-current="page"],
+[theme="retro-violet-parlor"] [pagination] [aria-current="page"] :is(a, button, [pagination-link]),
+[theme="retro-violet-parlor"] [pagination-link][aria-current="page"] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-current);
+    color: var(--juice-pagination-ink-current);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled="true"]),
+[theme="retro-violet-parlor"] [pagination] [aria-disabled="true"] :is(a, button, [pagination-link]) {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    color: var(--juice-pagination-ink-disabled);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-violet-parlor"] [pagination] a:focus-visible,
+[theme="retro-violet-parlor"] [pagination-link]:focus-visible,
+[theme="retro-violet-parlor"] button[pagination-link]:focus-visible,
+[theme="retro-violet-parlor"] button[pagination-prev]:focus-visible,
+[theme="retro-violet-parlor"] button[pagination-next]:focus-visible {
+    outline: 2px solid var(--juice-pagination-focus-ring);
+    outline-offset: 2px;
+}
+
+
+/* Palette-aware CTA ink. Component controls keep their own ink roles. */
+[theme="retro-violet-parlor"] :where(button) {
+    color: #{$vpr-on-accent};
+}
+/* Stable bundle aliases used by shared application chrome. */
+[theme="retro-violet-parlor"] {
+    --retro-page: var(--vpr-page);
+    --retro-page-tint: var(--vpr-page-tint);
+    --retro-page-deep: var(--vpr-page-deep);
+    --retro-surface: var(--vpr-surface);
+    --retro-surface-strong: var(--vpr-surface-strong);
+    --retro-surface-muted: var(--vpr-surface-muted);
+    --retro-surface-deep: var(--vpr-surface-deep);
+    --retro-border: var(--vpr-border);
+    --retro-border-strong: var(--vpr-border-strong);
+    --retro-shadow: var(--vpr-shadow);
+    --retro-text: var(--vpr-text);
+    --retro-text-muted: var(--vpr-text-muted);
+    --retro-heading: var(--vpr-heading);
+    --retro-body-font: var(--vpr-body-font);
+    --retro-heading-font: var(--vpr-heading-font);
+    --retro-accent: var(--vpr-accent);
+    --retro-accent-soft: var(--vpr-accent-soft);
+    --retro-accent-strong: var(--vpr-accent-strong);
+    --retro-highlight: var(--vpr-highlight);
+    --retro-page-background: var(--vpr-page-background);
+    --retro-button-background: var(--vpr-button-background);
+    --retro-card-background: var(--vpr-card-background);
+    --retro-panel-background: var(--vpr-panel-background);
+    --retro-hero-background: var(--vpr-hero-background);
+    --retro-stage-background: var(--vpr-stage-background);
+    --retro-stage-outline: var(--vpr-stage-outline);
+    --retro-stage-shadow: var(--vpr-stage-shadow);
+    --retro-theme-page: #{$vpr-page};
+    --retro-theme-highlight: #{$vpr-highlight};
+    --juice-color-page: var(--vpr-page);
+    --juice-color-surface: var(--vpr-surface-strong);
+    --juice-color-text: var(--vpr-text);
+    --juice-color-text-muted: var(--vpr-text-muted);
+    --juice-color-heading: var(--vpr-heading);
+    --juice-color-accent: var(--vpr-accent);
+    --juice-color-on-accent: #{$vpr-on-accent};
+    --juice-color-border: var(--vpr-border);
+    --juice-color-highlight: var(--vpr-highlight);
+}
