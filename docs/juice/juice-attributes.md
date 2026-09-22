@@ -464,9 +464,9 @@ See [Progress Runtime](./juice-progress-runtime.md). Theme paint uses `--juice-p
 
 Current page is `aria-current="page"` on the control or its item. Disabled prev/next is `aria-disabled="true"`, native `disabled`, or `[disabled]`. Hover does not brighten a disabled control. `nav[type="pagination"]` is an older layout pattern and is not this chrome.
 
-Pagination is an APG-inspired page set. It is not the site `[nav]` / navigation runtime, not a breadcrumb, not tabs, not the wizard step tracker, and not the surface `overlay="frost|tint"` utility. Inline nav chrome — no overlay z-index. This slice is theme chrome only. Runtime B syncs the current page and disabled prev/next. There is no Sig Pagination factory. Pagination chrome is unpublished versus 0.9.0. Eighteen Emerging runtimes stay the count.
+Pagination is an APG-inspired page set. It is not the site `[nav]` / navigation runtime, not a breadcrumb, not tabs, not the wizard step tracker, and not the surface `overlay="frost|tint"` utility. Inline nav chrome — no overlay z-index. The runtime auto-enhances `[pagination]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Pagination`, and a single `aria-current="page"` stays on the set (author current wins; otherwise the first page control). Prev/next disable at ends when page controls and optional ellipsis make that inferable. Author-owned disabled is kept. Arrow / Home / End move focus among enabled controls. Enter and Space stay with the browser. It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol pagination>` stays a list. No Sig Pagination factory. Pagination is the nineteenth Emerging auto-enhance runtime and is unpublished versus 0.9.0.
 
-Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). `surface` is the page control, not a bar.
+See [Pagination Runtime](./juice-pagination-runtime.md). Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). `surface` is the page control, not a bar.
 
 ### Wizard
 
