@@ -3,10 +3,17 @@ import aquafluxStyles from "@citrusworx/juiceui/styles/themes/aquaflux?url";
 import citrusmintStyles from "@citrusworx/juiceui/styles/themes/citrusmint?url";
 import kiwipressStyles from "@citrusworx/juiceui/styles/themes/kiwipress?url";
 import tideStyles from "@citrusworx/juiceui/styles/themes/tide?url";
-
-const THEMES = ["kiwipress", "tide", "citrusmint", "aquaflux"] as const;
-
-type ThemeId = (typeof THEMES)[number];
+import retroAfterburnStyles from "@citrusworx/juiceui/styles/themes/retro-afterburn?url";
+import retroArcadeGlowStyles from "@citrusworx/juiceui/styles/themes/retro-arcade-glow?url";
+import retroBoardwalkStyles from "@citrusworx/juiceui/styles/themes/retro-boardwalk?url";
+import retroDenimDialStyles from "@citrusworx/juiceui/styles/themes/retro-denim-dial?url";
+import retroForestRadioStyles from "@citrusworx/juiceui/styles/themes/retro-forest-radio?url";
+import retroOrchardClubStyles from "@citrusworx/juiceui/styles/themes/retro-orchard-club?url";
+import retroPoolsidePopStyles from "@citrusworx/juiceui/styles/themes/retro-poolside-pop?url";
+import retroSignalGardenStyles from "@citrusworx/juiceui/styles/themes/retro-signal-garden?url";
+import retroSunsetMotelStyles from "@citrusworx/juiceui/styles/themes/retro-sunset-motel?url";
+import retroVioletParlorStyles from "@citrusworx/juiceui/styles/themes/retro-violet-parlor?url";
+import { DEFAULT_THEME, isThemeId, type ThemeId } from "./themes";
 
 const PRESETS: Record<string, string> = {
   stack: `<section stack gap="1" padding="1.5rem">
@@ -53,12 +60,9 @@ const PRESETS: Record<string, string> = {
 </form>`
 };
 
-const isTheme = (value: string | null): value is ThemeId =>
-  THEMES.includes(value as ThemeId);
-
 const themeOf = (): ThemeId => {
   const value = document.body.getAttribute("theme");
-  return isTheme(value) ? value : "kiwipress";
+  return isThemeId(value) ? value : DEFAULT_THEME;
 };
 
 const sanitize = (markup: string) =>
@@ -81,6 +85,16 @@ const srcdoc = (markup: string, theme: ThemeId) => {
     <link rel="stylesheet" href="${tideStyles}" />
     <link rel="stylesheet" href="${citrusmintStyles}" />
     <link rel="stylesheet" href="${aquafluxStyles}" />
+    <link rel="stylesheet" href="${retroAfterburnStyles}" />
+    <link rel="stylesheet" href="${retroArcadeGlowStyles}" />
+    <link rel="stylesheet" href="${retroBoardwalkStyles}" />
+    <link rel="stylesheet" href="${retroDenimDialStyles}" />
+    <link rel="stylesheet" href="${retroForestRadioStyles}" />
+    <link rel="stylesheet" href="${retroOrchardClubStyles}" />
+    <link rel="stylesheet" href="${retroPoolsidePopStyles}" />
+    <link rel="stylesheet" href="${retroSignalGardenStyles}" />
+    <link rel="stylesheet" href="${retroSunsetMotelStyles}" />
+    <link rel="stylesheet" href="${retroVioletParlorStyles}" />
     <style>
       html, body { margin: 0; min-height: 100%; }
       body { box-sizing: border-box; }

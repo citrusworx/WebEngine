@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/src/juice.css" />
     <meta
       name="description"
-      content="Browse the four shipped Juice library themes. Juice owns structure. Themes own identity. Honest Beta."
+      content="Browse the fourteen shipped Juice library themes. Juice owns structure. Themes own identity. Honest Beta."
     />
   </head>
   <body theme="kiwipress">
@@ -29,6 +29,7 @@
             <a href="/reference.html">Reference</a>
           </div>
           <div nav-actions>
+            <select data-theme-select aria-label="Theme"></select>
             <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
@@ -46,6 +47,7 @@
               <a href="/docs/">Docs</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <select data-theme-select aria-label="Theme"></select>
             <button type="button" data-href="/getting-started.html">Get started</button>
           </div>
         </nav>
@@ -57,15 +59,16 @@
             <span hero-eyebrow>
               <span badge>Honest Beta · Emerging themes</span>
             </span>
-            <h1 hero-title>Four shipped faces. Same structure.</h1>
+            <h1 hero-title>Fourteen shipped faces. Same structure.</h1>
             <p hero-subtitle>
               Juice owns layout, spacing, and the composition vocabulary.
               Themes own identity — fonts, palette, surfaces, and semantic
-              defaults. Safe to use: KiwiPress, Tide, Citrusmint, Aquaflux.
-              Blush and anything under <code>_draft</code> stay unpublished.
+              defaults. Safe to use: four core faces and ten retro faces.
+              Each retro id is its own stylesheet. Blush and anything under
+              <code>_draft</code> stay unpublished.
             </p>
             <div hero-actions>
-              <button type="button" scale="lg" data-href="#gallery">See all four</button>
+              <button type="button" scale="lg" data-href="#gallery">See the gallery</button>
               <button type="button" btn="outline" scale="lg" data-href="/getting-started.html">
                 Import a theme
               </button>
@@ -113,17 +116,39 @@
             <div section-header>
               <h2>Restyle this page</h2>
               <p>
-                The site switcher stores the choice locally. Chrome, the live
-                sample, and the identity lab all wear it. The four-up gallery
-                below stays pinned so you can compare faces without losing the
-                set.
+                The site switcher stores the choice locally. Nav chrome, the
+                live sample, and the identity lab all wear it. Core stays a
+                row of frames. Retro is a separate grid so fourteen previews
+                do not collapse into one dense four-up.
               </p>
             </div>
-            <div row wrap gap="1" centered role="radiogroup" aria-label="Theme" data-theme-group>
-              <button type="button" role="radio" aria-checked="true" data-theme="kiwipress">KiwiPress</button>
-              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="tide">Tide</button>
-              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="citrusmint">Citrusmint</button>
-              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            <div theme-switcher>
+              <div role="radiogroup" aria-label="Theme" data-theme-group>
+                <div theme-switcher-row>
+                  <span theme-switcher-label>Core</span>
+                  <div theme-switcher-scroll>
+                    <button type="button" role="radio" aria-checked="true" scale="sm" data-theme="kiwipress">KiwiPress</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="tide">Tide</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="citrusmint">Citrusmint</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="aquaflux">Aquaflux</button>
+                  </div>
+                </div>
+                <div theme-switcher-row>
+                  <span theme-switcher-label>Retro</span>
+                  <div theme-switcher-scroll>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-afterburn">Afterburn</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-arcade-glow">Arcade Glow</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-boardwalk">Boardwalk</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-denim-dial">Denim Dial</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-forest-radio">Forest Radio</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-orchard-club">Orchard Club</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-poolside-pop">Poolside Pop</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-signal-garden">Signal Garden</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-sunset-motel">Sunset Motel</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-violet-parlor">Violet Parlor</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div row wrap gap="1" centered marginY="comfortable">
               <button type="button" btn="outline" scale="sm" data-href="#gallery">Gallery</button>
@@ -138,7 +163,7 @@
         <section type="features" paddingY="roomy" id="gallery">
           <div container>
             <div section-header>
-              <h2>Same composition. Four library themes.</h2>
+              <h2>Same composition. Core library themes.</h2>
               <p>
                 Hero, card, panel, badge, and buttons — identical markup in
                 each frame. KiwiPress is the richest product reference. Tide is
@@ -206,6 +231,141 @@
                   loading="lazy"
                 ></iframe>
                 <button type="button" data-theme="aquaflux">Wear Aquaflux</button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section type="features" paddingY="roomy" id="retro">
+          <div container>
+            <div section-header>
+              <h2>Retro faces. Same markup.</h2>
+              <p>
+                Ten separate entrypoints — not a <code>themes/retro</code>
+                bundle. Import one id, then set <code>theme="retro-…"</code>.
+                Frames use the same composition as the core row.
+              </p>
+            </div>
+            <div theme-gallery="retro">
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-afterburn</span>
+                <h3>Afterburn</h3>
+                <p>Charcoal, steel blue, and safety orange.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Afterburn composition"
+                  src="/theme-frame.html?theme=retro-afterburn"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-afterburn">Wear Afterburn</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-arcade-glow</span>
+                <h3>Arcade Glow</h3>
+                <p>Violet, magenta, hot pink, and bright yellow.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Arcade Glow composition"
+                  src="/theme-frame.html?theme=retro-arcade-glow"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-arcade-glow">Wear Arcade Glow</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-boardwalk</span>
+                <h3>Boardwalk</h3>
+                <p>Coral, sunshine yellow, mint, and ocean blue.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Boardwalk composition"
+                  src="/theme-frame.html?theme=retro-boardwalk"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-boardwalk">Wear Boardwalk</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-denim-dial</span>
+                <h3>Denim Dial</h3>
+                <p>Denim blue with a warm-orange accent.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Denim Dial composition"
+                  src="/theme-frame.html?theme=retro-denim-dial"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-denim-dial">Wear Denim Dial</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-forest-radio</span>
+                <h3>Forest Radio</h3>
+                <p>Midnight navy, forest green, mustard, and fog.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Forest Radio composition"
+                  src="/theme-frame.html?theme=retro-forest-radio"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-forest-radio">Wear Forest Radio</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-orchard-club</span>
+                <h3>Orchard Club</h3>
+                <p>Olive, sage, chartreuse, and brick red.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Orchard Club composition"
+                  src="/theme-frame.html?theme=retro-orchard-club"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-orchard-club">Wear Orchard Club</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-poolside-pop</span>
+                <h3>Poolside Pop</h3>
+                <p>Tomato red, orange, cream, and bright cyan.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Poolside Pop composition"
+                  src="/theme-frame.html?theme=retro-poolside-pop"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-poolside-pop">Wear Poolside Pop</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-signal-garden</span>
+                <h3>Signal Garden</h3>
+                <p>Signal red, butter yellow, garden green, and black.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Signal Garden composition"
+                  src="/theme-frame.html?theme=retro-signal-garden"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-signal-garden">Wear Signal Garden</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-sunset-motel</span>
+                <h3>Sunset Motel</h3>
+                <p>Ivory, coral, denim blue, and dark cocoa.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Sunset Motel composition"
+                  src="/theme-frame.html?theme=retro-sunset-motel"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-sunset-motel">Wear Sunset Motel</button>
+              </article>
+              <article card="feature" width="100%" stack gap="0.75rem">
+                <span badge>retro-violet-parlor</span>
+                <h3>Violet Parlor</h3>
+                <p>Deep indigo, violet, apricot, and cream.</p>
+                <iframe
+                  theme-frame="compact"
+                  title="Violet Parlor composition"
+                  src="/theme-frame.html?theme=retro-violet-parlor"
+                  loading="lazy"
+                ></iframe>
+                <button type="button" data-theme="retro-violet-parlor">Wear Violet Parlor</button>
               </article>
             </div>
           </div>
@@ -346,16 +506,19 @@
             <div section-header>
               <h2>Import core, import a theme, set theme="id"</h2>
               <p>
-                Core CSS has no theme rules. This showcase imports all four
-                shipped faces so the switcher can swap the root attribute. A
-                product usually imports one. The full install path stays on
-                Getting started — not duplicated here.
+                Core CSS has no theme rules. This showcase imports all fourteen
+                shipped faces, one stylesheet each, so the switcher can swap
+                the root attribute. A product usually imports one. There is
+                no retro barrel. The full install path stays on Getting
+                started — not duplicated here.
               </p>
             </div>
             <div stack gap="comfortable">
               <pre><code>import "@citrusworx/juiceui/styles";
 import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
-              <pre><code>&lt;body theme="kiwipress"&gt;…&lt;/body&gt;</code></pre>
+              <pre><code>import "@citrusworx/juiceui/styles/themes/retro-afterburn";</code></pre>
+              <pre><code>&lt;body theme="kiwipress"&gt;…&lt;/body&gt;
+&lt;body theme="retro-afterburn"&gt;…&lt;/body&gt;</code></pre>
               <div row wrap gap="1">
                 <button type="button" data-href="/getting-started.html">Getting started</button>
                 <button
@@ -418,10 +581,20 @@ import "@citrusworx/juiceui/styles/themes/kiwipress";</code></pre>
               <article card="feature" width="100%">
                 <h3>Shipped today</h3>
                 <p>
+                  Fourteen separate CSS entrypoints:
                   <code>aquaflux</code>, <code>kiwipress</code>,
-                  <code>citrusmint</code>, and <code>tide</code> as separate
-                  CSS entrypoints. Activate with <code>theme="…"</code> after
-                  importing core + that theme.
+                  <code>citrusmint</code>, <code>tide</code>,
+                  <code>retro-afterburn</code>, <code>retro-arcade-glow</code>,
+                  <code>retro-boardwalk</code>, <code>retro-denim-dial</code>,
+                  <code>retro-forest-radio</code>, <code>retro-orchard-club</code>,
+                  <code>retro-poolside-pop</code>, <code>retro-signal-garden</code>,
+                  <code>retro-sunset-motel</code>, and
+                  <code>retro-violet-parlor</code>. Activate with
+                  <code>theme="…"</code> after importing core plus that theme.
+                  The public npm pin on this site is still
+                  <code>@citrusworx/juiceui@0.9.0</code>. Retro files are
+                  master exports of the workspace package, not a second
+                  package and not a <code>themes/retro</code> bundle.
                 </p>
               </article>
               <article card="feature" width="100%" warm>

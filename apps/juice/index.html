@@ -32,6 +32,7 @@
           </div>
 
           <div nav-actions>
+            <select data-theme-select aria-label="Theme"></select>
             <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
@@ -50,6 +51,7 @@
               <a href="/docs/">Docs</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <select data-theme-select aria-label="Theme"></select>
             <button type="button" data-href="/getting-started.html">Get started</button>
           </div>
         </nav>
@@ -241,12 +243,7 @@
                 <header sell-window-chrome>
                   <span sell-dots aria-hidden="true"></span>
                   <span sell-window-title>Harbor Press — live sample</span>
-                  <div row wrap gap="0.5rem" role="radiogroup" aria-label="Theme" data-theme-group>
-                    <button type="button" role="radio" aria-checked="true" scale="sm" data-theme="kiwipress">KiwiPress</button>
-                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="tide">Tide</button>
-                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="citrusmint">Citrusmint</button>
-                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="aquaflux">Aquaflux</button>
-                  </div>
+                  <select data-theme-select aria-label="Theme"></select>
                 </header>
                 <div sell-canvas padding="2rem" stack gap="1">
                   <p sell-sample-note>
@@ -312,8 +309,9 @@
                 <h2>Themes own identity.</h2>
                 <p>
                   The sample above is the same markup under every face. Juice
-                  keeps layout, spacing, and composition. KiwiPress, Tide,
-                  Citrusmint, and Aquaflux decide how that language should feel.
+                  keeps layout, spacing, and composition. Fourteen library
+                  themes decide how that language should feel. Attributes
+                  stay the reason to adopt.
                 </p>
               </div>
 
@@ -333,7 +331,7 @@
                     defaults live in the theme CSS. Core has no theme rules.
                     Activate a face with one attribute.
                   </p>
-                  <a href="/themes.html">Browse the four shipped themes</a>
+                  <a href="/themes.html">Browse the fourteen shipped themes</a>
                 </article>
               </div>
             </div>

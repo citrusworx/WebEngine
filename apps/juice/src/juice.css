@@ -1,6 +1,18 @@
 @import "@citrusworx/juiceui/styles";
+/* One import per shipped theme. Do not fold the retro faces into a
+   themes/retro barrel — that entry is not a package export and breaks Vite. */
 @import "@citrusworx/juiceui/styles/themes/kiwipress";
 @import "@citrusworx/juiceui/styles/themes/tide";
 @import "@citrusworx/juiceui/styles/themes/citrusmint";
 @import "@citrusworx/juiceui/styles/themes/aquaflux";
+@import "@citrusworx/juiceui/styles/themes/retro-afterburn";
+@import "@citrusworx/juiceui/styles/themes/retro-arcade-glow";
+@import "@citrusworx/juiceui/styles/themes/retro-boardwalk";
+@import "@citrusworx/juiceui/styles/themes/retro-denim-dial";
+@import "@citrusworx/juiceui/styles/themes/retro-forest-radio";
+@import "@citrusworx/juiceui/styles/themes/retro-orchard-club";
+@import "@citrusworx/juiceui/styles/themes/retro-poolside-pop";
+@import "@citrusworx/juiceui/styles/themes/retro-signal-garden";
+@import "@citrusworx/juiceui/styles/themes/retro-sunset-motel";
+@import "@citrusworx/juiceui/styles/themes/retro-violet-parlor";
 @import "./shell.css";

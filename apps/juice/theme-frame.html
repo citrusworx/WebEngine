@@ -6,7 +6,22 @@
     <title>Theme preview — Juice</title>
     <script>
       (() => {
-        const themes = ["kiwipress", "tide", "citrusmint", "aquaflux"];
+        const themes = [
+          "kiwipress",
+          "tide",
+          "citrusmint",
+          "aquaflux",
+          "retro-afterburn",
+          "retro-arcade-glow",
+          "retro-boardwalk",
+          "retro-denim-dial",
+          "retro-forest-radio",
+          "retro-orchard-club",
+          "retro-poolside-pop",
+          "retro-signal-garden",
+          "retro-sunset-motel",
+          "retro-violet-parlor"
+        ];
         const requested = new URLSearchParams(location.search).get("theme");
         document.documentElement.setAttribute(
           "theme",
