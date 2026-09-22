@@ -745,6 +745,32 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-progress-ink: var(--jx-progress-ink);
     --juice-progress-focus-ring: var(--jx-progress-focus-ring);
 
+    /* Pagination chrome — APG page set from existing --jx-* tokens.
+       Page controls are surfaces, not the CTA fill. The trail stays
+       transparent. Current fill is accent; ink on that fill is inverse
+       text. Distinct from breadcrumb, the older pagination layout
+       pattern, tabs, and wizard steps. */
+    --jx-pagination-surface: var(--jx-surface);
+    --jx-pagination-surface-hover: var(--jx-surface-muted);
+    --jx-pagination-surface-current: var(--jx-accent);
+    --jx-pagination-ink: var(--jx-text);
+    --jx-pagination-ink-hover: var(--jx-accent);
+    --jx-pagination-ink-current: var(--jx-text-inverse);
+    --jx-pagination-ink-disabled: var(--jx-text-muted);
+    --jx-pagination-border: var(--jx-border);
+    --jx-pagination-focus-ring: var(--jx-accent);
+    --jx-pagination-ellipsis: var(--jx-text-muted);
+    --juice-pagination-surface: var(--jx-pagination-surface);
+    --juice-pagination-surface-hover: var(--jx-pagination-surface-hover);
+    --juice-pagination-surface-current: var(--jx-pagination-surface-current);
+    --juice-pagination-ink: var(--jx-pagination-ink);
+    --juice-pagination-ink-hover: var(--jx-pagination-ink-hover);
+    --juice-pagination-ink-current: var(--jx-pagination-ink-current);
+    --juice-pagination-ink-disabled: var(--jx-pagination-ink-disabled);
+    --juice-pagination-border: var(--jx-pagination-border);
+    --juice-pagination-focus-ring: var(--jx-pagination-focus-ring);
+    --juice-pagination-ellipsis: var(--jx-pagination-ellipsis);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1485,6 +1511,66 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 
 [theme="${config.id}"] [progress]:focus-visible {
     outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [pagination],
+[theme="${config.id}"] nav[pagination] {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-pagination-ink);
+}
+
+[theme="${config.id}"] [pagination] a,
+[theme="${config.id}"] [pagination-link],
+[theme="${config.id}"] a[pagination-link],
+[theme="${config.id}"] button[pagination-link],
+[theme="${config.id}"] button[pagination-prev],
+[theme="${config.id}"] button[pagination-next] {
+    background: var(--juice-pagination-surface);
+    border-color: var(--juice-pagination-border);
+    color: var(--juice-pagination-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="${config.id}"] [pagination] a:hover,
+[theme="${config.id}"] [pagination-link]:hover,
+[theme="${config.id}"] button[pagination-link]:hover,
+[theme="${config.id}"] button[pagination-prev]:hover,
+[theme="${config.id}"] button[pagination-next]:hover {
+    background: var(--juice-pagination-surface-hover);
+    color: var(--juice-pagination-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [pagination] [aria-current="page"],
+[theme="${config.id}"] [pagination] [aria-current="page"] :is(a, button, [pagination-link]),
+[theme="${config.id}"] [pagination-link][aria-current="page"] {
+    background: var(--juice-pagination-surface-current);
+    color: var(--juice-pagination-ink-current);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled="true"]),
+[theme="${config.id}"] [pagination] [aria-disabled="true"] :is(a, button, [pagination-link]) {
+    background: var(--juice-pagination-surface);
+    color: var(--juice-pagination-ink-disabled);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [pagination] a:focus-visible,
+[theme="${config.id}"] [pagination-link]:focus-visible,
+[theme="${config.id}"] button[pagination-link]:focus-visible,
+[theme="${config.id}"] button[pagination-prev]:focus-visible,
+[theme="${config.id}"] button[pagination-next]:focus-visible {
+    outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
 

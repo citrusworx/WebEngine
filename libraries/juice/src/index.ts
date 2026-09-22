@@ -181,4 +181,14 @@ export type {
     ProgressController,
     ProgressOptions
 } from "./js/src/progress/progress-runtime.js";
+export {
+    createPagination,
+    initPagination,
+    startPaginationRuntime,
+    stopPaginationRuntime
+} from "./js/src/pagination/pagination-runtime.js";
+export type {
+    PaginationController,
+    PaginationOptions
+} from "./js/src/pagination/pagination-runtime.js";
 export { tokens } from "./tokens/index.js";

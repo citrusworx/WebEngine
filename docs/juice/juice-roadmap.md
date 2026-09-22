@@ -84,14 +84,14 @@ Consumed Juice changesets (the 0.6.0 lane):
 
 Juice is a CSS-first, attribute-driven styling and composition system. It is no longer a layout-utility kit, and it is not a finished component framework.
 
-The visible layers today (0.9.0):
+The visible layers today (0.9.0 plus unreleased master):
 
 * layout and spacing primitives
 * token-driven color, font, gradient, and motion systems
 * four shipped modular themes (`aquaflux`, `kiwipress`, `citrusmint`, `tide`), with core CSS separate from theme identity
 * surface language A–C: themeable `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, standalone `blur="sm|md"`
-* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress auto-enhance when the JS entry is imported. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar
-* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, or Sig Progress factory)
+* Emerging browser runtimes: navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination auto-enhance when the JS entry is imported. Pagination is on master and is not in the 0.9.0 npm cut. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set
+* a Sig Accordion factory plus create/init/start/stop helpers (no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, or Sig Pagination factory)
 * contracts for themes, icons, and typography, including author type overrides
 * templates as a stress-test bed
 
@@ -102,14 +102,14 @@ The next strongest areas are now:
 * modular shipped themes (KiwiPress is the richest reference; Tide is the dark product/SaaS one)
 * motion wave 1 (P0 + P1)
 * surface utilities A–C
-* accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress chrome plus DOM-first auto-enhance
+* accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination chrome plus DOM-first auto-enhance
 * documented theme / icon / typography contracts
 * templates as design proofs
 
 The weakest areas are still:
 
 * remaining surface depth (structural `card="…"` recipes; `shadowTone`, `overlay`, and `variant` utilities are in)
-* component maturity beyond the eighteen auto-enhance runtimes
+* component maturity beyond the nineteen auto-enhance runtimes
 * blush remaining an unpublished YAML-only draft
 * templates as a continuing stress-test surface
 * Juice CLI and config / generator workflow
@@ -174,7 +174,14 @@ This is the stack that shipped in 0.9.0.
 * **Checkbox A→B→C.** Shared `--juice-checkbox-*` roles for `[checkbox]` (#189). DOM-first APG checkbox runtime (#190): `createCheckbox` / `initCheckbox` / `startCheckboxRuntime` / `stopCheckboxRuntime`, auto-boot, `toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, `role="checkbox"` plus binary `aria-checked` on button hosts (native `<input type="checkbox" checkbox>` hosts stay honest with `:checked`). Click and Enter/Space toggle. Disabled / `aria-disabled` ignored. Authors must supply the accessible name. No focus trap, no Escape steal, no tri-state, no menuitemcheckbox, no Sig Checkbox factory. Runtime docs and maturity notes shipped with the cut. Checkbox is the fifteenth Emerging auto-enhance runtime.
 * **Radio A→B→C.** Shared `--juice-radio-*` roles for `[radio]` inside layout-only `[radiogroup]` (no `--juice-radiogroup-*`) (#189). DOM-first APG radio runtime (#190): `createRadio` / `initRadio` / `startRadioRuntime` / `stopRadioRuntime`, auto-boot, `select` / `getChecked`, exclusive selection, roving tabindex. Click, Enter, and Space select. Arrows move among enabled options and wrap. Orphans outside `[radiogroup]` are ignored. Disabled / `aria-disabled` skipped. Authors must supply the accessible name. No focus trap, no Escape, no Sig Radio factory. Runtime docs and maturity notes shipped with the cut. Radio is the sixteenth Emerging auto-enhance runtime. Checkbox and radio are two runtimes.
 * **Breadcrumb A→B→C.** Shared `--juice-breadcrumb-*` roles for `[breadcrumb]` / `[breadcrumb-item]` / `[breadcrumb-link]` (#194). Light DOM-first runtime (#196): `createBreadcrumb` / `initBreadcrumb` / `startBreadcrumbRuntime` / `stopBreadcrumbRuntime`, auto-boot, `sync` / `setCurrent`. An unlabeled navigation landmark is named `Breadcrumb`. `<nav>` does not get a redundant role. `<ol breadcrumb>` stays a list. A single `aria-current="page"` is kept (author current wins; otherwise the last crumb). It does not remove `href`, trap focus, steal Escape, or listen to history. Not a router, not site `[nav]`, not `nav[type="breadcrumb"]`, not tabs, not a wizard step tracker, and not pagination. No Sig Breadcrumb factory. Runtime docs and maturity notes shipped with the cut. Breadcrumb is the seventeenth Emerging auto-enhance runtime.
-* **Progress A→B→C.** Shared `--juice-progress-*` roles for `[progress]` / `[progress-fill]` / optional `[progress-label]` (#198). DOM-first APG progress runtime (#199): `createProgress` / `initProgress` / `startProgressRuntime` / `stopProgressRuntime`, auto-boot, `setValue` / `getValue` / `setIndeterminate` / `isIndeterminate`. `role="progressbar"` plus `aria-valuemin` / `aria-valuemax` / `aria-valuenow` and `--juice-progress-ratio` on the host. Determinate is the boolean attribute. A missing or non-numeric `aria-valuenow` is min (an empty bar), not indeterminate. Values clamp. Indeterminate is `progress="indeterminate"` only: that flag clears `aria-valuenow` and restores the last determinate value when the flag clears. CSS owns the sliding fill. Authors must supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`. No keyboard, no pointer, no tabindex, no focus trap, no Escape, no native `<progress>` restyle, and no Sig Progress factory. Runtime docs and maturity notes in this pass. Progress is the eighteenth Emerging auto-enhance runtime.
+* **Progress A→B→C.** Shared `--juice-progress-*` roles for `[progress]` / `[progress-fill]` / optional `[progress-label]` (#198). DOM-first APG progress runtime (#199): `createProgress` / `initProgress` / `startProgressRuntime` / `stopProgressRuntime`, auto-boot, `setValue` / `getValue` / `setIndeterminate` / `isIndeterminate`. `role="progressbar"` plus `aria-valuemin` / `aria-valuemax` / `aria-valuenow` and `--juice-progress-ratio` on the host. Determinate is the boolean attribute. A missing or non-numeric `aria-valuenow` is min (an empty bar), not indeterminate. Values clamp. Indeterminate is `progress="indeterminate"` only: that flag clears `aria-valuenow` and restores the last determinate value when the flag clears. CSS owns the sliding fill. Authors must supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`. No keyboard, no pointer, no tabindex, no focus trap, no Escape, no native `<progress>` restyle, and no Sig Progress factory. Runtime docs and maturity notes shipped with the cut. Progress is the eighteenth Emerging auto-enhance runtime.
+
+### Since 0.9.0 (pending the next cut)
+
+This is the stack on master that is not in the 0.9.0 tarball.
+
+* **Pagination A→B→C.** Shared `--juice-pagination-*` roles for `[pagination]` / `[pagination-item]` / `[pagination-prev]` / `[pagination-next]` / optional `[pagination-ellipsis]` / `[pagination-status]` (#204). DOM-first page-set runtime (#205): `createPagination` / `initPagination` / `startPaginationRuntime` / `stopPaginationRuntime`, auto-boot, `sync` / `setCurrent`. An unlabeled navigation landmark is named `Pagination`. `<nav>` does not get a redundant role. `<ol pagination>` stays a list. An author role is kept. A single `aria-current="page"` is kept (author first current wins; otherwise the first page control). Prev/next disable at ends when page controls and optional ellipsis make that inferable. A current whose text or `aria-label` is the digits `1` disables prev even when an ellipsis sits before it. An ellipsis after the current page keeps next enabled. Status text is not parsed. Author-owned disabled is left. Runtime-owned disabled is `aria-disabled="true"`, plus `disabled` on buttons. Arrow / Home / End move focus among enabled controls and do not wrap. Enter and Space stay with the browser. A disabled link click is cancelled. It does not remove `href`, trap focus, steal Escape, or listen to history. Not a router, not site `[nav]`, not `nav[type="pagination"]`, not a breadcrumb, not tabs, and not a wizard step tracker. No Sig Pagination factory. Runtime docs and maturity notes in this pass. Pagination is the nineteenth Emerging auto-enhance runtime. Still unpublished vs 0.9.0.
+
 See [Surfaces](./juice-surfaces.md), [Theme Contract](./juice-theme-contract.md), [Icons](./juice-icons.md), and [Typography Contract](./juice-typography-contract.md).
 
 ---
@@ -205,7 +212,7 @@ Authors can compose visual character with the shipped utilities. Structural card
 
 ### 2. Components Are Uneven Beyond the Runtimes
 
-Accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, or Sig Progress factory. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar.
+Accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination have chrome plus auto-enhance. Navigation still exists and is still Emerging. The Sig Accordion factory is real. There is no Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, or Sig Pagination factory. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set and is unpublished versus 0.9.0.
 
 That is not the same as a polished component library. Cards, buttons, forms, and nav variants are useful and still settling. Prop contracts for styling internal parts are still being figured out. Juice should not pretend the exported component surface is broader or more mature than it is.
 
@@ -233,7 +240,7 @@ Lock this build order. Do not reorder it because a later item is more exciting.
 
 ### Closed / done on master (old P1–P3, plus 0.6.0, 0.7.0, 0.8.0, and 0.9.0 publish)
 
-These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0. Switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, and progress A→B→C shipped in 0.9.0. Switch is the thirteenth Emerging auto-enhance runtime. Slider is the fourteenth. Checkbox is the fifteenth. Radio is the sixteenth. Breadcrumb is the seventeenth. Progress is the eighteenth. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. All eighteen stay Emerging.
+These were the lock order after 0.4.0. Surfaces, the theme contract, and typography / icon polish shipped in the 0.6.0 public cut. Drawer / toast / popover shipped in 0.7.0. Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0. Switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, and progress A→B→C shipped in 0.9.0. Those eighteen stay Emerging. Pagination A→B→C is done on master (unpublished vs 0.9.0). Switch is the thirteenth Emerging auto-enhance runtime. Slider is the fourteenth. Checkbox is the fifteenth. Radio is the sixteenth. Breadcrumb is the seventeenth. Progress is the eighteenth. Pagination is the nineteenth. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. All nineteen stay Emerging.
 
 * **Old P1 — Expand surfaces A–C.** `surfaceTone`, `borderStrength`, and standalone `blur` ship. Theme roles and bind tests cover the first two; blur is a core utility.
 * **Old P2 — Formalize the theme contract.** [Theme Contract](./juice-theme-contract.md) is the canonical checklist. `libraries/juice/src/juice.theme-contract.test.ts` fails verify if a shipped library theme drops a required `--juice-*` bind. Slice C is vacant.
@@ -280,11 +287,13 @@ Radio **A→B→C shipped in 0.9.0**: theme chrome (`--juice-radio-*`), APG radi
 
 Breadcrumb **A→B→C shipped in 0.9.0**: theme chrome (`--juice-breadcrumb-*`), light trail runtime, and runtime / maturity docs. Valid `[breadcrumb]` markup auto-enhances. Breadcrumb is the seventeenth Emerging auto-enhance runtime. Light landmark labeling and a single `aria-current="page"`. No router, no Escape, no focus trap, and no history listener. `<ol breadcrumb>` stays a list. No Sig Breadcrumb factory.
 
-Progress **A→B→C shipped in 0.9.0**: theme chrome (`--juice-progress-*`), APG progress runtime, and runtime / maturity docs. Valid `[progress]` markup auto-enhances. Progress is the eighteenth Emerging auto-enhance runtime. Determinate sync writes `aria-valuemin` / `aria-valuemax` / `aria-valuenow` and `--juice-progress-ratio`. `progress="indeterminate"` clears `aria-valuenow` and restores the last value when cleared. Authors own the accessible name and `aria-valuetext`. No keyboard, no focus trap, and no Escape. Authors write `<div progress>`, not `<progress>`. No Sig Progress factory. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, or Sig Progress factory stays later. Grow the next runtime only when that markup contract stays honest.
+Progress **A→B→C shipped in 0.9.0**: theme chrome (`--juice-progress-*`), APG progress runtime, and runtime / maturity docs. Valid `[progress]` markup auto-enhances. Progress is the eighteenth Emerging auto-enhance runtime. Determinate sync writes `aria-valuemin` / `aria-valuemax` / `aria-valuenow` and `--juice-progress-ratio`. `progress="indeterminate"` clears `aria-valuenow` and restores the last value when cleared. Authors own the accessible name and `aria-valuetext`. No keyboard, no focus trap, and no Escape. Authors write `<div progress>`, not `<progress>`. No Sig Progress factory.
+
+Pagination **A→B→C is done on master** (still unpublished vs 0.9.0): theme chrome (`--juice-pagination-*`), page-set runtime, and runtime / maturity docs. Valid `[pagination]` markup auto-enhances. Pagination is the nineteenth Emerging auto-enhance runtime. An unlabeled navigation landmark is named `Pagination`. One `aria-current="page"` is kept (author current wins; otherwise the first page control). Prev/next disable at inferable ends. Author-owned disabled is kept. Arrow / Home / End move focus among enabled controls. Enter and Space stay with the browser. `<ol pagination>` stays a list. No router, no focus trap, and no Escape. No Sig Pagination factory. Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, or Sig Pagination factory stays later. Grow the next runtime only when that markup contract stays honest.
 
 Short-term focus remains:
 
-* keep navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress documented as Emerging until they settle
+* keep navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination documented as Emerging until they settle
 * improve component authoring patterns
 * ensure anything newly exported is actually ready
 * grow the next runtime only when that markup contract stays honest
@@ -306,10 +315,10 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 ## Recommended Build Order
 
 1. Remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`). Structural `card="…"` recipes can stay later.
-2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0 (chrome, runtime, docs). Switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, and progress A→B→C shipped in 0.9.0 (chrome, runtime, docs). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner / menu / switch / slider / checkbox / radio / breadcrumb / progress Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
+2. Modal / dialog A→B→C shipped in 0.6.0 (chrome, runtime, docs). Drawer A→B→C, toast A→B→C, and popover A→B→C shipped in 0.7.0 (chrome, runtime, docs). Wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C shipped in 0.8.0 (chrome, runtime, docs). Switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, and progress A→B→C shipped in 0.9.0 (chrome, runtime, docs). Pagination A→B→C is done on master (chrome, runtime, docs; unpublished vs 0.9.0). Keep nav / accordion / tabs / modal / drawer / toast / popover / wizard / tooltip / combobox / banner / menu / switch / slider / checkbox / radio / breadcrumb / progress / pagination Emerging. Grow the next runtime only when that markup contract stays honest. Do not oversell this.
 3. Keep template-driven stress testing after each improvement. Treat the Juice CLI as a parallel track.
 
-Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard / tooltip / combobox / banner / polish / menu A→B→C in the 0.8.0 npm publish, and switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, plus progress A→B→C in the 0.9.0 npm publish. Do not invent a next version number; the next cut happens when new Juice changesets exist.
+Closed: expand surfaces A–C, formalize the theme contract, typography / icon polish (including author type attrs beating theme defaults), modal / dialog A→B→C, the 0.6.0 npm publish, drawer / toast / popover A→B→C in the 0.7.0 npm publish, wizard / tooltip / combobox / banner / polish / menu A→B→C in the 0.8.0 npm publish, switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, plus progress A→B→C in the 0.9.0 npm publish, and pagination A→B→C on master (unpublished vs 0.9.0). Do not invent a next version number; the next cut happens when new Juice changesets exist.
 
 ---
 
@@ -323,12 +332,14 @@ Closed: expand surfaces A–C, formalize the theme contract, typography / icon p
 
 **0.8.0 was the prior public npm cut** for wizard, tooltip, combobox, banner, eleven-runtime polish, and menu A→B→C.
 
-**0.9.0 is the live npm cut** for switch, slider, checkbox, radio, breadcrumb, and progress A→B→C. Switch is the thirteenth Emerging auto-enhance runtime. Slider is the fourteenth. Checkbox is the fifteenth. Radio is the sixteenth. Breadcrumb is the seventeenth. Progress is the eighteenth. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. All eighteen stay Emerging.
+**0.9.0 is the live npm cut** for switch, slider, checkbox, radio, breadcrumb, and progress A→B→C. Switch is the thirteenth Emerging auto-enhance runtime. Slider is the fourteenth. Checkbox is the fifteenth. Radio is the sixteenth. Breadcrumb is the seventeenth. Progress is the eighteenth. Those eighteen stay Emerging.
+
+Master is ahead of that cut. Pagination A→B→C is on master and unpublished versus 0.9.0. Pagination is the nineteenth Emerging auto-enhance runtime. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. All nineteen stay Emerging. Do not invent a next version number.
 
 The next stage is post-0.9.0 refinement:
 
 * remaining surface depth utilities are done (`shadowTone`, `overlay`, `variant`); structural `card="…"` recipes can stay later
-* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are in 0.8.0; switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, and progress A→B→C are in 0.9.0; grow the next runtime only when the markup contract is honest
+* modal / dialog A→B→C is in 0.6.0; drawer A→B→C, toast A→B→C, and popover A→B→C are in 0.7.0; wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, eleven-runtime polish A→B→C, and menu A→B→C are in 0.8.0; switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, and progress A→B→C are in 0.9.0; pagination A→B→C is done on master (still unpublished vs 0.9.0); grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.

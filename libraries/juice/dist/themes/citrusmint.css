@@ -379,6 +379,30 @@
   --juice-progress-fill: var(--cm-progress-fill);
   --juice-progress-ink: var(--cm-progress-ink);
   --juice-progress-focus-ring: var(--cm-progress-focus-ring);
+  /* Pagination chrome — thinner --cm-* set. Heading stands in for accent
+     on the current page, same as slider fill. Page controls are surfaces,
+     not heading-fill. The trail stays transparent. Distinct from
+     breadcrumb, nav[type="pagination"], tabs, and wizard steps. */
+  --cm-pagination-surface: var(--cm-surface);
+  --cm-pagination-surface-hover: var(--cm-surface-muted);
+  --cm-pagination-surface-current: var(--cm-heading);
+  --cm-pagination-ink: var(--cm-text);
+  --cm-pagination-ink-hover: var(--cm-heading);
+  --cm-pagination-ink-current: var(--cm-surface);
+  --cm-pagination-ink-disabled: var(--cm-text-muted);
+  --cm-pagination-border: var(--cm-border);
+  --cm-pagination-focus-ring: var(--cm-heading);
+  --cm-pagination-ellipsis: var(--cm-text-muted);
+  --juice-pagination-surface: var(--cm-pagination-surface);
+  --juice-pagination-surface-hover: var(--cm-pagination-surface-hover);
+  --juice-pagination-surface-current: var(--cm-pagination-surface-current);
+  --juice-pagination-ink: var(--cm-pagination-ink);
+  --juice-pagination-ink-hover: var(--cm-pagination-ink-hover);
+  --juice-pagination-ink-current: var(--cm-pagination-ink-current);
+  --juice-pagination-ink-disabled: var(--cm-pagination-ink-disabled);
+  --juice-pagination-border: var(--cm-pagination-border);
+  --juice-pagination-focus-ring: var(--cm-pagination-focus-ring);
+  --juice-pagination-ellipsis: var(--cm-pagination-ellipsis);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -1024,5 +1048,68 @@
 
 [theme=citrusmint] [progress]:focus-visible {
   outline: 2px solid var(--juice-progress-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Pagination chrome. Beat generic fills and button CTAs. Heading paints
+   the current page, not a CTA. The trail stays inline. Runtime is later. */
+[theme=citrusmint] [pagination],
+[theme=citrusmint] nav[pagination] {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--juice-pagination-ink);
+}
+
+[theme=citrusmint] [pagination] a,
+[theme=citrusmint] [pagination-link],
+[theme=citrusmint] a[pagination-link],
+[theme=citrusmint] button[pagination-link],
+[theme=citrusmint] button[pagination-prev],
+[theme=citrusmint] button[pagination-next] {
+  background-color: var(--juice-pagination-surface);
+  border-color: var(--juice-pagination-border);
+  color: var(--juice-pagination-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=citrusmint] [pagination] a:hover,
+[theme=citrusmint] [pagination-link]:hover,
+[theme=citrusmint] button[pagination-link]:hover,
+[theme=citrusmint] button[pagination-prev]:hover,
+[theme=citrusmint] button[pagination-next]:hover {
+  background-color: var(--juice-pagination-surface-hover);
+  color: var(--juice-pagination-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] [pagination] [aria-current=page],
+[theme=citrusmint] [pagination] [aria-current=page] :is(a, button, [pagination-link]),
+[theme=citrusmint] [pagination-link][aria-current=page] {
+  background-color: var(--juice-pagination-surface-current);
+  color: var(--juice-pagination-ink-current);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled=true]),
+[theme=citrusmint] [pagination] [aria-disabled=true] :is(a, button, [pagination-link]) {
+  background-color: var(--juice-pagination-surface);
+  color: var(--juice-pagination-ink-disabled);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=citrusmint] [pagination] a:focus-visible,
+[theme=citrusmint] [pagination-link]:focus-visible,
+[theme=citrusmint] button[pagination-link]:focus-visible,
+[theme=citrusmint] button[pagination-prev]:focus-visible,
+[theme=citrusmint] button[pagination-next]:focus-visible {
+  outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
 }

@@ -593,6 +593,38 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[progress\][^{]*\{[^}]*--juice-slider-fill/);
     });
 
+    it("includes pagination structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[pagination]");
+        expect(css).toContain("[pagination-item]");
+        expect(css).toContain("[pagination-link]");
+        expect(css).toContain("[pagination-prev]");
+        expect(css).toContain("[pagination-next]");
+        expect(css).toContain("[pagination-ellipsis]");
+        expect(css).toContain("[pagination-status]");
+        expect(css).toMatch(/\[theme\]\s+\[pagination\]/);
+        expect(css).toMatch(/\[pagination\]\s+\[aria-current=["']?page["']?\]/);
+        expect(css).toMatch(/\[aria-disabled=["']?true["']?\]/);
+        expect(css).toContain("--juice-pagination-surface");
+        expect(css).toContain("--juice-pagination-surface-hover");
+        expect(css).toContain("--juice-pagination-surface-current");
+        expect(css).toContain("--juice-pagination-ink");
+        expect(css).toContain("--juice-pagination-ink-hover");
+        expect(css).toContain("--juice-pagination-ink-current");
+        expect(css).toContain("--juice-pagination-ink-disabled");
+        expect(css).toContain("--juice-pagination-border");
+        expect(css).toContain("--juice-pagination-focus-ring");
+        expect(css).toContain("--juice-pagination-ellipsis");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/(^|[,{])\s*\[aria-current=["']?page["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?navigation["']?\]/);
+        expect(css).not.toMatch(/\[pagination\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[pagination\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[pagination\][^{]*\{[^}]*--juice-breadcrumb-ink/);
+        expect(css).not.toMatch(/nav\[type=["']?pagination["']?\][^{]*--juice-pagination-ink/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1242,6 +1274,54 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-progress-ink: var(--tide-page)");
     });
 
+    it("binds pagination chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-pagination-surface: var(--aqua-surface)");
+        expect(aquaCss).toContain("--aqua-pagination-surface-current: var(--aqua-accent)");
+        expect(aquaCss).toContain("--aqua-pagination-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--aqua-pagination-ink-current: var(--aqua-page)");
+        expect(aquaCss).toContain("--aqua-pagination-ink-disabled: var(--aqua-text-muted)");
+        expect(aquaCss).toContain("--juice-pagination-focus-ring: var(--aqua-pagination-focus-ring)");
+        expect(aquaCss).toContain("[pagination]");
+        expect(aquaCss).toContain("[pagination-link]");
+        expect(aquaCss).toMatch(/\[aria-current=["']?page["']?\]/);
+        expect(aquaCss).toMatch(/\[aria-disabled=["']?true["']?\]/);
+        expect(aquaCss).not.toMatch(/(^|[,{])\s*\[aria-current=["']?page["']?\]/);
+        expect(aquaCss).not.toContain("--aqua-pagination-surface: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-pagination-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toMatch(/\[pagination-link\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-pagination-surface: var(--kw-surface)");
+        expect(kiwiCss).toContain("--juice-pagination-surface-current: var(--kw-pagination-surface-current)");
+        expect(kiwiCss).toContain("--kw-pagination-ink-current: var(--kw-page)");
+        expect(kiwiCss).toContain("--kw-pagination-ellipsis: var(--kw-text-muted)");
+        expect(kiwiCss).toContain("[pagination-prev]");
+        expect(kiwiCss).toContain("[pagination-next]");
+        expect(kiwiCss).not.toMatch(/\[pagination-link\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[pagination-link\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-pagination-surface: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-pagination-surface-current: var(--cm-heading)");
+        expect(mintCss).toContain("--cm-pagination-ink-current: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-pagination-ink-hover: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-pagination-focus-ring: var(--cm-pagination-focus-ring)");
+        expect(mintCss).toContain("[pagination]");
+
+        expect(tideCss).toContain("--tide-pagination-surface: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-pagination-surface-current: var(--tide-accent)");
+        expect(tideCss).toContain("--tide-pagination-ink-current: var(--tide-heading)");
+        expect(tideCss).toContain("--juice-pagination-ink-disabled: var(--tide-pagination-ink-disabled)");
+        expect(tideCss).toContain("[pagination]");
+        expect(tideCss).not.toMatch(/\[pagination-link\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-pagination-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-pagination-surface-current: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-pagination-ink-current: var(--tide-page)");
+    });
+
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
@@ -1540,6 +1620,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initProgress");
         expect(module).toHaveProperty("startProgressRuntime");
         expect(module).toHaveProperty("stopProgressRuntime");
+        expect(module).toHaveProperty("createPagination");
+        expect(module).toHaveProperty("initPagination");
+        expect(module).toHaveProperty("startPaginationRuntime");
+        expect(module).toHaveProperty("stopPaginationRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

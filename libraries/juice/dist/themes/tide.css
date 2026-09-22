@@ -417,6 +417,30 @@
   --juice-progress-fill: var(--tide-progress-fill);
   --juice-progress-ink: var(--tide-progress-ink);
   --juice-progress-focus-ring: var(--tide-progress-focus-ring);
+  /* Pagination chrome — dark chips, not a light bar and not a CTA.
+     Current fill stays accent; ink on that fill is heading, not the
+     page color. The trail stays transparent. Distinct from breadcrumb,
+     nav[type="pagination"], tabs, and wizard steps. */
+  --tide-pagination-surface: var(--tide-surface-strong);
+  --tide-pagination-surface-hover: var(--tide-surface-muted);
+  --tide-pagination-surface-current: var(--tide-accent);
+  --tide-pagination-ink: var(--tide-text);
+  --tide-pagination-ink-hover: var(--tide-accent);
+  --tide-pagination-ink-current: var(--tide-heading);
+  --tide-pagination-ink-disabled: var(--tide-text-muted);
+  --tide-pagination-border: var(--tide-border);
+  --tide-pagination-focus-ring: var(--tide-accent);
+  --tide-pagination-ellipsis: var(--tide-text-muted);
+  --juice-pagination-surface: var(--tide-pagination-surface);
+  --juice-pagination-surface-hover: var(--tide-pagination-surface-hover);
+  --juice-pagination-surface-current: var(--tide-pagination-surface-current);
+  --juice-pagination-ink: var(--tide-pagination-ink);
+  --juice-pagination-ink-hover: var(--tide-pagination-ink-hover);
+  --juice-pagination-ink-current: var(--tide-pagination-ink-current);
+  --juice-pagination-ink-disabled: var(--tide-pagination-ink-disabled);
+  --juice-pagination-border: var(--tide-pagination-border);
+  --juice-pagination-focus-ring: var(--tide-pagination-focus-ring);
+  --juice-pagination-ellipsis: var(--tide-pagination-ellipsis);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1304,5 +1328,73 @@
 
 [theme=tide] [progress]:focus-visible {
   outline: 2px solid var(--juice-progress-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Pagination chrome. Dark chips, not a light bar and not a CTA.
+   The trail stays inline. Runtime is later. */
+[theme=tide] [pagination],
+[theme=tide] nav[pagination] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  color: var(--juice-pagination-ink);
+}
+
+[theme=tide] [pagination] a,
+[theme=tide] [pagination-link],
+[theme=tide] a[pagination-link],
+[theme=tide] button[pagination-link],
+[theme=tide] button[pagination-prev],
+[theme=tide] button[pagination-next] {
+  background-image: none;
+  background-color: var(--juice-pagination-surface);
+  border-color: var(--juice-pagination-border);
+  color: var(--juice-pagination-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=tide] [pagination] a:hover,
+[theme=tide] [pagination-link]:hover,
+[theme=tide] button[pagination-link]:hover,
+[theme=tide] button[pagination-prev]:hover,
+[theme=tide] button[pagination-next]:hover {
+  background-image: none;
+  background-color: var(--juice-pagination-surface-hover);
+  color: var(--juice-pagination-ink-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] [pagination] [aria-current=page],
+[theme=tide] [pagination] [aria-current=page] :is(a, button, [pagination-link]),
+[theme=tide] [pagination-link][aria-current=page] {
+  background-image: none;
+  background-color: var(--juice-pagination-surface-current);
+  color: var(--juice-pagination-ink-current);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled=true]),
+[theme=tide] [pagination] [aria-disabled=true] :is(a, button, [pagination-link]) {
+  background-image: none;
+  background-color: var(--juice-pagination-surface);
+  color: var(--juice-pagination-ink-disabled);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] [pagination] a:focus-visible,
+[theme=tide] [pagination-link]:focus-visible,
+[theme=tide] button[pagination-link]:focus-visible,
+[theme=tide] button[pagination-prev]:focus-visible,
+[theme=tide] button[pagination-next]:focus-visible {
+  outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
 }

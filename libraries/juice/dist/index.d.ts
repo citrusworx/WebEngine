@@ -35,4 +35,6 @@ export { createBreadcrumb, initBreadcrumb, startBreadcrumbRuntime, stopBreadcrum
 export type { BreadcrumbController, BreadcrumbOptions } from "./js/src/breadcrumb/breadcrumb-runtime.js";
 export { createProgress, initProgress, startProgressRuntime, stopProgressRuntime } from "./js/src/progress/progress-runtime.js";
 export type { ProgressController, ProgressOptions } from "./js/src/progress/progress-runtime.js";
+export { createPagination, initPagination, startPaginationRuntime, stopPaginationRuntime } from "./js/src/pagination/pagination-runtime.js";
+export type { PaginationController, PaginationOptions } from "./js/src/pagination/pagination-runtime.js";
 export { tokens } from "./tokens/index.js";
