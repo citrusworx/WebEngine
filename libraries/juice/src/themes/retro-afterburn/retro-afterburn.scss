@@ -596,8 +596,7 @@
 }
 
 [theme="retro-afterburn"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--afb-surface-muted);
-    color: var(--afb-heading);
+    background-color: var(--afb-accent-soft);
     box-shadow: none;
 }
 

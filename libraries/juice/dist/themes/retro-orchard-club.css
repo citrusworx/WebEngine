@@ -27,7 +27,7 @@
   /* Typography */
   --orc-text: #1f2418;
   --orc-text-muted: #5f6554;
-  --orc-heading: #2a2f1c;
+  --orc-heading: #2c341c;
   --orc-body-font: "Lato", sans-serif;
   --orc-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
@@ -40,7 +40,7 @@
       radial-gradient(circle at top left, rgba(197, 212, 106, 0.72), transparent 38%),
       radial-gradient(circle at top right, rgba(151, 165, 110, 0.45), transparent 30%),
       linear-gradient(180deg, #f3f4eb 0%, #e8ebd9 100%);
-  --orc-button-background: linear-gradient(135deg, #b33a2b, #4f5c2c);
+  --orc-button-background: linear-gradient(135deg, #b33a2b, #9a2f22);
   --orc-card-background:
       linear-gradient(180deg, rgba(243, 244, 235, 0.96) 0%, rgba(232, 235, 217, 0.88) 100%);
   --orc-panel-background:
@@ -546,6 +546,31 @@
 
 [theme=retro-orchard-club] :where(button:hover, button:focus-visible) {
   box-shadow: 0 18px 38px -24px rgba(42, 47, 28, 0.24);
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme=retro-orchard-club] :where(button[btn=secondary]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--orc-text-muted);
+  border: 1px solid var(--orc-border);
+}
+
+[theme=retro-orchard-club] :where(button[btn=secondary]:hover, button[btn=secondary]:focus-visible) {
+  background-color: var(--orc-surface-muted);
+  box-shadow: none;
+}
+
+[theme=retro-orchard-club] :where(button[btn=outline]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--orc-accent);
+  border: 2px solid var(--orc-accent);
+}
+
+[theme=retro-orchard-club] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
+  background-color: var(--orc-accent-soft);
+  box-shadow: none;
 }
 
 [theme=retro-orchard-club] :where(input::placeholder, textarea::placeholder) {

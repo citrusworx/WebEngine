@@ -27,7 +27,7 @@
   /* Typography */
   --ssm-text: #2a1c16;
   --ssm-text-muted: #7a5f52;
-  --ssm-heading: #3b2418;
+  --ssm-heading: #1f140f;
   --ssm-body-font: "Lato", sans-serif;
   --ssm-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
@@ -40,7 +40,7 @@
       radial-gradient(circle at top left, rgba(196, 164, 132, 0.72), transparent 38%),
       radial-gradient(circle at top right, rgba(109, 137, 168, 0.45), transparent 30%),
       linear-gradient(180deg, #fff8f1 0%, #ffefe3 100%);
-  --ssm-button-background: linear-gradient(135deg, #e8796a, #2c4463);
+  --ssm-button-background: linear-gradient(135deg, #e8796a, #d16558);
   --ssm-card-background:
       linear-gradient(180deg, rgba(255, 248, 241, 0.96) 0%, rgba(255, 239, 227, 0.88) 100%);
   --ssm-panel-background:
@@ -546,6 +546,31 @@
 
 [theme=retro-sunset-motel] :where(button:hover, button:focus-visible) {
   box-shadow: 0 18px 38px -24px rgba(59, 36, 24, 0.24);
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme=retro-sunset-motel] :where(button[btn=secondary]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--ssm-text-muted);
+  border: 1px solid var(--ssm-border);
+}
+
+[theme=retro-sunset-motel] :where(button[btn=secondary]:hover, button[btn=secondary]:focus-visible) {
+  background-color: var(--ssm-surface-muted);
+  box-shadow: none;
+}
+
+[theme=retro-sunset-motel] :where(button[btn=outline]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--ssm-accent);
+  border: 2px solid var(--ssm-accent);
+}
+
+[theme=retro-sunset-motel] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
+  background-color: var(--ssm-accent-soft);
+  box-shadow: none;
 }
 
 [theme=retro-sunset-motel] :where(input::placeholder, textarea::placeholder) {

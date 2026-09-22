@@ -596,8 +596,7 @@
 }
 
 [theme="retro-forest-radio"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--frr-surface-muted);
-    color: var(--frr-heading);
+    background-color: var(--frr-accent-soft);
     box-shadow: none;
 }
 

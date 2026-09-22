@@ -596,8 +596,7 @@
 }
 
 [theme="retro-poolside-pop"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--psp-surface-muted);
-    color: var(--psp-heading);
+    background-color: var(--psp-accent-soft);
     box-shadow: none;
 }
 

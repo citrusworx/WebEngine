@@ -596,8 +596,7 @@
 }
 
 [theme="retro-denim-dial"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--dnd-surface-muted);
-    color: var(--dnd-heading);
+    background-color: var(--dnd-accent-soft);
     box-shadow: none;
 }
 

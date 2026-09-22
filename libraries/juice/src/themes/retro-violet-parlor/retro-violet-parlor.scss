@@ -596,8 +596,7 @@
 }
 
 [theme="retro-violet-parlor"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--vpr-surface-muted);
-    color: var(--vpr-heading);
+    background-color: var(--vpr-accent-soft);
     box-shadow: none;
 }
 

@@ -596,8 +596,7 @@
 }
 
 [theme="retro-orchard-club"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--orc-surface-muted);
-    color: var(--orc-heading);
+    background-color: var(--orc-accent-soft);
     box-shadow: none;
 }
 

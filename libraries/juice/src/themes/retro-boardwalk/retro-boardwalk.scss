@@ -596,8 +596,7 @@
 }
 
 [theme="retro-boardwalk"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
-    background-color: var(--bdw-surface-muted);
-    color: var(--bdw-heading);
+    background-color: var(--bdw-accent-soft);
     box-shadow: none;
 }
 

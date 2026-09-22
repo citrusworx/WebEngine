@@ -27,7 +27,7 @@
   /* Typography */
   --bdw-text: #1e2a36;
   --bdw-text-muted: #5c6b7a;
-  --bdw-heading: #1c3d5a;
+  --bdw-heading: #14324a;
   --bdw-body-font: "Lato", sans-serif;
   --bdw-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
@@ -40,7 +40,7 @@
       radial-gradient(circle at top left, rgba(255, 209, 102, 0.72), transparent 38%),
       radial-gradient(circle at top right, rgba(110, 212, 202, 0.45), transparent 30%),
       linear-gradient(180deg, #fff8f0 0%, #fff1e4 100%);
-  --bdw-button-background: linear-gradient(135deg, #ff6f61, #1f9a8e);
+  --bdw-button-background: linear-gradient(135deg, #ff6f61, #e85a4c);
   --bdw-card-background:
       linear-gradient(180deg, rgba(255, 248, 240, 0.96) 0%, rgba(255, 241, 228, 0.88) 100%);
   --bdw-panel-background:
@@ -546,6 +546,31 @@
 
 [theme=retro-boardwalk] :where(button:hover, button:focus-visible) {
   box-shadow: 0 18px 38px -24px rgba(28, 61, 90, 0.24);
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme=retro-boardwalk] :where(button[btn=secondary]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--bdw-text-muted);
+  border: 1px solid var(--bdw-border);
+}
+
+[theme=retro-boardwalk] :where(button[btn=secondary]:hover, button[btn=secondary]:focus-visible) {
+  background-color: var(--bdw-surface-muted);
+  box-shadow: none;
+}
+
+[theme=retro-boardwalk] :where(button[btn=outline]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--bdw-accent);
+  border: 2px solid var(--bdw-accent);
+}
+
+[theme=retro-boardwalk] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
+  background-color: var(--bdw-accent-soft);
+  box-shadow: none;
 }
 
 [theme=retro-boardwalk] :where(input::placeholder, textarea::placeholder) {

@@ -27,7 +27,7 @@
   /* Typography */
   --dnd-text: #1a2430;
   --dnd-text-muted: #5a6a7c;
-  --dnd-heading: #1c2b3a;
+  --dnd-heading: #122033;
   --dnd-body-font: "Lato", sans-serif;
   --dnd-heading-font: "Archivo Black", sans-serif;
   /* Accent system */
@@ -40,7 +40,7 @@
       radial-gradient(circle at top left, rgba(91, 141, 184, 0.72), transparent 38%),
       radial-gradient(circle at top right, rgba(109, 140, 176, 0.45), transparent 30%),
       linear-gradient(180deg, #eef2f7 0%, #e2e8f1 100%);
-  --dnd-button-background: linear-gradient(135deg, #f08a24, #2a476c);
+  --dnd-button-background: linear-gradient(135deg, #f08a24, #d97512);
   --dnd-card-background:
       linear-gradient(180deg, rgba(238, 242, 247, 0.96) 0%, rgba(226, 232, 241, 0.88) 100%);
   --dnd-panel-background:
@@ -546,6 +546,31 @@
 
 [theme=retro-denim-dial] :where(button:hover, button:focus-visible) {
   box-shadow: 0 18px 38px -24px rgba(28, 43, 58, 0.24);
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme=retro-denim-dial] :where(button[btn=secondary]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--dnd-text-muted);
+  border: 1px solid var(--dnd-border);
+}
+
+[theme=retro-denim-dial] :where(button[btn=secondary]:hover, button[btn=secondary]:focus-visible) {
+  background-color: var(--dnd-surface-muted);
+  box-shadow: none;
+}
+
+[theme=retro-denim-dial] :where(button[btn=outline]) {
+  background-image: none;
+  background-color: transparent;
+  color: var(--dnd-accent);
+  border: 2px solid var(--dnd-accent);
+}
+
+[theme=retro-denim-dial] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
+  background-color: var(--dnd-accent-soft);
+  box-shadow: none;
 }
 
 [theme=retro-denim-dial] :where(input::placeholder, textarea::placeholder) {
