@@ -128,6 +128,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Radio Runtime](./juice-radio-runtime.md)
 - [Breadcrumb Runtime](./juice-breadcrumb-runtime.md)
 - [Progress Runtime](./juice-progress-runtime.md)
+- [Pagination Runtime](./juice-pagination-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.0` live on npm)
 
