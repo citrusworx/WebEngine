@@ -7,7 +7,8 @@ $afb-deep: #0d0f14;
 $afb-text: #e8eaef;
 $afb-text-muted: #9aa3b2;
 // Tertiary ink. Quieter than muted (lower luminance) so the ladder reads soft < muted < body < heading.
-$afb-text-soft: #7a8496;
+// Light enough for figcaptions on the charcoal page; idle tabs use muted, not soft.
+$afb-text-soft: #8d97aa;
 // Dark ink for accent / bright surfaces. Aligns with deep; $afb-on-accent stays the button ink.
 $afb-text-inverse: $afb-deep;
 $afb-heading: #f4f6fa;

@@ -33,6 +33,8 @@ body {
  * Juice can name hero, card, panel, surfaceTone, and windows of content —
  * it cannot express a split product hero, comparison stage, or command
  * chip. Scope every override to [sell] so other showcase pages stay intact.
+ * Decorative washes stay faint and use accent or highlight when the
+ * theme publishes them, so a saturated face is not amplified into mud.
  * Tokens stay on currentColor / --juice-surface-* so KiwiPress, Tide,
  * Citrusmint, and Aquaflux all paint the same structure.
  */
@@ -54,8 +56,8 @@ body {
   height: 28rem;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, currentColor 14%, transparent),
-    transparent 68%
+    color-mix(in srgb, var(--juice-color-accent, currentColor) 9%, transparent),
+    transparent 72%
   );
   pointer-events: none;
   z-index: 0;
@@ -69,8 +71,8 @@ body {
   height: 22rem;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, currentColor 8%, transparent),
-    transparent 70%
+    color-mix(in srgb, var(--juice-color-highlight, currentColor) 6%, transparent),
+    transparent 74%
   );
   pointer-events: none;
   z-index: 0;

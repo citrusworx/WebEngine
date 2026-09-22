@@ -20,9 +20,9 @@
   --acg-page: #14081f;
   --acg-page-tint: #1f0f30;
   --acg-page-deep: #0a0414;
-  --acg-surface: rgb(49.4, 20.8, 89.4);
-  --acg-surface-strong: rgb(80.28, 62.3, 37.44);
-  --acg-surface-muted: rgb(33.868, 12.736, 63.524);
+  --acg-surface: rgb(42.04, 18.48, 72.84);
+  --acg-surface-strong: rgb(57.88, 40.8, 42.24);
+  --acg-surface-muted: rgb(28.7824, 10.9888, 51.8192);
   --acg-surface-deep: rgb(10.8, 4.32, 20.88);
   --acg-border: rgba(155, 126, 201, 0.26);
   --acg-border-strong: rgba(255, 43, 214, 0.38);
@@ -42,22 +42,23 @@
   --acg-highlight: #ffe600;
   /* Surface recipes */
   --acg-page-background:
-      radial-gradient(circle at top left, rgba(255, 230, 0, 0.72), transparent 38%),
-      radial-gradient(circle at top right, rgba(166, 107, 255, 0.45), transparent 30%),
+      radial-gradient(circle at top left, rgba(255, 230, 0, 0.14), transparent 46%),
+      radial-gradient(circle at top right, rgba(255, 43, 214, 0.12), transparent 36%),
       linear-gradient(180deg, #14081f 0%, #1f0f30 100%);
   --acg-button-background: linear-gradient(135deg, #ff2bd6, #e01fbc);
   --acg-card-background:
-      linear-gradient(180deg, rgb(93.72, 75.2, 34.56) 0%, rgb(64.12, 25.44, 122.52) 100%);
+      linear-gradient(180deg, rgb(40.2, 17.9, 68.7) 0%, rgb(34.42, 13.04, 62.36) 100%);
   --acg-panel-background:
       linear-gradient(180deg, rgb(34.42, 13.04, 62.36) 0%, rgb(19.45, 8.95, 32.6) 100%);
+  /* Violet field with a corner magenta ember. Light ink sits on this; inverse stays on solid accent CTAs. */
   --acg-hero-background:
-      radial-gradient(circle at top left, rgba(240, 196, 0, 0.38), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(123, 44, 255, 0.28), transparent 32%),
-      linear-gradient(135deg, #0a0414 0%, #a01488 54%, #e01fbc 100%);
+      radial-gradient(circle at 8% -8%, rgba(255, 230, 0, 0.12), transparent 40%),
+      radial-gradient(circle at 108% 120%, rgba(255, 43, 214, 0.32), transparent 46%),
+      linear-gradient(160deg, #0a0414 0%, rgb(39.6, 9.68, 45.7) 58%, rgb(71.7, 15.7, 71.26) 100%);
   --acg-stage-background:
-      radial-gradient(circle at 18% 20%, rgba(255, 230, 0, 0.22), transparent 22%),
-      radial-gradient(circle at 78% 22%, rgba(255, 122, 230, 0.2), transparent 24%),
-      linear-gradient(145deg, #0a0414 0%, #f3e9ff 52%, #e01fbc 100%);
+      radial-gradient(circle at 18% 20%, rgba(255, 230, 0, 0.12), transparent 28%),
+      radial-gradient(circle at 84% 86%, rgba(255, 43, 214, 0.24), transparent 34%),
+      linear-gradient(145deg, #0a0414 0%, rgb(48, 10.4, 52) 100%);
   --acg-stage-outline: rgba(20, 8, 31, 0.14);
   --acg-stage-shadow: rgba(10, 4, 20, 0.34);
   --acg-chip-background: rgb(66.84, 49.4, 40.32);
@@ -96,9 +97,9 @@
   --acg-tabs-trigger: transparent;
   --acg-tabs-trigger-hover: transparent;
   --acg-tabs-trigger-active: transparent;
-  --acg-tabs-text: var(--acg-text-soft);
+  --acg-tabs-text: var(--acg-text);
   --acg-tabs-text-hover: var(--acg-heading);
-  --acg-tabs-text-active: var(--acg-accent);
+  --acg-tabs-text-active: var(--acg-accent-soft);
   --acg-tabs-indicator: var(--acg-accent);
   --acg-tabs-list-rule: var(--acg-border);
   --acg-tabs-focus-ring: var(--acg-accent);
@@ -581,12 +582,12 @@
 
 /* Links and emphasis */
 [theme=retro-arcade-glow] :where(a) {
-  color: var(--acg-accent-strong);
-  text-decoration-color: rgba(224, 31, 188, 0.35);
+  color: var(--acg-accent-soft);
+  text-decoration-color: rgba(255, 122, 230, 0.45);
 }
 
 [theme=retro-arcade-glow] :where(a:hover, a:focus-visible) {
-  color: var(--acg-accent);
+  color: var(--acg-heading);
 }
 
 /* Controls */
@@ -624,12 +625,13 @@
 [theme=retro-arcade-glow] :where(button[btn=outline]) {
   background-image: none;
   background-color: transparent;
-  color: var(--acg-accent);
+  color: var(--acg-heading);
   border: 2px solid var(--acg-accent);
 }
 
 [theme=retro-arcade-glow] :where(button[btn=outline]:hover, button[btn=outline]:focus-visible) {
-  background-color: var(--acg-accent-soft);
+  background-color: var(--acg-accent);
+  color: #1a0518;
   box-shadow: none;
 }
 
@@ -727,8 +729,8 @@
 [theme=retro-arcade-glow][acg-hero],
 [theme=retro-arcade-glow] [acg-hero] {
   background: var(--acg-hero-background);
-  color: var(--acg-text-inverse);
-  border: 1px solid rgba(20, 8, 31, 0.16);
+  color: var(--acg-text);
+  border: 1px solid rgba(255, 43, 214, 0.28);
   box-shadow: 0 36px 90px -48px rgba(10, 4, 20, 0.45);
 }
 
@@ -736,30 +738,28 @@
 [theme=retro-arcade-glow] [hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow][acg-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme=retro-arcade-glow] [acg-hero] :where(h1, h2, h3, h4, h5, h6) {
-  color: var(--acg-text-inverse);
+  color: var(--acg-heading);
 }
 
-[theme=retro-arcade-glow][hero] :where(p, span, li, a),
-[theme=retro-arcade-glow] [hero] :where(p, span, li, a),
-[theme=retro-arcade-glow][acg-hero] :where(p, span, li, a),
-[theme=retro-arcade-glow] [acg-hero] :where(p, span, li, a) {
-  color: var(--acg-text-inverse);
+[theme=retro-arcade-glow][hero] :where(p, span, li),
+[theme=retro-arcade-glow] [hero] :where(p, span, li),
+[theme=retro-arcade-glow][acg-hero] :where(p, span, li),
+[theme=retro-arcade-glow] [acg-hero] :where(p, span, li) {
+  color: var(--acg-text);
+}
+
+[theme=retro-arcade-glow][hero] :where(a),
+[theme=retro-arcade-glow] [hero] :where(a),
+[theme=retro-arcade-glow][acg-hero] :where(a),
+[theme=retro-arcade-glow] [acg-hero] :where(a) {
+  color: var(--acg-accent-soft);
 }
 
 [theme=retro-arcade-glow][hero] :where(small, figcaption),
 [theme=retro-arcade-glow] [hero] :where(small, figcaption),
 [theme=retro-arcade-glow][acg-hero] :where(small, figcaption),
 [theme=retro-arcade-glow] [acg-hero] :where(small, figcaption) {
-  color: color-mix(in srgb, var(--acg-text-inverse) 72%, var(--acg-accent-soft));
-}
-
-[theme=retro-arcade-glow][hero] :where(button),
-[theme=retro-arcade-glow] [hero] :where(button),
-[theme=retro-arcade-glow][acg-hero] :where(button),
-[theme=retro-arcade-glow] [acg-hero] :where(button) {
-  background: var(--acg-text-inverse);
-  color: var(--acg-heading);
-  border-color: transparent;
+  color: var(--acg-text-muted);
 }
 
 /* [cta] uses the in-family accent → accent-strong recipe. Inverse ink on the magenta band. */
@@ -796,7 +796,7 @@
 [theme=retro-arcade-glow][acg-stage],
 [theme=retro-arcade-glow] [acg-stage] {
   background: var(--acg-stage-background);
-  color: var(--acg-text-inverse);
+  color: var(--acg-text);
   border: 1px solid var(--acg-stage-outline);
   box-shadow: 0 44px 100px -54px var(--acg-stage-shadow);
   overflow: hidden;
@@ -815,17 +815,22 @@
 
 [theme=retro-arcade-glow][acg-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme=retro-arcade-glow] [acg-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-  color: var(--acg-text-inverse);
+  color: var(--acg-heading);
 }
 
-[theme=retro-arcade-glow][acg-stage] :where(p, span, li, a),
-[theme=retro-arcade-glow] [acg-stage] :where(p, span, li, a) {
-  color: var(--acg-text-inverse);
+[theme=retro-arcade-glow][acg-stage] :where(p, span, li),
+[theme=retro-arcade-glow] [acg-stage] :where(p, span, li) {
+  color: var(--acg-text);
+}
+
+[theme=retro-arcade-glow][acg-stage] :where(a),
+[theme=retro-arcade-glow] [acg-stage] :where(a) {
+  color: var(--acg-accent-soft);
 }
 
 [theme=retro-arcade-glow][acg-stage] :where(small, figcaption),
 [theme=retro-arcade-glow] [acg-stage] :where(small, figcaption) {
-  color: color-mix(in srgb, var(--acg-text-inverse) 72%, var(--acg-accent-soft));
+  color: var(--acg-text-muted);
 }
 
 [theme=retro-arcade-glow][acg-chip],
@@ -1646,8 +1651,8 @@
   outline-offset: 2px;
 }
 
-/* Palette-aware CTA ink. Component controls keep their own ink roles. */
-[theme=retro-arcade-glow] :where(button) {
+/* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */
+[theme=retro-arcade-glow] :where(button:not([btn])) {
   color: #1a0518;
 }
 
