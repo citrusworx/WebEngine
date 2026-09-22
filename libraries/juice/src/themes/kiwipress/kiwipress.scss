@@ -452,6 +452,31 @@
     --juice-progress-ink: var(--kw-progress-ink);
     --juice-progress-focus-ring: var(--kw-progress-focus-ring);
 
+    /* Pagination chrome — APG page set from existing tokens. Page controls
+       are surfaces, not a kiwi CTA. The trail stays transparent. Current
+       fill is accent; ink on that fill is page. Distinct from breadcrumb,
+       nav[type="pagination"], tabs, and wizard steps. */
+    --kw-pagination-surface: var(--kw-surface);
+    --kw-pagination-surface-hover: var(--kw-surface-muted);
+    --kw-pagination-surface-current: var(--kw-accent);
+    --kw-pagination-ink: var(--kw-text);
+    --kw-pagination-ink-hover: var(--kw-accent);
+    --kw-pagination-ink-current: var(--kw-page);
+    --kw-pagination-ink-disabled: var(--kw-text-muted);
+    --kw-pagination-border: var(--kw-border);
+    --kw-pagination-focus-ring: var(--kw-accent);
+    --kw-pagination-ellipsis: var(--kw-text-muted);
+    --juice-pagination-surface: var(--kw-pagination-surface);
+    --juice-pagination-surface-hover: var(--kw-pagination-surface-hover);
+    --juice-pagination-surface-current: var(--kw-pagination-surface-current);
+    --juice-pagination-ink: var(--kw-pagination-ink);
+    --juice-pagination-ink-hover: var(--kw-pagination-ink-hover);
+    --juice-pagination-ink-current: var(--kw-pagination-ink-current);
+    --juice-pagination-ink-disabled: var(--kw-pagination-ink-disabled);
+    --juice-pagination-border: var(--kw-pagination-border);
+    --juice-pagination-focus-ring: var(--kw-pagination-focus-ring);
+    --juice-pagination-ellipsis: var(--kw-pagination-ellipsis);
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -2162,6 +2187,74 @@
 
 [theme="kiwipress"] [progress]:focus-visible {
     outline: 2px solid var(--juice-progress-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Pagination chrome. Beat generic link color and button CTAs.
+   Page controls are surfaces, not a kiwi CTA. The trail stays inline.
+   Runtime is later. */
+[theme="kiwipress"] [pagination],
+[theme="kiwipress"] nav[pagination] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--juice-pagination-ink);
+}
+
+[theme="kiwipress"] [pagination] a,
+[theme="kiwipress"] [pagination-link],
+[theme="kiwipress"] a[pagination-link],
+[theme="kiwipress"] button[pagination-link],
+[theme="kiwipress"] button[pagination-prev],
+[theme="kiwipress"] button[pagination-next] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    border-color: var(--juice-pagination-border);
+    color: var(--juice-pagination-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="kiwipress"] [pagination] a:hover,
+[theme="kiwipress"] [pagination-link]:hover,
+[theme="kiwipress"] button[pagination-link]:hover,
+[theme="kiwipress"] button[pagination-prev]:hover,
+[theme="kiwipress"] button[pagination-next]:hover {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-hover);
+    color: var(--juice-pagination-ink-hover);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] [pagination] [aria-current="page"],
+[theme="kiwipress"] [pagination] [aria-current="page"] :is(a, button, [pagination-link]),
+[theme="kiwipress"] [pagination-link][aria-current="page"] {
+    background-image: none;
+    background-color: var(--juice-pagination-surface-current);
+    color: var(--juice-pagination-ink-current);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] [pagination] :is(a, button, [pagination-link]):is(:disabled, [disabled], [aria-disabled="true"]),
+[theme="kiwipress"] [pagination] [aria-disabled="true"] :is(a, button, [pagination-link]) {
+    background-image: none;
+    background-color: var(--juice-pagination-surface);
+    color: var(--juice-pagination-ink-disabled);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] [pagination] a:focus-visible,
+[theme="kiwipress"] [pagination-link]:focus-visible,
+[theme="kiwipress"] button[pagination-link]:focus-visible,
+[theme="kiwipress"] button[pagination-prev]:focus-visible,
+[theme="kiwipress"] button[pagination-next]:focus-visible {
+    outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
 

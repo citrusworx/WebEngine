@@ -452,6 +452,22 @@ Progress is an APG-inspired progressbar. It is not a slider, not a spinner-only 
 
 See [Progress Runtime](./juice-progress-runtime.md). Theme paint uses `--juice-progress-*` roles (`track`, `track-border`, `fill`, `ink`, `focus-ring`).
 
+### Pagination
+
+- `pagination` — page-set root (boolean attr) on `<nav pagination>` or `<ol pagination>`. A boolean `[pagination]` attribute is fine: there is no HTML global `pagination` attribute. The trail background stays transparent. Do not restyle bare `[aria-current="page"]`
+- `pagination-item` — one cell. Layout only, not a chip
+- `pagination-link` — optional. Anchors and buttons inside the control are enough
+- `pagination-prev` — previous control. Same chip as a page. Mark the anchor, the button, or the item that wraps it
+- `pagination-next` — next control. Same idea as prev
+- `pagination-ellipsis` — optional gap marker. Not a chip and not a link. Authors should aria-hide the glyph
+- `pagination-status` — optional "Page 2 of 12" text. Uses ink
+
+Current page is `aria-current="page"` on the control or its item. Disabled prev/next is `aria-disabled="true"`, native `disabled`, or `[disabled]`. Hover does not brighten a disabled control. `nav[type="pagination"]` is an older layout pattern and is not this chrome.
+
+Pagination is an APG-inspired page set. It is not the site `[nav]` / navigation runtime, not a breadcrumb, not tabs, not the wizard step tracker, and not the surface `overlay="frost|tint"` utility. Inline nav chrome — no overlay z-index. This slice is theme chrome only. Runtime B syncs the current page and disabled prev/next. There is no Sig Pagination factory. Pagination chrome is unpublished versus 0.9.0. Eighteen Emerging runtimes stay the count.
+
+Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). `surface` is the page control, not a bar.
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
