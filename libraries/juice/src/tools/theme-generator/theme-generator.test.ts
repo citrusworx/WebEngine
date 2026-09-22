@@ -21,6 +21,7 @@ import {
     REQUIRED_RADIO_ROLES,
     REQUIRED_BREADCRUMB_ROLES,
     REQUIRED_PROGRESS_ROLES,
+    REQUIRED_PAGINATION_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -622,6 +623,45 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(fillBlocks.length).toBeGreaterThan(0);
         for (const block of fillBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-pagination-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-pagination-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-pagination-surface-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-pagination-surface-current: var(--jx-accent)");
+        expect(css).toContain("--jx-pagination-ink: var(--jx-text)");
+        expect(css).toContain("--jx-pagination-ink-hover: var(--jx-accent)");
+        expect(css).toContain("--jx-pagination-ink-current: var(--jx-text-inverse)");
+        expect(css).toContain("--jx-pagination-ink-disabled: var(--jx-text-muted)");
+        expect(css).toContain("--jx-pagination-border: var(--jx-border)");
+        expect(css).toContain("--jx-pagination-focus-ring: var(--jx-accent)");
+        expect(css).toContain("--jx-pagination-ellipsis: var(--jx-text-muted)");
+        expect(css).not.toContain("--jx-pagination-surface: var(--jx-accent)");
+        expect(css).not.toContain("--jx-pagination-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-pagination-ink-current: var(--jx-accent)");
+
+        for (const role of REQUIRED_PAGINATION_ROLES) {
+            expect(css).toContain(`--juice-pagination-${role}: var(--jx-pagination-${role})`);
+        }
+
+        expect(css).toContain("[pagination]");
+        expect(css).toContain("[pagination-link]");
+        expect(css).toContain("[pagination-prev]");
+        expect(css).toContain("[pagination-next]");
+        expect(css).not.toMatch(/\[role=["']?navigation["']?\]/);
+        expect(css).not.toMatch(/nav\[type=["']?pagination["']?\][^{]*--juice-pagination/);
+
+        const linkBlocks = [...css.matchAll(/\[pagination-link\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(linkBlocks.length).toBeGreaterThan(0);
+        for (const block of linkBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

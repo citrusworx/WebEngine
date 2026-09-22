@@ -86,6 +86,7 @@ A healthy Juice theme should own:
 - radio chrome roles (`--juice-radio-*`, bound from theme identity tokens)
 - breadcrumb chrome roles (`--juice-breadcrumb-*`, bound from theme identity tokens)
 - progress chrome roles (`--juice-progress-*`, bound from theme identity tokens)
+- pagination chrome roles (`--juice-pagination-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -244,6 +245,7 @@ The generated stylesheet currently defines:
 - radio chrome role bindings (`--jx-radio-*` / `--juice-radio-*`) and disc CTA overrides for `[radio]`
 - breadcrumb chrome role bindings (`--jx-breadcrumb-*` / `--juice-breadcrumb-*`) and link ink overrides for `[breadcrumb]` / `[breadcrumb-link]`
 - progress chrome role bindings (`--jx-progress-*` / `--juice-progress-*`) and fill overrides for `[progress]` / `[progress-fill]`
+- pagination chrome role bindings (`--jx-pagination-*` / `--juice-pagination-*`) and control overrides for `[pagination]` / `[pagination-link]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -417,6 +419,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for an APG-inspired Progressbar. It is not a slider, not a spinner-only loader, and not a native `<progress>` restyle as the only story. A boolean `[progress]` attribute is fine (no HTML global `progress` attr). `[progress]` is an attribute selector, not the type selector `progress`. Authors write `<div progress>`, not `<progress>`. `[progress-fill]` is the filled portion. `[progress-label]` is optional ink. Do not style bare `[role="progressbar"]`. Determinate paint is integer `aria-valuenow` 0–100 on the host (min/max omitted or `0` / `100`). Other ranges use the structural `--juice-progress-ratio` paint hook (not a theme role). Missing `aria-valuenow` is an empty determinate bar. Indeterminate is `progress="indeterminate"` only; CSS slides the fill and `prefers-reduced-motion` stops that animation. The host is usually not focusable. Inline status chrome — no overlay z-index. The progress runtime auto-enhances that markup (`setValue` / `getValue` / `setIndeterminate`, `role="progressbar"`, `--juice-progress-ratio`; `aria-valuenow` is omitted while indeterminate) — see [Progress Runtime](./juice-progress-runtime.md).
 
 Tide must bind a dark track (`--tide-surface-muted`), not a white groove. The fill stays `--tide-accent`, not the page color.
+
+## Pagination chrome roles
+
+Library themes bind the shared pagination contract so `[pagination]` / `[pagination-link]` / `[pagination-prev]` / `[pagination-next]` paint is theme-agnostic in `pagination.scss`. Required names (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-pagination-*`, `--kw-pagination-*`, `--cm-pagination-*`, `--tide-pagination-*`, …). App-owned generated themes use `--jx-pagination-*` and bind `--juice-pagination-*` from existing `--jx-*` surface/page/text/accent tokens. Do not invent a new hue family just for pagination chrome. Idle page controls are surfaces, not the CTA button gradient. The current page is accent (Citrusmint uses heading, same as slider fill). Ink on that fill is page text (generated themes use inverse text). Disabled ink is muted. Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic link and button fills on `[pagination]` the same way. The trail stays transparent; `surface` is the control, not a bar.
+
+This is Juice chrome for an APG-inspired Pagination control. It is not the site `[nav]` / navigation runtime, not `nav[type="pagination"]` (that older layout pattern stays in `nav.scss`), not a breadcrumb, not tabs, and not the wizard step tracker. A boolean `[pagination]` attribute is fine (no HTML global `pagination` attr). The root is `<nav pagination>` or `<ol pagination>`. `[pagination-item]` is one cell. Anchors and buttons inside the control are enough; `[pagination-link]` is optional. `[pagination-prev]` and `[pagination-next]` mark those controls. `[pagination-ellipsis]` is an optional gap marker. `[pagination-status]` is optional ink. Do not style bare `[aria-current="page"]`. Current-page paint is `aria-current="page"` on the control or its item. Disabled paint is `aria-disabled="true"`, native `disabled`, or `[disabled]`. Inline nav chrome — no overlay z-index. There is no pagination runtime in this slice.
+
+Tide must bind dark chips (`--tide-surface-strong`), not a light bar and not `--tide-page`. Current fill stays `--tide-accent`. Ink on that fill stays `--tide-heading`.
 
 ## Wizard chrome roles
 
