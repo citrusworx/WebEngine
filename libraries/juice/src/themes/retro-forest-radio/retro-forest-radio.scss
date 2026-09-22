@@ -30,7 +30,7 @@
     /* Typography */
     --frr-text: #{$frr-text};
     --frr-text-muted: #{$frr-text-muted};
-    --frr-heading: #{$frr-deep};
+    --frr-heading: #{$frr-heading};
     --frr-body-font: "Lato", sans-serif;
     --frr-heading-font: "Archivo Black", sans-serif;
 
@@ -45,7 +45,7 @@
         radial-gradient(circle at top left, #{rgba($frr-highlight, 0.72)}, transparent 38%),
         radial-gradient(circle at top right, #{rgba($frr-secondary-soft, 0.45)}, transparent 30%),
         linear-gradient(180deg, #{$frr-page} 0%, #{$frr-page-tint} 100%);
-    --frr-button-background: linear-gradient(135deg, #{$frr-accent}, #{$frr-secondary-strong});
+    --frr-button-background: linear-gradient(135deg, #{$frr-accent}, #{$frr-accent-strong});
     --frr-card-background:
         linear-gradient(180deg, #{rgba($frr-page, 0.96)} 0%, #{rgba($frr-page-tint, 0.88)} 100%);
     --frr-panel-background:
@@ -573,6 +573,32 @@
 
 [theme="retro-forest-radio"] :where(button:hover, button:focus-visible) {
     box-shadow: 0 18px 38px -24px #{rgba($frr-deep, 0.24)};
+}
+
+/* Outline / secondary are surface controls, not CTAs — clear the CTA gradient. */
+[theme="retro-forest-radio"] :where(button[btn="secondary"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--frr-text-muted);
+    border: 1px solid var(--frr-border);
+}
+
+[theme="retro-forest-radio"] :where(button[btn="secondary"]:hover, button[btn="secondary"]:focus-visible) {
+    background-color: var(--frr-surface-muted);
+    box-shadow: none;
+}
+
+[theme="retro-forest-radio"] :where(button[btn="outline"]) {
+    background-image: none;
+    background-color: transparent;
+    color: var(--frr-accent);
+    border: 2px solid var(--frr-accent);
+}
+
+[theme="retro-forest-radio"] :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
+    background-color: var(--frr-surface-muted);
+    color: var(--frr-heading);
+    box-shadow: none;
 }
 
 [theme="retro-forest-radio"] :where(input::placeholder, textarea::placeholder) {
