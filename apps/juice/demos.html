@@ -29,6 +29,7 @@
             <a href="/reference.html">Reference</a>
           </div>
           <div nav-actions>
+            <select data-theme-select aria-label="Theme"></select>
             <button type="button" scale="sm" data-href="/getting-started.html">Get started</button>
           </div>
         </div>
@@ -46,6 +47,7 @@
               <a href="/docs/">Docs</a>
               <a href="/reference.html">Reference</a>
             </div>
+            <select data-theme-select aria-label="Theme"></select>
             <button type="button" data-href="/getting-started.html">Get started</button>
           </div>
         </nav>
@@ -84,17 +86,39 @@
         <section type="workflow" paddingY="roomy">
           <div container>
             <div section-header>
-              <h2>Same structure. Four shipped faces.</h2>
+              <h2>Same structure. Fourteen shipped faces.</h2>
               <p>
-                Switch KiwiPress, Tide, Citrusmint, or Aquaflux. Blush and
+                Switch a core face or a retro face. Blush and
                 <code>_draft</code> stay unpublished. Choice is stored locally.
               </p>
             </div>
-            <div row wrap gap="1" centered role="radiogroup" aria-label="Theme" data-theme-group>
-              <button type="button" role="radio" aria-checked="true" data-theme="kiwipress">KiwiPress</button>
-              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="tide">Tide</button>
-              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="citrusmint">Citrusmint</button>
-              <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" data-theme="aquaflux">Aquaflux</button>
+            <div theme-switcher>
+              <div role="radiogroup" aria-label="Theme" data-theme-group>
+                <div theme-switcher-row>
+                  <span theme-switcher-label>Core</span>
+                  <div theme-switcher-scroll>
+                    <button type="button" role="radio" aria-checked="true" scale="sm" data-theme="kiwipress">KiwiPress</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="tide">Tide</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="citrusmint">Citrusmint</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="aquaflux">Aquaflux</button>
+                  </div>
+                </div>
+                <div theme-switcher-row>
+                  <span theme-switcher-label>Retro</span>
+                  <div theme-switcher-scroll>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-afterburn">Afterburn</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-arcade-glow">Arcade Glow</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-boardwalk">Boardwalk</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-denim-dial">Denim Dial</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-forest-radio">Forest Radio</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-orchard-club">Orchard Club</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-poolside-pop">Poolside Pop</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-signal-garden">Signal Garden</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-sunset-motel">Sunset Motel</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" btn="outline" scale="sm" data-theme="retro-violet-parlor">Violet Parlor</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div row wrap gap="1" centered marginY="comfortable">
               <button type="button" btn="outline" scale="sm" data-href="#navigation">Navigation</button>
@@ -208,8 +232,12 @@
                   aria-labelledby="demo-faq-theme-trigger"
                   hidden
                 >
-                  KiwiPress, Tide, Citrusmint, and Aquaflux. Blush and anything
-                  under <code>_draft</code> stay unpublished.
+                  Fourteen library faces: KiwiPress, Tide, Citrusmint, Aquaflux,
+                  and the retro set (Afterburn, Arcade Glow, Boardwalk, Denim
+                  Dial, Forest Radio, Orchard Club, Poolside Pop, Signal
+                  Garden, Sunset Motel, Violet Parlor). Each is its own CSS
+                  entrypoint. Blush and anything under <code>_draft</code>
+                  stay unpublished.
                 </div>
 
                 <button

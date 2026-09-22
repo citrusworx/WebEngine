@@ -1,6 +1,7 @@
 import "@citrusworx/juiceui";
 import { catalog } from "virtual:juice-docs";
 import { bindInstallCopy } from "./install-pm";
+import { bindThemeSwitch } from "./theme-switch";
 import type { DocNavGroup, DocNavItem, DocPage } from "./docs/types";
 import "./docs.css";
 
@@ -178,6 +179,7 @@ const resolveInternalDocHref = (href: string): string | null => {
 };
 
 const boot = () => {
+  bindThemeSwitch();
   if (searchHint) {
     searchHint.textContent = isMac ? "⌘K" : "Ctrl K";
   }

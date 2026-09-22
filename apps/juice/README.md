@@ -33,7 +33,7 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 - Landing page: product-marketing adoption pitch for the attribute system (split hero + live anatomy, windowed utilities-vs-Juice comparison, live sample with theme faces in the chrome, Honest Beta, runtimes as optional)
 - Getting started: install (npm / pnpm / yarn / bun / CDN) → core CSS → theme import → `theme="…"` → first attribute-driven page, plus a live hero/card/panel demo under the active theme
 - Demos: live navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress (markup + JS auto-enhance; toast show/dismiss via `createToast()`)
-- Themes: four shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux) as a gallery — same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into Juice Docs theme pages
+- Themes: fourteen shipped library faces (KiwiPress, Tide, Citrusmint, Aquaflux, plus ten retro faces) as a gallery — core frames plus a retro grid, same composition in isolated frames, live sample + identity lab under the page switcher, short import notes, pointers into Juice Docs theme pages
 - Reference: browsable index into Juice Docs (attributes, layout, surfaces, typography, theme docs, responsive, runtimes, practice / status, course) with short blurbs, on-site docs links, and tiny live Juice samples
 - Docs: windowed on-site reader for the whole `docs/juice` tree (sidebar, TOC, markdown pipeline). Open `/docs/`
 - Playground: edit Juice attribute markup and preview it in a CSS-only sandbox (`/playground.html`)
@@ -45,7 +45,7 @@ The KiwiPress app also uses port 5173. Run one Vite app at a time, or change the
 
 The site plugin injects root-relative `og:image` and `twitter:image` values (`/og.png`) plus a root-relative favicon (`/favicon.svg`). Those paths resolve on whatever host serves the built site. This repo does not invent an absolute image host. Social crawlers that ignore root-relative image URLs need the deploy origin filled in later (for example `https://<host>/og.png`). Docs routes share one HTML shell, so their crawler tags stay on that shell; the reader updates the title and description in the browser after a page loads.
 - Default theme: **KiwiPress** (richest product reference)
-- Cheap theme switcher: KiwiPress, Tide, Citrusmint, Aquaflux (never blush / `_draft`)
+- Theme switcher: fourteen shipped faces, grouped Core vs Retro, plus a compact select in nav chrome and Docs (never blush / `_draft`; no `themes/retro` barrel)
 - Chrome: Juice nav (including mobile + sidebar) and footer on every marketing page; Docs uses its own top bar with Back to Juice and a Playground link
 - Package links: npm `@citrusworx/juiceui`, `libraries/juice` on GitHub, and `libraries/juice/CHANGELOG.md` (there is no separate GitHub Releases feed for the package)
 
