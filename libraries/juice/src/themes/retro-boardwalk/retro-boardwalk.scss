@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../tokens/color/retro-boardwalk/retro-boardwalk.scss' as *;
 
 /*
@@ -15,24 +16,30 @@
 */
 
 [theme="retro-boardwalk"] {
-    /* Foundation */
+    /* Foundation.
+       Stepped light surfaces from existing page / page-tint / deep / secondary / highlight.
+       Alpha-only copies of cream collapsed, so each step is a distinct mix:
+       page → muted → default → strong, with deep as solid navy for the inverted footer.
+       Weights stay in the cream family so the ink ladder holds (KiwiPress light denseness). */
     --bdw-page: #{$bdw-page};
     --bdw-page-tint: #{$bdw-page-tint};
     --bdw-page-deep: #{$bdw-deep};
-    --bdw-surface: #{rgba($bdw-page, 0.78)};
-    --bdw-surface-strong: #{rgba($bdw-page, 0.92)};
-    --bdw-surface-muted: #{rgba($bdw-page-tint, 0.78)};
-    --bdw-surface-deep: #{$bdw-text};
+    --bdw-surface: #{color.mix($bdw-page, $bdw-secondary, 84%)};
+    --bdw-surface-strong: #{color.mix($bdw-page, $bdw-highlight, 80%)};
+    --bdw-surface-muted: #{color.mix($bdw-page-tint, $bdw-deep, 93%)};
+    --bdw-surface-deep: #{$bdw-deep};
     --bdw-border: #{rgba($bdw-border-color, 0.26)};
     --bdw-border-strong: #{rgba($bdw-accent, 0.38)};
     --bdw-shadow: #{rgba($bdw-deep, 0.12)};
 
-    /* Typography */
+    /* Typography — soft < muted < body < heading. Inverse is dark ink for coral CTAs. */
     --bdw-text: #{$bdw-text};
     --bdw-text-muted: #{$bdw-text-muted};
+    --bdw-text-soft: #{$bdw-text-soft};
+    --bdw-text-inverse: #{$bdw-text-inverse};
     --bdw-heading: #{$bdw-heading};
-    --bdw-body-font: "Lato", sans-serif;
-    --bdw-heading-font: "Archivo Black", sans-serif;
+    --bdw-body-font: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --bdw-heading-font: "Archivo Black", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
     /* Accent system */
     --bdw-accent: #{$bdw-accent};
@@ -42,30 +49,33 @@
 
     /* Surface recipes */
     --bdw-page-background:
-        radial-gradient(circle at top left, #{rgba($bdw-highlight, 0.72)}, transparent 38%),
-        radial-gradient(circle at top right, #{rgba($bdw-secondary-soft, 0.45)}, transparent 30%),
+        radial-gradient(circle at top left, #{rgba($bdw-highlight, 0.28)}, transparent 46%),
+        radial-gradient(circle at top right, #{rgba($bdw-secondary, 0.16)}, transparent 36%),
         linear-gradient(180deg, #{$bdw-page} 0%, #{$bdw-page-tint} 100%);
     --bdw-button-background: linear-gradient(135deg, #{$bdw-accent}, #{$bdw-accent-strong});
     --bdw-card-background:
-        linear-gradient(180deg, #{rgba($bdw-page, 0.96)} 0%, #{rgba($bdw-page-tint, 0.88)} 100%);
+        linear-gradient(180deg, #{color.mix($bdw-page, $bdw-highlight, 88%)} 0%, #{color.mix($bdw-page, $bdw-secondary, 86%)} 100%);
     --bdw-panel-background:
-        linear-gradient(180deg, #{rgba($bdw-page, 0.98)} 0%, #{rgba($bdw-page-tint, 0.72)} 100%);
+        linear-gradient(180deg, #{color.mix($bdw-page-tint, $bdw-secondary, 92%)} 0%, #{color.mix($bdw-page-tint, $bdw-deep, 94%)} 100%);
+    /* Cream field with corner sunshine, mint, and coral embers.
+       Dark reading ink sits on this; inverse stays on solid accent CTAs. */
     --bdw-hero-background:
-        radial-gradient(circle at top left, #{rgba($bdw-highlight-strong, 0.38)}, transparent 30%),
-        radial-gradient(circle at bottom right, #{rgba($bdw-secondary, 0.28)}, transparent 32%),
-        linear-gradient(135deg, #{$bdw-deep} 0%, #{$bdw-accent-deep} 54%, #{$bdw-accent-strong} 100%);
+        radial-gradient(circle at 100% -8%, #{rgba($bdw-highlight, 0.55)}, transparent 38%),
+        radial-gradient(circle at -6% 110%, #{rgba($bdw-secondary, 0.32)}, transparent 40%),
+        radial-gradient(circle at 108% 120%, #{rgba($bdw-accent, 0.28)}, transparent 42%),
+        linear-gradient(165deg, #{$bdw-page} 0%, #{$bdw-page-tint} 100%);
     --bdw-stage-background:
-        radial-gradient(circle at 18% 20%, #{rgba($bdw-highlight, 0.22)}, transparent 22%),
-        radial-gradient(circle at 78% 22%, #{rgba($bdw-accent-soft, 0.2)}, transparent 24%),
-        linear-gradient(145deg, #{$bdw-deep} 0%, #{$bdw-text} 52%, #{$bdw-accent-strong} 100%);
+        radial-gradient(circle at 18% 12%, #{rgba($bdw-highlight, 0.22)}, transparent 30%),
+        radial-gradient(circle at 88% 88%, #{rgba($bdw-accent, 0.24)}, transparent 36%),
+        linear-gradient(145deg, #{$bdw-deep} 0%, #{color.mix($bdw-deep, $bdw-page, 88%)} 100%);
     --bdw-stage-outline: #{rgba($bdw-page, 0.14)};
     --bdw-stage-shadow: #{rgba($bdw-deep, 0.34)};
-    --bdw-chip-background: #{rgba($bdw-page, 0.96)};
+    --bdw-chip-background: #{color.mix($bdw-page, $bdw-highlight, 84%)};
     --bdw-buybox-background:
-        linear-gradient(180deg, #{rgba($bdw-page, 0.98)} 0%, #{rgba($bdw-page-tint, 0.82)} 100%);
+        linear-gradient(180deg, #{color.mix($bdw-page, $bdw-highlight, 90%)} 0%, #{color.mix($bdw-page-tint, $bdw-secondary, 88%)} 100%);
     --bdw-buybox-shadow: 0 32px 70px -42px #{rgba($bdw-deep, 0.24)};
     --bdw-spec-background:
-        linear-gradient(180deg, #{rgba($bdw-page-tint, 0.95)} 0%, #{rgba($bdw-page, 0.98)} 100%);
+        linear-gradient(180deg, #{color.mix($bdw-page-tint, $bdw-secondary, 92%)} 0%, #{color.mix($bdw-page, $bdw-deep, 96%)} 100%);
 
     /* Accordion chrome roles — same names as KiwiPress / Citrusmint.
        Bound from existing Boardwalk tokens; no new hue family. */
@@ -98,9 +108,10 @@
     --bdw-tabs-trigger: transparent;
     --bdw-tabs-trigger-hover: transparent;
     --bdw-tabs-trigger-active: transparent;
-    --bdw-tabs-text: var(--bdw-text-muted);
+    --bdw-tabs-text: var(--bdw-text-soft);
     --bdw-tabs-text-hover: var(--bdw-heading);
-    --bdw-tabs-text-active: var(--bdw-accent);
+    /* accent-strong reads on cream; accent-soft is the dark-theme step and washes out here. */
+    --bdw-tabs-text-active: var(--bdw-accent-strong);
     --bdw-tabs-indicator: var(--bdw-accent);
     --bdw-tabs-list-rule: var(--bdw-border);
     --bdw-tabs-focus-ring: var(--bdw-accent);
@@ -286,7 +297,7 @@
     --bdw-wizard-rail-border: var(--bdw-border);
     --bdw-wizard-step: var(--bdw-surface-strong);
     --bdw-wizard-step-border: var(--bdw-border);
-    --bdw-wizard-step-ink: var(--bdw-text-muted);
+    --bdw-wizard-step-ink: var(--bdw-text-soft);
     --bdw-wizard-step-current: var(--bdw-accent);
     --bdw-wizard-step-complete: var(--bdw-accent-strong);
     --bdw-wizard-step-on: var(--bdw-page);
@@ -497,6 +508,7 @@
     background-image: var(--bdw-page-background);
     color: var(--bdw-text);
     font-family: var(--bdw-body-font);
+    line-height: 1.6;
 }
 
 /* Theme root behavior */
@@ -510,17 +522,64 @@
     color: inherit;
 }
 
-/* Semantic element defaults */
-[theme="retro-boardwalk"] :where(section, article, aside, nav, header, footer, form) {
+/* Semantic defaults — KiwiPress light denseness, Afterburn structure.
+   Section/article stay on the quiet recess. Nav (especially bar/sidebar)
+   is the elevated strong step. Footer is the navy deep band with light ink. */
+[theme="retro-boardwalk"] :where(section, article) {
+    background-color: var(--bdw-surface-muted);
+    color: var(--bdw-text);
+    border: 1px solid var(--bdw-border);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+}
+
+[theme="retro-boardwalk"] :where(aside, form) {
     background-color: var(--bdw-surface);
     color: var(--bdw-text);
     border: 1px solid var(--bdw-border);
-    box-shadow: 0 24px 60px -36px var(--bdw-shadow);
+    box-shadow: 0 18px 40px -28px var(--bdw-shadow);
+    backdrop-filter: blur(12px);
+}
+
+[theme="retro-boardwalk"] :where(header) {
+    background-color: var(--bdw-surface-muted);
+    color: var(--bdw-text);
+    border: none;
+    border-bottom: 1px solid var(--bdw-border);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+}
+
+[theme="retro-boardwalk"] :where(main > header) {
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--bdw-text);
+}
+
+[theme="retro-boardwalk"] :where(nav) {
+    background-color: var(--bdw-surface-strong);
+    color: var(--bdw-text);
+    border: none;
+    border-bottom: 1px solid var(--bdw-border);
+    box-shadow: 0 18px 40px -28px var(--bdw-shadow);
     backdrop-filter: blur(14px);
 }
 
 [theme="retro-boardwalk"] :where(nav[type="bar"], nav[type="sidebar"]) {
     background-color: var(--bdw-surface-strong);
+    border: 1px solid var(--bdw-border-strong);
+}
+
+[theme="retro-boardwalk"] :where(footer) {
+    background-color: var(--bdw-surface-deep);
+    color: var(--bdw-page);
+    border: none;
+    border-top: 1px solid var(--bdw-border-strong);
+    box-shadow: none;
+    backdrop-filter: none;
 }
 
 /* Typography hierarchy */
@@ -529,17 +588,19 @@
     font-family: var(--bdw-heading-font);
     font-weight: 900;
     letter-spacing: -0.03em;
-    line-height: 0.95;
+    line-height: 1.08;
 }
 
 [theme="retro-boardwalk"] :where(p, span, li, label, dt, dd, blockquote) {
     color: var(--bdw-text);
     font-family: var(--bdw-body-font);
+    line-height: 1.6;
 }
 
 [theme="retro-boardwalk"] :where(small, figcaption) {
-    color: var(--bdw-text-muted);
+    color: var(--bdw-text-soft);
     font-family: var(--bdw-body-font);
+    line-height: 1.55;
 }
 
 [theme="retro-boardwalk"] :where(strong, b) {
@@ -601,8 +662,66 @@
     box-shadow: none;
 }
 
-[theme="retro-boardwalk"] :where(input::placeholder, textarea::placeholder) {
+/* Inverted footer — light ink on navy. Later than the cream reading ladder,
+   outline, and secondary so dark heading/soft ink does not sit on deep. */
+[theme="retro-boardwalk"] :where(footer) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--bdw-page);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(p, span, li, label, dt, dd, blockquote) {
+    color: var(--bdw-page);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(small, figcaption) {
+    color: color-mix(in srgb, var(--bdw-page) 78%, var(--bdw-highlight));
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(a) {
+    color: var(--bdw-highlight);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(a:hover, a:focus-visible) {
+    color: var(--bdw-page);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(button[btn="secondary"]) {
+    color: var(--bdw-page);
+    border-color: color-mix(in srgb, var(--bdw-page) 46%, transparent);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(button[btn="outline"]) {
+    color: var(--bdw-page);
+    border-color: var(--bdw-highlight);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(button[btn="outline"]:hover, button[btn="outline"]:focus-visible) {
+    background-color: var(--bdw-highlight);
+    color: var(--bdw-heading);
+}
+
+/* Light surfaces nested in the footer keep the dark reading ladder. */
+[theme="retro-boardwalk"] :where(footer) :where(section, article, aside, form, nav, header, [card], [panel], [bdw-card], [bdw-panel], [hero], [bdw-hero]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: var(--bdw-heading);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(section, article, aside, form, nav, header, [card], [panel], [bdw-card], [bdw-panel], [hero], [bdw-hero]) :where(p, span, li, label, dt, dd, blockquote, a) {
+    color: var(--bdw-text);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(section, article, aside, form, nav, header, [card], [panel], [bdw-card], [bdw-panel], [hero], [bdw-hero]) :where(small, figcaption) {
+    color: var(--bdw-text-soft);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where(section, article, aside, form, nav, header, [card], [panel], [bdw-card], [bdw-panel], [hero], [bdw-hero]) :where(a) {
+    color: var(--bdw-accent-strong);
+}
+
+[theme="retro-boardwalk"] :where(footer) :where([card], [bdw-card]) :where(p, span, li) {
     color: var(--bdw-text-muted);
+}
+
+[theme="retro-boardwalk"] :where(input::placeholder, textarea::placeholder) {
+    color: var(--bdw-text-soft);
 }
 
 [theme="retro-boardwalk"] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) {
@@ -625,7 +744,11 @@
     color: var(--bdw-text);
 }
 
-/* Named themed surfaces */
+/* Named surfaces and Juice primitives share one recipe each.
+   [card]/[bdw-card] elevated, [panel]/[bdw-panel] quiet, [hero]/[bdw-hero] cream marquee.
+   Captions stay on soft; card body secondary stays muted. */
+[theme="retro-boardwalk"][card],
+[theme="retro-boardwalk"] [card],
 [theme="retro-boardwalk"][bdw-card],
 [theme="retro-boardwalk"] [bdw-card] {
     background: var(--bdw-card-background);
@@ -634,21 +757,29 @@
     box-shadow: 0 28px 70px -42px var(--bdw-shadow);
 }
 
+[theme="retro-boardwalk"][card] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [card] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-boardwalk"][bdw-card] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-boardwalk"] [bdw-card] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--bdw-heading);
 }
 
-[theme="retro-boardwalk"][bdw-card] :where(p, span, li, small),
-[theme="retro-boardwalk"] [bdw-card] :where(p, span, li, small) {
+[theme="retro-boardwalk"][card] :where(p, span, li),
+[theme="retro-boardwalk"] [card] :where(p, span, li),
+[theme="retro-boardwalk"][bdw-card] :where(p, span, li),
+[theme="retro-boardwalk"] [bdw-card] :where(p, span, li) {
     color: var(--bdw-text-muted);
 }
 
+[theme="retro-boardwalk"][card] :where(strong, b),
+[theme="retro-boardwalk"] [card] :where(strong, b),
 [theme="retro-boardwalk"][bdw-card] :where(strong, b),
 [theme="retro-boardwalk"] [bdw-card] :where(strong, b) {
     color: var(--bdw-heading);
 }
 
+[theme="retro-boardwalk"][panel],
+[theme="retro-boardwalk"] [panel],
 [theme="retro-boardwalk"][bdw-panel],
 [theme="retro-boardwalk"] [bdw-panel] {
     background: var(--bdw-panel-background);
@@ -657,42 +788,93 @@
     box-shadow: 0 22px 56px -40px var(--bdw-shadow);
 }
 
+[theme="retro-boardwalk"][panel] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-boardwalk"][bdw-panel] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-boardwalk"] [bdw-panel] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--bdw-heading);
 }
 
-[theme="retro-boardwalk"][bdw-panel] :where(p, span, li, small),
-[theme="retro-boardwalk"] [bdw-panel] :where(p, span, li, small) {
+[theme="retro-boardwalk"][panel] :where(p, span, li),
+[theme="retro-boardwalk"] [panel] :where(p, span, li),
+[theme="retro-boardwalk"][bdw-panel] :where(p, span, li),
+[theme="retro-boardwalk"] [bdw-panel] :where(p, span, li) {
     color: var(--bdw-text);
 }
 
+[theme="retro-boardwalk"][panel] :where(strong, b),
+[theme="retro-boardwalk"] [panel] :where(strong, b),
 [theme="retro-boardwalk"][bdw-panel] :where(strong, b),
 [theme="retro-boardwalk"] [bdw-panel] :where(strong, b) {
     color: var(--bdw-heading);
 }
 
+[theme="retro-boardwalk"][hero],
+[theme="retro-boardwalk"] [hero],
 [theme="retro-boardwalk"][bdw-hero],
 [theme="retro-boardwalk"] [bdw-hero] {
     background: var(--bdw-hero-background);
-    color: #{$bdw-page};
-    border: 1px solid #{rgba($bdw-page, 0.16)};
-    box-shadow: 0 36px 90px -48px #{rgba($bdw-deep, 0.45)};
+    color: var(--bdw-text);
+    border: 1px solid var(--bdw-border);
+    box-shadow: 0 36px 90px -48px #{rgba($bdw-deep, 0.18)};
 }
 
+[theme="retro-boardwalk"][hero] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [hero] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-boardwalk"][bdw-hero] :where(h1, h2, h3, h4, h5, h6),
 [theme="retro-boardwalk"] [bdw-hero] :where(h1, h2, h3, h4, h5, h6) {
-    color: #{$bdw-page};
+    color: var(--bdw-heading);
 }
 
-[theme="retro-boardwalk"][bdw-hero] :where(p, span, li, small, a),
-[theme="retro-boardwalk"] [bdw-hero] :where(p, span, li, small, a) {
-    color: #{rgba($bdw-page, 0.86)};
+[theme="retro-boardwalk"][hero] :where(p, span, li),
+[theme="retro-boardwalk"] [hero] :where(p, span, li),
+[theme="retro-boardwalk"][bdw-hero] :where(p, span, li),
+[theme="retro-boardwalk"] [bdw-hero] :where(p, span, li) {
+    color: var(--bdw-text);
 }
 
-[theme="retro-boardwalk"][bdw-hero] :where(button),
-[theme="retro-boardwalk"] [bdw-hero] :where(button) {
-    background: #{$bdw-page};
+[theme="retro-boardwalk"][hero] :where(a),
+[theme="retro-boardwalk"] [hero] :where(a),
+[theme="retro-boardwalk"][bdw-hero] :where(a),
+[theme="retro-boardwalk"] [bdw-hero] :where(a) {
+    color: var(--bdw-accent-strong);
+}
+
+[theme="retro-boardwalk"][hero] :where(small, figcaption),
+[theme="retro-boardwalk"] [hero] :where(small, figcaption),
+[theme="retro-boardwalk"][bdw-hero] :where(small, figcaption),
+[theme="retro-boardwalk"] [bdw-hero] :where(small, figcaption) {
+    color: var(--bdw-text-soft);
+}
+
+/* [cta] uses the in-family accent → accent-strong recipe. Inverse ink on the coral band. */
+[theme="retro-boardwalk"][cta],
+[theme="retro-boardwalk"] [cta] {
+    background: var(--bdw-button-background);
+    color: var(--bdw-text-inverse);
+    border: 1px solid transparent;
+    box-shadow: 0 28px 70px -42px var(--bdw-shadow);
+}
+
+[theme="retro-boardwalk"][cta] :where(h1, h2, h3, h4, h5, h6),
+[theme="retro-boardwalk"] [cta] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--bdw-text-inverse);
+}
+
+[theme="retro-boardwalk"][cta] :where(p, span, li, a),
+[theme="retro-boardwalk"] [cta] :where(p, span, li, a) {
+    color: var(--bdw-text-inverse);
+}
+
+[theme="retro-boardwalk"][cta] :where(small, figcaption),
+[theme="retro-boardwalk"] [cta] :where(small, figcaption) {
+    color: color-mix(in srgb, var(--bdw-text-inverse) 72%, var(--bdw-accent-soft));
+}
+
+[theme="retro-boardwalk"][cta] button:not([btn]),
+[theme="retro-boardwalk"] [cta] button:not([btn]) {
+    background-image: none;
+    background-color: var(--bdw-page);
     color: var(--bdw-heading);
     border-color: transparent;
 }
@@ -700,7 +882,7 @@
 [theme="retro-boardwalk"][bdw-stage],
 [theme="retro-boardwalk"] [bdw-stage] {
     background: var(--bdw-stage-background);
-    color: #{$bdw-page};
+    color: var(--bdw-page);
     border: 1px solid var(--bdw-stage-outline);
     box-shadow: 0 44px 100px -54px var(--bdw-stage-shadow);
     overflow: hidden;
@@ -719,12 +901,22 @@
 
 [theme="retro-boardwalk"][bdw-stage] :where(h1, h2, h3, h4, h5, h6, strong, b),
 [theme="retro-boardwalk"] [bdw-stage] :where(h1, h2, h3, h4, h5, h6, strong, b) {
-    color: #{$bdw-page};
+    color: var(--bdw-page);
 }
 
-[theme="retro-boardwalk"][bdw-stage] :where(p, span, li, small, a),
-[theme="retro-boardwalk"] [bdw-stage] :where(p, span, li, small, a) {
-    color: #{rgba($bdw-page, 0.86)};
+[theme="retro-boardwalk"][bdw-stage] :where(p, span, li),
+[theme="retro-boardwalk"] [bdw-stage] :where(p, span, li) {
+    color: var(--bdw-page);
+}
+
+[theme="retro-boardwalk"][bdw-stage] :where(a),
+[theme="retro-boardwalk"] [bdw-stage] :where(a) {
+    color: var(--bdw-accent-soft);
+}
+
+[theme="retro-boardwalk"][bdw-stage] :where(small, figcaption),
+[theme="retro-boardwalk"] [bdw-stage] :where(small, figcaption) {
+    color: color-mix(in srgb, var(--bdw-page) 78%, var(--bdw-highlight));
 }
 
 [theme="retro-boardwalk"][bdw-chip],
@@ -757,19 +949,32 @@
 }
 
 /* Nested surfaces inside the hero should retain their own readable contrast. */
-[theme="retro-boardwalk"][bdw-hero] :where([bdw-card], [bdw-panel]),
-[theme="retro-boardwalk"] [bdw-hero] :where([bdw-card], [bdw-panel]) {
+[theme="retro-boardwalk"][hero] :where([card], [panel], [bdw-card], [bdw-panel]),
+[theme="retro-boardwalk"] [hero] :where([card], [panel], [bdw-card], [bdw-panel]),
+[theme="retro-boardwalk"][bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]),
+[theme="retro-boardwalk"] [bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) {
     color: var(--bdw-text);
 }
 
-[theme="retro-boardwalk"][bdw-hero] :where([bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
-[theme="retro-boardwalk"] [bdw-hero] :where([bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
+[theme="retro-boardwalk"][hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-boardwalk"] [hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-boardwalk"][bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b),
+[theme="retro-boardwalk"] [bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(h1, h2, h3, h4, h5, h6, strong, b) {
     color: var(--bdw-heading);
 }
 
-[theme="retro-boardwalk"][bdw-hero] :where([bdw-card], [bdw-panel]) :where(p, span, li, small, a),
-[theme="retro-boardwalk"] [bdw-hero] :where([bdw-card], [bdw-panel]) :where(p, span, li, small, a) {
+[theme="retro-boardwalk"][hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(p, span, li, a),
+[theme="retro-boardwalk"] [hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(p, span, li, a),
+[theme="retro-boardwalk"][bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(p, span, li, a),
+[theme="retro-boardwalk"] [bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(p, span, li, a) {
     color: var(--bdw-text-muted);
+}
+
+[theme="retro-boardwalk"][hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(small, figcaption),
+[theme="retro-boardwalk"] [hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(small, figcaption),
+[theme="retro-boardwalk"][bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(small, figcaption),
+[theme="retro-boardwalk"] [bdw-hero] :where([card], [panel], [bdw-card], [bdw-panel]) :where(small, figcaption) {
+    color: var(--bdw-text-soft);
 }
 
 /* Accordion wrappers are structural, not named surfaces.
@@ -1547,6 +1752,8 @@
     --retro-shadow: var(--bdw-shadow);
     --retro-text: var(--bdw-text);
     --retro-text-muted: var(--bdw-text-muted);
+    --retro-text-soft: var(--bdw-text-soft);
+    --retro-text-inverse: var(--bdw-text-inverse);
     --retro-heading: var(--bdw-heading);
     --retro-body-font: var(--bdw-body-font);
     --retro-heading-font: var(--bdw-heading-font);
