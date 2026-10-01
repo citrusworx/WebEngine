@@ -22,6 +22,7 @@ import {
     REQUIRED_BREADCRUMB_ROLES,
     REQUIRED_PROGRESS_ROLES,
     REQUIRED_PAGINATION_ROLES,
+    REQUIRED_DISCLOSURE_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -662,6 +663,43 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(linkBlocks.length).toBeGreaterThan(0);
         for (const block of linkBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-disclosure-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-disclosure-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-disclosure-border: var(--jx-border)");
+        expect(css).toContain("--jx-disclosure-trigger: var(--jx-surface-strong)");
+        expect(css).toContain("--jx-disclosure-trigger-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-disclosure-trigger-open: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-disclosure-ink: var(--jx-text)");
+        expect(css).toContain("--jx-disclosure-chevron: var(--jx-accent)");
+        expect(css).toContain("--jx-disclosure-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-disclosure-trigger: var(--jx-accent)");
+        expect(css).not.toContain("--jx-disclosure-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-disclosure-surface: var(--jx-accent)");
+
+        for (const role of REQUIRED_DISCLOSURE_ROLES) {
+            expect(css).toContain(`--juice-disclosure-${role}: var(--jx-disclosure-${role})`);
+        }
+
+        expect(css).toContain("[disclosure]");
+        expect(css).toContain("[disclosure-trigger]");
+        expect(css).toContain("[disclosure-panel]");
+        expect(css).toMatch(/\[aria-expanded=["']?true["']?\]/);
+        expect(css).not.toMatch(/\[accordion-item\][^{]*--juice-disclosure/);
+        expect(css).not.toMatch(/\[disclosure\][^{]*--juice-accordion/);
+
+        const triggerBlocks = [...css.matchAll(/\[disclosure-trigger\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(triggerBlocks.length).toBeGreaterThan(0);
+        for (const block of triggerBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

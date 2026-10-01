@@ -441,6 +441,24 @@
   --juice-pagination-border: var(--tide-pagination-border);
   --juice-pagination-focus-ring: var(--tide-pagination-focus-ring);
   --juice-pagination-ellipsis: var(--tide-pagination-ellipsis);
+  /* Disclosure chrome — dark panel and dark trigger, not the page
+     and not a CTA. One trigger and one panel. Distinct from [accordion]. */
+  --tide-disclosure-surface: var(--tide-surface);
+  --tide-disclosure-border: var(--tide-border);
+  --tide-disclosure-trigger: var(--tide-surface-strong);
+  --tide-disclosure-trigger-hover: var(--tide-surface-muted);
+  --tide-disclosure-trigger-open: var(--tide-surface-muted);
+  --tide-disclosure-ink: var(--tide-text);
+  --tide-disclosure-chevron: var(--tide-accent);
+  --tide-disclosure-focus-ring: var(--tide-accent);
+  --juice-disclosure-surface: var(--tide-disclosure-surface);
+  --juice-disclosure-border: var(--tide-disclosure-border);
+  --juice-disclosure-trigger: var(--tide-disclosure-trigger);
+  --juice-disclosure-trigger-hover: var(--tide-disclosure-trigger-hover);
+  --juice-disclosure-trigger-open: var(--tide-disclosure-trigger-open);
+  --juice-disclosure-ink: var(--tide-disclosure-ink);
+  --juice-disclosure-chevron: var(--tide-disclosure-chevron);
+  --juice-disclosure-focus-ring: var(--tide-disclosure-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1397,4 +1415,66 @@
 [theme=tide] button[pagination-next]:focus-visible {
   outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
+}
+
+/* Disclosure chrome. Dark panel, not a light card and not a CTA.
+   Not an accordion. Runtime is later. */
+[theme=tide] [disclosure] {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-disclosure-border);
+  box-shadow: none;
+  color: var(--juice-disclosure-ink);
+}
+
+[theme=tide] button[disclosure-trigger],
+[theme=tide] a[disclosure-trigger],
+[theme=tide] [disclosure-trigger] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=tide] button[disclosure-trigger]:hover,
+[theme=tide] a[disclosure-trigger]:hover,
+[theme=tide] [disclosure-trigger]:hover {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-hover);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[disclosure-trigger][aria-expanded=true],
+[theme=tide] a[disclosure-trigger][aria-expanded=true],
+[theme=tide] [disclosure-trigger][aria-expanded=true] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-open);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] [disclosure-trigger]::after {
+  border-color: var(--juice-disclosure-chevron);
+}
+
+[theme=tide] button[disclosure-trigger]:focus-visible,
+[theme=tide] a[disclosure-trigger]:focus-visible,
+[theme=tide] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=tide] [disclosure-panel],
+[theme=tide] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  background-image: none;
+  background-color: var(--juice-disclosure-surface);
+  border-color: var(--juice-disclosure-border);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
 }

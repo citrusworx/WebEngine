@@ -1,0 +1,190 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Disclosure chrome is structural. Color comes from the shared role contract:
+//   --juice-disclosure-surface
+//   --juice-disclosure-border
+//   --juice-disclosure-trigger
+//   --juice-disclosure-trigger-hover
+//   --juice-disclosure-trigger-open
+//   --juice-disclosure-ink
+//   --juice-disclosure-chevron
+//   --juice-disclosure-focus-ring
+// Themes bind those names (and optional --aqua-disclosure-* / --kw-disclosure-* /
+// --cm-disclosure-* / --tide-disclosure-* / --jx-disclosure-* aliases) from
+// existing identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome, APG Disclosure. Distinct from:
+//   - [accordion] / [accordion-item] (multi-item, multi-open stack)
+//   - tabs, menu, and the wizard step tracker
+//
+// Native collision: there is no HTML *global* `disclosure` attribute. A
+// boolean [disclosure] attribute has no platform behavior. Do not restyle
+// <details> / <summary>, and do not style bare [aria-expanded].
+//
+// Juice names:
+//   [disclosure]         root. One trigger, one panel. Not a stack.
+//   [disclosure-trigger] the button. Expanded paint is aria-expanded="true"
+//                        on this control. The chevron is ::after.
+//   [disclosure-panel]   the controlled region. Pair it with aria-controls
+//                        on the trigger (panel id), or place the panel as
+//                        the next sibling of the trigger. Both paint.
+//
+// Closed panels use the native `hidden` attribute. This slice does not
+// toggle it. Do not set display on the panel — that would fight [hidden].
+//
+// z-index: inline chrome. No overlay band.
+
+@function -juice-disclosure-role($name, $fallback) {
+    @return var(
+        --juice-disclosure-#{$name},
+        var(--aqua-disclosure-#{$name}, var(--kw-disclosure-#{$name}, var(--cm-disclosure-#{$name}, var(--tide-disclosure-#{$name}, var(--jx-disclosure-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-disclosure-surface: -juice-disclosure-role(surface, #{$white-100});
+$_juice-disclosure-border: -juice-disclosure-role(border, #{$gray-300});
+$_juice-disclosure-trigger: -juice-disclosure-role(trigger, #{$white-100});
+$_juice-disclosure-trigger-hover: -juice-disclosure-role(trigger-hover, #{$gray-200});
+$_juice-disclosure-trigger-open: -juice-disclosure-role(trigger-open, #{$gray-200});
+$_juice-disclosure-ink: -juice-disclosure-role(ink, #{$black-600});
+$_juice-disclosure-chevron: -juice-disclosure-role(chevron, currentColor);
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(button) CTA fills and :where(div) surfaces.
+// Themes realize color through the roles.
+
+[disclosure],
+[theme] [disclosure] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px solid $_juice-disclosure-border;
+    border-radius: 0.75rem;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-disclosure-ink;
+    font: inherit;
+    line-height: 1.35;
+}
+
+[disclosure-trigger],
+button[disclosure-trigger],
+a[disclosure-trigger],
+[theme] [disclosure-trigger],
+[theme] button[disclosure-trigger],
+[theme] a[disclosure-trigger] {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0.875rem 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: $_juice-disclosure-trigger;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: $_juice-disclosure-ink;
+    font: inherit;
+    font-weight: 600;
+    line-height: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+[disclosure-trigger][aria-expanded="true"],
+button[disclosure-trigger][aria-expanded="true"],
+a[disclosure-trigger][aria-expanded="true"],
+[theme] [disclosure-trigger][aria-expanded="true"],
+[theme] button[disclosure-trigger][aria-expanded="true"],
+[theme] a[disclosure-trigger][aria-expanded="true"] {
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+[disclosure-trigger]::after,
+[theme] [disclosure-trigger]::after {
+    content: "";
+    display: block;
+    flex-shrink: 0;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin-left: 1rem;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: $_juice-disclosure-chevron;
+    border-width: 0 2px 2px 0;
+    transform: rotate(-45deg);
+    transform-origin: 50% 50%;
+    transition: transform 0.2s ease;
+}
+
+[disclosure-trigger][aria-expanded="true"]::after,
+[theme] [disclosure-trigger][aria-expanded="true"]::after {
+    transform: rotate(45deg);
+}
+
+[disclosure] [disclosure-trigger]:hover:not([aria-expanded="true"]),
+[theme] [disclosure] [disclosure-trigger]:hover:not([aria-expanded="true"]) {
+    background-color: $_juice-disclosure-trigger-hover;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: $_juice-disclosure-ink;
+    text-decoration: none;
+}
+
+[disclosure] [disclosure-trigger][aria-expanded="true"],
+[theme] [disclosure] [disclosure-trigger][aria-expanded="true"] {
+    background-color: $_juice-disclosure-trigger-open;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: $_juice-disclosure-ink;
+}
+
+[disclosure] [disclosure-trigger]:focus-visible,
+[theme] [disclosure] [disclosure-trigger]:focus-visible {
+    outline: 2px solid -juice-disclosure-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+[disclosure-panel],
+[disclosure] > [disclosure-trigger] + :not([disclosure-trigger]),
+[theme] [disclosure-panel],
+[theme] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.75rem 1.25rem 1rem;
+    border: none;
+    border-top: 1px solid $_juice-disclosure-border;
+    border-radius: 0 0 0.75rem 0.75rem;
+    background-color: $_juice-disclosure-surface;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-disclosure-ink;
+    font: inherit;
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [disclosure-trigger],
+    [disclosure-trigger]::after {
+        transition: none;
+    }
+}

@@ -493,6 +493,27 @@
     --juice-pagination-focus-ring: var(--psp-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--psp-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing tokens.
+       One trigger and one panel. Trigger is a surface, not a CTA.
+       Distinct from [accordion]. */
+    --psp-disclosure-surface: var(--psp-surface);
+    --psp-disclosure-border: var(--psp-border);
+    --psp-disclosure-trigger: var(--psp-surface-strong);
+    --psp-disclosure-trigger-hover: var(--psp-surface-muted);
+    --psp-disclosure-trigger-open: var(--psp-surface-muted);
+    --psp-disclosure-ink: var(--psp-text);
+    --psp-disclosure-chevron: var(--psp-accent);
+    --psp-disclosure-focus-ring: var(--psp-accent);
+    --juice-disclosure-surface: var(--psp-disclosure-surface);
+    --juice-disclosure-border: var(--psp-disclosure-border);
+    --juice-disclosure-trigger: var(--psp-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--psp-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--psp-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--psp-disclosure-ink);
+    --juice-disclosure-chevron: var(--psp-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--psp-disclosure-focus-ring);
+
+
     background-color: var(--psp-page);
     background-image: var(--psp-page-background);
     color: var(--psp-text);
@@ -1527,6 +1548,70 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme="retro-poolside-pop"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="retro-poolside-pop"] button[disclosure-trigger],
+[theme="retro-poolside-pop"] a[disclosure-trigger],
+[theme="retro-poolside-pop"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-poolside-pop"] button[disclosure-trigger]:hover,
+[theme="retro-poolside-pop"] a[disclosure-trigger]:hover,
+[theme="retro-poolside-pop"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] button[disclosure-trigger][aria-expanded="true"],
+[theme="retro-poolside-pop"] a[disclosure-trigger][aria-expanded="true"],
+[theme="retro-poolside-pop"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-poolside-pop"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="retro-poolside-pop"] button[disclosure-trigger]:focus-visible,
+[theme="retro-poolside-pop"] a[disclosure-trigger]:focus-visible,
+[theme="retro-poolside-pop"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-poolside-pop"] [disclosure-panel],
+[theme="retro-poolside-pop"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
 
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

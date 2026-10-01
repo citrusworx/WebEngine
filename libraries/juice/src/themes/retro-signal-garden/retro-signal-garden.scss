@@ -493,6 +493,27 @@
     --juice-pagination-focus-ring: var(--sgn-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--sgn-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing tokens.
+       One trigger and one panel. Trigger is a surface, not a CTA.
+       Distinct from [accordion]. */
+    --sgn-disclosure-surface: var(--sgn-surface);
+    --sgn-disclosure-border: var(--sgn-border);
+    --sgn-disclosure-trigger: var(--sgn-surface-strong);
+    --sgn-disclosure-trigger-hover: var(--sgn-surface-muted);
+    --sgn-disclosure-trigger-open: var(--sgn-surface-muted);
+    --sgn-disclosure-ink: var(--sgn-text);
+    --sgn-disclosure-chevron: var(--sgn-accent);
+    --sgn-disclosure-focus-ring: var(--sgn-accent);
+    --juice-disclosure-surface: var(--sgn-disclosure-surface);
+    --juice-disclosure-border: var(--sgn-disclosure-border);
+    --juice-disclosure-trigger: var(--sgn-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--sgn-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--sgn-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--sgn-disclosure-ink);
+    --juice-disclosure-chevron: var(--sgn-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--sgn-disclosure-focus-ring);
+
+
     background-color: var(--sgn-page);
     background-image: var(--sgn-page-background);
     color: var(--sgn-text);
@@ -1527,6 +1548,70 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme="retro-signal-garden"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="retro-signal-garden"] button[disclosure-trigger],
+[theme="retro-signal-garden"] a[disclosure-trigger],
+[theme="retro-signal-garden"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-signal-garden"] button[disclosure-trigger]:hover,
+[theme="retro-signal-garden"] a[disclosure-trigger]:hover,
+[theme="retro-signal-garden"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-signal-garden"] button[disclosure-trigger][aria-expanded="true"],
+[theme="retro-signal-garden"] a[disclosure-trigger][aria-expanded="true"],
+[theme="retro-signal-garden"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-signal-garden"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="retro-signal-garden"] button[disclosure-trigger]:focus-visible,
+[theme="retro-signal-garden"] a[disclosure-trigger]:focus-visible,
+[theme="retro-signal-garden"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-signal-garden"] [disclosure-panel],
+[theme="retro-signal-garden"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
 
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

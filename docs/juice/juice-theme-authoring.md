@@ -89,6 +89,7 @@ A healthy Juice theme should own:
 - breadcrumb chrome roles (`--juice-breadcrumb-*`, bound from theme identity tokens)
 - progress chrome roles (`--juice-progress-*`, bound from theme identity tokens)
 - pagination chrome roles (`--juice-pagination-*`, bound from theme identity tokens)
+- disclosure chrome roles (`--juice-disclosure-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -248,6 +249,7 @@ The generated stylesheet currently defines:
 - breadcrumb chrome role bindings (`--jx-breadcrumb-*` / `--juice-breadcrumb-*`) and link ink overrides for `[breadcrumb]` / `[breadcrumb-link]`
 - progress chrome role bindings (`--jx-progress-*` / `--juice-progress-*`) and fill overrides for `[progress]` / `[progress-fill]`
 - pagination chrome role bindings (`--jx-pagination-*` / `--juice-pagination-*`) and control overrides for `[pagination]` / `[pagination-link]`
+- disclosure chrome role bindings (`--jx-disclosure-*` / `--juice-disclosure-*`) and trigger overrides for `[disclosure]` / `[disclosure-trigger]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -431,6 +433,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for an APG-inspired Pagination control. It is not the site `[nav]` / navigation runtime, not `nav[type="pagination"]` (that older layout pattern stays in `nav.scss`), not a breadcrumb, not tabs, and not the wizard step tracker. A boolean `[pagination]` attribute is fine (no HTML global `pagination` attr). The root is `<nav pagination>` or `<ol pagination>`. `[pagination-item]` is one cell. Anchors and buttons inside the control are enough; `[pagination-link]` is optional. `[pagination-prev]` and `[pagination-next]` mark those controls. `[pagination-ellipsis]` is an optional gap marker. `[pagination-status]` is optional ink. Do not style bare `[aria-current="page"]`. Current-page paint is `aria-current="page"` on the control or its item. Disabled paint is `aria-disabled="true"`, native `disabled`, or `[disabled]`. Inline nav chrome — no overlay z-index. The pagination runtime auto-enhances that markup (`sync` / `setCurrent`, one `aria-current="page"`, prev/next disabled at inferable ends, Arrow / Home / End among enabled controls; `<ol pagination>` stays a list) — see [Pagination Runtime](./juice-pagination-runtime.md). Pagination is the nineteenth Emerging auto-enhance runtime and is unpublished versus 0.9.0.
 
 Tide must bind dark chips (`--tide-surface-strong`), not a light bar and not `--tide-page`. Current fill stays `--tide-accent`. Ink on that fill stays `--tide-heading`.
+
+## Disclosure chrome roles
+
+Library themes bind the shared disclosure contract so `[disclosure]` / `[disclosure-trigger]` / `[disclosure-panel]` paint is theme-agnostic in `disclosure.scss`. Required names (`surface`, `border`, `trigger`, `trigger-hover`, `trigger-open`, `ink`, `chevron`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-disclosure-*`, `--kw-disclosure-*`, `--cm-disclosure-*`, `--tide-disclosure-*`, …). App-owned generated themes use `--jx-disclosure-*` and bind `--juice-disclosure-*` from existing `--jx-*` surface / border / text / accent tokens. Do not invent a new hue family just for disclosure chrome. The trigger is a surface, not the CTA button gradient. Citrusmint has no accent token: heading stands in for the chevron and focus ring. Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `button` fills on `[disclosure-trigger]` the same way. `surface` is the panel, not a bar.
+
+This is Juice chrome for the APG Disclosure pattern. It is not an accordion. Accordion stays `[accordion]` / `[accordion-item]` (multi-item, multi-open). Disclosure is one trigger and one panel. A boolean `[disclosure]` attribute is fine (no HTML global `disclosure` attr). `[disclosure-trigger]` is the button. `[disclosure-panel]` is the controlled region. Pair the panel with `aria-controls`, or place it as the next sibling of the trigger. Expanded paint is `aria-expanded="true"` on the trigger. The chevron is `::after` and rotates when expanded. Do not style bare `[aria-expanded]`, `<details>`, or `<summary>`. Inline chrome — no overlay z-index. Runtime is later.
+
+Tide must bind a dark panel (`--tide-surface`) and a dark trigger (`--tide-surface-strong`), not `--tide-page`.
 
 ## Wizard chrome roles
 

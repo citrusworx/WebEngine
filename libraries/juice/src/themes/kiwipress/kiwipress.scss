@@ -477,6 +477,27 @@
     --juice-pagination-focus-ring: var(--kw-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--kw-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing tokens.
+       One trigger and one panel, not an accordion and not a kiwi CTA.
+       Open fill is accent-soft. Distinct from [accordion]. */
+    --kw-disclosure-surface: var(--kw-surface);
+    --kw-disclosure-border: var(--kw-border);
+    --kw-disclosure-trigger: var(--kw-surface-strong);
+    --kw-disclosure-trigger-hover: var(--kw-surface-muted);
+    --kw-disclosure-trigger-open: var(--kw-accent-soft);
+    --kw-disclosure-ink: var(--kw-text);
+    --kw-disclosure-chevron: var(--kw-accent);
+    --kw-disclosure-focus-ring: var(--kw-accent);
+    --juice-disclosure-surface: var(--kw-disclosure-surface);
+    --juice-disclosure-border: var(--kw-disclosure-border);
+    --juice-disclosure-trigger: var(--kw-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--kw-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--kw-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--kw-disclosure-ink);
+    --juice-disclosure-chevron: var(--kw-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--kw-disclosure-focus-ring);
+
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -2257,6 +2278,70 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat generic button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a kiwi CTA.
+   Runtime is later. */
+[theme="kiwipress"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="kiwipress"] button[disclosure-trigger],
+[theme="kiwipress"] a[disclosure-trigger],
+[theme="kiwipress"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="kiwipress"] button[disclosure-trigger]:hover,
+[theme="kiwipress"] a[disclosure-trigger]:hover,
+[theme="kiwipress"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[disclosure-trigger][aria-expanded="true"],
+[theme="kiwipress"] a[disclosure-trigger][aria-expanded="true"],
+[theme="kiwipress"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="kiwipress"] button[disclosure-trigger]:focus-visible,
+[theme="kiwipress"] a[disclosure-trigger]:focus-visible,
+[theme="kiwipress"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [disclosure-panel],
+[theme="kiwipress"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
 
 /* Accordion wrappers are structural, not default section surfaces.
    Generic KiwiPress buttons are kiwi CTAs; triggers stay surface controls. */

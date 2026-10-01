@@ -465,6 +465,25 @@
   --juice-pagination-border: var(--vpr-pagination-border);
   --juice-pagination-focus-ring: var(--vpr-pagination-focus-ring);
   --juice-pagination-ellipsis: var(--vpr-pagination-ellipsis);
+  /* Disclosure chrome — standalone APG disclosure from existing tokens.
+     One trigger and one panel. Trigger is a surface, not a CTA.
+     Distinct from [accordion]. */
+  --vpr-disclosure-surface: var(--vpr-surface);
+  --vpr-disclosure-border: var(--vpr-border);
+  --vpr-disclosure-trigger: var(--vpr-surface-strong);
+  --vpr-disclosure-trigger-hover: var(--vpr-surface-muted);
+  --vpr-disclosure-trigger-open: var(--vpr-surface-muted);
+  --vpr-disclosure-ink: var(--vpr-text);
+  --vpr-disclosure-chevron: var(--vpr-accent);
+  --vpr-disclosure-focus-ring: var(--vpr-accent);
+  --juice-disclosure-surface: var(--vpr-disclosure-surface);
+  --juice-disclosure-border: var(--vpr-disclosure-border);
+  --juice-disclosure-trigger: var(--vpr-disclosure-trigger);
+  --juice-disclosure-trigger-hover: var(--vpr-disclosure-trigger-hover);
+  --juice-disclosure-trigger-open: var(--vpr-disclosure-trigger-open);
+  --juice-disclosure-ink: var(--vpr-disclosure-ink);
+  --juice-disclosure-chevron: var(--vpr-disclosure-chevron);
+  --juice-disclosure-focus-ring: var(--vpr-disclosure-focus-ring);
   background-color: var(--vpr-page);
   background-image: var(--vpr-page-background);
   color: var(--vpr-text);
@@ -1503,6 +1522,69 @@
 [theme=retro-violet-parlor] button[pagination-next]:focus-visible {
   outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
+}
+
+/* Disclosure chrome. Beat button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme=retro-violet-parlor] [disclosure] {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-disclosure-border);
+  box-shadow: none;
+  color: var(--juice-disclosure-ink);
+}
+
+[theme=retro-violet-parlor] button[disclosure-trigger],
+[theme=retro-violet-parlor] a[disclosure-trigger],
+[theme=retro-violet-parlor] [disclosure-trigger] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=retro-violet-parlor] button[disclosure-trigger]:hover,
+[theme=retro-violet-parlor] a[disclosure-trigger]:hover,
+[theme=retro-violet-parlor] [disclosure-trigger]:hover {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-hover);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-violet-parlor] button[disclosure-trigger][aria-expanded=true],
+[theme=retro-violet-parlor] a[disclosure-trigger][aria-expanded=true],
+[theme=retro-violet-parlor] [disclosure-trigger][aria-expanded=true] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-open);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-violet-parlor] [disclosure-trigger]::after {
+  border-color: var(--juice-disclosure-chevron);
+}
+
+[theme=retro-violet-parlor] button[disclosure-trigger]:focus-visible,
+[theme=retro-violet-parlor] a[disclosure-trigger]:focus-visible,
+[theme=retro-violet-parlor] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=retro-violet-parlor] [disclosure-panel],
+[theme=retro-violet-parlor] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  background-image: none;
+  background-color: var(--juice-disclosure-surface);
+  border-color: var(--juice-disclosure-border);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
 }
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */
