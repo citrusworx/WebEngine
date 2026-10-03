@@ -910,4 +910,66 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
     });
+
+    it("lets a consumer mount and toggle the built disclosure runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopDisclosureRuntime();
+        document.body.innerHTML = `
+            <section disclosure name="shift-notes">
+                <button type="button" disclosure-trigger>Shift notes</button>
+                <div disclosure-panel hidden>Gate B closes at 9.</div>
+            </section>
+            <button type="button" id="orphan-trigger" disclosure-trigger aria-expanded="false">Orphan</button>
+        `;
+
+        const controller = module.createDisclosure({ root: document.body });
+        const trigger = document.querySelector("[disclosure] [disclosure-trigger]");
+        const panel = document.querySelector("[disclosure-panel]");
+        const orphan = document.getElementById("orphan-trigger");
+
+        expect(trigger?.getAttribute("aria-controls")).toBe("shift-notes-panel");
+        expect(trigger?.getAttribute("aria-expanded")).toBe("false");
+        expect(panel?.getAttribute("role")).toBe("region");
+        expect(panel?.hasAttribute("hidden")).toBe(true);
+        expect(panel?.getAttribute("aria-hidden")).toBe("true");
+        expect(panel?.getAttribute("content")).toBeNull();
+
+        trigger?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        expect(trigger?.getAttribute("aria-expanded")).toBe("true");
+        expect(panel?.hasAttribute("hidden")).toBe(false);
+        expect(panel?.getAttribute("content")).toBeNull();
+
+        panel?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, key: "Escape" })
+        );
+        expect(trigger?.getAttribute("aria-expanded")).toBe("false");
+        expect(panel?.hasAttribute("hidden")).toBe(true);
+
+        orphan?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        expect(orphan?.getAttribute("aria-expanded")).toBe("false");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopDisclosureRuntime();
+        module.stopPaginationRuntime();
+        module.stopProgressRuntime();
+        module.stopBreadcrumbRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
 });

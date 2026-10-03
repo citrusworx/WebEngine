@@ -1736,6 +1736,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initPagination");
         expect(module).toHaveProperty("startPaginationRuntime");
         expect(module).toHaveProperty("stopPaginationRuntime");
+        expect(module).toHaveProperty("createDisclosure");
+        expect(module).toHaveProperty("initDisclosure");
+        expect(module).toHaveProperty("startDisclosureRuntime");
+        expect(module).toHaveProperty("stopDisclosureRuntime");
         expect(module).toHaveProperty("tokens");
     });
 
