@@ -493,6 +493,27 @@
     --juice-pagination-focus-ring: var(--dnd-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--dnd-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing tokens.
+       One trigger and one panel. Trigger is a surface, not a CTA.
+       Distinct from [accordion]. */
+    --dnd-disclosure-surface: var(--dnd-surface);
+    --dnd-disclosure-border: var(--dnd-border);
+    --dnd-disclosure-trigger: var(--dnd-surface-strong);
+    --dnd-disclosure-trigger-hover: var(--dnd-surface-muted);
+    --dnd-disclosure-trigger-open: var(--dnd-surface-muted);
+    --dnd-disclosure-ink: var(--dnd-text);
+    --dnd-disclosure-chevron: var(--dnd-accent);
+    --dnd-disclosure-focus-ring: var(--dnd-accent);
+    --juice-disclosure-surface: var(--dnd-disclosure-surface);
+    --juice-disclosure-border: var(--dnd-disclosure-border);
+    --juice-disclosure-trigger: var(--dnd-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--dnd-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--dnd-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--dnd-disclosure-ink);
+    --juice-disclosure-chevron: var(--dnd-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--dnd-disclosure-focus-ring);
+
+
     background-color: var(--dnd-page);
     background-image: var(--dnd-page-background);
     color: var(--dnd-text);
@@ -1527,6 +1548,70 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme="retro-denim-dial"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="retro-denim-dial"] button[disclosure-trigger],
+[theme="retro-denim-dial"] a[disclosure-trigger],
+[theme="retro-denim-dial"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-denim-dial"] button[disclosure-trigger]:hover,
+[theme="retro-denim-dial"] a[disclosure-trigger]:hover,
+[theme="retro-denim-dial"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] button[disclosure-trigger][aria-expanded="true"],
+[theme="retro-denim-dial"] a[disclosure-trigger][aria-expanded="true"],
+[theme="retro-denim-dial"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-denim-dial"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="retro-denim-dial"] button[disclosure-trigger]:focus-visible,
+[theme="retro-denim-dial"] a[disclosure-trigger]:focus-visible,
+[theme="retro-denim-dial"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-denim-dial"] [disclosure-panel],
+[theme="retro-denim-dial"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
 
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

@@ -493,6 +493,27 @@
     --juice-pagination-focus-ring: var(--ssm-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--ssm-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing tokens.
+       One trigger and one panel. Trigger is a surface, not a CTA.
+       Distinct from [accordion]. */
+    --ssm-disclosure-surface: var(--ssm-surface);
+    --ssm-disclosure-border: var(--ssm-border);
+    --ssm-disclosure-trigger: var(--ssm-surface-strong);
+    --ssm-disclosure-trigger-hover: var(--ssm-surface-muted);
+    --ssm-disclosure-trigger-open: var(--ssm-surface-muted);
+    --ssm-disclosure-ink: var(--ssm-text);
+    --ssm-disclosure-chevron: var(--ssm-accent);
+    --ssm-disclosure-focus-ring: var(--ssm-accent);
+    --juice-disclosure-surface: var(--ssm-disclosure-surface);
+    --juice-disclosure-border: var(--ssm-disclosure-border);
+    --juice-disclosure-trigger: var(--ssm-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--ssm-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--ssm-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--ssm-disclosure-ink);
+    --juice-disclosure-chevron: var(--ssm-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--ssm-disclosure-focus-ring);
+
+
     background-color: var(--ssm-page);
     background-image: var(--ssm-page-background);
     color: var(--ssm-text);
@@ -1527,6 +1548,70 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme="retro-sunset-motel"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="retro-sunset-motel"] button[disclosure-trigger],
+[theme="retro-sunset-motel"] a[disclosure-trigger],
+[theme="retro-sunset-motel"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="retro-sunset-motel"] button[disclosure-trigger]:hover,
+[theme="retro-sunset-motel"] a[disclosure-trigger]:hover,
+[theme="retro-sunset-motel"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-sunset-motel"] button[disclosure-trigger][aria-expanded="true"],
+[theme="retro-sunset-motel"] a[disclosure-trigger][aria-expanded="true"],
+[theme="retro-sunset-motel"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="retro-sunset-motel"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="retro-sunset-motel"] button[disclosure-trigger]:focus-visible,
+[theme="retro-sunset-motel"] a[disclosure-trigger]:focus-visible,
+[theme="retro-sunset-motel"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="retro-sunset-motel"] [disclosure-panel],
+[theme="retro-sunset-motel"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
 
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

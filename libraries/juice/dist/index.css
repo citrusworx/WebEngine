@@ -97922,6 +97922,139 @@ button[checkbox][aria-disabled=true],
   margin: 0;
 }
 
+[disclosure],
+[theme] [disclosure] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--juice-disclosure-border, var(--aqua-disclosure-border, var(--kw-disclosure-border, var(--cm-disclosure-border, var(--tide-disclosure-border, var(--jx-disclosure-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0.75rem;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  line-height: 1.35;
+}
+
+[disclosure-trigger],
+button[disclosure-trigger],
+a[disclosure-trigger],
+[theme] [disclosure-trigger],
+[theme] button[disclosure-trigger],
+[theme] a[disclosure-trigger] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0.875rem 1.25rem;
+  border: none;
+  border-radius: 0.75rem;
+  background-color: var(--juice-disclosure-trigger, var(--aqua-disclosure-trigger, var(--kw-disclosure-trigger, var(--cm-disclosure-trigger, var(--tide-disclosure-trigger, var(--jx-disclosure-trigger, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  font-weight: 600;
+  line-height: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+[disclosure-trigger][aria-expanded=true],
+button[disclosure-trigger][aria-expanded=true],
+a[disclosure-trigger][aria-expanded=true],
+[theme] [disclosure-trigger][aria-expanded=true],
+[theme] button[disclosure-trigger][aria-expanded=true],
+[theme] a[disclosure-trigger][aria-expanded=true] {
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+[disclosure-trigger]::after,
+[theme] [disclosure-trigger]::after {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: 1rem;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: var(--juice-disclosure-chevron, var(--aqua-disclosure-chevron, var(--kw-disclosure-chevron, var(--cm-disclosure-chevron, var(--tide-disclosure-chevron, var(--jx-disclosure-chevron, currentColor))))));
+  border-width: 0 2px 2px 0;
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease;
+}
+
+[disclosure-trigger][aria-expanded=true]::after,
+[theme] [disclosure-trigger][aria-expanded=true]::after {
+  transform: rotate(45deg);
+}
+
+[disclosure] [disclosure-trigger]:hover:not([aria-expanded=true]),
+[theme] [disclosure] [disclosure-trigger]:hover:not([aria-expanded=true]) {
+  background-color: var(--juice-disclosure-trigger-hover, var(--aqua-disclosure-trigger-hover, var(--kw-disclosure-trigger-hover, var(--cm-disclosure-trigger-hover, var(--tide-disclosure-trigger-hover, var(--jx-disclosure-trigger-hover, hsl(0, 0%, 90%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  text-decoration: none;
+}
+
+[disclosure] [disclosure-trigger][aria-expanded=true],
+[theme] [disclosure] [disclosure-trigger][aria-expanded=true] {
+  background-color: var(--juice-disclosure-trigger-open, var(--aqua-disclosure-trigger-open, var(--kw-disclosure-trigger-open, var(--cm-disclosure-trigger-open, var(--tide-disclosure-trigger-open, var(--jx-disclosure-trigger-open, hsl(0, 0%, 90%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+}
+
+[disclosure] [disclosure-trigger]:focus-visible,
+[theme] [disclosure] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring, var(--aqua-disclosure-focus-ring, var(--kw-disclosure-focus-ring, var(--cm-disclosure-focus-ring, var(--tide-disclosure-focus-ring, var(--jx-disclosure-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[disclosure-panel],
+[disclosure] > [disclosure-trigger] + :not([disclosure-trigger]),
+[theme] [disclosure-panel],
+[theme] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.75rem 1.25rem 1rem;
+  border: none;
+  border-top: 1px solid var(--juice-disclosure-border, var(--aqua-disclosure-border, var(--kw-disclosure-border, var(--cm-disclosure-border, var(--tide-disclosure-border, var(--jx-disclosure-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0 0 0.75rem 0.75rem;
+  background-color: var(--juice-disclosure-surface, var(--aqua-disclosure-surface, var(--kw-disclosure-surface, var(--cm-disclosure-surface, var(--tide-disclosure-surface, var(--jx-disclosure-surface, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [disclosure-trigger],
+  [disclosure-trigger]::after {
+    transition: none;
+  }
+}
 [drawer-overlay],
 [theme] [drawer-overlay] {
   position: fixed;

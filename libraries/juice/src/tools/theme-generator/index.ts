@@ -771,6 +771,26 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-pagination-focus-ring: var(--jx-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--jx-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing --jx-* tokens.
+       One trigger and one panel. The trigger is a surface, not the CTA fill.
+       The panel is a surface, not the page. Distinct from accordion. */
+    --jx-disclosure-surface: var(--jx-surface);
+    --jx-disclosure-border: var(--jx-border);
+    --jx-disclosure-trigger: var(--jx-surface-strong);
+    --jx-disclosure-trigger-hover: var(--jx-surface-muted);
+    --jx-disclosure-trigger-open: var(--jx-surface-muted);
+    --jx-disclosure-ink: var(--jx-text);
+    --jx-disclosure-chevron: var(--jx-accent);
+    --jx-disclosure-focus-ring: var(--jx-accent);
+    --juice-disclosure-surface: var(--jx-disclosure-surface);
+    --juice-disclosure-border: var(--jx-disclosure-border);
+    --juice-disclosure-trigger: var(--jx-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--jx-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--jx-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--jx-disclosure-ink);
+    --juice-disclosure-chevron: var(--jx-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--jx-disclosure-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1572,6 +1592,56 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] button[pagination-next]:focus-visible {
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
+}
+
+[theme="${config.id}"] [disclosure] {
+    background: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="${config.id}"] button[disclosure-trigger],
+[theme="${config.id}"] [disclosure-trigger] {
+    background: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="${config.id}"] button[disclosure-trigger]:hover,
+[theme="${config.id}"] [disclosure-trigger]:hover {
+    background: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] button[disclosure-trigger][aria-expanded="true"],
+[theme="${config.id}"] [disclosure-trigger][aria-expanded="true"] {
+    background: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="${config.id}"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="${config.id}"] button[disclosure-trigger]:focus-visible,
+[theme="${config.id}"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [disclosure-panel],
+[theme="${config.id}"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
 }
 
 ${namedSurfaces}
