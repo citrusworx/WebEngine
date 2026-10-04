@@ -477,6 +477,21 @@
     --juice-select-chevron: var(--cm-select-chevron);
     --juice-select-focus-ring: var(--cm-select-focus-ring);
 
+    /* Input chrome — styled native text field. No accent token: heading
+       stands in for the focus ring. Field is a surface, not a
+       heading-fill CTA and not a combobox. Placeholder is muted text.
+       Text-like types only. Runtime is later. */
+    --cm-input-surface: var(--cm-surface);
+    --cm-input-border: var(--cm-border);
+    --cm-input-ink: var(--cm-text);
+    --cm-input-placeholder: var(--cm-text-muted);
+    --cm-input-focus-ring: var(--cm-heading);
+    --juice-input-surface: var(--cm-input-surface);
+    --juice-input-border: var(--cm-input-border);
+    --juice-input-ink: var(--cm-input-ink);
+    --juice-input-placeholder: var(--cm-input-placeholder);
+    --juice-input-focus-ring: var(--cm-input-focus-ring);
+
 
 
     background-color: var(--cm-page);
@@ -1301,6 +1316,63 @@
     background-image: none;
     background-color: transparent;
     color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
+/* Input chrome. Beat [theme] :where(input) defaults.
+   Styled native text field, not a combobox, not a select, and not a CTA.
+   Text-like types only. Border color only, so KiwiPress keeps its 2px
+   control border. Runtime is later. */
+[theme="citrusmint"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input]) {
+    background-color: var(--juice-input-surface);
+    border-color: var(--juice-input-border);
+    color: var(--juice-input-ink);
+}
+
+[theme="citrusmint"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input])::placeholder {
+    color: var(--juice-input-placeholder);
+    opacity: 1;
+}
+
+[theme="citrusmint"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input]):focus-visible {
+    outline: 2px solid var(--juice-input-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="citrusmint"] [input-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-input-ink);
     box-shadow: none;
 }
 

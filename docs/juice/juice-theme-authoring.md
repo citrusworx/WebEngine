@@ -466,6 +466,16 @@ This is Juice chrome for a styled native `<select>`. It is not a combobox. Combo
 
 Tide must bind a dark field (`--tide-surface-strong`), not `--tide-page`. The chevron stays `--tide-accent`. Ink stays `--tide-text`.
 
+## Input chrome roles
+
+Library themes bind the shared input contract so `<input input>` / `[input-label]` paint is theme-agnostic in `input.scss`. Required names (`surface`, `border`, `ink`, `placeholder`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-input-*`, `--kw-input-*`, `--cm-input-*`, `--tide-input-*`, …). App-owned generated themes use `--jx-input-*` and bind `--juice-input-*` from existing `--jx-*` surface / border / text / accent tokens. Do not invent a new hue family just for input chrome. The field is a surface, not the CTA button gradient. Surface and border match that theme's combobox input field. Placeholder follows the ink that theme already uses on `input::placeholder`. Ink is text. Focus ring is accent (Citrusmint uses heading).
+
+This is Juice chrome for a styled native `<input>`. It is not a combobox and not a select. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]`. Select stays `<select select>`. A boolean `[input]` attribute is fine (no HTML global `input` attr). The element is still `<input>`. `[input-label]` is optional ink. Text-like controls only: missing type, empty type, text, email, password, search, tel, url, and number. Do not style checkbox, radio, range, file, date, time, datetime-local, month, week, color, hidden, button, submit, reset, or image. Do not restyle a bare `input`. Do not style `[combobox-input]`. Inline field chrome — no overlay z-index. Invalid, helper, and error chrome are later. Runtime and runtime docs are later, so input is not yet an Emerging auto-enhance runtime.
+
+Tide must bind a dark field (`--tide-surface-strong`), not `--tide-page`. Placeholder stays `--tide-text-muted`. Ink stays `--tide-text`.
+
 ## Wizard chrome roles
 
 Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step-indicator]` paint is theme-agnostic in `wizard.scss`. Required names (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).

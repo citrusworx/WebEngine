@@ -1,0 +1,163 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Input chrome is structural. Color comes from the shared role contract:
+//   --juice-input-surface
+//   --juice-input-border
+//   --juice-input-ink
+//   --juice-input-placeholder
+//   --juice-input-focus-ring
+// Themes bind those names (and optional --aqua-input-* / --kw-input-* /
+// --cm-input-* / --tide-input-* / --jx-input-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome for a styled native <input>. Distinct from:
+//   - [combobox-input] (combobox text field)
+//   - <select select> (styled native dropdown)
+//   - libraries/juice/src/components/form/form.scss layout
+//     ([field] flex, signin/signup heights, hardcoded invalid red)
+//
+// Native collision: there is no HTML *global* `input` attribute. The
+// element is <input>. A boolean [input] attribute on that element has
+// no platform behavior. Do not restyle a bare `input` (theme semantic
+// defaults own untagged fields) and do not style [combobox-input].
+//
+// Juice names:
+//   [input]        host, on the native element: <input input>.
+//                  Text-like controls only: missing type, empty type,
+//                  text, email, password, search, tel, url, and number.
+//                  Do not paint checkbox, radio, range, file, date,
+//                  time, datetime-local, month, week, color, hidden,
+//                  button, submit, reset, or image.
+//   [input-label]  optional visible label. Uses ink. Pair it with the
+//                  control (wrapping <label input-label>, or for/id).
+//                  Authors own the accessible name.
+//
+// :where() keeps the 1px border fallback under theme semantic field
+// chrome. KiwiPress draws a 2px control border; a normal input[input]
+// shorthand would replace that width. Theme overrides set
+// background-color and border-color, not the `background` or `border`
+// shorthands.
+//
+// appearance: none clears the UA search decoration and number spinner
+// so the surface and border stay the field. The value and keyboard
+// stay native. Invalid, helper, and error chrome are later.
+//
+// z-index: inline field. No overlay band. Runtime is later.
+
+@function -juice-input-role($name, $fallback) {
+    @return var(
+        --juice-input-#{$name},
+        var(--aqua-input-#{$name}, var(--kw-input-#{$name}, var(--cm-input-#{$name}, var(--tide-input-#{$name}, var(--jx-input-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-input-surface: -juice-input-role(surface, #{$white-100});
+$_juice-input-border: -juice-input-role(border, #{$gray-300});
+$_juice-input-ink: -juice-input-role(ink, #{$black-600});
+$_juice-input-placeholder: -juice-input-role(placeholder, #{$black-300});
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(input) field chrome. Themes realize color
+// through the roles. Text-like types only.
+
+@mixin -juice-text-input {
+    input[input]:is(
+            :not([type]),
+            [type=""],
+            [type="text" i],
+            [type="email" i],
+            [type="password" i],
+            [type="search" i],
+            [type="tel" i],
+            [type="url" i],
+            [type="number" i]
+        ):not([combobox-input]) {
+        @content;
+    }
+}
+
+[input-label],
+label[input-label],
+[theme] [input-label],
+[theme] label[input-label] {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-input-ink;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+// :where() keeps this fallback under theme semantic field chrome.
+:where(
+    input[input]:is(
+            :not([type]),
+            [type=""],
+            [type="text" i],
+            [type="email" i],
+            [type="password" i],
+            [type="search" i],
+            [type="tel" i],
+            [type="url" i],
+            [type="number" i]
+        ):not([combobox-input])
+) {
+    border: 1px solid $_juice-input-border;
+    border-radius: 0.5rem;
+    font: inherit;
+    line-height: 1.4;
+}
+
+@mixin -juice-text-input-chrome {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    box-sizing: border-box;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    // Color only. Do not set the border shorthand or box-shadow here.
+    border-color: $_juice-input-border;
+    background-color: $_juice-input-surface;
+    color: $_juice-input-ink;
+    vertical-align: middle;
+
+    &::placeholder {
+        color: $_juice-input-placeholder;
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        outline: 2px solid -juice-input-role(focus-ring, currentColor);
+        outline-offset: 2px;
+    }
+
+    &:is(:disabled, [disabled]) {
+        cursor: not-allowed;
+        opacity: 0.72;
+    }
+}
+
+@include -juice-text-input {
+    @include -juice-text-input-chrome;
+}
+
+[theme] {
+    @include -juice-text-input {
+        @include -juice-text-input-chrome;
+    }
+}

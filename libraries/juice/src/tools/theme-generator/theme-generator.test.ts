@@ -25,6 +25,7 @@ import {
     REQUIRED_DISCLOSURE_ROLES,
     REQUIRED_SPINNER_ROLES,
     REQUIRED_SELECT_ROLES,
+    REQUIRED_INPUT_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -773,6 +774,61 @@ describe("Juice theme generator surface tone roles", () => {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
             expect(block).not.toContain("background-image: none");
+        }
+    });
+
+    it("binds --juice-input-* from existing --jx-* surface, border, text, and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-input-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-input-border: var(--jx-border)");
+        expect(css).toContain("--jx-input-ink: var(--jx-text)");
+        expect(css).toContain("--jx-input-placeholder: var(--jx-text-muted)");
+        expect(css).toContain("--jx-input-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-input-surface: var(--jx-accent)");
+        expect(css).not.toContain("--jx-input-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-input-placeholder: var(--jx-accent)");
+        expect(css).not.toContain("--jx-input-focus-ring: var(--jx-page)");
+
+        for (const role of REQUIRED_INPUT_ROLES) {
+            expect(css).toContain(`--juice-input-${role}: var(--jx-input-${role})`);
+        }
+
+        expect(css).toContain("input[input]");
+        expect(css).toContain("[input-label]");
+        expect(css).toContain('[type="text" i]');
+        expect(css).toContain('[type="email" i]');
+        expect(css).toContain('[type="password" i]');
+        expect(css).toContain('[type="search" i]');
+        expect(css).toContain('[type="tel" i]');
+        expect(css).toContain('[type="url" i]');
+        expect(css).toContain('[type="number" i]');
+        expect(css).toContain(":not([combobox-input])");
+        expect(css).toContain("[combobox-input]");
+        expect(css).toContain("select[select]");
+        expect(css).not.toMatch(/\[combobox-input\][^{]*--juice-input/);
+        expect(css).not.toMatch(/select\[select\][^{]*--juice-input/);
+        expect(css).not.toMatch(/input\[input\][^{]*--juice-combobox/);
+        expect(css).not.toMatch(/input\[input\][^{]*--juice-select/);
+        expect(css).not.toMatch(/\[type=["']checkbox["']/);
+        expect(css).not.toMatch(/\[type=["']radio["']/);
+        expect(css).not.toMatch(/\[type=["']range["']/);
+        expect(css).not.toMatch(/\[type=["']file["']/);
+        expect(css).not.toMatch(/\[type=["']date["']/);
+        expect(css).not.toMatch(/\[type=["']color["']/);
+        expect(css).not.toMatch(/\[type=["']hidden["']/);
+
+        const inputBlocks = [...css.matchAll(/input\[input\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+        const fieldBlocks = inputBlocks.filter((block) => block.includes("background-color"));
+
+        expect(fieldBlocks.length).toBeGreaterThan(0);
+        for (const block of fieldBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+            expect(block).not.toMatch(/\bborder:\s/);
+            expect(block).toContain("border-color: var(--juice-input-border)");
         }
     });
 
