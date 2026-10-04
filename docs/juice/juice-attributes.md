@@ -468,6 +468,16 @@ Pagination is an APG-inspired page set. It is not the site `[nav]` / navigation 
 
 See [Pagination Runtime](./juice-pagination-runtime.md). Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). `surface` is the page control, not a bar.
 
+### Disclosure
+
+- `disclosure` — standalone root (boolean attr). One trigger, one panel. A boolean `[disclosure]` attribute is fine: there is no HTML global `disclosure` attribute. Do not restyle bare `[aria-expanded]`, `<details>`, or `<summary>`
+- `disclosure-trigger` — the button. Expanded paint is `aria-expanded="true"`
+- `disclosure-panel` — the controlled region. Pair it with `aria-controls`, or place it as the next sibling of the trigger. Closed panels use the native `hidden` attribute
+
+Disclosure is the APG Disclosure pattern. It is not an accordion (`[accordion]` / `[accordion-item]` is multi-item and multi-open) and not the surface `overlay="frost|tint"` utility. Inline chrome — no overlay z-index. The runtime auto-enhances `[disclosure]` (`sync` / `expand` / `collapse` / `toggle`): one trigger toggles one panel with `aria-expanded`, native `hidden`, and `aria-hidden`. Orphans outside the root are ignored. Click toggles. Enter and Space toggle non-button triggers. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover. There is no exclusive group, no arrow roving, and no layout `content=`. No Sig Disclosure factory. Disclosure is the twentieth Emerging auto-enhance runtime and is unpublished versus 0.9.0.
+
+See [Disclosure Runtime](./juice-disclosure-runtime.md). Theme paint uses `--juice-disclosure-*` roles (`surface`, `border`, `trigger`, `trigger-hover`, `trigger-open`, `ink`, `chevron`, `focus-ring`). `surface` is the panel, not a bar.
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

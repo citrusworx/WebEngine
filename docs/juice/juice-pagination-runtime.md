@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Pagination is an APG-inspired **page set**. It is not the site `[nav]` / navigation runtime, not `nav[type="pagination"]`, not a breadcrumb, not tabs, and not the wizard step tracker. It is not a router. v1 does not listen to history, does not remove `href`, and does not trap focus. Escape is not handled.
 
-Pagination is the nineteenth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` ships eighteen (navigation through progress). Pagination is unpublished versus that cut. All nineteen stay Emerging.
+Pagination is the nineteenth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` ships eighteen (navigation through progress). Pagination is unpublished versus that cut. Disclosure is the twentieth and is also unpublished versus that cut. All twenty stay Emerging.
 
 ## Markup Contract
 
@@ -231,7 +231,7 @@ Authors own whether a control is a link. The runtime does not remove `href`.
 ## Limitations
 
 - No `Pagination()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Pagination is the nineteenth Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.0`.
+- This surface is Emerging, not Stable-ish. Pagination is the nineteenth Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.0`. Disclosure is the twentieth and is also unpublished versus that cut. All twenty stay Emerging.
 - This is not a router. v1 does not listen to history, and `setCurrent()` does not navigate or remove `href`.
 - The only invented name is `aria-label="Pagination"` on an unlabeled navigation landmark. Control names stay author-owned.
 - `<nav pagination>` does not get a redundant `role="navigation"`. `<ol>`, `<ul>`, and `<menu>` stay lists and are not labeled. An author role is never overwritten. Ancestor navs are not relabeled.
