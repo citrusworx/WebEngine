@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runCli } from "./cli.js";
-import type { LiveInventory } from "../config/live.js";
+import { emptyLiveInventory, type LiveInventory } from "../config/live.js";
 
 vi.mock("../config/apply.js", async () => {
     const actual = await vi.importActual<typeof import("../config/apply.js")>("../config/apply.js");
@@ -58,7 +58,8 @@ vi.mock("../config/apply.js", async () => {
     };
 });
 
-const liveInventory: LiveInventory = {
+const liveInventory: LiveInventory = emptyLiveInventory({
+    spaces_listed: false,
     droplets: [
         {
             id: 99,
@@ -109,9 +110,8 @@ const liveInventory: LiveInventory = {
     databases: [],
     spaces: [],
     cdn: [],
-    certificates: [],
-    spaces_listed: false
-};
+    certificates: []
+});
 
 vi.mock("../config/live.js", async () => {
     const actual = await vi.importActual<typeof import("../config/live.js")>("../config/live.js");
@@ -208,6 +208,26 @@ describe("grape CLI", () => {
         expect(text).toContain("destroy");
         expect(text).toContain("status");
         expect(text).toContain("init");
+        expect(text).toContain("catalog");
+        expect(text).toContain("offerings");
+        expect(text).toContain("telemetry");
+    });
+
+    it("prints a stable DigitalOcean catalog without calling the API", async () => {
+        const code = await runCli(["catalog", "--json"]);
+        expect(code).toBe(0);
+        const catalog = JSON.parse(logs.join("")) as {
+            provider_id: string;
+            products: Array<{ id: string; maturity: string; operations: string[] }>;
+            extension_point: string;
+        };
+        expect(catalog.provider_id).toBe("digitalocean");
+        expect(catalog.extension_point).toMatch(/No second provider/);
+        expect(catalog.products.map((product) => product.id)).not.toContain("aws");
+        expect(catalog.products.map((product) => product.id)).not.toContain("gcp");
+        const functions = catalog.products.find((product) => product.id === "functions");
+        expect(functions).toMatchObject({ maturity: "missing", operations: [] });
+        expect(logs.join("")).not.toContain("fake-token");
     });
 
     it("prints per-command help", async () => {

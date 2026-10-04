@@ -1,8 +1,8 @@
 import type { GrapeConfig, GrapeResources } from "./schema.js";
 import { type GrapeRunOptions } from "./source.js";
-export declare const RESOURCE_KINDS: readonly ["tags", "ssh_keys", "vpcs", "databases", "droplets", "firewalls", "domains", "load_balancers", "alert_policies", "apps", "spaces", "certificates", "cdn", "stacks"];
+export declare const RESOURCE_KINDS: readonly ["tags", "ssh_keys", "vpcs", "databases", "droplets", "firewalls", "domains", "load_balancers", "alert_policies", "apps", "spaces", "certificates", "cdn", "projects", "volumes", "kubernetes_clusters", "stacks"];
 export type ResourceKind = (typeof RESOURCE_KINDS)[number];
-export type PlannedKind = "tag" | "ssh_key" | "vpc" | "database" | "droplet" | "firewall" | "domain" | "load_balancer" | "alert_policy" | "app" | "space" | "certificate" | "cdn" | "stack" | "stack_step";
+export type PlannedKind = "tag" | "ssh_key" | "vpc" | "database" | "droplet" | "firewall" | "domain" | "load_balancer" | "alert_policy" | "app" | "space" | "certificate" | "cdn" | "project" | "volume" | "kubernetes" | "stack" | "stack_step";
 export interface PlannedResource {
     kind: PlannedKind;
     name: string;

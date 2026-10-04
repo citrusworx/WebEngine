@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { destroyGrapeResources, planDestroy } from "./destroy.js";
-import type { LiveInventory } from "./live.js";
+import { emptyLiveInventory, type LiveInventory } from "./live.js";
 import { validateGrapeConfig } from "./schema.js";
 
 vi.mock("../providers/digitalocean/apps/apps.js", () => ({
@@ -60,23 +60,7 @@ vi.mock("../providers/digitalocean/spaces/spaces.js", () => ({
 }));
 
 function inventory(partial: Partial<LiveInventory> = {}): LiveInventory {
-    return {
-        droplets: [],
-        vpcs: [],
-        firewalls: [],
-        domains: [],
-        load_balancers: [],
-        ssh_keys: [],
-        apps: [],
-        alert_policies: [],
-        tags: [],
-        databases: [],
-        spaces: [],
-        cdn: [],
-        certificates: [],
-        spaces_listed: true,
-        ...partial
-    };
+    return emptyLiveInventory(partial);
 }
 
 describe("planDestroy", () => {
@@ -245,6 +229,55 @@ describe("planDestroy", () => {
         ]);
         expect(plan.skipped.some((item) => item.name === "mixed")).toBe(true);
         expect(plan.targets.some((item) => item.name === "other")).toBe(false);
+    });
+
+    it("matches projects, volumes, and clusters and skips the default project", () => {
+        const plan = planDestroy(
+            inventory({
+                projects: [
+                    { id: "proj-1", name: "platform", is_default: false },
+                    { id: "proj-default", name: "default", is_default: true }
+                ],
+                volumes: [
+                    { id: "vol-1", name: "data", region: { slug: "nyc3" }, size_gigabytes: 10 },
+                    { id: "vol-sfo", name: "data", region: { slug: "sfo3" }, size_gigabytes: 10 }
+                ],
+                kubernetes_clusters: [
+                    {
+                        id: "k8s-1",
+                        name: "app",
+                        region: "nyc3",
+                        version: "1.31.1-do.0",
+                        status: { state: "running" }
+                    }
+                ]
+            }),
+            {
+                config: validateGrapeConfig({
+                    provider: "digitalocean",
+                    region: "nyc3",
+                    resources: {
+                        projects: [{ name: "platform" }, { name: "default" }],
+                        volumes: [{ name: "data", size_gigabytes: 10 }],
+                        kubernetes_clusters: [
+                            {
+                                name: "app",
+                                version: "1.31.1-do.0",
+                                node_pools: [{ name: "workers", size: "s-2vcpu-4gb", count: 1 }]
+                            }
+                        ]
+                    }
+                })
+            }
+        );
+
+        expect(plan.targets.map((target) => `${target.kind}:${target.name}`)).toEqual([
+            "kubernetes:app",
+            "volume:data",
+            "project:platform"
+        ]);
+        expect(plan.targets.find((target) => target.kind === "volume")?.region).toBe("nyc3");
+        expect(plan.skipped.some((item) => item.kind === "project" && item.reason?.includes("default"))).toBe(true);
     });
 });
 

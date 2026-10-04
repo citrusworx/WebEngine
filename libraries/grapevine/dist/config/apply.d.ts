@@ -70,6 +70,20 @@ export interface ApplyResult {
     spaces: AppliedSpace[];
     certificates: AppliedCertificate[];
     cdn: AppliedCdn[];
+    projects: Array<{
+        id: string;
+        name: string;
+    }>;
+    volumes: Array<{
+        id: string;
+        name: string;
+        region: string;
+    }>;
+    kubernetes_clusters: Array<{
+        id: string;
+        name: string;
+        status?: string;
+    }>;
     stacks: AppliedStack[];
     /** Absolute paths of private keys written during this apply (generate: true). */
     private_key_paths: string[];

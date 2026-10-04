@@ -38,6 +38,15 @@ export interface DatabaseResource {
 export interface DatabaseCreateResponse {
     database: DatabaseResource;
 }
+export interface DatabaseEngineOptions {
+    regions?: string[];
+    versions?: string[];
+    layouts?: unknown[];
+    [key: string]: unknown;
+}
+/** Engine map from GET /databases/options. Keys are engine slugs such as `pg` and `mysql`. */
+export type DatabaseOptions = Record<string, DatabaseEngineOptions>;
+export declare function listDatabaseOptions(): Promise<DatabaseOptions>;
 export declare function listDatabases(): Promise<DatabaseResource[]>;
 export declare function getDatabase(id: string): Promise<DatabaseResource>;
 export declare function createDatabase(blueprint: DatabaseBlueprint): Promise<DatabaseResource>;

@@ -1,6 +1,13 @@
 import { parseYAML } from "../../../infrastructure/util/utilities.js";
-import { doRequest } from "../client.js";
+import { doList, doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
+/** Public distribution images for the offerings catalog. Follows pagination. */
+export async function listPublicImages() {
+    return doList("/images", "images", {
+        type: "distribution",
+        private: false
+    });
+}
 export async function listAllImages(query = {}) {
     const response = await doRequest({
         method: "GET",

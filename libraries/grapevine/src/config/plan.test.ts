@@ -163,4 +163,35 @@ describe("planGrapeConfig", () => {
         });
         expect(plan.warnings).toEqual([]);
     });
+
+    it("plans projects, volumes, and kubernetes clusters without a token", () => {
+        const plan = planGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    projects: [{ name: "platform", environment: "Production" }],
+                    volumes: [{ name: "data", size_gigabytes: 50 }],
+                    kubernetes_clusters: [
+                        {
+                            name: "app",
+                            version: "1.31.1-do.0",
+                            vpc: "app",
+                            node_pools: [{ name: "workers", size: "s-2vcpu-4gb", count: 2 }]
+                        }
+                    ]
+                }
+            })
+        );
+        expect(plan.counts.projects).toBe(1);
+        expect(plan.counts.volumes).toBe(1);
+        expect(plan.counts.kubernetes_clusters).toBe(1);
+        expect(plan.resources.map((resource) => `${resource.kind}:${resource.name}`)).toEqual([
+            "project:platform",
+            "volume:data",
+            "kubernetes:app"
+        ]);
+        expect(plan.resources.find((resource) => resource.kind === "volume")?.detail.region).toBe("nyc3");
+        expect(plan.resources.find((resource) => resource.kind === "project")?.detail.purpose).toBe("Other");
+    });
 });

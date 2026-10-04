@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { Command } from "commander";
 import { DESTROY_V1_NOTES } from "../config/destroy.js";
-import { handleApply, handleDestroy, handleInit, handlePlan, handleStatus, handleValidate } from "./commands.js";
+import { handleApply, handleCatalog, handleDestroy, handleInit, handleOfferings, handlePlan, handleStatus, handleTelemetry, handleValidate } from "./commands.js";
 const require = createRequire(import.meta.url);
 const pkg = require("../../package.json");
 function addCommonOptions(command) {
@@ -55,6 +55,26 @@ export function createProgram() {
         await handleStatus(mergedOptions(command));
     });
     addCommonOptions(program
+        .command("catalog")
+        .description("Print the DigitalOcean provider catalog (dashboard contract). No API call unless --offerings is set.")
+        .option("--offerings", "List live offerings (requires DO_TOKEN); same as grape offerings")).action(async (_opts, command) => {
+        await handleCatalog(mergedOptions(command));
+    });
+    addCommonOptions(program
+        .command("offerings")
+        .description("List DigitalOcean regions, sizes, public images, database engines, and Kubernetes versions (requires DO_TOKEN)")).action(async (_opts, command) => {
+        await handleOfferings(mergedOptions(command));
+    });
+    addCommonOptions(program
+        .command("telemetry")
+        .alias("metrics")
+        .description("List alert policies and uptime checks. --droplet adds bandwidth, CPU, and memory.")
+        .option("--droplet <id>", "Droplet id for monitoring metrics")
+        .option("--start <unix>", "Metrics window start (unix seconds)")
+        .option("--end <unix>", "Metrics window end (unix seconds)")).action(async (_opts, command) => {
+        await handleTelemetry(mergedOptions(command));
+    });
+    addCommonOptions(program
         .command("init")
         .description("Scaffold grape.config.yaml from a packaged blueprint")
         .argument("[blueprint]", "Blueprint id or alias (omit to list)")
@@ -70,6 +90,11 @@ Examples:
   grape apply -c ./grape.config.yaml
   grape status
   grape status -c ./grape.config.yaml
+  grape catalog
+  grape catalog --json
+  grape offerings
+  grape telemetry
+  grape telemetry --droplet 123456
   grape init --list
   grape init 02
   grape destroy -c ./grape.config.yaml --yes

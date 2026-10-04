@@ -34,9 +34,12 @@ These DigitalOcean products have both HTTP helpers **and** a loop in `applyGrape
 
 | Product | Apply field | Create helper | HTTP |
 |---|---|---|---|
+| Projects | `resources.projects` | `createProject` | `POST /projects` |
 | Tags | `resources.tags` | `createTag`, `tagResource` | `POST /tags` |
 | SSH keys | `resources.ssh_keys` | `uploadSSHKey` | `POST /account/keys` |
 | VPCs | `resources.vpcs` | `createVPC` | `POST /vpcs` |
+| Volumes | `resources.volumes` | `createVolume` | `POST /volumes` |
+| Kubernetes | `resources.kubernetes_clusters` | `createKubernetesCluster` | `POST /kubernetes/clusters` |
 | Droplets | `resources.droplets` | `createDroplet` | `POST /droplets` |
 | Firewalls | `resources.firewalls` | `createFireWall` | `POST /firewalls` |
 | Domains / records | `resources.domains` | `createDomain`, `createDomainRecord` | `POST /domains` |
@@ -47,7 +50,7 @@ These DigitalOcean products have both HTTP helpers **and** a loop in `applyGrape
 | Certificates | `resources.certificates` | `createCertificate` | `POST /certificates` |
 | CDN endpoints | `resources.cdn` | `createCdnEndpoint` | `POST /cdn/endpoints` |
 
-That is the apply surface. If it is not in this table, YAML will not provision it.
+That is the apply surface. Reserved IPs, the container registry, uptime checks, metrics, images, and snapshots have clients and show up in the catalog, but YAML will not provision them. If a product is not in this table, `applyGrapeConfig` does not create it.
 
 Spaces bucket calls do **not** use `DO_TOKEN`. They use a Spaces key pair (`DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY`, or `credentials.spaces_access_key_env` / `spaces_secret_key_env`) and AWS Signature Version 4. The key needs DigitalOcean's **All (Buckets and Objects)** permission to create, list, and delete buckets. CDN and certificates use the API token.
 
@@ -182,15 +185,65 @@ Destroy order removes the CDN endpoint before the certificate and the Space. A c
 
 Juice follow-ups that this layer does not pretend to finish: idempotent updates, DNS from the CDN hostname, `yarn workspace @citrusworx/juiceapp build`, and uploading `dist/`.
 
-## Not implemented as Grapevine resources
+## Dashboard contract
+
+Grapevine is the source of truth for what a WebEngine dashboard can show about a cloud. DigitalOcean is the only implemented provider. The extension point is the catalog shape (`ProviderCatalog` in `src/providers/catalog/catalog.ts`, and the committed file `libraries/grapevine/catalog/digitalocean.json`). A second cloud would be another object with `schema_version: 1`. AWS and GCP are not in that file and have no provider modules.
+
+```bash
+grape catalog
+grape catalog --json
+grape offerings          # requires DO_TOKEN
+grape catalog --offerings
+grape telemetry
+grape metrics --droplet 123456
+```
+
+`grape catalog` does not call DigitalOcean. `--json` prints the stable catalog: provider id `digitalocean`, each product's maturity (`implemented`, `partial`, or `missing`), which of list/get/create/update/delete exist, whether grape YAML apply creates it, and which env vars authenticate it.
+
+`grape offerings` reads regions, droplet sizes, public distribution images, `GET /databases/options`, and `GET /kubernetes/options`.
+
+`grape telemetry` (alias `grape metrics`) lists alert policies and uptime checks. `--droplet` adds public bandwidth (in and out), CPU, and memory (available and total) for a window (default: the last hour; `--start` and `--end` are unix seconds).
+
+Auth is `DO_TOKEN` for the API, including metrics. Spaces buckets still use `DO_SPACES_ACCESS_KEY_ID` and `DO_SPACES_SECRET_ACCESS_KEY`. The token is not copied into account summaries, telemetry reports, or logs.
+
+### Metrics and the monitoring agent
+
+| Series | Endpoint | Agent |
+|---|---|---|
+| Bandwidth | `GET /monitoring/metrics/droplet/bandwidth` | No. Hypervisor metric. Grapevine asks for the public interface, inbound and outbound. |
+| CPU | `GET /monitoring/metrics/droplet/cpu` | Yes. Empty unless the droplet was created with `monitoring: true`. |
+| Memory | `GET /monitoring/metrics/droplet/memory_available` and `memory_total` | Yes. Same agent requirement. |
+
+Uptime checks are `GET /uptime/checks` (plus get/create/update/delete). They are not grape YAML. Per-check uptime alert policies are not wrapped.
+
+### Inventory the dashboard can list
+
+`fetchLiveInventory` / `grape status --json` includes the older resources plus account, projects, volumes, reserved IPs, Kubernetes clusters, snapshots, uptime checks, the container registry (404 means none), and billing. A billing-scope failure is stored on `billing.error` and does not blank the rest of the inventory. Registry errors other than "no registry" are stored on `registry_error`.
+
+| Product | YAML apply | Notes |
+|---|---|---|
+| Projects | `resources.projects` | Unique-name adopt. Purpose defaults to `Other` inside `createProject`. Destroy refuses the default project. Resource assignment is not wrapped. |
+| Volumes | `resources.volumes` | Unique name in the target region. Create does not attach or resize. |
+| Kubernetes | `resources.kubernetes_clusters` | Cluster create with initial `node_pools`, or adopt by unique name without reconciling pools. `vpc: name` must be a VPC created or adopted in the same apply. |
+| Reserved IPs | no | `/reserved_ips` list/get/create/delete. No name, so no YAML. Create takes a region or a droplet id, not both. |
+| Registry | no | `getContainerRegistry` and `listRegistryRepositories`. |
+| Account | no | Droplet limit, email, status, team name. |
+| Volume snapshots | no | Create/list/get/delete helpers. Account snapshot list is separate. |
+
+## Still not a Grapevine resource
 
 | Area | Reality |
 |---|---|
-| Block storage volumes | Droplet field `volumes?: string[]` may be sent; no `POST /volumes` |
-| Kubernetes (DOKS) | No cluster APIs; `kubernetes_ids` only on firewall payload shape |
-| Projects, floating IPs | Not grape resources |
-| Object upload / static sync | Spaces exist; putting files in them does not |
-| Other clouds | Schema rejects anything but `digitalocean` |
+| Functions | No client. Catalog maturity `missing`. |
+| DOKS day-2 | No kubeconfig download, upgrade, recycle, or autoscale. |
+| Volume attach / resize | Not wrapped. Destroy does not detach; an attached volume delete fails and is reported. |
+| Reserved IP assign / unassign | Not wrapped. |
+| Project resource assignment | Not wrapped. |
+| Droplet resize, rename, snapshot actions | Not wrapped. |
+| Database users, pools, replicas | Cluster lifecycle only. A second apply creates another database. |
+| Billing payments / invoice PDF | Balance and invoice list only. A token without billing scope returns `billing.error`. |
+| Object upload / static sync | Spaces exist; putting files in them does not. |
+| Other clouds | Schema rejects anything but `digitalocean`. The catalog shape is the extension point; there is no second implementation. |
 
 ## Client primitives
 

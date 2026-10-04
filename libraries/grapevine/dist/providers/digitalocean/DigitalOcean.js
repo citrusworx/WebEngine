@@ -18,4 +18,16 @@ export * from "./networking/load-balancer.js";
 export * from "./tags/tags.js";
 export * from "./security/security.js";
 export * from "./deploy/deployment-log.js";
+export * from "./account/account.js";
+export * from "./billing/billing.js";
+export * from "./projects/projects.js";
+export * from "./volumes/volumes.js";
+export * from "./snapshots/snapshots.js";
+export * from "./reserved-ips/reserved-ips.js";
+export * from "./kubernetes/kubernetes.js";
+export * from "./registry/registry.js";
+export * from "./offerings/offerings.js";
+export * from "./monitoring/metrics.js";
+export * from "./monitoring/uptime.js";
+export * from "./monitoring/telemetry.js";
 //# sourceMappingURL=DigitalOcean.js.map

@@ -2,7 +2,10 @@ import sshpk from "sshpk";
 import type { CdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
 import type { DropletResource } from "../providers/digitalocean/droplet/droplet.js";
 import type { FireWallResponse } from "../providers/digitalocean/firewall/firewall.js";
+import type { KubernetesCluster } from "../providers/digitalocean/kubernetes/kubernetes.js";
+import type { Project } from "../providers/digitalocean/projects/projects.js";
 import type { SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
+import { volumeRegionSlug, type Volume } from "../providers/digitalocean/volumes/volumes.js";
 import type { VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 
 export interface NamedResource {
@@ -132,4 +135,20 @@ export function adoptCdnByOrigin(endpoints: CdnEndpoint[], origin: string): CdnE
         );
     }
     return matches[0];
+}
+
+export function adoptProject(projects: Project[], name: string): Project | undefined {
+    return findUniqueByName("project", name, projects);
+}
+
+export function adoptVolume(volumes: Volume[], name: string, region: string): Volume | undefined {
+    const inRegion = volumes.filter((volume) => volumeRegionSlug(volume) === region);
+    return findUniqueByName("volume", name, inRegion);
+}
+
+export function adoptKubernetesCluster(
+    clusters: KubernetesCluster[],
+    name: string
+): KubernetesCluster | undefined {
+    return findUniqueByName("kubernetes cluster", name, clusters);
 }

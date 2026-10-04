@@ -17,6 +17,8 @@ export declare function getDoToken(envName?: string): string;
 export declare function authHeaders(extra?: Record<string, string>, envName?: string): Record<string, string>;
 export declare function wrapDoError(error: unknown): DigitalOceanError;
 export declare function doRequest<T>(config: AxiosRequestConfig): Promise<T>;
+/** Follow `links.pages.next` and concatenate one collection key. */
+export declare function doList<T>(url: string, collectionKey: string, params?: Record<string, unknown>): Promise<T[]>;
 export interface DoClientConfig {
     params?: Record<string, unknown>;
     headers?: Record<string, string>;

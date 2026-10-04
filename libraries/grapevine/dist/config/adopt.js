@@ -1,4 +1,5 @@
 import sshpk from "sshpk";
+import { volumeRegionSlug } from "../providers/digitalocean/volumes/volumes.js";
 function normalizeFingerprint(value) {
     return value.toLowerCase().replace(/^(md5:|sha256:)/, "").replace(/[^a-z0-9+/]/g, "");
 }
@@ -91,5 +92,15 @@ export function adoptCdnByOrigin(endpoints, origin) {
         throw new Error(formatAmbiguousError("CDN endpoint", origin, matches.map((endpoint) => ({ id: endpoint.id, name: endpoint.origin }))));
     }
     return matches[0];
+}
+export function adoptProject(projects, name) {
+    return findUniqueByName("project", name, projects);
+}
+export function adoptVolume(volumes, name, region) {
+    const inRegion = volumes.filter((volume) => volumeRegionSlug(volume) === region);
+    return findUniqueByName("volume", name, inRegion);
+}
+export function adoptKubernetesCluster(clusters, name) {
+    return findUniqueByName("kubernetes cluster", name, clusters);
 }
 //# sourceMappingURL=adopt.js.map

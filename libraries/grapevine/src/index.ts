@@ -13,7 +13,10 @@ export {
     type DatabaseResourceConfig,
     type SpaceResourceConfig,
     type CertificateResourceConfig,
-    type CdnResourceConfig
+    type CdnResourceConfig,
+    type ProjectResourceConfig,
+    type VolumeResourceConfig,
+    type KubernetesClusterResourceConfig
 } from "./config/schema.js";
 export { loadGrapeConfig, parseConfigText, readConfigSource, isRemoteConfigSource } from "./config/load.js";
 export {
@@ -54,3 +57,14 @@ export {
     type DestroyPlan,
     type DestroyTarget
 } from "./config/destroy.js";
+export {
+    CATALOG_SCHEMA_VERSION,
+    CATALOG_OPERATIONS,
+    digitalOceanCatalog,
+    listProviderCatalogs,
+    formatProviderCatalog,
+    type CatalogOperation,
+    type CatalogProduct,
+    type ProductMaturity,
+    type ProviderCatalog
+} from "./providers/catalog/catalog.js";

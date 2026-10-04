@@ -46,6 +46,24 @@ export interface DatabaseCreateResponse {
     database: DatabaseResource;
 }
 
+export interface DatabaseEngineOptions {
+    regions?: string[];
+    versions?: string[];
+    layouts?: unknown[];
+    [key: string]: unknown;
+}
+
+/** Engine map from GET /databases/options. Keys are engine slugs such as `pg` and `mysql`. */
+export type DatabaseOptions = Record<string, DatabaseEngineOptions>;
+
+export async function listDatabaseOptions(): Promise<DatabaseOptions> {
+    const response = await doRequest<{ options?: DatabaseOptions }>({
+        method: "GET",
+        url: "/databases/options"
+    });
+    return response.options ?? {};
+}
+
 export async function listDatabases(): Promise<DatabaseResource[]> {
     const response = await doRequest<{ databases: DatabaseResource[] }>({
         method: "GET",
