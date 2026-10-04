@@ -22,8 +22,9 @@
  * or popover (and to an already-handled Escape). There is no global
  * disclosure Escape and no arrow-key roving tabindex.
  *
- * Limitations: full runtime docs are a later slice. Exclusive groups,
- * arrow-key roving tabindex, and a Sig Disclosure factory are out of scope.
+ * Limitations: exclusive groups, arrow-key roving tabindex, and a Sig
+ * Disclosure factory are out of scope. See
+ * docs/juice/juice-disclosure-runtime.md.
  */
 
 import { createEventClaim } from '../shared/events.js';
