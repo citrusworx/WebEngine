@@ -132,6 +132,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Pagination Runtime](./juice-pagination-runtime.md)
 - [Disclosure Runtime](./juice-disclosure-runtime.md)
 - [Spinner Runtime](./juice-spinner-runtime.md)
+- [Select Runtime](./juice-select-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.0` live on npm)
 

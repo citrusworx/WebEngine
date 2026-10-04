@@ -33,6 +33,10 @@
  *
  * Change and keys stay on the native control. There is no keyboard
  * handler, no Escape handler, no focus trap, and no Sig Select factory.
+ *
+ * Limitations: a custom listbox, keyboard handling, Escape, a focus
+ * trap, and a Sig Select factory are out of scope. See
+ * docs/juice/juice-select-runtime.md.
  */
 
 import { escapeId } from '../shared/ids.js';

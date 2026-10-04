@@ -489,6 +489,17 @@ Spinner is a standalone indeterminate busy indicator. It is not a progress bar (
 
 See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spinner-*` roles (`track`, `indicator`, `ink`, `focus-ring`). `track` is the inactive ring. `indicator` is the leading arc.
 
+### Select
+
+- `select` — host, on the native element: `<select select>`. A boolean `[select]` attribute is fine: there is no HTML global `select` attribute. Any value, including `select="list"`, is still a select. The open list stays the platform popup. Do not restyle a bare `select`. Do not style `[combobox]`
+- `select-label` — optional visible label. Uses ink. Pair it with the control (associated `<label for>`, wrapping label, or `[select-label]`)
+
+`[multiple]` and `size` listboxes stay native selects. The chevron is a `background-image` on the closed dropdown. `size` other than `1` drops that chevron.
+
+Select is a styled native `<select>`. It is not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup). Inline field chrome — no overlay z-index. The runtime auto-enhances `<select select>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`. Order: associated `<label for>`, wrapping `<label>`, then `[select-label]`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the select, so the selected option is not part of the name. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Change events and the keyboard stay native. There is no listbox, no Escape handler, no focus trap, and no Sig Select factory. Select is the twenty-second Emerging auto-enhance runtime and is unpublished versus 0.9.0.
+
+See [Select Runtime](./juice-select-runtime.md). Theme paint uses `--juice-select-*` roles (`surface`, `border`, `ink`, `chevron`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

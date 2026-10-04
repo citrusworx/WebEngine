@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Spinner is a standalone indeterminate **busy indicator**. It is not a progress bar. Progress stays a valued `[progress]` / `[progress-fill]` bar (determinate or `progress="indeterminate"`). It is not a disclosure. CSS owns the spin. There is no value, no keyboard, no Escape, no focus trap, and no Sig Spinner factory.
 
-Spinner is the twenty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` ships eighteen (navigation through progress). Pagination is the nineteenth. Disclosure is the twentieth. Pagination, disclosure, and spinner are unpublished versus that cut. All twenty-one stay Emerging.
+Spinner is the twenty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` ships eighteen (navigation through progress). Pagination is the nineteenth. Disclosure is the twentieth. Select is the twenty-second. Pagination, disclosure, spinner, and select are unpublished versus that cut. All twenty-two stay Emerging.
 
 ## Markup Contract
 
@@ -187,7 +187,7 @@ Authors own whether the host is focusable. The runtime does not make it a contro
 ## Limitations
 
 - No `Spinner()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Spinner is the twenty-first Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.0`. Pagination remains the nineteenth and disclosure remains the twentieth. Both are also unpublished versus that cut. All twenty-one stay Emerging.
+- This surface is Emerging, not Stable-ish. Spinner is the twenty-first Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.0`. Pagination remains the nineteenth and disclosure remains the twentieth. Select is the twenty-second. Pagination, disclosure, spinner, and select are unpublished versus that cut. All twenty-two stay Emerging.
 - This is not a progress bar. There is no value, no `aria-valuenow`, and no `--juice-progress-ratio`. `progress="indeterminate"` is a different runtime.
 - This is not a disclosure. `[disclosure]` / `[disclosure-trigger]` / `[disclosure-panel]` is a different runtime. The two do not toggle each other.
 - A node without `[spinner]` is ignored. Any `[spinner]` value, including `spinner="busy"`, stays as authored.
