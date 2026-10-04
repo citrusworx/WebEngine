@@ -24,6 +24,7 @@ import {
     REQUIRED_PAGINATION_ROLES,
     REQUIRED_DISCLOSURE_ROLES,
     REQUIRED_SPINNER_ROLES,
+    REQUIRED_SELECT_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -738,6 +739,40 @@ describe("Juice theme generator surface tone roles", () => {
         for (const block of spinnerBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-select-* from existing --jx-* surface, border, text, and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-select-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-select-border: var(--jx-border)");
+        expect(css).toContain("--jx-select-ink: var(--jx-text)");
+        expect(css).toContain("--jx-select-chevron: var(--jx-accent)");
+        expect(css).toContain("--jx-select-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-select-surface: var(--jx-accent)");
+        expect(css).not.toContain("--jx-select-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-select-chevron: var(--jx-page)");
+
+        for (const role of REQUIRED_SELECT_ROLES) {
+            expect(css).toContain(`--juice-select-${role}: var(--jx-select-${role})`);
+        }
+
+        expect(css).toContain("select[select]");
+        expect(css).toContain("[select-label]");
+        expect(css).toContain("[combobox-list]");
+        expect(css).not.toMatch(/\[combobox\][^{]*--juice-select/);
+        expect(css).not.toMatch(/select\[select\][^{]*--juice-combobox/);
+
+        const selectBlocks = [...css.matchAll(/select\[select\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(selectBlocks.length).toBeGreaterThan(0);
+        for (const block of selectBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+            expect(block).not.toContain("background-image: none");
         }
     });
 

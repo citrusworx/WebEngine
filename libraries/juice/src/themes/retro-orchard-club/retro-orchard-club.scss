@@ -526,6 +526,22 @@
     --juice-spinner-ink: var(--orc-spinner-ink);
     --juice-spinner-focus-ring: var(--orc-spinner-focus-ring);
 
+    /* Select chrome — styled native <select> from existing tokens.
+       Field fill matches the combobox input surface. Not a combobox,
+       not a custom listbox, and not a CTA. Chevron is accent.
+       The platform popup stays native. Runtime is later. */
+    --orc-select-surface: var(--orc-surface-strong);
+    --orc-select-border: var(--orc-border-strong);
+    --orc-select-ink: var(--orc-text);
+    --orc-select-chevron: var(--orc-accent);
+    --orc-select-focus-ring: var(--orc-accent);
+    --juice-select-surface: var(--orc-select-surface);
+    --juice-select-border: var(--orc-select-border);
+    --juice-select-ink: var(--orc-select-ink);
+    --juice-select-chevron: var(--orc-select-chevron);
+    --juice-select-focus-ring: var(--orc-select-focus-ring);
+
+
 
     background-color: var(--orc-page);
     background-image: var(--orc-page-background);
@@ -1655,6 +1671,29 @@
     outline: 2px solid var(--juice-spinner-focus-ring);
     outline-offset: 2px;
 }
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme="retro-orchard-club"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="retro-orchard-club"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-orchard-club"] [select-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
 
 
 

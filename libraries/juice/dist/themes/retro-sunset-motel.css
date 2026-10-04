@@ -496,6 +496,20 @@
   --juice-spinner-indicator: var(--ssm-spinner-indicator);
   --juice-spinner-ink: var(--ssm-spinner-ink);
   --juice-spinner-focus-ring: var(--ssm-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a custom listbox, and not a CTA. Chevron is accent.
+     The platform popup stays native. Runtime is later. */
+  --ssm-select-surface: var(--ssm-surface-strong);
+  --ssm-select-border: var(--ssm-border-strong);
+  --ssm-select-ink: var(--ssm-text);
+  --ssm-select-chevron: var(--ssm-accent);
+  --ssm-select-focus-ring: var(--ssm-accent);
+  --juice-select-surface: var(--ssm-select-surface);
+  --juice-select-border: var(--ssm-select-border);
+  --juice-select-ink: var(--ssm-select-ink);
+  --juice-select-chevron: var(--ssm-select-chevron);
+  --juice-select-focus-ring: var(--ssm-select-focus-ring);
   background-color: var(--ssm-page);
   background-image: var(--ssm-page-background);
   color: var(--ssm-text);
@@ -1628,6 +1642,28 @@
 [theme=retro-sunset-motel] [spinner]:focus-visible {
   outline: 2px solid var(--juice-spinner-focus-ring);
   outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=retro-sunset-motel] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=retro-sunset-motel] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-sunset-motel] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

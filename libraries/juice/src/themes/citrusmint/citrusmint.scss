@@ -462,6 +462,22 @@
     --juice-spinner-ink: var(--cm-spinner-ink);
     --juice-spinner-focus-ring: var(--cm-spinner-focus-ring);
 
+    /* Select chrome — styled native <select>. No accent token: heading
+       stands in for the chevron and focus ring. Field is a surface, not
+       a heading-fill CTA and not a combobox. The platform popup stays
+       native. Runtime is later. */
+    --cm-select-surface: var(--cm-surface);
+    --cm-select-border: var(--cm-border);
+    --cm-select-ink: var(--cm-text);
+    --cm-select-chevron: var(--cm-heading);
+    --cm-select-focus-ring: var(--cm-heading);
+    --juice-select-surface: var(--cm-select-surface);
+    --juice-select-border: var(--cm-select-border);
+    --juice-select-ink: var(--cm-select-ink);
+    --juice-select-chevron: var(--cm-select-chevron);
+    --juice-select-focus-ring: var(--cm-select-focus-ring);
+
+
 
     background-color: var(--cm-page);
     color: var(--cm-text);
@@ -1265,5 +1281,28 @@
     outline: 2px solid var(--juice-spinner-focus-ring);
     outline-offset: 2px;
 }
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Heading paints the chevron and focus ring, not a CTA.
+   Not a combobox. Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme="citrusmint"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="citrusmint"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="citrusmint"] [select-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
 
 

@@ -502,6 +502,20 @@
   --juice-spinner-indicator: var(--acg-spinner-indicator);
   --juice-spinner-ink: var(--acg-spinner-ink);
   --juice-spinner-focus-ring: var(--acg-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a custom listbox, and not a CTA. Chevron is accent.
+     The platform popup stays native. Runtime is later. */
+  --acg-select-surface: var(--acg-surface-strong);
+  --acg-select-border: var(--acg-border-strong);
+  --acg-select-ink: var(--acg-text);
+  --acg-select-chevron: var(--acg-accent);
+  --acg-select-focus-ring: var(--acg-accent);
+  --juice-select-surface: var(--acg-select-surface);
+  --juice-select-border: var(--acg-select-border);
+  --juice-select-ink: var(--acg-select-ink);
+  --juice-select-chevron: var(--acg-select-chevron);
+  --juice-select-focus-ring: var(--acg-select-focus-ring);
   background-color: var(--acg-page);
   background-image: var(--acg-page-background);
   color: var(--acg-text);
@@ -1774,6 +1788,28 @@
 [theme=retro-arcade-glow] [spinner]:focus-visible {
   outline: 2px solid var(--juice-spinner-focus-ring);
   outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=retro-arcade-glow] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=retro-arcade-glow] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-arcade-glow] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

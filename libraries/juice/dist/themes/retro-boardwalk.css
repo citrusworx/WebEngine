@@ -506,6 +506,20 @@
   --juice-spinner-indicator: var(--bdw-spinner-indicator);
   --juice-spinner-ink: var(--bdw-spinner-ink);
   --juice-spinner-focus-ring: var(--bdw-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a custom listbox, and not a CTA. Chevron is accent.
+     The platform popup stays native. Runtime is later. */
+  --bdw-select-surface: var(--bdw-surface-strong);
+  --bdw-select-border: var(--bdw-border-strong);
+  --bdw-select-ink: var(--bdw-text);
+  --bdw-select-chevron: var(--bdw-accent);
+  --bdw-select-focus-ring: var(--bdw-accent);
+  --juice-select-surface: var(--bdw-select-surface);
+  --juice-select-border: var(--bdw-select-border);
+  --juice-select-ink: var(--bdw-select-ink);
+  --juice-select-chevron: var(--bdw-select-chevron);
+  --juice-select-focus-ring: var(--bdw-select-focus-ring);
   background-color: var(--bdw-page);
   background-image: var(--bdw-page-background);
   color: var(--bdw-text);
@@ -1837,6 +1851,28 @@
 [theme=retro-boardwalk] [spinner]:focus-visible {
   outline: 2px solid var(--juice-spinner-focus-ring);
   outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=retro-boardwalk] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=retro-boardwalk] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-boardwalk] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

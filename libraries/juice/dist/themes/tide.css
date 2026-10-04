@@ -470,6 +470,19 @@
   --juice-spinner-indicator: var(--tide-spinner-indicator);
   --juice-spinner-ink: var(--tide-spinner-ink);
   --juice-spinner-focus-ring: var(--tide-spinner-focus-ring);
+  /* Select chrome — dark field from the surface token, not the page.
+     Chevron stays accent. Distinct from combobox. The platform popup
+     stays native. Runtime is later. */
+  --tide-select-surface: var(--tide-surface-strong);
+  --tide-select-border: var(--tide-border);
+  --tide-select-ink: var(--tide-text);
+  --tide-select-chevron: var(--tide-accent);
+  --tide-select-focus-ring: var(--tide-accent);
+  --juice-select-surface: var(--tide-select-surface);
+  --juice-select-border: var(--tide-select-border);
+  --juice-select-ink: var(--tide-select-ink);
+  --juice-select-chevron: var(--tide-select-chevron);
+  --juice-select-focus-ring: var(--tide-select-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1519,4 +1532,26 @@
 [theme=tide] [spinner]:focus-visible {
   outline: 2px solid var(--juice-spinner-focus-ring);
   outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=tide] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=tide] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=tide] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }

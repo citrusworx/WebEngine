@@ -678,6 +678,28 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*--juice-spinner/);
     });
 
+    it("includes select structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("select[select]");
+        expect(css).toContain("[select-label]");
+        expect(css).toMatch(/\[theme\]\s+select\[select\]/);
+        expect(css).toContain("--juice-select-surface");
+        expect(css).toContain("--juice-select-border");
+        expect(css).toContain("--juice-select-ink");
+        expect(css).toContain("--juice-select-chevron");
+        expect(css).toContain("--juice-select-focus-ring");
+        expect(css).toContain("appearance: none");
+        expect(css).toContain("background-image:");
+        expect(css).not.toMatch(/\[select-option\]/);
+        expect(css).not.toMatch(/\[select-list\]/);
+        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*--juice-combobox/);
+        expect(css).not.toMatch(/\[combobox\][^{]*\{[^}]*--juice-select/);
+        expect(css).not.toMatch(/\[combobox-list\][^{]*--juice-select/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1465,6 +1487,53 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-spinner-track: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-spinner-indicator: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-spinner-ink: var(--tide-page)");
+    });
+
+    it("binds select chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-select-surface: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-select-border: var(--aqua-border-strong)");
+        expect(aquaCss).toContain("--aqua-select-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--aqua-select-chevron: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-select-focus-ring: var(--aqua-select-focus-ring)");
+        expect(aquaCss).toContain("select[select]");
+        expect(aquaCss).toContain("[select-label]");
+        expect(aquaCss).toContain("border-color: var(--juice-select-border)");
+        expect(aquaCss).not.toContain("--aqua-select-surface: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-select-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-select-chevron: var(--aqua-page)");
+        expect(aquaCss).not.toMatch(/select\[select\][^{]*\{[^}]*--aqua-button-background/);
+        expect(aquaCss).toContain("--juice-combobox-input: var(--aqua-combobox-input)");
+
+        expect(kiwiCss).toContain("--kw-select-surface: var(--kw-surface)");
+        expect(kiwiCss).toContain("--kw-select-border: var(--kw-border)");
+        expect(kiwiCss).toContain("--juice-select-chevron: var(--kw-select-chevron)");
+        expect(kiwiCss).toContain("--kw-select-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("select[select]");
+        expect(kiwiCss).not.toMatch(/select\[select\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/select\[select\][^{]*\{[^}]*background:\s*var\(--kw-accent\)/);
+
+        expect(mintCss).toContain("--cm-select-surface: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-select-border: var(--cm-border)");
+        expect(mintCss).toContain("--cm-select-chevron: var(--cm-heading)");
+        expect(mintCss).toContain("--cm-select-focus-ring: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-select-focus-ring: var(--cm-select-focus-ring)");
+        expect(mintCss).toContain("select[select]");
+        expect(mintCss).not.toContain("--cm-select-chevron: var(--cm-accent)");
+
+        expect(tideCss).toContain("--tide-select-surface: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-select-border: var(--tide-border)");
+        expect(tideCss).toContain("--tide-select-ink: var(--tide-text)");
+        expect(tideCss).toContain("--juice-select-chevron: var(--tide-select-chevron)");
+        expect(tideCss).toContain("select[select]");
+        expect(tideCss).not.toMatch(/select\[select\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-select-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-select-ink: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-select-chevron: var(--tide-page)");
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
