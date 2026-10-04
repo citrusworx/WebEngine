@@ -471,6 +471,51 @@
   --juice-pagination-border: var(--acg-pagination-border);
   --juice-pagination-focus-ring: var(--acg-pagination-focus-ring);
   --juice-pagination-ellipsis: var(--acg-pagination-ellipsis);
+  /* Disclosure chrome — standalone APG disclosure from existing tokens.
+     One trigger and one panel. Trigger is a surface, not a CTA.
+     Distinct from [accordion]. */
+  --acg-disclosure-surface: var(--acg-surface);
+  --acg-disclosure-border: var(--acg-border);
+  --acg-disclosure-trigger: var(--acg-surface-strong);
+  --acg-disclosure-trigger-hover: var(--acg-surface-muted);
+  --acg-disclosure-trigger-open: var(--acg-surface-muted);
+  --acg-disclosure-ink: var(--acg-text);
+  --acg-disclosure-chevron: var(--acg-accent);
+  --acg-disclosure-focus-ring: var(--acg-accent);
+  --juice-disclosure-surface: var(--acg-disclosure-surface);
+  --juice-disclosure-border: var(--acg-disclosure-border);
+  --juice-disclosure-trigger: var(--acg-disclosure-trigger);
+  --juice-disclosure-trigger-hover: var(--acg-disclosure-trigger-hover);
+  --juice-disclosure-trigger-open: var(--acg-disclosure-trigger-open);
+  --juice-disclosure-ink: var(--acg-disclosure-ink);
+  --juice-disclosure-chevron: var(--acg-disclosure-chevron);
+  --juice-disclosure-focus-ring: var(--acg-disclosure-focus-ring);
+  /* Spinner chrome — standalone indeterminate busy indicator from existing
+     tokens. The ring is a border stroke, not a CTA and not a progress
+     bar. Indicator is accent. Ink is text. Inline status — no overlay.
+     CSS owns the spin. Runtime is later. */
+  --acg-spinner-track: var(--acg-border);
+  --acg-spinner-indicator: var(--acg-accent);
+  --acg-spinner-ink: var(--acg-text);
+  --acg-spinner-focus-ring: var(--acg-accent);
+  --juice-spinner-track: var(--acg-spinner-track);
+  --juice-spinner-indicator: var(--acg-spinner-indicator);
+  --juice-spinner-ink: var(--acg-spinner-ink);
+  --juice-spinner-focus-ring: var(--acg-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a custom listbox, and not a CTA. Chevron is accent.
+     The platform popup stays native. Runtime is later. */
+  --acg-select-surface: var(--acg-surface-strong);
+  --acg-select-border: var(--acg-border-strong);
+  --acg-select-ink: var(--acg-text);
+  --acg-select-chevron: var(--acg-accent);
+  --acg-select-focus-ring: var(--acg-accent);
+  --juice-select-surface: var(--acg-select-surface);
+  --juice-select-border: var(--acg-select-border);
+  --juice-select-ink: var(--acg-select-ink);
+  --juice-select-chevron: var(--acg-select-chevron);
+  --juice-select-focus-ring: var(--acg-select-focus-ring);
   background-color: var(--acg-page);
   background-image: var(--acg-page-background);
   color: var(--acg-text);
@@ -1649,6 +1694,122 @@
 [theme=retro-arcade-glow] button[pagination-next]:focus-visible {
   outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
+}
+
+/* Disclosure chrome. Beat button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme=retro-arcade-glow] [disclosure] {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-disclosure-border);
+  box-shadow: none;
+  color: var(--juice-disclosure-ink);
+}
+
+[theme=retro-arcade-glow] button[disclosure-trigger],
+[theme=retro-arcade-glow] a[disclosure-trigger],
+[theme=retro-arcade-glow] [disclosure-trigger] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=retro-arcade-glow] button[disclosure-trigger]:hover,
+[theme=retro-arcade-glow] a[disclosure-trigger]:hover,
+[theme=retro-arcade-glow] [disclosure-trigger]:hover {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-hover);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-arcade-glow] button[disclosure-trigger][aria-expanded=true],
+[theme=retro-arcade-glow] a[disclosure-trigger][aria-expanded=true],
+[theme=retro-arcade-glow] [disclosure-trigger][aria-expanded=true] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-open);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=retro-arcade-glow] [disclosure-trigger]::after {
+  border-color: var(--juice-disclosure-chevron);
+}
+
+[theme=retro-arcade-glow] button[disclosure-trigger]:focus-visible,
+[theme=retro-arcade-glow] a[disclosure-trigger]:focus-visible,
+[theme=retro-arcade-glow] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=retro-arcade-glow] [disclosure-panel],
+[theme=retro-arcade-glow] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  background-image: none;
+  background-color: var(--juice-disclosure-surface);
+  border-color: var(--juice-disclosure-border);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a CTA.
+   CSS owns the spin. Runtime is later. */
+[theme=retro-arcade-glow] [spinner] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink);
+}
+
+[theme=retro-arcade-glow] [spinner]::before {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-spinner-track);
+  border-top-color: var(--juice-spinner-indicator);
+  box-shadow: none;
+}
+
+[theme=retro-arcade-glow] [spinner-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-spinner-ink);
+  box-shadow: none;
+}
+
+[theme=retro-arcade-glow] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=retro-arcade-glow] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=retro-arcade-glow] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-arcade-glow] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

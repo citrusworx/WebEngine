@@ -477,6 +477,56 @@
     --juice-pagination-focus-ring: var(--kw-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--kw-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from existing tokens.
+       One trigger and one panel, not an accordion and not a kiwi CTA.
+       Open fill is accent-soft. Distinct from [accordion]. */
+    --kw-disclosure-surface: var(--kw-surface);
+    --kw-disclosure-border: var(--kw-border);
+    --kw-disclosure-trigger: var(--kw-surface-strong);
+    --kw-disclosure-trigger-hover: var(--kw-surface-muted);
+    --kw-disclosure-trigger-open: var(--kw-accent-soft);
+    --kw-disclosure-ink: var(--kw-text);
+    --kw-disclosure-chevron: var(--kw-accent);
+    --kw-disclosure-focus-ring: var(--kw-accent);
+    --juice-disclosure-surface: var(--kw-disclosure-surface);
+    --juice-disclosure-border: var(--kw-disclosure-border);
+    --juice-disclosure-trigger: var(--kw-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--kw-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--kw-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--kw-disclosure-ink);
+    --juice-disclosure-chevron: var(--kw-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--kw-disclosure-focus-ring);
+
+    /* Spinner chrome — standalone indeterminate busy indicator from existing
+       tokens. The ring is a border stroke, not a kiwi CTA and not a progress
+       bar. Indicator is accent. Ink is text. Inline status — no overlay.
+       CSS owns the spin. Runtime is later. */
+    --kw-spinner-track: var(--kw-border);
+    --kw-spinner-indicator: var(--kw-accent);
+    --kw-spinner-ink: var(--kw-text);
+    --kw-spinner-focus-ring: var(--kw-accent);
+    --juice-spinner-track: var(--kw-spinner-track);
+    --juice-spinner-indicator: var(--kw-spinner-indicator);
+    --juice-spinner-ink: var(--kw-spinner-ink);
+    --juice-spinner-focus-ring: var(--kw-spinner-focus-ring);
+
+    /* Select chrome — styled native <select> from existing tokens.
+       Field fill is a surface, not a kiwi CTA and not a combobox.
+       Chevron is accent. Ink is text. The platform popup stays native.
+       Runtime is later. */
+    --kw-select-surface: var(--kw-surface);
+    --kw-select-border: var(--kw-border);
+    --kw-select-ink: var(--kw-text);
+    --kw-select-chevron: var(--kw-accent);
+    --kw-select-focus-ring: var(--kw-accent);
+    --juice-select-surface: var(--kw-select-surface);
+    --juice-select-border: var(--kw-select-border);
+    --juice-select-ink: var(--kw-select-ink);
+    --juice-select-chevron: var(--kw-select-chevron);
+    --juice-select-focus-ring: var(--kw-select-focus-ring);
+
+
+
     background-color: var(--kw-page);
     color: var(--kw-text);
     font-family: var(--kw-body-font);
@@ -2257,6 +2307,125 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat generic button CTAs.
+   Standalone one-trigger disclosure, not an accordion and not a kiwi CTA.
+   Runtime is later. */
+[theme="kiwipress"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="kiwipress"] button[disclosure-trigger],
+[theme="kiwipress"] a[disclosure-trigger],
+[theme="kiwipress"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="kiwipress"] button[disclosure-trigger]:hover,
+[theme="kiwipress"] a[disclosure-trigger]:hover,
+[theme="kiwipress"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] button[disclosure-trigger][aria-expanded="true"],
+[theme="kiwipress"] a[disclosure-trigger][aria-expanded="true"],
+[theme="kiwipress"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="kiwipress"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="kiwipress"] button[disclosure-trigger]:focus-visible,
+[theme="kiwipress"] a[disclosure-trigger]:focus-visible,
+[theme="kiwipress"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [disclosure-panel],
+[theme="kiwipress"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a kiwi CTA.
+   CSS owns the spin. Runtime is later. */
+[theme="kiwipress"] [spinner] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="kiwipress"] [spinner]::before {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [spinner-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme="kiwipress"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="kiwipress"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="kiwipress"] [select-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
+
+
 
 /* Accordion wrappers are structural, not default section surfaces.
    Generic KiwiPress buttons are kiwi CTAs; triggers stay surface controls. */

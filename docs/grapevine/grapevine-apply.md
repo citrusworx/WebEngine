@@ -15,14 +15,15 @@ config (already validated)
         │
  warn if loose `services` is non-empty (stack-shaped services are applied)
         │
- tags → ssh_keys → vpcs → databases → droplets (+ stack user_data)
+ tags → projects → ssh_keys → vpcs → volumes → kubernetes
+      → databases → droplets (+ stack user_data)
       → firewalls → domains → load_balancers → alert_policies → apps
       → spaces → certificates → cdn
         │
  return ApplyResult
 ```
 
-Most loops are **create**. Droplets, VPCs, firewalls, SSH keys, Spaces, certificates, and CDN origins also adopt a unique live name (or unique CDN origin) and skip create. That is not a full reconcile: ACL, TTL, custom domain, and droplet size are not updated. There is no state file and no rollback.
+Most loops are **create**. Droplets, VPCs, firewalls, SSH keys, Spaces, certificates, CDN origins, projects, volumes (unique name in the region), and Kubernetes clusters also adopt a unique live name and skip create. Adopting a cluster does not reconcile node pools. That is not a full reconcile: ACL, TTL, custom domain, droplet size, and volume size are not updated. There is no state file and no rollback.
 
 ## 0. Preconditions
 

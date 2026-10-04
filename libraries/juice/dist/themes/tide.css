@@ -441,6 +441,48 @@
   --juice-pagination-border: var(--tide-pagination-border);
   --juice-pagination-focus-ring: var(--tide-pagination-focus-ring);
   --juice-pagination-ellipsis: var(--tide-pagination-ellipsis);
+  /* Disclosure chrome — dark panel and dark trigger, not the page
+     and not a CTA. One trigger and one panel. Distinct from [accordion]. */
+  --tide-disclosure-surface: var(--tide-surface);
+  --tide-disclosure-border: var(--tide-border);
+  --tide-disclosure-trigger: var(--tide-surface-strong);
+  --tide-disclosure-trigger-hover: var(--tide-surface-muted);
+  --tide-disclosure-trigger-open: var(--tide-surface-muted);
+  --tide-disclosure-ink: var(--tide-text);
+  --tide-disclosure-chevron: var(--tide-accent);
+  --tide-disclosure-focus-ring: var(--tide-accent);
+  --juice-disclosure-surface: var(--tide-disclosure-surface);
+  --juice-disclosure-border: var(--tide-disclosure-border);
+  --juice-disclosure-trigger: var(--tide-disclosure-trigger);
+  --juice-disclosure-trigger-hover: var(--tide-disclosure-trigger-hover);
+  --juice-disclosure-trigger-open: var(--tide-disclosure-trigger-open);
+  --juice-disclosure-ink: var(--tide-disclosure-ink);
+  --juice-disclosure-chevron: var(--tide-disclosure-chevron);
+  --juice-disclosure-focus-ring: var(--tide-disclosure-focus-ring);
+  /* Spinner chrome — dark ring from the border token, not the page.
+     Indicator stays accent. Distinct from progress. Inline status —
+     no overlay. CSS owns the spin. Runtime is later. */
+  --tide-spinner-track: var(--tide-border);
+  --tide-spinner-indicator: var(--tide-accent);
+  --tide-spinner-ink: var(--tide-text);
+  --tide-spinner-focus-ring: var(--tide-accent);
+  --juice-spinner-track: var(--tide-spinner-track);
+  --juice-spinner-indicator: var(--tide-spinner-indicator);
+  --juice-spinner-ink: var(--tide-spinner-ink);
+  --juice-spinner-focus-ring: var(--tide-spinner-focus-ring);
+  /* Select chrome — dark field from the surface token, not the page.
+     Chevron stays accent. Distinct from combobox. The platform popup
+     stays native. Runtime is later. */
+  --tide-select-surface: var(--tide-surface-strong);
+  --tide-select-border: var(--tide-border);
+  --tide-select-ink: var(--tide-text);
+  --tide-select-chevron: var(--tide-accent);
+  --tide-select-focus-ring: var(--tide-accent);
+  --juice-select-surface: var(--tide-select-surface);
+  --juice-select-border: var(--tide-select-border);
+  --juice-select-ink: var(--tide-select-ink);
+  --juice-select-chevron: var(--tide-select-chevron);
+  --juice-select-focus-ring: var(--tide-select-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1397,4 +1439,119 @@
 [theme=tide] button[pagination-next]:focus-visible {
   outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
+}
+
+/* Disclosure chrome. Dark panel, not a light card and not a CTA.
+   Not an accordion. Runtime is later. */
+[theme=tide] [disclosure] {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-disclosure-border);
+  box-shadow: none;
+  color: var(--juice-disclosure-ink);
+}
+
+[theme=tide] button[disclosure-trigger],
+[theme=tide] a[disclosure-trigger],
+[theme=tide] [disclosure-trigger] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=tide] button[disclosure-trigger]:hover,
+[theme=tide] a[disclosure-trigger]:hover,
+[theme=tide] [disclosure-trigger]:hover {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-hover);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] button[disclosure-trigger][aria-expanded=true],
+[theme=tide] a[disclosure-trigger][aria-expanded=true],
+[theme=tide] [disclosure-trigger][aria-expanded=true] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-open);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=tide] [disclosure-trigger]::after {
+  border-color: var(--juice-disclosure-chevron);
+}
+
+[theme=tide] button[disclosure-trigger]:focus-visible,
+[theme=tide] a[disclosure-trigger]:focus-visible,
+[theme=tide] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=tide] [disclosure-panel],
+[theme=tide] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  background-image: none;
+  background-color: var(--juice-disclosure-surface);
+  border-color: var(--juice-disclosure-border);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Dark ring, not the page and not a CTA. Not a progress bar.
+   CSS owns the spin. Runtime is later. */
+[theme=tide] [spinner] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink);
+}
+
+[theme=tide] [spinner]::before {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-spinner-track);
+  border-top-color: var(--juice-spinner-indicator);
+  box-shadow: none;
+}
+
+[theme=tide] [spinner-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-spinner-ink);
+  box-shadow: none;
+}
+
+[theme=tide] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=tide] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=tide] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=tide] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }

@@ -191,4 +191,34 @@ export type {
     PaginationController,
     PaginationOptions
 } from "./js/src/pagination/pagination-runtime.js";
+export {
+    createDisclosure,
+    initDisclosure,
+    startDisclosureRuntime,
+    stopDisclosureRuntime
+} from "./js/src/disclosure/disclosure-runtime.js";
+export type {
+    DisclosureController,
+    DisclosureOptions
+} from "./js/src/disclosure/disclosure-runtime.js";
+export {
+    createSpinner,
+    initSpinner,
+    startSpinnerRuntime,
+    stopSpinnerRuntime
+} from "./js/src/spinner/spinner-runtime.js";
+export type {
+    SpinnerController,
+    SpinnerOptions
+} from "./js/src/spinner/spinner-runtime.js";
+export {
+    createSelect,
+    initSelect,
+    startSelectRuntime,
+    stopSelectRuntime
+} from "./js/src/select/select-runtime.js";
+export type {
+    SelectController,
+    SelectOptions
+} from "./js/src/select/select-runtime.js";
 export { tokens } from "./tokens/index.js";

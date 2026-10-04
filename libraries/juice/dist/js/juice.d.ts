@@ -36,3 +36,9 @@ export { createProgress, initProgress, startProgressRuntime, stopProgressRuntime
 export type { ProgressController, ProgressOptions } from "./src/progress/progress-runtime.js";
 export { createPagination, initPagination, startPaginationRuntime, stopPaginationRuntime } from "./src/pagination/pagination-runtime.js";
 export type { PaginationController, PaginationOptions } from "./src/pagination/pagination-runtime.js";
+export { createDisclosure, initDisclosure, startDisclosureRuntime, stopDisclosureRuntime } from "./src/disclosure/disclosure-runtime.js";
+export type { DisclosureController, DisclosureOptions } from "./src/disclosure/disclosure-runtime.js";
+export { createSpinner, initSpinner, startSpinnerRuntime, stopSpinnerRuntime } from "./src/spinner/spinner-runtime.js";
+export type { SpinnerController, SpinnerOptions } from "./src/spinner/spinner-runtime.js";
+export { createSelect, initSelect, startSelectRuntime, stopSelectRuntime } from "./src/select/select-runtime.js";
+export type { SelectController, SelectOptions } from "./src/select/select-runtime.js";

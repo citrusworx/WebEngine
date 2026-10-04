@@ -119,8 +119,17 @@ import {
 | LB | `createLoadBalancer`, `listAllLoadBalancers`, `addDropletsToLoadBalancer`, `deleteLoadBalancer` |
 | Monitoring | `createAlertPolicy`, `listAlertPolicies`, `updateAlertPolicy`, `deleteAlertPolicy` |
 | Apps | `createApp`, `createAppFromBlueprint`, `listApps`, `updateApp`, `deleteApp`, `createDeployment` |
-| Databases | `createDatabase`, `listDatabases`, `getDatabase`, `waitForDatabase`, `deleteDatabase` |
-| Images | `listAllImages`, `createCustomImage`, `updateImage`, `deleteImage` |
+| Databases | `createDatabase`, `listDatabases`, `getDatabase`, `waitForDatabase`, `deleteDatabase`, `listDatabaseOptions` |
+| Projects | `listProjects`, `getProject`, `getDefaultProject`, `createProject`, `updateProject`, `deleteProject` |
+| Volumes | `listVolumes`, `getVolume`, `createVolume`, `deleteVolume`, `createVolumeSnapshot` |
+| Reserved IPs | `listReservedIps`, `getReservedIp`, `createReservedIp`, `deleteReservedIp` |
+| Kubernetes | `listKubernetesClusters`, `getKubernetesCluster`, `createKubernetesCluster`, `deleteKubernetesCluster`, `listNodePools`, `createNodePool`, `listKubernetesOptions` |
+| Registry | `getContainerRegistry`, `listRegistryRepositories` |
+| Account / billing | `getAccountSummary`, `getCustomerBalance`, `listInvoices` |
+| Offerings | `fetchDigitalOceanOfferings`, `listRegions`, `listSizes`, `listPublicImages` |
+| Metrics | `getDropletTelemetry`, `getDropletBandwidth`, `getDropletCpu`, `fetchTelemetry`, `listUptimeChecks` |
+| Snapshots | `listAccountSnapshots`, `getAccountSnapshot`, `deleteAccountSnapshot` |
+| Images | `listAllImages`, `listPublicImages`, `createCustomImage`, `updateImage`, `deleteImage` |
 | Security | `createScan`, `listScans`, `getLatestScans`, `createSuppression`, … |
 | Actions | `getDropletActions`, `getAction`, `logDropletActions` |
 | Payload | `cleanPayload` |
@@ -133,6 +142,20 @@ import {
 - Any AWS/GCP SDK
 - `runCli` from the package root (it lives on the bin module)
 
+## Provider catalog
+
+```ts
+import {
+  digitalOceanCatalog,
+  listProviderCatalogs,
+  formatProviderCatalog,
+  type ProviderCatalog,
+  type CatalogProduct,
+} from "@citrusworx/grapevine";
+```
+
+`listProviderCatalogs()` returns one entry, DigitalOcean. The same object is committed at `catalog/digitalocean.json` (`@citrusworx/grapevine/catalog/digitalocean.json`) for a dashboard that wants JSON without executing TypeScript. `schema_version` is `1`. Maturity is `implemented`, `partial`, or `missing`. There is no AWS or GCP catalog.
+
 ## CLI (not an import)
 
 Use the `grape` binary:
@@ -143,8 +166,14 @@ grape plan     -c <path|url>
 grape apply    -c <path|url> [--dry-run] [--json]
 grape destroy  [-c <path|url>] [--tag <tag>] [--yes] [--dry-run]
 grape status   [-c <path|url>] [--json]
+grape catalog  [--json] [--offerings]
+grape offerings [--json]
+grape telemetry [--droplet <id>] [--start <unix>] [--end <unix>] [--json]
+grape metrics  (alias of telemetry)
 grape init     [blueprint] [--list] [--force]
 grape help
 ```
+
+`catalog` without `--offerings` does not call DigitalOcean. `offerings` and `telemetry` require `DO_TOKEN`. CPU and memory samples stay empty unless the droplet runs the monitoring agent.
 
 `kiwi --grape` is documented as a delegate to this binary, not a second implementation.

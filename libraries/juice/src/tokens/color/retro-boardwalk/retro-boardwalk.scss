@@ -6,6 +6,9 @@ $bdw-page-tint: #fff1e4;
 $bdw-deep: #1c3d5a;
 $bdw-text: #1e2a36;
 $bdw-text-muted: #5c6b7a;
+// Tertiary ink. Quieter than muted (higher luminance) so the ladder reads soft < muted < body < heading on cream.
+// Dark enough for figcaptions, idle tabs, and placeholders. Heading stays $bdw-heading.
+$bdw-text-soft: #667381;
 $bdw-heading: #14324a;
 $bdw-accent: #ff6f61;
 $bdw-accent-soft: #ff9a90;
@@ -18,3 +21,6 @@ $bdw-highlight: #ffd166;
 $bdw-highlight-strong: #f0b429;
 $bdw-border-color: #8aa0b2;
 $bdw-on-accent: #2a0f0c;
+// Dark ink for solid coral CTAs. Aligns with on-accent; navy deep fails on accent-strong.
+// Hero copy stays on the dark reading ladder. The inverted footer uses page cream, not inverse.
+$bdw-text-inverse: $bdw-on-accent;

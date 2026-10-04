@@ -10,6 +10,9 @@ import { deleteSSHKey } from "../providers/digitalocean/ssh/ssh.js";
 import { deleteTag } from "../providers/digitalocean/tags/tags.js";
 import { deleteVPC } from "../providers/digitalocean/vpc/vpc.js";
 import { deleteDatabase } from "../providers/digitalocean/databases/databases.js";
+import { deleteKubernetesCluster } from "../providers/digitalocean/kubernetes/kubernetes.js";
+import { deleteProject } from "../providers/digitalocean/projects/projects.js";
+import { deleteVolume, volumeRegionSlug } from "../providers/digitalocean/volumes/volumes.js";
 import { deleteCdnEndpoint, resolveCdnOrigin } from "../providers/digitalocean/cdn/cdn.js";
 import { deleteCertificate } from "../providers/digitalocean/certificates/certificates.js";
 import { deleteSpace } from "../providers/digitalocean/spaces/spaces.js";
@@ -24,10 +27,13 @@ export const DESTROY_ORDER = [
     "firewall",
     "domain",
     "droplet",
+    "kubernetes",
+    "volume",
     "database",
     "space",
     "ssh_key",
     "vpc",
+    "project",
     "tag"
 ] as const;
 
@@ -270,6 +276,53 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
             }
         }
 
+        for (const cluster of resources.kubernetes_clusters ?? []) {
+            const match = uniqueMatch(
+                inventory.kubernetes_clusters,
+                cluster.name,
+                (item) => item.name,
+                "kubernetes",
+                skipped
+            );
+            if (match) {
+                addUniqueTarget(targets, skipped, { kind: "kubernetes", name: match.name, id: match.id });
+            }
+        }
+
+        for (const volume of resources.volumes ?? []) {
+            const region = volume.region ?? config.region ?? "";
+            const matches = inventory.volumes.filter(
+                (item) => item.name === volume.name && volumeRegionSlug(item) === region
+            );
+            if (!region) {
+                skipped.push({ kind: "volume", name: volume.name, reason: "region required to match the volume" });
+                continue;
+            }
+            if (matches.length === 0) {
+                skipped.push({ kind: "volume", name: volume.name, region, reason: "not found" });
+                continue;
+            }
+            if (matches.length > 1) {
+                skipped.push({
+                    kind: "volume",
+                    name: volume.name,
+                    region,
+                    reason: `ambiguous: ${matches.length} live resources named "${volume.name}"`
+                });
+                continue;
+            }
+            const match = matches[0];
+            if (!match) {
+                continue;
+            }
+            addUniqueTarget(targets, skipped, {
+                kind: "volume",
+                name: match.name,
+                id: match.id,
+                region
+            });
+        }
+
         for (const database of resources.databases ?? []) {
             const match = uniqueMatch(inventory.databases, database.name, (item) => item.name, "database", skipped);
             if (match) {
@@ -325,6 +378,23 @@ export function planDestroy(inventory: LiveInventory, options: { config?: GrapeC
                 continue;
             }
             addUniqueTarget(targets, skipped, { kind: "vpc", name: match.name, id: match.id });
+        }
+
+        for (const project of resources.projects ?? []) {
+            const match = uniqueMatch(inventory.projects, project.name, (item) => item.name, "project", skipped);
+            if (!match) {
+                continue;
+            }
+            if (match.is_default) {
+                skipped.push({
+                    kind: "project",
+                    name: match.name,
+                    id: match.id,
+                    reason: "refusing to delete the default project"
+                });
+                continue;
+            }
+            addUniqueTarget(targets, skipped, { kind: "project", name: match.name, id: match.id });
         }
 
         for (const name of tagNamesFromConfig(config)) {
@@ -407,6 +477,15 @@ async function runDelete(target: DestroyTarget): Promise<void> {
         case "droplet":
             await deleteDroplet(Number(target.id));
             return;
+        case "kubernetes":
+            await deleteKubernetesCluster(String(target.id));
+            return;
+        case "volume":
+            await deleteVolume(String(target.id));
+            return;
+        case "project":
+            await deleteProject(String(target.id));
+            return;
         case "database":
             await deleteDatabase(String(target.id));
             return;
@@ -469,8 +548,10 @@ export const DESTROY_V1_NOTES = `v1 destroy support
   Local generated SSH private key files are not removed.
 
   Order: CDN endpoints → apps → alert policies → load balancers →
-  certificates → firewalls → domains → droplets → databases → Spaces →
-  SSH keys → VPCs → tags.
+  certificates → firewalls → domains → droplets → Kubernetes clusters →
+  volumes → databases → Spaces → SSH keys → VPCs → projects → tags.
+  The default project is never deleted. Attached volumes are not detached
+  first; that delete fails and is reported.
 
   CDN endpoints are removed before certificates and Spaces because DigitalOcean
   rejects those deletes while a CDN endpoint still references them. Load

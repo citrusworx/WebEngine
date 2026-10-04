@@ -29,6 +29,8 @@ export interface ImageResource {
     tags?: string[];
     status?: string;
 }
+/** Public distribution images for the offerings catalog. Follows pagination. */
+export declare function listPublicImages(): Promise<ImageResource[]>;
 export declare function listAllImages(query?: {
     type?: string;
     private?: boolean;

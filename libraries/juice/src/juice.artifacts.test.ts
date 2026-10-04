@@ -626,6 +626,80 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/nav\[type=["']?pagination["']?\][^{]*--juice-pagination-ink/);
     });
 
+    it("includes disclosure structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[disclosure]");
+        expect(css).toContain("[disclosure-trigger]");
+        expect(css).toContain("[disclosure-panel]");
+        expect(css).toMatch(/\[theme\]\s+\[disclosure\]/);
+        expect(css).toMatch(/\[disclosure-trigger\]\[aria-expanded=["']?true["']?\]/);
+        expect(css).toContain("--juice-disclosure-surface");
+        expect(css).toContain("--juice-disclosure-border");
+        expect(css).toContain("--juice-disclosure-trigger");
+        expect(css).toContain("--juice-disclosure-trigger-hover");
+        expect(css).toContain("--juice-disclosure-trigger-open");
+        expect(css).toContain("--juice-disclosure-ink");
+        expect(css).toContain("--juice-disclosure-chevron");
+        expect(css).toContain("--juice-disclosure-focus-ring");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).toContain("rotate(-45deg)");
+        expect(css).toContain("rotate(45deg)");
+        expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*--juice-accordion-trigger/);
+        expect(css).not.toMatch(/\[accordion-item\][^{]*--juice-disclosure/);
+        expect(css).not.toMatch(/\[accordion\][^{]*--juice-disclosure/);
+        expect(css).not.toMatch(/(^|[,{])\s*details\s*[,{]/);
+        expect(css).not.toMatch(/(^|[,{])\s*summary\s*[,{]/);
+    });
+
+    it("includes spinner structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[spinner]");
+        expect(css).toContain("[spinner-label]");
+        expect(css).toMatch(/\[theme\]\s+\[spinner\]/);
+        expect(css).toContain("--juice-spinner-track");
+        expect(css).toContain("--juice-spinner-indicator");
+        expect(css).toContain("--juice-spinner-ink");
+        expect(css).toContain("--juice-spinner-focus-ring");
+        expect(css).toContain("juice-spinner-spin");
+        expect(css).toContain("border-top-color");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/\[spinner-track\]/);
+        expect(css).not.toMatch(/\[spinner-indicator\]/);
+        expect(css).not.toMatch(/\[spinner-size/);
+        expect(css).not.toMatch(/\[role=["']?status["']?\]/);
+        expect(css).not.toMatch(/\[spinner\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[spinner\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[spinner\][^{]*\{[^}]*--juice-progress-fill/);
+        expect(css).not.toMatch(/\[progress\][^{]*\{[^}]*--juice-spinner/);
+        expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*--juice-spinner/);
+    });
+
+    it("includes select structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("select[select]");
+        expect(css).toContain("[select-label]");
+        expect(css).toMatch(/\[theme\]\s+select\[select\]/);
+        expect(css).toContain("--juice-select-surface");
+        expect(css).toContain("--juice-select-border");
+        expect(css).toContain("--juice-select-ink");
+        expect(css).toContain("--juice-select-chevron");
+        expect(css).toContain("--juice-select-focus-ring");
+        expect(css).toContain("appearance: none");
+        expect(css).toContain("background-image:");
+        expect(css).not.toMatch(/\[select-option\]/);
+        expect(css).not.toMatch(/\[select-list\]/);
+        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*--juice-combobox/);
+        expect(css).not.toMatch(/\[combobox\][^{]*\{[^}]*--juice-select/);
+        expect(css).not.toMatch(/\[combobox-list\][^{]*--juice-select/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1323,6 +1397,145 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-pagination-ink-current: var(--tide-page)");
     });
 
+    it("binds disclosure chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-disclosure-surface: var(--aqua-surface)");
+        expect(aquaCss).toContain("--aqua-disclosure-trigger: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-disclosure-trigger-open: var(--aqua-highlight)");
+        expect(aquaCss).toContain("--aqua-disclosure-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--aqua-disclosure-chevron: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-disclosure-focus-ring: var(--aqua-disclosure-focus-ring)");
+        expect(aquaCss).toContain("[disclosure]");
+        expect(aquaCss).toContain("[disclosure-trigger]");
+        expect(aquaCss).toContain("[disclosure-panel]");
+        expect(aquaCss).toMatch(/\[aria-expanded=["']?true["']?\]/);
+        expect(aquaCss).not.toContain("--aqua-disclosure-trigger: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-disclosure-surface: var(--aqua-page)");
+        expect(aquaCss).not.toMatch(/\[disclosure-trigger\][^{]*\{[^}]*--aqua-button-background/);
+        expect(aquaCss).not.toMatch(/\[accordion-item\][^{]*--juice-disclosure/);
+
+        expect(kiwiCss).toContain("--kw-disclosure-surface: var(--kw-surface)");
+        expect(kiwiCss).toContain("--kw-disclosure-trigger-open: var(--kw-accent-soft)");
+        expect(kiwiCss).toContain("--juice-disclosure-ink: var(--kw-disclosure-ink)");
+        expect(kiwiCss).toContain("--kw-disclosure-chevron: var(--kw-accent)");
+        expect(kiwiCss).toContain("[disclosure-trigger]");
+        expect(kiwiCss).toContain("[disclosure-panel]");
+        expect(kiwiCss).not.toMatch(/\[disclosure-trigger\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[disclosure-trigger\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-disclosure-surface: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-disclosure-trigger: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-disclosure-chevron: var(--cm-heading)");
+        expect(mintCss).toContain("--cm-disclosure-focus-ring: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-disclosure-focus-ring: var(--cm-disclosure-focus-ring)");
+        expect(mintCss).toContain("[disclosure]");
+        expect(mintCss).not.toContain("--cm-disclosure-chevron: var(--cm-accent)");
+
+        expect(tideCss).toContain("--tide-disclosure-surface: var(--tide-surface)");
+        expect(tideCss).toContain("--tide-disclosure-trigger: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-disclosure-ink: var(--tide-text)");
+        expect(tideCss).toContain("--juice-disclosure-chevron: var(--tide-disclosure-chevron)");
+        expect(tideCss).toContain("[disclosure]");
+        expect(tideCss).toContain("button[disclosure-trigger]");
+        expect(tideCss).not.toMatch(/\[disclosure-trigger\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-disclosure-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-disclosure-trigger: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-disclosure-ink: var(--tide-page)");
+    });
+
+    it("binds spinner chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-spinner-track: var(--aqua-border)");
+        expect(aquaCss).toContain("--aqua-spinner-indicator: var(--aqua-accent)");
+        expect(aquaCss).toContain("--aqua-spinner-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--juice-spinner-focus-ring: var(--aqua-spinner-focus-ring)");
+        expect(aquaCss).toContain("[spinner]");
+        expect(aquaCss).toContain("[spinner-label]");
+        expect(aquaCss).toContain("border-top-color: var(--juice-spinner-indicator)");
+        expect(aquaCss).not.toContain("--aqua-spinner-track: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-spinner-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-spinner-indicator: var(--aqua-page)");
+        expect(aquaCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-spinner-track: var(--kw-border)");
+        expect(kiwiCss).toContain("--juice-spinner-indicator: var(--kw-spinner-indicator)");
+        expect(kiwiCss).toContain("--kw-spinner-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("[spinner]");
+        expect(kiwiCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-spinner-track: var(--cm-border)");
+        expect(mintCss).toContain("--cm-spinner-indicator: var(--cm-heading)");
+        expect(mintCss).toContain("--cm-spinner-focus-ring: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-spinner-focus-ring: var(--cm-spinner-focus-ring)");
+        expect(mintCss).toContain("[spinner]");
+        expect(mintCss).not.toContain("--cm-spinner-indicator: var(--cm-accent)");
+
+        expect(tideCss).toContain("--tide-spinner-track: var(--tide-border)");
+        expect(tideCss).toContain("--tide-spinner-indicator: var(--tide-accent)");
+        expect(tideCss).toContain("--juice-spinner-ink: var(--tide-spinner-ink)");
+        expect(tideCss).toContain("[spinner]");
+        expect(tideCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-spinner-track: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-spinner-indicator: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-spinner-ink: var(--tide-page)");
+    });
+
+    it("binds select chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-select-surface: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-select-border: var(--aqua-border-strong)");
+        expect(aquaCss).toContain("--aqua-select-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--aqua-select-chevron: var(--aqua-accent)");
+        expect(aquaCss).toContain("--juice-select-focus-ring: var(--aqua-select-focus-ring)");
+        expect(aquaCss).toContain("select[select]");
+        expect(aquaCss).toContain("[select-label]");
+        expect(aquaCss).toContain("border-color: var(--juice-select-border)");
+        expect(aquaCss).not.toContain("--aqua-select-surface: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-select-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-select-chevron: var(--aqua-page)");
+        expect(aquaCss).not.toMatch(/select\[select\][^{]*\{[^}]*--aqua-button-background/);
+        expect(aquaCss).toContain("--juice-combobox-input: var(--aqua-combobox-input)");
+
+        expect(kiwiCss).toContain("--kw-select-surface: var(--kw-surface)");
+        expect(kiwiCss).toContain("--kw-select-border: var(--kw-border)");
+        expect(kiwiCss).toContain("--juice-select-chevron: var(--kw-select-chevron)");
+        expect(kiwiCss).toContain("--kw-select-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("select[select]");
+        expect(kiwiCss).not.toMatch(/select\[select\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/select\[select\][^{]*\{[^}]*background:\s*var\(--kw-accent\)/);
+
+        expect(mintCss).toContain("--cm-select-surface: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-select-border: var(--cm-border)");
+        expect(mintCss).toContain("--cm-select-chevron: var(--cm-heading)");
+        expect(mintCss).toContain("--cm-select-focus-ring: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-select-focus-ring: var(--cm-select-focus-ring)");
+        expect(mintCss).toContain("select[select]");
+        expect(mintCss).not.toContain("--cm-select-chevron: var(--cm-accent)");
+
+        expect(tideCss).toContain("--tide-select-surface: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-select-border: var(--tide-border)");
+        expect(tideCss).toContain("--tide-select-ink: var(--tide-text)");
+        expect(tideCss).toContain("--juice-select-chevron: var(--tide-select-chevron)");
+        expect(tideCss).toContain("select[select]");
+        expect(tideCss).not.toMatch(/select\[select\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-select-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-select-ink: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-select-chevron: var(--tide-page)");
+    });
+
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
         const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
         const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
@@ -1658,6 +1871,18 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initPagination");
         expect(module).toHaveProperty("startPaginationRuntime");
         expect(module).toHaveProperty("stopPaginationRuntime");
+        expect(module).toHaveProperty("createDisclosure");
+        expect(module).toHaveProperty("initDisclosure");
+        expect(module).toHaveProperty("startDisclosureRuntime");
+        expect(module).toHaveProperty("stopDisclosureRuntime");
+        expect(module).toHaveProperty("createSpinner");
+        expect(module).toHaveProperty("initSpinner");
+        expect(module).toHaveProperty("startSpinnerRuntime");
+        expect(module).toHaveProperty("stopSpinnerRuntime");
+        expect(module).toHaveProperty("createSelect");
+        expect(module).toHaveProperty("initSelect");
+        expect(module).toHaveProperty("startSelectRuntime");
+        expect(module).toHaveProperty("stopSelectRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

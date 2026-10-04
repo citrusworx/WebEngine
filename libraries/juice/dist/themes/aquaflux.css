@@ -452,6 +452,51 @@
   --juice-pagination-border: var(--aqua-pagination-border);
   --juice-pagination-focus-ring: var(--aqua-pagination-focus-ring);
   --juice-pagination-ellipsis: var(--aqua-pagination-ellipsis);
+  /* Disclosure chrome — standalone APG disclosure from existing tokens.
+     One trigger and one panel, not an accordion and not a CTA.
+     Open fill is highlight. Distinct from [accordion]. */
+  --aqua-disclosure-surface: var(--aqua-surface);
+  --aqua-disclosure-border: var(--aqua-border);
+  --aqua-disclosure-trigger: var(--aqua-surface-strong);
+  --aqua-disclosure-trigger-hover: var(--aqua-surface-muted);
+  --aqua-disclosure-trigger-open: var(--aqua-highlight);
+  --aqua-disclosure-ink: var(--aqua-text);
+  --aqua-disclosure-chevron: var(--aqua-accent);
+  --aqua-disclosure-focus-ring: var(--aqua-accent);
+  --juice-disclosure-surface: var(--aqua-disclosure-surface);
+  --juice-disclosure-border: var(--aqua-disclosure-border);
+  --juice-disclosure-trigger: var(--aqua-disclosure-trigger);
+  --juice-disclosure-trigger-hover: var(--aqua-disclosure-trigger-hover);
+  --juice-disclosure-trigger-open: var(--aqua-disclosure-trigger-open);
+  --juice-disclosure-ink: var(--aqua-disclosure-ink);
+  --juice-disclosure-chevron: var(--aqua-disclosure-chevron);
+  --juice-disclosure-focus-ring: var(--aqua-disclosure-focus-ring);
+  /* Spinner chrome — standalone indeterminate busy indicator from existing
+     tokens. The ring is a border stroke, not a CTA and not a progress
+     bar. Indicator is accent. Ink is text. Inline status — no overlay.
+     CSS owns the spin. Runtime is later. */
+  --aqua-spinner-track: var(--aqua-border);
+  --aqua-spinner-indicator: var(--aqua-accent);
+  --aqua-spinner-ink: var(--aqua-text);
+  --aqua-spinner-focus-ring: var(--aqua-accent);
+  --juice-spinner-track: var(--aqua-spinner-track);
+  --juice-spinner-indicator: var(--aqua-spinner-indicator);
+  --juice-spinner-ink: var(--aqua-spinner-ink);
+  --juice-spinner-focus-ring: var(--aqua-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a custom listbox, and not a CTA. Chevron is accent.
+     The platform popup stays native. Runtime is later. */
+  --aqua-select-surface: var(--aqua-surface-strong);
+  --aqua-select-border: var(--aqua-border-strong);
+  --aqua-select-ink: var(--aqua-text);
+  --aqua-select-chevron: var(--aqua-accent);
+  --aqua-select-focus-ring: var(--aqua-accent);
+  --juice-select-surface: var(--aqua-select-surface);
+  --juice-select-border: var(--aqua-select-border);
+  --juice-select-ink: var(--aqua-select-ink);
+  --juice-select-chevron: var(--aqua-select-chevron);
+  --juice-select-focus-ring: var(--aqua-select-focus-ring);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -1465,4 +1510,120 @@
 [theme=aquaflux] button[pagination-next]:focus-visible {
   outline: 2px solid var(--juice-pagination-focus-ring);
   outline-offset: 2px;
+}
+
+/* Disclosure chrome. Beat [theme] :where(button) CTA defaults.
+   Standalone one-trigger disclosure, not an accordion and not a CTA.
+   Runtime is later. */
+[theme=aquaflux] [disclosure] {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-disclosure-border);
+  box-shadow: none;
+  color: var(--juice-disclosure-ink);
+}
+
+[theme=aquaflux] button[disclosure-trigger],
+[theme=aquaflux] a[disclosure-trigger],
+[theme=aquaflux] [disclosure-trigger] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+}
+
+[theme=aquaflux] button[disclosure-trigger]:hover,
+[theme=aquaflux] a[disclosure-trigger]:hover,
+[theme=aquaflux] [disclosure-trigger]:hover {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-hover);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] button[disclosure-trigger][aria-expanded=true],
+[theme=aquaflux] a[disclosure-trigger][aria-expanded=true],
+[theme=aquaflux] [disclosure-trigger][aria-expanded=true] {
+  background-image: none;
+  background-color: var(--juice-disclosure-trigger-open);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+[theme=aquaflux] [disclosure-trigger]::after {
+  border-color: var(--juice-disclosure-chevron);
+}
+
+[theme=aquaflux] button[disclosure-trigger]:focus-visible,
+[theme=aquaflux] a[disclosure-trigger]:focus-visible,
+[theme=aquaflux] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[theme=aquaflux] [disclosure-panel],
+[theme=aquaflux] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  background-image: none;
+  background-color: var(--juice-disclosure-surface);
+  border-color: var(--juice-disclosure-border);
+  color: var(--juice-disclosure-ink);
+  box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a CTA.
+   CSS owns the spin. Runtime is later. */
+[theme=aquaflux] [spinner] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink);
+}
+
+[theme=aquaflux] [spinner]::before {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-spinner-track);
+  border-top-color: var(--juice-spinner-indicator);
+  box-shadow: none;
+}
+
+[theme=aquaflux] [spinner-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-spinner-ink);
+  box-shadow: none;
+}
+
+[theme=aquaflux] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=aquaflux] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=aquaflux] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=aquaflux] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }

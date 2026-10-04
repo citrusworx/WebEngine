@@ -910,4 +910,246 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
     });
+
+    it("lets a consumer mount and toggle the built disclosure runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopDisclosureRuntime();
+        document.body.innerHTML = `
+            <section disclosure name="shift-notes">
+                <button type="button" disclosure-trigger>Shift notes</button>
+                <div disclosure-panel hidden>Gate B closes at 9.</div>
+            </section>
+            <button type="button" id="orphan-trigger" disclosure-trigger aria-expanded="false">Orphan</button>
+        `;
+
+        const controller = module.createDisclosure({ root: document.body });
+        const trigger = document.querySelector("[disclosure] [disclosure-trigger]");
+        const panel = document.querySelector("[disclosure-panel]");
+        const orphan = document.getElementById("orphan-trigger");
+
+        expect(trigger?.getAttribute("aria-controls")).toBe("shift-notes-panel");
+        expect(trigger?.getAttribute("aria-expanded")).toBe("false");
+        expect(panel?.getAttribute("role")).toBe("region");
+        expect(panel?.hasAttribute("hidden")).toBe(true);
+        expect(panel?.getAttribute("aria-hidden")).toBe("true");
+        expect(panel?.getAttribute("content")).toBeNull();
+
+        trigger?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        expect(trigger?.getAttribute("aria-expanded")).toBe("true");
+        expect(panel?.hasAttribute("hidden")).toBe(false);
+        expect(panel?.getAttribute("content")).toBeNull();
+
+        panel?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, key: "Escape" })
+        );
+        expect(trigger?.getAttribute("aria-expanded")).toBe("false");
+        expect(panel?.hasAttribute("hidden")).toBe(true);
+
+        orphan?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        expect(orphan?.getAttribute("aria-expanded")).toBe("false");
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        module.stopDisclosureRuntime();
+        module.stopPaginationRuntime();
+        module.stopProgressRuntime();
+        module.stopBreadcrumbRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer show and hide the built spinner runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopSpinnerRuntime();
+        module.stopProgressRuntime();
+        document.body.innerHTML = `
+            <div spinner id="load" aria-label="Saving">
+                <span spinner-label>Saving</span>
+            </div>
+            <div spinner hidden id="held" role="status" aria-busy="true" aria-label="Waiting"></div>
+            <div progress id="upload" aria-valuenow="40" aria-label="Upload"></div>
+        `;
+
+        const progress = module.createProgress({ root: document.body });
+        const controller = module.createSpinner({ root: document.body });
+        const load = document.getElementById("load");
+        const held = document.getElementById("held");
+        const upload = document.getElementById("upload");
+        const label = load?.querySelector("[spinner-label]");
+
+        expect(load?.getAttribute("role")).toBe("status");
+        expect(load?.getAttribute("aria-busy")).toBe("true");
+        expect(load?.hasAttribute("tabindex")).toBe(false);
+        expect(load?.getAttribute("aria-label")).toBe("Saving");
+        expect(label?.textContent).toBe("Saving");
+        expect(load?.hasAttribute("aria-valuenow")).toBe(false);
+        expect(controller.isShown(load)).toBe(true);
+
+        expect(held?.hasAttribute("hidden")).toBe(true);
+        expect(held?.hasAttribute("role")).toBe(false);
+        expect(held?.hasAttribute("aria-busy")).toBe(false);
+        expect(held?.getAttribute("aria-label")).toBe("Waiting");
+        expect(controller.isShown(held)).toBe(false);
+
+        expect(upload?.getAttribute("role")).toBe("progressbar");
+        expect(upload?.getAttribute("aria-valuemin")).toBe("0");
+        expect(upload?.getAttribute("aria-valuemax")).toBe("100");
+        expect(upload?.getAttribute("aria-valuenow")).toBe("40");
+        expect(upload?.hasAttribute("aria-busy")).toBe(false);
+
+        controller.hide(load);
+        expect(load?.hasAttribute("hidden")).toBe(true);
+        expect(load?.hasAttribute("role")).toBe(false);
+        expect(load?.hasAttribute("aria-busy")).toBe(false);
+        expect(load?.getAttribute("aria-label")).toBe("Saving");
+        expect(held?.hasAttribute("hidden")).toBe(true);
+
+        load?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, key: "Escape" })
+        );
+        expect(load?.hasAttribute("hidden")).toBe(true);
+
+        controller.show(held);
+        expect(held?.hasAttribute("hidden")).toBe(false);
+        expect(held?.getAttribute("role")).toBe("status");
+        expect(held?.getAttribute("aria-busy")).toBe("true");
+        expect(upload?.getAttribute("role")).toBe("progressbar");
+        expect(upload?.getAttribute("aria-valuenow")).toBe("40");
+        expect(upload?.hasAttribute("aria-busy")).toBe(false);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        progress.destroy();
+        module.stopSpinnerRuntime();
+        module.stopSelectRuntime();
+        module.stopDisclosureRuntime();
+        module.stopPaginationRuntime();
+        module.stopProgressRuntime();
+        module.stopBreadcrumbRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer name a native select from a visible label", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            document.body.innerHTML = `
+                <label for="city" id="city-label">City</label>
+                <select select id="city">
+                    <option value="pdx">Portland</option>
+                    <option value="slm">Salem</option>
+                </select>
+                <label>
+                    Flavor
+                    <select select id="flavor" multiple>
+                        <option selected>Lime</option>
+                        <option>Mint</option>
+                    </select>
+                </label>
+                <select select id="named" aria-label="Region"></select>
+                <div combobox id="combo">
+                    <input combobox-input type="text" />
+                    <ul combobox-list hidden>
+                        <li combobox-option>Apple</li>
+                    </ul>
+                </div>
+            `;
+
+            const controller = module.createSelect({ root: document.body });
+            const city = document.getElementById("city") as HTMLSelectElement;
+            const flavor = document.getElementById("flavor") as HTMLSelectElement;
+            const named = document.getElementById("named");
+            const input = document.querySelector("[combobox-input]");
+            const list = document.querySelector("[combobox-list]");
+
+            expect(city.getAttribute("aria-labelledby")).toBe("city-label");
+            expect(city.hasAttribute("role")).toBe(false);
+            expect(city.hasAttribute("aria-expanded")).toBe(false);
+            expect(city.hasAttribute("tabindex")).toBe(false);
+
+            expect(flavor.getAttribute("aria-label")).toBe("Flavor");
+            expect(flavor.getAttribute("aria-label")).not.toMatch(/Lime/);
+            expect(flavor.hasAttribute("multiple")).toBe(true);
+            expect(flavor.hasAttribute("role")).toBe(false);
+            expect(flavor.selectedOptions[0]?.textContent).toBe("Lime");
+
+            expect(named?.getAttribute("aria-label")).toBe("Region");
+            expect(named?.hasAttribute("aria-labelledby")).toBe(false);
+
+            city.value = "slm";
+            const change = new Event("change", { bubbles: true, cancelable: true });
+            city.dispatchEvent(change);
+            expect(change.defaultPrevented).toBe(false);
+            expect(city.value).toBe("slm");
+
+            const keydown = new KeyboardEvent("keydown", {
+                bubbles: true,
+                cancelable: true,
+                key: "Escape"
+            });
+            city.dispatchEvent(keydown);
+            expect(keydown.defaultPrevented).toBe(false);
+            expect(city.value).toBe("slm");
+            expect(input?.hasAttribute("role")).toBe(false);
+            expect(list?.hasAttribute("hidden")).toBe(true);
+            expect(list?.hasAttribute("role")).toBe(false);
+
+            document.body.innerHTML = "";
+            controller.destroy();
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            module.stopSpinnerRuntime();
+            module.stopDisclosureRuntime();
+            module.stopPaginationRuntime();
+            module.stopProgressRuntime();
+            module.stopBreadcrumbRuntime();
+            module.stopRadioRuntime();
+            module.stopCheckboxRuntime();
+            module.stopSliderRuntime();
+            module.stopSwitchRuntime();
+            module.stopMenuRuntime();
+            module.stopBannerRuntime();
+            module.stopTooltipRuntime();
+            module.stopWizardRuntime();
+            module.stopPopoverRuntime();
+            module.stopToastRuntime();
+            module.stopDrawerRuntime();
+            module.stopModalRuntime();
+            module.stopTabsRuntime();
+            module.stopAccordionRuntime();
+            module.stopNavigationRuntime();
+        });
+    });
 });

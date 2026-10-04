@@ -60,6 +60,40 @@ export async function doRequest(config) {
         throw wrapDoError(error);
     }
 }
+const MAX_LIST_PAGES = 100;
+function nextPagePath(body) {
+    const links = body.links;
+    if (!links || typeof links !== "object") {
+        return undefined;
+    }
+    const pages = links.pages;
+    const next = pages?.next;
+    return typeof next === "string" && next.length > 0 ? next : undefined;
+}
+/** Follow `links.pages.next` and concatenate one collection key. */
+export async function doList(url, collectionKey, params) {
+    const items = [];
+    let path = url;
+    let query = { per_page: 200, ...params };
+    for (let page = 0; page < MAX_LIST_PAGES && path; page += 1) {
+        const response = await doRequest({
+            method: "GET",
+            url: path,
+            params: query
+        });
+        const chunk = response[collectionKey];
+        if (Array.isArray(chunk)) {
+            items.push(...chunk);
+        }
+        const next = nextPagePath(response);
+        if (!next) {
+            return items;
+        }
+        path = next.startsWith(DO_API_BASE) ? next.slice(DO_API_BASE.length) : next;
+        query = undefined;
+    }
+    throw new DigitalOceanError(`DigitalOcean list ${url} exceeded ${MAX_LIST_PAGES} pages`);
+}
 export const client = {
     get(url, config) {
         return doRequest({

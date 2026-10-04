@@ -4,6 +4,8 @@ import type { GrapePlan, PlannedResource } from "../config/plan.js";
 import { RESOURCE_KINDS, type ResourceCounts } from "../config/plan.js";
 import type { LiveInventory } from "../config/live.js";
 import { dropletAddresses, dropletRegion } from "../config/live.js";
+import { volumeRegionSlug } from "../providers/digitalocean/volumes/volumes.js";
+import { reservedIpRegionSlug } from "../providers/digitalocean/reserved-ips/reserved-ips.js";
 import { dash, formatLabeled, formatTable, println } from "./format.js";
 
 function countLine(counts: ResourceCounts): string {
@@ -117,6 +119,16 @@ export function renderApply(result: ApplyResult): void {
         lines.push(
             `  certificate     ${certificate.name}  id=${certificate.id}  type=${dash(certificate.type)}  state=${dash(certificate.state)}`
         );
+    }
+    for (const project of result.projects ?? []) {
+        lines.push(`  project         ${project.name}  id=${project.id}`);
+    }
+    for (const volume of result.volumes ?? []) {
+        lines.push(`  volume          ${volume.name}  id=${volume.id}  region=${volume.region}`);
+    }
+    for (const cluster of result.kubernetes_clusters ?? []) {
+        const status = cluster.status ? `  status=${cluster.status}` : "";
+        lines.push(`  kubernetes      ${cluster.name}  id=${cluster.id}${status}`);
     }
     for (const endpoint of result.cdn) {
         const custom = endpoint.custom_domain ? `  custom_domain=${endpoint.custom_domain}` : "";
@@ -358,6 +370,69 @@ export function overlapWithConfig(plan: GrapePlan, inventory: LiveInventory): St
                 }
                 break;
             }
+            case "project": {
+                const matches = inventory.projects.filter((item) => item.name === resource.name);
+                if (matches.length === 1) {
+                    rows.push({ kind: "project", name: resource.name, state: "present", id: matches[0].id });
+                } else if (matches.length === 0) {
+                    rows.push({ kind: "project", name: resource.name, state: "missing" });
+                } else {
+                    rows.push({
+                        kind: "project",
+                        name: resource.name,
+                        state: "present",
+                        extra: `ambiguous (${matches.length} matches)`
+                    });
+                }
+                break;
+            }
+            case "volume": {
+                const region = resource.detail.region;
+                const matches = inventory.volumes.filter(
+                    (item) => item.name === resource.name && volumeRegionSlug(item) === region
+                );
+                if (matches.length === 1) {
+                    rows.push({
+                        kind: "volume",
+                        name: resource.name,
+                        state: "present",
+                        id: matches[0].id,
+                        extra: `region=${region}`
+                    });
+                } else if (matches.length === 0) {
+                    rows.push({ kind: "volume", name: resource.name, state: "missing" });
+                } else {
+                    rows.push({
+                        kind: "volume",
+                        name: resource.name,
+                        state: "present",
+                        extra: `ambiguous (${matches.length} matches)`
+                    });
+                }
+                break;
+            }
+            case "kubernetes": {
+                const matches = inventory.kubernetes_clusters.filter((item) => item.name === resource.name);
+                if (matches.length === 1) {
+                    rows.push({
+                        kind: "kubernetes",
+                        name: resource.name,
+                        state: "present",
+                        id: matches[0].id,
+                        extra: matches[0].status?.state ? `status=${matches[0].status.state}` : undefined
+                    });
+                } else if (matches.length === 0) {
+                    rows.push({ kind: "kubernetes", name: resource.name, state: "missing" });
+                } else {
+                    rows.push({
+                        kind: "kubernetes",
+                        name: resource.name,
+                        state: "present",
+                        extra: `ambiguous (${matches.length} matches)`
+                    });
+                }
+                break;
+            }
             case "cdn": {
                 const origin = resource.detail.origin;
                 const matches = inventory.cdn.filter((item) => item.origin === origin);
@@ -390,6 +465,21 @@ export function overlapWithConfig(plan: GrapePlan, inventory: LiveInventory): St
 }
 
 export function renderLiveStatus(inventory: LiveInventory): void {
+    const account = inventory.account;
+    if (account) {
+        println(
+            `Account  ${account.email || "(no email)"}  status=${account.status}  droplet_limit=${account.droplet_limit}`
+        );
+        if (inventory.billing?.error) {
+            println(`Billing  unavailable (${inventory.billing.error})`);
+        } else if (inventory.billing?.balance) {
+            println(
+                `Billing  month_to_date_usage=${inventory.billing.balance.month_to_date_usage}  account_balance=${inventory.billing.balance.account_balance}`
+            );
+        }
+        println();
+    }
+
     println(`Droplets (${inventory.droplets.length})`);
     if (inventory.droplets.length === 0) {
         println("  (none)");
@@ -539,6 +629,109 @@ export function renderLiveStatus(inventory: LiveInventory): void {
                     { key: "state", header: "STATE" }
                 ]
             )
+        );
+    }
+
+    println();
+    println(`Projects (${inventory.projects?.length ?? 0})`);
+    if (!inventory.projects || inventory.projects.length === 0) {
+        println("  (none)");
+    } else {
+        println(
+            formatTable(
+                inventory.projects.map((project) => ({
+                    name: project.name,
+                    id: project.id,
+                    env: project.environment ?? "-",
+                    def: project.is_default ? "yes" : "no"
+                })),
+                [
+                    { key: "name", header: "NAME" },
+                    { key: "id", header: "ID" },
+                    { key: "env", header: "ENVIRONMENT" },
+                    { key: "def", header: "DEFAULT" }
+                ]
+            )
+        );
+    }
+
+    println();
+    println(`Volumes (${inventory.volumes?.length ?? 0})`);
+    if (!inventory.volumes || inventory.volumes.length === 0) {
+        println("  (none)");
+    } else {
+        println(
+            formatTable(
+                inventory.volumes.map((volume) => ({
+                    name: volume.name,
+                    id: volume.id,
+                    region: volumeRegionSlug(volume) || "-",
+                    size: String(volume.size_gigabytes)
+                })),
+                [
+                    { key: "name", header: "NAME" },
+                    { key: "id", header: "ID" },
+                    { key: "region", header: "REGION" },
+                    { key: "size", header: "GIB" }
+                ]
+            )
+        );
+    }
+
+    println();
+    println(`Reserved IPs (${inventory.reserved_ips?.length ?? 0})`);
+    if (!inventory.reserved_ips || inventory.reserved_ips.length === 0) {
+        println("  (none)");
+    } else {
+        println(
+            formatTable(
+                inventory.reserved_ips.map((reserved) => ({
+                    ip: reserved.ip,
+                    region: reservedIpRegionSlug(reserved) || "-",
+                    droplet: reserved.droplet?.id !== undefined ? String(reserved.droplet.id) : "-"
+                })),
+                [
+                    { key: "ip", header: "IP" },
+                    { key: "region", header: "REGION" },
+                    { key: "droplet", header: "DROPLET" }
+                ]
+            )
+        );
+    }
+
+    println();
+    println(`Kubernetes (${inventory.kubernetes_clusters?.length ?? 0})`);
+    if (!inventory.kubernetes_clusters || inventory.kubernetes_clusters.length === 0) {
+        println("  (none)");
+    } else {
+        println(
+            formatTable(
+                inventory.kubernetes_clusters.map((cluster) => ({
+                    name: cluster.name,
+                    id: cluster.id,
+                    region: cluster.region,
+                    version: cluster.version,
+                    status: cluster.status?.state ?? "-"
+                })),
+                [
+                    { key: "name", header: "NAME" },
+                    { key: "id", header: "ID" },
+                    { key: "region", header: "REGION" },
+                    { key: "version", header: "VERSION" },
+                    { key: "status", header: "STATUS" }
+                ]
+            )
+        );
+    }
+
+    println();
+    if (inventory.registry_error) {
+        println(`Registry  unavailable (${inventory.registry_error})`);
+    } else if (!inventory.registry) {
+        println("Registry  (none)");
+    } else {
+        println(
+            `Registry  ${inventory.registry.name}  region=${inventory.registry.region ?? "-"}  repositories=${inventory.registry_repositories?.length ?? 0}`
         );
     }
 

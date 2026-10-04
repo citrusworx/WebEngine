@@ -1,3 +1,6 @@
+import { digitalOceanCatalog, formatProviderCatalog } from "../providers/catalog/catalog.js";
+import { fetchDigitalOceanOfferings, formatOfferings } from "../providers/digitalocean/offerings/offerings.js";
+import { fetchTelemetry } from "../providers/digitalocean/monitoring/telemetry.js";
 import { applyGrapeConfig } from "../config/apply.js";
 import { DESTROY_V1_NOTES, destroyGrapeResources, planDestroy } from "../config/destroy.js";
 import { loadGrapeConfig } from "../config/load.js";
@@ -32,6 +35,10 @@ export interface CommandOptions {
     list?: boolean;
     force?: boolean;
     blueprint?: string;
+    offerings?: boolean;
+    droplet?: string;
+    start?: string;
+    end?: string;
 }
 
 function requireConfig(config: string | undefined): string {
@@ -209,6 +216,92 @@ export async function handleStatus(options: CommandOptions): Promise<void> {
     if (plan) {
         println();
         renderOverlap(overlapWithConfig(plan, inventory));
+    }
+}
+
+function requireToken(): void {
+    if (!tokenIsSet()) {
+        throw new CliError("DO_TOKEN is not set. Export a DigitalOcean personal access token.");
+    }
+}
+
+export async function handleCatalog(options: CommandOptions): Promise<void> {
+    if (options.offerings) {
+        await handleOfferings(options);
+        return;
+    }
+    if (options.json) {
+        printJson(digitalOceanCatalog);
+        return;
+    }
+    println(formatProviderCatalog());
+}
+
+export async function handleOfferings(options: CommandOptions): Promise<void> {
+    requireToken();
+    const offerings = await fetchDigitalOceanOfferings();
+    if (options.json) {
+        printJson(offerings);
+        return;
+    }
+    println(formatOfferings(offerings));
+}
+
+export async function handleTelemetry(options: CommandOptions): Promise<void> {
+    requireToken();
+    const start = options.start !== undefined ? Number(options.start) : undefined;
+    const end = options.end !== undefined ? Number(options.end) : undefined;
+    if ((options.start !== undefined && !Number.isFinite(start)) || (options.end !== undefined && !Number.isFinite(end))) {
+        throw new CliError("--start and --end must be unix timestamps in seconds");
+    }
+    const report = await fetchTelemetry({
+        dropletId: options.droplet,
+        start,
+        end
+    });
+    if (options.json) {
+        printJson(report);
+        return;
+    }
+    println(`Alert policies (${report.alert_policies.length})`);
+    if (report.alert_policies.length === 0) {
+        println("  (none)");
+    } else {
+        for (const policy of report.alert_policies) {
+            println(`  ${policy.description}  uuid=${policy.uuid}  type=${policy.type}  enabled=${policy.enabled}`);
+        }
+    }
+    println();
+    println(`Uptime checks (${report.uptime_checks.length})`);
+    if (report.uptime_checks.length === 0) {
+        println("  (none)");
+    } else {
+        for (const check of report.uptime_checks) {
+            println(`  ${check.name}  id=${check.id}  ${check.type} ${check.target}  enabled=${check.enabled}`);
+        }
+    }
+    println();
+    if (!report.droplet) {
+        println("Droplet metrics  (pass --droplet <id> to read bandwidth, CPU, and memory)");
+    } else {
+        const series = [
+            ["bandwidth public inbound", report.droplet.bandwidth_public_inbound],
+            ["bandwidth public outbound", report.droplet.bandwidth_public_outbound],
+            ["cpu", report.droplet.cpu],
+            ["memory available", report.droplet.memory_available],
+            ["memory total", report.droplet.memory_total]
+        ] as const;
+        println(`Droplet ${report.droplet.host_id}  ${report.droplet.start}..${report.droplet.end}`);
+        for (const [label, metric] of series) {
+            const points = metric.result.reduce((sum, sample) => sum + sample.values.length, 0);
+            const agent = metric.agent_required ? "  agent required" : "";
+            println(`  ${label}  samples=${points}${agent}`);
+        }
+    }
+    println();
+    println("Notes");
+    for (const note of report.notes) {
+        println(`  - ${note}`);
     }
 }
 

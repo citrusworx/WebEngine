@@ -97922,6 +97922,139 @@ button[checkbox][aria-disabled=true],
   margin: 0;
 }
 
+[disclosure],
+[theme] [disclosure] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--juice-disclosure-border, var(--aqua-disclosure-border, var(--kw-disclosure-border, var(--cm-disclosure-border, var(--tide-disclosure-border, var(--jx-disclosure-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0.75rem;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  line-height: 1.35;
+}
+
+[disclosure-trigger],
+button[disclosure-trigger],
+a[disclosure-trigger],
+[theme] [disclosure-trigger],
+[theme] button[disclosure-trigger],
+[theme] a[disclosure-trigger] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0.875rem 1.25rem;
+  border: none;
+  border-radius: 0.75rem;
+  background-color: var(--juice-disclosure-trigger, var(--aqua-disclosure-trigger, var(--kw-disclosure-trigger, var(--cm-disclosure-trigger, var(--tide-disclosure-trigger, var(--jx-disclosure-trigger, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  font-weight: 600;
+  line-height: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+[disclosure-trigger][aria-expanded=true],
+button[disclosure-trigger][aria-expanded=true],
+a[disclosure-trigger][aria-expanded=true],
+[theme] [disclosure-trigger][aria-expanded=true],
+[theme] button[disclosure-trigger][aria-expanded=true],
+[theme] a[disclosure-trigger][aria-expanded=true] {
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+[disclosure-trigger]::after,
+[theme] [disclosure-trigger]::after {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: 1rem;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: var(--juice-disclosure-chevron, var(--aqua-disclosure-chevron, var(--kw-disclosure-chevron, var(--cm-disclosure-chevron, var(--tide-disclosure-chevron, var(--jx-disclosure-chevron, currentColor))))));
+  border-width: 0 2px 2px 0;
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease;
+}
+
+[disclosure-trigger][aria-expanded=true]::after,
+[theme] [disclosure-trigger][aria-expanded=true]::after {
+  transform: rotate(45deg);
+}
+
+[disclosure] [disclosure-trigger]:hover:not([aria-expanded=true]),
+[theme] [disclosure] [disclosure-trigger]:hover:not([aria-expanded=true]) {
+  background-color: var(--juice-disclosure-trigger-hover, var(--aqua-disclosure-trigger-hover, var(--kw-disclosure-trigger-hover, var(--cm-disclosure-trigger-hover, var(--tide-disclosure-trigger-hover, var(--jx-disclosure-trigger-hover, hsl(0, 0%, 90%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  text-decoration: none;
+}
+
+[disclosure] [disclosure-trigger][aria-expanded=true],
+[theme] [disclosure] [disclosure-trigger][aria-expanded=true] {
+  background-color: var(--juice-disclosure-trigger-open, var(--aqua-disclosure-trigger-open, var(--kw-disclosure-trigger-open, var(--cm-disclosure-trigger-open, var(--tide-disclosure-trigger-open, var(--jx-disclosure-trigger-open, hsl(0, 0%, 90%)))))));
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+}
+
+[disclosure] [disclosure-trigger]:focus-visible,
+[theme] [disclosure] [disclosure-trigger]:focus-visible {
+  outline: 2px solid var(--juice-disclosure-focus-ring, var(--aqua-disclosure-focus-ring, var(--kw-disclosure-focus-ring, var(--cm-disclosure-focus-ring, var(--tide-disclosure-focus-ring, var(--jx-disclosure-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+[disclosure-panel],
+[disclosure] > [disclosure-trigger] + :not([disclosure-trigger]),
+[theme] [disclosure-panel],
+[theme] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.75rem 1.25rem 1rem;
+  border: none;
+  border-top: 1px solid var(--juice-disclosure-border, var(--aqua-disclosure-border, var(--kw-disclosure-border, var(--cm-disclosure-border, var(--tide-disclosure-border, var(--jx-disclosure-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0 0 0.75rem 0.75rem;
+  background-color: var(--juice-disclosure-surface, var(--aqua-disclosure-surface, var(--kw-disclosure-surface, var(--cm-disclosure-surface, var(--tide-disclosure-surface, var(--jx-disclosure-surface, hsl(0, 0%, 100%)))))));
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-disclosure-ink, var(--aqua-disclosure-ink, var(--kw-disclosure-ink, var(--cm-disclosure-ink, var(--tide-disclosure-ink, var(--jx-disclosure-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [disclosure-trigger],
+  [disclosure-trigger]::after {
+    transition: none;
+  }
+}
 [drawer-overlay],
 [theme] [drawer-overlay] {
   position: fixed;
@@ -100674,6 +100807,88 @@ button[radio][aria-disabled=true],
     gap: 0.75rem;
   }
 }
+[select-label],
+label[select-label],
+[theme] [select-label],
+[theme] label[select-label] {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-select-ink, var(--aqua-select-ink, var(--kw-select-ink, var(--cm-select-ink, var(--tide-select-ink, var(--jx-select-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+:where(select[select]) {
+  border: 1px solid var(--juice-select-border, var(--aqua-select-border, var(--kw-select-border, var(--cm-select-border, var(--tide-select-border, var(--jx-select-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0.5rem;
+  font: inherit;
+  line-height: 1.4;
+}
+
+select[select],
+[theme] select[select] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  box-sizing: border-box;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  padding-block: 0.5rem;
+  padding-inline: 0.75rem 2.25rem;
+  border-color: var(--juice-select-border, var(--aqua-select-border, var(--kw-select-border, var(--cm-select-border, var(--tide-select-border, var(--jx-select-border, hsl(0, 0%, 85%)))))));
+  background-color: var(--juice-select-surface, var(--aqua-select-surface, var(--kw-select-surface, var(--cm-select-surface, var(--tide-select-surface, var(--jx-select-surface, hsl(0, 0%, 100%)))))));
+  background-image: linear-gradient(135deg, transparent 38%, var(--juice-select-chevron, var(--aqua-select-chevron, var(--kw-select-chevron, var(--cm-select-chevron, var(--tide-select-chevron, var(--jx-select-chevron, currentColor)))))) 38% 62%, transparent 62%), linear-gradient(45deg, transparent 38%, var(--juice-select-chevron, var(--aqua-select-chevron, var(--kw-select-chevron, var(--cm-select-chevron, var(--tide-select-chevron, var(--jx-select-chevron, currentColor)))))) 38% 62%, transparent 62%);
+  background-repeat: no-repeat;
+  background-position: right 1.2rem center, right 0.75rem center;
+  background-size: 0.45rem 0.45rem, 0.45rem 0.45rem;
+  color: var(--juice-select-ink, var(--aqua-select-ink, var(--kw-select-ink, var(--cm-select-ink, var(--tide-select-ink, var(--jx-select-ink, hsl(0, 0%, 25%)))))));
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+select[select]::-ms-expand,
+[theme] select[select]::-ms-expand {
+  display: none;
+}
+
+select[select][multiple],
+select[select][size]:not([size="1"]),
+[theme] select[select][multiple],
+[theme] select[select][size]:not([size="1"]) {
+  appearance: revert;
+  -webkit-appearance: revert;
+  background-image: none;
+  padding-inline-end: 0.75rem;
+  cursor: auto;
+}
+
+select[select]:focus-visible,
+[theme] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring, var(--aqua-select-focus-ring, var(--kw-select-focus-ring, var(--cm-select-focus-ring, var(--tide-select-focus-ring, var(--jx-select-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+select[select]:disabled,
+select[select][disabled],
+[theme] select[select]:disabled,
+[theme] select[select][disabled] {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 [section-header] {
   display: flex;
   flex-direction: column;
@@ -101844,6 +102059,80 @@ button[slider-thumb]:focus-visible,
   [slider-thumb],
   [theme] [slider-thumb] {
     transition: none;
+  }
+}
+[spinner],
+[theme] [spinner] {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 0.5rem;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--juice-spinner-ink, var(--aqua-spinner-ink, var(--kw-spinner-ink, var(--cm-spinner-ink, var(--tide-spinner-ink, var(--jx-spinner-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  line-height: 1.3;
+  cursor: default;
+  vertical-align: middle;
+}
+
+[spinner]::before,
+[theme] [spinner]::before {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  box-sizing: border-box;
+  border: 2px solid var(--juice-spinner-track, var(--aqua-spinner-track, var(--kw-spinner-track, var(--cm-spinner-track, var(--tide-spinner-track, var(--jx-spinner-track, hsl(0, 0%, 85%)))))));
+  border-top-color: var(--juice-spinner-indicator, var(--aqua-spinner-indicator, var(--kw-spinner-indicator, var(--cm-spinner-indicator, var(--tide-spinner-indicator, var(--jx-spinner-indicator, hsl(0, 0%, 65%)))))));
+  border-radius: 999px;
+  background-color: transparent;
+  background-image: none;
+  pointer-events: none;
+  animation: juice-spinner-spin 0.8s linear infinite;
+}
+
+[spinner-label],
+[theme] [spinner-label] {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink, var(--aqua-spinner-ink, var(--kw-spinner-ink, var(--cm-spinner-ink, var(--tide-spinner-ink, var(--jx-spinner-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  line-height: inherit;
+}
+
+[spinner]:focus-visible,
+[theme] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring, var(--aqua-spinner-focus-ring, var(--kw-spinner-focus-ring, var(--cm-spinner-focus-ring, var(--tide-spinner-focus-ring, var(--jx-spinner-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+@keyframes juice-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [spinner]::before,
+  [theme] [spinner]::before {
+    animation: none;
+    transform: none;
   }
 }
 [stats] {

@@ -1,5 +1,5 @@
 import { parseYAML } from "../../../infrastructure/util/utilities.js";
-import { doRequest } from "../client.js";
+import { doList, doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
 
 export interface ImageBlueprint {
@@ -34,6 +34,14 @@ export interface ImageResource {
     description?: string;
     tags?: string[];
     status?: string;
+}
+
+/** Public distribution images for the offerings catalog. Follows pagination. */
+export async function listPublicImages(): Promise<ImageResource[]> {
+    return doList<ImageResource>("/images", "images", {
+        type: "distribution",
+        private: false
+    });
 }
 
 export async function listAllImages(

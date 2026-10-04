@@ -429,6 +429,56 @@
     --juice-pagination-focus-ring: var(--cm-pagination-focus-ring);
     --juice-pagination-ellipsis: var(--cm-pagination-ellipsis);
 
+    /* Disclosure chrome — standalone APG disclosure from the thinner --cm-* set.
+       No accent token: heading stands in for the chevron and focus ring.
+       Not an accordion and not a heading-fill CTA. */
+    --cm-disclosure-surface: var(--cm-surface);
+    --cm-disclosure-border: var(--cm-border);
+    --cm-disclosure-trigger: var(--cm-surface);
+    --cm-disclosure-trigger-hover: var(--cm-surface-muted);
+    --cm-disclosure-trigger-open: var(--cm-surface-muted);
+    --cm-disclosure-ink: var(--cm-text);
+    --cm-disclosure-chevron: var(--cm-heading);
+    --cm-disclosure-focus-ring: var(--cm-heading);
+    --juice-disclosure-surface: var(--cm-disclosure-surface);
+    --juice-disclosure-border: var(--cm-disclosure-border);
+    --juice-disclosure-trigger: var(--cm-disclosure-trigger);
+    --juice-disclosure-trigger-hover: var(--cm-disclosure-trigger-hover);
+    --juice-disclosure-trigger-open: var(--cm-disclosure-trigger-open);
+    --juice-disclosure-ink: var(--cm-disclosure-ink);
+    --juice-disclosure-chevron: var(--cm-disclosure-chevron);
+    --juice-disclosure-focus-ring: var(--cm-disclosure-focus-ring);
+
+    /* Spinner chrome — standalone indeterminate busy indicator. No accent
+       token: heading stands in for the indicator and focus ring. The ring
+       is a border stroke, not heading-fill and not a progress bar.
+       Inline status — no overlay. CSS owns the spin. Runtime is later. */
+    --cm-spinner-track: var(--cm-border);
+    --cm-spinner-indicator: var(--cm-heading);
+    --cm-spinner-ink: var(--cm-text);
+    --cm-spinner-focus-ring: var(--cm-heading);
+    --juice-spinner-track: var(--cm-spinner-track);
+    --juice-spinner-indicator: var(--cm-spinner-indicator);
+    --juice-spinner-ink: var(--cm-spinner-ink);
+    --juice-spinner-focus-ring: var(--cm-spinner-focus-ring);
+
+    /* Select chrome — styled native <select>. No accent token: heading
+       stands in for the chevron and focus ring. Field is a surface, not
+       a heading-fill CTA and not a combobox. The platform popup stays
+       native. Runtime is later. */
+    --cm-select-surface: var(--cm-surface);
+    --cm-select-border: var(--cm-border);
+    --cm-select-ink: var(--cm-text);
+    --cm-select-chevron: var(--cm-heading);
+    --cm-select-focus-ring: var(--cm-heading);
+    --juice-select-surface: var(--cm-select-surface);
+    --juice-select-border: var(--cm-select-border);
+    --juice-select-ink: var(--cm-select-ink);
+    --juice-select-chevron: var(--cm-select-chevron);
+    --juice-select-focus-ring: var(--cm-select-focus-ring);
+
+
+
     background-color: var(--cm-page);
     color: var(--cm-text);
     font-family: var(--cm-body-font);
@@ -1138,3 +1188,121 @@
     outline: 2px solid var(--juice-pagination-focus-ring);
     outline-offset: 2px;
 }
+
+/* Disclosure chrome. Beat generic fills and button CTAs. Heading paints
+   the chevron, not a CTA. Not an accordion. Runtime is later. */
+[theme="citrusmint"] [disclosure] {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-disclosure-border);
+    box-shadow: none;
+    color: var(--juice-disclosure-ink);
+}
+
+[theme="citrusmint"] button[disclosure-trigger],
+[theme="citrusmint"] a[disclosure-trigger],
+[theme="citrusmint"] [disclosure-trigger] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+}
+
+[theme="citrusmint"] button[disclosure-trigger]:hover,
+[theme="citrusmint"] a[disclosure-trigger]:hover,
+[theme="citrusmint"] [disclosure-trigger]:hover {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-hover);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="citrusmint"] button[disclosure-trigger][aria-expanded="true"],
+[theme="citrusmint"] a[disclosure-trigger][aria-expanded="true"],
+[theme="citrusmint"] [disclosure-trigger][aria-expanded="true"] {
+    background-image: none;
+    background-color: var(--juice-disclosure-trigger-open);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+    transform: none;
+}
+
+[theme="citrusmint"] [disclosure-trigger]::after {
+    border-color: var(--juice-disclosure-chevron);
+}
+
+[theme="citrusmint"] button[disclosure-trigger]:focus-visible,
+[theme="citrusmint"] a[disclosure-trigger]:focus-visible,
+[theme="citrusmint"] [disclosure-trigger]:focus-visible {
+    outline: 2px solid var(--juice-disclosure-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[theme="citrusmint"] [disclosure-panel],
+[theme="citrusmint"] [disclosure] > [disclosure-trigger] + :not([disclosure-trigger]) {
+    background-image: none;
+    background-color: var(--juice-disclosure-surface);
+    border-color: var(--juice-disclosure-border);
+    color: var(--juice-disclosure-ink);
+    box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Heading paints the indicator, not a CTA. Not a progress bar.
+   CSS owns the spin. Runtime is later. */
+[theme="citrusmint"] [spinner] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="citrusmint"] [spinner]::before {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="citrusmint"] [spinner-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="citrusmint"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Heading paints the chevron and focus ring, not a CTA.
+   Not a combobox. Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme="citrusmint"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="citrusmint"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="citrusmint"] [select-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
+
+

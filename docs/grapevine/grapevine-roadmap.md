@@ -14,6 +14,8 @@ It is a DigitalOcean provisioning library with five visible layers:
 
 The strongest part of Grapevine today is still the DigitalOcean-first model: one real adapter, a schema that refuses other clouds, and an apply order that makes `vpc:` / `droplets:` work **inside one process**. The next strongest areas are the function exports (list/get/delete) and the in-repo `01`–`04` blueprints.
 
+The dashboard contract is the provider catalog (`grape catalog --json` and `catalog/digitalocean.json`). It describes DigitalOcean product areas, maturity, operations, YAML apply, and auth env vars. A second cloud is another `ProviderCatalog` with the same `schema_version`. No second provider is implemented.
+
 The weakest areas are still:
 
 - apply is create-only (no idempotency, no rollback, no plan)
@@ -51,11 +53,11 @@ List/get/update/delete exist for droplets, VPCs, firewalls, domains, LBs, apps, 
 
 That is a real SDK kernel for operators who outgrow a one-shot stack. It is not a second config format.
 
-### 5. The CLI is three verbs
+### 5. The CLI is the operator surface, not a control plane
 
-`apply`, `validate`, `status`, `help`. Kiwi may delegate. grapeGUI does not exist. WebEngine does not drive this package.
+`validate`, `plan`, `apply`, `destroy`, `status`, `init`, plus `catalog`, `offerings`, and `telemetry` / `metrics`. Kiwi may delegate. grapeGUI does not exist. WebEngine should read the catalog and the live helpers; it should not grow a second DigitalOcean client.
 
-The product story is a file plus a token. The roadmap should deepen that story (docs, blueprints, safer apply), not grow a control plane in this library.
+The product story is a file plus a token, and a catalog a dashboard can trust. The roadmap should deepen that story, not pretend AWS or GCP exist.
 
 ---
 

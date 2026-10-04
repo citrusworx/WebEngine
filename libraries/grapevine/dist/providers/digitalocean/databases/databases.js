@@ -1,5 +1,12 @@
 import { doRequest } from "../client.js";
 import { cleanPayload } from "../utilities.js";
+export async function listDatabaseOptions() {
+    const response = await doRequest({
+        method: "GET",
+        url: "/databases/options"
+    });
+    return response.options ?? {};
+}
 export async function listDatabases() {
     const response = await doRequest({
         method: "GET",

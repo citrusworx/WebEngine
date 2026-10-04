@@ -22,6 +22,9 @@ import {
     REQUIRED_BREADCRUMB_ROLES,
     REQUIRED_PROGRESS_ROLES,
     REQUIRED_PAGINATION_ROLES,
+    REQUIRED_DISCLOSURE_ROLES,
+    REQUIRED_SPINNER_ROLES,
+    REQUIRED_SELECT_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -664,6 +667,112 @@ describe("Juice theme generator surface tone roles", () => {
         for (const block of linkBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-disclosure-* from existing --jx-* surfaces and accents", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-disclosure-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-disclosure-border: var(--jx-border)");
+        expect(css).toContain("--jx-disclosure-trigger: var(--jx-surface-strong)");
+        expect(css).toContain("--jx-disclosure-trigger-hover: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-disclosure-trigger-open: var(--jx-surface-muted)");
+        expect(css).toContain("--jx-disclosure-ink: var(--jx-text)");
+        expect(css).toContain("--jx-disclosure-chevron: var(--jx-accent)");
+        expect(css).toContain("--jx-disclosure-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-disclosure-trigger: var(--jx-accent)");
+        expect(css).not.toContain("--jx-disclosure-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-disclosure-surface: var(--jx-accent)");
+
+        for (const role of REQUIRED_DISCLOSURE_ROLES) {
+            expect(css).toContain(`--juice-disclosure-${role}: var(--jx-disclosure-${role})`);
+        }
+
+        expect(css).toContain("[disclosure]");
+        expect(css).toContain("[disclosure-trigger]");
+        expect(css).toContain("[disclosure-panel]");
+        expect(css).toMatch(/\[aria-expanded=["']?true["']?\]/);
+        expect(css).not.toMatch(/\[accordion-item\][^{]*--juice-disclosure/);
+        expect(css).not.toMatch(/\[disclosure\][^{]*--juice-accordion/);
+
+        const triggerBlocks = [...css.matchAll(/\[disclosure-trigger\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(triggerBlocks.length).toBeGreaterThan(0);
+        for (const block of triggerBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-spinner-* from existing --jx-* border, text, and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-spinner-track: var(--jx-border)");
+        expect(css).toContain("--jx-spinner-indicator: var(--jx-accent)");
+        expect(css).toContain("--jx-spinner-ink: var(--jx-text)");
+        expect(css).toContain("--jx-spinner-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-spinner-track: var(--jx-accent)");
+        expect(css).not.toContain("--jx-spinner-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-spinner-indicator: var(--jx-page)");
+
+        for (const role of REQUIRED_SPINNER_ROLES) {
+            expect(css).toContain(`--juice-spinner-${role}: var(--jx-spinner-${role})`);
+        }
+
+        expect(css).toContain("[spinner]");
+        expect(css).toContain("[spinner-label]");
+        expect(css).toContain("border-top-color: var(--juice-spinner-indicator)");
+        expect(css).not.toMatch(/\[spinner-track\]/);
+        expect(css).not.toMatch(/\[spinner-indicator\]/);
+        expect(css).not.toMatch(/\[role=["']?status["']?\]/);
+        expect(css).not.toMatch(/\[spinner\][^{]*--juice-progress/);
+        expect(css).not.toMatch(/\[progress\][^{]*--juice-spinner/);
+
+        const spinnerBlocks = [...css.matchAll(/\[spinner\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(spinnerBlocks.length).toBeGreaterThan(0);
+        for (const block of spinnerBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-select-* from existing --jx-* surface, border, text, and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-select-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-select-border: var(--jx-border)");
+        expect(css).toContain("--jx-select-ink: var(--jx-text)");
+        expect(css).toContain("--jx-select-chevron: var(--jx-accent)");
+        expect(css).toContain("--jx-select-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-select-surface: var(--jx-accent)");
+        expect(css).not.toContain("--jx-select-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-select-chevron: var(--jx-page)");
+
+        for (const role of REQUIRED_SELECT_ROLES) {
+            expect(css).toContain(`--juice-select-${role}: var(--jx-select-${role})`);
+        }
+
+        expect(css).toContain("select[select]");
+        expect(css).toContain("[select-label]");
+        expect(css).toContain("[combobox-list]");
+        expect(css).not.toMatch(/\[combobox\][^{]*--juice-select/);
+        expect(css).not.toMatch(/select\[select\][^{]*--juice-combobox/);
+
+        const selectBlocks = [...css.matchAll(/select\[select\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(selectBlocks.length).toBeGreaterThan(0);
+        for (const block of selectBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+            expect(block).not.toContain("background-image: none");
         }
     });
 

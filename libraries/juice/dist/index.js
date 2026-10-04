@@ -3901,8 +3901,389 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Fo = null, Po || Lo();
 }, document.addEventListener("DOMContentLoaded", Fo)) : Lo());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/disclosure/disclosure-runtime.ts
 var zo = {
+	root: typeof document < "u" ? document : {},
+	disclosureSelector: "[disclosure]",
+	triggerSelector: "[disclosure-trigger]"
+}, Bo = (e) => Array.from(e), Vo = "juice-disclosure-trigger", Ho = "juice-disclosure-panel", Uo = "[disclosure-panel]", Wo = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Go = A(), Ko = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "disclosure", qo = (e, t, n) => {
+	let r = String(n);
+	if (e.getAttribute("aria-expanded") !== r && e.setAttribute("aria-expanded", r), !t) return;
+	t.hidden !== !n && (t.hidden = !n);
+	let i = String(!n);
+	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
+}, Jo = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", Yo = (e) => e.defaultPrevented || ct() || lt(), Xo = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		expand: () => {},
+		collapse: () => {},
+		toggle: () => {}
+	};
+	let t = {
+		...zo,
+		...e
+	}, n = t.root ?? document, r = n, i = () => Bo(n.querySelectorAll(t.disclosureSelector)), a = (e) => Bo(e.querySelectorAll(t.triggerSelector)).filter((n) => n.closest(t.disclosureSelector) === e), o = () => i().flatMap((e) => a(e)), s = 0, c = null, l = (e) => (s += 1, `${e}-${s}`), u = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.disclosureSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, d = (e) => {
+		let n = u(e);
+		if (!n) return null;
+		let r = e.getAttribute("aria-controls");
+		if (r) {
+			let t = n.querySelector(`#${j(r)}`);
+			if (t && t !== e) return t;
+		}
+		let i = e.nextElementSibling;
+		for (; i;) {
+			if (i instanceof HTMLElement && (i.matches(Uo) || !i.matches(t.triggerSelector) && !i.matches(t.disclosureSelector))) return i;
+			i = i.nextElementSibling;
+		}
+		return null;
+	}, f = (e) => {
+		if (e) {
+			if (e.matches(t.triggerSelector) && u(e)) return e;
+			let n = e.closest(t.triggerSelector);
+			if (n instanceof HTMLElement && u(n)) return n;
+		}
+		return o()[0] ?? null;
+	}, p = (e) => {
+		let t = e.getAttribute("name");
+		return t ? Ko(t) : null;
+	}, m = (e, t) => {
+		let n = u(e);
+		if (!n) return;
+		let r = a(n), i = Math.max(0, r.indexOf(e)), o = p(n), s = r.length > 1 ? `-${i + 1}` : "";
+		e.id ||= o ? `${o}-trigger${s}` : l(Vo), Wo(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(Ho), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+	}, h = (e) => {
+		let t = f(e);
+		if (!t) return;
+		let n = d(t);
+		m(t, n), qo(t, n, !0), c = t;
+	}, g = (e) => {
+		let t = f(e);
+		if (!t) return;
+		let n = d(t);
+		m(t, n), qo(t, n, !1), t === c && (c = o().find((e) => e !== t && Jo(e, d(e))) ?? null);
+	}, _ = (e) => {
+		let t = f(e);
+		if (t) {
+			if (Jo(t, d(t))) {
+				g(t);
+				return;
+			}
+			h(t);
+		}
+	}, v = () => {
+		i().forEach((e) => {
+			a(e).forEach((e) => {
+				let t = d(e);
+				if (m(e, t), t) {
+					qo(e, t, Jo(e, t));
+					return;
+				}
+				e.hasAttribute("aria-expanded") || e.setAttribute("aria-expanded", "false");
+			});
+		});
+	}, y = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = n.closest(t.triggerSelector);
+		!(r instanceof HTMLElement) || !u(r) || Go(e) && _(r);
+	}, b = (e) => {
+		let n = e.closest(t.triggerSelector);
+		return n instanceof HTMLElement && u(n) && Jo(n, d(n)) ? n : o().filter((e) => Jo(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && Jo(c, d(c)) ? c : null);
+	}, x = (e) => {
+		if (!(e instanceof KeyboardEvent)) return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		if (e.key === "Escape") {
+			if (Yo(e)) return;
+			let t = b(n);
+			if (!t || !Go(e)) return;
+			e.preventDefault(), g(t), t.focus();
+			return;
+		}
+		if (e.key !== "Enter" && e.key !== " ") return;
+		let r = n.closest(t.triggerSelector);
+		!(r instanceof HTMLElement) || !u(r) || Wo(r) || Go(e) && (e.preventDefault(), _(r));
+	}, S = !1, C = () => {
+		S || (S = !0, requestAnimationFrame(() => {
+			S = !1, v();
+		}));
+	}, w = typeof MutationObserver < "u" ? new MutationObserver(() => C()) : null;
+	return r.addEventListener("click", y), r.addEventListener("keydown", x), w && n instanceof Node && w.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"aria-expanded",
+			"aria-controls",
+			"disclosure",
+			"disclosure-trigger",
+			"disclosure-panel"
+		]
+	}), v(), {
+		destroy: () => {
+			r.removeEventListener("click", y), r.removeEventListener("keydown", x), w?.disconnect();
+		},
+		sync: v,
+		expand: h,
+		collapse: g,
+		toggle: _
+	};
+}, Zo = (e = {}) => Xo(e), Qo = null, $o = !1, es = null, ts = () => {
+	!es || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", es), es = null);
+}, ns = () => typeof window > "u" || typeof document > "u" ? null : ($o = !1, ts(), Qo ? (Qo.sync(), Qo) : (Qo = Xo(), Qo)), rs = () => {
+	$o = !0, ts(), Qo?.destroy(), Qo = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (es = () => {
+	es = null, $o || ns();
+}, document.addEventListener("DOMContentLoaded", es)) : ns());
+//#endregion
+//#region src/js/src/spinner/spinner-runtime.ts
+var is = {
+	root: typeof document < "u" ? document : {},
+	spinnerSelector: "[spinner]"
+}, as = (e) => Array.from(e), os = (e) => !e.hasAttribute("hidden"), ss = () => ({
+	destroy: () => {},
+	sync: () => {},
+	show: () => {},
+	hide: () => {},
+	isShown: () => !1
+}), cs = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return ss();
+	let t = {
+		...is,
+		...e
+	}, n = t.root ?? document, r = !1, i = (e) => e?.matches(t.spinnerSelector) ? n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1 : !1, a = () => {
+		let e = as(n.querySelectorAll(t.spinnerSelector)).filter(i);
+		return n instanceof HTMLElement && i(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, o = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.spinnerSelector);
+		return !(n instanceof HTMLElement) || !i(n) ? null : n;
+	}, s = (e) => {
+		if (e) {
+			if (i(e)) return e;
+			let t = o(e);
+			if (t) return t;
+		}
+		return a().find((e) => i(e)) ?? null;
+	}, c = (e) => {
+		if (os(e)) {
+			e.getAttribute("role") !== "status" && e.setAttribute("role", "status"), e.getAttribute("aria-busy") !== "true" && e.setAttribute("aria-busy", "true");
+			return;
+		}
+		e.getAttribute("role") === "status" && e.removeAttribute("role"), e.hasAttribute("aria-busy") && e.removeAttribute("aria-busy");
+	}, l = () => {
+		r || a().forEach((e) => {
+			i(e) && c(e);
+		});
+	}, u = (e) => {
+		let t = s(e);
+		t && (t.hidden &&= !1, c(t));
+	}, d = (e) => {
+		let t = s(e);
+		t && (t.getAttribute("role") === "status" && t.removeAttribute("role"), t.hasAttribute("aria-busy") && t.removeAttribute("aria-busy"), t.hidden ||= !0);
+	}, f = (e) => {
+		let t = s(e);
+		return t ? os(t) : !1;
+	}, p = !1, m = 0, h = () => {
+		p || r || (p = !0, m = requestAnimationFrame(() => {
+			p = !1, l();
+		}));
+	}, g = typeof MutationObserver < "u" ? new MutationObserver(() => h()) : null;
+	return g && n instanceof Node && g.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"spinner",
+			"hidden",
+			"role",
+			"aria-busy",
+			"aria-label",
+			"aria-labelledby"
+		]
+	}), l(), {
+		destroy: () => {
+			r = !0, p &&= (cancelAnimationFrame(m), !1), g?.disconnect();
+		},
+		sync: l,
+		show: u,
+		hide: d,
+		isShown: f
+	};
+}, ls = (e = {}) => cs(e), us = null, ds = !1, fs = null, ps = () => {
+	!fs || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", fs), fs = null);
+}, ms = () => typeof window > "u" || typeof document > "u" ? null : (ds = !1, ps(), us ? (us.sync(), us) : (us = cs(), us)), hs = () => {
+	ds = !0, ps(), us?.destroy(), us = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (fs = () => {
+	fs = null, ds || ms();
+}, document.addEventListener("DOMContentLoaded", fs)) : ms());
+//#endregion
+//#region src/js/src/select/select-runtime.ts
+var gs = {
+	root: typeof document < "u" ? document : {},
+	selectSelector: "select[select]"
+}, _s = (e) => Array.from(e), vs = () => ({
+	destroy: () => {},
+	sync: () => {}
+}), ys = (e) => {
+	let t = e;
+	for (; t;) {
+		if (t.hidden || t.getAttribute("aria-hidden") === "true") return !1;
+		t = t.parentElement;
+	}
+	return !0;
+}, bs = (e) => {
+	let t = [], n = (r) => {
+		if (!(r !== e && (r instanceof HTMLSelectElement || r instanceof HTMLElement && (r.hidden || r.getAttribute("aria-hidden") === "true")))) {
+			if (r.nodeType === Node.TEXT_NODE) {
+				r.textContent && t.push(r.textContent);
+				return;
+			}
+			r.childNodes.forEach((e) => n(e));
+		}
+	};
+	return n(e), t.join("").replace(/\s+/g, " ").trim();
+}, xs = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return vs();
+	let t = {
+		...gs,
+		...e
+	}, n = t.root ?? document, r = /* @__PURE__ */ new WeakMap(), i = !1, a = 0, o = (e) => !(e instanceof HTMLSelectElement) || !e.matches(t.selectSelector) || e.closest("[combobox]") ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, s = () => {
+		let e = _s(n.querySelectorAll(t.selectSelector)).filter(o);
+		return n instanceof HTMLSelectElement && o(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, c = (e) => {
+		let t = /* @__PURE__ */ new Set(), r = (n) => {
+			(n instanceof Document || n instanceof Element) && n.querySelectorAll(e).forEach((e) => {
+				t.add(e);
+			});
+		};
+		return r(n), typeof document < "u" && n !== document && r(document), Array.from(t);
+	}, l = (e, t) => !e || e === t || t.contains(e) || !ys(e) || !bs(e) ? null : e, u = (e) => {
+		if (!e.id) return [];
+		let t = c(`label[for="${j(e.id)}"]`).filter((t) => t instanceof HTMLLabelElement && t.htmlFor === e.id);
+		return e.labels && Array.from(e.labels).forEach((n) => {
+			n.htmlFor === e.id && !t.includes(n) && t.push(n);
+		}), t;
+	}, d = (e) => {
+		let t = e.closest("label");
+		return !(t instanceof HTMLLabelElement) || t.htmlFor && t.htmlFor !== e.id ? null : t;
+	}, f = (e) => e.id ? l(c(`[select-label][for="${j(e.id)}"]`).find((t) => t.getAttribute("for") === e.id), e) : null, p = (e) => {
+		let n = e.parentElement?.closest("[select-label]");
+		return !n || n.querySelectorAll(t.selectSelector).length !== 1 ? null : l(n, e);
+	}, m = (e) => {
+		let t = e.previousElementSibling;
+		for (; t;) {
+			if (t instanceof HTMLSelectElement) return null;
+			if (t instanceof HTMLElement) {
+				if (t.matches("[select-label]")) return l(t, e);
+				if (!t.querySelector("select")) {
+					let n = l(t.querySelector("[select-label]"), e);
+					if (n) return n;
+				}
+			}
+			t = t.previousElementSibling;
+		}
+		return null;
+	}, h = (e) => {
+		for (let t of u(e)) {
+			let n = l(t, e);
+			if (n) return n;
+		}
+		return l(d(e), e) || (f(e) ?? p(e) ?? m(e));
+	}, g = (e, t) => {
+		let n = r.get(e);
+		return n?.attribute === t && e.getAttribute(t) === n.value;
+	}, _ = (e) => {
+		let t = e.getAttribute("aria-label");
+		if (t !== null && t.trim() !== "" && !g(e, "aria-label")) return !0;
+		let n = e.getAttribute("aria-labelledby");
+		return n !== null && n.trim() !== "" && !g(e, "aria-labelledby");
+	}, v = (e) => {
+		let t = r.get(e);
+		t && (e.getAttribute(t.attribute) === t.value && e.removeAttribute(t.attribute), r.delete(e));
+	}, y = (e) => {
+		let t = r.get(e);
+		if (!t) return;
+		let n = e.getAttribute("aria-label"), i = e.getAttribute("aria-labelledby"), a = n !== null && n.trim() !== "" && !g(e, "aria-label"), o = i !== null && i.trim() !== "" && !g(e, "aria-labelledby");
+		t.attribute === "aria-labelledby" && a && e.getAttribute("aria-labelledby") === t.value && e.removeAttribute("aria-labelledby"), t.attribute === "aria-label" && o && e.getAttribute("aria-label") === t.value && e.removeAttribute("aria-label"), r.delete(e);
+	}, b = (e) => {
+		if (e.id.trim()) return e.id;
+		let t = "";
+		do
+			a += 1, t = `juice-select-label-${a}`;
+		while (document.getElementById(t));
+		return e.id = t, t;
+	}, x = (e, t, n) => {
+		let i = t === "aria-label" ? "aria-labelledby" : "aria-label", a = r.get(e);
+		a?.attribute === i && e.getAttribute(i) === a.value && e.removeAttribute(i), e.getAttribute(t) !== n && e.setAttribute(t, n), r.set(e, {
+			attribute: t,
+			value: n
+		});
+	}, S = (e) => {
+		if (!o(e)) return;
+		if (_(e)) {
+			y(e);
+			return;
+		}
+		let t = h(e), n = t ? bs(t) : "";
+		if (!t || !n) {
+			v(e);
+			return;
+		}
+		if (t.contains(e)) {
+			x(e, "aria-label", n);
+			return;
+		}
+		x(e, "aria-labelledby", b(t));
+	}, C = () => {
+		i || s().forEach((e) => S(e));
+	}, w = !1, T = 0, E = () => {
+		w || i || (w = !0, T = requestAnimationFrame(() => {
+			w = !1, C();
+		}));
+	}, D = typeof MutationObserver < "u" ? new MutationObserver(() => E()) : null;
+	return D && n instanceof Node && D.observe(n, {
+		childList: !0,
+		subtree: !0,
+		characterData: !0,
+		attributes: !0,
+		attributeFilter: [
+			"select",
+			"select-label",
+			"for",
+			"id",
+			"hidden",
+			"aria-hidden",
+			"aria-label",
+			"aria-labelledby",
+			"multiple",
+			"size"
+		]
+	}), C(), {
+		destroy: () => {
+			i = !0, w &&= (cancelAnimationFrame(T), !1), D?.disconnect();
+		},
+		sync: C
+	};
+}, Ss = (e = {}) => xs(e), Cs = null, ws = !1, Ts = null, Es = () => {
+	!Ts || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", Ts), Ts = null);
+}, Ds = () => typeof window > "u" || typeof document > "u" ? null : (ws = !1, Es(), Cs ? (Cs.sync(), Cs) : (Cs = xs(), Cs)), Os = () => {
+	ws = !0, Es(), Cs?.destroy(), Cs = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Ts = () => {
+	Ts = null, ws || Ds();
+}, document.addEventListener("DOMContentLoaded", Ts)) : Ds());
+//#endregion
+//#region src/tokens/index.ts
+var ks = {
 	colors: {
 		families: [
 			"black",
@@ -4070,4 +4451,4 @@ var zo = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, zo as tokens };
+export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, Xo as createDisclosure, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, xs as createSelect, Hi as createSlider, cs as createSpinner, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, Zo as initDisclosure, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ss as initSelect, Ui as initSlider, ls as initSpinner, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, ns as startDisclosureRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ds as startSelectRuntime, Ji as startSliderRuntime, ms as startSpinnerRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, rs as stopDisclosureRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Os as stopSelectRuntime, Yi as stopSliderRuntime, hs as stopSpinnerRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, ks as tokens };

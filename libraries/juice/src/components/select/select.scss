@@ -1,0 +1,151 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Select chrome is structural. Color comes from the shared role contract:
+//   --juice-select-surface
+//   --juice-select-border
+//   --juice-select-ink
+//   --juice-select-chevron
+//   --juice-select-focus-ring
+// Themes bind those names (and optional --aqua-select-* / --kw-select-* /
+// --cm-select-* / --tide-select-* / --jx-select-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome for a styled native <select>. Distinct from:
+//   - [combobox] (input + listbox popup)
+//   - [menu] (APG menu button)
+//   - disclosure / accordion chevrons
+//
+// Native collision: there is no HTML *global* `select` attribute. The
+// element is <select>. A boolean [select] attribute on that element has
+// no platform behavior. Do not restyle a bare `select` (theme semantic
+// defaults own untagged fields) and do not style [combobox].
+//
+// Juice names:
+//   [select]        host, on the native element: <select select>.
+//                   The closed control is what this slice paints. The
+//                   open list stays the platform popup. There is no
+//                   [select-option] and no [select-list].
+//   [select-label]  optional visible label. Uses ink. Pair it with the
+//                   control (wrapping <label select-label>, or for/id).
+//                   Authors own the accessible name.
+//
+// The chevron is a background-image, not a child and not ::after.
+// <select> does not reliably paint pseudo-elements, and a covering
+// element would steal the click that opens the native popup.
+// Theme overrides must set background-color, not the `background`
+// shorthand, or that chevron disappears. [multiple] and size listboxes
+// drop the chevron and keep the native list.
+//
+// z-index: inline field. No overlay band. Runtime is later.
+
+@function -juice-select-role($name, $fallback) {
+    @return var(
+        --juice-select-#{$name},
+        var(--aqua-select-#{$name}, var(--kw-select-#{$name}, var(--cm-select-#{$name}, var(--tide-select-#{$name}, var(--jx-select-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-select-surface: -juice-select-role(surface, #{$white-100});
+$_juice-select-border: -juice-select-role(border, #{$gray-300});
+$_juice-select-ink: -juice-select-role(ink, #{$black-600});
+$_juice-select-chevron: -juice-select-role(chevron, currentColor);
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(select) field chrome. Themes realize color
+// through the roles.
+
+[select-label],
+label[select-label],
+[theme] [select-label],
+[theme] label[select-label] {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-select-ink;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+// :where() keeps this fallback under theme semantic field chrome.
+// KiwiPress draws a 2px control border; a normal select[select]
+// shorthand would replace that width.
+:where(select[select]) {
+    border: 1px solid $_juice-select-border;
+    border-radius: 0.5rem;
+    font: inherit;
+    line-height: 1.4;
+}
+
+select[select],
+[theme] select[select] {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    box-sizing: border-box;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem 2.25rem;
+    // Color only. Do not set the border shorthand or box-shadow here.
+    border-color: $_juice-select-border;
+    background-color: $_juice-select-surface;
+    // Two diagonal strokes meet as a down chevron in the end padding.
+    // Background paint only — the native control still receives the click.
+    // [theme] specificity beats :where(select) { background: … } so the
+    // shorthand cannot clear this image.
+    background-image:
+        linear-gradient(135deg, transparent 38%, $_juice-select-chevron 38% 62%, transparent 62%),
+        linear-gradient(45deg, transparent 38%, $_juice-select-chevron 38% 62%, transparent 62%);
+    background-repeat: no-repeat;
+    background-position:
+        right 1.2rem center,
+        right 0.75rem center;
+    background-size: 0.45rem 0.45rem, 0.45rem 0.45rem;
+    color: $_juice-select-ink;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+select[select]::-ms-expand,
+[theme] select[select]::-ms-expand {
+    display: none;
+}
+
+select[select][multiple],
+select[select][size]:not([size="1"]),
+[theme] select[select][multiple],
+[theme] select[select][size]:not([size="1"]) {
+    appearance: revert;
+    -webkit-appearance: revert;
+    background-image: none;
+    padding-inline-end: 0.75rem;
+    cursor: auto;
+}
+
+select[select]:focus-visible,
+[theme] select[select]:focus-visible {
+    outline: 2px solid -juice-select-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+select[select]:disabled,
+select[select][disabled],
+[theme] select[select]:disabled,
+[theme] select[select][disabled] {
+    cursor: not-allowed;
+    opacity: 0.72;
+}
