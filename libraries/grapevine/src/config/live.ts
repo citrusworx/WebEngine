@@ -1,4 +1,13 @@
+import { getAccountSummary, type AccountSummary } from "../providers/digitalocean/account/account.js";
+import { getCustomerBalance, listInvoices, type CustomerBalance, type InvoiceList } from "../providers/digitalocean/billing/billing.js";
 import { getDoToken } from "../providers/digitalocean/client.js";
+import { listKubernetesClusters, type KubernetesCluster } from "../providers/digitalocean/kubernetes/kubernetes.js";
+import { listProjects, type Project } from "../providers/digitalocean/projects/projects.js";
+import { getContainerRegistry, listRegistryRepositories, type ContainerRegistry, type RegistryRepository } from "../providers/digitalocean/registry/registry.js";
+import { listReservedIps, type ReservedIp } from "../providers/digitalocean/reserved-ips/reserved-ips.js";
+import { listAccountSnapshots, type AccountSnapshot } from "../providers/digitalocean/snapshots/snapshots.js";
+import { listUptimeChecks, type UptimeCheck } from "../providers/digitalocean/monitoring/uptime.js";
+import { listVolumes, type Volume } from "../providers/digitalocean/volumes/volumes.js";
 import { listApps, type AppResource } from "../providers/digitalocean/apps/apps.js";
 import {
     listAllDroplets,
@@ -23,6 +32,14 @@ import {
     type SpaceBucket
 } from "../providers/digitalocean/spaces/spaces.js";
 
+export interface BillingInventory {
+    balance: CustomerBalance | null;
+    invoices: InvoiceList["invoices"];
+    invoice_preview?: InvoiceList["invoice_preview"];
+    /** Set when the token cannot read billing. Other inventory still returns. */
+    error: string | null;
+}
+
 export interface LiveInventory {
     droplets: DropletResource[];
     vpcs: VPCResponse[];
@@ -39,6 +56,56 @@ export interface LiveInventory {
     certificates: CertificateResource[];
     /** False when Spaces keys were absent, so buckets were not listed. */
     spaces_listed: boolean;
+    account: AccountSummary;
+    projects: Project[];
+    volumes: Volume[];
+    reserved_ips: ReservedIp[];
+    kubernetes_clusters: KubernetesCluster[];
+    snapshots: AccountSnapshot[];
+    uptime_checks: UptimeCheck[];
+    registry: ContainerRegistry | null;
+    registry_repositories: RegistryRepository[];
+    /** Set when registry lookup fails for a reason other than "no registry". */
+    registry_error: string | null;
+    billing: BillingInventory;
+}
+
+export function emptyLiveInventory(partial: Partial<LiveInventory> = {}): LiveInventory {
+    return {
+        droplets: [],
+        vpcs: [],
+        firewalls: [],
+        domains: [],
+        load_balancers: [],
+        ssh_keys: [],
+        apps: [],
+        alert_policies: [],
+        tags: [],
+        databases: [],
+        spaces: [],
+        cdn: [],
+        certificates: [],
+        spaces_listed: true,
+        account: {
+            droplet_limit: 0,
+            email: "",
+            uuid: "",
+            email_verified: false,
+            status: "active",
+            status_message: ""
+        },
+        projects: [],
+        volumes: [],
+        reserved_ips: [],
+        kubernetes_clusters: [],
+        snapshots: [],
+        uptime_checks: [],
+        registry: null,
+        registry_repositories: [],
+        registry_error: null,
+        billing: { balance: null, invoices: [], error: null },
+        ...partial
+    };
 }
 
 export function tokenIsSet(envName = "DO_TOKEN"): boolean {
@@ -47,6 +114,14 @@ export function tokenIsSet(envName = "DO_TOKEN"): boolean {
         return true;
     } catch {
         return false;
+    }
+}
+
+async function capture<T>(task: Promise<T>): Promise<{ value: T | null; error: string | null }> {
+    try {
+        return { value: await task, error: null };
+    } catch (error) {
+        return { value: null, error: error instanceof Error ? error.message : String(error) };
     }
 }
 
@@ -65,7 +140,16 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         databases,
         cdn,
         certificates,
-        spaces
+        spaces,
+        account,
+        projects,
+        volumes,
+        reserved_ips,
+        kubernetes_clusters,
+        snapshots,
+        uptime_checks,
+        balanceResult,
+        invoiceResult
     ] = await Promise.all([
         listAllDroplets(),
         listAllVPCs(),
@@ -79,8 +163,31 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         listDatabases(),
         listCdnEndpoints(),
         listCertificates(),
-        spacesListed ? listSpaces() : Promise.resolve([])
+        spacesListed ? listSpaces() : Promise.resolve([]),
+        getAccountSummary(),
+        listProjects(),
+        listVolumes(),
+        listReservedIps(),
+        listKubernetesClusters(),
+        listAccountSnapshots(),
+        listUptimeChecks(),
+        capture(getCustomerBalance()),
+        capture(listInvoices())
     ]);
+
+    let registry: ContainerRegistry | null = null;
+    let registry_repositories: RegistryRepository[] = [];
+    let registry_error: string | null = null;
+    try {
+        registry = await getContainerRegistry();
+        if (registry?.name) {
+            registry_repositories = await listRegistryRepositories(registry.name);
+        }
+    } catch (error) {
+        registry_error = error instanceof Error ? error.message : String(error);
+    }
+
+    const billingError = [balanceResult.error, invoiceResult.error].filter(Boolean).join("; ");
 
     return {
         droplets,
@@ -96,7 +203,23 @@ export async function fetchLiveInventory(): Promise<LiveInventory> {
         spaces,
         cdn,
         certificates,
-        spaces_listed: spacesListed
+        spaces_listed: spacesListed,
+        account,
+        projects,
+        volumes,
+        reserved_ips,
+        kubernetes_clusters,
+        snapshots,
+        uptime_checks,
+        registry,
+        registry_repositories,
+        registry_error,
+        billing: {
+            balance: balanceResult.value,
+            invoices: invoiceResult.value?.invoices ?? [],
+            invoice_preview: invoiceResult.value?.invoice_preview,
+            error: billingError || null
+        }
     };
 }
 

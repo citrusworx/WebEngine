@@ -86,6 +86,46 @@ vi.mock("../providers/digitalocean/apps/apps.js", () => ({
     createApp: vi.fn()
 }));
 
+vi.mock("../providers/digitalocean/projects/projects.js", () => ({
+    listProjects: vi.fn(async () => []),
+    createProject: vi.fn(async (spec: { name: string; purpose?: string; environment?: string }) => ({
+        id: "proj-1",
+        name: spec.name,
+        purpose: spec.purpose ?? "Other",
+        environment: spec.environment,
+        is_default: false
+    }))
+}));
+
+vi.mock("../providers/digitalocean/volumes/volumes.js", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../providers/digitalocean/volumes/volumes.js")>();
+    return {
+        ...actual,
+        listVolumes: vi.fn(async () => []),
+        createVolume: vi.fn(async (spec: { name: string; region: string; size_gigabytes: number }) => ({
+            id: "vol-1",
+            name: spec.name,
+            region: { slug: spec.region },
+            size_gigabytes: spec.size_gigabytes
+        }))
+    };
+});
+
+vi.mock("../providers/digitalocean/kubernetes/kubernetes.js", () => ({
+    listKubernetesClusters: vi.fn(async () => []),
+    createKubernetesCluster: vi.fn(
+        async (spec: { name: string; region: string; version: string; vpc_uuid?: string; node_pools: unknown[] }) => ({
+            id: "k8s-1",
+            name: spec.name,
+            region: spec.region,
+            version: spec.version,
+            vpc_uuid: spec.vpc_uuid,
+            status: { state: "provisioning" },
+            node_pools: spec.node_pools
+        })
+    )
+}));
+
 vi.mock("../providers/digitalocean/databases/databases.js", async (importOriginal) => {
     const actual = await importOriginal<typeof import("../providers/digitalocean/databases/databases.js")>();
     return {
@@ -822,5 +862,66 @@ describe("apply grape config", () => {
                 droplet_ids: [321]
             })
         );
+    });
+
+    it("adopts unique projects, volumes, and clusters and creates the rest", async () => {
+        const { createProject, listProjects } = await import("../providers/digitalocean/projects/projects.js");
+        const { createVolume, listVolumes } = await import("../providers/digitalocean/volumes/volumes.js");
+        const { createKubernetesCluster, listKubernetesClusters } = await import(
+            "../providers/digitalocean/kubernetes/kubernetes.js"
+        );
+        vi.mocked(listProjects).mockResolvedValueOnce([
+            { id: "proj-live", name: "platform", purpose: "Other", is_default: false }
+        ]);
+        vi.mocked(listVolumes).mockResolvedValueOnce([
+            { id: "vol-live", name: "data", region: { slug: "nyc3" }, size_gigabytes: 10 }
+        ]);
+        vi.mocked(listKubernetesClusters).mockResolvedValueOnce([]);
+
+        const result = await applyGrapeConfig(
+            validateGrapeConfig({
+                provider: "digitalocean",
+                region: "nyc3",
+                resources: {
+                    projects: [{ name: "platform" }, { name: "new-project", environment: "Production" }],
+                    vpcs: [{ name: "app", ip_range: "10.20.0.0/16" }],
+                    volumes: [
+                        { name: "data", size_gigabytes: 10 },
+                        { name: "logs", size_gigabytes: 20, filesystem_type: "ext4" }
+                    ],
+                    kubernetes_clusters: [
+                        {
+                            name: "app",
+                            version: "1.31.1-do.0",
+                            vpc: "app",
+                            node_pools: [{ name: "workers", size: "s-2vcpu-4gb", count: 2 }]
+                        }
+                    ]
+                }
+            })
+        );
+
+        expect(createProject).toHaveBeenCalledTimes(1);
+        expect(createProject).toHaveBeenCalledWith({
+            name: "new-project",
+            description: undefined,
+            purpose: undefined,
+            environment: "Production"
+        });
+        expect(createVolume).toHaveBeenCalledTimes(1);
+        expect(createVolume).toHaveBeenCalledWith(
+            expect.objectContaining({ name: "logs", region: "nyc3", size_gigabytes: 20, filesystem_type: "ext4" })
+        );
+        expect(createKubernetesCluster).toHaveBeenCalledWith({
+            name: "app",
+            region: "nyc3",
+            version: "1.31.1-do.0",
+            vpc_uuid: "vpc-1",
+            tags: undefined,
+            node_pools: [{ name: "workers", size: "s-2vcpu-4gb", count: 2 }]
+        });
+        expect(result.projects.map((project) => project.id)).toEqual(["proj-live", "proj-1"]);
+        expect(result.volumes.map((volume) => volume.id)).toEqual(["vol-live", "vol-1"]);
+        expect(result.kubernetes_clusters[0]).toMatchObject({ id: "k8s-1", name: "app", status: "provisioning" });
     });
 });

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import axios from "axios";
-import { DigitalOceanError, authHeaders, doRequest, getDoToken, wrapDoError } from "./client.js";
+import { DigitalOceanError, authHeaders, doList, doRequest, getDoToken, wrapDoError } from "./client.js";
 
 vi.mock("axios", () => {
     const request = vi.fn();
@@ -78,5 +78,27 @@ describe("DigitalOcean client", () => {
         expect(wrapped.message).toBe("Unable to authenticate");
         expect(wrapped.status).toBe(401);
         expect(wrapped.id).toBe("unauthorized");
+    });
+
+    it("follows links.pages.next when listing a collection", async () => {
+        mockedAxios.request
+            .mockResolvedValueOnce({
+                data: {
+                    regions: [{ slug: "nyc1" }],
+                    links: { pages: { next: "https://api.digitalocean.com/v2/regions?page=2" } }
+                }
+            })
+            .mockResolvedValueOnce({
+                data: { regions: [{ slug: "sfo3" }] }
+            });
+
+        await expect(doList<{ slug: string }>("/regions", "regions")).resolves.toEqual([
+            { slug: "nyc1" },
+            { slug: "sfo3" }
+        ]);
+        expect(mockedAxios.request).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({ url: "/regions?page=2", params: undefined })
+        );
     });
 });

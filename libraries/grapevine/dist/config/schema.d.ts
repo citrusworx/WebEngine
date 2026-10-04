@@ -541,6 +541,48 @@ export declare const stackConfigSchema: z.ZodUnion<readonly [z.ZodObject<{
         command: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
 }, z.core.$strip>>]>;
+export declare const projectResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    description: z.ZodOptional<z.ZodString>;
+    purpose: z.ZodOptional<z.ZodString>;
+    environment: z.ZodOptional<z.ZodEnum<{
+        Development: "Development";
+        Staging: "Staging";
+        Production: "Production";
+    }>>;
+}, z.core.$strip>;
+export declare const volumeResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    region: z.ZodOptional<z.ZodString>;
+    size_gigabytes: z.ZodNumber;
+    description: z.ZodOptional<z.ZodString>;
+    filesystem_type: z.ZodOptional<z.ZodEnum<{
+        ext4: "ext4";
+        xfs: "xfs";
+    }>>;
+    filesystem_label: z.ZodOptional<z.ZodString>;
+    tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+}, z.core.$strip>;
+export declare const kubernetesNodePoolResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    size: z.ZodString;
+    count: z.ZodNumber;
+    tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+}, z.core.$strip>;
+export declare const kubernetesClusterResourceSchema: z.ZodObject<{
+    name: z.ZodString;
+    region: z.ZodOptional<z.ZodString>;
+    version: z.ZodString;
+    vpc: z.ZodOptional<z.ZodString>;
+    vpc_uuid: z.ZodOptional<z.ZodString>;
+    tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    node_pools: z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        size: z.ZodString;
+        count: z.ZodNumber;
+        tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    }, z.core.$strip>>;
+}, z.core.$strip>;
 export declare const resourcesSchema: z.ZodObject<{
     tags: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodString, z.ZodObject<{
         name: z.ZodString;
@@ -799,6 +841,42 @@ export declare const resourcesSchema: z.ZodObject<{
         custom_domain: z.ZodOptional<z.ZodString>;
         certificate: z.ZodOptional<z.ZodString>;
         certificate_id: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>;
+    projects: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        description: z.ZodOptional<z.ZodString>;
+        purpose: z.ZodOptional<z.ZodString>;
+        environment: z.ZodOptional<z.ZodEnum<{
+            Development: "Development";
+            Staging: "Staging";
+            Production: "Production";
+        }>>;
+    }, z.core.$strip>>>;
+    volumes: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        region: z.ZodOptional<z.ZodString>;
+        size_gigabytes: z.ZodNumber;
+        description: z.ZodOptional<z.ZodString>;
+        filesystem_type: z.ZodOptional<z.ZodEnum<{
+            ext4: "ext4";
+            xfs: "xfs";
+        }>>;
+        filesystem_label: z.ZodOptional<z.ZodString>;
+        tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    }, z.core.$strip>>>;
+    kubernetes_clusters: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        name: z.ZodString;
+        region: z.ZodOptional<z.ZodString>;
+        version: z.ZodString;
+        vpc: z.ZodOptional<z.ZodString>;
+        vpc_uuid: z.ZodOptional<z.ZodString>;
+        tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        node_pools: z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            size: z.ZodString;
+            count: z.ZodNumber;
+            tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        }, z.core.$strip>>;
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 export declare const grapeConfigSchema: z.ZodObject<{
@@ -1180,6 +1258,42 @@ export declare const grapeConfigSchema: z.ZodObject<{
             certificate: z.ZodOptional<z.ZodString>;
             certificate_id: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>>>;
+        projects: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            description: z.ZodOptional<z.ZodString>;
+            purpose: z.ZodOptional<z.ZodString>;
+            environment: z.ZodOptional<z.ZodEnum<{
+                Development: "Development";
+                Staging: "Staging";
+                Production: "Production";
+            }>>;
+        }, z.core.$strip>>>;
+        volumes: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            region: z.ZodOptional<z.ZodString>;
+            size_gigabytes: z.ZodNumber;
+            description: z.ZodOptional<z.ZodString>;
+            filesystem_type: z.ZodOptional<z.ZodEnum<{
+                ext4: "ext4";
+                xfs: "xfs";
+            }>>;
+            filesystem_label: z.ZodOptional<z.ZodString>;
+            tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        }, z.core.$strip>>>;
+        kubernetes_clusters: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            name: z.ZodString;
+            region: z.ZodOptional<z.ZodString>;
+            version: z.ZodString;
+            vpc: z.ZodOptional<z.ZodString>;
+            vpc_uuid: z.ZodOptional<z.ZodString>;
+            tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+            node_pools: z.ZodArray<z.ZodObject<{
+                name: z.ZodString;
+                size: z.ZodString;
+                count: z.ZodNumber;
+                tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+            }, z.core.$strip>>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>>;
     networking: z.ZodOptional<z.ZodObject<{
         vpc: z.ZodOptional<z.ZodUnion<readonly [z.ZodBoolean, z.ZodObject<{
@@ -1343,6 +1457,9 @@ export type DatabaseResourceConfig = z.infer<typeof databaseResourceSchema>;
 export type SpaceResourceConfig = z.infer<typeof spaceResourceSchema>;
 export type CertificateResourceConfig = z.infer<typeof certificateResourceSchema>;
 export type CdnResourceConfig = z.infer<typeof cdnResourceSchema>;
+export type ProjectResourceConfig = z.infer<typeof projectResourceSchema>;
+export type VolumeResourceConfig = z.infer<typeof volumeResourceSchema>;
+export type KubernetesClusterResourceConfig = z.infer<typeof kubernetesClusterResourceSchema>;
 /** Fold a classic `{ blueprint: { droplet | vpc | firewall } }` document into `resources`. */
 export declare function hoistBlueprintDocument(input: unknown): unknown;
 export declare function validateGrapeConfig(input: unknown): GrapeConfig;
@@ -1604,6 +1721,35 @@ export declare function safeValidateGrapeConfig(input: unknown): z.ZodSafeParseR
             custom_domain?: string | undefined;
             certificate?: string | undefined;
             certificate_id?: string | undefined;
+        }[] | undefined;
+        projects?: {
+            name: string;
+            description?: string | undefined;
+            purpose?: string | undefined;
+            environment?: "Development" | "Staging" | "Production" | undefined;
+        }[] | undefined;
+        volumes?: {
+            name: string;
+            size_gigabytes: number;
+            region?: string | undefined;
+            description?: string | undefined;
+            filesystem_type?: "ext4" | "xfs" | undefined;
+            filesystem_label?: string | undefined;
+            tags?: string[] | undefined;
+        }[] | undefined;
+        kubernetes_clusters?: {
+            name: string;
+            version: string;
+            node_pools: {
+                name: string;
+                size: string;
+                count: number;
+                tags?: string[] | undefined;
+            }[];
+            region?: string | undefined;
+            vpc?: string | undefined;
+            vpc_uuid?: string | undefined;
+            tags?: string[] | undefined;
         }[] | undefined;
     };
     grapevine?: string | undefined;

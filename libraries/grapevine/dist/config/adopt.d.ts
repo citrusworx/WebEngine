@@ -1,7 +1,10 @@
 import type { CdnEndpoint } from "../providers/digitalocean/cdn/cdn.js";
 import type { DropletResource } from "../providers/digitalocean/droplet/droplet.js";
 import type { FireWallResponse } from "../providers/digitalocean/firewall/firewall.js";
+import type { KubernetesCluster } from "../providers/digitalocean/kubernetes/kubernetes.js";
+import type { Project } from "../providers/digitalocean/projects/projects.js";
 import type { SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
+import { type Volume } from "../providers/digitalocean/volumes/volumes.js";
 import type { VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
 export interface NamedResource {
     name?: string;
@@ -19,3 +22,6 @@ export declare function adoptVPC(vpcs: VPCResponse[], name: string, region: stri
 export declare function adoptDroplet(droplets: DropletResource[], name: string): DropletResource | undefined;
 export declare function adoptFirewall(firewalls: FireWallResponse[], name: string): FireWallResponse | undefined;
 export declare function adoptCdnByOrigin(endpoints: CdnEndpoint[], origin: string): CdnEndpoint | undefined;
+export declare function adoptProject(projects: Project[], name: string): Project | undefined;
+export declare function adoptVolume(volumes: Volume[], name: string, region: string): Volume | undefined;
+export declare function adoptKubernetesCluster(clusters: KubernetesCluster[], name: string): KubernetesCluster | undefined;

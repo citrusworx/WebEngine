@@ -326,6 +326,41 @@ export const stackSchema = z.object({
 
 export const stackConfigSchema = z.union([stackSchema, z.array(stackSchema)]);
 
+export const projectResourceSchema = z.object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    /** DigitalOcean purpose string. Apply sends "Other" when omitted. */
+    purpose: z.string().min(1).optional(),
+    environment: z.enum(["Development", "Staging", "Production"]).optional()
+});
+
+export const volumeResourceSchema = z.object({
+    name: z.string().min(1),
+    region: z.string().min(1).optional(),
+    size_gigabytes: z.number().int().positive(),
+    description: z.string().optional(),
+    filesystem_type: z.enum(["ext4", "xfs"]).optional(),
+    filesystem_label: z.string().min(1).optional(),
+    tags: z.array(z.string()).optional()
+});
+
+export const kubernetesNodePoolResourceSchema = z.object({
+    name: z.string().min(1),
+    size: z.string().min(1),
+    count: z.number().int().positive(),
+    tags: z.array(z.string()).optional()
+});
+
+export const kubernetesClusterResourceSchema = z.object({
+    name: z.string().min(1),
+    region: z.string().min(1).optional(),
+    version: z.string().min(1),
+    vpc: z.string().min(1).optional(),
+    vpc_uuid: z.string().min(1).optional(),
+    tags: z.array(z.string()).optional(),
+    node_pools: z.array(kubernetesNodePoolResourceSchema).min(1)
+});
+
 export const resourcesSchema = z.object({
     tags: z.array(z.union([z.string(), tagResourceSchema])).optional(),
     ssh_keys: z.array(sshKeyResourceSchema).optional(),
@@ -339,7 +374,10 @@ export const resourcesSchema = z.object({
     databases: z.array(databaseResourceSchema).optional(),
     spaces: z.array(spaceResourceSchema).optional(),
     certificates: z.array(certificateResourceSchema).optional(),
-    cdn: z.array(cdnResourceSchema).optional()
+    cdn: z.array(cdnResourceSchema).optional(),
+    projects: z.array(projectResourceSchema).optional(),
+    volumes: z.array(volumeResourceSchema).optional(),
+    kubernetes_clusters: z.array(kubernetesClusterResourceSchema).optional()
 });
 
 export const grapeConfigSchema = z.object({
@@ -398,6 +436,9 @@ export type DatabaseResourceConfig = z.infer<typeof databaseResourceSchema>;
 export type SpaceResourceConfig = z.infer<typeof spaceResourceSchema>;
 export type CertificateResourceConfig = z.infer<typeof certificateResourceSchema>;
 export type CdnResourceConfig = z.infer<typeof cdnResourceSchema>;
+export type ProjectResourceConfig = z.infer<typeof projectResourceSchema>;
+export type VolumeResourceConfig = z.infer<typeof volumeResourceSchema>;
+export type KubernetesClusterResourceConfig = z.infer<typeof kubernetesClusterResourceSchema>;
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
     return value && typeof value === "object" && !Array.isArray(value)

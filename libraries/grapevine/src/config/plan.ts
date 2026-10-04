@@ -19,6 +19,9 @@ export const RESOURCE_KINDS = [
     "spaces",
     "certificates",
     "cdn",
+    "projects",
+    "volumes",
+    "kubernetes_clusters",
     "stacks"
 ] as const;
 
@@ -38,6 +41,9 @@ export type PlannedKind =
     | "space"
     | "certificate"
     | "cdn"
+    | "project"
+    | "volume"
+    | "kubernetes"
     | "stack"
     | "stack_step";
 
@@ -73,6 +79,9 @@ export function emptyCounts(): ResourceCounts {
         spaces: 0,
         certificates: 0,
         cdn: 0,
+        projects: 0,
+        volumes: 0,
+        kubernetes_clusters: 0,
         stacks: 0
     };
 }
@@ -92,6 +101,9 @@ export function countResources(resources: GrapeResources, stackCount = 0): Resou
         spaces: resources.spaces?.length ?? 0,
         certificates: resources.certificates?.length ?? 0,
         cdn: resources.cdn?.length ?? 0,
+        projects: resources.projects?.length ?? 0,
+        volumes: resources.volumes?.length ?? 0,
+        kubernetes_clusters: resources.kubernetes_clusters?.length ?? 0,
         stacks: stackCount
     };
 }
@@ -284,6 +296,43 @@ export function planGrapeConfig(config: GrapeConfig, options: GrapeRunOptions = 
                 ["ttl", endpoint.ttl],
                 ["certificate", endpoint.certificate ?? endpoint.certificate_id],
                 ["custom_domain", endpoint.custom_domain]
+            ])
+        });
+    }
+
+    for (const project of resources.projects ?? []) {
+        planned.push({
+            kind: "project",
+            name: project.name,
+            detail: detail([
+                ["purpose", project.purpose ?? "Other"],
+                ["environment", project.environment],
+                ["description", project.description]
+            ])
+        });
+    }
+
+    for (const volume of resources.volumes ?? []) {
+        planned.push({
+            kind: "volume",
+            name: volume.name,
+            detail: detail([
+                ["region", volume.region ?? config.region],
+                ["size_gigabytes", volume.size_gigabytes],
+                ["filesystem_type", volume.filesystem_type]
+            ])
+        });
+    }
+
+    for (const cluster of resources.kubernetes_clusters ?? []) {
+        planned.push({
+            kind: "kubernetes",
+            name: cluster.name,
+            detail: detail([
+                ["region", cluster.region ?? config.region],
+                ["version", cluster.version],
+                ["vpc", cluster.vpc ?? cluster.vpc_uuid],
+                ["node_pools", cluster.node_pools.map((pool) => pool.name)]
             ])
         });
     }

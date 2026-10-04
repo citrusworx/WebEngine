@@ -89,6 +89,49 @@ export async function doRequest<T>(config: AxiosRequestConfig): Promise<T> {
     }
 }
 
+const MAX_LIST_PAGES = 100;
+
+function nextPagePath(body: Record<string, unknown>): string | undefined {
+    const links = body.links;
+    if (!links || typeof links !== "object") {
+        return undefined;
+    }
+    const pages = (links as { pages?: { next?: unknown } }).pages;
+    const next = pages?.next;
+    return typeof next === "string" && next.length > 0 ? next : undefined;
+}
+
+/** Follow `links.pages.next` and concatenate one collection key. */
+export async function doList<T>(
+    url: string,
+    collectionKey: string,
+    params?: Record<string, unknown>
+): Promise<T[]> {
+    const items: T[] = [];
+    let path: string | undefined = url;
+    let query: Record<string, unknown> | undefined = { per_page: 200, ...params };
+
+    for (let page = 0; page < MAX_LIST_PAGES && path; page += 1) {
+        const response: Record<string, unknown> = await doRequest<Record<string, unknown>>({
+            method: "GET",
+            url: path,
+            params: query
+        });
+        const chunk = response[collectionKey];
+        if (Array.isArray(chunk)) {
+            items.push(...(chunk as T[]));
+        }
+        const next = nextPagePath(response);
+        if (!next) {
+            return items;
+        }
+        path = next.startsWith(DO_API_BASE) ? next.slice(DO_API_BASE.length) : next;
+        query = undefined;
+    }
+
+    throw new DigitalOceanError(`DigitalOcean list ${url} exceeded ${MAX_LIST_PAGES} pages`);
+}
+
 export interface DoClientConfig {
     params?: Record<string, unknown>;
     headers?: Record<string, string>;

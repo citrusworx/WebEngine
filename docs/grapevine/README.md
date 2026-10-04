@@ -19,7 +19,7 @@ Grapevine is strongest when you treat it as a typed DigitalOcean client plus a c
 - App repos that already have `@citrusworx/grapevine` and a DigitalOcean token
 - Operators following the downloadable starters in `libraries/grapevine/examples/blueprints/`
 
-It is not for AWS, GCP, Azure, or Linode (those names are roadmap only). It does not deploy your Node app onto the droplet. It does not open a dashboard.
+It is not for AWS, GCP, Azure, or Linode. Those clouds are not implemented. The provider catalog (`grape catalog --json`, `catalog/digitalocean.json`) is the extension point a later provider would fill. Grapevine does not host a dashboard; a WebEngine dashboard reads this catalog, offerings, and live inventory. It does not deploy your Node app onto the droplet.
 
 ## Why it exists
 
@@ -54,6 +54,9 @@ export DO_TOKEN=dop_v1_...
 npx grape validate -c ./grape.config.yaml
 npx grape apply -c ./grape.config.yaml
 npx grape status
+npx grape catalog --json
+npx grape offerings
+npx grape telemetry
 ```
 
 ```ts
@@ -64,7 +67,7 @@ const result = await applyGrapeConfig(config);
 console.log(result.droplets, result.warnings);
 ```
 
-Package version today: **0.2.1**. The binary is `grape` (`dist/bin/cli.js`). Commands: `apply`, `validate`, `status`, `help`. There is no `grape gui`, no `grape destroy`, no `grapevine init`.
+Package version today: **0.2.2**. The binary is `grape` (`dist/bin/cli.js`). Commands include `validate`, `plan`, `apply`, `destroy`, `status`, `init`, `catalog`, `offerings`, and `telemetry`. There is no `grape gui`.
 
 ## What it can do
 
@@ -252,9 +255,9 @@ ssh:
 
 `networking.ssl` and `networking.cdn` are deprecated booleans: plan and apply warn, and they do not provision anything. Use `resources.certificates` and `resources.cdn`. Loose `services:` maps still warn. Use top-level `stack` (or a stack-shaped `services` object) for compose bootstrap, `resources.databases` for DigitalOcean managed databases, and `resources.spaces` for a static-site bucket.
 
-### 9. Tear down with functions, not `grape destroy`
+### 9. Tear down
 
-Deletes exist as HTTP helpers. They are not a CLI plan and not the inverse of apply.
+`grape destroy` matches unique live names (and `--tag` for droplets). It is not a full inverse of every create. The same deletes exist as HTTP helpers:
 
 ```ts
 import {
@@ -345,7 +348,7 @@ Practical DigitalOcean notes also live under [infrastructure/digitalocean](./inf
 
 ## Status
 
-**Active development** (`@citrusworx/grapevine` 0.2.1), DigitalOcean-only. The apply engine, CLI, and DO HTTP helpers are real. Multi-cloud, GUIs, drift, and destroy-from-YAML are not.
+**Active development** (`@citrusworx/grapevine` 0.2.2), DigitalOcean-only. The apply engine, CLI, catalog, and DO HTTP helpers are real. A second cloud is not implemented. The catalog shape is the extension point. There is no GUI in this package.
 
 Active development here means the DigitalOcean create path is real and documented, not that the API is frozen or that other clouds are waiting behind a flag. See [Status](./grapevine-status.md) for the area-by-area matrix and [Roadmap](./grapevine-roadmap.md) for what is worth building next.
 

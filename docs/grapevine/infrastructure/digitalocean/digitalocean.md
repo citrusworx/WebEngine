@@ -4,7 +4,7 @@ Grapevine’s DigitalOcean provider provisions resources via YAML and the functi
 
 Region slugs and image slugs below are DigitalOcean’s catalog, not Grapevine enums. Wrong values fail at the API. Droplet `region` is optional in `grapeConfigSchema` because `applyGrapeConfig` fills `config.region`. `deployByBlueprint` still needs a region on the droplet object DigitalOcean will accept.
 
-`volumes` are existing volume **ids** forwarded on create. Grapevine does not `POST /volumes`. Prefer droplet `vpc` / `vpc_uuid` as documented in [Configuration](../../grapevine-config.md).
+Droplet `volumes` still forwards existing volume ids on droplet create. Block volumes themselves are `resources.volumes` (`POST /volumes`); see [grapevine-digitalocean.md](../../grapevine-digitalocean.md). Prefer droplet `vpc` / `vpc_uuid` as documented in [Configuration](../../grapevine-config.md).
 
 ---
 

@@ -15,6 +15,9 @@ import {
     type DatabaseResource
 } from "../providers/digitalocean/databases/databases.js";
 import { createDroplet, listAllDroplets, type DropletBlueprint, type DropletResource } from "../providers/digitalocean/droplet/droplet.js";
+import { createKubernetesCluster, listKubernetesClusters } from "../providers/digitalocean/kubernetes/kubernetes.js";
+import { createProject, listProjects } from "../providers/digitalocean/projects/projects.js";
+import { createVolume, listVolumes, volumeRegionSlug } from "../providers/digitalocean/volumes/volumes.js";
 import { createFireWall, listAllFirewalls, type FireWall } from "../providers/digitalocean/firewall/firewall.js";
 import { createAlertPolicy } from "../providers/digitalocean/monitoring/monitoring.js";
 import { createDomain, createDomainRecord } from "../providers/digitalocean/networking/domains.js";
@@ -22,7 +25,17 @@ import { createLoadBalancer } from "../providers/digitalocean/networking/load-ba
 import { createSSHKey, listSSHKeys, uploadSSHKey, type SSHKeyResource } from "../providers/digitalocean/ssh/ssh.js";
 import { createTag, tagResource } from "../providers/digitalocean/tags/tags.js";
 import { createVPC, listAllVPCs, type VPCResponse } from "../providers/digitalocean/vpc/vpc.js";
-import { adoptCdnByOrigin, adoptDroplet, adoptFirewall, adoptSSHKey, adoptVPC, findUniqueByName } from "./adopt.js";
+import {
+    adoptCdnByOrigin,
+    adoptDroplet,
+    adoptFirewall,
+    adoptKubernetesCluster,
+    adoptProject,
+    adoptSSHKey,
+    adoptVolume,
+    adoptVPC,
+    findUniqueByName
+} from "./adopt.js";
 import { normalizeFirewallRules } from "./firewall-rules.js";
 import type { DropletBlueprintConfig, GrapeConfig, GrapeDropletEntry, GrapeResources } from "./schema.js";
 import { persistGeneratedPrivateKey, readExistingPrivateKeyPublic, resolvePrivateKeyPath } from "./ssh-private-key.js";
@@ -94,6 +107,9 @@ export interface ApplyResult {
     spaces: AppliedSpace[];
     certificates: AppliedCertificate[];
     cdn: AppliedCdn[];
+    projects: Array<{ id: string; name: string }>;
+    volumes: Array<{ id: string; name: string; region: string }>;
+    kubernetes_clusters: Array<{ id: string; name: string; status?: string }>;
     stacks: AppliedStack[];
     /** Absolute paths of private keys written during this apply (generate: true). */
     private_key_paths: string[];
@@ -121,7 +137,10 @@ export function normalizeResources(config: GrapeConfig): GrapeResources {
         databases: [...(config.resources?.databases ?? [])],
         spaces: [...(config.resources?.spaces ?? [])],
         certificates: [...(config.resources?.certificates ?? [])],
-        cdn: [...(config.resources?.cdn ?? [])]
+        cdn: [...(config.resources?.cdn ?? [])],
+        projects: [...(config.resources?.projects ?? [])],
+        volumes: [...(config.resources?.volumes ?? [])],
+        kubernetes_clusters: [...(config.resources?.kubernetes_clusters ?? [])]
     };
 
     if (config.networking?.vpc) {
@@ -276,6 +295,9 @@ export async function applyGrapeConfig(
         spaces: [],
         certificates: [],
         cdn: [],
+        projects: [],
+        volumes: [],
+        kubernetes_clusters: [],
         stacks: [],
         private_key_paths: [],
         warnings
@@ -298,6 +320,26 @@ export async function applyGrapeConfig(
     const liveVpcs = (resources.vpcs ?? []).length > 0 ? await listAllVPCs() : [];
     const liveDroplets = (resources.droplets ?? []).length > 0 ? await listAllDroplets() : [];
     const liveFirewalls = (resources.firewalls ?? []).length > 0 ? await listAllFirewalls() : [];
+    const liveProjects = (resources.projects ?? []).length > 0 ? await listProjects() : [];
+    const liveVolumes = (resources.volumes ?? []).length > 0 ? await listVolumes() : [];
+    const liveClusters =
+        (resources.kubernetes_clusters ?? []).length > 0 ? await listKubernetesClusters() : [];
+
+    for (const project of resources.projects ?? []) {
+        const adopted = adoptProject(liveProjects, project.name);
+        if (adopted) {
+            result.projects.push({ id: adopted.id, name: adopted.name });
+            warnings.push(`Adopting existing project "${adopted.name}" (id ${adopted.id})`);
+            continue;
+        }
+        const created = await createProject({
+            name: project.name,
+            description: project.description,
+            purpose: project.purpose,
+            environment: project.environment
+        });
+        result.projects.push({ id: created.id, name: created.name });
+    }
 
     for (const key of resources.ssh_keys ?? []) {
         let publicKey = key.public_key ?? key.publicKey;
@@ -355,6 +397,73 @@ export async function applyGrapeConfig(
         });
         result.vpcs.push(created);
         vpcIds.set(created.name, created.id);
+    }
+
+    for (const volume of resources.volumes ?? []) {
+        const region = volume.region ?? config.region ?? "";
+        if (!region) {
+            throw new Error(`Volume "${volume.name}" is missing region`);
+        }
+        const adopted = adoptVolume(liveVolumes, volume.name, region);
+        if (adopted) {
+            result.volumes.push({ id: adopted.id, name: adopted.name, region: volumeRegionSlug(adopted) });
+            warnings.push(
+                `Adopting existing volume "${adopted.name}" (id ${adopted.id}) in ${region}; skipping create`
+            );
+            continue;
+        }
+        const created = await createVolume({
+            name: volume.name,
+            region,
+            size_gigabytes: volume.size_gigabytes,
+            description: volume.description,
+            filesystem_type: volume.filesystem_type,
+            filesystem_label: volume.filesystem_label,
+            tags: volume.tags
+        });
+        result.volumes.push({ id: created.id, name: created.name, region: volumeRegionSlug(created) || region });
+    }
+
+    for (const cluster of resources.kubernetes_clusters ?? []) {
+        const region = cluster.region ?? config.region ?? "";
+        if (!region) {
+            throw new Error(`Kubernetes cluster "${cluster.name}" is missing region`);
+        }
+        let vpcUuid = cluster.vpc_uuid;
+        if (cluster.vpc) {
+            const resolved = vpcIds.get(cluster.vpc);
+            if (!resolved) {
+                throw new Error(
+                    `Kubernetes cluster "${cluster.name}" references VPC "${cluster.vpc}" which was not created or adopted in this apply`
+                );
+            }
+            vpcUuid = resolved;
+        }
+        const adopted = adoptKubernetesCluster(liveClusters, cluster.name);
+        if (adopted) {
+            result.kubernetes_clusters.push({
+                id: adopted.id,
+                name: adopted.name,
+                status: adopted.status?.state
+            });
+            warnings.push(
+                `Adopting existing Kubernetes cluster "${adopted.name}" (id ${adopted.id}); node pools were not reconciled`
+            );
+            continue;
+        }
+        const created = await createKubernetesCluster({
+            name: cluster.name,
+            region,
+            version: cluster.version,
+            vpc_uuid: vpcUuid,
+            tags: cluster.tags,
+            node_pools: cluster.node_pools
+        });
+        result.kubernetes_clusters.push({
+            id: created.id,
+            name: created.name,
+            status: created.status?.state
+        });
     }
 
     const envOverlay: Record<string, string> = {};
