@@ -40,3 +40,5 @@ export { createDisclosure, initDisclosure, startDisclosureRuntime, stopDisclosur
 export type { DisclosureController, DisclosureOptions } from "./src/disclosure/disclosure-runtime.js";
 export { createSpinner, initSpinner, startSpinnerRuntime, stopSpinnerRuntime } from "./src/spinner/spinner-runtime.js";
 export type { SpinnerController, SpinnerOptions } from "./src/spinner/spinner-runtime.js";
+export { createSelect, initSelect, startSelectRuntime, stopSelectRuntime } from "./src/select/select-runtime.js";
+export type { SelectController, SelectOptions } from "./src/select/select-runtime.js";
