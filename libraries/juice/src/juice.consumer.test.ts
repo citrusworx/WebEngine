@@ -972,4 +972,90 @@ describe("Juice consumer smoke", () => {
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
     });
+
+    it("lets a consumer show and hide the built spinner runtime", async () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        const module = await import(entryUrl);
+        module.stopSpinnerRuntime();
+        module.stopProgressRuntime();
+        document.body.innerHTML = `
+            <div spinner id="load" aria-label="Saving">
+                <span spinner-label>Saving</span>
+            </div>
+            <div spinner hidden id="held" role="status" aria-busy="true" aria-label="Waiting"></div>
+            <div progress id="upload" aria-valuenow="40" aria-label="Upload"></div>
+        `;
+
+        const progress = module.createProgress({ root: document.body });
+        const controller = module.createSpinner({ root: document.body });
+        const load = document.getElementById("load");
+        const held = document.getElementById("held");
+        const upload = document.getElementById("upload");
+        const label = load?.querySelector("[spinner-label]");
+
+        expect(load?.getAttribute("role")).toBe("status");
+        expect(load?.getAttribute("aria-busy")).toBe("true");
+        expect(load?.hasAttribute("tabindex")).toBe(false);
+        expect(load?.getAttribute("aria-label")).toBe("Saving");
+        expect(label?.textContent).toBe("Saving");
+        expect(load?.hasAttribute("aria-valuenow")).toBe(false);
+        expect(controller.isShown(load)).toBe(true);
+
+        expect(held?.hasAttribute("hidden")).toBe(true);
+        expect(held?.hasAttribute("role")).toBe(false);
+        expect(held?.hasAttribute("aria-busy")).toBe(false);
+        expect(held?.getAttribute("aria-label")).toBe("Waiting");
+        expect(controller.isShown(held)).toBe(false);
+
+        expect(upload?.getAttribute("role")).toBe("progressbar");
+        expect(upload?.getAttribute("aria-valuemin")).toBe("0");
+        expect(upload?.getAttribute("aria-valuemax")).toBe("100");
+        expect(upload?.getAttribute("aria-valuenow")).toBe("40");
+        expect(upload?.hasAttribute("aria-busy")).toBe(false);
+
+        controller.hide(load);
+        expect(load?.hasAttribute("hidden")).toBe(true);
+        expect(load?.hasAttribute("role")).toBe(false);
+        expect(load?.hasAttribute("aria-busy")).toBe(false);
+        expect(load?.getAttribute("aria-label")).toBe("Saving");
+        expect(held?.hasAttribute("hidden")).toBe(true);
+
+        load?.dispatchEvent(
+            new KeyboardEvent("keydown", { bubbles: true, key: "Escape" })
+        );
+        expect(load?.hasAttribute("hidden")).toBe(true);
+
+        controller.show(held);
+        expect(held?.hasAttribute("hidden")).toBe(false);
+        expect(held?.getAttribute("role")).toBe("status");
+        expect(held?.getAttribute("aria-busy")).toBe("true");
+        expect(upload?.getAttribute("role")).toBe("progressbar");
+        expect(upload?.getAttribute("aria-valuenow")).toBe("40");
+        expect(upload?.hasAttribute("aria-busy")).toBe(false);
+
+        document.body.innerHTML = "";
+        controller.destroy();
+        progress.destroy();
+        module.stopSpinnerRuntime();
+        module.stopDisclosureRuntime();
+        module.stopPaginationRuntime();
+        module.stopProgressRuntime();
+        module.stopBreadcrumbRuntime();
+        module.stopRadioRuntime();
+        module.stopCheckboxRuntime();
+        module.stopSliderRuntime();
+        module.stopSwitchRuntime();
+        module.stopMenuRuntime();
+        module.stopBannerRuntime();
+        module.stopComboboxRuntime();
+        module.stopTooltipRuntime();
+        module.stopWizardRuntime();
+        module.stopPopoverRuntime();
+        module.stopToastRuntime();
+        module.stopDrawerRuntime();
+        module.stopModalRuntime();
+        module.stopTabsRuntime();
+        module.stopAccordionRuntime();
+        module.stopNavigationRuntime();
+    });
 });

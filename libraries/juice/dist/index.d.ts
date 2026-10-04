@@ -39,4 +39,6 @@ export { createPagination, initPagination, startPaginationRuntime, stopPaginatio
 export type { PaginationController, PaginationOptions } from "./js/src/pagination/pagination-runtime.js";
 export { createDisclosure, initDisclosure, startDisclosureRuntime, stopDisclosureRuntime } from "./js/src/disclosure/disclosure-runtime.js";
 export type { DisclosureController, DisclosureOptions } from "./js/src/disclosure/disclosure-runtime.js";
+export { createSpinner, initSpinner, startSpinnerRuntime, stopSpinnerRuntime } from "./js/src/spinner/spinner-runtime.js";
+export type { SpinnerController, SpinnerOptions } from "./js/src/spinner/spinner-runtime.js";
 export { tokens } from "./tokens/index.js";

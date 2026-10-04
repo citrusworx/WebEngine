@@ -200,3 +200,13 @@ export type {
     DisclosureController,
     DisclosureOptions
 } from "./src/disclosure/disclosure-runtime.js";
+export {
+    createSpinner,
+    initSpinner,
+    startSpinnerRuntime,
+    stopSpinnerRuntime
+} from "./src/spinner/spinner-runtime.js";
+export type {
+    SpinnerController,
+    SpinnerOptions
+} from "./src/spinner/spinner-runtime.js";
