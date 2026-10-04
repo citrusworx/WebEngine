@@ -7,5 +7,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "yaml.schemas": {
     "https://schema.qtorque.io/torque-schema.json": "!**/blueprints/**"
-  }
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
