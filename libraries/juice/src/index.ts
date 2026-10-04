@@ -221,4 +221,14 @@ export type {
     SelectController,
     SelectOptions
 } from "./js/src/select/select-runtime.js";
+export {
+    createInput,
+    initInput,
+    startInputRuntime,
+    stopInputRuntime
+} from "./js/src/input/input-runtime.js";
+export type {
+    InputController,
+    InputOptions
+} from "./js/src/input/input-runtime.js";
 export { tokens } from "./tokens/index.js";

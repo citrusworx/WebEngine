@@ -220,3 +220,13 @@ export type {
     SelectController,
     SelectOptions
 } from "./src/select/select-runtime.js";
+export {
+    createInput,
+    initInput,
+    startInputRuntime,
+    stopInputRuntime
+} from "./src/input/input-runtime.js";
+export type {
+    InputController,
+    InputOptions
+} from "./src/input/input-runtime.js";
