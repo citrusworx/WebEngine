@@ -500,6 +500,17 @@ Select is a styled native `<select>`. It is not a combobox (`[combobox]` / `[com
 
 See [Select Runtime](./juice-select-runtime.md). Theme paint uses `--juice-select-*` roles (`surface`, `border`, `ink`, `chevron`, `focus-ring`).
 
+### Input
+
+- `input` — host, on the native element: `<input input>`. A boolean `[input]` attribute is fine: there is no HTML global `input` attribute. Any value, including `input="text"`, is still an input. Text-like controls only: missing type, empty type, text, email, password, search, tel, url, and number. Do not restyle a bare `input`. Do not style `[combobox-input]`. Do not style `<select select>`
+- `input-label` — optional visible label. Uses ink. Pair it with the control (associated `<label for>`, wrapping label, or `[input-label]`)
+
+Checkbox, radio, range, file, date, time, datetime-local, month, week, color, hidden, button, submit, reset, and image are ignored. Textarea and the `[field]` wrapper are not this runtime.
+
+Input is a styled native `<input>`. It is not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup) and not a select (`<select select>` is a native dropdown). Inline field chrome — no overlay z-index. The runtime auto-enhances `<input input>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`. Order: associated `<label for>`, wrapping `<label>`, then `[input-label]`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the input's own value. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Typing, change, and the keyboard stay native. There is no mask, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Input factory. Input is the twenty-third Emerging auto-enhance runtime and is unpublished versus 0.9.1.
+
+See [Input Runtime](./juice-input-runtime.md). Theme paint uses `--juice-input-*` roles (`surface`, `border`, `ink`, `placeholder`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
