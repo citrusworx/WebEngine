@@ -1806,6 +1806,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initDisclosure");
         expect(module).toHaveProperty("startDisclosureRuntime");
         expect(module).toHaveProperty("stopDisclosureRuntime");
+        expect(module).toHaveProperty("createSpinner");
+        expect(module).toHaveProperty("initSpinner");
+        expect(module).toHaveProperty("startSpinnerRuntime");
+        expect(module).toHaveProperty("stopSpinnerRuntime");
         expect(module).toHaveProperty("tokens");
     });
 
