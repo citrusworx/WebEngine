@@ -483,6 +483,19 @@
   --juice-select-ink: var(--tide-select-ink);
   --juice-select-chevron: var(--tide-select-chevron);
   --juice-select-focus-ring: var(--tide-select-focus-ring);
+  /* Input chrome — dark field from the surface token, not the page.
+     Placeholder stays muted text. Distinct from combobox and select.
+     Text-like types only. Runtime is later. */
+  --tide-input-surface: var(--tide-surface-strong);
+  --tide-input-border: var(--tide-border);
+  --tide-input-ink: var(--tide-text);
+  --tide-input-placeholder: var(--tide-text-muted);
+  --tide-input-focus-ring: var(--tide-accent);
+  --juice-input-surface: var(--tide-input-surface);
+  --juice-input-border: var(--tide-input-border);
+  --juice-input-ink: var(--tide-input-ink);
+  --juice-input-placeholder: var(--tide-input-placeholder);
+  --juice-input-focus-ring: var(--tide-input-focus-ring);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1553,5 +1566,56 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-select-ink);
+  box-shadow: none;
+}
+
+/* Input chrome. Beat [theme] :where(input) defaults.
+   Styled native text field, not a combobox, not a select, and not a CTA.
+   Text-like types only. Border color only, so KiwiPress keeps its 2px
+   control border. Runtime is later. */
+[theme=tide] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input]) {
+  background-color: var(--juice-input-surface);
+  border-color: var(--juice-input-border);
+  color: var(--juice-input-ink);
+}
+
+[theme=tide] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input])::placeholder {
+  color: var(--juice-input-placeholder);
+  opacity: 1;
+}
+
+[theme=tide] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input]):focus-visible {
+  outline: 2px solid var(--juice-input-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=tide] [input-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-input-ink);
   box-shadow: none;
 }

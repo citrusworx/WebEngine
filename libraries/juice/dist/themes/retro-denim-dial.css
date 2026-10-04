@@ -510,6 +510,20 @@
   --juice-select-ink: var(--dnd-select-ink);
   --juice-select-chevron: var(--dnd-select-chevron);
   --juice-select-focus-ring: var(--dnd-select-focus-ring);
+  /* Input chrome — styled native text field from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a select, and not a CTA. Placeholder follows this theme's
+     existing placeholder ink. Text-like types only. Runtime is later. */
+  --dnd-input-surface: var(--dnd-surface-strong);
+  --dnd-input-border: var(--dnd-border-strong);
+  --dnd-input-ink: var(--dnd-text);
+  --dnd-input-placeholder: var(--dnd-text-muted);
+  --dnd-input-focus-ring: var(--dnd-accent);
+  --juice-input-surface: var(--dnd-input-surface);
+  --juice-input-border: var(--dnd-input-border);
+  --juice-input-ink: var(--dnd-input-ink);
+  --juice-input-placeholder: var(--dnd-input-placeholder);
+  --juice-input-focus-ring: var(--dnd-input-focus-ring);
   background-color: var(--dnd-page);
   background-image: var(--dnd-page-background);
   color: var(--dnd-text);
@@ -1663,6 +1677,57 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-select-ink);
+  box-shadow: none;
+}
+
+/* Input chrome. Beat [theme] :where(input) defaults.
+   Styled native text field, not a combobox, not a select, and not a CTA.
+   Text-like types only. Border color only, so KiwiPress keeps its 2px
+   control border. Runtime is later. */
+[theme=retro-denim-dial] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input]) {
+  background-color: var(--juice-input-surface);
+  border-color: var(--juice-input-border);
+  color: var(--juice-input-ink);
+}
+
+[theme=retro-denim-dial] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input])::placeholder {
+  color: var(--juice-input-placeholder);
+  opacity: 1;
+}
+
+[theme=retro-denim-dial] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input]):focus-visible {
+  outline: 2px solid var(--juice-input-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-denim-dial] [input-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-input-ink);
   box-shadow: none;
 }
 

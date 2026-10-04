@@ -700,6 +700,68 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[combobox-list\][^{]*--juice-select/);
     });
 
+    it("includes input structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("input[input]");
+        expect(css).toContain("[input-label]");
+        expect(css).toMatch(/\[theme\]\s+input\[input\]/);
+        expect(css).toContain("--juice-input-surface");
+        expect(css).toContain("--juice-input-border");
+        expect(css).toContain("--juice-input-ink");
+        expect(css).toContain("--juice-input-placeholder");
+        expect(css).toContain("--juice-input-focus-ring");
+        expect(css).toMatch(/\[type=["']?text["']?\s+i\]/);
+        expect(css).toMatch(/\[type=["']?email["']?\s+i\]/);
+        expect(css).toMatch(/\[type=["']?password["']?\s+i\]/);
+        expect(css).toMatch(/\[type=["']?search["']?\s+i\]/);
+        expect(css).toMatch(/\[type=["']?tel["']?\s+i\]/);
+        expect(css).toMatch(/\[type=["']?url["']?\s+i\]/);
+        expect(css).toMatch(/\[type=["']?number["']?\s+i\]/);
+        expect(css).toContain(":not([type])");
+        expect(css).toContain(":not([combobox-input])");
+        expect(css).not.toMatch(/\[type=["']checkbox["']/);
+        expect(css).not.toMatch(/\[type=["']radio["']/);
+        expect(css).not.toMatch(/\[type=["']range["']/);
+        expect(css).not.toMatch(/\[type=["']file["']/);
+        expect(css).not.toMatch(/\[type=["']date["']/);
+        expect(css).not.toMatch(/\[type=["']time["']/);
+        expect(css).not.toMatch(/\[type=["']datetime-local["']/);
+        expect(css).not.toMatch(/\[type=["']month["']/);
+        expect(css).not.toMatch(/\[type=["']week["']/);
+        expect(css).not.toMatch(/\[type=["']color["']/);
+        expect(css).not.toMatch(/\[type=["']hidden["']/);
+        expect(css).not.toMatch(/\[type=["']button["']/);
+        expect(css).not.toMatch(/\[type=["']submit["']/);
+        expect(css).not.toMatch(/\[type=["']reset["']/);
+        expect(css).not.toMatch(/\[type=["']image["']/);
+        const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+            selector: match[1] ?? "",
+            body: match[2] ?? "",
+        }));
+
+        for (const rule of rules) {
+            if (/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toMatch(/z-index:\s*10/);
+                expect(rule.body).not.toContain("--juice-overlay-frost");
+                expect(rule.body).not.toContain("--juice-combobox-");
+                expect(rule.body).not.toContain("--juice-select-");
+            }
+
+            if (/\[combobox/.test(rule.selector) && !/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+
+            if (/select\[select\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+
+            if (/\[field\]\[invalid\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+        }
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1534,6 +1596,90 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-select-surface: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-select-ink: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-select-chevron: var(--tide-page)");
+    });
+
+    it("binds input chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-input-surface: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-input-border: var(--aqua-border-strong)");
+        expect(aquaCss).toContain("--aqua-input-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--aqua-input-placeholder: var(--aqua-text-muted)");
+        expect(aquaCss).toContain("--juice-input-focus-ring: var(--aqua-input-focus-ring)");
+        expect(aquaCss).toContain("input[input]");
+        expect(aquaCss).toContain("[input-label]");
+        expect(aquaCss).toContain("border-color: var(--juice-input-border)");
+        expect(aquaCss).toContain(":not([combobox-input])");
+        expect(aquaCss).not.toContain("--aqua-input-surface: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-input-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-input-placeholder: var(--aqua-accent)");
+        expect(aquaCss).not.toMatch(/input\[input\][^{]*\{[^}]*--aqua-button-background/);
+        expect(aquaCss).toContain("--juice-combobox-input: var(--aqua-combobox-input)");
+        expect(aquaCss).toContain("select[select]");
+
+        expect(kiwiCss).toContain("--kw-input-surface: var(--kw-surface)");
+        expect(kiwiCss).toContain("--kw-input-border: var(--kw-border)");
+        expect(kiwiCss).toContain("--juice-input-placeholder: var(--kw-input-placeholder)");
+        expect(kiwiCss).toContain("--kw-input-placeholder: var(--kw-text-soft)");
+        expect(kiwiCss).toContain("--kw-input-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("input[input]");
+        expect(kiwiCss).toContain("border: 2px solid");
+        expect(kiwiCss).not.toMatch(/input\[input\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/input\[input\][^{]*\{[^}]*background:\s*var\(--kw-accent\)/);
+        expect(kiwiCss).not.toMatch(/input\[input\][^{]*\{[^}]*\bborder:\s/);
+
+        expect(mintCss).toContain("--cm-input-surface: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-input-border: var(--cm-border)");
+        expect(mintCss).toContain("--cm-input-placeholder: var(--cm-text-muted)");
+        expect(mintCss).toContain("--cm-input-focus-ring: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-input-focus-ring: var(--cm-input-focus-ring)");
+        expect(mintCss).toContain("input[input]");
+        expect(mintCss).not.toContain("--cm-input-focus-ring: var(--cm-accent)");
+        expect(mintCss).toContain('"Lato"');
+        expect(mintCss).toContain('"Archivo Black"');
+
+        expect(tideCss).toContain("--tide-input-surface: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-input-border: var(--tide-border)");
+        expect(tideCss).toContain("--tide-input-ink: var(--tide-text)");
+        expect(tideCss).toContain("--tide-input-placeholder: var(--tide-text-muted)");
+        expect(tideCss).toContain("--juice-input-focus-ring: var(--tide-input-focus-ring)");
+        expect(tideCss).toContain("input[input]");
+        expect(tideCss).not.toMatch(/input\[input\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-input-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-input-ink: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-input-placeholder: var(--tide-page)");
+    });
+
+    it("binds input chrome on every shipped theme without copying KiwiPress or Korolev into retro fields", () => {
+        for (const { id, prefix } of SHIPPED_LIBRARY_THEMES) {
+            const css = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+
+            for (const role of ["surface", "border", "ink", "placeholder", "focus-ring"]) {
+                expect(css, id).toContain(`--juice-input-${role}: var(--${prefix}-input-${role})`);
+                expect(css, id).toContain(`--${prefix}-input-${role}:`);
+            }
+
+            expect(css, id).toContain("input[input]");
+            expect(css, id).toContain("[input-label]");
+            expect(css, id).toContain(":not([combobox-input])");
+            expect(css, id).toMatch(/\[type=["']?email["']?\s+i\]/);
+            expect(css, id).toMatch(/\[type=["']?number["']?\s+i\]/);
+            expect(css, id).not.toContain("Korolev");
+
+            if (id.startsWith("retro-") || id === "citrusmint") {
+                expect(css, id).toContain("Lato");
+                expect(css, id).toContain("Archivo Black");
+            }
+
+            if (id.startsWith("retro-")) {
+                expect(css, id).not.toContain("--kw-input");
+                expect(css, id).not.toContain("--kw-accent");
+                expect(css, id).not.toContain("--kw-surface");
+            }
+        }
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {

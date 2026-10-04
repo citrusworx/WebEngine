@@ -531,6 +531,21 @@
     --juice-select-chevron: var(--aqua-select-chevron);
     --juice-select-focus-ring: var(--aqua-select-focus-ring);
 
+    /* Input chrome — styled native text field from existing tokens.
+       Field fill matches the combobox input surface. Not a combobox,
+       not a select, and not a CTA. Placeholder follows this theme's
+       existing placeholder ink. Text-like types only. Runtime is later. */
+    --aqua-input-surface: var(--aqua-surface-strong);
+    --aqua-input-border: var(--aqua-border-strong);
+    --aqua-input-ink: var(--aqua-text);
+    --aqua-input-placeholder: var(--aqua-text-muted);
+    --aqua-input-focus-ring: var(--aqua-accent);
+    --juice-input-surface: var(--aqua-input-surface);
+    --juice-input-border: var(--aqua-input-border);
+    --juice-input-ink: var(--aqua-input-ink);
+    --juice-input-placeholder: var(--aqua-input-placeholder);
+    --juice-input-focus-ring: var(--aqua-input-focus-ring);
+
 
 
     background-color: var(--aqua-page);
@@ -1656,6 +1671,63 @@
     background-image: none;
     background-color: transparent;
     color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
+/* Input chrome. Beat [theme] :where(input) defaults.
+   Styled native text field, not a combobox, not a select, and not a CTA.
+   Text-like types only. Border color only, so KiwiPress keeps its 2px
+   control border. Runtime is later. */
+[theme="aquaflux"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input]) {
+    background-color: var(--juice-input-surface);
+    border-color: var(--juice-input-border);
+    color: var(--juice-input-ink);
+}
+
+[theme="aquaflux"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input])::placeholder {
+    color: var(--juice-input-placeholder);
+    opacity: 1;
+}
+
+[theme="aquaflux"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input]):focus-visible {
+    outline: 2px solid var(--juice-input-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="aquaflux"] [input-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-input-ink);
     box-shadow: none;
 }
 

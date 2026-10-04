@@ -510,6 +510,20 @@
   --juice-select-ink: var(--sgn-select-ink);
   --juice-select-chevron: var(--sgn-select-chevron);
   --juice-select-focus-ring: var(--sgn-select-focus-ring);
+  /* Input chrome — styled native text field from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a select, and not a CTA. Placeholder follows this theme's
+     existing placeholder ink. Text-like types only. Runtime is later. */
+  --sgn-input-surface: var(--sgn-surface-strong);
+  --sgn-input-border: var(--sgn-border-strong);
+  --sgn-input-ink: var(--sgn-text);
+  --sgn-input-placeholder: var(--sgn-text-muted);
+  --sgn-input-focus-ring: var(--sgn-accent);
+  --juice-input-surface: var(--sgn-input-surface);
+  --juice-input-border: var(--sgn-input-border);
+  --juice-input-ink: var(--sgn-input-ink);
+  --juice-input-placeholder: var(--sgn-input-placeholder);
+  --juice-input-focus-ring: var(--sgn-input-focus-ring);
   background-color: var(--sgn-page);
   background-image: var(--sgn-page-background);
   color: var(--sgn-text);
@@ -1663,6 +1677,57 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-select-ink);
+  box-shadow: none;
+}
+
+/* Input chrome. Beat [theme] :where(input) defaults.
+   Styled native text field, not a combobox, not a select, and not a CTA.
+   Text-like types only. Border color only, so KiwiPress keeps its 2px
+   control border. Runtime is later. */
+[theme=retro-signal-garden] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input]) {
+  background-color: var(--juice-input-surface);
+  border-color: var(--juice-input-border);
+  color: var(--juice-input-ink);
+}
+
+[theme=retro-signal-garden] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input])::placeholder {
+  color: var(--juice-input-placeholder);
+  opacity: 1;
+}
+
+[theme=retro-signal-garden] input[input]:is(:not([type]),
+[type=""],
+[type=text i],
+[type=email i],
+[type=password i],
+[type=search i],
+[type=tel i],
+[type=url i],
+[type=number i]):not([combobox-input]):focus-visible {
+  outline: 2px solid var(--juice-input-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-signal-garden] [input-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-input-ink);
   box-shadow: none;
 }
 

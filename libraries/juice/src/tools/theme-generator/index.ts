@@ -819,6 +819,21 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-select-chevron: var(--jx-select-chevron);
     --juice-select-focus-ring: var(--jx-select-focus-ring);
 
+    /* Input chrome — styled native text field from existing --jx-* tokens.
+       Field fill is the surface, not the CTA. Placeholder is muted text.
+       Focus ring is accent. Not a combobox and not a select. Text-like
+       types only. */
+    --jx-input-surface: var(--jx-surface);
+    --jx-input-border: var(--jx-border);
+    --jx-input-ink: var(--jx-text);
+    --jx-input-placeholder: var(--jx-text-muted);
+    --jx-input-focus-ring: var(--jx-accent);
+    --juice-input-surface: var(--jx-input-surface);
+    --juice-input-border: var(--jx-input-border);
+    --juice-input-ink: var(--jx-input-ink);
+    --juice-input-placeholder: var(--jx-input-placeholder);
+    --juice-input-focus-ring: var(--jx-input-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1711,6 +1726,58 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [select-label] {
     background: transparent;
     color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input]) {
+    background-color: var(--juice-input-surface);
+    border-color: var(--juice-input-border);
+    color: var(--juice-input-ink);
+}
+
+[theme="${config.id}"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input])::placeholder {
+    color: var(--juice-input-placeholder);
+    opacity: 1;
+}
+
+[theme="${config.id}"] input[input]:is(
+    :not([type]),
+    [type=""],
+    [type="text" i],
+    [type="email" i],
+    [type="password" i],
+    [type="search" i],
+    [type="tel" i],
+    [type="url" i],
+    [type="number" i]
+):not([combobox-input]):focus-visible {
+    outline: 2px solid var(--juice-input-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [input-label] {
+    background: transparent;
+    color: var(--juice-input-ink);
     box-shadow: none;
 }
 
