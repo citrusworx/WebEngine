@@ -101979,6 +101979,80 @@ button[slider-thumb]:focus-visible,
     transition: none;
   }
 }
+[spinner],
+[theme] [spinner] {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 0.5rem;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--juice-spinner-ink, var(--aqua-spinner-ink, var(--kw-spinner-ink, var(--cm-spinner-ink, var(--tide-spinner-ink, var(--jx-spinner-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  line-height: 1.3;
+  cursor: default;
+  vertical-align: middle;
+}
+
+[spinner]::before,
+[theme] [spinner]::before {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  box-sizing: border-box;
+  border: 2px solid var(--juice-spinner-track, var(--aqua-spinner-track, var(--kw-spinner-track, var(--cm-spinner-track, var(--tide-spinner-track, var(--jx-spinner-track, hsl(0, 0%, 85%)))))));
+  border-top-color: var(--juice-spinner-indicator, var(--aqua-spinner-indicator, var(--kw-spinner-indicator, var(--cm-spinner-indicator, var(--tide-spinner-indicator, var(--jx-spinner-indicator, hsl(0, 0%, 65%)))))));
+  border-radius: 999px;
+  background-color: transparent;
+  background-image: none;
+  pointer-events: none;
+  animation: juice-spinner-spin 0.8s linear infinite;
+}
+
+[spinner-label],
+[theme] [spinner-label] {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink, var(--aqua-spinner-ink, var(--kw-spinner-ink, var(--cm-spinner-ink, var(--tide-spinner-ink, var(--jx-spinner-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  line-height: inherit;
+}
+
+[spinner]:focus-visible,
+[theme] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring, var(--aqua-spinner-focus-ring, var(--kw-spinner-focus-ring, var(--cm-spinner-focus-ring, var(--tide-spinner-focus-ring, var(--jx-spinner-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+@keyframes juice-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [spinner]::before,
+  [theme] [spinner]::before {
+    animation: none;
+    transform: none;
+  }
+}
 [stats] {
   display: flex;
   flex-wrap: wrap;

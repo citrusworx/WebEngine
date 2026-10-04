@@ -23,6 +23,7 @@ import {
     REQUIRED_PROGRESS_ROLES,
     REQUIRED_PAGINATION_ROLES,
     REQUIRED_DISCLOSURE_ROLES,
+    REQUIRED_SPINNER_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -700,6 +701,41 @@ describe("Juice theme generator surface tone roles", () => {
 
         expect(triggerBlocks.length).toBeGreaterThan(0);
         for (const block of triggerBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+        }
+    });
+
+    it("binds --juice-spinner-* from existing --jx-* border, text, and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-spinner-track: var(--jx-border)");
+        expect(css).toContain("--jx-spinner-indicator: var(--jx-accent)");
+        expect(css).toContain("--jx-spinner-ink: var(--jx-text)");
+        expect(css).toContain("--jx-spinner-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-spinner-track: var(--jx-accent)");
+        expect(css).not.toContain("--jx-spinner-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-spinner-indicator: var(--jx-page)");
+
+        for (const role of REQUIRED_SPINNER_ROLES) {
+            expect(css).toContain(`--juice-spinner-${role}: var(--jx-spinner-${role})`);
+        }
+
+        expect(css).toContain("[spinner]");
+        expect(css).toContain("[spinner-label]");
+        expect(css).toContain("border-top-color: var(--juice-spinner-indicator)");
+        expect(css).not.toMatch(/\[spinner-track\]/);
+        expect(css).not.toMatch(/\[spinner-indicator\]/);
+        expect(css).not.toMatch(/\[role=["']?status["']?\]/);
+        expect(css).not.toMatch(/\[spinner\][^{]*--juice-progress/);
+        expect(css).not.toMatch(/\[progress\][^{]*--juice-spinner/);
+
+        const spinnerBlocks = [...css.matchAll(/\[spinner\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(spinnerBlocks.length).toBeGreaterThan(0);
+        for (const block of spinnerBlocks) {
             expect(block).not.toContain("--jx-cta-background");
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
         }

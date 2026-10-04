@@ -503,6 +503,19 @@
     --juice-disclosure-chevron: var(--aqua-disclosure-chevron);
     --juice-disclosure-focus-ring: var(--aqua-disclosure-focus-ring);
 
+    /* Spinner chrome — standalone indeterminate busy indicator from existing
+       tokens. The ring is a border stroke, not a CTA and not a progress
+       bar. Indicator is accent. Ink is text. Inline status — no overlay.
+       CSS owns the spin. Runtime is later. */
+    --aqua-spinner-track: var(--aqua-border);
+    --aqua-spinner-indicator: var(--aqua-accent);
+    --aqua-spinner-ink: var(--aqua-text);
+    --aqua-spinner-focus-ring: var(--aqua-accent);
+    --juice-spinner-track: var(--aqua-spinner-track);
+    --juice-spinner-indicator: var(--aqua-spinner-indicator);
+    --juice-spinner-ink: var(--aqua-spinner-ink);
+    --juice-spinner-focus-ring: var(--aqua-spinner-focus-ring);
+
 
     background-color: var(--aqua-page);
     background-image: var(--aqua-page-background);
@@ -1576,4 +1589,36 @@
     color: var(--juice-disclosure-ink);
     box-shadow: none;
 }
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a CTA.
+   CSS owns the spin. Runtime is later. */
+[theme="aquaflux"] [spinner] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="aquaflux"] [spinner]::before {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="aquaflux"] [spinner-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="aquaflux"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
+}
+
 

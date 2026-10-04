@@ -654,6 +654,30 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/(^|[,{])\s*summary\s*[,{]/);
     });
 
+    it("includes spinner structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[spinner]");
+        expect(css).toContain("[spinner-label]");
+        expect(css).toMatch(/\[theme\]\s+\[spinner\]/);
+        expect(css).toContain("--juice-spinner-track");
+        expect(css).toContain("--juice-spinner-indicator");
+        expect(css).toContain("--juice-spinner-ink");
+        expect(css).toContain("--juice-spinner-focus-ring");
+        expect(css).toContain("juice-spinner-spin");
+        expect(css).toContain("border-top-color");
+        expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
+        expect(css).not.toMatch(/\[spinner-track\]/);
+        expect(css).not.toMatch(/\[spinner-indicator\]/);
+        expect(css).not.toMatch(/\[spinner-size/);
+        expect(css).not.toMatch(/\[role=["']?status["']?\]/);
+        expect(css).not.toMatch(/\[spinner\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[spinner\][^{]*\{[^}]*--juice-overlay-frost/);
+        expect(css).not.toMatch(/\[spinner\][^{]*\{[^}]*--juice-progress-fill/);
+        expect(css).not.toMatch(/\[progress\][^{]*\{[^}]*--juice-spinner/);
+        expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*--juice-spinner/);
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1399,6 +1423,48 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--tide-disclosure-surface: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-disclosure-trigger: var(--tide-page)");
         expect(tideCss).not.toContain("--tide-disclosure-ink: var(--tide-page)");
+    });
+
+    it("binds spinner chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-spinner-track: var(--aqua-border)");
+        expect(aquaCss).toContain("--aqua-spinner-indicator: var(--aqua-accent)");
+        expect(aquaCss).toContain("--aqua-spinner-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--juice-spinner-focus-ring: var(--aqua-spinner-focus-ring)");
+        expect(aquaCss).toContain("[spinner]");
+        expect(aquaCss).toContain("[spinner-label]");
+        expect(aquaCss).toContain("border-top-color: var(--juice-spinner-indicator)");
+        expect(aquaCss).not.toContain("--aqua-spinner-track: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-spinner-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-spinner-indicator: var(--aqua-page)");
+        expect(aquaCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--aqua-button-background/);
+
+        expect(kiwiCss).toContain("--kw-spinner-track: var(--kw-border)");
+        expect(kiwiCss).toContain("--juice-spinner-indicator: var(--kw-spinner-indicator)");
+        expect(kiwiCss).toContain("--kw-spinner-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("[spinner]");
+        expect(kiwiCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--kw-accent[^-]/);
+
+        expect(mintCss).toContain("--cm-spinner-track: var(--cm-border)");
+        expect(mintCss).toContain("--cm-spinner-indicator: var(--cm-heading)");
+        expect(mintCss).toContain("--cm-spinner-focus-ring: var(--cm-heading)");
+        expect(mintCss).toContain("--juice-spinner-focus-ring: var(--cm-spinner-focus-ring)");
+        expect(mintCss).toContain("[spinner]");
+        expect(mintCss).not.toContain("--cm-spinner-indicator: var(--cm-accent)");
+
+        expect(tideCss).toContain("--tide-spinner-track: var(--tide-border)");
+        expect(tideCss).toContain("--tide-spinner-indicator: var(--tide-accent)");
+        expect(tideCss).toContain("--juice-spinner-ink: var(--tide-spinner-ink)");
+        expect(tideCss).toContain("[spinner]");
+        expect(tideCss).not.toMatch(/\[spinner\][^{]*\{[^}]*--tide-button-background/);
+        expect(tideCss).not.toContain("--tide-spinner-track: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-spinner-indicator: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-spinner-ink: var(--tide-page)");
     });
 
     it("binds wizard chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
