@@ -1,0 +1,132 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+
+// Spinner chrome is structural. Color comes from the shared role contract:
+//   --juice-spinner-track
+//   --juice-spinner-indicator
+//   --juice-spinner-ink
+//   --juice-spinner-focus-ring
+// Themes bind those names (and optional --aqua-spinner-* / --kw-spinner-* /
+// --cm-spinner-* / --tide-spinner-* / --jx-spinner-* aliases) from
+// existing identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome. Standalone indeterminate busy indicator. Distinct from:
+//   - [progress] / [progress-fill] (valued bar, determinate or indeterminate)
+//   - slider
+//
+// Native collision: there is no HTML *global* `spinner` attribute.
+// [spinner] is an attribute selector. There is no <spinner> element.
+//
+// Juice names:
+//   [spinner]        host. The ring is ::before. CSS owns the spin.
+//                    There is no [spinner-track] and no [spinner-indicator]:
+//                    the host paints both. Do not style bare [role="status"]
+//                    or [aria-busy].
+//   [spinner-label]  optional visible text. Uses ink. Not announced by
+//                    chrome; authors own the accessible name.
+//
+// The track is the inactive ring (a border stroke). The indicator is the
+// leading edge (border-top-color) and is what spins. prefers-reduced-motion
+// stops that spin and leaves the indicator in place.
+//
+// The host is usually not focusable. focus-ring paints only on
+// :focus-visible when an author focuses the host. No tabindex here.
+//
+// This slice does not size the control: no spinner-size, and scale does
+// not change ring geometry.
+//
+// z-index: inline status chrome. No overlay band.
+
+@function -juice-spinner-role($name, $fallback) {
+    @return var(
+        --juice-spinner-#{$name},
+        var(--aqua-spinner-#{$name}, var(--kw-spinner-#{$name}, var(--cm-spinner-#{$name}, var(--tide-spinner-#{$name}, var(--jx-spinner-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-spinner-track: -juice-spinner-role(track, #{$gray-300});
+$_juice-spinner-indicator: -juice-spinner-role(indicator, #{$gray-700});
+$_juice-spinner-ink: -juice-spinner-role(ink, #{$black-600});
+
+$_juice-spinner-size: 1.25rem;
+$_juice-spinner-stroke: 2px;
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(div) fills. Themes realize color through the roles.
+
+[spinner],
+[theme] [spinner] {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 0.5rem;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    appearance: none;
+    -webkit-appearance: none;
+    color: $_juice-spinner-ink;
+    font: inherit;
+    line-height: 1.3;
+    cursor: default;
+    vertical-align: middle;
+}
+
+[spinner]::before,
+[theme] [spinner]::before {
+    content: "";
+    display: block;
+    flex-shrink: 0;
+    width: $_juice-spinner-size;
+    height: $_juice-spinner-size;
+    box-sizing: border-box;
+    border: $_juice-spinner-stroke solid $_juice-spinner-track;
+    border-top-color: $_juice-spinner-indicator;
+    border-radius: 999px;
+    background-color: transparent;
+    background-image: none;
+    pointer-events: none;
+    animation: juice-spinner-spin 0.8s linear infinite;
+}
+
+[spinner-label],
+[theme] [spinner-label] {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-spinner-ink;
+    font: inherit;
+    line-height: inherit;
+}
+
+[spinner]:focus-visible,
+[theme] [spinner]:focus-visible {
+    outline: 2px solid -juice-spinner-role(focus-ring, currentColor);
+    outline-offset: 2px;
+}
+
+@keyframes juice-spinner-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// The leading edge stays. Stopping the spin does not remove the indicator.
+@media (prefers-reduced-motion: reduce) {
+    [spinner]::before,
+    [theme] [spinner]::before {
+        animation: none;
+        transform: none;
+    }
+}

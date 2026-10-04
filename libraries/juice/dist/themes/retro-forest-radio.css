@@ -484,6 +484,18 @@
   --juice-disclosure-ink: var(--frr-disclosure-ink);
   --juice-disclosure-chevron: var(--frr-disclosure-chevron);
   --juice-disclosure-focus-ring: var(--frr-disclosure-focus-ring);
+  /* Spinner chrome — standalone indeterminate busy indicator from existing
+     tokens. The ring is a border stroke, not a CTA and not a progress
+     bar. Indicator is accent. Ink is text. Inline status — no overlay.
+     CSS owns the spin. Runtime is later. */
+  --frr-spinner-track: var(--frr-border);
+  --frr-spinner-indicator: var(--frr-accent);
+  --frr-spinner-ink: var(--frr-text);
+  --frr-spinner-focus-ring: var(--frr-accent);
+  --juice-spinner-track: var(--frr-spinner-track);
+  --juice-spinner-indicator: var(--frr-spinner-indicator);
+  --juice-spinner-ink: var(--frr-spinner-ink);
+  --juice-spinner-focus-ring: var(--frr-spinner-focus-ring);
   background-color: var(--frr-page);
   background-image: var(--frr-page-background);
   color: var(--frr-text);
@@ -1585,6 +1597,37 @@
   border-color: var(--juice-disclosure-border);
   color: var(--juice-disclosure-ink);
   box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a CTA.
+   CSS owns the spin. Runtime is later. */
+[theme=retro-forest-radio] [spinner] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink);
+}
+
+[theme=retro-forest-radio] [spinner]::before {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-spinner-track);
+  border-top-color: var(--juice-spinner-indicator);
+  box-shadow: none;
+}
+
+[theme=retro-forest-radio] [spinner-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-spinner-ink);
+  box-shadow: none;
+}
+
+[theme=retro-forest-radio] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring);
+  outline-offset: 2px;
 }
 
 /* Primary CTA ink only. Outline, secondary, and component controls keep their own roles. */

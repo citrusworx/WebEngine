@@ -524,6 +524,19 @@
     --juice-disclosure-chevron: var(--bdw-disclosure-chevron);
     --juice-disclosure-focus-ring: var(--bdw-disclosure-focus-ring);
 
+    /* Spinner chrome — standalone indeterminate busy indicator from existing
+       tokens. The ring is a border stroke, not a CTA and not a progress
+       bar. Indicator is accent. Ink is text. Inline status — no overlay.
+       CSS owns the spin. Runtime is later. */
+    --bdw-spinner-track: var(--bdw-border);
+    --bdw-spinner-indicator: var(--bdw-accent);
+    --bdw-spinner-ink: var(--bdw-text);
+    --bdw-spinner-focus-ring: var(--bdw-accent);
+    --juice-spinner-track: var(--bdw-spinner-track);
+    --juice-spinner-indicator: var(--bdw-spinner-indicator);
+    --juice-spinner-ink: var(--bdw-spinner-ink);
+    --juice-spinner-focus-ring: var(--bdw-spinner-focus-ring);
+
 
     background-color: var(--bdw-page);
     background-image: var(--bdw-page-background);
@@ -1816,6 +1829,38 @@
     color: var(--juice-disclosure-ink);
     box-shadow: none;
 }
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a CTA.
+   CSS owns the spin. Runtime is later. */
+[theme="retro-boardwalk"] [spinner] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="retro-boardwalk"] [spinner]::before {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="retro-boardwalk"] [spinner-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="retro-boardwalk"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
+}
+
 
 
 

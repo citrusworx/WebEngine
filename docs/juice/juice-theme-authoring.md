@@ -90,6 +90,7 @@ A healthy Juice theme should own:
 - progress chrome roles (`--juice-progress-*`, bound from theme identity tokens)
 - pagination chrome roles (`--juice-pagination-*`, bound from theme identity tokens)
 - disclosure chrome roles (`--juice-disclosure-*`, bound from theme identity tokens)
+- spinner chrome roles (`--juice-spinner-*`, bound from theme identity tokens)
 - wizard chrome roles (`--juice-wizard-*`, bound from theme identity tokens)
 - surface tone and border strength roles (`--juice-surface-*`, `--juice-border-strength-*`)
 
@@ -250,6 +251,7 @@ The generated stylesheet currently defines:
 - progress chrome role bindings (`--jx-progress-*` / `--juice-progress-*`) and fill overrides for `[progress]` / `[progress-fill]`
 - pagination chrome role bindings (`--jx-pagination-*` / `--juice-pagination-*`) and control overrides for `[pagination]` / `[pagination-link]`
 - disclosure chrome role bindings (`--jx-disclosure-*` / `--juice-disclosure-*`) and trigger overrides for `[disclosure]` / `[disclosure-trigger]`
+- spinner chrome role bindings (`--jx-spinner-*` / `--juice-spinner-*`) and ring overrides for `[spinner]` / `[spinner-label]`
 - wizard chrome role bindings (`--jx-wizard-*` / `--juice-wizard-*`) for `[wizard-shell]` / rails / step indicators
 - surface tone role bindings (`--juice-surface-soft-*` / `--juice-surface-strong-*` / `--juice-surface-muted-*`) from existing `--jx-surface*` tokens
 - optional rules for `named_surfaces`
@@ -443,6 +445,16 @@ Each shipped library theme also aliases the required roles with its identity pre
 This is Juice chrome for the APG Disclosure pattern. It is not an accordion. Accordion stays `[accordion]` / `[accordion-item]` (multi-item, multi-open). Disclosure is one trigger and one panel. A boolean `[disclosure]` attribute is fine (no HTML global `disclosure` attr). `[disclosure-trigger]` is the button. `[disclosure-panel]` is the controlled region. Pair the panel with `aria-controls`, or place it as the next sibling of the trigger. Expanded paint is `aria-expanded="true"` on the trigger. The chevron is `::after` and rotates when expanded. Do not style bare `[aria-expanded]`, `<details>`, or `<summary>`. Inline chrome — no overlay z-index. The disclosure runtime auto-enhances that markup (`sync` / `expand` / `collapse` / `toggle`, `aria-expanded` plus native `hidden` and `aria-hidden`, orphans ignored, Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover) — see [Disclosure Runtime](./juice-disclosure-runtime.md). Disclosure is the twentieth Emerging auto-enhance runtime and is unpublished versus 0.9.0.
 
 Tide must bind a dark panel (`--tide-surface`) and a dark trigger (`--tide-surface-strong`), not `--tide-page`.
+
+## Spinner chrome roles
+
+Library themes bind the shared spinner contract so `[spinner]` / `[spinner-label]` paint is theme-agnostic in `spinner.scss`. Required names (`track`, `indicator`, `ink`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-spinner-*`, `--kw-spinner-*`, `--cm-spinner-*`, `--tide-spinner-*`, …). App-owned generated themes use `--jx-spinner-*` and bind `--juice-spinner-*` from existing `--jx-*` border / text / accent tokens. Do not invent a new hue family just for spinner chrome. The track is the border token, not the CTA button gradient. The indicator is accent (Citrusmint uses heading, same as progress fill). Ink is text. The host stays transparent. Aquaflux, KiwiPress, Citrusmint, Tide, and generated themes override generic `div` fills on `[spinner]` the same way.
+
+This is Juice chrome for a standalone indeterminate busy indicator. It is not a progress bar. Progress stays `[progress]` / `[progress-fill]` (determinate or `progress="indeterminate"`). A boolean `[spinner]` attribute is fine (no HTML global `spinner` attr, and no `<spinner>` element). The ring is `::before` on the host. `[spinner-label]` is optional ink. There is no `[spinner-track]` and no `[spinner-indicator]`. Do not style bare `[role="status"]` or `[aria-busy]`. CSS owns the spin. `prefers-reduced-motion` stops that animation and leaves the indicator. The host is usually not focusable. Inline status chrome — no overlay z-index. Runtime is later.
+
+Tide must bind a dark ring (`--tide-border`), not a white disc and not `--tide-page`. The indicator stays `--tide-accent`. Ink stays `--tide-text`.
 
 ## Wizard chrome roles
 

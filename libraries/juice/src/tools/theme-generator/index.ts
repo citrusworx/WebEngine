@@ -791,6 +791,19 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-disclosure-chevron: var(--jx-disclosure-chevron);
     --juice-disclosure-focus-ring: var(--jx-disclosure-focus-ring);
 
+    /* Spinner chrome — standalone indeterminate busy indicator from existing
+       --jx-* tokens. The ring is a border stroke, not the CTA fill and not
+       a progress bar. The indicator is accent. Ink is text. The host stays
+       transparent so the surface shows through. CSS owns the spin. */
+    --jx-spinner-track: var(--jx-border);
+    --jx-spinner-indicator: var(--jx-accent);
+    --jx-spinner-ink: var(--jx-text);
+    --jx-spinner-focus-ring: var(--jx-accent);
+    --juice-spinner-track: var(--jx-spinner-track);
+    --juice-spinner-indicator: var(--jx-spinner-indicator);
+    --juice-spinner-ink: var(--jx-spinner-ink);
+    --juice-spinner-focus-ring: var(--jx-spinner-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1642,6 +1655,31 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     border-color: var(--juice-disclosure-border);
     color: var(--juice-disclosure-ink);
     box-shadow: none;
+}
+
+[theme="${config.id}"] [spinner] {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="${config.id}"] [spinner]::before {
+    background: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [spinner-label] {
+    background: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
 }
 
 ${namedSurfaces}

@@ -253,6 +253,14 @@ export const REQUIRED_DISCLOSURE_ROLES = [
     "focus-ring",
 ] as const;
 
+/** Spinner chrome — required on every shipped library theme and generated `--jx-*` themes. */
+export const REQUIRED_SPINNER_ROLES = [
+    "track",
+    "indicator",
+    "ink",
+    "focus-ring",
+] as const;
+
 /** Wizard chrome — required on every shipped library theme and generated `--jx-*` themes. */
 export const REQUIRED_WIZARD_ROLES = [
     "shell",
@@ -382,6 +390,10 @@ export function requiredDisclosureBinds(): string[] {
     return REQUIRED_DISCLOSURE_ROLES.map((role) => `--juice-disclosure-${role}`);
 }
 
+export function requiredSpinnerBinds(): string[] {
+    return REQUIRED_SPINNER_ROLES.map((role) => `--juice-spinner-${role}`);
+}
+
 export function requiredWizardBinds(): string[] {
     return REQUIRED_WIZARD_ROLES.map((role) => `--juice-wizard-${role}`);
 }
@@ -431,6 +443,7 @@ export function requiredJuiceBinds(): string[] {
         ...requiredProgressBinds(),
         ...requiredPaginationBinds(),
         ...requiredDisclosureBinds(),
+        ...requiredSpinnerBinds(),
         ...requiredWizardBinds(),
         ...requiredSurfaceToneBinds(),
         ...requiredBorderStrengthBinds(),
@@ -466,10 +479,10 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-*` → `--juice-*` declarations the generator already emits.
  * Surface / border-strength / shadow-tone / overlay roles bind `--juice-*` from `--jx-*`
  * tokens without a uniform suffix, so they are presence-checked only.
- * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, and wizard chrome use `--jx-modal-*` /
+ * Modal, drawer, toast, banner, popover, tooltip, combobox, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, and wizard chrome use `--jx-modal-*` /
  * `--jx-drawer-*` / `--jx-toast-*` / `--jx-banner-*` / `--jx-popover-*` / `--jx-tooltip-*` /
  * `--jx-combobox-*` / `--jx-menu-*` / `--jx-switch-*` / `--jx-slider-*` / `--jx-checkbox-*` /
- * `--jx-radio-*` / `--jx-breadcrumb-*` / `--jx-progress-*` / `--jx-pagination-*` / `--jx-disclosure-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
+ * `--jx-radio-*` / `--jx-breadcrumb-*` / `--jx-progress-*` / `--jx-pagination-*` / `--jx-disclosure-*` / `--jx-spinner-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -544,6 +557,10 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
         ...REQUIRED_DISCLOSURE_ROLES.map((role) => ({
             juice: `--juice-disclosure-${role}`,
             jx: `--jx-disclosure-${role}`,
+        })),
+        ...REQUIRED_SPINNER_ROLES.map((role) => ({
+            juice: `--juice-spinner-${role}`,
+            jx: `--jx-spinner-${role}`,
         })),
         ...REQUIRED_WIZARD_ROLES.map((role) => ({
             juice: `--juice-wizard-${role}`,

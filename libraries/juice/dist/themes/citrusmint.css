@@ -422,6 +422,18 @@
   --juice-disclosure-ink: var(--cm-disclosure-ink);
   --juice-disclosure-chevron: var(--cm-disclosure-chevron);
   --juice-disclosure-focus-ring: var(--cm-disclosure-focus-ring);
+  /* Spinner chrome — standalone indeterminate busy indicator. No accent
+     token: heading stands in for the indicator and focus ring. The ring
+     is a border stroke, not heading-fill and not a progress bar.
+     Inline status — no overlay. CSS owns the spin. Runtime is later. */
+  --cm-spinner-track: var(--cm-border);
+  --cm-spinner-indicator: var(--cm-heading);
+  --cm-spinner-ink: var(--cm-text);
+  --cm-spinner-focus-ring: var(--cm-heading);
+  --juice-spinner-track: var(--cm-spinner-track);
+  --juice-spinner-indicator: var(--cm-spinner-indicator);
+  --juice-spinner-ink: var(--cm-spinner-ink);
+  --juice-spinner-focus-ring: var(--cm-spinner-focus-ring);
   background-color: var(--cm-page);
   color: var(--cm-text);
   font-family: var(--cm-body-font);
@@ -1193,4 +1205,35 @@
   border-color: var(--juice-disclosure-border);
   color: var(--juice-disclosure-ink);
   box-shadow: none;
+}
+
+/* Spinner chrome. Beat generic div fills.
+   Heading paints the indicator, not a CTA. Not a progress bar.
+   CSS owns the spin. Runtime is later. */
+[theme=citrusmint] [spinner] {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--juice-spinner-ink);
+}
+
+[theme=citrusmint] [spinner]::before {
+  background-image: none;
+  background-color: transparent;
+  border-color: var(--juice-spinner-track);
+  border-top-color: var(--juice-spinner-indicator);
+  box-shadow: none;
+}
+
+[theme=citrusmint] [spinner-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-spinner-ink);
+  box-shadow: none;
+}
+
+[theme=citrusmint] [spinner]:focus-visible {
+  outline: 2px solid var(--juice-spinner-focus-ring);
+  outline-offset: 2px;
 }

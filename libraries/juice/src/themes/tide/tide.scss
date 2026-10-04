@@ -505,6 +505,18 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-disclosure-chevron: var(--tide-disclosure-chevron);
     --juice-disclosure-focus-ring: var(--tide-disclosure-focus-ring);
 
+    /* Spinner chrome — dark ring from the border token, not the page.
+       Indicator stays accent. Distinct from progress. Inline status —
+       no overlay. CSS owns the spin. Runtime is later. */
+    --tide-spinner-track: var(--tide-border);
+    --tide-spinner-indicator: var(--tide-accent);
+    --tide-spinner-ink: var(--tide-text);
+    --tide-spinner-focus-ring: var(--tide-accent);
+    --juice-spinner-track: var(--tide-spinner-track);
+    --juice-spinner-indicator: var(--tide-spinner-indicator);
+    --juice-spinner-ink: var(--tide-spinner-ink);
+    --juice-spinner-focus-ring: var(--tide-spinner-focus-ring);
+
 
     min-height: 100vh;
     background-color: var(--tide-page);
@@ -1518,4 +1530,36 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     color: var(--juice-disclosure-ink);
     box-shadow: none;
 }
+
+/* Spinner chrome. Beat generic div fills.
+   Dark ring, not the page and not a CTA. Not a progress bar.
+   CSS owns the spin. Runtime is later. */
+[theme="tide"] [spinner] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="tide"] [spinner]::before {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="tide"] [spinner-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="tide"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
+}
+
 

@@ -513,6 +513,19 @@
     --juice-disclosure-chevron: var(--psp-disclosure-chevron);
     --juice-disclosure-focus-ring: var(--psp-disclosure-focus-ring);
 
+    /* Spinner chrome — standalone indeterminate busy indicator from existing
+       tokens. The ring is a border stroke, not a CTA and not a progress
+       bar. Indicator is accent. Ink is text. Inline status — no overlay.
+       CSS owns the spin. Runtime is later. */
+    --psp-spinner-track: var(--psp-border);
+    --psp-spinner-indicator: var(--psp-accent);
+    --psp-spinner-ink: var(--psp-text);
+    --psp-spinner-focus-ring: var(--psp-accent);
+    --juice-spinner-track: var(--psp-spinner-track);
+    --juice-spinner-indicator: var(--psp-spinner-indicator);
+    --juice-spinner-ink: var(--psp-spinner-ink);
+    --juice-spinner-focus-ring: var(--psp-spinner-focus-ring);
+
 
     background-color: var(--psp-page);
     background-image: var(--psp-page-background);
@@ -1611,6 +1624,38 @@
     color: var(--juice-disclosure-ink);
     box-shadow: none;
 }
+
+/* Spinner chrome. Beat generic div fills.
+   Standalone indeterminate busy indicator, not a progress bar and not a CTA.
+   CSS owns the spin. Runtime is later. */
+[theme="retro-poolside-pop"] [spinner] {
+    background-image: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--juice-spinner-ink);
+}
+
+[theme="retro-poolside-pop"] [spinner]::before {
+    background-image: none;
+    background-color: transparent;
+    border-color: var(--juice-spinner-track);
+    border-top-color: var(--juice-spinner-indicator);
+    box-shadow: none;
+}
+
+[theme="retro-poolside-pop"] [spinner-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-spinner-ink);
+    box-shadow: none;
+}
+
+[theme="retro-poolside-pop"] [spinner]:focus-visible {
+    outline: 2px solid var(--juice-spinner-focus-ring);
+    outline-offset: 2px;
+}
+
 
 
 
