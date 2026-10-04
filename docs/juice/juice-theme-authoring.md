@@ -456,6 +456,16 @@ This is Juice chrome for a standalone indeterminate busy indicator. It is not a 
 
 Tide must bind a dark ring (`--tide-border`), not a white disc and not `--tide-page`. The indicator stays `--tide-accent`. Ink stays `--tide-text`.
 
+## Select chrome roles
+
+Library themes bind the shared select contract so `<select select>` / `[select-label]` paint is theme-agnostic in `select.scss`. Required names (`surface`, `border`, `ink`, `chevron`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-select-*`, `--kw-select-*`, `--cm-select-*`, `--tide-select-*`, …). App-owned generated themes use `--jx-select-*` and bind `--juice-select-*` from existing `--jx-*` surface / border / text / accent tokens. Do not invent a new hue family just for select chrome. The field is a surface, not the CTA button gradient. Surface and border match that theme's combobox input field. The chevron is accent (Citrusmint uses heading, same as disclosure chevron). Ink is text. Focus ring is the same accent (Citrusmint uses heading).
+
+This is Juice chrome for a styled native `<select>`. It is not a combobox. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]`. A boolean `[select]` attribute is fine (no HTML global `select` attr). The element is still `<select>`. `[select-label]` is optional ink. There is no `[select-list]` and no `[select-option]`. The open list stays the platform popup. The chevron is a `background-image` on the host, not `::after`. Do not restyle a bare `select`. Do not style `[combobox]`. `[multiple]` and `size` other than `1` drop the chevron and keep the native list. Inline field chrome — no overlay z-index. The select runtime auto-enhances that markup (`sync`, a visible label names the control when the author has not set `aria-label` or `aria-labelledby`, change and keys stay native) — see [Select Runtime](./juice-select-runtime.md). Select is the twenty-second Emerging auto-enhance runtime and is unpublished versus 0.9.0.
+
+Tide must bind a dark field (`--tide-surface-strong`), not `--tide-page`. The chevron stays `--tide-accent`. Ink stays `--tide-text`.
+
 ## Wizard chrome roles
 
 Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step-indicator]` paint is theme-agnostic in `wizard.scss`. Required names (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).

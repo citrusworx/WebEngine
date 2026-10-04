@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Disclosure is the APG **Disclosure** pattern: one trigger, one panel. It is not an accordion. Accordion stays multi-item `[accordion]` / `[accordion-item]` (multi-open). Disclosure is not a layered overlay. There is no exclusive group and no arrow-key roving tabindex.
 
-Disclosure is the twentieth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` ships eighteen (navigation through progress). Pagination is the nineteenth. Spinner is the twenty-first. Pagination, disclosure, and spinner are unpublished versus that cut. All twenty-one stay Emerging.
+Disclosure is the twentieth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` ships eighteen (navigation through progress). Pagination is the nineteenth. Spinner is the twenty-first. Select is the twenty-second. Pagination, disclosure, spinner, and select are unpublished versus that cut. All twenty-two stay Emerging.
 
 ## Markup Contract
 
@@ -215,7 +215,7 @@ Authors own the accessible name on the trigger. The runtime does not invent a vi
 ## Limitations
 
 - No `Disclosure()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Disclosure is the twentieth Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.0`. Pagination remains the nineteenth and is also unpublished versus that cut. Spinner is the twenty-first and is also unpublished versus that cut. All twenty-one stay Emerging.
+- This surface is Emerging, not Stable-ish. Disclosure is the twentieth Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.0`. Pagination remains the nineteenth and is also unpublished versus that cut. Spinner is the twenty-first and is also unpublished versus that cut. Select is the twenty-second and is also unpublished versus that cut. All twenty-two stay Emerging.
 - This is not an accordion. `[accordion]` / `[accordion-item]` is a different runtime. The two do not toggle each other.
 - Orphan triggers and panels outside `[disclosure]` are ignored.
 - There is no exclusive group. Opening one disclosure leaves the others open. Arrow-key roving tabindex is out of scope.
