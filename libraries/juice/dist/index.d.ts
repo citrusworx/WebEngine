@@ -43,4 +43,6 @@ export { createSpinner, initSpinner, startSpinnerRuntime, stopSpinnerRuntime } f
 export type { SpinnerController, SpinnerOptions } from "./js/src/spinner/spinner-runtime.js";
 export { createSelect, initSelect, startSelectRuntime, stopSelectRuntime } from "./js/src/select/select-runtime.js";
 export type { SelectController, SelectOptions } from "./js/src/select/select-runtime.js";
+export { createInput, initInput, startInputRuntime, stopInputRuntime } from "./js/src/input/input-runtime.js";
+export type { InputController, InputOptions } from "./js/src/input/input-runtime.js";
 export { tokens } from "./tokens/index.js";

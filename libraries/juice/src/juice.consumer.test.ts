@@ -1038,6 +1038,7 @@ describe("Juice consumer smoke", () => {
         progress.destroy();
         module.stopSpinnerRuntime();
         module.stopSelectRuntime();
+        module.stopInputRuntime();
         module.stopDisclosureRuntime();
         module.stopPaginationRuntime();
         module.stopProgressRuntime();
@@ -1064,6 +1065,7 @@ describe("Juice consumer smoke", () => {
         const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
         return import(entryUrl).then((module) => {
             module.stopSelectRuntime();
+            module.stopInputRuntime();
             module.stopComboboxRuntime();
             document.body.innerHTML = `
                 <label for="city" id="city-label">City</label>
@@ -1129,6 +1131,7 @@ describe("Juice consumer smoke", () => {
             document.body.innerHTML = "";
             controller.destroy();
             module.stopSelectRuntime();
+            module.stopInputRuntime();
             module.stopComboboxRuntime();
             module.stopSpinnerRuntime();
             module.stopDisclosureRuntime();
@@ -1137,6 +1140,119 @@ describe("Juice consumer smoke", () => {
             module.stopBreadcrumbRuntime();
             module.stopRadioRuntime();
             module.stopCheckboxRuntime();
+            module.stopSliderRuntime();
+            module.stopSwitchRuntime();
+            module.stopMenuRuntime();
+            module.stopBannerRuntime();
+            module.stopTooltipRuntime();
+            module.stopWizardRuntime();
+            module.stopPopoverRuntime();
+            module.stopToastRuntime();
+            module.stopDrawerRuntime();
+            module.stopModalRuntime();
+            module.stopTabsRuntime();
+            module.stopAccordionRuntime();
+            module.stopNavigationRuntime();
+        });
+    });
+
+    it("lets a consumer name a native text input from a visible label", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopInputRuntime();
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            module.stopCheckboxRuntime();
+            module.stopRadioRuntime();
+            document.body.innerHTML = `
+                <label for="email" id="email-label">Email</label>
+                <input input id="email" type="email" value="ada@example.com">
+                <label>
+                    Password
+                    <input input id="pw" type="password" value="s3cret">
+                </label>
+                <input input id="named" type="text" aria-label="Search">
+                <label for="agree" id="agree-label">Agree</label>
+                <input input id="agree" type="checkbox">
+                <label for="range" id="range-label">Range</label>
+                <input input id="range" type="range">
+                <label for="city" id="city-label">City</label>
+                <select select id="city">
+                    <option>Portland</option>
+                </select>
+                <div combobox id="combo">
+                    <input combobox-input type="text" />
+                    <ul combobox-list hidden>
+                        <li combobox-option>Apple</li>
+                    </ul>
+                </div>
+            `;
+
+            const controller = module.createInput({ root: document.body });
+            const email = document.getElementById("email") as HTMLInputElement;
+            const pw = document.getElementById("pw") as HTMLInputElement;
+            const named = document.getElementById("named");
+            const agree = document.getElementById("agree");
+            const range = document.getElementById("range");
+            const city = document.getElementById("city");
+            const comboInput = document.querySelector("[combobox-input]");
+            const list = document.querySelector("[combobox-list]");
+
+            expect(email.getAttribute("aria-labelledby")).toBe("email-label");
+            expect(email.hasAttribute("role")).toBe(false);
+            expect(email.hasAttribute("aria-invalid")).toBe(false);
+            expect(email.hasAttribute("tabindex")).toBe(false);
+            expect(email.value).toBe("ada@example.com");
+
+            expect(pw.getAttribute("aria-label")).toBe("Password");
+            expect(pw.getAttribute("aria-label")).not.toMatch(/s3cret/);
+            expect(pw.hasAttribute("aria-labelledby")).toBe(false);
+            expect(pw.value).toBe("s3cret");
+
+            expect(named?.getAttribute("aria-label")).toBe("Search");
+            expect(named?.hasAttribute("aria-labelledby")).toBe(false);
+
+            expect(agree?.hasAttribute("aria-label")).toBe(false);
+            expect(agree?.hasAttribute("aria-labelledby")).toBe(false);
+            expect(agree?.hasAttribute("role")).toBe(false);
+            expect(range?.hasAttribute("aria-labelledby")).toBe(false);
+            expect(range?.hasAttribute("aria-label")).toBe(false);
+            expect(city?.hasAttribute("aria-labelledby")).toBe(false);
+            expect(city?.hasAttribute("role")).toBe(false);
+
+            email.value = "ada@citrus.dev";
+            const inputEvent = new Event("input", { bubbles: true, cancelable: true });
+            email.dispatchEvent(inputEvent);
+            const change = new Event("change", { bubbles: true, cancelable: true });
+            email.dispatchEvent(change);
+            expect(inputEvent.defaultPrevented).toBe(false);
+            expect(change.defaultPrevented).toBe(false);
+            expect(email.value).toBe("ada@citrus.dev");
+
+            const keydown = new KeyboardEvent("keydown", {
+                bubbles: true,
+                cancelable: true,
+                key: "Escape"
+            });
+            email.dispatchEvent(keydown);
+            expect(keydown.defaultPrevented).toBe(false);
+            expect(email.value).toBe("ada@citrus.dev");
+            expect(comboInput?.hasAttribute("role")).toBe(false);
+            expect(list?.hasAttribute("hidden")).toBe(true);
+            expect(list?.hasAttribute("role")).toBe(false);
+
+            document.body.innerHTML = "";
+            controller.destroy();
+            module.stopInputRuntime();
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            module.stopCheckboxRuntime();
+            module.stopRadioRuntime();
+            module.stopSpinnerRuntime();
+            module.stopDisclosureRuntime();
+            module.stopPaginationRuntime();
+            module.stopProgressRuntime();
+            module.stopBreadcrumbRuntime();
             module.stopSliderRuntime();
             module.stopSwitchRuntime();
             module.stopMenuRuntime();

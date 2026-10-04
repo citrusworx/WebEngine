@@ -36,6 +36,7 @@
     "src/js/src/disclosure/disclosure-runtime.ts",
     "src/js/src/spinner/spinner-runtime.ts",
     "src/js/src/select/select-runtime.ts",
+    "src/js/src/input/input-runtime.ts",
     "src/js/src/shared/events.ts",
     "src/js/src/shared/focus.ts",
     "src/js/src/shared/ids.ts",
