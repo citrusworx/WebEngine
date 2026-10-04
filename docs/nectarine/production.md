@@ -2,7 +2,7 @@
 
 What is **production-ready today** for deploying Blackwater Sound’s backend with Nectarine and Seltzer.
 
-npm `@citrusworx/nectarine@0.4.0` is published. This repo’s `libraries/nectarine/package.json` is **0.4.0**. Git may be ahead of that tarball: INSERT `onConflict` compiles here and is not in the 0.4.0 pack. Pending Changesets make the next publish **0.5.0**. Blackwater in this monorepo depends on the workspace package, so it sees `onConflict` before that publish. Maturity label: **hostable alpha**. See [status](./nectarine-status.md).
+npm `@citrusworx/nectarine@0.4.0` is published. This repo’s `libraries/nectarine/package.json` is **0.5.0** and is not on npm. INSERT `onConflict` is in that workspace package and is not in the 0.4.0 tarball. Blackwater in this monorepo depends on the workspace package, so it sees `onConflict` before publish. Maturity label: **hostable alpha**. See [status](./nectarine-status.md).
 
 ## Ready today
 
@@ -100,6 +100,6 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 `ON CONFLICT`). They are not host SQL. Joins, `GROUP BY`, and `LIMIT` remain
 follow-ups.
 
-npm **0.4.0** is already published. Do not publish it again. The next intentional publish is **0.5.0** after `yarn version-packages` consumes the pending Nectarine changesets (see [Release checklist](./release-checklist.md)). There is no npm-token CI job. Commit the version bump before publishing — the 0.4.0 publish skipped that commit.
+npm **0.4.0** is already published. Do not publish it again. Workspace **0.5.0** is versioned and is not on npm. Publish that commit when ready (see [Release checklist](./release-checklist.md)). There is no npm-token CI job. The 0.4.0 publish skipped the version commit; do not publish 0.5.0 without the committed bump.
 
 See also: [Nectarine ↔ WebEngine kernel contract](../webengine/nectarine-kernel-contract.md).

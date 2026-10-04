@@ -17,7 +17,7 @@ A library is “ready to release” when an outside developer can:
 
 ## Shared bar (every package)
 
-Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([nectarine-status.md](../nectarine/nectarine-status.md)). These boxes stay open: they apply to every package, and this pass does not audit Juice, Sig, or Seltzer.
+Nectarine’s own status label is **hostable alpha**. Published npm is **0.4.0**. The workspace manifest is **0.5.0** and is not on npm ([nectarine-status.md](../nectarine/nectarine-status.md)). These boxes stay open: they apply to every package, and this pass does not audit Juice, Sig, or Seltzer.
 
 - [ ] Honest status label in docs (alpha / beta / 0.x) matches the code
 - [ ] `package.json` `exports`, README entrypoints, and `dist/` agree
@@ -94,9 +94,9 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 - [x] `applyMigrations` ledger + versioned phonics migrations; destructive ops require `destructive` + `confirm` (`src/migrate/runner.ts`, `src/compiler/migration.ts`, `runner.test.ts`, `migration.test.ts`). Forward-only — no down migrations
 - [x] Postgres path uses a `pg.Pool` with connect checkout, idle-client errors, and `disconnect` (`adapters/pg/pgz.ts`). Partial vendor env fails boot (kernel + Blackwater, above). MySQL and MongoDB are peer subpath exports (`package.json` `exports`), not loaded from the package root
 - [x] `listApiOperations` is exported for Seltzer / WebEngine (`src/config/api.ts`, engine `createNectarineRoutes`). Adapters are **not** loaded from the package root (`src/index.ts`, `src/package-exports.test.ts`)
-- [ ] `yarn verify:nectarine` (typecheck, build, tests, pack dry-run) is green **on master CI**. Local run on this honesty branch: exit 0, 197 tests passed, pack dry-run of `@citrusworx/nectarine@0.4.0`. The only `Nectarine Package` run on `master` (2026-09-15, run 35019588809, commit `da3d9ce7`) failed at `yarn install --immutable` before verify. Later green runs were on `cursor/blackwater-phase0-backend`, not `master`. This box stays open until a master workflow run is green
+- [ ] `yarn verify:nectarine` (typecheck, build, tests, pack dry-run) is green **on master CI**. An earlier local run on the honesty branch was exit 0, 197 tests passed, pack dry-run of `@citrusworx/nectarine@0.4.0`. The workspace manifest is now **0.5.0** (not published; npm is still 0.4.0). The only `Nectarine Package` run on `master` (2026-09-15, run 35019588809, commit `da3d9ce7`) failed at `yarn install --immutable` before verify. Later green runs were on `cursor/blackwater-phase0-backend`, not `master`. This box stays open until a master workflow run is green
 - [x] Showcase dry-run compiles the named-query path (`libraries/nectarine/examples/showcase.ts`; `yarn workspace @citrusworx/nectarine example` printed user CRUD SQL, exit 0). Live mode is `SELECT 1` and was not run. Blackwater is the host reference (`apps/blackwatersound/back/src/db/postgres.ts`, `named-ddl.ts`). Compiler fixtures for that YAML passed inside the nectarine suite (`compiler.blackwater.test.ts`, `compiler.blackwater.ddl.test.ts`). This box does not claim the Blackwater app’s own Vitest suite or a separate host CI job
-- [x] Status docs do not oversell. Label is **hostable alpha** at published **0.4.0** ([nectarine-status.md](../nectarine/nectarine-status.md)), not “early alpha” / 0.0.1. CREATE, `applyMigrations`, named query, and credential boot exist. Joins, `GROUP BY`, `LIMIT`, GraphQL, and Zod-on-the-hosted-path do not. INSERT `onConflict` is in git and not in the npm 0.4.0 tarball (next publish 0.5.0)
+- [x] Status docs do not oversell. Label is **hostable alpha**. Published npm is **0.4.0**. The workspace manifest is **0.5.0** and is not on npm ([nectarine-status.md](../nectarine/nectarine-status.md)), not “early alpha” / 0.0.1. CREATE, `applyMigrations`, named query, and credential boot exist. Joins, `GROUP BY`, `LIMIT`, GraphQL, and Zod-on-the-hosted-path do not. INSERT `onConflict` is in workspace 0.5.0 and not in the npm 0.4.0 tarball
 
 **Release label:** **0.4+ hostable alpha** for kernel work; **1.0** after migrations + a non-Blackwater consumer.
 

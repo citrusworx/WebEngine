@@ -6,21 +6,21 @@ What an outside reader can rely on. Capability claims in this file were checked 
 
 | | |
 |---|---|
-| npm `@citrusworx/nectarine` | **0.4.0** (published 2026-09-15; also 0.0.2, 0.1.0, 0.2.0, 0.3.0) |
-| Workspace `libraries/nectarine/package.json` | **0.4.0** |
+| npm `@citrusworx/nectarine` | **0.4.0** (published 2026-09-15; also 0.0.2, 0.1.0, 0.2.0, 0.3.0). **0.5.0 is not on npm.** |
+| Workspace `libraries/nectarine/package.json` | **0.5.0** (versioned; not published) |
 | Maturity | **Hostable alpha** |
 
 Hostable alpha means a WebEngine or Blackwater host can load YAML, compile named DML/DDL, migrate, and query Postgres without embedding SQL. It does not mean a finished ORM, joins, or a stable 1.0 API.
 
-The workspace manifest was restored to **0.4.0** because that version was published without committing the bump. `libraries/nectarine/CHANGELOG.md` in git still ends at **0.3.0** for the same reason. Do not publish 0.4.0 again.
+npm is still **0.4.0**. The workspace manifest is **0.5.0**. Those stay different until 0.5.0 is published. Do not publish 0.4.0 again. Do not treat 0.5.0 as live on npm.
 
-**Git may be ahead of the npm 0.4.0 tarball.** INSERT `onConflict` (Postgres `ON CONFLICT`; MySQL rejects it) is in this checkout and is not in the 0.4.0 pack. Pending Changesets are left in place so the next intentional `yarn version-packages` — not this docs pass — becomes **0.5.0**:
+The 0.4.0 publish did not commit a changelog section, so `libraries/nectarine/CHANGELOG.md` goes from **0.3.0** to **0.5.0**. `yarn version-packages` consumed the Nectarine changesets into that 0.5.0 section:
 
-- minor: `nectarine-on-conflict.md` (the unreleased surface)
-- minor: `nectarine-compiler-ops.md` (COUNT / EXISTS / JSONB `@>` / `?` / `->>`, already inside the 0.4.0 tarball, never consumed)
-- patches: `nectarine-on-conflict-dist.md`, `nectarine-mysql-json-escape.md`, `nectarine-ops-review-fixes.md`, `nectarine-align-npm-0-4-0.md`
+- minor: INSERT `onConflict` (Postgres `ON CONFLICT`; MySQL rejects it). This is in workspace **0.5.0** and is not in the npm 0.4.0 tarball.
+- minor: COUNT / EXISTS / JSONB `@>` / `?` / `->>`. Already inside the 0.4.0 tarball; the note is in the 0.5.0 changelog because that changeset was not consumed at publish. Bookkeeping, not a second feature.
+- patches: rebuilt `dist` for the ON CONFLICT compiler, MySQL JSON escaping, COUNT/JSONB review fixes, and the record that npm 0.4.0 was published without a version commit.
 
-The 0.5.0 changelog will repeat the COUNT/EXISTS/JSONB note because that changeset was not consumed at publish. That is bookkeeping, not a second feature. Do not run full-monorepo `yarn version-packages` to “clean this up”; master has unrelated pending changesets.
+Do not run full-monorepo `yarn version-packages` to publish this. Master still has unrelated pending changesets. WebEngine and KiwiPress were not version-bumped. Their dependency range is `^0.5.0` so Yarn links this workspace package (`^0.4.0` does not include 0.5.0).
 
 `0.x` minors can break import paths. Adapters are not exported from the package root (that split landed in 0.2.0).
 
@@ -46,9 +46,9 @@ Adapters do not build SQL. The compiler does.
 
 **Not compiled:** `LIMIT` / offset, joins, `GROUP BY`, JSONB `||` / `jsonb_set`, blog `queries:` maps (`models/blog/**/sql.yml`), arbitrary SQL casts. A `limit` key in YAML is not a paging clause.
 
-### INSERT `onConflict` (git only, not npm 0.4.0)
+### INSERT `onConflict` (workspace 0.5.0, not npm 0.4.0)
 
-`onConflict` compiles to Postgres `ON CONFLICT … DO NOTHING` or `DO UPDATE SET col = EXCLUDED.col`. The MySQL adapter throws at `query()` instead of emitting `ON DUPLICATE KEY UPDATE`. This ships in the next publish (**0.5.0**), not in 0.4.0.
+`onConflict` compiles to Postgres `ON CONFLICT … DO NOTHING` or `DO UPDATE SET col = EXCLUDED.col`. The MySQL adapter throws at `query()` instead of emitting `ON DUPLICATE KEY UPDATE`. This is in the workspace package **0.5.0**. It is not in the published npm 0.4.0 tarball. **0.5.0 is not on npm** until it is published.
 
 ### Migrator
 
@@ -123,7 +123,7 @@ MySQL and MongoDB stay peer adapters. “Full MySQL parity” (including `ON DUP
 4. **No cross-adapter transactions.**
 5. **No caching, auth, or authorization inside Nectarine.** Hosts guard Seltzer handlers themselves.
 6. **Blog `queries:` YAML is not the compiler grammar.**
-7. **`ON CONFLICT` is Postgres-only** and, until 0.5.0 is published, is source-tree only.
+7. **`ON CONFLICT` is Postgres-only.** It is in workspace **0.5.0**. Published npm **0.4.0** does not include it. 0.5.0 is not on npm yet.
 8. **MongoDB does not run the SQL compiler.**
 
 ---
@@ -146,12 +146,14 @@ MySQL and MongoDB stay peer adapters. “Full MySQL parity” (including `ON DUP
 
 ### 0.4.0 (npm, 2026-09-15) — current published version
 
-The 0.4.0 tarball’s compiler comments include `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>`. They do **not** include `ON CONFLICT`. Git never received the version or changelog commit for this publish.
+The 0.4.0 tarball’s compiler comments include `COUNT`, `EXISTS`, and JSONB `@>` / `?` / `->>`. They do **not** include `ON CONFLICT`. Git never received the version or changelog commit for this publish. This is still the version on npm.
 
-### Unreleased (this git tree → next publish 0.5.0)
+### 0.5.0 (workspace, not published)
 
 - INSERT `onConflict` and the rebuilt `dist` that carries it
-- Changeset bookkeeping for the 0.4.0 compiler ops, which will be written into the 0.5.0 changelog when those files are finally consumed
+- Changeset bookkeeping for the 0.4.0 compiler ops, written into `libraries/nectarine/CHANGELOG.md` when those files were consumed
+
+**0.5.0 is not on npm.** Publish it only after this version commit is the tree you pack.
 
 ### Older npm tags
 
@@ -164,8 +166,8 @@ The 0.4.0 tarball’s compiler comments include `COUNT`, `EXISTS`, and JSONB `@>
 ```
 0.2.0   listApiOperations, DDL, JSONB binds, MySQL placeholder rewrite, adapter subpaths
 0.3.0   applyMigrations
-0.4.0   COUNT / EXISTS / JSONB operators   ← npm latest; workspace manifest matches
-0.5.0   ON CONFLICT (pending Changesets; not published)
+0.4.0   COUNT / EXISTS / JSONB operators   ← npm latest
+0.5.0   ON CONFLICT                        ← workspace manifest; not on npm
 later   joins, GROUP BY, LIMIT, Zod-backed validate — not scheduled
 ```
 

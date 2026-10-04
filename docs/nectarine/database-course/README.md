@@ -28,7 +28,7 @@ Our project is a **community equipment library** with members, items, and loans.
 
 Nectarine's application convention is named YAML queries with bound values, not embedded SQL strings in backend handlers. Reading and writing SQL in an isolated teaching lab is how we understand what that compiler produces. The companion HTTP example uses named queries and contains no SQL assembly.
 
-Workspace manifest and npm are both **0.4.0**. Git may still be ahead of the published tarball (unreleased INSERT `onConflict`). This course identifies its baseline by source after merge `d25673e`, not by treating the tarball and this checkout as interchangeable. See [the source map](./source-map.md).
+The workspace manifest is **0.5.0**. npm is still **0.4.0** (0.5.0 is not published). INSERT `onConflict` is in this workspace package and is not in the npm 0.4.0 tarball. This course identifies its baseline by source after merge `d25673e`, not by treating the tarball and this checkout as interchangeable. See [the source map](./source-map.md).
 
 ## Learning path
 

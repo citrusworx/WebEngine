@@ -15,7 +15,7 @@ The destination CMS path (transfer + persist + native read) is the [tutorial](./
 yarn add @citrusworx/kiwipress
 ```
 
-Peers come along: `@citrusworx/seltzer@^0.8.1` and `@citrusworx/nectarine@^0.4.0`.
+Peers come along: `@citrusworx/seltzer@^0.8.1` and `@citrusworx/nectarine@^0.5.0`. Published npm Nectarine is still **0.4.0** until 0.5.0 is published; this range matches the workspace package.
 
 In this monorepo:
 

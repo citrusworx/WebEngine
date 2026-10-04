@@ -6,7 +6,7 @@ Quick introduction to Nectarine YAML contracts hosted with Seltzer.
 
 Nectarine is a config-driven backend library. Define models, schemas, queries, and APIs in YAML. Nectarine supplies the config loader, query compiler, and database adapters. WebEngine / Blackwater hosts HTTP with **Seltzer**.
 
-**Maturity:** hostable alpha. Published npm and this workspace manifest are **0.4.0**. Git may include unreleased INSERT `onConflict` (next publish **0.5.0**). See [status](./nectarine-status.md).
+**Maturity:** hostable alpha. Published npm is **0.4.0**. This workspace manifest is **0.5.0** and is not on npm yet. INSERT `onConflict` is in workspace 0.5.0 and is not in the npm 0.4.0 tarball. See [status](./nectarine-status.md).
 
 **Key Philosophy**:
 - Backend development should not require repetitive boilerplate

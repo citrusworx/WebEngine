@@ -2,7 +2,7 @@
 
 Compiler and adapter utilities for CitrusWorx data and query tooling.
 
-**Versions:** npm **0.4.0** is published. This workspace manifest is **0.4.0** (the publish did not commit the bump; this tree restores it). Maturity is **hostable alpha**. INSERT `onConflict` below is in git and is **not** in the npm 0.4.0 tarball. Pending Changesets make the next publish **0.5.0**. See `docs/nectarine/nectarine-status.md`.
+**Versions:** npm **0.4.0** is published. This workspace manifest is **0.5.0** and is **not** on npm yet. Maturity is **hostable alpha**. INSERT `onConflict` below is in workspace 0.5.0 and is **not** in the npm 0.4.0 tarball. See `docs/nectarine/nectarine-status.md`.
 
 ## Published surface
 

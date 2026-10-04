@@ -136,7 +136,7 @@ Those remaining items are not kernel invent-as-you-go.
 
 ## Version note
 
-npm `@citrusworx/nectarine@0.4.0` is the published package (migrator since 0.3.0; COUNT / EXISTS / JSONB operators in 0.4.0). The workspace manifest is **0.4.0**. INSERT `onConflict` is in this git tree and not in the 0.4.0 tarball; the next publish is **0.5.0**. `@citrusworx/webengine` depends on `@citrusworx/nectarine` `^0.4.0` (that caret is `>=0.4.0 <0.5.0`, so Yarn keeps the workspace link) and `@citrusworx/seltzer` `^0.8.1`. The builtin `nectarine` kernel module calls the migrator APIs; `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call Seltzer `generateRoutes`. Opt-in HTTP is `startSeltzerFromKernel` / `serveNectarineHttp` — not `nectarine serve`, and not during module bootstrap.
+npm `@citrusworx/nectarine@0.4.0` is the published package (migrator since 0.3.0; COUNT / EXISTS / JSONB operators in 0.4.0). The workspace manifest is **0.5.0** and is not on npm. INSERT `onConflict` is in workspace 0.5.0 and is not in the 0.4.0 tarball. `@citrusworx/webengine` depends on `@citrusworx/nectarine` `^0.5.0` (that caret is `>=0.5.0 <0.6.0`, so Yarn keeps the workspace link to 0.5.0; it does not match published npm 0.4.0) and `@citrusworx/seltzer` `^0.8.1`. The builtin `nectarine` kernel module calls the migrator APIs; `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` call Seltzer `generateRoutes`. Opt-in HTTP is `startSeltzerFromKernel` / `serveNectarineHttp` — not `nectarine serve`, and not during module bootstrap.
 
 ## Kernel checklist
 
