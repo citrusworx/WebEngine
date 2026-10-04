@@ -100807,6 +100807,88 @@ button[radio][aria-disabled=true],
     gap: 0.75rem;
   }
 }
+[select-label],
+label[select-label],
+[theme] [select-label],
+[theme] label[select-label] {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: var(--juice-select-ink, var(--aqua-select-ink, var(--kw-select-ink, var(--cm-select-ink, var(--tide-select-ink, var(--jx-select-ink, hsl(0, 0%, 25%)))))));
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+:where(select[select]) {
+  border: 1px solid var(--juice-select-border, var(--aqua-select-border, var(--kw-select-border, var(--cm-select-border, var(--tide-select-border, var(--jx-select-border, hsl(0, 0%, 85%)))))));
+  border-radius: 0.5rem;
+  font: inherit;
+  line-height: 1.4;
+}
+
+select[select],
+[theme] select[select] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  box-sizing: border-box;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  padding-block: 0.5rem;
+  padding-inline: 0.75rem 2.25rem;
+  border-color: var(--juice-select-border, var(--aqua-select-border, var(--kw-select-border, var(--cm-select-border, var(--tide-select-border, var(--jx-select-border, hsl(0, 0%, 85%)))))));
+  background-color: var(--juice-select-surface, var(--aqua-select-surface, var(--kw-select-surface, var(--cm-select-surface, var(--tide-select-surface, var(--jx-select-surface, hsl(0, 0%, 100%)))))));
+  background-image: linear-gradient(135deg, transparent 38%, var(--juice-select-chevron, var(--aqua-select-chevron, var(--kw-select-chevron, var(--cm-select-chevron, var(--tide-select-chevron, var(--jx-select-chevron, currentColor)))))) 38% 62%, transparent 62%), linear-gradient(45deg, transparent 38%, var(--juice-select-chevron, var(--aqua-select-chevron, var(--kw-select-chevron, var(--cm-select-chevron, var(--tide-select-chevron, var(--jx-select-chevron, currentColor)))))) 38% 62%, transparent 62%);
+  background-repeat: no-repeat;
+  background-position: right 1.2rem center, right 0.75rem center;
+  background-size: 0.45rem 0.45rem, 0.45rem 0.45rem;
+  color: var(--juice-select-ink, var(--aqua-select-ink, var(--kw-select-ink, var(--cm-select-ink, var(--tide-select-ink, var(--jx-select-ink, hsl(0, 0%, 25%)))))));
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+select[select]::-ms-expand,
+[theme] select[select]::-ms-expand {
+  display: none;
+}
+
+select[select][multiple],
+select[select][size]:not([size="1"]),
+[theme] select[select][multiple],
+[theme] select[select][size]:not([size="1"]) {
+  appearance: revert;
+  -webkit-appearance: revert;
+  background-image: none;
+  padding-inline-end: 0.75rem;
+  cursor: auto;
+}
+
+select[select]:focus-visible,
+[theme] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring, var(--aqua-select-focus-ring, var(--kw-select-focus-ring, var(--cm-select-focus-ring, var(--tide-select-focus-ring, var(--jx-select-focus-ring, currentColor))))));
+  outline-offset: 2px;
+}
+
+select[select]:disabled,
+select[select][disabled],
+[theme] select[select]:disabled,
+[theme] select[select][disabled] {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 [section-header] {
   display: flex;
   flex-direction: column;

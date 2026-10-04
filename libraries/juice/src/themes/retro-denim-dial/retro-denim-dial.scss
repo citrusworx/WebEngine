@@ -526,6 +526,22 @@
     --juice-spinner-ink: var(--dnd-spinner-ink);
     --juice-spinner-focus-ring: var(--dnd-spinner-focus-ring);
 
+    /* Select chrome — styled native <select> from existing tokens.
+       Field fill matches the combobox input surface. Not a combobox,
+       not a custom listbox, and not a CTA. Chevron is accent.
+       The platform popup stays native. Runtime is later. */
+    --dnd-select-surface: var(--dnd-surface-strong);
+    --dnd-select-border: var(--dnd-border-strong);
+    --dnd-select-ink: var(--dnd-text);
+    --dnd-select-chevron: var(--dnd-accent);
+    --dnd-select-focus-ring: var(--dnd-accent);
+    --juice-select-surface: var(--dnd-select-surface);
+    --juice-select-border: var(--dnd-select-border);
+    --juice-select-ink: var(--dnd-select-ink);
+    --juice-select-chevron: var(--dnd-select-chevron);
+    --juice-select-focus-ring: var(--dnd-select-focus-ring);
+
+
 
     background-color: var(--dnd-page);
     background-image: var(--dnd-page-background);
@@ -1655,6 +1671,29 @@
     outline: 2px solid var(--juice-spinner-focus-ring);
     outline-offset: 2px;
 }
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme="retro-denim-dial"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="retro-denim-dial"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-denim-dial"] [select-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
 
 
 

@@ -804,6 +804,21 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-spinner-ink: var(--jx-spinner-ink);
     --juice-spinner-focus-ring: var(--jx-spinner-focus-ring);
 
+    /* Select chrome — styled native <select> from existing --jx-* tokens.
+       Field fill is the surface, not the CTA. Chevron is accent. Ink is
+       text. Not a combobox and not a custom listbox. The platform popup
+       stays native. */
+    --jx-select-surface: var(--jx-surface);
+    --jx-select-border: var(--jx-border);
+    --jx-select-ink: var(--jx-text);
+    --jx-select-chevron: var(--jx-accent);
+    --jx-select-focus-ring: var(--jx-accent);
+    --juice-select-surface: var(--jx-select-surface);
+    --juice-select-border: var(--jx-select-border);
+    --juice-select-ink: var(--jx-select-ink);
+    --juice-select-chevron: var(--jx-select-chevron);
+    --juice-select-focus-ring: var(--jx-select-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1680,6 +1695,23 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [spinner]:focus-visible {
     outline: 2px solid var(--juice-spinner-focus-ring);
     outline-offset: 2px;
+}
+
+[theme="${config.id}"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="${config.id}"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [select-label] {
+    background: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
 }
 
 ${namedSurfaces}

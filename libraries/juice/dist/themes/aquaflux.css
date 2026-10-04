@@ -483,6 +483,20 @@
   --juice-spinner-indicator: var(--aqua-spinner-indicator);
   --juice-spinner-ink: var(--aqua-spinner-ink);
   --juice-spinner-focus-ring: var(--aqua-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill matches the combobox input surface. Not a combobox,
+     not a custom listbox, and not a CTA. Chevron is accent.
+     The platform popup stays native. Runtime is later. */
+  --aqua-select-surface: var(--aqua-surface-strong);
+  --aqua-select-border: var(--aqua-border-strong);
+  --aqua-select-ink: var(--aqua-text);
+  --aqua-select-chevron: var(--aqua-accent);
+  --aqua-select-focus-ring: var(--aqua-accent);
+  --juice-select-surface: var(--aqua-select-surface);
+  --juice-select-border: var(--aqua-select-border);
+  --juice-select-ink: var(--aqua-select-ink);
+  --juice-select-chevron: var(--aqua-select-chevron);
+  --juice-select-focus-ring: var(--aqua-select-focus-ring);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -1590,4 +1604,26 @@
 [theme=aquaflux] [spinner]:focus-visible {
   outline: 2px solid var(--juice-spinner-focus-ring);
   outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=aquaflux] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=aquaflux] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=aquaflux] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }

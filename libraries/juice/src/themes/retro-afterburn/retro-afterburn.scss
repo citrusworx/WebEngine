@@ -533,6 +533,22 @@
     --juice-spinner-ink: var(--afb-spinner-ink);
     --juice-spinner-focus-ring: var(--afb-spinner-focus-ring);
 
+    /* Select chrome — styled native <select> from existing tokens.
+       Field fill matches the combobox input surface. Not a combobox,
+       not a custom listbox, and not a CTA. Chevron is accent.
+       The platform popup stays native. Runtime is later. */
+    --afb-select-surface: var(--afb-surface-strong);
+    --afb-select-border: var(--afb-border-strong);
+    --afb-select-ink: var(--afb-text);
+    --afb-select-chevron: var(--afb-accent);
+    --afb-select-focus-ring: var(--afb-accent);
+    --juice-select-surface: var(--afb-select-surface);
+    --juice-select-border: var(--afb-select-border);
+    --juice-select-ink: var(--afb-select-ink);
+    --juice-select-chevron: var(--afb-select-chevron);
+    --juice-select-focus-ring: var(--afb-select-focus-ring);
+
+
 
     background-color: var(--afb-page);
     background-image: var(--afb-page-background);
@@ -1797,6 +1813,29 @@
     outline: 2px solid var(--juice-spinner-focus-ring);
     outline-offset: 2px;
 }
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme="retro-afterburn"] select[select] {
+    background-color: var(--juice-select-surface);
+    border-color: var(--juice-select-border);
+    color: var(--juice-select-ink);
+}
+
+[theme="retro-afterburn"] select[select]:focus-visible {
+    outline: 2px solid var(--juice-select-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-afterburn"] [select-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-select-ink);
+    box-shadow: none;
+}
+
 
 
 

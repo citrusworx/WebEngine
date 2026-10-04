@@ -474,6 +474,20 @@
   --juice-spinner-indicator: var(--kw-spinner-indicator);
   --juice-spinner-ink: var(--kw-spinner-ink);
   --juice-spinner-focus-ring: var(--kw-spinner-focus-ring);
+  /* Select chrome — styled native <select> from existing tokens.
+     Field fill is a surface, not a kiwi CTA and not a combobox.
+     Chevron is accent. Ink is text. The platform popup stays native.
+     Runtime is later. */
+  --kw-select-surface: var(--kw-surface);
+  --kw-select-border: var(--kw-border);
+  --kw-select-ink: var(--kw-text);
+  --kw-select-chevron: var(--kw-accent);
+  --kw-select-focus-ring: var(--kw-accent);
+  --juice-select-surface: var(--kw-select-surface);
+  --juice-select-border: var(--kw-select-border);
+  --juice-select-ink: var(--kw-select-ink);
+  --juice-select-chevron: var(--kw-select-chevron);
+  --juice-select-focus-ring: var(--kw-select-focus-ring);
   background-color: var(--kw-page);
   color: var(--kw-text);
   font-family: var(--kw-body-font);
@@ -2389,6 +2403,28 @@
 [theme=kiwipress] [spinner]:focus-visible {
   outline: 2px solid var(--juice-spinner-focus-ring);
   outline-offset: 2px;
+}
+
+/* Select chrome. Beat [theme] :where(select) defaults.
+   Styled native dropdown, not a combobox and not a CTA.
+   Chevron stays a background so the control still opens.
+   Runtime is later. */
+[theme=kiwipress] select[select] {
+  background-color: var(--juice-select-surface);
+  border-color: var(--juice-select-border);
+  color: var(--juice-select-ink);
+}
+
+[theme=kiwipress] select[select]:focus-visible {
+  outline: 2px solid var(--juice-select-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=kiwipress] [select-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-select-ink);
+  box-shadow: none;
 }
 
 /* Accordion wrappers are structural, not default section surfaces.
