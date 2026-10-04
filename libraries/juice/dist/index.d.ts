@@ -37,4 +37,6 @@ export { createProgress, initProgress, startProgressRuntime, stopProgressRuntime
 export type { ProgressController, ProgressOptions } from "./js/src/progress/progress-runtime.js";
 export { createPagination, initPagination, startPaginationRuntime, stopPaginationRuntime } from "./js/src/pagination/pagination-runtime.js";
 export type { PaginationController, PaginationOptions } from "./js/src/pagination/pagination-runtime.js";
+export { createDisclosure, initDisclosure, startDisclosureRuntime, stopDisclosureRuntime } from "./js/src/disclosure/disclosure-runtime.js";
+export type { DisclosureController, DisclosureOptions } from "./js/src/disclosure/disclosure-runtime.js";
 export { tokens } from "./tokens/index.js";

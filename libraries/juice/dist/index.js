@@ -3901,8 +3901,150 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Fo = null, Po || Lo();
 }, document.addEventListener("DOMContentLoaded", Fo)) : Lo());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/disclosure/disclosure-runtime.ts
 var zo = {
+	root: typeof document < "u" ? document : {},
+	disclosureSelector: "[disclosure]",
+	triggerSelector: "[disclosure-trigger]"
+}, Bo = (e) => Array.from(e), Vo = "juice-disclosure-trigger", Ho = "juice-disclosure-panel", Uo = "[disclosure-panel]", Wo = (e) => e instanceof HTMLButtonElement ? !0 : e instanceof HTMLAnchorElement ? e.hasAttribute("href") : !1, Go = A(), Ko = (e) => e.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "disclosure", qo = (e, t, n) => {
+	let r = String(n);
+	if (e.getAttribute("aria-expanded") !== r && e.setAttribute("aria-expanded", r), !t) return;
+	t.hidden !== !n && (t.hidden = !n);
+	let i = String(!n);
+	t.getAttribute("aria-hidden") !== i && t.setAttribute("aria-hidden", i);
+}, Jo = (e, t) => t ? !t.hasAttribute("hidden") : e.getAttribute("aria-expanded") === "true", Yo = (e) => e.defaultPrevented || ct() || lt(), Xo = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return {
+		destroy: () => {},
+		sync: () => {},
+		expand: () => {},
+		collapse: () => {},
+		toggle: () => {}
+	};
+	let t = {
+		...zo,
+		...e
+	}, n = t.root ?? document, r = n, i = () => Bo(n.querySelectorAll(t.disclosureSelector)), a = (e) => Bo(e.querySelectorAll(t.triggerSelector)).filter((n) => n.closest(t.disclosureSelector) === e), o = () => i().flatMap((e) => a(e)), s = 0, c = null, l = (e) => (s += 1, `${e}-${s}`), u = (e) => {
+		if (!e) return null;
+		let n = e.closest(t.disclosureSelector);
+		return n instanceof HTMLElement ? n : null;
+	}, d = (e) => {
+		let n = u(e);
+		if (!n) return null;
+		let r = e.getAttribute("aria-controls");
+		if (r) {
+			let t = n.querySelector(`#${j(r)}`);
+			if (t && t !== e) return t;
+		}
+		let i = e.nextElementSibling;
+		for (; i;) {
+			if (i instanceof HTMLElement && (i.matches(Uo) || !i.matches(t.triggerSelector) && !i.matches(t.disclosureSelector))) return i;
+			i = i.nextElementSibling;
+		}
+		return null;
+	}, f = (e) => {
+		if (e) {
+			if (e.matches(t.triggerSelector) && u(e)) return e;
+			let n = e.closest(t.triggerSelector);
+			if (n instanceof HTMLElement && u(n)) return n;
+		}
+		return o()[0] ?? null;
+	}, p = (e) => {
+		let t = e.getAttribute("name");
+		return t ? Ko(t) : null;
+	}, m = (e, t) => {
+		let n = u(e);
+		if (!n) return;
+		let r = a(n), i = Math.max(0, r.indexOf(e)), o = p(n), s = r.length > 1 ? `-${i + 1}` : "";
+		e.id ||= o ? `${o}-trigger${s}` : l(Vo), Wo(e) || (e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0")), t && (t.id ||= o ? `${o}-panel${s}` : l(Ho), e.getAttribute("aria-controls") !== t.id && e.setAttribute("aria-controls", t.id), t.getAttribute("role") !== "region" && t.setAttribute("role", "region"), t.getAttribute("aria-labelledby") !== e.id && t.setAttribute("aria-labelledby", e.id));
+	}, h = (e) => {
+		let t = f(e);
+		if (!t) return;
+		let n = d(t);
+		m(t, n), qo(t, n, !0), c = t;
+	}, g = (e) => {
+		let t = f(e);
+		if (!t) return;
+		let n = d(t);
+		m(t, n), qo(t, n, !1), t === c && (c = o().find((e) => e !== t && Jo(e, d(e))) ?? null);
+	}, _ = (e) => {
+		let t = f(e);
+		if (t) {
+			if (Jo(t, d(t))) {
+				g(t);
+				return;
+			}
+			h(t);
+		}
+	}, v = () => {
+		i().forEach((e) => {
+			a(e).forEach((e) => {
+				let t = d(e);
+				if (m(e, t), t) {
+					qo(e, t, Jo(e, t));
+					return;
+				}
+				e.hasAttribute("aria-expanded") || e.setAttribute("aria-expanded", "false");
+			});
+		});
+	}, y = (e) => {
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = n.closest(t.triggerSelector);
+		!(r instanceof HTMLElement) || !u(r) || Go(e) && _(r);
+	}, b = (e) => {
+		let n = e.closest(t.triggerSelector);
+		return n instanceof HTMLElement && u(n) && Jo(n, d(n)) ? n : o().filter((e) => Jo(e, d(e))).find((t) => d(t)?.contains(e)) || (c && u(c) && Jo(c, d(c)) ? c : null);
+	}, x = (e) => {
+		if (!(e instanceof KeyboardEvent)) return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		if (e.key === "Escape") {
+			if (Yo(e)) return;
+			let t = b(n);
+			if (!t || !Go(e)) return;
+			e.preventDefault(), g(t), t.focus();
+			return;
+		}
+		if (e.key !== "Enter" && e.key !== " ") return;
+		let r = n.closest(t.triggerSelector);
+		!(r instanceof HTMLElement) || !u(r) || Wo(r) || Go(e) && (e.preventDefault(), _(r));
+	}, S = !1, C = () => {
+		S || (S = !0, requestAnimationFrame(() => {
+			S = !1, v();
+		}));
+	}, w = typeof MutationObserver < "u" ? new MutationObserver(() => C()) : null;
+	return r.addEventListener("click", y), r.addEventListener("keydown", x), w && n instanceof Node && w.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"hidden",
+			"aria-expanded",
+			"aria-controls",
+			"disclosure",
+			"disclosure-trigger",
+			"disclosure-panel"
+		]
+	}), v(), {
+		destroy: () => {
+			r.removeEventListener("click", y), r.removeEventListener("keydown", x), w?.disconnect();
+		},
+		sync: v,
+		expand: h,
+		collapse: g,
+		toggle: _
+	};
+}, Zo = (e = {}) => Xo(e), Qo = null, $o = !1, es = null, ts = () => {
+	!es || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", es), es = null);
+}, ns = () => typeof window > "u" || typeof document > "u" ? null : ($o = !1, ts(), Qo ? (Qo.sync(), Qo) : (Qo = Xo(), Qo)), rs = () => {
+	$o = !0, ts(), Qo?.destroy(), Qo = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (es = () => {
+	es = null, $o || ns();
+}, document.addEventListener("DOMContentLoaded", es)) : ns());
+//#endregion
+//#region src/tokens/index.ts
+var is = {
 	colors: {
 		families: [
 			"black",
@@ -4070,4 +4212,4 @@ var zo = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, zo as tokens };
+export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, Xo as createDisclosure, $e as createDrawer, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, Hi as createSlider, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, Zo as initDisclosure, et as initDrawer, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ui as initSlider, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, ns as startDisclosureRuntime, at as startDrawerRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ji as startSliderRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, rs as stopDisclosureRuntime, ot as stopDrawerRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Yi as stopSliderRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, is as tokens };

@@ -190,3 +190,13 @@ export type {
     PaginationController,
     PaginationOptions
 } from "./src/pagination/pagination-runtime.js";
+export {
+    createDisclosure,
+    initDisclosure,
+    startDisclosureRuntime,
+    stopDisclosureRuntime
+} from "./src/disclosure/disclosure-runtime.js";
+export type {
+    DisclosureController,
+    DisclosureOptions
+} from "./src/disclosure/disclosure-runtime.js";
