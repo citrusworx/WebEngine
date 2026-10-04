@@ -39,7 +39,7 @@
  *
  * Limitations: a mask, validation, a floating label, keyboard
  * handling, Escape, a focus trap, and a Sig Input factory are out of
- * scope. Runtime docs are later.
+ * scope. See docs/juice/juice-input-runtime.md.
  */
 
 import { escapeId } from '../shared/ids.js';
