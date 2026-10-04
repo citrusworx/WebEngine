@@ -30,7 +30,9 @@
  * --juice-progress-ratio. Not a layered overlay: no focus trap, no
  * Escape, no Sig Spinner factory.
  *
- * Limitations: full runtime docs are a later slice.
+ * Limitations: a value, keyboard handling, Escape, a focus trap, and a
+ * Sig Spinner factory are out of scope. See
+ * docs/juice/juice-spinner-runtime.md.
  */
 
 export type SpinnerOptions = {

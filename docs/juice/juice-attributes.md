@@ -478,6 +478,17 @@ Disclosure is the APG Disclosure pattern. It is not an accordion (`[accordion]` 
 
 See [Disclosure Runtime](./juice-disclosure-runtime.md). Theme paint uses `--juice-disclosure-*` roles (`surface`, `border`, `trigger`, `trigger-hover`, `trigger-open`, `ink`, `chevron`, `focus-ring`). `surface` is the panel, not a bar.
 
+### Spinner
+
+- `spinner` — host. The ring is `::before`. A boolean `[spinner]` attribute is fine: there is no HTML global `spinner` attribute, and there is no `<spinner>` element. Any value, including `spinner="busy"`, is still a spinner. Do not restyle bare `[role="status"]` or `[aria-busy]`
+- `spinner-label` — optional visible text. Uses ink. Authors own the accessible name
+
+CSS owns the spin (`juice-spinner-spin`). `prefers-reduced-motion` stops that animation and leaves the indicator. The host is usually not focusable.
+
+Spinner is a standalone indeterminate busy indicator. It is not a progress bar (`[progress]` / `[progress-fill]` is a valued bar) and not a disclosure. Inline status chrome — no overlay z-index. The runtime auto-enhances `[spinner]` (`sync` / `show` / `hide` / `isShown`): a shown host is `role="status"` and `aria-busy="true"`, and `hide` sets native `hidden` and clears both so a hidden spinner does not announce as busy. A visible `[spinner-label]` is author text. The runtime does not invent `aria-label` when there is no visible label. No value, no keyboard, no Escape, and no focus trap. No Sig Spinner factory. Spinner is the twenty-first Emerging auto-enhance runtime and is unpublished versus 0.9.0.
+
+See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spinner-*` roles (`track`, `indicator`, `ink`, `focus-ring`). `track` is the inactive ring. `indicator` is the leading arc.
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
