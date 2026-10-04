@@ -1037,6 +1037,7 @@ describe("Juice consumer smoke", () => {
         controller.destroy();
         progress.destroy();
         module.stopSpinnerRuntime();
+        module.stopSelectRuntime();
         module.stopDisclosureRuntime();
         module.stopPaginationRuntime();
         module.stopProgressRuntime();
@@ -1057,5 +1058,98 @@ describe("Juice consumer smoke", () => {
         module.stopTabsRuntime();
         module.stopAccordionRuntime();
         module.stopNavigationRuntime();
+    });
+
+    it("lets a consumer name a native select from a visible label", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            document.body.innerHTML = `
+                <label for="city" id="city-label">City</label>
+                <select select id="city">
+                    <option value="pdx">Portland</option>
+                    <option value="slm">Salem</option>
+                </select>
+                <label>
+                    Flavor
+                    <select select id="flavor" multiple>
+                        <option selected>Lime</option>
+                        <option>Mint</option>
+                    </select>
+                </label>
+                <select select id="named" aria-label="Region"></select>
+                <div combobox id="combo">
+                    <input combobox-input type="text" />
+                    <ul combobox-list hidden>
+                        <li combobox-option>Apple</li>
+                    </ul>
+                </div>
+            `;
+
+            const controller = module.createSelect({ root: document.body });
+            const city = document.getElementById("city") as HTMLSelectElement;
+            const flavor = document.getElementById("flavor") as HTMLSelectElement;
+            const named = document.getElementById("named");
+            const input = document.querySelector("[combobox-input]");
+            const list = document.querySelector("[combobox-list]");
+
+            expect(city.getAttribute("aria-labelledby")).toBe("city-label");
+            expect(city.hasAttribute("role")).toBe(false);
+            expect(city.hasAttribute("aria-expanded")).toBe(false);
+            expect(city.hasAttribute("tabindex")).toBe(false);
+
+            expect(flavor.getAttribute("aria-label")).toBe("Flavor");
+            expect(flavor.getAttribute("aria-label")).not.toMatch(/Lime/);
+            expect(flavor.hasAttribute("multiple")).toBe(true);
+            expect(flavor.hasAttribute("role")).toBe(false);
+            expect(flavor.selectedOptions[0]?.textContent).toBe("Lime");
+
+            expect(named?.getAttribute("aria-label")).toBe("Region");
+            expect(named?.hasAttribute("aria-labelledby")).toBe(false);
+
+            city.value = "slm";
+            const change = new Event("change", { bubbles: true, cancelable: true });
+            city.dispatchEvent(change);
+            expect(change.defaultPrevented).toBe(false);
+            expect(city.value).toBe("slm");
+
+            const keydown = new KeyboardEvent("keydown", {
+                bubbles: true,
+                cancelable: true,
+                key: "Escape"
+            });
+            city.dispatchEvent(keydown);
+            expect(keydown.defaultPrevented).toBe(false);
+            expect(city.value).toBe("slm");
+            expect(input?.hasAttribute("role")).toBe(false);
+            expect(list?.hasAttribute("hidden")).toBe(true);
+            expect(list?.hasAttribute("role")).toBe(false);
+
+            document.body.innerHTML = "";
+            controller.destroy();
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            module.stopSpinnerRuntime();
+            module.stopDisclosureRuntime();
+            module.stopPaginationRuntime();
+            module.stopProgressRuntime();
+            module.stopBreadcrumbRuntime();
+            module.stopRadioRuntime();
+            module.stopCheckboxRuntime();
+            module.stopSliderRuntime();
+            module.stopSwitchRuntime();
+            module.stopMenuRuntime();
+            module.stopBannerRuntime();
+            module.stopTooltipRuntime();
+            module.stopWizardRuntime();
+            module.stopPopoverRuntime();
+            module.stopToastRuntime();
+            module.stopDrawerRuntime();
+            module.stopModalRuntime();
+            module.stopTabsRuntime();
+            module.stopAccordionRuntime();
+            module.stopNavigationRuntime();
+        });
     });
 });

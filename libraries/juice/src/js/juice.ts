@@ -210,3 +210,13 @@ export type {
     SpinnerController,
     SpinnerOptions
 } from "./src/spinner/spinner-runtime.js";
+export {
+    createSelect,
+    initSelect,
+    startSelectRuntime,
+    stopSelectRuntime
+} from "./src/select/select-runtime.js";
+export type {
+    SelectController,
+    SelectOptions
+} from "./src/select/select-runtime.js";
