@@ -806,10 +806,26 @@ describe("Juice theme generator surface tone roles", () => {
         expect(css).toContain(":not([combobox-input])");
         expect(css).toContain("[combobox-input]");
         expect(css).toContain("select[select]");
-        expect(css).not.toMatch(/\[combobox-input\][^{]*--juice-input/);
-        expect(css).not.toMatch(/select\[select\][^{]*--juice-input/);
-        expect(css).not.toMatch(/input\[input\][^{]*--juice-combobox/);
-        expect(css).not.toMatch(/input\[input\][^{]*--juice-select/);
+
+        const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+            selector: match[1] ?? "",
+            body: match[2] ?? "",
+        }));
+
+        for (const rule of rules) {
+            if (/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-combobox-");
+                expect(rule.body).not.toContain("--juice-select-");
+            }
+
+            if (/\[combobox/.test(rule.selector) && !/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+
+            if (/select\[select\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+        }
         expect(css).not.toMatch(/\[type=["']checkbox["']/);
         expect(css).not.toMatch(/\[type=["']radio["']/);
         expect(css).not.toMatch(/\[type=["']range["']/);

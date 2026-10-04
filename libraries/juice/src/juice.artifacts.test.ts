@@ -735,13 +735,31 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[type=["']submit["']/);
         expect(css).not.toMatch(/\[type=["']reset["']/);
         expect(css).not.toMatch(/\[type=["']image["']/);
-        expect(css).not.toMatch(/input\[input\][^{]*\{[^}]*z-index:\s*10/);
-        expect(css).not.toMatch(/input\[input\][^{]*\{[^}]*--juice-overlay-frost/);
-        expect(css).not.toMatch(/input\[input\][^{]*\{[^}]*--juice-combobox/);
-        expect(css).not.toMatch(/input\[input\][^{]*\{[^}]*--juice-select/);
-        expect(css).not.toMatch(/\[combobox-input\][^{]*\{[^}]*--juice-input/);
-        expect(css).not.toMatch(/select\[select\][^{]*\{[^}]*--juice-input/);
-        expect(css).not.toMatch(/\[field\]\[invalid\][^{]*--juice-input/);
+        const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+            selector: match[1] ?? "",
+            body: match[2] ?? "",
+        }));
+
+        for (const rule of rules) {
+            if (/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toMatch(/z-index:\s*10/);
+                expect(rule.body).not.toContain("--juice-overlay-frost");
+                expect(rule.body).not.toContain("--juice-combobox-");
+                expect(rule.body).not.toContain("--juice-select-");
+            }
+
+            if (/\[combobox/.test(rule.selector) && !/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+
+            if (/select\[select\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+
+            if (/\[field\]\[invalid\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+            }
+        }
     });
 
     it("includes wizard structural chrome in core CSS", () => {
