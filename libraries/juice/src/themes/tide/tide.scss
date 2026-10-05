@@ -545,6 +545,20 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-input-placeholder: var(--tide-input-placeholder);
     --juice-input-focus-ring: var(--tide-input-focus-ring);
 
+    /* Textarea chrome — dark field from the surface token, not the page.
+       Placeholder stays muted text. Distinct from input and select.
+       Runtime is later. */
+    --tide-textarea-surface: var(--tide-surface-strong);
+    --tide-textarea-border: var(--tide-border);
+    --tide-textarea-ink: var(--tide-text);
+    --tide-textarea-placeholder: var(--tide-text-muted);
+    --tide-textarea-focus-ring: var(--tide-accent);
+    --juice-textarea-surface: var(--tide-textarea-surface);
+    --juice-textarea-border: var(--tide-textarea-border);
+    --juice-textarea-ink: var(--tide-textarea-ink);
+    --juice-textarea-placeholder: var(--tide-textarea-placeholder);
+    --juice-textarea-focus-ring: var(--tide-textarea-focus-ring);
+
 
 
     min-height: 100vh;
@@ -1669,6 +1683,34 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     color: var(--juice-input-ink);
     box-shadow: none;
 }
+
+/* Textarea chrome. Beat [theme] :where(textarea) defaults.
+   Styled native multi-line field, not an input, not a select, and not a
+   combobox. Border color only, so KiwiPress keeps its 2px control border.
+   Runtime is later. */
+[theme="tide"] textarea[textarea] {
+    background-color: var(--juice-textarea-surface);
+    border-color: var(--juice-textarea-border);
+    color: var(--juice-textarea-ink);
+}
+
+[theme="tide"] textarea[textarea]::placeholder {
+    color: var(--juice-textarea-placeholder);
+    opacity: 1;
+}
+
+[theme="tide"] textarea[textarea]:focus-visible {
+    outline: 2px solid var(--juice-textarea-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="tide"] [textarea-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-textarea-ink);
+    box-shadow: none;
+}
+
 
 
 

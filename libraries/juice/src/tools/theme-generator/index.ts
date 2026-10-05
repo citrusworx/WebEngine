@@ -834,6 +834,20 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-input-placeholder: var(--jx-input-placeholder);
     --juice-input-focus-ring: var(--jx-input-focus-ring);
 
+    /* Textarea chrome — styled native multi-line field from existing --jx-* tokens.
+       Field fill is the surface, not the CTA. Placeholder is muted text.
+       Focus ring is accent. Not an input, not a select, and not a combobox. */
+    --jx-textarea-surface: var(--jx-surface);
+    --jx-textarea-border: var(--jx-border);
+    --jx-textarea-ink: var(--jx-text);
+    --jx-textarea-placeholder: var(--jx-text-muted);
+    --jx-textarea-focus-ring: var(--jx-accent);
+    --juice-textarea-surface: var(--jx-textarea-surface);
+    --juice-textarea-border: var(--jx-textarea-border);
+    --juice-textarea-ink: var(--jx-textarea-ink);
+    --juice-textarea-placeholder: var(--jx-textarea-placeholder);
+    --juice-textarea-focus-ring: var(--jx-textarea-focus-ring);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1778,6 +1792,28 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [input-label] {
     background: transparent;
     color: var(--juice-input-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] textarea[textarea] {
+    background-color: var(--juice-textarea-surface);
+    border-color: var(--juice-textarea-border);
+    color: var(--juice-textarea-ink);
+}
+
+[theme="${config.id}"] textarea[textarea]::placeholder {
+    color: var(--juice-textarea-placeholder);
+    opacity: 1;
+}
+
+[theme="${config.id}"] textarea[textarea]:focus-visible {
+    outline: 2px solid var(--juice-textarea-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="${config.id}"] [textarea-label] {
+    background: transparent;
+    color: var(--juice-textarea-ink);
     box-shadow: none;
 }
 

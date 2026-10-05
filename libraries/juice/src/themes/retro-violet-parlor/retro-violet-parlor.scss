@@ -556,6 +556,21 @@
     --juice-input-placeholder: var(--vpr-input-placeholder);
     --juice-input-focus-ring: var(--vpr-input-focus-ring);
 
+    /* Textarea chrome — styled native multi-line field from existing tokens.
+       Field fill matches the input surface. Not an input, not a select,
+       and not a combobox. Placeholder follows this theme's existing
+       placeholder ink. Runtime is later. */
+    --vpr-textarea-surface: var(--vpr-surface-strong);
+    --vpr-textarea-border: var(--vpr-border-strong);
+    --vpr-textarea-ink: var(--vpr-text);
+    --vpr-textarea-placeholder: var(--vpr-text-muted);
+    --vpr-textarea-focus-ring: var(--vpr-accent);
+    --juice-textarea-surface: var(--vpr-textarea-surface);
+    --juice-textarea-border: var(--vpr-textarea-border);
+    --juice-textarea-ink: var(--vpr-textarea-ink);
+    --juice-textarea-placeholder: var(--vpr-textarea-placeholder);
+    --juice-textarea-focus-ring: var(--vpr-textarea-focus-ring);
+
 
 
     background-color: var(--vpr-page);
@@ -1765,6 +1780,34 @@
     color: var(--juice-input-ink);
     box-shadow: none;
 }
+
+/* Textarea chrome. Beat [theme] :where(textarea) defaults.
+   Styled native multi-line field, not an input, not a select, and not a
+   combobox. Border color only, so KiwiPress keeps its 2px control border.
+   Runtime is later. */
+[theme="retro-violet-parlor"] textarea[textarea] {
+    background-color: var(--juice-textarea-surface);
+    border-color: var(--juice-textarea-border);
+    color: var(--juice-textarea-ink);
+}
+
+[theme="retro-violet-parlor"] textarea[textarea]::placeholder {
+    color: var(--juice-textarea-placeholder);
+    opacity: 1;
+}
+
+[theme="retro-violet-parlor"] textarea[textarea]:focus-visible {
+    outline: 2px solid var(--juice-textarea-focus-ring);
+    outline-offset: 2px;
+}
+
+[theme="retro-violet-parlor"] [textarea-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-textarea-ink);
+    box-shadow: none;
+}
+
 
 
 

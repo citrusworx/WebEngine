@@ -1,0 +1,140 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Textarea chrome is structural. Color comes from the shared role contract:
+//   --juice-textarea-surface
+//   --juice-textarea-border
+//   --juice-textarea-ink
+//   --juice-textarea-placeholder
+//   --juice-textarea-focus-ring
+// Themes bind those names (and optional --aqua-textarea-* / --kw-textarea-* /
+// --cm-textarea-* / --tide-textarea-* / --jx-textarea-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome for a styled native <textarea>. Distinct from:
+//   - <input input> (single-line text field)
+//   - [combobox-input] (combobox text field)
+//   - <select select> (styled native dropdown)
+//   - libraries/juice/src/components/form/form.scss layout
+//     ([field] flex, signin/signup heights, hardcoded invalid red)
+//
+// Native collision: there is no HTML *global* `textarea` attribute. The
+// element is <textarea>. A boolean [textarea] attribute on that element
+// has no platform behavior. Do not restyle a bare `textarea` (theme
+// semantic defaults own untagged fields).
+//
+// Juice names:
+//   [textarea]        host, on the native element: <textarea textarea>.
+//   [textarea-label]  optional visible label. Uses ink. Pair it with the
+//                     control (wrapping <label textarea-label>, or for/id).
+//                     Authors own the accessible name.
+//
+// :where() keeps the 1px border fallback under theme semantic field
+// chrome. KiwiPress draws a 2px control border; a normal
+// textarea[textarea] shorthand would replace that width. Theme overrides
+// set background-color and border-color, not the `background` or `border`
+// shorthands.
+//
+// appearance: none clears leftover platform field chrome so the surface
+// and border stay the field. resize: vertical keeps the native grip.
+// The value and keyboard stay native. There is no auto-grow. Invalid,
+// helper, and error chrome are later.
+//
+// z-index: inline field. No overlay band. Runtime is later.
+
+@function -juice-textarea-role($name, $fallback) {
+    @return var(
+        --juice-textarea-#{$name},
+        var(--aqua-textarea-#{$name}, var(--kw-textarea-#{$name}, var(--cm-textarea-#{$name}, var(--tide-textarea-#{$name}, var(--jx-textarea-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-textarea-surface: -juice-textarea-role(surface, #{$white-100});
+$_juice-textarea-border: -juice-textarea-role(border, #{$gray-300});
+$_juice-textarea-ink: -juice-textarea-role(ink, #{$black-600});
+$_juice-textarea-placeholder: -juice-textarea-role(placeholder, #{$black-300});
+
+// [theme] companions must beat theme semantic defaults such as
+// [theme="…"] :where(textarea) field chrome. Themes realize color
+// through the roles.
+
+@mixin -juice-textarea {
+    textarea[textarea] {
+        @content;
+    }
+}
+
+[textarea-label],
+label[textarea-label],
+[theme] [textarea-label],
+[theme] label[textarea-label] {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-textarea-ink;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+// :where() keeps this fallback under theme semantic field chrome.
+:where(textarea[textarea]) {
+    border: 1px solid $_juice-textarea-border;
+    border-radius: 0.5rem;
+    font: inherit;
+    line-height: 1.4;
+}
+
+@mixin -juice-textarea-chrome {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    box-sizing: border-box;
+    width: auto;
+    max-width: 100%;
+    min-height: 6.5rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    // Color only. Do not set the border shorthand or box-shadow here.
+    border-color: $_juice-textarea-border;
+    background-color: $_juice-textarea-surface;
+    color: $_juice-textarea-ink;
+    vertical-align: top;
+    resize: vertical;
+
+    &::placeholder {
+        color: $_juice-textarea-placeholder;
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        outline: 2px solid -juice-textarea-role(focus-ring, currentColor);
+        outline-offset: 2px;
+    }
+
+    &:is(:disabled, [disabled]) {
+        cursor: not-allowed;
+        opacity: 0.72;
+    }
+}
+
+@include -juice-textarea {
+    @include -juice-textarea-chrome;
+}
+
+[theme] {
+    @include -juice-textarea {
+        @include -juice-textarea-chrome;
+    }
+}

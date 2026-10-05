@@ -511,6 +511,20 @@
   --juice-input-ink: var(--aqua-input-ink);
   --juice-input-placeholder: var(--aqua-input-placeholder);
   --juice-input-focus-ring: var(--aqua-input-focus-ring);
+  /* Textarea chrome — styled native multi-line field from existing tokens.
+     Field fill matches the input surface. Not an input, not a select,
+     and not a combobox. Placeholder follows this theme's existing
+     placeholder ink. Runtime is later. */
+  --aqua-textarea-surface: var(--aqua-surface-strong);
+  --aqua-textarea-border: var(--aqua-border-strong);
+  --aqua-textarea-ink: var(--aqua-text);
+  --aqua-textarea-placeholder: var(--aqua-text-muted);
+  --aqua-textarea-focus-ring: var(--aqua-accent);
+  --juice-textarea-surface: var(--aqua-textarea-surface);
+  --juice-textarea-border: var(--aqua-textarea-border);
+  --juice-textarea-ink: var(--aqua-textarea-ink);
+  --juice-textarea-placeholder: var(--aqua-textarea-placeholder);
+  --juice-textarea-focus-ring: var(--aqua-textarea-focus-ring);
   background-color: var(--aqua-page);
   background-image: var(--aqua-page-background);
   color: var(--aqua-text);
@@ -1690,5 +1704,32 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-input-ink);
+  box-shadow: none;
+}
+
+/* Textarea chrome. Beat [theme] :where(textarea) defaults.
+   Styled native multi-line field, not an input, not a select, and not a
+   combobox. Border color only, so KiwiPress keeps its 2px control border.
+   Runtime is later. */
+[theme=aquaflux] textarea[textarea] {
+  background-color: var(--juice-textarea-surface);
+  border-color: var(--juice-textarea-border);
+  color: var(--juice-textarea-ink);
+}
+
+[theme=aquaflux] textarea[textarea]::placeholder {
+  color: var(--juice-textarea-placeholder);
+  opacity: 1;
+}
+
+[theme=aquaflux] textarea[textarea]:focus-visible {
+  outline: 2px solid var(--juice-textarea-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=aquaflux] [textarea-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-textarea-ink);
   box-shadow: none;
 }
