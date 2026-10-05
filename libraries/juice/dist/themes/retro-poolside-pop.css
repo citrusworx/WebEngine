@@ -524,6 +524,20 @@
   --juice-input-ink: var(--psp-input-ink);
   --juice-input-placeholder: var(--psp-input-placeholder);
   --juice-input-focus-ring: var(--psp-input-focus-ring);
+  /* Textarea chrome — styled native multi-line field from existing tokens.
+     Field fill matches the input surface. Not an input, not a select,
+     and not a combobox. Placeholder follows this theme's existing
+     placeholder ink. Runtime is later. */
+  --psp-textarea-surface: var(--psp-surface-strong);
+  --psp-textarea-border: var(--psp-border-strong);
+  --psp-textarea-ink: var(--psp-text);
+  --psp-textarea-placeholder: var(--psp-text-muted);
+  --psp-textarea-focus-ring: var(--psp-accent);
+  --juice-textarea-surface: var(--psp-textarea-surface);
+  --juice-textarea-border: var(--psp-textarea-border);
+  --juice-textarea-ink: var(--psp-textarea-ink);
+  --juice-textarea-placeholder: var(--psp-textarea-placeholder);
+  --juice-textarea-focus-ring: var(--psp-textarea-focus-ring);
   background-color: var(--psp-page);
   background-image: var(--psp-page-background);
   color: var(--psp-text);
@@ -1728,6 +1742,33 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-input-ink);
+  box-shadow: none;
+}
+
+/* Textarea chrome. Beat [theme] :where(textarea) defaults.
+   Styled native multi-line field, not an input, not a select, and not a
+   combobox. Border color only, so KiwiPress keeps its 2px control border.
+   Runtime is later. */
+[theme=retro-poolside-pop] textarea[textarea] {
+  background-color: var(--juice-textarea-surface);
+  border-color: var(--juice-textarea-border);
+  color: var(--juice-textarea-ink);
+}
+
+[theme=retro-poolside-pop] textarea[textarea]::placeholder {
+  color: var(--juice-textarea-placeholder);
+  opacity: 1;
+}
+
+[theme=retro-poolside-pop] textarea[textarea]:focus-visible {
+  outline: 2px solid var(--juice-textarea-focus-ring);
+  outline-offset: 2px;
+}
+
+[theme=retro-poolside-pop] [textarea-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-textarea-ink);
   box-shadow: none;
 }
 

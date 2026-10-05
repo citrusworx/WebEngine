@@ -26,6 +26,7 @@ import {
     REQUIRED_SPINNER_ROLES,
     REQUIRED_SELECT_ROLES,
     REQUIRED_INPUT_ROLES,
+    REQUIRED_TEXTAREA_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -845,6 +846,68 @@ describe("Juice theme generator surface tone roles", () => {
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
             expect(block).not.toMatch(/\bborder:\s/);
             expect(block).toContain("border-color: var(--juice-input-border)");
+        }
+    });
+
+    it("binds --juice-textarea-* from existing --jx-* surface, border, text, and accent tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-textarea-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-textarea-border: var(--jx-border)");
+        expect(css).toContain("--jx-textarea-ink: var(--jx-text)");
+        expect(css).toContain("--jx-textarea-placeholder: var(--jx-text-muted)");
+        expect(css).toContain("--jx-textarea-focus-ring: var(--jx-accent)");
+        expect(css).not.toContain("--jx-textarea-surface: var(--jx-accent)");
+        expect(css).not.toContain("--jx-textarea-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-textarea-placeholder: var(--jx-accent)");
+        expect(css).not.toContain("--jx-textarea-focus-ring: var(--jx-page)");
+
+        for (const role of REQUIRED_TEXTAREA_ROLES) {
+            expect(css).toContain(`--juice-textarea-${role}: var(--jx-textarea-${role})`);
+        }
+
+        expect(css).toContain("textarea[textarea]");
+        expect(css).toContain("[textarea-label]");
+        expect(css).toContain("input[input]");
+        expect(css).toContain("select[select]");
+        expect(css).toContain("[combobox-input]");
+
+        const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+            selector: match[1] ?? "",
+            body: match[2] ?? "",
+        }));
+
+        for (const rule of rules) {
+            if (/textarea\[textarea\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-input-");
+                expect(rule.body).not.toContain("--juice-select-");
+                expect(rule.body).not.toContain("--juice-combobox-");
+            }
+
+            if (/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-textarea-");
+            }
+
+            if (/select\[select\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-textarea-");
+            }
+
+            if (/\[combobox/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-textarea-");
+            }
+        }
+
+        const textareaBlocks = [...css.matchAll(/textarea\[textarea\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+        const fieldBlocks = textareaBlocks.filter((block) => block.includes("background-color"));
+
+        expect(fieldBlocks.length).toBeGreaterThan(0);
+        for (const block of fieldBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+            expect(block).not.toMatch(/\bborder:\s/);
+            expect(block).toContain("border-color: var(--juice-textarea-border)");
         }
     });
 
