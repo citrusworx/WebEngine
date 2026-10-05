@@ -4457,8 +4457,170 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Bs = null, zs || Hs();
 }, document.addEventListener("DOMContentLoaded", Bs)) : Hs());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/textarea/textarea-runtime.ts
 var Ws = {
+	root: typeof document < "u" ? document : {},
+	textareaSelector: "textarea[textarea]"
+}, Gs = (e) => Array.from(e), Ks = () => ({
+	destroy: () => {},
+	sync: () => {}
+}), qs = (e) => {
+	let t = e;
+	for (; t;) {
+		if (t.hidden || t.getAttribute("aria-hidden") === "true") return !1;
+		t = t.parentElement;
+	}
+	return !0;
+}, Js = (e) => {
+	let t = [], n = (r) => {
+		if (!(r !== e && (r instanceof HTMLTextAreaElement || r instanceof HTMLElement && (r.hidden || r.getAttribute("aria-hidden") === "true")))) {
+			if (r.nodeType === Node.TEXT_NODE) {
+				r.textContent && t.push(r.textContent);
+				return;
+			}
+			r.childNodes.forEach((e) => n(e));
+		}
+	};
+	return n(e), t.join("").replace(/\s+/g, " ").trim();
+}, Ys = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return Ks();
+	let t = {
+		...Ws,
+		...e
+	}, n = t.root ?? document, r = /* @__PURE__ */ new WeakMap(), i = /* @__PURE__ */ new Set(), a = !1, o = 0, s = (e) => !(e instanceof HTMLTextAreaElement) || !e.matches(t.textareaSelector) || e.closest("[combobox]") || e.hasAttribute("combobox-input") ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, c = () => {
+		let e = Gs(n.querySelectorAll(t.textareaSelector)).filter(s);
+		return n instanceof HTMLTextAreaElement && s(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, l = (e) => {
+		let t = /* @__PURE__ */ new Set(), r = (n) => {
+			(n instanceof Document || n instanceof Element) && n.querySelectorAll(e).forEach((e) => {
+				t.add(e);
+			});
+		};
+		return r(n), typeof document < "u" && n !== document && r(document), Array.from(t);
+	}, u = (e, t) => !e || e === t || t.contains(e) || !qs(e) || !Js(e) ? null : e, d = (e) => {
+		if (!e.id) return [];
+		let t = l(`label[for="${j(e.id)}"]`).filter((t) => t instanceof HTMLLabelElement && t.htmlFor === e.id);
+		return e.labels && Array.from(e.labels).forEach((n) => {
+			n.htmlFor === e.id && !t.includes(n) && t.push(n);
+		}), t;
+	}, f = (e) => {
+		let t = e.closest("label");
+		return !(t instanceof HTMLLabelElement) || t.htmlFor && t.htmlFor !== e.id ? null : t;
+	}, p = (e) => e.id ? u(l(`[textarea-label][for="${j(e.id)}"]`).find((t) => t.getAttribute("for") === e.id), e) : null, m = (e) => e instanceof Document || e instanceof Element ? Gs(e.querySelectorAll(t.textareaSelector)).filter((e) => e instanceof HTMLTextAreaElement && !e.closest("[combobox]") && !e.hasAttribute("combobox-input")) : [], h = (e) => {
+		let t = e.parentElement?.closest("[textarea-label]");
+		return !t || m(t).length !== 1 ? null : u(t, e);
+	}, g = (e) => {
+		let t = e.previousElementSibling;
+		for (; t;) {
+			if (t instanceof HTMLTextAreaElement) return null;
+			if (t instanceof HTMLElement) {
+				if (t.matches("[textarea-label]")) return u(t, e);
+				if (!t.querySelector("textarea")) {
+					let n = u(t.querySelector("[textarea-label]"), e);
+					if (n) return n;
+				}
+			}
+			t = t.previousElementSibling;
+		}
+		return null;
+	}, _ = (e) => {
+		for (let t of d(e)) {
+			let n = u(t, e);
+			if (n) return n;
+		}
+		return u(f(e), e) || (p(e) ?? h(e) ?? g(e));
+	}, v = (e, t) => {
+		let n = r.get(e);
+		return n?.attribute === t && e.getAttribute(t) === n.value;
+	}, y = (e) => {
+		let t = e.getAttribute("aria-label");
+		if (t !== null && t.trim() !== "" && !v(e, "aria-label")) return !0;
+		let n = e.getAttribute("aria-labelledby");
+		return n !== null && n.trim() !== "" && !v(e, "aria-labelledby");
+	}, b = (e) => {
+		let t = r.get(e);
+		t && (e.getAttribute(t.attribute) === t.value && e.removeAttribute(t.attribute), r.delete(e));
+	}, x = (e) => {
+		let t = r.get(e);
+		if (!t) return;
+		let n = e.getAttribute("aria-label"), i = e.getAttribute("aria-labelledby"), a = n !== null && n.trim() !== "" && !v(e, "aria-label"), o = i !== null && i.trim() !== "" && !v(e, "aria-labelledby");
+		t.attribute === "aria-labelledby" && a && e.getAttribute("aria-labelledby") === t.value && e.removeAttribute("aria-labelledby"), t.attribute === "aria-label" && o && e.getAttribute("aria-label") === t.value && e.removeAttribute("aria-label"), r.delete(e);
+	}, S = (e) => {
+		if (e.id.trim()) return e.id;
+		let t = "";
+		do
+			o += 1, t = `juice-textarea-label-${o}`;
+		while (document.getElementById(t));
+		return e.id = t, t;
+	}, C = (e, t, n) => {
+		let i = t === "aria-label" ? "aria-labelledby" : "aria-label", a = r.get(e);
+		a?.attribute === i && e.getAttribute(i) === a.value && e.removeAttribute(i), e.getAttribute(t) !== n && e.setAttribute(t, n), r.set(e, {
+			attribute: t,
+			value: n
+		});
+	}, w = (e) => {
+		if (!s(e)) return;
+		if (y(e)) {
+			x(e);
+			return;
+		}
+		let t = _(e), n = t ? Js(t) : "";
+		if (!t || !n) {
+			b(e);
+			return;
+		}
+		if (t.contains(e)) {
+			C(e, "aria-label", n);
+			return;
+		}
+		C(e, "aria-labelledby", S(t));
+	}, T = () => {
+		if (a) return;
+		let e = c(), t = new Set(e);
+		i.forEach((e) => {
+			t.has(e) || (b(e), i.delete(e));
+		}), e.forEach((e) => {
+			i.add(e), w(e);
+		});
+	}, E = !1, D = 0, O = () => {
+		E || a || (E = !0, D = requestAnimationFrame(() => {
+			E = !1, T();
+		}));
+	}, k = typeof MutationObserver < "u" ? new MutationObserver(() => O()) : null;
+	return k && n instanceof Node && k.observe(n, {
+		childList: !0,
+		subtree: !0,
+		characterData: !0,
+		attributes: !0,
+		attributeFilter: [
+			"textarea",
+			"textarea-label",
+			"for",
+			"id",
+			"hidden",
+			"aria-hidden",
+			"aria-label",
+			"aria-labelledby",
+			"combobox",
+			"combobox-input"
+		]
+	}), T(), {
+		destroy: () => {
+			a = !0, E &&= (cancelAnimationFrame(D), !1), k?.disconnect();
+		},
+		sync: T
+	};
+}, Xs = Ys, Zs = null, Qs = !1, $s = null, ec = () => {
+	!$s || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", $s), $s = null);
+}, tc = () => typeof window > "u" || typeof document > "u" ? null : (Qs = !1, ec(), Zs ? (Zs.sync(), Zs) : (Zs = Ys(), Zs)), nc = () => {
+	Qs = !0, ec(), Zs?.destroy(), Zs = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? ($s = () => {
+	$s = null, Qs || tc();
+}, document.addEventListener("DOMContentLoaded", $s)) : tc());
+//#endregion
+//#region src/tokens/index.ts
+var rc = {
 	colors: {
 		families: [
 			"black",
@@ -4626,4 +4788,4 @@ var Ws = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, Xo as createDisclosure, $e as createDrawer, Is as createInput, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, xs as createSelect, Hi as createSlider, cs as createSpinner, mi as createSwitch, ge as createTabs, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, Zo as initDisclosure, et as initDrawer, Ls as initInput, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ss as initSelect, Ui as initSlider, ls as initSpinner, hi as initSwitch, _e as initTabs, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, ns as startDisclosureRuntime, at as startDrawerRuntime, Hs as startInputRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ds as startSelectRuntime, Ji as startSliderRuntime, ms as startSpinnerRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, rs as stopDisclosureRuntime, ot as stopDrawerRuntime, Us as stopInputRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Os as stopSelectRuntime, Yi as stopSliderRuntime, hs as stopSpinnerRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, Ws as tokens };
+export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, Xo as createDisclosure, $e as createDrawer, Is as createInput, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, xs as createSelect, Hi as createSlider, cs as createSpinner, mi as createSwitch, ge as createTabs, Ys as createTextarea, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, Zo as initDisclosure, et as initDrawer, Ls as initInput, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ss as initSelect, Ui as initSlider, ls as initSpinner, hi as initSwitch, _e as initTabs, Xs as initTextarea, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, ns as startDisclosureRuntime, at as startDrawerRuntime, Hs as startInputRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ds as startSelectRuntime, Ji as startSliderRuntime, ms as startSpinnerRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, tc as startTextareaRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, rs as stopDisclosureRuntime, ot as stopDrawerRuntime, Us as stopInputRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Os as stopSelectRuntime, Yi as stopSliderRuntime, hs as stopSpinnerRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, nc as stopTextareaRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, rc as tokens };

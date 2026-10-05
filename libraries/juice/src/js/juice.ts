@@ -230,3 +230,13 @@ export type {
     InputController,
     InputOptions
 } from "./src/input/input-runtime.js";
+export {
+    createTextarea,
+    initTextarea,
+    startTextareaRuntime,
+    stopTextareaRuntime
+} from "./src/textarea/textarea-runtime.js";
+export type {
+    TextareaController,
+    TextareaOptions
+} from "./src/textarea/textarea-runtime.js";
