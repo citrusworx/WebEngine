@@ -35,7 +35,7 @@
  *
  * Limitations: auto-grow, a character count, validation, a floating
  * label, keyboard handling, Escape, a focus trap, and a Sig Textarea
- * factory are out of scope. Runtime docs are later.
+ * factory are out of scope. See docs/juice/juice-textarea-runtime.md.
  */
 export type TextareaOptions = {
     root?: ParentNode;

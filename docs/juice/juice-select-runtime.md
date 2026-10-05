@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Select is a styled native **`<select>`**. The open list stays the platform popup. It is not a combobox. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]` and is left untouched. There is no listbox, no Escape handler, no focus trap, and no Sig Select factory. Change events and the keyboard stay on the native control. `[multiple]` and `size` listboxes stay native selects.
 
-Select is the twenty-second Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Input is the twenty-third. Disclosure, spinner, select, and input are unpublished versus 0.9.1. All twenty-three stay Emerging.
+Select is the twenty-second Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Input is the twenty-third. Textarea is the twenty-fourth. Disclosure, spinner, select, input, and textarea are unpublished versus 0.9.1. All twenty-four stay Emerging.
 
 ## Markup Contract
 
@@ -194,7 +194,7 @@ Select does not listen for keys, and it does not listen for `change`.
 ## Limitations
 
 - No `Select()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Select is the twenty-second Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.1`. Pagination shipped in that cut and remains the nineteenth. Disclosure remains the twentieth and spinner remains the twenty-first. Input is the twenty-third and is also unpublished versus that cut. Disclosure, spinner, select, and input are unpublished versus that cut. All twenty-three stay Emerging.
+- This surface is Emerging, not Stable-ish. Select is the twenty-second Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.1`. Pagination shipped in that cut and remains the nineteenth. Disclosure remains the twentieth and spinner remains the twenty-first. Input is the twenty-third and is also unpublished versus that cut. Textarea is the twenty-fourth and is also unpublished versus that cut. Disclosure, spinner, select, input, and textarea are unpublished versus that cut. All twenty-four stay Emerging.
 - This is not a combobox. `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` is a different runtime. A `<select select>` inside `[combobox]` is ignored. Combobox stays untouched.
 - The open list stays the platform popup. There is no `[select-list]`, no `[select-option]`, and no listbox. Sync does not set `role`, `aria-expanded`, `aria-multiselectable`, or `tabindex`.
 - A node that is not a `<select>` is ignored. A `<select>` without `[select]` is ignored. Any `[select]` value, including `select="list"`, stays as authored.

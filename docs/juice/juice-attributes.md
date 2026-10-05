@@ -511,6 +511,17 @@ Input is a styled native `<input>`. It is not a combobox (`[combobox]` / `[combo
 
 See [Input Runtime](./juice-input-runtime.md). Theme paint uses `--juice-input-*` roles (`surface`, `border`, `ink`, `placeholder`, `focus-ring`).
 
+### Textarea
+
+- `textarea` — host, on the native element: `<textarea textarea>`. A boolean `[textarea]` attribute is fine: there is no HTML global `textarea` attribute. Any value, including `textarea="note"`, is still a textarea. Do not restyle a bare `textarea`. Do not style `[combobox-input]`. Do not style `<input input>`. Do not style `<select select>`
+- `textarea-label` — optional visible label. Uses ink. Pair it with the control (associated `<label for>`, wrapping label, or `[textarea-label]`)
+
+An `<input>`, a `[field]` wrapper, and a combobox field are not this runtime.
+
+Textarea is a styled native `<textarea>`. It is not an input (`<input input>` is a single-line text field), not a select (`<select select>` is a native dropdown), and not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup). Inline field chrome — no overlay z-index. The runtime auto-enhances `<textarea textarea>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`. Order: associated `<label for>`, wrapping `<label>`, then `[textarea-label]`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the textarea's own value. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Typing, change, and the keyboard stay native. There is no auto-grow, no character count, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Textarea factory. Textarea is the twenty-fourth Emerging auto-enhance runtime and is unpublished versus 0.9.1.
+
+See [Textarea Runtime](./juice-textarea-runtime.md). Theme paint uses `--juice-textarea-*` roles (`surface`, `border`, `ink`, `placeholder`, `focus-ring`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)

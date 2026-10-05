@@ -476,6 +476,16 @@ This is Juice chrome for a styled native `<input>`. It is not a combobox and not
 
 Tide must bind a dark field (`--tide-surface-strong`), not `--tide-page`. Placeholder stays `--tide-text-muted`. Ink stays `--tide-text`.
 
+## Textarea chrome roles
+
+Library themes bind the shared textarea contract so `<textarea textarea>` / `[textarea-label]` paint is theme-agnostic in `textarea.scss`. Required names (`surface`, `border`, `ink`, `placeholder`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-textarea-*`, `--kw-textarea-*`, `--cm-textarea-*`, `--tide-textarea-*`, …). App-owned generated themes use `--jx-textarea-*` and bind `--juice-textarea-*` from existing `--jx-*` surface / border / text / accent tokens. Do not invent a new hue family just for textarea chrome. The field is a surface, not the CTA button gradient. Surface and border match that theme's combobox input field. Placeholder follows the ink that theme already uses on `textarea::placeholder`. Ink is text. Focus ring is accent (Citrusmint uses heading).
+
+This is Juice chrome for a styled native `<textarea>`. It is not an input, not a select, and not a combobox. Input stays `<input input>`. Select stays `<select select>`. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]`. A boolean `[textarea]` attribute is fine (no HTML global `textarea` attr). The element is still `<textarea>`. `[textarea-label]` is optional ink. Do not restyle a bare `textarea`. Do not style `[combobox-input]`. Do not style `<input input>`. Inline field chrome — no overlay z-index. `resize: vertical` keeps the native grip. There is no auto-grow. Invalid, helper, and error chrome are later. The textarea runtime auto-enhances that markup (`sync`, a visible label names the control when the author has not set `aria-label` or `aria-labelledby`, typing, change, and keys stay native) — see [Textarea Runtime](./juice-textarea-runtime.md). Textarea is the twenty-fourth Emerging auto-enhance runtime and is unpublished versus 0.9.1.
+
+Tide must bind a dark field (`--tide-surface-strong`), not `--tide-page`. Placeholder stays `--tide-text-muted`. Ink stays `--tide-text`.
+
 ## Wizard chrome roles
 
 Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step-indicator]` paint is theme-agnostic in `wizard.scss`. Required names (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
