@@ -45,4 +45,6 @@ export { createSelect, initSelect, startSelectRuntime, stopSelectRuntime } from 
 export type { SelectController, SelectOptions } from "./js/src/select/select-runtime.js";
 export { createInput, initInput, startInputRuntime, stopInputRuntime } from "./js/src/input/input-runtime.js";
 export type { InputController, InputOptions } from "./js/src/input/input-runtime.js";
+export { createTextarea, initTextarea, startTextareaRuntime, stopTextareaRuntime } from "./js/src/textarea/textarea-runtime.js";
+export type { TextareaController, TextareaOptions } from "./js/src/textarea/textarea-runtime.js";
 export { tokens } from "./tokens/index.js";

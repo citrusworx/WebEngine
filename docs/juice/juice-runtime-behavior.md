@@ -118,6 +118,7 @@ The overlay band is the exception inside itself: modal and drawer do **not** yie
 | — | Spinner | Never. The spinner does not listen for keys | — |
 | — | Select | Never. Change and keys stay on the native `<select>`. The open list is the platform popup | — |
 | — | Input | Never. Typing, change, and keys stay on the native `<input>`. Text-like types only | — |
+| — | Textarea | Never. Typing, change, and keys stay on the native `<textarea>`. | — |
 | — | Pagination | Never. Arrows / Home / End move focus among enabled controls. Enter and Space stay with the browser | — |
 | — | Accordion | The focused open item, or the last opened item, when that accordion context already owns the key. There is no global accordion Escape. | — |
 | — | Disclosure | The focused open disclosure, or the last opened disclosure, when that disclosure already owns the key. There is no global disclosure Escape. | An open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists. |
@@ -149,6 +150,7 @@ Core chrome sets these stacking values. They are **structural bands**, not a the
 | Spinner | `[spinner]` | none | Inline status chrome; no elevation in this cut |
 | Select | `select[select]` | none | Inline field chrome; the open list is the platform popup |
 | Input | `input[input]` | none | Inline field chrome; text-like types only |
+| Textarea | `textarea[textarea]` | none | Inline field chrome; no auto-grow |
 | Pagination | `[pagination]` | none | Inline nav chrome; no elevation in this cut |
 
 Tabs, accordion, and disclosure do not set a stacking band.
