@@ -28,9 +28,9 @@ There is no `Input()` Sig factory. Markup plus the runtime is the contract.
 
 This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
-Input is a styled native **`<input>`**. Typing, change, and the keyboard stay on the native control. It is not a combobox and not a select. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]` and is left untouched. Select stays `<select select>` and is left untouched. Textarea and the `[field]` wrapper are not this runtime. There is no mask, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Input factory.
+Input is a styled native **`<input>`**. Typing, change, and the keyboard stay on the native control. It is not a combobox and not a select. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]` and is left untouched. Select stays `<select select>` and is left untouched. Textarea is a different runtime — see [Textarea Runtime](./juice-textarea-runtime.md). The `[field]` wrapper is not this runtime. There is no mask, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Input factory.
 
-Input is the twenty-third Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Disclosure, spinner, select, and input are unpublished versus 0.9.1. All twenty-three stay Emerging.
+Input is the twenty-third Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Textarea is the twenty-fourth. Disclosure, spinner, select, input, and textarea are unpublished versus 0.9.1. All twenty-four stay Emerging.
 
 ## Markup Contract
 
@@ -187,7 +187,7 @@ Input does not listen for keys, and it does not listen for `input` or `change`.
 ## Limitations
 
 - No `Input()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Input is the twenty-third Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.1`. Pagination shipped in that cut and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, and select remains the twenty-second. Disclosure, spinner, select, and input are unpublished versus that cut. All twenty-three stay Emerging.
+- This surface is Emerging, not Stable-ish. Input is the twenty-third Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.1`. Pagination shipped in that cut and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, and select remains the twenty-second. Textarea is the twenty-fourth and is also unpublished versus that cut. Disclosure, spinner, select, input, and textarea are unpublished versus that cut. All twenty-four stay Emerging.
 - This is not a combobox. `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` is a different runtime. An `<input input>` inside `[combobox]`, including `[combobox-input]`, is ignored. Combobox stays untouched.
 - This is not a select. `<select select>` is a different runtime. The open list of a select stays the platform popup. Select stays untouched.
 - Textarea and the `[field]` wrapper are not this runtime. A node that is not an `<input>` is ignored. An `<input>` without `[input]` is ignored. Any `[input]` value, including `input="text"`, stays as authored.
