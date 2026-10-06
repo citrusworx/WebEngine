@@ -27,6 +27,7 @@ import {
     REQUIRED_SELECT_ROLES,
     REQUIRED_INPUT_ROLES,
     REQUIRED_TEXTAREA_ROLES,
+    REQUIRED_FIELD_ROLES,
     REQUIRED_WIZARD_ROLES,
     SHADOW_TONE_ROLES,
     SHADOW_TONES,
@@ -908,6 +909,93 @@ describe("Juice theme generator surface tone roles", () => {
             expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
             expect(block).not.toMatch(/\bborder:\s/);
             expect(block).toContain("border-color: var(--juice-textarea-border)");
+        }
+    });
+
+    it("binds --juice-field-* from existing --jx-* surface, text, and banner-error tokens", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-field-surface: var(--jx-surface)");
+        expect(css).toContain("--jx-field-gap: 0.5rem");
+        expect(css).toContain("--jx-field-label-ink: var(--jx-text)");
+        expect(css).toContain("--jx-field-help-ink: var(--jx-text-muted)");
+        expect(css).toContain("--jx-field-error-ink: var(--jx-banner-error)");
+        expect(css).toContain("--jx-field-invalid-border: var(--jx-banner-error)");
+        expect(css).not.toContain("--jx-field-surface: var(--jx-accent)");
+        expect(css).not.toContain("--jx-field-surface: var(--jx-page)");
+        expect(css).not.toContain("--jx-field-label-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-field-help-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-field-error-ink: var(--jx-accent)");
+        expect(css).not.toContain("--jx-field-invalid-border: var(--jx-accent)");
+        expect(css).not.toContain("--jx-field-error-ink: var(--jx-page)");
+
+        for (const role of REQUIRED_FIELD_ROLES) {
+            expect(css).toContain(`--juice-field-${role}: var(--jx-field-${role})`);
+        }
+
+        expect(css).toContain("[field-label]");
+        expect(css).toContain("[field-help]");
+        expect(css).toContain("[field-error]");
+        expect(css).toContain("[field][invalid]");
+        expect(css).toContain("input[input]");
+        expect(css).toContain("textarea[textarea]");
+        expect(css).toContain("select[select]");
+        expect(css).toContain("[combobox-input]");
+
+        const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+            selector: match[1] ?? "",
+            body: match[2] ?? "",
+        }));
+
+        for (const rule of rules) {
+            const fieldHost = /\[field\](?!-)/.test(rule.selector);
+            const fieldPart = /\[field-(?:label|help|error)\]/.test(rule.selector);
+
+            if (fieldHost || fieldPart) {
+                expect(rule.body).not.toContain("--juice-input-");
+                expect(rule.body).not.toContain("--juice-textarea-");
+                expect(rule.body).not.toContain("--juice-select-");
+                expect(rule.body).not.toContain("--juice-combobox-");
+            }
+
+            if (/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/textarea\[textarea\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/select\[select\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/\[combobox/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+        }
+
+        const surfaceBlocks = [...css.matchAll(/\[field\](?!-)[^{]*\{[^}]+\}/g)]
+            .map((match) => match[0])
+            .filter((block) => block.includes("background-color"));
+
+        expect(surfaceBlocks.length).toBeGreaterThan(0);
+        for (const block of surfaceBlocks) {
+            expect(block).not.toContain("--jx-cta-background");
+            expect(block).not.toMatch(/background:\s*var\(--jx-accent\)/);
+            expect(block).not.toMatch(/\bborder:\s/);
+            expect(block).toContain("background-color: var(--juice-field-surface)");
+            expect(block).toContain("gap: var(--juice-field-gap)");
+        }
+
+        const invalidBlocks = [...css.matchAll(/\[field\]\[invalid\][^{]*\{[^}]+\}/g)].map(
+            (match) => match[0]
+        );
+
+        expect(invalidBlocks.length).toBeGreaterThan(0);
+        for (const block of invalidBlocks) {
+            expect(block).toContain("border-color: var(--juice-field-invalid-border)");
+            expect(block).not.toMatch(/\bborder:\s/);
         }
     });
 

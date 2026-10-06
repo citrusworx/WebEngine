@@ -509,6 +509,22 @@
   --juice-textarea-ink: var(--tide-textarea-ink);
   --juice-textarea-placeholder: var(--tide-textarea-placeholder);
   --juice-textarea-focus-ring: var(--tide-textarea-focus-ring);
+  /* Field chrome — dark wrapper from the surface token, not the page.
+     Label is text. Help stays muted. Error ink and the invalid border
+     reuse banner error. Not an input, not a textarea, and not a select.
+     Runtime is later. */
+  --tide-field-surface: var(--tide-surface-strong);
+  --tide-field-gap: 0.5rem;
+  --tide-field-label-ink: var(--tide-text);
+  --tide-field-help-ink: var(--tide-text-muted);
+  --tide-field-error-ink: var(--tide-banner-error);
+  --tide-field-invalid-border: var(--tide-banner-error);
+  --juice-field-surface: var(--tide-field-surface);
+  --juice-field-gap: var(--tide-field-gap);
+  --juice-field-label-ink: var(--tide-field-label-ink);
+  --juice-field-help-ink: var(--tide-field-help-ink);
+  --juice-field-error-ink: var(--tide-field-error-ink);
+  --juice-field-invalid-border: var(--tide-field-invalid-border);
   min-height: 100vh;
   background-color: var(--tide-page);
   background-image: var(--tide-page-background);
@@ -1657,5 +1673,39 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-textarea-ink);
+  box-shadow: none;
+}
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme=tide] [field] {
+  background-color: var(--juice-field-surface);
+  gap: var(--juice-field-gap);
+}
+
+[theme=tide] [field][invalid] {
+  border-color: var(--juice-field-invalid-border);
+}
+
+[theme=tide] [field-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-label-ink);
+  box-shadow: none;
+}
+
+[theme=tide] [field-help] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-help-ink);
+  box-shadow: none;
+}
+
+[theme=tide] [field-error] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-error-ink);
   box-shadow: none;
 }

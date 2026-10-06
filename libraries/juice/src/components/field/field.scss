@@ -1,0 +1,163 @@
+@use '../../tokens/color/black/black.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+
+// Field chrome is structural. Color and gap come from the shared role contract:
+//   --juice-field-surface
+//   --juice-field-gap
+//   --juice-field-label-ink
+//   --juice-field-help-ink
+//   --juice-field-error-ink
+//   --juice-field-invalid-border
+// Themes bind those names (and optional --aqua-field-* / --kw-field-* /
+// --cm-field-* / --tide-field-* / --jx-field-* aliases) from existing
+// identity tokens. Do not hard-code a single theme's hues here.
+//
+// Juice chrome for a wrapper around a control. Distinct from:
+//   - <input input> (single-line text field)
+//   - <textarea textarea> (multi-line text field)
+//   - <select select> (styled native dropdown)
+//   - [combobox] / [combobox-input] (combobox text field)
+//   - libraries/juice/src/components/form/form.scss layout
+//     ([field] flex row, [field][stack|group|help|error], signin/signup
+//     heights, hardcoded invalid red on the nested control)
+//
+// Native collision: there is no HTML *global* `field` attribute.
+// [field] on a wrapper has no platform behavior. [field-label],
+// [field-help], and [field-error] are optional parts. [invalid] on the
+// wrapper paints the invalid border. This is not a validation engine,
+// not a floating label, and not a control restyle.
+//
+// Juice names:
+//   [field]         host wrapper around a control.
+//   [field-label]   optional visible label. Uses label ink.
+//   [field-help]    optional help. Uses help ink.
+//   [field-error]   optional error. Uses error ink.
+//   [field][invalid] wrapper invalid border. Does not repaint the control.
+//
+// Layout direction stays in :where() / :has() so legacy `form [field]`
+// (row) keeps its direction. A wrapper that carries [field-label],
+// [field-help], or [field-error] stacks even inside a form. Theme rules
+// paint surface, gap, ink, and the invalid border. They do not set
+// flex-direction or the `border` shorthand, and they do not target
+// nested input, textarea, select, or combobox.
+//
+// :where() holds the 1px invalid border so KiwiPress can keep a 2px
+// control-density width. Theme overrides set background-color,
+// border-color, and gap, not the `background` or `border` shorthands.
+//
+// z-index: inline wrapper. No overlay band. Runtime is later.
+
+@function -juice-field-role($name, $fallback) {
+    @return var(
+        --juice-field-#{$name},
+        var(--aqua-field-#{$name}, var(--kw-field-#{$name}, var(--cm-field-#{$name}, var(--tide-field-#{$name}, var(--jx-field-#{$name}, #{$fallback})))))
+    );
+}
+
+$_juice-field-surface: -juice-field-role(surface, #{$white-100});
+$_juice-field-gap: -juice-field-role(gap, 0.5rem);
+$_juice-field-label-ink: -juice-field-role(label-ink, #{$black-600});
+$_juice-field-help-ink: -juice-field-role(help-ink, #{$black-300});
+$_juice-field-error-ink: -juice-field-role(error-ink, currentColor);
+$_juice-field-invalid-border: -juice-field-role(invalid-border, currentColor);
+
+// :where() keeps this stack under legacy `form [field]` (row).
+:where([field]) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0.5rem;
+}
+
+// Emerging parts stack even when the wrapper sits inside a form.
+// Legacy [field][label], [field][help], and [field][error] are different
+// attributes, so this does not flip the form.scss row / group layout.
+[field]:has([field-label], [field-help], [field-error]),
+[theme] [field]:has([field-label], [field-help], [field-error]) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+// :where() keeps the 1px fallback under a theme width override.
+// Color is re-set below so KiwiPress can widen without a shorthand.
+:where([field][invalid]) {
+    border: 1px solid $_juice-field-invalid-border;
+}
+
+@mixin -juice-field-paint {
+    gap: $_juice-field-gap;
+    // Color only. Do not set the border shorthand or flex-direction here.
+    background-color: $_juice-field-surface;
+}
+
+[field] {
+    @include -juice-field-paint;
+}
+
+[theme] [field] {
+    @include -juice-field-paint;
+}
+
+[field][invalid],
+[theme] [field][invalid] {
+    border-color: $_juice-field-invalid-border;
+}
+
+[field-label],
+label[field-label],
+[theme] [field-label],
+[theme] label[field-label] {
+    display: block;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-field-label-ink;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+[field-help],
+[theme] [field-help] {
+    display: block;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-field-help-ink;
+    font: inherit;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+[field-error],
+[theme] [field-error] {
+    display: block;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: $_juice-field-error-ink;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.4;
+}
