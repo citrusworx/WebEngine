@@ -553,6 +553,25 @@
     --juice-textarea-placeholder: var(--kw-textarea-placeholder);
     --juice-textarea-focus-ring: var(--kw-textarea-focus-ring);
 
+    /* Field chrome — wrapper around a control from existing tokens.
+       Surface is a field, not a kiwi CTA. Gap is the dense step.
+       Help is soft text. Error ink and the invalid border reuse banner
+       error. Not an input, not a textarea, and not a select.
+       Runtime is later. */
+    --kw-field-surface: var(--kw-surface);
+    --kw-field-gap: 0.35rem;
+    --kw-field-label-ink: var(--kw-text);
+    --kw-field-help-ink: var(--kw-text-soft);
+    --kw-field-error-ink: var(--kw-banner-error);
+    --kw-field-invalid-border: var(--kw-banner-error);
+    --juice-field-surface: var(--kw-field-surface);
+    --juice-field-gap: var(--kw-field-gap);
+    --juice-field-label-ink: var(--kw-field-label-ink);
+    --juice-field-help-ink: var(--kw-field-help-ink);
+    --juice-field-error-ink: var(--kw-field-error-ink);
+    --juice-field-invalid-border: var(--kw-field-invalid-border);
+
+
 
 
     background-color: var(--kw-page);
@@ -2535,6 +2554,42 @@
     color: var(--juice-textarea-ink);
     box-shadow: none;
 }
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme="kiwipress"] [field] {
+    background-color: var(--juice-field-surface);
+    gap: var(--juice-field-gap);
+    border-width: 2px;
+}
+
+[theme="kiwipress"] [field][invalid] {
+    border-color: var(--juice-field-invalid-border);
+}
+
+[theme="kiwipress"] [field-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-label-ink);
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [field-help] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-help-ink);
+    box-shadow: none;
+}
+
+[theme="kiwipress"] [field-error] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-error-ink);
+    box-shadow: none;
+}
+
 
 
 

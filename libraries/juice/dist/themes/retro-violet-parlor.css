@@ -538,6 +538,23 @@
   --juice-textarea-ink: var(--vpr-textarea-ink);
   --juice-textarea-placeholder: var(--vpr-textarea-placeholder);
   --juice-textarea-focus-ring: var(--vpr-textarea-focus-ring);
+  /* Field chrome — wrapper around a control from existing tokens.
+     Surface matches the input field. Help follows this theme's
+     placeholder ink. Error ink and the invalid border reuse banner
+     error. Not an input, not a textarea, not a select, and not a CTA.
+     Runtime is later. */
+  --vpr-field-surface: var(--vpr-surface-strong);
+  --vpr-field-gap: 0.5rem;
+  --vpr-field-label-ink: var(--vpr-text);
+  --vpr-field-help-ink: var(--vpr-text-muted);
+  --vpr-field-error-ink: var(--vpr-banner-error);
+  --vpr-field-invalid-border: var(--vpr-banner-error);
+  --juice-field-surface: var(--vpr-field-surface);
+  --juice-field-gap: var(--vpr-field-gap);
+  --juice-field-label-ink: var(--vpr-field-label-ink);
+  --juice-field-help-ink: var(--vpr-field-help-ink);
+  --juice-field-error-ink: var(--vpr-field-error-ink);
+  --juice-field-invalid-border: var(--vpr-field-invalid-border);
   background-color: var(--vpr-page);
   background-image: var(--vpr-page-background);
   color: var(--vpr-text);
@@ -1769,6 +1786,40 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-textarea-ink);
+  box-shadow: none;
+}
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme=retro-violet-parlor] [field] {
+  background-color: var(--juice-field-surface);
+  gap: var(--juice-field-gap);
+}
+
+[theme=retro-violet-parlor] [field][invalid] {
+  border-color: var(--juice-field-invalid-border);
+}
+
+[theme=retro-violet-parlor] [field-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-label-ink);
+  box-shadow: none;
+}
+
+[theme=retro-violet-parlor] [field-help] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-help-ink);
+  box-shadow: none;
+}
+
+[theme=retro-violet-parlor] [field-error] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-error-ink);
   box-shadow: none;
 }
 
