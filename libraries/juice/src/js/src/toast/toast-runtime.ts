@@ -4,6 +4,11 @@
  * Markup contract (authors place the region — this is not a portal):
  *   [toast-region] > [toast] + [toast-title]? + [toast-body]? + [toast-close]?
  * Individual toasts use native `hidden` when dismissed. The region stays in the DOM.
+ * Enter removes `hidden`, then plays. Exit plays first; `hidden` is set
+ * only after it finishes. Reduced motion (or a zero computed duration)
+ * does both in the same turn. Showing a toast that is exiting cancels
+ * the exit and leaves it open. Auto-dismiss duration is reading time,
+ * not motion: reduced motion does not shorten `toast-duration`.
  *
  * Toast is NOT a dialog:
  *   - no focus trap, no aria-modal, no exclusive "one toast only"
@@ -38,6 +43,7 @@ import {
   hasOpenPopover,
   hasOpenTooltip,
 } from '../shared/overlays.js';
+import { createElementMotion } from '../shared/motion.js';
 
 export type ToastOptions = {
   root?: ParentNode;
@@ -87,6 +93,9 @@ const isNativeInteractive = (element: HTMLElement) => {
 
 const isToastVisible = (toast: HTMLElement) => !toast.hasAttribute('hidden');
 
+const isClosing = (toast: HTMLElement) =>
+  toast.getAttribute('data-motion-state') === 'exiting';
+
 const isStickyDuration = (duration: number) =>
   !Number.isFinite(duration) || duration <= 0;
 
@@ -120,6 +129,7 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const motion = createElementMotion();
   const defaultDuration =
     typeof options.defaultDuration === 'number'
       ? options.defaultDuration
@@ -341,7 +351,7 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
     ensureRegionAccessibility(region);
     ensureToastAccessibility(region, toast);
 
-    if (isToastVisible(toast)) {
+    if (isToastVisible(toast) && !isClosing(toast)) {
       rememberShown(toast);
       startTimer(toast);
       return;
@@ -350,16 +360,19 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
     setVisibleState(toast, true);
     rememberShown(toast);
     clearTimer(toast);
+    motion.enter(toast);
     startTimer(toast);
   };
 
   const dismiss = (target?: HTMLElement | null) => {
     const toast = resolveToast(target);
-    if (!toast || !isToastVisible(toast)) return;
+    if (!toast || !isToastVisible(toast) || isClosing(toast)) return;
 
     clearTimer(toast);
     forgetShown(toast);
-    setVisibleState(toast, false);
+    motion.exit(toast, () => {
+      setVisibleState(toast, false);
+    });
   };
 
   const sync = () => {
@@ -367,6 +380,8 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
       ensureRegionAccessibility(region);
       getToasts(region).forEach((toast) => {
         ensureToastAccessibility(region, toast);
+        if (isClosing(toast)) return;
+
         if (isToastVisible(toast)) {
           rememberShown(toast, false);
           startTimer(toast);
@@ -527,6 +542,7 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
       rootEvents.removeEventListener('focusin', handleFocusIn);
       rootEvents.removeEventListener('focusout', handleFocusOut);
       observer?.disconnect();
+      motion.destroy();
       clearAllTimers();
     },
     sync,

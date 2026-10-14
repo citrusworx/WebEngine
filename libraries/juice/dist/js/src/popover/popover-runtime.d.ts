@@ -5,6 +5,11 @@
  *   [popover-root][hidden] > [popover-panel] + [popover-header]? +
  *   [popover-body]? + [popover-close]?
  * Closed vs open is the native `hidden` attribute on [popover-root].
+ * Enter removes `hidden`, places the panel, moves focus, then plays.
+ * Exit plays first; `hidden`, placement cleanup, and focus restore run
+ * only after it finishes. Reduced motion (or a zero computed duration)
+ * does both in the same turn. An in-flight exit stays the open popover
+ * for Escape and the focus trap until that commit, and a new open cancels it.
  *
  * Never use a bare `popover` attribute. HTML `popover=""` / `popover="manual"`
  * activates the platform Popover API. The floating surface is [popover-panel].

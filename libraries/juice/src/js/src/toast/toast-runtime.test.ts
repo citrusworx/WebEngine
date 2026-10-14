@@ -6,6 +6,11 @@ import {
   startToastRuntime,
   stopToastRuntime,
 } from './toast-runtime.js';
+import {
+  flushMotion,
+  stubMotionDuration,
+  stubReducedMotion,
+} from '../shared/motion-test-utils.js';
 
 const resetDom = () => {
   document.body.innerHTML = '';
@@ -493,5 +498,117 @@ describe('startToastRuntime', () => {
       configurable: true,
       get: () => 'complete',
     });
+  });
+});
+
+describe('toast motion', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  const stack = `
+    <div toast-region>
+      <div toast id="motion-toast" hidden>
+        <div toast-body>Saved</div>
+        <button type="button" toast-close aria-label="Dismiss">×</button>
+      </div>
+    </div>
+  `;
+
+  it('removes hidden before enter and sets it only after the exit ends', async () => {
+    stubMotionDuration('120ms');
+    document.body.innerHTML = stack;
+    stopToastRuntime();
+
+    const controller = createToast({ root: document.body, defaultDuration: 0 });
+    const toast = document.getElementById('motion-toast');
+    const body = toast?.querySelector('[toast-body]');
+
+    controller.show(toast);
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+    expect(toast?.getAttribute('data-motion-state')).toBe('entering');
+
+    controller.dismiss(toast);
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+    expect(toast?.getAttribute('data-motion-state')).toBe('exiting');
+
+    body?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+
+    toast?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+
+    expect(toast?.hasAttribute('hidden')).toBe(true);
+    expect(toast?.getAttribute('data-motion-state')).toBe('exited');
+
+    controller.destroy();
+  });
+
+  it('showing mid-exit leaves the toast open and not hidden', async () => {
+    stubMotionDuration('120ms');
+    document.body.innerHTML = stack;
+    stopToastRuntime();
+
+    const controller = createToast({ root: document.body, defaultDuration: 0 });
+    const toast = document.getElementById('motion-toast');
+
+    controller.show(toast);
+    controller.dismiss(toast);
+    controller.show(toast);
+
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+    expect(toast?.getAttribute('data-motion-state')).toBe('entering');
+
+    toast?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+    expect(toast?.getAttribute('data-motion-state')).toBe('entered');
+
+    controller.destroy();
+  });
+
+  it('dismisses immediately when reduced motion is preferred', () => {
+    stubReducedMotion(true);
+    stubMotionDuration('120ms');
+    document.body.innerHTML = stack;
+    stopToastRuntime();
+
+    const controller = createToast({ root: document.body, defaultDuration: 0 });
+    const toast = document.getElementById('motion-toast');
+
+    controller.show(toast);
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+    expect(toast?.getAttribute('data-motion-state')).toBe('entered');
+
+    controller.dismiss(toast);
+    expect(toast?.hasAttribute('hidden')).toBe(true);
+    expect(toast?.getAttribute('data-motion-state')).toBe('exited');
+
+    controller.destroy();
+  });
+
+  it('keeps auto-dismiss on the reading-time duration under reduced motion', () => {
+    vi.useFakeTimers();
+    stubReducedMotion(true);
+    stubMotionDuration('300ms');
+    document.body.innerHTML = stack;
+    stopToastRuntime();
+
+    const controller = createToast({
+      root: document.body,
+      defaultDuration: 5000,
+    });
+    const toast = document.getElementById('motion-toast');
+
+    controller.show(toast);
+    vi.advanceTimersByTime(4999);
+    expect(toast?.hasAttribute('hidden')).toBe(false);
+
+    vi.advanceTimersByTime(1);
+    expect(toast?.hasAttribute('hidden')).toBe(true);
+
+    controller.destroy();
   });
 });

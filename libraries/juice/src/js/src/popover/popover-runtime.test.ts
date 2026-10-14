@@ -1,11 +1,16 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   createPopover,
   startPopoverRuntime,
   stopPopoverRuntime,
 } from './popover-runtime.js';
+import {
+  flushMotion,
+  stubMotionDuration,
+  stubReducedMotion,
+} from '../shared/motion-test-utils.js';
 
 const resetDom = () => {
   document.body.innerHTML = '';
@@ -702,5 +707,99 @@ describe('startPopoverRuntime', () => {
       configurable: true,
       get: () => 'complete',
     });
+  });
+});
+
+describe('popover motion', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it('removes hidden before enter and sets it only after the exit ends', async () => {
+    stubMotionDuration('120ms');
+    document.body.innerHTML = popoverMarkup;
+    stopPopoverRuntime();
+
+    const controller = createPopover({ root: document.body });
+    const popover = document.getElementById('demo-pop');
+    const opener = document.getElementById('demo-open');
+    const panel = popover?.querySelector('[popover-panel]');
+
+    opener?.focus();
+    controller.open(opener);
+    expect(popover?.hasAttribute('hidden')).toBe(false);
+    expect(popover?.getAttribute('data-motion-state')).toBe('entering');
+    expect(popover?.contains(document.activeElement)).toBe(true);
+
+    controller.close(popover);
+    expect(popover?.hasAttribute('hidden')).toBe(false);
+    expect(popover?.getAttribute('data-motion-state')).toBe('exiting');
+    expect(opener?.getAttribute('aria-expanded')).toBe('true');
+    expect(popover?.style.position).toBe('fixed');
+
+    panel?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    expect(popover?.hasAttribute('hidden')).toBe(false);
+
+    popover?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+
+    expect(popover?.hasAttribute('hidden')).toBe(true);
+    expect(popover?.style.position).toBe('');
+    expect(document.activeElement).toBe(opener);
+    expect(opener?.getAttribute('aria-expanded')).toBe('false');
+
+    controller.destroy();
+  });
+
+  it('reopening mid-exit leaves the popover open and not hidden', async () => {
+    stubMotionDuration('120ms');
+    document.body.innerHTML = popoverMarkup;
+    stopPopoverRuntime();
+
+    const controller = createPopover({ root: document.body });
+    const popover = document.getElementById('demo-pop');
+    const opener = document.getElementById('demo-open');
+
+    controller.open(opener);
+    controller.close(popover);
+    opener?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(popover?.hasAttribute('hidden')).toBe(false);
+    expect(popover?.getAttribute('data-motion-state')).toBe('entering');
+
+    popover?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+
+    expect(popover?.hasAttribute('hidden')).toBe(false);
+    expect(popover?.getAttribute('data-motion-state')).toBe('entered');
+
+    controller.destroy();
+  });
+
+  it('closes immediately when reduced motion is preferred', () => {
+    stubReducedMotion(true);
+    stubMotionDuration('120ms');
+    document.body.innerHTML = popoverMarkup;
+    stopPopoverRuntime();
+
+    const controller = createPopover({ root: document.body });
+    const popover = document.getElementById('demo-pop');
+    const opener = document.getElementById('demo-open');
+
+    opener?.focus();
+    controller.open(opener);
+    controller.close(popover);
+
+    expect(popover?.hasAttribute('hidden')).toBe(true);
+    expect(popover?.getAttribute('data-motion-state')).toBe('exited');
+    expect(document.activeElement).toBe(opener);
+
+    controller.destroy();
   });
 });

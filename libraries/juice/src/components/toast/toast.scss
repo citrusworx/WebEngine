@@ -33,7 +33,9 @@
 // [toast-region] stays in the DOM (the stack). Closed vs open for an
 // individual [toast] uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
-// Runtime (later) toggles [hidden] on [toast] and wires [toast-close].
+// Runtime removes [hidden] before the enter motion and sets it only after
+// the exit motion. data-motion-state is entering | entered | exiting | exited.
+// toast-duration stays a reading-time timer and is not a motion duration.
 // Optional surfaceTone on [toast] is allowed; do not force it.
 //
 // Region position (default top-right):
@@ -265,4 +267,76 @@ $_juice-toast-warning-soft: -juice-toast-role(warning-soft, #{rgba($yellow-100, 
     [theme] [toast-close] {
         transition: none;
     }
+}
+
+@keyframes juice-toast-in-top {
+    from {
+        opacity: 0;
+        transform: translateY(-0.75rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes juice-toast-out-top {
+    from {
+        opacity: 1;
+        transform: none;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-0.75rem);
+    }
+}
+
+@keyframes juice-toast-in-bottom {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes juice-toast-out-bottom {
+    from {
+        opacity: 1;
+        transform: none;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+}
+
+[toast][data-motion-state="entering"] {
+    animation: juice-toast-in-top var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[toast][data-motion-state="exiting"] {
+    animation: juice-toast-out-top var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[toast-region="bottom-right"] [toast][data-motion-state="entering"],
+[toast-region="bottom-left"] [toast][data-motion-state="entering"] {
+    animation: juice-toast-in-bottom var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[toast-region="bottom-right"] [toast][data-motion-state="exiting"],
+[toast-region="bottom-left"] [toast][data-motion-state="exiting"] {
+    animation: juice-toast-out-bottom var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[toast][data-motion-state="exited"] {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+}
+
+[toast-region="bottom-right"] [toast][data-motion-state="exited"],
+[toast-region="bottom-left"] [toast][data-motion-state="exited"] {
+    transform: translateY(0.75rem);
 }

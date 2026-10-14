@@ -6,6 +6,11 @@ import {
   startModalRuntime,
   stopModalRuntime,
 } from './modal-runtime.js';
+import {
+  flushMotion,
+  stubMotionDuration,
+  stubReducedMotion,
+} from '../shared/motion-test-utils.js';
 
 const resetDom = () => {
   document.body.innerHTML = '';
@@ -390,5 +395,101 @@ describe('startModalRuntime', () => {
       configurable: true,
       get: () => 'complete',
     });
+  });
+});
+
+describe('modal motion', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it('removes hidden before enter and sets it only after the exit ends', async () => {
+    stubMotionDuration('120ms');
+    document.body.innerHTML = modalMarkup;
+    stopModalRuntime();
+
+    const controller = createModal({ root: document.body });
+    const overlay = document.getElementById('demo-modal');
+    const opener = document.getElementById('demo-open');
+    const panel = overlay?.querySelector('[modal]');
+
+    opener?.focus();
+    controller.open(opener);
+
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('entering');
+    expect(opener?.getAttribute('aria-expanded')).toBe('true');
+    expect(overlay?.contains(document.activeElement)).toBe(true);
+
+    controller.close(overlay);
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('exiting');
+    expect(opener?.getAttribute('aria-expanded')).toBe('true');
+    expect(overlay?.contains(document.activeElement)).toBe(true);
+
+    panel?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+
+    overlay?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+
+    expect(overlay?.hasAttribute('hidden')).toBe(true);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('exited');
+    expect(opener?.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(opener);
+
+    controller.destroy();
+  });
+
+  it('reopening mid-exit leaves the dialog open and not hidden', async () => {
+    stubMotionDuration('120ms');
+    document.body.innerHTML = modalMarkup;
+    stopModalRuntime();
+
+    const controller = createModal({ root: document.body });
+    const overlay = document.getElementById('demo-modal');
+    const opener = document.getElementById('demo-open');
+
+    controller.open(opener);
+    controller.close(overlay);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('exiting');
+
+    opener?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('entering');
+
+    overlay?.dispatchEvent(new Event('animationend', { bubbles: true }));
+    await flushMotion();
+
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('entered');
+    expect(opener?.getAttribute('aria-expanded')).toBe('true');
+
+    controller.destroy();
+  });
+
+  it('closes immediately when reduced motion is preferred', () => {
+    stubReducedMotion(true);
+    stubMotionDuration('120ms');
+    document.body.innerHTML = modalMarkup;
+    stopModalRuntime();
+
+    const controller = createModal({ root: document.body });
+    const overlay = document.getElementById('demo-modal');
+    const opener = document.getElementById('demo-open');
+
+    opener?.focus();
+    controller.open(opener);
+    expect(overlay?.hasAttribute('hidden')).toBe(false);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('entered');
+
+    controller.close(overlay);
+    expect(overlay?.hasAttribute('hidden')).toBe(true);
+    expect(overlay?.getAttribute('data-motion-state')).toBe('exited');
+    expect(document.activeElement).toBe(opener);
+    expect(opener?.getAttribute('aria-expanded')).toBe('false');
+
+    controller.destroy();
   });
 });

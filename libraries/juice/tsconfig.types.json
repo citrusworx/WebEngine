@@ -40,6 +40,7 @@
     "src/js/src/textarea/textarea-runtime.ts",
     "src/js/src/field/field-runtime.ts",
     "src/js/src/shared/events.ts",
+    "src/js/src/shared/motion.ts",
     "src/js/src/shared/focus.ts",
     "src/js/src/shared/ids.ts",
     "src/js/src/shared/overlays.ts",

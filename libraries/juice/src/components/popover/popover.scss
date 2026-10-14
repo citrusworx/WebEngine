@@ -32,8 +32,9 @@
 //
 // Closed vs open uses the native `hidden` attribute on [popover-root]
 // (display: none). Markup without [hidden] stays visible so static demos
-// keep working. The runtime toggles [hidden], wires [popover-close], and
-// positions the root.
+// keep working. The runtime removes [hidden] before the enter motion and
+// sets it only after the exit motion. data-motion-state is
+// entering | entered | exiting | exited.
 // Optional surfaceTone on [popover-panel] is allowed; do not force it.
 //
 // Placement (default bottom). CSS stubs transform-origin + a small offset
@@ -179,4 +180,117 @@ $_juice-popover-close-hover: -juice-popover-role(close-hover, #{$gray-100});
     [theme] [popover-close] {
         transition: none;
     }
+}
+
+@keyframes juice-popover-overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes juice-popover-overlay-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes juice-popover-in-bottom {
+    from { transform: translateY(-0.5rem); }
+    to { transform: none; }
+}
+
+@keyframes juice-popover-out-bottom {
+    from { transform: none; }
+    to { transform: translateY(-0.5rem); }
+}
+
+@keyframes juice-popover-in-top {
+    from { transform: translateY(0.5rem); }
+    to { transform: none; }
+}
+
+@keyframes juice-popover-out-top {
+    from { transform: none; }
+    to { transform: translateY(0.5rem); }
+}
+
+@keyframes juice-popover-in-left {
+    from { transform: translateX(0.5rem); }
+    to { transform: none; }
+}
+
+@keyframes juice-popover-out-left {
+    from { transform: none; }
+    to { transform: translateX(0.5rem); }
+}
+
+@keyframes juice-popover-in-right {
+    from { transform: translateX(-0.5rem); }
+    to { transform: none; }
+}
+
+@keyframes juice-popover-out-right {
+    from { transform: none; }
+    to { transform: translateX(-0.5rem); }
+}
+
+[popover-root][data-motion-state="entering"] {
+    animation: juice-popover-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root][data-motion-state="entering"] [popover-panel],
+[popover-root="bottom"][data-motion-state="entering"] [popover-panel] {
+    animation: juice-popover-in-bottom var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root="top"][data-motion-state="entering"] [popover-panel] {
+    animation: juice-popover-in-top var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root="left"][data-motion-state="entering"] [popover-panel] {
+    animation: juice-popover-in-left var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root="right"][data-motion-state="entering"] [popover-panel] {
+    animation: juice-popover-in-right var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root][data-motion-state="exiting"] {
+    animation: juice-popover-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root][data-motion-state="exiting"] [popover-panel],
+[popover-root="bottom"][data-motion-state="exiting"] [popover-panel] {
+    animation: juice-popover-out-bottom var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root="top"][data-motion-state="exiting"] [popover-panel] {
+    animation: juice-popover-out-top var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root="left"][data-motion-state="exiting"] [popover-panel] {
+    animation: juice-popover-out-left var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root="right"][data-motion-state="exiting"] [popover-panel] {
+    animation: juice-popover-out-right var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root][data-motion-state="exited"] {
+    opacity: 0;
+}
+
+[popover-root][data-motion-state="exited"] [popover-panel],
+[popover-root="bottom"][data-motion-state="exited"] [popover-panel] {
+    transform: translateY(-0.5rem);
+}
+
+[popover-root="top"][data-motion-state="exited"] [popover-panel] {
+    transform: translateY(0.5rem);
+}
+
+[popover-root="left"][data-motion-state="exited"] [popover-panel] {
+    transform: translateX(0.5rem);
+}
+
+[popover-root="right"][data-motion-state="exited"] [popover-panel] {
+    transform: translateX(-0.5rem);
 }

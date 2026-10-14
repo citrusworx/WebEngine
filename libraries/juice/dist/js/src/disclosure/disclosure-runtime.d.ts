@@ -16,6 +16,13 @@
  * and aria-hidden on the panel. This runtime never writes layout
  * content="active" or content="hidden".
  *
+ * A panel with `[motion="accordion"]` animates height from its measured
+ * `scrollHeight`. `aria-expanded` updates immediately. `hidden` is removed
+ * before the expand and applied only after the collapse transition, because
+ * native `hidden` cannot interpolate to `auto`. Reduced motion stays instant.
+ * The attribute has to sit on the panel: that is the element ease.scss
+ * transitions.
+ *
  * Keyboard: click toggles. Enter and Space activate non-button triggers.
  * Escape collapses the focused open disclosure, or the last opened one,
  * and returns focus to that trigger. It yields to an open modal, drawer,

@@ -1,3 +1,7 @@
+// Height easing for accordion and disclosure panels. The attribute belongs on
+// the panel. The runtimes measure scrollHeight, set an explicit pixel height,
+// and only then toggle native hidden — a hidden element and height: auto
+// never interpolate.
 [motion="accordion"] {
     transition: height var(--juice-motion-duration-base) var(--juice-motion-ease-in-out);
     overflow: hidden;

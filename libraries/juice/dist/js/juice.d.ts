@@ -48,3 +48,5 @@ export { createTextarea, initTextarea, startTextareaRuntime, stopTextareaRuntime
 export type { TextareaController, TextareaOptions } from "./src/textarea/textarea-runtime.js";
 export { createField, initField, startFieldRuntime, stopFieldRuntime } from "./src/field/field-runtime.js";
 export type { FieldController, FieldOptions } from "./src/field/field-runtime.js";
+export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./src/shared/motion.js";
+export type { MotionCancelToken, MotionDirection, MotionPlayer, MotionResult, MotionState } from "./src/shared/motion.js";

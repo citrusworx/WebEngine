@@ -4,6 +4,12 @@
  * Markup contract:
  *   [drawer-overlay][hidden] > [drawer role="dialog"] + [drawer-close]
  * Closed vs open is the native `hidden` attribute on the overlay.
+ * Enter removes `hidden`, then plays. Exit plays first; `hidden` is set
+ * only after it finishes. Focus moves in when `hidden` is removed and
+ * restores when `hidden` is set. Reduced motion (or a zero computed
+ * duration) does both in the same turn. An in-flight exit stays the open
+ * dialog for Escape and the focus trap until that commit, and a new open
+ * cancels it.
  *
  * Openers: any element whose `aria-controls` token list includes a
  * `[drawer-overlay]` id. `[drawer-close]` closes the containing overlay.
@@ -14,6 +20,7 @@
 import { createEventClaim } from '../shared/events.js';
 import { getFocusable, moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
+import { createElementMotion } from '../shared/motion.js';
 
 export type DrawerOptions = {
   root?: ParentNode;
@@ -67,6 +74,9 @@ const isNativeInteractive = (element: HTMLElement) => {
 
 const isOverlayOpen = (overlay: HTMLElement) => !overlay.hasAttribute('hidden');
 
+const isClosing = (overlay: HTMLElement) =>
+  overlay.getAttribute('data-motion-state') === 'exiting';
+
 export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return {
@@ -81,6 +91,7 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const motion = createElementMotion();
 
   let idCounter = 0;
 
@@ -303,14 +314,18 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   };
 
   const hideOverlay = (overlay: HTMLElement, restore: boolean) => {
+    if (!isOverlayOpen(overlay) || isClosing(overlay)) return;
+
     ensureDialogAccessibility(overlay);
-    setOpenState(overlay, false);
-    setOpenerState(overlay, false);
-    if (restore) {
-      restoreFocus(overlay);
-    } else {
-      focusRestorers.delete(overlay);
-    }
+    motion.exit(overlay, () => {
+      setOpenState(overlay, false);
+      setOpenerState(overlay, false);
+      if (restore) {
+        restoreFocus(overlay);
+      } else {
+        focusRestorers.delete(overlay);
+      }
+    });
   };
 
   const showOverlay = (
@@ -324,7 +339,7 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
         )
       )
       .forEach((other) => {
-        if (other === overlay || !isOverlayOpen(other)) return;
+        if (other === overlay || !isOverlayOpen(other) || isClosing(other)) return;
         hideOverlay(other, false);
       });
 
@@ -333,12 +348,13 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
     setOpenState(overlay, true);
     setOpenerState(overlay, true);
     moveFocusIn(overlay);
+    motion.enter(overlay);
   };
 
   const open = (target?: HTMLElement | null) => {
     const overlay = resolveOverlay(target);
     if (!overlay) return;
-    if (isOverlayOpen(overlay)) {
+    if (isOverlayOpen(overlay) && !isClosing(overlay)) {
       ensureDialogAccessibility(overlay);
       setOpenerState(overlay, true);
       return;
@@ -359,14 +375,14 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
 
   const close = (target?: HTMLElement | null) => {
     const overlay = resolveOverlay(target);
-    if (!overlay || !isOverlayOpen(overlay)) return;
+    if (!overlay || !isOverlayOpen(overlay) || isClosing(overlay)) return;
     hideOverlay(overlay, true);
   };
 
   const toggle = (target?: HTMLElement | null) => {
     const overlay = resolveOverlay(target);
     if (!overlay) return;
-    if (isOverlayOpen(overlay)) {
+    if (isOverlayOpen(overlay) && !isClosing(overlay)) {
       close(overlay);
       return;
     }
@@ -431,7 +447,10 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
     toggle(opener);
   };
 
-  const getOpenOverlay = () => getOverlays().find(isOverlayOpen) ?? null;
+  const getOpenOverlay = () =>
+    getOverlays().find((overlay) => isOverlayOpen(overlay) && !isClosing(overlay)) ??
+    getOverlays().find(isOverlayOpen) ??
+    null;
 
   const trapFocus = (event: KeyboardEvent, overlay: HTMLElement) =>
     wrapTabFocus(event, getDialog(overlay));
@@ -536,6 +555,7 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
       rootEvents.removeEventListener('keydown', handleRootKeydown, true);
       rootEvents.removeEventListener('focusin', handleFocusIn, true);
       observer?.disconnect();
+      motion.destroy();
     },
     sync,
     open,
