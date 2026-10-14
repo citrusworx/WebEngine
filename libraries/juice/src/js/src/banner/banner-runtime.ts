@@ -24,6 +24,7 @@
  * aria-label="Dismiss".
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 
 export type BannerOptions = {
@@ -32,11 +33,17 @@ export type BannerOptions = {
   closeSelector?: string;
 };
 
+export type BannerState = {
+  shown: boolean;
+};
+
 export type BannerController = {
   destroy: () => void;
   sync: () => void;
   show: (target?: HTMLElement | null) => void;
   dismiss: (target?: HTMLElement | null) => void;
+  isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => BannerState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -121,12 +128,15 @@ export const createBanner = (options: BannerOptions = {}): BannerController => {
       sync: () => {},
       show: () => {},
       dismiss: () => {},
+      isShown: () => false,
+      getState: () => null,
     };
   }
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<BannerState>('banner');
 
   const getBanners = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.bannerSelector));
@@ -185,8 +195,23 @@ export const createBanner = (options: BannerOptions = {}): BannerController => {
   };
 
   const setVisibleState = (banner: HTMLElement, visible: boolean) => {
-    if (banner.hidden === !visible) return;
-    banner.hidden = !visible;
+    const baseline: BannerState = { shown: isBannerVisible(banner) };
+    if (banner.hidden !== !visible) {
+      banner.hidden = !visible;
+    }
+    changes.note(banner, { shown: isBannerVisible(banner) }, { baseline });
+  };
+
+  const isShown = (target?: HTMLElement | null) => {
+    const banner = resolveBanner(target);
+    if (!banner) return false;
+    return isBannerVisible(banner);
+  };
+
+  const getState = (target?: HTMLElement | null): BannerState | null => {
+    const banner = resolveBanner(target);
+    if (!banner) return null;
+    return { shown: isBannerVisible(banner) };
   };
 
   const show = (target?: HTMLElement | null) => {
@@ -215,6 +240,7 @@ export const createBanner = (options: BannerOptions = {}): BannerController => {
         setVisibleState(banner, false);
       }
       ensureBannerAccessibility(banner);
+      changes.note(banner, { shown: isBannerVisible(banner) });
     });
   };
 
@@ -299,6 +325,8 @@ export const createBanner = (options: BannerOptions = {}): BannerController => {
     sync,
     show,
     dismiss,
+    isShown,
+    getState,
   };
 };
 

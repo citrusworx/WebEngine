@@ -102,6 +102,8 @@ stopComboboxRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real open or value change dispatches a bubbling `juice:change` from `[combobox]`. `detail` is `{ runtime: "combobox", state: { open: boolean, value: string } }`. `isOpen()` and `getState()` read it. One user action publishes the final state once. A write that leaves both fields unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createCombobox()` can run alongside the automatic document runtime. Each click, focus, input, or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 ## ComboboxOptions
@@ -142,6 +144,8 @@ type ComboboxController = {
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
   select: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => ComboboxState | null;
 };
 ```
 

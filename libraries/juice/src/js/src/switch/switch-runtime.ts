@@ -32,11 +32,16 @@
  * type is still the default.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 
 export type SwitchOptions = {
   root?: ParentNode;
   switchSelector?: string;
+};
+
+export type SwitchState = {
+  checked: boolean;
 };
 
 export type SwitchController = {
@@ -47,6 +52,7 @@ export type SwitchController = {
   uncheck: (target?: HTMLElement | null) => void;
   setChecked: (checked: boolean, target?: HTMLElement | null) => void;
   isChecked: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => SwitchState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -104,6 +110,7 @@ const noopController = (): SwitchController => ({
   uncheck: () => {},
   setChecked: () => {},
   isChecked: () => false,
+  getState: () => null,
 });
 
 export const createSwitch = (
@@ -116,6 +123,13 @@ export const createSwitch = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<SwitchState>('switch');
+
+  const commitChecked = (element: HTMLElement, checked: boolean) => {
+    const baseline: SwitchState = { checked: readChecked(element) };
+    writeChecked(element, checked);
+    changes.note(element, { checked: readChecked(element) }, { baseline });
+  };
 
   const getSwitches = () =>
     asArray(
@@ -160,7 +174,7 @@ export const createSwitch = (
       control.type = 'button';
     }
 
-    writeChecked(control, readChecked(control));
+    commitChecked(control, readChecked(control));
   };
 
   const setCheckedState = (
@@ -171,7 +185,7 @@ export const createSwitch = (
     if (!control || isDisabled(control)) return;
 
     ensureSwitchAccessibility(control);
-    writeChecked(control, checked);
+    commitChecked(control, checked);
   };
 
   const toggle = (target?: HTMLElement | null) => {
@@ -197,6 +211,12 @@ export const createSwitch = (
     const control = resolveSwitch(target);
     if (!control) return false;
     return readChecked(control);
+  };
+
+  const getState = (target?: HTMLElement | null): SwitchState | null => {
+    const control = resolveSwitch(target);
+    if (!control) return null;
+    return { checked: readChecked(control) };
   };
 
   const sync = () => {
@@ -226,7 +246,10 @@ export const createSwitch = (
     if (!isManagedSwitch(target) || isDisabled(target)) return;
     if (!claimEvent(event)) return;
 
-    writeChecked(target, target.checked);
+    if (!changes.has(target)) {
+      changes.prime(target, { checked: !target.checked });
+    }
+    commitChecked(target, target.checked);
   };
 
   const handleRootKeydown = (event: Event) => {
@@ -298,6 +321,7 @@ export const createSwitch = (
     uncheck,
     setChecked,
     isChecked,
+    getState,
   };
 };
 

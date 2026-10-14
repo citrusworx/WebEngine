@@ -105,6 +105,8 @@ stopMenuRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real open or close dispatches a bubbling `juice:change` from `[menu-root]`. `detail` is `{ runtime: "menu", state: { open: boolean } }`, where `open` means the `[menu]` panel is shown. `isOpen()` and `getState()` read it. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createMenu()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton. A controller claims opener clicks only when it can resolve a panel (a custom `menuSelector` can coexist with the auto singleton).
 
 ## MenuOptions
@@ -147,6 +149,8 @@ type MenuController = {
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
   select: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => MenuState | null;
 };
 ```
 

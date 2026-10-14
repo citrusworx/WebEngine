@@ -34,9 +34,16 @@
  * trap, no Escape, no Sig Progress factory.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
+
 export type ProgressOptions = {
   root?: ParentNode;
   progressSelector?: string;
+};
+
+export type ProgressState = {
+  value: number;
+  indeterminate: boolean;
 };
 
 export type ProgressController = {
@@ -49,6 +56,7 @@ export type ProgressController = {
     target?: HTMLElement | null
   ) => void;
   isIndeterminate: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => ProgressState | null;
 };
 
 type ProgressRecord = {
@@ -137,6 +145,7 @@ const noopController = (): ProgressController => ({
   getValue: () => 0,
   setIndeterminate: () => {},
   isIndeterminate: () => false,
+  getState: () => null,
 });
 
 export const createProgress = (
@@ -149,6 +158,7 @@ export const createProgress = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   let destroyed = false;
+  const changes = createJuiceChanges<ProgressState>('progress');
 
   const isManagedProgress = (element: HTMLElement | null | undefined) => {
     if (!element?.matches(settings.progressSelector)) return false;
@@ -222,6 +232,11 @@ export const createProgress = (
     if (host.style.getPropertyValue('--juice-progress-ratio').trim() !== ratio) {
       host.style.setProperty('--juice-progress-ratio', ratio);
     }
+
+    changes.note(host, {
+      value: resolveValue(host).value,
+      indeterminate: isIndeterminateHost(host),
+    });
   };
 
   const sync = () => {
@@ -268,6 +283,15 @@ export const createProgress = (
     const host = resolveProgress(target);
     if (!host) return false;
     return isIndeterminateHost(host);
+  };
+
+  const getState = (target?: HTMLElement | null): ProgressState | null => {
+    const host = resolveProgress(target);
+    if (!host) return null;
+    return {
+      value: resolveValue(host).value,
+      indeterminate: isIndeterminateHost(host),
+    };
   };
 
   let syncScheduled = false;
@@ -318,6 +342,7 @@ export const createProgress = (
     getValue,
     setIndeterminate,
     isIndeterminate,
+    getState,
   };
 };
 

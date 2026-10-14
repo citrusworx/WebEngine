@@ -64,12 +64,18 @@
  * the given root, or the first root when omitted. It is not navigation.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 
 export type PaginationOptions = {
   root?: ParentNode;
   paginationSelector?: string;
   itemSelector?: string;
+};
+
+/** `current` is the 0-based page index. `-1` when no page is current. */
+export type PaginationState = {
+  current: number;
 };
 
 export type PaginationController = {
@@ -79,6 +85,8 @@ export type PaginationController = {
     itemOrIndex: HTMLElement | number,
     pagination?: HTMLElement | null
   ) => void;
+  getCurrent: (target?: HTMLElement | null) => number;
+  getState: (target?: HTMLElement | null) => PaginationState | null;
 };
 
 type SlotKind = 'page' | 'prev' | 'next' | 'ellipsis' | 'status';
@@ -156,6 +164,8 @@ const noopController = (): PaginationController => ({
   destroy: () => {},
   sync: () => {},
   setCurrent: () => {},
+  getCurrent: () => -1,
+  getState: () => null,
 });
 
 export const createPagination = (
@@ -168,6 +178,7 @@ export const createPagination = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<PaginationState>('pagination');
 
   const partSelector = [
     settings.itemSelector,
@@ -388,12 +399,26 @@ export const createPagination = (
     });
   };
 
+  const readPaginationState = (pagination: HTMLElement): PaginationState => {
+    const pages = getSlots(pagination).filter((slot) => slot.kind === 'page');
+    const current = findPageCurrents(pagination)[0] ?? null;
+    if (!current) return { current: -1 };
+    const index = pages.findIndex(
+      (slot) =>
+        slot.element === current ||
+        slot.target === current ||
+        slot.element.contains(current)
+    );
+    return { current: index };
+  };
+
   const syncPagination = (pagination: HTMLElement) => {
     if (!isManaged(pagination)) return;
     ensureLandmark(pagination);
     const slots = getSlots(pagination);
     syncCurrent(pagination, slots);
     syncEnds(pagination, slots);
+    changes.note(pagination, readPaginationState(pagination));
   };
 
   const sync = () => {
@@ -413,6 +438,18 @@ export const createPagination = (
     }
 
     return getPaginations()[0] ?? null;
+  };
+
+  const getCurrent = (target?: HTMLElement | null) => {
+    const pagination = resolvePagination(target);
+    if (!pagination) return -1;
+    return readPaginationState(pagination).current;
+  };
+
+  const getState = (target?: HTMLElement | null): PaginationState | null => {
+    const pagination = resolvePagination(target);
+    if (!pagination) return null;
+    return readPaginationState(pagination);
   };
 
   const setCurrent = (
@@ -588,6 +625,8 @@ export const createPagination = (
     },
     sync,
     setCurrent,
+    getCurrent,
+    getState,
   };
 };
 

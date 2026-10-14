@@ -40,14 +40,22 @@
  * scope. [field-label] is chrome only.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
+
 export type FieldOptions = {
   root?: ParentNode;
   fieldSelector?: string;
 };
 
+export type FieldState = {
+  invalid: boolean;
+};
+
 export type FieldController = {
   destroy: () => void;
   sync: () => void;
+  isInvalid: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => FieldState | null;
 };
 
 type FieldControl = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -73,6 +81,8 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const noopController = (): FieldController => ({
   destroy: () => {},
   sync: () => {},
+  isInvalid: () => false,
+  getState: () => null,
 });
 
 const isFieldControl = (element: Element | null | undefined): element is FieldControl =>
@@ -136,6 +146,15 @@ export const createField = (options: FieldOptions = {}): FieldController => {
   let referenced = new Set<HTMLElement>();
   let destroyed = false;
   let idCounter = 0;
+  const changes = createJuiceChanges<FieldState>('field');
+
+  const readFieldState = (field: HTMLElement): FieldState => ({
+    invalid: field.hasAttribute('invalid'),
+  });
+
+  const publishField = (field: HTMLElement) => {
+    changes.note(field, readFieldState(field));
+  };
 
   const isManagedField = (
     element: Element | null | undefined
@@ -289,6 +308,7 @@ export const createField = (options: FieldOptions = {}): FieldController => {
 
     if (!control) {
       fieldRecords.set(field, { control: null });
+      publishField(field);
       return;
     }
 
@@ -331,6 +351,28 @@ export const createField = (options: FieldOptions = {}): FieldController => {
     }
 
     fieldRecords.set(field, { control });
+    publishField(field);
+  };
+
+  const resolveField = (target?: HTMLElement | null) => {
+    if (target && isManagedField(target)) return target;
+    if (target) {
+      const field = target.closest(settings.fieldSelector);
+      if (field instanceof HTMLElement && isManagedField(field)) return field;
+    }
+    return getFields()[0] ?? null;
+  };
+
+  const isInvalid = (target?: HTMLElement | null) => {
+    const field = resolveField(target);
+    if (!field) return false;
+    return readFieldState(field).invalid;
+  };
+
+  const getState = (target?: HTMLElement | null): FieldState | null => {
+    const field = resolveField(target);
+    if (!field) return null;
+    return readFieldState(field);
   };
 
   const sync = () => {
@@ -408,6 +450,8 @@ export const createField = (options: FieldOptions = {}): FieldController => {
       releaseUnreferencedIds();
     },
     sync,
+    isInvalid,
+    getState,
   };
 };
 

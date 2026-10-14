@@ -7,7 +7,8 @@ export {
 } from "./js/src/nav/navigation.js";
 export type {
     NavigationController,
-    NavigationOptions
+    NavigationOptions,
+    NavigationState
 } from "./js/src/nav/navigation.js";
 export {
     createAccordion,
@@ -17,7 +18,8 @@ export {
 } from "./js/src/accordion/accordion-runtime.js";
 export type {
     AccordionController,
-    AccordionOptions
+    AccordionOptions,
+    AccordionState
 } from "./js/src/accordion/accordion-runtime.js";
 export {
     createTabs,
@@ -27,7 +29,8 @@ export {
 } from "./js/src/tabs/tabs-runtime.js";
 export type {
     TabsController,
-    TabsOptions
+    TabsOptions,
+    TabsState
 } from "./js/src/tabs/tabs-runtime.js";
 export {
     createModal,
@@ -37,7 +40,8 @@ export {
 } from "./js/src/modal/modal-runtime.js";
 export type {
     ModalController,
-    ModalOptions
+    ModalOptions,
+    ModalState
 } from "./js/src/modal/modal-runtime.js";
 export {
     createDrawer,
@@ -47,7 +51,8 @@ export {
 } from "./js/src/drawer/drawer-runtime.js";
 export type {
     DrawerController,
-    DrawerOptions
+    DrawerOptions,
+    DrawerState
 } from "./js/src/drawer/drawer-runtime.js";
 export {
     createToast,
@@ -57,7 +62,8 @@ export {
 } from "./js/src/toast/toast-runtime.js";
 export type {
     ToastController,
-    ToastOptions
+    ToastOptions,
+    ToastState
 } from "./js/src/toast/toast-runtime.js";
 export {
     createPopover,
@@ -68,7 +74,8 @@ export {
 export type {
     PopoverController,
     PopoverOptions,
-    PopoverPlacement
+    PopoverPlacement,
+    PopoverState
 } from "./js/src/popover/popover-runtime.js";
 export {
     createTooltip,
@@ -79,7 +86,8 @@ export {
 export type {
     TooltipController,
     TooltipOptions,
-    TooltipPlacement
+    TooltipPlacement,
+    TooltipState
 } from "./js/src/tooltip/tooltip-runtime.js";
 export {
     createWizard,
@@ -89,7 +97,8 @@ export {
 } from "./js/src/wizard/wizard-runtime.js";
 export type {
     WizardController,
-    WizardOptions
+    WizardOptions,
+    WizardState
 } from "./js/src/wizard/wizard-runtime.js";
 export {
     createCombobox,
@@ -99,7 +108,8 @@ export {
 } from "./js/src/combobox/combobox-runtime.js";
 export type {
     ComboboxController,
-    ComboboxOptions
+    ComboboxOptions,
+    ComboboxState
 } from "./js/src/combobox/combobox-runtime.js";
 export {
     createBanner,
@@ -109,7 +119,8 @@ export {
 } from "./js/src/banner/banner-runtime.js";
 export type {
     BannerController,
-    BannerOptions
+    BannerOptions,
+    BannerState
 } from "./js/src/banner/banner-runtime.js";
 export {
     createMenu,
@@ -119,7 +130,8 @@ export {
 } from "./js/src/menu/menu-runtime.js";
 export type {
     MenuController,
-    MenuOptions
+    MenuOptions,
+    MenuState
 } from "./js/src/menu/menu-runtime.js";
 export {
     createSwitch,
@@ -129,7 +141,8 @@ export {
 } from "./js/src/switch/switch-runtime.js";
 export type {
     SwitchController,
-    SwitchOptions
+    SwitchOptions,
+    SwitchState
 } from "./js/src/switch/switch-runtime.js";
 export {
     createSlider,
@@ -139,7 +152,8 @@ export {
 } from "./js/src/slider/slider-runtime.js";
 export type {
     SliderController,
-    SliderOptions
+    SliderOptions,
+    SliderState
 } from "./js/src/slider/slider-runtime.js";
 export {
     createCheckbox,
@@ -149,7 +163,8 @@ export {
 } from "./js/src/checkbox/checkbox-runtime.js";
 export type {
     CheckboxController,
-    CheckboxOptions
+    CheckboxOptions,
+    CheckboxState
 } from "./js/src/checkbox/checkbox-runtime.js";
 export {
     createRadio,
@@ -159,7 +174,8 @@ export {
 } from "./js/src/radio/radio-runtime.js";
 export type {
     RadioController,
-    RadioOptions
+    RadioOptions,
+    RadioState
 } from "./js/src/radio/radio-runtime.js";
 export {
     createBreadcrumb,
@@ -169,7 +185,8 @@ export {
 } from "./js/src/breadcrumb/breadcrumb-runtime.js";
 export type {
     BreadcrumbController,
-    BreadcrumbOptions
+    BreadcrumbOptions,
+    BreadcrumbState
 } from "./js/src/breadcrumb/breadcrumb-runtime.js";
 export {
     createProgress,
@@ -179,7 +196,8 @@ export {
 } from "./js/src/progress/progress-runtime.js";
 export type {
     ProgressController,
-    ProgressOptions
+    ProgressOptions,
+    ProgressState
 } from "./js/src/progress/progress-runtime.js";
 export {
     createPagination,
@@ -189,7 +207,8 @@ export {
 } from "./js/src/pagination/pagination-runtime.js";
 export type {
     PaginationController,
-    PaginationOptions
+    PaginationOptions,
+    PaginationState
 } from "./js/src/pagination/pagination-runtime.js";
 export {
     createDisclosure,
@@ -199,7 +218,8 @@ export {
 } from "./js/src/disclosure/disclosure-runtime.js";
 export type {
     DisclosureController,
-    DisclosureOptions
+    DisclosureOptions,
+    DisclosureState
 } from "./js/src/disclosure/disclosure-runtime.js";
 export {
     createSpinner,
@@ -209,7 +229,8 @@ export {
 } from "./js/src/spinner/spinner-runtime.js";
 export type {
     SpinnerController,
-    SpinnerOptions
+    SpinnerOptions,
+    SpinnerState
 } from "./js/src/spinner/spinner-runtime.js";
 export {
     createSelect,
@@ -219,7 +240,8 @@ export {
 } from "./js/src/select/select-runtime.js";
 export type {
     SelectController,
-    SelectOptions
+    SelectOptions,
+    SelectState
 } from "./js/src/select/select-runtime.js";
 export {
     createInput,
@@ -229,7 +251,8 @@ export {
 } from "./js/src/input/input-runtime.js";
 export type {
     InputController,
-    InputOptions
+    InputOptions,
+    InputState
 } from "./js/src/input/input-runtime.js";
 export {
     createTextarea,
@@ -239,7 +262,8 @@ export {
 } from "./js/src/textarea/textarea-runtime.js";
 export type {
     TextareaController,
-    TextareaOptions
+    TextareaOptions,
+    TextareaState
 } from "./js/src/textarea/textarea-runtime.js";
 export {
     createField,
@@ -249,7 +273,8 @@ export {
 } from "./js/src/field/field-runtime.js";
 export type {
     FieldController,
-    FieldOptions
+    FieldOptions,
+    FieldState
 } from "./js/src/field/field-runtime.js";
 export {
     prefersReducedMotion,
@@ -265,4 +290,6 @@ export type {
     MotionResult,
     MotionState
 } from "./js/src/shared/motion.js";
+export { JUICE_CHANGE_EVENT } from "./js/src/shared/change.js";
+export type { JuiceChangeDetail } from "./js/src/shared/change.js";
 export { tokens } from "./tokens/index.js";

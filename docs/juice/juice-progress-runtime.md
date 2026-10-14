@@ -108,6 +108,8 @@ stopProgressRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real value or indeterminate change dispatches a bubbling `juice:change` from `[progress]`. `detail` is `{ runtime: "progress", state: { value: number, indeterminate: boolean } }`. `getValue()`, `isIndeterminate()`, and `getState()` read it. A write that leaves both fields unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createProgress()` can run alongside the automatic document runtime. This runtime claims no clicks or keys, so there is nothing to double-fire.
 
 `initProgress()` is the same function as `createProgress()`.
@@ -145,6 +147,7 @@ type ProgressController = {
     target?: HTMLElement | null
   ) => void;
   isIndeterminate: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => ProgressState | null;
 };
 ```
 

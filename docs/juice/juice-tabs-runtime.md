@@ -87,6 +87,8 @@ stopTabsRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real selection change dispatches a bubbling `juice:change` from `[tabs]`. `detail` is `{ runtime: "tabs", state: { selected: number } }`. `selected` is the 0-based trigger index, or `-1` when none are selected. `selected()` still returns the trigger element. `getState()` returns the index. A write that leaves the index unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createTabs()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-select with the singleton.
 
 ## TabsOptions
@@ -122,6 +124,8 @@ type TabsController = {
   destroy: () => void;
   sync: () => void;
   select: (trigger?: HTMLElement | null) => void;
+  selected: (target?: HTMLElement | null) => HTMLElement | null;
+  getState: (target?: HTMLElement | null) => TabsState | null;
 };
 ```
 

@@ -104,6 +104,8 @@ stopSpinnerRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real show or hide dispatches a bubbling `juice:change` from `[spinner]`. `detail` is `{ runtime: "spinner", state: { shown: boolean } }`. `isShown()` and `getState()` read it. A write that leaves `shown` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createSpinner()` can run alongside the automatic document runtime. This runtime claims no clicks or keys, so there is nothing to double-fire.
 
 `initSpinner()` is the same function as `createSpinner()`.
@@ -139,6 +141,7 @@ type SpinnerController = {
   show: (target?: HTMLElement | null) => void;
   hide: (target?: HTMLElement | null) => void;
   isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => SpinnerState | null;
 };
 ```
 
