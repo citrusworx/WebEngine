@@ -12,6 +12,8 @@ export type Recipe = {
   photo_url: string | null;
   author_id: string | null;
   cookbook_id: string | null;
+  category: string;
+  before_you_begin: string;
   created_at: string;
   updated_at: string;
 };
@@ -30,6 +32,8 @@ export type RecipeWrite = {
   photo_url: string | null;
   author_id: string | null;
   cookbook_id: string | null;
+  category: string;
+  before_you_begin: string;
 };
 
 export class RecipeInputError extends Error {
@@ -152,14 +156,40 @@ export type RecipeSeamDefaults = {
   author_id?: string | null;
   cookbook_id?: string | null;
   slug?: string | null;
+  category?: string | null;
+  before_you_begin?: string | null;
 };
+
+/** Starter shelves. The column is a slug, so a new shelf does not need a migration. */
+export const STARTER_CATEGORIES = ["salads", "entrees", "appetizers"] as const;
+
+const CATEGORY_RE = /^[a-z][a-z0-9-]{0,40}$/;
+const DEFAULT_CATEGORY = "entrees";
+
+function categorySlug(value: unknown, fallback: string): string {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+  if (typeof value !== "string") {
+    throw new RecipeInputError("category must be a string");
+  }
+  const category = value.trim().toLowerCase().replace(/\s+/g, "-");
+  if (!category) {
+    return fallback;
+  }
+  if (!CATEGORY_RE.test(category)) {
+    throw new RecipeInputError("category must be a short slug such as salads, entrees, or appetizers");
+  }
+  return category;
+}
 
 /**
  * Validate a create/update body.
  *
- * Omitted photo_url, author_id, and cookbook_id keep `defaults` so a later
- * photo or account value is not wiped by the week-1 form, which does not
- * send those fields. An explicit empty string clears the seam.
+ * Omitted photo_url, author_id, cookbook_id, category, and before_you_begin
+ * keep `defaults` so a partial write does not wipe a value the form forgot.
+ * An explicit empty string clears photo_url, author_id, and cookbook_id.
+ * An empty category falls back to entrees (or the saved category).
  */
 export function parseRecipeWrite(
   body: unknown,
@@ -182,6 +212,12 @@ export function parseRecipeWrite(
     photo_url: optionalNullable(payload.photo_url, "photo_url", defaults.photo_url ?? null),
     author_id: optionalNullable(payload.author_id, "author_id", defaults.author_id ?? null),
     cookbook_id: optionalNullable(payload.cookbook_id, "cookbook_id", defaults.cookbook_id ?? null),
+    category: categorySlug(payload.category, defaults.category || DEFAULT_CATEGORY),
+    before_you_begin: optionalText(
+      payload.before_you_begin,
+      "before_you_begin",
+      defaults.before_you_begin ?? "",
+    ),
   };
 }
 
@@ -224,6 +260,8 @@ export function recipeFromRow(row: Record<string, unknown>): Recipe {
     photo_url: typeof row.photo_url === "string" && row.photo_url ? row.photo_url : null,
     author_id: typeof row.author_id === "string" && row.author_id ? row.author_id : null,
     cookbook_id: typeof row.cookbook_id === "string" && row.cookbook_id ? row.cookbook_id : null,
+    category: typeof row.category === "string" && row.category ? row.category : DEFAULT_CATEGORY,
+    before_you_begin: typeof row.before_you_begin === "string" ? row.before_you_begin : "",
     created_at: recipeTimestamp(row.created_at),
     updated_at: recipeTimestamp(row.updated_at),
   };

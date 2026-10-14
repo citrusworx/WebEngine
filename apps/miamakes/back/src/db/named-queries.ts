@@ -19,6 +19,7 @@ export const namedSql = {
   listRecipes: compileNamed("recipe/recipeQueries.yml", "recipe", "read", "listRecipes"),
   byId: compileNamed("recipe/recipeQueries.yml", "recipe", "read", "byId"),
   bySlug: compileNamed("recipe/recipeQueries.yml", "recipe", "read", "bySlug"),
+  listByCategory: compileNamed("recipe/recipeQueries.yml", "recipe", "read", "listByCategory"),
   countRecipes: compileNamed("recipe/recipeQueries.yml", "recipe", "read", "countRecipes"),
   createRecipe: compileNamed("recipe/recipeQueries.yml", "recipe", "create", "createRecipe"),
   seedRecipe: compileNamed("recipe/recipeQueries.yml", "recipe", "create", "seedRecipe"),

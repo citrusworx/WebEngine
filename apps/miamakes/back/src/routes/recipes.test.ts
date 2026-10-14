@@ -80,6 +80,7 @@ describe("recipe routes", () => {
         "GET /api/recipes",
         "GET /api/recipes/slug/:slug",
         "GET /api/recipes/:id",
+        "GET /api/recipes/category/:category",
         "POST /api/recipes",
         "PUT /api/recipes/:id",
         "DELETE /api/recipes/:id",
@@ -98,12 +99,18 @@ describe("recipe routes", () => {
     const list = await request(`${base}/api/recipes`);
     expect(list.status).toBe(200);
     expect(Array.isArray(list.json)).toBe(true);
-    expect((list.json as { slug: string }[])[0]?.slug).toBe("lemon-rosemary-chicken");
+    const slugs = (list.json as { slug: string; category: string }[]).map((recipe) => recipe.slug);
+    expect(slugs[0]).toBe("herbed-bread-and-dip");
+    expect(new Set((list.json as { category: string }[]).map((recipe) => recipe.category))).toEqual(
+      new Set(["salads", "entrees", "appetizers"]),
+    );
 
     const detail = await request(`${base}/api/recipes/slug/garden-tomato-soup`);
     expect(detail.status).toBe(200);
     expect(detail.json).toMatchObject({
       name: "Garden Tomato Soup",
+      category: "appetizers",
+      before_you_begin: expect.stringContaining("Set the bowls"),
       ingredients: expect.arrayContaining(["2 pounds ripe tomatoes, chopped"]),
     });
 
@@ -133,6 +140,8 @@ describe("recipe routes", () => {
       ingredients: ["peaches", "biscuit dough"],
       steps: ["Slice the peaches.", "Bake until bubbling."],
       photo_url: null,
+      category: "entrees",
+      before_you_begin: "",
     });
 
     const createdId = (created.json as { id: string }).id;
@@ -168,7 +177,22 @@ describe("recipe routes", () => {
     expect(kept.json).toMatchObject({
       photo_url: "later/cobbler.jpg",
       description: "Photo stays put.",
+      category: "entrees",
+      before_you_begin: "",
     });
+
+    const salad = await json("POST", `${base}/api/recipes`, {
+      name: "Desk Salad",
+      category: "salads",
+      before_you_begin: "Dry the greens.",
+    });
+    expect(salad.json).toMatchObject({ category: "salads", before_you_begin: "Dry the greens." });
+
+    const shelf = await request(`${base}/api/recipes/category/salads`);
+    expect(shelf.status).toBe(200);
+    expect(shelf.json).toEqual(
+      expect.arrayContaining([expect.objectContaining({ slug: "desk-salad", category: "salads" })]),
+    );
 
     const removed = await request(`${base}/api/recipes/${createdId}`, { method: "DELETE" });
     expect(removed.status).toBe(200);

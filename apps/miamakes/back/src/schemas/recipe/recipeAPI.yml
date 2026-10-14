@@ -18,6 +18,12 @@ recipe:
         endpoint: /api/recipes/:id
         query: byId
 
+    listByCategory:
+      api:
+        method: GET
+        endpoint: /api/recipes/category/:category
+        query: listByCategory
+
   create:
     createRecipe:
       api:
@@ -37,6 +43,8 @@ recipe:
           photo_url: string
           author_id: string
           cookbook_id: string
+          category: string
+          before_you_begin: string
 
   update:
     updateRecipe:
@@ -57,6 +65,8 @@ recipe:
           photo_url: string
           author_id: string
           cookbook_id: string
+          category: string
+          before_you_begin: string
 
   delete:
     deleteRecipe:

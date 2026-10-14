@@ -1,19 +1,36 @@
 import { Signal } from "@citrusworx/sigjs";
-import { router } from "../router";
 import { deleteRecipe, getRecipeBySlug, type Recipe } from "../api/recipes";
-import { formatMinutes } from "../format";
+import { Banner } from "../components/Banner";
+import { categorySurface } from "../categories";
+import { takeFocus } from "../focus";
 import { Render } from "../render";
+import { router } from "../router";
 
 export function RecipeDetail(props: { slug: string }) {
   const recipe = Signal<Recipe | null>(null);
   const error = Signal("");
   const pending = Signal(false);
+  let didFocus = false;
 
   void getRecipeBySlug(props.slug)
     .then((row) => recipe.set(row))
     .catch((reason: unknown) => {
       error.set(reason instanceof Error ? reason.message : "That recipe isn't on the shelf.");
     });
+
+  function maybeFocus() {
+    if (didFocus) {
+      return;
+    }
+    const target = takeFocus();
+    didFocus = true;
+    if (!target) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      document.getElementById(target)?.scrollIntoView({ block: "start" });
+    });
+  }
 
   async function remove(current: Recipe) {
     if (!window.confirm(`Take “${current.name}” off the shelf?`)) {
@@ -30,92 +47,116 @@ export function RecipeDetail(props: { slug: string }) {
   }
 
   return (
-    <main>
-      <section paddingY="roomy">
-        <div container>
-          <Render>
-            {() => {
-              const message = error.get();
-              const current = recipe.get();
-              if (!current && message) {
-                return (
-                  <div stack gap="cozy">
-                    <h1>Recipe not found</h1>
-                    <p>{message}</p>
-                    <a href="/recipes">Back to the recipes</a>
-                  </div>
-                );
-              }
-              if (!current) {
-                return <p subtle>Setting a place at the table…</p>;
-              }
+    <main class="mm-detail">
+      <Render>
+        {() => {
+          const message = error.get();
+          const current = recipe.get();
+          if (!current && message) {
+            return (
+              <div class="mm-sheet" stack gap="cozy">
+                <h1 font="playfair-display">Recipe not found</h1>
+                <p font="poppins">{message}</p>
+                <a href="/">Back home</a>
+              </div>
+            );
+          }
+          if (!current) {
+            return (
+              <p class="mm-sheet" font="poppins">
+                Setting a place at the table…
+              </p>
+            );
+          }
 
-              return (
-                <article stack gap="cozy">
-                  <header stack gap="snug">
-                    <p subtle>{current.author || "Mia"}</p>
-                    <h1>{current.name}</h1>
-                    <p>{current.description}</p>
-                    {current.nutrition ? <p subtle>{current.nutrition}</p> : null}
-                    <p>
-                      Prep {formatMinutes(current.prep_minutes)} · Cook {formatMinutes(current.cook_minutes)}
-                    </p>
-                  </header>
+          maybeFocus();
 
-                  {current.photo_url ? (
-                    <img src={current.photo_url} alt="" />
-                  ) : null}
+          return (
+            <article>
+              <Banner
+                title={current.name}
+                surface={categorySurface(current.category)}
+                photoUrl={current.photo_url}
+                heading="h1"
+              />
 
-                  <section stack gap="snug">
-                    <h2>Ingredients</h2>
-                    {current.ingredients.length === 0 ? (
-                      <p subtle>No ingredients written down.</p>
-                    ) : (
-                      <ul>
-                        {current.ingredients.map((item) => (
-                          <li>{item}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </section>
+              <div id="ingredients">
+                <div surface="mm-section" class="mm-section-bar">
+                  <h2 font="playfair-display" fontColor="white-100" fontSize="lg">
+                    What You Will Need
+                  </h2>
+                  <button
+                    type="button"
+                    surface="mm-green"
+                    scale="sm"
+                    onclick={() => {
+                      document.getElementById("steps")?.scrollIntoView({ block: "start" });
+                    }}
+                  >
+                    Go To Steps
+                  </button>
+                </div>
+                {current.ingredients.length === 0 ? (
+                  <p class="mm-notes" font="poppins">
+                    No ingredients written down.
+                  </p>
+                ) : (
+                  <ul class="mm-ingredients">
+                    {current.ingredients.map((item) => (
+                      <li font="poppins">{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
-                  <section stack gap="snug">
-                    <h2>Steps</h2>
-                    {current.steps.length === 0 ? (
-                      <p subtle>No steps yet.</p>
-                    ) : (
-                      <ol>
-                        {current.steps.map((item) => (
-                          <li>{item}</li>
-                        ))}
-                      </ol>
-                    )}
-                  </section>
+              <div id="before">
+                <div surface="mm-section" class="mm-section-bar">
+                  <h2 font="playfair-display" fontColor="white-100" fontSize="lg">
+                    Before You Begin
+                  </h2>
+                </div>
+                <p class="mm-notes" font="poppins">
+                  {current.before_you_begin || "No notes for this one yet."}
+                </p>
+              </div>
 
-                  {message ? <p>{message}</p> : null}
+              <div id="steps">
+                <div surface="mm-section" class="mm-section-bar">
+                  <h2 font="playfair-display" fontColor="white-100" fontSize="lg">
+                    Steps
+                  </h2>
+                </div>
+                {current.steps.length === 0 ? (
+                  <p class="mm-notes" font="poppins">
+                    No steps yet.
+                  </p>
+                ) : (
+                  <ol class="mm-steps">
+                    {current.steps.map((item) => (
+                      <li font="poppins">{item}</li>
+                    ))}
+                  </ol>
+                )}
+              </div>
 
-                  <div row gap="cozy">
-                    <a href={`/recipes/${current.slug}/edit`}>
-                      <button type="button">Edit</button>
-                    </a>
-                    <button
-                      type="button"
-                      btn="outline"
-                      disabled={() => (pending.get() ? true : undefined)}
-                      onclick={() => {
-                        void remove(current);
-                      }}
-                    >
-                      {() => (pending.get() ? "Taking it off…" : "Delete")}
-                    </button>
-                    <a href="/recipes">All recipes</a>
-                  </div>
-                </article>
-              );
-            }}
-          </Render>
-        </div>
-      </section>
+              {message ? <p class="mm-sheet">{message}</p> : null}
+
+              <div class="mm-manage">
+                <a href={`/recipes/${current.slug}/edit`}>Edit</a>
+                <button
+                  type="button"
+                  disabled={() => (pending.get() ? true : undefined)}
+                  onclick={() => {
+                    void remove(current);
+                  }}
+                >
+                  {() => (pending.get() ? "Taking it off…" : "Delete")}
+                </button>
+              </div>
+            </article>
+          );
+        }}
+      </Render>
     </main>
   );
 }

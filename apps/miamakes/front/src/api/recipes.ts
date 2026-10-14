@@ -12,6 +12,8 @@ export type Recipe = {
   photo_url: string | null;
   author_id: string | null;
   cookbook_id: string | null;
+  category: string;
+  before_you_begin: string;
   created_at: string;
   updated_at: string;
 };
@@ -26,6 +28,8 @@ export type RecipeInput = {
   ingredients: string[];
   steps: string[];
   slug?: string;
+  category?: string;
+  before_you_begin?: string;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
@@ -56,6 +60,10 @@ function jsonInit(method: string, body: unknown): RequestInit {
 
 export function listRecipes(): Promise<Recipe[]> {
   return request<Recipe[]>("/api/recipes");
+}
+
+export function listRecipesByCategory(category: string): Promise<Recipe[]> {
+  return request<Recipe[]>(`/api/recipes/category/${encodeURIComponent(category)}`);
 }
 
 export function getRecipeBySlug(slug: string): Promise<Recipe> {

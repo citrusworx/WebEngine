@@ -20,11 +20,18 @@ Recipe:
     photo_url: string
     author_id: string
     cookbook_id: string
+    # Short slug, not a closed enum. salads, entrees, and appetizers are the
+    # starter set. A new category is a value, not a schema change. Existing
+    # databases pick this up as ADD COLUMN IF NOT EXISTS when migrations run.
+    category: string NOT NULL DEFAULT 'entrees'
+    before_you_begin: text NOT NULL DEFAULT ''
     created_at: timestamp NOT NULL DEFAULT NOW()
     updated_at: timestamp NOT NULL DEFAULT NOW()
   indexes:
     recipes_created_at_idx:
       columns: [created_at]
+    recipes_category_idx:
+      columns: [category]
   relationships:
     author: User
     cookbook: Cookbook

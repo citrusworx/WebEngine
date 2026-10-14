@@ -18,6 +18,13 @@ recipe:
       fields: '*'
       where: slug = $1
 
+    listByCategory:
+      type: SELECT
+      table: recipes
+      fields: '*'
+      where: category = $1
+      orderBy: created_at DESC
+
     countRecipes:
       type: SELECT
       table: recipes
@@ -29,7 +36,7 @@ recipe:
     createRecipe:
       type: INSERT
       table: recipes
-      fields: [id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id]
+      fields: [id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id, category, before_you_begin]
       values:
         - $1
         - $2
@@ -44,13 +51,15 @@ recipe:
         - $11
         - $12
         - $13
+        - $14
+        - $15
       returning: '*'
 
     # Boot seed. Same columns as createRecipe. Skip when the id already exists.
     seedRecipe:
       type: INSERT
       table: recipes
-      fields: [id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id]
+      fields: [id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id, category, before_you_begin]
       values:
         - $1
         - $2
@@ -65,18 +74,20 @@ recipe:
         - $11
         - $12
         - $13
+        - $14
+        - $15
       onConflict:
         target: id
         do: nothing
 
   update:
-    # Host binds $1–$12 from the body and $13 from the path id.
+    # Host binds $1–$14 from the body and $15 from the path id.
     # Nectarine's UPDATE compiler does not emit RETURNING, so the route
     # reads the row back with byId after this statement.
     updateRecipe:
       type: UPDATE
       table: recipes
-      fields: [slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id, updated_at]
+      fields: [slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id, category, before_you_begin, updated_at]
       values:
         - $1
         - $2
@@ -90,8 +101,10 @@ recipe:
         - $10
         - $11
         - $12
+        - $13
+        - $14
         - { fn: now }
-      where: id = $13
+      where: id = $15
 
   delete:
     deleteRecipe:

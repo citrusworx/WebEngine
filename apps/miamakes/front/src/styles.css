@@ -1,18 +1,276 @@
-[theme="retro-orchard-club"] {
-  --orc-heading-font: "Fraunces", Georgia, serif;
+/*
+  Product chrome Juice's theme generator does not own: fixed bars, photo
+  overlays, a button row that must stay horizontal on a phone, and a
+  two-column ingredient list. Color, type, and surfaces live in the
+  generated MiaMakes theme.
+*/
+
+.mm-app {
+  min-height: 100vh;
+  background: #fff;
 }
 
-.mm-nav a {
-  text-decoration: none;
-}
-
-.mm-card-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.mm-preview {
+.mm-topbar {
   position: sticky;
-  top: 1.5rem;
-  align-self: start;
+  top: 0;
+  z-index: 20;
+  height: 56px;
+}
+
+.mm-welcome {
+  position: sticky;
+  top: 56px;
+  z-index: 20;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.mm-welcome p {
+  margin: 0;
+}
+
+.mm-page {
+  padding-bottom: 96px;
+}
+
+.mm-detail {
+  padding-bottom: calc(100vh - 86px);
+}
+
+.mm-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  backdrop-filter: none;
+}
+
+.mm-tabbar a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  color: #fff;
+}
+
+.mm-banner-link {
+  display: block;
+  text-decoration: none;
+}
+
+.mm-banner {
+  position: relative;
+  display: block;
+  height: 240px;
+  min-height: 240px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.mm-banner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mm-banner h1,
+.mm-banner h2 {
+  position: absolute;
+  left: 18px;
+  bottom: 14px;
+  z-index: 1;
+  margin: 0;
+  font-weight: 500;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.mm-sheet {
+  padding: 16px 14px 28px;
+}
+
+.mm-recipe-card {
+  border-radius: 10px;
+  padding: 16px 16px 18px;
+  width: auto;
+  margin: 0;
+}
+
+.mm-recipe-card h2 {
+  margin: 0 0 10px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mm-recipe-card p {
+  margin: 0 0 16px;
+}
+
+.mm-card-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.mm-card-actions-split {
+  justify-content: space-between;
+}
+
+[theme="miamakes"] button {
+  border-radius: 8px;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+#ingredients,
+#before,
+#steps {
+  scroll-margin-top: 86px;
+}
+
+.mm-section-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 10px 14px;
+}
+
+.mm-section-bar h2 {
+  margin: 0;
+  font-weight: 500;
+}
+
+.mm-ingredients {
+  columns: 2;
+  column-gap: 1.5rem;
+  margin: 0;
+  padding: 16px 18px 8px;
+}
+
+.mm-ingredients li {
+  break-inside: avoid;
+  margin: 0 0 12px;
+}
+
+.mm-notes {
+  margin: 0;
+  padding: 22px 28px 26px;
+  text-align: center;
+}
+
+.mm-steps {
+  margin: 0;
+  padding: 16px 22px 12px 28px;
+}
+
+.mm-steps li {
+  margin: 0 0 14px;
+}
+
+.mm-manage {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 18px 28px;
+}
+
+.mm-manage button {
+  background: transparent;
+  color: #5b3d83;
+  border: 1px solid #5b3d83;
+}
+
+.mm-login,
+.mm-stub,
+.mm-form {
+  padding: 36px 22px 48px;
+}
+
+.mm-login h1,
+.mm-stub h1 {
+  margin: 8px 0 36px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.mm-login label {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 1.65rem;
+}
+
+.mm-login input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 52px;
+  border-radius: 14px;
+  padding: 0 16px;
+}
+
+.mm-forgot {
+  margin: 4px 0 22px;
+}
+
+.mm-login-submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.mm-login-submit button {
+  min-width: 148px;
+  min-height: 48px;
+  border-radius: 12px;
+}
+
+.mm-stub p {
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .mm-home-banners {
+    max-width: 1200px;
+    margin: 16px auto;
+  }
+
+  .mm-banner {
+    height: 320px;
+    min-height: 320px;
+  }
+
+  .mm-sheet,
+  .mm-detail,
+  .mm-login,
+  .mm-stub,
+  .mm-form {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .mm-sheet {
+    padding-top: 28px;
+  }
+
+  .mm-tabbar {
+    justify-content: center;
+    gap: 72px;
+  }
 }

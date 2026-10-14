@@ -1,10 +1,5 @@
-import { SiteNav } from "./components/SiteNav";
+import { Chrome } from "./components/Chrome";
 
 export function App() {
-  return (
-    <div theme="retro-orchard-club">
-      <SiteNav />
-      <div id="page-content"></div>
-    </div>
-  );
+  return <Chrome />;
 }

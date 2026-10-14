@@ -7,6 +7,8 @@ export type PreviewDraft = {
   author: Sig<string>;
   description: Sig<string>;
   nutrition: Sig<string>;
+  category: Sig<string>;
+  beforeYouBegin: Sig<string>;
   prep: Sig<string>;
   cook: Sig<string>;
   ingredients: () => string[];
@@ -44,9 +46,11 @@ export function RecipePreview(props: PreviewDraft) {
         <p subtle>Live preview</p>
         <h2>{() => props.name.get().trim() || "Your recipe"}</h2>
         <p>{() => props.author.get().trim() || "Mia"}</p>
+        <p subtle>{() => props.category.get().trim() || "entrees"}</p>
       </div>
       <div body stack gap="cozy">
         <p>{() => props.description.get().trim() || "A short note about the dish will land here."}</p>
+        <p>{() => props.beforeYouBegin.get().trim() || "Before-you-begin notes show up here."}</p>
         <p subtle>{() => props.nutrition.get().trim() || "Nutrition notes are optional."}</p>
         <p>
           {() => formatPair(Number(props.prep.get()) || 0, Number(props.cook.get()) || 0)}

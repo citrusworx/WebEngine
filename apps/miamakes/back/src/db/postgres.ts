@@ -99,6 +99,8 @@ function writeParams(id: string, recipe: RecipeWrite): unknown[] {
     recipe.photo_url,
     recipe.author_id,
     recipe.cookbook_id,
+    recipe.category,
+    recipe.before_you_begin,
   ];
 }
 
@@ -116,6 +118,8 @@ function updateParams(id: string, recipe: RecipeWrite): unknown[] {
     recipe.photo_url,
     recipe.author_id,
     recipe.cookbook_id,
+    recipe.category,
+    recipe.before_you_begin,
     id,
   ];
 }
@@ -133,6 +137,11 @@ export async function loadRecipeByIdFromDb(id: string): Promise<Recipe | null> {
   const result = await runNamed<Record<string, unknown>>("byId", [id]);
   const row = result?.rows[0];
   return row ? recipeFromRow(row) : null;
+}
+
+export async function loadRecipesByCategoryFromDb(category: string): Promise<Recipe[]> {
+  const result = await runNamed<Record<string, unknown>>("listByCategory", [category]);
+  return (result?.rows ?? []).map((row) => recipeFromRow(row));
 }
 
 export async function loadRecipeBySlugFromDb(slug: string): Promise<Recipe | null> {

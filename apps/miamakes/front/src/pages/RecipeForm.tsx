@@ -1,6 +1,7 @@
 import { Signal } from "@citrusworx/sigjs";
 import type { Sig } from "../signal";
 import { createRecipe, getRecipeBySlug, updateRecipe, type Recipe } from "../api/recipes";
+import { CATEGORIES } from "../categories";
 import { RecipePreview } from "../components/RecipePreview";
 import { router } from "../router";
 import { Render } from "../render";
@@ -92,6 +93,8 @@ export function RecipeForm(props: { slug?: string }) {
   const author = Signal("Mia");
   const description = Signal("");
   const nutrition = Signal("");
+  const category = Signal("entrees");
+  const beforeYouBegin = Signal("");
   const prepMinutes = Signal("0");
   const cookMinutes = Signal("0");
   const status = Signal(editing ? "Bringing the recipe in from the kitchen…" : "");
@@ -108,6 +111,8 @@ export function RecipeForm(props: { slug?: string }) {
   let authorInput: HTMLInputElement | null = null;
   let descriptionInput: HTMLTextAreaElement | null = null;
   let nutritionInput: HTMLTextAreaElement | null = null;
+  let categoryInput: HTMLInputElement | null = null;
+  let beforeInput: HTMLTextAreaElement | null = null;
   let prepInput: HTMLInputElement | null = null;
   let cookInput: HTMLInputElement | null = null;
   let prepUnit: HTMLSelectElement | null = null;
@@ -123,6 +128,8 @@ export function RecipeForm(props: { slug?: string }) {
     author.set(recipe.author || "Mia");
     description.set(recipe.description);
     nutrition.set(recipe.nutrition);
+    category.set(recipe.category || "entrees");
+    beforeYouBegin.set(recipe.before_you_begin || "");
     const prep = fromMinutes(recipe.prep_minutes);
     const cook = fromMinutes(recipe.cook_minutes);
     prepMinutes.set(String(recipe.prep_minutes));
@@ -133,6 +140,8 @@ export function RecipeForm(props: { slug?: string }) {
     if (authorInput) authorInput.value = recipe.author || "Mia";
     if (descriptionInput) descriptionInput.value = recipe.description;
     if (nutritionInput) nutritionInput.value = recipe.nutrition;
+    if (categoryInput) categoryInput.value = recipe.category || "entrees";
+    if (beforeInput) beforeInput.value = recipe.before_you_begin || "";
     if (prepInput) prepInput.value = prep.amount;
     if (cookInput) cookInput.value = cook.amount;
     if (prepUnit) prepUnit.value = prep.unit;
@@ -174,6 +183,8 @@ export function RecipeForm(props: { slug?: string }) {
       author: authorInput?.value ?? author.get(),
       description: descriptionInput?.value ?? description.get(),
       nutrition: nutritionInput?.value ?? nutrition.get(),
+      category: categoryInput?.value ?? category.get(),
+      before_you_begin: beforeInput?.value ?? beforeYouBegin.get(),
       prep_minutes: prep,
       cook_minutes: cook,
       ingredients: ingredients.map((item) => item.trim()).filter(Boolean),
@@ -192,9 +203,9 @@ export function RecipeForm(props: { slug?: string }) {
   }
 
   return (
-    <main>
+    <main class="mm-form">
       <section paddingY="roomy">
-        <div container stack gap="cozy">
+        <div stack gap="cozy">
           <div section-header>
             <h1>{editing ? "Edit recipe" : "Add a recipe"}</h1>
             <p>Basic notes, times, ingredients, and steps. The card on the right updates as you type.</p>
@@ -254,6 +265,44 @@ export function RecipeForm(props: { slug?: string }) {
                         }}
                         oninput={(event: Event) => {
                           description.set((event.currentTarget as HTMLTextAreaElement).value);
+                        }}
+                      />
+                    </label>
+                    <label>
+                      Category
+                      <input
+                        type="text"
+                        list="recipe-categories"
+                        placeholder="salads"
+                        ref={(node: HTMLInputElement) => {
+                          categoryInput = node;
+                          node.value = category.get();
+                        }}
+                        oninput={(event: Event) => {
+                          category.set((event.currentTarget as HTMLInputElement).value);
+                        }}
+                      />
+                      <datalist id="recipe-categories">
+                        {CATEGORIES.map((shelf) => (
+                          <option value={shelf.id}>{shelf.label}</option>
+                        ))}
+                      </datalist>
+                    </label>
+                    <p subtle>
+                      Salads, entrees, and appetizers are the starter shelves. A new short name is
+                      stored as-is. It does not need a schema change.
+                    </p>
+                    <label>
+                      Before you begin
+                      <textarea
+                        rows={3}
+                        placeholder="What should be true before the first step?"
+                        ref={(node: HTMLTextAreaElement) => {
+                          beforeInput = node;
+                          node.value = beforeYouBegin.get();
+                        }}
+                        oninput={(event: Event) => {
+                          beforeYouBegin.set((event.currentTarget as HTMLTextAreaElement).value);
                         }}
                       />
                     </label>
@@ -377,6 +426,8 @@ export function RecipeForm(props: { slug?: string }) {
                 author={author}
                 description={description}
                 nutrition={nutrition}
+                category={category}
+                beforeYouBegin={beforeYouBegin}
                 prep={prepMinutes}
                 cook={cookMinutes}
                 ingredients={() => ingredients}

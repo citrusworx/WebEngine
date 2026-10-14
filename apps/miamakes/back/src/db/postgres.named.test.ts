@@ -64,6 +64,8 @@ describe("recipe JSONB binds", () => {
             photo_url: null,
             author_id: null,
             cookbook_id: null,
+            category: "entrees",
+            before_you_begin: "",
             created_at: "2026-10-14T00:00:00.000Z",
             updated_at: "2026-10-14T00:00:00.000Z",
           },
@@ -85,6 +87,8 @@ describe("recipe JSONB binds", () => {
       photo_url: null,
       author_id: null,
       cookbook_id: null,
+      category: "entrees",
+      before_you_begin: "",
     });
 
     expect(recipe.ingredients).toEqual(["peaches"]);
@@ -105,6 +109,8 @@ describe("recipe JSONB binds", () => {
           null,
           null,
           null,
+          "entrees",
+          "",
         ],
       },
     ]);
@@ -131,6 +137,8 @@ describe("recipe JSONB binds", () => {
         photo_url: null,
         author_id: null,
         cookbook_id: null,
+        category: "entrees",
+        before_you_begin: "",
         created_at: "2026-10-01T00:00:00.000Z",
         updated_at: "2026-10-01T00:00:00.000Z",
       },

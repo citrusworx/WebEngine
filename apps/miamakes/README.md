@@ -67,6 +67,8 @@ yarn workspace @citrusworx/miamakes-back migrate
 
 Later renames, drops, and type changes go in `back/src/db/migrations/*.yml` as Nectarine migration documents. The initial table is the schema file, not a hand-written SQL script. `ingredients` and `steps` are protected JSONB columns.
 
+`category` and `before_you_begin` live on that schema. `category` is a short slug (`salads`, `entrees`, `appetizers`, and any later shelf), not a closed enum, so a new shelf does not need a migration. On an existing database, Nectarine's migrate runner adds the columns with `ADD COLUMN IF NOT EXISTS` from the schema. Versioned migration files stay for rename, drop, and type change. There is still no SQL in the app.
+
 ## Recipe API
 
 | Method | Path | Named query |
@@ -74,11 +76,12 @@ Later renames, drops, and type changes go in `back/src/db/migrations/*.yml` as N
 | GET | `/api/recipes` | `listRecipes` |
 | GET | `/api/recipes/slug/:slug` | `bySlug` |
 | GET | `/api/recipes/:id` | `byId` |
+| GET | `/api/recipes/category/:category` | `listByCategory` |
 | POST | `/api/recipes` | `createRecipe` |
 | PUT | `/api/recipes/:id` | `updateRecipe` |
 | DELETE | `/api/recipes/:id` | `deleteRecipe` |
 
-`name` is required. Ingredients and steps are JSON arrays of strings, stored as JSONB. Times are whole minutes. `photo_url`, `author_id`, and `cookbook_id` are optional seams. If a PUT omits them, the saved values stay.
+`name` is required. Ingredients and steps are JSON arrays of strings, stored as JSONB. Times are whole minutes. `category` defaults to `entrees` when a write omits it. `before_you_begin` is the note above the steps. `photo_url`, `author_id`, and `cookbook_id` are optional seams. If a PUT omits them, the saved values stay.
 
 ## Checks
 
@@ -92,7 +95,7 @@ yarn workspace @citrusworx/miamakes typecheck
 
 - `author_id` — accounts, still no auth and no password storage
 - `photo_url` — uploads, not a file pipeline
-- `cookbook_id` — cookbooks and categories, no foreign key until that table exists
+- `cookbook_id` — cookbooks, no foreign key until that table exists. Recipe shelves use `category`, which is already a column.
 - Decorative things (gardening, crafts) — named in the home hero, not a resource yet
 - Posts — hinted by the old prototype, not modeled yet
 

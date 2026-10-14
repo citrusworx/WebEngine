@@ -1,0 +1,148 @@
+id: miamakes
+name: MiaMakes
+selector: theme="miamakes"
+version: 1
+summary: Coral, purple, and green kitchen theme. Playfair Display headings, Poppins body.
+philosophy:
+  role: Identity for Mia's recipe kitchen, matching the mobile mockups.
+  owns:
+    - typography tone
+    - coral, purple, and green color relationships
+    - named surfaces for bars, cards, banners, and buttons
+  does_not_own:
+    - layout
+    - spacing
+    - row and stack behavior
+    - responsive breakpoints
+typography:
+  body:
+    family: '"Poppins"'
+    fallback: sans-serif
+    tone: readable recipe copy
+  heading:
+    family: '"Playfair Display"'
+    fallback: Georgia, serif
+    tone: banner and card titles
+palette:
+  page:
+    background: '#ffffff'
+    tint: '#ffffff'
+    deep: '#5b3d83'
+  text:
+    default: '#2b2b2b'
+    muted: '#4a4a4a'
+    soft: '#6b6b6b'
+    heading: '#1c1c1c'
+    inverse: '#ffffff'
+  accents:
+    primary: '#e15e5e'
+    primaryStrong: '#d34444'
+    secondary: '#5b3d83'
+    secondaryStrong: '#4a3270'
+    soft: '#efe8f6'
+    tint: '#ffffff'
+    warm: '#8de291'
+    warmSoft: '#e5f8e6'
+    warmTint: '#f4fdf4'
+  surfaces:
+    default: '#ffffff'
+    muted: '#f7f7f7'
+    strong: '#ffffff'
+    deep: '#5b3d83'
+    border: '#e4e4e4'
+    borderStrong: '#d0d0d0'
+    hero: '#2a211c'
+    cta: '#e15e5e'
+    panel: '#ffffff'
+    shadow: none
+    shadowStrong: none
+named_surfaces:
+  - name: mm-topbar
+    purpose: Deep coral strip across the top of every screen.
+    background: '#d34444'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-tabbar
+    purpose: Coral bottom navigation for home, profile, mail, and settings.
+    background: '#e15e5e'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-welcome
+    purpose: Purple strip under the coral bar. Home puts the welcome line here.
+    background: '#5b3d83'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-section
+    purpose: Purple section bar on a recipe, for ingredients, notes, and steps.
+    background: '#5b3d83'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-card
+    purpose: White recipe card with a hairline border.
+    background: '#ffffff'
+    color: '#1c1c1c'
+    border: '#e6e6e6'
+    shadow: none
+  - name: mm-coral
+    purpose: Coral Read Recipe button.
+    background: '#e15e5e'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-purple
+    purpose: Purple Get Ingreds and Login button.
+    background: '#5b3d83'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-green
+    purpose: Green Go To Steps jump button.
+    background: '#8de291'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-field
+    purpose: Soft gray login field.
+    background: '#f2f2f2'
+    color: '#1c1c1c'
+    border: transparent
+    shadow: none
+  - name: mm-photo-salads
+    purpose: Gradient stand-in for a salad photo. Not a hotlinked image.
+    background: >-
+      radial-gradient(circle at 22% 38%, #f4f7ef 0 8%, transparent 9%), radial-gradient(circle at 70% 42%, #e23b3b 0 7%,
+      transparent 8%), radial-gradient(circle at 48% 62%, #7dcea0 0 18%, transparent 19%), linear-gradient(165deg,
+      #214c32 0%, #6ea34a 46%, #e7b15a 78%, #c4553a 100%)
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-photo-entrees
+    purpose: Gradient stand-in for an entree photo. Not a hotlinked image.
+    background: >-
+      radial-gradient(circle at 30% 70%, #c9842a 0 22%, transparent 23%), radial-gradient(circle at 72% 40%, #f0d48a 0
+      16%, transparent 17%), linear-gradient(165deg, #241c18 0%, #6b3a24 42%, #d7a04a 74%, #f3e6cf 100%)
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-photo-appetizers
+    purpose: Gradient stand-in for an appetizer photo. Not a hotlinked image.
+    background: >-
+      radial-gradient(circle at 28% 36%, #8fbf4a 0 14%, transparent 15%), radial-gradient(circle at 74% 58%, #e7d3a1 0
+      18%, transparent 19%), linear-gradient(165deg, #0e4c56 0%, #1f7a62 48%, #d6a15a 82%, #f4efe4 100%)
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+  - name: mm-photo-extra
+    purpose: Neutral gradient for a category that does not have its own banner yet.
+    background: 'linear-gradient(165deg, #5b3d83 0%, #e15e5e 100%)'
+    color: '#ffffff'
+    border: transparent
+    shadow: none
+authoring_rules:
+  - Put coral, purple, and green in this theme, not in one-off color rules.
+  - Headings use Playfair Display. Body copy uses Poppins.
+  - Layout stays on Juice stack, row, grid, and gap. App CSS is only for the phone chrome the theme cannot express.
