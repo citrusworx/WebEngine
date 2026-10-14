@@ -1023,6 +1023,30 @@ describe("Juice theme generator surface tone roles", () => {
         }
     });
 
+    it("passes motion roles through at the core default pace", () => {
+        const css = buildThemeStylesheet(fixture, "test.yaml");
+
+        expect(css).toContain("--jx-motion-duration-instant: 0.15s");
+        expect(css).toContain("--jx-motion-duration-fast: 0.2s");
+        expect(css).toContain("--jx-motion-duration-base: 0.3s");
+        expect(css).toContain("--jx-motion-duration-slow: 1s");
+        expect(css).toContain("--jx-motion-ease-standard: ease");
+        expect(css).toContain("--jx-motion-ease-enter: ease-out");
+        expect(css).toContain("--jx-motion-ease-exit: ease-in");
+        expect(css).toContain("--jx-motion-ease-linear: linear");
+
+        for (const role of ["instant", "fast", "base", "slow"]) {
+            expect(css).toContain(`--juice-motion-duration-${role}: var(--jx-motion-duration-${role})`);
+        }
+
+        for (const role of ["standard", "enter", "exit", "linear"]) {
+            expect(css).toContain(`--juice-motion-ease-${role}: var(--jx-motion-ease-${role})`);
+        }
+
+        expect(css).toContain("transition: color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard)");
+        expect(css).not.toContain("transition: color 0.2s ease");
+    });
+
     it("binds --juice-overlay-* from existing --jx-* tokens", () => {
         const css = buildThemeStylesheet(fixture, "test.yaml");
 

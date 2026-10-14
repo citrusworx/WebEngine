@@ -1,6 +1,6 @@
 [motion="flicker"] {
     opacity: 1;
-    animation: flicker 2s infinite;
+    animation: flicker calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-standard) infinite;
 }
 
 @keyframes flicker {

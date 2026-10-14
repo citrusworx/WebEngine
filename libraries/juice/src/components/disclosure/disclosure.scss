@@ -104,7 +104,7 @@ a[disclosure-trigger],
     text-align: left;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [disclosure-trigger][aria-expanded="true"],
@@ -130,7 +130,7 @@ a[disclosure-trigger][aria-expanded="true"],
     border-width: 0 2px 2px 0;
     transform: rotate(-45deg);
     transform-origin: 50% 50%;
-    transition: transform 0.2s ease;
+    transition: transform var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [disclosure-trigger][aria-expanded="true"]::after,

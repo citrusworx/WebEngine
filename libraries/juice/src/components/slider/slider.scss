@@ -115,7 +115,7 @@ $_juice-slider-position: calc(#{$_juice-slider-thumb-size} * 0.5 + (100% - #{$_j
     background-image: none;
     transform: translateY(-50%);
     pointer-events: none;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [slider-fill],
@@ -133,7 +133,7 @@ $_juice-slider-position: calc(#{$_juice-slider-thumb-size} * 0.5 + (100% - #{$_j
     background-image: none;
     transform: translateY(-50%);
     pointer-events: none;
-    transition: width 0.15s ease, background-color 0.15s ease;
+    transition: width var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [slider-thumb],
@@ -162,7 +162,7 @@ button[slider-thumb],
     background-image: none;
     box-shadow: $_juice-slider-thumb-shadow;
     transform: translate(-50%, -50%);
-    transition: left 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    transition: left var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), box-shadow var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [slider-thumb]:hover,

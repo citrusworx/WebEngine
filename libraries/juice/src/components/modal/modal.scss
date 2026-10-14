@@ -1,6 +1,7 @@
 @use '../../tokens/color/black/black.scss' as *;
 @use '../../tokens/color/gray/gray.scss' as *;
 @use '../../tokens/color/white/white.scss' as *;
+@use '../../styles/animations/motion' as motion;
 
 // Modal chrome is structural. Color comes from the shared role contract:
 //   --juice-modal-overlay
@@ -114,7 +115,7 @@ $_juice-modal-close-hover: -juice-modal-role(close-hover, #{$gray-100});
     color: $_juice-modal-close-color;
     box-shadow: none;
     transform: none;
-    transition: background-color 0.2s, color 0.2s;
+    @include motion.overlay-close-transition;
 }
 
 [modal-close]:hover,

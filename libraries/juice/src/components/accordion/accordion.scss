@@ -89,7 +89,7 @@ $_juice-accordion-open-glow: -juice-accordion-role(open-glow, 0 0 0 transparent)
     border-width: 0 var(--juice-accordion-chevron-weight, 2px) var(--juice-accordion-chevron-weight, 2px) 0;
     transform: rotate(-45deg);
     transform-origin: 50% 50%;
-    transition: transform 0.2s ease;
+    transition: transform var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [accordion-item][aria-expanded="true"]::after {

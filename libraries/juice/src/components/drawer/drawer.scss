@@ -1,6 +1,7 @@
 @use '../../tokens/color/black/black.scss' as *;
 @use '../../tokens/color/gray/gray.scss' as *;
 @use '../../tokens/color/white/white.scss' as *;
+@use '../../styles/animations/motion' as motion;
 
 // Drawer chrome is structural. Color comes from the shared role contract:
 //   --juice-drawer-overlay
@@ -121,7 +122,7 @@ $_juice-drawer-close-hover: -juice-drawer-role(close-hover, #{$gray-100});
     color: $_juice-drawer-close-color;
     box-shadow: none;
     transform: none;
-    transition: background-color 0.2s, color 0.2s;
+    @include motion.overlay-close-transition;
 }
 
 [drawer-close]:hover,

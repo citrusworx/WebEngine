@@ -1,4 +1,4 @@
 [motion="accordion"] {
-    transition: height 0.3s ease-in-out;
+    transition: height var(--juice-motion-duration-base) var(--juice-motion-ease-in-out);
     overflow: hidden;
 }

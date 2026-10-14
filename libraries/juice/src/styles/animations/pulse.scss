@@ -1,5 +1,5 @@
 [motion="pulse"] {
-    animation: 5s infinite pulse;
+    animation: pulse calc(var(--juice-motion-duration-slow) * 5) var(--juice-motion-ease-standard) infinite;
 }
 
 @keyframes pulse {

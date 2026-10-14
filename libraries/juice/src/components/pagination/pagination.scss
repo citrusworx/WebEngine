@@ -169,7 +169,7 @@ button[pagination-link],
     line-height: inherit;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [pagination] :is(a, button):not([pagination-ellipsis]):not([pagination-status]):hover:not([aria-current="page"]):not(:disabled):not([disabled]):not([aria-disabled="true"]),

@@ -103,7 +103,7 @@ $_juice-tabs-panel-rule: -juice-tabs-role(panel-rule, transparent);
     cursor: pointer;
     box-sizing: border-box;
     transform: none;
-    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+    transition: color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
     margin-bottom: -2px;
 }
 

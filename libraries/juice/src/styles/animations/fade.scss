@@ -3,11 +3,11 @@
 */
 
 [motion="fade.in"]{ 
-    animation: fadeIn 1s linear forwards;
+    animation: fadeIn var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in::fast"] {
-    animation: fadeIn 0.3s linear forwards;
+    animation: fadeIn var(--juice-motion-duration-base) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes fadeIn {
@@ -24,31 +24,31 @@
 */
 
 [motion="fade.out"]{
-    animation: fadeOut 1s linear forwards;
+    animation: fadeOut var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.down"] {
-    animation: fadeInDown 1s linear forwards;
+    animation: fadeInDown var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.down::fast"] {
-    animation: fadeInDown 0.3s linear forwards;
+    animation: fadeInDown var(--juice-motion-duration-base) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.up"] {
-    animation: fadeInUp 1s linear forwards;
+    animation: fadeInUp var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.up::fast"] {
-    animation: fadeInUp 0.3s linear forwards;
+    animation: fadeInUp var(--juice-motion-duration-base) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.out.down"] {
-    animation: fadeOutDown 1s linear forwards;
+    animation: fadeOutDown var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.out.up"] {
-    animation: fadeOutUp 1s linear forwards;
+    animation: fadeOutUp var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes fadeOut {

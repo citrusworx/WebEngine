@@ -247,7 +247,7 @@ $_juice-wizard-panel-border: -juice-wizard-role(panel-border, #{rgba($gray-300, 
     flex-shrink: 0;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [step-indicator],
@@ -507,7 +507,7 @@ $_juice-wizard-panel-border: -juice-wizard-role(panel-border, #{rgba($gray-300, 
     padding: 1.5rem;
     border: 1px solid;
     border-radius: 0.5rem;
-    transition: border-color 0.2s;
+    transition: border-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
     background: transparent;
 }
 

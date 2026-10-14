@@ -1,13 +1,13 @@
 [motion="spin"] {
-    animation: spin 2s linear infinite;
+    animation: spin calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-linear) infinite;
 }
 
 [motion="spin::fast"] {
-    animation: spin 0.5s linear infinite;
+    animation: spin calc(var(--juice-motion-duration-slow) * 0.5) var(--juice-motion-ease-linear) infinite;
 }
 
 [motion="spin::slow"] {
-    animation: spin 4s linear infinite;
+    animation: spin calc(var(--juice-motion-duration-slow) * 4) var(--juice-motion-ease-linear) infinite;
 }
 
 @keyframes spin {

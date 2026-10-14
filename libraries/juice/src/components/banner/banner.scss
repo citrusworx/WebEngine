@@ -5,6 +5,7 @@
 @use '../../tokens/color/red/red.scss' as *;
 @use '../../tokens/color/blue/blue.scss' as *;
 @use '../../tokens/color/yellow/yellow.scss' as *;
+@use '../../styles/animations/motion' as motion;
 
 // Banner chrome is structural. Color comes from the shared role contract:
 //   --juice-banner-panel
@@ -172,7 +173,7 @@ $_juice-banner-warning-soft: -juice-banner-role(warning-soft, #{rgba($yellow-100
     color: $_juice-banner-close-color;
     box-shadow: none;
     transform: none;
-    transition: background-color 0.2s, color 0.2s;
+    @include motion.overlay-close-transition;
 }
 
 [banner-close]:hover,
