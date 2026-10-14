@@ -1,0 +1,66 @@
+recipe:
+  read:
+    listRecipes:
+      api:
+        method: GET
+        endpoint: /api/recipes
+        query: listRecipes
+
+    bySlug:
+      api:
+        method: GET
+        endpoint: /api/recipes/slug/:slug
+        query: bySlug
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/recipes/:id
+        query: byId
+
+  create:
+    createRecipe:
+      api:
+        method: POST
+        endpoint: /api/recipes
+        query: createRecipe
+        body:
+          name: string.required
+          author: string
+          description: string
+          nutrition: string
+          prep_minutes: int
+          cook_minutes: int
+          ingredients: json
+          steps: json
+          slug: string
+          photo_url: string
+          author_id: string
+          cookbook_id: string
+
+  update:
+    updateRecipe:
+      api:
+        method: PUT
+        endpoint: /api/recipes/:id
+        query: updateRecipe
+        body:
+          name: string.required
+          author: string
+          description: string
+          nutrition: string
+          prep_minutes: int
+          cook_minutes: int
+          ingredients: json
+          steps: json
+          slug: string
+          photo_url: string
+          author_id: string
+          cookbook_id: string
+
+  delete:
+    deleteRecipe:
+      api:
+        method: DELETE
+        endpoint: /api/recipes/:id
+        query: deleteRecipe

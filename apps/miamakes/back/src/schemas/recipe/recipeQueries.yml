@@ -1,0 +1,100 @@
+recipe:
+  read:
+    listRecipes:
+      type: SELECT
+      table: recipes
+      fields: '*'
+      orderBy: created_at DESC
+
+    byId:
+      type: SELECT
+      table: recipes
+      fields: '*'
+      where: id = $1
+
+    bySlug:
+      type: SELECT
+      table: recipes
+      fields: '*'
+      where: slug = $1
+
+    countRecipes:
+      type: SELECT
+      table: recipes
+      count: true
+
+  create:
+    # Live HTTP create. Host generates id, slugifies the name, and binds
+    # ingredients/steps as JSON strings. Compiler emits ::jsonb.
+    createRecipe:
+      type: INSERT
+      table: recipes
+      fields: [id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id]
+      values:
+        - $1
+        - $2
+        - $3
+        - $4
+        - $5
+        - $6
+        - $7
+        - $8
+        - { value: $9, cast: jsonb }
+        - { value: $10, cast: jsonb }
+        - $11
+        - $12
+        - $13
+      returning: '*'
+
+    # Boot seed. Same columns as createRecipe. Skip when the id already exists.
+    seedRecipe:
+      type: INSERT
+      table: recipes
+      fields: [id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id]
+      values:
+        - $1
+        - $2
+        - $3
+        - $4
+        - $5
+        - $6
+        - $7
+        - $8
+        - { value: $9, cast: jsonb }
+        - { value: $10, cast: jsonb }
+        - $11
+        - $12
+        - $13
+      onConflict:
+        target: id
+        do: nothing
+
+  update:
+    # Host binds $1–$12 from the body and $13 from the path id.
+    # Nectarine's UPDATE compiler does not emit RETURNING, so the route
+    # reads the row back with byId after this statement.
+    updateRecipe:
+      type: UPDATE
+      table: recipes
+      fields: [slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id, updated_at]
+      values:
+        - $1
+        - $2
+        - $3
+        - $4
+        - $5
+        - $6
+        - $7
+        - { value: $8, cast: jsonb }
+        - { value: $9, cast: jsonb }
+        - $10
+        - $11
+        - $12
+        - { fn: now }
+      where: id = $13
+
+  delete:
+    deleteRecipe:
+      type: DELETE
+      table: recipes
+      where: id = $1

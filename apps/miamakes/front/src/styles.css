@@ -1,0 +1,18 @@
+[theme="retro-orchard-club"] {
+  --orc-heading-font: "Fraunces", Georgia, serif;
+}
+
+.mm-nav a {
+  text-decoration: none;
+}
+
+.mm-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mm-preview {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+}
