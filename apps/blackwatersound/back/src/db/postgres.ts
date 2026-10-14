@@ -3,7 +3,7 @@ import type { DatabaseCredentials } from "@citrusworx/nectarine/config";
 import type { QueryResultRow } from "pg";
 import { asProductRecord, type ProductRecord } from "../data/seed-products.js";
 import type { WaitlistEntry } from "../types/context.js";
-import { namedQuery, bindJsonbDocument, type NamedQuery } from "./named-queries.js";
+import { namedQuery, type NamedQuery } from "./named-queries.js";
 import { applyNamedMigrations } from "./named-ddl.js";
 
 let adapter: PgSql | null = null;
@@ -139,7 +139,7 @@ export async function loadProductsContainingFromDb(
   fragment: Record<string, unknown>,
 ): Promise<ProductRecord[]> {
   return unwrapPayloads(
-    await runNamed<{ payload: unknown }>("payloadsContaining", [bindJsonbDocument(fragment)]),
+    await runNamed<{ payload: unknown }>("payloadsContaining", [fragment]),
   );
 }
 
@@ -162,7 +162,7 @@ export async function seedProductsIfEmpty(products: ProductRecord[]) {
 
   // seedPayload YAML emits ON CONFLICT (id) DO NOTHING — no payloadById probe.
   for (const product of products) {
-    await runNamed("seedPayload", [product.id, bindJsonbDocument(product)]);
+    await runNamed("seedPayload", [product.id, product]);
   }
 }
 
@@ -170,7 +170,7 @@ export async function seedProductsIfEmpty(products: ProductRecord[]) {
 export async function insertProductPayload(product: ProductRecord): Promise<ProductRecord> {
   const result = await runNamed<{ payload: unknown }>("insertPayload", [
     product.id,
-    bindJsonbDocument(product),
+    product,
   ]);
   if (!result) {
     throw new Error("Database is not configured");
@@ -181,15 +181,19 @@ export async function insertProductPayload(product: ProductRecord): Promise<Prod
 
 /**
  * Replace `products.payload` for `id`. Host merges the catalog document first;
- * this named query cannot express JSONB `||`.
+ * this named query cannot express JSONB `||`. `RETURNING payload` is the
+ * stored document from that same statement.
  */
-export async function updateProductPayload(id: string, product: ProductRecord): Promise<boolean> {
-  const result = await runNamed("updatePayload", [bindJsonbDocument(product), id]);
+export async function updateProductPayload(
+  id: string,
+  product: ProductRecord,
+): Promise<ProductRecord | null> {
+  const result = await runNamed<{ payload: unknown }>("updatePayload", [product, id]);
   if (!result) {
     throw new Error("Database is not configured");
   }
 
-  return rowsAffected(result) > 0;
+  return asProductRecord(result.rows[0]?.payload);
 }
 
 export async function deleteProductFromDb(id: string): Promise<boolean> {

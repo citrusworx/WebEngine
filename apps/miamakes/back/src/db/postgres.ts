@@ -3,7 +3,7 @@ import type { DatabaseCredentials } from "@citrusworx/nectarine/config";
 import type { QueryResultRow } from "pg";
 import type { Recipe, RecipeWrite } from "../domain/recipe.js";
 import { recipeFromRow } from "../domain/recipe.js";
-import { bindJsonb, namedQuery, type NamedQuery } from "./named-queries.js";
+import { namedQuery, type NamedQuery } from "./named-queries.js";
 import { applyNamedMigrations } from "./named-ddl.js";
 
 let adapter: PgSql | null = null;
@@ -94,8 +94,8 @@ function writeParams(id: string, recipe: RecipeWrite): unknown[] {
     recipe.nutrition,
     recipe.prep_minutes,
     recipe.cook_minutes,
-    bindJsonb(recipe.ingredients),
-    bindJsonb(recipe.steps),
+    recipe.ingredients,
+    recipe.steps,
     recipe.photo_url,
     recipe.author_id,
     recipe.cookbook_id,
@@ -113,8 +113,8 @@ function updateParams(id: string, recipe: RecipeWrite): unknown[] {
     recipe.nutrition,
     recipe.prep_minutes,
     recipe.cook_minutes,
-    bindJsonb(recipe.ingredients),
-    bindJsonb(recipe.steps),
+    recipe.ingredients,
+    recipe.steps,
     recipe.photo_url,
     recipe.author_id,
     recipe.cookbook_id,
@@ -179,19 +179,17 @@ export async function insertRecipe(id: string, recipe: RecipeWrite): Promise<Rec
 }
 
 /**
- * Named update has no RETURNING (the compiler does not emit it), so a
- * successful write is read back with byId.
+ * `updateRecipe` is `UPDATE … RETURNING *`. The written row comes back on
+ * that statement; there is no follow-up `byId`.
  */
 export async function updateRecipe(id: string, recipe: RecipeWrite): Promise<Recipe | null> {
-  const result = await runNamed("updateRecipe", updateParams(id, recipe));
+  const result = await runNamed<Record<string, unknown>>("updateRecipe", updateParams(id, recipe));
   if (!result) {
     throw new Error("Database is not configured");
   }
-  if (rowsAffected(result) < 1) {
-    return null;
-  }
 
-  return loadRecipeByIdFromDb(id);
+  const row = result.rows[0];
+  return row ? recipeFromRow(row) : null;
 }
 
 export async function deleteRecipeFromDb(id: string): Promise<boolean> {

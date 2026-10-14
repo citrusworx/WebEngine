@@ -31,7 +31,7 @@ describe("recipe named queries", () => {
       "INSERT INTO recipes (id, slug, name, author, description, nutrition, prep_minutes, cook_minutes, ingredients, steps, photo_url, author_id, cookbook_id, category, before_you_begin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10::jsonb, $11, $12, $13, $14, $15) ON CONFLICT (id) DO NOTHING",
     );
     expect(namedSql.updateRecipe).toBe(
-      "UPDATE recipes SET slug = $1, name = $2, author = $3, description = $4, nutrition = $5, prep_minutes = $6, cook_minutes = $7, ingredients = $8::jsonb, steps = $9::jsonb, photo_url = $10, author_id = $11, cookbook_id = $12, category = $13, before_you_begin = $14, updated_at = NOW() WHERE id = $15",
+      "UPDATE recipes SET slug = $1, name = $2, author = $3, description = $4, nutrition = $5, prep_minutes = $6, cook_minutes = $7, ingredients = $8::jsonb, steps = $9::jsonb, photo_url = $10, author_id = $11, cookbook_id = $12, category = $13, before_you_begin = $14, updated_at = NOW() WHERE id = $15 RETURNING *",
     );
     expect(namedSql.deleteRecipe).toBe("DELETE FROM recipes WHERE id = $1");
   });

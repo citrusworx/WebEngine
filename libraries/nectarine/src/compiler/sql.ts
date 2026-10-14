@@ -9,7 +9,8 @@
  *
  * Also compiled: `COUNT(*)` (`{ fn: count }` / `count: true`),
  * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`,
- * INSERT `onConflict` (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`).
+ * INSERT `onConflict` (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`),
+ * `returning` on INSERT, UPDATE, and DELETE (Postgres `RETURNING`).
  */
 
 import { isRecord, QueryCompileError } from "./errors.js";
@@ -47,6 +48,25 @@ export const CRUD_METHODS = ["get", "create", "update", "delete"] as const;
 export type OperatorToken = keyof typeof OP_TOKENS;
 export type optokens = typeof OP_TOKENS;
 export type CrudMethod = (typeof CRUD_METHODS)[number];
+export type JsonColumnCast = "json" | "jsonb";
+
+/**
+ * Optional compile context. `jsonColumns` comes from schema YAML
+ * (`schemaJsonColumns`): keys are `${table}.${column}`.
+ * Bare `$N` binds on those columns become `$N::json` or `$N::jsonb`.
+ * An explicit cast is left as written.
+ */
+export type CompileQueryOptions = {
+    jsonColumns?: ReadonlyMap<string, JsonColumnCast>;
+};
+
+type CompileScope = {
+    options?: CompileQueryOptions;
+    table?: string;
+};
+
+/** Comparisons whose right-hand bind is the JSON value, not extracted text or a key name. */
+const JSON_VALUE_OPS = new Set<OperatorToken>(["eq", "neq", "contains"]);
 
 /** Operators that keep a JSONB operand (`->`) instead of text (`->>`). */
 const JSONB_KEEP_OPS = new Set<OperatorToken>(["contains", "has_key"]);
@@ -153,6 +173,44 @@ export function compileValue(value: unknown): string {
     throw new QueryCompileError(
         `Unsupported value ${JSON.stringify(value)}; use a $1-style placeholder, $1::jsonb, or { fn: now }`,
     );
+}
+
+/**
+ * Stamp `::json` / `::jsonb` onto a bare `$N` when the schema column is JSON.
+ * Explicit `$N::cast` and non-placeholders (`NOW()`, constants) stay as compiled.
+ */
+function compileBoundValue(value: unknown, scope: CompileScope, column?: string): string {
+    const sql = compileValue(value);
+    if (!column || !scope.table || !scope.options?.jsonColumns) {
+        return sql;
+    }
+    if (!PLACEHOLDER.test(sql)) {
+        return sql;
+    }
+    const cast = scope.options.jsonColumns.get(`${scope.table}.${column}`);
+    if (!cast) {
+        return sql;
+    }
+    return `${sql}::${cast}`;
+}
+
+function returningClause(query: Record<string, unknown>, nested?: unknown): string {
+    const fromNested = isRecord(nested) ? nested.returning : undefined;
+    const returning = query.returning !== undefined ? query.returning : fromNested;
+    if (returning === undefined) {
+        return "";
+    }
+    return ` RETURNING ${normalizeColumns(returning, "returning", true).join(", ")}`;
+}
+
+function rawColumnNames(columns: unknown): string[] {
+    if (typeof columns === "string") {
+        return [columns.trim()];
+    }
+    if (!Array.isArray(columns)) {
+        return [];
+    }
+    return columns.map((column) => (typeof column === "string" ? column.trim() : ""));
 }
 
 function normalizeColumns(columns: unknown, label: string, allowStar: boolean): string[] {
@@ -330,7 +388,7 @@ function compileInList(value: unknown): string {
     throw new QueryCompileError("IN / NOT IN requires a non-empty list");
 }
 
-function compilePredicate(where: Record<string, unknown>): string {
+function compilePredicate(where: Record<string, unknown>, scope: CompileScope): string {
     const { column, operator, value } = where;
 
     if (typeof column !== "string") {
@@ -365,19 +423,20 @@ function compilePredicate(where: Record<string, unknown>): string {
         return `${left} ${sqlOp} (${compileInList(value)})`;
     }
 
-    return `${left} ${sqlOp} ${compileValue(value)}`;
+    const castColumn = path === undefined && JSON_VALUE_OPS.has(token) ? column : undefined;
+    return `${left} ${sqlOp} ${compileBoundValue(value, scope, castColumn)}`;
 }
 
-function compileWhere(where: unknown, parent?: "and" | "or"): string {
+function compileWhere(where: unknown, parent: "and" | "or" | undefined, scope: CompileScope): string {
     if (typeof where === "string") {
-        return compileWhere(whereNodeToYaml(parseWhereFragment(where)), parent);
+        return compileWhere(whereNodeToYaml(parseWhereFragment(where)), parent, scope);
     }
 
     if (Array.isArray(where)) {
         if (where.length === 0) {
             throw new QueryCompileError("where list cannot be empty");
         }
-        const sql = where.map((item) => compileWhere(item, "and")).join(" AND ");
+        const sql = where.map((item) => compileWhere(item, "and", scope)).join(" AND ");
         return parent === "or" ? `(${sql})` : sql;
     }
 
@@ -389,7 +448,7 @@ function compileWhere(where: unknown, parent?: "and" | "or"): string {
         if (!Array.isArray(where.and) || where.and.length === 0) {
             throw new QueryCompileError("where.and must be a non-empty array");
         }
-        const sql = where.and.map((item) => compileWhere(item, "and")).join(" AND ");
+        const sql = where.and.map((item) => compileWhere(item, "and", scope)).join(" AND ");
         return parent === "or" ? `(${sql})` : sql;
     }
 
@@ -397,11 +456,11 @@ function compileWhere(where: unknown, parent?: "and" | "or"): string {
         if (!Array.isArray(where.or) || where.or.length === 0) {
             throw new QueryCompileError("where.or must be a non-empty array");
         }
-        const sql = where.or.map((item) => compileWhere(item, "or")).join(" OR ");
+        const sql = where.or.map((item) => compileWhere(item, "or", scope)).join(" OR ");
         return parent === "and" ? `(${sql})` : sql;
     }
 
-    return compilePredicate(where);
+    return compilePredicate(where, scope);
 }
 
 function compileOrderBy(orderBy: unknown): string {
@@ -432,17 +491,18 @@ function compileOrderBy(orderBy: unknown): string {
         .join(", ");
 }
 
-function compileSelect(query: Record<string, unknown>): string {
+function compileSelect(query: Record<string, unknown>, scope: CompileScope): string {
     if (typeof query.from !== "string") {
         throw new QueryCompileError("SELECT requires from");
     }
     assertIdentifier(query.from, "table");
 
+    const tableScope: CompileScope = { ...scope, table: query.from };
     const fields = compileSelectList(query.select);
     let sql = `SELECT ${fields} FROM ${ident(query.from)}`;
 
     if (query.where !== undefined) {
-        sql += ` WHERE ${compileWhere(query.where)}`;
+        sql += ` WHERE ${compileWhere(query.where, undefined, tableScope)}`;
     }
     if (query.orderBy !== undefined) {
         if (isCountSelect(query.select)) {
@@ -454,7 +514,7 @@ function compileSelect(query: Record<string, unknown>): string {
     return sql;
 }
 
-function compileExists(query: Record<string, unknown>): string {
+function compileExists(query: Record<string, unknown>, scope: CompileScope): string {
     let from: unknown;
     let where: unknown;
 
@@ -480,9 +540,10 @@ function compileExists(query: Record<string, unknown>): string {
         throw new QueryCompileError("EXISTS cannot include orderBy");
     }
 
+    const tableScope: CompileScope = { ...scope, table: from };
     let sql = `SELECT EXISTS(SELECT 1 FROM ${ident(from)}`;
     if (where !== undefined) {
-        sql += ` WHERE ${compileWhere(where)}`;
+        sql += ` WHERE ${compileWhere(where, undefined, tableScope)}`;
     }
     return `${sql})`;
 }
@@ -585,7 +646,7 @@ function compileOnConflict(onConflict: unknown): string {
     return `ON CONFLICT (${targets.join(", ")}) DO UPDATE SET ${assignments.join(", ")}`;
 }
 
-function compileInsert(query: Record<string, unknown>): string {
+function compileInsert(query: Record<string, unknown>, scope: CompileScope): string {
     if (!isRecord(query.insert)) {
         throw new QueryCompileError("INSERT requires an insert object");
     }
@@ -598,6 +659,7 @@ function compileInsert(query: Record<string, unknown>): string {
     assertIdentifier(into, "table");
 
     const cols = normalizeColumns(columns, "columns", false);
+    const rawCols = rawColumnNames(columns);
 
     if (!Array.isArray(values) || values.length === 0) {
         throw new QueryCompileError("INSERT requires insert.values");
@@ -606,7 +668,10 @@ function compileInsert(query: Record<string, unknown>): string {
         throw new QueryCompileError("INSERT columns and values must have the same length");
     }
 
-    const compiled = values.map((value) => compileValue(value));
+    const tableScope: CompileScope = { ...scope, table: into };
+    const compiled = values.map((value, index) =>
+        compileBoundValue(value, tableScope, rawCols[index]),
+    );
     let sql = `INSERT INTO ${ident(into)} (${cols.join(", ")}) VALUES (${compiled.join(", ")})`;
 
     const onConflict = query.onConflict ?? query.insert.onConflict;
@@ -614,21 +679,19 @@ function compileInsert(query: Record<string, unknown>): string {
         sql += ` ${compileOnConflict(onConflict)}`;
     }
 
-    const returning = query.returning ?? query.insert.returning;
-    if (returning !== undefined) {
-        sql += ` RETURNING ${normalizeColumns(returning, "returning", true).join(", ")}`;
-    }
+    sql += returningClause(query, query.insert);
 
     return sql;
 }
 
-function compileUpdate(query: Record<string, unknown>): string {
+function compileUpdate(query: Record<string, unknown>, scope: CompileScope): string {
     if (typeof query.table !== "string") {
         throw new QueryCompileError("UPDATE requires table");
     }
     assertIdentifier(query.table, "table");
 
     const cols = normalizeColumns(query.set, "set", false);
+    const rawCols = rawColumnNames(query.set);
     const values = query.values;
 
     if (!Array.isArray(values) || values.length === 0) {
@@ -641,14 +704,16 @@ function compileUpdate(query: Record<string, unknown>): string {
         throw new QueryCompileError("UPDATE requires a where clause");
     }
 
+    const tableScope: CompileScope = { ...scope, table: query.table };
     const assignments = cols.map(
-        (column, index) => `${column} = ${compileValue(values[index])}`,
+        (column, index) =>
+            `${column} = ${compileBoundValue(values[index], tableScope, rawCols[index])}`,
     );
 
-    return `UPDATE ${ident(query.table)} SET ${assignments.join(", ")} WHERE ${compileWhere(query.where)}`;
+    return `UPDATE ${ident(query.table)} SET ${assignments.join(", ")} WHERE ${compileWhere(query.where, undefined, tableScope)}${returningClause(query)}`;
 }
 
-function compileDelete(query: Record<string, unknown>): string {
+function compileDelete(query: Record<string, unknown>, scope: CompileScope): string {
     if (typeof query.from !== "string") {
         throw new QueryCompileError("DELETE requires from");
     }
@@ -658,7 +723,8 @@ function compileDelete(query: Record<string, unknown>): string {
         throw new QueryCompileError("DELETE requires a where clause");
     }
 
-    return `DELETE FROM ${ident(query.from)} WHERE ${compileWhere(query.where)}`;
+    const tableScope: CompileScope = { ...scope, table: query.from };
+    return `DELETE FROM ${ident(query.from)} WHERE ${compileWhere(query.where, undefined, tableScope)}${returningClause(query)}`;
 }
 
 function inferQueryKind(query: Record<string, unknown>): CrudMethod {
@@ -697,32 +763,37 @@ function rejectOnConflictUnlessInsert(query: Record<string, unknown>, method: Cr
     }
 }
 
-function compileByMethod(query: Record<string, unknown>, method: CrudMethod): string {
+function compileByMethod(
+    query: Record<string, unknown>,
+    method: CrudMethod,
+    options?: CompileQueryOptions,
+): string {
     rejectOnConflictUnlessInsert(query, method);
+    const scope: CompileScope = { options };
     switch (method) {
         case "get":
             if (query.exists === true || isRecord(query.exists)) {
-                return compileExists(query);
+                return compileExists(query, scope);
             }
             if (!("select" in query)) {
                 throw new QueryCompileError("GET query requires select or exists");
             }
-            return compileSelect(query);
+            return compileSelect(query, scope);
         case "create":
             if (!("insert" in query)) {
                 throw new QueryCompileError("CREATE query requires insert");
             }
-            return compileInsert(query);
+            return compileInsert(query, scope);
         case "update":
             if (!("set" in query)) {
                 throw new QueryCompileError("UPDATE query requires set");
             }
-            return compileUpdate(query);
+            return compileUpdate(query, scope);
         case "delete":
             if ("select" in query || "insert" in query || "set" in query) {
                 throw new QueryCompileError("DELETE query has conflicting keys");
             }
-            return compileDelete(query);
+            return compileDelete(query, scope);
     }
 }
 
@@ -737,8 +808,16 @@ function compileByMethod(query: Record<string, unknown>, method: CrudMethod): st
  *
  * Blackwater `type: SELECT` objects are normalized onto the canonical
  * phonics shape before assembly. INSERT may include `onConflict`.
+ * UPDATE and DELETE may include `returning` (same clause as INSERT).
+ *
+ * Pass `options.jsonColumns` from {@link schemaJsonColumns} so bare `$N`
+ * binds on schema `json` / `jsonb` columns gain `::json` / `::jsonb`.
  */
-export function compileQuery(query: unknown, method?: CrudMethod): string {
+export function compileQuery(
+    query: unknown,
+    method?: CrudMethod,
+    options?: CompileQueryOptions,
+): string {
     if (!isRecord(query)) {
         throw new QueryCompileError("Query must be an object");
     }
@@ -746,5 +825,5 @@ export function compileQuery(query: unknown, method?: CrudMethod): string {
     const resolvedMethod = method ?? inferMethodFromType(query);
     const normalized = normalizeQuery(query, resolvedMethod);
     const kind = resolvedMethod ?? inferQueryKind(normalized);
-    return compileByMethod(normalized, kind);
+    return compileByMethod(normalized, kind, options);
 }

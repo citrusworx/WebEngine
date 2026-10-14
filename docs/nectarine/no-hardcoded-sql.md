@@ -90,9 +90,9 @@ on `@citrusworx/nectarine` but contains no SQL strings.
 | `loadProductsWithKeyFromDb()` | JSONB key exists | `product.read.payloadsWithKey` | **migrated** — `payload ? $1`; GET `/api/products/key/:key` |
 | `countPayloadsFromDb()` | Payload row total | `product.read.countPayloads` | **migrated** — `COUNT(*)`; seed skip + GET `/api/products/count` |
 | `seedProductsIfEmpty()` | Skip seed when rows exist | `product.read.countPayloads` | **migrated** — `COUNT(*)`; does not load payloads to check emptiness |
-| `seedProductsIfEmpty()` | Insert JSONB payload | `product.create.seedPayload` | **migrated** — `ON CONFLICT (id) DO NOTHING`; `$2::jsonb` phonics bind (`{ value: $2, cast: jsonb }` or `$2::jsonb`) + `bindJsonbDocument()` |
+| `seedProductsIfEmpty()` | Insert JSONB payload | `product.create.seedPayload` | **migrated** — `ON CONFLICT (id) DO NOTHING`; `$2::jsonb` phonics bind. The host passes the object; the Postgres adapter encodes it. |
 | `insertProductPayload()` | HTTP create catalog document | `product.create.insertPayload` | **migrated** — `INSERT (id, payload) … $2::jsonb RETURNING payload` |
-| `updateProductPayload()` | HTTP replace catalog document | `product.update.updatePayload` | **migrated** — `SET payload = $1::jsonb, updated_at = NOW()`; host merges first (no JSONB `||`) |
+| `updateProductPayload()` | HTTP replace catalog document | `product.update.updatePayload` | **migrated** — `SET payload = $1::jsonb, updated_at = NOW() RETURNING payload`; host merges first (no JSONB `||`) and passes the object |
 | `deleteProductFromDb()` | HTTP delete catalog row | `product.delete.deleteProduct` | **migrated** — `DELETE … WHERE id = $1`; `payload` column stays protected |
 | `loadWaitlistFromDb()` | List signups oldest-first | `waitlist.read.allEntries` | **migrated** — `SELECT * … ORDER BY created_at ASC`; `created_at` → `createdAt` in TS |
 | `loadWaitlistByEmailFromDb()` | Lookup signup by email | `waitlist.read.entryByEmail` | **migrated** — maps the first row for GET `/api/waitlist/:email` |

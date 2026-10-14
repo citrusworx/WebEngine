@@ -1,19 +1,22 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { compileResourceQuery } from "@citrusworx/webengine";
-
-export { compileResourceQuery };
+import { CCompiler, schemaJsonColumns } from "@citrusworx/nectarine/compiler";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const schemaDir = path.join(packageRoot, "src/schemas");
+const compiler = new CCompiler();
+const jsonColumns = schemaJsonColumns(path.join(schemaDir, "recipe/recipeSchema.yml"));
 
 function compileNamed(file: string, resource: string, method: string, name: string): string {
-  return compileResourceQuery(path.join(schemaDir, file), resource, method, name);
+  const parsed = compiler.parse_config(path.join(schemaDir, file));
+  return compiler.buildQuery(compiler.clean_parse(parsed, resource, method), name, undefined, {
+    jsonColumns,
+  });
 }
 
 /**
  * Compiler-assembled statements. App code passes a name from this map.
- * JSONB casts are emitted here by Nectarine from recipeQueries.yml.
+ * Schema jsonb columns stamp ::jsonb onto bare binds. The host passes arrays.
  */
 export const namedSql = {
   listRecipes: compileNamed("recipe/recipeQueries.yml", "recipe", "read", "listRecipes"),
@@ -31,17 +34,4 @@ export type NamedQuery = keyof typeof namedSql;
 
 export function namedQuery(name: NamedQuery): string {
   return namedSql[name];
-}
-
-/** Validate a JSONB bind before `$N::jsonb`. The compiler owns the cast. */
-export function bindJsonb(value: unknown): string {
-  if (value === null || typeof value !== "object") {
-    throw new Error("JSONB bind value must be a JSON object or array");
-  }
-
-  try {
-    return JSON.stringify(value);
-  } catch {
-    throw new Error("JSONB bind value is not JSON-serializable");
-  }
 }

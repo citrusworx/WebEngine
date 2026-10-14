@@ -31,8 +31,9 @@ recipe:
       count: true
 
   create:
-    # Live HTTP create. Host generates id, slugifies the name, and binds
-    # ingredients/steps as JSON strings. Compiler emits ::jsonb.
+    # Live HTTP create. Host generates id, slugifies the name, and passes
+    # ingredient and step arrays. Schema jsonb columns stamp ::jsonb; the
+    # Postgres adapter encodes those binds.
     createRecipe:
       type: INSERT
       table: recipes
@@ -46,8 +47,8 @@ recipe:
         - $6
         - $7
         - $8
-        - { value: $9, cast: jsonb }
-        - { value: $10, cast: jsonb }
+        - $9
+        - $10
         - $11
         - $12
         - $13
@@ -69,8 +70,8 @@ recipe:
         - $6
         - $7
         - $8
-        - { value: $9, cast: jsonb }
-        - { value: $10, cast: jsonb }
+        - $9
+        - $10
         - $11
         - $12
         - $13
@@ -82,8 +83,7 @@ recipe:
 
   update:
     # Host binds $1–$14 from the body and $15 from the path id.
-    # Nectarine's UPDATE compiler does not emit RETURNING, so the route
-    # reads the row back with byId after this statement.
+    # RETURNING * is the updated row; the route does not follow up with byId.
     updateRecipe:
       type: UPDATE
       table: recipes
@@ -96,8 +96,8 @@ recipe:
         - $5
         - $6
         - $7
-        - { value: $8, cast: jsonb }
-        - { value: $9, cast: jsonb }
+        - $8
+        - $9
         - $10
         - $11
         - $12
@@ -105,6 +105,7 @@ recipe:
         - $14
         - { fn: now }
       where: id = $15
+      returning: '*'
 
   delete:
     deleteRecipe:

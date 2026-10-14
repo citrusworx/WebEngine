@@ -67,7 +67,7 @@ function removeLocalProduct(ctx: BlackwaterContext, id: string): boolean {
  * | payloadsWithKey     | payloadsWithKey      | `payload ? $1` |
  * | countPayloads       | countPayloads        | `COUNT(*)` — also used to skip seed |
  * | insertPayload       | insertPayload        | HTTP body is the catalog document, not `{ payload }` |
- * | updatePayload       | updatePayload        | host merges then replaces JSONB (no compiler `||`) |
+ * | updatePayload       | updatePayload        | host merges, then `UPDATE … RETURNING payload` |
  * | deleteProduct       | deleteProduct        | row delete; payload column stays protected |
  *
  * When Postgres is unset (or the live catalog is empty), use boot-time
@@ -300,8 +300,7 @@ async function updateProduct({
   }
 
   if (isDatabaseConnected()) {
-    const updated = await updateProductPayload(id, merged);
-    return updated ? merged : null;
+    return updateProductPayload(id, merged);
   }
 
   replaceLocalProduct(ctx, merged);

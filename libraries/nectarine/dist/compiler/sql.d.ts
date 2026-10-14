@@ -9,7 +9,8 @@
  *
  * Also compiled: `COUNT(*)` (`{ fn: count }` / `count: true`),
  * `EXISTS` (`exists: true`), JSONB `@>` / `?` / `->>`,
- * INSERT `onConflict` (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`).
+ * INSERT `onConflict` (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`),
+ * `returning` on INSERT, UPDATE, and DELETE (Postgres `RETURNING`).
  */
 export { isRecord, QueryCompileError } from "./errors.js";
 export declare const OP_TOKENS: {
@@ -32,6 +33,16 @@ export declare const CRUD_METHODS: readonly ["get", "create", "update", "delete"
 export type OperatorToken = keyof typeof OP_TOKENS;
 export type optokens = typeof OP_TOKENS;
 export type CrudMethod = (typeof CRUD_METHODS)[number];
+export type JsonColumnCast = "json" | "jsonb";
+/**
+ * Optional compile context. `jsonColumns` comes from schema YAML
+ * (`schemaJsonColumns`): keys are `${table}.${column}`.
+ * Bare `$N` binds on those columns become `$N::json` or `$N::jsonb`.
+ * An explicit cast is left as written.
+ */
+export type CompileQueryOptions = {
+    jsonColumns?: ReadonlyMap<string, JsonColumnCast>;
+};
 export type CleanedQueries = {
     type: string;
     method: CrudMethod;
@@ -51,5 +62,9 @@ export declare function compileValue(value: unknown): string;
  *
  * Blackwater `type: SELECT` objects are normalized onto the canonical
  * phonics shape before assembly. INSERT may include `onConflict`.
+ * UPDATE and DELETE may include `returning` (same clause as INSERT).
+ *
+ * Pass `options.jsonColumns` from {@link schemaJsonColumns} so bare `$N`
+ * binds on schema `json` / `jsonb` columns gain `::json` / `::jsonb`.
  */
-export declare function compileQuery(query: unknown, method?: CrudMethod): string;
+export declare function compileQuery(query: unknown, method?: CrudMethod, options?: CompileQueryOptions): string;
