@@ -522,6 +522,20 @@ Textarea is a styled native `<textarea>`. It is not an input (`<input input>` is
 
 See [Textarea Runtime](./juice-textarea-runtime.md). Theme paint uses `--juice-textarea-*` roles (`surface`, `border`, `ink`, `placeholder`, `focus-ring`).
 
+### Field
+
+- `field` — host wrapper around a control. A boolean `[field]` attribute is fine: there is no HTML global `field` attribute. Any value, including `field="group"`, is still a field. The control is the first `input`, `textarea`, or `select` inside the wrapper that is not inside a nested field
+- `field-label` — optional visible label chrome. Uses label ink. This part does not name the control
+- `field-help` — optional help text. Uses help ink
+- `field-error` — optional error text. Uses error ink
+- `invalid` — on `[field]`, paints the wrapper border
+
+`[field-label]` is chrome only. Name the control with an associated `<label for>`, a wrapping `<label>`, or the control's own label part (`[input-label]`, `[textarea-label]`, `[select-label]`).
+
+Field is a wrapper around a control. It is not an input, not a textarea, not a select, and not a combobox. Inline wrapper chrome — no overlay z-index. The runtime auto-enhances `[field]` (`sync` / `destroy`): visible `[field-help]` and `[field-error]` describe the control when the author has not set `aria-describedby`. `[invalid]` sets `aria-invalid="true"` when the author has not set `aria-invalid`. Hidden or empty parts are skipped. Author values are kept. There is no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Field factory. Field is the twenty-fifth Emerging auto-enhance runtime and is unpublished versus 0.9.1.
+
+See [Field Runtime](./juice-field-runtime.md). Theme paint uses the six `--juice-field-*` roles (`surface`, `gap`, `label-ink`, `help-ink`, `error-ink`, `invalid-border`).
+
 ### Wizard
 
 - `wizard-shell` — widget root / multi-step onboarding shell; required for the step runtime. Bare shell jumps to completed + current only. Values `"linear"` (prev/next only) and `"free"` (any step)
