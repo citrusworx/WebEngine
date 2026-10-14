@@ -230,9 +230,10 @@ product:
 
 → `INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (id) DO NOTHING`
 
-The app serializes a validated object (`JSON.stringify` after an object
-check) and binds it. The compiler is the only place `::jsonb` is emitted.
-HTTP create uses the same bind (`insertPayload`) with `RETURNING payload`.
+The app passes the object or array. The compiler emits `::jsonb` (from
+`{ value: $N, cast: jsonb }`, or from `schemaJsonColumns` when that column
+is `jsonb`). The Postgres adapter encodes the bind. HTTP create uses the
+same bind (`insertPayload`) with `RETURNING payload`.
 
 ## `ON CONFLICT`
 
@@ -279,8 +280,9 @@ a plain INSERT so duplicates still fail.
 
 **MySQL:** this phonics is Postgres-only in v1. The MySQL adapter rejects
 `ON CONFLICT` at `query()` rather than rewriting to `ON DUPLICATE KEY UPDATE`
-(semantics differ; `INSERT IGNORE` would hide non-duplicate errors). Mongo
-does not execute SQL DML.
+(semantics differ; `INSERT IGNORE` would hide non-duplicate errors). The same
+boundary rejects `RETURNING` on INSERT, UPDATE, and DELETE rather than
+issuing a follow-up SELECT. Mongo does not execute SQL DML.
 
 Not compiled: `ON CONSTRAINT`, `DO UPDATE WHERE`, `EXCLUDED` expressions
 other than `EXCLUDED.column`, `jsonb_set` inside SET.
@@ -320,10 +322,13 @@ product:
       where: id = $2
 ```
 
-→ `UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2`
+→ `UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2 RETURNING payload`
 
-Host execute merges the catalog document in TypeScript, then binds the full
-JSON string. The compiler does not emit JSONB `||` / `jsonb_set`.
+`returning` is optional on UPDATE and DELETE, same as INSERT (`*` or a column
+list). It is emitted after `WHERE`.
+
+Host execute merges the catalog document in TypeScript, then binds the object.
+The Postgres adapter encodes it. The compiler does not emit JSONB `||` / `jsonb_set`.
 
 ## `delete`
 
@@ -339,6 +344,7 @@ user:
 ```
 
 Blackwater uses `table` instead of `from`; the normalizer maps it.
+Optional `returning` is the same clause as INSERT and UPDATE (`RETURNING id` or `RETURNING *`).
 
 ## `COUNT` / `EXISTS`
 
@@ -416,8 +422,25 @@ values: [$1, $2::jsonb]
 INSERT INTO products (id, payload) VALUES ($1, $2::jsonb)
 ```
 
+Pass a plain object or array for that bind. The Postgres adapter
+`JSON.stringify`s it (a JavaScript array would otherwise go out as a Postgres
+array). A string is left as-is, so an already-encoded JSON text is not
+encoded twice. Date and Buffer values are not stringified.
+
+When the schema says the column is `json` or `jsonb`, you can skip the cast
+in the query and pass the map from `schemaJsonColumns(schema)`:
+
+```ts
+compileQuery(query, "update", { jsonColumns: schemaJsonColumns(schema) });
+```
+
+Bare `$N` on that column (INSERT/UPDATE assignments, and `eq` / `neq` /
+`contains` with no path) becomes `$N::json` or `$N::jsonb`. `->>` text and
+`?` key names are not cast. An explicit cast wins and is not doubled.
+
 On MySQL, the adapter turns that bind into `CAST(? AS JSON)` (MySQL’s JSON
-type is the closest match to jsonb). `::text` is stripped to `?`.
+type is the closest match to jsonb) and stringifies objects and arrays the
+same way. `::text` is stripped to `?`. `RETURNING` is rejected at `query()`.
 
 JSONB path and operators are first-class phonics (not flattened columns):
 
@@ -464,6 +487,7 @@ connected; seed/memory still maps a missing catalog to `gear`.
 - general aggregates beyond `COUNT`, `EXISTS` as a WHERE subquery
 - JSONB `||` / `jsonb_set` (host merges documents, then binds `$N::jsonb`)
 - MySQL `ON DUPLICATE KEY UPDATE` (Postgres `ON CONFLICT` is compiled; MySQL rejects it)
+- MySQL `RETURNING` (Postgres INSERT / UPDATE / DELETE `returning` is compiled; MySQL rejects it)
 
 ## Usage
 

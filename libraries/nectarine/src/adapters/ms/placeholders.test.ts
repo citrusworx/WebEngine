@@ -291,4 +291,51 @@ describe("rewriteMysqlPlaceholders", () => {
             rewriteMysqlPlaceholders("INSERT INTO t (id) VALUES ('ON CONFLICT')", []),
         ).not.toThrow();
     });
+
+    it("rejects Postgres RETURNING instead of dropping the returned row", () => {
+        const update = compileQuery({
+            type: "UPDATE",
+            table: "recipes",
+            fields: ["name"],
+            values: ["$1"],
+            where: "id = $2",
+            returning: ["id", "name"],
+        });
+        expect(update).toContain("RETURNING");
+        expect(() => rewriteMysqlPlaceholders(update, ["Cobbler", "rec_1"])).toThrowError(
+            /does not support RETURNING/,
+        );
+
+        const deleted = compileQuery({
+            type: "DELETE",
+            table: "recipes",
+            where: "id = $1",
+            returning: "*",
+        });
+        expect(() => rewriteMysqlPlaceholders(deleted, ["rec_1"])).toThrowError(
+            /Postgres-only/,
+        );
+
+        const inserted = compileQuery({
+            insert: {
+                into: "recipes",
+                columns: ["id"],
+                values: ["$1"],
+            },
+            returning: ["id"],
+        });
+        expect(() => rewriteMysqlPlaceholders(inserted, ["rec_1"])).toThrowError(
+            /does not support RETURNING/,
+        );
+
+        expect(() =>
+            rewriteMysqlPlaceholders("SELECT 'RETURNING' FROM t WHERE id = $1", [1]),
+        ).not.toThrow();
+        expect(
+            rewriteMysqlPlaceholders("SELECT id FROM t WHERE note = $1 -- RETURNING id", ["ok"]),
+        ).toEqual({
+            sql: "SELECT id FROM t WHERE note = ? -- RETURNING id",
+            params: ["ok"],
+        });
+    });
 });

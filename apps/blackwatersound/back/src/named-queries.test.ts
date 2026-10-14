@@ -59,7 +59,7 @@ describe("compileResourceQuery", () => {
       "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
     );
     expect(namedSql.updatePayload).toBe(
-      "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
+      "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2 RETURNING payload",
     );
     expect(namedSql.deleteProduct).toBe("DELETE FROM products WHERE id = $1");
     expect(namedSql.allEntries).toBe("SELECT * FROM waitlist ORDER BY created_at ASC");

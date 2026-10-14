@@ -1,6 +1,6 @@
 # Nectarine + MySQL
 
-**This page describes a removed adapter shape** (import-time `mysql2` pool, `Mysql()` / `closeSql()`, no class). The current adapter is `createMysqlAdapter` in `libraries/nectarine/src/adapters/ms/msqlz.ts`: credentials from `loadNectarineConfig`, a pool opened in `connect()`, `$N` and JSONB operators rewritten in `query()`, and `ON CONFLICT` rejected. It is a peer adapter on a Postgres-first compiler, not a second compiler and not “early alpha.” See [status](./nectarine-status.md). Do not follow the steps below as the current API.
+**This page describes a removed adapter shape** (import-time `mysql2` pool, `Mysql()` / `closeSql()`, no class). The current adapter is `createMysqlAdapter` in `libraries/nectarine/src/adapters/ms/msqlz.ts`: credentials from `loadNectarineConfig`, a pool opened in `connect()`, `$N` and JSONB operators rewritten in `query()`, and `ON CONFLICT` plus `RETURNING` rejected. It is a peer adapter on a Postgres-first compiler, not a second compiler and not “early alpha.” See [status](./nectarine-status.md). Do not follow the steps below as the current API.
 
 How an older `Mysql` helper worked in `libraries/nectarine/src/adapters/ms/msqlz.ts`. That shape was a module-level `mysql2` pool plus `Mysql()` / `closeSql()`.
 

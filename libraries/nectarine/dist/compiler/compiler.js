@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.MIGRATION_VERSION = exports.MigrationCompileError = exports.compileMigrations = exports.compileMigration = exports.SchemaCompileError = exports.schemaPlanStatements = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSqlType = exports.compileSchemasPlan = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.quoteIdentPath = exports.quoteIdent = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
+exports.CCompiler = exports.parseWhereFragment = exports.parseOrderByFragment = exports.resolveCrudMethod = exports.normalizeQuery = exports.METHOD_ALIASES = exports.inferMethodFromType = exports.MIGRATION_VERSION = exports.MigrationCompileError = exports.compileMigrations = exports.compileMigration = exports.SchemaCompileError = exports.schemaPlanStatements = exports.schemaJsonColumns = exports.schemaFieldEnumValues = exports.DDL_VENDORS = exports.compileTable = exports.compileSqlType = exports.compileSchemasPlan = exports.compileSchemas = exports.compileSchemaPlan = exports.compileSchema = exports.quoteIdentPath = exports.quoteIdent = exports.QueryCompileError = exports.OP_TOKENS = exports.isCrudMethod = exports.CRUD_METHODS = exports.compileQuery = void 0;
 const util_js_1 = require("../util/util.js");
 const ddl_js_1 = require("./ddl.js");
 const migration_js_1 = require("./migration.js");
@@ -24,6 +24,7 @@ Object.defineProperty(exports, "compileSqlType", { enumerable: true, get: functi
 Object.defineProperty(exports, "compileTable", { enumerable: true, get: function () { return ddl_js_2.compileTable; } });
 Object.defineProperty(exports, "DDL_VENDORS", { enumerable: true, get: function () { return ddl_js_2.DDL_VENDORS; } });
 Object.defineProperty(exports, "schemaFieldEnumValues", { enumerable: true, get: function () { return ddl_js_2.schemaFieldEnumValues; } });
+Object.defineProperty(exports, "schemaJsonColumns", { enumerable: true, get: function () { return ddl_js_2.schemaJsonColumns; } });
 Object.defineProperty(exports, "schemaPlanStatements", { enumerable: true, get: function () { return ddl_js_2.schemaPlanStatements; } });
 Object.defineProperty(exports, "SchemaCompileError", { enumerable: true, get: function () { return ddl_js_2.SchemaCompileError; } });
 var migration_js_2 = require("./migration.js");
@@ -60,7 +61,9 @@ Object.defineProperty(exports, "parseWhereFragment", { enumerable: true, get: fu
  * Blackwater `type: SELECT` documents are accepted and normalized onto the
  * same phonics model before assembly. Postgres JSONB binds use
  * `{ value: $N, cast: jsonb }` (allow-listed). JSONB `@>` / `?` / `->>`,
- * `COUNT`, `EXISTS`, and INSERT `onConflict` are compiler phonics — not host SQL.
+ * `COUNT`, `EXISTS`, INSERT `onConflict`, and `returning` on INSERT, UPDATE,
+ * and DELETE are compiler phonics — not host SQL. Pass `schemaJsonColumns`
+ * as `jsonColumns` so schema `json` / `jsonb` fields cast bare `$N` binds.
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
@@ -105,7 +108,7 @@ class CCompiler {
      * `method` comes from {@link clean_parse}. A raw query map is accepted
      * when `method` is passed as the third argument (`read` aliases `get`).
      */
-    buildQuery(cleanedConfig, query, method) {
+    buildQuery(cleanedConfig, query, method, options) {
         const resolved = method === undefined ? undefined : (0, normalize_js_1.resolveCrudMethod)(method);
         if (method !== undefined && resolved === undefined) {
             throw new sql_js_1.QueryCompileError(`Unknown CRUD method: ${method}`);
@@ -114,7 +117,7 @@ class CCompiler {
         if (!Object.prototype.hasOwnProperty.call(bundle.queries, query)) {
             throw new sql_js_1.QueryCompileError(`Query not found: ${query}`);
         }
-        return (0, sql_js_1.compileQuery)(bundle.queries[query], bundle.method);
+        return (0, sql_js_1.compileQuery)(bundle.queries[query], bundle.method, options);
     }
     /**
      * Compile `*Schema.yml` tokens into CREATE TABLE / INDEX SQL.

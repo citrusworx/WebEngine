@@ -5,6 +5,7 @@
  * Blackwater:
  *   type: SELECT | INSERT | UPDATE | DELETE
  *   table, fields, where (fragment or structured), orderBy, returning
+ *   returning on INSERT, UPDATE, and DELETE
  *   read: is an alias of get
  *   count: true → SELECT COUNT(*)
  *   exists: true → SELECT EXISTS(SELECT 1 FROM ...)
@@ -278,20 +279,28 @@ function normalizeUpdate(query: Record<string, unknown>): Record<string, unknown
     const values = implicitValues ? implicitPlaceholders(setCount) : query.values;
     const where = normalizeWhere(query.where);
 
-    return {
+    const normalized: Record<string, unknown> = {
         table,
         set,
         values,
         where: implicitValues ? shiftPlaceholders(where, setCount) : where,
     };
+    if (query.returning !== undefined) {
+        normalized.returning = query.returning;
+    }
+    return normalized;
 }
 
 function normalizeDelete(query: Record<string, unknown>): Record<string, unknown> {
     const table = typeof query.from === "string" ? query.from : requireTable(query, "DELETE");
-    return {
+    const normalized: Record<string, unknown> = {
         from: table,
         where: normalizeWhere(query.where),
     };
+    if (query.returning !== undefined) {
+        normalized.returning = query.returning;
+    }
+    return normalized;
 }
 
 /**

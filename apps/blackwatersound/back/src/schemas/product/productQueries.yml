@@ -85,8 +85,9 @@ product:
       table: products
       fields: [id, catalog, name, slug, sub, price, originalPrice, img, accent, badge, category, tags, blurb, isNew, isActive]
 
-    # Document-store seed. Bind a validated JSON string as $2; compiler emits $2::jsonb.
-    # ON CONFLICT DO NOTHING replaces a host payloadById-then-insert race check.
+    # Document-store seed. Bind the catalog object as $2; compiler emits $2::jsonb.
+    # The Postgres adapter encodes that object. ON CONFLICT DO NOTHING replaces
+    # a host payloadById-then-insert race check.
     seedPayload:
       type: INSERT
       table: products
@@ -118,8 +119,10 @@ product:
       where: id = $1
 
     # Live HTTP update. Host merges the catalog document in TS (compiler has no
-    # JSONB || / jsonb_set), then replaces payload. Explicit values so WHERE
-    # stays $2 (no implicit SET/$N remap). Relational updateProduct is unused.
+    # JSONB || / jsonb_set), then replaces payload. Pass the object; the
+    # Postgres adapter encodes the jsonb bind. Explicit values so WHERE
+    # stays $2 (no implicit SET/$N remap). RETURNING payload is the written
+    # document. Relational updateProduct is unused.
     updatePayload:
       type: UPDATE
       table: products
@@ -128,6 +131,7 @@ product:
         - { value: $1, cast: jsonb }
         - { fn: now }
       where: id = $2
+      returning: [payload]
 
   delete:
     deleteProduct:

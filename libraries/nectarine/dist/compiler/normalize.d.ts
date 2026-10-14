@@ -5,6 +5,7 @@
  * Blackwater:
  *   type: SELECT | INSERT | UPDATE | DELETE
  *   table, fields, where (fragment or structured), orderBy, returning
+ *   returning on INSERT, UPDATE, and DELETE
  *   read: is an alias of get
  *   count: true → SELECT COUNT(*)
  *   exists: true → SELECT EXISTS(SELECT 1 FROM ...)
