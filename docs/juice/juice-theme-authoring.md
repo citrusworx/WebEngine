@@ -486,6 +486,16 @@ This is Juice chrome for a styled native `<textarea>`. It is not an input, not a
 
 Tide must bind a dark field (`--tide-surface-strong`), not `--tide-page`. Placeholder stays `--tide-text-muted`. Ink stays `--tide-text`.
 
+## Field chrome roles
+
+Library themes bind the shared field contract so `[field]` / `[field-label]` / `[field-help]` / `[field-error]` paint is theme-agnostic in `field.scss`. Required names (`surface`, `gap`, `label-ink`, `help-ink`, `error-ink`, `invalid-border`) are listed in the [Theme Contract](./juice-theme-contract.md).
+
+Each shipped library theme also aliases the required roles with its identity prefix (`--aqua-field-*`, `--kw-field-*`, `--cm-field-*`, `--tide-field-*`, …). App-owned generated themes use `--jx-field-*` and bind `--juice-field-*` from existing `--jx-*` surface / text / banner-error tokens. Do not invent a new hue family just for field chrome. The wrapper is a surface, not the CTA button gradient. Surface matches that theme's field surface. Label ink is text. Help ink follows muted or soft text that theme already uses. Error ink and the invalid border reuse that theme's banner error.
+
+This is Juice chrome for a wrapper around a control. It is not an input, not a textarea, not a select, and not a combobox. Input stays `<input input>`. Textarea stays `<textarea textarea>`. Select stays `<select select>`. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]`. A boolean `[field]` attribute is fine (no HTML global `field` attr). `[field-label]` is chrome only. Name the control with `<label for>`, a wrapping `<label>`, or `[input-label]`, `[textarea-label]`, or `[select-label]`. `[invalid]` paints the wrapper border and does not restyle the nested control. Inline wrapper chrome — no overlay z-index. The field runtime auto-enhances that markup (`sync` / `destroy`, visible help and error text describe the control when the author has not set `aria-describedby`, `[invalid]` sets `aria-invalid` when the author has not set it) — see [Field Runtime](./juice-field-runtime.md). Field is the twenty-fifth Emerging auto-enhance runtime and is unpublished versus 0.9.1.
+
+Tide must bind a dark wrapper (`--tide-surface-strong`), not `--tide-page`. Label ink stays `--tide-text`. Help ink stays `--tide-text-muted`. Error ink and the invalid border stay `--tide-banner-error`.
+
 ## Wizard chrome roles
 
 Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step-indicator]` paint is theme-agnostic in `wizard.scss`. Required names (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).
