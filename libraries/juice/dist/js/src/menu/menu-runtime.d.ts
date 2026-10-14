@@ -50,6 +50,9 @@ export type MenuOptions = {
     separatorSelector?: string;
     labelSelector?: string;
 };
+export type MenuState = {
+    open: boolean;
+};
 export type MenuController = {
     destroy: () => void;
     sync: () => void;
@@ -57,6 +60,8 @@ export type MenuController = {
     close: (target?: HTMLElement | null) => void;
     toggle: (target?: HTMLElement | null) => void;
     select: (target?: HTMLElement | null) => void;
+    isOpen: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => MenuState | null;
 };
 export declare const createMenu: (options?: MenuOptions) => MenuController;
 export declare const initMenu: (options?: MenuOptions) => MenuController;

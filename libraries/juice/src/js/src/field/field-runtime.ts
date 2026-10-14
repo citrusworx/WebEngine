@@ -355,10 +355,9 @@ export const createField = (options: FieldOptions = {}): FieldController => {
   };
 
   const resolveField = (target?: HTMLElement | null) => {
-    if (target && isManagedField(target)) return target;
-    if (target) {
-      const field = target.closest(settings.fieldSelector);
-      if (field instanceof HTMLElement && isManagedField(field)) return field;
+    const fromTarget = target?.closest(settings.fieldSelector);
+    if (fromTarget instanceof HTMLElement && isManagedField(fromTarget)) {
+      return fromTarget;
     }
     return getFields()[0] ?? null;
   };

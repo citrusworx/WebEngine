@@ -42,9 +42,18 @@ export type SelectOptions = {
     root?: ParentNode;
     selectSelector?: string;
 };
+/**
+ * Value changes stay on the native `input` and `change` events.
+ * This runtime does not dispatch `juice:change`.
+ * `value` is `HTMLSelectElement.value` (the first selected option).
+ */
+export type SelectState = {
+    value: string;
+};
 export type SelectController = {
     destroy: () => void;
     sync: () => void;
+    getState: (target?: HTMLElement | null) => SelectState | null;
 };
 export declare const createSelect: (options?: SelectOptions) => SelectController;
 export declare const initSelect: (options?: SelectOptions) => SelectController;

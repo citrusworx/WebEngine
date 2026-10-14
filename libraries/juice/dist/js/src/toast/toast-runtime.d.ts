@@ -41,11 +41,16 @@ export type ToastOptions = {
     closeSelector?: string;
     defaultDuration?: number;
 };
+export type ToastState = {
+    shown: boolean;
+};
 export type ToastController = {
     destroy: () => void;
     sync: () => void;
     show: (target?: HTMLElement | null) => void;
     dismiss: (target?: HTMLElement | null) => void;
+    isShown: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => ToastState | null;
 };
 export declare const createToast: (options?: ToastOptions) => ToastController;
 export declare const initToast: (options?: ToastOptions) => ToastController;

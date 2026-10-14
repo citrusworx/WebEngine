@@ -48,11 +48,16 @@ export type TooltipOptions = {
     gap?: number;
     hideDelay?: number;
 };
+export type TooltipState = {
+    shown: boolean;
+};
 export type TooltipController = {
     destroy: () => void;
     sync: () => void;
     show: (target?: HTMLElement | null) => void;
     hide: (target?: HTMLElement | null) => void;
+    isShown: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => TooltipState | null;
 };
 export declare const createTooltip: (options?: TooltipOptions) => TooltipController;
 export declare const initTooltip: (options?: TooltipOptions) => TooltipController;

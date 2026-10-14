@@ -53,10 +53,16 @@ export type BreadcrumbOptions = {
     breadcrumbSelector?: string;
     itemSelector?: string;
 };
+/** `current` is the 0-based crumb index. `-1` when no crumb is current. */
+export type BreadcrumbState = {
+    current: number;
+};
 export type BreadcrumbController = {
     destroy: () => void;
     sync: () => void;
     setCurrent: (itemOrIndex: HTMLElement | number, trail?: HTMLElement | null) => void;
+    getCurrent: (target?: HTMLElement | null) => number;
+    getState: (target?: HTMLElement | null) => BreadcrumbState | null;
 };
 export declare const createBreadcrumb: (options?: BreadcrumbOptions) => BreadcrumbController;
 export declare const initBreadcrumb: (options?: BreadcrumbOptions) => BreadcrumbController;

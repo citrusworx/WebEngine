@@ -41,9 +41,17 @@ export type TextareaOptions = {
     root?: ParentNode;
     textareaSelector?: string;
 };
+/**
+ * Value changes stay on the native `input` and `change` events.
+ * This runtime does not dispatch `juice:change`.
+ */
+export type TextareaState = {
+    value: string;
+};
 export type TextareaController = {
     destroy: () => void;
     sync: () => void;
+    getState: (target?: HTMLElement | null) => TextareaState | null;
 };
 export declare const createTextarea: (options?: TextareaOptions) => TextareaController;
 export declare const initTextarea: (options?: TextareaOptions) => TextareaController;

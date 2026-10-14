@@ -40,6 +40,9 @@ export type WizardOptions = {
     prevSelector?: string;
     completeSelector?: string;
 };
+export type WizardState = {
+    current: number;
+};
 export type WizardController = {
     destroy: () => void;
     sync: () => void;
@@ -47,6 +50,7 @@ export type WizardController = {
     prev: (target?: HTMLElement | null) => void;
     goTo: (step: number | string, target?: HTMLElement | null) => void;
     current: (target?: HTMLElement | null) => number;
+    getState: (target?: HTMLElement | null) => WizardState | null;
 };
 export declare const createWizard: (options?: WizardOptions) => WizardController;
 export declare const initWizard: (options?: WizardOptions) => WizardController;
