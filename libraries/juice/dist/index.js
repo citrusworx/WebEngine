@@ -4619,8 +4619,157 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	$s = null, Qs || tc();
 }, document.addEventListener("DOMContentLoaded", $s)) : tc());
 //#endregion
+//#region src/js/src/field/field-runtime.ts
+var rc = "input, textarea, select", ic = "[field-help], [field-error]", ac = {
+	root: typeof document < "u" ? document : {},
+	fieldSelector: "[field]"
+}, oc = (e) => Array.from(e), sc = () => ({
+	destroy: () => {},
+	sync: () => {}
+}), cc = (e) => e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement, lc = (e) => {
+	let t = e;
+	for (; t;) {
+		if (t.hidden || t.getAttribute("aria-hidden") === "true") return !1;
+		t = t.parentElement;
+	}
+	return !0;
+}, uc = (e) => {
+	let t = [], n = (r) => {
+		if (!(r !== e && r instanceof HTMLElement && (r.hidden || r.getAttribute("aria-hidden") === "true"))) {
+			if (r.nodeType === Node.TEXT_NODE) {
+				r.textContent && t.push(r.textContent);
+				return;
+			}
+			r.childNodes.forEach((e) => n(e));
+		}
+	};
+	return n(e), t.join("").replace(/\s+/g, " ").trim();
+}, dc = (e) => (e ?? "").trim().split(/\s+/).filter(Boolean), fc = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return sc();
+	let t = {
+		...ac,
+		...e
+	}, n = t.root ?? document, r = /* @__PURE__ */ new WeakMap(), i = /* @__PURE__ */ new WeakSet(), a = /* @__PURE__ */ new WeakMap(), o = /* @__PURE__ */ new Set(), s = /* @__PURE__ */ new WeakMap(), c = /* @__PURE__ */ new WeakMap(), l = /* @__PURE__ */ new Set(), u = /* @__PURE__ */ new Set(), d = !1, f = 0, p = (e) => !(e instanceof HTMLElement) || !e.matches(t.fieldSelector) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, m = () => {
+		let e = oc(n.querySelectorAll(t.fieldSelector)).filter(p);
+		return n instanceof HTMLElement && p(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, h = (e) => e.parentElement?.closest(t.fieldSelector) ?? null, g = (e) => {
+		let t = e.querySelectorAll(rc);
+		for (let n of t) if (cc(n) && h(n) === e) return n;
+		return null;
+	}, _ = (e, t) => {
+		let n = [];
+		return e.querySelectorAll(ic).forEach((r) => {
+			h(r) === e && (r === t || r.contains(t) || t.contains(r) || lc(r) && uc(r) && n.push(r));
+		}), n;
+	}, v = (e) => {
+		let t = r.get(e);
+		return t !== void 0 && e.getAttribute("aria-describedby") === t;
+	}, y = (e) => {
+		let t = e.getAttribute("aria-describedby");
+		return t === null || t.trim() === "" ? !1 : !v(e);
+	}, b = (e) => {
+		let t = e.getAttribute("aria-invalid");
+		return t === null || t.trim() === "" ? !1 : !(i.has(e) && t === "true");
+	}, x = (e) => {
+		let t = r.get(e);
+		t !== void 0 && (e.getAttribute("aria-describedby") === t && e.removeAttribute("aria-describedby"), r.delete(e));
+	}, S = (e) => {
+		i.has(e) && (e.getAttribute("aria-invalid") === "true" && e.removeAttribute("aria-invalid"), i.delete(e));
+	}, C = (e, t) => {
+		s.get(t) === e && (x(t), S(t), s.delete(t));
+	}, w = (e) => {
+		let t = c.get(e);
+		c.delete(e), t?.control && C(e, t.control);
+	}, T = (e) => {
+		let t = e.id.trim();
+		if (t) {
+			let n = a.get(e);
+			return n && n !== t && (a.delete(e), o.delete(e)), t;
+		}
+		let n = "";
+		do
+			f += 1, n = `juice-field-desc-${f}`;
+		while (document.getElementById(n));
+		return e.id = n, a.set(e, n), o.add(e), n;
+	}, E = (e) => {
+		let t = document.querySelectorAll("[aria-describedby]");
+		for (let n of t) if (dc(n.getAttribute("aria-describedby")).includes(e)) return !0;
+		return !1;
+	}, D = () => {
+		for (let e of [...o]) {
+			if (u.has(e)) continue;
+			let t = a.get(e);
+			a.delete(e), o.delete(e), !(!t || e.id !== t) && (e.isConnected && E(t) || e.removeAttribute("id"));
+		}
+	}, O = (e) => {
+		let t = g(e), n = c.get(e);
+		if (n?.control && n.control !== t && C(e, n.control), !t) {
+			c.set(e, { control: null });
+			return;
+		}
+		if (s.set(t, e), y(t)) r.delete(t);
+		else {
+			let n = [];
+			for (let r of _(e, t)) {
+				let e = T(r);
+				u.add(r), n.includes(e) || n.push(e);
+			}
+			if (n.length) {
+				let e = n.join(" ");
+				t.getAttribute("aria-describedby") !== e && t.setAttribute("aria-describedby", e), r.set(t, e);
+			} else x(t);
+		}
+		e.hasAttribute("invalid") ? b(t) ? i.has(t) && t.getAttribute("aria-invalid") !== "true" && i.delete(t) : (t.getAttribute("aria-invalid") !== "true" && t.setAttribute("aria-invalid", "true"), i.add(t)) : S(t), c.set(e, { control: t });
+	}, k = () => {
+		if (d) return;
+		let e = m(), t = new Set(e);
+		u = /* @__PURE__ */ new Set(), l.forEach((e) => {
+			t.has(e) || (w(e), l.delete(e));
+		}), e.forEach((e) => {
+			l.add(e), O(e);
+		}), D();
+	}, A = !1, j = 0, M = () => {
+		A || d || (A = !0, j = requestAnimationFrame(() => {
+			A = !1, k();
+		}));
+	}, N = typeof MutationObserver < "u" ? new MutationObserver(() => M()) : null;
+	return N && n instanceof Node && N.observe(n, {
+		childList: !0,
+		subtree: !0,
+		characterData: !0,
+		attributes: !0,
+		attributeFilter: [
+			"field",
+			"field-help",
+			"field-error",
+			"invalid",
+			"hidden",
+			"aria-hidden",
+			"aria-describedby",
+			"aria-invalid",
+			"id"
+		]
+	}), k(), {
+		destroy: () => {
+			if (!d) {
+				d = !0, A &&= (cancelAnimationFrame(j), !1), N?.disconnect();
+				for (let e of [...l]) w(e);
+				l.clear(), u = /* @__PURE__ */ new Set(), D();
+			}
+		},
+		sync: k
+	};
+}, pc = fc, mc = null, hc = !1, gc = null, _c = () => {
+	!gc || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", gc), gc = null);
+}, vc = () => typeof window > "u" || typeof document > "u" ? null : (hc = !1, _c(), mc ? (mc.sync(), mc) : (mc = fc(), mc)), yc = () => {
+	hc = !0, _c(), mc?.destroy(), mc = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (gc = () => {
+	gc = null, hc || vc();
+}, document.addEventListener("DOMContentLoaded", gc)) : vc());
+//#endregion
 //#region src/tokens/index.ts
-var rc = {
+var bc = {
 	colors: {
 		families: [
 			"black",
@@ -4788,4 +4937,4 @@ var rc = {
 	themes: {}
 };
 //#endregion
-export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, Xo as createDisclosure, $e as createDrawer, Is as createInput, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, xs as createSelect, Hi as createSlider, cs as createSpinner, mi as createSwitch, ge as createTabs, Ys as createTextarea, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, Zo as initDisclosure, et as initDrawer, Ls as initInput, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ss as initSelect, Ui as initSlider, ls as initSpinner, hi as initSwitch, _e as initTabs, Xs as initTextarea, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, ns as startDisclosureRuntime, at as startDrawerRuntime, Hs as startInputRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ds as startSelectRuntime, Ji as startSliderRuntime, ms as startSpinnerRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, tc as startTextareaRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, rs as stopDisclosureRuntime, ot as stopDrawerRuntime, Us as stopInputRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Os as stopSelectRuntime, Yi as stopSliderRuntime, hs as stopSpinnerRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, nc as stopTextareaRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, rc as tokens };
+export { v as Accordion, te as createAccordion, Ar as createBanner, Va as createBreadcrumb, oa as createCheckbox, fr as createCombobox, Xo as createDisclosure, $e as createDrawer, fc as createField, Is as createInput, Xr as createMenu, Le as createModal, T as createNavigation, jo as createPagination, qt as createPopover, so as createProgress, Ea as createRadio, xs as createSelect, Hi as createSlider, cs as createSpinner, mi as createSwitch, ge as createTabs, Ys as createTextarea, bt as createToast, xn as createTooltip, Hn as createWizard, ne as initAccordion, jr as initBanner, Ha as initBreadcrumb, sa as initCheckbox, pr as initCombobox, Zo as initDisclosure, et as initDrawer, pc as initField, Ls as initInput, Zr as initMenu, Re as initModal, E as initNavigation, Mo as initPagination, Jt as initPopover, co as initProgress, Da as initRadio, Ss as initSelect, Ui as initSlider, ls as initSpinner, hi as initSwitch, _e as initTabs, Xs as initTextarea, xt as initToast, Sn as initTooltip, Un as initWizard, oe as startAccordionRuntime, Ir as startBannerRuntime, qa as startBreadcrumbRuntime, fa as startCheckboxRuntime, vr as startComboboxRuntime, ns as startDisclosureRuntime, at as startDrawerRuntime, vc as startFieldRuntime, Hs as startInputRuntime, ni as startMenuRuntime, Ue as startModalRuntime, O as startNavigationRuntime, Lo as startPaginationRuntime, $t as startPopoverRuntime, mo as startProgressRuntime, Ma as startRadioRuntime, Ds as startSelectRuntime, Ji as startSliderRuntime, ms as startSpinnerRuntime, bi as startSwitchRuntime, Se as startTabsRuntime, tc as startTextareaRuntime, Et as startToastRuntime, Dn as startTooltipRuntime, Jn as startWizardRuntime, se as stopAccordionRuntime, Lr as stopBannerRuntime, Ja as stopBreadcrumbRuntime, pa as stopCheckboxRuntime, yr as stopComboboxRuntime, rs as stopDisclosureRuntime, ot as stopDrawerRuntime, yc as stopFieldRuntime, Us as stopInputRuntime, ri as stopMenuRuntime, We as stopModalRuntime, k as stopNavigationRuntime, Ro as stopPaginationRuntime, en as stopPopoverRuntime, ho as stopProgressRuntime, Na as stopRadioRuntime, Os as stopSelectRuntime, Yi as stopSliderRuntime, hs as stopSpinnerRuntime, xi as stopSwitchRuntime, Ce as stopTabsRuntime, nc as stopTextareaRuntime, Dt as stopToastRuntime, On as stopTooltipRuntime, Yn as stopWizardRuntime, bc as tokens };

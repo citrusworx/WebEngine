@@ -240,3 +240,13 @@ export type {
     TextareaController,
     TextareaOptions
 } from "./src/textarea/textarea-runtime.js";
+export {
+    createField,
+    initField,
+    startFieldRuntime,
+    stopFieldRuntime
+} from "./src/field/field-runtime.js";
+export type {
+    FieldController,
+    FieldOptions
+} from "./src/field/field-runtime.js";

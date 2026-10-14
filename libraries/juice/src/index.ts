@@ -241,4 +241,14 @@ export type {
     TextareaController,
     TextareaOptions
 } from "./js/src/textarea/textarea-runtime.js";
+export {
+    createField,
+    initField,
+    startFieldRuntime,
+    stopFieldRuntime
+} from "./js/src/field/field-runtime.js";
+export type {
+    FieldController,
+    FieldOptions
+} from "./js/src/field/field-runtime.js";
 export { tokens } from "./tokens/index.js";
