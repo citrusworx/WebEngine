@@ -2472,4 +2472,92 @@ describe("Juice package contract", () => {
         );
         expect(literals).toEqual([]);
     });
+
+    it("gates the P0 motion catalog in compiled CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const catalog: Array<{
+            value: string;
+            property: "animation" | "transition";
+            keyframes?: string;
+        }> = [
+            { value: "fade.in", property: "animation", keyframes: "fadeIn" },
+            { value: "fade.in::fast", property: "animation", keyframes: "fadeIn" },
+            { value: "fade.out", property: "animation", keyframes: "fadeOut" },
+            { value: "slideIn.left", property: "animation", keyframes: "slideInLeft" },
+            { value: "slideIn.left::fast", property: "animation", keyframes: "slideInLeft" },
+            { value: "slideIn.left::slow", property: "animation", keyframes: "slideInLeft" },
+            { value: "spin", property: "animation", keyframes: "spin" },
+            { value: "spin::fast", property: "animation", keyframes: "spin" },
+            { value: "spin::slow", property: "animation", keyframes: "spin" },
+            { value: "pulse", property: "animation", keyframes: "pulse" },
+            { value: "grow", property: "animation", keyframes: "grow" },
+            { value: "accordion", property: "transition" },
+            { value: "blink", property: "animation", keyframes: "blink-default" },
+            { value: "blink:slow", property: "animation", keyframes: "blink-soft" },
+            { value: "blink:fast", property: "animation", keyframes: "blink-soft" },
+            { value: "blink:signal", property: "animation", keyframes: "blink-signal" },
+            { value: "blink:terminal", property: "animation", keyframes: "blink-terminal" },
+        ];
+
+        const ruleBody = (value: string) => {
+            const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const match = new RegExp(`\\[motion=(?:"|')?${escaped}(?:"|')?\\]`).exec(css);
+            expect(match, `[motion="${value}"]`).not.toBeNull();
+
+            const open = css.indexOf("{", match!.index);
+            expect(open).toBeGreaterThan(match!.index);
+            let depth = 0;
+            let end = open;
+            for (let i = open; i < css.length; i += 1) {
+                if (css[i] === "{") depth += 1;
+                else if (css[i] === "}") {
+                    depth -= 1;
+                    if (depth === 0) {
+                        end = i;
+                        break;
+                    }
+                }
+            }
+
+            return css.slice(open + 1, end);
+        };
+
+        for (const entry of catalog) {
+            const body = ruleBody(entry.value);
+            const declaration = body.match(new RegExp(`${entry.property}\\s*:[^;]+`));
+            expect(declaration, entry.value).not.toBeNull();
+            const value = declaration![0];
+            expect(value, entry.value).toMatch(/var\(--juice-motion-/);
+            expect(value, entry.value).not.toMatch(/\d+(?:\.\d+)?(?:ms|s)\b/);
+
+            if (entry.keyframes) {
+                expect(value, entry.value).toContain(entry.keyframes);
+                expect(css).toMatch(new RegExp(`@keyframes ${entry.keyframes}\\s*\\{`));
+            }
+        }
+
+        const reduced = reducedMotionBlocks(css);
+        const blanket = reduced.find((block) =>
+            /\[motion\]\s*\{[^}]*animation:\s*none\s*!important/.test(block)
+        );
+        expect(blanket).toBeDefined();
+        expect(blanket).toMatch(
+            /transition-duration:\s*var\(--juice-motion-duration-instant\)\s*!important/
+        );
+        expect(blanket).toMatch(
+            /transition-delay:\s*var\(--juice-motion-duration-instant\)\s*!important/
+        );
+
+        const durationCollapse = reduced.filter((block) =>
+            block.includes("--juice-motion-duration-instant: 0.01ms !important")
+        );
+        expect(durationCollapse.length).toBeGreaterThan(0);
+        for (const token of ["instant", "fast", "base", "slow"]) {
+            expect(
+                durationCollapse.some((block) =>
+                    block.includes(`--juice-motion-duration-${token}: 0.01ms !important`)
+                )
+            ).toBe(true);
+        }
+    });
 });

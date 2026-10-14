@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Spinner is a standalone indeterminate **busy indicator**. It is not a progress bar. Progress stays a valued `[progress]` / `[progress-fill]` bar (determinate or `progress="indeterminate"`). It is not a disclosure. CSS owns the spin. There is no value, no keyboard, no Escape, no focus trap, and no Sig Spinner factory.
 
-Spinner is the twenty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, and field are unpublished versus 0.9.1. All twenty-five stay Emerging.
+Spinner is the twenty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core are unpublished versus 0.9.1. All twenty-five stay Emerging.
 
 ## Markup Contract
 

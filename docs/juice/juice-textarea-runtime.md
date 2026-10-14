@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Textarea is a styled native **`<textarea>`**. Typing, change, and the keyboard stay on the native control. It is not an input, not a select, and not a combobox. Input stays `<input input>` and is left untouched. Select stays `<select select>` and is left untouched. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]` and is left untouched. Field is a different runtime — see [Field Runtime](./juice-field-runtime.md). There is no auto-grow, no character count, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Textarea factory.
 
-Textarea is the twenty-fourth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, and field are unpublished versus 0.9.1. All twenty-five stay Emerging.
+Textarea is the twenty-fourth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core are unpublished versus 0.9.1. All twenty-five stay Emerging.
 
 ## Markup Contract
 
@@ -186,7 +186,7 @@ Textarea does not listen for keys, and it does not listen for `input` or `change
 ## Limitations
 
 - No `Textarea()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Textarea is the twenty-fourth Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.1`. Pagination shipped in that cut and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, select remains the twenty-second, and input remains the twenty-third. Field is the twenty-fifth and is also unpublished versus that cut. Disclosure, spinner, select, input, textarea, and field are unpublished versus that cut. All twenty-five stay Emerging.
+- This surface is Emerging, not Stable-ish. Textarea is the twenty-fourth Emerging auto-enhance runtime, unpublished versus `@citrusworx/juiceui@0.9.1`. Pagination shipped in that cut and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, select remains the twenty-second, and input remains the twenty-third. Field is the twenty-fifth and is also unpublished versus that cut. Disclosure, spinner, select, input, textarea, field, and motion core are unpublished versus that cut. All twenty-five stay Emerging.
 - This is not an input. `<input input>` is a different runtime. An `<input>` is ignored, even with `[textarea]`. Input stays untouched.
 - This is not a select. `<select select>` is a different runtime. The open list of a select stays the platform popup. Select stays untouched.
 - This is not a combobox. `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` is a different runtime. A `<textarea textarea>` inside `[combobox]`, including `[combobox-input]`, is ignored. Combobox stays untouched.

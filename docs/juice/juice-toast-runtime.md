@@ -146,8 +146,8 @@ The runtime performs seven main jobs:
 2. Fill missing `aria-live` (`polite`, or `assertive` when `toast-live="assertive"`) and `aria-relevant="additions"` on the region
 3. Set toast `role="status"`, or `role="alert"` for `toast="error"` or assertive live
 4. Fill an empty `[toast-close]` name (`aria-label="Dismiss"`) and button role/tabindex on non-native closes
-5. Show / dismiss via native `hidden` on the toast (the region stays); `show()` never hides siblings and does not move focus into the toast
-6. Auto-dismiss after `defaultDuration` (5000) or `toast-duration`; pause while pointer or focus is inside the toast; sticky when `0` / `Infinity` / negative
+5. Enter removes native `hidden`, then plays. Exit plays first; `hidden` is set only after it finishes. The region stays. `show()` never hides siblings and does not move focus into the toast
+6. Auto-dismiss after `defaultDuration` (5000) or `toast-duration`. That timer is reading time: reduced motion does not shorten it. Pause while pointer or focus is inside the toast. Sticky when `0` / `Infinity` / negative
 7. Handle click (`[toast-close]`) and keyboard (Escape for the most recently shown visible toast when no open modal/drawer overlay, popover, combobox list, or tooltip exists; Enter/Space on non-button closes)
 
 Orphan `[toast]` nodes that are not inside `[toast-region]` are ignored.
@@ -167,6 +167,14 @@ Mutation-heavy environments can change the DOM a lot in a short burst.
 So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
 
 That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
+
+## Motion
+
+Enter removes `hidden` on `[toast]`, then sets `data-motion-state="entering"`. The toast fades and travels `0.75rem`: up for top regions (default, `top-right`, `top-left`), down for `bottom-right` and `bottom-left`. Enter uses `--juice-motion-duration-base` and `--juice-motion-ease-enter`. Exit uses `--juice-motion-duration-fast` and `--juice-motion-ease-exit`, then sets `hidden`.
+
+Toast is not a dialog. There is no focus trap, and show does not move focus in. Escape still dismisses the most recently shown visible toast, including while an exit has not yet set `hidden`. A second dismiss on a toast that is already exiting does not start a second exit. Showing a toast that is exiting cancels the exit and leaves it open.
+
+`toast-duration` and `defaultDuration` are reading time. Reduced motion does not shorten them. Reduced motion, or a computed duration of `0`, still makes the enter and exit instant. See [Animations](./juice-animations.md).
 
 ## Keyboard
 
