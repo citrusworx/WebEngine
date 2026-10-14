@@ -130,10 +130,16 @@ The runtime performs five main jobs:
 1. Find `[accordion]` roots and their `[accordion-item]` triggers
 2. Pair each trigger with its panel (`aria-controls`, then the next sibling)
 3. Fill missing ids, `aria-controls`, `role="region"`, and `aria-labelledby`
-4. Toggle `aria-expanded`, panel `hidden`, and `aria-hidden` on click
+4. Toggle `aria-expanded`, panel `hidden`, and `aria-hidden` on click. A panel with `[motion="accordion"]` animates height; `hidden` waits until collapse finishes
 5. Handle Enter/Space on non-button triggers and Escape to close
 
 Open/closed state uses native `hidden` plus ARIA. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+
+## Motion
+
+`[motion="accordion"]` must be on the panel, not the trigger. The runtime measures that panel's `scrollHeight`, sets an explicit pixel height, and transitions height on `--juice-motion-duration-base` and `--juice-motion-ease-in-out`. `aria-expanded` updates immediately. Expand removes `hidden` before the height runs. Collapse sets `hidden` only after the height finishes, because native `hidden` cannot interpolate to or from `auto`.
+
+Without the attribute, show and hide stay an instant `hidden` toggle. Reduced motion stays instant even when the attribute is present. See [Animations](./juice-animations.md).
 
 ## Why MutationObserver Is Used
 
@@ -169,7 +175,7 @@ The runtime owns clicks. The factory does not attach a private `onclick`, so a c
 - Panels use native `hidden`, never layout `content=`.
 - Arrow-key roving tabindex is out of scope.
 - Escape is contextual: it collapses the focused or last open item only when that accordion already owns the key. There is no global accordion Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- `Accordion()` is the only shipped Sig factory among the twenty-five auto-enhance runtimes. Markup plus auto-enhance is still the contract. Checkbox and radio count as two of those runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion, and is unpublished versus 0.9.1. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure, and is unpublished versus 0.9.1. Select is a styled native `<select>`, distinct from combobox, and is unpublished versus 0.9.1. Input is a styled native `<input>`, distinct from combobox and from select, and is unpublished versus 0.9.1. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox, and is unpublished versus 0.9.1. Field is a wrapper around a control, distinct from input, textarea, select, and combobox, and is unpublished versus 0.9.1.
+- `Accordion()` is the only shipped Sig factory among the twenty-five auto-enhance runtimes. Markup plus auto-enhance is still the contract. Checkbox and radio count as two of those runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion, and is unpublished versus 0.9.1. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure, and is unpublished versus 0.9.1. Select is a styled native `<select>`, distinct from combobox, and is unpublished versus 0.9.1. Input is a styled native `<input>`, distinct from combobox and from select, and is unpublished versus 0.9.1. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox, and is unpublished versus 0.9.1. Field is a wrapper around a control, distinct from input, textarea, select, and combobox, and is unpublished versus 0.9.1. Motion core is unpublished versus 0.9.1 and stays Emerging.
 
 ## Why This Matches Navigation
 

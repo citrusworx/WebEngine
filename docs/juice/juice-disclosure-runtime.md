@@ -30,7 +30,7 @@ This surface is Emerging, not Stable-ish. Valid markup should work after importi
 
 Disclosure is the APG **Disclosure** pattern: one trigger, one panel. It is not an accordion. Accordion stays multi-item `[accordion]` / `[accordion-item]` (multi-open). Disclosure is not a layered overlay. There is no exclusive group and no arrow-key roving tabindex.
 
-Disclosure is the twentieth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, and field are unpublished versus 0.9.1. All twenty-five stay Emerging.
+Disclosure is the twentieth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.1` is the live npm cut and adds pagination, the nineteenth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core are unpublished versus 0.9.1. All twenty-five stay Emerging.
 
 ## Markup Contract
 
@@ -177,11 +177,17 @@ The runtime performs seven main jobs:
 2. Pair each trigger with one panel. `aria-controls` inside the root wins. Otherwise the next sibling panel is used, including an unmarked sibling that is not another trigger or a nested disclosure
 3. Fill missing ids from the root `name` when it is set, otherwise from `juice-disclosure-trigger-N` / `juice-disclosure-panel-N`. Author ids are kept. Extra triggers in one root stay independent and get a numeric suffix. They are not an exclusive group
 4. Wire `aria-controls`, `role="region"`, and `aria-labelledby`. A non-button trigger that is not an anchor with `href` gets `role="button"` and `tabindex="0"` when tabindex is missing
-5. Keep open/closed state on `aria-expanded`, native `hidden`, and `aria-hidden`. When a panel exists, `hidden` wins and sync rewrites the other two to match. Layout `content=` is never written
+5. Keep open/closed state on `aria-expanded`, native `hidden`, and `aria-hidden`. When a panel exists, `hidden` wins and sync rewrites the other two to match. A panel with `[motion="accordion"]` animates height, and `hidden` waits until collapse finishes. Layout `content=` is never written
 6. Toggle on click. Enter and Space toggle only non-button triggers that are not anchors with `href`. Buttons and those anchors keep the browser activation path
 7. Escape collapses the focused open disclosure, or the last opened one, and returns focus to that trigger. It yields to an open modal, drawer, or popover, and to an already-handled Escape. There is no global disclosure Escape
 
 There is no focus trap and no arrow-key roving tabindex. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, combobox, banner, or menu, and it does not toggle a switch, move a slider, toggle a checkbox, select a radio, move a breadcrumb or pagination current page, change a progress value, or collapse an accordion item.
+
+## Motion
+
+`[motion="accordion"]` must be on `[disclosure-panel]`, not the trigger. The runtime measures that panel's `scrollHeight`, sets an explicit pixel height, and transitions height on `--juice-motion-duration-base` and `--juice-motion-ease-in-out`. `aria-expanded` updates immediately. Expand removes `hidden` before the height runs. Collapse sets `hidden` only after the height finishes, because native `hidden` cannot interpolate to or from `auto`.
+
+Without the attribute, show and hide stay an instant `hidden` toggle. Reduced motion stays instant even when the attribute is present. This is the same height opt-in as accordion. Disclosure is still one trigger and one panel, not an accordion. See [Animations](./juice-animations.md).
 
 ## Why MutationObserver Is Used
 

@@ -142,8 +142,8 @@ The runtime performs eight main jobs:
 2. Resolve the panel (`[popover-panel]`, then `[role="dialog"]`, then the root’s first element child)
 3. Fill missing root / panel / title ids, `role="dialog"`, and `aria-labelledby` from the header heading. It does not set `aria-modal`
 4. Fill opener `aria-expanded` / `aria-haspopup="dialog"` and an empty `[popover-close]` name
-5. Toggle native `hidden` on the root; opening one managed popover closes any other open popover
-6. Move focus into the panel on open (`[autofocus]` if present, else the first focusable, else `tabindex="-1"` on the panel), trap Tab inside the panel, and restore focus to the opener on close
+5. Enter removes native `hidden`, places the panel, then plays. Exit plays first; `hidden` and placement cleanup run only after it finishes. Opening one managed popover closes any other open popover
+6. Move focus into the panel on open (`[autofocus]` if present, else the first focusable, else `tabindex="-1"` on the panel). Trap Tab and honor Escape while the popover is open, including during exit. Focus restores to the opener after `hidden` is set
 7. Place the root with `position: fixed` from the opener’s `getBoundingClientRect` plus an 8px gap; flip once to the opposite side if the preferred side overflows; reposition on open, window resize, and capture scroll (rAF-throttled)
 8. Handle click (opener toggle, close, outside) and keyboard (Escape, Tab trap, Enter/Space on non-button openers and closes)
 
@@ -176,6 +176,14 @@ Mutation-heavy environments can change the DOM a lot in a short burst.
 So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
 
 That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
+
+## Motion
+
+Enter removes `hidden` on `[popover-root]`, places the panel, moves focus in, then sets `data-motion-state="entering"`. The root fades in. The panel shifts `0.5rem` from the trigger side (`bottom` and the default from `translateY(-0.5rem)`, `top` from `translateY(0.5rem)`, `left` from `translateX(0.5rem)`, `right` from `translateX(-0.5rem)`). Enter uses `--juice-motion-duration-base` and `--juice-motion-ease-enter`.
+
+Exit sets `data-motion-state="exiting"` before `hidden`. The root fades out and the panel shifts back toward the trigger on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. The focus trap and Escape still apply during that exit. A second Escape does not start a second close. `hidden`, placement cleanup, and focus restore run only after the exit finishes (`exited`).
+
+Reduced motion, or a computed duration of `0`, does the same steps in the same turn. A new open cancels an in-flight exit. See [Animations](./juice-animations.md).
 
 ## Keyboard
 

@@ -757,7 +757,26 @@ Tide binds all of these (`--tide-item-border`, `--tide-trigger-accent`, `--tide-
 
 Tide binds `--juice-tabs-panel` from `--tide-tabs-panel`. Each retro theme binds `--juice-tabs-panel` from its own `--*-tabs-panel` alias. None of them bind `--juice-tabs-panel-rule`. Aquaflux, KiwiPress, and Citrusmint bind neither optional tabs hook.
 
-Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/wizard/surface/border-strength/shadow-tone/overlay roles only. They do not emit these optional hooks.
+### Motion (optional override)
+
+Core CSS owns the defaults. Shipped library themes are not required to bind these, so their pace stays the core scale. A theme may override any `--juice-motion-*` name. Generated `--jx-*` themes pass the eight roles below through (`--jx-motion-*` → `--juice-motion-*`) at the same defaults, so a generated theme does not retime unless the author changes those values.
+
+| Token | Default |
+|---|---|
+| `--juice-motion-duration-instant` | `0.15s` |
+| `--juice-motion-duration-fast` | `0.2s` |
+| `--juice-motion-duration-base` | `0.3s` |
+| `--juice-motion-duration-slow` | `1s` |
+| `--juice-motion-ease-standard` | `ease` |
+| `--juice-motion-ease-enter` | `ease-out` |
+| `--juice-motion-ease-exit` | `ease-in` |
+| `--juice-motion-ease-linear` | `linear` |
+
+Derived curves `--juice-motion-ease-in-out` (`ease-in-out`) and `--juice-motion-ease-steps` (`steps(2, end)`) stay on core. Generated themes do not pass them through. Component hooks `--juice-spinner-spin-duration` and `--juice-progress-indeterminate-duration` are optional overrides, not required binds.
+
+`prefers-reduced-motion: reduce` collapses the four duration tokens to `0.01ms` on `:root` and `[theme]`, with `!important`. A theme pass-through literal cannot keep a long duration. Motion core is unpublished versus `@citrusworx/juiceui@0.9.1` and stays Emerging. See [Animations](./juice-animations.md).
+
+Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/textarea/field/wizard/surface/border-strength/shadow-tone/overlay roles, and they pass motion through as above. They do not emit the optional accordion/tabs hooks.
 
 ## 6. Identity-prefix alias convention
 
@@ -837,6 +856,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Border strength (`soft` / `bold` × width, color) | bind | bind | bind | bind | bind |
 | Shadow tone (`cool` / `warm` × color, shadow) | bind | bind | bind | bind | bind |
 | Overlay (`frost` / `tint` × wash, layer) | bind | bind | bind | bind | bind |
+| Motion (`--juice-motion-*`) | optional (core default) | optional (core default) | optional (core default) | optional (core default) | optional (core default) |
 | Accordion optional | omit (core no-op) | omit | omit | bind all seven | bind all seven |
 | Tabs optional | omit | omit | omit | `--juice-tabs-panel` only | `--juice-tabs-panel` only |
 | Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role | not a theme role |
@@ -865,4 +885,4 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 ## Status
 
-This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, progress A→B→C, pagination A→B→C, disclosure A→B→C, spinner A→B→C, select A→B→C (theme chrome, runtime, and runtime docs), input A→B→C (theme chrome, runtime, and runtime docs), textarea A→B→C (theme chrome, runtime, and runtime docs), and field A→B→C (theme chrome, runtime, and runtime docs): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, `--juice-slider-*`, `--juice-checkbox-*`, `--juice-radio-*`, `--juice-breadcrumb-*`, `--juice-progress-*`, `--juice-pagination-*`, `--juice-disclosure-*`, `--juice-spinner-*`, `--juice-select-*`, `--juice-input-*`, `--juice-textarea-*`, `--juice-field-*`, and `--juice-wizard-*`. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set and the nineteenth Emerging auto-enhance runtime. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion, and the twentieth Emerging auto-enhance runtime. Disclosure is unpublished versus 0.9.1. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure, and the twenty-first Emerging auto-enhance runtime. Spinner is unpublished versus 0.9.1. Select is a styled native `<select>`, distinct from combobox, and the twenty-second Emerging auto-enhance runtime. Select is unpublished versus 0.9.1. Input is a styled native `<input>`, distinct from combobox and from select, and the twenty-third Emerging auto-enhance runtime. Input is unpublished versus 0.9.1. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox, and the twenty-fourth Emerging auto-enhance runtime. Textarea is unpublished versus 0.9.1. Field is a wrapper around a control, distinct from input, textarea, select, and combobox, and the twenty-fifth Emerging auto-enhance runtime. Field is unpublished versus 0.9.1. All twenty-five stay Emerging. Blush, CLI, and publish are out of scope here.
+This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, progress A→B→C, pagination A→B→C, disclosure A→B→C, spinner A→B→C, select A→B→C (theme chrome, runtime, and runtime docs), input A→B→C (theme chrome, runtime, and runtime docs), textarea A→B→C (theme chrome, runtime, and runtime docs), and field A→B→C (theme chrome, runtime, and runtime docs): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`, `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, `--juice-slider-*`, `--juice-checkbox-*`, `--juice-radio-*`, `--juice-breadcrumb-*`, `--juice-progress-*`, `--juice-pagination-*`, `--juice-disclosure-*`, `--juice-spinner-*`, `--juice-select-*`, `--juice-input-*`, `--juice-textarea-*`, `--juice-field-*`, and `--juice-wizard-*`. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set and the nineteenth Emerging auto-enhance runtime. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion, and the twentieth Emerging auto-enhance runtime. Disclosure is unpublished versus 0.9.1. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure, and the twenty-first Emerging auto-enhance runtime. Spinner is unpublished versus 0.9.1. Select is a styled native `<select>`, distinct from combobox, and the twenty-second Emerging auto-enhance runtime. Select is unpublished versus 0.9.1. Input is a styled native `<input>`, distinct from combobox and from select, and the twenty-third Emerging auto-enhance runtime. Input is unpublished versus 0.9.1. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox, and the twenty-fourth Emerging auto-enhance runtime. Textarea is unpublished versus 0.9.1. Field is a wrapper around a control, distinct from input, textarea, select, and combobox, and the twenty-fifth Emerging auto-enhance runtime. Field is unpublished versus 0.9.1. Motion core (tokens, the shared helper, and overlay enter/exit) is unpublished versus 0.9.1. All twenty-five stay Emerging. Motion stays Emerging. Blush, CLI, and publish are out of scope here.

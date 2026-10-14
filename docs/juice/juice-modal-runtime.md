@@ -136,8 +136,8 @@ The runtime performs seven main jobs:
 2. Resolve the dialog (`[modal]`, then `[role="dialog"]`, then the overlay’s first element child)
 3. Fill missing overlay / dialog / title ids, `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading
 4. Fill opener `aria-expanded` / `aria-haspopup="dialog"` and an empty `[modal-close]` name
-5. Toggle native `hidden` on the overlay; opening one overlay closes any other open overlay
-6. Trap focus while open and restore it to the opener on close
+5. Enter removes native `hidden`, then plays. Exit plays first; `hidden` is set only after it finishes. Opening one overlay closes any other open overlay
+6. Trap focus and honor Escape while the overlay is open, including during exit. Focus restores to the opener after `hidden` is set
 7. Handle click (opener, close, backdrop) and keyboard (Escape, Tab trap, Enter/Space on non-button openers and closes)
 
 Orphan `aria-controls` that do not target a `[modal-overlay]` are ignored.
@@ -157,6 +157,14 @@ Mutation-heavy environments can change the DOM a lot in a short burst.
 So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
 
 That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
+
+## Motion
+
+Enter removes `hidden` on `[modal-overlay]`, moves focus in, then sets `data-motion-state="entering"`. The scrim fades in and the panel rises from `translateY(0.75rem)` on `--juice-motion-duration-base` and `--juice-motion-ease-enter`. The state becomes `entered` when that finishes.
+
+Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel drops to `translateY(0.75rem)` on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. The focus trap and Escape still apply during that exit. A second Escape does not start a second close. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then.
+
+Reduced motion, or a computed duration of `0`, does the same steps in the same turn. A new open cancels an in-flight exit. See [Animations](./juice-animations.md).
 
 ## Keyboard
 

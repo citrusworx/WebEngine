@@ -538,6 +538,19 @@ Bind from existing identity tokens. Do not invent a new hue family. Tide must us
 
 Core `surface.scss` paints via `background-image` so `[bgColor]` swatches and tone `--juice-surface-*-bg` stay on `background-color`. Combined `[surfaceTone][overlay]` adjusts wash only, so tone fill / border / shadow / blur stay. Generated themes bind the same names from `--jx-surface` / `--jx-accent-tint`.
 
+## Motion
+
+Themes may override `--juice-motion-*`. The names and defaults are in the [Theme Contract](./juice-theme-contract.md) and [Animations](./juice-animations.md). Shipped library themes are not required to bind them. Omitting the bind keeps the core pace.
+
+Generated `--jx-*` themes pass eight roles through at the core defaults:
+
+- durations: `--juice-motion-duration-instant|fast|base|slow` from `--jx-motion-duration-*` (`0.15s`, `0.2s`, `0.3s`, `1s`)
+- eases: `--juice-motion-ease-standard|enter|exit|linear` from `--jx-motion-ease-*` (`ease`, `ease-out`, `ease-in`, `linear`)
+
+Change those `--jx-motion-*` values to retime a generated theme. Do not invent a second duration scale in component CSS. Derived curves `--juice-motion-ease-in-out` and `--juice-motion-ease-steps` stay on core. `prefers-reduced-motion: reduce` collapses the four duration tokens to `0.01ms` with `!important`, on `:root` and `[theme]`, so a theme literal cannot keep a long duration.
+
+Motion core is unpublished versus `@citrusworx/juiceui@0.9.1` and stays Emerging.
+
 ## Standalone blur
 
 `blur="sm|md"` is a core utility, not a theme role. See [Theme Contract](./juice-theme-contract.md). Lengths are fixed (`6px` / `16px`) via optional `--juice-blur-sm` / `--juice-blur-md` restyles. Do not bind a second per-theme blur scale — tone frost stays on `--juice-surface-<tone>-blur`. Combined `[surfaceTone][blur]` selectors override `backdrop-filter` length only, so tone background / border / shadow stay.
