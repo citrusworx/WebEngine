@@ -1,0 +1,31 @@
+Recipe:
+  table: recipes
+  description: >
+    Mia's recipes. Ingredients and steps are JSONB lists so the add-recipe
+    form can grow without a join table. photo_url, author_id, and cookbook_id
+    are empty seams for photo uploads, accounts, and cookbooks. They are not
+    foreign keys yet — those tables are later weeks. relationships below are
+    documentation only; Nectarine does not compile them to DDL.
+  fields:
+    id: string PRIMARY KEY
+    slug: string UNIQUE NOT NULL
+    name: string NOT NULL
+    author: string NOT NULL DEFAULT ''
+    description: text NOT NULL DEFAULT ''
+    nutrition: text NOT NULL DEFAULT ''
+    prep_minutes: int NOT NULL DEFAULT 0
+    cook_minutes: int NOT NULL DEFAULT 0
+    ingredients: jsonb NOT NULL
+    steps: jsonb NOT NULL
+    photo_url: string
+    author_id: string
+    cookbook_id: string
+    created_at: timestamp NOT NULL DEFAULT NOW()
+    updated_at: timestamp NOT NULL DEFAULT NOW()
+  indexes:
+    recipes_created_at_idx:
+      columns: [created_at]
+  relationships:
+    author: User
+    cookbook: Cookbook
+    photos: Photo[]

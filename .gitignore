@@ -40,6 +40,10 @@ apps/*
 !./apps/juice/**
 !apps/juice/
 !apps/juice/**
+!./apps/miamakes/
+!./apps/miamakes/**
+!apps/miamakes/
+!apps/miamakes/**
 
 ./kiwipresser/*
 kiwipresser/*

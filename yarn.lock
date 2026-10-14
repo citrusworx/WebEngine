@@ -837,6 +837,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@citrusworx/miamakes-back@workspace:apps/miamakes/back":
+  version: 0.0.0-use.local
+  resolution: "@citrusworx/miamakes-back@workspace:apps/miamakes/back"
+  dependencies:
+    "@citrusworx/nectarine": "workspace:*"
+    "@citrusworx/seltzer": "workspace:*"
+    "@citrusworx/webengine": "workspace:*"
+    "@types/node": "npm:^25.4.0"
+    "@types/pg": "npm:^8.15.2"
+    pg: "npm:^8.16.0"
+    tsx: "npm:^4.20.6"
+    typescript: "npm:~5.9.3"
+    vitest: "npm:^4.1.4"
+  languageName: unknown
+  linkType: soft
+
+"@citrusworx/miamakes@workspace:apps/miamakes/front":
+  version: 0.0.0-use.local
+  resolution: "@citrusworx/miamakes@workspace:apps/miamakes/front"
+  dependencies:
+    "@citrusworx/juiceui": "workspace:*"
+    "@citrusworx/sigjs": "workspace:*"
+    "@types/node": "npm:^25.4.0"
+    typescript: "npm:~5.9.3"
+    vite: "npm:^8.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@citrusworx/nectarine@npm:^0.5.0, @citrusworx/nectarine@workspace:*, @citrusworx/nectarine@workspace:libraries/nectarine":
   version: 0.0.0-use.local
   resolution: "@citrusworx/nectarine@workspace:libraries/nectarine"

@@ -1,0 +1,48 @@
+# MiaMakes — Nectarine root config.
+# Code reads this file. Secrets stay in env; this file names the keys.
+
+version: "0.1"
+app: miamakes
+engine: WebEngine
+
+database:
+  default: postgres
+  postgres:
+    env:
+      user: PG_USER
+      password: PG_PASS
+      host: PG_HOST
+      port: PG_PORT
+      database: PG_DB
+
+transport:
+  server: seltzer
+  # Recipe CRUD is Seltzer routes from recipeAPI.yml. SQL stays in
+  # recipeQueries.yml. Do not use Express.
+
+fallback:
+  # Local only: when PG_* is fully unset, the API serves seed recipes from
+  # memory so the kitchen UI can run without Postgres. Production
+  # (NODE_ENV=production) and REQUIRE_DATABASE=1 fail boot instead.
+  # ALLOW_SEED_FALLBACK=1 opts back into seed even in production.
+  # Partial PG_* is always an error.
+  seed: true
+
+apps:
+  - id: www
+    subdomain: www
+    purpose: Mia's kitchen — recipes now, decorative things later
+    resources:
+      - recipe
+
+# Later resources, not loaded this week:
+# - user: accounts. recipes.author_id is the seam; no password column yet.
+# - post: stories beside the recipes.
+# - cookbook: groupings. recipes.cookbook_id is the seam (no FK until the table exists).
+# - keepsake: gardening, crafts, and other decorative things.
+
+resources:
+  - name: recipe
+    schema: ./src/schemas/recipe/recipeSchema.yml
+    queries: ./src/schemas/recipe/recipeQueries.yml
+    api: ./src/schemas/recipe/recipeAPI.yml
