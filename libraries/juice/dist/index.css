@@ -96548,7 +96548,7 @@ section[auto] > * {
   border-width: 0 var(--juice-accordion-chevron-weight, 2px) var(--juice-accordion-chevron-weight, 2px) 0;
   transform: rotate(-45deg);
   transform-origin: 50% 50%;
-  transition: transform 0.2s ease;
+  transition: transform var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [accordion-item][aria-expanded=true]::after {
@@ -96629,6 +96629,28 @@ section[auto] > * {
   transform: translateX(-50%);
 }
 
+:root {
+  --juice-motion-duration-instant: 0.15s;
+  --juice-motion-duration-fast: 0.2s;
+  --juice-motion-duration-base: 0.3s;
+  --juice-motion-duration-slow: 1s;
+  --juice-motion-ease-standard: ease;
+  --juice-motion-ease-enter: ease-out;
+  --juice-motion-ease-exit: ease-in;
+  --juice-motion-ease-linear: linear;
+  --juice-motion-ease-in-out: ease-in-out;
+  --juice-motion-ease-steps: steps(2, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  [theme] {
+    --juice-motion-duration-instant: 0.01ms !important;
+    --juice-motion-duration-fast: 0.01ms !important;
+    --juice-motion-duration-base: 0.01ms !important;
+    --juice-motion-duration-slow: 0.01ms !important;
+  }
+}
 [banner] {
   display: flex;
   align-items: center;
@@ -96733,7 +96755,7 @@ section[auto] > * {
   color: var(--juice-banner-close-color, var(--aqua-banner-close-color, var(--kw-banner-close-color, var(--cm-banner-close-color, var(--tide-banner-close-color, var(--jx-banner-close-color, hsl(0, 0%, 20%)))))));
   box-shadow: none;
   transform: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [banner-close]:hover,
@@ -96837,7 +96859,7 @@ button[breadcrumb-link],
   line-height: inherit;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [breadcrumb] a:hover,
@@ -97107,7 +97129,7 @@ button[full] {
 
 [card=interactive] {
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), box-shadow var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 [card=interactive]:hover {
   transform: translateY(-2px);
@@ -97116,6 +97138,11 @@ button[full] {
   transform: translateY(-2px);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [card=interactive] {
+    transition: none;
+  }
+}
 [card=split] {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -97255,7 +97282,7 @@ button[checkbox],
   box-shadow: none;
   transform: none;
   overflow: hidden;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [checkbox]::after,
@@ -97276,7 +97303,7 @@ button[checkbox]::after,
   transform: translate(-50%, -58%) rotate(45deg) scale(0);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+  transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), opacity var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [checkbox][aria-checked=true],
@@ -97971,7 +97998,7 @@ a[disclosure-trigger],
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [disclosure-trigger][aria-expanded=true],
@@ -97997,7 +98024,7 @@ a[disclosure-trigger][aria-expanded=true],
   border-width: 0 2px 2px 0;
   transform: rotate(-45deg);
   transform-origin: 50% 50%;
-  transition: transform 0.2s ease;
+  transition: transform var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [disclosure-trigger][aria-expanded=true]::after,
@@ -98132,7 +98159,7 @@ a[disclosure-trigger][aria-expanded=true],
   color: var(--juice-drawer-close-color, var(--aqua-drawer-close-color, var(--kw-drawer-close-color, var(--cm-drawer-close-color, var(--tide-drawer-close-color, var(--jx-drawer-close-color, hsl(0, 0%, 20%)))))));
   box-shadow: none;
   transform: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [drawer-close]:hover,
@@ -98163,6 +98190,90 @@ a[disclosure-trigger][aria-expanded=true],
     transition: none;
   }
 }
+@keyframes juice-drawer-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes juice-drawer-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes juice-drawer-panel-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-drawer-panel-out-right {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes juice-drawer-panel-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-drawer-panel-out-left {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+[drawer-overlay][data-motion-state=entering] {
+  animation: juice-drawer-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[drawer-overlay][data-motion-state=entering] [drawer] {
+  animation: juice-drawer-panel-in-right var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[drawer-overlay][data-motion-state=entering] [drawer=left] {
+  animation: juice-drawer-panel-in-left var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[drawer-overlay][data-motion-state=exiting] {
+  animation: juice-drawer-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[drawer-overlay][data-motion-state=exiting] [drawer] {
+  animation: juice-drawer-panel-out-right var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[drawer-overlay][data-motion-state=exiting] [drawer=left] {
+  animation: juice-drawer-panel-out-left var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[drawer-overlay][data-motion-state=exited] {
+  opacity: 0;
+}
+
+[drawer-overlay][data-motion-state=exited] [drawer] {
+  transform: translateX(100%);
+}
+
+[drawer-overlay][data-motion-state=exited] [drawer=left] {
+  transform: translateX(-100%);
+}
+
 :where([field]) {
   display: flex;
   flex-direction: column;
@@ -99305,7 +99416,7 @@ input[input]:is(:not([type]),
   cursor: pointer;
   box-shadow: none;
   transform: none;
-  transition: background-color 0.15s;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [menuitem]:hover,
@@ -99439,7 +99550,7 @@ input[input]:is(:not([type]),
   color: var(--juice-modal-close-color, var(--aqua-modal-close-color, var(--kw-modal-close-color, var(--cm-modal-close-color, var(--tide-modal-close-color, var(--jx-modal-close-color, hsl(0, 0%, 20%)))))));
   box-shadow: none;
   transform: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [modal-close]:hover,
@@ -99470,6 +99581,62 @@ input[input]:is(:not([type]),
     transition: none;
   }
 }
+@keyframes juice-modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes juice-modal-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes juice-modal-panel-in {
+  from {
+    transform: translateY(0.75rem);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-modal-panel-out {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(0.75rem);
+  }
+}
+[modal-overlay][data-motion-state=entering] {
+  animation: juice-modal-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[modal-overlay][data-motion-state=entering] [modal] {
+  animation: juice-modal-panel-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[modal-overlay][data-motion-state=exiting] {
+  animation: juice-modal-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[modal-overlay][data-motion-state=exiting] [modal] {
+  animation: juice-modal-panel-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[modal-overlay][data-motion-state=exited] {
+  opacity: 0;
+}
+
+[modal-overlay][data-motion-state=exited] [modal] {
+  transform: translateY(0.75rem);
+}
+
 nav {
   display: flex;
   align-items: center;
@@ -99709,7 +99876,7 @@ nav[type=mobile][data-nav-toggle-icon=default]::after {
   height: 2px;
   border-radius: 999px;
   background-color: currentColor;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), box-shadow var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), opacity var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 nav[type=mobile][data-nav-toggle-icon=default]::before {
@@ -99730,6 +99897,12 @@ nav[type=mobile][data-nav-toggle-icon=default][aria-expanded=true]::after {
   transform: rotate(-45deg);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  nav[type=mobile][data-nav-toggle-icon=default]::before,
+  nav[type=mobile][data-nav-toggle-icon=default]::after {
+    transition: none;
+  }
+}
 nav[type=mobile]:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
@@ -99967,7 +100140,7 @@ nav[type=actions] a:hover {
   color: var(--juice-popover-close-color, var(--aqua-popover-close-color, var(--kw-popover-close-color, var(--cm-popover-close-color, var(--tide-popover-close-color, var(--jx-popover-close-color, hsl(0, 0%, 20%)))))));
   box-shadow: none;
   transform: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [popover-close]:hover,
@@ -99990,6 +100163,149 @@ nav[type=actions] a:hover {
     transition: none;
   }
 }
+@keyframes juice-popover-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes juice-popover-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes juice-popover-in-bottom {
+  from {
+    transform: translateY(-0.5rem);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-popover-out-bottom {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(-0.5rem);
+  }
+}
+@keyframes juice-popover-in-top {
+  from {
+    transform: translateY(0.5rem);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-popover-out-top {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(0.5rem);
+  }
+}
+@keyframes juice-popover-in-left {
+  from {
+    transform: translateX(0.5rem);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-popover-out-left {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateX(0.5rem);
+  }
+}
+@keyframes juice-popover-in-right {
+  from {
+    transform: translateX(-0.5rem);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes juice-popover-out-right {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateX(-0.5rem);
+  }
+}
+[popover-root][data-motion-state=entering] {
+  animation: juice-popover-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root][data-motion-state=entering] [popover-panel],
+[popover-root=bottom][data-motion-state=entering] [popover-panel] {
+  animation: juice-popover-in-bottom var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root=top][data-motion-state=entering] [popover-panel] {
+  animation: juice-popover-in-top var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root=left][data-motion-state=entering] [popover-panel] {
+  animation: juice-popover-in-left var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root=right][data-motion-state=entering] [popover-panel] {
+  animation: juice-popover-in-right var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[popover-root][data-motion-state=exiting] {
+  animation: juice-popover-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root][data-motion-state=exiting] [popover-panel],
+[popover-root=bottom][data-motion-state=exiting] [popover-panel] {
+  animation: juice-popover-out-bottom var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root=top][data-motion-state=exiting] [popover-panel] {
+  animation: juice-popover-out-top var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root=left][data-motion-state=exiting] [popover-panel] {
+  animation: juice-popover-out-left var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root=right][data-motion-state=exiting] [popover-panel] {
+  animation: juice-popover-out-right var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[popover-root][data-motion-state=exited] {
+  opacity: 0;
+}
+
+[popover-root][data-motion-state=exited] [popover-panel],
+[popover-root=bottom][data-motion-state=exited] [popover-panel] {
+  transform: translateY(-0.5rem);
+}
+
+[popover-root=top][data-motion-state=exited] [popover-panel] {
+  transform: translateY(0.5rem);
+}
+
+[popover-root=left][data-motion-state=exited] [popover-panel] {
+  transform: translateX(0.5rem);
+}
+
+[popover-root=right][data-motion-state=exited] [popover-panel] {
+  transform: translateX(-0.5rem);
+}
+
 [pagination],
 [theme] [pagination] {
   display: flex;
@@ -100083,7 +100399,7 @@ button[pagination-link],
   line-height: inherit;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [pagination] :is(a, button):not([pagination-ellipsis]):not([pagination-status]):hover:not([aria-current=page]):not(:disabled):not([disabled]):not([aria-disabled=true]),
@@ -100304,7 +100620,7 @@ button[pagination-link]:focus-visible,
   background-color: var(--juice-progress-fill, var(--aqua-progress-fill, var(--kw-progress-fill, var(--cm-progress-fill, var(--tide-progress-fill, var(--jx-progress-fill, hsl(0, 0%, 65%)))))));
   background-image: none;
   pointer-events: none;
-  transition: width 0.2s ease, background-color 0.15s ease;
+  transition: width var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [progress=indeterminate],
@@ -100316,7 +100632,7 @@ button[pagination-link]:focus-visible,
 [theme] [progress=indeterminate] [progress-fill] {
   width: 40%;
   transition: none;
-  animation: juice-progress-indeterminate 1.2s ease-in-out infinite;
+  animation: juice-progress-indeterminate var(--juice-progress-indeterminate-duration, calc(var(--juice-motion-duration-slow) * 1.2)) var(--juice-motion-ease-in-out) infinite;
 }
 
 @keyframes juice-progress-indeterminate {
@@ -100887,7 +101203,7 @@ button[radio],
   box-shadow: none;
   transform: none;
   overflow: hidden;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [radio]::after,
@@ -100907,7 +101223,7 @@ button[radio]::after,
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+  transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), opacity var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [radio][aria-checked=true],
@@ -101201,7 +101517,7 @@ select[select][disabled],
   background-image: none;
   transform: translateY(-50%);
   pointer-events: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [slider-fill],
@@ -101219,7 +101535,7 @@ select[select][disabled],
   background-image: none;
   transform: translateY(-50%);
   pointer-events: none;
-  transition: width 0.15s ease, background-color 0.15s ease;
+  transition: width var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [slider-thumb],
@@ -101248,7 +101564,7 @@ button[slider-thumb],
   background-image: none;
   box-shadow: var(--juice-slider-thumb-shadow, var(--aqua-slider-thumb-shadow, var(--kw-slider-thumb-shadow, var(--cm-slider-thumb-shadow, var(--tide-slider-thumb-shadow, var(--jx-slider-thumb-shadow, 0 1px 2px rgb(26 26 26 / 0.18)))))));
   transform: translate(-50%, -50%);
-  transition: left 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: left var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), box-shadow var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [slider-thumb]:hover,
@@ -102348,7 +102664,7 @@ button[slider-thumb]:focus-visible,
   background-color: transparent;
   background-image: none;
   pointer-events: none;
-  animation: juice-spinner-spin 0.8s linear infinite;
+  animation: juice-spinner-spin var(--juice-spinner-spin-duration, calc(var(--juice-motion-duration-slow) * 0.8)) var(--juice-motion-ease-linear) infinite;
 }
 
 [spinner-label],
@@ -102438,7 +102754,7 @@ button[slider-thumb]:focus-visible,
   box-shadow: none;
   transform: none;
   overflow: hidden;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [switch]::after,
@@ -102455,7 +102771,7 @@ button[slider-thumb]:focus-visible,
   background-image: none;
   box-shadow: 0 1px 2px rgba(25.5, 25.5, 25.5, 0.18);
   transform: translateX(0);
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [switch][aria-checked=true],
@@ -102565,7 +102881,7 @@ button[slider-thumb]:focus-visible,
   cursor: pointer;
   box-sizing: border-box;
   transform: none;
-  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+  transition: color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
   margin-bottom: -2px;
 }
 
@@ -102881,7 +103197,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
   color: var(--juice-toast-close-color, var(--aqua-toast-close-color, var(--kw-toast-close-color, var(--cm-toast-close-color, var(--tide-toast-close-color, var(--jx-toast-close-color, hsl(0, 0%, 20%)))))));
   box-shadow: none;
   transform: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [toast-close]:hover,
@@ -102904,6 +103220,74 @@ textarea[textarea]:is(:disabled, [disabled]) {
     transition: none;
   }
 }
+@keyframes juice-toast-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes juice-toast-out-top {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}
+@keyframes juice-toast-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes juice-toast-out-bottom {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+[toast][data-motion-state=entering] {
+  animation: juice-toast-in-top var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[toast][data-motion-state=exiting] {
+  animation: juice-toast-out-top var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[toast-region=bottom-right] [toast][data-motion-state=entering],
+[toast-region=bottom-left] [toast][data-motion-state=entering] {
+  animation: juice-toast-in-bottom var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[toast-region=bottom-right] [toast][data-motion-state=exiting],
+[toast-region=bottom-left] [toast][data-motion-state=exiting] {
+  animation: juice-toast-out-bottom var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[toast][data-motion-state=exited] {
+  opacity: 0;
+  transform: translateY(-0.75rem);
+}
+
+[toast-region=bottom-right] [toast][data-motion-state=exited],
+[toast-region=bottom-left] [toast][data-motion-state=exited] {
+  transform: translateY(0.75rem);
+}
+
 [tooltip-root],
 [theme] [tooltip-root] {
   position: absolute;
@@ -102961,6 +103345,15 @@ textarea[textarea]:is(:disabled, [disabled]) {
   transform-origin: left center;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  [tooltip-root],
+  [theme] [tooltip-root],
+  [tooltip-panel],
+  [theme] [tooltip-panel] {
+    transition: none;
+    animation: none;
+  }
+}
 /* =====================================================================
    Wizard — multi-step onboarding chrome
    Owns: shell, header, rails, step tracker, order summary, step pages,
@@ -103159,7 +103552,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
   flex-shrink: 0;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [step-indicator],
@@ -103418,7 +103811,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
   padding: 1.5rem;
   border: 1px solid;
   border-radius: 0.5rem;
-  transition: border-color 0.2s;
+  transition: border-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
   background: transparent;
 }
 
@@ -103632,35 +104025,35 @@ textarea[textarea]:is(:disabled, [disabled]) {
 [motion=blink],
 [animation=blink],
 [animate=blink] {
-  animation: blink-default 1.6s ease-in-out infinite;
+  animation: blink-default calc(var(--juice-motion-duration-slow) * 1.6) var(--juice-motion-ease-in-out) infinite;
   transform-origin: center;
 }
 
 [motion="blink:slow"],
 [animation="blink:slow"],
 [animate="blink:slow"] {
-  animation: blink-soft 3.4s ease-in-out infinite;
+  animation: blink-soft calc(var(--juice-motion-duration-slow) * 3.4) var(--juice-motion-ease-in-out) infinite;
   transform-origin: center;
 }
 
 [motion="blink:fast"],
 [animation="blink:fast"],
 [animate="blink:fast"] {
-  animation: blink-soft 1.4s ease-in-out infinite;
+  animation: blink-soft calc(var(--juice-motion-duration-slow) * 1.4) var(--juice-motion-ease-in-out) infinite;
   transform-origin: center;
 }
 
 [motion="blink:signal"],
 [animation="blink:signal"],
 [animate="blink:signal"] {
-  animation: blink-signal 2s ease-in-out infinite;
+  animation: blink-signal calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-in-out) infinite;
   transform-origin: center;
 }
 
 [motion="blink:terminal"],
 [animation="blink:terminal"],
 [animate="blink:terminal"] {
-  animation: blink-terminal 1.2s steps(2, end) infinite;
+  animation: blink-terminal calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-steps) infinite;
 }
 
 [motion^=blink]:hover,
@@ -103720,7 +104113,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
   }
 }
 [motion=bounce] {
-  animation: bounce 1s ease-in-out infinite;
+  animation: bounce var(--juice-motion-duration-slow) var(--juice-motion-ease-in-out) infinite;
 }
 
 @keyframes bounce {
@@ -103734,7 +104127,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
 [motion="bounce:in"],
 [motion=bounce-in],
 [motion="bounce.in"] {
-  animation: bounceIn 0.8s ease-out forwards;
+  animation: bounceIn calc(var(--juice-motion-duration-slow) * 0.8) var(--juice-motion-ease-enter) forwards;
 }
 
 @keyframes bounceIn {
@@ -103750,7 +104143,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
 [motion="bounce:out"],
 [motion=bounce-out],
 [motion="bounce.out"] {
-  animation: bounceOut 0.6s ease-in forwards;
+  animation: bounceOut calc(var(--juice-motion-duration-slow) * 0.6) var(--juice-motion-ease-exit) forwards;
 }
 
 @keyframes bounceOut {
@@ -103764,7 +104157,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
   }
 }
 [motion=accordion] {
-  transition: height 0.3s ease-in-out;
+  transition: height var(--juice-motion-duration-base) var(--juice-motion-ease-in-out);
   overflow: hidden;
 }
 
@@ -103772,11 +104165,11 @@ textarea[textarea]:is(:disabled, [disabled]) {
     FADE IN
 */
 [motion="fade.in"] {
-  animation: fadeIn 1s linear forwards;
+  animation: fadeIn var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in::fast"] {
-  animation: fadeIn 0.3s linear forwards;
+  animation: fadeIn var(--juice-motion-duration-base) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes fadeIn {
@@ -103791,31 +104184,31 @@ textarea[textarea]:is(:disabled, [disabled]) {
     FADE OUT
 */
 [motion="fade.out"] {
-  animation: fadeOut 1s linear forwards;
+  animation: fadeOut var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.down"] {
-  animation: fadeInDown 1s linear forwards;
+  animation: fadeInDown var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.down::fast"] {
-  animation: fadeInDown 0.3s linear forwards;
+  animation: fadeInDown var(--juice-motion-duration-base) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.up"] {
-  animation: fadeInUp 1s linear forwards;
+  animation: fadeInUp var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.in.up::fast"] {
-  animation: fadeInUp 0.3s linear forwards;
+  animation: fadeInUp var(--juice-motion-duration-base) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.out.down"] {
-  animation: fadeOutDown 1s linear forwards;
+  animation: fadeOutDown var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="fade.out.up"] {
-  animation: fadeOutUp 1s linear forwards;
+  animation: fadeOutUp var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes fadeOut {
@@ -103867,7 +104260,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
   }
 }
 [motion="flash:red"] {
-  animation: flash-red 1s running infinite;
+  animation: flash-red var(--juice-motion-duration-slow) var(--juice-motion-ease-standard) running infinite;
 }
 
 @keyframes flash-red {
@@ -103877,7 +104270,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
 }
 [motion=flicker] {
   opacity: 1;
-  animation: flicker 2s infinite;
+  animation: flicker calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-standard) infinite;
 }
 
 @keyframes flicker {
@@ -103916,7 +104309,7 @@ textarea[textarea]:is(:disabled, [disabled]) {
 Creating Gradient Animations
 */
 [motion="bg.alive"] {
-  animation: alive 10s running infinite;
+  animation: alive calc(var(--juice-motion-duration-slow) * 10) var(--juice-motion-ease-standard) running infinite;
 }
 
 @keyframes alive {
@@ -103928,12 +104321,12 @@ Creating Gradient Animations
   }
 }
 [motion=grow] {
-  animation: grow 2s linear forwards;
+  animation: grow calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes grow {}
 [motion=pulse] {
-  animation: 5s infinite pulse;
+  animation: pulse calc(var(--juice-motion-duration-slow) * 5) var(--juice-motion-ease-standard) infinite;
 }
 
 @keyframes pulse {
@@ -103948,15 +104341,15 @@ Creating Gradient Animations
   }
 }
 [motion="slideIn.left"] {
-  animation: slideInLeft 1.2s linear forwards;
+  animation: slideInLeft calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideIn.left::fast"] {
-  animation: slideInLeft 0.4s linear forwards;
+  animation: slideInLeft calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideIn.left::slow"] {
-  animation: slideInLeft 1s ease-in;
+  animation: slideInLeft var(--juice-motion-duration-slow) var(--juice-motion-ease-exit);
 }
 
 @keyframes slideInLeft {
@@ -103968,7 +104361,7 @@ Creating Gradient Animations
   }
 }
 .slideInRight {
-  animation: slideInRight 1s linear forwards;
+  animation: slideInRight var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes slideInRight {
@@ -103980,7 +104373,7 @@ Creating Gradient Animations
   }
 }
 .slideInOutLeft {
-  animation: slideInOutLeft 3s linear forwards;
+  animation: slideInOutLeft calc(var(--juice-motion-duration-slow) * 3) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes slideInOutLeft {
@@ -103998,7 +104391,7 @@ Creating Gradient Animations
   }
 }
 .slideInOutRight {
-  animation: slideInOutRight 3s linear forwards;
+  animation: slideInOutRight calc(var(--juice-motion-duration-slow) * 3) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes slideInOutRight {
@@ -104016,35 +104409,35 @@ Creating Gradient Animations
   }
 }
 [motion="slideOut.left"] {
-  animation: slideOutLeft 1.2s linear forwards;
+  animation: slideOutLeft calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.left::fast"] {
-  animation: slideOutLeft 0.4s linear forwards;
+  animation: slideOutLeft calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.right"] {
-  animation: slideOutRight 1.2s linear forwards;
+  animation: slideOutRight calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.right::fast"] {
-  animation: slideOutRight 0.4s linear forwards;
+  animation: slideOutRight calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.up"] {
-  animation: slideOutUp 1.2s linear forwards;
+  animation: slideOutUp calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.up::fast"] {
-  animation: slideOutUp 0.4s linear forwards;
+  animation: slideOutUp calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.down"] {
-  animation: slideOutDown 1.2s linear forwards;
+  animation: slideOutDown calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.down::fast"] {
-  animation: slideOutDown 0.4s linear forwards;
+  animation: slideOutDown calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes slideOutLeft {
@@ -104088,15 +104481,15 @@ Creating Gradient Animations
   }
 }
 [motion=spin] {
-  animation: spin 2s linear infinite;
+  animation: spin calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-linear) infinite;
 }
 
 [motion="spin::fast"] {
-  animation: spin 0.5s linear infinite;
+  animation: spin calc(var(--juice-motion-duration-slow) * 0.5) var(--juice-motion-ease-linear) infinite;
 }
 
 [motion="spin::slow"] {
-  animation: spin 4s linear infinite;
+  animation: spin calc(var(--juice-motion-duration-slow) * 4) var(--juice-motion-ease-linear) infinite;
 }
 
 @keyframes spin {
@@ -104109,7 +104502,7 @@ Creating Gradient Animations
 }
 [motion=tilt] {
   transform: rotate(0deg);
-  animation: transform 1s ease-in;
+  animation: transform var(--juice-motion-duration-slow) var(--juice-motion-ease-exit);
   transform-origin: bottom left;
 }
 
@@ -104118,18 +104511,18 @@ Creating Gradient Animations
 }
 
 [motion=turn] {
-  animation: spin 5s linear infinite;
+  animation: spin calc(var(--juice-motion-duration-slow) * 5) var(--juice-motion-ease-linear) infinite;
   animation-play-state: paused;
   overflow-y: hidden;
 }
 
 [motion="turn::fast"] {
-  animation: spin 2s linear infinite;
+  animation: spin calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-linear) infinite;
   animation-play-state: paused;
 }
 
 [motion="turn::slow"] {
-  animation: spin 7s linear infinite;
+  animation: spin calc(var(--juice-motion-duration-slow) * 7) var(--juice-motion-ease-linear) infinite;
   animation-play-state: paused;
 }
 
@@ -104145,7 +104538,7 @@ Creating Gradient Animations
   }
 }
 [motion=wiggle] {
-  animation: wiggle 1s linear forwards;
+  animation: wiggle var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes wiggle {
@@ -104166,8 +104559,8 @@ Creating Gradient Animations
 @media (prefers-reduced-motion: reduce) {
   [motion] {
     animation: none !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
+    transition-duration: var(--juice-motion-duration-instant) !important;
+    transition-delay: var(--juice-motion-duration-instant) !important;
   }
   .t-all,
   .t-width,
@@ -104183,28 +104576,28 @@ Creating Gradient Animations
 }
 /* Transition utilities */
 .t-all {
-  transition: all 0.3s ease;
+  transition: all var(--juice-motion-duration-base) var(--juice-motion-ease-standard);
 }
 
 .t-width {
-  transition: width 0.3s ease;
+  transition: width var(--juice-motion-duration-base) var(--juice-motion-ease-standard);
 }
 
 .t-height {
-  transition: height 0.3s ease;
+  transition: height var(--juice-motion-duration-base) var(--juice-motion-ease-standard);
 }
 
 .t-flex {
-  transition: flex 0.3s ease;
+  transition: flex var(--juice-motion-duration-base) var(--juice-motion-ease-standard);
 }
 
 .t-bg {
-  transition: background-color 0.3s ease;
+  transition: background-color var(--juice-motion-duration-base) var(--juice-motion-ease-standard);
 }
 
 .sm-to-md {
   width: 15vw;
-  transition: width 1s ease;
+  transition: width var(--juice-motion-duration-slow) var(--juice-motion-ease-standard);
 }
 
 .sm-to-md.expand {
@@ -115144,25 +115537,25 @@ body[gradient]:not([text])::before {
 [gradient]:not([text])[motion=flow]::before,
 [gradient]:not([text])[animation=flow]::before {
   background-size: 300% 100%;
-  animation: gradShiftX 3s linear infinite;
+  animation: gradShiftX calc(var(--juice-motion-duration-slow) * 3) var(--juice-motion-ease-linear) infinite;
 }
 
 button[gradient]:not([text])[motion=flow]::before,
 button[gradient]:not([text])[animation=flow]::before {
   background-size: 800% 100%;
-  animation: gradShiftX 8s linear infinite;
+  animation: gradShiftX calc(var(--juice-motion-duration-slow) * 8) var(--juice-motion-ease-linear) infinite;
 }
 
 [text][motion=flow],
 [text][animation=flow] {
   background-size: 800% 100%;
-  animation: gradShiftX 8s linear infinite;
+  animation: gradShiftX calc(var(--juice-motion-duration-slow) * 8) var(--juice-motion-ease-linear) infinite;
 }
 
 body[gradient]:not([text])[motion=fall]::before,
 body[gradient]:not([text])[animation=fall]::before {
   background-size: 300% 300%;
-  animation: gradShiftY 10s linear infinite;
+  animation: gradShiftY calc(var(--juice-motion-duration-slow) * 10) var(--juice-motion-ease-linear) infinite;
 }
 
 @keyframes gradShiftX {
@@ -115185,6 +115578,18 @@ body[gradient]:not([text])[animation=fall]::before {
   }
   100% {
     background-position: 50% 0%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [gradient]:not([text])[motion=flow]::before,
+  [gradient]:not([text])[animation=flow]::before,
+  button[gradient]:not([text])[motion=flow]::before,
+  button[gradient]:not([text])[animation=flow]::before,
+  [text][motion=flow],
+  [text][animation=flow],
+  body[gradient]:not([text])[motion=fall]::before,
+  body[gradient]:not([text])[animation=fall]::before {
+    animation: none;
   }
 }
 /* Special Colors */

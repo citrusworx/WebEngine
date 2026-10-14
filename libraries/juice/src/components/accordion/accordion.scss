@@ -18,8 +18,9 @@
 //
 // Open/closed panels use the native `hidden` attribute (display: none).
 // Optional height easing already lives on [motion="accordion"] in
-// src/styles/animations/ease.scss — apply that on a region when a runtime
-// animates height. Do not duplicate that transition here.
+// src/styles/animations/ease.scss. Put that attribute on the panel. The
+// runtime measures scrollHeight and delays native hidden until the height
+// transition ends. Do not duplicate that transition here.
 
 @function -juice-accordion-role($name, $fallback) {
     @return var(

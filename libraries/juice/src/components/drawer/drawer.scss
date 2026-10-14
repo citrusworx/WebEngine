@@ -18,7 +18,8 @@
 //
 // Closed vs open uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
-// Runtime toggles [hidden] on [drawer-overlay].
+// Runtime removes [hidden] before the enter motion and sets it only after
+// the exit motion. data-motion-state is entering | entered | exiting | exited.
 // Optional surfaceTone on [drawer] is allowed; do not force it.
 // This is not the surface `overlay="frost|tint"` utility.
 //
@@ -153,4 +154,70 @@ $_juice-drawer-close-hover: -juice-drawer-role(close-hover, #{$gray-100});
     [theme] [drawer-close] {
         transition: none;
     }
+}
+
+@keyframes juice-drawer-overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes juice-drawer-overlay-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes juice-drawer-panel-in-right {
+    from { transform: translateX(100%); }
+    to { transform: none; }
+}
+
+@keyframes juice-drawer-panel-out-right {
+    from { transform: none; }
+    to { transform: translateX(100%); }
+}
+
+@keyframes juice-drawer-panel-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: none; }
+}
+
+@keyframes juice-drawer-panel-out-left {
+    from { transform: none; }
+    to { transform: translateX(-100%); }
+}
+
+[drawer-overlay][data-motion-state="entering"] {
+    animation: juice-drawer-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[drawer-overlay][data-motion-state="entering"] [drawer] {
+    animation: juice-drawer-panel-in-right var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[drawer-overlay][data-motion-state="entering"] [drawer="left"] {
+    animation: juice-drawer-panel-in-left var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[drawer-overlay][data-motion-state="exiting"] {
+    animation: juice-drawer-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[drawer-overlay][data-motion-state="exiting"] [drawer] {
+    animation: juice-drawer-panel-out-right var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[drawer-overlay][data-motion-state="exiting"] [drawer="left"] {
+    animation: juice-drawer-panel-out-left var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[drawer-overlay][data-motion-state="exited"] {
+    opacity: 0;
+}
+
+[drawer-overlay][data-motion-state="exited"] [drawer] {
+    transform: translateX(100%);
+}
+
+[drawer-overlay][data-motion-state="exited"] [drawer="left"] {
+    transform: translateX(-100%);
 }

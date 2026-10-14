@@ -4,6 +4,11 @@
  * Markup contract (authors place the region — this is not a portal):
  *   [toast-region] > [toast] + [toast-title]? + [toast-body]? + [toast-close]?
  * Individual toasts use native `hidden` when dismissed. The region stays in the DOM.
+ * Enter removes `hidden`, then plays. Exit plays first; `hidden` is set
+ * only after it finishes. Reduced motion (or a zero computed duration)
+ * does both in the same turn. Showing a toast that is exiting cancels
+ * the exit and leaves it open. Auto-dismiss duration is reading time,
+ * not motion: reduced motion does not shorten `toast-duration`.
  *
  * Toast is NOT a dialog:
  *   - no focus trap, no aria-modal, no exclusive "one toast only"

@@ -5,6 +5,11 @@
  *   [popover-root][hidden] > [popover-panel] + [popover-header]? +
  *   [popover-body]? + [popover-close]?
  * Closed vs open is the native `hidden` attribute on [popover-root].
+ * Enter removes `hidden`, places the panel, moves focus, then plays.
+ * Exit plays first; `hidden`, placement cleanup, and focus restore run
+ * only after it finishes. Reduced motion (or a zero computed duration)
+ * does both in the same turn. An in-flight exit stays the open popover
+ * for Escape and the focus trap until that commit, and a new open cancels it.
  *
  * Never use a bare `popover` attribute. HTML `popover=""` / `popover="manual"`
  * activates the platform Popover API. The floating surface is [popover-panel].
@@ -41,6 +46,7 @@
 import { createEventClaim } from '../shared/events.js';
 import { moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
+import { createElementMotion } from '../shared/motion.js';
 import { hasOpenDialogOverlay } from '../shared/overlays.js';
 
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right';
@@ -106,6 +112,9 @@ const isNativeInteractive = (element: HTMLElement) => {
 };
 
 const isPopoverOpen = (popover: HTMLElement) => !popover.hasAttribute('hidden');
+
+const isClosing = (popover: HTMLElement) =>
+  popover.getAttribute('data-motion-state') === 'exiting';
 
 const readPlacement = (popover: HTMLElement): PopoverPlacement => {
   const raw = popover.getAttribute('popover-root');
@@ -234,6 +243,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
+  const motion = createElementMotion();
   const gap =
     typeof options.gap === 'number' && Number.isFinite(options.gap)
       ? options.gap
@@ -506,15 +516,19 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
   };
 
   const hidePopover = (popover: HTMLElement, restore: boolean) => {
+    if (!isPopoverOpen(popover) || isClosing(popover)) return;
+
     ensurePopoverAccessibility(popover);
-    setOpenState(popover, false);
-    setOpenerState(popover, false);
-    clearPlacement(popover);
-    if (restore) {
-      restoreFocus(popover);
-    } else {
-      focusRestorers.delete(popover);
-    }
+    motion.exit(popover, () => {
+      setOpenState(popover, false);
+      setOpenerState(popover, false);
+      clearPlacement(popover);
+      if (restore) {
+        restoreFocus(popover);
+      } else {
+        focusRestorers.delete(popover);
+      }
+    });
   };
 
   const showPopover = (
@@ -526,7 +540,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
         asArray(document.querySelectorAll<HTMLElement>(settings.rootSelector))
       )
       .forEach((other) => {
-        if (other === popover || !isPopoverOpen(other)) return;
+        if (other === popover || !isPopoverOpen(other) || isClosing(other)) return;
         hidePopover(other, false);
       });
 
@@ -536,12 +550,13 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     setOpenerState(popover, true);
     applyPlacement(popover, opener);
     moveFocusIn(popover);
+    motion.enter(popover);
   };
 
   const open = (target?: HTMLElement | null) => {
     const popover = resolvePopover(target);
     if (!popover) return;
-    if (isPopoverOpen(popover)) {
+    if (isPopoverOpen(popover) && !isClosing(popover)) {
       ensurePopoverAccessibility(popover);
       setOpenerState(popover, true);
       applyPlacement(popover);
@@ -563,14 +578,14 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
 
   const close = (target?: HTMLElement | null, restore = true) => {
     const popover = resolvePopover(target);
-    if (!popover || !isPopoverOpen(popover)) return;
+    if (!popover || !isPopoverOpen(popover) || isClosing(popover)) return;
     hidePopover(popover, restore);
   };
 
   const toggle = (target?: HTMLElement | null) => {
     const popover = resolvePopover(target);
     if (!popover) return;
-    if (isPopoverOpen(popover)) {
+    if (isPopoverOpen(popover) && !isClosing(popover)) {
       close(popover);
       return;
     }
@@ -610,7 +625,10 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     return null;
   };
 
-  const getOpenPopover = () => getPopovers().find(isPopoverOpen) ?? null;
+  const getOpenPopover = () =>
+    getPopovers().find((popover) => isPopoverOpen(popover) && !isClosing(popover)) ??
+    getPopovers().find(isPopoverOpen) ??
+    null;
 
   const handleDocumentClick = (event: Event) => {
     const target = event.target;
@@ -752,6 +770,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       window.removeEventListener('resize', schedulePlace);
       window.removeEventListener('scroll', schedulePlace, true);
       observer?.disconnect();
+      motion.destroy();
     },
     sync,
     open,

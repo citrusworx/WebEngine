@@ -10,6 +10,11 @@ import {
   startDisclosureRuntime,
   stopDisclosureRuntime,
 } from './disclosure-runtime.js';
+import {
+  flushMotion,
+  stubMotionDuration,
+  stubReducedMotion,
+} from '../shared/motion-test-utils.js';
 
 const resetDom = () => {
   document.body.innerHTML = '';
@@ -503,5 +508,98 @@ describe('startDisclosureRuntime', () => {
         get: () => 'complete',
       });
     }
+  });
+});
+
+describe('disclosure [motion=accordion]', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  const mount = () => {
+    document.body.innerHTML = `
+      <section disclosure>
+        <button type="button" id="motion-trigger" disclosure-trigger aria-expanded="false">Notes</button>
+        <div id="motion-panel" disclosure-panel motion="accordion" hidden>Measured content</div>
+      </section>
+    `;
+    stopDisclosureRuntime();
+    const panel = document.getElementById('motion-panel');
+    if (!panel) throw new Error('missing disclosure panel');
+    Object.defineProperty(panel, 'scrollHeight', {
+      configurable: true,
+      value: 140,
+    });
+    return {
+      controller: createDisclosure({ root: document.body }),
+      trigger: document.getElementById('motion-trigger'),
+      panel,
+    };
+  };
+
+  it('measures scrollHeight and sets hidden only after the collapse transition', async () => {
+    stubMotionDuration('80ms');
+    const { controller, trigger, panel } = mount();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.style.height).toBe('140px');
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+    expect(panel.hasAttribute('hidden')).toBe(false);
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.style.height).toBe('0px');
+    expect(trigger?.getAttribute('aria-expanded')).toBe('false');
+
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+    expect(panel.hasAttribute('hidden')).toBe(true);
+    expect(panel.style.height).toBe('');
+
+    controller.destroy();
+  });
+
+  it('reopening mid-collapse leaves the panel open and not hidden', async () => {
+    stubMotionDuration('80ms');
+    const { controller, trigger, panel } = mount();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.getAttribute('data-motion-state')).toBe('entering');
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.getAttribute('data-motion-state')).toBe('entered');
+
+    controller.destroy();
+  });
+
+  it('stays instant under reduced motion', () => {
+    stubReducedMotion(true);
+    stubMotionDuration('80ms');
+    const { controller, trigger, panel } = mount();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.style.height).toBe('');
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(true);
+    expect(panel.style.height).toBe('');
+
+    controller.destroy();
   });
 });

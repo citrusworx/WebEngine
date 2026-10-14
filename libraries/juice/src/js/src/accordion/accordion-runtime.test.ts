@@ -7,6 +7,11 @@ import {
   startAccordionRuntime,
   stopAccordionRuntime,
 } from './accordion-runtime.js';
+import {
+  flushMotion,
+  stubMotionDuration,
+  stubReducedMotion,
+} from '../shared/motion-test-utils.js';
 
 const resetDom = () => {
   document.body.innerHTML = '';
@@ -327,5 +332,140 @@ describe('startAccordionRuntime', () => {
       configurable: true,
       get: () => 'complete',
     });
+  });
+});
+
+describe('accordion [motion=accordion]', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  const markup = `
+    <div accordion>
+      <button type="button" id="motion-trigger" accordion-item aria-expanded="false">Details</button>
+      <div id="motion-panel" motion="accordion" hidden>Measured content</div>
+    </div>
+  `;
+
+  const mount = () => {
+    document.body.innerHTML = markup;
+    stopAccordionRuntime();
+    const panel = document.getElementById('motion-panel');
+    if (!panel) throw new Error('missing accordion panel');
+    Object.defineProperty(panel, 'scrollHeight', {
+      configurable: true,
+      value: 160,
+    });
+    return {
+      controller: createAccordion({ root: document.body }),
+      trigger: document.getElementById('motion-trigger'),
+      panel,
+    };
+  };
+
+  it('measures scrollHeight and sets hidden only after the collapse transition', async () => {
+    stubMotionDuration('80ms');
+    const { controller, trigger, panel } = mount();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.style.height).toBe('160px');
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+    expect(panel.getAttribute('aria-hidden')).toBe('false');
+
+    await flushRuntime();
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.style.height).toBe('160px');
+
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+    expect(panel.style.height).toBe('');
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.getAttribute('data-motion-state')).toBe('entered');
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.style.height).toBe('0px');
+    expect(trigger?.getAttribute('aria-expanded')).toBe('false');
+    expect(panel.getAttribute('aria-hidden')).toBe('true');
+
+    const child = document.createElement('span');
+    panel.appendChild(child);
+    child.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+    expect(panel.hasAttribute('hidden')).toBe(true);
+    expect(panel.style.height).toBe('');
+    expect(panel.getAttribute('data-motion-state')).toBe('exited');
+
+    controller.destroy();
+  });
+
+  it('reopening mid-collapse leaves the panel open and not hidden', async () => {
+    stubMotionDuration('80ms');
+    const { controller, trigger, panel } = mount();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.getAttribute('data-motion-state')).toBe('exiting');
+    expect(panel.hasAttribute('hidden')).toBe(false);
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.getAttribute('data-motion-state')).toBe('entering');
+    expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+    expect(panel.style.height).toBe('160px');
+
+    panel.dispatchEvent(new Event('transitionend', { bubbles: true }));
+    await flushMotion();
+    expect(panel.hasAttribute('hidden')).toBe(false);
+    expect(panel.getAttribute('data-motion-state')).toBe('entered');
+
+    controller.destroy();
+  });
+
+  it('stays instant under reduced motion and without the motion attribute', () => {
+    stubReducedMotion(true);
+    stubMotionDuration('80ms');
+    const reduced = mount();
+
+    reduced.trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(reduced.panel.hasAttribute('hidden')).toBe(false);
+    expect(reduced.panel.style.height).toBe('');
+    expect(reduced.panel.getAttribute('data-motion-state')).toBe('entered');
+
+    reduced.trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(reduced.panel.hasAttribute('hidden')).toBe(true);
+    expect(reduced.panel.style.height).toBe('');
+    reduced.controller.destroy();
+
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    stubMotionDuration('80ms');
+    document.body.innerHTML = `
+      <div accordion>
+        <button type="button" id="plain-trigger" accordion-item aria-expanded="false">Plain</button>
+        <div id="plain-panel" hidden>No motion attribute</div>
+      </div>
+    `;
+    stopAccordionRuntime();
+    const controller = createAccordion({ root: document.body });
+    const trigger = document.getElementById('plain-trigger');
+    const panel = document.getElementById('plain-panel');
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel?.hasAttribute('hidden')).toBe(false);
+    expect(panel?.getAttribute('data-motion-state')).toBeNull();
+
+    trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel?.hasAttribute('hidden')).toBe(true);
+
+    controller.destroy();
   });
 });

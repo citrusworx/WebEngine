@@ -251,4 +251,18 @@ export type {
     FieldController,
     FieldOptions
 } from "./js/src/field/field-runtime.js";
+export {
+    prefersReducedMotion,
+    subscribeReducedMotion,
+    createMotionCancelToken,
+    runMotion,
+    createElementMotion
+} from "./js/src/shared/motion.js";
+export type {
+    MotionCancelToken,
+    MotionDirection,
+    MotionPlayer,
+    MotionResult,
+    MotionState
+} from "./js/src/shared/motion.js";
 export { tokens } from "./tokens/index.js";

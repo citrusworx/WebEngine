@@ -18,7 +18,8 @@
 //
 // Closed vs open uses the native `hidden` attribute (display: none).
 // Markup without [hidden] stays visible so static demos keep working.
-// Runtime toggles [hidden] on [modal-overlay].
+// Runtime removes [hidden] before the enter motion and sets it only after
+// the exit motion. data-motion-state is entering | entered | exiting | exited.
 // Optional surfaceTone on [modal] is allowed; do not force it.
 // This is not the surface `overlay="frost|tint"` utility.
 
@@ -146,4 +147,48 @@ $_juice-modal-close-hover: -juice-modal-role(close-hover, #{$gray-100});
     [theme] [modal-close] {
         transition: none;
     }
+}
+
+@keyframes juice-modal-overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes juice-modal-overlay-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes juice-modal-panel-in {
+    from { transform: translateY(0.75rem); }
+    to { transform: none; }
+}
+
+@keyframes juice-modal-panel-out {
+    from { transform: none; }
+    to { transform: translateY(0.75rem); }
+}
+
+[modal-overlay][data-motion-state="entering"] {
+    animation: juice-modal-overlay-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[modal-overlay][data-motion-state="entering"] [modal] {
+    animation: juice-modal-panel-in var(--juice-motion-duration-base) var(--juice-motion-ease-enter) both;
+}
+
+[modal-overlay][data-motion-state="exiting"] {
+    animation: juice-modal-overlay-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[modal-overlay][data-motion-state="exiting"] [modal] {
+    animation: juice-modal-panel-out var(--juice-motion-duration-fast) var(--juice-motion-ease-exit) both;
+}
+
+[modal-overlay][data-motion-state="exited"] {
+    opacity: 0;
+}
+
+[modal-overlay][data-motion-state="exited"] [modal] {
+    transform: translateY(0.75rem);
 }

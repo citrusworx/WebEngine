@@ -16,6 +16,13 @@
  * and aria-hidden on the panel. This runtime never writes layout
  * content="active" or content="hidden".
  *
+ * A panel with `[motion="accordion"]` animates height from its measured
+ * `scrollHeight`. `aria-expanded` updates immediately. `hidden` is removed
+ * before the expand and applied only after the collapse transition, because
+ * native `hidden` cannot interpolate to `auto`. Reduced motion stays instant.
+ * The attribute has to sit on the panel: that is the element ease.scss
+ * transitions.
+ *
  * Keyboard: click toggles. Enter and Space activate non-button triggers.
  * Escape collapses the focused open disclosure, or the last opened one,
  * and returns focus to that trigger. It yields to an open modal, drawer,
@@ -29,6 +36,7 @@
 
 import { createEventClaim } from '../shared/events.js';
 import { escapeId } from '../shared/ids.js';
+import { createElementMotion, prefersReducedMotion } from '../shared/motion.js';
 import { hasOpenDialogOverlay, hasOpenPopover } from '../shared/overlays.js';
 
 export type DisclosureOptions = {
@@ -76,7 +84,21 @@ const slugFromName = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'disclosure';
 
-const setExpandedState = (
+const usesAccordionMotion = (panel: HTMLElement) =>
+  panel.getAttribute('motion') === 'accordion';
+
+const isExpanded = (trigger: HTMLElement, panel: HTMLElement | null) => {
+  if (panel && usesAccordionMotion(panel)) {
+    const state = panel.getAttribute('data-motion-state');
+    if (state === 'exiting') return false;
+    if (state === 'entering' || state === 'entered') return true;
+  }
+
+  if (panel) return !panel.hasAttribute('hidden');
+  return trigger.getAttribute('aria-expanded') === 'true';
+};
+
+const setTriggerState = (
   trigger: HTMLElement,
   panel: HTMLElement | null,
   expanded: boolean
@@ -88,19 +110,10 @@ const setExpandedState = (
 
   if (!panel) return;
 
-  if (panel.hidden !== !expanded) {
-    panel.hidden = !expanded;
-  }
-
   const ariaHidden = String(!expanded);
   if (panel.getAttribute('aria-hidden') !== ariaHidden) {
     panel.setAttribute('aria-hidden', ariaHidden);
   }
-};
-
-const isExpanded = (trigger: HTMLElement, panel: HTMLElement | null) => {
-  if (panel) return !panel.hasAttribute('hidden');
-  return trigger.getAttribute('aria-expanded') === 'true';
 };
 
 const shouldYieldEscape = (event: KeyboardEvent) =>
@@ -122,6 +135,80 @@ export const createDisclosure = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const motion = createElementMotion();
+
+  const commitInstant = (panel: HTMLElement, expanded: boolean) => {
+    motion.cancel(panel);
+    if (panel.hidden !== !expanded) {
+      panel.hidden = !expanded;
+    }
+    panel.style.removeProperty('height');
+    if (usesAccordionMotion(panel) || panel.hasAttribute('data-motion-state')) {
+      panel.setAttribute('data-motion-state', expanded ? 'entered' : 'exited');
+    }
+  };
+
+  const playExpand = (panel: HTMLElement) => {
+    const state = panel.getAttribute('data-motion-state');
+    if (state === 'entering') return;
+    if (!panel.hidden && state !== 'exiting' && state !== 'exited') {
+      if (state !== 'entered') {
+        panel.setAttribute('data-motion-state', 'entered');
+      }
+      return;
+    }
+
+    const fromExit = state === 'exiting';
+    panel.hidden = false;
+    const from = fromExit ? panel.getBoundingClientRect().height : 0;
+    const target = panel.scrollHeight;
+    panel.style.height = `${from}px`;
+    motion.enter(
+      panel,
+      () => {
+        panel.style.removeProperty('height');
+      },
+      () => {
+        panel.style.height = `${target}px`;
+      }
+    );
+  };
+
+  const playCollapse = (panel: HTMLElement) => {
+    if (panel.hidden || panel.getAttribute('data-motion-state') === 'exiting') {
+      return;
+    }
+
+    const target = panel.scrollHeight;
+    panel.style.height = `${target}px`;
+    motion.exit(
+      panel,
+      () => {
+        panel.hidden = true;
+        panel.style.removeProperty('height');
+      },
+      () => {
+        panel.style.height = '0px';
+      }
+    );
+  };
+
+  const setExpandedState = (
+    trigger: HTMLElement,
+    panel: HTMLElement | null,
+    expanded: boolean
+  ) => {
+    setTriggerState(trigger, panel, expanded);
+    if (!panel) return;
+
+    if (!usesAccordionMotion(panel) || prefersReducedMotion()) {
+      commitInstant(panel, expanded);
+      return;
+    }
+
+    if (expanded) playExpand(panel);
+    else playCollapse(panel);
+  };
 
   const getDisclosures = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.disclosureSelector));
@@ -421,6 +508,7 @@ export const createDisclosure = (
       rootEvents.removeEventListener('click', handleRootClick);
       rootEvents.removeEventListener('keydown', handleRootKeydown);
       observer?.disconnect();
+      motion.destroy();
     },
     sync,
     expand,

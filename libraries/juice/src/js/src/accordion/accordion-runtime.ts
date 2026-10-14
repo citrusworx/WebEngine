@@ -1,5 +1,6 @@
 import { createEventClaim } from '../shared/events.js';
 import { escapeId } from '../shared/ids.js';
+import { createElementMotion, prefersReducedMotion } from '../shared/motion.js';
 
 export type AccordionOptions = {
   root?: ParentNode;
@@ -45,7 +46,26 @@ const slugFromName = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'accordion';
 
-const setExpandedState = (
+// `[motion="accordion"]` on the panel opts into a measured height transition.
+// The attribute has to sit on the panel: ease.scss transitions that element's
+// height. `aria-expanded` updates immediately. `hidden` waits until collapse
+// finishes, because native hidden cannot interpolate to or from auto.
+// Reduced motion keeps the instant hidden toggle.
+const usesAccordionMotion = (panel: HTMLElement) =>
+  panel.getAttribute('motion') === 'accordion';
+
+const isExpanded = (trigger: HTMLElement, panel: HTMLElement | null) => {
+  if (panel && usesAccordionMotion(panel)) {
+    const state = panel.getAttribute('data-motion-state');
+    if (state === 'exiting') return false;
+    if (state === 'entering' || state === 'entered') return true;
+  }
+
+  if (panel) return !panel.hasAttribute('hidden');
+  return trigger.getAttribute('aria-expanded') === 'true';
+};
+
+const setTriggerState = (
   trigger: HTMLElement,
   panel: HTMLElement | null,
   expanded: boolean
@@ -57,19 +77,10 @@ const setExpandedState = (
 
   if (!panel) return;
 
-  if (panel.hidden !== !expanded) {
-    panel.hidden = !expanded;
-  }
-
   const ariaHidden = String(!expanded);
   if (panel.getAttribute('aria-hidden') !== ariaHidden) {
     panel.setAttribute('aria-hidden', ariaHidden);
   }
-};
-
-const isExpanded = (trigger: HTMLElement, panel: HTMLElement | null) => {
-  if (panel) return !panel.hasAttribute('hidden');
-  return trigger.getAttribute('aria-expanded') === 'true';
 };
 
 export const createAccordion = (
@@ -88,6 +99,83 @@ export const createAccordion = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const motion = createElementMotion();
+
+  const commitInstant = (
+    panel: HTMLElement,
+    expanded: boolean
+  ) => {
+    motion.cancel(panel);
+    if (panel.hidden !== !expanded) {
+      panel.hidden = !expanded;
+    }
+    panel.style.removeProperty('height');
+    if (usesAccordionMotion(panel) || panel.hasAttribute('data-motion-state')) {
+      panel.setAttribute('data-motion-state', expanded ? 'entered' : 'exited');
+    }
+  };
+
+  const playExpand = (panel: HTMLElement) => {
+    const state = panel.getAttribute('data-motion-state');
+    if (state === 'entering') return;
+    if (!panel.hidden && state !== 'exiting' && state !== 'exited') {
+      if (state !== 'entered') {
+        panel.setAttribute('data-motion-state', 'entered');
+      }
+      return;
+    }
+
+    const fromExit = state === 'exiting';
+    panel.hidden = false;
+    const from = fromExit ? panel.getBoundingClientRect().height : 0;
+    const target = panel.scrollHeight;
+    panel.style.height = `${from}px`;
+    motion.enter(
+      panel,
+      () => {
+        panel.style.removeProperty('height');
+      },
+      () => {
+        panel.style.height = `${target}px`;
+      }
+    );
+  };
+
+  const playCollapse = (panel: HTMLElement) => {
+    if (panel.hidden || panel.getAttribute('data-motion-state') === 'exiting') {
+      return;
+    }
+
+    const target = panel.scrollHeight;
+    panel.style.height = `${target}px`;
+    motion.exit(
+      panel,
+      () => {
+        panel.hidden = true;
+        panel.style.removeProperty('height');
+      },
+      () => {
+        panel.style.height = '0px';
+      }
+    );
+  };
+
+  const setExpandedState = (
+    trigger: HTMLElement,
+    panel: HTMLElement | null,
+    expanded: boolean
+  ) => {
+    setTriggerState(trigger, panel, expanded);
+    if (!panel) return;
+
+    if (!usesAccordionMotion(panel) || prefersReducedMotion()) {
+      commitInstant(panel, expanded);
+      return;
+    }
+
+    if (expanded) playExpand(panel);
+    else playCollapse(panel);
+  };
 
   const getAccordions = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.accordionSelector));
@@ -373,6 +461,7 @@ export const createAccordion = (
       rootEvents.removeEventListener('click', handleRootClick);
       rootEvents.removeEventListener('keydown', handleRootKeydown);
       observer?.disconnect();
+      motion.destroy();
     },
     sync,
     expand,
