@@ -1040,6 +1040,7 @@ describe("Juice consumer smoke", () => {
         module.stopSelectRuntime();
         module.stopInputRuntime();
         module.stopTextareaRuntime();
+        module.stopFieldRuntime();
         module.stopDisclosureRuntime();
         module.stopPaginationRuntime();
         module.stopProgressRuntime();
@@ -1068,6 +1069,7 @@ describe("Juice consumer smoke", () => {
             module.stopSelectRuntime();
             module.stopInputRuntime();
             module.stopTextareaRuntime();
+            module.stopFieldRuntime();
             module.stopComboboxRuntime();
             document.body.innerHTML = `
                 <label for="city" id="city-label">City</label>
@@ -1135,6 +1137,7 @@ describe("Juice consumer smoke", () => {
             module.stopSelectRuntime();
             module.stopInputRuntime();
             module.stopTextareaRuntime();
+            module.stopFieldRuntime();
             module.stopComboboxRuntime();
             module.stopSpinnerRuntime();
             module.stopDisclosureRuntime();
@@ -1164,6 +1167,7 @@ describe("Juice consumer smoke", () => {
         return import(entryUrl).then((module) => {
             module.stopInputRuntime();
             module.stopTextareaRuntime();
+            module.stopFieldRuntime();
             module.stopSelectRuntime();
             module.stopComboboxRuntime();
             module.stopCheckboxRuntime();
@@ -1249,6 +1253,7 @@ describe("Juice consumer smoke", () => {
             controller.destroy();
             module.stopInputRuntime();
             module.stopTextareaRuntime();
+            module.stopFieldRuntime();
             module.stopSelectRuntime();
             module.stopComboboxRuntime();
             module.stopCheckboxRuntime();
@@ -1278,6 +1283,7 @@ describe("Juice consumer smoke", () => {
         const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
         return import(entryUrl).then((module) => {
             module.stopTextareaRuntime();
+            module.stopFieldRuntime();
             module.stopInputRuntime();
             module.stopSelectRuntime();
             module.stopComboboxRuntime();
@@ -1355,6 +1361,130 @@ describe("Juice consumer smoke", () => {
 
             document.body.innerHTML = "";
             controller.destroy();
+            module.stopTextareaRuntime();
+            module.stopFieldRuntime();
+            module.stopInputRuntime();
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            module.stopCheckboxRuntime();
+            module.stopRadioRuntime();
+            module.stopSpinnerRuntime();
+            module.stopDisclosureRuntime();
+            module.stopPaginationRuntime();
+            module.stopProgressRuntime();
+            module.stopBreadcrumbRuntime();
+            module.stopSliderRuntime();
+            module.stopSwitchRuntime();
+            module.stopMenuRuntime();
+            module.stopBannerRuntime();
+            module.stopTooltipRuntime();
+            module.stopWizardRuntime();
+            module.stopPopoverRuntime();
+            module.stopToastRuntime();
+            module.stopDrawerRuntime();
+            module.stopModalRuntime();
+            module.stopTabsRuntime();
+            module.stopAccordionRuntime();
+            module.stopNavigationRuntime();
+        });
+    });
+
+    it("lets a consumer describe a field control from visible help and error text", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopFieldRuntime();
+            module.stopInputRuntime();
+            module.stopTextareaRuntime();
+            module.stopSelectRuntime();
+            module.stopComboboxRuntime();
+            document.body.innerHTML = `
+                <form>
+                    <div field id="email-field">
+                        <span field-label>Email</span>
+                        <input id="email" type="email" value="ada@example.com">
+                        <p field-help>Work address</p>
+                        <p field-error hidden>Required</p>
+                    </div>
+                    <div field invalid id="city-field">
+                        <select id="city">
+                            <option>Portland</option>
+                        </select>
+                        <p field-error id="city-error">Pick one</p>
+                    </div>
+                    <div field>
+                        <textarea id="named" aria-describedby="keep">Note</textarea>
+                        <p field-help id="ignored-help">Ignored</p>
+                    </div>
+                    <p field-help id="outside">Outside</p>
+                    <input id="plain" type="text" value="plain">
+                </form>
+            `;
+
+            const controller = module.createField({ root: document.body });
+            const email = document.getElementById("email") as HTMLInputElement;
+            const help = document.querySelector("#email-field [field-help]");
+            const hiddenError = document.querySelector("#email-field [field-error]");
+            const city = document.getElementById("city");
+            const named = document.getElementById("named") as HTMLTextAreaElement;
+            const plain = document.getElementById("plain") as HTMLInputElement;
+            const label = document.querySelector("[field-label]");
+
+            expect(email.getAttribute("aria-describedby")).toBe(help?.id);
+            expect(help?.id).toMatch(/^juice-field-desc-/);
+            expect(email.hasAttribute("aria-invalid")).toBe(false);
+            expect(email.hasAttribute("aria-label")).toBe(false);
+            expect(email.hasAttribute("aria-labelledby")).toBe(false);
+            expect(email.hasAttribute("role")).toBe(false);
+            expect(email.value).toBe("ada@example.com");
+            expect(hiddenError?.hasAttribute("id")).toBe(false);
+            expect(label?.hasAttribute("id")).toBe(false);
+
+            expect(city?.getAttribute("aria-describedby")).toBe("city-error");
+            expect(city?.getAttribute("aria-invalid")).toBe("true");
+            expect(city?.hasAttribute("role")).toBe(false);
+
+            expect(named.getAttribute("aria-describedby")).toBe("keep");
+            expect(document.getElementById("ignored-help")?.id).toBe("ignored-help");
+            expect(plain.hasAttribute("aria-describedby")).toBe(false);
+            expect(plain.hasAttribute("aria-invalid")).toBe(false);
+            expect(document.getElementById("outside")?.id).toBe("outside");
+
+            email.value = "ada@citrus.dev";
+            const inputEvent = new Event("input", { bubbles: true, cancelable: true });
+            email.dispatchEvent(inputEvent);
+            const change = new Event("change", { bubbles: true, cancelable: true });
+            email.dispatchEvent(change);
+            expect(inputEvent.defaultPrevented).toBe(false);
+            expect(change.defaultPrevented).toBe(false);
+            expect(email.value).toBe("ada@citrus.dev");
+
+            const keydown = new KeyboardEvent("keydown", {
+                bubbles: true,
+                cancelable: true,
+                key: "Escape"
+            });
+            email.dispatchEvent(keydown);
+            expect(keydown.defaultPrevented).toBe(false);
+            expect(email.value).toBe("ada@citrus.dev");
+
+            document.getElementById("city-field")?.removeAttribute("invalid");
+            controller.sync();
+            expect(city?.hasAttribute("aria-invalid")).toBe(false);
+            expect(city?.getAttribute("aria-describedby")).toBe("city-error");
+            expect(named.getAttribute("aria-describedby")).toBe("keep");
+
+            const described = help?.id;
+            controller.destroy();
+            expect(email.hasAttribute("aria-describedby")).toBe(false);
+            expect(help?.hasAttribute("id")).toBe(false);
+            expect(help?.id).not.toBe(described);
+            expect(city?.hasAttribute("aria-invalid")).toBe(false);
+            expect(city?.hasAttribute("aria-describedby")).toBe(false);
+            expect(document.getElementById("city-error")?.id).toBe("city-error");
+            expect(named.getAttribute("aria-describedby")).toBe("keep");
+
+            document.body.innerHTML = "";
+            module.stopFieldRuntime();
             module.stopTextareaRuntime();
             module.stopInputRuntime();
             module.stopSelectRuntime();

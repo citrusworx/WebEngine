@@ -46,3 +46,5 @@ export { createInput, initInput, startInputRuntime, stopInputRuntime } from "./s
 export type { InputController, InputOptions } from "./src/input/input-runtime.js";
 export { createTextarea, initTextarea, startTextareaRuntime, stopTextareaRuntime } from "./src/textarea/textarea-runtime.js";
 export type { TextareaController, TextareaOptions } from "./src/textarea/textarea-runtime.js";
+export { createField, initField, startFieldRuntime, stopFieldRuntime } from "./src/field/field-runtime.js";
+export type { FieldController, FieldOptions } from "./src/field/field-runtime.js";

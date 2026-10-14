@@ -2359,6 +2359,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initTextarea");
         expect(module).toHaveProperty("startTextareaRuntime");
         expect(module).toHaveProperty("stopTextareaRuntime");
+        expect(module).toHaveProperty("createField");
+        expect(module).toHaveProperty("initField");
+        expect(module).toHaveProperty("startFieldRuntime");
+        expect(module).toHaveProperty("stopFieldRuntime");
         expect(module).toHaveProperty("tokens");
     });
 
