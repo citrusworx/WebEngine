@@ -1,33 +1,33 @@
 [motion="slideOut.left"] {
-    animation: slideOutLeft 1.2s linear forwards;
+    animation: slideOutLeft calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.left::fast"] {
-    animation: slideOutLeft 0.4s linear forwards;
+    animation: slideOutLeft calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.right"] {
-    animation: slideOutRight 1.2s linear forwards;
+    animation: slideOutRight calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.right::fast"] {
-    animation: slideOutRight 0.4s linear forwards;
+    animation: slideOutRight calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.up"] {
-    animation: slideOutUp 1.2s linear forwards;
+    animation: slideOutUp calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.up::fast"] {
-    animation: slideOutUp 0.4s linear forwards;
+    animation: slideOutUp calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.down"] {
-    animation: slideOutDown 1.2s linear forwards;
+    animation: slideOutDown calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-linear) forwards;
 }
 
 [motion="slideOut.down::fast"] {
-    animation: slideOutDown 0.4s linear forwards;
+    animation: slideOutDown calc(var(--juice-motion-duration-slow) * 0.4) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes slideOutLeft {

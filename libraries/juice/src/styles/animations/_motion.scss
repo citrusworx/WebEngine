@@ -1,0 +1,54 @@
+// Motion tokens. Themes may override the --juice-motion-* roles.
+// Generated --jx-* themes pass the same defaults through; shipped themes
+// are not required to bind them, so pace stays here.
+//
+// Duration scale matches the timings already in components and utilities:
+//   instant 0.15s   fast 0.2s   base 0.3s   slow 1s
+// Ease:
+//   standard ease   enter ease-out   exit ease-in   linear linear
+// Derived curves that the four roles cannot reproduce without a feel change:
+//   --juice-motion-ease-in-out  (bounce, blink, progress indeterminate, accordion height)
+//   --juice-motion-ease-steps   (blink terminal — steps(2, end))
+//
+// Off-scale keyframe durations stay exact by multiplying --juice-motion-duration-slow
+// (0.4, 0.5, 0.6, 0.8, 1.2, 1.4, 1.6, 2, 3, 3.4, 4, 5, 7, 8, 10). Spinner 0.8s and
+// the progress 1.2s indeterminate loop are component hooks
+// (--juice-spinner-spin-duration, --juice-progress-indeterminate-duration)
+// whose defaults are those multiples.
+//
+// Reduced motion: one strategy. The four duration tokens collapse to 0.01ms
+// on :root and [theme] (important, so a theme pass-through literal cannot
+// keep a long duration). Loops also set animation: none, because a collapsed
+// duration on an infinite animation still iterates. 160ms card hover maps to
+// instant (0.15s).
+
+:root {
+    --juice-motion-duration-instant: 0.15s;
+    --juice-motion-duration-fast: 0.2s;
+    --juice-motion-duration-base: 0.3s;
+    --juice-motion-duration-slow: 1s;
+    --juice-motion-ease-standard: ease;
+    --juice-motion-ease-enter: ease-out;
+    --juice-motion-ease-exit: ease-in;
+    --juice-motion-ease-linear: linear;
+    --juice-motion-ease-in-out: ease-in-out;
+    --juice-motion-ease-steps: steps(2, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root,
+    [theme] {
+        --juice-motion-duration-instant: 0.01ms !important;
+        --juice-motion-duration-fast: 0.01ms !important;
+        --juice-motion-duration-base: 0.01ms !important;
+        --juice-motion-duration-slow: 0.01ms !important;
+    }
+}
+
+// Shared dismiss control. Modal, drawer, popover, banner, and toast
+// used the same background/color transition (0.2s, initial ease).
+@mixin overlay-close-transition {
+    transition:
+        background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard),
+        color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}

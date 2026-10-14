@@ -1,16 +1,16 @@
 [motion="turn"] {
-    animation: spin 5s linear infinite;
+    animation: spin calc(var(--juice-motion-duration-slow) * 5) var(--juice-motion-ease-linear) infinite;
     animation-play-state: paused;
     overflow-y: hidden;
 }
 
 [motion="turn::fast"] {
-    animation: spin 2s linear infinite;
+    animation: spin calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-linear) infinite;
     animation-play-state: paused;
 }
 
 [motion="turn::slow"] {
-    animation: spin 7s linear infinite;
+    animation: spin calc(var(--juice-motion-duration-slow) * 7) var(--juice-motion-ease-linear) infinite;
     animation-play-state: paused;
 }
 

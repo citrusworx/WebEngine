@@ -102,7 +102,7 @@ button[radio],
     box-shadow: none;
     transform: none;
     overflow: hidden;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [radio]::after,
@@ -122,7 +122,7 @@ button[radio]::after,
     transform: translate(-50%, -50%) scale(0);
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+    transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), opacity var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [radio][aria-checked="true"],

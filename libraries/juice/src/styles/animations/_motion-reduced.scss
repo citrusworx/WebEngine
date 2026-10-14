@@ -3,8 +3,8 @@
 @media (prefers-reduced-motion: reduce) {
     [motion] {
         animation: none !important;
-        transition-duration: 0.01ms !important;
-        transition-delay: 0ms !important;
+        transition-duration: var(--juice-motion-duration-instant) !important;
+        transition-delay: var(--juice-motion-duration-instant) !important;
     }
 
     .t-all,

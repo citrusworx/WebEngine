@@ -85,7 +85,7 @@ button[checkbox],
     box-shadow: none;
     transform: none;
     overflow: hidden;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [checkbox]::after,
@@ -106,7 +106,7 @@ button[checkbox]::after,
     transform: translate(-50%, -58%) rotate(45deg) scale(0);
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+    transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), opacity var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 }
 
 [checkbox][aria-checked="true"],

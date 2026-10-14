@@ -1,5 +1,5 @@
 [motion="wiggle"] {
-    animation: wiggle 1s linear forwards;
+    animation: wiggle var(--juice-motion-duration-slow) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes wiggle {

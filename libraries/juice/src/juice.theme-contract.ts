@@ -298,6 +298,28 @@ export const REQUIRED_FIELD_ROLES = [
     "invalid-border",
 ] as const;
 
+/**
+ * Motion duration and ease roles. Core CSS owns the defaults.
+ * Shipped library themes are not required to bind them, so their pace stays put.
+ * Generated `--jx-*` themes pass the same defaults through.
+ */
+export const MOTION_DURATION_ROLES = ["instant", "fast", "base", "slow"] as const;
+
+export const MOTION_EASE_ROLES = ["standard", "enter", "exit", "linear"] as const;
+
+export function motionRoleBinds(): Array<{ juice: string; jx: string }> {
+    return [
+        ...MOTION_DURATION_ROLES.map((role) => ({
+            juice: `--juice-motion-duration-${role}`,
+            jx: `--jx-motion-duration-${role}`,
+        })),
+        ...MOTION_EASE_ROLES.map((role) => ({
+            juice: `--juice-motion-ease-${role}`,
+            jx: `--jx-motion-ease-${role}`,
+        })),
+    ];
+}
+
 /** Wizard chrome — required on every shipped library theme and generated `--jx-*` themes. */
 export const REQUIRED_WIZARD_ROLES = [
     "shell",
@@ -540,6 +562,7 @@ export function missingRequiredJuiceBinds(css: string): string[] {
  * `--jx-drawer-*` / `--jx-toast-*` / `--jx-banner-*` / `--jx-popover-*` / `--jx-tooltip-*` /
  * `--jx-combobox-*` / `--jx-menu-*` / `--jx-switch-*` / `--jx-slider-*` / `--jx-checkbox-*` /
  * `--jx-radio-*` / `--jx-breadcrumb-*` / `--jx-progress-*` / `--jx-pagination-*` / `--jx-disclosure-*` / `--jx-spinner-*` / `--jx-select-*` / `--jx-input-*` / `--jx-textarea-*` / `--jx-field-*` / `--jx-wizard-*` aliases, same suffix pattern as tabs.
+ * Motion roles pass through as `--jx-motion-*` → `--juice-motion-*` and are not required on shipped themes.
  */
 export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: string }> {
     return [
@@ -639,5 +662,6 @@ export function requiredGeneratedJxJuiceBinds(): Array<{ juice: string; jx: stri
             juice: `--juice-wizard-${role}`,
             jx: `--jx-wizard-${role}`,
         })),
+        ...motionRoleBinds(),
     ];
 }

@@ -111,3 +111,15 @@ $_juice-tooltip-ink: -juice-tooltip-role(ink, #{$black-700});
     margin-left: 0.375rem;
     transform-origin: left center;
 }
+
+// Tooltip has no enter/exit motion in this slice. The guard keeps a tip
+// static if a later rule or theme adds a transition on the same elements.
+@media (prefers-reduced-motion: reduce) {
+    [tooltip-root],
+    [theme] [tooltip-root],
+    [tooltip-panel],
+    [theme] [tooltip-panel] {
+        transition: none;
+        animation: none;
+    }
+}

@@ -1,3 +1,4 @@
+@forward './motion';
 @forward './blink.scss';
 @forward './bounce.scss';
 @forward './ease.scss';
@@ -16,15 +17,15 @@
 @forward './_motion-reduced.scss';
 
 /* Transition utilities */
-.t-all { transition: all 0.3s ease; }
-.t-width { transition: width 0.3s ease; }
-.t-height { transition: height 0.3s ease; }
-.t-flex { transition: flex 0.3s ease; }
-.t-bg { transition: background-color 0.3s ease; }
+.t-all { transition: all var(--juice-motion-duration-base) var(--juice-motion-ease-standard); }
+.t-width { transition: width var(--juice-motion-duration-base) var(--juice-motion-ease-standard); }
+.t-height { transition: height var(--juice-motion-duration-base) var(--juice-motion-ease-standard); }
+.t-flex { transition: flex var(--juice-motion-duration-base) var(--juice-motion-ease-standard); }
+.t-bg { transition: background-color var(--juice-motion-duration-base) var(--juice-motion-ease-standard); }
 
 .sm-to-md {
     width: 15vw;
-    transition: width 1s ease;
+    transition: width var(--juice-motion-duration-slow) var(--juice-motion-ease-standard);
 }
 
 .sm-to-md.expand {

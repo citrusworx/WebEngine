@@ -1,5 +1,5 @@
 [motion="grow"] {
-    animation: grow 2s linear forwards;
+    animation: grow calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-linear) forwards;
 }
 
 @keyframes grow {

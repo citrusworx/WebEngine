@@ -94,7 +94,8 @@ $_juice-spinner-stroke: 2px;
     background-color: transparent;
     background-image: none;
     pointer-events: none;
-    animation: juice-spinner-spin 0.8s linear infinite;
+    // 0.8s spin. Override --juice-spinner-spin-duration; default is slow * 0.8.
+    animation: juice-spinner-spin var(--juice-spinner-spin-duration, calc(var(--juice-motion-duration-slow) * 0.8)) var(--juice-motion-ease-linear) infinite;
 }
 
 [spinner-label],

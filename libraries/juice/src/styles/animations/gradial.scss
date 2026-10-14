@@ -3,7 +3,7 @@ Creating Gradient Animations
 */
 
 [motion="bg.alive"]{
-    animation: alive 10s running infinite;
+    animation: alive calc(var(--juice-motion-duration-slow) * 10) var(--juice-motion-ease-standard) running infinite;
 }
 
 @keyframes alive {

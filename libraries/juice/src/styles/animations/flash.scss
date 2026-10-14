@@ -1,5 +1,5 @@
 [motion="flash:red"]{
-    animation: flash-red 1s running infinite;
+    animation: flash-red var(--juice-motion-duration-slow) var(--juice-motion-ease-standard) running infinite;
 }
 
 @keyframes flash-red {

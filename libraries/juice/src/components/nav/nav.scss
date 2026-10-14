@@ -258,7 +258,7 @@ nav[type="mobile"][data-nav-toggle-icon="default"]::after {
     height: 2px;
     border-radius: 999px;
     background-color: currentColor;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    transition: transform var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), box-shadow var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), opacity var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 nav[type="mobile"][data-nav-toggle-icon="default"]::before {
@@ -277,6 +277,13 @@ nav[type="mobile"][data-nav-toggle-icon="default"][aria-expanded="true"]::before
 nav[type="mobile"][data-nav-toggle-icon="default"][aria-expanded="true"]::after {
     opacity: 1;
     transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    nav[type="mobile"][data-nav-toggle-icon="default"]::before,
+    nav[type="mobile"][data-nav-toggle-icon="default"]::after {
+        transition: none;
+    }
 }
 
 nav[type="mobile"]:focus-visible {

@@ -29,6 +29,62 @@ function readBundledThemeIds() {
         .sort();
 }
 
+function reducedMotionBlocks(css: string): string[] {
+    const blocks: string[] = [];
+    const needle = "@media (prefers-reduced-motion: reduce)";
+    let from = 0;
+
+    while (from < css.length) {
+        const start = css.indexOf(needle, from);
+        if (start < 0) {
+            break;
+        }
+
+        const open = css.indexOf("{", start);
+        let depth = 0;
+        let end = open;
+
+        for (let i = open; i < css.length; i += 1) {
+            if (css[i] === "{") {
+                depth += 1;
+            } else if (css[i] === "}") {
+                depth -= 1;
+                if (depth === 0) {
+                    end = i;
+                    break;
+                }
+            }
+        }
+
+        blocks.push(css.slice(start, end + 1));
+        from = end + 1;
+    }
+
+    return blocks;
+}
+
+function motionDeclarationsWithDurationLiterals(css: string): string[] {
+    const found: string[] = [];
+    const re = /(?:^|[{;])\s*((?:-\w+-)?(?:transition|animation)(?:-duration|-delay)?)\s*:\s*([^;{}]+)/g;
+
+    for (const match of css.matchAll(re)) {
+        const value = match[2].replace(/\s+/g, " ").trim();
+        if (/\d+(?:\.\d+)?(?:ms|s)\b/.test(value)) {
+            found.push(`${match[1].trim()}: ${value}`);
+        }
+    }
+
+    return found;
+}
+
+// Demo and site SCSS stays on literal timing: developers, how-it-works, dashboard.
+const MOTION_DURATION_ALLOWLIST = new Set([
+    "transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s",
+    "transition: border-color 0.2s, transform 0.2s",
+    "transition: background-color 0.15s, color 0.15s",
+    "transition: border-color 0.2s, box-shadow 0.2s",
+]);
+
 describe("Juice build artifacts", () => {
     it("produces core CSS output without bundled themes", () => {
         const cssPath = join(DIST_DIR, "index.css");
@@ -2385,5 +2441,35 @@ describe("Juice package contract", () => {
         }
 
         expect(missingAssets).toEqual([]);
+    });
+
+    it("publishes motion tokens and keeps transition and animation durations on those tokens", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+
+        expect(css).toContain("--juice-motion-duration-instant: 0.15s");
+        expect(css).toContain("--juice-motion-duration-fast: 0.2s");
+        expect(css).toContain("--juice-motion-duration-base: 0.3s");
+        expect(css).toContain("--juice-motion-duration-slow: 1s");
+        expect(css).toContain("--juice-motion-ease-standard: ease");
+        expect(css).toContain("--juice-motion-ease-enter: ease-out");
+        expect(css).toContain("--juice-motion-ease-exit: ease-in");
+        expect(css).toContain("--juice-motion-ease-linear: linear");
+
+        const durationCollapse = reduced.filter((block) => block.includes("--juice-motion-duration-instant"));
+        expect(durationCollapse.length).toBeGreaterThan(0);
+        for (const token of ["instant", "fast", "base", "slow"]) {
+            expect(durationCollapse.some((block) => block.includes(`--juice-motion-duration-${token}: 0.01ms`))).toBe(true);
+        }
+
+        expect(reduced.some((block) => /\[card=["']?interactive["']?\]/.test(block))).toBe(true);
+        expect(reduced.some((block) => /nav\[type=["']?mobile["']?\]\[data-nav-toggle-icon=["']?default["']?\]::before/.test(block))).toBe(true);
+        expect(reduced.some((block) => /\[tooltip-panel\]/.test(block))).toBe(true);
+        expect(reduced.some((block) => /\[animation=["']?flow["']?\]/.test(block) && /\[animation=["']?fall["']?\]/.test(block))).toBe(true);
+
+        const literals = motionDeclarationsWithDurationLiterals(css).filter(
+            (declaration) => !MOTION_DURATION_ALLOWLIST.has(declaration)
+        );
+        expect(literals).toEqual([]);
     });
 });

@@ -1,6 +1,6 @@
 [motion="tilt"] {
     transform: rotate(0deg);
-    animation: transform 1s ease-in;
+    animation: transform var(--juice-motion-duration-slow) var(--juice-motion-ease-exit);
     transform-origin: bottom left;
 }
 

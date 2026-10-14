@@ -865,6 +865,25 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-field-error-ink: var(--jx-field-error-ink);
     --juice-field-invalid-border: var(--jx-field-invalid-border);
 
+    /* Motion roles — same defaults as core. Themes may override --jx-motion-*
+       to change pace. Values match core so a generated theme does not retime. */
+    --jx-motion-duration-instant: 0.15s;
+    --jx-motion-duration-fast: 0.2s;
+    --jx-motion-duration-base: 0.3s;
+    --jx-motion-duration-slow: 1s;
+    --jx-motion-ease-standard: ease;
+    --jx-motion-ease-enter: ease-out;
+    --jx-motion-ease-exit: ease-in;
+    --jx-motion-ease-linear: linear;
+    --juice-motion-duration-instant: var(--jx-motion-duration-instant);
+    --juice-motion-duration-fast: var(--jx-motion-duration-fast);
+    --juice-motion-duration-base: var(--jx-motion-duration-base);
+    --juice-motion-duration-slow: var(--jx-motion-duration-slow);
+    --juice-motion-ease-standard: var(--jx-motion-ease-standard);
+    --juice-motion-ease-enter: var(--jx-motion-ease-enter);
+    --juice-motion-ease-exit: var(--jx-motion-ease-exit);
+    --juice-motion-ease-linear: var(--jx-motion-ease-linear);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -913,7 +932,7 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] :where(a) {
     color: var(--jx-text-muted);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
 }
 
 [theme="${config.id}"] :where(a:hover, a:focus-visible) {

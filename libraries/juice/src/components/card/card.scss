@@ -57,7 +57,8 @@
 
 [card="interactive"]{
     cursor: pointer;
-    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    // 160ms maps to instant (0.15s).
+    transition: transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), box-shadow var(--juice-motion-duration-instant) var(--juice-motion-ease-standard), border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
 
     &:hover{
         transform: translateY(-2px);
@@ -65,6 +66,12 @@
 
     &:focus-within{
         transform: translateY(-2px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [card="interactive"] {
+        transition: none;
     }
 }
 

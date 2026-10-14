@@ -121,26 +121,26 @@ body[gradient]:not([text])::before{
 [gradient]:not([text])[motion="flow"]::before,
 [gradient]:not([text])[animation="flow"]::before{
     background-size: 300% 100%;
-    animation: gradShiftX 3s linear infinite;
+    animation: gradShiftX calc(var(--juice-motion-duration-slow) * 3) var(--juice-motion-ease-linear) infinite;
 }
 
 button[gradient]:not([text])[motion="flow"]::before,
 button[gradient]:not([text])[animation="flow"]::before{
     background-size: 800% 100%;
-    animation: gradShiftX 8s linear infinite;
+    animation: gradShiftX calc(var(--juice-motion-duration-slow) * 8) var(--juice-motion-ease-linear) infinite;
 }
 
 [text][motion="flow"],
 [text][animation="flow"]{
     background-size: 800% 100%;
-    animation: gradShiftX 8s linear infinite;
+    animation: gradShiftX calc(var(--juice-motion-duration-slow) * 8) var(--juice-motion-ease-linear) infinite;
 }
 
 
 body[gradient]:not([text])[motion="fall"]::before,
 body[gradient]:not([text])[animation="fall"]::before{
     background-size: 300% 300%;
-    animation: gradShiftY 10s linear infinite;
+    animation: gradShiftY calc(var(--juice-motion-duration-slow) * 10) var(--juice-motion-ease-linear) infinite;
 }
 
 @keyframes gradShiftX {
@@ -154,6 +154,19 @@ body[gradient]:not([text])[animation="fall"]::before{
     0% { background-position: 50% 0%; }
     50% { background-position: 50% 100%; }
     100% { background-position: 50% 0%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [gradient]:not([text])[motion="flow"]::before,
+    [gradient]:not([text])[animation="flow"]::before,
+    button[gradient]:not([text])[motion="flow"]::before,
+    button[gradient]:not([text])[animation="flow"]::before,
+    [text][motion="flow"],
+    [text][animation="flow"],
+    body[gradient]:not([text])[motion="fall"]::before,
+    body[gradient]:not([text])[animation="fall"]::before {
+        animation: none;
+    }
 }
 
 /* Special Colors */

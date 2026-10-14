@@ -1,35 +1,35 @@
 [motion="blink"],
 [animation="blink"],
 [animate="blink"] {
-    animation: blink-default 1.6s ease-in-out infinite;
+    animation: blink-default calc(var(--juice-motion-duration-slow) * 1.6) var(--juice-motion-ease-in-out) infinite;
     transform-origin: center;
 }
 
 [motion="blink:slow"],
 [animation="blink:slow"],
 [animate="blink:slow"] {
-    animation: blink-soft 3.4s ease-in-out infinite;
+    animation: blink-soft calc(var(--juice-motion-duration-slow) * 3.4) var(--juice-motion-ease-in-out) infinite;
     transform-origin: center;
 }
 
 [motion="blink:fast"],
 [animation="blink:fast"],
 [animate="blink:fast"] {
-    animation: blink-soft 1.4s ease-in-out infinite;
+    animation: blink-soft calc(var(--juice-motion-duration-slow) * 1.4) var(--juice-motion-ease-in-out) infinite;
     transform-origin: center;
 }
 
 [motion="blink:signal"],
 [animation="blink:signal"],
 [animate="blink:signal"] {
-    animation: blink-signal 2s ease-in-out infinite;
+    animation: blink-signal calc(var(--juice-motion-duration-slow) * 2) var(--juice-motion-ease-in-out) infinite;
     transform-origin: center;
 }
 
 [motion="blink:terminal"],
 [animation="blink:terminal"],
 [animate="blink:terminal"] {
-    animation: blink-terminal 1.2s steps(2, end) infinite;
+    animation: blink-terminal calc(var(--juice-motion-duration-slow) * 1.2) var(--juice-motion-ease-steps) infinite;
 }
 
 [motion^="blink"]:hover,
