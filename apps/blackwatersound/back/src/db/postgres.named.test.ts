@@ -93,7 +93,7 @@ describe("named COUNT / EXISTS / JSONB host helpers", () => {
     expect(state.queries).toEqual([
       { sql: namedSql.payloadsByCatalog, params: ["gear"] },
       { sql: namedSql.payloadsBySlug, params: ["fuzz-face"] },
-      { sql: namedSql.payloadsContaining, params: [JSON.stringify({ catalog: "gear" })] },
+      { sql: namedSql.payloadsContaining, params: [{ catalog: "gear" }] },
       { sql: namedSql.payloadsWithKey, params: ["badge"] },
     ]);
   });

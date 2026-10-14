@@ -31,16 +31,3 @@ export type NamedQuery = keyof typeof namedSql;
 export function namedQuery(name: NamedQuery): string {
   return namedSql[name];
 }
-
-/** Validate a JSONB bind before `$N::jsonb`. The compiler owns the cast. */
-export function bindJsonb(value: unknown): string {
-  if (value === null || typeof value !== "object") {
-    throw new Error("JSONB bind value must be a JSON object or array");
-  }
-
-  try {
-    return JSON.stringify(value);
-  } catch {
-    throw new Error("JSONB bind value is not JSON-serializable");
-  }
-}

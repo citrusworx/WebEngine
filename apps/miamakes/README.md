@@ -96,9 +96,9 @@ yarn workspace @citrusworx/miamakes typecheck
 - Decorative things (gardening, crafts) — named in the home hero, not a resource yet
 - Posts — hinted by the old prototype, not modeled yet
 
-## Known library gaps
+## Host execute
 
-Nectarine's UPDATE compiler does not emit `RETURNING`, so a successful `updateRecipe` is followed by the `byId` named query. The Postgres adapter does not stringify JSON objects on bind (the MySQL adapter does), and the default compiled writer does not attach path parameters when insert/update values are explicit `::jsonb` casts. The route execute follows the Blackwater JSONB pattern: validate, `JSON.stringify` the lists, and run the named query. No SQL is written in the app.
+Named SQL lives in `recipeQueries.yml`. The route execute validates the body, mints ids, keeps slugs unique, and falls back to the in-memory list when Postgres is unset. Ingredient and step arrays are passed through; the Postgres adapter encodes those JSONB binds. `updateRecipe` is one `UPDATE … RETURNING *` — the handler does not read the row back with `byId`. No SQL is written in the app.
 
 ## Roadmap to Christmas 2026
 

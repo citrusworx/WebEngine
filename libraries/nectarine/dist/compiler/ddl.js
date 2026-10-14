@@ -12,6 +12,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DDL_VENDORS = exports.SchemaCompileError = void 0;
 exports.schemaPlanStatements = schemaPlanStatements;
+exports.schemaJsonColumns = schemaJsonColumns;
 exports.compileSchema = compileSchema;
 exports.compileSchemas = compileSchemas;
 exports.compileTable = compileTable;
@@ -620,6 +621,25 @@ function schemaPlanStatements(tables, phase, options = {}) {
 }
 function emitPlan(tables, options = {}) {
     return schemaPlanStatements(tables, "all", options).join("\n\n");
+}
+/**
+ * `${table}.${column}` → `json` | `jsonb` for fields declared in schema YAML.
+ * Pass the map as `compileQuery(..., { jsonColumns })` so those columns' bare
+ * `$N` binds are cast. Explicit `{ cast: jsonb }` in the query is unchanged.
+ */
+function schemaJsonColumns(schema) {
+    const columns = new Map();
+    for (const model of collectModels(loadSchemaDoc(schema))) {
+        for (const field of model.fields) {
+            if (field.type.kind !== "named") {
+                continue;
+            }
+            if (field.type.name === "json" || field.type.name === "jsonb") {
+                columns.set(`${model.table}.${field.name}`, field.type.name);
+            }
+        }
+    }
+    return columns;
 }
 /**
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.

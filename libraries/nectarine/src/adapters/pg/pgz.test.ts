@@ -27,6 +27,7 @@ import { Pool } from "pg";
 import {
     createPgAdapter,
     createPgAdapterFromConfig,
+    encodePgJsonBinds,
     PgSql,
     requirePgCredentials,
 } from "./pgz.js";
@@ -165,6 +166,61 @@ describe("PgSql", () => {
             [1],
         );
         expect(result.rows).toEqual([{ id: 1 }]);
+    });
+
+    it("query() JSON-encodes object and array binds on ::jsonb and leaves other params", async () => {
+        const adapter = createPgAdapter(creds);
+        await adapter.connect();
+
+        await adapter.query(
+            "INSERT INTO recipes (id, ingredients, steps) VALUES ($1, $2::jsonb, $3::JSONB)",
+            ["rec_1", ["peaches", "sugar"], { heat: "350" }],
+        );
+
+        expect(mockPool().query).toHaveBeenCalledWith(
+            "INSERT INTO recipes (id, ingredients, steps) VALUES ($1, $2::jsonb, $3::JSONB)",
+            ["rec_1", '["peaches","sugar"]', '{"heat":"350"}'],
+        );
+    });
+
+    it("query() does not double-encode a JSON string or stringify a non-JSON array", async () => {
+        const adapter = createPgAdapter(creds);
+        await adapter.connect();
+
+        await adapter.query("INSERT INTO recipes (id, ingredients) VALUES ($1, $2::jsonb)", [
+            "rec_1",
+            '["already"]',
+        ]);
+        await adapter.query("SELECT id FROM recipes WHERE id = ANY($1)", [[1, 2]]);
+
+        expect(mockPool().query).toHaveBeenNthCalledWith(
+            1,
+            "INSERT INTO recipes (id, ingredients) VALUES ($1, $2::jsonb)",
+            ["rec_1", '["already"]'],
+        );
+        expect(mockPool().query).toHaveBeenNthCalledWith(
+            2,
+            "SELECT id FROM recipes WHERE id = ANY($1)",
+            [[1, 2]],
+        );
+    });
+
+    it("withTransaction JSON-encodes ::json binds on the pinned client", async () => {
+        const clientQuery = vi.fn().mockResolvedValue({ rows: [] });
+        mocks.poolConnect.mockResolvedValue({ query: clientQuery, release: mocks.release });
+        const adapter = createPgAdapter(creds);
+        await adapter.connect();
+        mocks.poolConnect.mockClear();
+        mocks.poolConnect.mockResolvedValue({ query: clientQuery, release: mocks.release });
+
+        await adapter.withTransaction(async (query) => {
+            await query("UPDATE recipes SET notes = $1::json WHERE id = $2", [{ a: 1 }, "rec_1"]);
+        });
+
+        expect(clientQuery).toHaveBeenCalledWith(
+            "UPDATE recipes SET notes = $1::json WHERE id = $2",
+            ['{"a":1}', "rec_1"],
+        );
     });
 
     it("query() throws when not connected", async () => {
@@ -333,5 +389,30 @@ describe("createPgAdapterFromConfig", () => {
         };
 
         expect(createPgAdapterFromConfig(config as unknown as NectarineConfig)).toBeNull();
+    });
+});
+
+describe("encodePgJsonBinds", () => {
+    it("ignores ::jsonb inside quotes and comments and keeps Date and Buffer", () => {
+        const when = new Date("2026-01-01T00:00:00.000Z");
+        const buf = Buffer.from("{}");
+        expect(
+            encodePgJsonBinds("SELECT '$2::jsonb', $1::jsonb -- $3::json\n/* $4::jsonb */", [
+                { ok: true },
+                ["hidden"],
+                ["comment"],
+                ["block"],
+            ]),
+        ).toEqual(['{"ok":true}', ["hidden"], ["comment"], ["block"]]);
+        expect(encodePgJsonBinds("SELECT $1::json, $2::jsonb", [when, buf])).toEqual([when, buf]);
+        expect(encodePgJsonBinds("SELECT $1::jsonb", [null])).toEqual([null]);
+    });
+
+    it("throws when a JSON bind cannot be serialized", () => {
+        const circular: { self?: unknown } = {};
+        circular.self = circular;
+        expect(() => encodePgJsonBinds("SELECT $1::jsonb", [circular])).toThrowError(
+            /cannot encode JSON bind/,
+        );
     });
 });

@@ -37,6 +37,12 @@ export type CompileSchemaOptions = {
  */
 export declare function schemaPlanStatements(tables: CompiledTable[], phase: "create" | "additive" | "indexes" | "all", options?: CompileSchemaOptions): string[];
 /**
+ * `${table}.${column}` → `json` | `jsonb` for fields declared in schema YAML.
+ * Pass the map as `compileQuery(..., { jsonColumns })` so those columns' bare
+ * `$N` binds are cast. Explicit `{ cast: jsonb }` in the query is unchanged.
+ */
+export declare function schemaJsonColumns(schema: unknown): Map<string, "json" | "jsonb">;
+/**
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
  * `schema` may be a parsed object or a filesystem path.
  */

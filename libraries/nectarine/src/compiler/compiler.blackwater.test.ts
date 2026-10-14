@@ -90,7 +90,7 @@ describe("Blackwater query YAML", () => {
             "INSERT INTO products (id, payload) VALUES ($1, $2::jsonb) RETURNING payload",
         );
         expect(compileNamed("product/productQueries.yml", "product", "update", "updatePayload")).toBe(
-            "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2",
+            "UPDATE products SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2 RETURNING payload",
         );
         expect(compileNamed("product/productQueries.yml", "product", "read", "payloadsByCatalog")).toBe(
             "SELECT payload FROM products WHERE payload->>'catalog' = $1 ORDER BY created_at ASC",

@@ -17,10 +17,11 @@ import {
     isRecord,
     QueryCompileError,
     type CleanedQueries,
+    type CompileQueryOptions,
     type CrudMethod,
 } from "./sql.js";
 
-export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
+export type { CleanedQueries, CompileQueryOptions, CrudMethod, JsonColumnCast, OperatorToken, optokens } from "./sql.js";
 export type { QueryType } from "./normalize.js";
 export type { CompiledTable, CompileSchemaOptions, DdlVendor } from "./ddl.js";
 export type {
@@ -47,6 +48,7 @@ export {
     compileTable,
     DDL_VENDORS,
     schemaFieldEnumValues,
+    schemaJsonColumns,
     schemaPlanStatements,
     SchemaCompileError,
 } from "./ddl.js";
@@ -85,7 +87,9 @@ export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
  * Blackwater `type: SELECT` documents are accepted and normalized onto the
  * same phonics model before assembly. Postgres JSONB binds use
  * `{ value: $N, cast: jsonb }` (allow-listed). JSONB `@>` / `?` / `->>`,
- * `COUNT`, `EXISTS`, and INSERT `onConflict` are compiler phonics — not host SQL.
+ * `COUNT`, `EXISTS`, INSERT `onConflict`, and `returning` on INSERT, UPDATE,
+ * and DELETE are compiler phonics — not host SQL. Pass `schemaJsonColumns`
+ * as `jsonColumns` so schema `json` / `jsonb` fields cast bare `$N` binds.
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
@@ -142,6 +146,7 @@ export class CCompiler {
         cleanedConfig: CleanedQueries | Record<string, unknown>,
         query: string,
         method?: string,
+        options?: CompileQueryOptions,
     ): string {
         const resolved = method === undefined ? undefined : resolveCrudMethod(method);
         if (method !== undefined && resolved === undefined) {
@@ -154,7 +159,7 @@ export class CCompiler {
             throw new QueryCompileError(`Query not found: ${query}`);
         }
 
-        return compileQuery(bundle.queries[query], bundle.method);
+        return compileQuery(bundle.queries[query], bundle.method, options);
     }
 
     /**

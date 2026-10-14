@@ -168,11 +168,9 @@ async function removeRecipe({ params, ctx }: ExecuteArgs<MiaContext>): Promise<u
  * Host execute for recipe CRUD.
  *
  * Named SQL lives in recipeQueries.yml. This function validates the body,
- * generates ids, and JSON.stringifies ingredient and step lists before the
- * Nectarine adapter binds them. The Postgres adapter does not stringify
- * objects, and the default compiled writer does not add ::jsonb path binds
- * when values are explicit — same reason Blackwater product writes use a
- * host execute.
+ * generates ids, and passes ingredient and step arrays through. The Postgres
+ * adapter encodes those JSONB binds. `updateRecipe` returns the row via
+ * RETURNING, so a successful write is one statement.
  */
 export async function executeRecipe(args: ExecuteArgs<MiaContext>): Promise<unknown> {
   try {

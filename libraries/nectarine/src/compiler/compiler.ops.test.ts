@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compileQuery, QueryCompileError } from "./compiler.js";
+import { compileQuery, QueryCompileError, schemaJsonColumns } from "./compiler.js";
 
 describe("compiler ops: COUNT", () => {
     it("compiles canonical { fn: count }", () => {
@@ -467,5 +467,186 @@ describe("compiler ops: ON CONFLICT", () => {
         expect(sql).not.toContain("fuzzface");
         expect(sql).not.toContain("'; DROP");
         expect(sql).toMatch(/EXCLUDED\.payload$/);
+    });
+});
+
+const recipeJsonColumns = schemaJsonColumns({
+    Recipe: {
+        table: "recipes",
+        fields: {
+            id: "string PRIMARY KEY",
+            ingredients: "jsonb NOT NULL",
+            steps: "jsonb NOT NULL",
+            notes: "json",
+        },
+    },
+});
+
+describe("compiler ops: UPDATE and DELETE RETURNING", () => {
+    it("compiles canonical UPDATE RETURNING after WHERE", () => {
+        expect(
+            compileQuery(
+                {
+                    table: "users",
+                    set: ["name"],
+                    values: ["$1"],
+                    where: { column: "id", operator: "eq", value: "$2" },
+                    returning: ["id", "name"],
+                },
+                "update",
+            ),
+        ).toBe("UPDATE users SET name = $1 WHERE id = $2 RETURNING id, name");
+    });
+
+    it("compiles Blackwater UPDATE and DELETE RETURNING, including star", () => {
+        expect(
+            compileQuery({
+                type: "UPDATE",
+                table: "recipes",
+                fields: ["name", "updated_at"],
+                values: ["$1", { fn: "now" }],
+                where: "id = $2",
+                returning: "*",
+            }),
+        ).toBe("UPDATE recipes SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING *");
+        expect(
+            compileQuery({
+                type: "DELETE",
+                table: "recipes",
+                where: "id = $1",
+                returning: ["id"],
+            }),
+        ).toBe("DELETE FROM recipes WHERE id = $1 RETURNING id");
+    });
+
+    it("compiles canonical DELETE RETURNING", () => {
+        expect(
+            compileQuery(
+                {
+                    from: "recipes",
+                    where: { column: "id", operator: "eq", value: "$1" },
+                    returning: "*",
+                },
+                "delete",
+            ),
+        ).toBe("DELETE FROM recipes WHERE id = $1 RETURNING *");
+    });
+
+    it("omits RETURNING when the key is absent", () => {
+        expect(
+            compileQuery({
+                type: "UPDATE",
+                table: "recipes",
+                fields: ["name"],
+                where: "id = $1",
+            }),
+        ).toBe("UPDATE recipes SET name = $1 WHERE id = $2");
+        expect(
+            compileQuery({
+                type: "DELETE",
+                table: "recipes",
+                where: "id = $1",
+            }),
+        ).toBe("DELETE FROM recipes WHERE id = $1");
+    });
+});
+
+describe("compiler ops: schema JSON columns", () => {
+    it("reads json and jsonb fields from schema YAML", () => {
+        expect([...recipeJsonColumns.entries()]).toEqual([
+            ["recipes.ingredients", "jsonb"],
+            ["recipes.steps", "jsonb"],
+            ["recipes.notes", "json"],
+        ]);
+    });
+
+    it("casts bare binds on schema JSON columns and leaves explicit casts alone", () => {
+        expect(
+            compileQuery(
+                {
+                    type: "INSERT",
+                    table: "recipes",
+                    fields: ["id", "ingredients", "notes"],
+                    values: ["$1", "$2", { value: "$3", cast: "json" }],
+                },
+                undefined,
+                { jsonColumns: recipeJsonColumns },
+            ),
+        ).toBe(
+            "INSERT INTO recipes (id, ingredients, notes) VALUES ($1, $2::jsonb, $3::json)",
+        );
+        expect(
+            compileQuery(
+                {
+                    type: "UPDATE",
+                    table: "recipes",
+                    fields: ["ingredients", "steps", "updated_at"],
+                    values: ["$1", "$2", { fn: "now" }],
+                    where: "id = $3",
+                    returning: "*",
+                },
+                undefined,
+                { jsonColumns: recipeJsonColumns },
+            ),
+        ).toBe(
+            "UPDATE recipes SET ingredients = $1::jsonb, steps = $2::jsonb, updated_at = NOW() WHERE id = $3 RETURNING *",
+        );
+    });
+
+    it("casts eq, neq, and contains on a JSON column, not path text or key names", () => {
+        expect(
+            compileQuery(
+                {
+                    type: "SELECT",
+                    table: "recipes",
+                    fields: ["id"],
+                    where: "ingredients = $1",
+                },
+                undefined,
+                { jsonColumns: recipeJsonColumns },
+            ),
+        ).toBe("SELECT id FROM recipes WHERE ingredients = $1::jsonb");
+        expect(
+            compileQuery(
+                {
+                    type: "SELECT",
+                    table: "recipes",
+                    fields: ["id"],
+                    where: "ingredients @> $1",
+                },
+                undefined,
+                { jsonColumns: recipeJsonColumns },
+            ),
+        ).toBe("SELECT id FROM recipes WHERE ingredients @> $1::jsonb");
+        expect(
+            compileQuery(
+                {
+                    type: "SELECT",
+                    table: "recipes",
+                    fields: ["id"],
+                    where: "ingredients->>'name' = $1 AND ingredients ? $2",
+                },
+                undefined,
+                { jsonColumns: recipeJsonColumns },
+            ),
+        ).toBe(
+            "SELECT id FROM recipes WHERE ingredients->>'name' = $1 AND ingredients ? $2",
+        );
+    });
+
+    it("does not cast columns the schema does not mark as JSON", () => {
+        expect(
+            compileQuery(
+                {
+                    type: "UPDATE",
+                    table: "recipes",
+                    fields: ["id"],
+                    values: ["$1"],
+                    where: "id = $2",
+                },
+                undefined,
+                { jsonColumns: recipeJsonColumns },
+            ),
+        ).toBe("UPDATE recipes SET id = $1 WHERE id = $2");
     });
 });

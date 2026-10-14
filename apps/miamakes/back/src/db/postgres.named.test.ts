@@ -100,8 +100,8 @@ describe("recipe JSONB binds", () => {
           "",
           20,
           45,
-          '["peaches"]',
-          '["Bake"]',
+          ["peaches"],
+          ["Bake"],
           null,
           null,
           null,
@@ -110,6 +110,74 @@ describe("recipe JSONB binds", () => {
     ]);
     expect(namedSql.createRecipe).toContain("$9::jsonb");
     expect(namedSql.createRecipe).toContain("$10::jsonb");
+  });
+
+  it("updates in one RETURNING statement and passes JSONB lists as arrays", async () => {
+    const { updateRecipe } = await import("./postgres.js");
+    state.responses = [
+      {
+        rows: [
+          {
+            id: "rec_peach",
+            slug: "peach-cobbler",
+            name: "Peach Cobbler",
+            author: "Mia",
+            description: "",
+            nutrition: "",
+            prep_minutes: 20,
+            cook_minutes: 40,
+            ingredients: ["peaches", "sugar"],
+            steps: ["Bake"],
+            photo_url: null,
+            author_id: null,
+            cookbook_id: null,
+            created_at: "2026-10-14T00:00:00.000Z",
+            updated_at: "2026-10-14T00:00:00.000Z",
+          },
+        ],
+        rowCount: 1,
+      },
+    ];
+
+    const recipe = await updateRecipe("rec_peach", {
+      slug: "peach-cobbler",
+      name: "Peach Cobbler",
+      author: "Mia",
+      description: "",
+      nutrition: "",
+      prep_minutes: 20,
+      cook_minutes: 40,
+      ingredients: ["peaches", "sugar"],
+      steps: ["Bake"],
+      photo_url: null,
+      author_id: null,
+      cookbook_id: null,
+    });
+
+    expect(recipe?.cook_minutes).toBe(40);
+    expect(recipe?.ingredients).toEqual(["peaches", "sugar"]);
+    expect(state.queries).toEqual([
+      {
+        sql: namedSql.updateRecipe,
+        params: [
+          "peach-cobbler",
+          "Peach Cobbler",
+          "Mia",
+          "",
+          "",
+          20,
+          40,
+          ["peaches", "sugar"],
+          ["Bake"],
+          null,
+          null,
+          null,
+          "rec_peach",
+        ],
+      },
+    ]);
+    expect(namedSql.updateRecipe).toContain("RETURNING *");
+    expect(state.queries.some((entry) => entry.sql === namedSql.byId)).toBe(false);
   });
 
   it("skips seed when countRecipes is non-zero", async () => {

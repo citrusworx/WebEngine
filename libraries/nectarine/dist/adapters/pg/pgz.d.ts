@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import type { QueryResult, QueryResultRow } from "pg";
 import type { NectarineConfig } from "../../config/NectarineConfig.js";
 import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+export { encodePgJsonBinds } from "./json-binds.js";
 export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
 /**
  * Postgres adapter for parameterized SQL from the Nectarine compiler.
@@ -11,6 +12,12 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
  * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
  * this adapter receives the resolved values. It does not read `process.env`
  * itself.
+ *
+ * `$N::json` and `$N::jsonb` binds that are plain objects or arrays are
+ * `JSON.stringify`'d before `pg` sees them. The driver would otherwise send
+ * a JavaScript array as a Postgres array, which a JSONB column rejects.
+ * Strings are left alone. Schema `json` / `jsonb` columns get that cast from
+ * query phonics (`{ cast: jsonb }`) or from `compileQuery` `jsonColumns`.
  *
  * @example
  * ```ts

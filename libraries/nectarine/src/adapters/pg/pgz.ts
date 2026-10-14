@@ -2,6 +2,9 @@ import { Pool } from "pg";
 import type { QueryResult, QueryResultRow } from "pg";
 import type { NectarineConfig } from "../../config/NectarineConfig.js";
 import type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
+import { encodePgJsonBinds } from "./json-binds.js";
+
+export { encodePgJsonBinds } from "./json-binds.js";
 
 export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js";
 
@@ -13,6 +16,12 @@ export type { DatabaseCredentials, DatabaseVendor } from "../../config/types.js"
  * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
  * this adapter receives the resolved values. It does not read `process.env`
  * itself.
+ *
+ * `$N::json` and `$N::jsonb` binds that are plain objects or arrays are
+ * `JSON.stringify`'d before `pg` sees them. The driver would otherwise send
+ * a JavaScript array as a Postgres array, which a JSONB column rejects.
+ * Strings are left alone. Schema `json` / `jsonb` columns get that cast from
+ * query phonics (`{ cast: jsonb }`) or from `compileQuery` `jsonColumns`.
  *
  * @example
  * ```ts
@@ -99,7 +108,7 @@ export class PgSql {
             throw new Error("Postgres adapter query() requires a SQL string");
         }
 
-        return this.pool.query<T>(sql, params as unknown[]);
+        return this.pool.query<T>(sql, encodePgJsonBinds(sql, params));
     }
 
     /**
@@ -127,7 +136,7 @@ export class PgSql {
                 if (typeof sql !== "string" || !sql.trim()) {
                     throw new Error("Postgres adapter query() requires a SQL string");
                 }
-                return client.query(sql, params as unknown[]);
+                return client.query(sql, encodePgJsonBinds(sql, params));
             });
         } finally {
             client.release();

@@ -46,7 +46,7 @@ The database can reject an impossible type or violated constraint. Decide which 
 
 Nectarine's PostgreSQL adapter accepts SQL plus parameters and uses a pool. Its MySQL adapter rewrites supported PostgreSQL-style binds to MySQL placeholders and reorders values when necessary. That is more than replacing every dollar sign: placeholders inside string literals, repeated binds, and JSON expressions require syntax-aware handling.
 
-It is also less than complete dialect translation. Supporting a placeholder does not mean every PostgreSQL statement, type, RETURNING clause, or upsert is portable to MySQL. MongoDB does not execute this SQL at all; it has a separate adapter surface.
+It is also less than complete dialect translation. Supporting a placeholder does not mean every PostgreSQL statement, type, RETURNING clause, or upsert is portable to MySQL. The MySQL adapter rejects `RETURNING` and `ON CONFLICT` at `query()` instead of rewriting them. MongoDB does not execute this SQL at all; it has a separate adapter surface.
 
 ## Checkpoint
 
