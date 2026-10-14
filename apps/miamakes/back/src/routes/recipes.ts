@@ -10,6 +10,7 @@ import {
   isDatabaseConnected,
   loadRecipeByIdFromDb,
   loadRecipeBySlugFromDb,
+  loadRecipesByCategoryFromDb,
   loadRecipesFromDb,
   updateRecipe,
 } from "../db/postgres.js";
@@ -36,6 +37,17 @@ async function listRecipes(ctx: MiaContext): Promise<Recipe[]> {
     return loadRecipesFromDb();
   }
   return sortNewest(storedRecipes(ctx));
+}
+
+async function listByCategory(ctx: MiaContext, category: string | undefined): Promise<Recipe[]> {
+  const shelf = category?.trim().toLowerCase() ?? "";
+  if (!shelf) {
+    return [];
+  }
+  if (isDatabaseConnected()) {
+    return loadRecipesByCategoryFromDb(shelf);
+  }
+  return sortNewest(storedRecipes(ctx).filter((recipe) => recipe.category === shelf));
 }
 
 async function findById(ctx: MiaContext, id: string | undefined): Promise<Recipe | null> {
@@ -99,6 +111,8 @@ function materialize(id: string, write: RecipeWrite, previous?: Recipe): Recipe 
     photo_url: write.photo_url,
     author_id: write.author_id,
     cookbook_id: write.cookbook_id,
+    category: write.category,
+    before_you_begin: write.before_you_begin,
     created_at: previous?.created_at ?? now,
     updated_at: now,
   };
@@ -129,6 +143,8 @@ async function replaceRecipe({ body, params, ctx }: ExecuteArgs<MiaContext>): Pr
     author_id: current.author_id,
     cookbook_id: current.cookbook_id,
     slug: current.slug,
+    category: current.category,
+    before_you_begin: current.before_you_begin,
   });
   write.slug = await uniqueSlug(ctx, write.slug, current.id);
 
@@ -179,6 +195,8 @@ export async function executeRecipe(args: ExecuteArgs<MiaContext>): Promise<unkn
     switch (args.query) {
       case "listRecipes":
         return await listRecipes(args.ctx);
+      case "listByCategory":
+        return await listByCategory(args.ctx, args.params.category);
       case "byId":
         return await findById(args.ctx, args.params.id);
       case "bySlug":

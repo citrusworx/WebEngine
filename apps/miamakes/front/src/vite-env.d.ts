@@ -5,4 +5,3 @@ interface ImportMetaEnv {
 }
 
 declare module "@citrusworx/juiceui/styles";
-declare module "@citrusworx/juiceui/styles/themes/retro-orchard-club";

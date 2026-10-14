@@ -28,7 +28,34 @@ describe("parseRecipeWrite", () => {
       photo_url: null,
       author_id: null,
       cookbook_id: null,
+      category: "entrees",
+      before_you_begin: "",
     });
+  });
+
+  it("keeps a new category slug and the before-you-begin note", () => {
+    const parsed = parseRecipeWrite({
+      name: "Quinoa Salad",
+      category: " Desserts ",
+      before_you_begin: " Rinse the greens. ",
+    });
+
+    expect(parsed.category).toBe("desserts");
+    expect(parsed.before_you_begin).toBe("Rinse the greens.");
+  });
+
+  it("keeps an omitted category and note from the saved recipe", () => {
+    const parsed = parseRecipeWrite(
+      { name: "Quinoa Salad" },
+      { category: "salads", before_you_begin: "Dry the greens." },
+    );
+
+    expect(parsed.category).toBe("salads");
+    expect(parsed.before_you_begin).toBe("Dry the greens.");
+  });
+
+  it("rejects a category that is not a short slug", () => {
+    expect(() => parseRecipeWrite({ name: "Soup", category: "!!!" })).toThrow(/category/);
   });
 
   it("keeps omitted photo and cookbook seams from the saved recipe", () => {
