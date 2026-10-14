@@ -561,6 +561,25 @@
     --juice-textarea-placeholder: var(--aqua-textarea-placeholder);
     --juice-textarea-focus-ring: var(--aqua-textarea-focus-ring);
 
+    /* Field chrome — wrapper around a control from existing tokens.
+       Surface matches the input field. Label is text. Help is muted.
+       Error ink and the invalid border reuse banner error — no new hue.
+       Not an input, not a textarea, not a select, and not a CTA.
+       Runtime is later. */
+    --aqua-field-surface: var(--aqua-surface-strong);
+    --aqua-field-gap: 0.5rem;
+    --aqua-field-label-ink: var(--aqua-text);
+    --aqua-field-help-ink: var(--aqua-text-muted);
+    --aqua-field-error-ink: var(--aqua-banner-error);
+    --aqua-field-invalid-border: var(--aqua-banner-error);
+    --juice-field-surface: var(--aqua-field-surface);
+    --juice-field-gap: var(--aqua-field-gap);
+    --juice-field-label-ink: var(--aqua-field-label-ink);
+    --juice-field-help-ink: var(--aqua-field-help-ink);
+    --juice-field-error-ink: var(--aqua-field-error-ink);
+    --juice-field-invalid-border: var(--aqua-field-invalid-border);
+
+
 
 
     background-color: var(--aqua-page);
@@ -1772,6 +1791,41 @@
     color: var(--juice-textarea-ink);
     box-shadow: none;
 }
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme="aquaflux"] [field] {
+    background-color: var(--juice-field-surface);
+    gap: var(--juice-field-gap);
+}
+
+[theme="aquaflux"] [field][invalid] {
+    border-color: var(--juice-field-invalid-border);
+}
+
+[theme="aquaflux"] [field-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-label-ink);
+    box-shadow: none;
+}
+
+[theme="aquaflux"] [field-help] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-help-ink);
+    box-shadow: none;
+}
+
+[theme="aquaflux"] [field-error] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-error-ink);
+    box-shadow: none;
+}
+
 
 
 

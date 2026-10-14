@@ -820,6 +820,86 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("includes field structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[field-label]");
+        expect(css).toContain("[field-help]");
+        expect(css).toContain("[field-error]");
+        expect(css).toContain("[field][invalid]");
+        expect(css).toMatch(/\[theme\]\s+\[field\]/);
+        expect(css).toContain(":has([field-label]");
+        expect(css).toContain("--juice-field-surface");
+        expect(css).toContain("--juice-field-gap");
+        expect(css).toContain("--juice-field-label-ink");
+        expect(css).toContain("--juice-field-help-ink");
+        expect(css).toContain("--juice-field-error-ink");
+        expect(css).toContain("--juice-field-invalid-border");
+        expect(css).toContain("--aqua-field-surface");
+        expect(css).toContain("--kw-field-surface");
+        expect(css).toContain("--cm-field-surface");
+        expect(css).toContain("--tide-field-surface");
+        expect(css).toContain("--jx-field-surface");
+        expect(css).not.toMatch(/\[field\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[field\][^{]*\{[^}]*--juice-overlay-frost/);
+
+        const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+            selector: match[1] ?? "",
+            body: match[2] ?? "",
+        }));
+
+        for (const rule of rules) {
+            const fieldHost = /\[field\](?!-)/.test(rule.selector);
+            const fieldPart = /\[field-(?:label|help|error)\]/.test(rule.selector);
+
+            if (fieldHost || fieldPart) {
+                expect(rule.body).not.toMatch(/z-index:\s*10/);
+                expect(rule.body).not.toContain("--juice-overlay-frost");
+                expect(rule.body).not.toContain("--juice-input-");
+                expect(rule.body).not.toContain("--juice-textarea-");
+                expect(rule.body).not.toContain("--juice-select-");
+                expect(rule.body).not.toContain("--juice-combobox-");
+            }
+
+            if (/input\[input\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/textarea\[textarea\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/select\[select\]/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/\[combobox/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+
+            if (/\[field\]\[invalid\]/.test(rule.selector) && /\b(input|textarea|select)\b/.test(rule.selector)) {
+                expect(rule.body).not.toContain("--juice-field-");
+            }
+        }
+
+        const formScss = readFileSync(join(PACKAGE_ROOT, "src/components/form/form.scss"), "utf-8");
+        expect(formScss).toContain("$red-500");
+        expect(formScss).toContain("$red-700");
+        expect(formScss).toContain('form[type="signin"]');
+        expect(formScss).toContain("height: 6vh");
+        expect(formScss).not.toContain("--juice-field-");
+
+        for (const file of [
+            "input/input.scss",
+            "textarea/textarea.scss",
+            "select/select.scss",
+            "combobox/combobox.scss",
+        ]) {
+            const source = readFileSync(join(PACKAGE_ROOT, "src/components", file), "utf-8");
+            expect(source, file).not.toContain("--juice-field-");
+        }
+    });
+
     it("includes wizard structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -1817,6 +1897,109 @@ describe("Juice build artifacts", () => {
                 expect(css, id).not.toContain("--kw-textarea");
                 expect(css, id).not.toContain("--kw-accent");
                 expect(css, id).not.toContain("--kw-surface");
+            }
+        }
+    });
+
+    it("binds field chrome roles in Aquaflux, KiwiPress, Citrusmint, and Tide", () => {
+        const aquaCss = readFileSync(join(DIST_DIR, "themes", "aquaflux.css"), "utf-8");
+        const kiwiCss = readFileSync(join(DIST_DIR, "themes", "kiwipress.css"), "utf-8");
+        const mintCss = readFileSync(join(DIST_DIR, "themes", "citrusmint.css"), "utf-8");
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+
+        expect(aquaCss).toContain("--aqua-field-surface: var(--aqua-surface-strong)");
+        expect(aquaCss).toContain("--aqua-field-gap: 0.5rem");
+        expect(aquaCss).toContain("--aqua-field-label-ink: var(--aqua-text)");
+        expect(aquaCss).toContain("--aqua-field-help-ink: var(--aqua-text-muted)");
+        expect(aquaCss).toContain("--aqua-field-error-ink: var(--aqua-banner-error)");
+        expect(aquaCss).toContain("--aqua-field-invalid-border: var(--aqua-banner-error)");
+        expect(aquaCss).toContain("--juice-field-gap: var(--aqua-field-gap)");
+        expect(aquaCss).toContain("[field-label]");
+        expect(aquaCss).toContain("[field-help]");
+        expect(aquaCss).toContain("[field-error]");
+        expect(aquaCss).toContain("gap: var(--juice-field-gap)");
+        expect(aquaCss).toContain("border-color: var(--juice-field-invalid-border)");
+        expect(aquaCss).not.toContain("--aqua-field-surface: var(--aqua-page)");
+        expect(aquaCss).not.toContain("--aqua-field-label-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-field-error-ink: var(--aqua-accent)");
+        expect(aquaCss).not.toContain("--aqua-field-invalid-border: var(--aqua-accent)");
+        expect(aquaCss).not.toMatch(/\[field\](?!-)[^{]*\{[^}]*--aqua-button-background/);
+        expect(aquaCss).toContain("input[input]");
+        expect(aquaCss).toContain("textarea[textarea]");
+        expect(aquaCss).toContain("select[select]");
+
+        expect(kiwiCss).toContain("--kw-field-surface: var(--kw-surface)");
+        expect(kiwiCss).toContain("--kw-field-gap: 0.35rem");
+        expect(kiwiCss).toContain("--kw-field-help-ink: var(--kw-text-soft)");
+        expect(kiwiCss).toContain("--kw-field-label-ink: var(--kw-text)");
+        expect(kiwiCss).toContain("--kw-field-error-ink: var(--kw-banner-error)");
+        expect(kiwiCss).toContain("--kw-field-invalid-border: var(--kw-banner-error)");
+        expect(kiwiCss).toContain("--juice-field-gap: var(--kw-field-gap)");
+        expect(kiwiCss).toMatch(/\[theme=["']?kiwipress["']?\]\s+\[field\]\s*\{[^}]*border-width:\s*2px/);
+        expect(kiwiCss).not.toMatch(/\[theme=["']?kiwipress["']?\]\s+\[field\]\s*\{[^}]*\bborder:\s/);
+        expect(kiwiCss).not.toContain("--kw-field-surface: var(--kw-accent)");
+        expect(kiwiCss).not.toContain("--kw-field-error-ink: var(--kw-accent)");
+        expect(kiwiCss).not.toMatch(/\[field\](?!-)[^{]*\{[^}]*--kw-cta-background/);
+        expect(kiwiCss).not.toMatch(/\[field\](?!-)[^{]*\{[^}]*background:\s*var\(--kw-accent\)/);
+        expect(kiwiCss).toContain("border: 2px solid");
+
+        expect(mintCss).toContain("--cm-field-surface: var(--cm-surface)");
+        expect(mintCss).toContain("--cm-field-gap: 0.5rem");
+        expect(mintCss).toContain("--cm-field-help-ink: var(--cm-text-muted)");
+        expect(mintCss).toContain("--cm-field-error-ink: var(--cm-banner-error)");
+        expect(mintCss).toContain("--cm-field-invalid-border: var(--cm-banner-error)");
+        expect(mintCss).toContain("--juice-field-invalid-border: var(--cm-field-invalid-border)");
+        expect(mintCss).not.toContain("--cm-field-error-ink: var(--cm-heading)");
+        expect(mintCss).not.toContain("--cm-field-error-ink: var(--cm-accent)");
+        expect(mintCss).not.toContain("--cm-field-invalid-border: var(--cm-heading)");
+        expect(mintCss).not.toContain("--cm-field-invalid-border: var(--cm-accent)");
+        expect(mintCss).toContain('"Lato"');
+        expect(mintCss).toContain('"Archivo Black"');
+
+        expect(tideCss).toContain("--tide-field-surface: var(--tide-surface-strong)");
+        expect(tideCss).toContain("--tide-field-gap: 0.5rem");
+        expect(tideCss).toContain("--tide-field-label-ink: var(--tide-text)");
+        expect(tideCss).toContain("--tide-field-help-ink: var(--tide-text-muted)");
+        expect(tideCss).toContain("--tide-field-error-ink: var(--tide-banner-error)");
+        expect(tideCss).toContain("--tide-field-invalid-border: var(--tide-banner-error)");
+        expect(tideCss).toContain("--juice-field-surface: var(--tide-field-surface)");
+        expect(tideCss).not.toContain("--tide-field-surface: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-field-label-ink: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-field-help-ink: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-field-error-ink: var(--tide-page)");
+        expect(tideCss).not.toContain("--tide-field-invalid-border: var(--tide-page)");
+        expect(tideCss).not.toMatch(/\[field\](?!-)[^{]*\{[^}]*--tide-button-background/);
+    });
+
+    it("binds field chrome on every shipped theme without copying KiwiPress or Korolev into retro fields", () => {
+        for (const { id, prefix } of SHIPPED_LIBRARY_THEMES) {
+            const css = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+
+            for (const role of ["surface", "gap", "label-ink", "help-ink", "error-ink", "invalid-border"]) {
+                expect(css, id).toContain(`--juice-field-${role}: var(--${prefix}-field-${role})`);
+                expect(css, id).toContain(`--${prefix}-field-${role}:`);
+            }
+
+            expect(css, id).toContain("[field-label]");
+            expect(css, id).toContain("[field-help]");
+            expect(css, id).toContain("[field-error]");
+            expect(css, id).toContain("gap: var(--juice-field-gap)");
+            expect(css, id).toContain("border-color: var(--juice-field-invalid-border)");
+            expect(css, id).toContain("input[input]");
+            expect(css, id).toContain("textarea[textarea]");
+            expect(css, id).toContain("select[select]");
+            expect(css, id).not.toContain("Korolev");
+
+            if (id.startsWith("retro-") || id === "citrusmint") {
+                expect(css, id).toContain("Lato");
+                expect(css, id).toContain("Archivo Black");
+            }
+
+            if (id.startsWith("retro-")) {
+                expect(css, id).not.toContain("--kw-field");
+                expect(css, id).not.toContain("--kw-accent");
+                expect(css, id).not.toContain("--kw-surface");
+                expect(css, id).toContain(`--${prefix}-field-gap: 0.5rem`);
             }
         }
     });

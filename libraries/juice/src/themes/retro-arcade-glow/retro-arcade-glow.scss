@@ -578,6 +578,25 @@
     --juice-textarea-placeholder: var(--acg-textarea-placeholder);
     --juice-textarea-focus-ring: var(--acg-textarea-focus-ring);
 
+    /* Field chrome — wrapper around a control from existing tokens.
+       Surface matches the input field. Help follows this theme's
+       placeholder ink. Error ink and the invalid border reuse banner
+       error. Not an input, not a textarea, not a select, and not a CTA.
+       Runtime is later. */
+    --acg-field-surface: var(--acg-surface-strong);
+    --acg-field-gap: 0.5rem;
+    --acg-field-label-ink: var(--acg-text);
+    --acg-field-help-ink: var(--acg-text-soft);
+    --acg-field-error-ink: var(--acg-banner-error);
+    --acg-field-invalid-border: var(--acg-banner-error);
+    --juice-field-surface: var(--acg-field-surface);
+    --juice-field-gap: var(--acg-field-gap);
+    --juice-field-label-ink: var(--acg-field-label-ink);
+    --juice-field-help-ink: var(--acg-field-help-ink);
+    --juice-field-error-ink: var(--acg-field-error-ink);
+    --juice-field-invalid-border: var(--acg-field-invalid-border);
+
+
 
 
     background-color: var(--acg-page);
@@ -1949,6 +1968,41 @@
     color: var(--juice-textarea-ink);
     box-shadow: none;
 }
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme="retro-arcade-glow"] [field] {
+    background-color: var(--juice-field-surface);
+    gap: var(--juice-field-gap);
+}
+
+[theme="retro-arcade-glow"] [field][invalid] {
+    border-color: var(--juice-field-invalid-border);
+}
+
+[theme="retro-arcade-glow"] [field-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-label-ink);
+    box-shadow: none;
+}
+
+[theme="retro-arcade-glow"] [field-help] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-help-ink);
+    box-shadow: none;
+}
+
+[theme="retro-arcade-glow"] [field-error] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-error-ink);
+    box-shadow: none;
+}
+
 
 
 

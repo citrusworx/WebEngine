@@ -571,6 +571,25 @@
     --juice-textarea-placeholder: var(--dnd-textarea-placeholder);
     --juice-textarea-focus-ring: var(--dnd-textarea-focus-ring);
 
+    /* Field chrome — wrapper around a control from existing tokens.
+       Surface matches the input field. Help follows this theme's
+       placeholder ink. Error ink and the invalid border reuse banner
+       error. Not an input, not a textarea, not a select, and not a CTA.
+       Runtime is later. */
+    --dnd-field-surface: var(--dnd-surface-strong);
+    --dnd-field-gap: 0.5rem;
+    --dnd-field-label-ink: var(--dnd-text);
+    --dnd-field-help-ink: var(--dnd-text-muted);
+    --dnd-field-error-ink: var(--dnd-banner-error);
+    --dnd-field-invalid-border: var(--dnd-banner-error);
+    --juice-field-surface: var(--dnd-field-surface);
+    --juice-field-gap: var(--dnd-field-gap);
+    --juice-field-label-ink: var(--dnd-field-label-ink);
+    --juice-field-help-ink: var(--dnd-field-help-ink);
+    --juice-field-error-ink: var(--dnd-field-error-ink);
+    --juice-field-invalid-border: var(--dnd-field-invalid-border);
+
+
 
 
     background-color: var(--dnd-page);
@@ -1807,6 +1826,41 @@
     color: var(--juice-textarea-ink);
     box-shadow: none;
 }
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme="retro-denim-dial"] [field] {
+    background-color: var(--juice-field-surface);
+    gap: var(--juice-field-gap);
+}
+
+[theme="retro-denim-dial"] [field][invalid] {
+    border-color: var(--juice-field-invalid-border);
+}
+
+[theme="retro-denim-dial"] [field-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-label-ink);
+    box-shadow: none;
+}
+
+[theme="retro-denim-dial"] [field-help] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-help-ink);
+    box-shadow: none;
+}
+
+[theme="retro-denim-dial"] [field-error] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-error-ink);
+    box-shadow: none;
+}
+
 
 
 

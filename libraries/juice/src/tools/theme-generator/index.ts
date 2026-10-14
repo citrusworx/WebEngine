@@ -848,6 +848,23 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
     --juice-textarea-placeholder: var(--jx-textarea-placeholder);
     --juice-textarea-focus-ring: var(--jx-textarea-focus-ring);
 
+    /* Field chrome — wrapper around a control from existing --jx-* tokens.
+       Surface is the field, not the CTA and not the page. Label is text.
+       Help is muted text. Error ink and the invalid border reuse banner
+       error. Not an input, not a textarea, and not a select. */
+    --jx-field-surface: var(--jx-surface);
+    --jx-field-gap: 0.5rem;
+    --jx-field-label-ink: var(--jx-text);
+    --jx-field-help-ink: var(--jx-text-muted);
+    --jx-field-error-ink: var(--jx-banner-error);
+    --jx-field-invalid-border: var(--jx-banner-error);
+    --juice-field-surface: var(--jx-field-surface);
+    --juice-field-gap: var(--jx-field-gap);
+    --juice-field-label-ink: var(--jx-field-label-ink);
+    --juice-field-help-ink: var(--jx-field-help-ink);
+    --juice-field-error-ink: var(--jx-field-error-ink);
+    --juice-field-invalid-border: var(--jx-field-invalid-border);
+
     background:
         radial-gradient(circle at top left, var(--jx-accent-tint), transparent 25%),
         linear-gradient(180deg, var(--jx-page-tint) 0%, var(--jx-page) 100%);
@@ -1814,6 +1831,33 @@ ${typographyVariantVariables ? `${typographyVariantVariables}\n` : ""}
 [theme="${config.id}"] [textarea-label] {
     background: transparent;
     color: var(--juice-textarea-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [field] {
+    background-color: var(--juice-field-surface);
+    gap: var(--juice-field-gap);
+}
+
+[theme="${config.id}"] [field][invalid] {
+    border-color: var(--juice-field-invalid-border);
+}
+
+[theme="${config.id}"] [field-label] {
+    background: transparent;
+    color: var(--juice-field-label-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [field-help] {
+    background: transparent;
+    color: var(--juice-field-help-ink);
+    box-shadow: none;
+}
+
+[theme="${config.id}"] [field-error] {
+    background: transparent;
+    color: var(--juice-field-error-ink);
     box-shadow: none;
 }
 

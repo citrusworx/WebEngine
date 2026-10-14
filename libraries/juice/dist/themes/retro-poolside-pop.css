@@ -538,6 +538,23 @@
   --juice-textarea-ink: var(--psp-textarea-ink);
   --juice-textarea-placeholder: var(--psp-textarea-placeholder);
   --juice-textarea-focus-ring: var(--psp-textarea-focus-ring);
+  /* Field chrome — wrapper around a control from existing tokens.
+     Surface matches the input field. Help follows this theme's
+     placeholder ink. Error ink and the invalid border reuse banner
+     error. Not an input, not a textarea, not a select, and not a CTA.
+     Runtime is later. */
+  --psp-field-surface: var(--psp-surface-strong);
+  --psp-field-gap: 0.5rem;
+  --psp-field-label-ink: var(--psp-text);
+  --psp-field-help-ink: var(--psp-text-muted);
+  --psp-field-error-ink: var(--psp-banner-error);
+  --psp-field-invalid-border: var(--psp-banner-error);
+  --juice-field-surface: var(--psp-field-surface);
+  --juice-field-gap: var(--psp-field-gap);
+  --juice-field-label-ink: var(--psp-field-label-ink);
+  --juice-field-help-ink: var(--psp-field-help-ink);
+  --juice-field-error-ink: var(--psp-field-error-ink);
+  --juice-field-invalid-border: var(--psp-field-invalid-border);
   background-color: var(--psp-page);
   background-image: var(--psp-page-background);
   color: var(--psp-text);
@@ -1769,6 +1786,40 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-textarea-ink);
+  box-shadow: none;
+}
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme=retro-poolside-pop] [field] {
+  background-color: var(--juice-field-surface);
+  gap: var(--juice-field-gap);
+}
+
+[theme=retro-poolside-pop] [field][invalid] {
+  border-color: var(--juice-field-invalid-border);
+}
+
+[theme=retro-poolside-pop] [field-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-label-ink);
+  box-shadow: none;
+}
+
+[theme=retro-poolside-pop] [field-help] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-help-ink);
+  box-shadow: none;
+}
+
+[theme=retro-poolside-pop] [field-error] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-error-ink);
   box-shadow: none;
 }
 

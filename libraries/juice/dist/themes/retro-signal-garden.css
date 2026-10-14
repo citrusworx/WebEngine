@@ -538,6 +538,23 @@
   --juice-textarea-ink: var(--sgn-textarea-ink);
   --juice-textarea-placeholder: var(--sgn-textarea-placeholder);
   --juice-textarea-focus-ring: var(--sgn-textarea-focus-ring);
+  /* Field chrome — wrapper around a control from existing tokens.
+     Surface matches the input field. Help follows this theme's
+     placeholder ink. Error ink and the invalid border reuse banner
+     error. Not an input, not a textarea, not a select, and not a CTA.
+     Runtime is later. */
+  --sgn-field-surface: var(--sgn-surface-strong);
+  --sgn-field-gap: 0.5rem;
+  --sgn-field-label-ink: var(--sgn-text);
+  --sgn-field-help-ink: var(--sgn-text-muted);
+  --sgn-field-error-ink: var(--sgn-banner-error);
+  --sgn-field-invalid-border: var(--sgn-banner-error);
+  --juice-field-surface: var(--sgn-field-surface);
+  --juice-field-gap: var(--sgn-field-gap);
+  --juice-field-label-ink: var(--sgn-field-label-ink);
+  --juice-field-help-ink: var(--sgn-field-help-ink);
+  --juice-field-error-ink: var(--sgn-field-error-ink);
+  --juice-field-invalid-border: var(--sgn-field-invalid-border);
   background-color: var(--sgn-page);
   background-image: var(--sgn-page-background);
   color: var(--sgn-text);
@@ -1769,6 +1786,40 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-textarea-ink);
+  box-shadow: none;
+}
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme=retro-signal-garden] [field] {
+  background-color: var(--juice-field-surface);
+  gap: var(--juice-field-gap);
+}
+
+[theme=retro-signal-garden] [field][invalid] {
+  border-color: var(--juice-field-invalid-border);
+}
+
+[theme=retro-signal-garden] [field-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-label-ink);
+  box-shadow: none;
+}
+
+[theme=retro-signal-garden] [field-help] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-help-ink);
+  box-shadow: none;
+}
+
+[theme=retro-signal-garden] [field-error] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-error-ink);
   box-shadow: none;
 }
 

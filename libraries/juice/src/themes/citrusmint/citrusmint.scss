@@ -507,6 +507,25 @@
     --juice-textarea-placeholder: var(--cm-textarea-placeholder);
     --juice-textarea-focus-ring: var(--cm-textarea-focus-ring);
 
+    /* Field chrome — wrapper around a control. No accent token:
+       error ink and the invalid border reuse banner error, not heading.
+       Surface is a field, not a heading-fill CTA. Help is muted text.
+       Not an input, not a textarea, and not a select.
+       Runtime is later. */
+    --cm-field-surface: var(--cm-surface);
+    --cm-field-gap: 0.5rem;
+    --cm-field-label-ink: var(--cm-text);
+    --cm-field-help-ink: var(--cm-text-muted);
+    --cm-field-error-ink: var(--cm-banner-error);
+    --cm-field-invalid-border: var(--cm-banner-error);
+    --juice-field-surface: var(--cm-field-surface);
+    --juice-field-gap: var(--cm-field-gap);
+    --juice-field-label-ink: var(--cm-field-label-ink);
+    --juice-field-help-ink: var(--cm-field-help-ink);
+    --juice-field-error-ink: var(--cm-field-error-ink);
+    --juice-field-invalid-border: var(--cm-field-invalid-border);
+
+
 
 
     background-color: var(--cm-page);
@@ -1417,6 +1436,41 @@
     color: var(--juice-textarea-ink);
     box-shadow: none;
 }
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme="citrusmint"] [field] {
+    background-color: var(--juice-field-surface);
+    gap: var(--juice-field-gap);
+}
+
+[theme="citrusmint"] [field][invalid] {
+    border-color: var(--juice-field-invalid-border);
+}
+
+[theme="citrusmint"] [field-label] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-label-ink);
+    box-shadow: none;
+}
+
+[theme="citrusmint"] [field-help] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-help-ink);
+    box-shadow: none;
+}
+
+[theme="citrusmint"] [field-error] {
+    background-image: none;
+    background-color: transparent;
+    color: var(--juice-field-error-ink);
+    box-shadow: none;
+}
+
 
 
 

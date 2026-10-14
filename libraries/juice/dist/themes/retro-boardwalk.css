@@ -548,6 +548,23 @@
   --juice-textarea-ink: var(--bdw-textarea-ink);
   --juice-textarea-placeholder: var(--bdw-textarea-placeholder);
   --juice-textarea-focus-ring: var(--bdw-textarea-focus-ring);
+  /* Field chrome — wrapper around a control from existing tokens.
+     Surface matches the input field. Help follows this theme's
+     placeholder ink. Error ink and the invalid border reuse banner
+     error. Not an input, not a textarea, not a select, and not a CTA.
+     Runtime is later. */
+  --bdw-field-surface: var(--bdw-surface-strong);
+  --bdw-field-gap: 0.5rem;
+  --bdw-field-label-ink: var(--bdw-text);
+  --bdw-field-help-ink: var(--bdw-text-soft);
+  --bdw-field-error-ink: var(--bdw-banner-error);
+  --bdw-field-invalid-border: var(--bdw-banner-error);
+  --juice-field-surface: var(--bdw-field-surface);
+  --juice-field-gap: var(--bdw-field-gap);
+  --juice-field-label-ink: var(--bdw-field-label-ink);
+  --juice-field-help-ink: var(--bdw-field-help-ink);
+  --juice-field-error-ink: var(--bdw-field-error-ink);
+  --juice-field-invalid-border: var(--bdw-field-invalid-border);
   background-color: var(--bdw-page);
   background-image: var(--bdw-page-background);
   color: var(--bdw-text);
@@ -1978,6 +1995,40 @@
   background-image: none;
   background-color: transparent;
   color: var(--juice-textarea-ink);
+  box-shadow: none;
+}
+
+/* Field chrome. Wrapper around a control — label, help, error, invalid.
+   Not an input, not a textarea, not a select, and not the legacy form
+   layout. Paint is surface, gap, ink, and the invalid border, so nested
+   controls keep their own chrome. Runtime is later. */
+[theme=retro-boardwalk] [field] {
+  background-color: var(--juice-field-surface);
+  gap: var(--juice-field-gap);
+}
+
+[theme=retro-boardwalk] [field][invalid] {
+  border-color: var(--juice-field-invalid-border);
+}
+
+[theme=retro-boardwalk] [field-label] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-label-ink);
+  box-shadow: none;
+}
+
+[theme=retro-boardwalk] [field-help] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-help-ink);
+  box-shadow: none;
+}
+
+[theme=retro-boardwalk] [field-error] {
+  background-image: none;
+  background-color: transparent;
+  color: var(--juice-field-error-ink);
   box-shadow: none;
 }
 
