@@ -204,6 +204,21 @@ Select, input, and textarea publish value changes through the native `input` and
 
 Accordion `expanded` follows trigger order. Disclosure `expanded` is the first trigger. Tabs `selected`, pagination `current`, and breadcrumb `current` are 0-based indexes, or `-1` when nothing is current. Radio `value` is the checked option's `value` attribute, and `index` is its position (`-1` when none are checked). `getChecked()` still returns that element. Tabs `selected()` still returns the trigger element. Menu `open` is whether the `[menu]` panel is shown. Nav `open` is whether the sidebar lacks `hidden`. Field `invalid` is the `[invalid]` attribute on the wrapper. Toast `shown` is the `[toast]` host, not the region.
 
+## Sig adapter
+
+`@citrusworx/juiceui/sig` is an optional subpath. It is not part of the main entry, and the runtimes still do not import Sig.
+
+```ts
+import { bind } from "@citrusworx/juiceui/sig";
+
+const notes = bind(switchHost, "switch");
+notes.state.get(); // { checked: boolean }, a Sig signal
+notes.state.set({ checked: true }); // write-back where supported
+notes.dispose();
+```
+
+`bind(host, runtime?)` infers the runtime from the host, or uses the name you pass. `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change` instead. The same state does not notify again. `dispose` removes those listeners. A `bind` during Sig render also disposes on unmount. Setting `state` writes back for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). Other runtimes are read-only. A longer guide is a later slice.
+
 ## Summary
 
 Juice runtime behavior should feel like a natural extension of the markup system, not a separate app framework.
