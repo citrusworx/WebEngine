@@ -1,0 +1,13 @@
+{
+  "name": "miamakesql",
+  "version": "1.0.0",
+  "description": "The GrpahQL API for the Recipe App",
+  "main": "index.js",
+  "author": "Drew Winkles",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-graphql": "^0.12.0",
+    "graphql": "^16.8.1"
+  }
+}
