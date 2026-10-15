@@ -11,6 +11,7 @@ Subpath exports:
 - `@citrusworx/sigjs/jsx-runtime`
 - `@citrusworx/sigjs/jsx-dev-runtime`
 - `@citrusworx/sigjs/sig-router`
+- `@citrusworx/sigjs/juice` — optional Juice host binding. The main entry does not import it. Unpublished versus `@citrusworx/sigjs@0.3.0`.
 
 ## Signal
 
@@ -261,6 +262,30 @@ router.navigate("/about");
 router.goBack();
 router.stop();
 ```
+
+## bind (Juice hosts)
+
+```ts
+import { bind } from "@citrusworx/sigjs/juice";
+
+function bind<R extends JuiceRuntimeName>(
+  host: HTMLElement,
+  runtime: R
+): JuiceBinding<JuiceRuntimeState[R]>;
+function bind(
+  host: HTMLElement,
+  runtime?: JuiceRuntimeName
+): JuiceBinding<JuiceRuntimeState[JuiceRuntimeName]>;
+
+type JuiceBinding<T> = {
+  state: { get(): T; set(value: T): void };
+  dispose(): void;
+};
+```
+
+Optional. Requires `@citrusworx/juiceui` (optional peer). `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change`. `state.set` writes the host for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). The other twenty-one runtimes are read-only. `dispose` removes the listeners and is safe to call twice. A `bind` during Sig render also disposes on unmount.
+
+State shapes and the write-back column are the table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange). Usage is [Runtime binding](./sig-juice-integration.md#runtime-binding). Juice works without this function.
 
 ## Practices that match the implementation
 

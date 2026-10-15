@@ -32,6 +32,8 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 
 **Should be:** CSS-first, attribute-driven styling and composition, shipped themes, and a small set of auto-enhance runtimes (nav / accordion / tabs). Not a large JS component library.
 
+**Observation:** done on master, unpublished versus the live npm cut. The twenty-five interactive runtimes expose `getState()`, and they publish changes through `juice:change` (native `input` / `change` for select, input, and textarea). That contract is DOM. Juice works without Sig. The table is [juice-runtime-behavior.md](../juice/juice-runtime-behavior.md#juicechange).
+
 **Ready when:**
 
 - [ ] Promises in [juice-beta.md](../juice/juice-beta.md) are true and gated by `yarn workspace @citrusworx/juiceui verify`
@@ -59,6 +61,8 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 - [x] Non-goals are explicit in docs: no SSR, no `<For>` / `<Show>` primitives yet, function children are text-only
 - [x] List/conditional usage has a blessed **pattern** in docs even if primitives remain Draft ([sig-roadmap.md](../sigjs/sig-roadmap.md), `replaceChildren`)
 - [x] npm `@citrusworx/sigjs@0.3.0` is published (2026-09-18). Further publishes follow [sigjs release-checklist.md](../sigjs/release-checklist.md)
+
+**Juice hookup:** done on master, unpublished versus `@citrusworx/sigjs@0.3.0`. `@citrusworx/sigjs/juice` exports `bind(host, runtime?)` → `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other twenty-one runtimes are read-only. A bind during Sig render disposes on unmount. The main entry does not import Juice, and Juice does not require this subpath. Guide: [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding).
 
 **Release label:** **0.3+ usable alpha/beta** for app shells; **1.0** only after the list/conditional story is intentional (primitive or documented pattern).
 

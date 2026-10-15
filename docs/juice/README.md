@@ -103,6 +103,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Page Tutorial](./juice-page-tutorial.md) — a *second* build (different CitrusWorx landing page), after the course
 - [Patterns](./juice-patterns.md)
 - [Maturity Matrix](./juice-maturity-matrix.md)
+- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 25 runtimes
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
