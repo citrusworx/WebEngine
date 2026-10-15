@@ -109,6 +109,8 @@ stopInputRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+Input publishes value changes through the native `input` and `change` events. `getState()` returns `{ value: string }` from the control, or `null` when the host is missing. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createInput()` can run alongside the automatic document runtime. This runtime claims no clicks or keys, so there is nothing to double-fire.
 
 `initInput()` is the same function as `createInput()`.
@@ -141,6 +143,7 @@ A custom `root` limits sync to inputs inside that root. When the root itself is 
 type InputController = {
   destroy: () => void;
   sync: () => void;
+  getState: (target?: HTMLElement | null) => InputState | null;
 };
 ```
 

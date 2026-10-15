@@ -46,9 +46,19 @@ export type SelectOptions = {
   selectSelector?: string;
 };
 
+/**
+ * Value changes stay on the native `input` and `change` events.
+ * This runtime does not dispatch `juice:change`.
+ * `value` is `HTMLSelectElement.value` (the first selected option).
+ */
+export type SelectState = {
+  value: string;
+};
+
 export type SelectController = {
   destroy: () => void;
   sync: () => void;
+  getState: (target?: HTMLElement | null) => SelectState | null;
 };
 
 type OwnedName = {
@@ -70,6 +80,7 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const noopController = (): SelectController => ({
   destroy: () => {},
   sync: () => {},
+  getState: () => null,
 });
 
 const isVisibleElement = (element: HTMLElement) => {
@@ -419,6 +430,18 @@ export const createSelect = (
       observer?.disconnect();
     },
     sync,
+    getState: (target) => {
+      const select =
+        target && isManagedSelect(target)
+          ? target
+          : target
+            ? (asArray(
+                target.querySelectorAll<HTMLElement>(settings.selectSelector)
+              ).find(isManagedSelect) ?? null)
+            : (getSelects()[0] ?? null);
+      if (!select) return null;
+      return { value: select.value };
+    },
   };
 };
 

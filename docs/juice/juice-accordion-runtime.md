@@ -87,6 +87,8 @@ stopAccordionRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real expand or collapse dispatches a bubbling `juice:change` from `[accordion]`. `detail` is `{ runtime: "accordion", state: { expanded: boolean[] } }` in trigger order. `isExpanded()` reads one trigger. `getState()` returns the list. A write that leaves that list unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createAccordion()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-toggle with the singleton.
 
 ## AccordionOptions
@@ -120,6 +122,8 @@ type AccordionController = {
   expand: (trigger?: HTMLElement | null) => void;
   collapse: (trigger?: HTMLElement | null) => void;
   toggle: (trigger?: HTMLElement | null) => void;
+  isExpanded: (trigger?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => AccordionState | null;
 };
 ```
 

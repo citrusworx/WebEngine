@@ -745,6 +745,26 @@ function emitPlan(tables: CompiledTable[], options: CompileSchemaOptions = {}): 
 }
 
 /**
+ * `${table}.${column}` → `json` | `jsonb` for fields declared in schema YAML.
+ * Pass the map as `compileQuery(..., { jsonColumns })` so those columns' bare
+ * `$N` binds are cast. Explicit `{ cast: jsonb }` in the query is unchanged.
+ */
+export function schemaJsonColumns(schema: unknown): Map<string, "json" | "jsonb"> {
+    const columns = new Map<string, "json" | "jsonb">();
+    for (const model of collectModels(loadSchemaDoc(schema))) {
+        for (const field of model.fields) {
+            if (field.type.kind !== "named") {
+                continue;
+            }
+            if (field.type.name === "json" || field.type.name === "jsonb") {
+                columns.set(`${model.table}.${field.name}`, field.type.name);
+            }
+        }
+    }
+    return columns;
+}
+
+/**
  * Compile one schema document (`*Schema.yml`) into CREATE TABLE / INDEX SQL.
  * `schema` may be a parsed object or a filesystem path.
  */

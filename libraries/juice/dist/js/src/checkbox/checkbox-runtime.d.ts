@@ -36,6 +36,9 @@ export type CheckboxOptions = {
     root?: ParentNode;
     checkboxSelector?: string;
 };
+export type CheckboxState = {
+    checked: boolean;
+};
 export type CheckboxController = {
     destroy: () => void;
     sync: () => void;
@@ -44,6 +47,7 @@ export type CheckboxController = {
     uncheck: (target?: HTMLElement | null) => void;
     setChecked: (checked: boolean, target?: HTMLElement | null) => void;
     isChecked: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => CheckboxState | null;
 };
 export declare const createCheckbox: (options?: CheckboxOptions) => CheckboxController;
 export declare const initCheckbox: (options?: CheckboxOptions) => CheckboxController;

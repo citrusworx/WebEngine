@@ -104,6 +104,8 @@ stopSliderRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real value change dispatches a bubbling `juice:change` from `[slider]`. `detail` is `{ runtime: "slider", state: { value: number } }`. `getValue()` and `getState()` read it. A write that leaves `value` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createSlider()` can run alongside the automatic document runtime. Each pointer or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 `initSlider()` is the same function as `createSlider()`.
@@ -138,6 +140,7 @@ type SliderController = {
   getValue: (target?: HTMLElement | null) => number;
   increment: (target?: HTMLElement | null) => void;
   decrement: (target?: HTMLElement | null) => void;
+  getState: (target?: HTMLElement | null) => SliderState | null;
 };
 ```
 

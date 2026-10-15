@@ -77,7 +77,7 @@ Live catalog reads **`products.payload` JSONB**, not the nullable relational cat
 - Empty table → seed copies `SEED_PRODUCTS` into `payload`
 - Rows already present → seed is skipped, even if catalog columns are null
 - Rows whose `payload` is not a product object are ignored at read time; if that leaves the catalog empty, the API serves in-memory `SEED_PRODUCTS` and does **not** insert duplicates
-- Seed inserts use named `seedPayload` (`ON CONFLICT (id) DO NOTHING`); HTTP create/update/delete use named JSONB queries (`insertPayload`, `updatePayload`, `deleteProduct`) plus a thin host `execute` that serializes the catalog document and merges on PUT (the compiler does not emit JSONB `||`)
+- Seed inserts use named `seedPayload` (`ON CONFLICT (id) DO NOTHING`); HTTP create/update/delete use named JSONB queries (`insertPayload`, `updatePayload`, `deleteProduct`) plus a thin host `execute` that passes the catalog object (the Postgres adapter encodes the JSONB bind) and merges on PUT (the compiler does not emit JSONB `||`). `updatePayload` returns the row with `RETURNING payload`.
 
 JSONB is first-class. It is not being dropped.
 
@@ -97,8 +97,9 @@ Blackwater (`apps/blackwatersound/back`) loads config, connects, migrates, seeds
 `COUNT`, `EXISTS`, JSONB `@>` / `?` / `->>`, and INSERT `ON CONFLICT`
 (`DO NOTHING` / `DO UPDATE SET col = EXCLUDED.col`) compile from named YAML
 (Postgres-first; MySQL rewrites JSONB operators at `query()` and rejects
-`ON CONFLICT`). They are not host SQL. Joins, `GROUP BY`, and `LIMIT` remain
-follow-ups.
+`ON CONFLICT` and `RETURNING`). They are not host SQL. UPDATE and DELETE
+`returning` compile the same way INSERT does. Joins, `GROUP BY`, and `LIMIT`
+remain follow-ups.
 
 npm **0.4.0** is already published. Do not publish it again. The next intentional publish is **0.5.0** after `yarn version-packages` consumes the pending Nectarine changesets (see [Release checklist](./release-checklist.md)). There is no npm-token CI job. Commit the version bump before publishing — the 0.4.0 publish skipped that commit.
 

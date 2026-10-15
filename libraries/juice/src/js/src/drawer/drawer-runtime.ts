@@ -17,6 +17,7 @@
  * `closeOnBackdrop` is false.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { getFocusable, moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
@@ -30,12 +31,18 @@ export type DrawerOptions = {
   closeOnBackdrop?: boolean;
 };
 
+export type DrawerState = {
+  open: boolean;
+};
+
 export type DrawerController = {
   destroy: () => void;
   sync: () => void;
   open: (target?: HTMLElement | null) => void;
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => DrawerState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -85,6 +92,8 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
       open: () => {},
       close: () => {},
       toggle: () => {},
+      isOpen: () => false,
+      getState: () => null,
     };
   }
 
@@ -92,6 +101,7 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
   const motion = createElementMotion();
+  const changes = createJuiceChanges<DrawerState>('drawer');
 
   let idCounter = 0;
 
@@ -309,8 +319,11 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
   };
 
   const setOpenState = (overlay: HTMLElement, open: boolean) => {
-    if (overlay.hidden === !open) return;
-    overlay.hidden = !open;
+    const baseline: DrawerState = { open: isOverlayOpen(overlay) };
+    if (overlay.hidden !== !open) {
+      overlay.hidden = !open;
+    }
+    changes.note(overlay, { open: isOverlayOpen(overlay) }, { baseline });
   };
 
   const hideOverlay = (overlay: HTMLElement, restore: boolean) => {
@@ -389,10 +402,23 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
     open(target ?? overlay);
   };
 
+  const isOpen = (target?: HTMLElement | null) => {
+    const overlay = resolveOverlay(target);
+    if (!overlay) return false;
+    return isOverlayOpen(overlay);
+  };
+
+  const getState = (target?: HTMLElement | null): DrawerState | null => {
+    const overlay = resolveOverlay(target);
+    if (!overlay) return null;
+    return { open: isOverlayOpen(overlay) };
+  };
+
   const sync = () => {
     getOverlays().forEach((overlay) => {
       ensureDialogAccessibility(overlay);
       setOpenerState(overlay, isOverlayOpen(overlay));
+      changes.note(overlay, { open: isOverlayOpen(overlay) });
     });
   };
 
@@ -561,6 +587,8 @@ export const createDrawer = (options: DrawerOptions = {}): DrawerController => {
     open,
     close,
     toggle,
+    isOpen,
+    getState,
   };
 };
 

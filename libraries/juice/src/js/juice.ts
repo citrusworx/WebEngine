@@ -6,7 +6,8 @@ export {
 } from "./src/nav/navigation.js";
 export type {
     NavigationController,
-    NavigationOptions
+    NavigationOptions,
+    NavigationState
 } from "./src/nav/navigation.js";
 export {
     createAccordion,
@@ -16,7 +17,8 @@ export {
 } from "./src/accordion/accordion-runtime.js";
 export type {
     AccordionController,
-    AccordionOptions
+    AccordionOptions,
+    AccordionState
 } from "./src/accordion/accordion-runtime.js";
 export {
     createTabs,
@@ -26,7 +28,8 @@ export {
 } from "./src/tabs/tabs-runtime.js";
 export type {
     TabsController,
-    TabsOptions
+    TabsOptions,
+    TabsState
 } from "./src/tabs/tabs-runtime.js";
 export {
     createModal,
@@ -36,7 +39,8 @@ export {
 } from "./src/modal/modal-runtime.js";
 export type {
     ModalController,
-    ModalOptions
+    ModalOptions,
+    ModalState
 } from "./src/modal/modal-runtime.js";
 export {
     createDrawer,
@@ -46,7 +50,8 @@ export {
 } from "./src/drawer/drawer-runtime.js";
 export type {
     DrawerController,
-    DrawerOptions
+    DrawerOptions,
+    DrawerState
 } from "./src/drawer/drawer-runtime.js";
 export {
     createToast,
@@ -56,7 +61,8 @@ export {
 } from "./src/toast/toast-runtime.js";
 export type {
     ToastController,
-    ToastOptions
+    ToastOptions,
+    ToastState
 } from "./src/toast/toast-runtime.js";
 export {
     createPopover,
@@ -67,7 +73,8 @@ export {
 export type {
     PopoverController,
     PopoverOptions,
-    PopoverPlacement
+    PopoverPlacement,
+    PopoverState
 } from "./src/popover/popover-runtime.js";
 export {
     createTooltip,
@@ -78,7 +85,8 @@ export {
 export type {
     TooltipController,
     TooltipOptions,
-    TooltipPlacement
+    TooltipPlacement,
+    TooltipState
 } from "./src/tooltip/tooltip-runtime.js";
 export {
     createWizard,
@@ -88,7 +96,8 @@ export {
 } from "./src/wizard/wizard-runtime.js";
 export type {
     WizardController,
-    WizardOptions
+    WizardOptions,
+    WizardState
 } from "./src/wizard/wizard-runtime.js";
 export {
     createCombobox,
@@ -98,7 +107,8 @@ export {
 } from "./src/combobox/combobox-runtime.js";
 export type {
     ComboboxController,
-    ComboboxOptions
+    ComboboxOptions,
+    ComboboxState
 } from "./src/combobox/combobox-runtime.js";
 export {
     createBanner,
@@ -108,7 +118,8 @@ export {
 } from "./src/banner/banner-runtime.js";
 export type {
     BannerController,
-    BannerOptions
+    BannerOptions,
+    BannerState
 } from "./src/banner/banner-runtime.js";
 export {
     createMenu,
@@ -118,7 +129,8 @@ export {
 } from "./src/menu/menu-runtime.js";
 export type {
     MenuController,
-    MenuOptions
+    MenuOptions,
+    MenuState
 } from "./src/menu/menu-runtime.js";
 export {
     createSwitch,
@@ -128,7 +140,8 @@ export {
 } from "./src/switch/switch-runtime.js";
 export type {
     SwitchController,
-    SwitchOptions
+    SwitchOptions,
+    SwitchState
 } from "./src/switch/switch-runtime.js";
 export {
     createSlider,
@@ -138,7 +151,8 @@ export {
 } from "./src/slider/slider-runtime.js";
 export type {
     SliderController,
-    SliderOptions
+    SliderOptions,
+    SliderState
 } from "./src/slider/slider-runtime.js";
 export {
     createCheckbox,
@@ -148,7 +162,8 @@ export {
 } from "./src/checkbox/checkbox-runtime.js";
 export type {
     CheckboxController,
-    CheckboxOptions
+    CheckboxOptions,
+    CheckboxState
 } from "./src/checkbox/checkbox-runtime.js";
 export {
     createRadio,
@@ -158,7 +173,8 @@ export {
 } from "./src/radio/radio-runtime.js";
 export type {
     RadioController,
-    RadioOptions
+    RadioOptions,
+    RadioState
 } from "./src/radio/radio-runtime.js";
 export {
     createBreadcrumb,
@@ -168,7 +184,8 @@ export {
 } from "./src/breadcrumb/breadcrumb-runtime.js";
 export type {
     BreadcrumbController,
-    BreadcrumbOptions
+    BreadcrumbOptions,
+    BreadcrumbState
 } from "./src/breadcrumb/breadcrumb-runtime.js";
 export {
     createProgress,
@@ -178,7 +195,8 @@ export {
 } from "./src/progress/progress-runtime.js";
 export type {
     ProgressController,
-    ProgressOptions
+    ProgressOptions,
+    ProgressState
 } from "./src/progress/progress-runtime.js";
 export {
     createPagination,
@@ -188,7 +206,8 @@ export {
 } from "./src/pagination/pagination-runtime.js";
 export type {
     PaginationController,
-    PaginationOptions
+    PaginationOptions,
+    PaginationState
 } from "./src/pagination/pagination-runtime.js";
 export {
     createDisclosure,
@@ -198,7 +217,8 @@ export {
 } from "./src/disclosure/disclosure-runtime.js";
 export type {
     DisclosureController,
-    DisclosureOptions
+    DisclosureOptions,
+    DisclosureState
 } from "./src/disclosure/disclosure-runtime.js";
 export {
     createSpinner,
@@ -208,7 +228,8 @@ export {
 } from "./src/spinner/spinner-runtime.js";
 export type {
     SpinnerController,
-    SpinnerOptions
+    SpinnerOptions,
+    SpinnerState
 } from "./src/spinner/spinner-runtime.js";
 export {
     createSelect,
@@ -218,7 +239,8 @@ export {
 } from "./src/select/select-runtime.js";
 export type {
     SelectController,
-    SelectOptions
+    SelectOptions,
+    SelectState
 } from "./src/select/select-runtime.js";
 export {
     createInput,
@@ -228,7 +250,8 @@ export {
 } from "./src/input/input-runtime.js";
 export type {
     InputController,
-    InputOptions
+    InputOptions,
+    InputState
 } from "./src/input/input-runtime.js";
 export {
     createTextarea,
@@ -238,7 +261,8 @@ export {
 } from "./src/textarea/textarea-runtime.js";
 export type {
     TextareaController,
-    TextareaOptions
+    TextareaOptions,
+    TextareaState
 } from "./src/textarea/textarea-runtime.js";
 export {
     createField,
@@ -248,8 +272,11 @@ export {
 } from "./src/field/field-runtime.js";
 export type {
     FieldController,
-    FieldOptions
+    FieldOptions,
+    FieldState
 } from "./src/field/field-runtime.js";
+export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
+export type { JuiceChangeDetail } from "./src/shared/change.js";
 export {
     prefersReducedMotion,
     subscribeReducedMotion,

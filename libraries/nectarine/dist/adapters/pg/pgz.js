@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PgSql = void 0;
+exports.PgSql = exports.encodePgJsonBinds = void 0;
 exports.createPgAdapter = createPgAdapter;
 exports.createPgAdapterFromConfig = createPgAdapterFromConfig;
 exports.requirePgCredentials = requirePgCredentials;
 const pg_1 = require("pg");
+const json_binds_js_1 = require("./json-binds.js");
+var json_binds_js_2 = require("./json-binds.js");
+Object.defineProperty(exports, "encodePgJsonBinds", { enumerable: true, get: function () { return json_binds_js_2.encodePgJsonBinds; } });
 /**
  * Postgres adapter for parameterized SQL from the Nectarine compiler.
  *
@@ -13,6 +16,12 @@ const pg_1 = require("pg");
  * {@link NectarineConfig.resolveCredentials} — YAML names the env keys;
  * this adapter receives the resolved values. It does not read `process.env`
  * itself.
+ *
+ * `$N::json` and `$N::jsonb` binds that are plain objects or arrays are
+ * `JSON.stringify`'d before `pg` sees them. The driver would otherwise send
+ * a JavaScript array as a Postgres array, which a JSONB column rejects.
+ * Strings are left alone. Schema `json` / `jsonb` columns get that cast from
+ * query phonics (`{ cast: jsonb }`) or from `compileQuery` `jsonColumns`.
  *
  * @example
  * ```ts
@@ -86,7 +95,7 @@ class PgSql {
         if (typeof sql !== "string" || !sql.trim()) {
             throw new Error("Postgres adapter query() requires a SQL string");
         }
-        return this.pool.query(sql, params);
+        return this.pool.query(sql, (0, json_binds_js_1.encodePgJsonBinds)(sql, params));
     }
     /**
      * Pin one pooled client for `work`. The migrator sends BEGIN/COMMIT through
@@ -103,7 +112,7 @@ class PgSql {
                 if (typeof sql !== "string" || !sql.trim()) {
                     throw new Error("Postgres adapter query() requires a SQL string");
                 }
-                return client.query(sql, params);
+                return client.query(sql, (0, json_binds_js_1.encodePgJsonBinds)(sql, params));
             });
         }
         finally {

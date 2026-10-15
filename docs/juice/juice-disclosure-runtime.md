@@ -127,6 +127,8 @@ stopDisclosureRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real expand or collapse dispatches a bubbling `juice:change` from `[disclosure]`. `detail` is `{ runtime: "disclosure", state: { expanded: boolean } }` for the first trigger. `isExpanded()` and `getState()` read it. A write that leaves `expanded` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createDisclosure()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 `initDisclosure()` is the same function as `createDisclosure()`.
@@ -162,6 +164,8 @@ type DisclosureController = {
   expand: (trigger?: HTMLElement | null) => void;
   collapse: (trigger?: HTMLElement | null) => void;
   toggle: (trigger?: HTMLElement | null) => void;
+  isExpanded: (trigger?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => DisclosureState | null;
 };
 ```
 

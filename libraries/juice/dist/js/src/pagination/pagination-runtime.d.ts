@@ -68,10 +68,16 @@ export type PaginationOptions = {
     paginationSelector?: string;
     itemSelector?: string;
 };
+/** `current` is the 0-based page index. `-1` when no page is current. */
+export type PaginationState = {
+    current: number;
+};
 export type PaginationController = {
     destroy: () => void;
     sync: () => void;
     setCurrent: (itemOrIndex: HTMLElement | number, pagination?: HTMLElement | null) => void;
+    getCurrent: (target?: HTMLElement | null) => number;
+    getState: (target?: HTMLElement | null) => PaginationState | null;
 };
 export declare const createPagination: (options?: PaginationOptions) => PaginationController;
 export declare const initPagination: (options?: PaginationOptions) => PaginationController;

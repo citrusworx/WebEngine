@@ -97,6 +97,8 @@ stopBannerRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real show or dismiss dispatches a bubbling `juice:change` from `[banner]`. `detail` is `{ runtime: "banner", state: { shown: boolean } }`. `isShown()` and `getState()` read it. A write that leaves `shown` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createBanner()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 ## BannerOptions
@@ -129,6 +131,8 @@ type BannerController = {
   sync: () => void;
   show: (target?: HTMLElement | null) => void;
   dismiss: (target?: HTMLElement | null) => void;
+  isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => BannerState | null;
 };
 ```
 

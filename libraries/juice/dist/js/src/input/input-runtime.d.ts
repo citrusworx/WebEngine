@@ -45,9 +45,17 @@ export type InputOptions = {
     root?: ParentNode;
     inputSelector?: string;
 };
+/**
+ * Value changes stay on the native `input` and `change` events.
+ * This runtime does not dispatch `juice:change`.
+ */
+export type InputState = {
+    value: string;
+};
 export type InputController = {
     destroy: () => void;
     sync: () => void;
+    getState: (target?: HTMLElement | null) => InputState | null;
 };
 export declare const createInput: (options?: InputOptions) => InputController;
 export declare const initInput: (options?: InputOptions) => InputController;

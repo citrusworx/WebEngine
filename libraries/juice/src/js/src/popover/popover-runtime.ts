@@ -43,6 +43,7 @@
  * / drawer / menu are not auto-closed.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { moveFocusInto, wrapTabFocus } from '../shared/focus.js';
 import { controlIds, resolveElementById } from '../shared/ids.js';
@@ -59,12 +60,18 @@ export type PopoverOptions = {
   gap?: number;
 };
 
+export type PopoverState = {
+  open: boolean;
+};
+
 export type PopoverController = {
   destroy: () => void;
   sync: () => void;
   open: (target?: HTMLElement | null) => void;
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => PopoverState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -238,12 +245,15 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       open: () => {},
       close: () => {},
       toggle: () => {},
+      isOpen: () => false,
+      getState: () => null,
     };
   }
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const motion = createElementMotion();
+  const changes = createJuiceChanges<PopoverState>('popover');
   const gap =
     typeof options.gap === 'number' && Number.isFinite(options.gap)
       ? options.gap
@@ -511,8 +521,11 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
   };
 
   const setOpenState = (popover: HTMLElement, open: boolean) => {
-    if (popover.hidden === !open) return;
-    popover.hidden = !open;
+    const baseline: PopoverState = { open: isPopoverOpen(popover) };
+    if (popover.hidden !== !open) {
+      popover.hidden = !open;
+    }
+    changes.note(popover, { open: isPopoverOpen(popover) }, { baseline });
   };
 
   const hidePopover = (popover: HTMLElement, restore: boolean) => {
@@ -599,6 +612,18 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     });
   };
 
+  const isOpen = (target?: HTMLElement | null) => {
+    const popover = resolvePopover(target);
+    if (!popover) return false;
+    return isPopoverOpen(popover);
+  };
+
+  const getState = (target?: HTMLElement | null): PopoverState | null => {
+    const popover = resolvePopover(target);
+    if (!popover) return null;
+    return { open: isPopoverOpen(popover) };
+  };
+
   const sync = () => {
     getPopovers().forEach((popover) => {
       ensurePopoverAccessibility(popover);
@@ -606,6 +631,7 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
       if (isPopoverOpen(popover)) {
         applyPlacement(popover);
       }
+      changes.note(popover, { open: isPopoverOpen(popover) });
     });
   };
 
@@ -776,6 +802,8 @@ export const createPopover = (options: PopoverOptions = {}): PopoverController =
     open,
     close,
     toggle,
+    isOpen,
+    getState,
   };
 };
 

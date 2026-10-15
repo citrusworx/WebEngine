@@ -49,9 +49,18 @@ export type InputOptions = {
   inputSelector?: string;
 };
 
+/**
+ * Value changes stay on the native `input` and `change` events.
+ * This runtime does not dispatch `juice:change`.
+ */
+export type InputState = {
+  value: string;
+};
+
 export type InputController = {
   destroy: () => void;
   sync: () => void;
+  getState: (target?: HTMLElement | null) => InputState | null;
 };
 
 type OwnedName = {
@@ -83,6 +92,7 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const noopController = (): InputController => ({
   destroy: () => {},
   sync: () => {},
+  getState: () => null,
 });
 
 const isTextLikeInput = (input: HTMLInputElement) => {
@@ -461,6 +471,18 @@ export const createInput = (options: InputOptions = {}): InputController => {
       observer?.disconnect();
     },
     sync,
+    getState: (target) => {
+      const input =
+        target && isManagedInput(target)
+          ? target
+          : target
+            ? (asArray(
+                target.querySelectorAll<HTMLElement>(settings.inputSelector)
+              ).find(isManagedInput) ?? null)
+            : (getInputs()[0] ?? null);
+      if (!input) return null;
+      return { value: input.value };
+    },
   };
 };
 

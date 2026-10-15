@@ -2305,6 +2305,17 @@ describe("Juice package contract", () => {
         expect(readFileSync(join(DIST_DIR, "index.js"), "utf-8")).toContain("DOMContentLoaded");
     });
 
+    it("does not ship a Sig adapter subpath", () => {
+        const pkg = readPackageJson();
+        const main = readFileSync(join(DIST_DIR, "index.js"), "utf-8");
+
+        expect(pkg.exports?.["./sig"]).toBeUndefined();
+        expect(existsSync(join(DIST_DIR, "sig"))).toBe(false);
+        expect(existsSync(join(PACKAGE_ROOT, "src", "sig"))).toBe(false);
+        expect(main).not.toMatch(/\/sig\/index\.js/);
+        expect(main).not.toMatch(/@citrusworx\/juiceui\/sig/);
+    });
+
     it("declares a published semver range for @citrusworx/sigjs", () => {
         const pkg = readPackageJson();
         const range = pkg.dependencies?.["@citrusworx/sigjs"];

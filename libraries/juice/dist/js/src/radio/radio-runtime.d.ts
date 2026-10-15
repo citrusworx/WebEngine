@@ -40,11 +40,18 @@ export type RadioOptions = {
     radiogroupSelector?: string;
     radioSelector?: string;
 };
+export type RadioState = {
+    /** `value` attribute of the checked radio, or the native value. */
+    value: string | null;
+    /** Index of the checked radio in the group. `-1` when none are checked. */
+    index: number;
+};
 export type RadioController = {
     destroy: () => void;
     sync: () => void;
     select: (radio?: HTMLElement | null) => void;
     getChecked: (group?: HTMLElement | null) => HTMLElement | null;
+    getState: (target?: HTMLElement | null) => RadioState | null;
 };
 export declare const createRadio: (options?: RadioOptions) => RadioController;
 export declare const initRadio: (options?: RadioOptions) => RadioController;

@@ -28,11 +28,16 @@ export type BannerOptions = {
     bannerSelector?: string;
     closeSelector?: string;
 };
+export type BannerState = {
+    shown: boolean;
+};
 export type BannerController = {
     destroy: () => void;
     sync: () => void;
     show: (target?: HTMLElement | null) => void;
     dismiss: (target?: HTMLElement | null) => void;
+    isShown: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => BannerState | null;
 };
 export declare const createBanner: (options?: BannerOptions) => BannerController;
 export declare const initBanner: (options?: BannerOptions) => BannerController;

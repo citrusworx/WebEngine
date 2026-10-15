@@ -22,7 +22,7 @@ DELETE FROM items WHERE id = 50 RETURNING id;
 
 INSERT creates one item. UPDATE changes its name while preserving identity. DELETE removes that row. The `06-writes.sql` lab surrounds the experiment with a transaction and rollback, then verifies the original four items remain.
 
-RETURNING is a PostgreSQL feature that returns affected rows. It is not a separate SELECT issued by your application. Nectarine's current INSERT compiler supports RETURNING, but its UPDATE and DELETE emitters do not emit it. Learn the SQL capability without assuming feature parity in the compiler.
+RETURNING is a PostgreSQL feature that returns affected rows. It is not a separate SELECT issued by your application. Nectarine's INSERT, UPDATE, and DELETE compilers emit `returning` from the query YAML. The MySQL adapter rejects that clause at `query()` — it does not run a follow-up SELECT.
 
 ## What protects a write?
 

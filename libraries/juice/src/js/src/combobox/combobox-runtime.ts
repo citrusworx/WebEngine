@@ -54,6 +54,7 @@
  * under the field at z-index 1050).
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import {
   hasOpenDialogOverlay,
@@ -70,6 +71,11 @@ export type ComboboxOptions = {
   optionSelector?: string;
 };
 
+export type ComboboxState = {
+  open: boolean;
+  value: string;
+};
+
 export type ComboboxController = {
   destroy: () => void;
   sync: () => void;
@@ -77,6 +83,8 @@ export type ComboboxController = {
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
   select: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => ComboboxState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -176,6 +184,8 @@ const noopController = (): ComboboxController => ({
   close: () => {},
   toggle: () => {},
   select: () => {},
+  isOpen: () => false,
+  getState: () => null,
 });
 
 export const createCombobox = (
@@ -187,6 +197,7 @@ export const createCombobox = (
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
+  const changes = createJuiceChanges<ComboboxState>('combobox');
 
   const getComboboxes = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.rootSelector));
@@ -409,12 +420,25 @@ export const createCombobox = (
     setExpanded(combobox, isListOpen(combobox));
   };
 
+  const readComboboxState = (combobox: HTMLElement): ComboboxState => {
+    const input = getInput(combobox);
+    return {
+      open: isListOpen(combobox),
+      value: input ? getInputValue(input) : '',
+    };
+  };
+
+  const publishCombobox = (combobox: HTMLElement) => {
+    changes.note(combobox, readComboboxState(combobox));
+  };
+
   const hideCombobox = (combobox: HTMLElement) => {
     ensureComboboxAccessibility(combobox);
     setOpenState(combobox, false);
     setExpanded(combobox, false);
     setActiveOption(combobox, null);
     revealOptions(combobox);
+    publishCombobox(combobox);
   };
 
   const showCombobox = (combobox: HTMLElement) => {
@@ -431,6 +455,7 @@ export const createCombobox = (
     applyFilter(combobox);
     setOpenState(combobox, true);
     setExpanded(combobox, true);
+    publishCombobox(combobox);
   };
 
   const open = (target?: HTMLElement | null) => {
@@ -451,6 +476,18 @@ export const createCombobox = (
     const combobox = resolveCombobox(target);
     if (!combobox || !isListOpen(combobox)) return;
     hideCombobox(combobox);
+  };
+
+  const isOpen = (target?: HTMLElement | null) => {
+    const combobox = resolveCombobox(target);
+    if (!combobox) return false;
+    return isListOpen(combobox);
+  };
+
+  const getState = (target?: HTMLElement | null): ComboboxState | null => {
+    const combobox = resolveCombobox(target);
+    if (!combobox) return null;
+    return readComboboxState(combobox);
   };
 
   const toggle = (target?: HTMLElement | null) => {
@@ -533,9 +570,11 @@ export const createCombobox = (
       if (isListOpen(combobox)) {
         applyFilter(combobox);
         setExpanded(combobox, true);
+        publishCombobox(combobox);
         return;
       }
       setExpanded(combobox, false);
+      publishCombobox(combobox);
     });
   };
 
@@ -645,6 +684,7 @@ export const createCombobox = (
     if (!input || isInputDisabled(input)) return;
     if (!claimEvent(event)) return;
     open(combobox);
+    publishCombobox(combobox);
   };
 
   const handleDocumentKeydown = (event: Event) => {
@@ -807,6 +847,8 @@ export const createCombobox = (
     close,
     toggle,
     select,
+    isOpen,
+    getState,
   };
 };
 

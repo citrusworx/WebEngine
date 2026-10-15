@@ -1,14 +1,14 @@
 import { type YAMLdata } from "../util/util.js";
 import { type CompileSchemaOptions, type DdlVendor } from "./ddl.js";
 import { type CompiledMigration } from "./migration.js";
-import { type CleanedQueries } from "./sql.js";
-export type { CleanedQueries, CrudMethod, OperatorToken, optokens } from "./sql.js";
+import { type CleanedQueries, type CompileQueryOptions } from "./sql.js";
+export type { CleanedQueries, CompileQueryOptions, CrudMethod, JsonColumnCast, OperatorToken, optokens } from "./sql.js";
 export type { QueryType } from "./normalize.js";
 export type { CompiledTable, CompileSchemaOptions, DdlVendor } from "./ddl.js";
 export type { CompiledChangeType, CompiledDropColumn, CompiledMigration, CompiledMigrationOp, CompiledRenameColumn, } from "./migration.js";
 export { compileQuery, CRUD_METHODS, isCrudMethod, OP_TOKENS, QueryCompileError, } from "./sql.js";
 export { quoteIdent, quoteIdentPath } from "./identifiers.js";
-export { compileSchema, compileSchemaPlan, compileSchemas, compileSchemasPlan, compileSqlType, compileTable, DDL_VENDORS, schemaFieldEnumValues, schemaPlanStatements, SchemaCompileError, } from "./ddl.js";
+export { compileSchema, compileSchemaPlan, compileSchemas, compileSchemasPlan, compileSqlType, compileTable, DDL_VENDORS, schemaFieldEnumValues, schemaJsonColumns, schemaPlanStatements, SchemaCompileError, } from "./ddl.js";
 export { compileMigration, compileMigrations, MigrationCompileError, MIGRATION_VERSION, } from "./migration.js";
 export { inferMethodFromType, METHOD_ALIASES, normalizeQuery, resolveCrudMethod, } from "./normalize.js";
 export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
@@ -33,7 +33,9 @@ export { parseOrderByFragment, parseWhereFragment } from "./fragments.js";
  * Blackwater `type: SELECT` documents are accepted and normalized onto the
  * same phonics model before assembly. Postgres JSONB binds use
  * `{ value: $N, cast: jsonb }` (allow-listed). JSONB `@>` / `?` / `->>`,
- * `COUNT`, `EXISTS`, and INSERT `onConflict` are compiler phonics — not host SQL.
+ * `COUNT`, `EXISTS`, INSERT `onConflict`, and `returning` on INSERT, UPDATE,
+ * and DELETE are compiler phonics — not host SQL. Pass `schemaJsonColumns`
+ * as `jsonColumns` so schema `json` / `jsonb` fields cast bare `$N` binds.
  *
  * `clean_parse` takes `(parsed, type, method)` so it matches
  * `parser.genSQL(path, type, method, config)` and the YAML path
@@ -59,7 +61,7 @@ export declare class CCompiler {
      * `method` comes from {@link clean_parse}. A raw query map is accepted
      * when `method` is passed as the third argument (`read` aliases `get`).
      */
-    buildQuery(cleanedConfig: CleanedQueries | Record<string, unknown>, query: string, method?: string): string;
+    buildQuery(cleanedConfig: CleanedQueries | Record<string, unknown>, query: string, method?: string, options?: CompileQueryOptions): string;
     /**
      * Compile `*Schema.yml` tokens into CREATE TABLE / INDEX SQL.
      * `schema` is a parsed document or a filesystem path.

@@ -205,7 +205,7 @@ numbers: int[]            # Array of integers
 
 # JSON / JSONB (first-class — do not drop JSONB to avoid SQL in app code)
 metadata: json            # JSON data
-settings: jsonb           # Binary JSON (indexed); bind via { value: $N, cast: jsonb }
+settings: jsonb           # Binary JSON (indexed); bind an object or array via { value: $N, cast: jsonb } or schemaJsonColumns
 
 # UUID
 id: uuid DEFAULT gen_random_uuid()

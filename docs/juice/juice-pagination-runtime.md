@@ -138,6 +138,8 @@ stopPaginationRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real page change dispatches a bubbling `juice:change` from `[pagination]`. `detail` is `{ runtime: "pagination", state: { current: number } }`. `current` is the 0-based page index, or `-1` when none are current. `getCurrent()` and `getState()` read it. A write that leaves `current` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createPagination()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 `initPagination()` is the same function as `createPagination()`.
@@ -174,6 +176,8 @@ type PaginationController = {
     itemOrIndex: HTMLElement | number,
     pagination?: HTMLElement | null
   ) => void;
+  getCurrent: (target?: HTMLElement | null) => number;
+  getState: (target?: HTMLElement | null) => PaginationState | null;
 };
 ```
 

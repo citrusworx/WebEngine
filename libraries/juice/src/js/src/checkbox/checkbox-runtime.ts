@@ -33,11 +33,16 @@
  * type is still the default.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 
 export type CheckboxOptions = {
   root?: ParentNode;
   checkboxSelector?: string;
+};
+
+export type CheckboxState = {
+  checked: boolean;
 };
 
 export type CheckboxController = {
@@ -48,6 +53,7 @@ export type CheckboxController = {
   uncheck: (target?: HTMLElement | null) => void;
   setChecked: (checked: boolean, target?: HTMLElement | null) => void;
   isChecked: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => CheckboxState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -105,6 +111,7 @@ const noopController = (): CheckboxController => ({
   uncheck: () => {},
   setChecked: () => {},
   isChecked: () => false,
+  getState: () => null,
 });
 
 export const createCheckbox = (
@@ -117,6 +124,13 @@ export const createCheckbox = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<CheckboxState>('checkbox');
+
+  const commitChecked = (element: HTMLElement, checked: boolean) => {
+    const baseline: CheckboxState = { checked: readChecked(element) };
+    writeChecked(element, checked);
+    changes.note(element, { checked: readChecked(element) }, { baseline });
+  };
 
   const getCheckboxes = () =>
     asArray(
@@ -161,7 +175,7 @@ export const createCheckbox = (
       control.type = 'button';
     }
 
-    writeChecked(control, readChecked(control));
+    commitChecked(control, readChecked(control));
   };
 
   const setCheckedState = (
@@ -172,7 +186,7 @@ export const createCheckbox = (
     if (!control || isDisabled(control)) return;
 
     ensureCheckboxAccessibility(control);
-    writeChecked(control, checked);
+    commitChecked(control, checked);
   };
 
   const toggle = (target?: HTMLElement | null) => {
@@ -198,6 +212,12 @@ export const createCheckbox = (
     const control = resolveCheckbox(target);
     if (!control) return false;
     return readChecked(control);
+  };
+
+  const getState = (target?: HTMLElement | null): CheckboxState | null => {
+    const control = resolveCheckbox(target);
+    if (!control) return null;
+    return { checked: readChecked(control) };
   };
 
   const sync = () => {
@@ -227,7 +247,10 @@ export const createCheckbox = (
     if (!isManagedCheckbox(target) || isDisabled(target)) return;
     if (!claimEvent(event)) return;
 
-    writeChecked(target, target.checked);
+    if (!changes.has(target)) {
+      changes.prime(target, { checked: !target.checked });
+    }
+    commitChecked(target, target.checked);
   };
 
   const handleRootKeydown = (event: Event) => {
@@ -299,6 +322,7 @@ export const createCheckbox = (
     uncheck,
     setChecked,
     isChecked,
+    getState,
   };
 };
 

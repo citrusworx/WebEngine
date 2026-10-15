@@ -41,16 +41,3 @@ export type NamedQuery = keyof typeof namedSql;
 export function namedQuery(name: NamedQuery): string {
   return namedSql[name];
 }
-
-/** Validate a document-store bind before `$N::jsonb`. */
-export function bindJsonbDocument(value: unknown): string {
-  if (value === null || typeof value !== "object") {
-    throw new Error("JSONB bind value must be a JSON object");
-  }
-
-  try {
-    return JSON.stringify(value);
-  } catch {
-    throw new Error("JSONB bind value is not JSON-serializable");
-  }
-}

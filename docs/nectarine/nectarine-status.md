@@ -50,6 +50,12 @@ Adapters do not build SQL. The compiler does.
 
 `onConflict` compiles to Postgres `ON CONFLICT … DO NOTHING` or `DO UPDATE SET col = EXCLUDED.col`. The MySQL adapter throws at `query()` instead of emitting `ON DUPLICATE KEY UPDATE`. It is in git and in the npm 0.5.0 tarball (published 2026-10-04).
 
+### UPDATE / DELETE `returning` and JSON binds (git, not in the 0.5.0 tarball)
+
+UPDATE and DELETE accept `returning` the same way INSERT does. Postgres SQL includes `RETURNING`. The MySQL adapter throws at `query()` instead of issuing a second SELECT.
+
+Schema `json` / `jsonb` columns can drive bind casts: `schemaJsonColumns(schema)` passed as `compileQuery` `jsonColumns` adds `::json` / `::jsonb` to bare `$N` on those columns. `{ cast: jsonb }` still works. The Postgres adapter JSON-encodes objects and arrays on `$N::json` and `$N::jsonb` so `pg` does not send a JavaScript array as a Postgres array. Strings are not encoded twice. This is in git and is not in the published 0.5.0 tarball. The pending changeset is `nectarine-update-returning-json.md`. Do not publish from this note.
+
 ### Migrator
 
 `applyMigrations` (npm since **0.3.0**):
@@ -68,8 +74,8 @@ Optional peers, imported from subpaths. The package root does not load them (`sr
 
 | Import | Driver | What it is |
 |---|---|---|
-| `@citrusworx/nectarine/adapters/pg` | peer `pg` | `pg.Pool`, `connect()` / `disconnect()`, `query(sql, params)` |
-| `@citrusworx/nectarine/adapters/ms` | peer `mysql2` | Pool on `connect()`. Rewrites `$N` and JSONB operators at `query()`. Rejects `ON CONFLICT`. |
+| `@citrusworx/nectarine/adapters/pg` | peer `pg` | `pg.Pool`, `connect()` / `disconnect()`, `query(sql, params)`. Encodes `$N::json` / `$N::jsonb` objects and arrays. |
+| `@citrusworx/nectarine/adapters/ms` | peer `mysql2` | Pool on `connect()`. Rewrites `$N` and JSONB operators at `query()`. Rejects `ON CONFLICT` and `RETURNING`. |
 | `@citrusworx/nectarine/adapters/mg` | peer `mongodb` | `MongoClient` collection helpers. Not the SQL compiler. |
 
 Postgres and MySQL use driver pools. MongoDB uses one `MongoClient` (the driver pools sockets). Nectarine does not add a fourth pool implementation.
@@ -124,7 +130,8 @@ MySQL and MongoDB stay peer adapters. “Full MySQL parity” (including `ON DUP
 5. **No caching, auth, or authorization inside Nectarine.** Hosts guard Seltzer handlers themselves.
 6. **Blog `queries:` YAML is not the compiler grammar.**
 7. **`ON CONFLICT` is Postgres-only.** It is in git and in the npm 0.5.0 tarball.
-8. **MongoDB does not run the SQL compiler.**
+8. **`RETURNING` is Postgres-only.** INSERT, UPDATE, and DELETE can emit it. MySQL throws at `query()`. It is in git and not in the 0.5.0 tarball.
+9. **MongoDB does not run the SQL compiler.**
 
 ---
 

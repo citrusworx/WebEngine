@@ -37,6 +37,10 @@ export type ProgressOptions = {
     root?: ParentNode;
     progressSelector?: string;
 };
+export type ProgressState = {
+    value: number;
+    indeterminate: boolean;
+};
 export type ProgressController = {
     destroy: () => void;
     sync: () => void;
@@ -44,6 +48,7 @@ export type ProgressController = {
     getValue: (target?: HTMLElement | null) => number;
     setIndeterminate: (indeterminate: boolean, target?: HTMLElement | null) => void;
     isIndeterminate: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => ProgressState | null;
 };
 export declare const createProgress: (options?: ProgressOptions) => ProgressController;
 export declare const initProgress: (options?: ProgressOptions) => ProgressController;

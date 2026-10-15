@@ -1,3 +1,4 @@
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { escapeId } from '../shared/ids.js';
 import { createElementMotion, prefersReducedMotion } from '../shared/motion.js';
@@ -8,12 +9,19 @@ export type AccordionOptions = {
   triggerSelector?: string;
 };
 
+/** `expanded` is one flag per trigger, in DOM order. */
+export type AccordionState = {
+  expanded: boolean[];
+};
+
 export type AccordionController = {
   destroy: () => void;
   sync: () => void;
   expand: (trigger?: HTMLElement | null) => void;
   collapse: (trigger?: HTMLElement | null) => void;
   toggle: (trigger?: HTMLElement | null) => void;
+  isExpanded: (trigger?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => AccordionState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -93,6 +101,8 @@ export const createAccordion = (
       expand: () => {},
       collapse: () => {},
       toggle: () => {},
+      isExpanded: () => false,
+      getState: () => null,
     };
   }
 
@@ -100,6 +110,7 @@ export const createAccordion = (
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
   const motion = createElementMotion();
+  const changes = createJuiceChanges<AccordionState>('accordion');
 
   const commitInstant = (
     panel: HTMLElement,
@@ -165,16 +176,20 @@ export const createAccordion = (
     panel: HTMLElement | null,
     expanded: boolean
   ) => {
-    setTriggerState(trigger, panel, expanded);
-    if (!panel) return;
+    const accordion = resolveAccordion(trigger);
+    const baseline = accordion ? readAccordionState(accordion) : null;
 
-    if (!usesAccordionMotion(panel) || prefersReducedMotion()) {
-      commitInstant(panel, expanded);
-      return;
+    setTriggerState(trigger, panel, expanded);
+    if (panel) {
+      if (!usesAccordionMotion(panel) || prefersReducedMotion()) {
+        commitInstant(panel, expanded);
+      } else if (expanded) playExpand(panel);
+      else playCollapse(panel);
     }
 
-    if (expanded) playExpand(panel);
-    else playCollapse(panel);
+    if (accordion && baseline) {
+      changes.note(accordion, readAccordionState(accordion), { baseline });
+    }
   };
 
   const getAccordions = () =>
@@ -224,6 +239,19 @@ export const createAccordion = (
     }
 
     return null;
+  };
+
+  const readAccordionState = (accordion: HTMLElement): AccordionState => ({
+    expanded: getTriggers(accordion).map((trigger) =>
+      isExpanded(trigger, resolvePanel(trigger))
+    ),
+  });
+
+  const resolveAccordionTarget = (target?: HTMLElement | null) => {
+    if (target?.matches(settings.accordionSelector)) return target;
+    const fromTrigger = target ? resolveAccordion(target) : null;
+    if (fromTrigger) return fromTrigger;
+    return getAccordions()[0] ?? null;
   };
 
   const resolveTrigger = (trigger?: HTMLElement | null) => {
@@ -315,6 +343,18 @@ export const createAccordion = (
           (item) => item !== resolved && isExpanded(item, resolvePanel(item))
         ) ?? null;
     }
+  };
+
+  const isTriggerExpanded = (trigger?: HTMLElement | null) => {
+    const resolved = resolveTrigger(trigger);
+    if (!resolved) return false;
+    return isExpanded(resolved, resolvePanel(resolved));
+  };
+
+  const getState = (target?: HTMLElement | null): AccordionState | null => {
+    const accordion = resolveAccordionTarget(target);
+    if (!accordion) return null;
+    return readAccordionState(accordion);
   };
 
   const toggle = (trigger?: HTMLElement | null) => {
@@ -467,6 +507,8 @@ export const createAccordion = (
     expand,
     collapse,
     toggle,
+    isExpanded: isTriggerExpanded,
+    getState,
   };
 };
 

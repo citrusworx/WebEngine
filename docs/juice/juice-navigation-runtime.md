@@ -70,6 +70,8 @@ stopNavigationRuntime()
 
 These are useful for internal control, tests, or advanced cases, but the main feature is the automatic runtime.
 
+A real sidebar open or close dispatches a bubbling `juice:change` from `nav[type="sidebar"]`. `detail` is `{ runtime: "nav", state: { open: boolean } }`. `open` means the sidebar lacks `hidden`. `isOpen()` and `getState()` read it. The mobile toggle is the meaningful change. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 ## NavigationOptions
 
 The configurable shape is:

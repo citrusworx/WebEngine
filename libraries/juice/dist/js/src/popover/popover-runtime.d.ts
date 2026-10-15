@@ -50,12 +50,17 @@ export type PopoverOptions = {
     closeSelector?: string;
     gap?: number;
 };
+export type PopoverState = {
+    open: boolean;
+};
 export type PopoverController = {
     destroy: () => void;
     sync: () => void;
     open: (target?: HTMLElement | null) => void;
     close: (target?: HTMLElement | null) => void;
     toggle: (target?: HTMLElement | null) => void;
+    isOpen: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => PopoverState | null;
 };
 export declare const createPopover: (options?: PopoverOptions) => PopoverController;
 export declare const initPopover: (options?: PopoverOptions) => PopoverController;

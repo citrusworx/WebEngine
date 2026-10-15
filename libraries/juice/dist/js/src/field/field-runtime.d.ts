@@ -43,9 +43,14 @@ export type FieldOptions = {
     root?: ParentNode;
     fieldSelector?: string;
 };
+export type FieldState = {
+    invalid: boolean;
+};
 export type FieldController = {
     destroy: () => void;
     sync: () => void;
+    isInvalid: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => FieldState | null;
 };
 export declare const createField: (options?: FieldOptions) => FieldController;
 export declare const initField: (options?: FieldOptions) => FieldController;

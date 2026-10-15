@@ -115,6 +115,8 @@ stopSelectRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+Select publishes value changes through the native `input` and `change` events. `getState()` returns `{ value: string }` from `HTMLSelectElement.value`, or `null` when the host is missing. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createSelect()` can run alongside the automatic document runtime. This runtime claims no clicks or keys, so there is nothing to double-fire.
 
 `initSelect()` is the same function as `createSelect()`.
@@ -147,6 +149,7 @@ A custom `root` limits sync to selects inside that root. When the root itself is
 type SelectController = {
   destroy: () => void;
   sync: () => void;
+  getState: (target?: HTMLElement | null) => SelectState | null;
 };
 ```
 

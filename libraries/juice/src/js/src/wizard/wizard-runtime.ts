@@ -29,6 +29,7 @@
  *   [step-page] as role="region" labelled by its step when unlabeled
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { escapeId } from '../shared/ids.js';
 
@@ -45,6 +46,10 @@ export type WizardOptions = {
   completeSelector?: string;
 };
 
+export type WizardState = {
+  current: number;
+};
+
 export type WizardController = {
   destroy: () => void;
   sync: () => void;
@@ -52,6 +57,7 @@ export type WizardController = {
   prev: (target?: HTMLElement | null) => void;
   goTo: (step: number | string, target?: HTMLElement | null) => void;
   current: (target?: HTMLElement | null) => number;
+  getState: (target?: HTMLElement | null) => WizardState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -160,12 +166,14 @@ export const createWizard = (options: WizardOptions = {}): WizardController => {
       prev: () => {},
       goTo: () => {},
       current: () => 0,
+      getState: () => null,
     };
   }
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<WizardState>('wizard');
 
   const getShells = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.shellSelector));
@@ -540,6 +548,8 @@ export const createWizard = (options: WizardOptions = {}): WizardController => {
     getCompleteControls(shell).forEach((control) =>
       setControlDisabled(control, !atLast)
     );
+
+    changes.note(shell, { current });
   };
 
   const resolveTargetShell = (target?: HTMLElement | null) => {
@@ -554,6 +564,12 @@ export const createWizard = (options: WizardOptions = {}): WizardController => {
     const shell = resolveTargetShell(target);
     if (!shell) return 0;
     return inferIndex(shell);
+  };
+
+  const getState = (target?: HTMLElement | null): WizardState | null => {
+    const shell = resolveTargetShell(target);
+    if (!shell) return null;
+    return { current: inferIndex(shell) };
   };
 
   const goTo = (step: number | string, target?: HTMLElement | null) => {
@@ -759,6 +775,7 @@ export const createWizard = (options: WizardOptions = {}): WizardController => {
     prev,
     goTo,
     current,
+    getState,
   };
 };
 

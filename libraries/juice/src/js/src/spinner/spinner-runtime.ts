@@ -35,9 +35,15 @@
  * docs/juice/juice-spinner-runtime.md.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
+
 export type SpinnerOptions = {
   root?: ParentNode;
   spinnerSelector?: string;
+};
+
+export type SpinnerState = {
+  shown: boolean;
 };
 
 export type SpinnerController = {
@@ -46,6 +52,7 @@ export type SpinnerController = {
   show: (target?: HTMLElement | null) => void;
   hide: (target?: HTMLElement | null) => void;
   isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => SpinnerState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -67,6 +74,7 @@ const noopController = (): SpinnerController => ({
   show: () => {},
   hide: () => {},
   isShown: () => false,
+  getState: () => null,
 });
 
 export const createSpinner = (
@@ -79,6 +87,7 @@ export const createSpinner = (
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   let destroyed = false;
+  const changes = createJuiceChanges<SpinnerState>('spinner');
 
   const isManagedSpinner = (element: HTMLElement | null | undefined) => {
     if (!element?.matches(settings.spinnerSelector)) return false;
@@ -143,19 +152,23 @@ export const createSpinner = (
     getSpinners().forEach((host) => {
       if (!isManagedSpinner(host)) return;
       writeHost(host);
+      changes.note(host, { shown: isShownHost(host) });
     });
   };
 
   const show = (target?: HTMLElement | null) => {
     const host = resolveSpinner(target);
     if (!host) return;
+    const baseline: SpinnerState = { shown: isShownHost(host) };
     if (host.hidden) host.hidden = false;
     writeHost(host);
+    changes.note(host, { shown: isShownHost(host) }, { baseline });
   };
 
   const hide = (target?: HTMLElement | null) => {
     const host = resolveSpinner(target);
     if (!host) return;
+    const baseline: SpinnerState = { shown: isShownHost(host) };
     if (host.getAttribute('role') === 'status') {
       host.removeAttribute('role');
     }
@@ -163,12 +176,19 @@ export const createSpinner = (
       host.removeAttribute('aria-busy');
     }
     if (!host.hidden) host.hidden = true;
+    changes.note(host, { shown: isShownHost(host) }, { baseline });
   };
 
   const isShown = (target?: HTMLElement | null) => {
     const host = resolveSpinner(target);
     if (!host) return false;
     return isShownHost(host);
+  };
+
+  const getState = (target?: HTMLElement | null): SpinnerState | null => {
+    const host = resolveSpinner(target);
+    if (!host) return null;
+    return { shown: isShownHost(host) };
   };
 
   let syncScheduled = false;
@@ -218,6 +238,7 @@ export const createSpinner = (
     show,
     hide,
     isShown,
+    getState,
   };
 };
 

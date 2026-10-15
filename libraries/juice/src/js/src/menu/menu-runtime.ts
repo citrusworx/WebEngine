@@ -42,6 +42,7 @@
  * coexist with the auto singleton).
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { controlIds } from '../shared/ids.js';
 import { hasOpenDialogOverlay } from '../shared/overlays.js';
@@ -56,6 +57,10 @@ export type MenuOptions = {
   labelSelector?: string;
 };
 
+export type MenuState = {
+  open: boolean;
+};
+
 export type MenuController = {
   destroy: () => void;
   sync: () => void;
@@ -63,6 +68,8 @@ export type MenuController = {
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
   select: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => MenuState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -143,6 +150,8 @@ const noopController = (): MenuController => ({
   close: () => {},
   toggle: () => {},
   select: () => {},
+  isOpen: () => false,
+  getState: () => null,
 });
 
 export const createMenu = (options: MenuOptions = {}): MenuController => {
@@ -152,6 +161,7 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
+  const changes = createJuiceChanges<MenuState>('menu');
 
   const getMenuRoots = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.rootSelector));
@@ -286,8 +296,11 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
   const setOpenState = (menuRoot: HTMLElement, open: boolean) => {
     const panel = getPanel(menuRoot);
     if (!panel) return;
-    if (panel.hidden === !open) return;
-    panel.hidden = !open;
+    const baseline: MenuState = { open: isMenuOpen(menuRoot) };
+    if (panel.hidden !== !open) {
+      panel.hidden = !open;
+    }
+    changes.note(menuRoot, { open: isMenuOpen(menuRoot) }, { baseline });
   };
 
   const applyRovingTabindex = (
@@ -550,10 +563,23 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     setActiveItem(menuRoot, next, true);
   };
 
+  const isOpen = (target?: HTMLElement | null) => {
+    const menuRoot = resolveMenuRoot(target);
+    if (!menuRoot) return false;
+    return isMenuOpen(menuRoot);
+  };
+
+  const getState = (target?: HTMLElement | null): MenuState | null => {
+    const menuRoot = resolveMenuRoot(target);
+    if (!menuRoot) return null;
+    return { open: isMenuOpen(menuRoot) };
+  };
+
   const sync = () => {
     getMenuRoots().forEach((menuRoot) => {
       ensureMenuAccessibility(menuRoot);
       setExpanded(menuRoot, isMenuOpen(menuRoot));
+      changes.note(menuRoot, { open: isMenuOpen(menuRoot) });
     });
   };
 
@@ -800,6 +826,8 @@ export const createMenu = (options: MenuOptions = {}): MenuController => {
     close,
     toggle,
     select,
+    isOpen,
+    getState,
   };
 };
 

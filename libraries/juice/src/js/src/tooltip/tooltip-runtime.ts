@@ -41,6 +41,7 @@
  * others.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { controlIds, resolveElementById, tokenIds } from '../shared/ids.js';
 import {
@@ -60,11 +61,17 @@ export type TooltipOptions = {
   hideDelay?: number;
 };
 
+export type TooltipState = {
+  shown: boolean;
+};
+
 export type TooltipController = {
   destroy: () => void;
   sync: () => void;
   show: (target?: HTMLElement | null) => void;
   hide: (target?: HTMLElement | null) => void;
+  isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => TooltipState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -241,10 +248,13 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
       sync: () => {},
       show: () => {},
       hide: () => {},
+      isShown: () => false,
+      getState: () => null,
     };
   }
 
   const settings = { ...DEFAULTS, ...options };
+  const changes = createJuiceChanges<TooltipState>('tooltip');
   const root = settings.root ?? document;
   const gap =
     typeof options.gap === 'number' && Number.isFinite(options.gap)
@@ -477,8 +487,11 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
   };
 
   const setOpenState = (tooltip: HTMLElement, open: boolean) => {
-    if (tooltip.hidden === !open) return;
-    tooltip.hidden = !open;
+    const baseline: TooltipState = { shown: isTooltipOpen(tooltip) };
+    if (tooltip.hidden !== !open) {
+      tooltip.hidden = !open;
+    }
+    changes.note(tooltip, { shown: isTooltipOpen(tooltip) }, { baseline });
   };
 
   const cancelHide = () => {
@@ -516,6 +529,18 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
     }
     setOpenState(tooltip, true);
     applyPlacement(tooltip, trigger);
+  };
+
+  const isShown = (target?: HTMLElement | null) => {
+    const tooltip = resolveTooltip(target);
+    if (!tooltip) return false;
+    return isTooltipOpen(tooltip);
+  };
+
+  const getState = (target?: HTMLElement | null): TooltipState | null => {
+    const tooltip = resolveTooltip(target);
+    if (!tooltip) return null;
+    return { shown: isTooltipOpen(tooltip) };
   };
 
   const show = (target?: HTMLElement | null) => {
@@ -575,6 +600,7 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
       if (isTooltipOpen(tooltip)) {
         applyPlacement(tooltip);
       }
+      changes.note(tooltip, { shown: isTooltipOpen(tooltip) });
     });
   };
 
@@ -734,6 +760,8 @@ export const createTooltip = (options: TooltipOptions = {}): TooltipController =
     sync,
     show,
     hide,
+    isShown,
+    getState,
   };
 };
 

@@ -97,6 +97,8 @@ stopSwitchRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real checked change dispatches a bubbling `juice:change` from `[switch]`. `detail` is `{ runtime: "switch", state: { checked: boolean } }`. `isChecked()` and `getState()` read it. A write that leaves `checked` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createSwitch()` can run alongside the automatic document runtime. Each click, change, or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 ## SwitchOptions
@@ -130,6 +132,7 @@ type SwitchController = {
   uncheck: (target?: HTMLElement | null) => void;
   setChecked: (checked: boolean, target?: HTMLElement | null) => void;
   isChecked: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => SwitchState | null;
 };
 ```
 

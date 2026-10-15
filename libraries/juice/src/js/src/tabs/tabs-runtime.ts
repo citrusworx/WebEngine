@@ -1,3 +1,4 @@
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { escapeId } from '../shared/ids.js';
 
@@ -9,10 +10,17 @@ export type TabsOptions = {
   panelSelector?: string;
 };
 
+/** `selected` is the trigger index. `-1` when the tab list is empty. */
+export type TabsState = {
+  selected: number;
+};
+
 export type TabsController = {
   destroy: () => void;
   sync: () => void;
   select: (trigger?: HTMLElement | null) => void;
+  selected: (target?: HTMLElement | null) => HTMLElement | null;
+  getState: (target?: HTMLElement | null) => TabsState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -61,12 +69,15 @@ export const createTabs = (options: TabsOptions = {}): TabsController => {
       destroy: () => {},
       sync: () => {},
       select: () => {},
+      selected: () => null,
+      getState: () => null,
     };
   }
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<TabsState>('tabs');
 
   const getTabRoots = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.tabsSelector));
@@ -342,6 +353,8 @@ export const createTabs = (options: TabsOptions = {}): TabsController => {
         panel.removeAttribute('tabindex');
       }
     });
+
+    changes.note(tabs, readTabsState(tabs));
   };
 
   const select = (trigger?: HTMLElement | null) => {
@@ -352,6 +365,29 @@ export const createTabs = (options: TabsOptions = {}): TabsController => {
     if (!tabs) return;
 
     applyExclusiveSelection(tabs, resolved);
+  };
+
+  const readTabsState = (tabs: HTMLElement): TabsState => ({
+    selected: getTriggers(tabs).findIndex((trigger) => isSelected(trigger)),
+  });
+
+  const resolveTabsTarget = (target?: HTMLElement | null) => {
+    if (target?.matches(settings.tabsSelector)) return target;
+    const fromTrigger = target ? resolveTabs(target) : null;
+    if (fromTrigger) return fromTrigger;
+    return getTabRoots()[0] ?? null;
+  };
+
+  const selected = (target?: HTMLElement | null) => {
+    const tabs = resolveTabsTarget(target);
+    if (!tabs) return null;
+    return pickSelectedTrigger(tabs);
+  };
+
+  const getState = (target?: HTMLElement | null): TabsState | null => {
+    const tabs = resolveTabsTarget(target);
+    if (!tabs) return null;
+    return readTabsState(tabs);
   };
 
   const pickSelectedTrigger = (tabs: HTMLElement) => {
@@ -509,6 +545,8 @@ export const createTabs = (options: TabsOptions = {}): TabsController => {
     },
     sync,
     select,
+    selected,
+    getState,
   };
 };
 

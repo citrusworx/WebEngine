@@ -118,6 +118,8 @@ stopBreadcrumbRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real current-crumb change dispatches a bubbling `juice:change` from `[breadcrumb]`. `detail` is `{ runtime: "breadcrumb", state: { current: number } }`. `current` is the 0-based crumb index, or `-1` when none are current. `getCurrent()` and `getState()` read it. A write that leaves `current` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createBreadcrumb()` can run alongside the automatic document runtime. This runtime claims no clicks, keys, or history events, so there is nothing to double-fire.
 
 `initBreadcrumb()` is the same function as `createBreadcrumb()`.
@@ -154,6 +156,8 @@ type BreadcrumbController = {
     itemOrIndex: HTMLElement | number,
     trail?: HTMLElement | null
   ) => void;
+  getCurrent: (target?: HTMLElement | null) => number;
+  getState: (target?: HTMLElement | null) => BreadcrumbState | null;
 };
 ```
 
