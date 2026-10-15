@@ -9,10 +9,6 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
-        "./sig": {
-            "types": "./dist/sig/index.d.ts",
-            "default": "./dist/sig/index.js"
-        },
         "./styles": {
             "types": "./dist/themes/index.d.ts",
             "default": "./dist/index.css"
@@ -157,7 +153,6 @@
     ],
     "sideEffects": [
         "./dist/index.js",
-        "./dist/sig/index.js",
         "./dist/index.css",
         "./dist/themes/*.css",
         "./dist/themes/aquaflux.css",
@@ -212,7 +207,7 @@
     "scripts": {
         "generate:themes": "ts-node --esm src/tools/theme-generator/cli.ts",
         "dev": "gulp dev & vite dev --watch",
-        "build": "gulp build --gulpfile gulp.ts && vite build && vite build --config vite.sig.config.ts && tsc -p tsconfig.types.json",
+        "build": "gulp build --gulpfile gulp.ts && vite build && tsc -p tsconfig.types.json",
         "prepack": "yarn build",
         "verify": "yarn build && yarn test",
         "test": "node ../../node_modules/vitest/vitest.mjs run",

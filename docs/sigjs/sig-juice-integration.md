@@ -177,15 +177,15 @@ Juice lays out the chips and cards. Sig.js decides which cards exist.
 
 ## Runtime binding
 
-Juice runtimes stay free of Sig. The optional adapter is a separate entry:
+The adapter is Sig's optional `@citrusworx/sigjs/juice` subpath. Juice does not ship it, and the main Sig entry does not import Juice.
 
 ```ts
-import { bind } from "@citrusworx/juiceui/sig";
+import { bind } from "@citrusworx/sigjs/juice";
 
 const notes = bind(switchHost, "switch");
 ```
 
-`notes.state` is a Sig signal of that host's `getState()`. It updates on `juice:change` (native `input` / `change` for select, input, and textarea). `notes.dispose()` drops the listeners; binding during Sig render also disposes on unmount. Setting the signal writes back for switch, checkbox, disclosure, and modal. See [Juice runtime behavior](../juice/juice-runtime-behavior.md#sig-adapter). The long-form guide is a later slice.
+`notes.state` is a Sig signal of that host's `getState()`. It updates on `juice:change` (native `input` / `change` for select, input, and textarea). `notes.dispose()` drops the listeners; binding during Sig render also disposes on unmount. Setting the signal writes back for switch, checkbox, disclosure, and modal. `@citrusworx/juiceui` is an optional peer so Sig can install alone. This subpath is the only Sig module that imports Juice controllers; Juice depends on Sig's main entry, not on `./juice`, so the packages do not cycle. See [Juice runtime behavior](../juice/juice-runtime-behavior.md#sig-adapter). The long-form guide is a later slice.
 
 ## Practices
 

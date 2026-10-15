@@ -2298,7 +2298,6 @@ describe("Juice package contract", () => {
 
         expect(pkg.sideEffects).toEqual([
             "./dist/index.js",
-            "./dist/sig/index.js",
             "./dist/index.css",
             "./dist/themes/*.css",
             ...SHIPPED_LIBRARY_THEMES.map(({ id }) => `./dist/themes/${id}.css`)
@@ -2306,21 +2305,15 @@ describe("Juice package contract", () => {
         expect(readFileSync(join(DIST_DIR, "index.js"), "utf-8")).toContain("DOMContentLoaded");
     });
 
-    it("ships the Sig adapter as a subpath that imports Sig, not as part of the main entry", () => {
+    it("does not ship a Sig adapter subpath", () => {
         const pkg = readPackageJson();
         const main = readFileSync(join(DIST_DIR, "index.js"), "utf-8");
-        const adapter = readFileSync(join(DIST_DIR, "sig", "index.js"), "utf-8");
 
-        expect(pkg.exports?.["./sig"]).toEqual({
-            types: "./dist/sig/index.d.ts",
-            default: "./dist/sig/index.js"
-        });
-        expect(existsSync(join(DIST_DIR, "sig", "index.d.ts"))).toBe(true);
-        expect(main).not.toMatch(/from\s+['"]\.\/sig\/index\.js['"]/);
+        expect(pkg.exports?.["./sig"]).toBeUndefined();
+        expect(existsSync(join(DIST_DIR, "sig"))).toBe(false);
+        expect(existsSync(join(PACKAGE_ROOT, "src", "sig"))).toBe(false);
+        expect(main).not.toMatch(/\/sig\/index\.js/);
         expect(main).not.toMatch(/@citrusworx\/juiceui\/sig/);
-        expect(adapter).toMatch(/from\s+['"]@citrusworx\/sigjs['"]/);
-        expect(adapter).toMatch(/from\s+['"]\.\.\/index\.js['"]/);
-        expect(adapter).toContain("export {");
     });
 
     it("declares a published semver range for @citrusworx/sigjs", () => {

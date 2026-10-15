@@ -206,10 +206,10 @@ Accordion `expanded` follows trigger order. Disclosure `expanded` is the first t
 
 ## Sig adapter
 
-`@citrusworx/juiceui/sig` is an optional subpath. It is not part of the main entry, and the runtimes still do not import Sig.
+The adapter lives in Sig, not in Juice. Juice runtimes still do not import Sig.
 
 ```ts
-import { bind } from "@citrusworx/juiceui/sig";
+import { bind } from "@citrusworx/sigjs/juice";
 
 const notes = bind(switchHost, "switch");
 notes.state.get(); // { checked: boolean }, a Sig signal
@@ -217,7 +217,7 @@ notes.state.set({ checked: true }); // write-back where supported
 notes.dispose();
 ```
 
-`bind(host, runtime?)` infers the runtime from the host, or uses the name you pass. `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change` instead. The same state does not notify again. `dispose` removes those listeners. A `bind` during Sig render also disposes on unmount. Setting `state` writes back for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). Other runtimes are read-only. A longer guide is a later slice.
+`bind(host, runtime?)` infers the runtime from the host, or uses the name you pass. `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change` instead. The same state does not notify again. `dispose` removes those listeners. A `bind` during Sig render also disposes on unmount. Setting `state` writes back for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). Other runtimes are read-only. `@citrusworx/juiceui` is an optional peer of Sig; the main Sig entry does not import it. A longer guide is a later slice.
 
 ## Summary
 
