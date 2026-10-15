@@ -21,6 +21,18 @@
     "./sig-router": {
       "types": "./dist/sig-router.d.ts",
       "default": "./dist/sig-router.js"
+    },
+    "./juice": {
+      "types": "./dist/juice.d.ts",
+      "default": "./dist/juice.js"
+    }
+  },
+  "peerDependencies": {
+    "@citrusworx/juiceui": "^0.9.1"
+  },
+  "peerDependenciesMeta": {
+    "@citrusworx/juiceui": {
+      "optional": true
     }
   },
   "files": [
@@ -39,6 +51,7 @@
     "test": "yarn run --top-level playwright test --config ../../playwright.config.ts --project=sigjs"
   },
   "devDependencies": {
+    "@citrusworx/juiceui": "^0.9.1",
     "jsdom": "^29.0.1",
     "typescript": "^5.9.3"
   }

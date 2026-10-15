@@ -151,6 +151,7 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 | `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`) |
 | `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`) |
 | `@citrusworx/sigjs/sig-router` | `SigRouter` only |
+| `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` keeps a Sig signal aligned with a Juice runtime host. Needs `@citrusworx/juiceui` (optional peer). |
 
 `jsxImportSource` uses the `jsx-runtime` / `jsx-dev-runtime` subpaths automatically. You do not import those by hand unless you are calling `jsx()` yourself.
 
@@ -176,7 +177,7 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 
 ## Also used by
 
-CitrusWorx apps (Juice UI, KiwiPress, and others in this monorepo) consume `@citrusworx/sigjs` as a normal npm dependency. Those stacks are optional. This package does not import them.
+CitrusWorx apps (Juice UI, KiwiPress, and others in this monorepo) consume `@citrusworx/sigjs` as a normal npm dependency. Those stacks are optional. The main entry does not import them. `@citrusworx/sigjs/juice` is the optional Juice adapter and the only module here that imports Juice.
 
 ## Development (this repo)
 
