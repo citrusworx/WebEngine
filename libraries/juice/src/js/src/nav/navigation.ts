@@ -1,9 +1,15 @@
+import { createJuiceChanges } from '../shared/change.js';
+
 export type NavigationOptions = {
   root?: ParentNode;
   navSelector?: string;
   sidebarSelector?: string;
   toggleSelector?: string;
   mobileBreakpoint?: number;
+};
+
+export type NavigationState = {
+  open: boolean;
 };
 
 export type NavigationController = {
@@ -13,6 +19,8 @@ export type NavigationController = {
   toggleSidebar: (toggle?: HTMLElement | null) => void;
   sync: () => void;
   isMobile: () => boolean;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => NavigationState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -56,12 +64,27 @@ export const createNavigation = (
       toggleSidebar: () => {},
       sync: () => {},
       isMobile: () => false,
+      isOpen: () => false,
+      getState: () => null,
     };
   }
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
+  const changes = createJuiceChanges<NavigationState>('nav');
+
+  const readNavState = (sidebar: HTMLElement): NavigationState => ({
+    open: !sidebar.hasAttribute('hidden'),
+  });
+
+  const publishNav = (sidebar: HTMLElement, baseline?: NavigationState) => {
+    changes.note(
+      sidebar,
+      readNavState(sidebar),
+      baseline ? { baseline } : undefined
+    );
+  };
 
   const getNavs = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.navSelector));
@@ -176,12 +199,14 @@ export const createNavigation = (
 
     if (!sidebar) return;
 
+    const baseline = readNavState(sidebar);
     ensureSidebarId(sidebar);
     ensureToggleAccessibility(resolvedToggle, sidebar);
     sidebar.removeAttribute('hidden');
     sidebar.setAttribute('aria-hidden', 'false');
     resolvedToggle?.setAttribute('aria-expanded', 'true');
     lastActiveToggle = resolvedToggle ?? null;
+    publishNav(sidebar, baseline);
   };
 
   const closeSidebar = (toggle?: HTMLElement | null) => {
@@ -190,6 +215,7 @@ export const createNavigation = (
 
     if (!sidebar) return;
 
+    const baseline = readNavState(sidebar);
     ensureSidebarId(sidebar);
     ensureToggleAccessibility(resolvedToggle, sidebar);
     if (isMobile()) {
@@ -202,6 +228,7 @@ export const createNavigation = (
     if (isMobile() && resolvedToggle) {
       resolvedToggle.focus();
     }
+    publishNav(sidebar, baseline);
   };
 
   const toggleSidebar = (toggle?: HTMLElement | null) => {
@@ -242,6 +269,7 @@ export const createNavigation = (
         sidebar.removeAttribute('hidden');
         sidebar.setAttribute('aria-hidden', 'false');
         toggle?.setAttribute('aria-expanded', 'false');
+        publishNav(sidebar);
         return;
       }
 
@@ -249,13 +277,27 @@ export const createNavigation = (
       if (shouldStayOpen) {
         sidebar.setAttribute('aria-hidden', 'false');
         toggle?.setAttribute('aria-expanded', 'true');
+        publishNav(sidebar);
         return;
       }
 
       sidebar.setAttribute('hidden', 'true');
       sidebar.setAttribute('aria-hidden', 'true');
       toggle?.setAttribute('aria-expanded', 'false');
+      publishNav(sidebar);
     });
+  };
+
+  const isOpen = (target?: HTMLElement | null) => {
+    const sidebar = resolveSidebar(target);
+    if (!sidebar) return false;
+    return readNavState(sidebar).open;
+  };
+
+  const getState = (target?: HTMLElement | null): NavigationState | null => {
+    const sidebar = resolveSidebar(target);
+    if (!sidebar) return null;
+    return readNavState(sidebar);
   };
 
   const handleResize = () => sync();
@@ -341,6 +383,8 @@ export const createNavigation = (
     toggleSidebar,
     sync,
     isMobile,
+    isOpen,
+    getState,
   };
 };
 

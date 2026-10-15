@@ -35,6 +35,7 @@
  * role="status" for polite; role="alert" for toast="error" or assertive.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import {
   hasOpenComboboxList,
@@ -53,11 +54,17 @@ export type ToastOptions = {
   defaultDuration?: number;
 };
 
+export type ToastState = {
+  shown: boolean;
+};
+
 export type ToastController = {
   destroy: () => void;
   sync: () => void;
   show: (target?: HTMLElement | null) => void;
   dismiss: (target?: HTMLElement | null) => void;
+  isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => ToastState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -123,6 +130,8 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
       sync: () => {},
       show: () => {},
       dismiss: () => {},
+      isShown: () => false,
+      getState: () => null,
     };
   }
 
@@ -130,6 +139,7 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
   const motion = createElementMotion();
+  const changes = createJuiceChanges<ToastState>('toast');
   const defaultDuration =
     typeof options.defaultDuration === 'number'
       ? options.defaultDuration
@@ -337,8 +347,23 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
   };
 
   const setVisibleState = (toast: HTMLElement, visible: boolean) => {
-    if (toast.hidden === !visible) return;
-    toast.hidden = !visible;
+    const baseline: ToastState = { shown: isToastVisible(toast) };
+    if (toast.hidden !== !visible) {
+      toast.hidden = !visible;
+    }
+    changes.note(toast, { shown: isToastVisible(toast) }, { baseline });
+  };
+
+  const isShown = (target?: HTMLElement | null) => {
+    const toast = resolveToast(target);
+    if (!toast) return false;
+    return isToastVisible(toast);
+  };
+
+  const getState = (target?: HTMLElement | null): ToastState | null => {
+    const toast = resolveToast(target);
+    if (!toast) return null;
+    return { shown: isToastVisible(toast) };
   };
 
   const show = (target?: HTMLElement | null) => {
@@ -385,10 +410,12 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
         if (isToastVisible(toast)) {
           rememberShown(toast, false);
           startTimer(toast);
+          changes.note(toast, { shown: true });
           return;
         }
         clearTimer(toast);
         forgetShown(toast);
+        changes.note(toast, { shown: false });
       });
     });
 
@@ -548,6 +575,8 @@ export const createToast = (options: ToastOptions = {}): ToastController => {
     sync,
     show,
     dismiss,
+    isShown,
+    getState,
   };
 };
 

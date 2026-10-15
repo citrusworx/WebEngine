@@ -49,10 +49,17 @@
  * It is not a navigation.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
+
 export type BreadcrumbOptions = {
   root?: ParentNode;
   breadcrumbSelector?: string;
   itemSelector?: string;
+};
+
+/** `current` is the 0-based crumb index. `-1` when no crumb is current. */
+export type BreadcrumbState = {
+  current: number;
 };
 
 export type BreadcrumbController = {
@@ -62,6 +69,8 @@ export type BreadcrumbController = {
     itemOrIndex: HTMLElement | number,
     trail?: HTMLElement | null
   ) => void;
+  getCurrent: (target?: HTMLElement | null) => number;
+  getState: (target?: HTMLElement | null) => BreadcrumbState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -100,6 +109,8 @@ const noopController = (): BreadcrumbController => ({
   destroy: () => {},
   sync: () => {},
   setCurrent: () => {},
+  getCurrent: () => -1,
+  getState: () => null,
 });
 
 export const createBreadcrumb = (
@@ -111,6 +122,7 @@ export const createBreadcrumb = (
 
   const settings = { ...DEFAULTS, ...options };
   const root = settings.root ?? document;
+  const changes = createJuiceChanges<BreadcrumbState>('breadcrumb');
 
   const isManagedTrail = (element: HTMLElement | null | undefined) => {
     if (!element?.matches(settings.breadcrumbSelector)) return false;
@@ -221,20 +233,35 @@ export const createBreadcrumb = (
     );
   };
 
+  const readBreadcrumbState = (trail: HTMLElement): BreadcrumbState => {
+    const crumbs = getCrumbs(trail);
+    const current = findPageCurrents(trail)[0] ?? null;
+    if (!current) return { current: -1 };
+    const index = crumbs.findIndex(
+      (crumb) => crumb === current || crumb.contains(current)
+    );
+    return { current: index };
+  };
+
   const syncTrail = (trail: HTMLElement) => {
     ensureLandmark(trail);
 
     const currents = findPageCurrents(trail);
     if (currents.length > 0) {
       clearPageCurrentExcept(trail, currents[0]);
+      changes.note(trail, readBreadcrumbState(trail));
       return;
     }
 
     const crumbs = getCrumbs(trail);
     const last = crumbs[crumbs.length - 1];
-    if (!last) return;
+    if (!last) {
+      changes.note(trail, readBreadcrumbState(trail));
+      return;
+    }
 
     markCurrent(preferredCurrentTarget(last));
+    changes.note(trail, readBreadcrumbState(trail));
   };
 
   const sync = () => {
@@ -270,6 +297,19 @@ export const createBreadcrumb = (
 
     clearPageCurrentExcept(trailEl, target);
     markCurrent(target);
+    changes.note(trailEl, readBreadcrumbState(trailEl));
+  };
+
+  const getCurrent = (target?: HTMLElement | null) => {
+    const trail = resolveTrail(target);
+    if (!trail) return -1;
+    return readBreadcrumbState(trail).current;
+  };
+
+  const getState = (target?: HTMLElement | null): BreadcrumbState | null => {
+    const trail = resolveTrail(target);
+    if (!trail) return null;
+    return readBreadcrumbState(trail);
   };
 
   let syncScheduled = false;
@@ -318,6 +358,8 @@ export const createBreadcrumb = (
     },
     sync,
     setCurrent,
+    getCurrent,
+    getState,
   };
 };
 

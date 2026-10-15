@@ -127,6 +127,8 @@ stopFieldRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real invalid change dispatches a bubbling `juice:change` from `[field]`. `detail` is `{ runtime: "field", state: { invalid: boolean } }`. `invalid` is the `[invalid]` attribute on the wrapper. `isInvalid()` and `getState()` read it. A write that leaves `invalid` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createField()` can run alongside the automatic document runtime. This runtime claims no clicks or keys, so there is nothing to double-fire.
 
 `initField()` is the same function as `createField()`.
@@ -159,6 +161,8 @@ A custom `root` limits sync to fields inside that root. When the root itself is 
 type FieldController = {
   destroy: () => void;
   sync: () => void;
+  isInvalid: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => FieldState | null;
 };
 ```
 

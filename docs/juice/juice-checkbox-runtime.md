@@ -97,6 +97,8 @@ stopCheckboxRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real checked change dispatches a bubbling `juice:change` from `[checkbox]`. `detail` is `{ runtime: "checkbox", state: { checked: boolean } }`. `isChecked()` and `getState()` read it. A write that leaves `checked` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createCheckbox()` can run alongside the automatic document runtime. Each click, change, or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 `initCheckbox()` is the same function as `createCheckbox()`.
@@ -132,6 +134,7 @@ type CheckboxController = {
   uncheck: (target?: HTMLElement | null) => void;
   setChecked: (checked: boolean, target?: HTMLElement | null) => void;
   isChecked: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => CheckboxState | null;
 };
 ```
 

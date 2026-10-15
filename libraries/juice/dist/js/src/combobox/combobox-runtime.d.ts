@@ -61,6 +61,10 @@ export type ComboboxOptions = {
     listSelector?: string;
     optionSelector?: string;
 };
+export type ComboboxState = {
+    open: boolean;
+    value: string;
+};
 export type ComboboxController = {
     destroy: () => void;
     sync: () => void;
@@ -68,6 +72,8 @@ export type ComboboxController = {
     close: (target?: HTMLElement | null) => void;
     toggle: (target?: HTMLElement | null) => void;
     select: (target?: HTMLElement | null) => void;
+    isOpen: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => ComboboxState | null;
 };
 export declare const createCombobox: (options?: ComboboxOptions) => ComboboxController;
 export declare const initCombobox: (options?: ComboboxOptions) => ComboboxController;

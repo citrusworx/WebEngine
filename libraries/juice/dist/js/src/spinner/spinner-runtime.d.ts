@@ -38,12 +38,16 @@ export type SpinnerOptions = {
     root?: ParentNode;
     spinnerSelector?: string;
 };
+export type SpinnerState = {
+    shown: boolean;
+};
 export type SpinnerController = {
     destroy: () => void;
     sync: () => void;
     show: (target?: HTMLElement | null) => void;
     hide: (target?: HTMLElement | null) => void;
     isShown: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => SpinnerState | null;
 };
 export declare const createSpinner: (options?: SpinnerOptions) => SpinnerController;
 export declare const initSpinner: (options?: SpinnerOptions) => SpinnerController;

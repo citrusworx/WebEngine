@@ -5,6 +5,9 @@ export type NavigationOptions = {
     toggleSelector?: string;
     mobileBreakpoint?: number;
 };
+export type NavigationState = {
+    open: boolean;
+};
 export type NavigationController = {
     destroy: () => void;
     openSidebar: (toggle?: HTMLElement | null) => void;
@@ -12,6 +15,8 @@ export type NavigationController = {
     toggleSidebar: (toggle?: HTMLElement | null) => void;
     sync: () => void;
     isMobile: () => boolean;
+    isOpen: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => NavigationState | null;
 };
 export declare const createNavigation: (options?: NavigationOptions) => NavigationController;
 export declare const initNavigation: (options?: NavigationOptions) => NavigationController;

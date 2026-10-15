@@ -23,12 +23,17 @@ export type ModalOptions = {
     closeSelector?: string;
     closeOnBackdrop?: boolean;
 };
+export type ModalState = {
+    open: boolean;
+};
 export type ModalController = {
     destroy: () => void;
     sync: () => void;
     open: (target?: HTMLElement | null) => void;
     close: (target?: HTMLElement | null) => void;
     toggle: (target?: HTMLElement | null) => void;
+    isOpen: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => ModalState | null;
 };
 export declare const createModal: (options?: ModalOptions) => ModalController;
 export declare const initModal: (options?: ModalOptions) => ModalController;

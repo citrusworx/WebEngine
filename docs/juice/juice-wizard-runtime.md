@@ -120,6 +120,8 @@ stopWizardRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real step change dispatches a bubbling `juice:change` from `[wizard-shell]`. `detail` is `{ runtime: "wizard", state: { current: number } }`, the same index `current()` returns. `getState()` reads it. A write that leaves `current` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createWizard()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 ## WizardOptions
@@ -168,6 +170,7 @@ type WizardController = {
   prev: (target?: HTMLElement | null) => void;
   goTo: (step: number | string, target?: HTMLElement | null) => void;
   current: (target?: HTMLElement | null) => number;
+  getState: (target?: HTMLElement | null) => WizardState | null;
 };
 ```
 

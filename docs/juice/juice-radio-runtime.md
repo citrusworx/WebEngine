@@ -102,6 +102,8 @@ stopRadioRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real selection change dispatches a bubbling `juice:change` from `[radiogroup]`. `detail` is `{ runtime: "radio", state: { value: string | null, index: number } }`. `value` is the checked option's `value` attribute. `index` is its position, or `-1` when none are checked. `getChecked()` still returns the element. `getState()` returns the pair. A write that leaves both fields unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createRadio()` can run alongside the automatic document runtime. Each click, change, or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 `initRadio()` is the same function as `createRadio()`.
@@ -136,6 +138,7 @@ type RadioController = {
   sync: () => void;
   select: (radio?: HTMLElement | null) => void;
   getChecked: (group?: HTMLElement | null) => HTMLElement | null;
+  getState: (target?: HTMLElement | null) => RadioState | null;
 };
 ```
 

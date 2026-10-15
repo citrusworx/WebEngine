@@ -23,12 +23,17 @@ export type DrawerOptions = {
     closeSelector?: string;
     closeOnBackdrop?: boolean;
 };
+export type DrawerState = {
+    open: boolean;
+};
 export type DrawerController = {
     destroy: () => void;
     sync: () => void;
     open: (target?: HTMLElement | null) => void;
     close: (target?: HTMLElement | null) => void;
     toggle: (target?: HTMLElement | null) => void;
+    isOpen: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => DrawerState | null;
 };
 export declare const createDrawer: (options?: DrawerOptions) => DrawerController;
 export declare const initDrawer: (options?: DrawerOptions) => DrawerController;

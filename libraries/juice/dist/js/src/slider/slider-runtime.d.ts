@@ -41,6 +41,9 @@ export type SliderOptions = {
     root?: ParentNode;
     sliderSelector?: string;
 };
+export type SliderState = {
+    value: number;
+};
 export type SliderController = {
     destroy: () => void;
     sync: () => void;
@@ -48,6 +51,7 @@ export type SliderController = {
     getValue: (target?: HTMLElement | null) => number;
     increment: (target?: HTMLElement | null) => void;
     decrement: (target?: HTMLElement | null) => void;
+    getState: (target?: HTMLElement | null) => SliderState | null;
 };
 export declare const createSlider: (options?: SliderOptions) => SliderController;
 export declare const initSlider: (options?: SliderOptions) => SliderController;

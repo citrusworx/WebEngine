@@ -36,6 +36,7 @@
  * is ignored.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 
 export type RadioOptions = {
@@ -44,11 +45,19 @@ export type RadioOptions = {
   radioSelector?: string;
 };
 
+export type RadioState = {
+  /** `value` attribute of the checked radio, or the native value. */
+  value: string | null;
+  /** Index of the checked radio in the group. `-1` when none are checked. */
+  index: number;
+};
+
 export type RadioController = {
   destroy: () => void;
   sync: () => void;
   select: (radio?: HTMLElement | null) => void;
   getChecked: (group?: HTMLElement | null) => HTMLElement | null;
+  getState: (target?: HTMLElement | null) => RadioState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -105,6 +114,7 @@ const noopController = (): RadioController => ({
   sync: () => {},
   select: () => {},
   getChecked: () => null,
+  getState: () => null,
 });
 
 export const createRadio = (options: RadioOptions = {}): RadioController => {
@@ -116,6 +126,7 @@ export const createRadio = (options: RadioOptions = {}): RadioController => {
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
   let applying = false;
+  const changes = createJuiceChanges<RadioState>('radio');
 
   const getGroups = () =>
     asArray(root.querySelectorAll<HTMLElement>(settings.radiogroupSelector));
@@ -192,6 +203,16 @@ export const createRadio = (options: RadioOptions = {}): RadioController => {
     });
   };
 
+  const readRadioState = (group: HTMLElement): RadioState => {
+    const radios = getRadios(group);
+    const index = radios.findIndex((radio) => readChecked(radio));
+    const checked = index >= 0 ? (radios[index] ?? null) : null;
+    let value: string | null = null;
+    if (checked instanceof HTMLInputElement) value = checked.value;
+    else if (checked) value = checked.getAttribute('value');
+    return { value, index };
+  };
+
   const writeGroupSelection = (
     group: HTMLElement,
     checked: HTMLElement | null
@@ -211,6 +232,7 @@ export const createRadio = (options: RadioOptions = {}): RadioController => {
     } finally {
       applying = false;
     }
+    changes.note(group, readRadioState(group));
   };
 
   const syncGroup = (group: HTMLElement) => {
@@ -241,6 +263,20 @@ export const createRadio = (options: RadioOptions = {}): RadioController => {
 
     if (!group) return null;
     return getRadios(group).find((radio) => readChecked(radio)) ?? null;
+  };
+
+  const resolveStateGroup = (target?: HTMLElement | null) => {
+    if (!target) {
+      return getGroups().find((candidate) => isManagedGroup(candidate)) ?? null;
+    }
+    if (isManagedGroup(target)) return target;
+    return resolveGroup(target);
+  };
+
+  const getState = (target?: HTMLElement | null): RadioState | null => {
+    const group = resolveStateGroup(target);
+    if (!group) return null;
+    return readRadioState(group);
   };
 
   const sync = () => {
@@ -363,6 +399,7 @@ export const createRadio = (options: RadioOptions = {}): RadioController => {
     sync,
     select,
     getChecked,
+    getState,
   };
 };
 

@@ -38,12 +38,17 @@ export type DisclosureOptions = {
     disclosureSelector?: string;
     triggerSelector?: string;
 };
+export type DisclosureState = {
+    expanded: boolean;
+};
 export type DisclosureController = {
     destroy: () => void;
     sync: () => void;
     expand: (trigger?: HTMLElement | null) => void;
     collapse: (trigger?: HTMLElement | null) => void;
     toggle: (trigger?: HTMLElement | null) => void;
+    isExpanded: (trigger?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => DisclosureState | null;
 };
 export declare const createDisclosure: (options?: DisclosureOptions) => DisclosureController;
 export declare const initDisclosure: (options?: DisclosureOptions) => DisclosureController;

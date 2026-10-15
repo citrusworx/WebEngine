@@ -45,9 +45,18 @@ export type TextareaOptions = {
   textareaSelector?: string;
 };
 
+/**
+ * Value changes stay on the native `input` and `change` events.
+ * This runtime does not dispatch `juice:change`.
+ */
+export type TextareaState = {
+  value: string;
+};
+
 export type TextareaController = {
   destroy: () => void;
   sync: () => void;
+  getState: (target?: HTMLElement | null) => TextareaState | null;
 };
 
 type OwnedName = {
@@ -69,6 +78,7 @@ const asArray = <T extends Element>(nodes: ArrayLike<T>): T[] =>
 const noopController = (): TextareaController => ({
   destroy: () => {},
   sync: () => {},
+  getState: () => null,
 });
 
 const isVisibleElement = (element: HTMLElement) => {
@@ -451,6 +461,18 @@ export const createTextarea = (
       observer?.disconnect();
     },
     sync,
+    getState: (target) => {
+      const textarea =
+        target && isManagedTextarea(target)
+          ? target
+          : target
+            ? (asArray(
+                target.querySelectorAll<HTMLElement>(settings.textareaSelector)
+              ).find(isManagedTextarea) ?? null)
+            : (getTextareas()[0] ?? null);
+      if (!textarea) return null;
+      return { value: textarea.value };
+    },
   };
 };
 

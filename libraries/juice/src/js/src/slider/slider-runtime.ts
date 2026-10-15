@@ -38,11 +38,16 @@
  * handling (not a layered overlay).
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 
 export type SliderOptions = {
   root?: ParentNode;
   sliderSelector?: string;
+};
+
+export type SliderState = {
+  value: number;
 };
 
 export type SliderController = {
@@ -52,6 +57,7 @@ export type SliderController = {
   getValue: (target?: HTMLElement | null) => number;
   increment: (target?: HTMLElement | null) => void;
   decrement: (target?: HTMLElement | null) => void;
+  getState: (target?: HTMLElement | null) => SliderState | null;
 };
 
 const STEP = 1;
@@ -227,6 +233,7 @@ const noopController = (): SliderController => ({
   getValue: () => 0,
   increment: () => {},
   decrement: () => {},
+  getState: () => null,
 });
 
 export const createSlider = (
@@ -237,6 +244,7 @@ export const createSlider = (
   }
 
   const settings = { ...DEFAULTS, ...options };
+  const changes = createJuiceChanges<SliderState>('slider');
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
   let destroyed = false;
@@ -324,6 +332,8 @@ export const createSlider = (
     if (host.style.getPropertyValue('--juice-slider-ratio').trim() !== ratio) {
       host.style.setProperty('--juice-slider-ratio', ratio);
     }
+
+    changes.note(host, { value });
   };
 
   const commitValue = (
@@ -367,6 +377,14 @@ export const createSlider = (
     const thumb = findOwnedThumb(host);
     if (!thumb) return 0;
     return readBounds(host, thumb).value;
+  };
+
+  const getState = (target?: HTMLElement | null): SliderState | null => {
+    const host = resolveSlider(target);
+    if (!host) return null;
+    const thumb = findOwnedThumb(host);
+    if (!thumb) return null;
+    return { value: readBounds(host, thumb).value };
   };
 
   const stepValue = (
@@ -576,6 +594,7 @@ export const createSlider = (
     getValue,
     increment: (target) => stepValue(target, STEP),
     decrement: (target) => stepValue(target, -STEP),
+    getState,
   };
 };
 

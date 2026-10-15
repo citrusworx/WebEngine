@@ -94,6 +94,8 @@ stopDrawerRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real open or close dispatches a bubbling `juice:change` from `[drawer-overlay]`. `detail` is `{ runtime: "drawer", state: { open: boolean } }`. `isOpen()` and `getState()` read it. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createDrawer()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 ## DrawerOptions
@@ -131,6 +133,8 @@ type DrawerController = {
   open: (target?: HTMLElement | null) => void;
   close: (target?: HTMLElement | null) => void;
   toggle: (target?: HTMLElement | null) => void;
+  isOpen: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => DrawerState | null;
 };
 ```
 

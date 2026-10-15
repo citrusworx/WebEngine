@@ -88,6 +88,8 @@ stopTooltipRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+A real show or hide dispatches a bubbling `juice:change` from `[tooltip-root]`. `detail` is `{ runtime: "tooltip", state: { shown: boolean } }`. `isShown()` and `getState()` read it. A write that leaves `shown` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createTooltip()` can run alongside the automatic document runtime. Each pointer or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
 
 ## TooltipOptions
@@ -124,6 +126,8 @@ type TooltipController = {
   sync: () => void;
   show: (target?: HTMLElement | null) => void;
   hide: (target?: HTMLElement | null) => void;
+  isShown: (target?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => TooltipState | null;
 };
 ```
 

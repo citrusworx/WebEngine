@@ -34,6 +34,7 @@
  * docs/juice/juice-disclosure-runtime.md.
  */
 
+import { createJuiceChanges } from '../shared/change.js';
 import { createEventClaim } from '../shared/events.js';
 import { escapeId } from '../shared/ids.js';
 import { createElementMotion, prefersReducedMotion } from '../shared/motion.js';
@@ -45,12 +46,18 @@ export type DisclosureOptions = {
   triggerSelector?: string;
 };
 
+export type DisclosureState = {
+  expanded: boolean;
+};
+
 export type DisclosureController = {
   destroy: () => void;
   sync: () => void;
   expand: (trigger?: HTMLElement | null) => void;
   collapse: (trigger?: HTMLElement | null) => void;
   toggle: (trigger?: HTMLElement | null) => void;
+  isExpanded: (trigger?: HTMLElement | null) => boolean;
+  getState: (target?: HTMLElement | null) => DisclosureState | null;
 };
 
 const DEFAULT_ROOT: ParentNode =
@@ -129,6 +136,8 @@ export const createDisclosure = (
       expand: () => {},
       collapse: () => {},
       toggle: () => {},
+      isExpanded: () => false,
+      getState: () => null,
     };
   }
 
@@ -136,6 +145,7 @@ export const createDisclosure = (
   const root = settings.root ?? document;
   const rootEvents = root as ParentNode & EventTarget;
   const motion = createElementMotion();
+  const changes = createJuiceChanges<DisclosureState>('disclosure');
 
   const commitInstant = (panel: HTMLElement, expanded: boolean) => {
     motion.cancel(panel);
@@ -198,16 +208,20 @@ export const createDisclosure = (
     panel: HTMLElement | null,
     expanded: boolean
   ) => {
-    setTriggerState(trigger, panel, expanded);
-    if (!panel) return;
+    const disclosure = resolveDisclosure(trigger);
+    const baseline = disclosure ? readDisclosureState(disclosure) : null;
 
-    if (!usesAccordionMotion(panel) || prefersReducedMotion()) {
-      commitInstant(panel, expanded);
-      return;
+    setTriggerState(trigger, panel, expanded);
+    if (panel) {
+      if (!usesAccordionMotion(panel) || prefersReducedMotion()) {
+        commitInstant(panel, expanded);
+      } else if (expanded) playExpand(panel);
+      else playCollapse(panel);
     }
 
-    if (expanded) playExpand(panel);
-    else playCollapse(panel);
+    if (disclosure && baseline) {
+      changes.note(disclosure, readDisclosureState(disclosure), { baseline });
+    }
   };
 
   const getDisclosures = () =>
@@ -263,6 +277,19 @@ export const createDisclosure = (
     }
 
     return null;
+  };
+
+  const readDisclosureState = (disclosure: HTMLElement): DisclosureState => {
+    const trigger = getTriggers(disclosure)[0] ?? null;
+    if (!trigger) return { expanded: false };
+    return { expanded: isExpanded(trigger, resolvePanel(trigger)) };
+  };
+
+  const resolveDisclosureTarget = (target?: HTMLElement | null) => {
+    if (target?.matches(settings.disclosureSelector)) return target;
+    const fromTrigger = target ? resolveDisclosure(target) : null;
+    if (fromTrigger) return fromTrigger;
+    return getDisclosures()[0] ?? null;
   };
 
   const resolveTrigger = (trigger?: HTMLElement | null) => {
@@ -356,6 +383,18 @@ export const createDisclosure = (
           (item) => item !== resolved && isExpanded(item, resolvePanel(item))
         ) ?? null;
     }
+  };
+
+  const isTriggerExpanded = (trigger?: HTMLElement | null) => {
+    const resolved = resolveTrigger(trigger);
+    if (!resolved) return false;
+    return isExpanded(resolved, resolvePanel(resolved));
+  };
+
+  const getState = (target?: HTMLElement | null): DisclosureState | null => {
+    const disclosure = resolveDisclosureTarget(target);
+    if (!disclosure) return null;
+    return readDisclosureState(disclosure);
   };
 
   const toggle = (trigger?: HTMLElement | null) => {
@@ -514,6 +553,8 @@ export const createDisclosure = (
     expand,
     collapse,
     toggle,
+    isExpanded: isTriggerExpanded,
+    getState,
   };
 };
 

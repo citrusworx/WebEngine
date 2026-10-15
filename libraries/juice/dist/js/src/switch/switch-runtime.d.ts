@@ -35,6 +35,9 @@ export type SwitchOptions = {
     root?: ParentNode;
     switchSelector?: string;
 };
+export type SwitchState = {
+    checked: boolean;
+};
 export type SwitchController = {
     destroy: () => void;
     sync: () => void;
@@ -43,6 +46,7 @@ export type SwitchController = {
     uncheck: (target?: HTMLElement | null) => void;
     setChecked: (checked: boolean, target?: HTMLElement | null) => void;
     isChecked: (target?: HTMLElement | null) => boolean;
+    getState: (target?: HTMLElement | null) => SwitchState | null;
 };
 export declare const createSwitch: (options?: SwitchOptions) => SwitchController;
 export declare const initSwitch: (options?: SwitchOptions) => SwitchController;

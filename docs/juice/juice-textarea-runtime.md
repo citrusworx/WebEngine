@@ -108,6 +108,8 @@ stopTextareaRuntime()
 
 These are useful for internal control, tests, or advanced cases.
 
+Textarea publishes value changes through the native `input` and `change` events. `getState()` returns `{ value: string }` from the control, or `null` when the host is missing. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
 `createTextarea()` can run alongside the automatic document runtime. This runtime claims no clicks or keys, so there is nothing to double-fire.
 
 `initTextarea()` is the same function as `createTextarea()`.
@@ -140,6 +142,7 @@ A custom `root` limits sync to textareas inside that root. When the root itself 
 type TextareaController = {
   destroy: () => void;
   sync: () => void;
+  getState: (target?: HTMLElement | null) => TextareaState | null;
 };
 ```
 

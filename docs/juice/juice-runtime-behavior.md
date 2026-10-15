@@ -159,6 +159,51 @@ Core chrome sets these stacking values. They are **structural bands**, not a the
 
 Tabs, accordion, and disclosure do not set a stacking band.
 
+## juice:change
+
+Interactive runtimes dispatch a bubbling, composed `juice:change` `CustomEvent` from the widget host when observable state actually changes. Clicks, keys, and programmatic writes all count. A write that leaves the previous state unchanged does not dispatch. The first observation of a host is recorded and does not dispatch, so init can normalize ARIA without looking like a change.
+
+```ts
+type JuiceChangeDetail<TState> = {
+  runtime: string;
+  state: TState;
+};
+```
+
+`JUICE_CHANGE_EVENT` is the string `'juice:change'`. Listen on the host or any ancestor. `detail.state` is a copy of the state below. Each controller also exposes `getState(target)`, which returns that same shape, or `null` when the host is missing. This observation contract stays Emerging. It is Juice core. The runtimes do not import Sig.
+
+Select, input, and textarea publish value changes through the native `input` and `change` events. `getState()` still returns `{ value: string }` (`HTMLSelectElement.value` for select, the control value otherwise).
+
+| Runtime | Host | `detail.state` | Readers |
+| --- | --- | --- | --- |
+| `switch` | `[switch]` | `{ checked: boolean }` | `isChecked`, `getState` |
+| `checkbox` | `[checkbox]` | `{ checked: boolean }` | `isChecked`, `getState` |
+| `disclosure` | `[disclosure]` | `{ expanded: boolean }` | `isExpanded`, `getState` |
+| `accordion` | `[accordion]` | `{ expanded: boolean[] }` | `isExpanded`, `getState` |
+| `modal` | `[modal-overlay]` | `{ open: boolean }` | `isOpen`, `getState` |
+| `drawer` | `[drawer-overlay]` | `{ open: boolean }` | `isOpen`, `getState` |
+| `popover` | `[popover-root]` | `{ open: boolean }` | `isOpen`, `getState` |
+| `menu` | `[menu-root]` | `{ open: boolean }` | `isOpen`, `getState` |
+| `combobox` | `[combobox]` | `{ open: boolean, value: string }` | `isOpen`, `getState` |
+| `slider` | `[slider]` | `{ value: number }` | `getValue`, `getState` |
+| `progress` | `[progress]` | `{ value: number, indeterminate: boolean }` | `getValue`, `isIndeterminate`, `getState` |
+| `radio` | `[radiogroup]` | `{ value: string \| null, index: number }` | `getChecked`, `getState` |
+| `tabs` | `[tabs]` | `{ selected: number }` | `selected`, `getState` |
+| `pagination` | `[pagination]` | `{ current: number }` | `getCurrent`, `getState` |
+| `breadcrumb` | `[breadcrumb]` | `{ current: number }` | `getCurrent`, `getState` |
+| `wizard` | `[wizard-shell]` | `{ current: number }` | `current`, `getState` |
+| `toast` | `[toast]` | `{ shown: boolean }` | `isShown`, `getState` |
+| `banner` | `[banner]` | `{ shown: boolean }` | `isShown`, `getState` |
+| `tooltip` | `[tooltip-root]` | `{ shown: boolean }` | `isShown`, `getState` |
+| `spinner` | `[spinner]` | `{ shown: boolean }` | `isShown`, `getState` |
+| `nav` | `nav[type="sidebar"]` | `{ open: boolean }` | `isOpen`, `getState` |
+| `field` | `[field]` | `{ invalid: boolean }` | `isInvalid`, `getState` |
+| `select` | `select[select]` | `{ value: string }` | `getState` (native `input` / `change`) |
+| `input` | `input[input]` | `{ value: string }` | `getState` (native `input` / `change`) |
+| `textarea` | `textarea[textarea]` | `{ value: string }` | `getState` (native `input` / `change`) |
+
+Accordion `expanded` follows trigger order. Disclosure `expanded` is the first trigger. Tabs `selected`, pagination `current`, and breadcrumb `current` are 0-based indexes, or `-1` when nothing is current. Radio `value` is the checked option's `value` attribute, and `index` is its position (`-1` when none are checked). `getChecked()` still returns that element. Tabs `selected()` still returns the trigger element. Menu `open` is whether the `[menu]` panel is shown. Nav `open` is whether the sidebar lacks `hidden`. Field `invalid` is the `[invalid]` attribute on the wrapper. Toast `shown` is the `[toast]` host, not the region.
+
 ## Summary
 
 Juice runtime behavior should feel like a natural extension of the markup system, not a separate app framework.
