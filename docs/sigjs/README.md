@@ -406,6 +406,7 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 - JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
 - `mount` and tree dispose
 - `SigRouter` — exact paths, `:param` segments, named routes, link interception, view cleanup
+- optional `@citrusworx/sigjs/juice` `bind` for Juice hosts (`{ state, dispose }`). Juice works without it. On master; unpublished versus 0.3.0. See [Sig.js + Juice](./sig-juice-integration.md#runtime-binding)
 
 Not shipped:
 

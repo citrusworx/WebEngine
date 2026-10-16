@@ -28,8 +28,10 @@ Juice runtime behavior should be:
 It should not require:
 
 * app glue
-* framework-specific adapters
+* a framework adapter
 * custom user bootstrapping for basic behavior
+
+Juice works without Sig. The observation contract below is DOM. Sig’s optional `bind` is a separate import, `@citrusworx/sigjs/juice`, and the runtimes do not load it.
 
 ## Current Examples
 
@@ -172,52 +174,71 @@ type JuiceChangeDetail<TState> = {
 
 `JUICE_CHANGE_EVENT` is the string `'juice:change'`. Listen on the host or any ancestor. `detail.state` is a copy of the state below. Each controller also exposes `getState(target)`, which returns that same shape, or `null` when the host is missing. This observation contract stays Emerging. It is Juice core. The runtimes do not import Sig.
 
-Select, input, and textarea publish value changes through the native `input` and `change` events. `getState()` still returns `{ value: string }` (`HTMLSelectElement.value` for select, the control value otherwise).
+Juice works without Sig. `juice:change` and `getState()` are a framework-agnostic DOM contract. Any script can listen or call the controller. The optional Sig adapter is `@citrusworx/sigjs/juice` only; see [Sig adapter](#sig-adapter) and [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding).
 
-| Runtime | Host | `detail.state` | Readers |
-| --- | --- | --- | --- |
-| `switch` | `[switch]` | `{ checked: boolean }` | `isChecked`, `getState` |
-| `checkbox` | `[checkbox]` | `{ checked: boolean }` | `isChecked`, `getState` |
-| `disclosure` | `[disclosure]` | `{ expanded: boolean }` | `isExpanded`, `getState` |
-| `accordion` | `[accordion]` | `{ expanded: boolean[] }` | `isExpanded`, `getState` |
-| `modal` | `[modal-overlay]` | `{ open: boolean }` | `isOpen`, `getState` |
-| `drawer` | `[drawer-overlay]` | `{ open: boolean }` | `isOpen`, `getState` |
-| `popover` | `[popover-root]` | `{ open: boolean }` | `isOpen`, `getState` |
-| `menu` | `[menu-root]` | `{ open: boolean }` | `isOpen`, `getState` |
-| `combobox` | `[combobox]` | `{ open: boolean, value: string }` | `isOpen`, `getState` |
-| `slider` | `[slider]` | `{ value: number }` | `getValue`, `getState` |
-| `progress` | `[progress]` | `{ value: number, indeterminate: boolean }` | `getValue`, `isIndeterminate`, `getState` |
-| `radio` | `[radiogroup]` | `{ value: string \| null, index: number }` | `getChecked`, `getState` |
-| `tabs` | `[tabs]` | `{ selected: number }` | `selected`, `getState` |
-| `pagination` | `[pagination]` | `{ current: number }` | `getCurrent`, `getState` |
-| `breadcrumb` | `[breadcrumb]` | `{ current: number }` | `getCurrent`, `getState` |
-| `wizard` | `[wizard-shell]` | `{ current: number }` | `current`, `getState` |
-| `toast` | `[toast]` | `{ shown: boolean }` | `isShown`, `getState` |
-| `banner` | `[banner]` | `{ shown: boolean }` | `isShown`, `getState` |
-| `tooltip` | `[tooltip-root]` | `{ shown: boolean }` | `isShown`, `getState` |
-| `spinner` | `[spinner]` | `{ shown: boolean }` | `isShown`, `getState` |
-| `nav` | `nav[type="sidebar"]` | `{ open: boolean }` | `isOpen`, `getState` |
-| `field` | `[field]` | `{ invalid: boolean }` | `isInvalid`, `getState` |
-| `select` | `select[select]` | `{ value: string }` | `getState` (native `input` / `change`) |
-| `input` | `input[input]` | `{ value: string }` | `getState` (native `input` / `change`) |
-| `textarea` | `textarea[textarea]` | `{ value: string }` | `getState` (native `input` / `change`) |
+```ts
+import { startSwitchRuntime } from "@citrusworx/juiceui";
+
+const host = document.querySelector<HTMLElement>("[switch]")!;
+
+host.addEventListener("juice:change", (event) => {
+  const { runtime, state } = (event as CustomEvent).detail;
+  // runtime === "switch", state === { checked: boolean }
+});
+
+startSwitchRuntime()?.getState(host); // { checked: boolean } | null
+```
+
+Select, input, and textarea publish value changes through the native `input` and `change` events. They do not dispatch `juice:change`. `getState()` still returns `{ value: string }` (`HTMLSelectElement.value` for select, the control value otherwise).
+
+The twenty-five rows are the whole contract. Per-runtime pages repeat one row; keep them aligned with this table. The last column is how `@citrusworx/sigjs/juice` `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller.
+
+| Runtime | Host | `detail.state` / `getState()` | Readers | Sig `bind` |
+| --- | --- | --- | --- | --- |
+| `switch` | `[switch]` | `{ checked: boolean }` | `isChecked`, `getState` | write-back `setChecked` |
+| `checkbox` | `[checkbox]` | `{ checked: boolean }` | `isChecked`, `getState` | write-back `setChecked` |
+| `disclosure` | `[disclosure]` | `{ expanded: boolean }` | `isExpanded`, `getState` | write-back `expand` / `collapse` |
+| `accordion` | `[accordion]` | `{ expanded: boolean[] }` | `isExpanded`, `getState` | read-only |
+| `modal` | `[modal-overlay]` | `{ open: boolean }` | `isOpen`, `getState` | write-back `open` / `close` |
+| `drawer` | `[drawer-overlay]` | `{ open: boolean }` | `isOpen`, `getState` | read-only |
+| `popover` | `[popover-root]` | `{ open: boolean }` | `isOpen`, `getState` | read-only |
+| `menu` | `[menu-root]` | `{ open: boolean }` | `isOpen`, `getState` | read-only |
+| `combobox` | `[combobox]` | `{ open: boolean, value: string }` | `isOpen`, `getState` | read-only |
+| `slider` | `[slider]` | `{ value: number }` | `getValue`, `getState` | read-only |
+| `progress` | `[progress]` | `{ value: number, indeterminate: boolean }` | `getValue`, `isIndeterminate`, `getState` | read-only |
+| `radio` | `[radiogroup]` | `{ value: string \| null, index: number }` | `getChecked`, `getState` | read-only |
+| `tabs` | `[tabs]` | `{ selected: number }` | `selected`, `getState` | read-only |
+| `pagination` | `[pagination]` | `{ current: number }` | `getCurrent`, `getState` | read-only |
+| `breadcrumb` | `[breadcrumb]` | `{ current: number }` | `getCurrent`, `getState` | read-only |
+| `wizard` | `[wizard-shell]` | `{ current: number }` | `current`, `getState` | read-only |
+| `toast` | `[toast]` | `{ shown: boolean }` | `isShown`, `getState` | read-only |
+| `banner` | `[banner]` | `{ shown: boolean }` | `isShown`, `getState` | read-only |
+| `tooltip` | `[tooltip-root]` | `{ shown: boolean }` | `isShown`, `getState` | read-only |
+| `spinner` | `[spinner]` | `{ shown: boolean }` | `isShown`, `getState` | read-only |
+| `nav` | `nav[type="sidebar"]` | `{ open: boolean }` | `isOpen`, `getState` | read-only |
+| `field` | `[field]` | `{ invalid: boolean }` | `isInvalid`, `getState` | read-only |
+| `select` | `select[select]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
+| `input` | `input[input]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
+| `textarea` | `textarea[textarea]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
 
 Accordion `expanded` follows trigger order. Disclosure `expanded` is the first trigger. Tabs `selected`, pagination `current`, and breadcrumb `current` are 0-based indexes, or `-1` when nothing is current. Radio `value` is the checked option's `value` attribute, and `index` is its position (`-1` when none are checked). `getChecked()` still returns that element. Tabs `selected()` still returns the trigger element. Menu `open` is whether the `[menu]` panel is shown. Nav `open` is whether the sidebar lacks `hidden`. Field `invalid` is the `[invalid]` attribute on the wrapper. Toast `shown` is the `[toast]` host, not the region.
 
 ## Sig adapter
 
-The adapter lives in Sig, not in Juice. Juice runtimes still do not import Sig.
+The hookup is done. It lives in Sig. Juice runtimes still do not import Sig, and Juice still runs when Sig is absent.
 
 ```ts
 import { bind } from "@citrusworx/sigjs/juice";
 
 const notes = bind(switchHost, "switch");
 notes.state.get(); // { checked: boolean }, a Sig signal
-notes.state.set({ checked: true }); // write-back where supported
+notes.state.set({ checked: true }); // write-back: switch, checkbox, disclosure, modal
 notes.dispose();
 ```
 
-`bind(host, runtime?)` infers the runtime from the host, or uses the name you pass. `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change` instead. The same state does not notify again. `dispose` removes those listeners. A `bind` during Sig render also disposes on unmount. Setting `state` writes back for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). Other runtimes are read-only. `@citrusworx/juiceui` is an optional peer of Sig; the main Sig entry does not import it. A longer guide is a later slice.
+`bind(host, runtime?)` returns `{ state, dispose }`. `state` is seeded from `getState()` and follows `juice:change` (native `input` and `change` for select, input, and textarea). Write-back is the four runtimes in the table above. The other twenty-one are read-only. `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts. `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath is on master and is unpublished versus `@citrusworx/sigjs@0.3.0`.
+
+How to call it, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).
 
 ## Summary
 

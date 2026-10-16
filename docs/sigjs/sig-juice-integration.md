@@ -177,15 +177,99 @@ Juice lays out the chips and cards. Sig.js decides which cards exist.
 
 ## Runtime binding
 
-The adapter is Sig's optional `@citrusworx/sigjs/juice` subpath. Juice does not ship it, and the main Sig entry does not import Juice.
+Juice widgets already change on their own. `bind` is how a Sig signal follows that host, and how four of them accept a write back. Juice works without this module. The DOM contract (`juice:change`, `getState()`) is enough for any other script. This subpath is the only Sig import that talks to Juice controllers.
 
-```ts
-import { bind } from "@citrusworx/sigjs/juice";
+The hookup is done. It ships from master as `@citrusworx/sigjs/juice` and is unpublished versus `@citrusworx/sigjs@0.3.0`. `@citrusworx/juiceui` is an optional peer (`^0.9.1`), so installing Sig does not install Juice. The main entry `@citrusworx/sigjs` does not import Juice. Juice depends on Sig's main entry, not on `./juice`.
 
-const notes = bind(switchHost, "switch");
+```bash
+yarn add @citrusworx/sigjs@^0.3.0 @citrusworx/juiceui
 ```
 
-`notes.state` is a Sig signal of that host's `getState()`. It updates on `juice:change` (native `input` / `change` for select, input, and textarea). `notes.dispose()` drops the listeners; binding during Sig render also disposes on unmount. Setting the signal writes back for switch, checkbox, disclosure, and modal. `@citrusworx/juiceui` is an optional peer so Sig can install alone. This subpath is the only Sig module that imports Juice controllers; Juice depends on Sig's main entry, not on `./juice`, so the packages do not cycle. See [Juice runtime behavior](../juice/juice-runtime-behavior.md#sig-adapter). The long-form guide is a later slice.
+Import the JS entry (or call the matching `start*Runtime`) so the host is enhanced before you bind it. Import styles the same way as any other Juice page.
+
+```ts
+import "@citrusworx/juiceui";
+import { bind } from "@citrusworx/sigjs/juice";
+
+const host = document.querySelector<HTMLElement>("[switch]")!;
+const notes = bind(host, "switch");
+
+notes.state.get(); // { checked: boolean }
+notes.state.set({ checked: true }); // writes the host via setChecked
+notes.dispose(); // drop listeners; safe to call again
+```
+
+`bind` returns `{ state, dispose }`.
+
+| Field | What it is |
+| --- | --- |
+| `state` | A Sig signal, `{ get, set }`, seeded from that host's `getState()`. Later host changes update it. |
+| `dispose` | Removes the host listeners. A second call does nothing. |
+
+`bind(host)` infers the runtime from the host element. `bind(host, runtime)` uses the name you pass and types `state` to that runtime's `getState()` shape. Pass the name when inference fails, or when you want the type. A missing host shape throws: inference failure (`could not infer a runtime`) or `getState()` returning `null`.
+
+### What the signal follows
+
+`state` starts as a copy of `getState()`. After that it follows the host:
+
+- Twenty-two runtimes dispatch a bubbling `juice:change` whose `detail` is `{ runtime, state }`. `bind` accepts the event when `event.target` is the bound host and `detail.runtime` is that runtime.
+- Select, input, and textarea do not dispatch `juice:change`. `bind` also listens for native `input` and `change` on those hosts and reads `getState()` again.
+
+An equal state does not notify. That includes a `state.set` of the current shape, and a host event whose state matches the signal. The shapes for all twenty-five runtimes are the table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange).
+
+### Write-back and read-only
+
+`state.set` stores the next value on the signal. It writes the widget only for these four:
+
+| Runtime | `state.set` calls |
+| --- | --- |
+| `switch` | `setChecked(state.checked, host)` |
+| `checkbox` | `setChecked(state.checked, host)` |
+| `disclosure` | `expand` or `collapse` on the first `[disclosure-trigger]` (or the host, when the host is that trigger) |
+| `modal` | `open(host)` or `close(host)` |
+
+The other twenty-one are read-only: accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea. `set` updates the signal and does not call a controller, so the host stays where the runtime left it. The next `juice:change` (or native `input` / `change`) copies the host back over the signal.
+
+```tsx
+import { effect, mount } from "@citrusworx/sigjs";
+import { bind } from "@citrusworx/sigjs/juice";
+
+function SwitchLabel(props: { host: HTMLElement }) {
+  const notes = bind(props.host, "switch");
+  const label = <span>Off</span> as HTMLSpanElement;
+
+  effect(() => {
+    label.textContent = notes.state.get().checked ? "On" : "Off";
+  });
+
+  return (
+    <span row gap="0.5rem">
+      {label}
+      <button type="button" onClick={() => notes.state.set({ checked: true })}>
+        Turn on
+      </button>
+    </span>
+  );
+}
+
+const switchHost = document.querySelector<HTMLElement>("[switch]")!;
+mount(<SwitchLabel host={switchHost} />, document.getElementById("root")!);
+```
+
+A read-only host uses the same `bind`. Read `state.get()` from an effect. Leave `set` alone unless you only need a local copy that the next host event will replace.
+
+### Disposal on unmount
+
+`bind` registers its listeners with `effect`. Two cleanups apply:
+
+- Call `dispose()` when you bound a host outside a Sig component and the host is going away.
+- Call `bind` while a Sig component function is running, and the component cleanup scope owns that effect. `mount` and `SigRouter` call `disposeTree` on the way out, which runs the effect cleanup and removes the listeners. You can still call `dispose()` yourself first.
+
+Listeners removed are `juice:change`, plus `input` and `change` for select, input, and textarea.
+
+### Juice without this adapter
+
+A page that never imports `@citrusworx/sigjs/juice` still gets every runtime. Listen for `juice:change` on the host, or call `getState()` from the controller. That path is [juice:change](../juice/juice-runtime-behavior.md#juicechange). Sig attributes on static markup (`stack`, `card`, `gap`) stay the other half of this guide and do not require `bind`.
 
 ## Practices
 

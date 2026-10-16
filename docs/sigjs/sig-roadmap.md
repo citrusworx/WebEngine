@@ -56,6 +56,14 @@ Unknown keys become attributes. `stack`, `card`, `gap`, `hero` work on Sig-creat
 
 The split — Juice for structure, Sig for behavior — is the product story. The roadmap should deepen that story (docs, examples, a few helpers), not merge the two packages into a component framework.
 
+### 6. The Juice runtime hookup is done
+
+`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. `state` follows Juice’s `juice:change` / `getState()` contract for all twenty-five runtimes. `state.set` writes back for switch, checkbox, disclosure, and modal. The other twenty-one are read-only. `dispose` drops the listeners, and a `bind` during Sig render also disposes on unmount.
+
+Juice works without that module. The DOM contract stays in Juice, and the main Sig entry does not import Juice. The guide is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). The state table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath is on master and unpublished versus `@citrusworx/sigjs@0.3.0`.
+
+That hookup is the adapter. It is not a new state primitive, and it is not a per-runtime Sig factory.
+
 ---
 
 ## What is still holding Sig.js back
@@ -164,6 +172,8 @@ Highest value tests that already exist:
 
 Sig.js should not grow a theme, a `<Button>`, or a layout system. If a pattern needs structure, the answer is a Juice attribute on a real element.
 
+The runtime hookup is already the optional `@citrusworx/sigjs/juice` adapter. Further Juice work stays on Juice’s DOM contract. Sig does not absorb the runtimes.
+
 ---
 
 ## Recommended build order
@@ -171,7 +181,8 @@ Sig.js should not grow a theme, a `<Button>`, or a layout system. If a pattern n
 1. Keep docs and examples locked to source (ongoing).
 2. Nested-safe `batch`, `navigate` normalization, `"*"` fallback, and JSX-runtime tests (landed).
 3. Function-valued props and parametric routes (landed).
-4. An explicit list helper only if `replaceChildren` keeps generating support questions.
+4. Juice runtime hookup: `bind` on `@citrusworx/sigjs/juice`, docs in [Sig.js + Juice](./sig-juice-integration.md#runtime-binding) (landed, unpublished versus 0.3.0).
+5. An explicit list helper only if `replaceChildren` keeps generating support questions.
 
 ---
 
@@ -197,6 +208,7 @@ It now has:
 - a JSX factory that is actually the DOM
 - view dispose that makes routing viable
 - a documented split with Juice
+- an optional Juice host binding (`@citrusworx/sigjs/juice`) that Juice does not require
 - a guided tutorial and topic depth that match that split
 
 The next stage is not inventing Sig.js from scratch.

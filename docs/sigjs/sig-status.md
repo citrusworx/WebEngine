@@ -45,6 +45,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `SigRouter` exact + param paths | Emerging | Named routes, `:id` params, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. |
 | Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
 | Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys (covered by `jsx.test.ts`). Not a typed Juice plugin. |
+| Juice `bind` | Emerging | Optional `@citrusworx/sigjs/juice`. `{ state, dispose }` follows `getState` / `juice:change`. Write-back is switch, checkbox, disclosure, and modal. Unpublished versus 0.3.0. Juice works without it. |
 | List / conditional helpers | Draft | `replaceChildren` is the current instruction, not a `<For>` / `<Show>` primitive. |
 | SSR / hydration | Draft | Client DOM only. |
 | Error boundaries | Draft | Uncaught. |
@@ -68,7 +69,8 @@ The feature is more of a direction than a hardened part of the runtime.
 | `SigRouter` paths | `sig-router.ts` | Exact, `:param` segments, named routes, click + popstate, normalized `navigate` |
 | `"*"` unknown-route fallback | `sig-router.ts` | Optional; without it `navigate` no-ops and `popstate` empties |
 | View dispose on navigate | `sig-router.ts` | `disposeTree` |
-| Package exports | `package.json` | root, jsx-runtime, jsx-dev-runtime, sig-router |
+| Package exports | `package.json` | root, jsx-runtime, jsx-dev-runtime, sig-router, juice |
+| Juice `bind` | `juice.ts` | Optional subpath. `bind(host, runtime?)` → `{ state, dispose }`. Main entry does not import Juice. |
 
 ## What is not shipped
 
@@ -140,6 +142,8 @@ If you put `{count.get()}` in JSX without a function wrapper, you get a static t
 - `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo` (lazy cache + effect notify)
 - `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, reactive `className` / `value` / booleans, Juice-style unknown attributes via `setAttribute`, `ref` + effect, `mount` / `disposeTree`
 - `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate, param match, exact-over-param
+- `libraries/sig/src/juice.test.ts` — `bind` seed, `juice:change`, native input/change, write-back, read-only, dispose, unmount
+- `libraries/sig/src/juice-boundary.test.ts` — the main entry does not import Juice
 
 DOM tests install a jsdom document from `libraries/sig/jsdom-register.ts` (not published).
 
@@ -152,6 +156,8 @@ Coverage is real and still narrow. Docs examples were checked against source, no
 ## Integration (what is real)
 
 **Juice.** Complementary: Juice attributes are HTML attributes; Sig writes them at create time. Import `@citrusworx/juiceui/styles` plus a theme. There is no `Button` export from Juice for Sig to mount. Juice’s accordion is a working in-tree example of `Signal` + `effect` writing `hidden` / `aria-expanded`.
+
+Juice works without Sig. Observable widget state is `juice:change` and `getState()` on the host. The optional adapter is `bind` from `@citrusworx/sigjs/juice` (`{ state, dispose }`). Write-back is switch, checkbox, disclosure, and modal. A bind during render disposes on unmount. Guide: [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). Unpublished versus `@citrusworx/sigjs@0.3.0`.
 
 **Nectarine / Grapevine / Seltzer.** No typed client bindings. Fetch Nectarine-backed HTTP yourself; do not expect `BlogSchema` or `GrapevineClient` exports. The [Seltzer integration note](../seltzer/seltzer-integration.md) shows `Signal` + `client.get` as app code, not a Sig plugin.
 
