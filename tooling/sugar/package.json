@@ -19,7 +19,7 @@
     },
     "dependencies": {
         "@citrusworx/juiceui": "^0.9.0",
-        "@citrusworx/sigjs": "^0.3.0"
+        "@citrusworx/sigjs": "^0.4.0"
     },
     "devDependencies": {
         "json5": "^2.2.3",

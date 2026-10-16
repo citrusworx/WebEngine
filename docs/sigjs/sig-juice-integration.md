@@ -16,7 +16,7 @@ Juice is not a component runtime. Do not import `{ Button }` from `@citrusworx/j
 ## Setup
 
 ```bash
-yarn add @citrusworx/juiceui @citrusworx/sigjs@^0.3.0
+yarn add @citrusworx/juiceui @citrusworx/sigjs@^0.4.0
 ```
 
 ```json
@@ -179,10 +179,10 @@ Juice lays out the chips and cards. Sig.js decides which cards exist.
 
 Juice widgets already change on their own. `bind` is how a Sig signal follows that host, and how four of them accept a write back. Juice works without this module. The DOM contract (`juice:change`, `getState()`) is enough for any other script. This subpath is the only Sig import that talks to Juice controllers.
 
-The hookup is done. It ships from master as `@citrusworx/sigjs/juice` and is unpublished versus `@citrusworx/sigjs@0.3.0`. `@citrusworx/juiceui` is an optional peer (`^0.9.1`), so installing Sig does not install Juice. The main entry `@citrusworx/sigjs` does not import Juice. Juice depends on Sig's main entry, not on `./juice`.
+The hookup is done. It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. `@citrusworx/juiceui` is an optional peer (`^0.9.1`), so installing Sig does not install Juice. The main entry `@citrusworx/sigjs` does not import Juice. Juice depends on Sig's main entry, not on `./juice`.
 
 ```bash
-yarn add @citrusworx/sigjs@^0.3.0 @citrusworx/juiceui
+yarn add @citrusworx/sigjs@^0.4.0 @citrusworx/juiceui
 ```
 
 Import the JS entry (or call the matching `start*Runtime`) so the host is enhanced before you bind it. Import styles the same way as any other Juice page.
