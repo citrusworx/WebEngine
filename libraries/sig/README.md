@@ -7,10 +7,10 @@ Reactivity is opt-in. Host elements render once; wrap a child or a prop in a fun
 ## Install
 
 ```bash
-npm install @citrusworx/sigjs@^0.3.0
+npm install @citrusworx/sigjs@^0.4.0
 ```
 
-Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.3.0` or `pnpm add @citrusworx/sigjs@^0.3.0`.
+Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.4.0` or `pnpm add @citrusworx/sigjs@^0.4.0`.
 
 ## Signals
 
@@ -151,7 +151,7 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 | `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`) |
 | `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`) |
 | `@citrusworx/sigjs/sig-router` | `SigRouter` only |
-| `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` returns `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other runtimes are read-only. Needs `@citrusworx/juiceui` (optional peer). Juice works without this subpath. Guide: [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding). Unpublished versus 0.3.0. |
+| `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` returns `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other runtimes are read-only. Needs `@citrusworx/juiceui` (optional peer). Juice works without this subpath. Guide: [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding). Shipped in 0.4.0. |
 
 `jsxImportSource` uses the `jsx-runtime` / `jsx-dev-runtime` subpaths automatically. You do not import those by hand unless you are calling `jsx()` yourself.
 

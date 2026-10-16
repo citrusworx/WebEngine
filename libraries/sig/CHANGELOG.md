@@ -1,5 +1,13 @@
 # @citrusworx/sigjs
 
+## 0.4.0
+
+Published to npm **2026-10-16**. Workspace `package.json` matches this version. Do not republish.
+
+### Minor Changes
+
+- Add an optional `@citrusworx/sigjs/juice` adapter. `bind(host, runtime?)` returns a Sig signal kept in sync with a Juice runtime host, plus `dispose` to drop the listeners. The main Sig entry does not import Juice.
+
 ## 0.3.0
 
 Published to npm **2026-09-18**. Workspace `package.json` matches this version. Do not republish.

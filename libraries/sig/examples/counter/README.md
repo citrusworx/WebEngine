@@ -9,7 +9,7 @@ Shows `Signal`, function children, function props, `batch`, and `SigRouter` (exa
 This is the path for an outside consumer. The example depends on the published package, not a monorepo `file:` link.
 
 ```bash
-npm install @citrusworx/sigjs@^0.3.0
+npm install @citrusworx/sigjs@^0.4.0
 npm install -D vite typescript
 ```
 
@@ -27,7 +27,7 @@ Confirm the registry version with `npm view @citrusworx/sigjs version` if a newe
 
 ## From this repo
 
-This folder is its own npm project (not a Yarn workspace). `package.json` already pins `@citrusworx/sigjs` to `^0.3.0` from npm, so a fresh `npm install` here matches an outside consumer.
+This folder is its own npm project (not a Yarn workspace). `package.json` already pins `@citrusworx/sigjs` to `^0.4.0` from npm, so a fresh `npm install` here matches an outside consumer.
 
 ```bash
 cd libraries/sig/examples/counter
@@ -55,4 +55,4 @@ Point the example at the workspace package for one install:
 
 Or, from the repo root, Yarn already resolves `@citrusworx/sigjs` as the `libraries/sig` workspace. The counter example is not a workspace member, so it does not pick that up unless you use `file:../..` (or copy the app into a workspace package).
 
-Put the `file:` pin back to `^0.3.0` before treating this folder as the golden-path consumer example.
+Put the `file:` pin back to `^0.4.0` before treating this folder as the golden-path consumer example.
