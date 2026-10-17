@@ -11,7 +11,7 @@ Subpath exports:
 - `@citrusworx/sigjs/jsx-runtime`
 - `@citrusworx/sigjs/jsx-dev-runtime`
 - `@citrusworx/sigjs/sig-router`
-- `@citrusworx/sigjs/juice` — optional Juice host binding. The main entry does not import it. Unpublished versus `@citrusworx/sigjs@0.3.0`.
+- `@citrusworx/sigjs/juice` — optional Juice host binding. The main entry does not import it. Shipped in `@citrusworx/sigjs@0.4.0`.
 
 ## Signal
 
