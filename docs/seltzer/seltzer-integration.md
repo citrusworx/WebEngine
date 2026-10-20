@@ -88,7 +88,7 @@ app.listen(3000, {
 });
 ```
 
-You do not need per-route `OPTIONS` handlers or extra headers on every `ResponseData` for the simple Vite-dev case. `OPTIONS` is 204 before the pipeline.
+You do not need per-route `OPTIONS` handlers or extra headers on every `ResponseData` for the simple Vite-dev case. With `cors` set, `OPTIONS` is 204 before the pipeline.
 
 Juice attributes (`stack`, `card`, `hero`) do not change this HTTP story. See [Sig.js + Juice](../sigjs/sig-juice-integration.md).
 

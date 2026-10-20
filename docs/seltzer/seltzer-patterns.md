@@ -174,7 +174,7 @@ app.listen(3000, {
 });
 ```
 
-Do not register a per-path `OPTIONS` handler unless you need behavior beyond the builtin 204. CORS only fires when the request has an `Origin` header.
+When `cors` is set, do not register a per-path `OPTIONS` handler: the builtin 204 runs first. CORS headers are sent only when the request has an `Origin` that the config allows. Omit `cors` and `OPTIONS` is a normal route.
 
 ## Auth as `before("handle")`
 

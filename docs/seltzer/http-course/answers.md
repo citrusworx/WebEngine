@@ -75,7 +75,7 @@ The first run's deliberate read-after-delete receives a real 404 and Seltzer thr
 
 ## Lesson 08
 
-OPTIONS is handled before matching and receives 204 even on an unknown path. Curl does not implement a browser page's cross-origin access restrictions. A browser can refuse to expose a response while the server remains callable by other clients; for some requests, the server-side effect may already have occurred. CORS cannot stand in for credential verification and permission checks.
+With `cors` configured, OPTIONS is handled before matching and receives 204 even on an unknown path. Without `cors`, OPTIONS is an ordinary method. Curl does not implement a browser page's cross-origin access restrictions. A browser can refuse to expose a response while the server remains callable by other clients; for some requests, the server-side effect may already have occurred. CORS cannot stand in for credential verification and permission checks.
 
 ## Lesson 09
 

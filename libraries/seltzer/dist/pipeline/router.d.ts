@@ -24,3 +24,9 @@ export declare function comparePathRank(a: PathRank, b: PathRank): number;
  */
 export declare function matchRoute(routes: CompiledRoute[], method: string, path: string): CompiledRoute | undefined;
 export declare function paramsFromMatch(route: CompiledRoute, path: string): Record<string, string>;
+/**
+ * Methods that would match `path`, in first-registration order.
+ * Empty when the path matches no route pattern. Method mismatch uses this
+ * for `Allow`; an empty list is a 404.
+ */
+export declare function allowedMethods(routes: CompiledRoute[], path: string): string[];

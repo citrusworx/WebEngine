@@ -52,7 +52,7 @@ Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime wri
 
 `listen` returns the Node `http.Server`. The default bind is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections from other machines. Header, request, and keep-alive timeouts default to 20s, 30s, and 5s (`0` disables that timer). `server.close()` stops accepting; idle keep-alive sockets delay the callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`.
 
-`listen` also accepts `locals` (available on `ctx.locals`) and `cors`. CORS headers and `OPTIONS` 204 run before the pipeline.
+`listen` also accepts `locals` (available on `ctx.locals`), `bodyLimit`, and `cors`. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited).
 
 ## Pipeline
 
@@ -62,9 +62,9 @@ Each request runs through a named pipeline:
 
 | Stage | Responsibility |
 | --- | --- |
-| `parse` | Read the body (JSON or raw). Invalid JSON → 400. GET/HEAD skip the body. |
+| `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty body → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. Non-JSON content types are not 415. |
 | `context` | Set `method`, `path`, `query`, and `headers` on ctx. |
-| `route` | Match a registered route and fill `params`. No match → 404. |
+| `route` | Match a registered route and fill `params` (`decodeURIComponent`). No path match → 404. Known path, wrong method → 405 + `Allow`. Malformed `%` encoding in a param → 400. |
 | `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
 | `response` | Reject non-`ResponseData` handler results with 500. |
@@ -107,7 +107,7 @@ app.route({
 });
 ```
 
-`init().route().listen()` matches 0.4.0 behavior unless a route declares `contract.body` with `.required` keys.
+`init().route().listen()` is the supported shape. A route with `contract.body` `.required` keys turns on presence checks. `listen` binds `127.0.0.1`, applies the default timeouts and the 1 MB body limit, and leaves CORS off until you pass `cors`.
 
 ## Outbound HTTP `client`
 

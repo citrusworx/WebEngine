@@ -8,14 +8,15 @@ Every behavior here is from `libraries/seltzer/src/core/seltzer.ts`, `core/respo
 
 ## What `listen` actually does
 
-On each incoming request, `listen` applies CORS, answers `OPTIONS` with 204, builds a `PipelineContext`, and `await`s `pipeline.run(ctx)`.
+On each incoming request, `listen` applies CORS **only when `cors` was configured**. A configured `OPTIONS` preflight is 204 and returns. Every other request builds a `PipelineContext` and `await`s `pipeline.run(ctx)`.
 
 ```ts
-applyCors(req, res, cors);
-
-if (req.method === "OPTIONS") {
-  send(res, { status: 204 });
-  return;
+if (cors) {
+  applyCors(req, res, cors);
+  if (req.method === "OPTIONS") {
+    send(res, { status: 204 });
+    return;
+  }
 }
 
 const ctx: PipelineContext = {
@@ -29,6 +30,7 @@ const ctx: PipelineContext = {
   headers: {},
   locals,
   options: this.config?.options,
+  bodyLimit,
 };
 
 await this.pipeline.run(ctx);
@@ -50,7 +52,7 @@ There is no `ctx.json`. That helper was removed in 0.4.0 (breaking).
 | `path` | URL pathname (`/notes/1`, no query) |
 | `query` | `Record<string, string>` from `URLSearchParams` |
 | `params` | Captured `:id` segments after `route` matches |
-| `body` | Parsed JSON object, raw string, or `undefined` (GET/HEAD skip the body) |
+| `body` | Parsed JSON value, raw UTF-8 string, or `undefined` (GET/HEAD skip the body; empty bodies are `undefined`) |
 | `headers` | Lowercased string map |
 | `locals` | From `listen({ locals })` |
 | `options` | From `.handler(config)` if set |
@@ -61,6 +63,7 @@ Pipeline-only fields on `PipelineContext`:
 |---|---|
 | `route` | Matched `Route` (includes `contract`) |
 | `response` | `ResponseData` accumulated toward `send` |
+| `bodyLimit` | Byte cap from `listen`. `0` is unlimited. Handlers can ignore it |
 
 ## `ResponseData`
 
@@ -112,11 +115,13 @@ Applies defaults and `writeHead` + `end`. No-op if `res.headersSent`. Builtin 40
 | Method | Body |
 |---|---|
 | GET / HEAD | skipped (`ctx.body` stays `undefined`) |
-| others, empty | `undefined` |
+| others, empty | `undefined` (not a JSON parse error) |
 | others, `Content-Type` includes `application/json` | `JSON.parse`; failure → 400 `{ error: "Invalid JSON body" }` |
-| others, other content types | UTF-8 string |
+| others, any other content type, or no content type | UTF-8 string. Not 415. Not parsed as a form |
 
-There is no size limit and no `application/x-www-form-urlencoded` parser. Add those with `before("validate", …)` or in the handler if you need them.
+`application/x-www-form-urlencoded` and multipart bodies stay strings. Parsing them into fields is still Draft. `+json` types that do not contain the substring `application/json` are strings too.
+
+The default limit is 1 MB (`1048576` bytes, `DEFAULT_BODY_LIMIT_BYTES`). `listen({ bodyLimit })` overrides it. `0` means unlimited. A `Content-Length` over the limit, or chunks whose running total passes it, is **413** `{ error: "Payload Too Large" }`. Seltzer does not keep reading that body, and the handler does not run. A single socket chunk that already exceeds the limit is rejected without parsing, which is as early as the chunk can be seen.
 
 ## Async handlers
 

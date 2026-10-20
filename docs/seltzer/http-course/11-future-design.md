@@ -120,7 +120,7 @@ Separate TLS termination choices. A reverse proxy may provide HTTPS while Seltze
 
 A streaming design must wait when the destination cannot accept more bytes, stop the source on disconnect, and define error handling before versus after headers. It also needs clear ownership of source cleanup. Buffer support alone is not streaming support.
 
-Protocol improvements should be separately scoped: malformed parameter encoding as a client error, method mismatch as 405 with `Allow`, explicit HEAD behavior, and consistent JSON media-type handling. Avoid promising them as one vaguely named “HTTP compliance” change.
+Malformed parameter encoding is already a 400, and a known path with the wrong method is already 405 with `Allow`. Still separate from those: explicit HEAD behavior, and treating `+json` media types the same way the outbound client does. Avoid promising them as one vaguely named “HTTP compliance” change.
 
 **Acceptance tests:** a slow reader does not cause unbounded buffering; disconnection cancels the source; pre-header failure can choose an error response; post-header failure closes cleanly; HEAD produces no content; unsupported methods identify allowed ones under the chosen policy.
 

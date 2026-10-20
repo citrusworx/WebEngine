@@ -16,15 +16,15 @@ parse → context → route → validate → handle → response → send
 
 | Stage | Responsibility |
 |---|---|
-| `parse` | Read the body (JSON or raw). Invalid JSON → 400. GET/HEAD skip the body. |
+| `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. |
 | `context` | Set `method`, `path`, `query`, and lowercased `headers` on ctx. |
-| `route` | Match a registered route and fill `params`. No match → 404. |
+| `route` | Match a registered route and fill `params`. Unknown path → 404. Known path, wrong method → 405 + `Allow`. Malformed param encoding → 400. |
 | `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
 | `response` | Reject non-`ResponseData` handler results with 500. Defaults live in `send`. |
 | `send` | Write the HTTP response via `send()`. |
 
-CORS headers and `OPTIONS` 204 run in `listen` **before** `pipeline.run`. They are not stages.
+CORS headers and `OPTIONS` 204 run in `listen` **before** `pipeline.run`, and only when `cors` was passed. They are not stages. Without `cors`, `OPTIONS` enters the pipeline like any other method.
 
 ## Stage contract
 

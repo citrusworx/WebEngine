@@ -10,9 +10,9 @@ The sender writes bytes. They can arrive in several chunks, and chunk boundaries
 
 Node exposes the request as a readable stream. Seltzer collects its chunks, concatenates them, decodes UTF-8, then parses JSON when the content type contains `application/json`. The asynchronous loop waits for the stream to finish. [Node's stream documentation](https://nodejs.org/api/stream.html#streams-compatibility-with-async-generators-and-async-iterators)
 
-Read `readBody` and `parseStage` in [stages.ts](../../../libraries/seltzer/src/pipeline/stages.ts). GET and HEAD skip body parsing. An empty body becomes `undefined`. Other content types become strings. Multipart files and HTML form bodies are not automatically converted into objects.
+Read `readBody` and `parseStage` in [stages.ts](../../../libraries/seltzer/src/pipeline/stages.ts). GET and HEAD skip body parsing. An empty body becomes `undefined`. Other content types become UTF-8 strings, not 415. Multipart files and HTML form bodies are not automatically converted into objects.
 
-Current parsing buffers the entire body; there is no Seltzer byte-limit option. That tradeoff makes the implementation small, but motivates the bounded-parser design in Lesson 11.
+The default limit is 1 MB (`bodyLimit` on `listen`, `0` for unlimited). A larger body is 413 and Seltzer stops reading it, including when `Content-Length` already says the body is too big. A single chunk that arrives already over the limit is still seen once; further chunks are not pulled.
 
 ## Four different questions
 

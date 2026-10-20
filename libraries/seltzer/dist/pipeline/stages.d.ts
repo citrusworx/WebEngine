@@ -1,7 +1,12 @@
 import { type ResponseData } from "../core/response.js";
 import type { CompiledRoute } from "./router.js";
 import type { PipelineContext, Stage } from "./types.js";
-/** Read the request body. Invalid JSON short-circuits with 400. */
+/**
+ * Read the request body.
+ * Invalid JSON is 400. A body over `bodyLimit` is 413 and is not read further.
+ * GET/HEAD skip the body. An empty body is `undefined`.
+ * Non-JSON content types are a UTF-8 string (not 415).
+ */
 export declare function parseStage(ctx: PipelineContext): Promise<ResponseData | void>;
 /** Normalize method, path, query, and headers onto ctx. */
 export declare function contextStage(ctx: PipelineContext): void;

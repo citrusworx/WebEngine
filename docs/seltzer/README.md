@@ -11,7 +11,7 @@ The current model is:
 - **`Seltzer.init()`** builds an instance
 - **`.route({ method, path, handler, contract? })`** registers an object route (static or `:param`)
 - **`.before(name, stage)` / `.replace(name, stage)`** extend the named pipeline
-- **`.listen(port, options?)`** runs Node `http`, CORS/`OPTIONS` 204, then the pipeline
+- **`.listen(port, options?)`** runs Node `http`, optional CORS/`OPTIONS` 204, then the pipeline
 - **`client.get/post/put/patch/delete`** call `fetch` with an `Endpoint` and throw `HttpError` on non-2xx
 
 Seltzer is strongest as a readable request engine you can hold in your head. It is not Express, and it is not a middleware stack. The pipeline in [seltzer-design.md](./seltzer-design.md) is **shipped** in `@citrusworx/seltzer` **0.8.1**, not a future sketch.
@@ -101,7 +101,7 @@ Matching uses `ctx.path` (the URL pathname). `/health?verbose=1` still hits `/he
 
 ### 2. JSON POST — the `parse` stage owns the body
 
-`parse` reads the stream for methods other than GET/HEAD. `Content-Type: application/json` is parsed; invalid JSON is **400** `{ error: "Invalid JSON body" }` and never reaches the handler. Other content types land as a UTF-8 string. Empty bodies are `undefined`.
+`parse` reads the stream for methods other than GET/HEAD. `Content-Type: application/json` is parsed; invalid JSON is **400** `{ error: "Invalid JSON body" }` and never reaches the handler. Other content types, including form posts and webhook payloads that are not JSON, land as a UTF-8 string (not 415). Empty bodies are `undefined`, not a parse error. The default limit is 1 MB. A larger body is **413** `{ error: "Payload Too Large" }` and Seltzer stops reading it. Override with `listen(port, { bodyLimit })`; `0` is unlimited.
 
 ```ts
 app.route({
@@ -138,9 +138,11 @@ app.route({
 
 Query strings remain available: `ctx.query.q` for `/notes/1?q=search`.
 
-### 4. 404 for unmatched method + path
+### 4. 404, 405, and trailing slashes
 
-Unmatched requests get `{ error: "Not Found" }` with status 404 from the `route` stage. Method mismatch is also 404 (not 405). Trailing slashes are a different path: `/notes` ≠ `/notes/`.
+An unknown path is `{ error: "Not Found" }` with status 404 from the `route` stage. A known path with the wrong method is **405** `{ error: "Method Not Allowed" }` and an `Allow` header listing the methods that pattern accepts. Trailing slashes are a different path: `/notes` ≠ `/notes/`, and `/notes/1/` does not match `/notes/:id`. There is no redirect.
+
+`ctx.params` values are percent-decoded. `/items/%E0%A4` on `/items/:id` is **400** `{ error: "Malformed path parameter" }`, not a 500.
 
 ### 5. Headers, text, and buffers without touching `res`
 
@@ -161,7 +163,7 @@ app.route({
 
 ### 6. CORS and `OPTIONS` 204
 
-CORS runs **before** the pipeline. `OPTIONS` answers 204 and returns. Pass `cors` on `listen`:
+CORS is off until you pass `cors`. Then CORS headers and an `OPTIONS` 204 run **before** the pipeline. Without `cors`, `OPTIONS` is routed like any other method:
 
 ```ts
 app.listen(3000, {
@@ -175,7 +177,7 @@ app.listen(3000, {
 });
 ```
 
-If `origin` is omitted, Seltzer reflects the request `Origin` when present. No `Origin` header means no CORS headers. `ctx.locals` is the `locals` object from `listen`.
+If `origin` is omitted, Seltzer reflects the request `Origin` when present and sets `Vary: Origin`. `origin: "*"` sends `*` and does not set `Vary`. `credentials: true` with `origin: "*"` throws when `listen` is called. No `Origin` header means no CORS headers. `maxAge` sets `Access-Control-Max-Age`. `ctx.locals` is the `locals` object from `listen`.
 
 `listen` **returns** the `http.Server` (tests can `close()` it).
 
@@ -295,7 +297,7 @@ app.handler({
 
 ```text
 HTTP request
-  → CORS / OPTIONS 204 (if configured)
+  → CORS / OPTIONS 204 (only if `cors` is configured)
   → parse (JSON body or raw)
   → context (method, path, query, headers)
   → route (match + params; 404 if none)

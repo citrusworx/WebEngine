@@ -83,4 +83,23 @@ export function paramsFromMatch(route, path) {
     });
     return params;
 }
+/**
+ * Methods that would match `path`, in first-registration order.
+ * Empty when the path matches no route pattern. Method mismatch uses this
+ * for `Allow`; an empty list is a 404.
+ */
+export function allowedMethods(routes, path) {
+    const seen = new Set();
+    const allowed = [];
+    for (const route of routes) {
+        if (seen.has(route.method)) {
+            continue;
+        }
+        if (route.regex.test(path)) {
+            seen.add(route.method);
+            allowed.push(route.method);
+        }
+    }
+    return allowed;
+}
 //# sourceMappingURL=router.js.map

@@ -67,15 +67,20 @@ test("Static routes win; trailing slash and method mismatches stay distinct", as
   const base = await serve(t, createNotesApp().app);
   assert.deepEqual((await request(base, "/notes/stats")).body, { count: 0 });
   assert.equal((await request(base, "/notes/")).status, 404);
-  assert.equal((await request(base, "/notes", { method: "PUT" })).status, 404);
+  const mismatch = await request(base, "/notes", { method: "PUT" });
+  assert.equal(mismatch.status, 405);
+  assert.match(mismatch.headers.get("allow"), /\bGET\b/);
+  assert.match(mismatch.headers.get("allow"), /\bPOST\b/);
 });
 
-test("0.8.1 keeps the last query value and maps malformed parameter decoding to 500", async (t) => {
+test("Query keeps the last value and malformed parameter decoding is 400", async (t) => {
   const app = Seltzer.init().route({ method: "GET", path: "/echo/:id", handler: (ctx) => ({ body: { params: ctx.params, query: ctx.query } }) });
   const base = await serve(t, app);
   const result = await request(base, "/echo/hello%20world?q=one&q=two");
   assert.deepEqual(result.body, { params: { id: "hello world" }, query: { q: "two" } });
-  assert.equal((await request(base, "/echo/%ZZ")).status, 500);
+  const malformed = await request(base, "/echo/%ZZ");
+  assert.equal(malformed.status, 400);
+  assert.equal(malformed.body.error, "Malformed path parameter");
 });
 
 test("Built-in string.required enforces presence, not string type", async (t) => {

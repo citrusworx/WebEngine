@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ResponseData } from "../core/response.js";
-import { compileRoute, comparePathRank, matchRoute, rankPath } from "./router.js";
+import { allowedMethods, compileRoute, comparePathRank, matchRoute, paramsFromMatch, rankPath } from "./router.js";
 
 const ok =
     (label: string) =>
@@ -58,5 +58,44 @@ describe("matchRoute", () => {
 
         expect(compiled.contract).toEqual(contract);
         expect(matchRoute([compiled], "POST", "/api/waitlist")?.contract).toEqual(contract);
+    });
+
+    it("treats a trailing slash as a different path", () => {
+        const routes = [{ method: "GET", path: "/items/:id", handler: ok("param") }].map(compileRoute);
+
+        expect(matchRoute(routes, "GET", "/items/42")?.path).toBe("/items/:id");
+        expect(matchRoute(routes, "GET", "/items/42/")).toBeUndefined();
+        expect(matchRoute(routes, "GET", "/items/")).toBeUndefined();
+    });
+});
+
+describe("paramsFromMatch", () => {
+    it("decodes percent-encoded parameter values", () => {
+        const route = compileRoute({ method: "GET", path: "/items/:id", handler: ok("param") });
+
+        expect(paramsFromMatch(route, "/items/hello%20world")).toEqual({ id: "hello world" });
+        expect(paramsFromMatch(route, "/items/%C3%A9")).toEqual({ id: "é" });
+    });
+
+    it("throws URIError for a malformed parameter encoding", () => {
+        const route = compileRoute({ method: "GET", path: "/items/:id", handler: ok("param") });
+
+        expect(() => paramsFromMatch(route, "/items/%E0%A4")).toThrow(URIError);
+        expect(() => paramsFromMatch(route, "/items/%ZZ")).toThrow(URIError);
+    });
+});
+
+describe("allowedMethods", () => {
+    it("lists methods whose patterns match the path, in registration order", () => {
+        const routes = [
+            { method: "GET", path: "/items/:id", handler: ok("get") },
+            { method: "POST", path: "/items", handler: ok("post-collection") },
+            { method: "PUT", path: "/items/:id", handler: ok("put") },
+            { method: "GET", path: "/items/new", handler: ok("static") },
+        ].map(compileRoute);
+
+        expect(allowedMethods(routes, "/items/42")).toEqual(["GET", "PUT"]);
+        expect(allowedMethods(routes, "/items/new")).toEqual(["GET", "PUT"]);
+        expect(allowedMethods(routes, "/missing")).toEqual([]);
     });
 });

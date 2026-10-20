@@ -12,7 +12,7 @@
 2. Collect body chunks from the request stream (`for await` of `req`, or `data` / `end` / `error`).
 3. Parse JSON and echo the parsed object back as `{ body: parsed }` JSON (status 200).
 4. Return `400` with `{ error: "Invalid JSON body" }` if JSON is invalid.
-5. Return `405` for non-POST methods on `/echo` (the real runtime would 404 unmatched methods instead — that difference is fine here).
+5. Return `405` for non-POST methods on `/echo`. The runtime does the same when the path is registered for another method: 405 plus `Allow`. An unknown path is 404.
 6. Skip reading a body on GET/HEAD if you add those routes.
 
 ## Scratch

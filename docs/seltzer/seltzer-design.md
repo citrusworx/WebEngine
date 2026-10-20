@@ -78,7 +78,7 @@ Handlers still *see* `req` / `res` as escape hatches. They should not need them 
 
 ### 2. Automatic Request Body Parsing
 
-Seltzer parses request bodies before handlers run (`parse` stage). JSON with `Content-Type: application/json` becomes `ctx.body`. Invalid JSON is 400, not a preserved raw string.
+Seltzer parses request bodies before handlers run (`parse` stage). JSON with `Content-Type: application/json` becomes `ctx.body`. Invalid JSON is 400, not a preserved raw string. Other content types stay a UTF-8 string. The default body limit is 1 MB; exceeding it is 413.
 
 ### 3. Structured Handler Responses
 
@@ -154,7 +154,7 @@ In Node, request bodies arrive as chunks. The `parse` stage owns that complexity
 ```text
 HTTP Request
   ↓
-CORS / OPTIONS 204 (listen, not a stage)
+CORS / OPTIONS 204 (listen, only when `cors` is set, not a stage)
   ↓
 Parse Request
   ↓

@@ -3,7 +3,7 @@ import { isExplicitResponse, isResponseData, response, send, type ResponseData }
 import { type HandlerConfig, type ListenOptions, type RequestContext, type Route } from "./types.js";
 import { type Stage, type StageName } from "../pipeline/index.js";
 export type { CorsOptions, Endpoint, ListenOptions, RequestContext, Route, RouteContract, } from "./types.js";
-export { DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
+export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData };
@@ -40,6 +40,10 @@ export declare class Seltzer {
      * connections; idle keep-alive sockets hold it until
      * `keepAliveTimeout` unless the host also calls
      * `server.closeIdleConnections()`.
+     *
+     * CORS headers are off unless `cors` is set. When it is set, `OPTIONS`
+     * is a 204 preflight before the pipeline. `bodyLimit` defaults to
+     * 1 MB (`0` is unlimited). A larger body is 413 and is not read further.
      */
     listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
     private handleRequest;

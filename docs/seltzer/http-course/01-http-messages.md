@@ -68,7 +68,7 @@ Our `Map` disappears on restart. That is the example's persistence limitation, n
 
 ## Experiment and checkpoint
 
-With `hello.mjs` running, request `/hello`, `/missing`, and `POST /hello`. For the last, use `curl -i -X POST http://127.0.0.1:3000/hello`. Seltzer returns 404 for an unmatched method; it does not automatically produce 405.
+With `hello.mjs` running, request `/hello`, `/missing`, and `POST /hello`. For the last, use `curl -i -X POST http://127.0.0.1:3000/hello`. `POST /hello` is 405 with `Allow: GET` because `/hello` is registered for GET. `/missing` is 404 and has no `Allow` header.
 
 Write a request that creates `{"text":"Learn HTTP"}`. Label its method, path, content type, and body. Explain why a lost response to a successful POST is dangerous to retry blindly.
 

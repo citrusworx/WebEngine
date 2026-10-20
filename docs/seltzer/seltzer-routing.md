@@ -31,7 +31,7 @@ app.route({
 
 `.route` compiles, pushes, and returns `this`. There is no `.get` / `.post` sugar. `method` and `path` are plain strings. `"get"` will not match Node’s `"GET"`.
 
-`ctx.params` values are `decodeURIComponent`d. `/notes/%31` on `/notes/:id` yields `{ id: "1" }`.
+`ctx.params` values are `decodeURIComponent`d. `/notes/%31` on `/notes/:id` yields `{ id: "1" }`. `/notes/hello%20world` yields `{ id: "hello world" }`. A malformed sequence such as `/notes/%E0%A4` or `/notes/%ZZ` is **400** `{ error: "Malformed path parameter" }`. The handler does not run, and the process keeps serving. Decoding happens after the path matches, so a bad percent-encoding on a path that matches nothing is still 404.
 
 ## Pathname details
 
@@ -46,7 +46,7 @@ The `context` stage builds `new URL(req.url || "/", \`http://${host}\`)` and set
 | `/notes/:id` | `/notes/:id` | only a route whose path is the literal `/notes/:id` |
 | `/` | `/` | `/` |
 
-There is no trailing-slash redirect. There is no case folding.
+There is no trailing-slash redirect and no trailing-slash normalization. `/notes` and `/notes/` are different paths, including for parametric routes: `/notes/1/` does not match `/notes/:id`. There is no case folding. `method` is case-sensitive (`"GET"`, not `"get"`).
 
 ## Static prefix vs `:id`
 
@@ -72,11 +72,15 @@ app.route({
 
 Two identical `GET /health` registrations: rank ties, so **earlier** registration wins. Seltzer does not warn. The second is dead code.
 
-## Method mismatch is a 404
+## Method mismatch is a 405
 
-`GET /notes` and `POST /notes` are different routes. A GET-only collection will 404 a POST rather than 405. Register both methods explicitly.
+`GET /notes` and `POST /notes` are different routes. Register both methods explicitly.
 
-`OPTIONS` never reaches the matcher when `listen` is used: CORS/`OPTIONS` 204 runs first.
+If the path matches at least one registered pattern and the method matches none of them, the `route` stage returns **405** `{ error: "Method Not Allowed" }` with an `Allow` header. `Allow` lists those methods in first-registration order, separated by `", "` (`GET, PUT`). HEAD is not implied by GET. An unknown path is still **404** `{ error: "Not Found" }` and has no `Allow` header.
+
+`parse` runs before `route`. A JSON content type with invalid JSON is 400 even when the method would otherwise be 405.
+
+`OPTIONS` reaches the matcher unless `listen` was given `cors`. With `cors`, `OPTIONS` is 204 before the pipeline and does not hit your routes.
 
 ## Nectarine YAML and this matcher
 

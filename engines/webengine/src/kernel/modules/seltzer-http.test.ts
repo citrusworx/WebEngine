@@ -287,6 +287,13 @@ describe("startSeltzerFromKernel", () => {
         expect(preflight.headers.get("access-control-allow-origin")).toBe(
             "http://localhost:5173",
         );
+        expect(preflight.headers.get("access-control-allow-methods")).toBe(
+            "GET,OPTIONS",
+        );
+        expect(preflight.headers.get("access-control-allow-headers")).toBe(
+            "Content-Type",
+        );
+        expect(preflight.headers.get("vary")).toBe("Origin");
 
         const missing = await request(
             `http://127.0.0.1:${http.port}/api/products`,
