@@ -94,7 +94,7 @@ The runtime `send`s. Bare objects are not wrapped (0.4.0 breaking change). There
 
 ### 4. Support for Multiple Response Types
 
-`send` JSON-encodes objects/arrays/null/numbers/booleans, writes strings and buffers as-is, and respects an explicit `Content-Type`. First-class file streaming remains a [roadmap](./seltzer-roadmap.md) item.
+`send` JSON-encodes objects, arrays, `null`, numbers, and booleans (`application/json`), writes strings as `text/plain; charset=utf-8`, and writes `Buffer` / `Uint8Array` as raw bytes (`application/octet-stream`). An explicit `Content-Type` wins. 204, 304, and HEAD send no body. First-class file streaming remains a [roadmap](./seltzer-roadmap.md) item.
 
 ### 5. Dynamic Route Support
 

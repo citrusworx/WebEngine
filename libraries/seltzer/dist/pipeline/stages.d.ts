@@ -18,6 +18,9 @@ export declare function createRouteStage(getRoutes: () => CompiledRoute[]): Stag
  */
 export declare function validateStage(ctx: PipelineContext): ResponseData | void;
 export declare function handleStage(ctx: PipelineContext): Promise<void>;
-/** Reject non-ResponseData handler results with 500. Defaults live in `send`. */
+/**
+ * Reject non-ResponseData handler results with 500 and a log line that
+ * names the route and the returned value. Defaults for valid results live in `send`.
+ */
 export declare function responseStage(ctx: PipelineContext): void;
 export declare function sendStage(ctx: PipelineContext): void;

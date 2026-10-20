@@ -36,9 +36,9 @@ const ctx: PipelineContext = {
 await this.pipeline.run(ctx);
 ```
 
-Read that last line twice. The pipeline **awaits** stages and the handler. Thrown errors become JSON 500. The handler’s return value is **not** discarded — `handle` assigns it to `ctx.response`, `response` checks the shape, `send` writes the socket.
+Read that last line twice. The pipeline **awaits** stages and the handler. Thrown errors become a generic JSON 500. The handler’s return value is **not** discarded — `handle` assigns it to `ctx.response`, `response` checks the shape, `send` writes the socket.
 
-There is no `ctx.json`. That helper was removed in 0.4.0 (breaking).
+There is no `ctx.json` and no `ctx.send`. Both were removed. Calling either throws. Writing `ctx.res` throws. `replace("send")` throws. The runtime is the only writer.
 
 ## The context object
 
@@ -46,8 +46,8 @@ There is no `ctx.json`. That helper was removed in 0.4.0 (breaking).
 
 | Field | What it is |
 |---|---|
-| `req` | Node `IncomingMessage` — escape hatch |
-| `res` | Node `ServerResponse` — escape hatch; normal responses should not touch it |
+| `req` | Node `IncomingMessage`. Read the socket or raw headers. The body stream is already consumed. Not a response API |
+| `res` | Node `ServerResponse`. Reads work. `writeHead`, `end`, `write`, `setHeader`, and assignment throw while a handler or hook runs |
 | `method` | Set in `context` from `req.method` |
 | `path` | URL pathname (`/notes/1`, no query) |
 | `query` | `Record<string, string>` from `URLSearchParams` |
@@ -83,7 +83,16 @@ return { status: 201, headers: { "X-Created": "1" }, body: note };
 return { status: 204 }; // no body
 ```
 
-`status` defaults to `200` in `send`. Object, array, `null`, number, and boolean bodies are `JSON.stringify`d with `Content-Type: application/json` unless you already set that header (any casing). Strings are written as-is (no automatic content type). `Buffer` / `Uint8Array` are written as-is.
+`status` defaults to `200` in `send`. Headers you set are copied through.
+
+| `body` | Wire | Default `Content-Type` |
+|---|---|---|
+| omitted / `undefined` | no body | none |
+| string | the string, UTF-8 | `text/plain; charset=utf-8` |
+| object, array, number, boolean, `null` | `JSON.stringify` | `application/json` |
+| `Buffer` or `Uint8Array` | raw bytes | `application/octet-stream` |
+
+An existing `Content-Type` header (any casing) wins. Other headers and `status` are written as given. Status **204** and **304** drop the body and do not invent a content type from it. **HEAD** uses the same headers a GET would, including `Content-Length` of the encoded body, and sends no bytes.
 
 ## `response()` branding
 
@@ -108,7 +117,7 @@ An unbranded `{ body: "copy" }` from `execute` is wrapped again as `{ body: { bo
 function send(res: ServerResponse, data: ResponseData): void
 ```
 
-Applies defaults and `writeHead` + `end`. No-op if `res.headersSent`. Builtin 404/400/500 paths use the same function.
+Applies defaults and `writeHead` + `end`. No-op if `res.headersSent`. Builtin 404/400/500 paths use the same function. `send(res, data, { head: true })` writes headers and no body.
 
 ## Request body (`parse`)
 
@@ -127,8 +136,10 @@ The default limit is 1 MB (`1048576` bytes, `DEFAULT_BODY_LIMIT_BYTES`). `listen
 
 `handler` is `(ctx) => ResponseData | Promise<ResponseData>`. The pipeline awaits it.
 
-- `throw new Error("boom")` becomes `{ error: "Internal Server Error", message: "boom" }` at 500.
-- Returning a non-`ResponseData` value becomes 500 with a message that handlers must return `{ status?, headers?, body? }`.
+- `throw new Error("boom")` becomes `{ error: "Internal Server Error" }` at 500. The body has no `message` and no stack. The log line includes `boom`. The stack is added to that line only when `listen` was passed `debug: true`.
+- Returning a non-`ResponseData` value becomes 500 with a message that handlers must return `{ status?, headers?, body? }`. The same log line names the route and the returned value (`undefined`, a bare object, an array, a string, a wrong shape).
+
+`listen({ logger })` receives those lines. The default is `console.error`. One argument, one string. A throwing logger does not change the HTTP response.
 
 You can still `try/catch` in the handler to send a domain-specific 400 instead of a 500.
 
@@ -149,15 +160,15 @@ app.handler({
 
 ## What must happen before the request is done
 
-The pipeline always reaches builtin `send` unless a previous `send` already wrote headers. Handlers should return `ResponseData` on every branch. Returning `undefined` fails `isResponseData` and becomes 500.
+The pipeline always reaches builtin `send`. Handlers should return `ResponseData` on every branch. Returning `undefined` fails `isResponseData`, becomes 500, and is logged.
 
-Do not `writeHead` yourself and then return `{ body }` — `send` is a no-op once headers are sent, and the JSON never goes out.
+Do not `writeHead` yourself. That call throws, the handler’s return is discarded, and the client gets the generic 500. Put headers on `ResponseData`.
 
 ## 0.2.0 vs 0.8.1
 
 | 0.2.0 (`master` docs) | 0.8.1 |
 |---|---|
-| `ctx.json(data, status?)` writes immediately | gone |
+| `ctx.json(data, status?)` writes immediately | gone; calling it throws |
 | Handler return discarded; curl hangs | return `ResponseData`; runtime sends |
 | You read the body stream | `ctx.body` |
 | `ctx.req.url` for query | `ctx.query` |

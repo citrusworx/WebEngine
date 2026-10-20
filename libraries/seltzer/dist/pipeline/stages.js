@@ -1,3 +1,5 @@
+import { genericInternalError, logInvalidReturn, routePhrase } from "../core/log.js";
+import { guardRawResponse } from "../core/raw-response.js";
 import { DEFAULT_BODY_LIMIT_BYTES } from "../core/types.js";
 import { isResponseData, send } from "../core/response.js";
 import { allowedMethods, matchRoute, paramsFromMatch } from "./router.js";
@@ -199,24 +201,39 @@ export async function handleStage(ctx) {
     if (!ctx.route) {
         return;
     }
-    ctx.response = await ctx.route.handler(ctx);
-}
-/** Reject non-ResponseData handler results with 500. Defaults live in `send`. */
-export function responseStage(ctx) {
-    if (!isResponseData(ctx.response)) {
-        ctx.response = {
-            status: 500,
-            body: {
-                error: "Internal Server Error",
-                message: "Handler must return ResponseData ({ status?, headers?, body? }). Bare values are not wrapped.",
-            },
-        };
+    const real = ctx.res;
+    ctx.res = guardRawResponse(real);
+    try {
+        ctx.response = await ctx.route.handler(ctx);
+    }
+    finally {
+        ctx.res = real;
     }
 }
-export function sendStage(ctx) {
-    send(ctx.res, ctx.response ?? {
+/**
+ * Reject non-ResponseData handler results with 500 and a log line that
+ * names the route and the returned value. Defaults for valid results live in `send`.
+ */
+export function responseStage(ctx) {
+    if (isResponseData(ctx.response)) {
+        return;
+    }
+    logInvalidReturn(ctx, ctx.response, routePhrase(ctx));
+    ctx.response = {
         status: 500,
-        body: { error: "Internal Server Error" },
+        body: {
+            error: "Internal Server Error",
+            message: "Handler must return ResponseData ({ status?, headers?, body? }). Bare values are not wrapped.",
+        },
+    };
+}
+export function sendStage(ctx) {
+    if (!isResponseData(ctx.response)) {
+        logInvalidReturn(ctx, ctx.response, `${routePhrase(ctx)} send`);
+        ctx.response = genericInternalError();
+    }
+    send(ctx.res, ctx.response, {
+        head: (ctx.method ?? "").toUpperCase() === "HEAD",
     });
 }
 //# sourceMappingURL=stages.js.map

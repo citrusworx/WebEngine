@@ -1,6 +1,6 @@
 # Seltzer Status
 
-Snapshot of `@citrusworx/seltzer` source against `libraries/seltzer/src`. Published npm is still **0.8.1**. The loopback `listen` default, server timeouts, and removal of `src/core/server/server.ts` are in this tree and ship in the next minor; they are not in the 0.8.1 tarball.
+Snapshot of `@citrusworx/seltzer` source against `libraries/seltzer/src`. Published npm is still **0.8.1**. The loopback `listen` default, server timeouts, removal of `src/core/server/server.ts`, strict `ResponseData` serialization, and the generic thrown-error body are in this tree and ship in the next minor; they are not in the 0.8.1 tarball.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
@@ -34,13 +34,13 @@ The feature is more of a direction than a hardened part of the runtime.
 | Named pipeline | Stable-ish | `parse` → `send`. `before` / `replace`. Mutation in place. |
 | Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. Params are `decodeURIComponent`. A trailing slash is a different path. Malformed `%` encoding on a matched param is 400. Known path + wrong method is 405 + `Allow`; unknown paths stay 404. |
 | JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. Empty body is `undefined`. Non-JSON content types are a UTF-8 string, not 415. Default body limit is 1 MB (`bodyLimit`, `0` unlimited); over the limit is 413 and reading stops. |
-| `ResponseData` + `send` | Stable-ish | Bare values are 500. No `ctx.json`. |
+| `ResponseData` + `send` | Stable-ish | Handlers and hooks return `ResponseData`. Bare values are 500 and are logged (route + returned value). Strings are `text/plain; charset=utf-8`, JSON values are `application/json`, buffers are `application/octet-stream`, unless `Content-Type` is set. 204, 304, and HEAD send no body. Thrown errors are a generic 500; the error is logged, stack only with `listen({ debug: true })`. `logger` defaults to `console.error`. No `ctx.json` / `ctx.send`. Writing `ctx.res` throws. `replace("send")` throws. |
 | Default `validate` (`.required`) | Emerging | Presence-only. Zod is `replace("validate")`. |
 | `generateRoutes` | Emerging | Host `execute` + `response()` brand. |
 | CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
 | `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface conformance. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface conformance, strict `ResponseData` conformance. |
 | HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
 | Full contract / response-shape validation | Draft | Reserved for Nectarine via `replace`. |
 
@@ -52,10 +52,10 @@ The feature is more of a direction than a hardened part of the runtime.
 | `.route()` | same | `compileRoute` |
 | `.before()` / `.replace()` | same + `pipeline/index.ts` | |
 | `.handler()` | same | stores config |
-| `.listen(port, options?)` | same | returns `http.Server`. Default host `127.0.0.1`. Timeouts: headers 20s, request 30s, keep-alive 5s. Body limit 1 MB. CORS only when `cors` is set. |
+| `.listen(port, options?)` | same | returns `http.Server`. Default host `127.0.0.1`. Timeouts: headers 20s, request 30s, keep-alive 5s. Body limit 1 MB. CORS only when `cors` is set. `logger` defaults to `console.error`. `debug` is off. |
 | Stages | `pipeline/stages.ts` | parse…send |
 | Matcher | `pipeline/router.ts` | rank + params |
-| `ResponseData` / `send` / `response()` | `core/response.ts` | |
+| `ResponseData` / `send` / `response()` | `core/response.ts` | string, JSON, or bytes. 204, 304, and HEAD send no body. |
 | `generateRoutes` | `generate/generate-routes.ts` | |
 | `client` / `HttpError` | `core/client/client.ts` | |
 | Example server | `src/example.ts` | GET `/` |
@@ -129,7 +129,8 @@ Less accurate positioning:
 
 If you are building with Seltzer today:
 
-- return `{ body }` (and `status` / `headers` when needed)
+- return `{ body }` (and `status` / `headers` when needed). Do not write `ctx.res`, `ctx.json`, or `ctx.send`
+- pass `logger` to `listen` when `console.error` is the wrong place for handler failures. `debug: true` adds stacks to that log only
 - use `ctx.params` / `ctx.body` / `ctx.query`
 - generate routes from operations; replace `validate` when contracts grow
 - catch `HttpError` on `client.*`

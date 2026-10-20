@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import type { SeltzerLogger } from "./log.js";
 import type { ResponseData } from "./response.js";
 
 export type Endpoint = {
@@ -13,7 +14,17 @@ export type Endpoint = {
 };
 
 export type RequestContext<TLocals = unknown> = {
+    /**
+     * Inbound message. Read `socket` or raw headers when the normalized
+     * context is not enough. The body stream is already consumed by `parse`.
+     * This is not a response API.
+     */
     req: IncomingMessage;
+    /**
+     * Node response. Handlers and hooks must not write it: `writeHead`,
+     * `end`, `write`, `setHeader`, and assignment throw. Return `ResponseData`.
+     * `ctx.json` and `ctx.send` are not on this type; calling them throws.
+     */
     res: ServerResponse;
     method: string;
     path: string;
@@ -136,4 +147,14 @@ export type ListenOptions<TLocals = unknown> = {
      * `listen(0)` reports the ephemeral port, not `0`.
      */
     onListening?: (port: number) => void;
+    /**
+     * Receives one formatted line for handler/hook failures.
+     * Default is `console.error`. The HTTP body never includes the stack.
+     */
+    logger?: SeltzerLogger;
+    /**
+     * When true, logged thrown errors include the stack trace.
+     * Off by default. Does not change the HTTP body.
+     */
+    debug?: boolean;
 };

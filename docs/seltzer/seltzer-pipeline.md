@@ -21,8 +21,8 @@ parse → context → route → validate → handle → response → send
 | `route` | Match a registered route and fill `params`. Unknown path → 404. Known path, wrong method → 405 + `Allow`. Malformed param encoding → 400. |
 | `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
-| `response` | Reject non-`ResponseData` handler results with 500. Defaults live in `send`. |
-| `send` | Write the HTTP response via `send()`. |
+| `response` | Reject non-`ResponseData` handler results with 500 and a log line (route + returned value). Defaults live in `send`. |
+| `send` | Write the HTTP response via `send()`. `replace("send")` throws. |
 
 CORS headers and `OPTIONS` 204 run in `listen` **before** `pipeline.run`, and only when `cors` was passed. They are not stages. Without `cors`, `OPTIONS` enters the pipeline like any other method.
 
@@ -34,9 +34,11 @@ type Stage = (
 ) => void | ResponseData | Promise<void | ResponseData | undefined>;
 ```
 
-Stages **mutate** `ctx` in place. Return `void` / `undefined` to continue. Return `ResponseData` to set `ctx.response` and skip remaining stages except builtin `send`.
+Stages **mutate** `ctx` in place. Return `void` / `undefined` to continue. Return `ResponseData` to set `ctx.response` and skip remaining stages except builtin `send`. Any other return is 500 and is logged.
 
-Thrown errors become `{ status: 500, body: { error: "Internal Server Error", message } }` and also jump to `send`.
+Thrown errors become `{ status: 500, body: { error: "Internal Server Error" } }` and also jump to `send`. The body has no `message` and no stack. `listen({ logger })` gets one line (default `console.error`) with the error message. `debug: true` adds the stack to that line only.
+
+While a hook or handler runs, `ctx.res` writes throw. `ctx.json` and `ctx.send` throw.
 
 Unknown names throw: `Unknown pipeline stage "parse"` if that builtin is missing (it is not, on the default pipeline).
 
@@ -93,7 +95,7 @@ Put logging `before("route")` if you need `ctx.path`. Put auth `before("handle")
 app.replace(name: StageName, stage: Stage): this
 ```
 
-Swaps the builtin. Inserted `before` stages stay in place. The replacement remains `builtin: true`, so later `before(name, …)` still finds it.
+Swaps the builtin. Inserted `before` stages stay in place. The replacement remains `builtin: true`, so later `before(name, …)` still finds it. `replace("send")` throws. The builtin `send` is the only writer.
 
 Nectarine’s intended hook:
 
@@ -127,7 +129,8 @@ From `validateStage`:
 |---|---|
 | `undefined` / `void` | next stage |
 | `ResponseData` | skip to builtin `send` |
-| throw | 500 JSON, skip to builtin `send` |
+| any other value | 500 JSON, logged, skip to builtin `send` |
+| throw | generic 500 JSON, logged, skip to builtin `send` |
 
 `handle` does not return `ResponseData` itself; it assigns `ctx.response = await handler(ctx)`. `response` then validates that shape. A handler that returns `{ ok: true }` is a 500 **after** handle, not a hang.
 

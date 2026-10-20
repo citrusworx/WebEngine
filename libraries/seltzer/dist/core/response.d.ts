@@ -18,5 +18,16 @@ export declare function isResponseData(value: unknown): value is ResponseData;
 export declare function response(data: ResponseData): ResponseData;
 /** True when `value` was produced by {@link response}. */
 export declare function isExplicitResponse(value: unknown): value is ResponseData;
-/** Apply ResponseData defaults and write the HTTP response. No-op if headers were already sent. */
-export declare function send(res: ServerResponse, data: ResponseData): void;
+export type SendOptions = {
+    /**
+     * Write the headers a GET would send, including `Content-Length` of the
+     * encoded body, and write no bytes. Used for HEAD.
+     */
+    head?: boolean;
+};
+/**
+ * Apply ResponseData defaults and write the HTTP response.
+ * No-op if headers were already sent.
+ * Status 204 and 304 never include a body. `head: true` never includes a body.
+ */
+export declare function send(res: ServerResponse, data: ResponseData, options?: SendOptions): void;

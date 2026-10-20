@@ -1,5 +1,6 @@
 import http from "node:http";
-import { isExplicitResponse, isResponseData, response, send } from "./response.js";
+import { installRemovedResponseMethods } from "./raw-response.js";
+import { isExplicitResponse, isResponseData, response, send, } from "./response.js";
 import { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 import { compileRoute, createDefaultPipeline, } from "../pipeline/index.js";
 export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
@@ -138,6 +139,10 @@ export class Seltzer {
      * CORS headers are off unless `cors` is set. When it is set, `OPTIONS`
      * is a 204 preflight before the pipeline. `bodyLimit` defaults to
      * 1 MB (`0` is unlimited). A larger body is 413 and is not read further.
+     *
+     * `logger` receives one line for a bad handler/hook return or a thrown
+     * error. The default is `console.error`. `debug: true` adds stack traces
+     * to those lines. The HTTP body of a thrown error stays generic.
      */
     listen(port, options = {}) {
         if (typeof process === "undefined" || !process.versions?.node) {
@@ -149,7 +154,7 @@ export class Seltzer {
         const bodyLimit = resolveBodyLimit(options.bodyLimit);
         const locals = (options.locals ?? {});
         const server = http.createServer((req, res) => {
-            void this.handleRequest(req, res, locals, options.cors, bodyLimit);
+            void this.handleRequest(req, res, locals, options, bodyLimit);
         });
         server.headersTimeout = timeouts.headersTimeout;
         server.requestTimeout = timeouts.requestTimeout;
@@ -166,9 +171,9 @@ export class Seltzer {
         });
         return server;
     }
-    async handleRequest(req, res, locals, cors, bodyLimit) {
-        if (cors) {
-            applyCors(req, res, cors);
+    async handleRequest(req, res, locals, options, bodyLimit) {
+        if (options.cors) {
+            applyCors(req, res, options.cors);
             if (req.method === "OPTIONS") {
                 send(res, { status: 204 });
                 return;
@@ -186,7 +191,10 @@ export class Seltzer {
             locals,
             options: this.config?.options,
             bodyLimit,
+            logger: options.logger,
+            debug: options.debug === true,
         };
+        installRemovedResponseMethods(ctx);
         await this.pipeline.run(ctx);
     }
 }

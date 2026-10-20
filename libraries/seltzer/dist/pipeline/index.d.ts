@@ -13,6 +13,7 @@ export declare class Pipeline {
     /**
      * Swap the builtin stage named `name`. Inserted `before` stages are left in place.
      * The replacement stays builtin so later `before(name, …)` still finds it.
+     * `send` cannot be replaced: the runtime is the only writer.
      */
     replace(name: StageName, stage: Stage): this;
     run(ctx: PipelineContext): Promise<void>;

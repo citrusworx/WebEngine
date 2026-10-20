@@ -65,7 +65,7 @@ handler: () => "ok",
 Why it is bad:
 
 - `isResponseData` requires a plain object whose keys are only `status` / `headers` / `body`
-- the `response` stage turns anything else into 500 `{ error: "Internal Server Error", message: "Handler must return ResponseData…" }`
+- the `response` stage turns anything else into 500 `{ error: "Internal Server Error", message: "Handler must return ResponseData…" }` and logs the route plus the returned value
 
 Better:
 
@@ -141,8 +141,9 @@ handler: (ctx) => {
 
 Why it is bad:
 
-- `send` no-ops when headers are already sent
-- the JSON body never goes out
+- `writeHead`, `end`, `setHeader`, and assigning `statusCode` throw
+- the handler’s return is discarded
+- the client gets a generic 500, not the headers you tried to write
 
 Better: put headers on `ResponseData.headers`.
 

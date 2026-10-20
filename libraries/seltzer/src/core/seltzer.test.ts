@@ -137,7 +137,7 @@ describe("Seltzer default pipeline", () => {
             handler: () => ({ ok: true }) as unknown as ResponseData,
         });
 
-        const base = await listen(app);
+        const base = await listen(app, { logger: () => undefined });
         const res = await request(`${base}/bad`);
 
         expect(res.status).toBe(500);
@@ -156,14 +156,12 @@ describe("Seltzer default pipeline", () => {
             },
         });
 
-        const base = await listen(app);
+        const base = await listen(app, { logger: () => undefined });
         const res = await request(`${base}/boom`);
 
         expect(res.status).toBe(500);
-        expect(res.json).toEqual({
-            error: "Internal Server Error",
-            message: "nope",
-        });
+        expect(res.json).toEqual({ error: "Internal Server Error" });
+        expect(res.text).not.toContain("nope");
     });
 
     it("applies CORS headers and answers OPTIONS with 204", async () => {

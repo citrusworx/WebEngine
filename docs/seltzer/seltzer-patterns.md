@@ -145,7 +145,7 @@ function fail(status: number, error: string): ResponseData {
 
 Seltzer’s unmatched route uses `{ error: "Not Found" }` at 404. Matching that key in handlers keeps clients boring.
 
-Thrown errors become `{ error: "Internal Server Error", message }`. Domain 400s should return `ResponseData`, not throw, if you want a stable `error` string.
+Thrown errors become `{ error: "Internal Server Error" }` with no `message` and no stack. The detail is logged. Domain 400s should return `ResponseData`, not throw, if you want a stable `error` string.
 
 ## Plain text / non-JSON
 
@@ -160,7 +160,7 @@ app.route({
 });
 ```
 
-Do not `writeHead` on `ctx.res` and then return `{ body }` — `send` will no-op.
+A string body already sends `text/plain; charset=utf-8`. Set `Content-Type` when the text is something else. Do not `writeHead` on `ctx.res` — that throws.
 
 ## CORS on listen
 
