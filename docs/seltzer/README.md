@@ -201,11 +201,11 @@ const requireAuth: Stage = (ctx) => {
 const app = Seltzer.init().before("handle", requireAuth);
 ```
 
-See [Pipeline](./seltzer-pipeline.md).
+See [Pipeline](./seltzer-pipeline.md). `replace("validate", stage)` removes the `.required` checks. The replacement returns `undefined` to continue or `validationError(issues)` for 400 `{ error: "Validation failed", issues: [{ path, message }] }`. `path` is `(string | number)[]`. Put parsed values on `ctx.valid` (`{ body?, params?, query? }`) and leave `ctx.body` raw. Any other return is 500 and is logged. A throw is a generic 500, logged. Seltzer does not depend on Zod. `Route` and `generateRoutes` have no schema field; dispatch on `` `${method} ${path}` `` or `contract.name` inside the replacement. The Zod `safeParse` recipe is in [Pipeline](./seltzer-pipeline.md#replacement-validate) and in the package README.
 
 ### 8. Default `validate` for `.required` body fields
 
-`Route.contract.body` uses YAML-style specs. Keys whose spec contains `.required` must be present and non-empty on a JSON object body. Missing → 400 `{ error: "Missing required field(s): …" }`. No specs → no-op.
+`Route.contract.body` uses YAML-style specs. Keys whose spec contains `.required` must be present and non-empty on a JSON object body. Missing → 400 `{ error: "Missing required field: …" }` (or `fields` when several are missing). A non-object body → 400 `{ error: "Request body must be an object" }`. No specs → no-op. The word `string` in `string.required` is not a type check. The stage does not set `ctx.valid` and does not change `ctx.body`.
 
 ```ts
 app.route({
@@ -301,7 +301,7 @@ HTTP request
   → parse (JSON body or raw)
   → context (method, path, query, headers)
   → route (match + params; 404 if none)
-  → validate (.required body keys)
+  → validate (.required body keys; ctx.valid stays unset)
   → handle (handler returns ResponseData)
   → response (reject bare values with 500)
   → send (writeHead + end)
@@ -311,11 +311,11 @@ HTTP request
 |---|---|
 | JSON response | `return { body }` (status defaults to 200) |
 | Extra headers / 201 | `return { status, headers, body }` |
-| Request body | `ctx.body` (JSON parsed in `parse`) |
+| Request body | `ctx.body` (JSON parsed in `parse`). Parsed output of a replacement validator is `ctx.valid` |
 | Query string | `ctx.query` |
 | `/users/:id` | `ctx.params.id` |
 | Auth / logging | `before("handle", stage)` |
-| Richer contracts | `replace("validate", …)` |
+| Richer contracts | `replace("validate", …)` + `validationError()`. Zod stays an app dependency |
 | YAML APIs | `listApiOperations` + `generateRoutes` |
 | CORS | `listen(port, { cors })` |
 | Outbound JSON | `client.*` — catch `HttpError` |
@@ -367,7 +367,7 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 
 Shipped: object routes, parametric matching, JSON `parse`, `ResponseData` + `send`, named pipeline, default `validate`, `generateRoutes`, CORS/`OPTIONS`, hardened `client`.
 
-Not shipped: HTTPS listen, `app.use`, Zod/full contract validation, form-urlencoded parser, slash-safe client URL join, first-class file/stream responses.
+Not shipped: HTTPS listen, `app.use`, a bundled schema library, response-shape validation, form-urlencoded parser, slash-safe client URL join, first-class file/stream responses. Zod is a documented `replace("validate")` recipe, not a dependency.
 
 See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./seltzer-roadmap.md) for what is worth building next.
 

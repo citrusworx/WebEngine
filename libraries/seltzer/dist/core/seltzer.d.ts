@@ -2,12 +2,14 @@ import http from "node:http";
 import { isExplicitResponse, isResponseData, response, send, type ResponseData, type SendOptions } from "./response.js";
 import { type HandlerConfig, type ListenOptions, type RequestContext, type Route } from "./types.js";
 import { type Stage, type StageName } from "../pipeline/index.js";
-export type { CorsOptions, Endpoint, ListenOptions, RequestContext, Route, RouteContract, } from "./types.js";
+export type { CorsOptions, Endpoint, ListenOptions, RequestContext, Route, RouteContract, ValidatedInput, } from "./types.js";
 export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData, SendOptions };
 export type { SeltzerLogger } from "./log.js";
+export type { ValidationIssue } from "./validation.js";
+export { validationError } from "./validation.js";
 export { isExplicitResponse, isResponseData, response, send };
 export declare class Seltzer {
     private routes;
@@ -24,7 +26,8 @@ export declare class Seltzer {
     before(name: StageName, stage: Stage): this;
     /**
      * Swap the builtin stage named `name`. `before` still inserts ahead of it.
-     * Nectarine uses this to hang full contract checks on `validate`.
+     * Hosts use this to hang richer checks on `validate`. That replacement
+     * removes the builtin, including `.required` presence checks.
      */
     replace(name: StageName, stage: Stage): this;
     handler(config: HandlerConfig): this;

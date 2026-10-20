@@ -72,7 +72,7 @@ Do not add automatic retries as an invisible side effect. An idempotency key req
 
 ## C. Proposed: a richer validation contract
 
-**Current evidence:** `.required` establishes presence only. `replace("validate", ...)` is implemented, so a host can supply stronger checks today. A general schema engine is not built into Seltzer.
+**Current evidence:** `.required` establishes presence only and does not set `ctx.valid`. `replace("validate", ...)` is implemented. `validationError(issues)` is the standard 400 (`path` is `(string | number)[]`), and a Zod `safeParse` recipe is documented. Seltzer does not depend on Zod. `Route` / `generateRoutes` still have no schema field. A general schema engine is not built into Seltzer.
 
 **Plain-language problem:** a form can contain every box and still contain the wrong kind of information.
 

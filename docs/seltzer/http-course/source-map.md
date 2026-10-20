@@ -29,7 +29,7 @@ Baseline: Seltzer workspace version **0.8.1**, inspected after merge `d25673e`. 
 |---|---|
 | Object routes and path parameters | Ownership and permissions |
 | JSON/raw body collection with a 1 MB default limit | Form and multipart parsing |
-| Presence-only `.required` checks | Full types, formats, coercion policies |
+| Presence-only `.required` checks (`ctx.valid` unset). `validationError()` and a documented Zod `replace("validate")` recipe; Zod is not a dependency | Full types, formats, and coercion inside Seltzer. `Route` has no schema field |
 | Named `before` / `replace` stages | Universal response finalization, `after` / removal APIs |
 | Structured responses and buffered bytes | Explicit streaming and backpressure |
 | CORS headers and OPTIONS shortcut | Authentication and CSRF policy |

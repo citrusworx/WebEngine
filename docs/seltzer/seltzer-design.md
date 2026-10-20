@@ -8,7 +8,7 @@ This document explains why Seltzer is a named request pipeline instead of Expres
 
 **Contributor path (rebuild internals by hand):** [study guide](./courses.md) and [exercises](./exercises/README.md). Those exercises reconstruct what already ships. They are not “implement the missing stage.”
 
-Open questions that are *not* shipped yet (HTTPS listen, Zod on `validate`, `after`, form bodies) live on [Roadmap](./seltzer-roadmap.md).
+Open questions that are *not* shipped yet (HTTPS listen, response-shape validation, `after`, form bodies) live on [Roadmap](./seltzer-roadmap.md). Zod is a host `replace("validate")` recipe, not a Seltzer dependency.
 
 ---
 
@@ -235,7 +235,7 @@ Seltzer is the runtime layer. Nectarine is the data and contract layer.
 They are separate concerns, and they integrate at two explicit points:
 
 * **`generateRoutes`** — Nectarine flattens YAML to `ApiOperation[]`; Seltzer builds `Route[]`; the host supplies `execute`
-* **`Route.contract` + `validate` / `replace("validate")`** — presence checks by default; richer checks later
+* **`Route.contract` + `validate` / `replace("validate")`** — presence checks by default (`ctx.valid` unset). A host replacement sets `ctx.valid` and returns `validationError()`. Seltzer does not depend on Zod
 
 Seltzer does not compile SQL. Nectarine does not call `listen`.
 

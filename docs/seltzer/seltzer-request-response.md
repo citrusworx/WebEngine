@@ -52,7 +52,8 @@ There is no `ctx.json` and no `ctx.send`. Both were removed. Calling either thro
 | `path` | URL pathname (`/notes/1`, no query) |
 | `query` | `Record<string, string>` from `URLSearchParams` |
 | `params` | Captured `:id` segments after `route` matches |
-| `body` | Parsed JSON value, raw UTF-8 string, or `undefined` (GET/HEAD skip the body; empty bodies are `undefined`) |
+| `body` | Parsed JSON value, raw UTF-8 string, or `undefined` (GET/HEAD skip the body; empty bodies are `undefined`). Stays raw when a validator parses a copy |
+| `valid` | `{ body?, params?, query? }` from a replacement `validate` stage. The default stage does not set it |
 | `headers` | Lowercased string map |
 | `locals` | From `listen({ locals })` |
 | `options` | From `.handler(config)` if set |

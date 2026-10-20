@@ -5,6 +5,7 @@ import { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIV
 import { compileRoute, createDefaultPipeline, } from "../pipeline/index.js";
 export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
+export { validationError } from "./validation.js";
 export { isExplicitResponse, isResponseData, response, send };
 function resolveListenHost(host) {
     if (host === undefined) {
@@ -112,7 +113,8 @@ export class Seltzer {
     }
     /**
      * Swap the builtin stage named `name`. `before` still inserts ahead of it.
-     * Nectarine uses this to hang full contract checks on `validate`.
+     * Hosts use this to hang richer checks on `validate`. That replacement
+     * removes the builtin, including `.required` presence checks.
      */
     replace(name, stage) {
         this.pipeline.replace(name, stage);

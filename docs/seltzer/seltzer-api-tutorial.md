@@ -157,7 +157,7 @@ Why this works:
 - `ctx.body` is already an object. No stream loop in the handler.
 - `contract.body.text: "string.required"` is presence-only: missing, `null`, or whitespace → 400 `{ error: "Missing required field: text" }` before `handle`.
 - `{ status: 201, body: note }` is `ResponseData`. Extra headers go on `headers`.
-- Type checks (string vs number) are **not** in default `validate`. Use `replace("validate", …)` for Zod later.
+- Type checks (string vs number) are **not** in default `validate`. `ctx.valid` stays unset. Use `replace("validate", …)` and `validationError(issues)` when you want them. Seltzer does not depend on Zod. See [Pipeline](./seltzer-pipeline.md#replacement-validate).
 
 Try it:
 

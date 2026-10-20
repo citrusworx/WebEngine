@@ -169,8 +169,23 @@ function isPresent(value) {
 }
 /**
  * Enforce `.required` keys from `ctx.route.contract.body` on `ctx.body`.
- * No body specs → no-op (GET product/waitlist reads). Nectarine can
- * `replace("validate", …)` for richer contracts.
+ *
+ * Presence only. The words `string` and `int` in a spec are not type checks.
+ * Numbers, booleans, objects, and arrays count as present. `undefined`,
+ * `null`, and blank strings do not.
+ *
+ * No body specs, or specs with no `.required` token, return undefined.
+ * This stage does not read or write `ctx.valid` and does not replace
+ * `ctx.body`. After a normal request, `ctx.valid` is still `undefined`
+ * unless an earlier hook assigned it.
+ *
+ * Failures keep the presence messages, not `validationError()`:
+ * `{ error: "Request body must be an object" }`,
+ * `{ error: "Missing required field: email" }`, or
+ * `{ error: "Missing required fields: email, name" }` (spec key order).
+ *
+ * `replace("validate", …)` removes this stage. Richer checks, including Zod,
+ * belong in that replacement: set `ctx.valid` and return `validationError(issues)`.
  */
 export function validateStage(ctx) {
     const specs = ctx.route?.contract?.body;

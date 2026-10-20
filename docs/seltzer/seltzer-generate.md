@@ -123,7 +123,7 @@ for (const route of generateRoutes(operations, {
 }
 ```
 
-POST `/api/waitlist` without `email` is 400 from default `validate` (`Missing required field: email`) and `execute` does not run.
+POST `/api/waitlist` without `email` is 400 from default `validate` (`Missing required field: email`) and `execute` does not run. That stage does not set `ctx.valid`. A number in `email` counts as present.
 
 ## Flatten from Nectarine YAML
 
@@ -177,7 +177,7 @@ app.route({
 - Not OpenAPI generation
 - Not Express codegen
 - Not a database layer — `execute` is host data access (adapter, memory, compiler query)
-- Not Zod — default `validate` is `.required` presence; richer checks are `replace("validate", …)`
+- Not a schema runner. Default `validate` is `.required` presence. `replace("validate", …)` can dispatch on `ctx.route.contract.name` or `` `${method} ${path}` `` and return `validationError(issues)`. That replacement does not also run the presence check. Zod is an application dependency; Seltzer does not import it. See [Pipeline](./seltzer-pipeline.md#replacement-validate)
 
 ## Related
 

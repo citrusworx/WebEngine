@@ -37,6 +37,7 @@ export type {
     RequestContext,
     Route,
     RouteContract,
+    ValidatedInput,
 } from "./types.js";
 export {
     DEFAULT_BODY_LIMIT_BYTES,
@@ -49,6 +50,8 @@ export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData, SendOptions };
 export type { SeltzerLogger } from "./log.js";
+export type { ValidationIssue } from "./validation.js";
+export { validationError } from "./validation.js";
 export { isExplicitResponse, isResponseData, response, send };
 
 function resolveListenHost(host: string | undefined): string {
@@ -221,7 +224,8 @@ export class Seltzer {
 
     /**
      * Swap the builtin stage named `name`. `before` still inserts ahead of it.
-     * Nectarine uses this to hang full contract checks on `validate`.
+     * Hosts use this to hang richer checks on `validate`. That replacement
+     * removes the builtin, including `.required` presence checks.
      */
     replace(name: StageName, stage: Stage) {
         this.pipeline.replace(name, stage);

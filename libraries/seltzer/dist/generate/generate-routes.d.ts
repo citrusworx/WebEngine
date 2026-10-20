@@ -24,7 +24,9 @@ export type GenerateRoutesOptions<TContext extends RequestContext = RequestConte
  * Seltzer `Route`s. Nectarine does not generate routes.
  *
  * Copies `resource`, `name`, and `body` field specs onto `Route.contract`
- * so the default `validate` stage can see `.required` keys.
+ * so the default `validate` stage can see `.required` keys. Those specs are
+ * strings, not schemas. A `replace("validate")` stage reads `ctx.route`
+ * and dispatches itself; this function does not attach a validator.
  *
  * Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call `execute`, and
  * return `ResponseData`. They never write `ctx.json`.
