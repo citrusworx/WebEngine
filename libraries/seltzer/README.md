@@ -65,7 +65,7 @@ Each request runs through a named pipeline:
 | `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty body → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. Non-JSON content types are not 415. |
 | `context` | Set `method`, `path`, `query`, and `headers` on ctx. |
 | `route` | Match a registered route and fill `params` (`decodeURIComponent`). No path match → 404. Known path, wrong method → 405 + `Allow`. Malformed `%` encoding in a param → 400. |
-| `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
+| `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. That is presence only (a number counts). Failure → 400 `{ error: "Missing required field: …" }` or `{ error: "Request body must be an object" }`. No specs → no-op. Does not set `ctx.valid` and does not change `ctx.body`. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
 | `response` | Reject non-`ResponseData` handler results with 500 and a log line. |
 | `send` | Write the HTTP response via `send()`. Cannot be replaced. |
@@ -108,6 +108,55 @@ app.route({
 ```
 
 `init().route().listen()` is the supported shape. A route with `contract.body` `.required` keys turns on presence checks. `listen` binds `127.0.0.1`, applies the default timeouts and the 1 MB body limit, and leaves CORS off until you pass `cors`.
+
+## Richer validation (`replace("validate")`)
+
+Seltzer does not depend on Zod, or on any schema library. Install one in the app if you want it, then swap the builtin. `replace("validate", stage)` **removes** the `.required` checks. The replacement receives `ctx` after `parse`, `context`, and `route`.
+
+- Return `undefined` to continue.
+- Return `validationError(issues)` for the standard 400: `{ error: "Validation failed", issues: [{ path, message }] }`. `path` is `(string | number)[]` (`[]`, `["email"]`, `["items", 0, "qty"]`), the same shape as Zod's `issue.path`. A string is not a path.
+- Put parsed values on `ctx.valid` (`{ body?, params?, query? }`). Leave `ctx.body`, `ctx.params`, and `ctx.query` as the raw pipeline input.
+- Any other return is 500 and is logged. A throw is 500 `{ error: "Internal Server Error" }` with no message, and is logged (`debug: true` adds the stack to the log only).
+
+`Route.contract` and `generateRoutes` carry YAML strings (`email: "string.required"`), not schemas. Dispatch inside the replacement on `` `${ctx.route.method} ${ctx.route.path}` `` (the pattern, not `ctx.path`) or on `ctx.route.contract.name`. A route with no schema should return `undefined`.
+
+```ts
+import { z } from "zod"; // application dependency — not a dependency of @citrusworx/seltzer
+import { Seltzer, validationError, type ResponseData } from "@citrusworx/seltzer";
+
+const JoinWaitlist = z.object({
+    email: z.string().email(),
+    name: z.string().optional(),
+});
+
+const app = Seltzer.init().replace("validate", (ctx) => {
+    const parsed = JoinWaitlist.safeParse(ctx.body);
+    if (!parsed.success) {
+        return validationError(
+            parsed.error.issues.map((issue) => ({
+                path: issue.path.filter(
+                    (part): part is string | number =>
+                        typeof part === "string" || typeof part === "number",
+                ),
+                message: issue.message,
+            })),
+        );
+    }
+
+    ctx.valid = { body: parsed.data };
+});
+
+app.route({
+    method: "POST",
+    path: "/api/waitlist",
+    handler: (ctx): ResponseData => ({
+        status: 201,
+        body: ctx.valid?.body,
+    }),
+});
+```
+
+`ctx.body` is still the raw parsed JSON. `ctx.valid.body` is the schema output. The default stage never fills `ctx.valid`.
 
 ## Outbound HTTP `client`
 
@@ -198,7 +247,7 @@ for (const route of generateRoutes(operations, {
 ```
 
 - `query` is a named-query key passed to `execute`, not the HTTP search string (`ctx.query`).
-- `generateRoutes` copies `resource`, `name`, and `body` field specs onto `Route.contract`. The default `validate` stage enforces `.required` keys; reads with no body specs stay a no-op.
+- `generateRoutes` copies `resource`, `name`, and `body` field specs onto `Route.contract`. The default `validate` stage enforces `.required` keys and still leaves `ctx.valid` unset; reads with no body specs stay a no-op. A replacement that dispatches on `contract.name` does not also run those presence checks.
 - Handlers read `ctx.params` / `ctx.query` / `ctx.body`, call host `execute`, and return `ResponseData`.
 - `execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ body }` / `{}` objects are treated as payloads.
 - Static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) register before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
@@ -225,7 +274,7 @@ const routes = generateRoutes(operations, {
 });
 ```
 
-YAML layout is `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`). Nectarine does not generate `Route`s; hosts that want richer contracts can `replace("validate", …)`.
+YAML layout is `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`). Nectarine does not generate `Route`s and does not install a validator. Hosts that want richer contracts `replace("validate", …)` and dispatch on `ctx.route.contract.name`.
 
 ## Development
 

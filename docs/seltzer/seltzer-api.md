@@ -10,8 +10,8 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 - `STAGE_NAMES`
 - `client`, `HttpError`
 - `generateRoutes`
-- `response`, `send`, `isResponseData`, `isExplicitResponse`
-- types: `Route`, `RouteContract`, `RequestContext`, `Endpoint`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`
+- `response`, `send`, `isResponseData`, `isExplicitResponse`, `validationError`
+- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`
 - listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`
 
 There are no subpath exports. `HandlerConfig` is used by `.handler()` but is not re-exported from the package root.
@@ -141,7 +141,13 @@ If `cors.origin` is a specific origin, it must equal that `Origin`. `"*"` sends 
 ## `RequestContext`
 
 ```ts
-type RequestContext<TLocals = unknown> = {
+type ValidatedInput<TBody = unknown, TParams = unknown, TQuery = unknown> = {
+  body?: TBody;
+  params?: TParams;
+  query?: TQuery;
+};
+
+type RequestContext<TLocals = unknown, TValid extends ValidatedInput = ValidatedInput> = {
   req: IncomingMessage;
   res: ServerResponse;
   method: string;
@@ -149,6 +155,8 @@ type RequestContext<TLocals = unknown> = {
   query: Record<string, string>;
   params: Record<string, string>;
   body: unknown;
+  /** Set by a replacement `validate` stage. The default stage leaves this unset. */
+  valid?: TValid;
   headers: Record<string, string>;
   locals: TLocals;
   options?: {
@@ -185,9 +193,18 @@ function isResponseData(value: unknown): value is ResponseData;
 function response(data: ResponseData): ResponseData;
 function isExplicitResponse(value: unknown): value is ResponseData;
 function send(res: ServerResponse, data: ResponseData): void;
+
+type ValidationIssue = {
+  path: readonly (string | number)[];
+  message: string;
+};
+
+function validationError(issues: readonly ValidationIssue[]): ResponseData;
 ```
 
 `response()` brands a value for `generateRoutes` `execute`. Hand-written handlers return a plain `ResponseData` object.
+
+`validationError` is the standard 400 for a replacement `validate` stage: `{ error: "Validation failed", issues: [{ path, message }] }`. `path` is an array of strings and numbers. The default `.required` stage does not use it. See [Pipeline](./seltzer-pipeline.md#replacement-validate).
 
 `send` writes `status` (default 200) and `headers`. Strings are `text/plain; charset=utf-8`. Objects, arrays, numbers, booleans, and `null` are JSON (`application/json`). `Buffer` / `Uint8Array` are raw bytes (`application/octet-stream`). A `Content-Type` you already set is kept. Status 204 and 304, and `{ head: true }`, send no body.
 

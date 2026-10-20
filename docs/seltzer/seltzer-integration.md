@@ -14,7 +14,7 @@ The join that shipped:
 2. Seltzer `generateRoutes(operations, { execute })` → `Route[]`
 3. `app.route(route)` for each
 4. Default `validate` enforces `.required` keys copied onto `Route.contract`
-5. Hosts that want Zod later call `app.replace("validate", …)`
+5. Hosts that want types or formats call `app.replace("validate", …)`, set `ctx.valid`, and return `validationError(issues)`. Zod is not a Seltzer dependency. The recipe is [Pipeline → Replacement validate](./seltzer-pipeline.md#replacement-validate). Replacing the stage turns off `.required` unless the replacement checks those fields itself. Dispatch on `ctx.route.contract.name` for generated routes
 
 WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` wrap that path. Blackwater product JSONB catalog and waitlist GET + POST `joinWaitlist` pass a host `execute` into `createNectarineRoutes`. Health and KiwiPress content stay hand-registered.
 

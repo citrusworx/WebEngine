@@ -16,8 +16,8 @@ export type StageName = (typeof STAGE_NAMES)[number];
 
 /**
  * Per-request pipeline state. Stages mutate this object in place.
- * Handlers still receive the public `RequestContext` shape; extra fields
- * (`route`, `response`) are for pipeline stages.
+ * Handlers still receive the public `RequestContext` shape, including
+ * `valid`. Extra fields (`route`, `response`) are for pipeline stages.
  */
 export type PipelineContext<TLocals = unknown> = RequestContext<TLocals> & {
     route?: Route;

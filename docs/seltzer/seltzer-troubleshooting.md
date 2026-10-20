@@ -47,7 +47,11 @@ The path matches a route pattern, but not this method. The `Allow` header lists 
 
 ## `{ "error": "Missing required field: email" }`
 
-`Route.contract.body` (or generated `ApiOperation.body`) marks `email` as `.required`. Empty string and whitespace count as missing. `execute` / the handler did not run.
+`Route.contract.body` (or generated `ApiOperation.body`) marks `email` as `.required`. Empty string and whitespace count as missing. A number still counts as present. `execute` / the handler did not run. `ctx.valid` is not set by this stage. Several missing keys use `Missing required fields: …` in spec key order. A body that is not a plain object is `{ "error": "Request body must be an object" }`.
+
+## `{ "error": "Validation failed", "issues": […] }`
+
+That body comes from `validationError(issues)` inside `replace("validate")`, not from the default stage. `issues[].path` is an array of strings and numbers (`["email"]`, `["tags", 1]`, or `[]`). The handler did not run. `ctx.body` is still the raw input when the handler does run; the parsed value is `ctx.valid`. Replacing `validate` turns off `.required` for every route, including generated ones with no schema in your map.
 
 ## POST `ctx.body` is `undefined`
 

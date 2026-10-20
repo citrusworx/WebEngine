@@ -11,7 +11,17 @@ export type Endpoint = {
         allowSelfSigned?: boolean;
     };
 };
-export type RequestContext<TLocals = unknown> = {
+/**
+ * Values produced by a replacement `validate` stage.
+ * Each field is optional because a stage may parse only the body,
+ * only params, or only the query string.
+ */
+export type ValidatedInput<TBody = unknown, TParams = unknown, TQuery = unknown> = {
+    body?: TBody;
+    params?: TParams;
+    query?: TQuery;
+};
+export type RequestContext<TLocals = unknown, TValid extends ValidatedInput = ValidatedInput> = {
     /**
      * Inbound message. Read `socket` or raw headers when the normalized
      * context is not enough. The body stream is already consumed by `parse`.
@@ -28,7 +38,20 @@ export type RequestContext<TLocals = unknown> = {
     path: string;
     query: Record<string, string>;
     params: Record<string, string>;
+    /**
+     * Raw body from `parse`. JSON values, a UTF-8 string, or `undefined`.
+     * A replacement validator must not replace this with its parsed output;
+     * that output belongs on `valid`.
+     */
     body: unknown;
+    /**
+     * Parsed input from a replacement `validate` stage.
+     * The default stage does not assign this. On a normal request it stays
+     * `undefined` unless an earlier hook set it. `body`, `params`, and
+     * `query` on this object are the parsed values; the same-named fields
+     * on the context stay raw.
+     */
+    valid?: TValid;
     headers: Record<string, string>;
     locals: TLocals;
     options?: {
@@ -40,7 +63,8 @@ export type RequestContext<TLocals = unknown> = {
 /**
  * Optional contract metadata for the `validate` stage.
  * `generateRoutes` copies `ApiOperation` `resource` / `name` / `body` here.
- * Nectarine can later `replace("validate", …)` and read the same field.
+ * These are YAML field specs, not schemas. A replacement validator dispatches
+ * on `method` + `path` or on `name` / `resource` itself.
  */
 export type RouteContract = {
     resource?: string;

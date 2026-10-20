@@ -35,14 +35,15 @@ The feature is more of a direction than a hardened part of the runtime.
 | Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. Params are `decodeURIComponent`. A trailing slash is a different path. Malformed `%` encoding on a matched param is 400. Known path + wrong method is 405 + `Allow`; unknown paths stay 404. |
 | JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. Empty body is `undefined`. Non-JSON content types are a UTF-8 string, not 415. Default body limit is 1 MB (`bodyLimit`, `0` unlimited); over the limit is 413 and reading stops. |
 | `ResponseData` + `send` | Stable-ish | Handlers and hooks return `ResponseData`. Bare values are 500 and are logged (route + returned value). Strings are `text/plain; charset=utf-8`, JSON values are `application/json`, buffers are `application/octet-stream`, unless `Content-Type` is set. 204, 304, and HEAD send no body. Thrown errors are a generic 500; the error is logged, stack only with `listen({ debug: true })`. `logger` defaults to `console.error`. No `ctx.json` / `ctx.send`. Writing `ctx.res` throws. `replace("send")` throws. |
-| Default `validate` (`.required`) | Emerging | Presence-only. Zod is `replace("validate")`. |
-| `generateRoutes` | Emerging | Host `execute` + `response()` brand. |
+| Default `validate` (`.required`) | Emerging | Presence-only. Does not set `ctx.valid`. Failure stays `Missing required field` / `Request body must be an object`. |
+| Replacement `validate` | Emerging | `replace("validate")` sets `ctx.valid` and returns `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement. No schema field on `Route` or `generateRoutes`. |
+| `generateRoutes` | Emerging | Host `execute` + `response()` brand. Copies YAML `contract.body` for the default stage. |
 | CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
 | `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface conformance, strict `ResponseData` conformance. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, and validate-stage conformance. |
 | HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
-| Full contract / response-shape validation | Draft | Reserved for Nectarine via `replace`. |
+| Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
 
 ## What is shipped
 
@@ -56,6 +57,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Stages | `pipeline/stages.ts` | parse…send |
 | Matcher | `pipeline/router.ts` | rank + params |
 | `ResponseData` / `send` / `response()` | `core/response.ts` | string, JSON, or bytes. 204, 304, and HEAD send no body. |
+| `validationError()` | `core/validation.ts` | 400 `{ error: "Validation failed", issues }`. `path` is `(string \| number)[]`. |
 | `generateRoutes` | `generate/generate-routes.ts` | |
 | `client` / `HttpError` | `core/client/client.ts` | |
 | Example server | `src/example.ts` | GET `/` |
@@ -92,7 +94,7 @@ These form the case for Seltzer as the ecosystem’s HTTP engine, not a thin `cr
 
 ## Most promising emerging areas
 
-- richer `validate` (Zod) via `replace` without changing handler signatures
+- host schema libraries via `replace("validate")` (Seltzer does not depend on Zod) without changing handler signatures
 - `generateRoutes` covering more write operations in hosts
 - slash-safe client URL join
 - typed `client` generics
@@ -117,7 +119,7 @@ yarn workspace @citrusworx/seltzer typecheck
 
 ## Recommended positioning right now
 
-> Seltzer 0.8.x is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields, and maps Nectarine `ApiOperation[]` through `generateRoutes`. It is not Express, and it is not the 0.2.0 `ctx.json` listener still described on master.
+> Seltzer 0.8.x is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields (presence only, `ctx.valid` left unset), and maps Nectarine `ApiOperation[]` through `generateRoutes`. Richer checks are `replace("validate")` plus `validationError()`; Zod is not a Seltzer dependency. It is not Express, and it is not the 0.2.0 `ctx.json` listener.
 
 Less accurate positioning:
 
@@ -131,8 +133,8 @@ If you are building with Seltzer today:
 
 - return `{ body }` (and `status` / `headers` when needed). Do not write `ctx.res`, `ctx.json`, or `ctx.send`
 - pass `logger` to `listen` when `console.error` is the wrong place for handler failures. `debug: true` adds stacks to that log only
-- use `ctx.params` / `ctx.body` / `ctx.query`
-- generate routes from operations; replace `validate` when contracts grow
+- use `ctx.params` / `ctx.body` / `ctx.query`. `ctx.valid` stays unset unless your `replace("validate")` assigns it
+- generate routes from operations; replace `validate` when contracts grow, and dispatch on the route inside that stage
 - catch `HttpError` on `client.*`
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 - pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`

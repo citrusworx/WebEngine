@@ -15,7 +15,7 @@ The strongest part of Seltzer today is the request engine: parametric routes, JS
 The weakest areas are still:
 
 - HTTPS listen (plain HTTP host bind and timeouts shipped)
-- full contract validation (reserved for `replace("validate")`)
+- response-shape validation (the `replace("validate")` hook and `validationError()` are documented; Seltzer still has no schema library)
 - client URL joining and abort/timeout
 
 0.8.x is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior.
@@ -44,7 +44,7 @@ YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is
 
 ### 5. The design doc is rationale, not a backlog of missing stages
 
-[seltzer-design.md](./seltzer-design.md) still explains why not middleware. Most of its lifecycle diagram is source. Remaining forks (Zod, HTTPS, `after`) belong on this roadmap.
+[seltzer-design.md](./seltzer-design.md) still explains why not middleware. Most of its lifecycle diagram is source. Remaining forks (a bundled schema library, HTTPS, `after`) belong on this roadmap. Zod stays an application dependency used through `replace("validate")`.
 
 ---
 
@@ -52,7 +52,7 @@ YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is
 
 ### 1. `validate` is presence-only
 
-`.required` closed the “no contracts” gap. Type and format checks are still host work. Highest-value increment: a Nectarine `replace("validate")` that reads the same `Route.contract` field.
+`.required` closed the “no contracts” gap. It is presence-only and does not set `ctx.valid`. Type and format checks are still host work: `replace("validate")`, `ctx.valid`, and `validationError(issues)`. `Route.contract` is still YAML strings, not a schema. A Nectarine-owned schema adapter is not in Seltzer.
 
 ### 2. `client` URL join is still naive
 
@@ -96,7 +96,7 @@ Examples that return `ResponseData`, tutorials that use `:id` and `ctx.body`, an
 
 ### Priority 2. Richer validate via `replace`
 
-Do not add Zod inside Seltzer’s default stage if Nectarine owns contracts. Document the hook; implement the replacement in the host.
+Do not add Zod inside Seltzer’s default stage. The hook is documented (`validationError`, `ctx.valid`, a Zod `safeParse` example). Implement the replacement in the host. `replace` removes the `.required` checks.
 
 ### Priority 3. Client join / abort
 
@@ -111,7 +111,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 ## Recommended build order
 
 1. Keep docs and examples locked to source (ongoing).
-2. Host `replace("validate")` for real contracts.
+2. Host `replace("validate")` for real contracts (the Seltzer side of that hook is documented).
 3. `client` slash-safe join + AbortSignal.
 4. Only then: HTTPS listen or `after(name)` — not both at once.
 
@@ -136,7 +136,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 | `/users/:id` → `ctx.params` | Trailing-slash normalize |
 | Handler `return { status, headers, body }` | Bare-payload wrapping (intentionally rejected) |
 | `parse` JSON + 400 | form-urlencoded / multipart |
-| Default `.required` validate | Zod / response-shape contracts |
+| Default `.required` validate; `ctx.valid`; `validationError()`; Zod shown as a host `replace("validate")` | Response-shape checks; a schema bundled in Seltzer |
 | `generateRoutes` + `response()` | Generating OpenAPI |
 | `client.*` + `HttpError` + undici TLS | Slash-safe join, timeouts |
 | CORS + OPTIONS 204 | Per-route CORS overrides |

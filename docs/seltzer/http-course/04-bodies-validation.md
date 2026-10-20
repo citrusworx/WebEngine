@@ -25,7 +25,9 @@ The default limit is 1 MB (`bodyLimit` on `listen`, `0` for unlimited). A larger
 
 Seltzer's parser maps read/parse failures to a 400 “Invalid JSON body” response. This message can be less precise than the underlying cause.
 
-The built-in validator recognizes `.required` in a field spec. It rejects absent, null, and blank-string values. It **does not enforce the word `string`** in `string.required`: numbers, booleans, arrays, and objects can count as present. A contract describes intention; the shipped validator only implements part of that intention.
+The built-in validator recognizes `.required` in a field spec. It rejects absent, null, and blank-string values. It **does not enforce the word `string`** in `string.required`: numbers, booleans, arrays, and objects can count as present. A contract describes intention; the shipped validator only implements part of that intention. It does not set `ctx.valid`, and its 400 body is `Missing required field` (or `Request body must be an object`), not `validationError()`.
+
+Richer checks belong in `replace("validate", …)`. That stage receives `ctx`, returns nothing to continue, or returns `validationError(issues)` for 400 `{ error: "Validation failed", issues }` where `path` is `(string | number)[]`. Put the parsed value on `ctx.valid` (`{ body?, params?, query? }`) and leave `ctx.body` raw. Any other return is 500 and is logged. A throw is a generic 500, logged. Seltzer does not import Zod. The Zod `safeParse` recipe is in [Pipeline](../seltzer-pipeline.md#replacement-validate). `Route` and `generateRoutes` still carry YAML strings, not schemas, so the replacement dispatches per route itself. Replacing the stage turns the presence checks off.
 
 ## Build a trustworthy application boundary
 

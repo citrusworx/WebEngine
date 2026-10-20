@@ -113,7 +113,7 @@ If you only need `listen(3000)`, exercise 06 is the wrong tab.
 
 ## Stay complementary to Nectarine
 
-Seltzer should not grow a YAML compiler or a query DSL. `generateRoutes` is the join. If a pattern needs a richer contract, `replace("validate", …)` — do not fold Zod into every handler.
+Seltzer should not grow a YAML compiler, a query DSL, or a schema dependency. `generateRoutes` is the join. If a pattern needs a richer contract, `replace("validate", …)`, set `ctx.valid`, and return `validationError(issues)`. Do not fold Zod into every handler, and do not add Zod to Seltzer.
 
 ## Related
 

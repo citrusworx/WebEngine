@@ -120,17 +120,38 @@ describe("validateStage", () => {
     });
 
     it("continues when required keys are present and non-empty", () => {
-        expect(
-            validateStage(
-                fakeCtx({
-                    body: { email: "ada@example.com", name: "Ada" },
-                    route: routeWithBody({
-                        name: "string",
-                        email: "string.required",
-                    }),
-                }),
-            ),
-        ).toBeUndefined();
+        const body = { email: "ada@example.com", name: "Ada", extra: 1 };
+        const ctx = fakeCtx({
+            body,
+            route: routeWithBody({
+                name: "string",
+                email: "string.required",
+            }),
+        });
+
+        expect(validateStage(ctx)).toBeUndefined();
+        expect(ctx.body).toBe(body);
+        expect(ctx.valid).toBeUndefined();
+    });
+
+    it("does not read or write ctx.valid", () => {
+        const preset = { body: { email: "kept" } };
+        const passing = fakeCtx({
+            body: { email: "ada@example.com" },
+            route: routeWithBody({ email: "string.required" }),
+            valid: preset,
+        });
+
+        expect(validateStage(passing)).toBeUndefined();
+        expect(passing.valid).toBe(preset);
+
+        const missing = fakeCtx({
+            body: {},
+            route: routeWithBody({ email: "string.required" }),
+            valid: preset,
+        });
+        expect(validateStage(missing)?.status).toBe(400);
+        expect(missing.valid).toBe(preset);
     });
 
     it("no-ops for body specs that have no .required keys", () => {
