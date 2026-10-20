@@ -12,6 +12,7 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 - `generateRoutes`
 - `response`, `send`, `isResponseData`, `isExplicitResponse`
 - types: `Route`, `RouteContract`, `RequestContext`, `Endpoint`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`
+- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`
 
 There are no subpath exports. `HandlerConfig` is used by `.handler()` but is not re-exported from the package root.
 
@@ -73,12 +74,41 @@ listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.
 
 Throws `Seltzer.listen requires a Node.js runtime.` when `process.versions.node` is missing.
 
-Creates `http.createServer`, applies CORS, answers `OPTIONS` with 204, runs the pipeline. Default log: `Seltzer server listening on port ${port}`. Override with `onListening`.
+Creates `http.createServer`, applies CORS, answers `OPTIONS` with 204, runs the pipeline, and returns that `http.Server`.
+
+**Breaking (next minor, not in the 0.8.1 tarball):** the default bind is `127.0.0.1`, not Node's all-interfaces default. Pass `host: "0.0.0.0"` or `host: "::"` to accept connections from other machines. An empty `host` throws.
+
+Header, request, and keep-alive timeouts are on:
+
+| Option | Default | Meaning |
+|---|---|---|
+| `headersTimeout` | `20000` | Milliseconds to receive complete headers. `0` disables. |
+| `requestTimeout` | `30000` | Milliseconds for the whole request, including the body. `0` disables. Must be `0` or `>= headersTimeout`. |
+| `keepAliveTimeout` | `5000` | Idle keep-alive before the socket is destroyed. `0` disables. Must be `< headersTimeout` when headers timeout is on. |
+
+Those numbers are `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`. `DEFAULT_LISTEN_HOST` is `"127.0.0.1"`. Non-integers and negative timeouts throw before the server binds. The legacy `server.timeout` is left at Node's `0` so it does not fight `requestTimeout`.
+
+`onListening(port)` receives the bound TCP port (`listen(0)` reports the ephemeral port). When `onListening` is omitted, the default log is `Seltzer server listening on http://<host>:<port>`.
+
+Shutdown is the returned server:
+
+```ts
+const server = app.listen(3000);
+server.close((error) => {
+  // accepting has stopped; existing requests can finish
+});
+```
+
+`close()` waits for open connections. Idle keep-alive clients hold that callback until `keepAliveTimeout` unless the host also calls `server.closeIdleConnections()`. Seltzer does not install `SIGTERM` handlers.
 
 ```ts
 type ListenOptions<TLocals = unknown> = {
+  host?: string;
   locals?: TLocals;
   cors?: CorsOptions;
+  headersTimeout?: number;
+  requestTimeout?: number;
+  keepAliveTimeout?: number;
   onListening?: (port: number) => void;
 };
 
@@ -90,8 +120,6 @@ type CorsOptions = {
 ```
 
 CORS runs only when the request has `Origin`. If `cors.origin` is set, it must equal that origin; otherwise the request origin is reflected. Default methods: `GET,POST,PUT,PATCH,DELETE,OPTIONS`. Default headers: `Content-Type`. `Vary: Origin` is set when CORS headers are applied.
-
-Returns the `http.Server`.
 
 ## `RequestContext`
 
@@ -197,7 +225,7 @@ type Endpoint = {
 | `app.use` / `app.get` | Missing |
 | `ctx.json` | Removed in 0.4.0 |
 | `app.pipeline` | Use `before` / `replace` on `Seltzer` |
-| `src/core/server/server.ts` | Unused hello-world server |
+| `src/core/server/server.ts` | Removed. It was an unused hello-world `createServer` |
 | HTTPS `listen` | Missing — `http.createServer` only |
 | `after(name, stage)` | Missing — only `before` |
 

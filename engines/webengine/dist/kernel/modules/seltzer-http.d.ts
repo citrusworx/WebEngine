@@ -22,6 +22,12 @@ export type StartSeltzerFromKernelOptions<TContext extends RequestContext = Requ
     /** Extra hand routes (health, KiwiPress, …) registered before generated ones. */
     routes?: readonly Route<TContext>[];
     /**
+     * Bind address forwarded to `Seltzer.listen`. Omit to keep Seltzer's
+     * default (`127.0.0.1`). Pass `"0.0.0.0"` when this process must accept
+     * connections from other machines.
+     */
+    host?: string;
+    /**
      * Called with the bound TCP port after listen. When omitted, logs
      * `Seltzer server listening on port <bound>`.
      */
@@ -57,6 +63,7 @@ export declare function resolveSeltzerListenPort(ctx: KernelContext, port?: numb
  * const result = await runKernelLifecycle(cwd);
  * const http = await startSeltzerFromKernel(result, {
  *   port: 0,
+ *   // host omitted → 127.0.0.1. Pass "0.0.0.0" for a public bind.
  *   cors: { origin: "http://localhost:5173" },
  *   routes: [{ method: "GET", path: "/health", handler: () => ({ body: { ok: true } }) }],
  * });

@@ -81,6 +81,7 @@ function listenReady(app, port, options) {
             resolve({ server, port: bound });
         };
         const server = app.listen(port, {
+            host: options.host,
             cors: options.cors,
             locals: options.locals,
             onListening: () => undefined,
@@ -117,6 +118,7 @@ function requireNectarineHandle(ctx) {
  * const result = await runKernelLifecycle(cwd);
  * const http = await startSeltzerFromKernel(result, {
  *   port: 0,
+ *   // host omitted → 127.0.0.1. Pass "0.0.0.0" for a public bind.
  *   cors: { origin: "http://localhost:5173" },
  *   routes: [{ method: "GET", path: "/health", handler: () => ({ body: { ok: true } }) }],
  * });
@@ -125,7 +127,7 @@ function requireNectarineHandle(ctx) {
 export async function startSeltzerFromKernel(source, options = {}) {
     const ctx = kernelContextOf(source);
     const handle = requireNectarineHandle(ctx);
-    const { port: portOption, cors, locals, routes: extraRoutes, onListening, resources: resourceOption, ...routeOptions } = options;
+    const { port: portOption, host, cors, locals, routes: extraRoutes, onListening, resources: resourceOption, ...routeOptions } = options;
     const resources = resourceOption && resourceOption.length > 0
         ? resourceOption
         : defaultNectarineHttpResources(handle);
@@ -141,6 +143,7 @@ export async function startSeltzerFromKernel(source, options = {}) {
     }
     const requestedPort = resolveSeltzerListenPort(ctx, portOption);
     const listening = await listenReady(app, requestedPort, {
+        host,
         cors,
         locals,
         onListening,

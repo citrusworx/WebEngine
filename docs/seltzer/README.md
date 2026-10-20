@@ -289,7 +289,7 @@ app.handler({
 
 ### 12. Node-only listen
 
-`listen` throws if `process.versions.node` is missing. Plain `http.createServer`, not HTTPS.
+`listen` throws if `process.versions.node` is missing. Plain `http.createServer`, not HTTPS. Default bind is `127.0.0.1`; pass `host` for any other interface. Header, request, and keep-alive timeouts are on (20s / 30s / 5s).
 
 ## Mental model
 

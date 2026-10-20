@@ -96,7 +96,7 @@ Walking YAML and registering every `endpoint` as a **literal** without compiling
 
 The matcher does not look at host. Virtual hosts are your `ctx.headers.host` check.
 
-`listen(port)` binds the default host for `server.listen(port)`. There is no `listen({ host, port })` overload. It **does** return the `http.Server`.
+`listen(port)` binds `127.0.0.1`. Pass `listen(port, { host })` to choose another address (`"0.0.0.0"` or `"::"` for a public bind). There is no `listen({ port, host })` object overload. It returns the `http.Server`; `server.close()` stops accepting new connections. Header, request, and keep-alive timeouts are on (20s / 30s / 5s) and overridable on the same options object. See [API](./seltzer-api.md).
 
 ## No middleware, no router groups, no unroute
 

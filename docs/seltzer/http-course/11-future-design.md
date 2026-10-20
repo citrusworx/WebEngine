@@ -100,7 +100,7 @@ The boundary should choose public error content independently from internal logs
 
 ## E. Proposed: explicit listen and shutdown policy
 
-**Current evidence:** `listen(port, options)` returns Node's server, but does not accept a host, TLS configuration, or an integrated drain deadline. The host can already call `server.close()`.
+**Current evidence:** `listen(port, options)` returns Node's server, binds `127.0.0.1` unless `host` is set, and turns on header (20s), request (30s), and keep-alive (5s) timeouts. The host calls `server.close()`; idle keep-alive sockets need `closeIdleConnections()` if the callback must not wait. TLS configuration and an integrated drain deadline are still absent. The object-only shape below was not adopted.
 
 Candidate API, **proposed only**:
 

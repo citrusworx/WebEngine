@@ -34,6 +34,12 @@ export type StartSeltzerFromKernelOptions<
     /** Extra hand routes (health, KiwiPress, …) registered before generated ones. */
     routes?: readonly Route<TContext>[];
     /**
+     * Bind address forwarded to `Seltzer.listen`. Omit to keep Seltzer's
+     * default (`127.0.0.1`). Pass `"0.0.0.0"` when this process must accept
+     * connections from other machines.
+     */
+    host?: string;
+    /**
      * Called with the bound TCP port after listen. When omitted, logs
      * `Seltzer server listening on port <bound>`.
      */
@@ -128,6 +134,7 @@ function listenReady(
     app: Seltzer,
     port: number,
     options: {
+        host?: string;
         cors?: CorsOptions;
         locals?: unknown;
         onListening?: (port: number) => void;
@@ -150,6 +157,7 @@ function listenReady(
         };
 
         const server = app.listen(port, {
+            host: options.host,
             cors: options.cors,
             locals: options.locals,
             onListening: () => undefined,
@@ -195,6 +203,7 @@ function requireNectarineHandle(ctx: KernelContext): NectarineModuleHandle {
  * const result = await runKernelLifecycle(cwd);
  * const http = await startSeltzerFromKernel(result, {
  *   port: 0,
+ *   // host omitted → 127.0.0.1. Pass "0.0.0.0" for a public bind.
  *   cors: { origin: "http://localhost:5173" },
  *   routes: [{ method: "GET", path: "/health", handler: () => ({ body: { ok: true } }) }],
  * });
@@ -210,6 +219,7 @@ export async function startSeltzerFromKernel<
     const handle = requireNectarineHandle(ctx);
     const {
         port: portOption,
+        host,
         cors,
         locals,
         routes: extraRoutes,
@@ -236,6 +246,7 @@ export async function startSeltzerFromKernel<
 
     const requestedPort = resolveSeltzerListenPort(ctx, portOption);
     const listening = await listenReady(app, requestedPort, {
+        host,
         cors,
         locals,
         onListening,

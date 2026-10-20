@@ -74,7 +74,7 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 
 **Ready when:**
 
-- [ ] `init` / `route` / `listen` / `before` / `replace` match the status matrix (**Stable-ish** core per [seltzer-status.md](../seltzer/seltzer-status.md))
+- [x] `init` / `route` / `listen` / `before` / `replace` match the status matrix (**Stable-ish** core per [seltzer-status.md](../seltzer/seltzer-status.md)). Proven by `libraries/seltzer/src/core/core-api.conformance.test.ts`: `init` returns a fresh app, `route` compiles params and ranks `/items/new` ahead of `/items/:id`, `listen` returns `http.Server` on `127.0.0.1` with default timeouts and a working `close()`, and `before` / `replace` insert or swap stages and throw `Unknown pipeline stage "…"` on an unknown name. Public bind is the `host` option. Leftover `src/core/server/server.ts` is deleted
 - [ ] Parametric routes, static-prefix ranking, JSON parse + 400, and CORS / OPTIONS are documented and tested
 - [ ] Handlers must return `ResponseData`; bare values are 500; no live `ctx.json` write API in current docs
 - [ ] Default `validate` (`.required`) is documented; Zod (or richer) validation is shown as `replace("validate")`

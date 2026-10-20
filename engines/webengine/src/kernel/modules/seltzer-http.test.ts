@@ -199,6 +199,7 @@ describe("startSeltzerFromKernel", () => {
         expect(http.port).not.toBe(9091);
         expect(http.app).toBeDefined();
         expect(http.server.listening).toBe(true);
+        expect(http.server.address()).toMatchObject({ address: "127.0.0.1" });
 
         const res = await request(`http://127.0.0.1:${http.port}/api/products`);
         expect(res.status).toBe(200);
@@ -237,6 +238,7 @@ describe("startSeltzerFromKernel", () => {
 
         const http = await startSeltzerFromKernel(ctx, {
             port: 0,
+            host: "0.0.0.0",
             resources: ["course"],
             cors: {
                 origin: "http://localhost:5173",
@@ -255,6 +257,7 @@ describe("startSeltzerFromKernel", () => {
             onListening: () => undefined,
         });
         httpHandles.push(http);
+        expect(http.server.address()).toMatchObject({ address: "0.0.0.0" });
 
         const health = await request(`http://127.0.0.1:${http.port}/health`);
         expect(health.status).toBe(200);
