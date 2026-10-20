@@ -1,4 +1,12 @@
-import { isResponseData, type ResponseData } from "../core/response.js";
+import {
+    genericInternalError,
+    invalidReturnResponse,
+    logInvalidReturn,
+    logThrown,
+    routePhrase,
+} from "../core/log.js";
+import { guardRawResponse } from "../core/raw-response.js";
+import { isResponseData } from "../core/response.js";
 import type { CompiledRoute } from "./router.js";
 import {
     contextStage,
@@ -15,16 +23,6 @@ export type { PipelineContext, PipelineEntry, Stage, StageName } from "./types.j
 export { STAGE_NAMES } from "./types.js";
 export type { CompiledRoute } from "./router.js";
 export { compileRoute, comparePathRank, matchRoute, rankPath } from "./router.js";
-
-function internalError(error: unknown): ResponseData {
-    return {
-        status: 500,
-        body: {
-            error: "Internal Server Error",
-            message: error instanceof Error ? error.message : String(error),
-        },
-    };
-}
 
 export class Pipeline {
     private readonly entries: PipelineEntry[];
@@ -44,17 +42,24 @@ export class Pipeline {
 
     /** Insert `stage` immediately before the builtin stage named `name`. */
     before(name: StageName, stage: Stage): this {
-        this.entries.splice(this.builtinIndex(name), 0, { name, stage });
+        this.entries.splice(this.builtinIndex(name), 0, { name, stage, user: true });
         return this;
     }
 
     /**
      * Swap the builtin stage named `name`. Inserted `before` stages are left in place.
      * The replacement stays builtin so later `before(name, …)` still finds it.
+     * `send` cannot be replaced: the runtime is the only writer.
      */
     replace(name: StageName, stage: Stage): this {
+        if (name === "send") {
+            throw new Error(
+                'Cannot replace pipeline stage "send". Handlers and hooks return ResponseData; Seltzer writes the HTTP response.',
+            );
+        }
+
         const index = this.builtinIndex(name);
-        this.entries[index] = { name, stage, builtin: true };
+        this.entries[index] = { name, stage, builtin: true, user: true };
         return this;
     }
 
@@ -66,15 +71,32 @@ export class Pipeline {
                 continue;
             }
 
+            const realRes = ctx.res;
+            if (entry.user && ctx.res) {
+                ctx.res = guardRawResponse(ctx.res);
+            }
+
             try {
                 const result = await entry.stage(ctx);
-                if (result !== undefined && isResponseData(result)) {
-                    ctx.response = result;
-                    skipToSend = true;
+                if (result !== undefined) {
+                    if (isResponseData(result)) {
+                        ctx.response = result;
+                        skipToSend = true;
+                    } else {
+                        const kind = entry.user ? "hook" : "stage";
+                        logInvalidReturn(ctx, result, `${routePhrase(ctx)} ${kind} "${entry.name}"`);
+                        ctx.response = invalidReturnResponse();
+                        skipToSend = true;
+                    }
                 }
             } catch (error) {
-                ctx.response = internalError(error);
+                logThrown(ctx, entry.user ? `hook "${entry.name}"` : `stage "${entry.name}"`, error);
+                ctx.response = genericInternalError();
                 skipToSend = true;
+            } finally {
+                if (entry.user && realRes) {
+                    ctx.res = realRes;
+                }
             }
         }
     }

@@ -69,32 +69,71 @@ function isJsonBody(body) {
     }
     return true;
 }
+const TEXT_CONTENT_TYPE = "text/plain; charset=utf-8";
+const JSON_CONTENT_TYPE = "application/json";
+const BYTES_CONTENT_TYPE = "application/octet-stream";
+/** 204 and 304 must not include a message body. */
+function statusOmitsBody(status) {
+    return status === 204 || status === 304;
+}
+function setDefaultContentType(headers, value) {
+    if (!hasContentType(headers)) {
+        headers["Content-Type"] = value;
+    }
+}
+function hasHeader(headers, name) {
+    const lower = name.toLowerCase();
+    return Object.keys(headers).some((key) => key.toLowerCase() === lower);
+}
+function byteLength(payload) {
+    if (typeof payload === "string") {
+        return Buffer.byteLength(payload);
+    }
+    return payload.byteLength;
+}
 function encodeBody(body, headers) {
     if (body === undefined) {
         return undefined;
     }
     if (typeof body === "string") {
+        setDefaultContentType(headers, TEXT_CONTENT_TYPE);
         return body;
     }
     if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+        setDefaultContentType(headers, BYTES_CONTENT_TYPE);
         return body;
     }
     if (isJsonBody(body) || typeof body === "number" || typeof body === "boolean") {
-        if (!hasContentType(headers)) {
-            headers["Content-Type"] = "application/json";
-        }
+        setDefaultContentType(headers, JSON_CONTENT_TYPE);
         return JSON.stringify(body);
     }
     return String(body);
 }
-/** Apply ResponseData defaults and write the HTTP response. No-op if headers were already sent. */
-export function send(res, data) {
+/**
+ * Apply ResponseData defaults and write the HTTP response.
+ * No-op if headers were already sent.
+ * Status 204 and 304 never include a body. `head: true` never includes a body.
+ */
+export function send(res, data, options = {}) {
     if (res.headersSent) {
         return;
     }
     const status = data.status ?? 200;
     const headers = { ...(data.headers ?? {}) };
+    if (statusOmitsBody(status)) {
+        res.writeHead(status, headers);
+        res.end();
+        return;
+    }
     const payload = encodeBody(data.body, headers);
+    if (options.head) {
+        if (payload !== undefined && !hasHeader(headers, "content-length")) {
+            headers["Content-Length"] = String(byteLength(payload));
+        }
+        res.writeHead(status, headers);
+        res.end();
+        return;
+    }
     res.writeHead(status, headers);
     res.end(payload);
 }

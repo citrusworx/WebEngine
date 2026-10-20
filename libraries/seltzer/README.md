@@ -46,13 +46,13 @@ app.route({
 app.listen(3000);
 ```
 
-Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime writes the HTTP response. There is no writing `ctx.json` helper. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`.
+Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime writes the HTTP response. There is no `ctx.json` or `ctx.send` helper; calling either throws. Writing `ctx.res` (`writeHead`, `end`, `setHeader`, assignment) throws. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`. A wrong return is **500** and is logged with the route and the returned value.
 
-`status` defaults to `200`. Object and array bodies are JSON-serialized with `Content-Type: application/json` unless you set that header yourself.
+`status` defaults to `200`. Objects, arrays, numbers, booleans, and `null` are JSON with `Content-Type: application/json`. Strings are `text/plain; charset=utf-8`. `Buffer` and `Uint8Array` are raw bytes with `Content-Type: application/octet-stream`. Set `headers["Content-Type"]` (any casing) to override. Status **204** and **304**, and **HEAD** requests, send no body. A thrown error is **500** `{ error: "Internal Server Error" }` with no message and no stack. The error is logged. Pass `listen(port, { debug: true })` to include the stack in that log only. `logger` defaults to `console.error`.
 
 `listen` returns the Node `http.Server`. The default bind is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections from other machines. Header, request, and keep-alive timeouts default to 20s, 30s, and 5s (`0` disables that timer). `server.close()` stops accepting; idle keep-alive sockets delay the callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`.
 
-`listen` also accepts `locals` (available on `ctx.locals`), `bodyLimit`, and `cors`. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited).
+`listen` also accepts `locals` (available on `ctx.locals`), `bodyLimit`, `cors`, `logger`, and `debug`. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited).
 
 ## Pipeline
 
@@ -67,10 +67,10 @@ Each request runs through a named pipeline:
 | `route` | Match a registered route and fill `params` (`decodeURIComponent`). No path match → 404. Known path, wrong method → 405 + `Allow`. Malformed `%` encoding in a param → 400. |
 | `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Failure → 400. No specs → no-op. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
-| `response` | Reject non-`ResponseData` handler results with 500. |
-| `send` | Write the HTTP response via `send()`. |
+| `response` | Reject non-`ResponseData` handler results with 500 and a log line. |
+| `send` | Write the HTTP response via `send()`. Cannot be replaced. |
 
-`before(name, stage)` inserts immediately before a named builtin. `replace(name, stage)` swaps that builtin. Returning `ResponseData` from a stage skips the rest of the pipeline and jumps to `send`. Stages mutate the shared context in place; return `void`/`undefined` to continue.
+`before(name, stage)` inserts immediately before a named builtin. `replace(name, stage)` swaps that builtin. `replace("send")` throws: the runtime is the only writer. Returning `ResponseData` from a stage skips the rest of the pipeline and jumps to `send`. Any other returned value is 500. Stages mutate the shared context in place; return `void`/`undefined` to continue.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";

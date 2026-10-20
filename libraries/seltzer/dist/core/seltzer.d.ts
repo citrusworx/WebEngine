@@ -1,12 +1,13 @@
 import http from "node:http";
-import { isExplicitResponse, isResponseData, response, send, type ResponseData } from "./response.js";
+import { isExplicitResponse, isResponseData, response, send, type ResponseData, type SendOptions } from "./response.js";
 import { type HandlerConfig, type ListenOptions, type RequestContext, type Route } from "./types.js";
 import { type Stage, type StageName } from "../pipeline/index.js";
 export type { CorsOptions, Endpoint, ListenOptions, RequestContext, Route, RouteContract, } from "./types.js";
 export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
-export type { ResponseData };
+export type { ResponseData, SendOptions };
+export type { SeltzerLogger } from "./log.js";
 export { isExplicitResponse, isResponseData, response, send };
 export declare class Seltzer {
     private routes;
@@ -44,6 +45,10 @@ export declare class Seltzer {
      * CORS headers are off unless `cors` is set. When it is set, `OPTIONS`
      * is a 204 preflight before the pipeline. `bodyLimit` defaults to
      * 1 MB (`0` is unlimited). A larger body is 413 and is not read further.
+     *
+     * `logger` receives one line for a bad handler/hook return or a thrown
+     * error. The default is `console.error`. `debug: true` adds stack traces
+     * to those lines. The HTTP body of a thrown error stays generic.
      */
     listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
     private handleRequest;

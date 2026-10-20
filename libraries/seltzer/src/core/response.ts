@@ -97,6 +97,34 @@ function isJsonBody(body: unknown): boolean {
     return true;
 }
 
+const TEXT_CONTENT_TYPE = "text/plain; charset=utf-8";
+const JSON_CONTENT_TYPE = "application/json";
+const BYTES_CONTENT_TYPE = "application/octet-stream";
+
+/** 204 and 304 must not include a message body. */
+function statusOmitsBody(status: number): boolean {
+    return status === 204 || status === 304;
+}
+
+function setDefaultContentType(headers: Record<string, string>, value: string): void {
+    if (!hasContentType(headers)) {
+        headers["Content-Type"] = value;
+    }
+}
+
+function hasHeader(headers: Record<string, string>, name: string): boolean {
+    const lower = name.toLowerCase();
+    return Object.keys(headers).some((key) => key.toLowerCase() === lower);
+}
+
+function byteLength(payload: string | Buffer | Uint8Array): number {
+    if (typeof payload === "string") {
+        return Buffer.byteLength(payload);
+    }
+
+    return payload.byteLength;
+}
+
 function encodeBody(
     body: unknown,
     headers: Record<string, string>,
@@ -106,33 +134,60 @@ function encodeBody(
     }
 
     if (typeof body === "string") {
+        setDefaultContentType(headers, TEXT_CONTENT_TYPE);
         return body;
     }
 
     if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+        setDefaultContentType(headers, BYTES_CONTENT_TYPE);
         return body;
     }
 
     if (isJsonBody(body) || typeof body === "number" || typeof body === "boolean") {
-        if (!hasContentType(headers)) {
-            headers["Content-Type"] = "application/json";
-        }
-
+        setDefaultContentType(headers, JSON_CONTENT_TYPE);
         return JSON.stringify(body);
     }
 
     return String(body);
 }
 
-/** Apply ResponseData defaults and write the HTTP response. No-op if headers were already sent. */
-export function send(res: ServerResponse, data: ResponseData): void {
+export type SendOptions = {
+    /**
+     * Write the headers a GET would send, including `Content-Length` of the
+     * encoded body, and write no bytes. Used for HEAD.
+     */
+    head?: boolean;
+};
+
+/**
+ * Apply ResponseData defaults and write the HTTP response.
+ * No-op if headers were already sent.
+ * Status 204 and 304 never include a body. `head: true` never includes a body.
+ */
+export function send(res: ServerResponse, data: ResponseData, options: SendOptions = {}): void {
     if (res.headersSent) {
         return;
     }
 
     const status = data.status ?? 200;
     const headers = { ...(data.headers ?? {}) };
+
+    if (statusOmitsBody(status)) {
+        res.writeHead(status, headers);
+        res.end();
+        return;
+    }
+
     const payload = encodeBody(data.body, headers);
+
+    if (options.head) {
+        if (payload !== undefined && !hasHeader(headers, "content-length")) {
+            headers["Content-Length"] = String(byteLength(payload));
+        }
+        res.writeHead(status, headers);
+        res.end();
+        return;
+    }
 
     res.writeHead(status, headers);
     res.end(payload);

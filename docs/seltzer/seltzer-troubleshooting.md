@@ -6,9 +6,15 @@ Related: [Anti-patterns](./seltzer-anti-patterns.md), [Request and response](./s
 
 ## `{ "error": "Internal Server Error", "message": "Handler must return ResponseData…" }`
 
-You returned a bare object, array, or string. Wrap it: `{ body: value }`. Extra keys (`{ ok: true }`) also fail `isResponseData`.
+You returned a bare object, array, string, `undefined`, or a wrong shape (`status` not a number, header values not strings, extra keys). Wrap it: `{ body: value }`. `{ ok: true }` fails `isResponseData`. `{}` is a valid empty `ResponseData`.
 
-This is **not** a hang. 0.2.0 hung when you returned `{ status, body }`; 0.8.x sends 500 instead if the shape is wrong, and sends the body if the shape is right.
+The same 500 is logged with the route and the returned value (`logger`, default `console.error`). This is **not** a hang. 0.2.0 hung when you returned `{ status, body }`; the runtime sends 500 instead if the shape is wrong, and sends the body if the shape is right.
+
+## `{ "error": "Internal Server Error" }` with no `message`
+
+A handler or hook threw. The body does not include the error message or the stack. Read the log line. Pass `listen(port, { debug: true })` to add the stack to that line only. Pass `logger` to send the line somewhere other than `console.error`.
+
+Return `ResponseData` for a domain error. A throw is always this generic 500.
 
 ## `{ "error": "Not Found" }` when the handler exists
 
@@ -16,7 +22,7 @@ Matching is method + compiled path, case-sensitive.
 
 | You registered | Request | Result |
 |---|---|---|
-| `GET` `/notes` | `POST /notes` | 404 |
+| `GET` `/notes` | `POST /notes` | 405 + `Allow` |
 | `/notes` | `/notes/` | 404 |
 | `get` `/health` | `GET /health` | 404 (`req.method` is `"GET"`) |
 | `/notes/:id` | `/notes/1` | **match** — `{ id: "1" }` |
@@ -71,7 +77,7 @@ Pass `cors` to `listen`. Without it, there are no CORS headers and `OPTIONS` is 
 
 ## Extra CORS headers on `ResponseData` plus `listen({ cors })`
 
-Usually redundant. If you `writeHead` yourself, `send` no-ops and the body may vanish.
+Usually redundant. `writeHead` on `ctx.res` throws. Put extra headers on the returned `ResponseData`.
 
 ## Port already in use
 

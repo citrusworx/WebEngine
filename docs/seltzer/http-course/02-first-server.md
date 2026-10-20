@@ -56,13 +56,13 @@ The inner `{ message: "Hello, HTTP!" }` is the **payload**. It becomes the JSON 
 
 The second result fails Seltzer's shape check. Keeping the response description separate lets the handler decide what to send without knowing how Node writes bytes.
 
-Omitting `status` selects 200. Object bodies are JSON-encoded. String bodies are sent as strings; specify `Content-Type: text/plain; charset=utf-8` when returning text. Our 204 responses omit the body.
+Omitting `status` selects 200. Object bodies are JSON-encoded. String bodies are `text/plain; charset=utf-8` unless you set `Content-Type`. Our 204 responses omit the body.
 
 ## Developer view: response ownership
 
 Read [seltzer.ts](../../../libraries/seltzer/src/core/seltzer.ts), then [response.ts](../../../libraries/seltzer/src/core/response.ts). The listener creates a context and runs the pipeline; the handler returns data; `send` encodes it and writes the response.
 
-`ctx.res` remains accessible, but our normal handlers do not write to it. Mixing `res.end()` with a returned description creates competing response owners. The current `send` skips writing if headers were already sent; that guard does not make mixed ownership reliable.
+`ctx.res` remains readable, but writing it throws. Return `ResponseData` and let `send` own the socket.
 
 The [source map](./source-map.md) links every major part of this flow.
 

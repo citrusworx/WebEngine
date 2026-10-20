@@ -68,7 +68,7 @@ app.listen(3000);
 
 That is `libraries/seltzer/src/example.ts`. Package version today: **0.8.1**. Requires Node 18+.
 
-Handlers return `ResponseData`. The runtime writes the HTTP response. There is no writing `ctx.json` helper. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`.
+Handlers and hooks return `ResponseData`. The runtime writes the HTTP response. `ctx.json` and `ctx.send` are gone (calling them throws). Writing `ctx.res` throws. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`. A wrong return is 500 and is logged with the route and the value.
 
 ## What it can do
 
@@ -76,7 +76,7 @@ The sections below are the capability showcase. Every snippet matches `libraries
 
 ### 1. JSON GET with `ResponseData`
 
-`status` defaults to `200`. Object and array bodies are JSON with `Content-Type: application/json` unless you set that header yourself.
+`status` defaults to `200`. Objects, arrays, numbers, booleans, and `null` are JSON with `Content-Type: application/json`. Strings are `text/plain; charset=utf-8`. `Buffer` / `Uint8Array` are raw bytes with `application/octet-stream`. Set `Content-Type` yourself to override. 204, 304, and HEAD send no body. A thrown error is `{ error: "Internal Server Error" }` with nothing else; the detail is logged (`logger`, default `console.error`; stacks only with `debug: true`).
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";

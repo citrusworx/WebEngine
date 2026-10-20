@@ -92,6 +92,8 @@ Those numbers are `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, an
 
 `onListening(port)` receives the bound TCP port (`listen(0)` reports the ephemeral port). When `onListening` is omitted, the default log is `Seltzer server listening on http://<host>:<port>`.
 
+`logger` receives one string when a handler or hook returns a non-`ResponseData` value or throws. The default is `console.error`. `debug: true` appends the stack of a thrown error to that string. The HTTP body of a thrown error stays `{ error: "Internal Server Error" }`.
+
 Shutdown is the returned server:
 
 ```ts
@@ -113,6 +115,10 @@ type ListenOptions<TLocals = unknown> = {
   requestTimeout?: number;
   keepAliveTimeout?: number;
   onListening?: (port: number) => void;
+  /** One formatted line per failed handler or hook. Default `console.error`. */
+  logger?: (message: string) => void;
+  /** Include stack traces in `logger` output. Off by default. Never changes the HTTP body. */
+  debug?: boolean;
 };
 
 type CorsOptions = {
@@ -183,6 +189,8 @@ function send(res: ServerResponse, data: ResponseData): void;
 
 `response()` brands a value for `generateRoutes` `execute`. Hand-written handlers return a plain `ResponseData` object.
 
+`send` writes `status` (default 200) and `headers`. Strings are `text/plain; charset=utf-8`. Objects, arrays, numbers, booleans, and `null` are JSON (`application/json`). `Buffer` / `Uint8Array` are raw bytes (`application/octet-stream`). A `Content-Type` you already set is kept. Status 204 and 304, and `{ head: true }`, send no body.
+
 ## `generateRoutes`
 
 ```ts
@@ -234,7 +242,9 @@ type Endpoint = {
 | Name | Reality |
 |---|---|
 | `app.use` / `app.get` | Missing |
-| `ctx.json` | Removed in 0.4.0 |
+| `ctx.json` / `ctx.send` | Removed. Calling either throws. Return `ResponseData` |
+| `ctx.res.writeHead` / `end` / `setHeader` | Throw while a handler or hook runs |
+| `replace("send")` | Throws. Builtin `send` is the only writer |
 | `app.pipeline` | Use `before` / `replace` on `Seltzer` |
 | `src/core/server/server.ts` | Removed. It was an unused hello-world `createServer` |
 | HTTPS `listen` | Missing — `http.createServer` only |
