@@ -28,7 +28,7 @@ Baseline: Seltzer workspace version **0.8.1**, inspected after merge `d25673e`. 
 | Implemented in this baseline | Host responsibility or future design |
 |---|---|
 | Object routes and path parameters | Ownership and permissions |
-| JSON/raw body collection | Bounded bodies, form and multipart parsing |
+| JSON/raw body collection with a 1 MB default limit | Form and multipart parsing |
 | Presence-only `.required` checks | Full types, formats, coercion policies |
 | Named `before` / `replace` stages | Universal response finalization, `after` / removal APIs |
 | Structured responses and buffered bytes | Explicit streaming and backpressure |

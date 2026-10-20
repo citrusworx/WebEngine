@@ -32,15 +32,15 @@ The feature is more of a direction than a hardened part of the runtime.
 |---|---|---|
 | `Seltzer.init()` / `.route()` / `.listen()` | Stable-ish | Identity of the package. Node `http`. `listen` returns `Server`. Default bind `127.0.0.1`. `host` opts into another interface. Header, request, and keep-alive timeouts are on. `server.close()` stops accept. |
 | Named pipeline | Stable-ish | `parse` → `send`. `before` / `replace`. Mutation in place. |
-| Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. |
-| JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. |
+| Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. Params are `decodeURIComponent`. A trailing slash is a different path. Malformed `%` encoding on a matched param is 400. Known path + wrong method is 405 + `Allow`; unknown paths stay 404. |
+| JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. Empty body is `undefined`. Non-JSON content types are a UTF-8 string, not 415. Default body limit is 1 MB (`bodyLimit`, `0` unlimited); over the limit is 413 and reading stops. |
 | `ResponseData` + `send` | Stable-ish | Bare values are 500. No `ctx.json`. |
 | Default `validate` (`.required`) | Emerging | Presence-only. Zod is `replace("validate")`. |
 | `generateRoutes` | Emerging | Host `execute` + `response()` brand. |
-| CORS / OPTIONS 204 | Stable-ish | On `listen`, before the pipeline. |
+| CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
 | `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface conformance. |
 | HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
 | Full contract / response-shape validation | Draft | Reserved for Nectarine via `replace`. |
 
@@ -52,7 +52,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `.route()` | same | `compileRoute` |
 | `.before()` / `.replace()` | same + `pipeline/index.ts` | |
 | `.handler()` | same | stores config |
-| `.listen(port, options?)` | same | returns `http.Server`. Default host `127.0.0.1`. Timeouts: headers 20s, request 30s, keep-alive 5s. |
+| `.listen(port, options?)` | same | returns `http.Server`. Default host `127.0.0.1`. Timeouts: headers 20s, request 30s, keep-alive 5s. Body limit 1 MB. CORS only when `cors` is set. |
 | Stages | `pipeline/stages.ts` | parse…send |
 | Matcher | `pipeline/router.ts` | rank + params |
 | `ResponseData` / `send` / `response()` | `core/response.ts` | |

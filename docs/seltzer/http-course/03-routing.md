@@ -50,11 +50,11 @@ Compilation turns a parameter segment into a regular-expression capture. Literal
 |---|---|
 | `/notes?q=one&q=two` | `ctx.query.q` is `"two"`; repeated values are overwritten |
 | `/notes/` | Distinct from `/notes`; no automatic trailing-slash normalization |
-| `PUT /notes` | 404 unless explicitly registered |
+| `PUT /notes` | 405 `Allow` lists the methods registered for that path. An unknown path stays 404 |
 | `/notes/hello%20world` | `ctx.params.id` becomes `"hello world"` |
-| `/notes/%ZZ` | Parameter decoding throws; the pipeline currently turns that into 500 |
+| `/notes/%ZZ` | 400 `{ error: "Malformed path parameter" }`. The handler does not run |
 
-The malformed-encoding case is a candidate for improvement, not a recommended response policy. The course tests pin it so future changes are visible.
+Trailing slashes stay distinct: `/notes/` does not match `/notes`. There is no redirect.
 
 ## Build it yourself
 

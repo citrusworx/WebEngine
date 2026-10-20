@@ -16,7 +16,7 @@ It gives you:
 - `.route({ method, path, handler, contract? })` — object route, static or `:param`
 - `.before(name, stage)` / `.replace(name, stage)` — named pipeline
 - `.handler(config)` — stash options copied onto `ctx.options`
-- `.listen(port, options?)` — `http.createServer` on `127.0.0.1` (pass `host` for any other interface), CORS/`OPTIONS`, pipeline, default timeouts, returns `http.Server`
+- `.listen(port, options?)` — `http.createServer` on `127.0.0.1` (pass `host` for any other interface), CORS/`OPTIONS` only when `cors` is set, pipeline, default timeouts, 1 MB body limit, returns `http.Server`
 - `ResponseData` — `{ status?, headers?, body? }`; the runtime `send`s
 - `generateRoutes(operations, { execute })` — `ApiOperation[]` → `Route[]`
 - `client.get/post/put/patch/delete` — `fetch` + `HttpError` on non-2xx
@@ -170,7 +170,7 @@ app.listen(3000, {
 });
 ```
 
-`ctx.locals` is that object. Browser preflight `OPTIONS` is 204 with CORS headers.
+`ctx.locals` is that object. With `cors` set, a browser preflight `OPTIONS` is 204 with CORS headers. Omit `cors` and those headers are absent.
 
 ## Call it from the Seltzer client
 

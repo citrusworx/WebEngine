@@ -58,11 +58,28 @@ export type HandlerConfig = {
 };
 
 export type CorsOptions = {
-    /** Exact allowed origin, or omit to reflect request Origin when present. */
+    /**
+     * Allowed origin. A specific origin must equal the request `Origin`.
+     * `"*"` sends `Access-Control-Allow-Origin: *` and cannot be combined
+     * with `credentials: true`. Omit to reflect the request `Origin`.
+     */
     origin?: string;
     methods?: string[];
     headers?: string[];
+    /**
+     * Seconds for `Access-Control-Max-Age` on CORS responses.
+     * Omit to leave the header off. `0` is sent as `0`.
+     */
+    maxAge?: number;
+    /**
+     * When true, send `Access-Control-Allow-Credentials: true`.
+     * Throws at `listen` if combined with `origin: "*"`.
+     */
+    credentials?: boolean;
 };
+
+/** Default request body limit. `listen({ bodyLimit: 0 })` means unlimited. */
+export const DEFAULT_BODY_LIMIT_BYTES = 1_048_576;
 
 /** Default `listen` bind. Public interfaces require an explicit `host`. */
 export const DEFAULT_LISTEN_HOST = "127.0.0.1";
@@ -91,6 +108,12 @@ export type ListenOptions<TLocals = unknown> = {
     host?: string;
     locals?: TLocals;
     cors?: CorsOptions;
+    /**
+     * Maximum request body size in bytes for methods other than GET and HEAD.
+     * Default {@link DEFAULT_BODY_LIMIT_BYTES} (1 MB). `0` means unlimited.
+     * A larger body is 413 and is not read to completion.
+     */
+    bodyLimit?: number;
     /**
      * Milliseconds to receive the complete HTTP headers.
      * Default {@link DEFAULT_HEADERS_TIMEOUT_MS}. `0` disables the timer.

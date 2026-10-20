@@ -74,7 +74,7 @@ listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.
 
 Throws `Seltzer.listen requires a Node.js runtime.` when `process.versions.node` is missing.
 
-Creates `http.createServer`, applies CORS, answers `OPTIONS` with 204, runs the pipeline, and returns that `http.Server`.
+Creates `http.createServer`, applies CORS only when `cors` is set, answers a configured `OPTIONS` preflight with 204, runs the pipeline, and returns that `http.Server`.
 
 **Breaking (next minor, not in the 0.8.1 tarball):** the default bind is `127.0.0.1`, not Node's all-interfaces default. Pass `host: "0.0.0.0"` or `host: "::"` to accept connections from other machines. An empty `host` throws.
 
@@ -87,6 +87,8 @@ Header, request, and keep-alive timeouts are on:
 | `keepAliveTimeout` | `5000` | Idle keep-alive before the socket is destroyed. `0` disables. Must be `< headersTimeout` when headers timeout is on. |
 
 Those numbers are `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`. `DEFAULT_LISTEN_HOST` is `"127.0.0.1"`. Non-integers and negative timeouts throw before the server binds. The legacy `server.timeout` is left at Node's `0` so it does not fight `requestTimeout`.
+
+`bodyLimit` defaults to `DEFAULT_BODY_LIMIT_BYTES` (`1048576`, 1 MB). `0` means unlimited. A non-integer or negative value throws before the server binds. A request body over the limit is **413** `{ error: "Payload Too Large" }` and Seltzer stops reading it. GET and HEAD are not limited because their bodies are skipped.
 
 `onListening(port)` receives the bound TCP port (`listen(0)` reports the ephemeral port). When `onListening` is omitted, the default log is `Seltzer server listening on http://<host>:<port>`.
 
@@ -106,6 +108,7 @@ type ListenOptions<TLocals = unknown> = {
   host?: string;
   locals?: TLocals;
   cors?: CorsOptions;
+  bodyLimit?: number;
   headersTimeout?: number;
   requestTimeout?: number;
   keepAliveTimeout?: number;
@@ -116,10 +119,18 @@ type CorsOptions = {
   origin?: string;
   methods?: string[];
   headers?: string[];
+  maxAge?: number;
+  credentials?: boolean;
 };
 ```
 
-CORS runs only when the request has `Origin`. If `cors.origin` is set, it must equal that origin; otherwise the request origin is reflected. Default methods: `GET,POST,PUT,PATCH,DELETE,OPTIONS`. Default headers: `Content-Type`. `Vary: Origin` is set when CORS headers are applied.
+CORS is **off** unless `listen` is passed `cors`. No `cors` means no `Access-Control-*` headers, and `OPTIONS` is an ordinary method (a route, 405, or 404).
+
+When `cors` is set, `OPTIONS` is **204** with an empty body before the pipeline, including unknown paths. Other methods still run the pipeline, with CORS headers added when the request has `Origin`.
+
+If `cors.origin` is a specific origin, it must equal that `Origin`. `"*"` sends `Access-Control-Allow-Origin: *`. Omit `origin` to reflect the request `Origin`. Default methods: `GET,POST,PUT,PATCH,DELETE,OPTIONS`. Default headers: `Content-Type`. `maxAge` sets `Access-Control-Max-Age` (seconds); omit it to leave the header off. `credentials: true` sends `Access-Control-Allow-Credentials: true` and **throws at `listen`** when combined with `origin: "*"`.
+
+`Vary: Origin` is set when the allow-origin value is a specific origin (configured or reflected). It is omitted when the value is `*`. A request with no `Origin`, or an origin that does not match a configured one, gets no CORS headers. The application request is not rejected with 403.
 
 ## `RequestContext`
 

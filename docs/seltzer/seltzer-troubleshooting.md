@@ -25,7 +25,19 @@ Duplicate routes with the same rank: earlier registration wins.
 
 ## `{ "error": "Invalid JSON body" }`
 
-`Content-Type` included `application/json` but the bytes were not JSON. The handler never ran. Fix the client, or omit that content type if you meant to send raw text (`ctx.body` will be a string).
+`Content-Type` included `application/json` but the bytes were not JSON. The handler never ran. Fix the client, or omit that content type if you meant to send raw text (`ctx.body` will be a UTF-8 string, not a 415).
+
+## `{ "error": "Payload Too Large" }`
+
+The body is over `bodyLimit` (default 1 MB). The handler never ran, and Seltzer stopped reading. Pass `listen(port, { bodyLimit })` or `bodyLimit: 0` for unlimited.
+
+## `{ "error": "Malformed path parameter" }`
+
+A matched `:param` contained a bad percent-encoding (`%E0%A4`, `%ZZ`, a trailing `%`). That is 400, not 500. A bad encoding on a path that matches no route is still 404.
+
+## `{ "error": "Method Not Allowed" }`
+
+The path matches a route pattern, but not this method. The `Allow` header lists the methods that do. An unknown path is 404 and has no `Allow` header.
 
 ## `{ "error": "Missing required field: email" }`
 
@@ -55,7 +67,7 @@ You imported Seltzer in a browser (or edge) runtime without `process.versions.no
 
 ## CORS errors in the Sig app
 
-Pass `cors` to `listen`. CORS headers are skipped when the request has no `Origin`. A mismatched `cors.origin` also skips headers. `OPTIONS` is 204 from `listen`, not from your routes.
+Pass `cors` to `listen`. Without it, there are no CORS headers and `OPTIONS` is a normal method. CORS headers are skipped when the request has no `Origin`. A mismatched `cors.origin` also skips headers. When `cors` is set, `OPTIONS` is 204 from `listen`, not from your routes. `Vary: Origin` is present when the allow-origin value is a specific origin, and absent when it is `*`. `credentials: true` with `origin: "*"` throws at startup.
 
 ## Extra CORS headers on `ResponseData` plus `listen({ cors })`
 

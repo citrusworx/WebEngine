@@ -2,6 +2,7 @@ import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { isExplicitResponse, isResponseData, response, send, type ResponseData } from "./response.js";
 import {
+    DEFAULT_BODY_LIMIT_BYTES,
     DEFAULT_HEADERS_TIMEOUT_MS,
     DEFAULT_KEEP_ALIVE_TIMEOUT_MS,
     DEFAULT_LISTEN_HOST,
@@ -30,6 +31,7 @@ export type {
     RouteContract,
 } from "./types.js";
 export {
+    DEFAULT_BODY_LIMIT_BYTES,
     DEFAULT_HEADERS_TIMEOUT_MS,
     DEFAULT_KEEP_ALIVE_TIMEOUT_MS,
     DEFAULT_LISTEN_HOST,
@@ -109,34 +111,75 @@ function formatListenUrl(host: string, port: number): string {
     return `http://${shown}:${port}`;
 }
 
-function applyCors(
-    req: IncomingMessage,
-    res: ServerResponse,
-    cors: CorsOptions | undefined,
-) {
+const DEFAULT_CORS_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+const DEFAULT_CORS_HEADERS = ["Content-Type"];
+
+function assertCors(cors: CorsOptions | undefined): void {
     if (!cors) {
         return;
     }
 
+    if (cors.credentials === true && cors.origin === "*") {
+        throw new Error(
+            'Seltzer.listen cors credentials: true cannot be combined with origin "*". Name a specific origin, or omit origin to reflect the request Origin.',
+        );
+    }
+
+    if (cors.maxAge !== undefined && (!Number.isInteger(cors.maxAge) || cors.maxAge < 0)) {
+        throw new Error(
+            "Seltzer.listen cors maxAge must be a non-negative integer of seconds.",
+        );
+    }
+}
+
+function resolveBodyLimit(bodyLimit: number | undefined): number {
+    const limit = bodyLimit ?? DEFAULT_BODY_LIMIT_BYTES;
+    if (!Number.isInteger(limit) || limit < 0) {
+        throw new Error(
+            "Seltzer.listen bodyLimit must be a non-negative integer of bytes. 0 means unlimited.",
+        );
+    }
+
+    return limit;
+}
+
+/**
+ * CORS headers are applied only when `cors` was passed to `listen`.
+ * `Vary: Origin` is set when the allow-origin value is a specific origin
+ * (configured or reflected). It is omitted for `origin: "*"`.
+ */
+function applyCors(req: IncomingMessage, res: ServerResponse, cors: CorsOptions) {
     const requestOrigin = req.headers.origin;
     if (!requestOrigin) {
         return;
     }
 
-    if (cors.origin && requestOrigin !== cors.origin) {
+    if (cors.origin && cors.origin !== "*" && requestOrigin !== cors.origin) {
         return;
     }
 
-    res.setHeader("Access-Control-Allow-Origin", cors.origin ?? requestOrigin);
-    res.setHeader("Vary", "Origin");
+    const allowOrigin = cors.origin === "*" ? "*" : (cors.origin ?? requestOrigin);
+    res.setHeader("Access-Control-Allow-Origin", allowOrigin);
+    if (allowOrigin !== "*") {
+        res.setHeader("Vary", "Origin");
+    }
+
     res.setHeader(
         "Access-Control-Allow-Methods",
-        (cors.methods ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]).join(","),
+        (cors.methods ?? DEFAULT_CORS_METHODS).join(","),
     );
     res.setHeader(
         "Access-Control-Allow-Headers",
-        (cors.headers ?? ["Content-Type"]).join(","),
+        (cors.headers ?? DEFAULT_CORS_HEADERS).join(","),
     );
+
+    if (cors.credentials === true) {
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+    }
+
+    if (cors.maxAge !== undefined) {
+        res.setHeader("Access-Control-Max-Age", String(cors.maxAge));
+    }
 }
 
 export class Seltzer {
@@ -194,6 +237,10 @@ export class Seltzer {
      * connections; idle keep-alive sockets hold it until
      * `keepAliveTimeout` unless the host also calls
      * `server.closeIdleConnections()`.
+     *
+     * CORS headers are off unless `cors` is set. When it is set, `OPTIONS`
+     * is a 204 preflight before the pipeline. `bodyLimit` defaults to
+     * 1 MB (`0` is unlimited). A larger body is 413 and is not read further.
      */
     listen<TLocals = unknown>(port: number, options: ListenOptions<TLocals> = {}) {
         if (typeof process === "undefined" || !process.versions?.node) {
@@ -202,10 +249,12 @@ export class Seltzer {
 
         const host = resolveListenHost(options.host);
         const timeouts = resolveListenTimeouts(options);
+        assertCors(options.cors);
+        const bodyLimit = resolveBodyLimit(options.bodyLimit);
         const locals = (options.locals ?? {}) as TLocals;
 
         const server = http.createServer((req, res) => {
-            void this.handleRequest(req, res, locals, options.cors);
+            void this.handleRequest(req, res, locals, options.cors, bodyLimit);
         });
 
         server.headersTimeout = timeouts.headersTimeout;
@@ -232,12 +281,15 @@ export class Seltzer {
         res: ServerResponse,
         locals: TLocals,
         cors: CorsOptions | undefined,
+        bodyLimit: number,
     ) {
-        applyCors(req, res, cors);
+        if (cors) {
+            applyCors(req, res, cors);
 
-        if (req.method === "OPTIONS") {
-            send(res, { status: 204 });
-            return;
+            if (req.method === "OPTIONS") {
+                send(res, { status: 204 });
+                return;
+            }
         }
 
         const ctx: PipelineContext<TLocals> = {
@@ -251,6 +303,7 @@ export class Seltzer {
             headers: {},
             locals,
             options: this.config?.options,
+            bodyLimit,
         };
 
         await this.pipeline.run(ctx);

@@ -132,7 +132,7 @@ curl http://127.0.0.1:3000/notes
 
 ## Step 3: Create with POST — `ctx.body`
 
-The `parse` stage reads JSON when `Content-Type` includes `application/json`. Invalid JSON is 400 `{ error: "Invalid JSON body" }` and the handler never runs.
+The `parse` stage reads JSON when `Content-Type` includes `application/json`. Invalid JSON is 400 `{ error: "Invalid JSON body" }` and the handler never runs. An empty body is `undefined`. Other content types arrive as a UTF-8 string. Bodies over the default 1 MB limit are 413.
 
 ```ts
 let nextId = 2;

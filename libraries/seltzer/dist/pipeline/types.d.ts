@@ -10,6 +10,11 @@ export type StageName = (typeof STAGE_NAMES)[number];
 export type PipelineContext<TLocals = unknown> = RequestContext<TLocals> & {
     route?: Route;
     response?: ResponseData;
+    /**
+     * Byte cap for `parse`. Set from `listen({ bodyLimit })`.
+     * `0` is unlimited. Omitted uses the 1 MB default inside `parse`.
+     */
+    bodyLimit?: number;
 };
 /**
  * A pipeline stage. Mutate `ctx` and return void/undefined to continue.

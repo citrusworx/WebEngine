@@ -30,7 +30,7 @@ Use the page's buttons rather than entering the API URL in the address bar: navi
 
 ## Current listener behavior
 
-In 0.8.1, CORS and OPTIONS handling happen before the pipeline. Every OPTIONS request gets 204 there, even for an unknown path and even without CORS configuration. That is not proof that the requested endpoint exists or that a requested method is supported.
+When `listen` is passed `cors`, CORS headers and `OPTIONS` handling happen before the pipeline. That `OPTIONS` response is 204 even for an unknown path. It is not proof that the requested endpoint exists or that a requested method is supported. Omit `cors` and there are no CORS headers; `OPTIONS` is routed like any other method.
 
 For an origin that does not match the configured origin, Seltzer omits the allow-origin header. It does not reject the application request with 403. A browser may refuse access to the response; another client can still call the endpoint. Some cross-origin requests can perform their server-side effect even when the browser cannot read the result.
 
@@ -56,6 +56,6 @@ For cookie-authenticated writes, separately consider cross-site request forgery.
 
 ## Checkpoint
 
-Send an OPTIONS request to an unknown API path. Explain its 204. Then explain why a successful curl call does not prove a cross-origin browser fetch can read the same response, and why a failed browser CORS check does not establish that the endpoint is secure.
+With the Notes server's `cors` config, send an OPTIONS request to an unknown API path. Explain its 204. Then explain why a successful curl call does not prove a cross-origin browser fetch can read the same response, and why a failed browser CORS check does not establish that the endpoint is secure.
 
 [Answers](./answers.md#lesson-08)
