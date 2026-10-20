@@ -16,7 +16,7 @@ It gives you:
 - `.route({ method, path, handler, contract? })` — object route, static or `:param`
 - `.before(name, stage)` / `.replace(name, stage)` — named pipeline
 - `.handler(config)` — stash options copied onto `ctx.options`
-- `.listen(port, options?)` — `http.createServer`, CORS/`OPTIONS`, pipeline, returns `http.Server`
+- `.listen(port, options?)` — `http.createServer` on `127.0.0.1` (pass `host` for any other interface), CORS/`OPTIONS`, pipeline, default timeouts, returns `http.Server`
 - `ResponseData` — `{ status?, headers?, body? }`; the runtime `send`s
 - `generateRoutes(operations, { execute })` — `ApiOperation[]` → `Route[]`
 - `client.get/post/put/patch/delete` — `fetch` + `HttpError` on non-2xx
@@ -55,6 +55,14 @@ app.route({
 
 const server = app.listen(3000);
 ```
+
+`listen(3000)` binds **127.0.0.1:3000**, not every interface. `curl http://127.0.0.1:3000/` reaches it. A public bind is explicit:
+
+```ts
+app.listen(3000, { host: "0.0.0.0" });
+```
+
+Timeouts are on: 20s for headers, 30s for the whole request, 5s for idle keep-alive. Override with `headersTimeout`, `requestTimeout`, and `keepAliveTimeout` (`0` disables that timer). `server.close()` stops accepting new connections.
 
 In this workspace:
 

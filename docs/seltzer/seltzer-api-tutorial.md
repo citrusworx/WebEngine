@@ -65,7 +65,7 @@ Why this works:
 
 - `Seltzer.init()` is `new Seltzer()`. There is no config file.
 - `.route` compiles `{ method, path, handler }` (parametric regex included).
-- `.listen(3000)` calls `http.createServer`. Each request runs the pipeline.
+- `.listen(3000)` calls `http.createServer` and binds `127.0.0.1` (pass `{ host: "0.0.0.0" }` for a public bind). Each request runs the pipeline. `close()` on the returned server stops accepting.
 - `{ body: { ok: true } }` is `ResponseData`. `send` JSON-encodes it at status 200.
 
 Try it:

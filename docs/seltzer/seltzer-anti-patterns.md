@@ -225,9 +225,9 @@ Bad: `grape apply` as the way a Seltzer process appears.
 
 Better: run a Node entry that calls `app.listen`. Provision the VM separately. WebEngine hosts that already wire Nectarine→Seltzer are a different (engine) path — see [Integration](./seltzer-integration.md).
 
-## 13. Using leftover `server.ts` as the runtime
+## 13. Looking for a second server entry
 
-`libraries/seltzer/src/core/server/server.ts` is a hello-world `createServer`. It is **not** imported by `Seltzer.listen`. Building apps on that file is a different program.
+The hello-world `libraries/seltzer/src/core/server/server.ts` was removed. `Seltzer.listen` in `core/seltzer.ts` is the listener. Building a separate `createServer` beside the pipeline skips routing, `ResponseData`, and timeouts.
 
 ## 14. Treating `execute`’s `{ status, body }` as a transport result
 

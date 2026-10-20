@@ -1,6 +1,6 @@
 # Seltzer Status
 
-Snapshot of `@citrusworx/seltzer` **0.8.1** against `libraries/seltzer/src`, now present on local `master` after the Blackwater Phase 0 merge.
+Snapshot of `@citrusworx/seltzer` source against `libraries/seltzer/src`. Published npm is still **0.8.1**. The loopback `listen` default, server timeouts, and removal of `src/core/server/server.ts` are in this tree and ship in the next minor; they are not in the 0.8.1 tarball.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
@@ -30,7 +30,7 @@ The feature is more of a direction than a hardened part of the runtime.
 
 | Area | Maturity | Notes |
 |---|---|---|
-| `Seltzer.init()` / `.route()` / `.listen()` | Stable-ish | Identity of the package. Node `http`. `listen` returns `Server`. |
+| `Seltzer.init()` / `.route()` / `.listen()` | Stable-ish | Identity of the package. Node `http`. `listen` returns `Server`. Default bind `127.0.0.1`. `host` opts into another interface. Header, request, and keep-alive timeouts are on. `server.close()` stops accept. |
 | Named pipeline | Stable-ish | `parse` → `send`. `before` / `replace`. Mutation in place. |
 | Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. |
 | JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. |
@@ -52,7 +52,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `.route()` | same | `compileRoute` |
 | `.before()` / `.replace()` | same + `pipeline/index.ts` | |
 | `.handler()` | same | stores config |
-| `.listen(port, options?)` | same | returns `http.Server` |
+| `.listen(port, options?)` | same | returns `http.Server`. Default host `127.0.0.1`. Timeouts: headers 20s, request 30s, keep-alive 5s. |
 | Stages | `pipeline/stages.ts` | parse…send |
 | Matcher | `pipeline/router.ts` | rank + params |
 | `ResponseData` / `send` / `response()` | `core/response.ts` | |
@@ -60,7 +60,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `client` / `HttpError` | `core/client/client.ts` | |
 | Example server | `src/example.ts` | GET `/` |
 
-`src/core/server/server.ts` is a leftover hello-world `createServer`. It is **not** used by `Seltzer.listen`.
+`Seltzer.listen` in `core/seltzer.ts` is the only listener. The leftover hello-world `src/core/server/server.ts` was removed.
 
 ## Myths that closed (0.2.0 docs → 0.8.1)
 
@@ -77,7 +77,8 @@ The feature is more of a direction than a hardened part of the runtime.
 | `client` always `res.json()`, no `ok` check | `HttpError`; JSON or text |
 | `allowSelfSigned` unused | undici Agent on https |
 | No tests | Vitest suite |
-| `listen` returns `void` | Returns `http.Server` |
+| `listen` returns `void` | Returns `http.Server`. `server.close()` stops accepting |
+| `listen(port)` binds every interface | Default host is `127.0.0.1`. Public bind is `host: "0.0.0.0"` |
 
 ## Strongest areas
 
@@ -133,6 +134,8 @@ If you are building with Seltzer today:
 - generate routes from operations; replace `validate` when contracts grow
 - catch `HttpError` on `client.*`
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
+- pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`
+- call `server.close()` to stop accepting. Idle keep-alive sockets delay the close callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`
 
 ## Suggested reading
 

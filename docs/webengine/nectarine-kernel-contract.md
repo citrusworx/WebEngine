@@ -62,12 +62,13 @@ import {
 const result = await runKernelLifecycle(cwd);
 const { app, server, port } = await startSeltzerFromKernel(result, {
   // options.port → kiwi webengine.port → web runtime network.port
+  // host omitted → 127.0.0.1. Pass "0.0.0.0" for a public bind.
   cors: { origin: "http://localhost:5173" },
   routes: [{ method: "GET", path: "/health", handler: () => ({ body: { ok: true } }) }],
 });
 ```
 
-`startSeltzerFromKernel` (`serveNectarineHttp`) requires a bootstrapped nectarine handle. It runs `Seltzer.init()`, registers `handle.createRoutes({ resources })` (resources from options, else unique `apps[].resources`, else every loaded resource), then `listen`. Extra hand routes (health) and CORS stay in options. Default kernel bootstrap still does **not** auto-listen.
+`startSeltzerFromKernel` (`serveNectarineHttp`) requires a bootstrapped nectarine handle. It runs `Seltzer.init()`, registers `handle.createRoutes({ resources })` (resources from options, else unique `apps[].resources`, else every loaded resource), then `listen`. Extra hand routes (health), CORS, and `host` stay in options. Omit `host` and Seltzer binds `127.0.0.1`. Default kernel bootstrap still does **not** auto-listen.
 
 Hosts can still wire Seltzer themselves:
 

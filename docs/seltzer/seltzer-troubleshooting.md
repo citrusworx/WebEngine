@@ -81,9 +81,9 @@ Return `response({ status: 418, body })` from `execute`. Unbranded `{ status, bo
 
 Nectarine does not call `.route`. You must `generateRoutes` (or copy by hand) and register. Flatten with `listApiOperations`, do not invent a second YAML walker.
 
-## Changes to `server.ts` did nothing
+## The server only answers on this machine
 
-`src/core/server/server.ts` is not used by `Seltzer.listen`. Edit `core/seltzer.ts` / `pipeline/` / `generate/`.
+`listen(port)` binds `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) when another machine or a container port-forward must connect. The old hello-world file `src/core/server/server.ts` was removed; edit `core/seltzer.ts`.
 
 ## `allowSelfSigned` throws about undici
 

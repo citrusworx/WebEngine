@@ -32,6 +32,8 @@ for (const route of createRoutes(nectarine)) {
 }
 
 const server = app.listen(port, {
+  // Seltzer defaults to 127.0.0.1. This process is the public API.
+  host: "0.0.0.0",
   locals,
   cors: corsOrigin
     ? {

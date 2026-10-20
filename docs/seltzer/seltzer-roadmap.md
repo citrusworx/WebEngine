@@ -14,10 +14,9 @@ The strongest part of Seltzer today is the request engine: parametric routes, JS
 
 The weakest areas are still:
 
-- HTTPS and production listen edges (timeouts, host bind)
+- HTTPS listen (plain HTTP host bind and timeouts shipped)
 - full contract validation (reserved for `replace("validate")`)
 - client URL joining and abort/timeout
-- leftover `server.ts`
 
 0.8.x is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior.
 
@@ -61,13 +60,9 @@ YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is
 
 ### 3. Listen is HTTP-only
 
-No HTTPS, no `listen({ host })` overload. CORS and `Server.close` did ship.
+`listen(port, { host })` defaults to `127.0.0.1`. Header, request, and keep-alive timeouts are on (20s / 30s / 5s). `server.close()` stops accepting. HTTPS is still missing. There is no `listen({ port, host })` object overload and no integrated drain deadline.
 
-### 4. The leftover `server.ts`
-
-A second `createServer` in-tree still confuses contributors. Delete or wire it when the package is touched. Docs already warn.
-
-### 5. Stage API has no `after` / remove
+### 4. Stage API has no `after` / remove
 
 Insert-before covers auth and logging. Some hosts will want post-`handle` decoration without replacing `response`.
 
@@ -118,8 +113,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 1. Keep docs and examples locked to source (ongoing).
 2. Host `replace("validate")` for real contracts.
 3. `client` slash-safe join + AbortSignal.
-4. Decide `server.ts` (delete or re-export).
-5. Only then: HTTPS listen or `after(name)` — not both at once.
+4. Only then: HTTPS listen or `after(name)` — not both at once.
 
 ---
 
@@ -137,7 +131,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 | Shipped (teach this) | Still open |
 |---|---|
-| `init` / `route` / `listen` | HTTPS listen |
+| `init` / `route` / `listen` on `127.0.0.1`, timeouts, `server.close()` | HTTPS listen |
 | Named pipeline, `before` / `replace` | `after` / remove |
 | `/users/:id` → `ctx.params` | Trailing-slash normalize |
 | Handler `return { status, headers, body }` | Bare-payload wrapping (intentionally rejected) |
@@ -163,6 +157,6 @@ It now has:
 - `generateRoutes` as the Nectarine join
 - a client that throws on failure
 
-The next stage is refinement around contracts, client URLs, and listen edges — not reinventing Seltzer from scratch.
+The next stage is refinement around contracts, client URLs, and HTTPS — not reinventing Seltzer from scratch. Host bind and the three server timeouts are already in source.
 
 Until those land, the product docs stay with [Status](./seltzer-status.md) and the APIs in `libraries/seltzer/src` at 0.8.1.

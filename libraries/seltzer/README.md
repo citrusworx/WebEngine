@@ -50,7 +50,9 @@ Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime wri
 
 `status` defaults to `200`. Object and array bodies are JSON-serialized with `Content-Type: application/json` unless you set that header yourself.
 
-`listen` accepts optional `locals` (available on `ctx.locals`) and `cors`. CORS headers and `OPTIONS` 204 run before the pipeline.
+`listen` returns the Node `http.Server`. The default bind is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections from other machines. Header, request, and keep-alive timeouts default to 20s, 30s, and 5s (`0` disables that timer). `server.close()` stops accepting; idle keep-alive sockets delay the callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`.
+
+`listen` also accepts `locals` (available on `ctx.locals`) and `cors`. CORS headers and `OPTIONS` 204 run before the pipeline.
 
 ## Pipeline
 

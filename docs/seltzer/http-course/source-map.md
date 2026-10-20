@@ -19,7 +19,7 @@ Baseline: Seltzer workspace version **0.8.1**, inspected after merge `d25673e`. 
 | Client, error response handling, decoding | [core/client/client.ts](../../../libraries/seltzer/src/core/client/client.ts) | 07 |
 | Generated routes and executor wrapping | [generate/generate-routes.ts](../../../libraries/seltzer/src/generate/generate-routes.ts), [types.ts](../../../libraries/seltzer/src/generate/types.ts) | 09 |
 
-`src/core/server/server.ts` is a separate hello-world remnant, not the listener implementation used by `Seltzer.listen`. The course raw server is a teaching example, not an endorsement of that file as the runtime entrypoint.
+`Seltzer.listen` in `core/seltzer.ts` is the only listener. The hello-world `src/core/server/server.ts` was removed. The course raw server is a teaching example, not a second runtime entrypoint.
 
 `.handler(config)` currently stores configuration and exposes options on the context. Its adapter name does not automatically choose a database or execute a route. The course does not invent additional semantics for it.
 
@@ -33,7 +33,7 @@ Baseline: Seltzer workspace version **0.8.1**, inspected after merge `d25673e`. 
 | Named `before` / `replace` stages | Universal response finalization, `after` / removal APIs |
 | Structured responses and buffered bytes | Explicit streaming and backpressure |
 | CORS headers and OPTIONS shortcut | Authentication and CSRF policy |
-| Node HTTP listener returned to host | Host binding option, native TLS policy, integrated drain |
+| Node HTTP listener on `127.0.0.1` with timeouts, returned to the host | Native TLS, integrated drain deadline |
 | Fetch wrapper and `HttpError` | Deadlines, cancellation, URL-joining contract |
 | Operation-list route generation | Actual data execution and persistence |
 
