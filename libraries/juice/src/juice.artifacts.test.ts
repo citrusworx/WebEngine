@@ -780,6 +780,52 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[disclosure\][^{]*\{[^}]*--juice-spinner/);
     });
 
+    it("includes skeleton structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+
+        expect(css).toContain("[skeleton]");
+        expect(css).toMatch(/\[skeleton=["']?text["']?\]/);
+        expect(css).toMatch(/\[skeleton=["']?circle["']?\]/);
+        expect(css).toMatch(/\[skeleton=["']?rect["']?\]/);
+        expect(css).toMatch(/\[skeleton\]\[scale=["']?sm["']?\]/);
+        expect(css).toMatch(/\[skeleton\]\[scale=["']?lg["']?\]/);
+        expect(css).toMatch(/\[skeleton=["']?circle["']?\]\[scale=["']?sm["']?\]/);
+        expect(css).toMatch(/\[skeleton=["']?circle["']?\]\[scale=["']?lg["']?\]/);
+        expect(css).toMatch(/\[skeleton=["']?text["']?\]\[lines=["']?3["']?\]/);
+        expect(css).toMatch(/\[skeleton=["']?text["']?\]\[lines=["']?8["']?\]/);
+        expect(css).not.toMatch(/\[skeleton=["']?text["']?\]\[lines=["']?9["']?\]/);
+        expect(css).toContain("[skeleton][static]");
+        expect(css).toMatch(/\[theme\]\s+\[skeleton\]/);
+        expect(css).toContain("--juice-skeleton-base:");
+        expect(css).toContain("--juice-skeleton-highlight:");
+        expect(css).toContain("--juice-skeleton-radius: 0.375rem");
+        expect(css).toContain("--juice-skeleton-line-height: 0.75rem");
+        expect(css).toContain("--juice-skeleton-line-height-sm: 0.5rem");
+        expect(css).toContain("--juice-skeleton-line-height-lg: 1rem");
+        expect(css).toContain("--juice-skeleton-line-gap: 0.5rem");
+        expect(css).toContain("--juice-skeleton-circle-size: 2.5rem");
+        expect(css).toContain("--juice-skeleton-circle-size-sm: 1.5rem");
+        expect(css).toContain("--juice-skeleton-circle-size-lg: 4rem");
+        expect(css).toContain("--juice-skeleton-rect-height: 4rem");
+        expect(css).toContain("--juice-skeleton-rect-height-sm: 2.5rem");
+        expect(css).toContain("--juice-skeleton-rect-height-lg: 6rem");
+        expect(css).toContain("--juice-skeleton-duration: calc(var(--juice-motion-duration-slow) * 1.6)");
+        expect(css).toContain("color-mix(in srgb, currentColor 14%, var(--juice-surface-muted-bg,");
+        expect(css).toContain("juice-skeleton-shimmer");
+        expect(css).toContain("var(--juice-motion-ease-linear)");
+        expect(css).toContain("-webkit-text-fill-color: transparent");
+        expect(css).toContain("clip-path: inset(50%)");
+        expect(css).toContain("repeating-linear-gradient");
+        expect(reduced.some((block) => block.includes("[skeleton]") && block.includes("animation: none"))).toBe(true);
+        expect(css).not.toMatch(/\[skeleton-line\]/);
+        expect(css).not.toMatch(/\[skeleton\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[skeleton\][^{]*\{[^}]*--juice-spinner/);
+        expect(css).not.toMatch(/\[skeleton\][^{]*\{[^}]*--juice-progress/);
+        expect(css).not.toMatch(/\[skeleton\][^{]*(?:^|[^-\w])color:\s*transparent/);
+        expect(css).not.toMatch(/\[role=["']?status["']?\]/);
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
