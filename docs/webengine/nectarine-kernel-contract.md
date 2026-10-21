@@ -90,7 +90,7 @@ for (const route of nectarine.createRoutes({
 await app.listen(port);
 ```
 
-Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). Both use the same helper:
+Pass `execute` when a resource needs host logic (Blackwater product JSONB catalog / waitlist `joinWaitlist`). `execute` binds every selected operation, so those hosts do not hit Seltzer's unbound-operation throw. A host that calls `generateRoutes` with a partial `handlers` map and no `execute` must bind the rest or pass `unbound: "notImplemented"` (501). `exclude` still omits operations before that check. Both product and waitlist use the same helper:
 
 ```ts
 createNectarineRoutes(nectarine, {

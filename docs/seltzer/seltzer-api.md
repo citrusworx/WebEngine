@@ -9,9 +9,9 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 - `Seltzer`
 - `STAGE_NAMES`
 - `client`, `HttpError`
-- `generateRoutes`
+- `generateRoutes`, `UnboundOperationsError`
 - `response`, `send`, `isResponseData`, `isExplicitResponse`, `validationError`
-- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`
+- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`, `OperationHandler`, `UnboundOperationPolicy`
 - listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`
 
 There are no subpath exports. `HandlerConfig` is used by `.handler()` but is not re-exported from the package root.
@@ -215,9 +215,15 @@ function generateRoutes<TContext extends RequestContext = RequestContext>(
   operations: readonly ApiOperation[],
   options: GenerateRoutesOptions<TContext>,
 ): Route<TContext>[];
+
+class UnboundOperationsError extends Error {
+  readonly operations: readonly ApiOperation[];
+}
+
+type UnboundOperationPolicy = "throw" | "notImplemented";
 ```
 
-See [Generate routes](./seltzer-generate.md).
+`operations` is a plain `ApiOperation[]`. Seltzer does not import Nectarine. `handlers[name]` binds that operation. `execute` binds every other selected name. Default `unbound: "throw"` raises `UnboundOperationsError` listing `name method path` for each miss. `unbound: "notImplemented"` registers 501 `{ error: "Not Implemented" }`. A payload is status 200. `response({ status })` sets another status. See [Generate routes](./seltzer-generate.md).
 
 ## `client` / `HttpError`
 

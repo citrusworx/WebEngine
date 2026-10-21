@@ -340,8 +340,8 @@ export function compileResourceQuery(source, resource, method, name) {
  *
  * Writes: bind YAML columns from body / path (`order_id` ↔ `orderId`).
  * No database or zero affected rows → `null` (404). JSONB catalog mapping
- * and waitlist join (generated id, allowlist, duplicates) stay in host
- * `execute` callbacks.
+ * (product create/update merge) and waitlist join (generated id, allowlist,
+ * duplicates) stay in host `execute` callbacks.
  */
 export function createCompiledNectarineExecute(options) {
     return async ({ resource, query, params, body, operation }) => {
@@ -430,7 +430,7 @@ function operationAllowed(operation, options) {
  *
  * Default `execute` compiles `operation.query` from `*Queries.yml` and runs
  * adapter `query(sql, params)`. Pass `execute` to specialize (Blackwater
- * product JSONB / waitlist join).
+ * product JSONB catalog writes / waitlist join).
  */
 export function createNectarineRoutes(nectarine, options) {
     const operations = selectOperations(nectarine, options.resources);
@@ -447,8 +447,10 @@ export function createNectarineRoutes(nectarine, options) {
     });
 }
 /**
- * GET reads from `*API.yml`. `include` can add a non-GET op such as waitlist
- * `joinWaitlist`; those typically need a custom `execute`.
+ * GET reads from `*API.yml`. `include` can add a non-GET op (e.g. a host
+ * that only wants GET + one extra write). Specialized resources such as
+ * Blackwater waitlist `joinWaitlist` prefer {@link createNectarineRoutes}
+ * with a host `execute` instead.
  */
 export function createNectarineReadRoutes(nectarine, options) {
     return createNectarineRoutes(nectarine, {

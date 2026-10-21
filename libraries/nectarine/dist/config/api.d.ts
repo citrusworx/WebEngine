@@ -1,4 +1,9 @@
 export type ApiHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+/**
+ * Flattened HTTP operation. This object must stay structurally assignable
+ * to `@citrusworx/seltzer` `ApiOperation` (the `generateRoutes` input).
+ * Nectarine does not import Seltzer. WebEngine checks the assignment.
+ */
 export type ApiOperation = {
     resource: string;
     crud: string;
@@ -15,7 +20,9 @@ export type ApiOperation = {
  * `endpoint` maps to {@link ApiOperation.path}. `path` is accepted as a fallback.
  *
  * Seltzer hosts / auto-wiring consumers should call
- * `listApiOperations(resource, loaded.api)` — Nectarine does not generate routes.
+ * `listApiOperations(resource, loaded.api)` and pass the array to
+ * Seltzer `generateRoutes`. Nectarine does not generate routes and does
+ * not import Seltzer. The returned objects match Seltzer `ApiOperation`.
  */
 export declare function listApiOperations(resource: string, api: Record<string, unknown>): ApiOperation[];
 /**

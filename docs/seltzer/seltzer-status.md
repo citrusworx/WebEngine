@@ -37,11 +37,11 @@ The feature is more of a direction than a hardened part of the runtime.
 | `ResponseData` + `send` | Stable-ish | Handlers and hooks return `ResponseData`. Bare values are 500 and are logged (route + returned value). Strings are `text/plain; charset=utf-8`, JSON values are `application/json`, buffers are `application/octet-stream`, unless `Content-Type` is set. 204, 304, and HEAD send no body. Thrown errors are a generic 500; the error is logged, stack only with `listen({ debug: true })`. `logger` defaults to `console.error`. No `ctx.json` / `ctx.send`. Writing `ctx.res` throws. `replace("send")` throws. |
 | Default `validate` (`.required`) | Emerging | Presence-only. Does not set `ctx.valid`. Failure stays `Missing required field` / `Request body must be an object`. |
 | Replacement `validate` | Emerging | `replace("validate")` sets `ctx.valid` and returns `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement. No schema field on `Route` or `generateRoutes`. |
-| `generateRoutes` | Emerging | Host `execute` + `response()` brand. Copies YAML `contract.body` for the default stage. |
+| `generateRoutes` | Emerging | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. |
 | CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
 | `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, and validate-stage conformance. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, and generate-routes conformance. The YAML → listen proof is in WebEngine. |
 | HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
 | Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
 
@@ -134,7 +134,7 @@ If you are building with Seltzer today:
 - return `{ body }` (and `status` / `headers` when needed). Do not write `ctx.res`, `ctx.json`, or `ctx.send`
 - pass `logger` to `listen` when `console.error` is the wrong place for handler failures. `debug: true` adds stacks to that log only
 - use `ctx.params` / `ctx.body` / `ctx.query`. `ctx.valid` stays unset unless your `replace("validate")` assigns it
-- generate routes from operations; replace `validate` when contracts grow, and dispatch on the route inside that stage
+- generate routes from operations; bind every name (`handlers` or `execute`) or pass `unbound: "notImplemented"`; replace `validate` when contracts grow, and dispatch on the route inside that stage
 - catch `HttpError` on `client.*`
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 - pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`
