@@ -103,7 +103,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Page Tutorial](./juice-page-tutorial.md) — a *second* build (different CitrusWorx landing page), after the course
 - [Patterns](./juice-patterns.md)
 - [Maturity Matrix](./juice-maturity-matrix.md)
-- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 25 runtimes
+- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 26 runtimes
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
@@ -137,6 +137,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Input Runtime](./juice-input-runtime.md)
 - [Textarea Runtime](./juice-textarea-runtime.md)
 - [Field Runtime](./juice-field-runtime.md)
+- [Icon Button Runtime](./juice-icon-button-runtime.md)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)
 

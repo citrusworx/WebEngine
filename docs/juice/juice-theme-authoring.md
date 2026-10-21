@@ -496,6 +496,12 @@ This is Juice chrome for a wrapper around a control. It is not an input, not a t
 
 Tide must bind a dark wrapper (`--tide-surface-strong`), not `--tide-page`. Label ink stays `--tide-text`. Help ink stays `--tide-text-muted`. Error ink and the invalid border stay `--tide-banner-error`.
 
+## Icon button geometry
+
+Core CSS owns `--juice-icon-button-*` on `:root`. Shipped library themes and generated `--jx-*` themes are not required to bind them. There is no icon-button fill role. Color, border, and hover fill stay with `button` and `[btn]`. Override a geometry role only when the square box fights that theme. Defaults are button block padding (`0.625rem` / `0.4rem` / `0.875rem`), icon size (`1.25rem` / `1rem` / `1.5rem`), size as icon size plus padding times two, radius (`0.5rem` / `0.375rem` / `0.625rem`), `--juice-icon-button-radius-round` (`999px`), and `--juice-icon-button-focus-ring` (`currentColor`).
+
+This is Juice chrome for a square icon-only control. `[icon-button="round"]` and `[icon-button][round]` are the circle. `[scale="sm"|"lg"]` steps the box and the glyph together. `[pressed]` and `[aria-pressed="true"]` paint an inset ring. `:focus-visible` is a 2px ring. Disabled is `opacity: 0.5`. `:active` presses `translateY(2px)`. Transitions use `--juice-motion-*`, and reduced motion turns them off. It is not a switch and not a checkbox. Inline control — no overlay z-index. The icon-button runtime auto-enhances that markup (`toggle` / `getState`, `[toggle]` keeps `aria-pressed` and `[pressed]` in sync, a missing name warns once in development and is not invented) — see [Icon Button Runtime](./juice-icon-button-runtime.md). Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+
 ## Wizard chrome roles
 
 Library themes bind the shared wizard contract so `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step-indicator]` paint is theme-agnostic in `wizard.scss`. Required names (`shell`, `header`, `header-border`, `rail`, `rail-border`, `step`, `step-border`, `step-ink`, `step-current`, `step-complete`, `step-on`, `step-connector`, `panel`, `panel-border`, `focus-ring`) are listed in the [Theme Contract](./juice-theme-contract.md).

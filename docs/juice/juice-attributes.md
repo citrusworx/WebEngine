@@ -219,7 +219,7 @@ Square icon-only control on the existing button chrome. Color, border, and hover
 - `scale`
   `"sm"` and `"lg"` keep the control square and step the icon. Unmarked scale matches a default button.
 - `pressed`
-  Visual toggle. `aria-pressed="true"` paints the same state. Styling only.
+  Visual toggle. `aria-pressed="true"` paints the same state. On `[icon-button][toggle]`, the runtime keeps `[pressed]` and `aria-pressed` together. Without `[toggle]`, `[pressed]` stays visual.
 
 Core owns the defaults (button block padding, plus the icon default). Shipped themes do not bind them.
 
@@ -242,6 +242,8 @@ Core owns the defaults (button block padding, plus the icon default). Shipped th
   <i icon="bold" lib="solid"></i>
 </button>
 ```
+
+The runtime auto-enhances this markup. `[toggle]` flips `aria-pressed` and `[pressed]`. A missing accessible name warns once in development and is not invented. `title` does not count. See [Icon Button Runtime](./juice-icon-button-runtime.md). Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
 ### Cards
 
