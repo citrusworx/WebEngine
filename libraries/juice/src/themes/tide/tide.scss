@@ -250,6 +250,14 @@ $_tide-control-focus: color.change($_tide-accent, $alpha: 0.42);
     --juice-banner-warning: var(--tide-banner-warning);
     --juice-banner-warning-soft: var(--tide-banner-warning-soft);
 
+    /* Avatar away dot. Core maps away to banner warning, which on Tide is
+       lagoon-800. That step sits on the muted surface (the same hue at low
+       alpha) and the dot disappears (about 1.6:1). Lift the warning hue
+       toward the text color so the dot stays in-family and readable.
+       Online, busy, and offline already clear the surface. No other
+       --juice-avatar-* override. */
+    --juice-avatar-status-away: color-mix(in srgb, var(--tide-banner-warning) 45%, var(--tide-text));
+
     /* Popover chrome — dark panel, not white glass. Close is a surface
        control, not the CTA gradient. Distinct from modal/drawer/toast. */
     --tide-popover-panel: var(--tide-surface-strong);

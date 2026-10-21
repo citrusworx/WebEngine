@@ -1,0 +1,338 @@
+@use '../../tokens/color/gray/gray.scss' as *;
+@use '../../tokens/color/green/green.scss' as *;
+@use '../../tokens/color/red/red.scss' as *;
+@use '../../tokens/color/white/white.scss' as *;
+@use '../../tokens/color/yellow/yellow.scss' as *;
+
+// Avatar chrome is structural. Color comes from core roles on :root.
+// Shipped themes are not required to bind --juice-avatar-*. Checked
+// against KiwiPress (light), Tide (dark), and Aquaflux. Muted surface,
+// inherited ink, and the banner status hues read on KiwiPress and
+// Aquaflux with no override. Tide's banner warning is lagoon-800, which
+// disappears on the muted surface, so tide.scss lifts only
+// --juice-avatar-status-away. Nothing in components, patterns, or themes
+// styled an avatar before this file. Sizes match [skeleton="circle"]
+// so a circle skeleton can stand in for the same box.
+//
+//   --juice-avatar-size / -sm / -lg
+//   --juice-avatar-font-size / -sm / -lg
+//   --juice-avatar-radius
+//   --juice-avatar-radius-square
+//   --juice-avatar-bg
+//   --juice-avatar-ink
+//   --juice-avatar-ring
+//   --juice-avatar-ring-width
+//   --juice-avatar-status-size
+//   --juice-avatar-group-overlap
+//   --juice-avatar-status-online / -away / -busy / -offline
+//
+// Why color is restated on [theme]: a custom property resolves var() on
+// the element that sets it. :root does not see a theme's
+// --juice-surface-muted-bg or --juice-banner-success, so a formula that
+// lived only on :root would bake the unthemed fallback in for every
+// descendant. [theme] states the same formula again. currentColor stays
+// in the ink and offline values and resolves where the avatar paints.
+//
+// Juice chrome. Identity mark. Distinct from:
+//   - [badge] (pill label; [badge="square"] is the square precedent)
+//   - [skeleton="circle"] (loading placeholder at the same sizes)
+//   - [icon-button="round"] (a control; the circle there is the option)
+//
+// Native collision: there is no HTML global `avatar` attribute, and
+// there is no <avatar> element. [status] is not a global attribute
+// either. Selectors are [avatar][status="…"], so a bare [status] is
+// not painted. Do not style [role="status"].
+//
+// Juice names:
+//   [avatar]              round mark. [avatar="round"] is the same
+//                         shape. Boolean [avatar] is the round.
+//                         Unmarked scale is the md size. There is no
+//                         [scale="md"]. [scale="sm"|"lg"] steps the box.
+//   [avatar="square"]     squared mark. Same idea as [badge="square"]:
+//                         the default is round, and the other shape is
+//                         a value on the component attribute. Not a
+//                         [square] boolean — [icon-button][round] is the
+//                         inverse case (square control, circle option).
+//   [status="online|away|busy|offline"]
+//                         presence dot on the avatar, bottom-right.
+//                         A scalar on the parent, not an [avatar-status]
+//                         child (that name repeats the parent). The dot
+//                         is ::after. No child element, no JS.
+//   [avatar-group]        overlapping row. [scale] on the group steps
+//                         every unmarked child. A child [scale] wins.
+//   [avatar-more]         overflow chip, same box as an avatar. An
+//                         [avatar] whose text is "+N" is the same picture.
+//
+// An <img> inside [avatar] covers initials. The photo is taken out of
+// flow and stacked above the text, so source order does not matter.
+// Initials (a <span> or bare text) stay centered underneath. Removing
+// or hiding the img is the image-error fallback (slice B). This slice
+// does not do that in JS. Authors own the accessible name. Prefer an
+// empty alt when the initials are the name, or no initials when the
+// img names the person.
+//
+// The first eight faces in a group paint above the ones after them, so
+// a bottom-right dot stays on the visible rim. Past eight, later faces
+// paint in source order. The group ring is a shadow, not a border, so
+// the box size does not change.
+//
+// The status dot's background-color eases with --juice-motion-*.
+// prefers-reduced-motion removes that transition. The dot's translate
+// is placement, not motion, and stays.
+//
+// z-index: the photo and the dot stack inside the avatar. The group
+// ladder is 8 down to 1. No overlay band.
+
+:root,
+[theme] {
+    --juice-avatar-bg: var(--juice-surface-muted-bg, #{$gray-200});
+    --juice-avatar-ink: currentColor;
+    --juice-avatar-ring: var(--juice-surface-strong-bg, #{$white-100});
+    // Banner status hues, then toast, then the unthemed swatch. Themes
+    // already remap banner status from accent / warm / page-deep.
+    --juice-avatar-status-online: var(--juice-banner-success, var(--juice-toast-success, #{$green-700}));
+    --juice-avatar-status-away: var(--juice-banner-warning, var(--juice-toast-warning, #{$yellow-700}));
+    --juice-avatar-status-busy: var(--juice-banner-error, var(--juice-toast-error, #{$red-700}));
+    // No offline hue on banner or toast. Ink at 55% stays neutral on
+    // light and dark without a new swatch.
+    --juice-avatar-status-offline: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+:root {
+    // Same steps as [skeleton="circle"].
+    --juice-avatar-size: 2.5rem;
+    --juice-avatar-size-sm: 1.5rem;
+    --juice-avatar-size-lg: 4rem;
+    --juice-avatar-font-size: calc(var(--juice-avatar-size) * 0.4);
+    --juice-avatar-font-size-sm: calc(var(--juice-avatar-size-sm) * 0.4);
+    --juice-avatar-font-size-lg: calc(var(--juice-avatar-size-lg) * 0.4);
+    --juice-avatar-radius: 999px;
+    // [badge="square"] and [skeleton] use this radius.
+    --juice-avatar-radius-square: 0.375rem;
+    --juice-avatar-ring-width: 2px;
+    --juice-avatar-status-size: calc(var(--juice-avatar-size) * 0.28);
+    // Negative margin. A quarter of the current size, so [scale] on
+    // the group tightens the stack with the box. Children do not
+    // reassign --juice-avatar-size, so a child's own [scale] does not
+    // change the group's overlap.
+    --juice-avatar-group-overlap: calc(var(--juice-avatar-size) * -0.25);
+}
+
+// [theme] companions beat semantic defaults such as
+// [theme="…"] :where(div) fills and :where(p, span) color.
+// Geometry stays on the bare attribute so width / height utilities,
+// which share that specificity and load later, can still override it.
+
+[avatar],
+[avatar-more],
+[theme] [avatar],
+[theme] [avatar-more] {
+    box-sizing: border-box;
+    border: none;
+    background-color: var(--juice-avatar-bg);
+    background-image: none;
+    color: var(--juice-avatar-ink);
+    box-shadow: none;
+    backdrop-filter: none;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+[avatar],
+[avatar="round"],
+[avatar-more],
+[avatar-more="round"] {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--juice-avatar-size);
+    height: var(--juice-avatar-size);
+    min-width: var(--juice-avatar-size);
+    min-height: var(--juice-avatar-size);
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--juice-avatar-radius);
+    font-size: var(--juice-avatar-font-size);
+    vertical-align: middle;
+    aspect-ratio: 1;
+    // Restate on the avatar so the dot tracks this box. A :root formula
+    // would bake the md size. [scale] on the avatar replaces it below.
+    --juice-avatar-status-size: calc(var(--juice-avatar-size) * 0.28);
+}
+
+[avatar][scale="sm"],
+[avatar-more][scale="sm"] {
+    width: var(--juice-avatar-size-sm);
+    height: var(--juice-avatar-size-sm);
+    min-width: var(--juice-avatar-size-sm);
+    min-height: var(--juice-avatar-size-sm);
+    font-size: var(--juice-avatar-font-size-sm);
+    --juice-avatar-status-size: calc(var(--juice-avatar-size-sm) * 0.28);
+}
+
+[avatar][scale="lg"],
+[avatar-more][scale="lg"] {
+    width: var(--juice-avatar-size-lg);
+    height: var(--juice-avatar-size-lg);
+    min-width: var(--juice-avatar-size-lg);
+    min-height: var(--juice-avatar-size-lg);
+    font-size: var(--juice-avatar-font-size-lg);
+    --juice-avatar-status-size: calc(var(--juice-avatar-size-lg) * 0.28);
+}
+
+[avatar="square"],
+[avatar-more="square"] {
+    border-radius: var(--juice-avatar-radius-square);
+}
+
+// Theme span / strong color would otherwise beat inherited ink.
+// The photo is not text, so it stays out of this rule.
+
+[avatar] > :not(img),
+[theme] [avatar] > :not(img),
+[avatar-more] > :not(img),
+[theme] [avatar-more] > :not(img) {
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    text-transform: inherit;
+}
+
+// The img covers initials whenever it is in the avatar. Broken-image
+// fallback is slice B. z-index 1 is inside the avatar's isolate, above
+// in-flow text and below the status dot.
+
+[avatar] img,
+[theme] [avatar] img {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+// A status dot hangs off the rim. Overflow stays visible so the ring
+// is not clipped by the circle. The translate is the placement.
+
+[avatar][status],
+[theme] [avatar][status] {
+    overflow: visible;
+}
+
+[avatar][status="online"]::after,
+[avatar][status="away"]::after,
+[avatar][status="busy"]::after,
+[avatar][status="offline"]::after,
+[theme] [avatar][status="online"]::after,
+[theme] [avatar][status="away"]::after,
+[theme] [avatar][status="busy"]::after,
+[theme] [avatar][status="offline"]::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    width: var(--juice-avatar-status-size);
+    height: var(--juice-avatar-status-size);
+    border-radius: 999px;
+    transform: translate(20%, 20%);
+    box-shadow: 0 0 0 var(--juice-avatar-ring-width) var(--juice-avatar-ring);
+    pointer-events: none;
+    transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}
+
+[avatar][status="online"]::after,
+[theme] [avatar][status="online"]::after {
+    background-color: var(--juice-avatar-status-online);
+}
+
+[avatar][status="away"]::after,
+[theme] [avatar][status="away"]::after {
+    background-color: var(--juice-avatar-status-away);
+}
+
+[avatar][status="busy"]::after,
+[theme] [avatar][status="busy"]::after {
+    background-color: var(--juice-avatar-status-busy);
+}
+
+[avatar][status="offline"]::after,
+[theme] [avatar][status="offline"]::after {
+    background-color: var(--juice-avatar-status-offline);
+}
+
+[avatar-group],
+[theme] [avatar-group] {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 0;
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+    // Resolve overlap here, not only on :root. Otherwise var(--juice-avatar-size)
+    // bakes the md length and [scale] on the group cannot tighten the stack.
+    --juice-avatar-group-overlap: calc(var(--juice-avatar-size) * -0.25);
+}
+
+// Reassign the md roles. Overlap is calc(--juice-avatar-size * -0.25)
+// from :root, so it follows this reassignment. A child [scale] sets
+// width and font-size directly and leaves --juice-avatar-size alone.
+
+[avatar-group][scale="sm"] {
+    --juice-avatar-size: var(--juice-avatar-size-sm);
+    --juice-avatar-font-size: var(--juice-avatar-font-size-sm);
+}
+
+[avatar-group][scale="lg"] {
+    --juice-avatar-size: var(--juice-avatar-size-lg);
+    --juice-avatar-font-size: var(--juice-avatar-font-size-lg);
+}
+
+[avatar-group] > :is([avatar], [avatar-more]) ~ :is([avatar], [avatar-more]) {
+    margin-inline-start: var(--juice-avatar-group-overlap);
+}
+
+[avatar-group] > :is([avatar], [avatar-more]),
+[theme] [avatar-group] > :is([avatar], [avatar-more]) {
+    box-shadow: 0 0 0 var(--juice-avatar-ring-width) var(--juice-avatar-ring);
+}
+
+// Earlier faces sit above later ones (8 … 1). The rest stay at 0,
+// still under the eighth. Not an overlay: nothing here is z-index 10.
+
+[avatar-group] > :is([avatar], [avatar-more]) {
+    z-index: 0;
+}
+
+@for $i from 1 through 8 {
+    [avatar-group] > :is([avatar], [avatar-more]):nth-child(#{$i}) {
+        z-index: #{9 - $i};
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [avatar][status="online"]::after,
+    [avatar][status="away"]::after,
+    [avatar][status="busy"]::after,
+    [avatar][status="offline"]::after,
+    [theme] [avatar][status="online"]::after,
+    [theme] [avatar][status="away"]::after,
+    [theme] [avatar][status="busy"]::after,
+    [theme] [avatar][status="offline"]::after {
+        transition: none;
+    }
+}
