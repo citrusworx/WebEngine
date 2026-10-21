@@ -12,7 +12,7 @@ Related: [Roadmap](./sig-roadmap.md) for direction. [API](./sig-api.md) for the 
 
 ## Maturity levels
 
-### `Stable-ish`
+### `Stable`
 
 The feature is usable today, central to the Sig.js experience, and unlikely to change dramatically in basic concept. Alpha still means the package version can move; the *idea* is settled.
 
@@ -32,18 +32,18 @@ The feature is more of a direction than a hardened part of the runtime.
 
 | Area | Maturity | Notes |
 |---|---|---|
-| `Signal(value)` factory | Stable-ish | `get` / `set` only. No equality check, no `peek`. This is the core identity of the library. |
-| `effect` + cleanup + dispose | Stable-ish | Runs immediately, re-tracks every run, returns a disposer. Tested. |
-| Cleanup scopes on function components | Stable-ish | `captureCleanupScope` + `disposeTree`. This is how the router stops timers. |
-| Function-child **text** | Stable-ish | `String(child())` on a text node. Easy to misuse; behavior is consistent. |
-| JSX → real DOM | Stable-ish | `createElement`, `on*`, `ref`, known properties vs attributes. No VDOM. |
+| `Signal(value)` factory | Stable | `get` / `set` only. No equality check, no `peek`. This is the core identity of the library. |
+| `effect` + cleanup + dispose | Stable | Runs immediately, re-tracks every run, returns a disposer. Tested. |
+| Cleanup scopes on function components | Stable | `captureCleanupScope` + `disposeTree`. This is how the router stops timers. |
+| Function-child **text** | Stable | `String(child())` on a text node. Easy to misuse; behavior is consistent. |
+| JSX → real DOM | Stable | `createElement`, `on*`, `ref`, known properties vs attributes. No VDOM. |
 | Function-valued host props | Emerging | Getters via `effect` (not `ref` / `on*`). `className` / `value` / booleans / attributes. |
-| `mount` / `disposeTree` | Stable-ish | Replace a target’s children; walk cleanups. |
-| `Fragment` | Stable-ish | `DocumentFragment`. Same child model as host elements. |
-| `batch` | Stable-ish | Depth counter, `try` / `finally`. Nested calls and throws are covered by tests. |
-| `memo` | Stable-ish | Lazy `{ get }` cache. Recomputes when signal (or memo) dependencies change; notifies subscribed effects. No public `dispose`, no equality check, no `set`. |
+| `mount` / `disposeTree` | Stable | Replace a target’s children; walk cleanups. |
+| `Fragment` | Stable | `DocumentFragment`. Same child model as host elements. |
+| `batch` | Stable | Depth counter, `try` / `finally`. Nested calls and throws are covered by tests. |
+| `memo` | Stable | Lazy `{ get }` cache. Recomputes when signal (or memo) dependencies change; notifies subscribed effects. No public `dispose`, no equality check, no `set`. |
 | `SigRouter` exact + param paths | Emerging | Named routes, `:id` params, click + popstate, view dispose, `navigate` normalizes. Optional `"*"` fallback. |
-| Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
+| Docs and onboarding | Emerging to Stable | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
 | Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys (covered by `jsx.test.ts`). Not a typed Juice plugin. |
 | Juice `bind` | Emerging | Optional `@citrusworx/sigjs/juice`. `{ state, dispose }` follows `getState` / `juice:change`. Write-back is switch, checkbox, disclosure, and modal. Shipped in 0.4.0. Juice works without it. |
 | `bindList` | Emerging | Keyed array or `Map` list. Per-row getter, node reuse, dispose with the row. `replaceChildren` remains the non-keyed rewrite. No `<For>` / `<Show>`. |
@@ -88,7 +88,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Built-in fetch / forms / persistence | Use the platform |
 | `<For>` / `<Show>` / JSX `.map()` reconciler | Not present. Keyed rows are `bindList`. A rewrite is `replaceChildren`. |
 
-`memo` **is** implemented and tested (`lazy` cache + effect notification). It is **Stable-ish** as a derivation primitive: `{ get }` only, no public dispose. Older roadmap text that listed “derived signals” as a future version was stale.
+`memo` **is** implemented and tested (`lazy` cache + effect notification). It is **Stable** as a derivation primitive: `{ get }` only, no public dispose. Older roadmap text that listed “derived signals” as a future version was stale.
 
 ## Strongest areas
 

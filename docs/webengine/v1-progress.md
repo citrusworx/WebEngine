@@ -2,7 +2,7 @@
 
 Living %-based scorecard toward a honest WebEngine v1. Recompute from [library-release-gates.md](./library-release-gates.md), package manifests, status docs, and npm. Prefer conservative scores when gate checkboxes are still open or docs/version drift exists. Do not invent green checkboxes.
 
-**As-of:** 2026-10-15 (routine refresh ~09:20 PT; scored from `origin/master` `e1a19908` (PR #248) via `git fetch` + `git show` / `git diff`; local `master` is 10 behind at `03cf749c` and was not pulled. Overall unchanged; new Juice npm-ahead-of-repo drift recorded)
+**As-of:** 2026-10-21 for the Seltzer row (release gate 8, npm `@citrusworx/seltzer@0.9.0`). Other rows remain the 2026-10-15 pass.
 
 ## Weights (stable)
 
@@ -23,16 +23,16 @@ Living %-based scorecard toward a honest WebEngine v1. Recompute from [library-r
 |---|---|---|
 | Juice | ~95% | npm `@citrusworx/juiceui@0.9.2` (published 2026-10-14 10:26 PT, `gitHead` `03cf749c`), but the `origin/master` manifest still says **0.9.1**, [juice-beta.md](../juice/juice-beta.md) still names 0.9.1 as the public cut and calls disclosure / spinner / select / input / textarea / field and motion core unpublished, and their changesets are still pending -- **new npm-ahead-of-repo drift** (Shared bar: no surprise versions on publish). Tarball check: 0.9.2 does contain the input, textarea, and field runtimes and shared motion, so the 10-06 git-only runtime gap is closed on npm. Master is ahead again: `@citrusworx/juiceui/sig` adapter subpath (PR #248) and `juice:change` events from runtime hosts plus a field `getState` fix (PR #247), both unpublished. Gates still **0/7**. Held at ~95%: one gap closed, one honesty drift opened. |
 | Sig | 100% | Gates **7/7**. npm `@citrusworx/sigjs@0.3.0`. No `libraries/sig` changes in `fb9f989f..e1a19908` (only a new Juice-adapter section in `sig-juice-integration.md`). |
-| Seltzer | ~74% | npm + workspace `@citrusworx/seltzer@0.8.1`. Gates still **0/8**. No Seltzer changes in `fb9f989f..e1a19908`. |
+| Seltzer | 100% | npm `@citrusworx/seltzer@0.9.0` (2026-10-21) matches the workspace manifest. Gates **8/8**. `handleRequest` stays private and is listed as Not yet. Client stays Emerging. |
 | Nectarine | ~84% | npm `@citrusworx/nectarine@0.5.0` = manifest. [nectarine-status.md](../nectarine/nectarine-status.md) and `libraries/nectarine/README.md` now say published **0.5.0**, INSERT `onConflict` in the tarball (PR #228). **Master CI:** GitHub Actions run 37223531237, **Nectarine Package**, push to `master` at `9656bd32` (2026-10-04 11:12 PT) concluded **success**; that workflow runs `yarn install --immutable` then `yarn verify:nectarine`. This is the first green master run (the 10:06 PT run on `77d73e1a` failed). Gates doc still shows **7/8** -- the CI box is unticked and gates prose (lines on Nectarine status) still says published **0.4.0**. +6, not to 100%, until the gate box and prose are updated in-repo. Since 10-06, master added UPDATE / DELETE `returning` and first-class `json` / `jsonb` binds (PR #245, changeset pending) plus a MiaMakes second-golden-host audit (PR #246), unpublished versus 0.5.0; gates doc unchanged, held. |
 | Grapevine | ~85% | npm + workspace `@citrusworx/grapevine@0.2.2`. DO catalog / offerings / telemetry on master, unpublished. Gates still **0/7**. No Grapevine changes in `fb9f989f..e1a19908`. |
 | Shared | ~45% | `@citrusworx/types@0.2.0` npm = workspace. Shared bar **0/6**. No changes in range. The Juice 0.9.2 publish without a repo version bump is a fresh Shared-bar miss (changeset + changelog, no surprise versions). |
 | Kernel | ~52% | `@citrusworx/webengine@0.2.1` (npm matches). Only change in range: dependency bumped to `@citrusworx/nectarine@^0.5.0`. PaaS lifecycle methods still silent `Promise.resolve()`. [README.md](./README.md) still claims stubs / no kernel in `src/` -- **docs drift**. |
-| **Overall** | **~76%** | Weighted 75.68, unchanged since 2026-10-05. No component moved. |
+| **Overall** | **~79%** | Weighted 79.32 after the Seltzer row moved from ~74% to 100% on 2026-10-21. Other component scores are unchanged from 2026-10-15. |
 
 ### Weighted check
 
-`14x0.95 + 14x1.00 + 14x0.74 + 16x0.84 + 10x0.85 + 8x0.45 + 24x0.52 = 75.68`
+`14x0.95 + 14x1.00 + 14x1.00 + 16x0.84 + 10x0.85 + 8x0.45 + 24x0.52 = 79.32`
 
 ## What moved since the 2026-10-06 pass (`fb9f989f`)
 
@@ -61,7 +61,7 @@ Living %-based scorecard toward a honest WebEngine v1. Recompute from [library-r
 
 ## Biggest blocker left to v1
 
-**Seltzer release-gate close-out (still 0/8)** -- freeze the Seltzer <-> Nectarine join before treating kernel scaffolding as product-ready. Nectarine is effectively gate-complete, so Seltzer is the clear bottleneck on the data/HTTP path. Housekeeping next: land a Juice 0.9.2 version commit (manifest, changelog, consumed changesets, juice-beta.md naming 0.9.2) so npm and master agree again; tick the Nectarine master-CI box (cite run 37223531237) and refresh its 0.4.0 gate prose; fix the kernel README drift; then start checking Juice gate boxes against `yarn workspace @citrusworx/juiceui verify` without inventing greens.
+Seltzer's eight release-gate boxes are ticked at published **0.9.0**. `handleRequest` is still private (planned, not a gate miss). Housekeeping still open from the 2026-10-15 pass: land a Juice 0.9.2 version commit (manifest, changelog, consumed changesets, juice-beta.md naming 0.9.2) so npm and master agree again; tick the Nectarine master-CI box (cite run 37223531237) and refresh its 0.4.0 gate prose; fix the kernel README drift; then start checking Juice gate boxes against `yarn workspace @citrusworx/juiceui verify` without inventing greens.
 
 ## Method notes
 

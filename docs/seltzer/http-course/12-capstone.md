@@ -6,7 +6,7 @@
 
 ## Your brief
 
-Create a Reading List API using Seltzer 0.8.1. Each entry has an ID, a title, and a `finished` boolean. Work in a separate exercise folder so the course's reference solutions remain available.
+Create a Reading List API using Seltzer 0.9.0. Each entry has an ID, a title, and a `finished` boolean. Work in a separate exercise folder so the course's reference solutions remain available.
 
 Define these operations:
 

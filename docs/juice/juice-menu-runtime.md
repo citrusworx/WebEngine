@@ -26,7 +26,7 @@ The user should not need to manually initialize menu behavior in their app code.
 
 There is no `Menu()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Menu is an APG **Menu Button** (an opener toggles a menu of menuitems). It is not a popover, not a combobox, not a native `<select>` restyle, not a menubar, and not a context menu. No submenus and no typeahead in v1.
 
@@ -214,7 +214,7 @@ Disabled items are skipped by the roving keys. They never fire author click hand
 - Placement has no Floating UI. The panel stays CSS-absolute from the root.
 - Do not use the HTML `<menu>` element. A boolean `[menu]` attribute is the Juice name.
 - The panel is not a dialog overlay: no `aria-modal`, no focus trap, and the background stays interactive.
-- This surface is Emerging, not Stable-ish.
+- This surface is Emerging, not Stable.
 - Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, and banner behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), and [Banner Runtime](./juice-banner-runtime.md).
 - Escape dismisses the open menu only when no open modal/drawer overlay exists. Combobox, toast, and tooltip yield to an open menu like they yield to an open popover. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Panel chrome is `z-index: 1050`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).

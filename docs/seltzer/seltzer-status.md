@@ -1,57 +1,58 @@
 # Seltzer Status
 
-Snapshot of `@citrusworx/seltzer` source against `libraries/seltzer/src`. Published npm is still **0.8.1**. The loopback `listen` default, server timeouts, removal of `src/core/server/server.ts`, strict `ResponseData` serialization, and the generic thrown-error body are in this tree and ship in the next minor; they are not in the 0.8.1 tarball.
+Snapshot of `@citrusworx/seltzer` **0.9.0** (published to npm on 2026-10-21) against `libraries/seltzer/src`. The workspace manifest is **0.9.0**. A rebuild of this tree matches the 0.9.0 `dist` (declarations and ESM). `handleRequest` is still a private method.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
-**0.8.x is the HTTP core.** The inspected 0.8.1 runtime includes default `validate`, `replace`, and the current `client`. The package declares `engines.node` `>=18` and has no runtime dependencies: the client uses global `fetch` only. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons. The slash-safe client, 30s deadline, and abort errors are in this tree and ship in the next minor; they are not in the 0.8.1 tarball.
+**0.9.0 is the HTTP core.** It includes loopback `listen`, server timeouts, default `validate`, `replace`, strict `ResponseData`, and the fetch client. The package declares `engines.node` `>=18` and has no runtime dependencies: the client uses global `fetch` only. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons.
 
-Related: [Roadmap](./seltzer-roadmap.md). [API](./seltzer-api.md). [JSON API tutorial](./seltzer-api-tutorial.md).
+Related: [Roadmap](./seltzer-roadmap.md). [API](./seltzer-api.md). [JSON API tutorial](./seltzer-api-tutorial.md). [Changelog](../../libraries/seltzer/CHANGELOG.md).
 
 ## Maturity levels
 
-### `Stable-ish`
+These five labels are the only ones this matrix uses.
 
-The feature is usable today, central to the Seltzer experience, and unlikely to change dramatically in basic concept. Pre-1.0 still means the package version can move; the *idea* is settled.
+### `Stable`
+
+The behavior in the row is what 0.9.0 documents, and a conformance test under `libraries/seltzer/src` covers that surface. Pre-1.0 still means a later minor can change it. The tests lock the behavior the row describes.
 
 ### `Emerging`
 
-The feature is useful and present, but the API, conventions, or implementation details are still likely to evolve.
-
-### `Early`
-
-The feature exists, but it is still exploratory, incomplete, or not yet something Seltzer should strongly promise as a finished public surface.
+The feature ships in 0.9.0 and is safe to call, and the API or an uncovered edge is still likely to move. A conformance file may exist and still leave part of the documented surface untested. The client stays Emerging for that reason.
 
 ### `Draft`
 
-The feature is more of a direction than a hardened part of the runtime.
+The direction is written down. 0.9.0 does not offer it as a finished public surface.
+
+### `Not yet`
+
+Absent from 0.9.0, and not ruled out. A later design can add it. This is not a refusal.
 
 ### `Non-goal`
 
 The package will not grow this. The alternative is in [Non-goals](../../libraries/seltzer/README.md#non-goals).
 
-### `Not yet`
-
-Absent today, and not ruled out. This is distinct from a non-goal.
-
 ## Matrix
 
 | Area | Maturity | Notes |
 |---|---|---|
-| `Seltzer.init()` / `.route()` / `.listen()` | Stable-ish | Identity of the package. Node `http`. `listen` returns `Server`. Default bind `127.0.0.1`. `host` opts into another interface. Header, request, and keep-alive timeouts are on. `server.close()` stops accept. |
-| Named pipeline | Stable-ish | `parse` → `send`. `before` / `replace`. Mutation in place. |
-| Parametric match + static-prefix rank | Stable-ish | `/items/new` beats `/items/:id`. Params are `decodeURIComponent`. A trailing slash is a different path. Malformed `%` encoding on a matched param is 400. Known path + wrong method is 405 + `Allow`; unknown paths stay 404. |
-| JSON `parse` + 400 on bad JSON | Stable-ish | GET/HEAD skip body. Empty body is `undefined`. Non-JSON content types are a UTF-8 string, not 415. Default body limit is 1 MB (`bodyLimit`, `0` unlimited); over the limit is 413 and reading stops. |
-| `ResponseData` + `send` | Stable-ish | Handlers and hooks return `ResponseData`. Bare values are 500 and are logged (route + returned value). Strings are `text/plain; charset=utf-8`, JSON values are `application/json`, buffers are `application/octet-stream`, unless `Content-Type` is set. 204, 304, and HEAD send no body. Thrown errors are a generic 500; the error is logged, stack only with `listen({ debug: true })`. `logger` defaults to `console.error`. No `ctx.json` / `ctx.send`. Writing `ctx.res` throws. `replace("send")` throws. |
-| Default `validate` (`.required`) | Emerging | Presence-only. Does not set `ctx.valid`. Failure stays `Missing required field` / `Request body must be an object`. |
-| Replacement `validate` | Emerging | `replace("validate")` sets `ctx.valid` and returns `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement. No schema field on `Route` or `generateRoutes`. |
-| `generateRoutes` | Emerging | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. |
-| CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
-| `client.*` + `HttpError` | Emerging | Global `fetch`. `client.conformance.test.ts` covers slash-safe join, query encoding, the 30s deadline, caller abort, and `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. The result is still `unknown`. Documented edges outside that file: ignored `endpoint`, `FormData` rejection, `Buffer` bodies, the error snippet. No retries. |
-| `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, and the urlencoded recipe on `127.0.0.1`. The YAML → listen proof is in WebEngine. |
+| `Seltzer.init()` / `.route()` / `.listen()` | Stable | Identity of the package. Node `http`. `listen` returns `Server`. Default bind `127.0.0.1`. `host` opts into another interface. Header, request, and keep-alive timeouts are on. `server.close()` stops accept. Covered by `core-api.conformance.test.ts`. |
+| Named pipeline | Stable | `parse` → `send`. `before` / `replace`. Mutation in place. Unknown stage names throw. Covered by `core-api.conformance.test.ts`. |
+| Parametric match + static-prefix rank | Stable | `/items/new` beats `/items/:id`. Params are `decodeURIComponent`. A trailing slash is a different path. Malformed `%` encoding on a matched param is 400. Known path + wrong method is 405 + `Allow`; unknown paths stay 404. Covered by `http-surface.conformance.test.ts`. |
+| JSON `parse` + 400 on bad JSON | Stable | GET/HEAD skip body. Empty body is `undefined`. Non-JSON content types are a UTF-8 string, not 415. Default body limit is 1 MB (`bodyLimit`, `0` unlimited); over the limit is 413 and reading stops. Covered by `http-surface.conformance.test.ts`. |
+| `ResponseData` + `send` | Stable | Handlers and hooks return `ResponseData`. Bare values are 500 and are logged (route + returned value). Strings are `text/plain; charset=utf-8`, JSON values are `application/json`, buffers are `application/octet-stream`, unless `Content-Type` is set. 204, 304, and HEAD send no body. Thrown errors are a generic 500; the error is logged, stack only with `listen({ debug: true })`. `logger` defaults to `console.error`. No `ctx.json` / `ctx.send`. Writing `ctx.res` throws. `replace("send")` throws. Covered by `response-data.conformance.test.ts`. |
+| Default `validate` (`.required`) | Stable | Presence-only. Does not set `ctx.valid`. Failure stays `Missing required field` / `Request body must be an object`. That narrow contract is what `validate.conformance.test.ts` locks. |
+| Replacement `validate` | Emerging | `replace("validate")` can set `ctx.valid` and return `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement, and is not installed here. No schema field on `Route` or `generateRoutes`. The helpers are tested; the host schema integration is still the part that moves. |
+| `generateRoutes` | Stable | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. Covered by `generate-routes.conformance.test.ts`. The YAML → `listen` proof is in WebEngine. |
+| CORS / OPTIONS 204 | Stable | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. Covered by `http-surface.conformance.test.ts`. |
+| `client.*` + `HttpError` | Emerging | Global `fetch`. `client.conformance.test.ts` covers slash-safe join, query encoding, the 30s deadline, caller abort, and `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. The result is still `unknown`. Documented edges outside that file: ignored `endpoint`, `FormData` rejection, `Buffer` bodies, the error snippet. No retries. Stays Emerging. |
+| `.handler()` options | Emerging | Copied to `ctx.options`. `adapter` is unused inbound. There is no conformance file for this stash. |
+| Tests | Stable | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, the urlencoded recipe on `127.0.0.1`, and the README docs-drift check. The YAML → listen proof is in WebEngine. |
 | HTTPS listen, `app.use`, form/multipart, sessions, cookies, static files, templating, client retries, ORM | Non-goal | [Non-goals](../../libraries/seltzer/README.md#non-goals). Urlencoded fields are a host `URLSearchParams` recipe. |
 | Streaming responses / WebSockets | Not yet | No stream or socket API. A `Buffer` body is still one payload. Possible later. |
+| Public `handleRequest` | Not yet | Private on `Seltzer` in 0.9.0 (`dist/core/seltzer.d.ts`). A host-created `http.Server` or `https.Server` cannot be attached. Exporting it is a planned follow-up, not this release. |
+| `after` / remove stage | Draft | Not in the pipeline API. `before` and `replace` are the extension points. |
+| Custom 404 envelope for hand-written routes | Draft | Unmatched hand-written paths use the builtin 404. Generated routes already take `notFound`. |
 | Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
 
 ## What is shipped
@@ -73,7 +74,7 @@ Absent today, and not ruled out. This is distinct from a non-goal.
 
 `Seltzer.listen` in `core/seltzer.ts` is the only listener. The leftover hello-world `src/core/server/server.ts` was removed.
 
-## Myths that closed (0.2.0 docs → 0.8.1)
+## Myths that closed (0.2.0 docs → 0.9.0)
 
 | Old claim | Now |
 |---|---|
@@ -107,20 +108,21 @@ These form the case for Seltzer as the ecosystem’s HTTP engine, not a thin `cr
 - `generateRoutes` covering more write operations in hosts
 - outbound `client` (join, deadline, and error classes are tested; the result is still `unknown`)
 
-## Early or draft areas
+## Draft areas
 
 - `after` / remove stage
 - custom 404 envelope for hand-written unmatched routes (generated routes already take `notFound`)
 - response-shape validation
 
-They can be valuable later. They should not appear as if they shipped.
+They can be valuable later. They should not appear as if they shipped. HTTPS listen, `app.use`, and form or multipart parsing are [non-goals](../../libraries/seltzer/README.md#non-goals), not drafts.
 
 ## Not yet
 
 - streaming responses (a `Readable` is not a stream)
 - WebSockets
+- a public `handleRequest` (it is private; attaching a host-created server is a planned follow-up)
 
-These are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets).
+Streaming and WebSockets are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets). `handleRequest` is the known gap on the 0.9.0 tarball: `dist/core/seltzer.d.ts` still declares it `private`.
 
 ## Non-goals
 
@@ -136,7 +138,7 @@ yarn workspace @citrusworx/seltzer typecheck
 
 ## Recommended positioning right now
 
-> Seltzer 0.8.x is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields (presence only, `ctx.valid` left unset), and maps Nectarine `ApiOperation[]` through `generateRoutes`. Richer checks are `replace("validate")` plus `validationError()`; Zod is not a Seltzer dependency. It is not Express, and it is not the 0.2.0 `ctx.json` listener.
+> Seltzer 0.9.0 is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields (presence only, `ctx.valid` left unset), and maps Nectarine `ApiOperation[]` through `generateRoutes`. Richer checks are `replace("validate")` plus `validationError()`; Zod is not a Seltzer dependency. It is not Express, and it is not the 0.2.0 `ctx.json` listener. `listen(port)` binds `127.0.0.1`.
 
 Less accurate positioning:
 
@@ -156,6 +158,7 @@ If you are building with Seltzer today:
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 - pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`
 - call `server.close()` to stop accepting. Idle keep-alive sockets delay the close callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`
+- do not expect a public `handleRequest`. It is private in 0.9.0. Exporting it so a host can attach its own server is planned and is not this release
 
 ## Suggested reading
 

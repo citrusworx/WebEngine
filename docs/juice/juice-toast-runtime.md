@@ -26,7 +26,7 @@ The user should not need to manually initialize toast behavior in their app code
 
 There is no `Toast()` Sig factory. Markup plus the runtime is the contract. There is no programmatic message factory either — authors place `[toast-region]` and `[toast]` nodes.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Toast is not a dialog. It is a non-modal stack. It is not an inline banner / callout.
 

@@ -6,7 +6,7 @@
 
 **Proves you can rebuild:** The exact-match subset of Seltzer’s `route` stage (before params in exercise 4).
 
-**Shipped:** `@citrusworx/seltzer` 0.8.1 already matches method + compiled path (including `:id`). This exercise is the simpler `===` matcher so you understand first-wins before rank.
+**Shipped:** `@citrusworx/seltzer` 0.9.0 already matches method + compiled path (including `:id`). This exercise is the simpler `===` matcher so you understand first-wins before rank.
 
 ## Requirements
 

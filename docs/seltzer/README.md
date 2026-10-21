@@ -14,9 +14,9 @@ The current model is:
 - **`.listen(port, options?)`** runs Node `http`, optional CORS/`OPTIONS` 204, then the pipeline
 - **`client.get/post/put/patch/delete`** call `fetch` with an `Endpoint` and throw `HttpError` on non-2xx
 
-Seltzer is strongest as a readable request engine you can hold in your head. It is not Express, and it is not a middleware stack. The pipeline in [seltzer-design.md](./seltzer-design.md) is **shipped** in `@citrusworx/seltzer` **0.8.1**, not a future sketch.
+Seltzer is strongest as a readable request engine you can hold in your head. It is not Express, and it is not a middleware stack. The pipeline in [seltzer-design.md](./seltzer-design.md) is **shipped** in `@citrusworx/seltzer` **0.9.0**, not a future sketch.
 
-These docs describe the Seltzer **0.8.1** runtime now present on local `master` after the Blackwater Phase 0 merge. Earlier 0.2.0 examples using `ctx.json` describe a different API; use the current source and versioned examples when comparing behavior.
+These docs describe the Seltzer **0.9.0** runtime now present on local `master` after the Blackwater Phase 0 merge. Earlier 0.2.0 examples using `ctx.json` describe a different API; use the current source and versioned examples when comparing behavior.
 
 ## Who it is for
 
@@ -66,13 +66,13 @@ app.route({
 app.listen(3000);
 ```
 
-That is `libraries/seltzer/src/example.ts`. Package version today: **0.8.1**. Requires Node 18+.
+That is `libraries/seltzer/src/example.ts`. Package version today: **0.9.0**. Requires Node 18+.
 
 Handlers and hooks return `ResponseData`. The runtime writes the HTTP response. `ctx.json` and `ctx.send` are gone (calling them throws). Writing `ctx.res` throws. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`. A wrong return is 500 and is logged with the route and the value.
 
 ## What it can do
 
-The sections below are the capability showcase. Every snippet matches `libraries/seltzer/src` at 0.8.1. If a pattern is not here, check [Status](./seltzer-status.md) before assuming an Express-shaped API.
+The sections below are the capability showcase. Every snippet matches `libraries/seltzer/src` at 0.9.0. If a pattern is not here, check [Status](./seltzer-status.md) before assuming an Express-shaped API.
 
 ### 1. JSON GET with `ResponseData`
 
@@ -356,13 +356,13 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 13. [API Reference](./seltzer-api.md)
 14. [Integration](./seltzer-integration.md) — Nectarine, Juice/Sig, Grapevine, KiwiPress
 15. [Troubleshooting](./seltzer-troubleshooting.md)
-16. [Status](./seltzer-status.md) — 0.8.x maturity matrix
+16. [Status](./seltzer-status.md) — 0.9.0 maturity matrix
 17. [Roadmap](./seltzer-roadmap.md) — what closed vs what is still open
 18. [Design](./seltzer-design.md) — rationale; most of it is now source
 
 ## Status
 
-**0.8.x** (`@citrusworx/seltzer` **0.8.1**). Packaging/DX hygiene on top of the 0.8.0 HTTP core (git-labeled 0.7.0). Versions 0.3–0.7 were never published.
+**0.9.0** (`@citrusworx/seltzer`, published 2026-10-21). 0.9.0 was packaging hygiene on the 0.8.0 HTTP core. Versions 0.3–0.7 were never published. 0.9.0 is the release that shipped listen defaults, the HTTP surface, strict `ResponseData`, validation, `generateRoutes`, and the fetch client.
 
 Shipped: object routes, parametric matching, JSON `parse`, `ResponseData` + `send`, named pipeline, default `validate`, `generateRoutes`, CORS/`OPTIONS`, hardened `client`.
 

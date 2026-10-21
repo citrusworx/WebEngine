@@ -59,7 +59,7 @@ Bad:
 handler: (ctx) => { ctx.json(await kiwi.native.posts.getAll()); }
 ```
 
-Why: Seltzer 0.8.1 removed `ctx.json`. Handlers must return `{ body }`. `registerKiwiPressGateway` already returns `ResponseData`. Do not copy the old helper.
+Why: Seltzer 0.9.0 removed `ctx.json`. Handlers must return `{ body }`. `registerKiwiPressGateway` already returns `ResponseData`. Do not copy the old helper.
 
 Better:
 
@@ -73,7 +73,7 @@ handler: async (): Promise<ResponseData> => ({
 
 Bad: `for await (const chunk of ctx.req)`.
 
-Why: 0.8.1 already filled `ctx.body`. A second read is empty.
+Why: 0.9.0 already filled `ctx.body`. A second read is empty.
 
 Better: `ctx.body`. (Gateway `readJson` is the old shape.)
 
@@ -81,7 +81,7 @@ Better: `ctx.body`. (Gateway `readJson` is the old shape.)
 
 Bad: documenting `:id` as unsupported.
 
-Why: Seltzer 0.8.1 matches `:param`. The gateway uses `?id=` because it was written that way.
+Why: Seltzer 0.9.0 matches `:param`. The gateway uses `?id=` because it was written that way.
 
 ## 9. Expecting taxonomies to write back to WordPress
 

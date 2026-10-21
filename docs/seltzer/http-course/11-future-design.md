@@ -30,7 +30,7 @@ Use this sequence for each feature:
 One possible public shape, **not valid today**, is:
 
 ```ts
-// Proposed API only; do not copy into a 0.8.1 application.
+// Proposed API only; do not copy into a 0.9.0 application.
 app.listen(3000, { maxBodyBytes: 1_048_576 });
 ```
 
@@ -76,7 +76,7 @@ A validator needs a result contract: success with validated data, or failure wit
 
 Distinguish body, route-parameter, and query validation. Repeated query values are currently collapsed, so a future array-valued query contract needs a representation change first. Unknown fields need an explicit allow/reject/strip policy. Optional, null, absent, and blank are separate states.
 
-**Compatibility:** stricter checks can reject requests accepted by 0.8.1. Preserve presence-only defaults initially or announce a breaking contract change. Replacing a validator must state whether required-field behavior is preserved.
+**Compatibility:** stricter checks can reject requests accepted by 0.9.0. Preserve presence-only defaults initially or announce a breaking contract change. Replacing a validator must state whether required-field behavior is preserved.
 
 **Acceptance tests:** absent versus null; false and zero; wrong scalar type; nested field paths; unknown keys; malformed contracts rejected during startup; handler never sees invalid data; normalized values are exactly the ones the handler receives.
 

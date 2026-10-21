@@ -26,7 +26,7 @@ The user should not need to manually initialize banner behavior in their app cod
 
 There is no `Banner()` Sig factory. Markup plus the runtime is the contract. Authors place `[banner]` nodes — this is not a portal.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, not a drawer, and not the surface `overlay="frost|tint"` utility. There is no `[banner-region]`, no focus trap, no Escape steal, and no auto-dismiss timer. The banner stays until dismiss.
 

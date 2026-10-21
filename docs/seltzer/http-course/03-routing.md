@@ -38,7 +38,7 @@ In [notes-app.mjs](./examples/notes-app.mjs), the list handler lowercases `ctx.q
 
 The pattern `/notes/:id` can match the word `stats`. Our app also registers `/notes/stats`. Which wins?
 
-In 0.8.1, Seltzer compares matching route ranks: more static segments first, fewer parameters next, then more segments. Tied ranks use registration order. `/notes/stats` therefore wins even though the reference app registers `/notes/:id` first.
+In 0.9.0, Seltzer compares matching route ranks: more static segments first, fewer parameters next, then more segments. Tied ranks use registration order. `/notes/stats` therefore wins even though the reference app registers `/notes/:id` first.
 
 That is a design choice, not a universal framework rule. Read [router.ts](../../../libraries/seltzer/src/pipeline/router.ts) to see `compilePath`, `rankPath`, `matchRoute`, and `paramsFromMatch`.
 

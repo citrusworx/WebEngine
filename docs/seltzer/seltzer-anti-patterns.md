@@ -4,7 +4,7 @@
 
 This document collects the most common ways to fight Seltzer instead of working with it.
 
-These are useful because most 500s, surprise 404s, and leftover 0.2.0 habits come from a few repeated mistakes — usually Express, Koa, or **master-branch docs** brought into a 0.8.x listener.
+These are useful because most 500s, surprise 404s, and leftover 0.2.0 habits come from a few repeated mistakes — usually Express, Koa, or **master-branch docs** brought into a 0.9.0 listener.
 
 ## 1. Treating Seltzer like Express
 
@@ -162,7 +162,7 @@ console.log((note as { error?: string }).error);
 
 Why it is bad:
 
-- 0.8.x throws `HttpError` on non-2xx
+- 0.9.0 throws `HttpError` on non-2xx
 - the 0.2.0 “always `res.json()`, never throw” story is closed
 
 Better: `try/catch` and `instanceof HttpError`.

@@ -26,7 +26,7 @@ The user should not need to manually initialize icon-button behavior in their ap
 
 There is no `IconButton()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Icon button is a square icon-only control on the existing button chrome. Color, border, and hover fill stay with `button` and `[btn]`. It is not a switch and not a checkbox. Switch stays `[switch]` and is left untouched. Checkbox stays `[checkbox]` and is left untouched. There is no focus trap, no Escape handler, and no Sig IconButton factory.
 
@@ -258,7 +258,7 @@ That keeps the runtime from reacting too aggressively while still updating quick
 ## Limitations
 
 - No `IconButton()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Icon button is the twenty-sixth Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Field remains the twenty-fifth and shipped in that cut. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. All twenty-six stay Emerging.
+- This surface is Emerging, not Stable. Icon button is the twenty-sixth Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Field remains the twenty-fifth and shipped in that cut. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. All twenty-six stay Emerging.
 - The runtime does not invent an accessible name. `title`, an SVG `<title>`, and icon-only content do not count. The development warning fires once per unnamed element and is silent in production and test.
 - `[toggle]` is what flips `aria-pressed` and `[pressed]`. A `[pressed]` without `[toggle]` is visual only. The runtime does not add `aria-pressed` to it.
 - Disabled hosts do not flip. Sync still records the initial pressed value.

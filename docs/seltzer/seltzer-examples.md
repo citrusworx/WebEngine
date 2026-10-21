@@ -1,6 +1,6 @@
 # Seltzer Examples
 
-Longer showcases against `Seltzer` and `client` as exported in **0.8.1**. These are the same primitives as the [tutorial](./seltzer-api-tutorial.md), written as copyable slices rather than a guided build.
+Longer showcases against `Seltzer` and `client` as exported in **0.9.0**. These are the same primitives as the [tutorial](./seltzer-api-tutorial.md), written as copyable slices rather than a guided build.
 
 For smaller recipes see [Patterns](./seltzer-patterns.md).
 

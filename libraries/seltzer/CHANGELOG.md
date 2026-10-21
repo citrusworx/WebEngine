@@ -1,5 +1,33 @@
 # @citrusworx/seltzer
 
+## 0.9.0
+
+### Minor Changes
+
+Published 2026-10-21. Gates 1–7: loopback `listen`, the HTTP surface, strict `ResponseData`, `validate` / `ctx.valid`, `generateRoutes` unbound operations, the hardened client, and explicit non-goals. No runtime dependencies. `handleRequest` stays private.
+
+### Migrating from 0.8.1
+
+- `listen` defaults to `127.0.0.1`. Pass `host: "0.0.0.0"` when the process must accept connections from other machines.
+- Server timeouts are on by default (headers 20s, request 30s, keep-alive 5s). `0` disables that timer.
+- A known path with the wrong method is **405** with an `Allow` header, not 404. Unknown paths stay 404.
+- Request bodies default to a 1 MB `bodyLimit`. A larger body is **413** and is not read to completion. `bodyLimit: 0` is unlimited.
+- Malformed percent-encoding in a matched path parameter is **400**, not 500.
+- `OPTIONS` is a 204 preflight only when `listen` is passed `cors`. Without `cors`, `OPTIONS` is an ordinary method.
+- `Vary: Origin` is set when the allow-origin value is a specific origin, and omitted when it is `*`.
+- `credentials: true` with `origin: "*"` throws at `listen`, before bind.
+- Return `ResponseData`. `ctx.json`, `ctx.send`, `ctx.res` writes (`writeHead`, `end`, `write`, `setHeader`, assignment), and `replace("send")` throw.
+- A thrown error no longer leaks `error.message`. The body is **500** `{ error: "Internal Server Error" }`. The error is logged. `listen({ debug: true })` adds the stack to that log only.
+- String bodies use `Content-Type: text/plain; charset=utf-8`. `Buffer` and `Uint8Array` bodies use `application/octet-stream`, unless `Content-Type` is already set. Objects, arrays, numbers, booleans, and `null` stay JSON.
+- Status **204** and **304**, and **HEAD** requests, send no body.
+- `ctx.valid` is where a replacement `validate` stage puts parsed `{ body?, params?, query? }`. `validationError(issues)` returns 400 `{ error: "Validation failed", issues }`. The default `.required` stage does not set `ctx.valid`.
+- `generateRoutes` takes `ApiOperation[]`. A name with neither `handlers[name]` nor `execute` throws `UnboundOperationsError` (`name method path`). Pass `unbound: "notImplemented"` to register those routes as 501 `{ error: "Not Implemented" }`.
+- The client no longer depends on `undici`. `allowSelfSigned` is removed from `Endpoint`, `RequestContext`, and `HandlerConfig`. Certificate checks stay with Node.
+- The client waits at most 30 seconds (`DEFAULT_CLIENT_TIMEOUT_MS`) unless `createClient({ timeout })` or `options.timeout` sets another value. `0` disables the timer. The client does not retry.
+- URL join keeps one slash between `baseUrl` and `path` and preserves a base path (`/api/v1` + `users` → `/api/v1/users`).
+- New client errors: `TimeoutError` (`TIMEOUT`), `AbortError` (`ABORTED`), `NetworkError` (`NETWORK`), and `UrlError` (`INVALID_URL`), alongside `HttpError` (`HTTP_ERROR`) with a parsed body.
+- A string request body is sent as text (`text/plain; charset=utf-8`), not JSON. `Uint8Array` / `Buffer` are bytes. Objects, arrays, numbers, booleans, and `null` are still JSON.
+
 ## 0.8.1
 
 ### Patch Changes

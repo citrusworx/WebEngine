@@ -15,7 +15,7 @@ The destination CMS path (transfer + persist + native read) is the [tutorial](./
 yarn add @citrusworx/kiwipress
 ```
 
-Peers come along: `@citrusworx/seltzer@^0.8.1` and `@citrusworx/nectarine@^0.4.0`.
+Peers come along: `@citrusworx/seltzer@^0.9.0` and `@citrusworx/nectarine@^0.4.0`.
 
 In this monorepo:
 
@@ -229,7 +229,7 @@ That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.t
 - **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and delegates writes to collaborators.
 - **Self-signed HTTPS** only bypasses TLS verification when `allowSelfSigned` is true and the URL is `https://`.
 - **Inbound gateway returns `ResponseData`.** `registerKiwiPressGateway` reads `ctx.body` / `ctx.query` / `ctx.params` and returns `{ status, body }`. The auth guard still reads `ctx.req` for the token and the remote address. New host routes should return `{ status?, headers?, body? }` too. See [Gateway](./kiwipress-gateway.md).
-- **Seltzer 0.8.1 matches `:id`.** The gateway still uses `?id=` because that is how it was written, not because Seltzer cannot parse params.
+- **Seltzer 0.9.0 matches `:id`.** The gateway still uses `?id=` because that is how it was written, not because Seltzer cannot parse params.
 
 ## Where to go next
 

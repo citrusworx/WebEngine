@@ -4,9 +4,9 @@ For a guided introduction before rebuilding internals, take [HTTP, understood th
 
 **Contributor elective.** App authors should use [Getting Started](../seltzer-getting-started.md) and the [JSON API tutorial](../seltzer-api-tutorial.md) instead of this folder.
 
-Hands-on checkpoints for the [Seltzer study guide](../courses.md). Complete these in order using plain `node:http` and TypeScript **to rebuild shipped 0.8.x internals**, then compare with `libraries/seltzer/src/`.
+Hands-on checkpoints for the [Seltzer study guide](../courses.md). Complete these in order using plain `node:http` and TypeScript **to rebuild shipped 0.9.0 internals**, then compare with `libraries/seltzer/src/`.
 
-These exercises are not “implement the missing stage.” Parametric routes, structured handler returns, the named pipeline, `before` / `replace`, and `HttpError` **already ship** on `@citrusworx/seltzer` 0.8.1. See [Status](../seltzer-status.md).
+These exercises are not “implement the missing stage.” Parametric routes, structured handler returns, the named pipeline, `before` / `replace`, and `HttpError` **already ship** on `@citrusworx/seltzer` 0.9.0. See [Status](../seltzer-status.md).
 
 Write your solution in each file's scratch block, or copy the template into `libraries/seltzer/src/example.ts` and run with:
 

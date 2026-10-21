@@ -137,4 +137,4 @@ Those belong on top of this contract, not instead of it.
 
 ## Stale claim, corrected
 
-Older transfer docs said Seltzer still matches exact pathnames and therefore the gateway must use `?id=`. **Seltzer 0.8.1 matches `:param`.** The inbound KiwiPress gateway still uses `?id=` because `registerKiwiPressGateway` was written that way (and still uses a pre-`ResponseData` handler shape). See [Gateway](./kiwipress-gateway.md).
+Older transfer docs said Seltzer still matches exact pathnames and therefore the gateway must use `?id=`. **Seltzer 0.9.0 matches `:param`.** The inbound KiwiPress gateway still uses `?id=` because `registerKiwiPressGateway` was written that way (and still uses a pre-`ResponseData` handler shape). See [Gateway](./kiwipress-gateway.md).

@@ -9,7 +9,7 @@
 ## Requirements
 
 1. Define stage names: `parse`, `context`, `route`, `validate`, `handle`, `response`, `send`.
-2. Each stage mutates `ctx` and returns `void | ResponseData`. **Do not** `return ctx` (0.8.x mutates in place).
+2. Each stage mutates `ctx` and returns `void | ResponseData`. **Do not** `return ctx` (0.9.0 mutates in place).
 3. A `Pipeline.run(ctx)` executes them sequentially.
 4. Returning `ResponseData` skips remaining stages except builtin `send`.
 5. Thrown errors become JSON 500 and also jump to `send`.

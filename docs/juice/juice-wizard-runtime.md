@@ -26,7 +26,7 @@ The user should not need to manually initialize wizard behavior in their app cod
 
 There is no `Wizard()` Sig factory. Markup plus the runtime is the contract. Form validation and provisioning stay in the app.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Wizard is a multi-step onboarding shell. It is not a dialog, not a toast stack, and not APG Tabs.
 

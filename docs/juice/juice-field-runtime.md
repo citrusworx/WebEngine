@@ -26,7 +26,7 @@ The user should not need to manually initialize field behavior in their app code
 
 There is no `Field()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Field is a wrapper around a control. The control is the first `input`, `textarea`, or `select` inside `[field]` that is not inside a nested field. Typing, change, and the keyboard stay on that control. Field is not a validation engine, not a floating label, and not a restyle of input, textarea, select, or combobox. Input stays `<input input>` and is left to name itself. Textarea stays `<textarea textarea>` and is left to name itself. Select stays `<select select>` and is left to name itself. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]` and is left untouched. There is no Escape handler, no focus trap, and no Sig Field factory.
 
@@ -209,7 +209,7 @@ Field does not listen for keys, and it does not listen for `input` or `change`.
 ## Limitations
 
 - No `Field()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Field is the twenty-fifth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, select remains the twenty-second, input remains the twenty-third, and textarea remains the twenty-fourth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
+- This surface is Emerging, not Stable. Field is the twenty-fifth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, select remains the twenty-second, input remains the twenty-third, and textarea remains the twenty-fourth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
 - `[field-label]` is chrome only. This runtime does not name the control. Name it with an associated `<label for>`, a wrapping `<label>`, or the control's own label part (`[input-label]`, `[textarea-label]`, `[select-label]`). Those names belong to the input, textarea, and select runtimes.
 - The description comes from visible `[field-help]` and `[field-error]` only when the author has not set `aria-describedby`. Hidden or empty parts are skipped. No description is invented when nothing visible is there. An author `aria-describedby` is kept. A blank value is not a description.
 - `[invalid]` sets `aria-invalid="true"` only when the author has not set `aria-invalid`. An author value is kept. A blank value is not set. Clearing `[invalid]` removes only an `aria-invalid` this runtime wrote.

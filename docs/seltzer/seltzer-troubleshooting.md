@@ -1,6 +1,6 @@
 # Seltzer Troubleshooting
 
-The usual “why didn’t it answer?” cases against `libraries/seltzer/src` at **0.8.1**.
+The usual “why didn’t it answer?” cases against `libraries/seltzer/src` at **0.9.0**.
 
 Related: [Anti-patterns](./seltzer-anti-patterns.md), [Request and response](./seltzer-request-response.md), [Routing](./seltzer-routing.md), [Pipeline](./seltzer-pipeline.md).
 
