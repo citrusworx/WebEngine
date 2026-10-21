@@ -1,6 +1,6 @@
 # Sig.js API surface
 
-Freeze inventory for `@citrusworx/sigjs` before v1. npm is still **0.4.0** (2026-10-16). This page is the source on `master` after the v1 surface cleanup. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
+Freeze inventory for `@citrusworx/sigjs` before v1. **0.7.0** is the release candidate this page describes. npm latest is **0.6.0** (2026-10-21); that tarball still exports `captureCleanupScope` and `jsxDEV` from the package root. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
 
 Two root names came off the public entry: `captureCleanupScope` (internal module only) and `jsxDEV` (still on `./jsx-dev-runtime`). `Signal.set` always notifies, including when the value is unchanged, and that is frozen for v1. `bindList` and `ListItem` stay experimental.
 
