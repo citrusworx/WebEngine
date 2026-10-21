@@ -138,7 +138,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Textarea Runtime](./juice-textarea-runtime.md)
 - [Field Runtime](./juice-field-runtime.md)
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.1` live on npm)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)
 
 ## Status
 

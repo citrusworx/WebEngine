@@ -1,6 +1,6 @@
 # Juice Motion (Emerging)
 
-Motion core is on master and stays **Emerging**. It is unpublished versus `@citrusworx/juiceui@0.9.1`. That npm cut still has the earlier attribute catalog. Token timing, the shared helper, and overlay enter/exit landed after it. Do not invent a newer version number.
+Motion core shipped in `@citrusworx/juiceui@0.9.2` and stays **Emerging**. The 0.9.1 tarball still has the earlier attribute catalog. Token timing, the shared helper, and overlay enter/exit shipped in 0.9.2.
 
 ## Canonical attribute: `motion`
 
