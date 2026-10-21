@@ -89,7 +89,9 @@ function toOperation(resource, crud, name, value) {
  * `endpoint` maps to {@link ApiOperation.path}. `path` is accepted as a fallback.
  *
  * Seltzer hosts / auto-wiring consumers should call
- * `listApiOperations(resource, loaded.api)` — Nectarine does not generate routes.
+ * `listApiOperations(resource, loaded.api)` and pass the array to
+ * Seltzer `generateRoutes`. Nectarine does not generate routes and does
+ * not import Seltzer. The returned objects match Seltzer `ApiOperation`.
  */
 function listApiOperations(resource, api) {
     const block = resolveResourceBlock(resource, api);

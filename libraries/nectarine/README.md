@@ -110,7 +110,7 @@ const ops = listApiOperations("product", product.api);
 // ops[].method + ops[].path (from YAML `endpoint`) are ready for Seltzer Route wiring
 ```
 
-`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes — Seltzer's `generateRoutes` maps `ApiOperation[]` onto `Route[]` (Blackwater product reads and waitlist GET + POST `joinWaitlist` use this).
+`loadApiOperations(resource, apiPath)` loads YAML from disk first. Nectarine does not generate Seltzer Routes and does not import Seltzer. `ApiOperation` is the same shape Seltzer's `generateRoutes` accepts (WebEngine checks the assignment). Seltzer maps that array onto `Route[]` (Blackwater product reads and waitlist GET + POST `joinWaitlist` use this). An operation with no handler binding throws in Seltzer unless the host passes `execute` (these hosts do) or `unbound: "notImplemented"`.
 
 Express is not the default transport. Seltzer's default `validate` stage enforces `.required` body fields from `Route.contract` (copied by `generateRoutes` from `ApiOperation.body`) and does not set `ctx.valid`. Richer checks are a host `Seltzer#replace("validate", …)` that returns `validationError(issues)`. Seltzer does not depend on Zod. An HTTP client such as Axios is optional and not part of the default stack.
 

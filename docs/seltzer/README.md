@@ -222,7 +222,7 @@ app.route({
 
 ### 9. `generateRoutes` from `ApiOperation[]`
 
-Nectarine does not generate `Route`s. Seltzer does. Flatten YAML with `listApiOperations`, or build the list by hand.
+Nectarine does not generate `Route`s. Seltzer does, and Seltzer does not import Nectarine. Flatten YAML with `listApiOperations`, or build the list by hand. `handlers[name]` binds one operation; `execute` binds the rest. A listed operation with neither throws at `generateRoutes` (`Unbound operations:` plus `name method path`). `unbound: "notImplemented"` registers 501 instead. A payload is 200; `response({ status })` sets another status. `replace("validate")` is the richer check and replaces `.required`. Recipe: [Generate routes](./seltzer-generate.md#recipe-yaml-to-listen).
 
 ```ts
 import { Seltzer, generateRoutes, type ApiOperation } from "@citrusworx/seltzer";

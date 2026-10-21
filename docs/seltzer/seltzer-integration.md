@@ -11,10 +11,10 @@ Nectarine is library-first. It does not spin up a server and does not export `ge
 The join that shipped:
 
 1. YAML `*API.yml` → Nectarine `listApiOperations` / `loadApiOperations` → `ApiOperation[]`
-2. Seltzer `generateRoutes(operations, { execute })` → `Route[]`
+2. Seltzer `generateRoutes(operations, { handlers })` or `{ execute }` → `Route[]`, then `listen` (default `127.0.0.1`). `handlers[name]` binds that operation. `execute` binds every other selected name. A name with neither throws `UnboundOperationsError` (`name method path` for each). `unbound: "notImplemented"` registers 501 instead. `filter` drops names before that check
 3. `app.route(route)` for each
-4. Default `validate` enforces `.required` keys copied onto `Route.contract`
-5. Hosts that want types or formats call `app.replace("validate", …)`, set `ctx.valid`, and return `validationError(issues)`. Zod is not a Seltzer dependency. The recipe is [Pipeline → Replacement validate](./seltzer-pipeline.md#replacement-validate). Replacing the stage turns off `.required` unless the replacement checks those fields itself. Dispatch on `ctx.route.contract.name` for generated routes
+4. Default `validate` enforces `.required` keys copied onto `Route.contract`. A payload is 200. `response({ status })` is how a handler sets another status (201 create, 204 delete)
+5. Hosts that want types or formats call `app.replace("validate", …)`, set `ctx.valid`, and return `validationError(issues)`. Zod is not a Seltzer dependency. The recipe is [Pipeline → Replacement validate](./seltzer-pipeline.md#replacement-validate) and the generate page shows the plug on `contract.name`. Replacing the stage turns off `.required` unless the replacement checks those fields itself. Dispatch on `ctx.route.contract.name` for generated routes
 
 WebEngine helpers `createNectarineReadRoutes` / `createNectarineWriteRoutes` / `createNectarineRoutes` wrap that path. Blackwater product JSONB catalog and waitlist GET + POST `joinWaitlist` pass a host `execute` into `createNectarineRoutes`. Health and KiwiPress content stay hand-registered.
 

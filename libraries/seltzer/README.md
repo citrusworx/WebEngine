@@ -252,29 +252,58 @@ for (const route of generateRoutes(operations, {
 - `execute` may return a payload (`{ body }`), `response({ status?, headers?, body? })` to send as-is, or `null`/`undefined` (default 404). Unbranded `{ body }` / `{}` objects are treated as payloads.
 - Static-prefix paths (`/catalog/:catalog`, `/slug/:slug`) register before `:id`. `matchRoute` also prefers the most specific match, so `/items/new` wins over `/items/:id` regardless of registration order.
 
-### Optional: flatten from Nectarine YAML
+- `handlers[name]` binds that operation. `execute` binds every selected name the map does not set. A name with neither throws `UnboundOperationsError` at `generateRoutes` time (`name method path`, one per line). `unbound: "notImplemented"` registers those routes as 501 `{ error: "Not Implemented" }` instead. `filter` drops operations before that check. A named handler wins over `execute`.
 
-If you already use Nectarine `*API.yml`, flatten with `listApiOperations` and pass the same `ApiOperation[]` into `generateRoutes`. Do not duplicate that flatten here.
+### YAML → `listApiOperations` → `generateRoutes` → `listen`
+
+Seltzer does not import Nectarine. Flatten elsewhere and pass the array. `listApiOperations` output is the same shape as `ApiOperation`.
 
 ```ts
-import { listApiOperations } from "@citrusworx/nectarine/config";
-import { generateRoutes } from "@citrusworx/seltzer";
+import { listApiOperations, loadYaml } from "@citrusworx/nectarine/config";
+import { Seltzer, generateRoutes, response, validationError } from "@citrusworx/seltzer";
 
-const operations = listApiOperations("product", product.api).filter(
-    (operation) => operation.crud === "read" && operation.method === "GET",
-);
+const operations = listApiOperations("product", loadYaml("./productAPI.yml"));
+const documents: Array<{ id: string; name: string; catalog?: string }> = [];
 
-const routes = generateRoutes(operations, {
-    execute: ({ query, params, ctx }) => {
-        if (query === "productById") {
-            return ctx.locals.products.find((item) => item.id === params.id) ?? null;
-        }
-        return ctx.locals.products;
-    },
+const app = Seltzer.init().replace("validate", (ctx) => {
+    if (ctx.route?.contract?.name !== "newProduct") {
+        return;
+    }
+    const body = ctx.body;
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+        return validationError([{ path: [], message: "Expected an object" }]);
+    }
+    const name = (body as { name?: unknown }).name;
+    if (typeof name !== "string" || name.trim() === "") {
+        return validationError([{ path: ["name"], message: "Required" }]);
+    }
+    ctx.valid = { body: { ...(body as object), name: name.trim() } };
 });
+
+for (const route of generateRoutes(operations, {
+    filter: (operation) =>
+        operation.name === "allProducts" ||
+        operation.name === "productById" ||
+        operation.name === "newProduct",
+    handlers: {
+        allProducts: () => documents,
+        productById: ({ params }) => documents.find((item) => item.id === params.id) ?? null,
+        newProduct: ({ ctx }) => {
+            const created = ctx.valid?.body as { id: string; name: string };
+            documents.push(created);
+            return response({ status: 201, body: { id: created.id, payload: created } });
+        },
+    },
+})) {
+    app.route(route);
+}
+
+app.listen(3000); // 127.0.0.1
 ```
 
-YAML layout is `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`). Nectarine does not generate `Route`s and does not install a validator. Hosts that want richer contracts `replace("validate", …)` and dispatch on `ctx.route.contract.name`.
+A handler payload is **200**. `response({ status: 201, body })` is the create status. `response({ status: 204 })` is a delete with no body. Replacing `validate` turns off `.required`; without `replace`, a missing `string.required` field is 400 `{ error: "Missing required field: …" }` and the handler does not run. Leave a name out of `handlers` and omit `execute` to throw, or pass `unbound: "notImplemented"` for 501.
+
+YAML layout is `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`). Nectarine does not generate `Route`s. The worked fixture and HTTP test live in WebEngine, which already depends on both. Full notes: [Generate routes](../../docs/seltzer/seltzer-generate.md).
 
 ## Development
 
