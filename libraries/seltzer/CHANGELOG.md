@@ -4,10 +4,15 @@
 
 ### Minor Changes
 
-- `app.handler()` with no arguments returns a Node `(req, res) => void` request listener. Mount it with `http.createServer(app.handler())` or `https.createServer(tlsOptions, app.handler())`. It runs the same pipeline as `listen` (body limit, CORS / OPTIONS, logger, debug, strict `ResponseData`). `handleRequest` stays private.
-- `app.handler(config)` still stores `ctx.options` and returns the app. A config argument never returns a listener. The no-arg call never stores that config.
+- `app.handler()` returns a Node `(req, res) => void` request listener. Mount it with `http.createServer(app.handler())` or `https.createServer(tlsOptions, app.handler())`. It runs the same pipeline as `listen` (body limit, CORS / OPTIONS, logger, debug, strict `ResponseData`). `handleRequest` stays private. This call takes no arguments.
+- `app.adapter(config)` stores `{ adapter, options }` and returns the app. `options` is copied onto `ctx.options`. `adapter` is unused inbound. Last call wins. This is the options stash.
+- `app.handler(config)` still stores that config and returns the app, but it is deprecated. It forwards to `adapter(config)`. The first call in a process emits one `process.emitWarning` (`DeprecationWarning`, code `SELTZER_DEP_HANDLER_CONFIG`). The `init` / `listen` `logger` does not receive it. Node prints the warning to stderr unless a `warning` listener is attached or deprecation warnings are disabled. The alias will be removed in the next minor after 0.10.0.
 - `Seltzer.init({ bodyLimit, cors, logger, debug, locals })` accepts those request options. `credentials: true` with `origin: "*"` throws at `init`. `listen` still accepts the same fields. A field passed to `listen` replaces the init value for that server only. `cors` is replaced as a whole object, not merged. An omitted field keeps the init value. `host`, port, and the three server timeouts stay on `listen`. A host-owned server does not receive those timeouts. Set `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` on it when you want Seltzer's defaults.
 - Built-in HTTPS `listen` stays a non-goal. The bring-your-own-server recipe is how a host terminates TLS.
+
+### Migrating
+
+- Replace `app.handler({ adapter, options })` with `app.adapter({ adapter, options })`. `app.handler()` with no arguments is the request listener and stays.
 
 ## 0.9.0
 

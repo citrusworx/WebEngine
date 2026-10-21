@@ -60,7 +60,7 @@ See [Auth](./kiwipress-auth.md). `strategy()`, `isConfigured()`, `headers()`. Pr
 
 **File:** `packages/kiwipress/src/core/WPClient.ts`
 
-Extends `WPCore`. Constructs `Seltzer.init().handler({ adapter: "node:http", options: { baseUrl, headers, allowSelfSigned } })` **only to stash options**. Outbound I/O is `requestWordPress` / `requestWordPressPage` (`fetch`). This is not `Seltzer.listen` and not Seltzer `client.*`.
+Extends `WPCore`. Constructs `Seltzer.init().adapter({ adapter: "node:http", options: { baseUrl, headers, allowSelfSigned } })` **only to stash options**. Outbound I/O is `requestWordPress` / `requestWordPressPage` (`fetch`). This is not `Seltzer.listen` and not Seltzer `client.*`.
 
 | Method | Role |
 |---|---|

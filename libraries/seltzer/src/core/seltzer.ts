@@ -177,6 +177,33 @@ function foundationFromListen(init: InitOptions, options: ListenOptions): InitOp
     };
 }
 
+const HANDLER_CONFIG_DEPRECATION =
+    "app.handler(config) is deprecated. Use app.adapter(config). This alias will be removed in the next minor after 0.10.0.";
+
+/** Once per process. Further `handler(config)` calls stay silent. */
+let handlerConfigDeprecationEmitted = false;
+
+/**
+ * `handler(config)` is a deprecated alias of `adapter(config)`.
+ * The warning is `process.emitWarning` with code `SELTZER_DEP_HANDLER_CONFIG`
+ * and type `DeprecationWarning`. It is not sent to the `init` / `listen` logger.
+ * Node prints it to stderr unless a `warning` listener is attached, or
+ * deprecation warnings are disabled (`--no-deprecation`).
+ */
+function warnHandlerConfigDeprecated(): void {
+    if (handlerConfigDeprecationEmitted) {
+        return;
+    }
+    handlerConfigDeprecationEmitted = true;
+    if (typeof process === "undefined" || typeof process.emitWarning !== "function") {
+        return;
+    }
+    process.emitWarning(HANDLER_CONFIG_DEPRECATION, {
+        type: "DeprecationWarning",
+        code: "SELTZER_DEP_HANDLER_CONFIG",
+    });
+}
+
 /**
  * CORS headers are applied only when `cors` was passed to `init` or `listen`.
  * `Vary: Origin` is set when the allow-origin value is a specific origin
@@ -280,10 +307,19 @@ export class Seltzer {
     }
 
     /**
-     * Two calls share this name. The argument decides which one runs.
-     *
-     * `handler()` with no arguments returns a Node request listener,
-     * `(req, res) => void`. Mount it on a server the host owns:
+     * Store `{ adapter, options }` and return this app.
+     * `options` is copied onto inbound `ctx.options`. `adapter` is unused inbound.
+     * Last call wins. This is not a request listener.
+     * `handler(config)` is a deprecated alias of this method.
+     */
+    adapter(config: HandlerConfig): this {
+        this.config = config;
+        return this;
+    }
+
+    /**
+     * Node request listener, `(req, res) => void`.
+     * Mount it on a server the host owns:
      * `http.createServer(app.handler())` or
      * `https.createServer(tlsOptions, app.handler())`.
      * That listener runs the same pipeline as `listen`. It uses `bodyLimit`,
@@ -292,16 +328,19 @@ export class Seltzer {
      * A `listen` override applies only to the server `listen` creates.
      * Calling `handler()` again still returns a listener from `init`.
      *
-     * `handler(config)` stores `config` and returns this app. `config.options`
-     * is copied onto `ctx.options`. `adapter` is unused inbound. That call is
-     * not a request listener. Passing a config object never returns a function.
+     * Storing `{ adapter, options }` is `adapter(config)`, not this call.
      */
     handler(): RequestListener;
+    /**
+     * @deprecated Use `adapter(config)`. `handler(config)` forwards to `adapter`
+     * and will be removed in the next minor after 0.10.0. The first call emits
+     * one process warning, code `SELTZER_DEP_HANDLER_CONFIG`.
+     */
     handler(config: HandlerConfig): this;
     handler(config?: HandlerConfig): this | RequestListener {
         if (config !== undefined) {
-            this.config = config;
-            return this;
+            warnHandlerConfigDeprecated();
+            return this.adapter(config);
         }
 
         if (typeof process === "undefined" || !process.versions?.node) {

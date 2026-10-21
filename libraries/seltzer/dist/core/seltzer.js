@@ -75,6 +75,29 @@ function foundationFromListen(init, options) {
         locals: options.locals !== undefined ? options.locals : init.locals,
     };
 }
+const HANDLER_CONFIG_DEPRECATION = "app.handler(config) is deprecated. Use app.adapter(config). This alias will be removed in the next minor after 0.10.0.";
+/** Once per process. Further `handler(config)` calls stay silent. */
+let handlerConfigDeprecationEmitted = false;
+/**
+ * `handler(config)` is a deprecated alias of `adapter(config)`.
+ * The warning is `process.emitWarning` with code `SELTZER_DEP_HANDLER_CONFIG`
+ * and type `DeprecationWarning`. It is not sent to the `init` / `listen` logger.
+ * Node prints it to stderr unless a `warning` listener is attached, or
+ * deprecation warnings are disabled (`--no-deprecation`).
+ */
+function warnHandlerConfigDeprecated() {
+    if (handlerConfigDeprecationEmitted) {
+        return;
+    }
+    handlerConfigDeprecationEmitted = true;
+    if (typeof process === "undefined" || typeof process.emitWarning !== "function") {
+        return;
+    }
+    process.emitWarning(HANDLER_CONFIG_DEPRECATION, {
+        type: "DeprecationWarning",
+        code: "SELTZER_DEP_HANDLER_CONFIG",
+    });
+}
 /**
  * CORS headers are applied only when `cors` was passed to `init` or `listen`.
  * `Vary: Origin` is set when the allow-origin value is a specific origin
@@ -157,10 +180,20 @@ export class Seltzer {
         this.pipeline.replace(name, stage);
         return this;
     }
+    /**
+     * Store `{ adapter, options }` and return this app.
+     * `options` is copied onto inbound `ctx.options`. `adapter` is unused inbound.
+     * Last call wins. This is not a request listener.
+     * `handler(config)` is a deprecated alias of this method.
+     */
+    adapter(config) {
+        this.config = config;
+        return this;
+    }
     handler(config) {
         if (config !== undefined) {
-            this.config = config;
-            return this;
+            warnHandlerConfigDeprecated();
+            return this.adapter(config);
         }
         if (typeof process === "undefined" || !process.versions?.node) {
             throw new Error("Seltzer.handler requires a Node.js runtime.");

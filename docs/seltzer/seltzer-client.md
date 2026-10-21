@@ -203,9 +203,9 @@ server.close();
 
 `listen` returns the `http.Server`. Wait for `listening` or pass `onListening` before calling the client.
 
-## Sharing option shape with `.handler(config)`
+## Sharing option shape with `.adapter(config)`
 
-`.handler({ adapter, options })` stores `baseUrl` and `headers` on inbound `ctx.options` and returns the app. It does **not** configure `client`, and it is not the no-arg `app.handler()` request listener. Copy the options yourself:
+`.adapter({ adapter, options })` stores `baseUrl` and `headers` on inbound `ctx.options` and returns the app. It does **not** configure `client`, and it is not the `app.handler()` request listener. Copy the options yourself. `handler(config)` is a deprecated alias of `adapter(config)` and will be removed in the next minor after 0.10.0.
 
 ```ts
 const options = {
@@ -213,7 +213,7 @@ const options = {
   headers: { "X-App": "notes" },
 };
 
-app.handler({ adapter: "node-http", options });
+app.adapter({ adapter: "node-http", options });
 
 const notes: Endpoint = {
   path: "/notes",

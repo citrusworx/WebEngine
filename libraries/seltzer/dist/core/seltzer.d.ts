@@ -44,10 +44,15 @@ export declare class Seltzer {
      */
     replace(name: StageName, stage: Stage): this;
     /**
-     * Two calls share this name. The argument decides which one runs.
-     *
-     * `handler()` with no arguments returns a Node request listener,
-     * `(req, res) => void`. Mount it on a server the host owns:
+     * Store `{ adapter, options }` and return this app.
+     * `options` is copied onto inbound `ctx.options`. `adapter` is unused inbound.
+     * Last call wins. This is not a request listener.
+     * `handler(config)` is a deprecated alias of this method.
+     */
+    adapter(config: HandlerConfig): this;
+    /**
+     * Node request listener, `(req, res) => void`.
+     * Mount it on a server the host owns:
      * `http.createServer(app.handler())` or
      * `https.createServer(tlsOptions, app.handler())`.
      * That listener runs the same pipeline as `listen`. It uses `bodyLimit`,
@@ -56,11 +61,14 @@ export declare class Seltzer {
      * A `listen` override applies only to the server `listen` creates.
      * Calling `handler()` again still returns a listener from `init`.
      *
-     * `handler(config)` stores `config` and returns this app. `config.options`
-     * is copied onto `ctx.options`. `adapter` is unused inbound. That call is
-     * not a request listener. Passing a config object never returns a function.
+     * Storing `{ adapter, options }` is `adapter(config)`, not this call.
      */
     handler(): RequestListener;
+    /**
+     * @deprecated Use `adapter(config)`. `handler(config)` forwards to `adapter`
+     * and will be removed in the next minor after 0.10.0. The first call emits
+     * one process warning, code `SELTZER_DEP_HANDLER_CONFIG`.
+     */
     handler(config: HandlerConfig): this;
     /**
      * Bind a Node `http.Server`.

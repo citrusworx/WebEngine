@@ -274,14 +274,14 @@ Non-2xx throws `HttpError` (`status`, lowercase `headers`, parsed `body`; the me
 
 URL join keeps one slash and a base path (`/api/v1` + `users` → `/api/v1/users`). An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. `Endpoint.endpoint` and `Endpoint.route` are typed and unused. There is no `undici` peer and no `allowSelfSigned` option.
 
-### 11. Two `handler` calls
+### 11. Request listener and `adapter(config)`
 
-`app.handler()` with no arguments returns the Node request listener. `app.handler(config)` stores options and returns the app. A config object never returns a listener. The no-arg call never stores config.
+`app.handler()` returns the Node request listener. `app.adapter(config)` stores options and returns the app. A config object passed to `handler` does not return a listener. `handler()` does not store config.
 
-#### Optional `.handler(config)` stash
+#### Optional `.adapter(config)` stash
 
 ```ts
-app.handler({
+app.adapter({
   adapter: "node-http",
   options: {
     baseUrl: "https://api.example.com",
@@ -291,6 +291,8 @@ app.handler({
 ```
 
 `options` is copied onto `ctx.options`. Nothing in `listen` reads `adapter`. KiwiPress stores `baseUrl` this way for outbound WordPress calls — it does not make Seltzer speak WordPress.
+
+`app.handler(config)` is a deprecated alias of `adapter(config)`. The first call in a process emits one warning, code `SELTZER_DEP_HANDLER_CONFIG`. It will be removed in the next minor after 0.10.0.
 
 ### 12. Node-only listen, or your own server
 

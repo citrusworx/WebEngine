@@ -2,10 +2,10 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { SeltzerLogger } from "./log.js";
 import type { ResponseData } from "./response.js";
 /**
- * Options stored by `.handler(config)` and copied onto inbound `ctx.options`.
- * This is not the no-arg `app.handler()` request listener. The config call
- * returns the app. The outbound client does not read this object unless you
- * pass it on an `Endpoint`.
+ * Options stored by `adapter(config)` and copied onto inbound `ctx.options`.
+ * `handler(config)` is a deprecated alias of that call. This is not the
+ * `app.handler()` request listener. The config call returns the app.
+ * The outbound client does not read this object unless you pass it on an `Endpoint`.
  */
 export type HostOptions = {
     baseUrl?: string;
@@ -106,6 +106,10 @@ export type Route<TContext = RequestContext> = {
     handler: (ctx: TContext) => ResponseData | Promise<ResponseData>;
     contract?: RouteContract;
 };
+/**
+ * Stored by `adapter(config)`. `options` is copied onto `ctx.options`.
+ * `adapter` is unused inbound. `handler(config)` is a deprecated alias.
+ */
 export type HandlerConfig = {
     adapter: string;
     options: HostOptions;

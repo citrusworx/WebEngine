@@ -76,7 +76,7 @@ Tests exist beside the source (`*.test.ts`) and `vitest.config.ts`. The package.
 | Claim | Reality |
 |---|---|
 | KiwiPress is “Seltzer serving WordPress” | No. Outbound is `fetch` via `requestWordPress`. |
-| `WPClient` uses Seltzer `client.*` | No. `Seltzer.init().handler()` only stores options. |
+| `WPClient` uses Seltzer `client.*` | No. `Seltzer.init().adapter()` only stores options. |
 | Gateway is a 0.9.0 tutorial | No. It is a KiwiPress façade. Handlers do return `ResponseData`. |
 | Seltzer cannot match `:id` | False as of 0.9.0. Gateway still uses `?id=`. |
 | `ctx.json` is current Seltzer | Removed in 0.4.0. The gateway returns `ResponseData` from a local `json(status, body)` helper. |

@@ -15,7 +15,7 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 - listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`, `DEFAULT_BODY_LIMIT_BYTES`, `DEFAULT_CLIENT_TIMEOUT_MS` (`30000`, same number as the request timeout)
 - `InitOptions`
 
-There are no subpath exports. `HandlerConfig` is used by `.handler(config)` but is not re-exported from the package root.
+There are no subpath exports. `HandlerConfig` is used by `.adapter(config)` but is not re-exported from the package root. `handler(config)` is a deprecated alias of that call.
 
 ## `Seltzer.init`
 
@@ -60,18 +60,11 @@ replace(name: StageName, stage: Stage): this
 
 ## `handler`
 
-Two calls share this name. The argument decides which one runs. They are not overloads of one behavior.
-
 ```ts
 handler(): (req: IncomingMessage, res: ServerResponse) => void
-
-handler(config: {
-  adapter: string;
-  options: { baseUrl?: string; headers?: Record<string, string> };
-}): this
 ```
 
-**No arguments.** Returns a Node request listener. Mount it on a server the host owns:
+Returns a Node request listener. Mount it on a server the host owns:
 
 ```ts
 http.createServer(app.handler())
@@ -82,7 +75,29 @@ That listener runs the same pipeline as `listen`: `parse` → `context` → `rou
 
 `handleRequest` stays private. Pass the listener in. There is no method that accepts an already-built server.
 
-**One config argument.** Stores `config` and returns this app. `listen` and the no-arg listener copy `config.options` onto `ctx.options`. `adapter` is unused inbound. Last config call wins. Passing a config object never returns a listener. The no-arg call never stores config. KiwiPress uses the config call to stash a base URL. It does not mount HTTP.
+`handler()` does not take a config object. Storing options is `adapter(config)`.
+
+### Deprecated: `handler(config)`
+
+```ts
+handler(config: {
+  adapter: string;
+  options: { baseUrl?: string; headers?: Record<string, string> };
+}): this
+```
+
+This overload is deprecated. It forwards to `adapter(config)`, stores the same object, and returns the app. The first call in a process emits one `process.emitWarning` (`DeprecationWarning`, code `SELTZER_DEP_HANDLER_CONFIG`). The `init` / `listen` `logger` does not receive it. It will be removed in the next minor after 0.10.0. Editors flag the overload because the signature is marked `@deprecated`. `handler()` with no arguments does not warn.
+
+## `adapter`
+
+```ts
+adapter(config: {
+  adapter: string;
+  options: { baseUrl?: string; headers?: Record<string, string> };
+}): this
+```
+
+Stores `config` and returns this app. `listen` and `handler()` copy `config.options` onto `ctx.options`. The `adapter` string is unused inbound. Last `adapter()` wins. This is not a request listener. KiwiPress uses it to stash a base URL. It does not mount HTTP. On the published 0.9.0 tarball this stash is still named `handler(config)`. `adapter()` arrives with unreleased 0.10.0.
 
 ## `listen`
 

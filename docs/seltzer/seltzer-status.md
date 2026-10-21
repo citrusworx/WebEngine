@@ -1,6 +1,6 @@
 # Seltzer Status
 
-Snapshot of `@citrusworx/seltzer` source against the package published as **0.9.0** on 2026-10-21. `libraries/seltzer/package.json` is still **0.9.0**. Do not publish from this note. Source adds no-arg `app.handler()` for the unreleased **0.10.0** minor ([changelog](../../libraries/seltzer/CHANGELOG.md)). The published 0.9.0 tarball does not have that listener. `handleRequest` is still private.
+Snapshot of `@citrusworx/seltzer` source against the package published as **0.9.0** on 2026-10-21. `libraries/seltzer/package.json` is still **0.9.0**. Do not publish from this note. Source for the unreleased **0.10.0** minor adds no-arg `app.handler()` and moves the options stash to `app.adapter(config)` ([changelog](../../libraries/seltzer/CHANGELOG.md)). `handler(config)` remains as a deprecated alias, removed in the next minor after 0.10.0. The published 0.9.0 tarball does not have the listener or `adapter()`. `handleRequest` is still private.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
@@ -46,7 +46,7 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | `generateRoutes` | Stable | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. Covered by `generate-routes.conformance.test.ts`. The YAML → `listen` proof is in WebEngine. |
 | CORS / OPTIONS 204 | Stable | Off unless `init({ cors })` or `listen({ cors })`. A `listen` cors object replaces the init object. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `init` or at `listen` when that call passes it. Covered by `http-surface.conformance.test.ts` and `handler.conformance.test.ts`. |
 | `client.*` + `HttpError` | Emerging | Global `fetch`. `client.conformance.test.ts` covers slash-safe join, query encoding, the 30s deadline, caller abort, and `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. The result is still `unknown`. Documented edges outside that file: ignored `endpoint`, `FormData` rejection, `Buffer` bodies, the error snippet. No retries. Stays Emerging. |
-| `.handler(config)` options | Emerging | The config call stores `ctx.options` and returns the app. It is not the request listener. `adapter` is unused inbound. There is no conformance file for this stash. The no-arg listener is a different row. |
+| `app.adapter()` | Emerging | `adapter(config)` stores `{ adapter, options }` and returns the app. `options` is copied onto `ctx.options`. The `adapter` string is unused inbound. This is not the request listener. `handler(config)` is a deprecated alias: it forwards, and the first call in a process emits one warning, code `SELTZER_DEP_HANDLER_CONFIG`. That alias will be removed in the next minor after 0.10.0. The stash behavior is covered by `handler.conformance.test.ts`. The row stays Emerging because the stored adapter name still has no inbound effect. The listener is a different row. |
 | Tests | Stable | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, the urlencoded recipe on `127.0.0.1`, `handler.conformance.test.ts` (bring-your-own server, HTTPS fixture, init/listen precedence, listen/handler parity), and the README docs-drift check. The YAML → listen proof is in WebEngine. |
 | HTTPS listen, `app.use`, form/multipart, sessions, cookies, static files, templating, client retries, ORM | Non-goal | [Non-goals](../../libraries/seltzer/README.md#non-goals). Urlencoded fields are a host `URLSearchParams` recipe. |
 | Streaming responses / WebSockets | Not yet | No stream or socket API. A `Buffer` body is still one payload. Possible later. |
@@ -62,8 +62,8 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | `Seltzer.init(options?)` | `core/seltzer.ts` | `new Seltzer()`. Optional `bodyLimit`, `cors`, `logger`, `debug`, `locals`. |
 | `.route()` | same | `compileRoute` |
 | `.before()` / `.replace()` | same + `pipeline/index.ts` | |
-| `.handler(config)` | same | stores config and returns the app. Not a request listener. |
-| `.handler()` | same | no-arg Node request listener. Same pipeline as `listen`. Uses `init` options. Does not set timeouts. |
+| `.adapter(config)` | same | stores config and returns the app. Not a request listener. |
+| `.handler()` | same | Node request listener only. Same pipeline as `listen`. Uses `init` options. Does not set timeouts. `handler(config)` is a deprecated alias of `adapter(config)`. |
 | `.listen(port, options?)` | same | `http.createServer` of that listener, loopback `127.0.0.1`, timeouts 20s / 30s / 5s. A passed `bodyLimit`, `cors`, `logger`, `debug`, or `locals` replaces the `init` value for that server. `cors` is not merged field by field. |
 | Stages | `pipeline/stages.ts` | parse…send |
 | Matcher | `pipeline/router.ts` | rank + params |
