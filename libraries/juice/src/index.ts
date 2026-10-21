@@ -288,6 +288,17 @@ export type {
     IconButtonState
 } from "./js/src/icon-button/icon-button-runtime.js";
 export {
+    createAvatar,
+    initAvatar,
+    startAvatarRuntime,
+    stopAvatarRuntime
+} from "./js/src/avatar/avatar-runtime.js";
+export type {
+    AvatarController,
+    AvatarOptions,
+    AvatarState
+} from "./js/src/avatar/avatar-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,

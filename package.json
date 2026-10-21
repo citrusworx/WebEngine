@@ -21,7 +21,8 @@
         "verify:nectarine": "yarn workspace @citrusworx/nectarine verify",
         "stack:up": "docker compose -f apps/blackwatersound/docker/docker-compose.yml --env-file apps/blackwatersound/docker/.env up -d --build",
         "stack:down": "docker compose -f apps/blackwatersound/docker/docker-compose.yml --env-file apps/blackwatersound/docker/.env down",
-        "stack:logs": "docker compose -f apps/blackwatersound/docker/docker-compose.yml --env-file apps/blackwatersound/docker/.env logs -f"
+        "stack:logs": "docker compose -f apps/blackwatersound/docker/docker-compose.yml --env-file apps/blackwatersound/docker/.env logs -f",
+        "test:e2e:bridge": "bash plugins/kiwipress-bridge/tests/e2e/run.sh"
     },
     "devDependencies": {
         "@changesets/cli": "2.29.6",

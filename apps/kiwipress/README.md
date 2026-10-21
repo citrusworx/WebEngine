@@ -5,7 +5,7 @@ Product app that consumes `@citrusworx/kiwipress`. This is the only platform app
 | Workspace | Package | Role |
 | --- | --- | --- |
 | `apps/kiwipress/front` | `@citrusworx/kiwipressapp-front` | Vite + Juice + Sig. Wizard, marketing, dashboard chrome. |
-| `apps/kiwipress/back` | `@citrusworx/kiwipressapp-back` | Seltzer process: CMS gateway (`/__kiwipress`) + GrapeVine provision (`/provision/*`). |
+| `apps/kiwipress/back` | `@citrusworx/kiwipressapp-back` | Seltzer process: CMS gateway (`/__kiwipress`), GrapeVine provision (`/provision/*`), and WordPress bridge pairing (`/projects/:id/bridge/*`). |
 
 There is no root `apps/kiwipress/package.json`. Library docs live in [`docs/kiwipress`](../../docs/kiwipress/README.md); this file is how to run the app locally and walk the wizard against real plan/apply.
 
@@ -41,13 +41,14 @@ The API loads `apps/kiwipress/back/.env` on startup when that file exists (comme
 | `KIWIPRESS_API_PORT` | Listen port. Default `8787`. |
 | `KIWIPRESS_GATEWAY_TOKEN` | When set, `/__kiwipress` (except health) and `/provision/*` require `Authorization: Bearer …` or `X-KiwiPress-Token`. Leave unset for loopback-only laptop use. |
 | `DO_TOKEN` | **Server-only.** Required for `POST /provision/apply` and `POST /provision/destroy`. Plan works without it. Blueprints use `credentials.env: DO_TOKEN`. |
+| `KIWIPRESS_SECRET_KEY` | **Server-only.** 32 bytes as base64 or 64 hex characters. Required to pair a WordPress site. Encrypts the application password at rest with AES-256-GCM. Pairing returns **503** when it is missing or not 32 bytes. Generate with `node --input-type=module -e "import { randomBytes } from 'node:crypto'; console.log(randomBytes(32).toString('base64'))"`. |
 | `WP_URL` / `WP_API` / `WP_USER` / `WP_APP_PASSWORD` / `WP_TOKEN` / `WP_API_KEY` | Optional WordPress REST entry. Omit `WP_URL` for nectarine-only CMS. |
 | `KIWIPRESS_CMS_FILE` | Optional JSON persistence path. |
 | `KIWIPRESS_PG_DB` / `PG_DB` | Optional Nectarine Postgres persistence. |
 
 If no persistence env is set, the API writes `data/kiwipress-cms.json` under the back cwd (`apps/kiwipress/back/data/` when started via the workspace script).
 
-`DO_TOKEN` must never appear in front env, Vite, or browser requests.
+`DO_TOKEN` and `KIWIPRESS_SECRET_KEY` must never appear in front env, Vite, or browser requests. The bridge routes never return the application password or its ciphertext.
 
 ### Front (`apps/kiwipress/front/.env.example`)
 
@@ -123,9 +124,37 @@ Registered next to `registerKiwiPressGateway` with the same `authorizeKiwiPressG
 | `POST` | `/provision/apply` | Same mapping. Missing token → **503**. Otherwise job + async `applyGrapeConfig`. |
 | `POST` | `/provision/destroy` | Same mapping and gateway auth. Missing token → **503**. Sync `destroyGrapeResources`. Returns deleted/skipped/failed/warnings (no secrets or key material). |
 | `GET` | `/provision/:id` | Job status, step events, apply summary (ids/IPs/hosts/warnings — not passwords or key material). |
+| `POST` | `/projects/:id/bridge/probe` | `{ siteUrl }`. Unauthenticated plugin health. `pluginPresent`, version, `paired`, lockdown — or `pluginPresent: false` with `plugin_missing` / `site_unreachable`. |
+| `POST` | `/projects/:id/bridge/pair` | `{ siteUrl, username, applicationPassword, frontendUrl }`. Verifies `manage_options`, writes plugin settings, reads them back, then stores the password encrypted. Nothing is stored if any step fails. **503** without `KIWIPRESS_SECRET_KEY`. |
+| `GET` | `/projects/:id/bridge/status` | Health plus a short GET of `frontendUrl`. `connected`, `disconnected` (no stored pairing), or `needs_attention`. Updates `lastHealth`. |
+| `POST` | `/projects/:id/bridge/unpair` | Best-effort `paired: false` on the plugin, then always deletes the local credential. |
 | `*` | `/__kiwipress/…` | CMS gateway. See [Dashboard](../../docs/kiwipress/kiwipress-dashboard.md) and [Gateway](../../docs/kiwipress/kiwipress-gateway.md). |
 
 Wizard snapshot fields the front actually posts: `databaseType`, `dropletSize`, `region`, `domainName`, `domainOption`, `cdnEnabled`, `loadBalancer`, `sslEnabled`, `blueprintId`, `autoScaling`, `backupFrequency`.
+
+## Connect WordPress
+
+The project screen (`/app/projects`) pairs the current project (`my-wordpress-app`) with a site that has the [KiwiPress Bridge](../../plugins/kiwipress-bridge/README.md) plugin. The dashboard is still one project; the bridge record is stored beside the CMS file at `data/kiwipress-bridges.json` under the back cwd, keyed by project id. The record holds `siteUrl`, `username`, the encrypted application password, `frontendUrl`, `pairedAt`, and `lastHealth` (`at` plus the status result). It does not hold preview tokens or webhook subscriptions.
+
+1. **Site.** Enter the WordPress URL and probe. The API calls `GET /wp-json/kiwipress/v1/health` with no credentials. A hit shows plugin version, lockdown, and whether the plugin already says paired. A 404 tells you to install and activate KiwiPress Bridge. A connection failure says the site is unreachable.
+2. **Account.** Username and an application password from **Users → Profile → Application Passwords**. The account must be an administrator (`manage_options`). The API checks that with one call to `GET /wp/v2/users/me?context=edit`.
+3. **Frontend.** Confirm the URL lockdown should send logged-out visitors to (it starts as this app's origin), then pair.
+
+Pairing writes `{ frontend_url, paired: true, project_label }` to the plugin and reads settings back. The password is encrypted with AES-256-GCM (`node:crypto`) only after that confirmation. The key is `KIWIPRESS_SECRET_KEY`. The browser never receives the password or the ciphertext.
+
+The status card then shows **Connected**, **Disconnected**, or **Needs attention**:
+
+| Status | When |
+| --- | --- |
+| Disconnected | This project has no stored pairing. |
+| Needs attention | A pairing is stored, and the frontend URL did not answer, or the plugin version is below `0.1.0` (`MIN_BRIDGE_VERSION`), or the plugin reports `paired: false`, or health itself failed (site down or plugin missing). |
+| Connected | A pairing is stored, health succeeded, the plugin is at least `0.1.0` and still paired, and the frontend URL returned an HTTP response. |
+
+Any HTTP response from the frontend counts as reachable, including errors and redirects. A timeout or network error does not. **Check again** re-runs that and updates `lastHealth`. **Disconnect** asks you to confirm, tells the plugin `paired: false` when it can, and always deletes the local credential.
+
+Restart the back after setting `KIWIPRESS_SECRET_KEY`. The Vite dev server proxies `/projects` to `KIWIPRESS_API_URL` along with `/provision` and `/__kiwipress`.
+
+A real WordPress run of probe, pair, status, lockdown, and unpair is `yarn test:e2e:bridge` (Docker, opt-in). See the [plugin README](../../plugins/kiwipress-bridge/README.md#end-to-end-test).
 
 ## Local stack preview (secondary)
 

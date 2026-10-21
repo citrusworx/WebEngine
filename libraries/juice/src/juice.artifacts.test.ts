@@ -826,6 +826,70 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/\[role=["']?status["']?\]/);
     });
 
+    it("includes avatar structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+
+        expect(css).toContain("[avatar]");
+        expect(css).toMatch(/\[avatar=["']?round["']?\]/);
+        expect(css).toMatch(/\[avatar=["']?square["']?\]/);
+        expect(css).toMatch(/\[avatar\]\[scale=["']?sm["']?\]/);
+        expect(css).toMatch(/\[avatar\]\[scale=["']?lg["']?\]/);
+        expect(css).not.toMatch(/\[avatar\]\[scale=["']?md["']?\]/);
+        expect(css).toMatch(/\[avatar\]\[status=["']?online["']?\]/);
+        expect(css).toMatch(/\[avatar\]\[status=["']?away["']?\]/);
+        expect(css).toMatch(/\[avatar\]\[status=["']?busy["']?\]/);
+        expect(css).toMatch(/\[avatar\]\[status=["']?offline["']?\]/);
+        expect(css).toContain("[avatar-group]");
+        expect(css).toContain("[avatar-more]");
+        expect(css).toMatch(/\[avatar-group\]\[scale=["']?sm["']?\]/);
+        expect(css).toMatch(/\[avatar-group\]\[scale=["']?lg["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[avatar\]/);
+        expect(css).toContain("--juice-avatar-size: 2.5rem");
+        expect(css).toContain("--juice-avatar-size-sm: 1.5rem");
+        expect(css).toContain("--juice-avatar-size-lg: 4rem");
+        expect(css).toContain("--juice-avatar-font-size: calc(var(--juice-avatar-size) * 0.4)");
+        expect(css).toContain("--juice-avatar-font-size-sm: calc(var(--juice-avatar-size-sm) * 0.4)");
+        expect(css).toContain("--juice-avatar-font-size-lg: calc(var(--juice-avatar-size-lg) * 0.4)");
+        expect(css).toContain("--juice-avatar-radius: 999px");
+        expect(css).toContain("--juice-avatar-radius-square: 0.375rem");
+        expect(css).toContain("--juice-avatar-bg:");
+        expect(css).toContain("--juice-avatar-ink: currentColor");
+        expect(css).toContain("--juice-avatar-ring:");
+        expect(css).toContain("--juice-avatar-ring-width: 2px");
+        expect(css).toContain("--juice-avatar-status-size: calc(var(--juice-avatar-size) * 0.28)");
+        expect(css).toContain("--juice-avatar-group-overlap: calc(var(--juice-avatar-size) * -0.25)");
+        expect(css).toContain("--juice-avatar-status-online:");
+        expect(css).toContain("--juice-avatar-status-away:");
+        expect(css).toContain("--juice-avatar-status-busy:");
+        expect(css).toContain("--juice-avatar-status-offline:");
+        expect(css).toContain("var(--juice-surface-muted-bg,");
+        expect(css).toContain("var(--juice-banner-success, var(--juice-toast-success,");
+        expect(css).toContain("object-fit: cover");
+        expect(css).toContain("text-transform: uppercase");
+        expect(css).toContain("margin-inline-start: var(--juice-avatar-group-overlap)");
+        expect(css).toContain(
+            "transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard)"
+        );
+        expect(reduced.some((block) => block.includes("[avatar]") && block.includes("transition: none"))).toBe(true);
+        expect(css).not.toMatch(/\[avatar-status\]/);
+        expect(css).not.toMatch(/\[avatar\]\[scale=["']?md["']?\]/);
+        expect(css).not.toMatch(/\[avatar\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[avatar\][^{]*\{[^}]*z-index:\s*1000/);
+        expect(css).not.toMatch(/\[role=["']?status["']?\]/);
+
+        for (const id of ["kiwipress", "aquaflux"]) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-avatar-");
+        }
+
+        const tideCss = readFileSync(join(DIST_DIR, "themes", "tide.css"), "utf-8");
+        expect(tideCss).toContain("--juice-avatar-status-away:");
+        expect(tideCss).not.toContain("--juice-avatar-size");
+        expect(tideCss).not.toContain("--juice-avatar-bg");
+        expect(tideCss).not.toContain("--juice-avatar-status-online");
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
@@ -2526,6 +2590,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initIconButton");
         expect(module).toHaveProperty("startIconButtonRuntime");
         expect(module).toHaveProperty("stopIconButtonRuntime");
+        expect(module).toHaveProperty("createAvatar");
+        expect(module).toHaveProperty("initAvatar");
+        expect(module).toHaveProperty("startAvatarRuntime");
+        expect(module).toHaveProperty("stopAvatarRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

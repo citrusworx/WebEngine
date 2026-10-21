@@ -1,0 +1,37 @@
+# No RETURNING clause. A successful write comes back as
+# { ok: true, rowCount: 1 }, not the saved row. The client keeps the
+# object it sent, then refetches the list.
+todo:
+  read:
+    allTodos:
+      type: SELECT
+      table: todos
+      fields: '*'
+      orderBy: created_at ASC
+
+    byId:
+      type: SELECT
+      table: todos
+      fields: '*'
+      where: id = $1
+
+  create:
+    createTodo:
+      type: INSERT
+      table: todos
+      fields: [id, title, notes, done]
+
+  update:
+    # Every column listed here is bound from the body. A missing key
+    # becomes NULL. The client sends title, notes, and done together.
+    updateTodo:
+      type: UPDATE
+      table: todos
+      fields: [title, notes, done]
+      where: id = $1
+
+  delete:
+    deleteTodo:
+      type: DELETE
+      table: todos
+      where: id = $1

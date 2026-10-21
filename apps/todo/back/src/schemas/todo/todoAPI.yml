@@ -1,0 +1,43 @@
+todo:
+  read:
+    allTodos:
+      api:
+        method: GET
+        endpoint: /api/todos
+        query: allTodos
+
+    byId:
+      api:
+        method: GET
+        endpoint: /api/todos/:id
+        query: byId
+
+  create:
+    createTodo:
+      api:
+        method: POST
+        endpoint: /api/todos
+        query: createTodo
+        body:
+          id: string.required
+          title: string.required
+          notes: string
+          done: boolean
+
+  update:
+    updateTodo:
+      api:
+        method: PATCH
+        endpoint: /api/todos/:id
+        query: updateTodo
+        body:
+          title: string.required
+          notes: string
+          done: boolean.required
+
+  delete:
+    deleteTodo:
+      api:
+        method: DELETE
+        endpoint: /api/todos/:id
+        query: deleteTodo

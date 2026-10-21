@@ -1,0 +1,28 @@
+# ToDo — Nectarine root config.
+# Code reads this file. Secrets stay in env; this file names the keys.
+
+version: "0.1"
+app: todo
+engine: WebEngine
+
+database:
+  default: postgres
+  postgres:
+    env:
+      user: PG_USER
+      password: PG_PASS
+      host: PG_HOST
+      port: PG_PORT
+      database: PG_DB
+
+transport:
+  server: seltzer
+  # CRUD routes: listApiOperations → Seltzer generateRoutes via
+  # @citrusworx/webengine createNectarineRoutes. Health stays hand-written.
+  # There is no sqlite adapter in this package. Postgres is the path.
+
+resources:
+  - name: todo
+    schema: ./src/schemas/todo/todoSchema.yml
+    queries: ./src/schemas/todo/todoQueries.yml
+    api: ./src/schemas/todo/todoAPI.yml

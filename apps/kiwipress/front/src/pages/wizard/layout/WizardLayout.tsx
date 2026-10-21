@@ -1,10 +1,11 @@
+import type { Child } from "@citrusworx/sigjs";
 import { StepTracker, type StepId } from "./StepTracker";
 import { OrderSummary } from "./OrderSummary";
 import "../wizard.css";
 
 type LayoutOpts = {
     step: StepId;
-    children?: unknown;
+    children?: Child;
 };
 
 const HIDE_STEP_TRACKER: ReadonlySet<StepId> = new Set<StepId>(["live", "scale"]);
