@@ -34,7 +34,7 @@ Baseline: Seltzer workspace version **0.8.1**, inspected after merge `d25673e`. 
 | Structured responses and buffered bytes | Explicit streaming and backpressure |
 | CORS headers and OPTIONS shortcut | Authentication and CSRF policy |
 | Node HTTP listener on `127.0.0.1` with timeouts, returned to the host | Native TLS, integrated drain deadline |
-| Fetch wrapper and `HttpError` | Deadlines, cancellation, URL-joining contract |
+| Fetch client: slash-safe join, 30s deadline, abort, `HttpError` | Retries and server-side idempotency storage |
 | Operation-list route generation | Actual data execution and persistence |
 
 The right column is not a promise to put every feature into Seltzer. Some responsibilities should remain in the host or another package.

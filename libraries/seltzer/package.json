@@ -20,14 +20,6 @@
     "publishConfig": {
         "access": "public"
     },
-    "peerDependencies": {
-        "undici": ">=5"
-    },
-    "peerDependenciesMeta": {
-        "undici": {
-            "optional": true
-        }
-    },
     "scripts": {
         "build": "tsc",
         "dev": "ts-node src/index.ts",

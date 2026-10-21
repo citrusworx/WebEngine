@@ -31,9 +31,14 @@ import {
 } from "../pipeline/index.js";
 
 export type {
+    ClientCallOptions,
     CorsOptions,
     Endpoint,
+    HostOptions,
     ListenOptions,
+    QueryInput,
+    QueryPrimitive,
+    QueryValue,
     RequestContext,
     Route,
     RouteContract,
@@ -41,6 +46,7 @@ export type {
 } from "./types.js";
 export {
     DEFAULT_BODY_LIMIT_BYTES,
+    DEFAULT_CLIENT_TIMEOUT_MS,
     DEFAULT_HEADERS_TIMEOUT_MS,
     DEFAULT_KEEP_ALIVE_TIMEOUT_MS,
     DEFAULT_LISTEN_HOST,

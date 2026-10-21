@@ -1,3 +1,6 @@
+export function kiwiCallOptions(options) {
+    return options;
+}
 async function sendWordPressRequest(ctx, init) {
     const headers = {
         ...(ctx.options?.headers ?? {}),

@@ -318,16 +318,17 @@ try {
 
 Why this works:
 
-- URL = `options.baseUrl` + `path` → `http://127.0.0.1:3000/notes`.
+- URL join keeps one slash: `http://127.0.0.1:3000` + `/notes` → `http://127.0.0.1:3000/notes`. A base path is kept (`/api/v1` + `users`).
 - `endpoint` is required by the type and unused by the client.
-- `POST` sets `Content-Type: application/json` and `JSON.stringify`s the body.
-- A 400 `{ error: "Missing required field: text" }` **throws** (`HttpError`), unlike 0.2.0 which parsed it as success JSON.
+- `POST` of an object sets `Content-Type: application/json` and `JSON.stringify`s the body. A string is text. Bytes stay bytes.
+- A 400 `{ error: "Missing required field: text" }` **throws** (`HttpError`) with that object as `err.body`, unlike 0.2.0 which parsed it as success JSON.
+- The call waits at most 30 seconds unless you pass `timeout`. `0` disables it. The client does not retry.
 
 Caveats:
 
-- Concatenate carefully: `baseUrl` with a trailing slash plus `path` with a leading slash becomes `//notes`.
-- Successful `text/plain` comes back as a string, not JSON.
-- `allowSelfSigned` only applies to `https://` and needs the optional `undici` peer.
+- An absolute `path` throws `UrlError` unless `options.allowAbsoluteUrl` is set.
+- Successful `text/*` comes back as a string. Other non-JSON types come back as `Uint8Array`.
+- A deadline is `TimeoutError`, not `HttpError`. There is no `allowSelfSigned` option and no `undici` dependency.
 
 A Sig.js page would call the same URL with `fetch` inside an `effect`. Juice styles that page. Neither library starts this Node process. CORS is `listen({ cors })`:
 

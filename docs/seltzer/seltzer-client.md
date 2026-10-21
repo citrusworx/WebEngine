@@ -1,24 +1,43 @@
 # Seltzer Client
 
-Outbound `fetch` helpers exported as `client` from `@citrusworx/seltzer`.
+Outbound `fetch` helpers exported as `client` and `createClient` from `@citrusworx/seltzer`.
 
-Source: `libraries/seltzer/src/core/client/client.ts`. This is not a full HTTP client. KiwiPress still wraps `fetch` itself for WordPress in places; treat `client.*` as the packaged sibling of `Seltzer.listen`.
+Source: `libraries/seltzer/src/core/client/client.ts`. Transport is global `fetch` only. The package has no runtime dependencies and does not import `undici`. This is not a full HTTP client. KiwiPress still wraps `fetch` itself for WordPress; treat `client.*` as the packaged sibling of `Seltzer.listen`.
 
-Package **0.8.x** hardened this wrapper relative to 0.2.0: `HttpError` on non-2xx, JSON only when the success body is JSON, optional `allowSelfSigned` via `undici`.
+The client does **not** retry. A 5xx, a timeout, and a dropped connection are each one attempt. Call again yourself if that is safe. Sending `Idempotency-Key` is just a header: put it in `options.headers`. Seltzer does not store or replay idempotency keys. That belongs to a future pipeline stage, not this client.
 
 ## The object
 
 ```ts
-import { client, HttpError, type Endpoint } from "@citrusworx/seltzer";
+import {
+  client,
+  createClient,
+  HttpError,
+  TimeoutError,
+  AbortError,
+  NetworkError,
+  UrlError,
+  DEFAULT_CLIENT_TIMEOUT_MS,
+  type Endpoint,
+} from "@citrusworx/seltzer";
 
 client.get(endpoint);
+client.head(endpoint);
 client.post(endpoint, data);
 client.put(endpoint, data);
 client.patch(endpoint, data);
 client.delete(endpoint);
+
+const api = createClient({
+  baseUrl: "http://127.0.0.1:3000/api/v1",
+  headers: { Authorization: "Bearer …" },
+  timeout: 5_000,
+});
 ```
 
-Each method returns `Promise<unknown>`.
+`client` is `createClient()` with no base URL and no extra headers. Each method returns `Promise<unknown>`.
+
+`DEFAULT_CLIENT_TIMEOUT_MS` is `30000`, the same number as the server `requestTimeout` (`DEFAULT_REQUEST_TIMEOUT_MS`).
 
 ## `Endpoint`
 
@@ -30,7 +49,10 @@ type Endpoint = {
   options?: {
     baseUrl?: string;
     headers?: Record<string, string>;
-    allowSelfSigned?: boolean;
+    timeout?: number;
+    signal?: AbortSignal;
+    query?: QueryInput;
+    allowAbsoluteUrl?: boolean;
   };
 };
 ```
@@ -38,98 +60,121 @@ type Endpoint = {
 What the client **reads**:
 
 - `path`
-- `options.baseUrl`
-- `options.headers`
-- `options.allowSelfSigned` (only for `https://` URLs)
+- `options.baseUrl` (falls back to the `createClient` base URL)
+- `options.headers` (override client headers of the same name; names are matched case-insensitively)
+- `options.timeout` (`0` disables; omitted uses the client timeout)
+- `options.signal`
+- `options.query`
+- `options.allowAbsoluteUrl`
 
 What the client **does not read**:
 
 - `endpoint` — required by the type, ignored at runtime
 - `route` — optional, ignored
 
+There is no `allowSelfSigned` option. Certificate checks stay with Node. Prefer a real certificate or `NODE_EXTRA_CA_CERTS`.
+
 ## URL construction
 
-```ts
-const url = endpoint.options?.baseUrl
-  ? `${endpoint.options.baseUrl}${endpoint.path}`
-  : endpoint.path;
-```
+`resolveRequestUrl` joins `baseUrl` and `path` with a single slash at the boundary. A base path is kept. Leading slashes on `path` and trailing slashes on the base path are only the join. A trailing slash on the relative path stays, because the server treats `/users` and `/users/` as different paths. The path is not re-encoded.
 
 | `baseUrl` | `path` | Result |
 |---|---|---|
 | `http://127.0.0.1:3000` | `/notes` | `http://127.0.0.1:3000/notes` |
-| `http://127.0.0.1:3000/` | `/notes` | `http://127.0.0.1:3000//notes` |
-| unset | `http://127.0.0.1:3000/notes` | used as the full URL |
-| unset | `/notes` | fetch of `/notes` (relative; fine in a browser, usually wrong in Node) |
+| `http://127.0.0.1:3000/` | `/notes` | `http://127.0.0.1:3000/notes` |
+| `http://127.0.0.1:3000/api/v1` | `users` | `http://127.0.0.1:3000/api/v1/users` |
+| `http://127.0.0.1:3000/api/v1/` | `/users/` | `http://127.0.0.1:3000/api/v1/users/` |
+| `http://127.0.0.1:3000/api?x=1` | `/users?y=2` | `http://127.0.0.1:3000/api/users?x=1&y=2` |
 
-Prefer `baseUrl` without a trailing slash and `path` with a leading slash. Or put the full URL in `path` and omit `baseUrl`.
+`baseUrl` must be an absolute `http:` or `https:` URL when it is set. A call's `baseUrl` replaces the client `baseUrl`; it is not joined onto it.
 
-Query strings belong on `path` (`/notes/1?verbose=1`). The client will not append `searchParams` for you.
+### Query
 
-## Methods
+`options.query` is appended with `URLSearchParams` (spaces become `+`).
 
-| Method | Body | Default headers |
+- `null` and `undefined` are omitted, including inside arrays
+- an array repeats the key (`tag=a&tag=b`); an empty array omits the key
+- `0` and `false` are sent
+- a plain object throws `TypeError` and no request is sent
+- keys already present on the base or path are left in place; `query` does not delete them
+
+### Absolute `path`
+
+An `http:` / `https:` path, or a protocol-relative `//host/...` path, throws `UrlError` (`code: "INVALID_URL"`) unless `options.allowAbsoluteUrl` is `true`. With that option, an `http(s)` path is fetched as-is and `baseUrl` is ignored. Protocol-relative URLs and other schemes still throw. `UrlError` means nothing was sent.
+
+## Methods and request bodies
+
+| Method | Body | Default `Content-Type` |
 |---|---|---|
-| `get` | none | `options.headers` only |
-| `delete` | none | `options.headers` only |
-| `post` | `JSON.stringify(data)` | `Content-Type: application/json` merged with `options.headers` |
-| `put` | same | same |
-| `patch` | same | same |
+| `get` / `head` / `delete` | none | `options.headers` only |
+| `post` / `put` / `patch` | see below | depends on the value |
 
-Merge order for write methods:
+| `data` | Sent as | Default `Content-Type` |
+|---|---|---|
+| plain object, array, number, boolean, `null` | `JSON.stringify` | `application/json` |
+| string | the string | `text/plain; charset=utf-8` |
+| `Uint8Array` or `Buffer` | the bytes | `application/octet-stream` |
+| `undefined` | no body | none |
 
-```ts
-headers: {
-  "Content-Type": "application/json",
-  ...endpoint.options?.headers,
-}
-```
-
-Caller headers win. You can override `Content-Type`. `data` is always stringified.
+A caller `Content-Type` wins, matched case-insensitively, so only one content type is sent. `FormData`, `Blob`, and streams throw `TypeError`. Pass a string or bytes instead.
 
 ## Success parsing
 
-After `res.ok`:
+| Response | Result |
+|---|---|
+| `204`, `205`, or request method `HEAD` | `undefined` (a body is discarded) |
+| empty body | `undefined` |
+| `application/json` or a `+json` type | parsed JSON |
+| `text/*` | string |
+| no `Content-Type`, body is JSON text | parsed JSON |
+| no `Content-Type`, other text | string |
+| anything else | `Uint8Array` |
 
-- `204` / `205` → `undefined`
-- empty body → `undefined`
-- `Content-Type` `application/json` or `+json` → `JSON.parse`
-- no Content-Type: parse JSON if the body is JSON, else text
-- other Content-Types → text
+Invalid JSON with a JSON content type on a **successful** status throws `SyntaxError`, not `HttpError`. On a **failed** status the same bad JSON is `HttpError.body` as the raw string, so the status is still visible.
 
-## `HttpError`
+The inbound parser is close but not identical: it treats every non-JSON request body as a UTF-8 string. The client returns bytes for a response that is neither JSON nor `text/*`.
 
-Non-2xx responses throw:
+## Errors
 
-```ts
-class HttpError extends Error {
-  readonly status: number;
-  readonly statusText: string;
-  readonly body: string; // full response text
-}
-```
+These are different classes and `code` values. A timeout is not an HTTP error: the server may still be working.
 
-The `message` is `HTTP ${status} ${statusText}` plus a body snippet (trimmed, max 200 characters, ellipsis if longer). Catch `instanceof HttpError` instead of reading `{ error: "Not Found" }` as a successful payload — that 0.2.0 habit is closed.
+| Class | `code` | When |
+|---|---|---|
+| `HttpError` | `HTTP_ERROR` | non-2xx response. `status`, `statusText`, lowercase `headers`, parsed `body` |
+| `TimeoutError` | `TIMEOUT` | the deadline elapsed (`timeoutMs`) |
+| `AbortError` | `ABORTED` | `options.signal` aborted. `reason` is the abort reason. Wins if the deadline also fires |
+| `NetworkError` | `NETWORK` | connection or transport failure. `cause` is the fetch error |
+| `UrlError` | `INVALID_URL` | the URL was rejected before `fetch` |
+
+`HttpError.message` is `HTTP ${status} ${statusText}` plus a trimmed body snippet (max 200 characters, ellipsis if longer).
 
 ```ts
 try {
   await client.get({
     path: "/missing",
     endpoint: "/missing",
-    options: { baseUrl: "http://127.0.0.1:3000" },
+    options: { baseUrl: "http://127.0.0.1:3000", timeout: 1_000 },
   });
 } catch (err) {
   if (err instanceof HttpError && err.status === 404) {
-    // err.body is the raw '{"error":"Not Found"}'
+    // err.body is the parsed JSON, for example { error: "Not Found" }
+  } else if (err instanceof TimeoutError) {
+    // deadline, not a status code
+  } else if (err instanceof AbortError) {
+    // caller signal
+  } else if (err instanceof NetworkError) {
+    // nothing came back
   }
 }
 ```
 
-## `allowSelfSigned`
+## Timeout and abort
 
-`allowSelfSigned: true` on an `https://` URL dynamically imports `undici` and uses `Agent({ connect: { rejectUnauthorized: false } })`. HTTP URLs ignore the flag. If `undici` is missing, the client throws a message telling you to install it or use a trusted certificate.
+The default deadline is 30 seconds, covering headers and the body. `createClient({ timeout })` changes it for every call. `options.timeout` overrides that, and `0` in either place disables the timer.
 
-Prefer a real certificate or `NODE_EXTRA_CA_CERTS` when you can. Everyday `init().route().listen()` does not need `undici`.
+`options.signal` is merged with the deadline. Node's `AbortSignal.any` is used when it exists. Node 18 combines the signals by hand. The timer is cleared when the call finishes, fails, or is aborted. `unref` is used so a pending deadline does not hold the process open by itself; `clearTimeout` still runs.
+
+An already-aborted signal throws `AbortError` and does not open a connection.
 
 ## Typical server + client pair
 
@@ -156,11 +201,11 @@ const data = await client.get(health);
 server.close();
 ```
 
-`listen` returns the `http.Server`. A same-file smoke test can still race `ECONNREFUSED` if `client.get` runs before the port is bound — wait for `listening` or pass `onListening`.
+`listen` returns the `http.Server`. Wait for `listening` or pass `onListening` before calling the client.
 
 ## Sharing option shape with `.handler()`
 
-`.handler({ adapter, options })` stores the same `options` bag on inbound `ctx.options`. It does **not** configure `client`. You copy the bag yourself:
+`.handler({ adapter, options })` stores `baseUrl` and `headers` on inbound `ctx.options`. It does **not** configure `client`. Copy them yourself:
 
 ```ts
 const options = {
@@ -185,13 +230,14 @@ There is no `app.client`.
 
 ## What is not here
 
-- Timeouts, retries, abort
-- Slash-safe base-URL joining
+- Retries
+- Server-side idempotency storage (a header is not a replay)
 - Typed generics on the JSON result
-- Multipart / non-JSON request bodies
+- Multipart helpers (`FormData` is rejected)
 - Reading `Endpoint.endpoint` even when it is the absolute URL KiwiPress stores
+- TLS certificate bypass
 
-KiwiPress may still `fetch` `ctx.endpoint` in its own helper. Do not assume Seltzer `client` follows that convention.
+KiwiPress may still `fetch` `ctx.endpoint` in its own helper, including its own self-signed path. Do not assume Seltzer `client` follows that convention.
 
 ## Related
 

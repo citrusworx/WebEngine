@@ -1,6 +1,6 @@
 import { Seltzer } from "@citrusworx/seltzer";
 import { WPCore } from "./WPCore.js";
-import { requestWordPress, requestWordPressPage } from "./route-utils.js";
+import { kiwiCallOptions, requestWordPress, requestWordPressPage } from "./route-utils.js";
 import { asCollection } from "./normalize.js";
 import { createMediaUploadInit } from "../media/upload.js";
 export class WPClient extends WPCore {
@@ -9,11 +9,11 @@ export class WPClient extends WPCore {
         super(config);
         this.app = Seltzer.init().handler({
             adapter: "node:http",
-            options: {
+            options: kiwiCallOptions({
                 baseUrl: `${this.config.url}/${this.config.apiBase}`,
                 headers: this.createAuthHeaders(),
                 allowSelfSigned: this.config.allowSelfSigned
-            }
+            })
         });
     }
     buildEndpoint(route, params) {
@@ -23,11 +23,11 @@ export class WPClient extends WPCore {
             route: route,
             path,
             endpoint,
-            options: {
+            options: kiwiCallOptions({
                 baseUrl: `${this.config.url}/${this.config.apiBase}`,
                 headers: this.createAuthHeaders(),
                 allowSelfSigned: this.config.allowSelfSigned
-            }
+            })
         };
     }
     execute(route, params) {
@@ -77,11 +77,11 @@ export class WPClient extends WPCore {
             const result = await requestWordPressPage({
                 path: `/${collection}`,
                 endpoint: `${this.config.url}/${this.config.apiBase}/${collection}?${search.toString()}`,
-                options: {
+                options: kiwiCallOptions({
                     baseUrl: `${this.config.url}/${this.config.apiBase}`,
                     headers: this.createAuthHeaders(),
                     allowSelfSigned: this.config.allowSelfSigned
-                }
+                })
             });
             items.push(...asCollection(result.data));
             totalPages = Math.min(result.totalPages, maxPages);

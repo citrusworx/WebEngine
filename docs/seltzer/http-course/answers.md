@@ -71,7 +71,7 @@ A route-aware access check can run before validate or before handle, after route
 
 ## Lesson 07
 
-The first run's deliberate read-after-delete receives a real 404 and Seltzer throws `HttpError`. With no listening server, native fetch fails and the caught error is not `HttpError`. Successful responses with malformed JSON can fail decoding as another category. Blind retries ignore both the cause and the possibility that a previous write already happened.
+The first run's deliberate read-after-delete receives a real 404 and Seltzer throws `HttpError`. With no listening server, the client throws `NetworkError`, not `HttpError`. A deadline is `TimeoutError`. Successful responses with malformed JSON can fail decoding as `SyntaxError`. The client does not retry. Blind retries in your own code ignore both the cause and the possibility that a previous write already happened.
 
 ## Lesson 08
 

@@ -4,7 +4,7 @@
 
 **Goal:** turn an observed limitation into a testable design without confusing it with an existing feature. Allow 90–150 minutes for one proposal.
 
-Everything labeled **Proposed** on this page is a course design direction. None of the suggested signatures below is implemented by this course. They are not promises for Seltzer 0.9 or 1.0. The intended skill is evaluating a design, including when to reject it.
+Everything still labeled **Proposed** on this page is a course design direction. Those signatures are not promises. Section B (outbound deadlines, cancellation, and URL join) has shipped; the other sections have not. The intended skill is evaluating a design, including when to reject it.
 
 ## Start from a failed promise
 
@@ -44,31 +44,25 @@ The number above is an exercise default of one MiB, not a universally appropriat
 
 **Open decision:** preserve the unlimited default for compatibility or adopt a finite default as an explicit behavior change. A changelog must state which was chosen.
 
-## B. Proposed: outbound deadlines and cancellation
+## B. Shipped: outbound deadlines and cancellation
 
-**Current evidence:** `Endpoint.options` has no signal or deadline. `request` passes no caller-controlled abort signal. URLs are concatenated directly.
-
-**Plain-language problem:** when a caller stops waiting, the work should have a defined end rather than continuing indefinitely in the background.
-
-Candidate API, **proposed only**:
+**Current behavior:** `createClient({ timeout })` and `options.timeout` set the deadline. The default is 30 seconds (`DEFAULT_CLIENT_TIMEOUT_MS`), the same number as the server `requestTimeout`. `0` disables it. `options.signal` aborts the call. `resolveRequestUrl` joins `baseUrl` and `path`.
 
 ```ts
 client.get({
   path: "/notes",
   endpoint: "/notes",
-  options: { baseUrl, signal: callerSignal, timeoutMs: 2000 },
+  options: { baseUrl, signal: callerSignal, timeout: 2000 },
 });
 ```
 
-The deadline should cover obtaining the response **and consuming its body**, not just receipt of headers. Compose caller cancellation and the deadline without losing the earlier abort reason. Clean up timers and listeners on success, failure, and abort. The implementation must respect the package's Node support range; do not assume every abort helper exists in every supported release.
+The deadline covers headers and the body. Caller abort and the deadline are merged (`AbortSignal.any` when it exists, otherwise a Node 18 combine). If the caller signal aborts, the error is `AbortError` even when the timer also fires. `TimeoutError`, `AbortError`, and `NetworkError` are not `HttpError`. The timer is cleared when the call ends. Cancelling the wait does not guarantee a remote write was cancelled.
 
-An abort is not an `HttpError`: it has no complete non-2xx HTTP response. Define a documented cancellation/deadline error category so hosts can distinguish it from server rejection. Cancelling the wait does not guarantee a remote write was cancelled.
+The client does not retry. An idempotency key needs server-side storage and replay, which this package does not implement. `options.headers` can still send `Idempotency-Key`.
 
-Do not add automatic retries as an invisible side effect. An idempotency key requires server-side storage and replay semantics; a header alone does not make a POST safe to repeat.
+**URL policy:** `baseUrl = http://host/api/v1` and `path = users` is `/api/v1/users`, not `/users`. `new URL(path, baseUrl)` is not the join, because a leading slash would drop the base path. Boundary slashes collapse. A trailing slash on the relative path stays. `options.query` is encoded; `null` and `undefined` are omitted; arrays repeat the key. An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. The path is not re-encoded.
 
-**URL policy:** specify whether `baseUrl = https://host/api` and `path = /notes` means `/api/notes` or `/notes`. Replacing concatenation with `new URL(path, baseUrl)` changes that result. Preserve established prefixes or clearly version the change. Cover query strings, escaped characters, trailing slashes, and absolute paths without rewriting user input unexpectedly.
-
-**Acceptance tests:** delayed headers time out; delayed body times out; caller abort wins; completed requests leave no timer; HTTP 404 still yields `HttpError`; prefix joining is deterministic; no silent retry performs a duplicate write.
+**Tests:** `libraries/seltzer/src/core/client/client.conformance.test.ts` covers delayed headers, a delayed body, caller abort, an already-aborted signal, the Node 18 combine, timer cleanup, HTTP 404 as `HttpError`, prefix joining, and a single attempt on 503, timeout, and connection failure.
 
 ## C. Proposed: a richer validation contract
 

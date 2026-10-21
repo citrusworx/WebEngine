@@ -1,6 +1,20 @@
 import type { Endpoint, Route } from "@citrusworx/seltzer";
 import type { ApiDefinition } from "../types/api.js";
 
+/**
+ * Seltzer's client does not bypass TLS. KiwiPress still stores this flag and
+ * applies it in `requestWordPress` with its own fetch path.
+ */
+export type KiwiPressCallOptions = {
+    baseUrl?: string;
+    headers?: Record<string, string>;
+    allowSelfSigned?: boolean;
+};
+
+export function kiwiCallOptions(options: KiwiPressCallOptions): NonNullable<Endpoint["options"]> {
+    return options;
+}
+
 async function sendWordPressRequest(ctx: Endpoint, init?: RequestInit): Promise<Response> {
     const headers = {
         ...(ctx.options?.headers ?? {}),

@@ -13,6 +13,11 @@ export const DEFAULT_HEADERS_TIMEOUT_MS = 20000;
  * Tighter than Node's 5-minute default. `0` disables the timer.
  */
 export const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
+/**
+ * Default outbound client deadline. Same number as {@link DEFAULT_REQUEST_TIMEOUT_MS}.
+ * `createClient({ timeout: 0 })` or `options.timeout: 0` disables it.
+ */
+export const DEFAULT_CLIENT_TIMEOUT_MS = DEFAULT_REQUEST_TIMEOUT_MS;
 /** Milliseconds an idle keep-alive socket may wait for the next request. */
 export const DEFAULT_KEEP_ALIVE_TIMEOUT_MS = 5000;
 //# sourceMappingURL=types.js.map

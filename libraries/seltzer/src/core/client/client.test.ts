@@ -146,7 +146,9 @@ describe("seltzer HTTP client", () => {
         expect(error).toBeInstanceOf(HttpError);
         expect(error.status).toBe(404);
         expect(error.statusText).toBe("Not Found");
-        expect(error.body).toContain("missing");
+        expect(error.code).toBe("HTTP_ERROR");
+        expect(error.body).toEqual({ error: "missing" });
+        expect(error.headers["content-type"]).toMatch(/application\/json/);
         expect(error.message).toMatch(/HTTP 404 Not Found/);
         expect(error.message).toContain("missing");
     });
@@ -202,14 +204,29 @@ describe("seltzer HTTP client", () => {
         expect(seen).toEqual(["PUT /items/1", "PATCH /items/1", "DELETE /items/1", "PUT /items/2"]);
     });
 
-    it("does not load undici for allowSelfSigned on http URLs", async () => {
-        const base = await listen((_req, res) => {
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ tls: false }));
+    it("sends a string as text and bytes as bytes", async () => {
+        let seen = { type: "", body: Buffer.alloc(0) };
+        const base = await listen(async (req, res) => {
+            const chunks: Buffer[] = [];
+            for await (const chunk of req) {
+                chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+            }
+            seen = {
+                type: String(req.headers["content-type"] ?? ""),
+                body: Buffer.concat(chunks),
+            };
+            res.writeHead(204);
+            res.end();
         });
 
+        await expect(client.post(endpoint("/text", { baseUrl: base }), "hello")).resolves.toBeUndefined();
+        expect(seen.type).toBe("text/plain; charset=utf-8");
+        expect(seen.body.toString("utf8")).toBe("hello");
+
         await expect(
-            client.get(endpoint("/", { baseUrl: base, allowSelfSigned: true })),
-        ).resolves.toEqual({ tls: false });
+            client.put(endpoint("/bytes", { baseUrl: base }), Buffer.from([1, 2, 3])),
+        ).resolves.toBeUndefined();
+        expect(seen.type).toBe("application/octet-stream");
+        expect([...seen.body]).toEqual([1, 2, 3]);
     });
 });
