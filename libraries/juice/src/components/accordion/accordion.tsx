@@ -1,10 +1,10 @@
-import { effect, Signal } from "@citrusworx/sigjs";
+import { effect, Signal, type Child } from "@citrusworx/sigjs";
 
 interface AccordionProps {
     name: string;
     title?: string;
     defaultExpanded?: boolean;
-    children?: unknown;
+    children?: Child;
     attributes: Record<string, string>;
 }
 

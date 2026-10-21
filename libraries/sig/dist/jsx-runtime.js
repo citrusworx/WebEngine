@@ -1,5 +1,6 @@
 import { attachNodeCleanup, disposeTree } from "./node-cleanup.js";
-import { captureCleanupScope, effect } from "./signal.js";
+import { captureCleanupScope } from "./cleanup-scope.js";
+import { effect } from "./signal.js";
 export { disposeTree };
 function appendChild(parent, child) {
     if (child == null)
@@ -21,7 +22,7 @@ function appendChild(parent, child) {
         parent.appendChild(document.createTextNode(String(child)));
         return;
     }
-    parent.appendChild(child); // Now guaranteed Node
+    parent.appendChild(child);
 }
 function isDomPropertyKey(el, key) {
     return (key in el &&
@@ -70,8 +71,9 @@ function setProp(el, key, value) {
     }
     // Function-valued host props (not ref / on*) are reactive getters.
     if (typeof value === "function") {
+        const read = value;
         const dispose = effect(() => {
-            applyPropValue(el, key, value());
+            applyPropValue(el, key, read());
         });
         attachNodeCleanup(el, dispose);
         return;
@@ -80,7 +82,7 @@ function setProp(el, key, value) {
 }
 export function jsx(type, props) {
     if (typeof type === "function") {
-        const { value, dispose } = captureCleanupScope(() => type(props));
+        const { value, dispose } = captureCleanupScope(() => type(props ?? null));
         if (value instanceof Node) {
             attachNodeCleanup(value, dispose);
         }
@@ -102,7 +104,7 @@ export function mount(node, target) {
 export const jsxs = jsx;
 export const Fragment = (props) => {
     const frag = document.createDocumentFragment();
-    appendChild(frag, props.children);
+    appendChild(frag, props?.children);
     return frag;
 };
 //# sourceMappingURL=jsx-runtime.js.map

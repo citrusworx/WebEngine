@@ -150,7 +150,7 @@ The box holds whatever you put in it. Mutating an array in place does **not** no
 const items = Signal<string[]>(["a"]);
 
 items.get().push("b"); // subscribers never run
-items.set(items.get()); // notifies, because set always notifies
+items.set(items.get()); // notifies, because set always notifies (frozen for v1)
 items.set([...items.get(), "b"]); // the usual pattern: replace the value
 ```
 

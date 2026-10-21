@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@citrusworx/sigjs",
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "types": [],
+        "baseUrl": ".",
+        "paths": {
+            "@citrusworx/sigjs/jsx-runtime": ["../src/jsx-runtime.ts"],
+            "@citrusworx/sigjs/jsx-dev-runtime": ["../src/jsx-dev-runtime.ts"]
+        }
+    },
+    "files": ["import-source.tsx"]
+}

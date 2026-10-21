@@ -75,13 +75,11 @@ Function children as **text only** is correct and documented, and it is still th
 
 `bindList` is the keyed escape hatch. It does not make function children return elements. Teaching still has to say that out loud.
 
-### 2. `batch` nesting is done; equality on `set` is not
+### 2. `batch` nesting is done; `set` always notifies
 
 `batch` is a depth counter with `try` / `finally`. Nested calls and throws are tested.
 
-`count.set(1); count.set(1)` still notifies twice. That is simple and sometimes useful. It is noisy for derived stores and for controlled inputs that write the same string.
-
-An opt-in compare, or a documented “check before set” practice (already in the form pattern), is enough. A deep equality rabbit hole is not.
+`count.set(1); count.set(1)` notifies twice. That is the v1 contract: `Signal.set` always notifies, even when the value is unchanged. There is no equality check. Callers that want to skip a write compare first. A deep equality helper is not part of v1.
 
 ### 3. The router matches params; splat routes are still absent
 
@@ -130,13 +128,11 @@ The next work that helps the most is not a new primitive. It is:
 
 This docs set is that work. Keep it aligned with `libraries/sig/src` when the code moves.
 
-### Priority 2. Harden the edges of `set`
+### Priority 2. `set` equality is decided
 
-If the core is opened:
+`Signal.set` always notifies, including when the new value is the same. That behavior is frozen for v1. Documented in [API surface](./api-surface.md) and covered by `libraries/sig/src/signal.test.ts`.
 
-1. decide whether `set` should skip identical values (and document either choice)
-
-Do not add `peek` unless a real effect-tracking bug requires it. Reading outside an effect is already untracked.
+Do not add `peek` unless a real effect-tracking bug requires it. Reading outside an effect is already untracked. `untrack` is the supported snapshot read.
 
 ### Priority 3. Make the router harder to misuse
 
@@ -201,7 +197,7 @@ Those would blur the split that justifies both libraries.
 
 ## API surface for v1
 
-The classified inventory is [API surface](./api-surface.md). Stable exports are the v1 contract. `bindList` and `ListItem` stay experimental. `captureCleanupScope` is internal and still exported. `jsxDEV` belongs on `./jsx-dev-runtime`; the root re-export is accidental. This roadmap does not remove or rename anything. The breaking cleanups are listed in that doc for a later decision.
+The classified inventory is [API surface](./api-surface.md). Stable exports are the v1 contract. `bindList` and `ListItem` stay experimental. `captureCleanupScope` is not exported. `jsxDEV` is only on `./jsx-dev-runtime`. `Signal.set` always notifies, and that is frozen. Public `any` is gone from the JSX factory and `JSX.IntrinsicElements`. The `JSX` namespace is exported from both runtime entries.
 
 ## Summary
 
@@ -223,6 +219,6 @@ The next stage is refinement:
 - lists are decided: `bindList` for keyed rows, `replaceChildren` for a rewrite, no `<For>` / `<Show>`
 - keep the static-first promise
 - keep param matching boring (exact wins, first registered pattern, `"*"` last)
-- freeze the public surface per [API surface](./api-surface.md) before calling it 1.0
+- the public surface cleanup is in [API surface](./api-surface.md). `bindList` stays experimental. 1.0 is the publish of that surface
 
 That is a strong place to be. The docs stay with [Status](./sig-status.md), [API surface](./api-surface.md), and the APIs in `libraries/sig/src`.

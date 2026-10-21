@@ -61,7 +61,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `memo` | `signal.ts` | `{ get }` cache. Public surface is `get` only; internal invalidator `dispose` is not exported. |
 | `untrack` | `signal.ts` | Read without subscribing the current effect or memo. |
 | `bindList` | `list.ts` | Keyed reconcile for `T[]` (key function) or `Map<K, T>` (map key, iteration order). |
-| `captureCleanupScope` | `signal.ts` | Used by JSX components |
+| `captureCleanupScope` | `cleanup-scope.ts` | Internal. Not a package export. Used by JSX components, `bindList`, and Juice `bind` |
 | JSX → real DOM | `jsx-runtime.ts` | No VDOM |
 | Function-child **text** | `jsx-runtime.ts` | `String(child())` |
 | Function-valued host props | `jsx-runtime.ts` | `effect` + `disposeTree` cleanup |

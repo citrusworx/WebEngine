@@ -1,5 +1,6 @@
 import { attachNodeCleanup, disposeTree } from "./node-cleanup.js";
-import { Signal, captureCleanupScope, effect, untrack } from "./signal.js";
+import { captureCleanupScope } from "./cleanup-scope.js";
+import { Signal, effect, untrack } from "./signal.js";
 
 /**
  * Per-row view of the current item. Read it inside an effect or a function

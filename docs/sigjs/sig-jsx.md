@@ -41,7 +41,7 @@ type Child =
   | number
   | null
   | undefined
-  | (() => any)
+  | (() => string | number | boolean | null | undefined)
   | Child[];
 ```
 

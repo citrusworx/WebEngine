@@ -1,9 +1,11 @@
+import type { Child } from "@citrusworx/sigjs";
+
 export function PageIntro(props: {
   kicker: string;
   title: string;
   body: string;
   titleStyle?: string;
-  children?: unknown;
+  children?: Child;
 }) {
   return (
     <section shell route-head stack gap="0.75rem">

@@ -24,22 +24,21 @@ const EXPECTED_ENTRIES = [
 const EXPECTED_VALUES: Record<string, string[]> = {
     ".": [
         "Fragment",
+        "JSX",
         "Signal",
         "SigRouter",
         "batch",
         "bindList",
-        "captureCleanupScope",
         "disposeTree",
         "effect",
         "jsx",
-        "jsxDEV",
         "jsxs",
         "memo",
         "mount",
         "untrack",
     ],
-    "./jsx-dev-runtime": ["Fragment", "jsxDEV", "jsxs"],
-    "./jsx-runtime": ["Fragment", "disposeTree", "jsx", "jsxs", "mount"],
+    "./jsx-dev-runtime": ["Fragment", "JSX", "jsxDEV", "jsxs"],
+    "./jsx-runtime": ["Fragment", "JSX", "disposeTree", "jsx", "jsxs", "mount"],
     "./juice": ["bind"],
     "./sig-router": ["SigRouter"],
 };
@@ -98,15 +97,26 @@ const EXPECTED_GLOBAL_JSX: Record<string, string[]> = {
     ".": [
         "JSX.Element",
         "JSX.ElementChildrenAttribute",
+        "JSX.IntrinsicAttributes",
         "JSX.IntrinsicElements",
     ],
-    "./jsx-dev-runtime": [],
-    "./jsx-runtime": [],
+    "./jsx-dev-runtime": [
+        "JSX.Element",
+        "JSX.ElementChildrenAttribute",
+        "JSX.IntrinsicAttributes",
+        "JSX.IntrinsicElements",
+    ],
+    "./jsx-runtime": [
+        "JSX.Element",
+        "JSX.ElementChildrenAttribute",
+        "JSX.IntrinsicAttributes",
+        "JSX.IntrinsicElements",
+    ],
     "./juice": [],
     "./sig-router": [],
 };
 
-const NOT_PUBLIC = ["attachNodeCleanup"];
+const NOT_PUBLIC = ["attachNodeCleanup", "captureCleanupScope"];
 
 type Surface = {
     values: string[];
@@ -211,7 +221,10 @@ function collect(filePath: string, seen: Set<string>, into: {
         collect(resolveSpecifier(filePath, spec), seen, into);
     }
 
-    for (const match of source.matchAll(/export\s+function\s+([A-Za-z0-9_]+)/g)) {
+    for (const match of source.matchAll(/^export\s+function\s+([A-Za-z0-9_]+)/gm)) {
+        if (match[1]) into.values.add(match[1]);
+    }
+    for (const match of source.matchAll(/^export\s+namespace\s+([A-Za-z0-9_]+)/gm)) {
         if (match[1]) into.values.add(match[1]);
     }
     for (const match of source.matchAll(/export\s+class\s+([A-Za-z0-9_]+)/g)) {
@@ -223,10 +236,10 @@ function collect(filePath: string, seen: Set<string>, into: {
     for (const match of source.matchAll(/export\s+const\s+([A-Za-z0-9_]+)/g)) {
         if (match[1]) into.values.add(match[1]);
     }
-    for (const match of source.matchAll(/export\s+(?:type|interface)\s+([A-Za-z0-9_]+)/g)) {
+    for (const match of source.matchAll(/^export\s+(?:type|interface)\s+([A-Za-z0-9_]+)/gm)) {
         if (match[1]) into.types.add(match[1]);
     }
-    for (const match of source.matchAll(/export\s+(type\s+)?\{([^}]+)\}/g)) {
+    for (const match of source.matchAll(/export\s+(type\s+)?\{([^}]+)\}(?:\s+from\s+["']([^"']+)["'])?/g)) {
         const listIsType = Boolean(match[1]);
         for (const part of (match[2] ?? "").split(",")) {
             const trimmed = part.trim();
@@ -238,12 +251,41 @@ function collect(filePath: string, seen: Set<string>, into: {
             if (listIsType || local.startsWith("type ")) into.types.add(exported);
             else into.values.add(exported);
         }
+        const spec = match[3];
+        const exportedNames = (match[2] ?? "").split(",").map((part) => {
+            const alias = part.trim().split(/\s+as\s+/);
+            return (alias[1] ?? alias[0] ?? "").trim().replace(/^type\s+/, "");
+        });
+        if (spec && exportedNames.includes("JSX")) {
+            addJsxNamespace(
+                stripComments(readFileSync(resolveSpecifier(filePath, spec), "utf8")),
+                into.globalJsx
+            );
+        }
     }
 
-    const namespace = source.match(/namespace\s+JSX\s*\{([\s\S]*?)\n {4}\}/);
-    if (namespace?.[1]) {
-        for (const match of namespace[1].matchAll(/\b(?:type|interface)\s+([A-Za-z0-9_]+)/g)) {
-            if (match[1]) into.globalJsx.add(`JSX.${match[1]}`);
+    addJsxNamespace(source, into.globalJsx);
+}
+
+function addJsxNamespace(source: string, into: Set<string>) {
+    const re = /namespace\s+JSX\s*\{/g;
+    for (const match of source.matchAll(re)) {
+        const open = (match.index ?? 0) + match[0].length - 1;
+        let depth = 0;
+        let close = open;
+        for (let i = open; i < source.length; i++) {
+            if (source[i] === "{") depth += 1;
+            else if (source[i] === "}") {
+                depth -= 1;
+                if (depth === 0) {
+                    close = i;
+                    break;
+                }
+            }
+        }
+        const body = source.slice(open + 1, close);
+        for (const found of body.matchAll(/\b(?:type|interface)\s+([A-Za-z0-9_]+)/g)) {
+            if (found[1]) into.add(`JSX.${found[1]}`);
         }
     }
 }

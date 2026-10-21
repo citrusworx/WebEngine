@@ -172,7 +172,7 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 
 | Import | What it is |
 |--------|------------|
-| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList` (experimental), `captureCleanupScope` (internal), `mount`, `disposeTree`, `jsx` / `jsxs` / `Fragment`, `SigRouter`, types. `jsxDEV` is also re-exported; import it from the dev runtime. |
+| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList` (experimental), `mount`, `disposeTree`, `jsx` / `jsxs` / `Fragment`, the `JSX` namespace, `SigRouter`, types. `jsxDEV` is not on this entry. |
 | `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `Child`) |
 | `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`, `jsxs`, `Fragment`) |
 | `@citrusworx/sigjs/sig-router` | `SigRouter` only |

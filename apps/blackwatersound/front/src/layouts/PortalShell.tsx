@@ -1,3 +1,4 @@
+import type { Child } from "@citrusworx/sigjs";
 import { PageFooter } from "../components/brand/PageFooter";
 
 export type PortalTone = "bw-orange" | "bw-blue" | "bw-lime" | "bw-dark";
@@ -7,7 +8,7 @@ export function PortalShell(props: {
   kicker: string;
   title: string;
   body: string;
-  children?: unknown;
+  children?: Child;
 }) {
   return (
     <div portal-shell stack>

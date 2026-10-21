@@ -11,7 +11,8 @@
  * as types. Seeding and write-back call the runtime controllers.
  *
  * `bind` returns `{ state, dispose }`. `dispose` removes the host listeners.
- * A call during Sig render also disposes on unmount.
+ * A call during Sig render also disposes on unmount: `effect` registers that
+ * disposer on the internal cleanup scope (`captureCleanupScope`).
  */
 import type { AccordionState, BannerState, BreadcrumbState, CheckboxState, ComboboxState, DisclosureState, DrawerState, FieldState, InputState, MenuState, ModalState, NavigationState, PaginationState, PopoverState, ProgressState, RadioState, SelectState, SliderState, SpinnerState, SwitchState, TabsState, TextareaState, ToastState, TooltipState, WizardState } from "@citrusworx/juiceui";
 export type JuiceRuntimeName = "switch" | "checkbox" | "disclosure" | "accordion" | "modal" | "drawer" | "popover" | "menu" | "combobox" | "slider" | "progress" | "radio" | "tabs" | "pagination" | "breadcrumb" | "wizard" | "toast" | "banner" | "tooltip" | "spinner" | "nav" | "field" | "select" | "input" | "textarea";

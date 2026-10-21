@@ -1,10 +1,12 @@
+import type { Child } from "@citrusworx/sigjs";
+
 export function PaperPanel(props: {
   kicker?: string;
   title?: string;
   titleStyle?: string;
   body?: string;
   gap?: string;
-  children?: unknown;
+  children?: Child;
 }) {
   return (
     <article panel surface="bw-panel" stack gap={props.gap ?? "0.75rem"}>
