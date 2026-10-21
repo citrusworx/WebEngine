@@ -168,8 +168,8 @@ function hasManageOptions(body: Record<string, unknown>): boolean {
  *
  * The library owns HTTP. `health()` is unauthenticated. Settings calls and
  * `verifyCredentials()` send the same application-password basic auth the
- * content client uses. `verifyCredentials()` makes one authenticated request:
- * `GET /wp/v2/users/me?context=edit`.
+ * content client uses. `verifyCredentials()` reads public health first, then
+ * makes one authenticated request: `GET /wp/v2/users/me?context=edit`.
  */
 export class Bridge extends WPCore {
     constructor(config?: Partial<WPCoreConfig>) {
@@ -216,10 +216,18 @@ export class Bridge extends WPCore {
     }
 
     /**
-     * Confirm the application password belongs to a user who can manage options.
-     * This is the only authenticated call in the check: `GET /wp/v2/users/me?context=edit`.
+     * Confirm the plugin is active and the application password belongs to a
+     * user who can manage options.
+     *
+     * Public health runs first. A deactivated plugin 404s `kiwipress/v1` while
+     * `/wp/v2/users/me` would still succeed, so that 404 is `plugin_missing`
+     * and not a successful credential check. The only authenticated request
+     * is `GET /wp/v2/users/me?context=edit`. A 404 on that core route stays
+     * `request_failed`.
      */
     async verifyCredentials(): Promise<BridgeCredentialCheck> {
+        await this.health();
+
         const endpoint = `${this.config.url}/wp-json/wp/v2/users/me?context=edit`;
         const body = await this.request(endpoint, { method: "GET" }, true);
 

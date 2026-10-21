@@ -154,6 +154,8 @@ Any HTTP response from the frontend counts as reachable, including errors and re
 
 Restart the back after setting `KIWIPRESS_SECRET_KEY`. The Vite dev server proxies `/projects` to `KIWIPRESS_API_URL` along with `/provision` and `/__kiwipress`.
 
+A real WordPress run of probe, pair, status, lockdown, and unpair is `yarn test:e2e:bridge` (Docker, opt-in). See the [plugin README](../../plugins/kiwipress-bridge/README.md#end-to-end-test).
+
 ## Local stack preview (secondary)
 
 For a local Docker WordPress / Traefik / MinIO look — **not** the platform app and **not** a second compose fork — use the existing blueprint stack:
