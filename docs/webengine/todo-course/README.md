@@ -57,6 +57,8 @@ yarn workspace @citrusworx/todo dev
 
 Open `http://127.0.0.1:5173`. The API is `http://127.0.0.1:3001`. Vite proxies `/api` in dev, so the browser does not talk to port 3001 directly.
 
+The finished page is a centered Tide card: near-black page, Inter, one lagoon accent. The header is the name plus the count. Rows are dividers and a Juice `[checkbox]`, not a stack of mint panels. Lesson 07 names the tokens and the few rules `todo.css` adds because Tide cannot say them.
+
 ## Library map
 
 Versions are the workspace manifests on this checkout, not a promise about npm.
@@ -67,7 +69,7 @@ Versions are the workspace manifests on this checkout, not a promise about npm.
 | [WebEngine](../README.md) | `@citrusworx/webengine` 0.2.1 | `createNectarineRoutes` only. The `WebEngine` class lifecycle is still stubs |
 | [Seltzer](../../seltzer/README.md) | `@citrusworx/seltzer` 0.9.0 | HTTP server, routing, `ResponseData`. This checkout is 0.9.0 |
 | [Sig.js](../../sigjs/README.md) | `@citrusworx/sigjs` 0.7.0 | `jsx()`, `Signal`, `effect`, `bindList`, `mount` |
-| [Juice](../../juice/README.md) | `@citrusworx/juiceui` 0.9.2 | Attribute CSS and the `citrusmint` theme |
+| [Juice](../../juice/README.md) | `@citrusworx/juiceui` 0.9.2 | Attribute CSS and the `tide` theme |
 | [Grapevine](../../grapevine/README.md) | `@citrusworx/grapevine` 0.2.2 | `grape validate`, `grape plan`, `grape status` against a real DigitalOcean config |
 
 The closest product app is `apps/blackwatersound`: a Vite + Sig + Juice front, and a Seltzer + Nectarine + WebEngine API on Postgres via `pg`. The ToDo app is that wiring with one table.
@@ -88,6 +90,8 @@ More gaps found while building the app:
 
 - **There is no `node:sqlite` adapter** in `libraries/nectarine`. Adapters are `pg`, `mysql2` (MySQL), and `mongodb`. This course does not invent a SQLite path.
 - **Sig writes `width` and `style` as DOM properties** when those names are JSX props, so Juice's `[width="100%"]` selector never sees the attribute. Control width lives in `apps/todo/front/src/todo.css`.
+- **Tide paints every button as a lagoon gradient**, and that rule lands at the same specificity as `[btn]` after the theme file. `btn="outline"` is not quiet until `todo.css` clears the gradient. The primary action is a flat fill of `--tide-accent`.
+- **Author `display` beats `[hidden]`.** `:where([stack])` and `button { display: inline-flex }` keep a node on screen after Sig sets `hidden`. `todo.css` sets `[data-todo] [hidden] { display: none }`.
 - **Grapevine apply creates cloud resources. It does not build this repo or upload `dist/`.** `connection_env` is copied onto a droplet only when a `stack` section targets that droplet. This config has no `stack`. `grape status` is an inventory, not a drift diff.
 - **Seltzer's default validate stage checks that `.required` keys are present.** The words `string` and `boolean` in a body spec are not type checks.
 - **Seltzer `listen` binds `127.0.0.1` unless you pass `host`.** The API passes `"0.0.0.0"` so a droplet can accept traffic.

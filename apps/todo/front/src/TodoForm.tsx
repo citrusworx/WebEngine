@@ -9,27 +9,25 @@ export function TodoForm(props: { todos: Sig<Todo[]>; error: Sig<string> }) {
 
   const node = (
     <form
-      panel
       stack
       gap="1"
-      bgColor="white-100"
       ref={(el) => { form = el as HTMLFormElement; }}
       onSubmit={(event: Event) => {
         event.preventDefault();
         void submit();
       }}
     >
-      <label field stack gap="1">
+      <label field stack gap="0.5">
         <span field-label>Title</span>
-        <input name="title" type="text" required autocomplete="off" />
+        <input input name="title" type="text" required autocomplete="off" placeholder="What needs doing?" />
       </label>
-      <label field stack gap="1">
+      <label field stack gap="0.5">
         <span field-label>Notes</span>
-        <textarea name="notes" rows={3}></textarea>
+        <textarea textarea name="notes" rows={3} placeholder="Optional details"></textarea>
       </label>
-      <p ref={(el) => { message = el as HTMLParagraphElement; }} hidden></p>
-      <div row>
-        <button type="submit" btn="flat">Add todo</button>
+      <p data-error ref={(el) => { message = el as HTMLParagraphElement; }} hidden></p>
+      <div row space="end" data-inline>
+        <button data-primary type="submit" btn="flat">Add todo</button>
       </div>
     </form>
   );

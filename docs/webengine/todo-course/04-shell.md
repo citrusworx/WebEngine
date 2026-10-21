@@ -20,16 +20,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ToDos</title>
+    <title>ToDo</title>
   </head>
-  <body theme="citrusmint">
+  <body theme="tide">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 ```
 
-`theme="citrusmint"` is a Juice attribute on `body`. The stylesheet that paints it is imported from `main.tsx`, not linked here. Vite injects the CSS.
+`theme="tide"` is a Juice attribute on `body`. The stylesheet that paints it is imported from `main.tsx`, not linked here. Vite injects the CSS. Tide is the dark SaaS theme: Inter, a near-black page, one lagoon accent. Lesson 07 is where that choice is used.
 
 Seltzer is not serving this file. Vite is.
 
@@ -64,7 +64,7 @@ The browser calls `/api/todos` on port 5173. Vite forwards that to the Seltzer p
 
 ```ts
 import "@citrusworx/juiceui/styles";
-import "@citrusworx/juiceui/styles/themes/citrusmint";
+import "@citrusworx/juiceui/styles/themes/tide";
 import { mount } from "@citrusworx/sigjs";
 import { App } from "./App";
 import "./todo.css";
@@ -82,7 +82,7 @@ mount(<App />, root);
 
 `mount` clears `#root` and inserts the node `App` returns.
 
-The two Juice imports are the published CSS entrypoints: core attributes, then the citrusmint theme. `todo.css` is the small exception in lesson 07.
+The two Juice imports are the published CSS entrypoints: core attributes, then the tide theme. `todo.css` is the small exception in lesson 07.
 
 ### 4. Start the front end
 
@@ -96,7 +96,7 @@ Open `http://127.0.0.1:5173`. If that address refuses the connection and `http:/
 
 ## Checkpoint
 
-The browser shows the heading ToDos, a title field, and an Add button. The network panel shows `GET /api/todos` returning `[]` or your rows, via the dev server, not via a second origin.
+The browser shows the heading ToDo, a title field, and an Add button. The network panel shows `GET /api/todos` returning `[]` or your rows, via the dev server, not via a second origin.
 
 If the heading is missing, the root element was not found or `mount` threw. The console message is the one in `main.tsx`.
 

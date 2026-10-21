@@ -17,22 +17,23 @@ export function TodoRow(props: {
   let editor!: HTMLDivElement;
 
   const node = (
-    <li panel="compact" bgColor="white-100">
-      <div stack gap="1">
-        <div row gap="1" space="between">
-          <label row gap="1">
+    <li data-row>
+      <div stack gap="0.75">
+        <div row gap="1" space="between" data-inline>
+          <label row gap="0.75" data-inline>
             <input
+              checkbox
               type="checkbox"
               aria-label="Done"
               ref={(el) => { box = el as HTMLInputElement; }}
               checked={() => props.item.get().done}
               onChange={() => { void toggle(); }}
             />
-            <span ref={(el) => { titleText = el as HTMLSpanElement; }}>
+            <span data-title ref={(el) => { titleText = el as HTMLSpanElement; }}>
               {() => props.item.get().title}
             </span>
           </label>
-          <div row gap="1">
+          <div row gap="0.5" data-inline>
             <button type="button" btn="outline" hidden={() => editing.get()} onClick={() => editing.set(true)}>
               Edit
             </button>
@@ -41,23 +42,29 @@ export function TodoRow(props: {
             </button>
           </div>
         </div>
-        <p hidden={() => editing.get() || props.item.get().notes.length === 0}>
+        <p data-notes hidden={() => editing.get() || props.item.get().notes.length === 0}>
           {() => props.item.get().notes}
         </p>
-        <div stack gap="1" ref={(el) => { saved = el as HTMLDivElement; }}>
-          <small>{() => props.item.get().created_at ? `Saved ${props.item.get().created_at}` : ""}</small>
+        <div data-meta stack ref={(el) => { saved = el as HTMLDivElement; }}>
+          <small>{() => {
+            const created = props.item.get().created_at;
+            if (!created) return "";
+            const date = new Date(created);
+            if (Number.isNaN(date.getTime())) return `Saved ${created}`;
+            return `Saved ${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+          }}</small>
         </div>
         <div stack gap="1" hidden ref={(el) => { editor = el as HTMLDivElement; }}>
-          <label field stack gap="1">
+          <label field stack gap="0.5">
             <span field-label>Title</span>
-            <input type="text" ref={(el) => { titleInput = el as HTMLInputElement; }} />
+            <input input type="text" ref={(el) => { titleInput = el as HTMLInputElement; }} />
           </label>
-          <label field stack gap="1">
+          <label field stack gap="0.5">
             <span field-label>Notes</span>
-            <textarea rows={3} ref={(el) => { notesInput = el as HTMLTextAreaElement; }}></textarea>
+            <textarea textarea rows={3} ref={(el) => { notesInput = el as HTMLTextAreaElement; }}></textarea>
           </label>
-          <div row gap="1">
-            <button type="button" btn="flat" onClick={() => { void save(); }}>Save</button>
+          <div row gap="0.5" data-inline>
+            <button data-primary type="button" btn="flat" onClick={() => { void save(); }}>Save</button>
             <button type="button" btn="outline" onClick={() => editing.set(false)}>Cancel</button>
           </div>
         </div>
@@ -69,6 +76,7 @@ export function TodoRow(props: {
     const todo = props.item.get();
     const isEditing = editing.get();
     titleText.style.textDecoration = todo.done ? "line-through" : "";
+    titleText.style.color = todo.done ? "var(--tide-text-muted)" : "";
     saved.hidden = isEditing;
     editor.hidden = !isEditing;
     if (!isEditing) {

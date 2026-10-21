@@ -23,16 +23,18 @@ export function App() {
     });
 
   return (
-    <main container stack gap="2" padding="comfortable" data-todo>
-      <header stack gap="1">
-        <h1 fontSize="xl">ToDos</h1>
-        <p>{() => `${todos.get().length} on the list`}</p>
-      </header>
-      <p hidden={() => phase.get() !== "loading"}>Loading todos…</p>
-      <p hidden={() => error.get().length === 0}>{() => error.get()}</p>
-      <TodoForm todos={todos} error={error} />
-      <EmptyState todos={todos} phase={phase} />
-      <TodoList todos={todos} error={error} />
+    <main container narrow stack gap="2" padding="comfortable" data-todo>
+      <section tide-card stack gap="2" padding="comfortable">
+        <header stack gap="1">
+          <h1 fontSize="xl">ToDo</h1>
+          <p>{() => `${todos.get().length} on the list`}</p>
+        </header>
+        <p hidden={() => phase.get() !== "loading"}>Loading todos…</p>
+        <p data-error hidden={() => error.get().length === 0}>{() => error.get()}</p>
+        <TodoForm todos={todos} error={error} />
+        <EmptyState todos={todos} phase={phase} />
+        <TodoList todos={todos} error={error} />
+      </section>
     </main>
   );
 }

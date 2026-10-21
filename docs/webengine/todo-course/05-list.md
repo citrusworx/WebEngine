@@ -82,7 +82,6 @@ export function TodoList(props: { todos: Sig<Todo[]>; error: Sig<string> }) {
   return (
     <ul
       stack
-      gap="1"
       ref={(el) => {
         bindList(
           el as HTMLElement,
@@ -102,7 +101,7 @@ Arguments: parent, source, key function, render. The key is `todo.id`. Duplicate
 
 When `todos.set` replaces the array, `bindList` reuses the DOM node for an id that is still there, creates a node for a new id, and disposes a node whose id left. It does not call render again for an id that stayed.
 
-`stack` and `gap="1"` are Juice. `ul[stack]` also clears the browser's list markers. Lesson 07 says why `gap="1"` and not a word.
+`stack` is Juice. `ul[stack]` also clears the browser's list markers. This list has no `gap` attribute. Lesson 07 draws the row dividers, and it says why a `gap` value is a number when you do use one.
 
 ## Checkpoint
 

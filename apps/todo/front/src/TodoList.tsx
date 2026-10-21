@@ -6,7 +6,6 @@ export function TodoList(props: { todos: Sig<Todo[]>; error: Sig<string> }) {
   return (
     <ul
       stack
-      gap="1"
       ref={(el) => {
         bindList(
           el as HTMLElement,

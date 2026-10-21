@@ -6,7 +6,7 @@
 
 ## What you'll build
 
-The empty-state paragraph and the edit panel. Both nodes are created once. An effect, or a `hidden` getter, flips visibility.
+The empty-state block and the edit panel. Both nodes are created once. An effect, or a `hidden` getter, flips visibility.
 
 ## Steps
 
@@ -34,12 +34,12 @@ import type { Sig, Todo } from "./types";
  * that stays mounted. `hidden={() => ...}` is the same subscription.
  */
 export function EmptyState(props: { todos: Sig<Todo[]>; phase: Sig<"loading" | "ready"> }) {
-  let note!: HTMLParagraphElement;
+  let note!: HTMLDivElement;
 
   const node = (
-    <p ref={(el) => { note = el as HTMLParagraphElement; }} hidden>
-      Nothing on the list yet. Add a task above.
-    </p>
+    <div data-empty stack gap="1" padding="cozy" ref={(el) => { note = el as HTMLDivElement; }} hidden>
+      <p>Nothing on the list yet. Add a task above.</p>
+    </div>
   );
 
   effect(() => {
@@ -51,7 +51,7 @@ export function EmptyState(props: { todos: Sig<Todo[]>; phase: Sig<"loading" | "
 }
 ```
 
-Order matters. The ref runs while the JSX expression evaluates, so `note` is assigned before `effect` runs. The effect runs immediately, not on a later tick. `phase` starts as `"loading"`, so the paragraph stays hidden during the fetch and appears only when the fetch finished and the list is empty.
+Order matters. The ref runs while the JSX expression evaluates, so `note` is assigned before `effect` runs. The effect runs immediately, not on a later tick. `phase` starts as `"loading"`, so the block stays hidden during the fetch and appears only when the fetch finished and the list is empty. `data-empty`, `stack`, `gap="1"`, and `padding="cozy"` are the Juice shell from lesson 07. The effect does not know about them.
 
 Read every signal you care about on every run. If you put `todos.get()` inside an `if` that is sometimes false, the effect will not subscribe to `todos` on that run and a later `set` will not wake it. This effect reads `phase` and `todos` before the `&&` result is used... it reads `phase` first, then `todos` only when phase is `"ready"`. On the loading run it does **not** read `todos`. That is safe here because `phase.set("ready")` happens after `todos.set` in the same `finally`, and `phase` is always read, so the effect re-runs when loading finishes and then subscribes to `todos`. If you reordered those reads, the empty message could stick. The comment in your head should be: read the signal that gates the effect unconditionally.
 
@@ -70,6 +70,7 @@ The loading line in `App` is the getter form of the same idea:
     const todo = props.item.get();
     const isEditing = editing.get();
     titleText.style.textDecoration = todo.done ? "line-through" : "";
+    titleText.style.color = todo.done ? "var(--tide-text-muted)" : "";
     saved.hidden = isEditing;
     editor.hidden = !isEditing;
     if (!isEditing) {
@@ -93,7 +94,7 @@ The Edit button uses the getter form so it disappears while you edit:
 The notes paragraph hides itself while editing, and also when there is nothing to say:
 
 ```tsx
-        <p hidden={() => editing.get() || props.item.get().notes.length === 0}>
+        <p data-notes hidden={() => editing.get() || props.item.get().notes.length === 0}>
           {() => props.item.get().notes}
         </p>
 ```
@@ -108,7 +109,9 @@ The input values are copied when editing becomes true. They are not function pro
 
 ## What's happening
 
-`hidden` is a DOM boolean. The browser does not paint the subtree and removes it from the accessibility tree. The nodes, their listeners, and their effects stay. That is cheaper to reason about than rebuilding, and it is the pattern Sig's own docs use for disclosure.
+`hidden` is a DOM boolean. The nodes, their listeners, and their effects stay. That is cheaper to reason about than rebuilding, and it is the pattern Sig's own docs use for disclosure.
+
+The browser's own `[hidden]` rule is user-agent CSS. Juice's `:where([stack])` and `button { display: inline-flex }` are author CSS, so they win, and a node with `hidden === true` can still paint. `todo.css` puts `display: none` back on `[data-todo] [hidden]`. Lesson 07 quotes that rule. After it, the empty block, the editor, and the Edit button actually leave the screen.
 
 `bindList` still owns structural change: a row that should not exist is removed, not hidden. Hide is for modes of a row that exists. Remove is for an id that left the array.
 
