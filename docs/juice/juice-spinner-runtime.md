@@ -28,7 +28,7 @@ There is no `Spinner()` Sig factory. Markup plus the runtime is the contract.
 
 This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
-Spinner is a standalone indeterminate **busy indicator**. It is not a progress bar. Progress stays a valued `[progress]` / `[progress-fill]` bar (determinate or `progress="indeterminate"`). It is not a disclosure. CSS owns the spin. There is no value, no keyboard, no Escape, no focus trap, and no Sig Spinner factory.
+Spinner is a standalone indeterminate **busy indicator**. It is not a progress bar. Progress stays a valued `[progress]` / `[progress-fill]` bar (determinate or `progress="indeterminate"`). It is not a disclosure. A content-shaped placeholder is `[skeleton]`, which is CSS-only and is not this runtime — see [Skeleton](./juice-skeleton.md). CSS owns the spin. There is no value, no keyboard, no Escape, no focus trap, and no Sig Spinner factory.
 
 Spinner is the twenty-first Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
 

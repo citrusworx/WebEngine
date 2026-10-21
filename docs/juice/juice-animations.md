@@ -68,8 +68,9 @@ Off-scale keyframe durations stay exact by multiplying `--juice-motion-duration-
 |-------|---------|-----|
 | `--juice-spinner-spin-duration` | `calc(var(--juice-motion-duration-slow) * 0.8)` | Spinner ring loop |
 | `--juice-progress-indeterminate-duration` | `calc(var(--juice-motion-duration-slow) * 1.2)` | Indeterminate progress loop |
+| `--juice-skeleton-duration` | `calc(var(--juice-motion-duration-slow) * 1.6)` | Skeleton sheen (`juice-skeleton-shimmer`). `[static]` and reduced motion remove the sweep and keep the base. |
 
-`prefers-reduced-motion` stops the spinner spin and leaves the indicator. It stops the indeterminate progress animation. Those stops are separate from the `[motion]` rule below.
+`prefers-reduced-motion` stops the spinner spin and leaves the indicator. It stops the indeterminate progress animation. It removes the skeleton sheen and leaves the base color. Those stops are separate from the `[motion]` rule below. Skeleton is CSS-only — see [Skeleton](./juice-skeleton.md).
 
 The `overlay-close-transition` mixin paints the shared close control (modal, drawer, popover, banner, toast): background and color over `--juice-motion-duration-fast` with `--juice-motion-ease-standard`. Each of those components sets `transition: none` on its close control under reduced motion.
 
