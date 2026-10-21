@@ -2,7 +2,9 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { SeltzerLogger } from "./log.js";
 import type { ResponseData } from "./response.js";
 /**
- * Options stored by `.handler()` and copied onto inbound `ctx.options`.
+ * Options stored by `adapter(config)` and copied onto inbound `ctx.options`.
+ * `handler(config)` is a deprecated alias of that call. This is not the
+ * `app.handler()` request listener. The config call returns the app.
  * The outbound client does not read this object unless you pass it on an `Endpoint`.
  */
 export type HostOptions = {
@@ -104,6 +106,10 @@ export type Route<TContext = RequestContext> = {
     handler: (ctx: TContext) => ResponseData | Promise<ResponseData>;
     contract?: RouteContract;
 };
+/**
+ * Stored by `adapter(config)`. `options` is copied onto `ctx.options`.
+ * `adapter` is unused inbound. `handler(config)` is a deprecated alias.
+ */
 export type HandlerConfig = {
     adapter: string;
     options: HostOptions;
@@ -124,11 +130,11 @@ export type CorsOptions = {
     maxAge?: number;
     /**
      * When true, send `Access-Control-Allow-Credentials: true`.
-     * Throws at `listen` if combined with `origin: "*"`.
+     * Throws at `init` or `listen` if combined with `origin: "*"`.
      */
     credentials?: boolean;
 };
-/** Default request body limit. `listen({ bodyLimit: 0 })` means unlimited. */
+/** Default request body limit. `bodyLimit: 0` on `init` or `listen` means unlimited. */
 export declare const DEFAULT_BODY_LIMIT_BYTES = 1048576;
 /** Default `listen` bind. Public interfaces require an explicit `host`. */
 export declare const DEFAULT_LISTEN_HOST = "127.0.0.1";
@@ -150,18 +156,57 @@ export declare const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
 export declare const DEFAULT_CLIENT_TIMEOUT_MS = 30000;
 /** Milliseconds an idle keep-alive socket may wait for the next request. */
 export declare const DEFAULT_KEEP_ALIVE_TIMEOUT_MS = 5000;
-export type ListenOptions<TLocals = unknown> = {
-    /**
-     * Bind address. Default {@link DEFAULT_LISTEN_HOST} (`127.0.0.1`).
-     * Pass `"0.0.0.0"` or `"::"` to accept connections from other machines.
-     */
-    host?: string;
+/**
+ * Request options for `Seltzer.init`.
+ * `listen` still accepts each field. A field passed to `listen` replaces the
+ * init value for that server. `cors` is replaced as a whole object.
+ * Bind address, port, and server timeouts are not here: they belong to `listen`
+ * or to the host-owned server.
+ */
+export type InitOptions<TLocals = unknown> = {
+    /** Copied onto `ctx.locals`. `listen({ locals })` replaces this for that server. */
     locals?: TLocals;
     cors?: CorsOptions;
     /**
      * Maximum request body size in bytes for methods other than GET and HEAD.
      * Default {@link DEFAULT_BODY_LIMIT_BYTES} (1 MB). `0` means unlimited.
      * A larger body is 413 and is not read to completion.
+     * Checked when `init` is called if you pass it, and again for the listener.
+     */
+    bodyLimit?: number;
+    /**
+     * Receives one formatted line for handler/hook failures.
+     * Default is `console.error`. The HTTP body never includes the stack.
+     */
+    logger?: SeltzerLogger;
+    /**
+     * When true, logged thrown errors include the stack trace.
+     * Off by default. Does not change the HTTP body.
+     */
+    debug?: boolean;
+};
+export type ListenOptions<TLocals = unknown> = {
+    /**
+     * Bind address. Default {@link DEFAULT_LISTEN_HOST} (`127.0.0.1`).
+     * Pass `"0.0.0.0"` or `"::"` to accept connections from other machines.
+     * Not an `init` option. A host-owned server chooses its own address.
+     */
+    host?: string;
+    /**
+     * Replaces `init({ locals })` for this server when passed.
+     * Omit to keep the init value (`{}` when init omitted it).
+     */
+    locals?: TLocals;
+    /**
+     * Replaces `init({ cors })` for this server when passed.
+     * The object is not merged field by field. Omit to keep the init value.
+     */
+    cors?: CorsOptions;
+    /**
+     * Maximum request body size in bytes for methods other than GET and HEAD.
+     * Default {@link DEFAULT_BODY_LIMIT_BYTES} (1 MB) unless `init({ bodyLimit })`
+     * set another value. Passed here, this replaces the init value for this server.
+     * `0` means unlimited. A larger body is 413 and is not read to completion.
      */
     bodyLimit?: number;
     /**
@@ -188,12 +233,15 @@ export type ListenOptions<TLocals = unknown> = {
     onListening?: (port: number) => void;
     /**
      * Receives one formatted line for handler/hook failures.
-     * Default is `console.error`. The HTTP body never includes the stack.
+     * Default is `console.error`, or the `init({ logger })` function when that
+     * was set and this field is omitted. Passed here, this replaces it for this server.
+     * The HTTP body never includes the stack.
      */
     logger?: SeltzerLogger;
     /**
      * When true, logged thrown errors include the stack trace.
      * Off by default. Does not change the HTTP body.
+     * Passed here, including `false`, this replaces `init({ debug })` for this server.
      */
     debug?: boolean;
 };

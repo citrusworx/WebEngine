@@ -526,6 +526,27 @@ Spinner is a standalone indeterminate busy indicator. It is not a progress bar (
 
 See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spinner-*` roles (`track`, `indicator`, `ink`, `focus-ring`). `track` is the inactive ring. `indicator` is the leading arc.
 
+### Skeleton
+
+CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-six Emerging auto-enhance runtimes.
+
+- `skeleton` — host. Boolean `[skeleton]` is a rectangle, the same shape as `skeleton="rect"`. `skeleton="text"` is a line. `skeleton="circle"` is a circle. There is no HTML global `skeleton` attribute, and there is no `<skeleton>` element. Do not restyle a bare `[aria-busy]` or `[role="status"]`
+- `lines` — on `[skeleton="text"]`, a count from `"1"` through `"8"`. Anything else keeps one bar. There is no `skeleton-line`
+- `scale` — `"sm"` or `"lg"` steps rect height, circle size, or text line height and gap. Unmarked scale is the default role
+- `static` — shimmer off. The base color stays. `prefers-reduced-motion: reduce` does the same without this attribute
+
+Element children of `[skeleton="text"]` without `[lines]` are the lines. One child, one line. A `width` on the last child shortens it. With `[lines]`, those children are clipped copy and the mask paints the count.
+
+Copy inside stays in the accessibility tree and does not paint. Authors own `aria-busy` on the loading region and the accessible name. Chrome does not set them.
+
+```html
+<div skeleton="rect" scale="sm"></div>
+<div skeleton="text" lines="3"></div>
+<span skeleton="circle" scale="lg"></span>
+```
+
+See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`, `highlight`, `radius`, `line-height` / `-sm` / `-lg`, `line-gap` / `-sm` / `-lg`, `circle-size` / `-sm` / `-lg`, `rect-height` / `-sm` / `-lg`, `duration`). Shipped themes are not required to bind them. The highlight is a translucent white sheen. Tune `--juice-skeleton-highlight` on a pale surface.
+
 ### Select
 
 - `select` — host, on the native element: `<select select>`. A boolean `[select]` attribute is fine: there is no HTML global `select` attribute. Any value, including `select="list"`, is still a select. The open list stays the platform popup. Do not restyle a bare `select`. Do not style `[combobox]`

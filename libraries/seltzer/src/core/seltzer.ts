@@ -1,5 +1,5 @@
 import http from "node:http";
-import type { IncomingMessage, ServerResponse } from "node:http";
+import type { IncomingMessage, RequestListener, ServerResponse } from "node:http";
 import { installRemovedResponseMethods } from "./raw-response.js";
 import {
     isExplicitResponse,
@@ -17,6 +17,7 @@ import {
     DEFAULT_REQUEST_TIMEOUT_MS,
     type CorsOptions,
     type HandlerConfig,
+    type InitOptions,
     type ListenOptions,
     type RequestContext,
     type Route,
@@ -35,6 +36,7 @@ export type {
     CorsOptions,
     Endpoint,
     HostOptions,
+    InitOptions,
     ListenOptions,
     QueryInput,
     QueryPrimitive,
@@ -132,29 +134,29 @@ function formatListenUrl(host: string, port: number): string {
 const DEFAULT_CORS_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
 const DEFAULT_CORS_HEADERS = ["Content-Type"];
 
-function assertCors(cors: CorsOptions | undefined): void {
+type OptionSite = "Seltzer.init" | "Seltzer.listen";
+
+function assertCors(cors: CorsOptions | undefined, site: OptionSite): void {
     if (!cors) {
         return;
     }
 
     if (cors.credentials === true && cors.origin === "*") {
         throw new Error(
-            'Seltzer.listen cors credentials: true cannot be combined with origin "*". Name a specific origin, or omit origin to reflect the request Origin.',
+            `${site} cors credentials: true cannot be combined with origin "*". Name a specific origin, or omit origin to reflect the request Origin.`,
         );
     }
 
     if (cors.maxAge !== undefined && (!Number.isInteger(cors.maxAge) || cors.maxAge < 0)) {
-        throw new Error(
-            "Seltzer.listen cors maxAge must be a non-negative integer of seconds.",
-        );
+        throw new Error(`${site} cors maxAge must be a non-negative integer of seconds.`);
     }
 }
 
-function resolveBodyLimit(bodyLimit: number | undefined): number {
+function resolveBodyLimit(bodyLimit: number | undefined, site: OptionSite): number {
     const limit = bodyLimit ?? DEFAULT_BODY_LIMIT_BYTES;
     if (!Number.isInteger(limit) || limit < 0) {
         throw new Error(
-            "Seltzer.listen bodyLimit must be a non-negative integer of bytes. 0 means unlimited.",
+            `${site} bodyLimit must be a non-negative integer of bytes. 0 means unlimited.`,
         );
     }
 
@@ -162,7 +164,48 @@ function resolveBodyLimit(bodyLimit: number | undefined): number {
 }
 
 /**
- * CORS headers are applied only when `cors` was passed to `listen`.
+ * Listen wins per field when the field is passed. Omitted listen fields keep
+ * the init value. `cors` is replaced as a whole object, not merged.
+ */
+function foundationFromListen(init: InitOptions, options: ListenOptions): InitOptions {
+    return {
+        bodyLimit: options.bodyLimit !== undefined ? options.bodyLimit : init.bodyLimit,
+        cors: options.cors !== undefined ? options.cors : init.cors,
+        logger: options.logger !== undefined ? options.logger : init.logger,
+        debug: options.debug !== undefined ? options.debug : init.debug,
+        locals: options.locals !== undefined ? options.locals : init.locals,
+    };
+}
+
+const HANDLER_CONFIG_DEPRECATION =
+    "app.handler(config) is deprecated. Use app.adapter(config). This alias will be removed in the next minor after 0.10.0.";
+
+/** Once per process. Further `handler(config)` calls stay silent. */
+let handlerConfigDeprecationEmitted = false;
+
+/**
+ * `handler(config)` is a deprecated alias of `adapter(config)`.
+ * The warning is `process.emitWarning` with code `SELTZER_DEP_HANDLER_CONFIG`
+ * and type `DeprecationWarning`. It is not sent to the `init` / `listen` logger.
+ * Node prints it to stderr unless a `warning` listener is attached, or
+ * deprecation warnings are disabled (`--no-deprecation`).
+ */
+function warnHandlerConfigDeprecated(): void {
+    if (handlerConfigDeprecationEmitted) {
+        return;
+    }
+    handlerConfigDeprecationEmitted = true;
+    if (typeof process === "undefined" || typeof process.emitWarning !== "function") {
+        return;
+    }
+    process.emitWarning(HANDLER_CONFIG_DEPRECATION, {
+        type: "DeprecationWarning",
+        code: "SELTZER_DEP_HANDLER_CONFIG",
+    });
+}
+
+/**
+ * CORS headers are applied only when `cors` was passed to `init` or `listen`.
  * `Vary: Origin` is set when the allow-origin value is a specific origin
  * (configured or reflected). It is omitted for `origin: "*"`.
  */
@@ -203,14 +246,39 @@ function applyCors(req: IncomingMessage, res: ServerResponse, cors: CorsOptions)
 export class Seltzer {
     private routes: ReturnType<typeof compileRoute>[] = [];
     private config: HandlerConfig | null = null;
+    private foundation: InitOptions = {};
+    /**
+     * Set only for the synchronous `handler()` call inside `listen`, so that
+     * server snapshots listen overrides without changing later `app.handler()` calls.
+     */
+    private listenerOverride: { foundation: InitOptions; site: OptionSite } | null = null;
     private readonly pipeline: Pipeline;
 
     constructor() {
         this.pipeline = createDefaultPipeline(() => this.routes);
     }
 
-    static init() {
-        return new Seltzer();
+    /**
+     * Create an app. Pass `bodyLimit`, `cors`, `logger`, `debug`, and `locals`
+     * here when every server for this app should share them.
+     * `credentials: true` with `origin: "*"` throws here, before `listen`.
+     * A non-integer or negative `bodyLimit` throws here when you pass it.
+     */
+    static init<TLocals = unknown>(options: InitOptions<TLocals> = {}) {
+        assertCors(options.cors, "Seltzer.init");
+        if (options.bodyLimit !== undefined) {
+            resolveBodyLimit(options.bodyLimit, "Seltzer.init");
+        }
+
+        const app = new Seltzer();
+        app.foundation = {
+            bodyLimit: options.bodyLimit,
+            cors: options.cors,
+            logger: options.logger,
+            debug: options.debug,
+            locals: options.locals,
+        };
+        return app;
     }
 
     /** Register a single object-based route. Do not model APIs as promise chains. */
@@ -238,18 +306,68 @@ export class Seltzer {
         return this;
     }
 
-    handler(config: HandlerConfig) {
+    /**
+     * Store `{ adapter, options }` and return this app.
+     * `options` is copied onto inbound `ctx.options`. `adapter` is unused inbound.
+     * Last call wins. This is not a request listener.
+     * `handler(config)` is a deprecated alias of this method.
+     */
+    adapter(config: HandlerConfig): this {
         this.config = config;
         return this;
     }
 
     /**
+     * Node request listener, `(req, res) => void`.
+     * Mount it on a server the host owns:
+     * `http.createServer(app.handler())` or
+     * `https.createServer(tlsOptions, app.handler())`.
+     * That listener runs the same pipeline as `listen`. It uses `bodyLimit`,
+     * `cors`, `logger`, `debug`, and `locals` from `init`. It does not bind
+     * a port and it does not set server timeouts. The host owns those.
+     * A `listen` override applies only to the server `listen` creates.
+     * Calling `handler()` again still returns a listener from `init`.
+     *
+     * Storing `{ adapter, options }` is `adapter(config)`, not this call.
+     */
+    handler(): RequestListener;
+    /**
+     * @deprecated Use `adapter(config)`. `handler(config)` forwards to `adapter`
+     * and will be removed in the next minor after 0.10.0. The first call emits
+     * one process warning, code `SELTZER_DEP_HANDLER_CONFIG`.
+     */
+    handler(config: HandlerConfig): this;
+    handler(config?: HandlerConfig): this | RequestListener {
+        if (config !== undefined) {
+            warnHandlerConfigDeprecated();
+            return this.adapter(config);
+        }
+
+        if (typeof process === "undefined" || !process.versions?.node) {
+            throw new Error("Seltzer.handler requires a Node.js runtime.");
+        }
+
+        const override = this.listenerOverride;
+        return this.requestListener(
+            override?.foundation ?? this.foundation,
+            override?.site ?? "Seltzer.init",
+        );
+    }
+
+    /**
      * Bind a Node `http.Server`.
      *
-     * Default host is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to
-     * accept connections from other machines. Header, request, and
-     * keep-alive timeouts are on by default; pass `0` on an option to
-     * disable that timer.
+     * This is `http.createServer` of the same listener `handler()` returns,
+     * plus the loopback default and the timeout defaults. Default host is
+     * `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections
+     * from other machines. Header, request, and keep-alive timeouts are on
+     * by default; pass `0` on an option to disable that timer. Those timers
+     * belong to this server. `handler()` does not set them.
+     *
+     * `bodyLimit`, `cors`, `logger`, `debug`, and `locals` passed here replace
+     * the `init` values for this server only. An omitted field keeps the init
+     * value. `cors` is replaced as a whole object, not merged field by field.
+     * `app.handler()` keeps using `init`.
      *
      * The return value is the real `http.Server`. `server.close()` stops
      * accepting new connections. The close callback waits for open
@@ -257,9 +375,10 @@ export class Seltzer {
      * `keepAliveTimeout` unless the host also calls
      * `server.closeIdleConnections()`.
      *
-     * CORS headers are off unless `cors` is set. When it is set, `OPTIONS`
-     * is a 204 preflight before the pipeline. `bodyLimit` defaults to
-     * 1 MB (`0` is unlimited). A larger body is 413 and is not read further.
+     * CORS headers are off unless `cors` is set on `init` or here. When it
+     * is set, `OPTIONS` is a 204 preflight before the pipeline. `bodyLimit`
+     * defaults to 1 MB (`0` is unlimited). A larger body is 413 and is not
+     * read further.
      *
      * `logger` receives one line for a bad handler/hook return or a thrown
      * error. The default is `console.error`. `debug: true` adds stack traces
@@ -272,13 +391,21 @@ export class Seltzer {
 
         const host = resolveListenHost(options.host);
         const timeouts = resolveListenTimeouts(options);
-        assertCors(options.cors);
-        const bodyLimit = resolveBodyLimit(options.bodyLimit);
-        const locals = (options.locals ?? {}) as TLocals;
+        const foundation = foundationFromListen(this.foundation, options);
+        assertCors(foundation.cors, "Seltzer.listen");
 
-        const server = http.createServer((req, res) => {
-            void this.handleRequest(req, res, locals, options, bodyLimit);
-        });
+        // Snapshot listen overrides into this one listener. `handler()` reads
+        // the override synchronously, then the override is cleared so a later
+        // `app.handler()` still sees `init`.
+        this.listenerOverride = { foundation, site: "Seltzer.listen" };
+        let listener: RequestListener;
+        try {
+            listener = this.handler();
+        } finally {
+            this.listenerOverride = null;
+        }
+
+        const server = http.createServer(listener);
 
         server.headersTimeout = timeouts.headersTimeout;
         server.requestTimeout = timeouts.requestTimeout;
@@ -299,11 +426,19 @@ export class Seltzer {
         return server;
     }
 
+    private requestListener(foundation: InitOptions, site: OptionSite): RequestListener {
+        const bodyLimit = resolveBodyLimit(foundation.bodyLimit, site);
+        const locals = foundation.locals ?? {};
+        return (req, res) => {
+            void this.handleRequest(req, res, locals, foundation, bodyLimit);
+        };
+    }
+
     private async handleRequest<TLocals>(
         req: IncomingMessage,
         res: ServerResponse,
         locals: TLocals,
-        options: ListenOptions<TLocals>,
+        options: Pick<InitOptions, "cors" | "logger" | "debug">,
         bodyLimit: number,
     ) {
         if (options.cors) {

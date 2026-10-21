@@ -56,7 +56,7 @@ There is no `ctx.json` and no `ctx.send`. Both were removed. Calling either thro
 | `valid` | `{ body?, params?, query? }` from a replacement `validate` stage. The default stage does not set it |
 | `headers` | Lowercased string map |
 | `locals` | From `listen({ locals })` |
-| `options` | From `.handler(config)` if set |
+| `options` | From `.adapter(config)` if set. `handler(config)` is a deprecated alias |
 
 Pipeline-only fields on `PipelineContext`:
 
@@ -175,10 +175,12 @@ Multipart bodies and other binary uploads are out of scope. The parse stage stil
 
 You can still `try/catch` in the handler to send a domain-specific 400 instead of a 500.
 
-## `.handler()` options on `ctx`
+## `.adapter(config)` options on `ctx`
+
+`app.adapter(config)` stores the stash and returns the app. `app.handler()` is the request listener in [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server). `handler(config)` is a deprecated alias of `adapter(config)`. It still stores the same object, warns once per process (`SELTZER_DEP_HANDLER_CONFIG`), and will be removed in the next minor after 0.10.0.
 
 ```ts
-app.handler({
+app.adapter({
   adapter: "node-http",
   options: {
     baseUrl: "http://127.0.0.1:3000",

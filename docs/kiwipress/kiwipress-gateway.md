@@ -91,7 +91,7 @@ This token is not `WPAuth`. It does not become a WordPress application password.
 
 Gateway handlers return Seltzer `ResponseData` (`{ status, body }`), read `ctx.body` / `ctx.query.id` / `ctx.params`, and use the same `authorizeKiwiPressGateway` guard as before. Content PATCH/DELETE still use `?id=` so the dashboard does not have to change.
 
-Seltzer `.handler({ adapter: "node:http", options })` on `WPClient` only stashes outbound options. It does not make `listen` speak WordPress. Adapter string in source is `"node:http"`; Seltzer does not interpret it.
+Seltzer `.adapter({ adapter: "node:http", options })` on `WPClient` only stashes outbound options. It does not make `listen` speak WordPress. Adapter string in source is `"node:http"`; Seltzer does not interpret it.
 
 ## What the backend app adds
 

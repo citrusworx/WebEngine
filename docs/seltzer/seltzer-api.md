@@ -12,17 +12,20 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 - `generateRoutes`, `UnboundOperationsError`
 - `response`, `send`, `isResponseData`, `isExplicitResponse`, `validationError`
 - types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ClientCallOptions`, `HostOptions`, `QueryInput`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`, `OperationHandler`, `UnboundOperationPolicy`, `ClientConfig`, `SeltzerClient`
-- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`, `DEFAULT_CLIENT_TIMEOUT_MS` (`30000`, same number as the request timeout)
+- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`, `DEFAULT_BODY_LIMIT_BYTES`, `DEFAULT_CLIENT_TIMEOUT_MS` (`30000`, same number as the request timeout)
+- `InitOptions`
 
-There are no subpath exports. `HandlerConfig` is used by `.handler()` but is not re-exported from the package root.
+There are no subpath exports. `HandlerConfig` is used by `.adapter(config)` but is not re-exported from the package root. `handler(config)` is a deprecated alias of that call.
 
 ## `Seltzer.init`
 
 ```ts
-static init(): Seltzer
+static init<TLocals = unknown>(options?: InitOptions<TLocals>): Seltzer
 ```
 
 Returns `new Seltzer()`. Empty route list, default pipeline, `config === null`.
+
+`options` may set `bodyLimit`, `cors`, `logger`, `debug`, and `locals`. Those apply to `listen` and to no-arg `handler()`. `credentials: true` with `origin: "*"` throws here, before any server exists. A non-integer or negative `bodyLimit` throws here when you pass it. `host` and the three server timeouts are not `init` options.
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
@@ -58,13 +61,43 @@ replace(name: StageName, stage: Stage): this
 ## `handler`
 
 ```ts
+handler(): (req: IncomingMessage, res: ServerResponse) => void
+```
+
+Returns a Node request listener. Mount it on a server the host owns:
+
+```ts
+http.createServer(app.handler())
+https.createServer(tlsOptions, app.handler())
+```
+
+That listener runs the same pipeline as `listen`: `parse` → `context` → `route` → `validate` → `handle` → `response` → `send`. It applies `bodyLimit`, CORS / `OPTIONS` 204, `logger`, `debug`, `locals`, and the strict `ResponseData` checks. It reads those from `init`. A field passed to `listen` does not change this listener. It does not bind a port and it does not set `headersTimeout`, `requestTimeout`, or `keepAliveTimeout`. Copy `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` onto the host server when you want Seltzer's timers. See [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server).
+
+`handleRequest` stays private. Pass the listener in. There is no method that accepts an already-built server.
+
+`handler()` does not take a config object. Storing options is `adapter(config)`.
+
+### Deprecated: `handler(config)`
+
+```ts
 handler(config: {
   adapter: string;
   options: { baseUrl?: string; headers?: Record<string, string> };
 }): this
 ```
 
-Stores `config`. `listen` copies `config.options` onto `ctx.options`. `adapter` is unused inbound. Last `.handler()` wins.
+This overload is deprecated. It forwards to `adapter(config)`, stores the same object, and returns the app. The first call in a process emits one `process.emitWarning` (`DeprecationWarning`, code `SELTZER_DEP_HANDLER_CONFIG`). The `init` / `listen` `logger` does not receive it. It will be removed in the next minor after 0.10.0. Editors flag the overload because the signature is marked `@deprecated`. `handler()` with no arguments does not warn.
+
+## `adapter`
+
+```ts
+adapter(config: {
+  adapter: string;
+  options: { baseUrl?: string; headers?: Record<string, string> };
+}): this
+```
+
+Stores `config` and returns this app. `listen` and `handler()` copy `config.options` onto `ctx.options`. The `adapter` string is unused inbound. Last `adapter()` wins. This is not a request listener. KiwiPress uses it to stash a base URL. It does not mount HTTP. On the published 0.9.0 tarball this stash is still named `handler(config)`. `adapter()` arrives with unreleased 0.10.0.
 
 ## `listen`
 
@@ -74,7 +107,11 @@ listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.
 
 Throws `Seltzer.listen requires a Node.js runtime.` when `process.versions.node` is missing.
 
-Creates `http.createServer`, applies CORS only when `cors` is set, answers a configured `OPTIONS` preflight with 204, runs the pipeline, and returns that `http.Server`.
+Creates `http.createServer` with the same listener `handler()` returns, applies the loopback default and the timeout defaults, and returns that `http.Server`.
+
+`bodyLimit`, `cors`, `logger`, `debug`, and `locals` passed here replace the `init` values for this server only. An omitted field keeps the `init` value. `cors` is replaced as a whole object, not merged field by field. `app.handler()` keeps the `init` values.
+
+CORS runs only when the effective `cors` is set. A configured `OPTIONS` preflight is 204 before the pipeline.
 
 **Shipped in 0.9.0:** the default bind is `127.0.0.1`, not Node's all-interfaces default. Pass `host: "0.0.0.0"` or `host: "::"` to accept connections from other machines. An empty `host` throws.
 
@@ -130,11 +167,11 @@ type CorsOptions = {
 };
 ```
 
-CORS is **off** unless `listen` is passed `cors`. No `cors` means no `Access-Control-*` headers, and `OPTIONS` is an ordinary method (a route, 405, or 404).
+CORS is **off** unless `init` or `listen` is passed `cors`. No effective `cors` means no `Access-Control-*` headers, and `OPTIONS` is an ordinary method (a route, 405, or 404).
 
 When `cors` is set, `OPTIONS` is **204** with an empty body before the pipeline, including unknown paths. Other methods still run the pipeline, with CORS headers added when the request has `Origin`.
 
-If `cors.origin` is a specific origin, it must equal that `Origin`. `"*"` sends `Access-Control-Allow-Origin: *`. Omit `origin` to reflect the request `Origin`. Default methods: `GET,POST,PUT,PATCH,DELETE,OPTIONS`. Default headers: `Content-Type`. `maxAge` sets `Access-Control-Max-Age` (seconds); omit it to leave the header off. `credentials: true` sends `Access-Control-Allow-Credentials: true` and **throws at `listen`** when combined with `origin: "*"`.
+If `cors.origin` is a specific origin, it must equal that `Origin`. `"*"` sends `Access-Control-Allow-Origin: *`. Omit `origin` to reflect the request `Origin`. Default methods: `GET,POST,PUT,PATCH,DELETE,OPTIONS`. Default headers: `Content-Type`. `maxAge` sets `Access-Control-Max-Age` (seconds); omit it to leave the header off. `credentials: true` sends `Access-Control-Allow-Credentials: true` and **throws at `init` or `listen`** when that call combines it with `origin: "*"`.
 
 `Vary: Origin` is set when the allow-origin value is a specific origin (configured or reflected). It is omitted when the value is `*`. A request with no `Origin`, or an origin that does not match a configured one, gets no CORS headers. The application request is not rejected with 403.
 
@@ -277,7 +314,7 @@ type Endpoint = {
 | `replace("send")` | Throws. Builtin `send` is the only writer |
 | `app.pipeline` | Use `before` / `replace` on `Seltzer` |
 | `src/core/server/server.ts` | Removed. It was an unused hello-world `createServer` |
-| HTTPS `listen` | Non-goal. `http.createServer` only. No attach to a host `https.Server` |
+| HTTPS `listen` | Non-goal. `listen` is `http.createServer` only. Mount TLS with `https.createServer(tlsOptions, app.handler())` |
 | Form / multipart parser | Non-goal. Non-JSON bodies are a UTF-8 string. Recipe: [Form urlencoded](./seltzer-request-response.md#form-urlencoded) |
 | `after(name, stage)` | Missing — only `before` |
 

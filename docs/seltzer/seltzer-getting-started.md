@@ -15,8 +15,9 @@ It gives you:
 - `Seltzer.init()` — construct an instance
 - `.route({ method, path, handler, contract? })` — object route, static or `:param`
 - `.before(name, stage)` / `.replace(name, stage)` — named pipeline
-- `.handler(config)` — stash options copied onto `ctx.options`
-- `.listen(port, options?)` — `http.createServer` on `127.0.0.1` (pass `host` for any other interface), CORS/`OPTIONS` only when `cors` is set, pipeline, default timeouts, 1 MB body limit, returns `http.Server`
+- `.adapter(config)` — stash options copied onto `ctx.options`. This is not a request listener. Unreleased 0.10.0 name (0.9.0 called this `handler(config)`)
+- `.handler()` — Node `(req, res) => void` listener for a host-owned `http.Server` or `https.Server`. Same pipeline as `listen`. Unreleased 0.10.0 (not in the published 0.9.0 tarball). `handler(config)` is a deprecated alias of `adapter(config)`, removed in the next minor after 0.10.0
+- `.listen(port, options?)` — `http.createServer(app.handler())` on `127.0.0.1` (pass `host` for any other interface), plus timeout defaults. CORS/`OPTIONS` only when `cors` is set on `init` or `listen`. A field passed to `listen` replaces the `init` value for that server. Returns `http.Server`
 - `ResponseData` — `{ status?, headers?, body? }`; the runtime `send`s
 - `generateRoutes(operations, { execute })` — `ApiOperation[]` → `Route[]`
 - `client.get/post/put/patch/delete` — `fetch` + `HttpError` on non-2xx
@@ -61,6 +62,8 @@ app.listen(3000, { host: "0.0.0.0" });
 ```
 
 Timeouts are on: 20s for headers, 30s for the whole request, 5s for idle keep-alive. Override with `headersTimeout`, `requestTimeout`, and `keepAliveTimeout` (`0` disables that timer). `server.close()` stops accepting new connections.
+
+To mount Seltzer on a server you created, including TLS, use `app.handler()` and set those three timeout constants yourself. `listen` does not speak HTTPS. The recipe is [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server). `app.adapter({ adapter, options })` only stores `ctx.options`. `app.handler(config)` is a deprecated alias of that stash.
 
 In this workspace:
 

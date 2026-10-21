@@ -129,7 +129,7 @@ By starting here, Seltzer gets full control over body parsing, URL parsing, head
 
 If it started from Express, much of that lifecycle would already be shaped by middleware assumptions and plugin patterns that Seltzer is intentionally trying to avoid.
 
-There is no HTTPS `listen`. Terminate TLS at a proxy. `listen` only calls `http.createServer`, and there is no public attach for a host `https.Server`. That is a [non-goal](../../libraries/seltzer/README.md#no-built-in-https-listen).
+There is no HTTPS `listen`. `listen` only calls `http.createServer`. Terminate TLS at a proxy, or pass no-arg `app.handler()` to `https.createServer`. That built-in HTTPS listen gap is a [non-goal](../../libraries/seltzer/README.md#no-built-in-https-listen). The host-owned server owns its timeouts.
 
 ---
 

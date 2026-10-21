@@ -21,7 +21,7 @@ Baseline: Seltzer **0.9.0** (workspace manifest and the npm tarball published 20
 
 `Seltzer.listen` in `core/seltzer.ts` is the only listener. The hello-world `src/core/server/server.ts` was removed. The course raw server is a teaching example, not a second runtime entrypoint.
 
-`.handler(config)` currently stores configuration and exposes options on the context. Its adapter name does not automatically choose a database or execute a route. The course does not invent additional semantics for it.
+`.adapter(config)` stores configuration and exposes options on the context. Its adapter name does not automatically choose a database or execute a route. The course does not invent additional semantics for it. `handler(config)` is a deprecated alias of that stash, removed in the next minor after 0.10.0. `app.handler()` is a different call: a Node request listener for a host-owned server. The course lessons still use `listen`.
 
 ## Capability boundaries
 
@@ -33,7 +33,7 @@ Baseline: Seltzer **0.9.0** (workspace manifest and the npm tarball published 20
 | Named `before` / `replace` stages | Universal response finalization, `after` / removal APIs |
 | Structured responses and buffered bytes | Explicit streaming and backpressure (**Not yet**, not a non-goal). No WebSocket API |
 | CORS headers and OPTIONS shortcut | Authentication and CSRF policy |
-| Node HTTP listener on `127.0.0.1` with timeouts, returned to the host | Native TLS is a non-goal (terminate at a proxy; no host `https.Server` attach). Integrated drain deadline is still open |
+| Node HTTP listener on `127.0.0.1` with timeouts, returned to the host. No-arg `app.handler()` mounts the same pipeline on a host server | Native TLS inside `listen` is a non-goal (terminate at a proxy, or `https.createServer(tlsOptions, app.handler())`). Integrated drain deadline is still open |
 | Fetch client: slash-safe join, 30s deadline, abort, `HttpError` | Client retries are a non-goal. Server-side idempotency storage is planned |
 | Operation-list route generation | Actual data execution and persistence |
 

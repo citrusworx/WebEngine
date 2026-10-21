@@ -61,7 +61,7 @@ Slash-safe join, a 30s deadline, and distinct timeout / abort / network errors s
 
 ### 3. Listen is HTTP on purpose
 
-`listen(port, { host })` defaults to `127.0.0.1`. Header, request, and keep-alive timeouts are on (20s / 30s / 5s). `server.close()` stops accepting. Built-in HTTPS listen is a non-goal: terminate TLS at a proxy. `listen` calls `http.createServer` only, and a host `https.Server` cannot be attached. There is no `listen({ port, host })` object overload and no integrated drain deadline.
+`listen(port, { host })` defaults to `127.0.0.1`. Header, request, and keep-alive timeouts are on (20s / 30s / 5s). `server.close()` stops accepting. Built-in HTTPS listen is a non-goal: `listen` calls `http.createServer` only. A host that wants TLS uses `https.createServer(tlsOptions, app.handler())` and sets the timeout constants on that server. There is no `listen({ port, host })` object overload and no integrated drain deadline.
 
 ### 4. Stage API has no `after` / remove
 
@@ -132,7 +132,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 | Shipped (teach this) | Still open |
 |---|---|
-| `init` / `route` / `listen` on `127.0.0.1`, timeouts, `server.close()` | Drain deadline. HTTPS listen is a non-goal |
+| `init` / `route` / `listen` on `127.0.0.1`, timeouts, `server.close()`, no-arg `app.handler()` | Drain deadline. Built-in HTTPS `listen` is a non-goal. TLS is `https.createServer(tlsOptions, app.handler())` |
 | Named pipeline, `before` / `replace` | `after` / remove |
 | `/users/:id` → `ctx.params` | Trailing-slash normalize |
 | Handler `return { status, headers, body }` | Bare-payload wrapping (intentionally rejected). Streaming and WebSockets are **Not yet** |

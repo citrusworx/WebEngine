@@ -42,6 +42,10 @@ Juice usage today usually falls into these groups:
 - `badge`
 - `stat`
 
+### Loading placeholders
+
+- `skeleton` — CSS-only rect, text, and circle bars. See [Skeleton](./juice-skeleton.md). On master, not in the published npm 0.9.2 release. Not a runtime.
+
 ### Theme scoping
 
 - `theme="..."`
