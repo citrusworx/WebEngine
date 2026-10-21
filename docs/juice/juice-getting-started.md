@@ -31,21 +31,21 @@ Monorepo contributors already have the workspace package linked — you do not a
 
 ## Plain HTML / CDN (no bundler)
 
-The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.1`:
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.2`:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.1/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.1/dist/themes/kiwipress.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/themes/kiwipress.css" />
 
 <body theme="kiwipress">
   <!-- markup -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.1/dist/index.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/index.js"></script>
 </body>
 ```
 
 The JS `<script>` is optional. Loading it auto-enhances Emerging runtimes. Core CSS plus a theme is enough for CSS-first composition. Pin a version — do not rely on a floating `@latest` for production.
 
-unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.1/`.
+unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.2/`.
 
 If you prefer not to hit a CDN, copy the same files from `node_modules/@citrusworx/juiceui/dist/` (or `libraries/juice/dist/` in this repo) next to your HTML. See the [course first look](./course/00-first-look.md) standalone path.
 
@@ -208,15 +208,15 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 - breadcrumbs / light trails
 - progress bars / APG progressbars
 - pagination / page sets
-- disclosures / one trigger, one panel (on master; not in the 0.9.1 npm cut)
-- spinners / indeterminate busy indicators (on master; not in the 0.9.1 npm cut)
-- selects / native dropdowns (on master; not in the 0.9.1 npm cut)
-- inputs / native text fields (on master; not in the 0.9.1 npm cut)
-- textareas / native multiline fields (on master; not in the 0.9.1 npm cut)
-- fields / help and error on a wrapped control (on master; not in the 0.9.1 npm cut)
-- motion core / tokens, overlay enter and exit, and `[motion="accordion"]` height (on master; not in the 0.9.1 npm cut)
+- disclosures / one trigger, one panel (shipped in 0.9.2)
+- spinners / indeterminate busy indicators (shipped in 0.9.2)
+- selects / native dropdowns (shipped in 0.9.2)
+- inputs / native text fields (shipped in 0.9.2)
+- textareas / native multiline fields (shipped in 0.9.2)
+- fields / help and error on a wrapped control (shipped in 0.9.2)
+- motion core / tokens, overlay enter and exit, and `[motion="accordion"]` height (shipped in 0.9.2)
 
-Those features should work without app init, and they work without Sig. Observable state is the DOM contract `juice:change` plus `getState()` — see [Runtime Behavior](./juice-runtime-behavior.md#juicechange). Sig’s optional adapter is a separate import, `@citrusworx/sigjs/juice`. See [Accordion Runtime](./juice-accordion-runtime.md), [Tabs Runtime](./juice-tabs-runtime.md), [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Progress Runtime](./juice-progress-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), [Disclosure Runtime](./juice-disclosure-runtime.md), [Spinner Runtime](./juice-spinner-runtime.md), [Select Runtime](./juice-select-runtime.md), [Input Runtime](./juice-input-runtime.md), [Textarea Runtime](./juice-textarea-runtime.md), [Field Runtime](./juice-field-runtime.md), and [Navigation Runtime](./juice-navigation-runtime.md).
+Those features should work without app init, and they work without Sig. Observable state on master is the DOM contract `juice:change` plus `getState()`, unreleased after 0.9.2 — see [Runtime Behavior](./juice-runtime-behavior.md#juicechange). Sig’s optional adapter is a separate import, `@citrusworx/sigjs/juice`. See [Accordion Runtime](./juice-accordion-runtime.md), [Tabs Runtime](./juice-tabs-runtime.md), [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Progress Runtime](./juice-progress-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), [Disclosure Runtime](./juice-disclosure-runtime.md), [Spinner Runtime](./juice-spinner-runtime.md), [Select Runtime](./juice-select-runtime.md), [Input Runtime](./juice-input-runtime.md), [Textarea Runtime](./juice-textarea-runtime.md), [Field Runtime](./juice-field-runtime.md), and [Navigation Runtime](./juice-navigation-runtime.md).
 
 Use Sig.js for app-specific state:
 
