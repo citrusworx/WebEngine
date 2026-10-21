@@ -28,7 +28,7 @@ There is no `Progress()` Sig factory. Markup plus the runtime is the contract.
 
 This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
-Progress is an APG-inspired **Progressbar**. It is not a slider, not a spinner-only loader, and not a native `<progress>` restyle. It is not interactive. No keyboard, no pointer handling, no focus trap, and no Escape handling in v1.
+Progress is an APG-inspired **Progressbar**. It is not a slider, not a spinner-only loader, and not a native `<progress>` restyle. A content-shaped placeholder is `[skeleton]`, which is CSS-only and is not this runtime — see [Skeleton](./juice-skeleton.md). It is not interactive. No keyboard, no pointer handling, no focus trap, and no Escape handling in v1.
 
 ## Markup Contract
 

@@ -155,6 +155,7 @@ Core chrome sets these stacking values. They are **structural bands**, not a the
 | Breadcrumb | `[breadcrumb]` | none | Inline nav chrome; no elevation in this cut |
 | Progress | `[progress]` | none | Inline status chrome; no elevation in this cut |
 | Spinner | `[spinner]` | none | Inline status chrome; no elevation in this cut |
+| Skeleton | `[skeleton]` | none | Inline placeholder; CSS-only, not one of the twenty-six runtimes |
 | Select | `select[select]` | none | Inline field chrome; the open list is the platform popup |
 | Input | `input[input]` | none | Inline field chrome; text-like types only |
 | Textarea | `textarea[textarea]` | none | Inline field chrome; no auto-grow |
