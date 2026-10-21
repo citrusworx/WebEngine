@@ -15,6 +15,10 @@ import {
 } from '../disclosure/disclosure-runtime.js';
 import { createDrawer, stopDrawerRuntime } from '../drawer/drawer-runtime.js';
 import { createField, stopFieldRuntime } from '../field/field-runtime.js';
+import {
+  createIconButton,
+  stopIconButtonRuntime,
+} from '../icon-button/icon-button-runtime.js';
 import { createInput, stopInputRuntime } from '../input/input-runtime.js';
 import { createMenu, stopMenuRuntime } from '../menu/menu-runtime.js';
 import { createModal, stopModalRuntime } from '../modal/modal-runtime.js';
@@ -52,6 +56,7 @@ const stopAll = () => {
   stopDisclosureRuntime();
   stopDrawerRuntime();
   stopFieldRuntime();
+  stopIconButtonRuntime();
   stopInputRuntime();
   stopMenuRuntime();
   stopModalRuntime();
@@ -853,5 +858,47 @@ describe('juice:change', () => {
     input.destroy();
     select.destroy();
     textarea.destroy();
+  });
+
+  it('dispatches one icon-button event per real pressed change', () => {
+    document.body.innerHTML =
+      '<button type="button" icon-button toggle id="bold" aria-label="Bold"></button>';
+    stopIconButtonRuntime();
+    const controller = createIconButton({ root: document.body });
+    const host = document.getElementById('bold')!;
+    const heard = listen();
+
+    expect(controller.getState(host)).toEqual({
+      pressed: false,
+      disabled: false,
+      named: true,
+    });
+
+    controller.toggle(host);
+    controller.toggle(host);
+    host.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(heard.events).toHaveLength(3);
+    expect(heard.events[0]?.target).toBe(host);
+    expect(heard.events[0]?.detail).toEqual({
+      runtime: 'icon-button',
+      state: { pressed: true, disabled: false, named: true },
+    });
+    expect(heard.events[2]?.detail.state).toEqual({
+      pressed: true,
+      disabled: false,
+      named: true,
+    });
+    expect(controller.getState(host)?.pressed).toBe(true);
+
+    controller.toggle(host);
+    expect(heard.events).toHaveLength(4);
+    expect(controller.getState()).toEqual({
+      pressed: false,
+      disabled: false,
+      named: true,
+    });
+
+    heard.stop();
+    controller.destroy();
   });
 });
