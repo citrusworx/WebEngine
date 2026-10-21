@@ -1,6 +1,6 @@
 # Seltzer Status
 
-Snapshot of `@citrusworx/seltzer` **0.9.0** (published to npm on 2026-10-21) against `libraries/seltzer/src`. The workspace manifest is **0.9.0**. A rebuild of this tree matches the 0.9.0 `dist` (declarations and ESM). `handleRequest` is still a private method.
+Snapshot of `@citrusworx/seltzer` source against the package published as **0.9.0** on 2026-10-21. `libraries/seltzer/package.json` is still **0.9.0**. Do not publish from this note. Source adds no-arg `app.handler()` for the unreleased **0.10.0** minor ([changelog](../../libraries/seltzer/CHANGELOG.md)). The published 0.9.0 tarball does not have that listener. `handleRequest` is still private.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
@@ -14,7 +14,7 @@ These five labels are the only ones this matrix uses.
 
 ### `Stable`
 
-The behavior in the row is what 0.9.0 documents, and a conformance test under `libraries/seltzer/src` covers that surface. Pre-1.0 still means a later minor can change it. The tests lock the behavior the row describes.
+The behavior in the row is what this tree documents, and a conformance test under `libraries/seltzer/src` covers that surface. Pre-1.0 still means a later minor can change it. The tests lock the behavior the row describes. `app.handler()` is Stable here ahead of the 0.10.0 publish. The npm 0.9.0 tarball does not include it.
 
 ### `Emerging`
 
@@ -44,13 +44,13 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | Default `validate` (`.required`) | Stable | Presence-only. Does not set `ctx.valid`. Failure stays `Missing required field` / `Request body must be an object`. That narrow contract is what `validate.conformance.test.ts` locks. |
 | Replacement `validate` | Emerging | `replace("validate")` can set `ctx.valid` and return `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement, and is not installed here. No schema field on `Route` or `generateRoutes`. The helpers are tested; the host schema integration is still the part that moves. |
 | `generateRoutes` | Stable | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. Covered by `generate-routes.conformance.test.ts`. The YAML → `listen` proof is in WebEngine. |
-| CORS / OPTIONS 204 | Stable | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. Covered by `http-surface.conformance.test.ts`. |
+| CORS / OPTIONS 204 | Stable | Off unless `init({ cors })` or `listen({ cors })`. A `listen` cors object replaces the init object. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `init` or at `listen` when that call passes it. Covered by `http-surface.conformance.test.ts` and `handler.conformance.test.ts`. |
 | `client.*` + `HttpError` | Emerging | Global `fetch`. `client.conformance.test.ts` covers slash-safe join, query encoding, the 30s deadline, caller abort, and `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. The result is still `unknown`. Documented edges outside that file: ignored `endpoint`, `FormData` rejection, `Buffer` bodies, the error snippet. No retries. Stays Emerging. |
-| `.handler()` options | Emerging | Copied to `ctx.options`. `adapter` is unused inbound. There is no conformance file for this stash. |
-| Tests | Stable | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, the urlencoded recipe on `127.0.0.1`, and the README docs-drift check. The YAML → listen proof is in WebEngine. |
+| `.handler(config)` options | Emerging | The config call stores `ctx.options` and returns the app. It is not the request listener. `adapter` is unused inbound. There is no conformance file for this stash. The no-arg listener is a different row. |
+| Tests | Stable | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, the urlencoded recipe on `127.0.0.1`, `handler.conformance.test.ts` (bring-your-own server, HTTPS fixture, init/listen precedence, listen/handler parity), and the README docs-drift check. The YAML → listen proof is in WebEngine. |
 | HTTPS listen, `app.use`, form/multipart, sessions, cookies, static files, templating, client retries, ORM | Non-goal | [Non-goals](../../libraries/seltzer/README.md#non-goals). Urlencoded fields are a host `URLSearchParams` recipe. |
 | Streaming responses / WebSockets | Not yet | No stream or socket API. A `Buffer` body is still one payload. Possible later. |
-| Public `handleRequest` | Not yet | Private on `Seltzer` in 0.9.0 (`dist/core/seltzer.d.ts`). A host-created `http.Server` or `https.Server` cannot be attached. Exporting it is a planned follow-up, not this release. |
+| `app.handler()` | Stable | No-arg `app.handler()` returns `(req, res) => void`. `http.createServer(app.handler())` and `https.createServer(tls, app.handler())` run the same pipeline as `listen`. `handleRequest` stays private. Listen overrides do not change a listener from `handler()`. Host-owned servers own their timeouts (`DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`). Covered by `handler.conformance.test.ts`. Unreleased 0.10.0. Not in the published 0.9.0 tarball. |
 | `after` / remove stage | Draft | Not in the pipeline API. `before` and `replace` are the extension points. |
 | Custom 404 envelope for hand-written routes | Draft | Unmatched hand-written paths use the builtin 404. Generated routes already take `notFound`. |
 | Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
@@ -59,11 +59,12 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 
 | Area | Source | Notes |
 |---|---|---|
-| `Seltzer.init()` | `core/seltzer.ts` | `new Seltzer()` |
+| `Seltzer.init(options?)` | `core/seltzer.ts` | `new Seltzer()`. Optional `bodyLimit`, `cors`, `logger`, `debug`, `locals`. |
 | `.route()` | same | `compileRoute` |
 | `.before()` / `.replace()` | same + `pipeline/index.ts` | |
-| `.handler()` | same | stores config |
-| `.listen(port, options?)` | same | returns `http.Server`. Default host `127.0.0.1`. Timeouts: headers 20s, request 30s, keep-alive 5s. Body limit 1 MB. CORS only when `cors` is set. `logger` defaults to `console.error`. `debug` is off. |
+| `.handler(config)` | same | stores config and returns the app. Not a request listener. |
+| `.handler()` | same | no-arg Node request listener. Same pipeline as `listen`. Uses `init` options. Does not set timeouts. |
+| `.listen(port, options?)` | same | `http.createServer` of that listener, loopback `127.0.0.1`, timeouts 20s / 30s / 5s. A passed `bodyLimit`, `cors`, `logger`, `debug`, or `locals` replaces the `init` value for that server. `cors` is not merged field by field. |
 | Stages | `pipeline/stages.ts` | parse…send |
 | Matcher | `pipeline/router.ts` | rank + params |
 | `ResponseData` / `send` / `response()` | `core/response.ts` | string, JSON, or bytes. 204, 304, and HEAD send no body. |
@@ -72,7 +73,7 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | `client` / `createClient` / `HttpError` | `core/client/client.ts` | 30s default. No retries. No `undici`. |
 | Example server | `src/example.ts` | GET `/` |
 
-`Seltzer.listen` in `core/seltzer.ts` is the only listener. The leftover hello-world `src/core/server/server.ts` was removed.
+`listen` is the only method that binds a socket. No-arg `handler()` is the request listener that `listen` passes to `http.createServer`. The leftover hello-world `src/core/server/server.ts` was removed.
 
 ## Myths that closed (0.2.0 docs → 0.9.0)
 
@@ -120,9 +121,8 @@ They can be valuable later. They should not appear as if they shipped. HTTPS lis
 
 - streaming responses (a `Readable` is not a stream)
 - WebSockets
-- a public `handleRequest` (it is private; attaching a host-created server is a planned follow-up)
 
-Streaming and WebSockets are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets). `handleRequest` is the known gap on the 0.9.0 tarball: `dist/core/seltzer.d.ts` still declares it `private`.
+Streaming and WebSockets are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets). `handleRequest` stays private. Hosts mount a server with no-arg `app.handler()`, which is Stable in this tree and unreleased on npm.
 
 ## Non-goals
 
@@ -158,7 +158,7 @@ If you are building with Seltzer today:
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 - pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`
 - call `server.close()` to stop accepting. Idle keep-alive sockets delay the close callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`
-- do not expect a public `handleRequest`. It is private in 0.9.0. Exporting it so a host can attach its own server is planned and is not this release
+- mount your own `http.Server` or `https.Server` with no-arg `app.handler()`. Set `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` on that server when you want Seltzer's timers. `listen` does not speak TLS. The published 0.9.0 tarball does not include `handler()` yet
 
 ## Suggested reading
 

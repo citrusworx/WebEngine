@@ -49,6 +49,12 @@ Documented version: `0.9.0`.
 | `timeout` | client option |
 | `signal` | client option |
 | `query` | client option |
+| `handler` | app method |
+| `DEFAULT_BODY_LIMIT_BYTES` | export |
+| `DEFAULT_LISTEN_HOST` | export |
+| `DEFAULT_HEADERS_TIMEOUT_MS` | export |
+| `DEFAULT_REQUEST_TIMEOUT_MS` | export |
+| `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` | export |
 
 <!-- /seltzer-docs-drift -->
 
@@ -87,7 +93,48 @@ Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime wri
 
 `listen` returns the Node `http.Server`. The default bind is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections from other machines. Header, request, and keep-alive timeouts default to 20s, 30s, and 5s (`0` disables that timer). `server.close()` stops accepting; idle keep-alive sockets delay the callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`.
 
-`listen` also accepts `locals` (available on `ctx.locals`), `bodyLimit`, `cors`, `logger`, and `debug`. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited).
+`init` and `listen` accept `locals` (available on `ctx.locals`), `bodyLimit`, `cors`, `logger`, and `debug`. A field passed to `listen` replaces the `init` value for that server. An omitted field keeps the `init` value. `cors` is replaced as a whole object, not merged field by field. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited). `credentials: true` with `origin: "*"` throws at `init` when you pass it there, and at `listen` when that call passes it. `host`, the port, and the three timeouts stay on `listen`. They are not `init` options.
+
+## Bring your own server
+
+`app.handler()` with no arguments returns a Node request listener, `(req, res) => void`. `listen` is that listener on an `http.Server` Seltzer creates, plus the loopback bind and the timeout defaults. Call `handler()` when the host already has a server, including TLS:
+
+```ts
+import https from "node:https";
+import {
+    Seltzer,
+    DEFAULT_HEADERS_TIMEOUT_MS,
+    DEFAULT_KEEP_ALIVE_TIMEOUT_MS,
+    DEFAULT_REQUEST_TIMEOUT_MS,
+} from "@citrusworx/seltzer";
+
+const app = Seltzer.init({
+    cors: { origin: "https://app.example" },
+    bodyLimit: 1_048_576,
+});
+
+app.route({
+    method: "GET",
+    path: "/",
+    handler: () => ({ body: { ok: true } }),
+});
+
+const server = https.createServer(tlsOptions, app.handler());
+server.headersTimeout = DEFAULT_HEADERS_TIMEOUT_MS;
+server.requestTimeout = DEFAULT_REQUEST_TIMEOUT_MS;
+server.keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT_MS;
+server.listen(443, "127.0.0.1");
+```
+
+The same listener works on `http.createServer(app.handler())`. It runs the same pipeline as `listen` (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`), including the body limit, CORS / `OPTIONS` 204, `logger`, `debug`, and strict `ResponseData` checks. Routes registered after `handler()` still run. The listener reads `bodyLimit`, `cors`, `logger`, `debug`, and `locals` from `init`. It does not read a later `listen` override, and it does not set timeouts.
+
+A host-owned server owns its timeouts. Seltzer does not change them. Copy the defaults above when you want the same 20s / 30s / 5s timers `listen` applies. `0` disables that timer on `listen`; on your server, assign `0` yourself. `server.close()` is also yours.
+
+`app.handler(config)` is a different call. It stores `{ adapter, options }` and returns the app. `options` is copied onto `ctx.options`. `adapter` is unused inbound. Passing a config object never returns a listener. The no-arg call never stores config. KiwiPress uses the config call to stash a base URL. It does not mount HTTP.
+
+`handleRequest` stays private. There is no method that accepts an already-built `http.Server`. Pass the listener into `http.createServer` or `https.createServer` instead.
+
+This listener is in source for the unreleased 0.10.0 minor. `package.json` and the install pin above stay at 0.9.0 until that publish. The published 0.9.0 tarball has no no-arg `handler()`.
 
 ## Pipeline
 
@@ -353,7 +400,7 @@ Order should stay visible. The extension model is the named pipeline (`parse` �
 
 ### No built-in HTTPS listen
 
-Terminate TLS at a reverse proxy and let Seltzer speak HTTP behind it. `listen` always builds a Node `http.Server` with `http.createServer` and returns that server. There is no public method that accepts a host `https.Server` or `http.Server`: request handling lives on a private `handleRequest`, so a server the host created cannot be attached.
+`listen` always builds a Node `http.Server` with `http.createServer` and returns that server. It does not accept TLS options and it does not call `https.createServer`. Terminate TLS at a reverse proxy, or mount the no-arg listener yourself: `https.createServer(tlsOptions, app.handler())`. Timeouts on that server are yours. See [Bring your own server](#bring-your-own-server). `handleRequest` stays private.
 
 ### No form or multipart parsing
 

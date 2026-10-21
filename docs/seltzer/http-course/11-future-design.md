@@ -104,7 +104,7 @@ app.listen({ port: 3000, host: "127.0.0.1", shutdownGraceMs: 5000 });
 
 Prefer a backwards-compatible overload if this shape is adopted. Decide whether Seltzer owns OS signals or the host does; a reusable library should not casually install global process handlers. The course currently keeps signal handling in the executable entrypoint.
 
-Separate TLS termination choices. A reverse proxy may provide HTTPS while Seltzer handles local HTTP. Built-in HTTPS `listen` is a [non-goal](../../../libraries/seltzer/README.md#no-built-in-https-listen): `listen` only calls `http.createServer`, and a host `https.Server` cannot be attached. This section is a design exercise, not a plan to add native TLS.
+Separate TLS termination choices. A reverse proxy may provide HTTPS while Seltzer handles local HTTP. Built-in HTTPS `listen` is a [non-goal](../../../libraries/seltzer/README.md#no-built-in-https-listen): `listen` only calls `http.createServer`. A host that already has TLS passes no-arg `app.handler()` to `https.createServer` and owns that server's timeouts. This section is a design exercise, not a plan to add native TLS to `listen`.
 
 **Acceptance tests:** loopback binding; port-zero reporting; startup errors reach the caller; repeated close is well-defined; new work stops during drain; active requests have a deadline; host cleanup can await completion.
 
