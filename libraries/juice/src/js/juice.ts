@@ -286,6 +286,17 @@ export type {
     IconButtonOptions,
     IconButtonState
 } from "./src/icon-button/icon-button-runtime.js";
+export {
+    createAvatar,
+    initAvatar,
+    startAvatarRuntime,
+    stopAvatarRuntime
+} from "./src/avatar/avatar-runtime.js";
+export type {
+    AvatarController,
+    AvatarOptions,
+    AvatarState
+} from "./src/avatar/avatar-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export {

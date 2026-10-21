@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createAccordion, stopAccordionRuntime } from '../accordion/accordion-runtime.js';
+import { createAvatar, stopAvatarRuntime } from '../avatar/avatar-runtime.js';
 import { createBanner, stopBannerRuntime } from '../banner/banner-runtime.js';
 import {
   createBreadcrumb,
@@ -49,6 +50,7 @@ const resetDom = () => {
 
 const stopAll = () => {
   stopAccordionRuntime();
+  stopAvatarRuntime();
   stopBannerRuntime();
   stopBreadcrumbRuntime();
   stopCheckboxRuntime();
@@ -897,6 +899,58 @@ describe('juice:change', () => {
       disabled: false,
       named: true,
     });
+
+    heard.stop();
+    controller.destroy();
+  });
+
+  it('dispatches one avatar event per real image change', () => {
+    document.body.innerHTML =
+      '<span avatar id="face">AL<img id="photo" alt="Ada" src="ada.png"></span>';
+    const photo = document.getElementById('photo') as HTMLImageElement;
+    Object.defineProperty(photo, 'complete', {
+      configurable: true,
+      get: () => false,
+    });
+    Object.defineProperty(photo, 'naturalWidth', {
+      configurable: true,
+      get: () => 0,
+    });
+    stopAvatarRuntime();
+    const controller = createAvatar({ root: document.body });
+    const host = document.getElementById('face')!;
+    const heard = listen();
+
+    expect(controller.getState(host)).toEqual({
+      loaded: false,
+      fallback: false,
+      hasImage: true,
+    });
+
+    photo.dispatchEvent(new Event('error'));
+    photo.dispatchEvent(new Event('error'));
+    expect(heard.events).toHaveLength(1);
+    expect(heard.events[0]?.bubbles).toBe(true);
+    expect(heard.events[0]?.target).toBe(host);
+    expect(heard.events[0]?.detail).toEqual({
+      runtime: 'avatar',
+      state: { loaded: false, fallback: true, hasImage: true },
+    });
+
+    photo.dispatchEvent(new Event('load'));
+    expect(heard.events).toHaveLength(2);
+    expect(heard.events[1]?.detail.state).toEqual({
+      loaded: true,
+      fallback: false,
+      hasImage: true,
+    });
+    expect(controller.getState()).toEqual({
+      loaded: true,
+      fallback: false,
+      hasImage: true,
+    });
+    expect(photo.getAttribute('alt')).toBe('Ada');
+    expect(host.textContent).toContain('AL');
 
     heard.stop();
     controller.destroy();

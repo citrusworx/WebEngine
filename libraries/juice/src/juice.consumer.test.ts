@@ -1510,6 +1510,7 @@ describe("Juice consumer smoke", () => {
             module.stopAccordionRuntime();
             module.stopNavigationRuntime();
             module.stopIconButtonRuntime();
+            module.stopAvatarRuntime();
         });
     });
 
@@ -1565,6 +1566,78 @@ describe("Juice consumer smoke", () => {
 
             document.body.innerHTML = "";
             module.stopIconButtonRuntime();
+        });
+    });
+
+    it("lets a consumer fall back an avatar image and read juice:change state", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopAvatarRuntime();
+            document.body.innerHTML = `
+                <span avatar id="face" aria-label="Ada Lovelace">AL<img id="photo" alt="Ada Lovelace" src="ada.png"></span>
+                <span avatar id="initials">JL</span>
+                <span avatar-more id="more"><img id="more-photo" alt="+2" src=""></span>
+            `;
+            const photo = document.getElementById("photo") as HTMLImageElement;
+            Object.defineProperty(photo, "complete", {
+                configurable: true,
+                get: () => false
+            });
+            Object.defineProperty(photo, "naturalWidth", {
+                configurable: true,
+                get: () => 0
+            });
+
+            const controller = module.createAvatar({ root: document.body });
+            const face = document.getElementById("face")!;
+            const events: Array<CustomEvent<{ runtime: string; state: { loaded: boolean; fallback: boolean; hasImage: boolean } }>> = [];
+            const onChange = (event: Event) => {
+                events.push(event as CustomEvent<{ runtime: string; state: { loaded: boolean; fallback: boolean; hasImage: boolean } }>);
+            };
+            document.body.addEventListener("juice:change", onChange);
+
+            expect(face.hasAttribute("fallback")).toBe(false);
+            expect(photo.hasAttribute("hidden")).toBe(false);
+            expect(controller.getState(face)).toEqual({
+                loaded: false,
+                fallback: false,
+                hasImage: true
+            });
+            expect(controller.getState(document.getElementById("initials"))).toEqual({
+                loaded: false,
+                fallback: false,
+                hasImage: false
+            });
+            expect(controller.getState(document.getElementById("more"))).toBeNull();
+
+            photo.dispatchEvent(new Event("error"));
+            expect(events).toHaveLength(1);
+            expect(events[0]?.bubbles).toBe(true);
+            expect(events[0]?.detail).toEqual({
+                runtime: "avatar",
+                state: { loaded: false, fallback: true, hasImage: true }
+            });
+            expect(face.hasAttribute("fallback")).toBe(true);
+            expect(photo.hasAttribute("hidden")).toBe(true);
+            expect(photo.getAttribute("alt")).toBe("Ada Lovelace");
+            expect(face.getAttribute("aria-label")).toBe("Ada Lovelace");
+            expect(face.textContent).toContain("AL");
+            expect(document.getElementById("more")?.hasAttribute("fallback")).toBe(false);
+            expect(document.getElementById("more-photo")?.hasAttribute("hidden")).toBe(false);
+
+            photo.dispatchEvent(new Event("load"));
+            expect(events).toHaveLength(2);
+            expect(face.hasAttribute("fallback")).toBe(false);
+            expect(photo.hasAttribute("hidden")).toBe(false);
+            expect(controller.getState(face)?.loaded).toBe(true);
+
+            document.body.removeEventListener("juice:change", onChange);
+            controller.destroy();
+            photo.dispatchEvent(new Event("error"));
+            expect(face.hasAttribute("fallback")).toBe(false);
+
+            document.body.innerHTML = "";
+            module.stopAvatarRuntime();
         });
     });
 });

@@ -51,6 +51,8 @@ export { createField, initField, startFieldRuntime, stopFieldRuntime } from "./j
 export type { FieldController, FieldOptions, FieldState } from "./js/src/field/field-runtime.js";
 export { createIconButton, initIconButton, startIconButtonRuntime, stopIconButtonRuntime } from "./js/src/icon-button/icon-button-runtime.js";
 export type { IconButtonController, IconButtonOptions, IconButtonState } from "./js/src/icon-button/icon-button-runtime.js";
+export { createAvatar, initAvatar, startAvatarRuntime, stopAvatarRuntime } from "./js/src/avatar/avatar-runtime.js";
+export type { AvatarController, AvatarOptions, AvatarState } from "./js/src/avatar/avatar-runtime.js";
 export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./js/src/shared/motion.js";
 export type { MotionCancelToken, MotionDirection, MotionPlayer, MotionResult, MotionState } from "./js/src/shared/motion.js";
 export { JUICE_CHANGE_EVENT } from "./js/src/shared/change.js";
