@@ -7,8 +7,50 @@ Requires Node 18+. No runtime dependencies. The outbound client uses global `fet
 ## Install
 
 ```bash
-npm install @citrusworx/seltzer
+npm install @citrusworx/seltzer@0.9.0
 ```
+
+Documented version: `0.9.0`.
+
+## Names this README checks
+
+<!-- seltzer-docs-drift -->
+
+| Name | Kind |
+| --- | --- |
+| `Seltzer` | export |
+| `client` | export |
+| `createClient` | export |
+| `generateRoutes` | export |
+| `validationError` | export |
+| `response` | export |
+| `HttpError` | export |
+| `TimeoutError` | export |
+| `AbortError` | export |
+| `NetworkError` | export |
+| `UrlError` | export |
+| `UnboundOperationsError` | export |
+| `host` | listen option |
+| `bodyLimit` | listen option |
+| `headersTimeout` | listen option |
+| `requestTimeout` | listen option |
+| `keepAliveTimeout` | listen option |
+| `cors` | listen option |
+| `logger` | listen option |
+| `debug` | listen option |
+| `locals` | listen option |
+| `onListening` | listen option |
+| `origin` | cors option |
+| `methods` | cors option |
+| `headers` | cors option |
+| `credentials` | cors option |
+| `maxAge` | cors option |
+| `allowAbsoluteUrl` | client option |
+| `timeout` | client option |
+| `signal` | client option |
+| `query` | client option |
+
+<!-- /seltzer-docs-drift -->
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # Seltzer Tutorial — Building a Notes JSON API
 
-This tutorial walks through building a small JSON API with Seltzer **0.8.1**.
+This tutorial walks through building a small JSON API with Seltzer **0.9.0**.
 
 The goal is to show how Seltzer should be composed in real server code:
 

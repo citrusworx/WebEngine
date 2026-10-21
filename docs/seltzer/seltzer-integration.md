@@ -1,6 +1,6 @@
 # Seltzer Integration
 
-How the 0.8.x HTTP runtime sits next to the rest of WebEngine.
+How the 0.9.0 HTTP runtime sits next to the rest of WebEngine.
 
 Seltzer does not boot Juice, compile Nectarine YAML, or apply Grapevine. Integration is **app or engine code**: flatten operations, call `generateRoutes`, run adapters inside `execute` or a handler, `fetch` from a Sig page.
 

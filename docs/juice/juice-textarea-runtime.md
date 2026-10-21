@@ -26,7 +26,7 @@ The user should not need to manually initialize textarea behavior in their app c
 
 There is no `Textarea()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Textarea is a styled native **`<textarea>`**. Typing, change, and the keyboard stay on the native control. It is not an input, not a select, and not a combobox. Input stays `<input input>` and is left untouched. Select stays `<select select>` and is left untouched. Combobox stays `[combobox]` / `[combobox-input]` / `[combobox-list]` and is left untouched. Field is a different runtime — see [Field Runtime](./juice-field-runtime.md). There is no auto-grow, no character count, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Textarea factory.
 
@@ -189,7 +189,7 @@ Textarea does not listen for keys, and it does not listen for `input` or `change
 ## Limitations
 
 - No `Textarea()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Textarea is the twenty-fourth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, select remains the twenty-second, and input remains the twenty-third. Field is the twenty-fifth and also shipped in 0.9.2. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
+- This surface is Emerging, not Stable. Textarea is the twenty-fourth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Disclosure remains the twentieth, spinner remains the twenty-first, select remains the twenty-second, and input remains the twenty-third. Field is the twenty-fifth and also shipped in 0.9.2. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
 - This is not an input. `<input input>` is a different runtime. An `<input>` is ignored, even with `[textarea]`. Input stays untouched.
 - This is not a select. `<select select>` is a different runtime. The open list of a select stays the platform popup. Select stays untouched.
 - This is not a combobox. `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]` is a different runtime. A `<textarea textarea>` inside `[combobox]`, including `[combobox-input]`, is ignored. Combobox stays untouched.

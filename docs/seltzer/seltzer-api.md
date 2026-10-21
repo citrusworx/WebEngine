@@ -1,6 +1,6 @@
 # Seltzer API Reference
 
-Public surface of `@citrusworx/seltzer` **0.8.1** as implemented in `libraries/seltzer/src`.
+Public surface of `@citrusworx/seltzer` **0.9.0** as implemented in `libraries/seltzer/src`.
 
 This page is the compact contract. For the mental model, start with [Request and response](./seltzer-request-response.md), [Routing](./seltzer-routing.md), [Pipeline](./seltzer-pipeline.md), [Generate routes](./seltzer-generate.md), and [Client](./seltzer-client.md).
 
@@ -76,7 +76,7 @@ Throws `Seltzer.listen requires a Node.js runtime.` when `process.versions.node`
 
 Creates `http.createServer`, applies CORS only when `cors` is set, answers a configured `OPTIONS` preflight with 204, runs the pipeline, and returns that `http.Server`.
 
-**Breaking (next minor, not in the 0.8.1 tarball):** the default bind is `127.0.0.1`, not Node's all-interfaces default. Pass `host: "0.0.0.0"` or `host: "::"` to accept connections from other machines. An empty `host` throws.
+**Shipped in 0.9.0:** the default bind is `127.0.0.1`, not Node's all-interfaces default. Pass `host: "0.0.0.0"` or `host: "::"` to accept connections from other machines. An empty `host` throws.
 
 Header, request, and keep-alive timeouts are on:
 

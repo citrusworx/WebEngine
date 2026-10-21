@@ -12,7 +12,7 @@ Related: [Roadmap](./grapevine-roadmap.md) for direction. [API](./grapevine-api.
 
 ## Maturity levels
 
-### `Stable-ish`
+### `Stable`
 
 The feature is usable today, central to the Grapevine experience, and unlikely to change dramatically in basic concept. Active development still means the package version can move; the *idea* is settled.
 
@@ -32,13 +32,13 @@ The feature is more of a direction than a hardened part of the runtime.
 
 | Area | Maturity | Notes |
 |---|---|---|
-| `provider: digitalocean` schema | Stable-ish | Literal only. Rejecting `aws` is the identity of the config. |
-| `loadGrapeConfig` path / URL | Stable-ish | YAML or JSON. Always pass `-c`. |
-| `grape validate` | Stable-ish | Zod + normalized counts. No DigitalOcean. |
-| Apply create order | Stable-ish | tags → SSH → VPC → databases → droplets (+ stack user_data) → firewalls → domains → LBs → alerts → apps → Spaces → certificates → CDN. Tested with mocks. |
-| Same-apply `vpc:` / `droplets:` maps | Stable-ish | Process-local. Easy to misuse; behavior is consistent. |
-| `createDroplet` / `createVPC` / `createFireWall` | Stable-ish | Real POSTs through `doRequest`. |
-| `DO_TOKEN` / `credentials.env` | Stable-ish | Env only. Live `status`/`destroy` use `credentials.env` when `-c` is passed. |
+| `provider: digitalocean` schema | Stable | Literal only. Rejecting `aws` is the identity of the config. |
+| `loadGrapeConfig` path / URL | Stable | YAML or JSON. Always pass `-c`. |
+| `grape validate` | Stable | Zod + normalized counts. No DigitalOcean. |
+| Apply create order | Stable | tags → SSH → VPC → databases → droplets (+ stack user_data) → firewalls → domains → LBs → alerts → apps → Spaces → certificates → CDN. Tested with mocks. |
+| Same-apply `vpc:` / `droplets:` maps | Stable | Process-local. Easy to misuse; behavior is consistent. |
+| `createDroplet` / `createVPC` / `createFireWall` | Stable | Real POSTs through `doRequest`. |
+| `DO_TOKEN` / `credentials.env` | Stable | Env only. Live `status`/`destroy` use `credentials.env` when `-c` is passed. |
 | CLI `grape apply` | Emerging | Create-only; `--dry-run` aliases `plan`; human receipt or `--json`; no rollback. |
 | In-repo blueprints `01`–`04` + KiwiPress packs | Emerging | Honest starters; `grape init` copies files or pack directories. |
 | Function CRUD (list/get/update/delete) | Emerging | Broad HTTP surface; `destroy` uses unique-name / tag matching. |
@@ -54,7 +54,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Billing | Early | Balance and invoice list. Payment methods and PDF download are not wrapped. A missing billing scope is `billing.error`, not a failed inventory. |
 | Images / Insight security | Early | Exported, not applied. |
 | `generate: true` SSH | Emerging | Writes OpenSSH private key to `.grape/ssh/<name>` (or `private_key_path`); apply reports the path. |
-| Docs as product surface | Emerging to Stable-ish | Tutorial, topics, patterns, anti-patterns now exist next to the API. |
+| Docs as product surface | Emerging to Stable | Tutorial, topics, patterns, anti-patterns now exist next to the API. |
 | Idempotent apply / state | Draft | Not implemented. |
 | Drift / reconcile | Draft | Not implemented. |
 | Destroy-from-YAML | Emerging | Conservative unique-name / `--tag` teardown; requires `--yes` off-TTY. |

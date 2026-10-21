@@ -27,7 +27,7 @@ For a standalone folder outside the monorepo:
 mkdir seltzer-http-course
 cd seltzer-http-course
 npm init -y
-npm install --save-exact @citrusworx/seltzer@0.8.1
+npm install --save-exact @citrusworx/seltzer@0.9.0
 ```
 
 Copy the `.mjs` files from [examples](./examples/README.md) into that folder and run `node hello.mjs`. Use `npm.cmd` on Windows if PowerShell blocks the `npm.ps1` launcher. The `.mjs` extension enables `import` and `export` without a compiler or a package `type` setting.
@@ -76,7 +76,7 @@ The course uses JavaScript first. TypeScript names such as `ResponseData` descri
 | Connection refused | Server process, address, and port |
 | HTTP 404 | The server answered; inspect method and path |
 
-Run one course server on port 3000 at a time. These are local learning programs without login or durable storage. Seltzer 0.8.1 has no host option on `listen`; displaying a localhost URL does not make the socket loopback-only.
+Run one course server on port 3000 at a time. These are local learning programs without login or durable storage. `listen(3000)` binds `127.0.0.1`. Pass `listen(3000, { host: "0.0.0.0" })` to accept connections from other machines. Printing a localhost URL is not what makes the socket loopback-only; the default `host` is.
 
 ## Checkpoint
 

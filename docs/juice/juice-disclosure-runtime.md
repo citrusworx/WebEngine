@@ -26,7 +26,7 @@ The user should not need to manually initialize disclosure behavior in their app
 
 There is no `Disclosure()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Disclosure is the APG **Disclosure** pattern: one trigger, one panel. It is not an accordion. Accordion stays multi-item `[accordion]` / `[accordion-item]` (multi-open). Disclosure is not a layered overlay. There is no exclusive group and no arrow-key roving tabindex.
 
@@ -225,7 +225,7 @@ Authors own the accessible name on the trigger. The runtime does not invent a vi
 ## Limitations
 
 - No `Disclosure()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Disclosure is the twentieth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Spinner is the twenty-first and also shipped in 0.9.2. Select is the twenty-second and also shipped in 0.9.2. Input is the twenty-third and also shipped in 0.9.2. Textarea is the twenty-fourth and also shipped in 0.9.2. Field is the twenty-fifth and also shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
+- This surface is Emerging, not Stable. Disclosure is the twentieth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Spinner is the twenty-first and also shipped in 0.9.2. Select is the twenty-second and also shipped in 0.9.2. Input is the twenty-third and also shipped in 0.9.2. Textarea is the twenty-fourth and also shipped in 0.9.2. Field is the twenty-fifth and also shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
 - This is not an accordion. `[accordion]` / `[accordion-item]` is a different runtime. The two do not toggle each other.
 - Orphan triggers and panels outside `[disclosure]` are ignored.
 - There is no exclusive group. Opening one disclosure leaves the others open. Arrow-key roving tabindex is out of scope.

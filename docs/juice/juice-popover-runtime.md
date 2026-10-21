@@ -26,7 +26,7 @@ The user should not need to manually initialize popover behavior in their app co
 
 There is no `Popover()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Popover is a non-modal dialog. It is not a modal, not a drawer, and not a toast stack.
 

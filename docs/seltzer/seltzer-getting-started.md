@@ -1,10 +1,10 @@
 # Getting Started With Seltzer
 
-This is the best starting point if you want to use Seltzer the way the library works in **0.8.1**.
+This is the best starting point if you want to use Seltzer the way the library works in **0.9.0**.
 
 After this page, the [JSON API tutorial](./seltzer-api-tutorial.md) is the guided build — health, collection, JSON POST, `/notes/:id`, a generated Nectarine-shaped route, and `client.*` — analogous to [Juice’s page tutorial](../juice/juice-page-tutorial.md).
 
-Build against the API in `libraries/seltzer/src` on the Blackwater / 0.8.x line, not the 0.2.0 `ctx.json` story still documented on `master`.
+Build against the API in `libraries/seltzer/src` at 0.9.0, not the 0.2.0 `ctx.json` story.
 
 ## What Seltzer is
 
@@ -26,14 +26,14 @@ It is not Express. There is no `app.use` (that chain is a [non-goal](../../libra
 ## Install
 
 ```bash
-yarn add @citrusworx/seltzer
+yarn add @citrusworx/seltzer@0.9.0
 # or
-npm install @citrusworx/seltzer
+npm install @citrusworx/seltzer@0.9.0
 ```
 
 Requires Node 18+. The package has no runtime dependencies. `client` uses global `fetch`.
 
-Package version today: **0.8.1**. The hardened client (slash-safe join, 30s timeout, no `undici`) is in this tree and ships in the next minor.
+Package version today: **0.9.0** (published 2026-10-21). The hardened client (slash-safe join, 30s timeout, no `undici`) shipped in that release.
 
 ## Hello World
 

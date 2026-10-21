@@ -4,7 +4,7 @@
 
 Seltzer is no longer an essay about pipelines, and it is no longer the 0.2.0 exact-path `ctx.json` listener.
 
-It is a shipped 0.8.x runtime with three visible layers:
+It is a shipped 0.9.0 runtime with three visible layers:
 
 - `Seltzer.init` / `.route` / `.before` / `.replace` / `.handler` / `.listen` in `seltzer.ts`
 - a named pipeline (`parse` → `send`) plus `ResponseData` / `send` / `generateRoutes`
@@ -19,9 +19,9 @@ The weakest areas that are still open:
 
 HTTPS listen, `app.use`, form and multipart parsing, and client retries are [non-goals](../../libraries/seltzer/README.md#non-goals). Plain HTTP host bind, timeouts, and the outbound deadline already shipped. Streaming responses and WebSockets are **Not yet**.
 
-0.8.x is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior.
+0.9.0 is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior. 0.9.0 did: loopback `listen`, timeouts, the HTTP surface, strict `ResponseData`, `ctx.valid`, unbound `generateRoutes`, and the fetch client.
 
-These docs describe the 0.8.1 runtime now present on local `master` after the Blackwater Phase 0 merge. For worked proposals with acceptance criteria, see the HTTP course's [future-design lesson](./http-course/11-future-design.md). Those proposals are exercises, not committed release plans.
+These docs describe the 0.9.0 runtime on `master`, which matches the npm tarball published 2026-10-21. For worked proposals with acceptance criteria, see the HTTP course's [future-design lesson](./http-course/11-future-design.md). Those proposals are exercises, not committed release plans.
 
 ---
 
@@ -77,7 +77,7 @@ If Seltzer is viewed as an HTTP platform, its current maturity looks roughly lik
 - Pipeline / params / parse / `ResponseData`: strong
 - `generateRoutes`: useful and still evolving with hosts
 - Client: global `fetch`, 30s deadline, no retries, no `undici`
-- Docs as product surface: this set, locked to 0.8.1 source
+- Docs as product surface: this set, locked to 0.9.0 source
 - Production-hardened framework (quotas, OpenAPI): not the goal yet. HTTPS listen is a non-goal, not a later milestone
 
 In practical terms:
@@ -147,7 +147,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 ## Summary
 
-Seltzer 0.8.x is a meaningfully stronger place than both a design-only HTTP essay and the 0.2.0 kernel.
+Seltzer 0.9.0 is a meaningfully stronger place than both a design-only HTTP essay and the 0.2.0 kernel.
 
 It now has:
 
@@ -160,4 +160,4 @@ It now has:
 
 The next stage is refinement around contracts — not reinventing Seltzer from scratch, and not adding HTTPS listen. Host bind, the three server timeouts, and the outbound deadline are already in source.
 
-Until those land, the product docs stay with [Status](./seltzer-status.md) and the APIs in `libraries/seltzer/src` at 0.8.1.
+Until those land, the product docs stay with [Status](./seltzer-status.md) and the APIs in `libraries/seltzer/src` at 0.9.0.

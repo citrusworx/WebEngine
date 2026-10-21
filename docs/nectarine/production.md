@@ -9,7 +9,7 @@ npm `@citrusworx/nectarine@0.4.0` is published. This repo’s `libraries/nectari
 - **Config:** `loadNectarineConfig` reads `nectarine.config.yaml`. Env *key names* come from YAML; secrets come from the environment (`PG_USER`, `PG_PASS`, `PG_HOST`, `PG_PORT`, `PG_DB`).
 - **Named DML:** product + waitlist live paths call compiler-owned queries (`allPayloads`, `payloadsByCatalog`, `countPayloads`, `emailExists`, `joinWaitlist`, …). App code does not embed SQL.
 - **Schema-YAML DDL:** `migrate()` runs Nectarine `applyMigrations`: ledger table, `CREATE TABLE` from every Blackwater `*Schema.yml`, pending versioned migration YAML (rename / drop / type change, each in a Postgres transaction), additive `ADD COLUMN IF NOT EXISTS`, then `CREATE INDEX`.
-- **HTTP:** Seltzer (workspace `@citrusworx/seltzer` 0.8.1) hosts object-based `Route` handlers. Handlers return `ResponseData` (`{ status?, headers?, body? }`). There is no writing `ctx.json`.
+- **HTTP:** Seltzer (workspace `@citrusworx/seltzer` 0.9.0) hosts object-based `Route` handlers. Handlers return `ResponseData` (`{ status?, headers?, body? }`). There is no writing `ctx.json`.
 - **Postgres:** Blackwater uses Nectarine `createPgAdapter` (`pg.Pool`, idle-client error handler, `connect()` / `disconnect()`). Boot connects before migrate. Failed boot closes the pool. `SIGTERM` / `SIGINT` drain the HTTP server then the pool.
 
 ## Required env (production)

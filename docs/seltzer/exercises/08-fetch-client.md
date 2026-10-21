@@ -52,7 +52,7 @@ const users = await get("http://localhost:3000/users");
 
 - Non-2xx responses throw `HttpError` instead of returning parsed JSON.
 - A JSON 404 from Seltzer is a throw, not `{ error: "Not Found" }` as a successful value.
-- You understand how 0.8.x `client.ts` differs from the 0.2.0 always-`res.json()` wrapper.
+- You understand how 0.9.0 `client.ts` differs from the 0.2.0 always-`res.json()` wrapper.
 
 ## Next
 

@@ -2,7 +2,7 @@
 
 **Rationale — not a backlog of missing stages.**
 
-This document explains why Seltzer is a named request pipeline instead of Express middleware or WordPress-style hooks. The lifecycle it describes (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) is **implemented** in `@citrusworx/seltzer` **0.8.1**. Parametric routes, JSON body parsing, `ResponseData` returns, `before` / `replace`, default `.required` validate, `generateRoutes`, CORS, and `HttpError` are source, not electives.
+This document explains why Seltzer is a named request pipeline instead of Express middleware or WordPress-style hooks. The lifecycle it describes (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) is **implemented** in `@citrusworx/seltzer` **0.9.0**. Parametric routes, JSON body parsing, `ResponseData` returns, `before` / `replace`, default `.required` validate, `generateRoutes`, CORS, and `HttpError` are source, not electives.
 
 **Product path (use the package):** [README](./README.md) → [Getting Started](./seltzer-getting-started.md) → [JSON API tutorial](./seltzer-api-tutorial.md) → [Pipeline](./seltzer-pipeline.md).
 
@@ -68,7 +68,7 @@ Its differentiation comes from its structure.
 
 ## The Foundational Design Decisions
 
-Several key design decisions define what Seltzer is. Each of these is in `libraries/seltzer/src` at 0.8.1.
+Several key design decisions define what Seltzer is. Each of these is in `libraries/seltzer/src` at 0.9.0.
 
 ### 1. Structured Context Instead of Raw `req` / `res`
 
@@ -222,7 +222,7 @@ There is no `after` yet. That is a roadmap item, not a hidden API.
 
 ## Mutation vs Immutability
 
-The design session left this as a fork. **0.8.x chose mutation.** Stages mutate the shared `PipelineContext` in place and return `void` to continue. That is simpler in Node and matches the tests.
+The design session left this as a fork. **0.9.0 chose mutation.** Stages mutate the shared `PipelineContext` in place and return `void` to continue. That is simpler in Node and matches the tests.
 
 Immutability would make transformations easier to log as copies. It is not the current model. Do not write stages that expect to `return ctx`.
 
@@ -263,7 +263,7 @@ Where Juice addresses UI expression, Seltzer addresses HTTP execution structure.
 
 ---
 
-## Identity (0.8.x)
+## Identity (0.9.0)
 
 > A structured, contract-aware HTTP runtime built around explicit request pipelines instead of middleware or hooks.
 

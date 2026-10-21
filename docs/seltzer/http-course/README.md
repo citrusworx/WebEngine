@@ -12,11 +12,11 @@ By the end, you should be able to explain an HTTP exchange, build and test a Sel
 
 Three labels distinguish what you can use from what you can design:
 
-- **Implemented — 0.8.1:** behavior present in the source inspected for this course.
+- **Implemented — 0.9.0:** behavior present in the source inspected for this course.
 - **Application code:** code we write around existing APIs; it is not a built-in feature.
 - **Proposed:** a design exercise, not a callable API, release commitment, or delivery prediction.
 
-The baseline is `libraries/seltzer` **0.8.1**, inspected after local merge `d25673e`. A package version alone does not prove that source and published artifacts are identical. [The source map](./source-map.md) identifies the implementation behind the lessons. Examples use the public package entrypoint.
+The baseline is `libraries/seltzer` **0.9.0**, the same cut as npm `@citrusworx/seltzer@0.9.0` (2026-10-21). [The source map](./source-map.md) identifies the implementation behind the lessons. Examples use the public package entrypoint.
 
 ## Course route
 

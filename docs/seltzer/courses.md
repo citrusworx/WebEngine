@@ -8,7 +8,7 @@ This page remains the supplemental reading list for the contributor track. It is
 
 If you want to **run** the HTTP surface that exists today (`Seltzer.init` / `.route` / `.listen` / `ResponseData` / `before` / `generateRoutes` / `client.*`), use the [product README](./README.md), [Getting Started](./seltzer-getting-started.md), and the [JSON API tutorial](./seltzer-api-tutorial.md).
 
-Come here when you intend to **rebuild** the shipped pipeline from `node:http` so you can extend `libraries/seltzer/src` without cargo-culting it. The exercises reconstruct 0.8.x behavior. They are not “implement the missing stage.”
+Come here when you intend to **rebuild** the shipped pipeline from `node:http` so you can extend `libraries/seltzer/src` without cargo-culting it. The exercises reconstruct 0.9.0 behavior. They are not “implement the missing stage.”
 
 A structured path to write **Seltzer** yourself — from raw `node:http` through streams, routing, pipeline stages, and contract validation — without leaning on AI for whole features.
 
@@ -242,4 +242,4 @@ You are ready to extend Seltzer without AI scaffolding when you can:
 2. Explain why request bodies require stream handling and why invalid JSON is 400
 3. Add a parametric route and populate `ctx.params`, including why `/items/new` beats `/items/:id`
 4. Return structured data from a handler and let the runtime serialize the HTTP response
-5. Extend the Seltzer client the way 0.8.x does (`HttpError`, JSON vs text, optional TLS)
+5. Extend the Seltzer client the way 0.9.0 does (`HttpError`, JSON vs text, a 30s deadline, no `undici`)

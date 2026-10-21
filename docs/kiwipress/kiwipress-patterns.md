@@ -97,7 +97,7 @@ const persistence = process.env.VITEST
 
 Postgres tests should inject `SqlExecutor` so `pg` is not imported.
 
-## Host-owned Seltzer routes (0.8.1)
+## Host-owned Seltzer routes (0.9.0)
 
 Prefer this over copying `registerKiwiPressGateway` internals:
 

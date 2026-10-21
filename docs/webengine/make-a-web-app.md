@@ -26,7 +26,7 @@ Read this before you treat any chapter as a finished product.
 - [Juice](../juice/README.md) — published CSS, attributes, themes
 - [Sig.js](../sigjs/README.md) — signals, effects, JSX runtime, router
 - [Nectarine](../nectarine/README.md) — compiler plus PostgreSQL, MySQL, and MongoDB adapters
-- [Seltzer](../seltzer/README.md) — early HTTP runtime; design is ahead of the code
+- [Seltzer](../seltzer/README.md) — Node HTTP runtime (`@citrusworx/seltzer@0.9.0`): object routes, `ResponseData`, named pipeline
 - [Grapevine](../grapevine/README.md) — DigitalOcean provider surface
 - [DNS](../dns/README.md) — core abstractions and a ResellerClub availability adapter ([getting started](../dns/dns-getting-started.md))
 - [Types](../types/README.md) — shared contracts (`Blueprint`, `Environment`, `DeploymentManifest`)
@@ -79,9 +79,11 @@ Define models and queries in YAML. Use the guides that exist; there is no separa
 
 ### 4. Seltzer — HTTP as a pipeline
 
-Seltzer is the request runtime. The design doc and study guide are the honest start; the implementation is still early.
+Seltzer is the request runtime. `@citrusworx/seltzer@0.9.0` ships `init` / `route` / `listen`, `ResponseData`, the named pipeline, and `generateRoutes`. Start with the product docs, then the study guide if you want to rebuild those pieces.
 
 - [Design Overview](../seltzer/README.md)
+- [Status](../seltzer/seltzer-status.md)
+- [Getting Started](../seltzer/seltzer-getting-started.md)
 - [Node study guide](../seltzer/courses.md)
 - [Exercises](../seltzer/exercises/README.md)
 

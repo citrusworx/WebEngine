@@ -26,7 +26,7 @@ The user should not need to manually initialize spinner behavior in their app co
 
 There is no `Spinner()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Spinner is a standalone indeterminate **busy indicator**. It is not a progress bar. Progress stays a valued `[progress]` / `[progress-fill]` bar (determinate or `progress="indeterminate"`). It is not a disclosure. CSS owns the spin. There is no value, no keyboard, no Escape, no focus trap, and no Sig Spinner factory.
 
@@ -190,7 +190,7 @@ Authors own whether the host is focusable. The runtime does not make it a contro
 ## Limitations
 
 - No `Spinner()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable-ish. Spinner is the twenty-first Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Disclosure remains the twentieth and also shipped in 0.9.2. Select is the twenty-second and also shipped in 0.9.2. Input is the twenty-third and also shipped in 0.9.2. Textarea is the twenty-fourth and also shipped in 0.9.2. Field is the twenty-fifth and also shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
+- This surface is Emerging, not Stable. Spinner is the twenty-first Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Disclosure remains the twentieth and also shipped in 0.9.2. Select is the twenty-second and also shipped in 0.9.2. Input is the twenty-third and also shipped in 0.9.2. Textarea is the twenty-fourth and also shipped in 0.9.2. Field is the twenty-fifth and also shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All twenty-six stay Emerging.
 - This is not a progress bar. There is no value, no `aria-valuenow`, and no `--juice-progress-ratio`. `progress="indeterminate"` is a different runtime.
 - This is not a disclosure. `[disclosure]` / `[disclosure-trigger]` / `[disclosure-panel]` is a different runtime. The two do not toggle each other.
 - A node without `[spinner]` is ignored. Any `[spinner]` value, including `spinner="busy"`, stays as authored.

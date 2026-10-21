@@ -26,7 +26,7 @@ The user should not need to manually initialize tooltip behavior in their app co
 
 There is no `Tooltip()` Sig factory. Markup plus the runtime is the contract.
 
-This surface is Emerging, not Stable-ish. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
+This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
 
 Tooltip is a hover/focus tip. It is not a popover (interactive), not a native `title` attribute, not a modal, not a drawer, and not a toast stack.
 

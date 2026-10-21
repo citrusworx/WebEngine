@@ -6,11 +6,11 @@ The goal is the same as Juice / Sig / Seltzer maturity writing: what is ready, w
 
 Related: [Roadmap](./kiwipress-roadmap.md), [API](./kiwipress-api.md), [Tutorial](./kiwipress-tutorial.md).
 
-Package changelog is mostly dependency bumps (Seltzer 0.8.1, Nectarine 0.3.0) plus a 0.4.0 “removed resolve()” note. Treat **source**, not the changelog prose, as the feature list.
+Older changelog entries name Seltzer 0.8.1. The dependency range is now `@citrusworx/seltzer@^0.9.0`. Treat **source**, not the changelog prose, as the feature list.
 
 ## Maturity levels
 
-### `Stable-ish`
+### `Stable`
 
 Usable today, central to the product, unlikely to change in basic concept. Pre-1.0 still means the package version can move.
 
@@ -30,18 +30,18 @@ Direction or app chrome, not a hardened public surface.
 
 | Area | Maturity | Notes |
 |---|---|---|
-| `Posts` / `Pages` / `Users` WordPress CRUD | Stable-ish | Collaborator spine; raw JSON in/out |
-| `Categories` / `Tags` / `Comments` WP reads | Stable-ish | No WP writes |
-| `WPAuth` Basic / Bearer / API key | Stable-ish | Basic wins; key combines |
-| Route aliases (`?slug=`, `?after=`, …) | Stable-ish | `createAliasedQueryRoute` |
-| `listAll` paging | Stable-ish | `X-WP-TotalPages`, cap 1000 |
-| `normalizeWordPressItem` / `ContentRecord` | Stable-ish | Status map documented |
-| `WPSync.preview` / `transfer` | Stable-ish | Explicit; throws per collection |
-| `KiwiPress.connect` wordpress + nectarine modes | Stable-ish | URL required only for wordpress mode |
+| `Posts` / `Pages` / `Users` WordPress CRUD | Stable | Collaborator spine; raw JSON in/out |
+| `Categories` / `Tags` / `Comments` WP reads | Stable | No WP writes |
+| `WPAuth` Basic / Bearer / API key | Stable | Basic wins; key combines |
+| Route aliases (`?slug=`, `?after=`, …) | Stable | `createAliasedQueryRoute` |
+| `listAll` paging | Stable | `X-WP-TotalPages`, cap 1000 |
+| `normalizeWordPressItem` / `ContentRecord` | Stable | Status map documented |
+| `WPSync.preview` / `transfer` | Stable | Explicit; throws per collection |
+| `KiwiPress.connect` wordpress + nectarine modes | Stable | URL required only for wordpress mode |
 | `NativeCollection` get/create/update/delete | Emerging | Partial field copy on write |
-| File persistence | Stable-ish | Atomic rename; `{ version: 1, types, collections }` |
+| File persistence | Stable | Atomic rename; `{ version: 1, types, collections }` |
 | Postgres persistence | Emerging | Nectarine `PgSql`; delete-then-insert; types stored as `__types` rows |
-| `persistenceFromEnv` | Stable-ish | File before PG |
+| `persistenceFromEnv` | Stable | File before PG |
 | `loadNectarineApi` | Emerging | Walker only; `parser.yaml` logs |
 | `registerKiwiPressGateway` | Emerging | `ResponseData` handlers; types + `/content/:kind` |
 | Gateway token / loopback | Emerging | Timing-safe compare |
@@ -77,8 +77,8 @@ Tests exist beside the source (`*.test.ts`) and `vitest.config.ts`. The package.
 |---|---|
 | KiwiPress is “Seltzer serving WordPress” | No. Outbound is `fetch` via `requestWordPress`. |
 | `WPClient` uses Seltzer `client.*` | No. `Seltzer.init().handler()` only stores options. |
-| Gateway is a 0.8.1 tutorial | No. It is a KiwiPress façade. Handlers do return `ResponseData`. |
-| Seltzer cannot match `:id` | False as of 0.8.1. Gateway still uses `?id=`. |
+| Gateway is a 0.9.0 tutorial | No. It is a KiwiPress façade. Handlers do return `ResponseData`. |
+| Seltzer cannot match `:id` | False as of 0.9.0. Gateway still uses `?id=`. |
 | `ctx.json` is current Seltzer | Removed in 0.4.0. The gateway returns `ResponseData` from a local `json(status, body)` helper. |
 
 ## Honesty: CMS
@@ -100,4 +100,4 @@ Tests exist beside the source (`*.test.ts`) and `vitest.config.ts`. The package.
 | Persistence requires the kernel | File or Nectarine `PgSql` |
 | Categories have WP create | Read-only on WordPress |
 | Transfer uses `getAll()` | Uses `listAll` |
-| Seltzer inbound is exact-path only | Seltzer 0.8.1 is parametric; gateway is still query-id |
+| Seltzer inbound is exact-path only | Seltzer 0.9.0 is parametric; gateway is still query-id |

@@ -1,6 +1,6 @@
 # Seltzer Pipeline
 
-The named request pipeline is **shipped core** in `@citrusworx/seltzer` **0.8.x**, not a design elective.
+The named request pipeline is **shipped core** in `@citrusworx/seltzer` **0.9.0**, not a design elective.
 
 Source: `libraries/seltzer/src/pipeline/**` and `Seltzer#before` / `Seltzer#replace` in `core/seltzer.ts`.
 

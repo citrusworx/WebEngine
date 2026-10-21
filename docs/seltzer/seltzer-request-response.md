@@ -1,6 +1,6 @@
 # Seltzer Request and Response
 
-How a request becomes bytes on the wire in `@citrusworx/seltzer` **0.8.1**.
+How a request becomes bytes on the wire in `@citrusworx/seltzer` **0.9.0**.
 
 This page is the request/response mental model. Routing is [Routing](./seltzer-routing.md). Stages are [Pipeline](./seltzer-pipeline.md). Outbound calls are [Client](./seltzer-client.md).
 
@@ -195,9 +195,9 @@ The pipeline always reaches builtin `send`. Handlers should return `ResponseData
 
 Do not `writeHead` yourself. That call throws, the handler’s return is discarded, and the client gets the generic 500. Put headers on `ResponseData`.
 
-## 0.2.0 vs 0.8.1
+## 0.2.0 vs 0.9.0
 
-| 0.2.0 (`master` docs) | 0.8.1 |
+| 0.2.0 (`master` docs) | 0.9.0 |
 |---|---|
 | `ctx.json(data, status?)` writes immediately | gone; calling it throws |
 | Handler return discarded; curl hangs | return `ResponseData`; runtime sends |
