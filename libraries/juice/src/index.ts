@@ -277,6 +277,17 @@ export type {
     FieldState
 } from "./js/src/field/field-runtime.js";
 export {
+    createIconButton,
+    initIconButton,
+    startIconButtonRuntime,
+    stopIconButtonRuntime
+} from "./js/src/icon-button/icon-button-runtime.js";
+export type {
+    IconButtonController,
+    IconButtonOptions,
+    IconButtonState
+} from "./js/src/icon-button/icon-button-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,
