@@ -142,12 +142,17 @@ describe("Bridge", () => {
     });
 
     it("accepts an administrator from users/me?context=edit", async () => {
-        const fetchMock = vi.fn(async () => jsonResponse(200, {
-            id: 7,
-            slug: "ada",
-            name: "Ada",
-            capabilities: { manage_options: true, read: true }
-        }));
+        const fetchMock = vi.fn(async (url: string) => {
+            if (String(url).includes("/kiwipress/v1/health")) {
+                return jsonResponse(200, healthPayload);
+            }
+            return jsonResponse(200, {
+                id: 7,
+                slug: "ada",
+                name: "Ada",
+                capabilities: { manage_options: true, read: true }
+            });
+        });
         vi.stubGlobal("fetch", fetchMock);
 
         await expect(new Bridge(wordpressConfig).verifyCredentials()).resolves.toEqual({
@@ -156,19 +161,27 @@ describe("Bridge", () => {
             name: "Ada"
         });
 
-        const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-        expect(url).toBe("https://cms.example.com/wp-json/wp/v2/users/me?context=edit");
-        expect(fetchMock).toHaveBeenCalledTimes(1);
-        expect(headerRecord(init).Authorization).toMatch(/^Basic /);
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        const [healthUrl, healthInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+        const [userUrl, userInit] = fetchMock.mock.calls[1] as [string, RequestInit];
+        expect(healthUrl).toBe("https://cms.example.com/wp-json/kiwipress/v1/health");
+        expect(headerRecord(healthInit).Authorization).toBeUndefined();
+        expect(userUrl).toBe("https://cms.example.com/wp-json/wp/v2/users/me?context=edit");
+        expect(headerRecord(userInit).Authorization).toMatch(/^Basic /);
     });
 
     it("rejects a signed-in user without manage_options", async () => {
-        vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(200, {
-            id: 4,
-            slug: "guest",
-            name: "Guest",
-            capabilities: { manage_options: false, read: true }
-        })));
+        vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+            if (String(url).includes("/kiwipress/v1/health")) {
+                return jsonResponse(200, healthPayload);
+            }
+            return jsonResponse(200, {
+                id: 4,
+                slug: "guest",
+                name: "Guest",
+                capabilities: { manage_options: false, read: true }
+            });
+        }));
 
         await expect(new Bridge(wordpressConfig).verifyCredentials()).rejects.toMatchObject({
             code: "insufficient_role"
@@ -176,14 +189,35 @@ describe("Bridge", () => {
     });
 
     it("rejects bad credentials on the user check", async () => {
-        vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(401, {
-            code: "invalid_username",
-            message: "Unknown username."
-        })));
+        vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+            if (String(url).includes("/kiwipress/v1/health")) {
+                return jsonResponse(200, healthPayload);
+            }
+            return jsonResponse(401, {
+                code: "invalid_username",
+                message: "Unknown username."
+            });
+        }));
 
         await expect(new Bridge(wordpressConfig).verifyCredentials()).rejects.toMatchObject({
             code: "bad_credentials"
         });
+    });
+
+    it("reports a missing plugin from verifyCredentials when health is 404", async () => {
+        const fetchMock = vi.fn(async () => jsonResponse(404, {
+            code: "rest_no_route",
+            message: "No route was found matching the URL and request method.",
+            data: { status: 404 }
+        }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        await expect(new Bridge(wordpressConfig).verifyCredentials()).rejects.toMatchObject({
+            code: "plugin_missing",
+            status: 404
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/kiwipress/v1/health");
     });
 
     it("rejects an unreachable site on the user check", async () => {
@@ -197,10 +231,15 @@ describe("Bridge", () => {
     });
 
     it("does not treat a users/me 404 as a missing bridge plugin", async () => {
-        vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(404, {
-            code: "rest_no_route",
-            message: "No route was found matching the URL and request method."
-        })));
+        vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+            if (String(url).includes("/kiwipress/v1/health")) {
+                return jsonResponse(200, healthPayload);
+            }
+            return jsonResponse(404, {
+                code: "rest_no_route",
+                message: "No route was found matching the URL and request method."
+            });
+        }));
 
         const error = await new Bridge(wordpressConfig).verifyCredentials().then(
             () => null,

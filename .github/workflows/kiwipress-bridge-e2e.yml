@@ -1,0 +1,34 @@
+# Opt-in. Real WordPress in Docker is too heavy for the default PR checks.
+# Run from the Actions tab: KiwiPress Bridge E2E → Run workflow.
+# Locally: yarn test:e2e:bridge
+
+name: KiwiPress Bridge E2E
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bridge-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.13.0 --activate
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Bridge end-to-end (real WordPress)
+        run: yarn test:e2e:bridge

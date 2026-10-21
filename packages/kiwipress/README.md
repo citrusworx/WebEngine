@@ -91,7 +91,7 @@ Options map onto the WordPress REST args: `type` (`post` | `term` | `post-format
 ```ts
 const health = await kiwi.bridge.health(); // no Authorization header
 
-await kiwi.bridge.verifyCredentials(); // GET /wp/v2/users/me?context=edit, requires manage_options
+await kiwi.bridge.verifyCredentials(); // public health, then GET /wp/v2/users/me?context=edit (manage_options)
 
 await kiwi.bridge.saveSettings({
     frontend_url: "https://app.example.com",

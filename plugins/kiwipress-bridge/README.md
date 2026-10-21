@@ -120,7 +120,7 @@ Then either:
 
 Create an application password under **Users → Profile → Application Passwords** for an administrator. KiwiPress keeps that password. This plugin never sees it, and it is not stored in `kiwipress_bridge`.
 
-There is no Composer package and no PHPUnit suite. Syntax-check with `php -l` on each file if you want a local smoke test.
+There is no Composer package and no PHPUnit suite. Syntax-check with `php -l` on each file if you want a local smoke test. The Docker end-to-end suite below is the check against a real site.
 
 ## Pairing (B1)
 
@@ -133,6 +133,27 @@ KiwiPress already knows the site and starts every call. This plugin never looks 
 5. Later status checks call `GET /health` again (still public) and GET the frontend URL. Disconnect sends `POST /settings` with `paired: false`, then deletes the copy stored by KiwiPress even if this site is down.
 
 Content keeps moving over `/wp/v2` with the same application password. This folder is still the only thing you install into `wp-content/plugins`.
+
+## End-to-end test
+
+`yarn test:e2e:bridge` boots MariaDB and WordPress in Docker (host network, so the site is `http://127.0.0.1:18080` and MariaDB is `127.0.0.1:3306`), mounts this plugin, installs the site, turns on pretty permalinks, and creates an administrator and a subscriber with application passwords. It then runs the real `kiwi.bridge` client and the KiwiPress back routes (`/projects/:id/bridge/probe|pair|status|unpair`) against that site.
+
+The suite is opt-in. It is not part of `yarn workspace @citrusworx/kiwipress test` or the back unit tests, because it needs a Docker daemon. From the repo root:
+
+```bash
+yarn test:e2e:bridge
+```
+
+That script is `plugins/kiwipress-bridge/tests/e2e/run.sh`. Useful overrides:
+
+| Env | Default | Role |
+| --- | --- | --- |
+| `KIWIPRESS_E2E_WP_PORT` | `18080` | Host port published to WordPress. |
+| `KIWIPRESS_E2E_KEEP` | unset | Set to `1` to leave the containers up after the run. |
+
+Application passwords over plain HTTP require `WP_ENVIRONMENT_TYPE=local`. The compose file sets that in `wp-config.php`. The suite generates its own `KIWIPRESS_SECRET_KEY` for the test process and does not read `apps/kiwipress/back/.env`.
+
+GitHub Actions workflow **KiwiPress Bridge E2E** is manual (`workflow_dispatch` only). It runs the same command.
 
 ## Not in this version
 
