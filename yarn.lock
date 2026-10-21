@@ -2260,7 +2260,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/juiceui@npm:^0.9.0, @citrusworx/juiceui@npm:^0.9.1, @citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:^, @citrusworx/juiceui@workspace:libraries/juice":
+"@citrusworx/juiceui@npm:>=0.9.1 <0.11.0, @citrusworx/juiceui@npm:^0.9.0, @citrusworx/juiceui@workspace:*, @citrusworx/juiceui@workspace:^, @citrusworx/juiceui@workspace:libraries/juice":
   version: 0.0.0-use.local
   resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
@@ -2411,11 +2411,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/sigjs@workspace:libraries/sig"
   dependencies:
-    "@citrusworx/juiceui": "npm:^0.9.1"
+    "@citrusworx/juiceui": "npm:>=0.9.1 <0.11.0"
     jsdom: "npm:^29.0.1"
     typescript: "npm:^5.9.3"
   peerDependencies:
-    "@citrusworx/juiceui": ^0.9.1
+    "@citrusworx/juiceui": ">=0.9.1 <0.11.0"
   peerDependenciesMeta:
     "@citrusworx/juiceui":
       optional: true

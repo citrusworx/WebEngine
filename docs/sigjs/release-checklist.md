@@ -6,6 +6,8 @@ npm **`0.6.0`** is the current registry cut (published 2026-10-21 from an unvers
 
 **0.7.0** is the release candidate. `libraries/sig/package.json` is already `0.7.0`, and `libraries/sig/CHANGELOG.md` records it. It is **not** on npm. Do **not** bump `0.7.0` again before that publish. Do **not** run `yarn version-packages` for this publish. Other packages still have pending changesets, and that command would version them and can move Sig off `0.7.0`.
 
+Sig's optional Juice peer is `>=0.9.1 <0.11.0`. The pending Juice minor is `0.10.0`, and `^0.9.1` does not include it. Changesets major-bumps a peer dependent only when the new version leaves the range (`onlyUpdatePeerDependentsWhenOutOfRange`). With no Sig changesets left, `yarn changeset status` does not bump `@citrusworx/sigjs`.
+
 The Changeset that produced `0.4.0` (`sigjs-juice-adapter`) is **consumed**. Do not re-add it. The three Changesets that produced `0.3.0` (`sigjs-reactive-props-routes`, `sigjs-runtime-polish`, `sigjs-standalone-docs`) are **consumed**. Do not re-add them. The three that describe this `0.7.0` tree (`sigjs-bind-list`, `sigjs-v1-api-cleanup`, `sigjs-api-surface`) are **consumed** in the changelog. Do not re-add them.
 
 There is **no** Changesets GitHub Action and **no** `NPM_TOKEN` in this repo. Publish is manual, same as Juice / Nectarine. Do not invent CI credentials.

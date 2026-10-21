@@ -12,6 +12,7 @@ Release candidate. Not published. npm latest is **0.6.0** (2026-10-21).
 ### Patch Changes
 
 - Tag `bindList` and `ListItem` as experimental and `captureCleanupScope` as internal. Add explicit return types on the public functions that were missing them. `memo().get()` is now declared as `T`, matching the API page; declaration emit previously inferred `T | undefined` from the uninitialized cache. No export was added, removed, or renamed.
+- Optional `@citrusworx/juiceui` peer is `>=0.9.1 <0.11.0` (was `^0.9.1`). `^0.9.1` does not include the pending Juice minor `0.10.0`, and Changesets would otherwise major-bump Sig for that peer.
 - Sig's build binds `@citrusworx/sigjs` to this package's source. Juice's declaration files import that name, and a nested registry copy's `declare global` JSX block (`type Element`, string index signature) otherwise collides with `src/jsx.ts` during `prepack`. `skipLibCheck` does not suppress that clash, and those members do not merge with the published 0.6.0 types.
 
 ## 0.6.0
