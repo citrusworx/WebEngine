@@ -776,6 +776,21 @@ Derived curves `--juice-motion-ease-in-out` (`ease-in-out`) and `--juice-motion-
 
 `prefers-reduced-motion: reduce` collapses the four duration tokens to `0.01ms` on `:root` and `[theme]`, with `!important`. A theme pass-through literal cannot keep a long duration. Motion core shipped in `@citrusworx/juiceui@0.9.2` and stays Emerging. See [Animations](./juice-animations.md).
 
+### Icon button (optional override)
+
+Core CSS owns the defaults on `:root`. Shipped library themes and generated `--jx-*` themes are not required to bind them. Color stays on `button` / `[btn]` — there is no icon-button fill role. Override a `--juice-icon-button-*` name only when the square box fights that theme.
+
+| Token | Default |
+|---|---|
+| `--juice-icon-button-padding` / `-sm` / `-lg` | `0.625rem` / `0.4rem` / `0.875rem` (button block padding) |
+| `--juice-icon-button-icon-size` / `-sm` / `-lg` | `1.25rem` / `1rem` / `1.5rem` |
+| `--juice-icon-button-size` / `-sm` / `-lg` | `calc(icon-size + padding * 2)` |
+| `--juice-icon-button-radius` / `-sm` / `-lg` | `0.5rem` / `0.375rem` / `0.625rem` |
+| `--juice-icon-button-radius-round` | `999px` |
+| `--juice-icon-button-focus-ring` | `currentColor` |
+
+`[icon-button]` is a square icon-only control. `[icon-button="round"]` and `[icon-button][round]` are the circle. `[scale="sm"|"lg"]` steps size, padding, radius, and glyph together. `[pressed]` and `[aria-pressed="true"]` are a visual toggle (inset ring). Hover fill stays with the button variant. `:active` presses `translateY(2px)`, same as `[btn="3d"]`. Transitions use `--juice-motion-*`.
+
 Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/textarea/field/wizard/surface/border-strength/shadow-tone/overlay roles, and they pass motion through as above. They do not emit the optional accordion/tabs hooks.
 
 ## 6. Identity-prefix alias convention
@@ -857,6 +872,7 @@ Also not theme roles: layout primitives, responsive collapse, app state, feature
 | Shadow tone (`cool` / `warm` × color, shadow) | bind | bind | bind | bind | bind |
 | Overlay (`frost` / `tint` × wash, layer) | bind | bind | bind | bind | bind |
 | Motion (`--juice-motion-*`) | optional (core default) | optional (core default) | optional (core default) | optional (core default) | optional (core default) |
+| Icon button geometry (`--juice-icon-button-*`) | optional (core default) | optional (core default) | optional (core default) | optional (core default) | optional (core default) |
 | Accordion optional | omit (core no-op) | omit | omit | bind all seven | bind all seven |
 | Tabs optional | omit | omit | omit | `--juice-tabs-panel` only | `--juice-tabs-panel` only |
 | Standalone blur scale | not a theme role | not a theme role | not a theme role | not a theme role | not a theme role |

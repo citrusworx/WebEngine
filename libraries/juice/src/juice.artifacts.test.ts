@@ -710,6 +710,52 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/(^|[,{])\s*summary\s*[,{]/);
     });
 
+    it("includes icon-button structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+        const blocks = [...css.matchAll(/\[icon-button\][^{]*\{[^}]*\}/g)].map((match) => match[0]);
+
+        expect(blocks.length).toBeGreaterThan(0);
+        for (const block of blocks) {
+            expect(block).not.toMatch(/(^|[;{\s])background-color\s*:/);
+            expect(block).not.toMatch(/(^|[;{\s])background-image\s*:/);
+            expect(block).not.toMatch(/(^|[;{\s])background\s*:/);
+            expect(block).not.toMatch(/z-index:\s*10/);
+        }
+
+        expect(css).toContain("[icon-button]");
+        expect(css).toMatch(/\[icon-button=["']?round["']?\]/);
+        expect(css).toContain("[icon-button][round]");
+        expect(css).toMatch(/\[icon-button\]\[scale=["']?sm["']?\]/);
+        expect(css).toMatch(/\[icon-button\]\[scale=["']?lg["']?\]/);
+        expect(css).toContain("[icon-button][pressed]");
+        expect(css).toMatch(/\[icon-button\]\[aria-pressed=["']?true["']?\]/);
+        expect(css).toContain("[icon-button]:focus-visible");
+        expect(css).toContain("[icon-button]:active");
+        expect(css).toContain("[icon-button]:disabled");
+        expect(css).toMatch(/\[icon-button\]\[aria-disabled=["']?true["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[icon-button\]/);
+        expect(css).toMatch(/\[icon-button\]:active[^{]*\{[^}]*translateY\(2px\)/);
+        expect(css).toContain("outline: 2px solid var(--juice-icon-button-focus-ring)");
+        expect(css).toContain("--juice-icon-button-padding: 0.625rem");
+        expect(css).toContain("--juice-icon-button-padding-sm: 0.4rem");
+        expect(css).toContain("--juice-icon-button-padding-lg: 0.875rem");
+        expect(css).toContain("--juice-icon-button-icon-size: 1.25rem");
+        expect(css).toContain("--juice-icon-button-icon-size-sm: 1rem");
+        expect(css).toContain("--juice-icon-button-icon-size-lg: 1.5rem");
+        expect(css).toContain(
+            "--juice-icon-button-size: calc(var(--juice-icon-button-icon-size) + (var(--juice-icon-button-padding) * 2))"
+        );
+        expect(css).toContain("--juice-icon-button-radius: 0.5rem");
+        expect(css).toContain("--juice-icon-button-radius-round: 999px");
+        expect(css).toContain("--juice-icon-button-focus-ring: currentColor");
+        expect(css).toContain(
+            "transition: background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard)"
+        );
+        expect(reduced.some((block) => block.includes("[icon-button]") && block.includes("transition: none"))).toBe(true);
+        expect(css).not.toMatch(/\[icon-button\][^{]*\{[^}]*z-index:\s*10/);
+    });
+
     it("includes spinner structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
