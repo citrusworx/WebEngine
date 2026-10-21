@@ -199,6 +199,10 @@ Those would blur the split that justifies both libraries.
 
 ---
 
+## API surface for v1
+
+The classified inventory is [API surface](./api-surface.md). Stable exports are the v1 contract. `bindList` and `ListItem` stay experimental. `captureCleanupScope` is internal and still exported. `jsxDEV` belongs on `./jsx-dev-runtime`; the root re-export is accidental. This roadmap does not remove or rename anything. The breaking cleanups are listed in that doc for a later decision.
+
 ## Summary
 
 Sig.js is in a meaningfully stronger place than a prototype.
@@ -219,5 +223,6 @@ The next stage is refinement:
 - lists are decided: `bindList` for keyed rows, `replaceChildren` for a rewrite, no `<For>` / `<Show>`
 - keep the static-first promise
 - keep param matching boring (exact wins, first registered pattern, `"*"` last)
+- freeze the public surface per [API surface](./api-surface.md) before calling it 1.0
 
-That is a strong place to be. The docs stay with [Status](./sig-status.md) and the APIs in `libraries/sig/src`.
+That is a strong place to be. The docs stay with [Status](./sig-status.md), [API surface](./api-surface.md), and the APIs in `libraries/sig/src`.

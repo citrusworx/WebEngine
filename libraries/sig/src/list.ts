@@ -4,6 +4,8 @@ import { Signal, captureCleanupScope, effect, untrack } from "./signal.js";
 /**
  * Per-row view of the current item. Read it inside an effect or a function
  * child. `bindList` does not call `render` again when the item changes.
+ *
+ * @experimental
  */
 export type ListItem<T> = {
     get(): T;
@@ -57,6 +59,8 @@ const boundParents = new WeakSet<Element>();
  * disposer is attached to `parent`, so `disposeTree` / `mount` stop the list
  * too. Row effects are also disposed when that row's key disappears.
  * `replaceChildren` remains the non-keyed alternative: it rebuilds nodes.
+ *
+ * @experimental
  */
 export function bindList<T, K>(
     parent: Element,

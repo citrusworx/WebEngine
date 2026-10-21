@@ -46,6 +46,15 @@ function disposeScope(scope) {
     }
     scope.cleanups.clear();
 }
+/**
+ * Collects cleanups registered while `fn` runs and returns them as `dispose`.
+ * The JSX runtime uses this for a component call. `bindList` uses it for a row.
+ * If `fn` throws, those cleanups run before the error propagates.
+ *
+ * App code should not call this. It stays exported so existing imports keep working.
+ *
+ * @internal
+ */
 export function captureCleanupScope(fn) {
     const parentScope = currentCleanupScope;
     const scope = { cleanups: new Set() };
@@ -89,6 +98,25 @@ export function untrack(fn) {
         currentSubscriber = prev;
     }
 }
+/**
+ * Creates a reactive signal that tracks subscribers for state changes.
+ *
+ * When the signal's getter is called within an {@link effect}, the effect function
+ * is automatically subscribed to receive updates. When the setter is called with a new value,
+ * all subscribers are notified and their callback functions are executed.
+ *
+ * @template T - The type of value stored in the signal
+ * @param value - The initial value of the signal
+ * @returns An object with `get` and `set` methods for reading and writing the signal value
+ * @returns {Object} Signal object
+ * @returns {Function} Signal.get - Retrieves the current value and registers the current subscriber
+ * @returns {Function} Signal.set - Updates the value and notifies all subscribers
+ *
+ * @example
+ * const message = Signal('hello');
+ * const current = message.get(); // Returns 'hello'
+ * message.set('world'); // Notifies all subscribers
+ */
 export function Signal(value) {
     const subscribers = new Set();
     function getter() {
@@ -160,12 +188,28 @@ export function memo(fn) {
             }
             isDirty = false;
         }
+        // Assigned on the dirty path above. The slot is `T | undefined` only before that run.
         return cachedValue;
     }
     return {
         get: getter
     };
 }
+/**
+ * Registers a function to automatically run whenever accessed signals change.
+ *
+ * The provided function is executed immediately, and any signals accessed during execution
+ * will register this function as a subscriber. When those signals are updated via their setter,
+ * this effect function will be re-executed.
+ *
+ * @param fn - The callback function to execute and track for reactive updates
+ * @returns A disposer. Calling it unsubscribes the effect and runs the last cleanup.
+ *
+ * @example
+ * effect(() => {
+ *   console.log('Count is:', count.get());
+ * });
+ */
 export function effect(fn) {
     const dependencies = new Set();
     let cleanup;

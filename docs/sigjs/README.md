@@ -395,9 +395,10 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 10. [Router Guide](./sig-router.md) — exact paths, `:param` routes, named routes, cleanup
 11. [Sig.js + Juice](./sig-juice-integration.md) — behavior vs structure
 12. [API Reference](./sig-api.md) — the public surface, one page
-13. [Troubleshooting](./sig-troubleshooting.md) — the usual “why didn’t it update?” cases
-14. [Status](./sig-status.md) — Alpha maturity matrix
-15. [Roadmap](./sig-roadmap.md) — what would move Sig upward, and what would not
+13. [API surface](./api-surface.md) — v1 freeze inventory: stable, experimental, internal
+14. [Troubleshooting](./sig-troubleshooting.md) — the usual “why didn’t it update?” cases
+15. [Status](./sig-status.md) — Alpha maturity matrix
+16. [Roadmap](./sig-roadmap.md) — what would move Sig upward, and what would not
 
 ## Status
 

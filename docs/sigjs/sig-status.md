@@ -8,7 +8,7 @@ The goal is the same as Juice’s maturity writing: make it easy to answer what 
 
 Workspace index calls this **Active alpha**. That matches the code better than “beta” or “production ready.”
 
-Related: [Roadmap](./sig-roadmap.md) for direction. [API](./sig-api.md) for the surface as it exists.
+Related: [Roadmap](./sig-roadmap.md) for direction. [API](./sig-api.md) for the surface as it exists. [API surface](./api-surface.md) for the v1 classification (stable, experimental, internal).
 
 ## Maturity levels
 
