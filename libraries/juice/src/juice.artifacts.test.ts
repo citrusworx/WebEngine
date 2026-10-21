@@ -717,8 +717,9 @@ describe("Juice build artifacts", () => {
 
         expect(blocks.length).toBeGreaterThan(0);
         for (const block of blocks) {
-            expect(block).not.toContain("background-color");
-            expect(block).not.toContain("background-image");
+            expect(block).not.toMatch(/(^|[;{\s])background-color\s*:/);
+            expect(block).not.toMatch(/(^|[;{\s])background-image\s*:/);
+            expect(block).not.toMatch(/(^|[;{\s])background\s*:/);
             expect(block).not.toMatch(/z-index:\s*10/);
         }
 

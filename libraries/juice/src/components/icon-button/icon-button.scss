@@ -66,14 +66,13 @@
     border-radius: $radius;
 }
 
+// Glyph size stays on the role. Do not shrink it to the content box:
+// a theme or UA border is inside the border-box, and max-width: 100%
+// would undersize the icon. The square still centers the glyph.
 @mixin -juice-icon-button-glyph($size) {
     width: $size;
     height: $size;
-    max-width: 100%;
-    max-height: 100%;
-    min-width: 0;
-    min-height: 0;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
 }
 
 [icon-button],
