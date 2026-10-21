@@ -7,10 +7,10 @@ Reactivity is opt-in. Host elements render once; wrap a child or a prop in a fun
 ## Install
 
 ```bash
-npm install @citrusworx/sigjs@^0.4.0
+npm install @citrusworx/sigjs@^0.7.0
 ```
 
-Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.4.0` or `pnpm add @citrusworx/sigjs@^0.4.0`.
+Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.7.0` or `pnpm add @citrusworx/sigjs@^0.7.0`. The workspace copy is `0.7.0` and is not on npm yet. `^0.4.0` does not install `0.7.0`.
 
 ## Signals
 

@@ -42,6 +42,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Reject a nested @citrusworx/sigjs install
+        run: node libraries/sig/scripts/check-no-nested-sigjs.mjs
+
+      - name: Build Sig against a foreign JSX copy
+        run: node libraries/sig/scripts/check-foreign-jsx-build.mjs
+
       - name: Verify Juice package
         run: yarn verify:juice
 

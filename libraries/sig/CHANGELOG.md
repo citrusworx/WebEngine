@@ -1,5 +1,14 @@
 # @citrusworx/sigjs
 
+## 0.7.0
+
+Unpublished. npm **0.6.0** (2026-10-21) is the latest registry cut. This workspace version is the next publish. Do not republish it, and do not run `yarn version-packages` before that publish.
+
+### Patch Changes
+
+- Sig's build binds `@citrusworx/sigjs` to this package's source. Juice's declaration files import that name, and a nested registry copy's `declare global` JSX block (`type Element`, string index signature) otherwise collides with `src/jsx.ts` during `prepack`. `skipLibCheck` does not suppress that clash, and those members do not merge with the published 0.6.0 types.
+- Consumers that publish or install Sig declare `^0.7.0`. A `^0.4.0` pin matches neither `0.6.0` nor `0.7.0`, so Yarn nests a registry tarball beside the workspace package.
+
 ## 0.4.0
 
 Published to npm **2026-10-16**. Workspace `package.json` matches this version. Do not republish.
