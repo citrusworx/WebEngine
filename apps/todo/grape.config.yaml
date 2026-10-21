@@ -1,0 +1,107 @@
+# ToDo course — droplet for the Seltzer API, managed Postgres, Spaces + CDN
+# for the Vite build. Shape matches libraries/grapevine examples/blueprints
+# 04-full-web-stack.yaml and 05-static-site-spaces.yaml.
+#
+# grape validate / grape plan / grape status do not call DigitalOcean.
+# grape apply does. Do not apply this file until the placeholders below are
+# yours. Apply creates the resources. It does not run yarn, upload dist/,
+# or install Node. This file has no `stack` section, so connection_env is
+# not written onto the droplet.
+#
+# Replace before apply:
+#   REPLACE_WITH_YOUR_IP   your public IPv4, SSH /32
+#   example.com            a zone delegated to DigitalOcean
+#   todo.example.com       the static hostname
+#   todo-static-example    a Space name unique in your account
+#
+#   export DO_TOKEN=dop_v1_...
+#   export DO_SPACES_ACCESS_KEY_ID=...
+#   export DO_SPACES_SECRET_ACCESS_KEY=...
+#   yarn workspace @citrusworx/todo-app validate:grape
+#   yarn workspace @citrusworx/todo-app plan:grape
+#   yarn workspace @citrusworx/todo-app status:grape
+
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - todo
+  ssh_keys:
+    - name: todo
+      generate: true
+  vpcs:
+    - name: todo
+      description: ToDo API VPC
+      ip_range: 10.130.0.0/16
+  databases:
+    - name: todo-pg
+      engine: pg
+      version: "16"
+      size: db-s-1vcpu-1gb
+      num_nodes: 1
+      vpc: todo
+      tags: [todo]
+      wait: true
+      private: true
+      connection_env:
+        host: PG_HOST
+        port: PG_PORT
+        user: PG_USER
+        password: PG_PASS
+        database: PG_DB
+  droplets:
+    - name: todo-api-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: todo
+      monitoring: true
+      tags: [todo]
+  firewalls:
+    - name: todo-api
+      droplets: [todo-api-01]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["REPLACE_WITH_YOUR_IP/32"]
+        - protocol: tcp
+          ports: "80"
+          sources: ["0.0.0.0/0"]
+        - protocol: tcp
+          ports: "443"
+          sources: ["0.0.0.0/0"]
+        - protocol: tcp
+          ports: "3001"
+          sources: ["0.0.0.0/0"]
+        - protocol: icmp
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "1-65535"
+          destinations: ["0.0.0.0/0"]
+        - protocol: udp
+          ports: "1-65535"
+          destinations: ["0.0.0.0/0"]
+        - protocol: icmp
+          destinations: ["0.0.0.0/0"]
+  domains:
+    - name: example.com
+  spaces:
+    - name: todo-static-example
+      region: nyc3
+      acl: public-read
+  certificates:
+    - name: todo-static
+      type: lets_encrypt
+      dns_names:
+        - todo.example.com
+  cdn:
+    - space: todo-static-example
+      region: nyc3
+      ttl: 3600
+      custom_domain: todo.example.com
+      certificate: todo-static

@@ -1,0 +1,7 @@
+/* Juice [width] is an attribute selector. Sig assigns the DOM property
+   `width` instead, so [width="100%"] never matches these controls. */
+[data-todo] input,
+[data-todo] textarea {
+  width: 100%;
+  box-sizing: border-box;
+}

@@ -44,6 +44,10 @@ apps/*
 !./apps/miamakes/**
 !apps/miamakes/
 !apps/miamakes/**
+!./apps/todo/
+!./apps/todo/**
+!apps/todo/
+!apps/todo/**
 
 ./kiwipresser/*
 kiwipresser/*

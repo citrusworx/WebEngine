@@ -1,0 +1,12 @@
+Todo:
+  table: todos
+  description: One task on the learner's list
+  fields:
+    id: string PRIMARY KEY
+    title: string NOT NULL
+    notes: string
+    done: boolean NOT NULL DEFAULT false
+    created_at: timestamp NOT NULL DEFAULT NOW()
+  indexes:
+    todos_created_idx:
+      columns: [created_at]
