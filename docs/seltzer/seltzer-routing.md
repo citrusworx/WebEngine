@@ -104,7 +104,7 @@ The matcher does not look at host. Virtual hosts are your `ctx.headers.host` che
 
 ## No middleware, no router groups, no unroute
 
-There is no `app.use`, no mounted sub-app, no `Router()`, and no way to remove a route. Grouping is functions that call `app.route`:
+There is no `app.use` ([non-goal](../../libraries/seltzer/README.md#no-middleware-chain)), no mounted sub-app, no `Router()`, and no way to remove a route. Grouping is functions that call `app.route`:
 
 ```ts
 function mountNotes(app: Seltzer) {

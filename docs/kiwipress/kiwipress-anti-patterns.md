@@ -59,7 +59,7 @@ Bad:
 handler: (ctx) => { ctx.json(await kiwi.native.posts.getAll()); }
 ```
 
-Why: Seltzer 0.8.1 removed `ctx.json`. Handlers must return `{ body }`. The **existing** gateway still does this — that is a code-capped gap, not a pattern to copy.
+Why: Seltzer 0.8.1 removed `ctx.json`. Handlers must return `{ body }`. `registerKiwiPressGateway` already returns `ResponseData`. Do not copy the old helper.
 
 Better:
 

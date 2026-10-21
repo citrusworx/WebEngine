@@ -48,6 +48,8 @@ export { createTextarea, initTextarea, startTextareaRuntime, stopTextareaRuntime
 export type { TextareaController, TextareaOptions, TextareaState } from "./src/textarea/textarea-runtime.js";
 export { createField, initField, startFieldRuntime, stopFieldRuntime } from "./src/field/field-runtime.js";
 export type { FieldController, FieldOptions, FieldState } from "./src/field/field-runtime.js";
+export { createIconButton, initIconButton, startIconButtonRuntime, stopIconButtonRuntime } from "./src/icon-button/icon-button-runtime.js";
+export type { IconButtonController, IconButtonOptions, IconButtonState } from "./src/icon-button/icon-button-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./src/shared/motion.js";

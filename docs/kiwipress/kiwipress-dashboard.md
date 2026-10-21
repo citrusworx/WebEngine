@@ -101,4 +101,4 @@ Responses are sanitized: DigitalOcean tokens and password fields are stripped. T
 
 ## Gateway honesty
 
-The CMS helper (`registerKiwiPressGateway`) is still the older `ctx.json` façade. See [Gateway](./kiwipress-gateway.md). New provision routes do **not** copy that pattern.
+The CMS helper (`registerKiwiPressGateway`) returns Seltzer `ResponseData`. See [Gateway](./kiwipress-gateway.md). Provision routes use the same return shape.

@@ -230,7 +230,7 @@ Do not reimplement JSON parse in the replacement. `parse` already did that.
 - `remove(name)` — not exported
 - Free-form stage names — only `STAGE_NAMES`
 - Immutable ctx copies — mutation is the model
-- `app.use` / `next()`
+- `app.use` / `next()` — [non-goal](../../libraries/seltzer/README.md#no-middleware-chain)
 
 [Exercises 6–7](./exercises/README.md) rebuild this runner from `node:http` so you can read `pipeline/index.ts` without cargo-culting it. They are not “implement the missing stage.”
 

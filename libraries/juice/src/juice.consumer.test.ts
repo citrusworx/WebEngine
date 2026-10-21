@@ -1509,6 +1509,62 @@ describe("Juice consumer smoke", () => {
             module.stopTabsRuntime();
             module.stopAccordionRuntime();
             module.stopNavigationRuntime();
+            module.stopIconButtonRuntime();
+        });
+    });
+
+    it("lets a consumer toggle an icon button and read juice:change state", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopIconButtonRuntime();
+            document.body.innerHTML = `
+                <button type="button" icon-button toggle aria-label="Bold" id="bold"></button>
+                <button type="button" icon-button aria-label="Close" id="close"></button>
+                <div icon-button toggle id="plain"></div>
+            `;
+
+            const controller = module.createIconButton({ root: document.body });
+            const bold = document.getElementById("bold")!;
+            const close = document.getElementById("close");
+            const plain = document.getElementById("plain");
+            const events: Array<CustomEvent<{ runtime: string; state: { pressed: boolean } }>> = [];
+            const onChange = (event: Event) => {
+                events.push(event as CustomEvent<{ runtime: string; state: { pressed: boolean } }>);
+            };
+            document.body.addEventListener("juice:change", onChange);
+
+            expect(bold.getAttribute("aria-pressed")).toBe("false");
+            expect(close?.hasAttribute("aria-pressed")).toBe(false);
+            expect(plain?.getAttribute("role")).toBe("button");
+            expect(controller.getState(bold)).toEqual({
+                pressed: false,
+                disabled: false,
+                named: true
+            });
+
+            bold.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+            expect(events).toHaveLength(1);
+            expect(events[0]?.detail).toEqual({
+                runtime: "icon-button",
+                state: { pressed: true, disabled: false, named: true }
+            });
+            expect(bold.hasAttribute("pressed")).toBe(true);
+
+            bold.setAttribute("disabled", "");
+            controller.toggle(bold);
+            expect(bold.getAttribute("aria-pressed")).toBe("true");
+            expect(events).toHaveLength(1);
+
+            plain?.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Enter" }));
+            expect(plain?.getAttribute("aria-pressed")).toBe("true");
+
+            document.body.removeEventListener("juice:change", onChange);
+            controller.destroy();
+            bold.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+            expect(bold.getAttribute("aria-pressed")).toBe("true");
+
+            document.body.innerHTML = "";
+            module.stopIconButtonRuntime();
         });
     });
 });

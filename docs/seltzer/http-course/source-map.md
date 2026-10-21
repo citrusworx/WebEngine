@@ -28,16 +28,16 @@ Baseline: Seltzer workspace version **0.8.1**, inspected after merge `d25673e`. 
 | Implemented in this baseline | Host responsibility or future design |
 |---|---|
 | Object routes and path parameters | Ownership and permissions |
-| JSON/raw body collection with a 1 MB default limit | Form and multipart parsing |
+| JSON/raw body collection with a 1 MB default limit | Form and multipart parsing are non-goals. Urlencoded fields use host `URLSearchParams` |
 | Presence-only `.required` checks (`ctx.valid` unset). `validationError()` and a documented Zod `replace("validate")` recipe; Zod is not a dependency | Full types, formats, and coercion inside Seltzer. `Route` has no schema field |
 | Named `before` / `replace` stages | Universal response finalization, `after` / removal APIs |
-| Structured responses and buffered bytes | Explicit streaming and backpressure |
+| Structured responses and buffered bytes | Explicit streaming and backpressure (**Not yet**, not a non-goal). No WebSocket API |
 | CORS headers and OPTIONS shortcut | Authentication and CSRF policy |
-| Node HTTP listener on `127.0.0.1` with timeouts, returned to the host | Native TLS, integrated drain deadline |
-| Fetch client: slash-safe join, 30s deadline, abort, `HttpError` | Retries and server-side idempotency storage |
+| Node HTTP listener on `127.0.0.1` with timeouts, returned to the host | Native TLS is a non-goal (terminate at a proxy; no host `https.Server` attach). Integrated drain deadline is still open |
+| Fetch client: slash-safe join, 30s deadline, abort, `HttpError` | Client retries are a non-goal. Server-side idempotency storage is planned |
 | Operation-list route generation | Actual data execution and persistence |
 
-The right column is not a promise to put every feature into Seltzer. Some responsibilities should remain in the host or another package.
+The right column is not a promise to put every feature into Seltzer. Form parsing, native TLS, and client retries are [non-goals](../../../libraries/seltzer/README.md#non-goals). Streaming and WebSockets are **Not yet**. Some responsibilities should remain in the host or another package.
 
 ## Verification commands
 

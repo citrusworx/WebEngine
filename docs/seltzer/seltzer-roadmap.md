@@ -12,10 +12,12 @@ It is a shipped 0.8.x runtime with three visible layers:
 
 The strongest part of Seltzer today is the request engine: parametric routes, JSON parse, structured returns, and a pipeline you can insert into without inventing Express. The next strongest area is the Nectarine join (`ApiOperation[]` → `Route[]`).
 
-The weakest areas are still:
+The weakest areas that are still open:
 
-- HTTPS listen (plain HTTP host bind and timeouts shipped; the outbound client deadline shipped too)
 - response-shape validation (the `replace("validate")` hook and `validationError()` are documented; Seltzer still has no schema library)
+- typed `client` results (`unknown` today)
+
+HTTPS listen, `app.use`, form and multipart parsing, and client retries are [non-goals](../../libraries/seltzer/README.md#non-goals). Plain HTTP host bind, timeouts, and the outbound deadline already shipped. Streaming responses and WebSockets are **Not yet**.
 
 0.8.x is the honest label for the HTTP core. Packaging 0.8.1 did not add runtime behavior.
 
@@ -43,7 +45,7 @@ YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is
 
 ### 5. The design doc is rationale, not a backlog of missing stages
 
-[seltzer-design.md](./seltzer-design.md) still explains why not middleware. Most of its lifecycle diagram is source. Remaining forks (a bundled schema library, HTTPS, `after`) belong on this roadmap. Zod stays an application dependency used through `replace("validate")`.
+[seltzer-design.md](./seltzer-design.md) still explains why not middleware. Most of its lifecycle diagram is source. Remaining forks (a bundled schema library, `after`) belong on this roadmap. HTTPS listen is a non-goal. Zod stays an application dependency used through `replace("validate")`.
 
 ---
 
@@ -53,13 +55,13 @@ YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is
 
 `.required` closed the “no contracts” gap. It is presence-only and does not set `ctx.valid`. Type and format checks are still host work: `replace("validate")`, `ctx.valid`, and `validationError(issues)`. `Route.contract` is still YAML strings, not a schema. A Nectarine-owned schema adapter is not in Seltzer.
 
-### 2. `client` does not retry, and it has no generics
+### 2. `client` results are still `unknown`
 
-Slash-safe join, a 30s deadline, and distinct timeout / abort / network errors shipped. The client still returns `unknown`. It does not retry, and an `Idempotency-Key` header is not server-side replay.
+Slash-safe join, a 30s deadline, and distinct timeout / abort / network errors shipped. The client still returns `unknown`. Retries are a [non-goal](../../libraries/seltzer/README.md#no-client-retries): the caller owns that policy. A server-side idempotency stage is planned. `Idempotency-Key` is only a header until that stage exists.
 
-### 3. Listen is HTTP-only
+### 3. Listen is HTTP on purpose
 
-`listen(port, { host })` defaults to `127.0.0.1`. Header, request, and keep-alive timeouts are on (20s / 30s / 5s). `server.close()` stops accepting. HTTPS is still missing. There is no `listen({ port, host })` object overload and no integrated drain deadline.
+`listen(port, { host })` defaults to `127.0.0.1`. Header, request, and keep-alive timeouts are on (20s / 30s / 5s). `server.close()` stops accepting. Built-in HTTPS listen is a non-goal: terminate TLS at a proxy. `listen` calls `http.createServer` only, and a host `https.Server` cannot be attached. There is no `listen({ port, host })` object overload and no integrated drain deadline.
 
 ### 4. Stage API has no `after` / remove
 
@@ -76,7 +78,7 @@ If Seltzer is viewed as an HTTP platform, its current maturity looks roughly lik
 - `generateRoutes`: useful and still evolving with hosts
 - Client: global `fetch`, 30s deadline, no retries, no `undici`
 - Docs as product surface: this set, locked to 0.8.1 source
-- Production-hardened framework (HTTPS, quotas, OpenAPI): not the goal yet
+- Production-hardened framework (quotas, OpenAPI): not the goal yet. HTTPS listen is a non-goal, not a later milestone
 
 In practical terms:
 
@@ -99,7 +101,7 @@ Do not add Zod inside Seltzer’s default stage. The hook is documented (`valida
 
 ### Priority 3. Typed client results
 
-Join, abort, and the deadline are in. Generics on the JSON result are the remaining client nicety. Do not add retries inside the client.
+Join, abort, and the deadline are in. Generics on the JSON result are the remaining client nicety. Client retries are a non-goal. A server-side idempotency stage is planned.
 
 ### Priority 4. Stay complementary to Nectarine, Sig, Juice
 
@@ -111,8 +113,8 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 1. Keep docs and examples locked to source (ongoing).
 2. Host `replace("validate")` for real contracts (the Seltzer side of that hook is documented).
-3. Typed `client` results. Join, abort, and the 30s deadline are in. Do not add client retries.
-4. Only then: HTTPS listen or `after(name)` — not both at once.
+3. Typed `client` results. Join, abort, and the 30s deadline are in. Client retries stay a non-goal. A server-side idempotency stage is the planned follow-on, separate from the client.
+4. Only then: `after(name)`, if a host needs post-handle decoration. HTTPS listen stays a non-goal.
 
 ---
 
@@ -130,14 +132,14 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 | Shipped (teach this) | Still open |
 |---|---|
-| `init` / `route` / `listen` on `127.0.0.1`, timeouts, `server.close()` | HTTPS listen |
+| `init` / `route` / `listen` on `127.0.0.1`, timeouts, `server.close()` | Drain deadline. HTTPS listen is a non-goal |
 | Named pipeline, `before` / `replace` | `after` / remove |
 | `/users/:id` → `ctx.params` | Trailing-slash normalize |
-| Handler `return { status, headers, body }` | Bare-payload wrapping (intentionally rejected) |
-| `parse` JSON + 400 | form-urlencoded / multipart |
+| Handler `return { status, headers, body }` | Bare-payload wrapping (intentionally rejected). Streaming and WebSockets are **Not yet** |
+| `parse` JSON + 400 | Urlencoded is a host `URLSearchParams` recipe. Multipart bytes are out of scope |
 | Default `.required` validate; `ctx.valid`; `validationError()`; Zod shown as a host `replace("validate")` | Response-shape checks; a schema bundled in Seltzer |
 | `generateRoutes` + `response()` | Generating OpenAPI |
-| `client.*`, slash-safe join, 30s deadline, abort | Retries, idempotency storage, typed JSON results |
+| `client.*`, slash-safe join, 30s deadline, abort | Typed JSON results. Retries are a non-goal. Idempotency storage is planned |
 | CORS + OPTIONS 204 | Per-route CORS overrides |
 | Vitest | — |
 
@@ -156,6 +158,6 @@ It now has:
 - `generateRoutes` as the Nectarine join
 - a client that throws on failure
 
-The next stage is refinement around contracts and HTTPS — not reinventing Seltzer from scratch. Host bind, the three server timeouts, and the outbound deadline are already in source.
+The next stage is refinement around contracts — not reinventing Seltzer from scratch, and not adding HTTPS listen. Host bind, the three server timeouts, and the outbound deadline are already in source.
 
 Until those land, the product docs stay with [Status](./seltzer-status.md) and the APIs in `libraries/seltzer/src` at 0.8.1.

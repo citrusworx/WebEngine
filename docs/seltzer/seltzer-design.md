@@ -8,7 +8,7 @@ This document explains why Seltzer is a named request pipeline instead of Expres
 
 **Contributor path (rebuild internals by hand):** [study guide](./courses.md) and [exercises](./exercises/README.md). Those exercises reconstruct what already ships. They are not “implement the missing stage.”
 
-Open questions that are *not* shipped yet (HTTPS listen, response-shape validation, `after`, form bodies) live on [Roadmap](./seltzer-roadmap.md). Zod is a host `replace("validate")` recipe, not a Seltzer dependency.
+Open questions that are *not* shipped yet (response-shape validation, `after`, streaming responses, WebSockets) live on [Roadmap](./seltzer-roadmap.md). HTTPS listen, `app.use`, and form or multipart parsing are [non-goals](../../libraries/seltzer/README.md#non-goals), not open questions. Zod is a host `replace("validate")` recipe, not a Seltzer dependency.
 
 ---
 
@@ -129,7 +129,7 @@ By starting here, Seltzer gets full control over body parsing, URL parsing, head
 
 If it started from Express, much of that lifecycle would already be shaped by middleware assumptions and plugin patterns that Seltzer is intentionally trying to avoid.
 
-HTTPS `listen` is still not wrapped; that is a deliberate small surface, not a contradiction of “start from `http`.”
+There is no HTTPS `listen`. Terminate TLS at a proxy. `listen` only calls `http.createServer`, and there is no public attach for a host `https.Server`. That is a [non-goal](../../libraries/seltzer/README.md#no-built-in-https-listen).
 
 ---
 

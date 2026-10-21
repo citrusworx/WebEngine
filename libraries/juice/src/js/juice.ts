@@ -275,6 +275,17 @@ export type {
     FieldOptions,
     FieldState
 } from "./src/field/field-runtime.js";
+export {
+    createIconButton,
+    initIconButton,
+    startIconButtonRuntime,
+    stopIconButtonRuntime
+} from "./src/icon-button/icon-button-runtime.js";
+export type {
+    IconButtonController,
+    IconButtonOptions,
+    IconButtonState
+} from "./src/icon-button/icon-button-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export {

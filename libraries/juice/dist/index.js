@@ -5270,8 +5270,150 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Hc = null, Vc || Wc();
 }, document.addEventListener("DOMContentLoaded", Hc)) : Wc());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/icon-button/icon-button-runtime.ts
 var Kc = {
+	root: typeof document < "u" ? document : {},
+	iconButtonSelector: "[icon-button]"
+}, qc = (e) => Array.from(e), Jc = L(), Yc = /* @__PURE__ */ new WeakSet(), Xc = () => typeof process < "u" && process.env.NODE_ENV === "development", Zc = (e) => !!(e instanceof HTMLButtonElement || e instanceof HTMLAnchorElement && e.hasAttribute("href")), Qc = (e) => e.getAttribute("aria-disabled") === "true" || e instanceof HTMLButtonElement && e.disabled || e instanceof HTMLInputElement && e.disabled ? !0 : e.hasAttribute("disabled"), $c = (e) => e.hasAttribute("toggle"), el = (e) => {
+	let t = e;
+	for (; t;) {
+		if (t.hidden || t.getAttribute("aria-hidden") === "true") return !1;
+		t = t.parentElement;
+	}
+	return !0;
+}, tl = (e) => {
+	let t = [], n = (r) => {
+		if (!(r instanceof SVGElement) && !(r !== e && r instanceof HTMLElement && (r.hidden || r.getAttribute("aria-hidden") === "true"))) {
+			if (r.nodeType === Node.TEXT_NODE) {
+				r.textContent && t.push(r.textContent);
+				return;
+			}
+			r.childNodes.forEach((e) => n(e));
+		}
+	};
+	return n(e), t.join("").replace(/\s+/g, " ").trim();
+}, nl = (e) => {
+	let t = e.getAttribute("aria-labelledby");
+	if (t === null || t.trim() === "") return "";
+	let n = [];
+	return t.trim().split(/\s+/).forEach((t) => {
+		let r = e.ownerDocument.getElementById(t);
+		if (!(r instanceof HTMLElement) || !el(r)) return;
+		let i = tl(r);
+		i && n.push(i);
+	}), n.join(" ").replace(/\s+/g, " ").trim();
+}, rl = (e) => {
+	let t = e.getAttribute("aria-label");
+	return t !== null && t.trim() !== "" || nl(e) ? !0 : tl(e) !== "";
+}, il = (e) => e.getAttribute("aria-pressed") === "true" || e.hasAttribute("pressed"), al = (e, t) => {
+	let n = t ? "true" : "false";
+	if (e.getAttribute("aria-pressed") !== n && e.setAttribute("aria-pressed", n), t) {
+		e.hasAttribute("pressed") || e.setAttribute("pressed", "");
+		return;
+	}
+	e.hasAttribute("pressed") && e.removeAttribute("pressed");
+}, ol = (e) => ({
+	pressed: il(e),
+	disabled: Qc(e),
+	named: rl(e)
+}), sl = (e) => {
+	Xc() && (rl(e) || Yc.has(e) || (Yc.add(e), console.warn("[juice] [icon-button] has no accessible name. Add a non-empty aria-label, an aria-labelledby that resolves to text, or visible text. Icon-only content and title do not count.", e)));
+}, cl = () => ({
+	destroy: () => {},
+	sync: () => {},
+	toggle: () => {},
+	getState: () => null
+}), ll = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return cl();
+	let t = {
+		...Kc,
+		...e
+	}, n = t.root ?? document, r = n, i = T("icon-button"), a = !1, o = (e) => !(e instanceof HTMLElement) || !e.matches(t.iconButtonSelector) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, s = () => {
+		let e = qc(n.querySelectorAll(t.iconButtonSelector)).filter(o);
+		return n instanceof HTMLElement && o(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, c = (e) => {
+		if (e) {
+			if (o(e)) return e;
+			let n = e.closest(t.iconButtonSelector);
+			return n instanceof HTMLElement && o(n) ? n : null;
+		}
+		return s()[0] ?? null;
+	}, l = (e) => {
+		!$c(e) || Zc(e) || (e.hasAttribute("role") || e.setAttribute("role", "button"), e.hasAttribute("tabindex") || e.setAttribute("tabindex", "0"));
+	}, u = (e) => {
+		$c(e) && (l(e), al(e, il(e)));
+	}, d = (e, t) => {
+		let n = ol(e);
+		l(e), al(e, t), i.note(e, ol(e), { baseline: n });
+	}, f = (e) => {
+		if (a) return;
+		let t = c(e);
+		!t || !$c(t) || Qc(t) || (sl(t), d(t, !il(t)));
+	}, p = () => {
+		a || s().forEach((e) => {
+			o(e) && (u(e), sl(e), i.note(e, ol(e)));
+		});
+	}, m = (e) => {
+		if (!(e instanceof Element)) return null;
+		let n = e.closest(t.iconButtonSelector);
+		return !(n instanceof HTMLElement) || !o(n) ? null : n;
+	}, h = (e) => {
+		if (a) return;
+		let t = m(e.target);
+		!t || !$c(t) || Qc(t) || Jc(e) && f(t);
+	}, g = (e) => {
+		if (a || !(e instanceof KeyboardEvent) || e.key !== "Enter" && e.key !== " ") return;
+		let t = m(e.target);
+		!t || !$c(t) || Qc(t) || Zc(t) || Jc(e) && (e.preventDefault(), f(t));
+	}, _ = !1, v = 0, y = () => {
+		_ || a || (_ = !0, v = requestAnimationFrame(() => {
+			_ = !1, p();
+		}));
+	}, b = typeof MutationObserver < "u" ? new MutationObserver(() => y()) : null;
+	return r.addEventListener("click", h), r.addEventListener("keydown", g), b && n instanceof Node && b.observe(n, {
+		childList: !0,
+		subtree: !0,
+		characterData: !0,
+		attributes: !0,
+		attributeFilter: [
+			"icon-button",
+			"toggle",
+			"pressed",
+			"disabled",
+			"role",
+			"tabindex",
+			"hidden",
+			"aria-hidden",
+			"aria-pressed",
+			"aria-disabled",
+			"aria-label",
+			"aria-labelledby",
+			"title",
+			"href",
+			"id"
+		]
+	}), p(), {
+		destroy: () => {
+			a || (a = !0, _ &&= (cancelAnimationFrame(v), !1), r.removeEventListener("click", h), r.removeEventListener("keydown", g), b?.disconnect());
+		},
+		sync: p,
+		toggle: f,
+		getState: (e) => {
+			let t = c(e);
+			return t ? ol(t) : null;
+		}
+	};
+}, ul = ll, dl = null, fl = !1, pl = null, ml = () => {
+	!pl || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", pl), pl = null);
+}, hl = () => typeof window > "u" || typeof document > "u" ? null : (fl = !1, ml(), dl ? (dl.sync(), dl) : (dl = ll(), dl)), gl = () => {
+	fl = !0, ml(), dl?.destroy(), dl = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (pl = () => {
+	pl = null, fl || hl();
+}, document.addEventListener("DOMContentLoaded", pl)) : hl());
+//#endregion
+//#region src/tokens/index.ts
+var _l = {
 	colors: {
 		families: [
 			"black",
@@ -5439,4 +5581,4 @@ var Kc = {
 	themes: {}
 };
 //#endregion
-export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, Kc as tokens };
+export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, _l as tokens };

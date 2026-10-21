@@ -126,4 +126,4 @@ async function listPosts() {
 }
 ```
 
-That is what the gateway content GET does (then it currently `ctx.json`s the result).
+That is what the gateway content GET does. The handler returns `{ status: 200, body }` (`ResponseData`), not `ctx.json`.

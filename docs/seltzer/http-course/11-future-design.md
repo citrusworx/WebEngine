@@ -58,7 +58,7 @@ client.get({
 
 The deadline covers headers and the body. Caller abort and the deadline are merged (`AbortSignal.any` when it exists, otherwise a Node 18 combine). If the caller signal aborts, the error is `AbortError` even when the timer also fires. `TimeoutError`, `AbortError`, and `NetworkError` are not `HttpError`. The timer is cleared when the call ends. Cancelling the wait does not guarantee a remote write was cancelled.
 
-The client does not retry. An idempotency key needs server-side storage and replay, which this package does not implement. `options.headers` can still send `Idempotency-Key`.
+The client does not retry. That is a [non-goal](../../../libraries/seltzer/README.md#no-client-retries): the caller owns retry policy. An idempotency key needs server-side storage and replay. That stage is planned and is not implemented. `options.headers` can still send `Idempotency-Key`.
 
 **URL policy:** `baseUrl = http://host/api/v1` and `path = users` is `/api/v1/users`, not `/users`. `new URL(path, baseUrl)` is not the join, because a leading slash would drop the base path. Boundary slashes collapse. A trailing slash on the relative path stays. `options.query` is encoded; `null` and `undefined` are omitted; arrays repeat the key. An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. The path is not re-encoded.
 
@@ -104,13 +104,13 @@ app.listen({ port: 3000, host: "127.0.0.1", shutdownGraceMs: 5000 });
 
 Prefer a backwards-compatible overload if this shape is adopted. Decide whether Seltzer owns OS signals or the host does; a reusable library should not casually install global process handlers. The course currently keeps signal handling in the executable entrypoint.
 
-Separate TLS termination choices. A reverse proxy may provide HTTPS while Seltzer handles local HTTP. Native TLS support would require certificate provisioning and renewal decisions; it should not be confused with the outbound self-signed option.
+Separate TLS termination choices. A reverse proxy may provide HTTPS while Seltzer handles local HTTP. Built-in HTTPS `listen` is a [non-goal](../../../libraries/seltzer/README.md#no-built-in-https-listen): `listen` only calls `http.createServer`, and a host `https.Server` cannot be attached. This section is a design exercise, not a plan to add native TLS.
 
 **Acceptance tests:** loopback binding; port-zero reporting; startup errors reach the caller; repeated close is well-defined; new work stops during drain; active requests have a deadline; host cleanup can await completion.
 
 ## F. Proposed: streaming responses and better protocol edges
 
-**Current evidence:** `ResponseData.body` supports strings, JSON-like values, buffers, and typed byte arrays. There is no explicit stream response contract. Returning a `Readable` does not opt into streaming; the encoder can try to serialize an object instead.
+**Current evidence:** `ResponseData.body` supports strings, JSON-like values, buffers, and typed byte arrays. There is no explicit stream response contract, and there is no WebSocket API. Returning a `Readable` does not opt into streaming; the encoder can try to serialize an object instead. Streaming and WebSockets are **Not yet** ([Non-goals](../../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets)), not a decision that they will never exist.
 
 A streaming design must wait when the destination cannot accept more bytes, stop the source on disconnect, and define error handling before versus after headers. It also needs clear ownership of source cleanup. Buffer support alone is not streaming support.
 
