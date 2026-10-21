@@ -154,7 +154,7 @@ The panel is created on first render. The effect toggles `hidden`. For swapping 
 
 ### 4. Lists you rewrite yourself
 
-There is no keyed reconciler. The honest list pattern is `replaceChildren` inside an effect.
+`replaceChildren` is the simple, non-keyed list. The snippet below rebuilds every `<li>`. When a row should keep its DOM node, focus, and effects, use `bindList` ([keyed todo](./sig-patterns.md#keyed-todo-list-bindlist)). `{() => items.map(...)}` is still text.
 
 ```tsx
 import { Signal, effect, mount } from "@citrusworx/sigjs";
@@ -335,7 +335,8 @@ A view function receives params as its first argument: `function UserPage(params
 | Live **attributes** in JSX | `className={() => …}`, `value={() => …}`, `checked={() => …}` |
 | Several writes, or lists / structure | Hold the element; update it in `effect` |
 | Show / hide existing structure | `hidden={() => …}` or `hidden` from an effect |
-| Swap list children | `replaceChildren` from an effect |
+| Swap list children, and rebuilding rows is fine | `replaceChildren` from an effect |
+| Keyed rows (keep the node, focus, and row effects) | `bindList(parent, source, key, render)` |
 | Several writes, one notification | `batch(() => { … })` |
 | A cached derivation | `memo(() => …)` |
 | To put a tree on the page | `mount(node, target)` |

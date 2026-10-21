@@ -120,7 +120,7 @@ effect(() => {
 });
 ```
 
-Better — rewrite membership:
+Better — rewrite membership when the row is cheap to rebuild:
 
 ```tsx
 effect(() => {
@@ -129,6 +129,16 @@ effect(() => {
   );
 });
 ```
+
+Better — keep the row node when the key stays:
+
+```tsx
+bindList(list, items, (item) => item.id, (item) => (
+  <li>{() => item.get().text}</li>
+));
+```
+
+`replaceChildren` is the non-keyed list. `bindList` is the keyed one. See [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
 
 ## 5. Virtual-DOM assumptions
 
@@ -149,7 +159,7 @@ Why it is bad:
 
 Better: keep `App` mounted. Subscribe at the leaves (one label, one list, one panel).
 
-Rebuilding a **small** region with `replaceChildren` (a tab body, a queue) is the intended list/conditional pattern. Rebuilding `#root` on every keystroke is not.
+Rebuilding a **small** region with `replaceChildren` (a tab body, a short queue) is still a good list/conditional pattern. Rebuilding `#root` on every keystroke is not. A queue that must keep focus uses `bindList` on the row container, not a new `<App />` on every write.
 
 ## 6. `new Signal(0)`
 
@@ -327,9 +337,9 @@ Creating a `SigRouter` inside a component that you somehow run more than once (y
 These are not Sig.js:
 
 - `useSignal`, `createSignal`, `observable`
-- keyed `<For>`, `<Show>`, `<Switch>`
+- keyed `<For>`, `<Show>`, `<Switch>` (`bindList` is the keyed list; it is not a JSX component)
 - reactive `style={{}}` objects as live bindings
-- `peek`, `untrack` (there is no peek; read outside an effect instead)
+- `peek` (read outside an effect, or call `untrack` inside one)
 - splat routes (`/files/*`)
 - SSR / `hydrate`
 - Juice `<Button>` as a Sig import

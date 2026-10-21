@@ -1,25 +1,6 @@
+import { attachNodeCleanup, disposeTree } from "./node-cleanup.js";
 import { captureCleanupScope, effect } from "./signal.js";
-const nodeCleanups = new WeakMap();
-function attachCleanup(node, cleanup) {
-    if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-        node.childNodes.forEach(child => attachCleanup(child, cleanup));
-        return;
-    }
-    const cleanups = nodeCleanups.get(node) ?? new Set();
-    cleanups.add(cleanup);
-    nodeCleanups.set(node, cleanups);
-}
-export function disposeTree(node) {
-    node.childNodes.forEach(child => disposeTree(child));
-    const cleanups = nodeCleanups.get(node);
-    if (!cleanups) {
-        return;
-    }
-    nodeCleanups.delete(node);
-    for (const cleanup of cleanups) {
-        cleanup();
-    }
-}
+export { disposeTree };
 function appendChild(parent, child) {
     if (child == null)
         return;
@@ -33,7 +14,7 @@ function appendChild(parent, child) {
         const dispose = effect(() => {
             textNode.textContent = String(child());
         });
-        attachCleanup(textNode, dispose);
+        attachNodeCleanup(textNode, dispose);
         return;
     }
     if (typeof child === "string" || typeof child === "number") {
@@ -92,7 +73,7 @@ function setProp(el, key, value) {
         const dispose = effect(() => {
             applyPropValue(el, key, value());
         });
-        attachCleanup(el, dispose);
+        attachNodeCleanup(el, dispose);
         return;
     }
     applyPropValue(el, key, value);
@@ -101,7 +82,7 @@ export function jsx(type, props) {
     if (typeof type === "function") {
         const { value, dispose } = captureCleanupScope(() => type(props));
         if (value instanceof Node) {
-            attachCleanup(value, dispose);
+            attachNodeCleanup(value, dispose);
         }
         return value;
     }

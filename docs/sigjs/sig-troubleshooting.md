@@ -32,7 +32,7 @@ effect(() => {
 });
 ```
 
-Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `replaceChildren` in an effect. See [JSX and the DOM](./sig-jsx.md), [Patterns](./sig-patterns.md), and [Examples](./sig-examples.md).
+Lists are the same: `{() => items.get().map(…)}` stringifies an array. Use `replaceChildren` in an effect when rebuilding rows is fine, or `bindList` when a key should keep its node. See [JSX and the DOM](./sig-jsx.md), [Patterns](./sig-patterns.md), and [Examples](./sig-examples.md).
 
 ### `className={flag.get()}` / `value={name.get()}` / `disabled={!ready.get()}` stay frozen
 

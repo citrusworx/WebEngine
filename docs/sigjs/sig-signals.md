@@ -70,6 +70,8 @@ This is why `{count.get()}` in JSX is static. The component function is not an e
 
 The function child is installed as an effect by the JSX runtime. That effect's `get()` is the subscription.
 
+`untrack(fn)` reads inside `fn` without subscribing the surrounding effect or memo. `bindList` uses it so the list effect does not subscribe to per-row signals while it is creating rows.
+
 ## What `set` does
 
 `set(newValue)` assigns the value, then notifies **every current subscriber**.

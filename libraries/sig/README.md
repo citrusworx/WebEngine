@@ -38,6 +38,7 @@ doubled.get(); // 6
 - **`effect(fn)`** — runs immediately, re-runs when read signals change. Return a function to clean up before the next run and on dispose. `effect` itself returns a disposer.
 - **`batch(fn)`** — groups `set` calls so subscribers flush once. Nested batches flush when the outermost call finishes; a throw still resets batching and flushes successful sets.
 - **`memo(fn)`** — lazy cached derived value. Recomputes when its signal dependencies change.
+- **`untrack(fn)`** — read signals inside `fn` without subscribing the current effect or memo.
 
 ## JSX
 
@@ -103,6 +104,30 @@ mount(<Counter />, document.getElementById("root")!);
 
 A runnable copy of this counter lives in [`examples/counter`](./examples/counter).
 
+## Lists
+
+`replaceChildren` in an effect rebuilds children. That is the non-keyed list.
+
+`bindList` keeps a DOM node for each key. An array needs a key function. A `Map` uses iteration order and the map key. `render` is called once per key and receives `{ get() }` for the current item — read it from an effect or a function child. Removing a key, disposing the list, or `disposeTree` on the parent disposes that row's effects. Duplicate array keys throw.
+
+```ts
+import { Signal, bindList, effect } from "@citrusworx/sigjs";
+
+const todos = Signal(new Map<string, { text: string }>());
+const list = document.createElement("ul");
+
+const dispose = bindList(list, todos, (item, id) => {
+  const li = document.createElement("li");
+  li.dataset.id = id;
+  effect(() => {
+    li.textContent = item.get().text;
+  });
+  return li;
+});
+```
+
+A `Map<id, Todo>` plus an `order: id[]`, joined with `memo`, is the shape to use when display order is not insertion order. The walkthrough is [Keyed todo list](../../docs/sigjs/sig-patterns.md#keyed-todo-list-bindlist).
+
 ## Router
 
 ```tsx
@@ -147,7 +172,7 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 
 | Import | What it is |
 |--------|------------|
-| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `mount`, `jsx` / `jsxs` / `Fragment`, `SigRouter`, types |
+| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList`, `mount`, `jsx` / `jsxs` / `Fragment`, `SigRouter`, types |
 | `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`) |
 | `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`) |
 | `@citrusworx/sigjs/sig-router` | `SigRouter` only |

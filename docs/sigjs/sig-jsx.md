@@ -270,7 +270,9 @@ effect(() => {
 });
 ```
 
-`replaceChildren` drops the previous `<li>` nodes. There is no keyed reuse. For a small operator queue this is the intended pattern. If you need to preserve focus inside a row, keep those row elements yourself and mutate them — Sig will not do it for you.
+`replaceChildren` drops the previous `<li>` nodes. That is the simple, non-keyed list. For a small operator queue it is the right default.
+
+When a row should keep its node, focus, and effects, use `bindList`. It reuses the node for a key that stays and gives `render` a per-row getter. It is not `{() => items.map(...)}`. See [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist) and [bindList](./sig-api.md#bindlist).
 
 ## `mount` and `disposeTree`
 
@@ -310,7 +312,7 @@ Sig.js does not re-render a component function when a signal changes.
 - A function child updates **one text node**.
 - A function-valued prop updates **one property or attribute**.
 - An `effect` runs your callback; you decide which properties to write.
-- A list example that calls `replaceChildren` rebuilds those children. That is your code, not a reconciler.
+- `replaceChildren` rebuilds those children. `bindList` reuses a row whose key stayed. Neither one is `{() => items.map(...)}`.
 
 If the page “re-renders,” you wrote an effect that rebuilt it. That is allowed. It is also how you accidentally recreate the problem Sig.js exists to avoid. Keep the writes small.
 
@@ -321,4 +323,4 @@ If the page “re-renders,” you wrote an effect that rebuilt it. That is allow
 - Use function-valued props for live attributes (`className`, `value`, `checked`, Juice flags)
 - Hold elements for lists, conditionals, and multi-property writes
 - Put the app in a function component so `disposeTree` can find effects
-- Do not invent keyed lists or `{condition && <X />}` element swapping
+- Do not invent `{condition && <X />}` element swapping or a JSX `.map()` reconciler. Keyed rows are `bindList`. Conditionals are `hidden` or `replaceChildren`.

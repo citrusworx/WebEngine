@@ -46,7 +46,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Docs and onboarding | Emerging to Stable-ish | Tutorial, topic pages, patterns, anti-patterns now exist next to the API. |
 | Juice composition | Emerging | Attributes work because `setProp` uses `setAttribute` for unknown keys (covered by `jsx.test.ts`). Not a typed Juice plugin. |
 | Juice `bind` | Emerging | Optional `@citrusworx/sigjs/juice`. `{ state, dispose }` follows `getState` / `juice:change`. Write-back is switch, checkbox, disclosure, and modal. Shipped in 0.4.0. Juice works without it. |
-| List / conditional helpers | Draft | `replaceChildren` is the current instruction, not a `<For>` / `<Show>` primitive. |
+| `bindList` | Emerging | Keyed array or `Map` list. Per-row getter, node reuse, dispose with the row. `replaceChildren` remains the non-keyed rewrite. No `<For>` / `<Show>`. |
 | SSR / hydration | Draft | Client DOM only. |
 | Error boundaries | Draft | Uncaught. |
 | DevTools | Draft | None. |
@@ -59,6 +59,8 @@ The feature is more of a direction than a hardened part of the runtime.
 | `effect` + cleanup + dispose | `signal.ts` | Returns disposer |
 | `batch` | `signal.ts` | Nested-safe depth counter |
 | `memo` | `signal.ts` | `{ get }` cache. Public surface is `get` only; internal invalidator `dispose` is not exported. |
+| `untrack` | `signal.ts` | Read without subscribing the current effect or memo. |
+| `bindList` | `list.ts` | Keyed reconcile for `T[]` (key function) or `Map<K, T>` (map key, iteration order). |
 | `captureCleanupScope` | `signal.ts` | Used by JSX components |
 | JSX → real DOM | `jsx-runtime.ts` | No VDOM |
 | Function-child **text** | `jsx-runtime.ts` | `String(child())` |
@@ -84,7 +86,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | Error boundaries | Uncaught |
 | DevTools | None |
 | Built-in fetch / forms / persistence | Use the platform |
-| Keyed list reconciler | `replaceChildren` in your effect |
+| `<For>` / `<Show>` / JSX `.map()` reconciler | Not present. Keyed rows are `bindList`. A rewrite is `replaceChildren`. |
 
 `memo` **is** implemented and tested (`lazy` cache + effect notification). It is **Stable-ish** as a derivation primitive: `{ get }` only, no public dispose. Older roadmap text that listed “derived signals” as a future version was stale.
 
@@ -117,7 +119,7 @@ These areas are what will most directly move Sig.js from strong alpha toward a c
 
 These should be treated more carefully in positioning:
 
-- list / conditional components
+- `<Show>`-style conditional components (`hidden` and `replaceChildren` are the patterns)
 - live `style` object bindings
 - splat routes (`/files/*`)
 - SSR
@@ -133,13 +135,15 @@ Sig.js does not re-render a component function when a signal changes.
 - A function child updates **one text node**.
 - A function-valued prop updates **one property or attribute**.
 - An `effect` runs your callback; you decide which properties to write.
-- A list example that calls `replaceChildren` rebuilds those children. That is your code, not a reconciler.
+- `replaceChildren` rebuilds those children. That is your code.
+- `bindList` reuses the node for a key that stays, and updates it through the per-row getter. It does not re-run the component that contains the list.
 
 If you put `{count.get()}` in JSX without a function wrapper, you get a static text node from the first render.
 
 ## Tests
 
-- `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo` (lazy cache + effect notify)
+- `libraries/sig/src/signal.test.ts` — init, set, effect run/re-run, cleanup, dispose, `batch` (including throw + nest), `memo` (lazy cache + effect notify), `untrack`, cleanup when `captureCleanupScope` throws
+- `libraries/sig/src/list.test.ts` — `bindList` add/remove/reorder with node identity, item updates, minimal moves, focus, `Map` and array sources, `memo` of `Map` + order, duplicate keys (throw), per-row dispose, list dispose, `disposeTree` / `mount`
 - `libraries/sig/src/jsx.test.ts` — function-child text, stringify-on-element, reactive `className` / `value` / booleans, Juice-style unknown attributes via `setAttribute`, `ref` + effect, `mount` / `disposeTree`
 - `libraries/sig/src/router.test.ts` — registration, named routes, factory re-render, `navigate` normalize, `"*"` fallback, popstate, param match, exact-over-param
 - `libraries/sig/src/juice.test.ts` — `bind` seed, `juice:change`, native input/change, write-back, read-only, dispose, unmount
@@ -171,7 +175,7 @@ That framing matches the strongest current reality.
 
 Less accurate positioning right now would be:
 
-- fine-grained reactive JSX for **structure** (element children, lists)
+- fine-grained JSX that swaps elements from function children (`bindList` is an explicit function, not a JSX `.map()`)
 - a production-hardened SPA framework
 - a meta-framework with SSR
 - a form / fetch / data library
@@ -183,7 +187,8 @@ If you are building with Sig.js today:
 - confidently use `Signal`, function-child text, function-valued props, `effect` + cleanup, `mount`
 - use `batch` (including nested) and `memo` (lazy `{ get }` derivations)
 - use `SigRouter` for exact pages and `/user/:id`-style params; register `"*"` if you want a missing-path view
-- treat list components and live `style` objects as things you write yourself or live without
+- use `bindList` when a row's node should survive updates; use `replaceChildren` when rebuilding is fine
+- treat live `style` objects as something you write yourself (`el.style` from an effect)
 
 That is the cleanest adoption model for the current state of the system.
 

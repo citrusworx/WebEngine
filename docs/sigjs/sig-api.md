@@ -61,6 +61,14 @@ dispose();
 
 Effects created while a component function runs are registered on a cleanup scope and disposed when the router (or `mount`) tears down that tree.
 
+## untrack
+
+```ts
+function untrack<T>(fn: () => T): T
+```
+
+Runs `fn` and returns its value without subscribing the current effect or memo. `bindList` uses this so a row's first `item.get()` cannot subscribe the list effect. Call it yourself when a read should be a snapshot inside an effect that must stay subscribed to something else.
+
 ## batch
 
 ```ts
@@ -118,7 +126,64 @@ sum.get(); // 30
 function captureCleanupScope<T>(fn: () => T): { value: T; dispose: () => void }
 ```
 
-Internal building block used by the JSX runtime when it calls a component function. Effects registered during `fn` are attached to the returned `dispose`. You rarely call this yourself.
+Internal building block used by the JSX runtime when it calls a component function, and by `bindList` for each row. Effects registered during `fn` are attached to the returned `dispose`. If `fn` throws, those effects are disposed before the error propagates. You rarely call this yourself.
+
+## bindList
+
+```ts
+function bindList<T, K>(
+  parent: Element,
+  source: { get(): readonly T[] | undefined | null },
+  key: (item: T) => K,
+  render: (item: { get(): T }, key: K) => Node,
+): () => void;
+
+function bindList<T, K>(
+  parent: Element,
+  source: { get(): ReadonlyMap<K, T> | undefined | null },
+  render: (item: { get(): T }, key: K) => Node,
+): () => void;
+```
+
+Keyed list. `source` is a `Signal` or a `memo`. `null` or `undefined` from `get()` throws `bindList: source.get() returned no list`.
+
+- **Array.** Pass `key`. Display order is array order.
+- **Map.** Omit `key`. Iteration order is display order. The map key is the row key.
+
+`render` runs **once per key**. It must return a single `Node` (not a `DocumentFragment`). It receives a per-row getter. Read `item.get()` inside an effect or a function child to update that row when the item for the key changes. `bindList` does not call `render` again for a key that stayed. A bare `item.get()` in `render` is a snapshot, same as any other read outside an effect.
+
+Reconciliation:
+
+- a key that stays keeps its node, so focus and per-row effects stay
+- a new key creates a row
+- a key that leaves is removed, and its effects are disposed
+- nodes are moved with `insertBefore` only when they are not already at the next index. If that move blurs an element inside the row, `bindList` focuses it again
+
+`parent` should be an empty element reserved for the rows. One `bindList` per parent. Children that were already there are pushed after the rows.
+
+Keys use SameValueZero (`Map` / `Set` equality), so `NaN` matches `NaN`. An array that yields the same key twice throws `bindList: duplicate key …` **before** that update changes the DOM. The previous rows stay mounted, and a later valid `set` reconciles from there. The first call throws out of `bindList` and leaves `parent` empty. A `Map` cannot contain duplicate keys.
+
+The return value is a disposer. It removes every row and disposes row effects. Calling it twice is safe. The same disposer is attached to `parent`, so `disposeTree` and `mount` stop the list. While a component function is running, the list effect is also on that cleanup scope.
+
+`replaceChildren` is the non-keyed alternative. It throws the previous children away. Use it when rebuilding the row is fine.
+
+```ts
+import { Signal, bindList, effect } from "@citrusworx/sigjs";
+
+const todos = Signal(new Map<string, { text: string }>());
+const list = document.createElement("ul");
+
+bindList(list, todos, (item, id) => {
+  const li = document.createElement("li");
+  li.dataset.id = id;
+  effect(() => {
+    li.textContent = item.get().text;
+  });
+  return li;
+});
+```
+
+The usual todo shape is a `Map<id, Todo>` plus an `order: id[]`, joined with `memo`, so sequence is not trapped inside insertion order. Priority sorting is that same derivation. See [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
 
 ## JSX runtime
 
@@ -295,6 +360,6 @@ State shapes and the write-back column are the table in [Juice runtime behavior]
 - Use `batch` when several signals should notify together
 - Use `memo` for derived numbers/lists you read often
 - Register routes as functions; call `start()` after `set`
-- Do not invent `useEffect` or keyed list diffs — they are not here
+- Do not invent `useEffect`, `<For>`, or `<Show>`. Keyed rows are `bindList`. A cheap rewrite is `replaceChildren`.
 
 See [Best practices](./sig-best-practices.md) and [Anti-patterns](./sig-anti-patterns.md) for the same rules with examples. [Status](./sig-status.md) is the maturity matrix.

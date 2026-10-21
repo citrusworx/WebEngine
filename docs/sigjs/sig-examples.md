@@ -137,7 +137,7 @@ mount(<EmailField />, document.getElementById("root")!);
 
 ## Todo board (replaceChildren)
 
-Sig.js does not reconcile `{() => items.map(<li />)}`. Rebuild the list nodes when the signal changes. `batch` keeps the add path to one effect run.
+Sig.js does not reconcile `{() => items.map(<li />)}`. This board rebuilds the row nodes when the signal changes. That is the simple, non-keyed list. `batch` keeps the add path to one effect run. The next section keeps row nodes with `bindList`.
 
 ```tsx
 import { Signal, effect, batch, mount } from "@citrusworx/sigjs";
@@ -230,6 +230,80 @@ function TodoApp() {
         {list}
       </section>
     </main>
+  );
+}
+
+mount(<TodoApp />, document.getElementById("root")!);
+```
+
+## Keyed todo (Map + order)
+
+Same board, but each id keeps its `<li>`. Records live in a `Map`. `order` is the sequence. `memo` joins them, and `bindList` reconciles that array by `todo.id`. Toggling writes a new todo object into the map; the checkbox stays the same node because `checked` reads the per-row getter.
+
+If you never reorder, skip `order` and pass the `Map` itself: `bindList(list, todos, (item, id) => ...)`. Iteration order is display order. A priority sort is another `memo` over the map, not a third store. The longer walkthrough is [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist).
+
+```tsx
+import { Signal, batch, bindList, memo, mount } from "@citrusworx/sigjs";
+
+type Todo = { id: string; text: string; done: boolean };
+
+function TodoApp() {
+  const todos = Signal(new Map<string, Todo>());
+  const order = Signal<string[]>([]);
+  const draft = Signal("");
+  const nextId = Signal(1);
+  const list = <ul stack gap="0.5rem"></ul> as HTMLUListElement;
+
+  const rows = memo(() => {
+    const byId = todos.get();
+    return order.get().flatMap((id) => {
+      const todo = byId.get(id);
+      return todo ? [todo] : [];
+    });
+  });
+
+  bindList(list, rows, (todo) => todo.id, (item) => (
+    <li row gap="0.75rem" centered>
+      <input
+        type="checkbox"
+        checked={() => item.get().done}
+        onChange={() => {
+          const current = item.get();
+          const next = { ...current, done: !current.done };
+          const byId = new Map(todos.get());
+          byId.set(current.id, next);
+          todos.set(byId);
+        }}
+      />
+      <span>{() => item.get().text}</span>
+    </li>
+  ));
+
+  function add() {
+    const text = draft.get().trim();
+    if (!text) return;
+    const id = String(nextId.get());
+    batch(() => {
+      const byId = new Map(todos.get());
+      byId.set(id, { id, text, done: false });
+      todos.set(byId);
+      order.set([...order.get(), id]);
+      nextId.set(nextId.get() + 1);
+      draft.set("");
+    });
+  }
+
+  return (
+    <section stack gap="1rem">
+      <input
+        placeholder="Add a todo"
+        onInput={(e) => draft.set((e.target as HTMLInputElement).value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") add();
+        }}
+      />
+      {list}
+    </section>
   );
 }
 
