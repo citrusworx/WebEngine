@@ -7,10 +7,10 @@ Requires Node 18+. No runtime dependencies. The outbound client uses global `fet
 ## Install
 
 ```bash
-npm install @citrusworx/seltzer@0.9.0
+npm install @citrusworx/seltzer@0.10.0
 ```
 
-Documented version: `0.9.0`.
+Documented version: `0.10.0`.
 
 ## Names this README checks
 
@@ -137,7 +137,7 @@ A host-owned server owns its timeouts. Seltzer does not change them. Copy the de
 
 `handleRequest` stays private. There is no method that accepts an already-built `http.Server`. Pass the listener into `http.createServer` or `https.createServer` instead.
 
-This listener, `app.adapter(config)`, and the `handler(config)` deprecation are in source for the unreleased 0.10.0 minor. `package.json` and the install pin above stay at 0.9.0 until that publish. The published 0.9.0 tarball has no no-arg `handler()` and no `adapter()`. On 0.9.0 the options stash is `handler(config)`.
+No-arg `app.handler()` and `app.adapter(config)` shipped in 0.10.0. The 0.9.0 tarball named the options stash `handler(config)` and had no no-arg listener.
 
 ## Pipeline
 

@@ -16,7 +16,7 @@ Three labels distinguish what you can use from what you can design:
 - **Application code:** code we write around existing APIs; it is not a built-in feature.
 - **Proposed:** a design exercise, not a callable API, release commitment, or delivery prediction.
 
-The baseline is `libraries/seltzer` **0.9.0**, the same cut as npm `@citrusworx/seltzer@0.9.0` (2026-10-21). [The source map](./source-map.md) identifies the implementation behind the lessons. Examples use the public package entrypoint.
+The baseline for the lessons is the 0.9.0 HTTP core. npm `@citrusworx/seltzer@0.10.0` (2026-10-21) is the current package and adds no-arg `app.handler()` and `app.adapter(config)`. [The source map](./source-map.md) identifies the implementation behind the lessons. Examples use the public package entrypoint.
 
 ## Course route
 

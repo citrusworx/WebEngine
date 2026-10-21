@@ -1,10 +1,10 @@
 # Getting Started With Seltzer
 
-This is the best starting point if you want to use Seltzer the way the library works in **0.9.0**.
+This is the best starting point if you want to use Seltzer the way the library works in **0.10.0**.
 
 After this page, the [JSON API tutorial](./seltzer-api-tutorial.md) is the guided build — health, collection, JSON POST, `/notes/:id`, a generated Nectarine-shaped route, and `client.*` — analogous to [Juice’s page tutorial](../juice/juice-page-tutorial.md).
 
-Build against the API in `libraries/seltzer/src` at 0.9.0, not the 0.2.0 `ctx.json` story.
+Build against the API in `libraries/seltzer/src` at 0.10.0, not the 0.2.0 `ctx.json` story.
 
 ## What Seltzer is
 
@@ -15,8 +15,8 @@ It gives you:
 - `Seltzer.init()` — construct an instance
 - `.route({ method, path, handler, contract? })` — object route, static or `:param`
 - `.before(name, stage)` / `.replace(name, stage)` — named pipeline
-- `.adapter(config)` — stash options copied onto `ctx.options`. This is not a request listener. Unreleased 0.10.0 name (0.9.0 called this `handler(config)`)
-- `.handler()` — Node `(req, res) => void` listener for a host-owned `http.Server` or `https.Server`. Same pipeline as `listen`. Unreleased 0.10.0 (not in the published 0.9.0 tarball). `handler(config)` is a deprecated alias of `adapter(config)`, removed in the next minor after 0.10.0
+- `.adapter(config)` — stash options copied onto `ctx.options`. This is not a request listener. Released in 0.10.0 (0.9.0 called this `handler(config)`)
+- `.handler()` — Node `(req, res) => void` listener for a host-owned `http.Server` or `https.Server`. Same pipeline as `listen`. Released in 0.10.0. `handler(config)` is a deprecated alias of `adapter(config)`, removed in the next minor after 0.10.0
 - `.listen(port, options?)` — `http.createServer(app.handler())` on `127.0.0.1` (pass `host` for any other interface), plus timeout defaults. CORS/`OPTIONS` only when `cors` is set on `init` or `listen`. A field passed to `listen` replaces the `init` value for that server. Returns `http.Server`
 - `ResponseData` — `{ status?, headers?, body? }`; the runtime `send`s
 - `generateRoutes(operations, { execute })` — `ApiOperation[]` → `Route[]`
@@ -27,14 +27,14 @@ It is not Express. There is no `app.use` (that chain is a [non-goal](../../libra
 ## Install
 
 ```bash
-yarn add @citrusworx/seltzer@0.9.0
+yarn add @citrusworx/seltzer@0.10.0
 # or
-npm install @citrusworx/seltzer@0.9.0
+npm install @citrusworx/seltzer@0.10.0
 ```
 
 Requires Node 18+. The package has no runtime dependencies. `client` uses global `fetch`.
 
-Package version today: **0.9.0** (published 2026-10-21). The hardened client (slash-safe join, 30s timeout, no `undici`) shipped in that release.
+Package version today: **0.10.0** (published 2026-10-21). No-arg `app.handler()` and `app.adapter(config)` shipped in this release. The hardened client (slash-safe join, 30s timeout, no `undici`) shipped in 0.9.0.
 
 ## Hello World
 

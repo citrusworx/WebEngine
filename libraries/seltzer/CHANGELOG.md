@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.10.0
+
+Published 2026-10-21.
+
 ### Minor Changes
 
 - `app.handler()` returns a Node `(req, res) => void` request listener. Mount it with `http.createServer(app.handler())` or `https.createServer(tlsOptions, app.handler())`. It runs the same pipeline as `listen` (body limit, CORS / OPTIONS, logger, debug, strict `ResponseData`). `handleRequest` stays private. This call takes no arguments.
