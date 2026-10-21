@@ -100,13 +100,27 @@ function registerCleanup(cleanup: Cleanup) {
     currentCleanupScope?.cleanups.add(cleanup);
 }
 
+function disposeScope(scope: CleanupScope) {
+    for (const cleanup of scope.cleanups) {
+        runCleanup(cleanup);
+    }
+    scope.cleanups.clear();
+}
+
 export function captureCleanupScope<T>(fn: () => T): { value: T; dispose: Cleanup } {
     const parentScope = currentCleanupScope;
     const scope: CleanupScope = { cleanups: new Set() };
     currentCleanupScope = scope;
 
     try {
-        const value = fn();
+        let value: T;
+        try {
+            value = fn();
+        } catch (error) {
+            disposeScope(scope);
+            throw error;
+        }
+
         let disposed = false;
 
         return {
@@ -117,14 +131,25 @@ export function captureCleanupScope<T>(fn: () => T): { value: T; dispose: Cleanu
                 }
 
                 disposed = true;
-                for (const cleanup of scope.cleanups) {
-                    runCleanup(cleanup);
-                }
-                scope.cleanups.clear();
+                disposeScope(scope);
             },
         };
     } finally {
         currentCleanupScope = parentScope;
+    }
+}
+
+/**
+ * Runs `fn` without subscribing the current effect or memo.
+ * Reads inside `fn` still return the current value.
+ */
+export function untrack<T>(fn: () => T): T {
+    const prev = currentSubscriber;
+    currentSubscriber = null;
+    try {
+        return fn();
+    } finally {
+        currentSubscriber = prev;
     }
 }
 

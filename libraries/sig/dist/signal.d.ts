@@ -55,6 +55,11 @@ export declare function captureCleanupScope<T>(fn: () => T): {
     value: T;
     dispose: Cleanup;
 };
+/**
+ * Runs `fn` without subscribing the current effect or memo.
+ * Reads inside `fn` still return the current value.
+ */
+export declare function untrack<T>(fn: () => T): T;
 export declare function Signal<T>(value: T): {
     get: () => T;
     set: (newValue: T) => void;

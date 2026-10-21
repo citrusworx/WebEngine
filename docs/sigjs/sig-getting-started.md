@@ -186,7 +186,7 @@ mount(<NameField />, document.getElementById("root")!);
 
 ## A list (rewrite the children)
 
-There is no keyed reconciler. The honest pattern is `replaceChildren` inside an effect.
+`replaceChildren` inside an effect is the simple, non-keyed list. It rebuilds the row nodes. When a row should keep its node and effects, use `bindList` — see [Keyed todo list](./sig-patterns.md#keyed-todo-list-bindlist). `{() => todos.map(...)}` is still text.
 
 ```tsx
 import { Signal, effect, mount } from "@citrusworx/sigjs";

@@ -1,4 +1,7 @@
+import { attachNodeCleanup, disposeTree } from "./node-cleanup.js";
 import { captureCleanupScope, effect } from "./signal.js";
+
+export { disposeTree };
 
 export type Child =
     | Node
@@ -8,35 +11,6 @@ export type Child =
     | undefined
     | (() => any)
     | Child[];
-
-type Cleanup = () => void;
-
-const nodeCleanups = new WeakMap<Node, Set<Cleanup>>();
-
-function attachCleanup(node: Node, cleanup: Cleanup): void {
-    if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-        node.childNodes.forEach(child => attachCleanup(child, cleanup));
-        return;
-    }
-
-    const cleanups = nodeCleanups.get(node) ?? new Set<Cleanup>();
-    cleanups.add(cleanup);
-    nodeCleanups.set(node, cleanups);
-}
-
-export function disposeTree(node: Node): void {
-    node.childNodes.forEach(child => disposeTree(child));
-
-    const cleanups = nodeCleanups.get(node);
-    if (!cleanups) {
-        return;
-    }
-
-    nodeCleanups.delete(node);
-    for (const cleanup of cleanups) {
-        cleanup();
-    }
-}
 
 function appendChild(parent: Node, child: Child): void {
     if (child == null) return;
@@ -53,7 +27,7 @@ function appendChild(parent: Node, child: Child): void {
         const dispose = effect(() => {
             textNode.textContent = String(child());
         });
-        attachCleanup(textNode, dispose);
+        attachNodeCleanup(textNode, dispose);
         return;
     }
 
@@ -122,7 +96,7 @@ function setProp(el: HTMLElement, key: string, value: any) {
         const dispose = effect(() => {
             applyPropValue(el, key, value());
         });
-        attachCleanup(el, dispose);
+        attachNodeCleanup(el, dispose);
         return;
     }
 
@@ -133,7 +107,7 @@ export function jsx(type: any, props: any) {
     if (typeof type === "function") {
         const { value, dispose } = captureCleanupScope(() => type(props));
         if (value instanceof Node) {
-            attachCleanup(value, dispose);
+            attachNodeCleanup(value, dispose);
         }
         return value;
     }

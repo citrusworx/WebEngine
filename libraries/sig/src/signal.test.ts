@@ -1,5 +1,5 @@
 import {test, expect} from "@playwright/test";
-import { Signal, effect, batch, memo } from "./signal.js";
+import { Signal, effect, batch, memo, untrack, captureCleanupScope } from "./signal.js";
 
 test("Signal initializes with the correct value", () => {
     const count = Signal(0);
@@ -212,4 +212,48 @@ test("memo notifies effects when a dependency changes", () => {
     count.set(4);
     expect(seen).toBe(8);
     expect(runCount).toBe(2);
+});
+
+test("untrack reads a signal without subscribing the current effect", () => {
+    const count = Signal(0);
+    const other = Signal(0);
+    let seen = -1;
+
+    effect(() => {
+        other.get();
+        seen = untrack(() => count.get());
+    });
+
+    expect(seen).toBe(0);
+
+    count.set(5);
+    expect(seen).toBe(0);
+
+    other.set(1);
+    expect(seen).toBe(5);
+});
+
+test("captureCleanupScope disposes effects when the function throws", () => {
+    const count = Signal(0);
+    let runs = 0;
+    let cleanups = 0;
+
+    expect(() => {
+        captureCleanupScope(() => {
+            effect(() => {
+                count.get();
+                runs += 1;
+                return () => {
+                    cleanups += 1;
+                };
+            });
+            throw new Error("fail");
+        });
+    }).toThrow("fail");
+
+    expect(runs).toBe(1);
+    expect(cleanups).toBe(1);
+
+    count.set(1);
+    expect(runs).toBe(1);
 });

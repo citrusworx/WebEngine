@@ -10,15 +10,16 @@ It is a small, implemented runtime with five visible layers:
 - a JSX factory that creates real DOM in `jsx-runtime.ts`
 - cleanup scopes so views can die cleanly
 - `mount` / `disposeTree`
+- `bindList` for keyed array and `Map` lists
 - `SigRouter` for exact-path and `:param` client navigation
 
 The strongest part of Sig.js today is still the static-first model: build the tree once, subscribe at the leaves. The next strongest areas are effect cleanup, function-valued props, and Juice composition (attributes survive `setProp`).
 
 The weakest areas are still:
 
-- list / conditional primitives
+- conditionals (`hidden` / `replaceChildren`; there is no `<Show>`)
 - live `style` object bindings
-- tests beyond the current signal, JSX, and router files
+- tests beyond the current signal, JSX, list, and router files
 
 Alpha is the honest label. The core is real enough to teach in depth; it is not frozen.
 
@@ -42,7 +43,7 @@ That is enough to build timers, fetch-with-abort, and disclosures without a seco
 
 There is no reactive transform. Function children are text. Function-valued **props** (except `ref` and `on*`) are reactive getters. That split is the current feature: the runtime stays readable.
 
-The roadmap should not “fix” this by pretending a VDOM exists. Function children that return elements still stringify. Lists still need `replaceChildren`.
+The roadmap should not “fix” this by pretending a VDOM exists. Function children that return elements still stringify. Keyed lists are `bindList`. A cheap rewrite is still `replaceChildren`.
 
 ### 4. The router is useful for a handful of pages
 
@@ -72,7 +73,7 @@ That hookup is the adapter. It is not a new state primitive, and it is not a per
 
 Function children as **text only** is correct and documented, and it is still the first place authors fall down. `{() => items.map(<li />)}` looks like every other modern JSX dialect.
 
-Until there is either a tiny list helper or even stronger teaching (tutorial + anti-patterns — this docs pass), this will keep generating support questions.
+`bindList` is the keyed escape hatch. It does not make function children return elements. Teaching still has to say that out loud.
 
 ### 2. `batch` nesting is done; equality on `set` is not
 
@@ -104,7 +105,8 @@ If Sig.js is viewed as a UI system, its current maturity looks roughly like this
 - Cleanup / dispose: solid
 - Router: exact + `:param` + `"*"`, still small
 - Docs as product surface: much stronger after the tutorial and topic pages
-- List / conditional components: not started
+- Keyed lists: decided — `bindList` (array or `Map`)
+- Conditionals: `hidden` / `replaceChildren`; no `<Show>`
 - Production-hardened SPA framework: not the goal yet
 
 In practical terms:
@@ -146,16 +148,15 @@ Useful increments, if they are built:
 
 Exact paths, `:param` matching, `navigate` normalization, and an optional `"*"` fallback are already in source.
 
-### Priority 4. Decide the story for lists
+### Priority 4. Lists — decided
 
-Function-valued props landed as a small coherent rule. Lists and conditionals did not.
+Keyed rows use `bindList(parent, source, key, render)` for an array, or `bindList(parent, source, render)` for a `Map`. The map's iteration order is display order, and the map key is the row key. `render` runs once per key and receives a per-row getter. Read `item.get()` in an effect or a function child; the node stays. Removed keys dispose their effects. The returned disposer, and `disposeTree` on the parent, dispose the list.
 
-Two honest options:
+`replaceChildren` stays the simple non-keyed alternative. It rebuilds the children.
 
-1. **Never** add list helpers. Double down on `replaceChildren`. The docs already teach this.
-2. Add a very small, explicit helper (`bindList(el, signal, renderRow)` would be new code).
+There is still no `<For>` or `<Show>`. `{condition && <X />}` and `{() => items.map(<li />)}` still stringify. A conditional that should keep state uses `hidden`. A conditional that should swap a subtree uses `replaceChildren`.
 
-What would be a mistake: `{condition && <X />}` or `{() => items.map(<li />)}` that still stringifies.
+The recommended todo shape is a `Map<id, Todo>` plus an `order: id[]`, joined with `memo`. A `Map` alone is enough when insertion order is display order. Priority sorting is a derived array or map, not a third source of truth. See [Patterns](./sig-patterns.md#keyed-todo-list-bindlist).
 
 ### Priority 5. Test the runtime you document
 
@@ -182,7 +183,7 @@ The runtime hookup is already the optional `@citrusworx/sigjs/juice` adapter. Fu
 2. Nested-safe `batch`, `navigate` normalization, `"*"` fallback, and JSX-runtime tests (landed).
 3. Function-valued props and parametric routes (landed).
 4. Juice runtime hookup: `bind` on `@citrusworx/sigjs/juice`, docs in [Sig.js + Juice](./sig-juice-integration.md#runtime-binding) (shipped in 0.4.0).
-5. An explicit list helper only if `replaceChildren` keeps generating support questions.
+5. Keyed `bindList`, with `replaceChildren` kept as the non-keyed rewrite (landed).
 
 ---
 
@@ -190,7 +191,7 @@ The runtime hookup is already the optional `@citrusworx/sigjs/juice` adapter. Fu
 
 - SSR before the client child model is widely understood
 - a hook compatibility layer
-- inventing list reconciler APIs in documentation
+- pretending JSX `.map()` is a reconciler (`bindList` is the explicit helper; the `key` argument to `jsxDEV` is still ignored)
 - merging Juice and Sig into one “UI framework” package
 - a compiler
 
@@ -215,8 +216,8 @@ The next stage is not inventing Sig.js from scratch.
 
 The next stage is refinement:
 
-- decide lists explicitly
+- lists are decided: `bindList` for keyed rows, `replaceChildren` for a rewrite, no `<For>` / `<Show>`
 - keep the static-first promise
 - keep param matching boring (exact wins, first registered pattern, `"*"` last)
 
-That is a strong place to be. Until those land, the docs stay with [Status](./sig-status.md) and the APIs in `libraries/sig/src`.
+That is a strong place to be. The docs stay with [Status](./sig-status.md) and the APIs in `libraries/sig/src`.

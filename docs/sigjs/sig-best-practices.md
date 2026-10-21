@@ -246,7 +246,7 @@ router.start();
 When wrapping Sig for an app, ask:
 
 1. Is this still a signal, an effect, or a DOM write?
-2. Am I hiding a React-shaped API (`useState`, keyed lists) that the runtime does not have?
+2. Am I hiding a React-shaped API (`useState`, `<For>`, JSX `.map()` as a reconciler) that the runtime does not have? Keyed rows are already `bindList`.
 3. Will the wrapper still dispose when the view unmounts?
 
 If the wrapper pretends Sig is React, the next author will write `{() => items.map(<li />)}` and wonder why the list is a string.

@@ -1,6 +1,6 @@
 # Sig.js Patterns
 
-Reusable UI patterns built from current Sig.js primitives. These are not new APIs. They are recommended compositions you can copy and adapt.
+Reusable UI patterns built from Sig.js. Copy them and adapt them.
 
 Each pattern follows the same general rules:
 
@@ -8,7 +8,8 @@ Each pattern follows the same general rules:
 - signals own values
 - function children own live text
 - function-valued props own live attributes
-- effects own lists, resources, and multi-property writes
+- `bindList` owns keyed rows; `replaceChildren` owns cheap rewrites
+- effects own resources and multi-property writes
 - app code owns behavior
 
 Related:
@@ -221,7 +222,9 @@ Juice lays out the chips and cards. Sig.js decides which cards exist.
 
 ## Todo / queue list
 
-Use this when the user can add and remove rows. `batch` the add path so the list effect runs once.
+Use this when the user can add and remove rows and it is fine to rebuild them. `replaceChildren` drops the previous nodes. Focus inside a row, and effects created for that row, do not survive. `batch` the add path so the list effect runs once.
+
+When a row should keep its DOM node, use [Keyed todo list](#keyed-todo-list-bindlist).
 
 ```tsx
 import { Signal, effect, batch } from "@citrusworx/sigjs";
@@ -302,6 +305,103 @@ function TodoList() {
 ```
 
 Replace whole item objects when toggling. Mutating `todo.done = true` in place will not notify. See [Signals](./sig-signals.md#arrays-objects-and-identity).
+
+## Keyed todo list (bindList)
+
+Use this when a row should keep its element, focus, and effects across adds, deletes, and reorders. `bindList` calls `render` once per key. The row reads a per-row getter, `item.get()`, from an effect or a function child. A later change to that item updates the same node.
+
+Keep the records in a `Map<id, Todo>`. Keep display sequence in an `order: id[]` when the user can reorder, or when insertion order is not the order you want to show. `memo` joins them. If insertion order is enough on its own, pass the `Map` signal as the source and omit the key function — iteration order is display order, and the map key is the row key.
+
+A priority sort does not need a third store. `memo` an array (or a new `Map`) in the order you want, and pass that to `bindList`.
+
+```tsx
+import { Signal, batch, bindList, memo, mount } from "@citrusworx/sigjs";
+
+type Todo = { id: string; text: string; done: boolean };
+
+function TodoList() {
+  const todos = Signal(new Map<string, Todo>());
+  const order = Signal<string[]>([]);
+  const draft = Signal("");
+  const nextId = Signal(1);
+
+  const input = (
+    <input
+      placeholder="Add a todo"
+      onInput={(e) => draft.set((e.target as HTMLInputElement).value)}
+    />
+  ) as HTMLInputElement;
+
+  const list = <ul stack gap="0.5rem"></ul> as HTMLUListElement;
+
+  const rows = memo(() => {
+    const byId = todos.get();
+    return order.get().flatMap((id) => {
+      const todo = byId.get(id);
+      return todo ? [todo] : [];
+    });
+  });
+
+  bindList(list, rows, (todo) => todo.id, (item) => (
+    <li row gap="0.75rem" centered>
+      <label row gap="0.5rem" centered>
+        <input
+          type="checkbox"
+          checked={() => item.get().done}
+          onChange={() => {
+            const current = item.get();
+            const next = { ...current, done: !current.done };
+            const byId = new Map(todos.get());
+            byId.set(current.id, next);
+            todos.set(byId);
+          }}
+        />
+        {() => item.get().text}
+      </label>
+    </li>
+  ));
+
+  function add() {
+    const text = draft.get().trim();
+    if (!text) return;
+
+    const id = String(nextId.get());
+    batch(() => {
+      const byId = new Map(todos.get());
+      byId.set(id, { id, text, done: false });
+      todos.set(byId);
+      order.set([...order.get(), id]);
+      nextId.set(nextId.get() + 1);
+      draft.set("");
+    });
+    input.value = "";
+  }
+
+  return (
+    <section stack gap="1rem">
+      <div row gap="0.75rem">
+        {input}
+        <button type="button" onClick={add}>
+          Add
+        </button>
+      </div>
+      {list}
+    </section>
+  );
+}
+
+mount(<TodoList />, document.getElementById("root")!);
+```
+
+`list` is only for rows. Duplicate ids throw (`bindList: duplicate key …`) and the previous rows stay. `{() => rows.get().map(...)}` is still text, not a list. The non-keyed alternative is `replaceChildren` in the previous section.
+
+Map-only, when insertion order is the display order:
+
+```tsx
+bindList(list, todos, (item, id) => (
+  <li>{() => item.get().text}</li>
+));
+```
 
 ## Text field + derived label
 
@@ -570,7 +670,8 @@ If `Desk` created `operatorName` internally, leaving and returning would reset i
 
 - Prefer function children for labels, counts, and greetings.
 - Prefer `hidden` when the structure should stay mounted.
-- Prefer `replaceChildren` when membership changes.
+- Prefer `replaceChildren` when membership changes and rebuilding the row is fine.
+- Prefer `bindList` when a kept key should preserve the row node, focus, and effects.
 - Prefer `batch` when one gesture writes several signals.
 - Prefer `memo` when several readers share one derivation.
 - Prefer Juice attributes for layout (`stack`, `row`, `gap`, `card`) instead of rebuilding layout in an effect on resize.

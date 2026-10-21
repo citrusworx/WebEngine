@@ -40,12 +40,25 @@ function flushPendingSubscribers() {
 function registerCleanup(cleanup) {
     currentCleanupScope?.cleanups.add(cleanup);
 }
+function disposeScope(scope) {
+    for (const cleanup of scope.cleanups) {
+        runCleanup(cleanup);
+    }
+    scope.cleanups.clear();
+}
 export function captureCleanupScope(fn) {
     const parentScope = currentCleanupScope;
     const scope = { cleanups: new Set() };
     currentCleanupScope = scope;
     try {
-        const value = fn();
+        let value;
+        try {
+            value = fn();
+        }
+        catch (error) {
+            disposeScope(scope);
+            throw error;
+        }
         let disposed = false;
         return {
             value,
@@ -54,15 +67,26 @@ export function captureCleanupScope(fn) {
                     return;
                 }
                 disposed = true;
-                for (const cleanup of scope.cleanups) {
-                    runCleanup(cleanup);
-                }
-                scope.cleanups.clear();
+                disposeScope(scope);
             },
         };
     }
     finally {
         currentCleanupScope = parentScope;
+    }
+}
+/**
+ * Runs `fn` without subscribing the current effect or memo.
+ * Reads inside `fn` still return the current value.
+ */
+export function untrack(fn) {
+    const prev = currentSubscriber;
+    currentSubscriber = null;
+    try {
+        return fn();
+    }
+    finally {
+        currentSubscriber = prev;
     }
 }
 export function Signal(value) {

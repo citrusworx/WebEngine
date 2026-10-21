@@ -137,7 +137,9 @@ Practical rule: **create effects inside the component function** that returns th
 
 Function-child and function-valued-prop effects also attach their disposer to the host node, so `disposeTree` can stop them even without a component wrapper. Effects you call yourself still need a function-component root (or an explicit disposer) to be found. Prefer a function component as the mount root.
 
-`captureCleanupScope` is exported. You almost never need to call it yourself; the JSX runtime already does.
+`captureCleanupScope` is exported. You almost never need to call it yourself. The JSX runtime uses it for component functions. `bindList` uses it for each row, and attaches that disposer to the row node.
+
+`bindList` also returns a list disposer and attaches it to the parent element. Removing a key disposes that row. Disposing the list, or `disposeTree` on the parent, disposes every remaining row. Effects created in `render` — including effects inside a row component — stop on that path. Read the current item from the per-row getter inside the effect so the effect re-runs when the item changes and the node stays.
 
 ## Writing to the DOM
 
