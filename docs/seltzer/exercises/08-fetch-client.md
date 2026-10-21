@@ -2,17 +2,18 @@
 
 **Goal:** Build a small HTTP client with proper error handling.
 
-**Proves you can rebuild:** Seltzer `client` as shipped in 0.8.x (`HttpError`, JSON vs text).
+**Proves you can rebuild:** Seltzer `client` (`HttpError`, content types, slash-safe join, a deadline).
 
-**Shipped:** `client.*` throws `HttpError` on non-2xx. It does **not** always `res.json()`. Optional `allowSelfSigned` uses undici — treat that as a bonus, not a day-one requirement.
+**Shipped:** `client.*` throws `HttpError` on non-2xx with a parsed body. It uses global `fetch` only. There is no `undici` peer and no `allowSelfSigned` option. The default deadline is 30 seconds. The client does not retry.
 
 ## Requirements
 
-1. Implement `get(url, options?)` and `post(url, body, options?)` using `fetch` (or mirror `Endpoint` + `baseUrl + path`).
-2. Merge default headers with caller-provided headers (caller wins on write methods).
-3. Throw a dedicated error type when `!response.ok` (include `status`, `statusText`, full `body`; message may snippet the body).
-4. Parse JSON only when Content-Type is JSON (or `+json`); return text otherwise. `204` / empty → `undefined`.
-5. Bonus: dynamically import `undici` `Agent({ connect: { rejectUnauthorized: false } })` for `allowSelfSigned` on `https://` only.
+1. Implement `get` and `post` using `fetch` (or mirror `Endpoint` + a slash-safe `baseUrl` / `path` join that keeps a base path).
+2. Merge default headers with caller-provided headers (caller wins, including `Content-Type`).
+3. Throw a dedicated error type when `!response.ok` (include `status`, `statusText`, headers, and the parsed body; the message may snippet the raw text).
+4. Parse `application/json` and `+json` as JSON, `text/*` as a string, and anything else as bytes. `204` / `HEAD` / empty → `undefined`.
+5. Accept a timeout and an `AbortSignal`. Time out with a different error than a caller abort, and clear the timer.
+6. Do not retry. A string body is text; an object is JSON; `Uint8Array` is bytes.
 
 ## Scratch
 

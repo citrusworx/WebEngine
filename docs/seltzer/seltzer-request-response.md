@@ -152,12 +152,11 @@ app.handler({
   options: {
     baseUrl: "http://127.0.0.1:3000",
     headers: { "X-App": "notes" },
-    allowSelfSigned: false,
   },
 });
 ```
 
-`ctx.options` is that `options` object. `adapter` is stored on the instance and never read by `listen`. `allowSelfSigned` is never applied to the **inbound** server (plain `http`). The outbound `client` reads the same option shape when you pass an `Endpoint`.
+`ctx.options` is that `options` object (`baseUrl` and `headers` only). `adapter` is stored on the instance and never read by `listen`. The outbound `client` does not read `ctx.options` unless you pass the same bag on an `Endpoint`. Certificate bypass is not a client option.
 
 ## What must happen before the request is done
 

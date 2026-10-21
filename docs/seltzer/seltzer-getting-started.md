@@ -31,11 +31,9 @@ yarn add @citrusworx/seltzer
 npm install @citrusworx/seltzer
 ```
 
-Requires Node 18+. `listen` throws outside Node.
+Requires Node 18+. The package has no runtime dependencies. `client` uses global `fetch`.
 
-`undici` is an optional peer. Install it only if you set `allowSelfSigned: true` on an outbound `https://` `client` call. Everyday `init().route().listen()` does not need it.
-
-Package version today: **0.8.1**.
+Package version today: **0.8.1**. The hardened client (slash-safe join, 30s timeout, no `undici`) is in this tree and ships in the next minor.
 
 ## Hello World
 
@@ -107,7 +105,7 @@ Handlers receive a named `RequestContext` (exported):
   body: unknown;
   headers: Record<string, string>;  // lowercased keys
   locals: unknown;                  // from listen({ locals })
-  options?: { baseUrl?: string; headers?: Record<string, string>; allowSelfSigned?: boolean };
+  options?: { baseUrl?: string; headers?: Record<string, string> };
 }
 ```
 
@@ -193,7 +191,7 @@ try {
 }
 ```
 
-`endpoint` is required by the type and ignored by the client. The URL is `baseUrl + path`.
+`endpoint` is required by the type and ignored by the client. The URL joins `baseUrl` and `path` with one slash and keeps a base path. The default deadline is 30 seconds. The client does not retry.
 
 ## What to ignore on day one
 

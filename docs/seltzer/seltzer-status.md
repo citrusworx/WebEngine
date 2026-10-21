@@ -4,7 +4,7 @@ Snapshot of `@citrusworx/seltzer` source against `libraries/seltzer/src`. Publis
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
-**0.8.x is the HTTP core.** The inspected 0.8.1 runtime includes default `validate`, `replace`, and the current `client`. Its package declares `engines.node` `>=18` and an optional `undici` peer. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons.
+**0.8.x is the HTTP core.** The inspected 0.8.1 runtime includes default `validate`, `replace`, and the current `client`. The package declares `engines.node` `>=18` and has no runtime dependencies: the client uses global `fetch` only. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons. The slash-safe client, 30s deadline, and abort errors are in this tree and ship in the next minor; they are not in the 0.8.1 tarball.
 
 Related: [Roadmap](./seltzer-roadmap.md). [API](./seltzer-api.md). [JSON API tutorial](./seltzer-api-tutorial.md).
 
@@ -39,9 +39,9 @@ The feature is more of a direction than a hardened part of the runtime.
 | Replacement `validate` | Emerging | `replace("validate")` sets `ctx.valid` and returns `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement. No schema field on `Route` or `generateRoutes`. |
 | `generateRoutes` | Emerging | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. |
 | CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
-| `client.*` + `HttpError` | Emerging | JSON/text parse, optional `undici` TLS. Naive URL join remains. |
+| `client.*` + `HttpError` | Stable-ish | Global `fetch` only. Slash-safe join, query encoding, 30s deadline (`0` disables), caller `AbortSignal`. No retries. `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, and generate-routes conformance. The YAML → listen proof is in WebEngine. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, and client conformance. The YAML → listen proof is in WebEngine. |
 | HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
 | Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
 
@@ -59,7 +59,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `ResponseData` / `send` / `response()` | `core/response.ts` | string, JSON, or bytes. 204, 304, and HEAD send no body. |
 | `validationError()` | `core/validation.ts` | 400 `{ error: "Validation failed", issues }`. `path` is `(string \| number)[]`. |
 | `generateRoutes` | `generate/generate-routes.ts` | |
-| `client` / `HttpError` | `core/client/client.ts` | |
+| `client` / `createClient` / `HttpError` | `core/client/client.ts` | 30s default. No retries. No `undici`. |
 | Example server | `src/example.ts` | GET `/` |
 
 `Seltzer.listen` in `core/seltzer.ts` is the only listener. The leftover hello-world `src/core/server/server.ts` was removed.
@@ -76,8 +76,8 @@ The feature is more of a direction than a hardened part of the runtime.
 | Pipeline is a design elective | Shipped core |
 | Nectarine is copy-only | `listApiOperations` + `generateRoutes` |
 | No CORS | `listen({ cors })` + OPTIONS 204 |
-| `client` always `res.json()`, no `ok` check | `HttpError`; JSON or text |
-| `allowSelfSigned` unused | undici Agent on https |
+| `client` always `res.json()`, no `ok` check | `HttpError` with parsed body; JSON, text, or bytes |
+| `allowSelfSigned` / optional `undici` | Removed. Global `fetch` only. KiwiPress keeps its own TLS path |
 | No tests | Vitest suite |
 | `listen` returns `void` | Returns `http.Server`. `server.close()` stops accepting |
 | `listen(port)` binds every interface | Default host is `127.0.0.1`. Public bind is `host: "0.0.0.0"` |
@@ -96,7 +96,6 @@ These form the case for Seltzer as the ecosystem’s HTTP engine, not a thin `cr
 
 - host schema libraries via `replace("validate")` (Seltzer does not depend on Zod) without changing handler signatures
 - `generateRoutes` covering more write operations in hosts
-- slash-safe client URL join
 - typed `client` generics
 
 ## Early or draft areas
@@ -135,7 +134,7 @@ If you are building with Seltzer today:
 - pass `logger` to `listen` when `console.error` is the wrong place for handler failures. `debug: true` adds stacks to that log only
 - use `ctx.params` / `ctx.body` / `ctx.query`. `ctx.valid` stays unset unless your `replace("validate")` assigns it
 - generate routes from operations; bind every name (`handlers` or `execute`) or pass `unbound: "notImplemented"`; replace `validate` when contracts grow, and dispatch on the route inside that stage
-- catch `HttpError` on `client.*`
+- catch `HttpError` on `client.*`. A deadline is `TimeoutError`, a caller abort is `AbortError`, and a dropped connection is `NetworkError`. The client does not retry
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 - pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`
 - call `server.close()` to stop accepting. Idle keep-alive sockets delay the close callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`

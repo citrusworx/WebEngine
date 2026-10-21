@@ -167,7 +167,7 @@ Why it is bad:
 
 Better: `try/catch` and `instanceof HttpError`.
 
-## 8. Double slashes and ignored `endpoint`
+## 8. Putting the URL in `endpoint`, or an absolute `path` with no opt-in
 
 Bad:
 
@@ -181,10 +181,11 @@ client.get({
 
 Why it is bad:
 
-- the client concatenates `baseUrl + path` → `http://127.0.0.1:3000//notes`
-- `endpoint` is never read (KiwiPress may read it in *its* helper, not here)
+- the client joins `baseUrl` and `path` (`http://127.0.0.1:3000/notes`). `endpoint` is never read
+- an absolute `path` throws `UrlError` unless `options.allowAbsoluteUrl` is set
+- KiwiPress may read `endpoint` in *its* helper, not here
 
-Better: `baseUrl` without a trailing slash, or put the full URL in `path` and omit `baseUrl`.
+Better: pass `baseUrl` plus a relative `path`. The boundary slash is normalized, and a base path such as `/api/v1` is kept.
 
 ## 9. Starting with pipeline exercises as an app author
 

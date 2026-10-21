@@ -44,31 +44,32 @@ try {
 
 The `Endpoint` type currently requires both `path` and `endpoint`; URL construction uses `path`. They are not two requests. The duplication is a historical API detail worth understanding rather than inventing a meaning for the unused field.
 
-`client` turns a non-2xx response into `HttpError`. Its `body` is the complete response text, not automatically parsed JSON; `message` contains only a short snippet. A successful call resolves to the decoded body, not a fetch `Response`, so use native fetch when you need response headers or success status.
+`client` turns a non-2xx response into `HttpError`. `body` is parsed with the same content-type rules as a success (JSON, text, or bytes), and `headers` is the response header map. `message` contains only a short snippet of the raw text. A successful call resolves to the decoded body, not a fetch `Response`, so use native fetch when you need success headers or the success status.
 
 ## What gets decoded?
 
 | Response | Client result |
 |---|---|
 | JSON or `+json` content type | Parsed JSON |
-| Other content type | Text |
+| `text/*` | String |
+| Any other content type | `Uint8Array` |
 | No content type, valid JSON text | Parsed JSON |
-| No content type, other text | Text |
-| 204, 205, or empty success body | `undefined` |
-| Non-2xx | Throws `HttpError` |
-| Successful status with malformed advertised JSON | JSON parsing error |
+| No content type, other text | String |
+| 204, 205, HEAD, or empty body | `undefined` |
+| Non-2xx | Throws `HttpError` with the parsed body |
+| Successful status with malformed advertised JSON | `SyntaxError` |
 
-The inbound parser and outbound client are not identical. In particular, the client recognizes `+json` media types, while the incoming parser currently searches for `application/json`.
+The inbound parser and outbound client are not identical. The client recognizes `+json` media types and returns bytes for a response that is neither JSON nor `text/*`. The incoming parser searches for `application/json` and treats every other request body as a UTF-8 string.
 
 ## Classify before retrying
 
 An HTTP 400 tells you the server received a request and rejected it. A connection failure may mean it never arrived. A lost connection after sending a POST can mean the write succeeded but its response was lost. You cannot deduce “nothing happened” from a network exception.
 
-Our client has no automatic retry, timeout, or abort option. It concatenates `baseUrl + path`; choose exactly one slash at the boundary. A missing slash or duplicate slash is not normalized for you.
+The client does not retry. A 400, a timeout, and a connection failure are different outcomes (`HttpError`, `TimeoutError`, `NetworkError`). Repeating every caught exception can write twice.
 
-For a controlled timeout today, use native fetch with an abort signal in host code. Do not pass an imaginary `timeoutMs` option to Seltzer and assume it works. Lesson 11 designs that feature explicitly.
+URL join keeps one slash between `baseUrl` and `path` and keeps a base path (`/api/v1` + `users` is `/api/v1/users`). An absolute `path` throws `UrlError` unless `options.allowAbsoluteUrl` is set.
 
-The `allowSelfSigned` option disables certificate verification on a special outbound HTTPS path using optional `undici`. It is not a way to enable HTTPS on the server. The local course needs neither this flag nor undici.
+The default deadline is 30 seconds (`options.timeout`, or `createClient({ timeout })`). `0` disables it. Pass `options.signal` to cancel. A deadline is not an `HttpError`. There is no `allowSelfSigned` option and no `undici` dependency. That flag was never a way to turn on HTTPS for `listen`.
 
 ## Checkpoint
 

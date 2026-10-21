@@ -1,15 +1,45 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { SeltzerLogger } from "./log.js";
 import type { ResponseData } from "./response.js";
+/**
+ * Options stored by `.handler()` and copied onto inbound `ctx.options`.
+ * The outbound client does not read this object unless you pass it on an `Endpoint`.
+ */
+export type HostOptions = {
+    baseUrl?: string;
+    headers?: Record<string, string>;
+};
+/** A single query value. `null` and `undefined` are omitted. */
+export type QueryPrimitive = string | number | boolean | null | undefined;
+/** A query value, or an array of values that repeat the same key. */
+export type QueryValue = QueryPrimitive | readonly QueryPrimitive[];
+/**
+ * Query string appended by the client.
+ * `null` and `undefined` (including inside arrays) are omitted.
+ * Arrays repeat the key. Objects are rejected.
+ * Values are encoded with `URLSearchParams` (`+` for spaces).
+ */
+export type QueryInput = Record<string, QueryValue>;
+/**
+ * Per-call options for `client` / `createClient`.
+ * `timeout` overrides the client default. `0` disables the timer.
+ */
+export type ClientCallOptions = HostOptions & {
+    timeout?: number;
+    /** Merged with the timeout. Caller abort wins over the deadline. */
+    signal?: AbortSignal;
+    query?: QueryInput;
+    /**
+     * When true, an `http:` or `https:` `path` is fetched as-is and `baseUrl`
+     * is not joined. Otherwise an absolute `path` throws `UrlError`.
+     */
+    allowAbsoluteUrl?: boolean;
+};
 export type Endpoint = {
     route?: Route;
     path: string;
     endpoint: string;
-    options?: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
+    options?: ClientCallOptions;
 };
 /**
  * Values produced by a replacement `validate` stage.
@@ -54,11 +84,7 @@ export type RequestContext<TLocals = unknown, TValid extends ValidatedInput = Va
     valid?: TValid;
     headers: Record<string, string>;
     locals: TLocals;
-    options?: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
+    options?: HostOptions;
 };
 /**
  * Optional contract metadata for the `validate` stage.
@@ -80,11 +106,7 @@ export type Route<TContext = RequestContext> = {
 };
 export type HandlerConfig = {
     adapter: string;
-    options: {
-        baseUrl?: string;
-        headers?: Record<string, string>;
-        allowSelfSigned?: boolean;
-    };
+    options: HostOptions;
 };
 export type CorsOptions = {
     /**
@@ -121,6 +143,11 @@ export declare const DEFAULT_HEADERS_TIMEOUT_MS = 20000;
  * Tighter than Node's 5-minute default. `0` disables the timer.
  */
 export declare const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
+/**
+ * Default outbound client deadline. Same number as {@link DEFAULT_REQUEST_TIMEOUT_MS}.
+ * `createClient({ timeout: 0 })` or `options.timeout: 0` disables it.
+ */
+export declare const DEFAULT_CLIENT_TIMEOUT_MS = 30000;
 /** Milliseconds an idle keep-alive socket may wait for the next request. */
 export declare const DEFAULT_KEEP_ALIVE_TIMEOUT_MS = 5000;
 export type ListenOptions<TLocals = unknown> = {

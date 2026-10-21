@@ -168,7 +168,7 @@ test("Seltzer client decodes CRUD results and throws HttpError for a missing not
   await assert.rejects(client.get(endpoint("/notes/client-note")), (error) => {
     assert.ok(error instanceof HttpError);
     assert.equal(error.status, 404);
-    assert.deepEqual(JSON.parse(error.body), { error: "Note not found" });
+    assert.deepEqual(error.body, { error: "Note not found" });
     return true;
   });
 });

@@ -3,7 +3,7 @@ import { installRemovedResponseMethods } from "./raw-response.js";
 import { isExplicitResponse, isResponseData, response, send, } from "./response.js";
 import { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 import { compileRoute, createDefaultPipeline, } from "../pipeline/index.js";
-export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
+export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_CLIENT_TIMEOUT_MS, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export { validationError } from "./validation.js";
 export { isExplicitResponse, isResponseData, response, send };

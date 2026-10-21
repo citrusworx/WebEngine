@@ -61,7 +61,7 @@ Do not read `ctx.req` again; `parse` already consumed the stream.
 
 ## `client` throws `HttpError`
 
-Non-2xx. Read `err.status` and `err.body`. This is expected for Seltzer’s own 404 JSON. 0.2.0 parsed that JSON as success.
+Non-2xx. Read `err.status`, `err.headers`, and `err.body` (parsed the same way as a success). This is expected for Seltzer’s own 404 JSON. 0.2.0 parsed that JSON as success. A deadline is `TimeoutError` (`code: "TIMEOUT"`). Aborting `options.signal` is `AbortError`. A connection failure is `NetworkError`. The client does not retry any of these.
 
 ## Client throws `SyntaxError` on success
 
@@ -69,7 +69,7 @@ The success `Content-Type` was JSON but the body was not. Or you pointed `baseUr
 
 ## `http://host:3000//notes`
 
-`baseUrl` had a trailing slash and `path` had a leading slash. Concatenation does not join paths.
+That double slash was the old concatenation. The client now joins the boundary to one slash and keeps a base path. A trailing slash on the path itself is still a different URL.
 
 ## `listen` throws about Node
 
@@ -107,9 +107,9 @@ Nectarine does not call `.route`. You must `generateRoutes` (or copy by hand) an
 
 `listen(port)` binds `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) when another machine or a container port-forward must connect. The old hello-world file `src/core/server/server.ts` was removed; edit `core/seltzer.ts`.
 
-## `allowSelfSigned` throws about undici
+## Looking for `allowSelfSigned` or `undici`
 
-Install the optional peer `undici`, or use a trusted certificate. HTTP URLs ignore the flag.
+Removed. The client uses global `fetch` and does not bypass certificate checks. Use a trusted certificate or `NODE_EXTRA_CA_CERTS`. KiwiPress still has its own WordPress fetch path for self-signed origins; that is not Seltzer's client.
 
 ## Suggested reading
 

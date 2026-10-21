@@ -8,11 +8,11 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 
 - `Seltzer`
 - `STAGE_NAMES`
-- `client`, `HttpError`
+- `client`, `createClient`, `resolveRequestUrl`, `HttpError`, `TimeoutError`, `AbortError`, `NetworkError`, `UrlError`
 - `generateRoutes`, `UnboundOperationsError`
 - `response`, `send`, `isResponseData`, `isExplicitResponse`, `validationError`
-- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`, `OperationHandler`, `UnboundOperationPolicy`
-- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`
+- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ClientCallOptions`, `HostOptions`, `QueryInput`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`, `OperationHandler`, `UnboundOperationPolicy`, `ClientConfig`, `SeltzerClient`
+- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`, `DEFAULT_CLIENT_TIMEOUT_MS` (`30000`, same number as the request timeout)
 
 There are no subpath exports. `HandlerConfig` is used by `.handler()` but is not re-exported from the package root.
 
@@ -60,7 +60,7 @@ replace(name: StageName, stage: Stage): this
 ```ts
 handler(config: {
   adapter: string;
-  options: { baseUrl?: string; headers?: Record<string, string>; allowSelfSigned?: boolean };
+  options: { baseUrl?: string; headers?: Record<string, string> };
 }): this
 ```
 
@@ -159,11 +159,7 @@ type RequestContext<TLocals = unknown, TValid extends ValidatedInput = Validated
   valid?: TValid;
   headers: Record<string, string>;
   locals: TLocals;
-  options?: {
-    baseUrl?: string;
-    headers?: Record<string, string>;
-    allowSelfSigned?: boolean;
-  };
+  options?: { baseUrl?: string; headers?: Record<string, string> };
 };
 ```
 
@@ -229,21 +225,27 @@ type UnboundOperationPolicy = "throw" | "notImplemented";
 
 ```ts
 class HttpError extends Error {
+  readonly code: "HTTP_ERROR";
   readonly status: number;
   readonly statusText: string;
-  readonly body: string;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly body: unknown;
 }
+class TimeoutError extends Error { readonly code: "TIMEOUT"; readonly timeoutMs: number }
+class AbortError extends Error { readonly code: "ABORTED"; readonly reason: unknown }
+class NetworkError extends Error { readonly code: "NETWORK"; readonly cause?: unknown }
+class UrlError extends Error { readonly code: "INVALID_URL" }
 
-const client: {
-  get(endpoint: Endpoint): Promise<unknown>;
-  post(endpoint: Endpoint, data: unknown): Promise<unknown>;
-  put(endpoint: Endpoint, data: unknown): Promise<unknown>;
-  patch(endpoint: Endpoint, data: unknown): Promise<unknown>;
-  delete(endpoint: Endpoint): Promise<unknown>;
-};
+function createClient(config?: {
+  timeout?: number;
+  baseUrl?: string;
+  headers?: Record<string, string>;
+}): SeltzerClient;
+
+const client: SeltzerClient;
 ```
 
-URL = `options.baseUrl + path` or `path`. Write methods JSON-stringify `data`. Non-2xx throws `HttpError`. See [Client](./seltzer-client.md).
+`client` is `createClient()`. The default timeout is 30s (`DEFAULT_CLIENT_TIMEOUT_MS`). `0` disables it. Per-call `options.timeout` overrides the client. There is no retry. `Idempotency-Key` is an ordinary header. See [Client](./seltzer-client.md).
 
 ## `Endpoint`
 
@@ -255,10 +257,15 @@ type Endpoint = {
   options?: {
     baseUrl?: string;
     headers?: Record<string, string>;
-    allowSelfSigned?: boolean;
+    timeout?: number;
+    signal?: AbortSignal;
+    query?: QueryInput;
+    allowAbsoluteUrl?: boolean;
   };
 };
 ```
+
+`resolveRequestUrl(baseUrl, path, options)` joins with one slash and keeps a base path. An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. `endpoint` and `route` are ignored.
 
 ## Not in the public surface
 

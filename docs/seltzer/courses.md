@@ -29,7 +29,7 @@ The concepts you need to understand deeply:
 - **Async server handlers** — returning Promises; central error → 500 mapping
 - **Pipeline design** — ordered named stages vs middleware chains (see [design](./seltzer-design.md) § Why Pipelines)
 - **Validation / contracts** — `.required` at `validate`; `replace` for richer checks
-- **HTTP client** — `fetch`, `HttpError` on non-2xx, optional `undici` TLS
+- **HTTP client** — global `fetch`, `HttpError` on non-2xx, 30s deadline, no retries
 - **TypeScript for libraries** — generics for context types, narrow exports, declaration files
 
 ### Seltzer topic map
@@ -42,7 +42,7 @@ The concepts you need to understand deeply:
 | Routing | `pipeline/router.ts` | Parametric path matching, rank, `ctx.params` |
 | Pipeline stages | `pipeline/index.ts` (`parse` → `send`) | Named runner with `before` / `replace` |
 | Structured responses | `core/response.ts` | Handlers return `{ status, headers, body }`; `send` |
-| HTTP client | `src/core/client/client.ts` | `fetch`, `HttpError`, optional undici Agent |
+| HTTP client | `src/core/client/client.ts` | `fetch`, URL join, timeout, `HttpError` |
 | Contracts | `validateStage` + `Route.contract` | Presence checks; Nectarine `replace` later |
 | `generateRoutes` | `src/generate/` | Host `execute` + `response()` brand |
 | Library authoring | `package.json` — ESM + TypeScript | Generics (`Route<TContext>`), `.js` import extensions, `node:` prefix |

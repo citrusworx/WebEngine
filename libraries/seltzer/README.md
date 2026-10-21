@@ -2,19 +2,12 @@
 
 Small Node HTTP runtime: object routes, `ResponseData` handlers, and a named request pipeline. Built on Node’s `http` module. No Express. WebEngine and Nectarine are optional, not required.
 
-Requires Node 18+.
+Requires Node 18+. No runtime dependencies. The outbound client uses global `fetch` only.
 
 ## Install
 
 ```bash
 npm install @citrusworx/seltzer
-```
-
-`undici` is an optional peer dependency. Install it only if you set `allowSelfSigned: true` on an outbound `https://` `client` call. Everyday `init().route().listen()` does not need it.
-
-```bash
-# only for allowSelfSigned on https
-npm install undici
 ```
 
 ## Usage
@@ -160,10 +153,10 @@ app.route({
 
 ## Outbound HTTP `client`
 
-`client` is a small `fetch` wrapper for host-to-host calls. Methods take an `Endpoint` (`path`, optional `options.baseUrl`, `options.headers`, `options.allowSelfSigned`):
+`client` is a small global-`fetch` wrapper. It does not retry, and it does not load `undici`. `createClient({ timeout, baseUrl, headers })` builds another client; `client` is `createClient()` with a 30s timeout (`DEFAULT_CLIENT_TIMEOUT_MS`, the same number as the server `requestTimeout`). `options.timeout` overrides that per call. `0` disables the timer.
 
 ```ts
-import { client, HttpError } from "@citrusworx/seltzer";
+import { client, createClient, HttpError, TimeoutError, AbortError, NetworkError } from "@citrusworx/seltzer";
 
 const posts = await client.get({
     path: "/posts",
@@ -178,16 +171,19 @@ await client.post(
     { path: "/posts", endpoint: "/posts", options: { baseUrl } },
     { title: "Hello" },
 );
+
+const api = createClient({ baseUrl: "http://127.0.0.1:3000/api/v1", timeout: 5_000 });
+await api.get({ path: "users", endpoint: "users" });
 ```
 
-`GET` / `POST` / `PUT` / `PATCH` / `DELETE` share one request path:
-
-- URL is `baseUrl + path` when `baseUrl` is set, otherwise `path`.
-- Non-2xx responses throw `HttpError` (`status`, `statusText`, full `body`; the message includes a short body snippet).
-- Successful `application/json` (or `+json`) bodies are parsed. Other Content-Types are returned as text. No Content-Type still parses JSON when the body is JSON.
-- `204` / `205` and empty bodies resolve to `undefined`.
-
-`allowSelfSigned: true` on an `https://` URL dynamically imports `undici` and uses `Agent({ connect: { rejectUnauthorized: false } })`. That is the only path that needs the optional `undici` peer. HTTP URLs ignore the flag. Prefer a trusted certificate or `NODE_EXTRA_CA_CERTS` when you can.
+- URL join keeps one slash at the boundary and keeps a base path (`/api/v1` + `users` → `/api/v1/users`).
+- An absolute `path` throws `UrlError` unless `options.allowAbsoluteUrl` is set.
+- `options.query` is encoded (`null` / `undefined` omitted, arrays repeat the key).
+- Non-2xx throws `HttpError` (`status`, `headers`, parsed `body`).
+- A deadline throws `TimeoutError`. The caller's `signal` throws `AbortError` (it wins if both fire). A dropped connection throws `NetworkError`.
+- JSON (`application/json` and `+json`) is parsed. `text/*` is a string. Anything else is a `Uint8Array`. No Content-Type sniffs JSON, then a string. `204`, `205`, and `HEAD` are `undefined`.
+- Objects are sent as JSON, strings as text, `Uint8Array` / `Buffer` as bytes.
+- Put `Idempotency-Key` in `headers` if you need it. The client will not repeat the request, and Seltzer does not store idempotency keys.
 
 ## Generate routes from `ApiOperation[]`
 

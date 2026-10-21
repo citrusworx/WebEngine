@@ -87,13 +87,11 @@ Less ideal: assuming Nectarine mounted handlers, or copying `{ method, endpoint 
 
 Keep `execute` as data access. Use `response()` only for explicit transport results (non-200 that is not the default wrap).
 
-## Give `client` a slash-safe `baseUrl`
+## Let the client join the URL, and do not retry inside it
 
-Good: `baseUrl: "http://127.0.0.1:3000"` + `path: "/notes"`.
+Good: `baseUrl: "http://127.0.0.1:3000/api/v1"` + `path: "users"`, or a trailing slash on either side. The join keeps one slash and the base path.
 
-Bad: trailing slash on `baseUrl` plus leading slash on `path` (`//notes`).
-
-Catch `HttpError` for 4xx/5xx. Do not treat `{ error: "Not Found" }` as a successful `get` result — that was 0.2.0.
+Catch `HttpError` for 4xx/5xx. A deadline is `TimeoutError`, a caller abort is `AbortError`, and a dropped connection is `NetworkError`. Do not treat `{ error: "Not Found" }` as a successful `get` result — that was 0.2.0. The client does not retry. Repeat a call only when you know it is safe. `Idempotency-Key` is a header you set; Seltzer does not store it.
 
 ## Use `listen` options instead of reinventing CORS
 

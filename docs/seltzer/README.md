@@ -270,9 +270,9 @@ try {
 }
 ```
 
-Non-2xx throws `HttpError` (`status`, `statusText`, full `body`; the message includes a short snippet). Successful JSON is parsed; other content types come back as text. `204` / `205` and empty bodies resolve to `undefined`. `allowSelfSigned: true` on `https://` dynamically imports optional peer `undici`.
+Non-2xx throws `HttpError` (`status`, lowercase `headers`, parsed `body`; the message includes a short snippet). JSON and `+json` are parsed, `text/*` is a string, other types are `Uint8Array`. No Content-Type sniffs JSON, then a string. `204`, `205`, `HEAD`, and empty bodies are `undefined`. The default deadline is 30s (`0` disables). Caller abort is `AbortError`, a deadline is `TimeoutError`, a dropped connection is `NetworkError`. The client does not retry.
 
-URL is still `baseUrl + path` (no slash-safe join). `Endpoint.endpoint` and `Endpoint.route` are typed and unused.
+URL join keeps one slash and a base path (`/api/v1` + `users` → `/api/v1/users`). An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. `Endpoint.endpoint` and `Endpoint.route` are typed and unused. There is no `undici` peer and no `allowSelfSigned` option.
 
 ### 11. Optional `.handler()` config
 
@@ -282,7 +282,6 @@ app.handler({
   options: {
     baseUrl: "https://api.example.com",
     headers: { "X-App": "demo" },
-    allowSelfSigned: false,
   },
 });
 ```
@@ -348,7 +347,7 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 4. [Request and response](./seltzer-request-response.md) — `RequestContext`, `ResponseData`, `send`
 5. [Routing](./seltzer-routing.md) — params, static-prefix preference, 404
 6. [Pipeline](./seltzer-pipeline.md) — stages, `before`, `replace`, short-circuit
-7. [Client](./seltzer-client.md) — `Endpoint`, `HttpError`, `allowSelfSigned`
+7. [Client](./seltzer-client.md) — `Endpoint`, `HttpError`, timeout, no retries
 8. [Generate routes](./seltzer-generate.md) — `ApiOperation[]`, `execute`, `response()`
 9. [Patterns](./seltzer-patterns.md) — cookbook for JSON APIs
 10. [Best Practices](./seltzer-best-practices.md)
@@ -367,7 +366,7 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 
 Shipped: object routes, parametric matching, JSON `parse`, `ResponseData` + `send`, named pipeline, default `validate`, `generateRoutes`, CORS/`OPTIONS`, hardened `client`.
 
-Not shipped: HTTPS listen, `app.use`, a bundled schema library, response-shape validation, form-urlencoded parser, slash-safe client URL join, first-class file/stream responses. Zod is a documented `replace("validate")` recipe, not a dependency.
+Not shipped: HTTPS listen, `app.use`, a bundled schema library, response-shape validation, form-urlencoded parser, client retries, server-side idempotency, first-class file/stream responses. Zod is a documented `replace("validate")` recipe, not a dependency. The client uses global `fetch` and does not depend on `undici`.
 
 See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./seltzer-roadmap.md) for what is worth building next.
 
