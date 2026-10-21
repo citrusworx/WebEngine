@@ -1,5 +1,6 @@
 import { attachNodeCleanup, disposeTree } from "./node-cleanup.js";
-import { Signal, captureCleanupScope, effect, untrack } from "./signal.js";
+import { captureCleanupScope } from "./cleanup-scope.js";
+import { Signal, effect, untrack } from "./signal.js";
 const boundParents = new WeakSet();
 export function bindList(parent, source, keyOrRender, maybeRender) {
     if (!(parent instanceof Element)) {

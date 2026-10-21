@@ -11,7 +11,8 @@
  * as types. Seeding and write-back call the runtime controllers.
  *
  * `bind` returns `{ state, dispose }`. `dispose` removes the host listeners.
- * A call during Sig render also disposes on unmount.
+ * A call during Sig render also disposes on unmount: `effect` registers that
+ * disposer on the internal cleanup scope (`captureCleanupScope`).
  */
 
 import { effect, Signal } from "./signal.js";

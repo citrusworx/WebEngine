@@ -1,5 +1,6 @@
 import {test, expect} from "@playwright/test";
-import { Signal, effect, batch, memo, untrack, captureCleanupScope } from "./signal.js";
+import { captureCleanupScope } from "./cleanup-scope.js";
+import { Signal, effect, batch, memo, untrack } from "./signal.js";
 
 test("Signal initializes with the correct value", () => {
     const count = Signal(0);
@@ -10,6 +11,21 @@ test("Signal updates the value on set", () => {
     const count = Signal(0);
     count.set(1);
     expect(count.get()).toBe(1);
+});
+
+test("Signal.set notifies subscribers when the value is unchanged", () => {
+    const count = Signal(1);
+    let runs = 0;
+
+    effect(() => {
+        count.get();
+        runs += 1;
+    });
+
+    expect(runs).toBe(1);
+    count.set(1);
+    expect(count.get()).toBe(1);
+    expect(runs).toBe(2);
 });
 
 test("Effect runs immediately on registration", () => {

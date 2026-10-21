@@ -21,6 +21,8 @@
 // Attach signals to components so only THEY get updated and not the entire DOM
 
 
+import { registerCleanup } from "./cleanup-scope.js";
+
 type Cleanup = () => void;
 type EffectCallback = () => void | Cleanup;
 
@@ -32,14 +34,9 @@ interface ReactiveEffect {
     dispose(): void;
 }
 
-interface CleanupScope {
-    cleanups: Set<Cleanup>;
-}
-
 let batchDepth = 0;
 const pendingSubscribers = new Set<ReactiveEffect>();
 let currentSubscriber: ReactiveEffect | null = null;
-let currentCleanupScope: CleanupScope | null = null;
 
 function runCleanup(cleanup?: Cleanup) {
     cleanup?.();
@@ -62,58 +59,6 @@ function flushPendingSubscribers() {
     }
 }
 
-function registerCleanup(cleanup: Cleanup) {
-    currentCleanupScope?.cleanups.add(cleanup);
-}
-
-function disposeScope(scope: CleanupScope) {
-    for (const cleanup of scope.cleanups) {
-        runCleanup(cleanup);
-    }
-    scope.cleanups.clear();
-}
-
-/**
- * Collects cleanups registered while `fn` runs and returns them as `dispose`.
- * The JSX runtime uses this for a component call. `bindList` uses it for a row.
- * If `fn` throws, those cleanups run before the error propagates.
- *
- * App code should not call this. It stays exported so existing imports keep working.
- *
- * @internal
- */
-export function captureCleanupScope<T>(fn: () => T): { value: T; dispose: Cleanup } {
-    const parentScope = currentCleanupScope;
-    const scope: CleanupScope = { cleanups: new Set() };
-    currentCleanupScope = scope;
-
-    try {
-        let value: T;
-        try {
-            value = fn();
-        } catch (error) {
-            disposeScope(scope);
-            throw error;
-        }
-
-        let disposed = false;
-
-        return {
-            value,
-            dispose: () => {
-                if (disposed) {
-                    return;
-                }
-
-                disposed = true;
-                disposeScope(scope);
-            },
-        };
-    } finally {
-        currentCleanupScope = parentScope;
-    }
-}
-
 /**
  * Runs `fn` without subscribing the current effect or memo.
  * Reads inside `fn` still return the current value.
@@ -132,15 +77,16 @@ export function untrack<T>(fn: () => T): T {
  * Creates a reactive signal that tracks subscribers for state changes.
  *
  * When the signal's getter is called within an {@link effect}, the effect function
- * is automatically subscribed to receive updates. When the setter is called with a new value,
- * all subscribers are notified and their callback functions are executed.
+ * is automatically subscribed to receive updates. `set` writes the value and notifies
+ * every subscriber. Frozen for v1: `set` always notifies, even when the new value is
+ * the same as the current one. There is no equality check.
  *
  * @template T - The type of value stored in the signal
  * @param value - The initial value of the signal
  * @returns An object with `get` and `set` methods for reading and writing the signal value
  * @returns {Object} Signal object
  * @returns {Function} Signal.get - Retrieves the current value and registers the current subscriber
- * @returns {Function} Signal.set - Updates the value and notifies all subscribers
+ * @returns {Function} Signal.set - Writes the value and notifies every subscriber, including when the value is unchanged
  *
  * @example
  * const message = Signal('hello');

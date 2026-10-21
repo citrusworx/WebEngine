@@ -1,88 +1,91 @@
-//#region ../sig/dist/signal.js
-var e = 0, t = /* @__PURE__ */ new Set(), n = null, r = null;
-function i(e) {
-	e?.();
-}
-function a(n) {
-	if (e > 0) {
-		t.add(n);
-		return;
-	}
-	n.notify();
-}
-function o(e) {
-	r?.cleanups.add(e);
-}
-function s(e) {
-	for (let t of e.cleanups) i(t);
+//#region ../sig/dist/cleanup-scope.js
+var e = null;
+function t(e) {
+	for (let t of e.cleanups) t();
 	e.cleanups.clear();
 }
-function c(e) {
-	let t = r, n = { cleanups: /* @__PURE__ */ new Set() };
-	r = n;
+function n(t) {
+	e?.cleanups.add(t);
+}
+function r(n) {
+	let r = e, i = { cleanups: /* @__PURE__ */ new Set() };
+	e = i;
 	try {
-		let t;
+		let e;
 		try {
-			t = e();
+			e = n();
 		} catch (e) {
-			throw s(n), e;
+			throw t(i), e;
 		}
 		let r = !1;
 		return {
-			value: t,
+			value: e,
 			dispose: () => {
-				r || (r = !0, s(n));
+				r || (r = !0, t(i));
 			}
 		};
 	} finally {
-		r = t;
+		e = r;
 	}
+}
+//#endregion
+//#region ../sig/dist/signal.js
+var i = 0, a = /* @__PURE__ */ new Set(), o = null;
+function s(e) {
+	e?.();
+}
+function c(e) {
+	if (i > 0) {
+		a.add(e);
+		return;
+	}
+	e.notify();
 }
 function l(e) {
 	let t = /* @__PURE__ */ new Set();
-	function r() {
-		return n && (t.add(n), n.addDependency(t)), e;
+	function n() {
+		return o && (t.add(o), o.addDependency(t)), e;
 	}
-	function i(n) {
-		e = n, [...t].forEach((e) => a(e));
+	function r(n) {
+		e = n, [...t].forEach((e) => c(e));
 	}
 	return {
-		get: r,
-		set: i
+		get: n,
+		set: r
 	};
 }
 function u(e) {
-	let r = /* @__PURE__ */ new Set(), a, s = !1, c = {
+	let t = /* @__PURE__ */ new Set(), r, i = !1, c = {
 		addDependency(e) {
-			r.add(e);
+			t.add(e);
 		},
 		notify() {
-			s || l();
+			i || l();
 		},
 		dispose() {
-			if (!s) {
-				s = !0;
-				for (let e of r) e.delete(c);
-				r.clear(), i(a), a = void 0, t.delete(c);
+			if (!i) {
+				i = !0;
+				for (let e of t) e.delete(c);
+				t.clear(), s(r), r = void 0, a.delete(c);
 			}
 		}
 	};
 	function l() {
-		for (let e of r) e.delete(c);
-		r.clear(), i(a), a = void 0;
-		let t = n;
-		n = c;
-		let o;
+		for (let e of t) e.delete(c);
+		t.clear(), s(r), r = void 0;
+		let n = o;
+		o = c;
+		let i;
 		try {
-			o = e();
+			i = e();
 		} finally {
-			n = t;
+			o = n;
 		}
-		typeof o == "function" && (a = o);
+		typeof i == "function" && (r = i);
 	}
 	l();
 	let u = () => c.dispose();
-	return o(u), u;
+	return n(u), u;
 }
 //#endregion
 //#region ../sig/dist/node-cleanup.js
@@ -147,8 +150,9 @@ function g(e, t, n) {
 			return;
 		}
 		if (typeof n == "function") {
+			let r = n;
 			f(e, u(() => {
-				h(e, t, n());
+				h(e, t, r());
 			}));
 			return;
 		}
@@ -157,8 +161,8 @@ function g(e, t, n) {
 }
 function _(e, t) {
 	if (typeof e == "function") {
-		let { value: n, dispose: r } = c(() => e(t));
-		return n instanceof Node && f(n, r), n;
+		let { value: n, dispose: i } = r(() => e(t ?? null));
+		return n instanceof Node && f(n, i), n;
 	}
 	let n = document.createElement(e);
 	if (t) {

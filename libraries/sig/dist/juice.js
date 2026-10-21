@@ -11,7 +11,8 @@
  * as types. Seeding and write-back call the runtime controllers.
  *
  * `bind` returns `{ state, dispose }`. `dispose` removes the host listeners.
- * A call during Sig render also disposes on unmount.
+ * A call during Sig render also disposes on unmount: `effect` registers that
+ * disposer on the internal cleanup scope (`captureCleanupScope`).
  */
 import { effect, Signal } from "./signal.js";
 import { startAccordionRuntime, startBannerRuntime, startBreadcrumbRuntime, startCheckboxRuntime, startComboboxRuntime, startDisclosureRuntime, startDrawerRuntime, startFieldRuntime, startInputRuntime, startMenuRuntime, startModalRuntime, startNavigationRuntime, startPaginationRuntime, startPopoverRuntime, startProgressRuntime, startRadioRuntime, startSelectRuntime, startSliderRuntime, startSpinnerRuntime, startSwitchRuntime, startTabsRuntime, startTextareaRuntime, startToastRuntime, startTooltipRuntime, startWizardRuntime, } from "@citrusworx/juiceui";

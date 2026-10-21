@@ -4,7 +4,7 @@ Public surface of `@citrusworx/sigjs` as implemented in `libraries/sig/src`.
 
 This page is the compact contract. For the mental model, start with [Signals](./sig-signals.md), [Effects](./sig-effects.md), and [JSX and the DOM](./sig-jsx.md).
 
-Exports from the package root: `Signal`, `effect`, `batch`, `memo`, `untrack`, `captureCleanupScope`, `bindList`, `jsx`, `jsxs`, `jsxDEV`, `Fragment`, `mount`, `disposeTree`, `SigRouter`, plus the types named in [API surface](./api-surface.md). That page is the v1 freeze inventory (stable, experimental, internal). `jsxDEV` on the root is an `export *` accident; import it from `@citrusworx/sigjs/jsx-dev-runtime`.
+Exports from the package root: `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList`, `jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `SigRouter`, the `JSX` namespace, plus the types named in [API surface](./api-surface.md). That page is the v1 freeze inventory (stable, experimental, internal). `jsxDEV` is not on the root. Import it from `@citrusworx/sigjs/jsx-dev-runtime`. `captureCleanupScope` is not exported.
 
 Subpath exports:
 
@@ -29,7 +29,7 @@ count.get(); // 0
 count.set(1); // notifies subscribers
 ```
 
-`get()` registers the current effect or memo (if any) as a subscriber. `set()` always notifies, even if the value is unchanged.
+`get()` registers the current effect or memo (if any) as a subscriber. `set()` always notifies, even if the value is unchanged. That notification rule is frozen for v1. There is no equality check.
 
 There is no `.peek()`, no `.update()`, and no equality check.
 
@@ -120,13 +120,11 @@ sum.get(); // 30
 
 `memo` is readable from effects and from other memos. It has no `set`. There is no public `dispose`; keep memos as cheap derivations.
 
-## captureCleanupScope
+## Cleanup scopes
 
-```ts
-function captureCleanupScope<T>(fn: () => T): { value: T; dispose: () => void }
-```
+Component calls and `bindList` rows run inside an internal cleanup scope. Effects registered during that call are attached to the returned node and run on `disposeTree`. If the call throws, those effects are disposed before the error propagates. `@citrusworx/sigjs/juice` `bind` uses the same scope, so a bind during render disposes on unmount.
 
-Internal building block used by the JSX runtime when it calls a component function, and by `bindList` for each row. Effects registered during `fn` are attached to the returned `dispose`. If `fn` throws, those effects are disposed before the error propagates. Tagged `@internal`. Still exported. App code should not call it. Hiding it is a breaking change and is listed in [API surface](./api-surface.md).
+The helper is `captureCleanupScope` in `src/cleanup-scope.ts`. It is not a package export. App code should not import it. See [API surface](./api-surface.md).
 
 ## bindList
 
@@ -192,12 +190,14 @@ The usual todo shape is a `Map<id, Todo>` plus an `order: id[]`, joined with `me
 Configured via `jsxImportSource: "@citrusworx/sigjs"`.
 
 ```ts
-function jsx(type: string | Function, props: any): Node
-function jsxs(type: string | Function, props: any): Node
-function Fragment(props: { children?: Child }): DocumentFragment
+function jsx(type: string, props?: JSX.IntrinsicElements[string] | null): Node
+function jsx<P>(type: (props: P) => Node, props?: P | null): Node
+function Fragment(props: { children?: Child } | null): DocumentFragment
 ```
 
-`jsxs` is an alias of `jsx`.
+`jsxs` is an alias of `jsx`. `jsxDEV` is the same factory on `@citrusworx/sigjs/jsx-dev-runtime`. Its extra arguments are `unknown` and ignored.
+
+Host props accept a string, number, boolean, null, a reactive getter `() =>` of those, an event listener, a `ref`, or a style object. Unknown keys are attributes. Function children are `() => string | number | boolean | null | undefined`. The `JSX` namespace is exported from `./jsx-runtime` and `./jsx-dev-runtime`.
 
 ### Elements
 

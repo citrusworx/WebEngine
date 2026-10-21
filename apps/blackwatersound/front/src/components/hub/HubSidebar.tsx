@@ -3,7 +3,7 @@ import { Render } from "../../app/Render";
 import { HUB_NAV, type HubScreen } from "../../data/hub";
 
 export function HubSidebar(props: {
-  screen: Signal<HubScreen>;
+  screen: ReturnType<typeof Signal<HubScreen>>;
   onNavigate: (screen: HubScreen) => void;
   brandTitle?: string;
   brandSub?: string;
