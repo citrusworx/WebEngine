@@ -6,6 +6,7 @@ import {
     persistenceFromEnv,
     registerKiwiPressGateway
 } from "@citrusworx/kiwipress";
+import { registerKiwiPressBridge } from "./bridge/register.js";
 import { loadBackEnv } from "./env.js";
 import { registerKiwiPressProvision } from "./provision/register.js";
 
@@ -44,6 +45,7 @@ async function main() {
     };
     registerKiwiPressGateway(server, kiwi, gatewayAuth);
     registerKiwiPressProvision(server, gatewayAuth);
+    registerKiwiPressBridge(server, gatewayAuth);
     // Seltzer defaults to 127.0.0.1. This gateway is the public API.
     server.listen(port, { host: "0.0.0.0" });
 

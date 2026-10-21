@@ -13,6 +13,8 @@ import { DestroyPanel } from "../../wizard/DestroyPanel";
 import { beginDestroyConfirm, destroyError, destroyPhase, destroySummary } from "../../wizard/destroy-flow";
 import { liveInstance } from "../../wizard/state";
 import { backupsEnabled, instanceStatus, simulateAction, viewMode, yamlHistoryOpen } from "../state";
+import { WordPressBridge } from "../bridge/WordPressBridge";
+import { refreshBridgeStatus, trackBridgeView } from "../bridge/state";
 
 function statusLabel(): string {
     if (liveInstance.get()?.destroyed || destroyPhase.get() === "done") {
@@ -25,6 +27,7 @@ function statusLabel(): string {
 }
 
 export function Projects() {
+    void refreshBridgeStatus();
     let bodyNode: HTMLElement | null = null;
 
     function paint() {
@@ -137,6 +140,8 @@ export function Projects() {
                     </div>
                 </div>
 
+                <WordPressBridge />
+
                 {mode === "simple"
                     ? <div section-block>
                         <h2 section-kicker>Active Features</h2>
@@ -233,6 +238,7 @@ export function Projects() {
         destroyPhase.get();
         destroyError.get();
         destroySummary.get();
+        trackBridgeView();
         paint();
     });
 

@@ -15,7 +15,7 @@ export function kiwiCallOptions(options: KiwiPressCallOptions): NonNullable<Endp
     return options;
 }
 
-async function sendWordPressRequest(ctx: Endpoint, init?: RequestInit): Promise<Response> {
+export async function sendWordPressRequest(ctx: Endpoint, init?: RequestInit): Promise<Response> {
     const headers = {
         ...(ctx.options?.headers ?? {}),
         ...(init?.headers ?? {})

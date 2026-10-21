@@ -1,3 +1,6 @@
+/** The dashboard is one project today. Bridge routes are keyed by this id. */
+export const PROJECT_ID = "my-wordpress-app";
+
 export const INSTANCE = {
     name: "my-wordpress-app",
     region: "NYC3",

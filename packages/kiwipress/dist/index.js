@@ -6,6 +6,8 @@ export * from "./core/WPUpdate.js";
 export * from "./core/WPDelete.js";
 export * from "./core/WPRead.js";
 export * from "./core/WPSync.js";
+export * from "./bridge/errors.js";
+export * from "./bridge/bridge.js";
 export * from "./core/normalize.js";
 export * from "./core/query.js";
 export * from "./cms/types.js";
