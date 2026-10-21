@@ -39,6 +39,7 @@ Shipped:
 - opt-in `CmsPersistence` (`createFilePersistence`, `createPostgresPersistence` via Nectarine `PgSql`)
 - `registerKiwiPressGateway` for the `apps/kiwipress` Seltzer proxy
 - live app at `apps/kiwipress` (marketing, wizard, dashboard Content + Types)
+- `Bridge` / `kiwi.bridge` for the KiwiPress Bridge plugin (`kiwipress/v1` health and settings, plus `users/me?context=edit`)
 - native custom type registry (definitions + items)
 
 Not finished yet:

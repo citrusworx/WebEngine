@@ -61,6 +61,20 @@
     box-shadow: 0 1px 2px var(--kw-shadow);
 }
 
+[dashboard-shell] [bridge-stack] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+[dashboard-shell] [bridge-stack] [action-group] {
+    margin-top: 1rem;
+}
+
+[dashboard-shell] [bridge-stack] [note] {
+    margin-top: 0.75rem;
+}
+
 [dashboard-shell] [panel-card][muted] {
     background: var(--kw-surface-muted);
 }

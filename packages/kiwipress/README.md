@@ -84,6 +84,36 @@ const hits = await kiwi.wordpress.search.query("kiwi", { type: "post", per_page:
 
 Options map onto the WordPress REST args: `type` (`post` | `term` | `post-format`), `subtype`, `page`, `per_page`, `exclude`, `include`. This is not Elasticsearch, a search plugin, or native Nectarine store search.
 
+## Bridge plugin
+
+`kiwi.bridge` talks to the KiwiPress Bridge plugin (`kiwipress/v1`). It does not move posts. Content stays on `/wp/v2` with the same application password.
+
+```ts
+const health = await kiwi.bridge.health(); // no Authorization header
+
+await kiwi.bridge.verifyCredentials(); // GET /wp/v2/users/me?context=edit, requires manage_options
+
+await kiwi.bridge.saveSettings({
+    frontend_url: "https://app.example.com",
+    paired: true,
+    project_label: "acme"
+});
+
+const settings = await kiwi.bridge.getSettings();
+```
+
+Failures are a `BridgeError` with `code`:
+
+| Code | When |
+| --- | --- |
+| `bad_credentials` | WordPress returns 401 for the application password. |
+| `insufficient_role` | The user is signed in but `capabilities.manage_options` is not true. |
+| `plugin_missing` | `kiwipress/v1` returns 404. |
+| `site_unreachable` | DNS, connection, or timeout. |
+| `request_failed` | Any other unexpected WordPress response. |
+
+The KiwiPress app encrypts the application password before it stores it. This package does not.
+
 ## Development
 
 ```bash

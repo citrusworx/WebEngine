@@ -34,7 +34,7 @@ One row in `wp_options`: **`kiwipress_bridge`**.
 | --- | --- | --- | --- |
 | `frontend_url` | string | `""` | wp-admin or `POST /settings`. Empty, or an absolute `http`/`https` URL. |
 | `lockdown` | bool | `true` | wp-admin or `POST /settings`. |
-| `paired` | bool | `false` | `POST /settings` (KiwiPress, in B1). The status screen shows it and will not overwrite it. |
+| `paired` | bool | `false` | `POST /settings` from the KiwiPress app when it pairs or unpairs. The status screen shows it and will not overwrite it. |
 | `project_label` | string | `""` | `POST /settings`. Shown on the status screen, not edited there. |
 
 Deactivating the plugin leaves the option in place. Deleting the plugin removes it (`uninstall.php`).
@@ -122,10 +122,21 @@ Create an application password under **Users → Profile → Application Passwor
 
 There is no Composer package and no PHPUnit suite. Syntax-check with `php -l` on each file if you want a local smoke test.
 
+## Pairing (B1)
+
+KiwiPress already knows the site and starts every call. This plugin never looks up the app. The app flow, in [`apps/kiwipress`](../../apps/kiwipress/README.md):
+
+1. `GET /health` with no credentials. If this 404s, the plugin is not active.
+2. One authenticated `GET /wp/v2/users/me?context=edit`. The user must have `manage_options` (an administrator application password).
+3. `POST /settings` with `frontend_url`, `paired: true`, and `project_label`.
+4. `GET /settings` to confirm those values stuck. The app stores the application password only after that, encrypted on the KiwiPress side. This plugin still does not see or store the password.
+5. Later status checks call `GET /health` again (still public) and GET the frontend URL. Disconnect sends `POST /settings` with `paired: false`, then deletes the copy stored by KiwiPress even if this site is down.
+
+Content keeps moving over `/wp/v2` with the same application password. This folder is still the only thing you install into `wp-content/plugins`.
+
 ## Not in this version
 
-- **B1** — KiwiPress app pairing (store the application password, call these routes, set `paired`).
 - **B2** — draft preview bypass.
 - **B3** — webhooks.
 
-No GraphQL, no preview tokens, and no changes to `packages/kiwipress` or `apps/kiwipress` ship with this plugin.
+No GraphQL and no preview tokens.

@@ -2,6 +2,7 @@ import { createNativeCms, type NativeCms } from "./native.js";
 import type { CmsPersistence } from "./persistence.js";
 import { NectarineStore } from "./store.js";
 import type { CmsMode } from "./types.js";
+import { Bridge } from "../bridge/bridge.js";
 import { WPAuth } from "../core/WPAuth.js";
 import { createWordPressClients, WPSync, type WordPressClients } from "../core/WPSync.js";
 import type { WPCoreConfig } from "../core/WPCore.js";
@@ -21,6 +22,7 @@ export class KiwiPress {
 
     private readonly config: KiwiPressConfig;
     private readonly wp?: WordPressClients;
+    private readonly bridgeClient: Bridge | null;
 
     constructor(config: KiwiPressConfig = {}) {
         this.config = config;
@@ -38,8 +40,11 @@ export class KiwiPress {
             const wordpressConfig = { ...config, url };
             this.wp = createWordPressClients(wordpressConfig);
             this.sync = new WPSync(this.wp, this.store, url);
+            this.bridgeClient = new Bridge(wordpressConfig);
         } else if (this.mode === "wordpress") {
             throw new Error("KiwiPress requires a WordPress URL via config.url or process.env.WP_URL.");
+        } else {
+            this.bridgeClient = null;
         }
     }
 
@@ -66,6 +71,18 @@ export class KiwiPress {
         }
 
         return this.wp;
+    }
+
+    /**
+     * WordPress bridge client for this site (`kiwipress/v1` plus credential check).
+     * Content still moves through `wordpress` and `/wp/v2`.
+     */
+    get bridge(): Bridge {
+        if (!this.bridgeClient) {
+            throw new Error("KiwiPress bridge requires config.url or process.env.WP_URL.");
+        }
+
+        return this.bridgeClient;
     }
 
     toNectarine(store = this.store): KiwiPress {

@@ -10,6 +10,7 @@ export type KiwiPressCallOptions = {
     allowSelfSigned?: boolean;
 };
 export declare function kiwiCallOptions(options: KiwiPressCallOptions): NonNullable<Endpoint["options"]>;
+export declare function sendWordPressRequest(ctx: Endpoint, init?: RequestInit): Promise<Response>;
 export declare function requestWordPress(ctx: Endpoint, init?: RequestInit): Promise<any>;
 export type WordPressPage = {
     data: unknown;
