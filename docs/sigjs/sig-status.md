@@ -1,6 +1,6 @@
 # Sig.js Status
 
-Honest snapshot of `@citrusworx/sigjs` **0.4.0** (npm, 2026-10-16) against `libraries/sig/src`.
+Honest snapshot of the `@citrusworx/sigjs` **0.7.0** release candidate against `libraries/sig/src`. npm latest is **0.6.0** (2026-10-21).
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 
