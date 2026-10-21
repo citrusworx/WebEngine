@@ -271,13 +271,14 @@ type Endpoint = {
 
 | Name | Reality |
 |---|---|
-| `app.use` / `app.get` | Missing |
+| `app.use` / `app.get` | Non-goal. Extend the named pipeline with `before` / `replace` |
 | `ctx.json` / `ctx.send` | Removed. Calling either throws. Return `ResponseData` |
 | `ctx.res.writeHead` / `end` / `setHeader` | Throw while a handler or hook runs |
 | `replace("send")` | Throws. Builtin `send` is the only writer |
 | `app.pipeline` | Use `before` / `replace` on `Seltzer` |
 | `src/core/server/server.ts` | Removed. It was an unused hello-world `createServer` |
-| HTTPS `listen` | Missing — `http.createServer` only |
+| HTTPS `listen` | Non-goal. `http.createServer` only. No attach to a host `https.Server` |
+| Form / multipart parser | Non-goal. Non-JSON bodies are a UTF-8 string. Recipe: [Form urlencoded](./seltzer-request-response.md#form-urlencoded) |
 | `after(name, stage)` | Missing — only `before` |
 
 ## Related

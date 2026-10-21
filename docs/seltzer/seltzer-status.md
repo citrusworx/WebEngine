@@ -26,6 +26,14 @@ The feature exists, but it is still exploratory, incomplete, or not yet somethin
 
 The feature is more of a direction than a hardened part of the runtime.
 
+### `Non-goal`
+
+The package will not grow this. The alternative is in [Non-goals](../../libraries/seltzer/README.md#non-goals).
+
+### `Not yet`
+
+Absent today, and not ruled out. This is distinct from a non-goal.
+
 ## Matrix
 
 | Area | Maturity | Notes |
@@ -39,10 +47,11 @@ The feature is more of a direction than a hardened part of the runtime.
 | Replacement `validate` | Emerging | `replace("validate")` sets `ctx.valid` and returns `validationError(issues)`. `path` is `(string \| number)[]`. Zod is an app dependency, documented as that replacement. No schema field on `Route` or `generateRoutes`. |
 | `generateRoutes` | Emerging | `ApiOperation[]` in, `Route[]` out. `handlers[name]` or catch-all `execute`. Unbound names throw at generation (`name method path`) unless `unbound: "notImplemented"` (501). Copies YAML `contract.body` for the default stage. Does not import Nectarine. |
 | CORS / OPTIONS 204 | Stable-ish | Off unless `listen({ cors })`. Configured preflight is 204 before the pipeline. `Vary: Origin` when allow-origin is a specific origin, not `*`. `credentials: true` with `origin: "*"` throws at `listen`. |
-| `client.*` + `HttpError` | Stable-ish | Global `fetch` only. Slash-safe join, query encoding, 30s deadline (`0` disables), caller `AbortSignal`. No retries. `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. |
+| `client.*` + `HttpError` | Emerging | Global `fetch`. `client.conformance.test.ts` covers slash-safe join, query encoding, the 30s deadline, caller abort, and `HttpError` / `TimeoutError` / `AbortError` / `NetworkError` / `UrlError`. The result is still `unknown`. Documented edges outside that file: ignored `endpoint`, `FormData` rejection, `Buffer` bodies, the error snippet. No retries. |
 | `.handler()` options | Early | Copied to `ctx.options`. `adapter` unused inbound. |
-| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, and client conformance. The YAML → listen proof is in WebEngine. |
-| HTTPS listen / `app.use` / form bodies | Draft | Not in source. |
+| Tests | Stable-ish | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, and the urlencoded recipe on `127.0.0.1`. The YAML → listen proof is in WebEngine. |
+| HTTPS listen, `app.use`, form/multipart, sessions, cookies, static files, templating, client retries, ORM | Non-goal | [Non-goals](../../libraries/seltzer/README.md#non-goals). Urlencoded fields are a host `URLSearchParams` recipe. |
+| Streaming responses / WebSockets | Not yet | No stream or socket API. A `Buffer` body is still one payload. Possible later. |
 | Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
 
 ## What is shipped
@@ -96,17 +105,26 @@ These form the case for Seltzer as the ecosystem’s HTTP engine, not a thin `cr
 
 - host schema libraries via `replace("validate")` (Seltzer does not depend on Zod) without changing handler signatures
 - `generateRoutes` covering more write operations in hosts
-- typed `client` generics
+- outbound `client` (join, deadline, and error classes are tested; the result is still `unknown`)
 
 ## Early or draft areas
 
-- HTTPS `listen`
 - `after` / remove stage
-- form-urlencoded / multipart
-- first-class file/stream responses beyond string/Buffer bodies
 - custom 404 envelope for hand-written unmatched routes (generated routes already take `notFound`)
+- response-shape validation
 
 They can be valuable later. They should not appear as if they shipped.
+
+## Not yet
+
+- streaming responses (a `Readable` is not a stream)
+- WebSockets
+
+These are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets).
+
+## Non-goals
+
+Hard boundaries (no `app.use`, no HTTPS `listen`, no form or multipart parser, no sessions, cookies, static files, or templating, no client retries, no ORM) are the package [Non-goals](../../libraries/seltzer/README.md#non-goals). Zero runtime dependencies is the stance there. They should not reappear here as Draft.
 
 ## Tests
 

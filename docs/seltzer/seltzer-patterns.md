@@ -247,13 +247,17 @@ app.route({
 });
 ```
 
-## What is not a pattern (yet)
+## What is not a pattern
 
-- `app.use(auth)`
+These are [non-goals](../../libraries/seltzer/README.md#non-goals), not future patterns:
+
+- `app.use(auth)` — use `before("handle", …)`
+- HTTPS `listen` — terminate TLS at a proxy
+- File uploads as `ctx.file` — multipart bytes are out of scope
+
+These are not APIs:
+
 - `return { ok: true }` without `{ body }`
 - `ctx.json`
-- Automatic OpenAPI from `.route` calls
-- File uploads as first-class `ctx.file`
-- HTTPS `listen`
 
-Those would be new code.
+Automatic OpenAPI from `.route` calls is not generated.

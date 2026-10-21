@@ -76,7 +76,7 @@ Not started in this package. The dashboard wysiwyg folder is an experiment. Do n
 
 ## Suggested order if someone touches code
 
-1. Gateway `ResponseData` (unlocks honest Seltzer integration)
+1. Gateway `ResponseData` — done. Handlers return `{ status, body }` and read `ctx.body`.
 2. Native write field honesty (or reuse `normalizeWordPressItem`)
 3. Postgres transactional save (or document + warn only — already documented)
 4. Media as a `WPRead` when a host needs it

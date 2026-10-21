@@ -129,9 +129,40 @@ Applies defaults and `writeHead` + `end`. No-op if `res.headersSent`. Builtin 40
 | others, `Content-Type` includes `application/json` | `JSON.parse`; failure → 400 `{ error: "Invalid JSON body" }` |
 | others, any other content type, or no content type | UTF-8 string. Not 415. Not parsed as a form |
 
-`application/x-www-form-urlencoded` and multipart bodies stay strings. Parsing them into fields is still Draft. `+json` types that do not contain the substring `application/json` are strings too.
+`application/x-www-form-urlencoded` and multipart bodies stay strings. Parsing them into fields is a [non-goal](../../libraries/seltzer/README.md#no-form-or-multipart-parsing). The urlencoded recipe is below. `+json` types that do not contain the substring `application/json` are strings too.
 
 The default limit is 1 MB (`1048576` bytes, `DEFAULT_BODY_LIMIT_BYTES`). `listen({ bodyLimit })` overrides it. `0` means unlimited. A `Content-Length` over the limit, or chunks whose running total passes it, is **413** `{ error: "Payload Too Large" }`. Seltzer does not keep reading that body, and the handler does not run. A single socket chunk that already exceeds the limit is rejected without parsing, which is as early as the chunk can be seen.
+
+## Form urlencoded
+
+`application/x-www-form-urlencoded` is a non-goal for the parser. `parse` leaves that body as a UTF-8 string. Turn it into fields with `URLSearchParams`. That constructor is on the platform; the recipe adds no dependency.
+
+```ts
+import { Seltzer, type ResponseData } from "@citrusworx/seltzer";
+
+const app = Seltzer.init();
+
+app.route({
+  method: "POST",
+  path: "/login",
+  handler: (ctx): ResponseData => {
+    if (typeof ctx.body !== "string") {
+      return { status: 400, body: { error: "Expected a urlencoded body" } };
+    }
+    const fields = new URLSearchParams(ctx.body);
+    return {
+      body: {
+        email: fields.get("email"),
+        name: fields.get("name"),
+      },
+    };
+  },
+});
+```
+
+`URLSearchParams` decodes `+` and `%XX`. `get` returns the first value; `getAll` returns repeats. `libraries/seltzer/src/core/form-urlencoded.recipe.test.ts` posts `email=ada%2Blist%40example.com&name=Ada+Lovelace` to this handler on `127.0.0.1` and expects `ada+list@example.com` and `Ada Lovelace`.
+
+Multipart bodies and other binary uploads are out of scope. The parse stage still exposes them as a UTF-8 string, which is not a file API.
 
 ## Async handlers
 

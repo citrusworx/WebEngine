@@ -29,7 +29,7 @@ registerKiwiPressGateway(app, kiwi, {
 app.listen(Number(process.env.KIWIPRESS_API_PORT ?? 8787));
 ```
 
-`listen` binds every interface. Treat the token as required in any non-loopback deploy.
+`listen` binds `127.0.0.1` unless the host passes `host`. Treat the token as required in any non-loopback deploy.
 
 ## Routes
 

@@ -129,4 +129,4 @@ Summaries only — full pages elsewhere.
 - **`KiwiPress.connect`** — [Native CMS](./kiwipress-native-cms.md)
 - **`CmsPersistence`** — file / Postgres / env — same page
 - **`loadNectarineApi`** — [Nectarine API YAML](./kiwipress-nectarine-api.md)
-- **`registerKiwiPressGateway`** — [Gateway](./kiwipress-gateway.md). Item writes use `?id=`. Handlers still call `ctx.json` (mismatch with Seltzer 0.8.1 `ResponseData`). `options.token` / loopback rules apply; `/__kiwipress/health` is public `{ ok: true }`.
+- **`registerKiwiPressGateway`** — [Gateway](./kiwipress-gateway.md). Item writes use `?id=`. Handlers return Seltzer `ResponseData` and read `ctx.body`. `options.token` / loopback rules apply; `/__kiwipress/health` is public `{ ok: true }`.
