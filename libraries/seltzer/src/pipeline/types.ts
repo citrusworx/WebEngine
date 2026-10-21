@@ -23,13 +23,13 @@ export type PipelineContext<TLocals = unknown> = RequestContext<TLocals> & {
     route?: Route;
     response?: ResponseData;
     /**
-     * Byte cap for `parse`. Set from `listen({ bodyLimit })`.
+     * Byte cap for `parse`. Set from `init({ bodyLimit })` or `listen({ bodyLimit })`.
      * `0` is unlimited. Omitted uses the 1 MB default inside `parse`.
      */
     bodyLimit?: number;
-    /** From `listen({ logger })`. Omitted lines go to `console.error`. */
+    /** From `init({ logger })` or `listen({ logger })`. Omitted lines go to `console.error`. */
     logger?: SeltzerLogger;
-    /** From `listen({ debug })`. Stack traces are logged only when true. */
+    /** From `init({ debug })` or `listen({ debug })`. Stack traces are logged only when true. */
     debug?: boolean;
 };
 

@@ -1,4 +1,4 @@
-/** Default request body limit. `listen({ bodyLimit: 0 })` means unlimited. */
+/** Default request body limit. `bodyLimit: 0` on `init` or `listen` means unlimited. */
 export const DEFAULT_BODY_LIMIT_BYTES = 1048576;
 /** Default `listen` bind. Public interfaces require an explicit `host`. */
 export const DEFAULT_LISTEN_HOST = "127.0.0.1";

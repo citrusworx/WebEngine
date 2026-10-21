@@ -175,7 +175,9 @@ Multipart bodies and other binary uploads are out of scope. The parse stage stil
 
 You can still `try/catch` in the handler to send a domain-specific 400 instead of a 500.
 
-## `.handler()` options on `ctx`
+## `.handler(config)` options on `ctx`
+
+This is the config call. No-arg `app.handler()` is the request listener in [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server). Passing a config object does not return that listener.
 
 ```ts
 app.handler({

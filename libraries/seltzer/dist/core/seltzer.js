@@ -44,26 +44,39 @@ function formatListenUrl(host, port) {
 }
 const DEFAULT_CORS_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
 const DEFAULT_CORS_HEADERS = ["Content-Type"];
-function assertCors(cors) {
+function assertCors(cors, site) {
     if (!cors) {
         return;
     }
     if (cors.credentials === true && cors.origin === "*") {
-        throw new Error('Seltzer.listen cors credentials: true cannot be combined with origin "*". Name a specific origin, or omit origin to reflect the request Origin.');
+        throw new Error(`${site} cors credentials: true cannot be combined with origin "*". Name a specific origin, or omit origin to reflect the request Origin.`);
     }
     if (cors.maxAge !== undefined && (!Number.isInteger(cors.maxAge) || cors.maxAge < 0)) {
-        throw new Error("Seltzer.listen cors maxAge must be a non-negative integer of seconds.");
+        throw new Error(`${site} cors maxAge must be a non-negative integer of seconds.`);
     }
 }
-function resolveBodyLimit(bodyLimit) {
+function resolveBodyLimit(bodyLimit, site) {
     const limit = bodyLimit ?? DEFAULT_BODY_LIMIT_BYTES;
     if (!Number.isInteger(limit) || limit < 0) {
-        throw new Error("Seltzer.listen bodyLimit must be a non-negative integer of bytes. 0 means unlimited.");
+        throw new Error(`${site} bodyLimit must be a non-negative integer of bytes. 0 means unlimited.`);
     }
     return limit;
 }
 /**
- * CORS headers are applied only when `cors` was passed to `listen`.
+ * Listen wins per field when the field is passed. Omitted listen fields keep
+ * the init value. `cors` is replaced as a whole object, not merged.
+ */
+function foundationFromListen(init, options) {
+    return {
+        bodyLimit: options.bodyLimit !== undefined ? options.bodyLimit : init.bodyLimit,
+        cors: options.cors !== undefined ? options.cors : init.cors,
+        logger: options.logger !== undefined ? options.logger : init.logger,
+        debug: options.debug !== undefined ? options.debug : init.debug,
+        locals: options.locals !== undefined ? options.locals : init.locals,
+    };
+}
+/**
+ * CORS headers are applied only when `cors` was passed to `init` or `listen`.
  * `Vary: Origin` is set when the allow-origin value is a specific origin
  * (configured or reflected). It is omitted for `origin: "*"`.
  */
@@ -93,10 +106,34 @@ export class Seltzer {
     constructor() {
         this.routes = [];
         this.config = null;
+        this.foundation = {};
+        /**
+         * Set only for the synchronous `handler()` call inside `listen`, so that
+         * server snapshots listen overrides without changing later `app.handler()` calls.
+         */
+        this.listenerOverride = null;
         this.pipeline = createDefaultPipeline(() => this.routes);
     }
-    static init() {
-        return new Seltzer();
+    /**
+     * Create an app. Pass `bodyLimit`, `cors`, `logger`, `debug`, and `locals`
+     * here when every server for this app should share them.
+     * `credentials: true` with `origin: "*"` throws here, before `listen`.
+     * A non-integer or negative `bodyLimit` throws here when you pass it.
+     */
+    static init(options = {}) {
+        assertCors(options.cors, "Seltzer.init");
+        if (options.bodyLimit !== undefined) {
+            resolveBodyLimit(options.bodyLimit, "Seltzer.init");
+        }
+        const app = new Seltzer();
+        app.foundation = {
+            bodyLimit: options.bodyLimit,
+            cors: options.cors,
+            logger: options.logger,
+            debug: options.debug,
+            locals: options.locals,
+        };
+        return app;
     }
     /** Register a single object-based route. Do not model APIs as promise chains. */
     route(route) {
@@ -121,16 +158,30 @@ export class Seltzer {
         return this;
     }
     handler(config) {
-        this.config = config;
-        return this;
+        if (config !== undefined) {
+            this.config = config;
+            return this;
+        }
+        if (typeof process === "undefined" || !process.versions?.node) {
+            throw new Error("Seltzer.handler requires a Node.js runtime.");
+        }
+        const override = this.listenerOverride;
+        return this.requestListener(override?.foundation ?? this.foundation, override?.site ?? "Seltzer.init");
     }
     /**
      * Bind a Node `http.Server`.
      *
-     * Default host is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to
-     * accept connections from other machines. Header, request, and
-     * keep-alive timeouts are on by default; pass `0` on an option to
-     * disable that timer.
+     * This is `http.createServer` of the same listener `handler()` returns,
+     * plus the loopback default and the timeout defaults. Default host is
+     * `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections
+     * from other machines. Header, request, and keep-alive timeouts are on
+     * by default; pass `0` on an option to disable that timer. Those timers
+     * belong to this server. `handler()` does not set them.
+     *
+     * `bodyLimit`, `cors`, `logger`, `debug`, and `locals` passed here replace
+     * the `init` values for this server only. An omitted field keeps the init
+     * value. `cors` is replaced as a whole object, not merged field by field.
+     * `app.handler()` keeps using `init`.
      *
      * The return value is the real `http.Server`. `server.close()` stops
      * accepting new connections. The close callback waits for open
@@ -138,9 +189,10 @@ export class Seltzer {
      * `keepAliveTimeout` unless the host also calls
      * `server.closeIdleConnections()`.
      *
-     * CORS headers are off unless `cors` is set. When it is set, `OPTIONS`
-     * is a 204 preflight before the pipeline. `bodyLimit` defaults to
-     * 1 MB (`0` is unlimited). A larger body is 413 and is not read further.
+     * CORS headers are off unless `cors` is set on `init` or here. When it
+     * is set, `OPTIONS` is a 204 preflight before the pipeline. `bodyLimit`
+     * defaults to 1 MB (`0` is unlimited). A larger body is 413 and is not
+     * read further.
      *
      * `logger` receives one line for a bad handler/hook return or a thrown
      * error. The default is `console.error`. `debug: true` adds stack traces
@@ -152,12 +204,20 @@ export class Seltzer {
         }
         const host = resolveListenHost(options.host);
         const timeouts = resolveListenTimeouts(options);
-        assertCors(options.cors);
-        const bodyLimit = resolveBodyLimit(options.bodyLimit);
-        const locals = (options.locals ?? {});
-        const server = http.createServer((req, res) => {
-            void this.handleRequest(req, res, locals, options, bodyLimit);
-        });
+        const foundation = foundationFromListen(this.foundation, options);
+        assertCors(foundation.cors, "Seltzer.listen");
+        // Snapshot listen overrides into this one listener. `handler()` reads
+        // the override synchronously, then the override is cleared so a later
+        // `app.handler()` still sees `init`.
+        this.listenerOverride = { foundation, site: "Seltzer.listen" };
+        let listener;
+        try {
+            listener = this.handler();
+        }
+        finally {
+            this.listenerOverride = null;
+        }
+        const server = http.createServer(listener);
         server.headersTimeout = timeouts.headersTimeout;
         server.requestTimeout = timeouts.requestTimeout;
         server.keepAliveTimeout = timeouts.keepAliveTimeout;
@@ -172,6 +232,13 @@ export class Seltzer {
             console.log(`Seltzer server listening on ${formatListenUrl(shownHost, boundPort)}`);
         });
         return server;
+    }
+    requestListener(foundation, site) {
+        const bodyLimit = resolveBodyLimit(foundation.bodyLimit, site);
+        const locals = foundation.locals ?? {};
+        return (req, res) => {
+            void this.handleRequest(req, res, locals, foundation, bodyLimit);
+        };
     }
     async handleRequest(req, res, locals, options, bodyLimit) {
         if (options.cors) {

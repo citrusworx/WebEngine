@@ -252,7 +252,7 @@ app.route({
 These are [non-goals](../../libraries/seltzer/README.md#non-goals), not future patterns:
 
 - `app.use(auth)` — use `before("handle", …)`
-- HTTPS `listen` — terminate TLS at a proxy
+- HTTPS `listen` — terminate TLS at a proxy, or `https.createServer(tlsOptions, app.handler())`
 - File uploads as `ctx.file` — multipart bytes are out of scope
 
 These are not APIs:

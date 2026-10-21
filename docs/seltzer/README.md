@@ -274,7 +274,11 @@ Non-2xx throws `HttpError` (`status`, lowercase `headers`, parsed `body`; the me
 
 URL join keeps one slash and a base path (`/api/v1` + `users` → `/api/v1/users`). An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. `Endpoint.endpoint` and `Endpoint.route` are typed and unused. There is no `undici` peer and no `allowSelfSigned` option.
 
-### 11. Optional `.handler()` config
+### 11. Two `handler` calls
+
+`app.handler()` with no arguments returns the Node request listener. `app.handler(config)` stores options and returns the app. A config object never returns a listener. The no-arg call never stores config.
+
+#### Optional `.handler(config)` stash
 
 ```ts
 app.handler({
@@ -288,9 +292,11 @@ app.handler({
 
 `options` is copied onto `ctx.options`. Nothing in `listen` reads `adapter`. KiwiPress stores `baseUrl` this way for outbound WordPress calls — it does not make Seltzer speak WordPress.
 
-### 12. Node-only listen
+### 12. Node-only listen, or your own server
 
-`listen` throws if `process.versions.node` is missing. Plain `http.createServer`, not HTTPS. Default bind is `127.0.0.1`; pass `host` for any other interface. Header, request, and keep-alive timeouts are on (20s / 30s / 5s).
+`listen` throws if `process.versions.node` is missing. It calls `http.createServer`, not `https.createServer`. Default bind is `127.0.0.1`; pass `host` for any other interface. Header, request, and keep-alive timeouts are on (20s / 30s / 5s).
+
+No-arg `app.handler()` is the same request pipeline without those server defaults. `https.createServer(tlsOptions, app.handler())` is the TLS recipe. The host sets `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` when it wants Seltzer's timers. See [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server). That listener is unreleased 0.10.0. The published package is still 0.9.0.
 
 ## Mental model
 
@@ -366,7 +372,7 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 
 Shipped: object routes, parametric matching, JSON `parse`, `ResponseData` + `send`, named pipeline, default `validate`, `generateRoutes`, CORS/`OPTIONS`, hardened `client`.
 
-Non-goals (package [README](../../libraries/seltzer/README.md#non-goals)): HTTPS listen, `app.use`, form and multipart parsing, templating, sessions, cookies, static files, client retries, an ORM, and any runtime dependency. Urlencoded fields are a host `URLSearchParams` recipe. A server-side idempotency stage is planned. Streaming responses and WebSockets are **Not yet**, not refusals. Response-shape validation and `after` are still open. Zod is a documented `replace("validate")` recipe, not a dependency. The client uses global `fetch`.
+Non-goals (package [README](../../libraries/seltzer/README.md#non-goals)): built-in HTTPS `listen` (mount TLS with `https.createServer(tlsOptions, app.handler())`), `app.use`, form and multipart parsing, templating, sessions, cookies, static files, client retries, an ORM, and any runtime dependency. Urlencoded fields are a host `URLSearchParams` recipe. A server-side idempotency stage is planned. Streaming responses and WebSockets are **Not yet**, not refusals. Response-shape validation and `after` are still open. Zod is a documented `replace("validate")` recipe, not a dependency. The client uses global `fetch`.
 
 See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./seltzer-roadmap.md) for what is worth building next.
 
