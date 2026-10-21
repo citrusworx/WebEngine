@@ -32,7 +32,7 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 
 **Should be:** CSS-first, attribute-driven styling and composition, shipped themes, and a small set of auto-enhance runtimes (nav / accordion / tabs). Not a large JS component library.
 
-**Observation:** done on master, unpublished versus the live npm cut. The twenty-five interactive runtimes expose `getState()`, and they publish changes through `juice:change` (native `input` / `change` for select, input, and textarea). That contract is DOM. Juice works without Sig. The table is [juice-runtime-behavior.md](../juice/juice-runtime-behavior.md#juicechange).
+**Observation:** done on master, unpublished versus the live npm cut. The twenty-six interactive runtimes expose `getState()`, and they publish changes through `juice:change` (native `input` / `change` for select, input, and textarea). Icon button is the twenty-sixth and is not in the published npm 0.9.2 release. That contract is DOM. Juice works without Sig. The table is [juice-runtime-behavior.md](../juice/juice-runtime-behavior.md#juicechange).
 
 **Ready when:**
 
@@ -63,7 +63,7 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 - [x] npm `@citrusworx/sigjs@0.4.0` is published (2026-10-16; `0.3.0` was 2026-09-18). Further publishes follow [sigjs release-checklist.md](../sigjs/release-checklist.md)
 - [x] v1 API surface is frozen per [api-surface.md](../sigjs/api-surface.md): stable names stay, `bindList` and `ListItem` stay experimental, `captureCleanupScope` is not exported, and `jsxDEV` is only on `./jsx-dev-runtime`. `Signal.set` always notifies, including when the value is unchanged, and that is frozen for v1. Public `any` is gone from `jsx`, `jsxDEV`, `Fragment`, `Child`, and `JSX.IntrinsicElements`. `./jsx-runtime` and `./jsx-dev-runtime` export the `JSX` namespace. Guarded by `libraries/sig/src/exports.test.ts` and `libraries/sig/src/jsx-namespace.test.ts`
 
-**Juice hookup:** shipped in `@citrusworx/sigjs@0.4.0`. `@citrusworx/sigjs/juice` exports `bind(host, runtime?)` → `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other twenty-one runtimes are read-only. A bind during Sig render disposes on unmount. The main entry does not import Juice, and Juice does not require this subpath. Guide: [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding).
+**Juice hookup:** shipped in `@citrusworx/sigjs@0.4.0`. `@citrusworx/sigjs/juice` exports `bind(host, runtime?)` → `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other twenty-one runtimes `bind` accepts are read-only. Icon button is not a `JuiceRuntimeName`, so `bind` does not accept it. A bind during Sig render disposes on unmount. The main entry does not import Juice, and Juice does not require this subpath. Guide: [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding).
 
 **Release label:** **0.x after the v1 surface cleanup** (npm is still 0.4.0; the cleanup is a minor bump because root exports were removed). The ready-when list above is checked. `bindList` stays experimental. **1.0** is the publish that ships this surface, not a claim that 1.0 is already on npm. The list story stays `bindList` for keyed rows, `replaceChildren` for a rewrite, and `hidden` / `replaceChildren` for conditionals.
 
