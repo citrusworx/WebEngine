@@ -2,9 +2,11 @@
 
 Use this before publishing `@citrusworx/sigjs`.
 
-npm **`0.6.0`** is the latest registry cut (published 2026-10-21). The workspace `libraries/sig/package.json` is **0.7.0** and is **not** published. Do **not** republish `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`. Do **not** bump `0.7.0` again before that publish.
+npm **`0.6.0`** is the current registry cut (published 2026-10-21 from an unversioned local build, `gitHead` `3055fe2e`). Do **not** republish `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`.
 
-The Changeset that produced `0.4.0` (`sigjs-juice-adapter`) is **consumed**. Do not re-add it. The three Changesets that produced `0.3.0` (`sigjs-reactive-props-routes`, `sigjs-runtime-polish`, `sigjs-standalone-docs`) are **consumed**. Do not re-add them. Pending Sig changesets still in `.changeset/` describe work already in this `0.7.0` tree. Park them before any `yarn version-packages`, or that command will move the package off `0.7.0`.
+**0.7.0** is the release candidate. `libraries/sig/package.json` is already `0.7.0`, and `libraries/sig/CHANGELOG.md` records it. It is **not** on npm. Do **not** bump `0.7.0` again before that publish. Do **not** run `yarn version-packages` for this publish. Other packages still have pending changesets, and that command would version them and can move Sig off `0.7.0`.
+
+The Changeset that produced `0.4.0` (`sigjs-juice-adapter`) is **consumed**. Do not re-add it. The three Changesets that produced `0.3.0` (`sigjs-reactive-props-routes`, `sigjs-runtime-polish`, `sigjs-standalone-docs`) are **consumed**. Do not re-add them. The three that describe this `0.7.0` tree (`sigjs-bind-list`, `sigjs-v1-api-cleanup`, `sigjs-api-surface`) are **consumed** in the changelog. Do not re-add them.
 
 There is **no** Changesets GitHub Action and **no** `NPM_TOKEN` in this repo. Publish is manual, same as Juice / Nectarine. Do not invent CI credentials.
 
@@ -28,25 +30,26 @@ Juice Package CI is the path-filter gate (`libraries/sig/**` → `yarn verify:ju
 
 ## Next version
 
-The next publish is **0.7.0** (this workspace version). It is already set. Do not run `yarn version-packages` first.
+The next publish is **0.7.0**, the release candidate. The workspace version and changelog are already set. Do not run `yarn version-packages` first.
 
-Confirm with `npm view @citrusworx/sigjs version` before writing install lines. Add Changesets only for work that is **not** already in this `0.7.0` tree.
+Confirm with `npm view @citrusworx/sigjs version` before writing install lines. npm latest should still be `0.6.0` until this publish. Add Changesets only for work that is **not** already in this `0.7.0` tree.
 
-Workspace dependents (`@citrusworx/juiceui`, `@citrusworx/sugar`, Blackwater front) declare `@citrusworx/sigjs` `^0.7.0` so Yarn links `libraries/sig`. `^0.4.0` does not.
+Workspace packages that publish (`@citrusworx/juiceui`, `@citrusworx/sugar`) declare `@citrusworx/sigjs` `^0.7.0` so Yarn links `libraries/sig`. `^0.6.0` and `^0.4.0` do not. Private apps may keep `workspace:*` (MiaMakes front does).
 
 ## Publish Flow
 
 1. Land **new** runtime/docs Changesets for work that is not already in this `0.7.0` tree. Do not add one that bumps Sig before `0.7.0` is published.
 2. Merge with Juice Package CI green.
-3. On a clean `master` (or a `release/sigjs-*` branch), park **Sig and non-Sig** changeset files so `yarn version-packages` cannot move `@citrusworx/sigjs` off `0.7.0` or version grapevine / kiwipress / nectarine / webengine from *their* notes.
-4. For this `0.7.0` publish, skip `yarn version-packages`. The workspace version is already `0.7.0`. A later publish applies versions only after `0.7.0` is on npm:
+3. On a clean `master` (or a `release/sigjs-*` branch), publish the release candidate as already versioned. Do not run `yarn version-packages`. That command versions every package with a pending changeset (grapevine, kiwipress, nectarine, webengine, and the rest) and can move `@citrusworx/sigjs` off `0.7.0`.
+4. After `0.7.0` is on npm, a later publish may run:
 
    ```bash
    yarn version-packages
    ```
 
-5. Review `libraries/sig/package.json` (this publish is **0.7.0**; a later publish must be newer than that) and `CHANGELOG.md`. Restore parked changesets after the version commit, or leave the Sig ones parked until `0.7.0` is published.
-6. Commit the version if it changed. Do not publish from a dirty worktree.
+   Park non-Sig changeset files first if that command should not version them.
+5. Review `libraries/sig/package.json` (this publish is **0.7.0**; a later publish must be newer than that) and `CHANGELOG.md`.
+6. The version commit is already on `master` before publish. Do not publish from a dirty worktree.
 7. Publish **Sig only** unless companion packages are intentionally going to npm in this release:
 
    ```bash

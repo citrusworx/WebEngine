@@ -2,12 +2,21 @@
 
 ## 0.7.0
 
-Unpublished. npm **0.6.0** (2026-10-21) is the latest registry cut. This workspace version is the next publish. Do not republish it, and do not run `yarn version-packages` before that publish.
+Release candidate. Not published. npm latest is **0.6.0** (2026-10-21).
+
+### Minor Changes
+
+- Add `bindList` for keyed array and Map lists. A key that stays keeps its DOM node and row effects; `render` reads the current item from a per-row getter. Duplicate array keys throw. `replaceChildren` remains the non-keyed rewrite.
+- Remove `captureCleanupScope` from the package root and stop re-exporting `jsxDEV` from `.` (`jsxDEV` stays on `@citrusworx/sigjs/jsx-dev-runtime`). Replace public `any` on `jsx`, `jsxDEV`, `Fragment`, `Child`, and `JSX.IntrinsicElements`. Export the `JSX` namespace from the JSX runtime entries so `jsxImportSource` does not depend on a root import. `Signal.set` remains always-notify, including when the value is unchanged, and that behavior is frozen for v1.
 
 ### Patch Changes
 
+- Tag `bindList` and `ListItem` as experimental and `captureCleanupScope` as internal. Add explicit return types on the public functions that were missing them. `memo().get()` is now declared as `T`, matching the API page; declaration emit previously inferred `T | undefined` from the uninitialized cache. No export was added, removed, or renamed.
 - Sig's build binds `@citrusworx/sigjs` to this package's source. Juice's declaration files import that name, and a nested registry copy's `declare global` JSX block (`type Element`, string index signature) otherwise collides with `src/jsx.ts` during `prepack`. `skipLibCheck` does not suppress that clash, and those members do not merge with the published 0.6.0 types.
-- Consumers that publish or install Sig declare `^0.7.0`. A `^0.4.0` pin matches neither `0.6.0` nor `0.7.0`, so Yarn nests a registry tarball beside the workspace package.
+
+## 0.6.0
+
+Published to npm **2026-10-21** from an unversioned local build (`gitHead` `3055fe2e`; that commit is not in this repository). `libraries/sig/package.json` never recorded `0.6.0`. The tarball includes `bindList` and `ListItem` (already tagged `@experimental` in `dist/list.d.ts`) and still exports `captureCleanupScope` from the package root (`dist/index.js` re-exports `dist/signal.js`, where it is marked `@internal`). It also re-exports `jsxDEV` from `.`. `jsx`, `jsxDEV`, `Fragment`, and `Child` are still typed with `any`, and the `JSX` namespace is only a global augmentation, not an export of the JSX runtime entries. `memo().get()` is already declared as `T`. **0.7.0** is the full set.
 
 ## 0.4.0
 
