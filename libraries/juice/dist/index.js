@@ -5412,8 +5412,124 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	pl = null, fl || hl();
 }, document.addEventListener("DOMContentLoaded", pl)) : hl());
 //#endregion
-//#region src/tokens/index.ts
+//#region src/js/src/avatar/avatar-runtime.ts
 var _l = {
+	root: typeof document < "u" ? document : {},
+	avatarSelector: "[avatar]"
+}, vl = (e) => Array.from(e), yl = L(), bl = /* @__PURE__ */ new WeakSet(), xl = /* @__PURE__ */ new WeakMap(), Sl = /* @__PURE__ */ new WeakMap(), Cl = (e) => `${e.getAttribute("src") ?? ""}\u0000${e.getAttribute("srcset") ?? ""}`, wl = (e) => e !== null && e.trim() !== "", Tl = (e) => wl(e.getAttribute("src")) || wl(e.getAttribute("srcset")), El = (e) => {
+	let t = Cl(e), n = Sl.get(e);
+	n !== t && (Sl.set(e, t), n !== void 0 && xl.delete(e));
+}, Dl = (e) => {
+	if (El(e), !Tl(e)) return "empty";
+	let t = xl.get(e);
+	return t === "loaded" ? "loaded" : t === "broken" ? "broken" : e.complete ? e.naturalWidth > 0 ? "loaded" : "broken" : "pending";
+}, Ol = (e) => {
+	e.hasAttribute("hidden") || (e.setAttribute("hidden", ""), bl.add(e));
+}, kl = (e) => {
+	bl.has(e) && (e.removeAttribute("hidden"), bl.delete(e));
+}, Al = () => ({
+	destroy: () => {},
+	sync: () => {},
+	getState: () => null
+}), jl = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return Al();
+	let t = {
+		..._l,
+		...e
+	}, n = t.root ?? document, r = n, i = T("avatar"), a = !1, o = (e) => !(e instanceof HTMLElement) || !e.matches(t.avatarSelector) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, s = () => {
+		let e = vl(n.querySelectorAll(t.avatarSelector)).filter(o);
+		return n instanceof HTMLElement && o(n) ? [n, ...e.filter((e) => e !== n)] : e;
+	}, c = (e) => vl(e.querySelectorAll("img")).filter((n) => n.closest(t.avatarSelector) === e), l = (e) => {
+		if (e) {
+			if (o(e)) return e;
+			let n = e.closest(t.avatarSelector);
+			return n instanceof HTMLElement && o(n) ? n : null;
+		}
+		return s()[0] ?? null;
+	}, u = (e) => {
+		let t = c(e);
+		if (t.length === 0) return {
+			loaded: !1,
+			fallback: !1,
+			hasImage: !1
+		};
+		let n = !1, r = !1;
+		return t.forEach((e) => {
+			let t = Dl(e);
+			t === "loaded" ? n = !0 : t === "pending" && (r = !0);
+		}), {
+			loaded: n,
+			fallback: !n && !r,
+			hasImage: !0
+		};
+	}, d = (e, t) => {
+		if (t) {
+			e.hasAttribute("fallback") || e.setAttribute("fallback", "");
+			return;
+		}
+		e.hasAttribute("fallback") && e.removeAttribute("fallback");
+	}, f = (e) => {
+		c(e).forEach((e) => {
+			let t = Dl(e);
+			t === "broken" || t === "empty" ? Ol(e) : kl(e);
+		});
+		let t = u(e);
+		d(e, t.fallback), i.note(e, t);
+	}, p = () => {
+		a || s().forEach((e) => {
+			o(e) && f(e);
+		});
+	}, m = (e, t) => {
+		El(e), xl.set(e, t);
+	}, h = (e) => {
+		if (!(e instanceof HTMLImageElement)) return null;
+		let n = e.closest(t.avatarSelector);
+		return !(n instanceof HTMLElement) || !o(n) ? null : n;
+	}, g = (e) => {
+		if (a) return;
+		let t = e.target, n = h(t);
+		!n || !(t instanceof HTMLImageElement) || yl(e) && (m(t, "loaded"), f(n));
+	}, _ = (e) => {
+		if (a) return;
+		let t = e.target, n = h(t);
+		!n || !(t instanceof HTMLImageElement) || yl(e) && (m(t, "broken"), f(n));
+	}, v = !1, y = 0, b = () => {
+		v || a || (v = !0, y = requestAnimationFrame(() => {
+			v = !1, p();
+		}));
+	}, x = typeof MutationObserver < "u" ? new MutationObserver(() => b()) : null;
+	return r.addEventListener("load", g, !0), r.addEventListener("error", _, !0), x && n instanceof Node && x.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"avatar",
+			"src",
+			"srcset",
+			"fallback",
+			"hidden"
+		]
+	}), p(), {
+		destroy: () => {
+			a || (a = !0, v &&= (cancelAnimationFrame(y), !1), r.removeEventListener("load", g, !0), r.removeEventListener("error", _, !0), x?.disconnect());
+		},
+		sync: p,
+		getState: (e) => {
+			let t = l(e);
+			return t ? u(t) : null;
+		}
+	};
+}, Ml = jl, Nl = null, Pl = !1, Fl = null, Il = () => {
+	!Fl || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", Fl), Fl = null);
+}, Ll = () => typeof window > "u" || typeof document > "u" ? null : (Pl = !1, Il(), Nl ? (Nl.sync(), Nl) : (Nl = jl(), Nl)), Rl = () => {
+	Pl = !0, Il(), Nl?.destroy(), Nl = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Fl = () => {
+	Fl = null, Pl || Ll();
+}, document.addEventListener("DOMContentLoaded", Fl)) : Ll());
+//#endregion
+//#region src/tokens/index.ts
+var zl = {
 	colors: {
 		families: [
 			"black",
@@ -5581,4 +5697,4 @@ var _l = {
 	themes: {}
 };
 //#endregion
-export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, _l as tokens };
+export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, jl as createAvatar, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, Ml as initAvatar, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, Ll as startAvatarRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, Rl as stopAvatarRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, zl as tokens };

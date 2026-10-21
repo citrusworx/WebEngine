@@ -2590,6 +2590,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initIconButton");
         expect(module).toHaveProperty("startIconButtonRuntime");
         expect(module).toHaveProperty("stopIconButtonRuntime");
+        expect(module).toHaveProperty("createAvatar");
+        expect(module).toHaveProperty("initAvatar");
+        expect(module).toHaveProperty("startAvatarRuntime");
+        expect(module).toHaveProperty("stopAvatarRuntime");
         expect(module).toHaveProperty("tokens");
     });
 
