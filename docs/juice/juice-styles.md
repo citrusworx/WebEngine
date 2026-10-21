@@ -46,6 +46,10 @@ Juice usage today usually falls into these groups:
 
 - `skeleton` — CSS-only rect, text, and circle bars. See [Skeleton](./juice-skeleton.md). On master, not in the published npm 0.9.2 release. Not a runtime.
 
+### Identity marks
+
+- `avatar` — initials or photo, optional status dot, and `[avatar-group]` / `[avatar-more]`. See [Avatar](./juice-avatar.md). On master, not in the published npm 0.9.2 release. The twenty-seventh Emerging runtime.
+
 ### Theme scoping
 
 - `theme="..."`

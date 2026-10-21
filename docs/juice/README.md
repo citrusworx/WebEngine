@@ -103,7 +103,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Page Tutorial](./juice-page-tutorial.md) — a *second* build (different CitrusWorx landing page), after the course
 - [Patterns](./juice-patterns.md)
 - [Maturity Matrix](./juice-maturity-matrix.md)
-- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 26 runtimes
+- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 27 runtimes
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
@@ -138,6 +138,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Textarea Runtime](./juice-textarea-runtime.md)
 - [Field Runtime](./juice-field-runtime.md)
 - [Icon Button Runtime](./juice-icon-button-runtime.md)
+- [Avatar](./juice-avatar.md) — initials-or-photo mark (on master; not in the published npm 0.9.2 release; the twenty-seventh Emerging runtime)
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)

@@ -528,7 +528,7 @@ See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spi
 
 ### Skeleton
 
-CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-six Emerging auto-enhance runtimes.
+CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-seven Emerging auto-enhance runtimes.
 
 - `skeleton` — host. Boolean `[skeleton]` is a rectangle, the same shape as `skeleton="rect"`. `skeleton="text"` is a line. `skeleton="circle"` is a circle. There is no HTML global `skeleton` attribute, and there is no `<skeleton>` element. Do not restyle a bare `[aria-busy]` or `[role="status"]`
 - `lines` — on `[skeleton="text"]`, a count from `"1"` through `"8"`. Anything else keeps one bar. There is no `skeleton-line`
@@ -546,6 +546,33 @@ Copy inside stays in the accessibility tree and does not paint. Authors own `ari
 ```
 
 See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`, `highlight`, `radius`, `line-height` / `-sm` / `-lg`, `line-gap` / `-sm` / `-lg`, `circle-size` / `-sm` / `-lg`, `rect-height` / `-sm` / `-lg`, `duration`). Shipped themes are not required to bind them. The highlight is a translucent white sheen. Tune `--juice-skeleton-highlight` on a pale surface.
+
+### Avatar
+
+Initials-or-photo mark. Round by default. Color comes from `--juice-avatar-*`. There is no HTML global `avatar` attribute, and there is no `<avatar>` element.
+
+- `avatar` — host. Boolean `[avatar]` and `avatar="round"` are round. `avatar="square"` is square
+- `scale` — `"sm"` or `"lg"` steps the box and the initials. Unmarked scale is `2.5rem`. There is no `"md"`
+- `status` — on `[avatar]`: `"online"`, `"away"`, `"busy"`, or `"offline"`. The dot is a `::after`. Any other value does not paint a dot. `[avatar-more]` does not grow one
+- `avatar-group` — overlapping row. Not a runtime host. A child `[scale]` wins and does not change the group's overlap
+- `avatar-more` — overflow chip. `+N` is the text. `"round"` and `"square"` match the avatar shapes. Not a runtime host
+- `fallback` — runtime state on `[avatar]` when no photo is showing and none is still loading. Core CSS does not paint from it
+
+An `<img>` inside `[avatar]` covers the initials. The runtime hides a broken, empty, or already-failed image and sets `[fallback]`. A later load clears both. An empty `src` with a real `srcset` waits.
+
+```html
+<span avatar aria-label="Ada Lovelace">AL</span>
+<span avatar="square" scale="sm" status="online">
+  <img alt="" src="ada.png">
+  <span>AL</span>
+</span>
+<div avatar-group>
+  <span avatar>AL</span>
+  <span avatar-more>+3</span>
+</div>
+```
+
+The runtime auto-enhances `[avatar]`. It does not touch `alt`, labels, or initials. The status dot needs a text equivalent. The `+N` chip is plain text. See [Avatar](./juice-avatar.md). Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
 ### Select
 
