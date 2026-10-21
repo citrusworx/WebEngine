@@ -1,6 +1,6 @@
 # Seltzer API Reference
 
-Public surface of `@citrusworx/seltzer` **0.9.0** as implemented in `libraries/seltzer/src`.
+Public surface of `@citrusworx/seltzer` **0.10.0** as implemented in `libraries/seltzer/src`.
 
 This page is the compact contract. For the mental model, start with [Request and response](./seltzer-request-response.md), [Routing](./seltzer-routing.md), [Pipeline](./seltzer-pipeline.md), [Generate routes](./seltzer-generate.md), and [Client](./seltzer-client.md).
 
@@ -97,7 +97,7 @@ adapter(config: {
 }): this
 ```
 
-Stores `config` and returns this app. `listen` and `handler()` copy `config.options` onto `ctx.options`. The `adapter` string is unused inbound. Last `adapter()` wins. This is not a request listener. KiwiPress uses it to stash a base URL. It does not mount HTTP. On the published 0.9.0 tarball this stash is still named `handler(config)`. `adapter()` arrives with unreleased 0.10.0.
+Stores `config` and returns this app. `listen` and `handler()` copy `config.options` onto `ctx.options`. The `adapter` string is unused inbound. Last `adapter()` wins. This is not a request listener. KiwiPress uses it to stash a base URL. It does not mount HTTP. Released in 0.10.0. On the published 0.9.0 tarball this stash was named `handler(config)`.
 
 ## `listen`
 

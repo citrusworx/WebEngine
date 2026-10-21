@@ -2,7 +2,7 @@
 
 [Course](./README.md)
 
-Baseline: Seltzer **0.9.0** (workspace manifest and the npm tarball published 2026-10-21). This page records source ownership so a future editor can update a lesson when behavior changes. It does not infer readiness from an npm version alone. An older note on this page cited merge `d25673e` at 0.8.1.
+Baseline: Seltzer **0.9.0** HTTP core (npm tarball published 2026-10-21). The workspace manifest is **0.10.0**, which adds no-arg `app.handler()` and `app.adapter(config)`. This page records source ownership so a future editor can update a lesson when behavior changes. It does not infer readiness from an npm version alone. An older note on this page cited merge `d25673e` at 0.8.1.
 
 ## Implementation map
 

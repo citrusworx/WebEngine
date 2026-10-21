@@ -66,13 +66,13 @@ app.route({
 app.listen(3000);
 ```
 
-That is `libraries/seltzer/src/example.ts`. Package version today: **0.9.0**. Requires Node 18+.
+That is `libraries/seltzer/src/example.ts`. Package version today: **0.10.0**. Requires Node 18+.
 
 Handlers and hooks return `ResponseData`. The runtime writes the HTTP response. `ctx.json` and `ctx.send` are gone (calling them throws). Writing `ctx.res` throws. Bare objects, arrays, and strings are not wrapped — return `{ body: ... }`. A wrong return is 500 and is logged with the route and the value.
 
 ## What it can do
 
-The sections below are the capability showcase. Every snippet matches `libraries/seltzer/src` at 0.9.0. If a pattern is not here, check [Status](./seltzer-status.md) before assuming an Express-shaped API.
+The sections below are the capability showcase. Every snippet matches `libraries/seltzer/src` at 0.10.0. If a pattern is not here, check [Status](./seltzer-status.md) before assuming an Express-shaped API.
 
 ### 1. JSON GET with `ResponseData`
 
@@ -298,7 +298,7 @@ app.adapter({
 
 `listen` throws if `process.versions.node` is missing. It calls `http.createServer`, not `https.createServer`. Default bind is `127.0.0.1`; pass `host` for any other interface. Header, request, and keep-alive timeouts are on (20s / 30s / 5s).
 
-No-arg `app.handler()` is the same request pipeline without those server defaults. `https.createServer(tlsOptions, app.handler())` is the TLS recipe. The host sets `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` when it wants Seltzer's timers. See [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server). That listener is unreleased 0.10.0. The published package is still 0.9.0.
+No-arg `app.handler()` is the same request pipeline without those server defaults. `https.createServer(tlsOptions, app.handler())` is the TLS recipe. The host sets `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` when it wants Seltzer's timers. See [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server). That listener shipped in 0.10.0.
 
 ## Mental model
 
