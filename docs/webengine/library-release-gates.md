@@ -57,7 +57,7 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 - [x] `Signal` / `effect` / `batch` / `memo` / `mount` / `disposeTree` are documented and tested (**Stable-ish** per [sig-status.md](../sigjs/sig-status.md); `memo` is `{ get }` only, no public dispose)
 - [x] JSX factory + `jsxImportSource` recipes work for Vite and `tsc` from a fresh install
 - [x] `SigRouter` supports exact paths, `:param` segments, optional `*`, and dispose-on-navigate; Juice attributes survive `setProp` (`jsx.test.ts`)
-- [x] An example under `libraries/sig/examples/` (or a Juice+Sig shell) runs without monorepo-only magic ([counter](../../libraries/sig/examples/counter) installs `@citrusworx/sigjs@^0.4.0` from npm)
+- [x] An example under `libraries/sig/examples/` (or a Juice+Sig shell) runs without monorepo-only magic ([counter](../../libraries/sig/examples/counter) pins `@citrusworx/sigjs@^0.7.0` from npm)
 - [x] Non-goals are explicit in docs: no SSR, no `<For>` / `<Show>` (function children stay text-only; conditionals are `hidden` or `replaceChildren`)
 - [x] List story is decided. `bindList` is the keyed helper (array with a key function, or `Map` in iteration order). A kept key reuses its node; `render` gets a per-row getter; row effects dispose with the row and with the list. `replaceChildren` stays the simple non-keyed rewrite. No `<For>` / `<Show>`. See [sig-patterns.md](../sigjs/sig-patterns.md#keyed-todo-list-bindlist) and [sig-roadmap.md](../sigjs/sig-roadmap.md).
 - [x] npm `@citrusworx/sigjs@0.4.0` is published (2026-10-16; `0.3.0` was 2026-09-18). Further publishes follow [sigjs release-checklist.md](../sigjs/release-checklist.md)

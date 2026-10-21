@@ -3,7 +3,20 @@
 
     "compilerOptions": {
         "rootDir": "src",
-        "outDir": "dist"
+        "outDir": "dist",
+        // Juice's published types import `@citrusworx/sigjs`. The base config's
+        // `paths` are one `../` too deep from this folder, so they miss and
+        // Node resolves a nested copy under `libraries/juice/node_modules`.
+        // That copy's `declare global` JSX block collides with `src/jsx.ts`
+        // (`type` aliases and index signatures do not merge; `skipLibCheck`
+        // does not suppress the clash). Bind this name to the source already
+        // being compiled. Do not point `@citrusworx/juiceui` at Juice source:
+        // those files sit outside `rootDir`.
+        "baseUrl": ".",
+        "paths": {
+            "@citrusworx/sigjs": ["./src/index.ts"],
+            "@citrusworx/sigjs/*": ["./src/*"]
+        }
     },
 
     "include": ["src/**/*"],

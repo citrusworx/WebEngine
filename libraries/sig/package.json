@@ -1,6 +1,6 @@
 {
   "name": "@citrusworx/sigjs",
-  "version": "0.4.0",
+  "version": "0.7.0",
   "description": "Standalone signals, JSX-to-DOM runtime, and client router for TypeScript and JavaScript. No framework required.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -46,6 +46,8 @@
   },
   "scripts": {
     "build": "tsc",
+    "check:install": "node scripts/check-no-nested-sigjs.mjs",
+    "check:foreign-jsx": "node scripts/check-foreign-jsx-build.mjs",
     "dev": "tsc --watch",
     "prepack": "yarn build",
     "test": "yarn run --top-level playwright test --config ../../playwright.config.ts --project=sigjs"
