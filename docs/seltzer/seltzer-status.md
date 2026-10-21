@@ -1,10 +1,10 @@
 # Seltzer Status
 
-Snapshot of `@citrusworx/seltzer` source against the package published as **0.9.0** on 2026-10-21. `libraries/seltzer/package.json` is still **0.9.0**. Do not publish from this note. Source for the unreleased **0.10.0** minor adds no-arg `app.handler()` and moves the options stash to `app.adapter(config)` ([changelog](../../libraries/seltzer/CHANGELOG.md)). `handler(config)` remains as a deprecated alias, removed in the next minor after 0.10.0. The published 0.9.0 tarball does not have the listener or `adapter()`. `handleRequest` is still private.
+Snapshot of `@citrusworx/seltzer` **0.10.0**, published 2026-10-21. `libraries/seltzer/package.json` is **0.10.0**. 0.10.0 adds no-arg `app.handler()` and moves the options stash to `app.adapter(config)` ([changelog](../../libraries/seltzer/CHANGELOG.md)). `handler(config)` remains a deprecated alias, removed in the next minor after 0.10.0. `handleRequest` is still private.
 
 The goal is the same as Juice’s and Sig.js’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still a design-doc future.
 
-**0.9.0 is the HTTP core.** It includes loopback `listen`, server timeouts, default `validate`, `replace`, strict `ResponseData`, and the fetch client. The package declares `engines.node` `>=18` and has no runtime dependencies: the client uses global `fetch` only. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons.
+**0.9.0 is the HTTP core.** It includes loopback `listen`, server timeouts, default `validate`, `replace`, strict `ResponseData`, and the fetch client. **0.10.0** adds no-arg `app.handler()` and `app.adapter(config)`. The package declares `engines.node` `>=18` and has no runtime dependencies: the client uses global `fetch` only. Earlier 0.2.0 examples use a different API; do not mix those examples with current handler contracts. The [HTTP course source map](./http-course/source-map.md) records the baseline and capability boundaries used by the lessons.
 
 Related: [Roadmap](./seltzer-roadmap.md). [API](./seltzer-api.md). [JSON API tutorial](./seltzer-api-tutorial.md). [Changelog](../../libraries/seltzer/CHANGELOG.md).
 
@@ -14,7 +14,7 @@ These five labels are the only ones this matrix uses.
 
 ### `Stable`
 
-The behavior in the row is what this tree documents, and a conformance test under `libraries/seltzer/src` covers that surface. Pre-1.0 still means a later minor can change it. The tests lock the behavior the row describes. `app.handler()` is Stable here ahead of the 0.10.0 publish. The npm 0.9.0 tarball does not include it.
+The behavior in the row is what this tree documents, and a conformance test under `libraries/seltzer/src` covers that surface. Pre-1.0 still means a later minor can change it. The tests lock the behavior the row describes. `app.handler()` is Stable and shipped in 0.10.0.
 
 ### `Emerging`
 
@@ -50,7 +50,7 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | Tests | Stable | Vitest: listen, pipeline, router, validate, generate, client, HTTP-surface, strict `ResponseData`, validate-stage, generate-routes, client conformance, the urlencoded recipe on `127.0.0.1`, `handler.conformance.test.ts` (bring-your-own server, HTTPS fixture, init/listen precedence, listen/handler parity), and the README docs-drift check. The YAML → listen proof is in WebEngine. |
 | HTTPS listen, `app.use`, form/multipart, sessions, cookies, static files, templating, client retries, ORM | Non-goal | [Non-goals](../../libraries/seltzer/README.md#non-goals). Urlencoded fields are a host `URLSearchParams` recipe. |
 | Streaming responses / WebSockets | Not yet | No stream or socket API. A `Buffer` body is still one payload. Possible later. |
-| `app.handler()` | Stable | No-arg `app.handler()` returns `(req, res) => void`. `http.createServer(app.handler())` and `https.createServer(tls, app.handler())` run the same pipeline as `listen`. `handleRequest` stays private. Listen overrides do not change a listener from `handler()`. Host-owned servers own their timeouts (`DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`). Covered by `handler.conformance.test.ts`. Unreleased 0.10.0. Not in the published 0.9.0 tarball. |
+| `app.handler()` | Stable | No-arg `app.handler()` returns `(req, res) => void`. `http.createServer(app.handler())` and `https.createServer(tls, app.handler())` run the same pipeline as `listen`. `handleRequest` stays private. Listen overrides do not change a listener from `handler()`. Host-owned servers own their timeouts (`DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`). Covered by `handler.conformance.test.ts`. Shipped in 0.10.0. |
 | `after` / remove stage | Draft | Not in the pipeline API. `before` and `replace` are the extension points. |
 | Custom 404 envelope for hand-written routes | Draft | Unmatched hand-written paths use the builtin 404. Generated routes already take `notFound`. |
 | Response-shape validation | Draft | Not in the pipeline. Hosts can check inside `replace("validate")` or the handler. |
@@ -122,7 +122,7 @@ They can be valuable later. They should not appear as if they shipped. HTTPS lis
 - streaming responses (a `Readable` is not a stream)
 - WebSockets
 
-Streaming and WebSockets are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets). `handleRequest` stays private. Hosts mount a server with no-arg `app.handler()`, which is Stable in this tree and unreleased on npm.
+Streaming and WebSockets are absent, and they are not refusals. See [Non-goals](../../libraries/seltzer/README.md#not-yet-streaming-responses-and-websockets). `handleRequest` stays private. Hosts mount a server with no-arg `app.handler()`, which is Stable and shipped in 0.10.0.
 
 ## Non-goals
 
@@ -138,7 +138,7 @@ yarn workspace @citrusworx/seltzer typecheck
 
 ## Recommended positioning right now
 
-> Seltzer 0.9.0 is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields (presence only, `ctx.valid` left unset), and maps Nectarine `ApiOperation[]` through `generateRoutes`. Richer checks are `replace("validate")` plus `validationError()`; Zod is not a Seltzer dependency. It is not Express, and it is not the 0.2.0 `ctx.json` listener. `listen(port)` binds `127.0.0.1`.
+> Seltzer 0.10.0 is a small Node HTTP runtime with object routes, `ResponseData` handlers, and a named request pipeline. It parses JSON, matches `/resources/:id`, validates `.required` body fields (presence only, `ctx.valid` left unset), and maps Nectarine `ApiOperation[]` through `generateRoutes`. Richer checks are `replace("validate")` plus `validationError()`; Zod is not a Seltzer dependency. It is not Express, and it is not the 0.2.0 `ctx.json` listener. `listen(port)` binds `127.0.0.1`. No-arg `app.handler()` is the request listener for a host-owned server. `app.adapter(config)` stores options.
 
 Less accurate positioning:
 
@@ -158,7 +158,7 @@ If you are building with Seltzer today:
 - treat `ctx.json` and “no `:id`” as outdated docs, not APIs
 - pass `host: "0.0.0.0"` when the process must accept connections from other machines. `listen(port)` binds `127.0.0.1`
 - call `server.close()` to stop accepting. Idle keep-alive sockets delay the close callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`
-- mount your own `http.Server` or `https.Server` with no-arg `app.handler()`. Set `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` on that server when you want Seltzer's timers. `listen` does not speak TLS. The published 0.9.0 tarball does not include `handler()` yet
+- mount your own `http.Server` or `https.Server` with no-arg `app.handler()`. Set `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` on that server when you want Seltzer's timers. `listen` does not speak TLS. No-arg `app.handler()` shipped in 0.10.0
 
 ## Suggested reading
 

@@ -2,7 +2,7 @@
 
 [Course](./README.md)
 
-This course follows the checkout after merge `d25673e`. The local [manifest](../../../libraries/nectarine/package.json) and npm are both **0.4.0** (the manifest was restored to the published version on September 21, 2026; it had been left at 0.3.0). Git source may still be ahead of the published 0.4.0 tarball (INSERT `onConflict` is unreleased). The lab uses the local package through a file dependency. It does not claim to validate that tarball. Seltzer's local package is 0.9.0.
+This course follows the checkout after merge `d25673e`. The local [manifest](../../../libraries/nectarine/package.json) and npm are both **0.4.0** (the manifest was restored to the published version on September 21, 2026; it had been left at 0.3.0). Git source may still be ahead of the published 0.4.0 tarball (INSERT `onConflict` is unreleased). The lab uses the local package through a file dependency. It does not claim to validate that tarball. Seltzer's local package is 0.10.0.
 
 ## Follow a question through the code
 

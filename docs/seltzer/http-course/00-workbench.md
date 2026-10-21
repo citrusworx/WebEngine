@@ -27,7 +27,7 @@ For a standalone folder outside the monorepo:
 mkdir seltzer-http-course
 cd seltzer-http-course
 npm init -y
-npm install --save-exact @citrusworx/seltzer@0.9.0
+npm install --save-exact @citrusworx/seltzer@0.10.0
 ```
 
 Copy the `.mjs` files from [examples](./examples/README.md) into that folder and run `node hello.mjs`. Use `npm.cmd` on Windows if PowerShell blocks the `npm.ps1` launcher. The `.mjs` extension enables `import` and `export` without a compiler or a package `type` setting.
