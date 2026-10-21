@@ -228,7 +228,7 @@ That is how `getPostBySlug` is defined in `packages/kiwipress/src/posts/routes.t
 - **Nectarine YAML is loaded by `loadNectarineApi`.** The WordPress client still uses static `routes.ts` files.
 - **`WPCreate` is not the Posts base class.** Posts extends `WPRead` and delegates writes to collaborators.
 - **Self-signed HTTPS** only bypasses TLS verification when `allowSelfSigned` is true and the URL is `https://`.
-- **Inbound gateway ≠ current Seltzer tutorial.** `registerKiwiPressGateway` still calls `ctx.json` and re-reads `ctx.req`. New host routes should return `{ status?, headers?, body? }`. See [Gateway](./kiwipress-gateway.md).
+- **Inbound gateway returns `ResponseData`.** `registerKiwiPressGateway` reads `ctx.body` / `ctx.query` / `ctx.params` and returns `{ status, body }`. The auth guard still reads `ctx.req` for the token and the remote address. New host routes should return `{ status?, headers?, body? }` too. See [Gateway](./kiwipress-gateway.md).
 - **Seltzer 0.8.1 matches `:id`.** The gateway still uses `?id=` because that is how it was written, not because Seltzer cannot parse params.
 
 ## Where to go next

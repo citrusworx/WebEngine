@@ -18,8 +18,8 @@ app.post("/notes/:id", update);
 
 Why it is bad:
 
-- `use` and `get` are not in `@citrusworx/seltzer`
-- there is no middleware stack
+- `use` and `get` are not in `@citrusworx/seltzer`, and an `app.use` chain is a [non-goal](../../libraries/seltzer/README.md#no-middleware-chain)
+- the extension model is the named pipeline with `before` / `replace`
 
 Better:
 

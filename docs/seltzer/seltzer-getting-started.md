@@ -21,7 +21,7 @@ It gives you:
 - `generateRoutes(operations, { execute })` — `ApiOperation[]` → `Route[]`
 - `client.get/post/put/patch/delete` — `fetch` + `HttpError` on non-2xx
 
-It is not Express. There is no `app.use` and no writing `ctx.json`.
+It is not Express. There is no `app.use` (that chain is a [non-goal](../../libraries/seltzer/README.md#no-middleware-chain)) and no writing `ctx.json`.
 
 ## Install
 

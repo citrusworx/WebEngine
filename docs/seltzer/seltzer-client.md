@@ -230,8 +230,8 @@ There is no `app.client`.
 
 ## What is not here
 
-- Retries
-- Server-side idempotency storage (a header is not a replay)
+- Retries. That is a [non-goal](../../libraries/seltzer/README.md#no-client-retries). The caller owns retry policy
+- Server-side idempotency storage (a header is not a replay). A pipeline stage for that is planned and is not in this package
 - Typed generics on the JSON result
 - Multipart helpers (`FormData` is rejected)
 - Reading `Endpoint.endpoint` even when it is the absolute URL KiwiPress stores

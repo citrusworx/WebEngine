@@ -82,9 +82,9 @@ PATCH/DELETE `/__kiwipress/content/posts` without `?id=`.
 
 Backend started without `WP_URL`. Content can still run nectarine-only.
 
-## Gateway 500 / empty body / `ctx.json is not a function`
+## Gateway 500 / `ctx.json is not a function`
 
-`registerKiwiPressGateway` does not return `ResponseData`. On strict Seltzer 0.8.1 this can 500 before the inner `async` finishes, or fail because `ctx.json` is missing. See [Gateway](./kiwipress-gateway.md). Workaround: write your own handlers; do not add `ctx.json` to Seltzer.
+Current `registerKiwiPressGateway` returns `ResponseData` and does not call `ctx.json`. See [Gateway](./kiwipress-gateway.md). If a running process still throws `ctx.json is not a function`, it is an older gateway build. Do not add `ctx.json` back to Seltzer.
 
 ## Dashboard Content loads, other pages are empty
 

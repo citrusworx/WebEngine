@@ -1,6 +1,6 @@
 # @citrusworx/seltzer
 
-Small Node HTTP runtime: object routes, `ResponseData` handlers, and a named request pipeline. Built on Node’s `http` module. No Express. WebEngine and Nectarine are optional, not required.
+Small Node HTTP runtime: object routes, `ResponseData` handlers, and a named request pipeline. Built on Node’s `http` module. No Express. WebEngine and Nectarine are optional, not required. What this package will not grow is [Non-goals](#non-goals).
 
 Requires Node 18+. No runtime dependencies. The outbound client uses global `fetch` only.
 
@@ -300,6 +300,42 @@ app.listen(3000); // 127.0.0.1
 A handler payload is **200**. `response({ status: 201, body })` is the create status. `response({ status: 204 })` is a delete with no body. Replacing `validate` turns off `.required`; without `replace`, a missing `string.required` field is 400 `{ error: "Missing required field: …" }` and the handler does not run. Leave a name out of `handlers` and omit `execute` to throw, or pass `unbound: "notImplemented"` for 501.
 
 YAML layout is `resource → crud → operationName → api: { method, endpoint, query?, body? }`. Nectarine maps `endpoint` to `ApiOperation.path`. `listApiOperations` lives in `@citrusworx/nectarine/config` (also `@citrusworx/nectarine/api`). Nectarine does not generate `Route`s. The worked fixture and HTTP test live in WebEngine, which already depends on both. Full notes: [Generate routes](../../docs/seltzer/seltzer-generate.md).
+
+## Non-goals
+
+Seltzer stays a small HTTP runtime. The list below is a decision, not a backlog. The maturity matrix links here from [Status](../../docs/seltzer/seltzer-status.md).
+
+### No middleware chain
+
+Order should stay visible. The extension model is the named pipeline (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) with `before` and `replace`. An `app.use` chain would hide that order in registration and `next()`. Put auth, logging, and extra checks on a named stage. See [Pipeline](../../docs/seltzer/seltzer-pipeline.md) and [Design](../../docs/seltzer/seltzer-design.md#why-pipelines-were-chosen-over-middleware-and-hooks).
+
+### No built-in HTTPS listen
+
+Terminate TLS at a reverse proxy and let Seltzer speak HTTP behind it. `listen` always builds a Node `http.Server` with `http.createServer` and returns that server. There is no public method that accepts a host `https.Server` or `http.Server`: request handling lives on a private `handleRequest`, so a server the host created cannot be attached.
+
+### No form or multipart parsing
+
+Non-JSON bodies arrive as a raw UTF-8 string ([release gate 2](../../docs/webengine/library-release-gates.md)). Read `application/x-www-form-urlencoded` in the handler with `URLSearchParams` (no dependency). The recipe is [Form urlencoded](../../docs/seltzer/seltzer-request-response.md#form-urlencoded), and `libraries/seltzer/src/core/form-urlencoded.recipe.test.ts` runs it against `listen` on `127.0.0.1`. Multipart and other binary inbound bytes are out of scope: this parser is text, and that string is not a file upload API.
+
+### No templating, sessions, cookies, or static files
+
+Those belong to the host app or to another CitrusWorx library. Juice and Sig own the browser. The host owns files, cookies, and any session store. A Seltzer handler returns `ResponseData` for an API response.
+
+### No client retries
+
+The caller owns retry policy. `client` makes one attempt: a 5xx, a timeout, and a dropped connection are not repeated ([release gate 6](../../docs/webengine/library-release-gates.md)). Call again yourself only when that is safe. A server-side idempotency stage is planned and is not in this package; `Idempotency-Key` is only a header you can send. See [Client](../../docs/seltzer/seltzer-client.md#what-is-not-here).
+
+### No ORM or database layer
+
+Queries and migrations belong to [Nectarine](../../docs/nectarine/README.md) and to the host that calls them from a handler or from `generateRoutes` `execute`. Seltzer does not open a database. See [Integration](../../docs/seltzer/seltzer-integration.md#nectarine).
+
+### Not yet: streaming responses and WebSockets
+
+Streaming responses and WebSockets are absent today. That absence is **Not yet**: a later design can add them. It is not a decision that they will never exist. A handler body is still a string, a JSON value, or a `Buffer` / `Uint8Array`. Returning a `Readable` does not stream, and there is no socket upgrade API. See [Roadmap](../../docs/seltzer/seltzer-roadmap.md) and the course note on [streaming](../../docs/seltzer/http-course/11-future-design.md#f-proposed-streaming-responses-and-better-protocol-edges).
+
+### Zero external dependencies
+
+Zero runtime dependencies is a design stance in the WebEngine split: a library owns one capability and does not pull another framework in with it ([why WebEngine exists](../../docs/webengine/README.md#why-it-exists)). `@citrusworx/seltzer` has no `dependencies`. Node `http` and global `fetch` are the platform. A schema library or a TLS helper stays in the app when that app wants one. `typescript` and `vitest` in this repo are dev dependencies, not part of the published runtime.
 
 ## Development
 
