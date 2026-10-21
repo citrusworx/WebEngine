@@ -2415,7 +2415,7 @@ __metadata:
     jsdom: "npm:^29.0.1"
     typescript: "npm:^5.9.3"
   peerDependencies:
-    "@citrusworx/juiceui": ^0.9.1
+    "@citrusworx/juiceui": ">=0.9.1 <1"
   peerDependenciesMeta:
     "@citrusworx/juiceui":
       optional: true
