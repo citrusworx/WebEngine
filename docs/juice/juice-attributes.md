@@ -208,6 +208,41 @@ For more detail, see [Icons](./juice-icons.md).
 - `outline`
   Boolean modifier
 
+### Icon button
+
+Square icon-only control on the existing button chrome. Color, border, and hover fill stay with `button` and `btn`. Geometry is `[icon-button]`.
+
+- `icon-button`
+  Values: boolean, or `"round"` for a circle
+- `round`
+  On `[icon-button]`, same circle as `icon-button="round"`
+- `scale`
+  `"sm"` and `"lg"` keep the control square and step the icon. Unmarked scale matches a default button.
+- `pressed`
+  Visual toggle. `aria-pressed="true"` paints the same state. Styling only.
+
+Core owns the defaults (button block padding, plus the icon default). Shipped themes do not bind them.
+
+| Role | Default |
+|---|---|
+| `--juice-icon-button-padding` / `-sm` / `-lg` | `0.625rem` / `0.4rem` / `0.875rem` |
+| `--juice-icon-button-icon-size` / `-sm` / `-lg` | `1.25rem` / `1rem` / `1.5rem` |
+| `--juice-icon-button-size` / `-sm` / `-lg` | icon size + padding × 2 |
+| `--juice-icon-button-radius` / `-sm` / `-lg` | `0.5rem` / `0.375rem` / `0.625rem` |
+| `--juice-icon-button-radius-round` | `999px` |
+| `--juice-icon-button-focus-ring` | `currentColor` |
+
+`:active` uses the same `translateY(2px)` press as `[btn="3d"]`. Transitions use `--juice-motion-*`. Authors supply the accessible name.
+
+```html
+<button type="button" icon-button btn="outline" scale="sm" aria-label="Close">
+  <i icon="xmark" lib="solid"></i>
+</button>
+<button type="button" icon-button="round" aria-pressed="true" aria-label="Bold">
+  <i icon="bold" lib="solid"></i>
+</button>
+```
+
 ### Cards
 
 - `card`

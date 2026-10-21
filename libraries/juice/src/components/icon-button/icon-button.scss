@@ -1,0 +1,227 @@
+// Icon-button chrome is geometry on top of button chrome.
+// Color, border, fill, and hover paint stay with `button`, `[btn]`, and
+// the theme's button rules. This file does not set background, color, or
+// border, so every `[btn]` variant keeps its own chrome.
+//
+// Juice names:
+//   [icon-button]         square icon-only control. Host is usually
+//                         <button type="button" icon-button>. Pair with
+//                         any [btn] value and with [scale="sm"|"lg"].
+//                         Default scale matches an unmarked button.
+//   [icon-button="round"] circle. [icon-button][round] is the same option.
+//   [pressed]             visual toggle. [aria-pressed="true"] paints the
+//                         same state. Styling only — slice B owns behavior.
+//
+// There is no HTML global `icon-button` attribute. Do not restyle bare
+// [aria-pressed]. The accessible name stays author-owned (aria-label or
+// aria-labelledby). This slice does not check it.
+//
+// Roles (core defaults on :root). Shipped themes are not required to bind
+// them. Override the custom properties when a theme needs a different box.
+//   --juice-icon-button-size / -sm / -lg
+//   --juice-icon-button-radius / -sm / -lg / -round
+//   --juice-icon-button-icon-size / -sm / -lg
+//   --juice-icon-button-padding / -sm / -lg
+//   --juice-icon-button-focus-ring
+//
+// Defaults come from button.scss block padding and the icon default:
+//   padding        0.625rem   (button)
+//   padding-sm     0.4rem     (button[scale="sm"])
+//   padding-lg     0.875rem   (button[scale="lg"])
+//   icon-size-sm   1rem       ([icon] default)
+//   icon-size      1.25rem
+//   icon-size-lg   1.5rem     (iconSize sm, 24px)
+//   size           icon-size + padding * 2   (square, border-box)
+//   radius         0.5rem     (8px — the button radius KiwiPress already uses)
+//
+// Focus, disabled, and the pressed toggle are icon-button chrome. Hover
+// fill stays on the button variant. :active uses the same translateY(2px)
+// press as [btn="3d"] / [btn="metallic"]. Transitions read --juice-motion-*.
+//
+// z-index: inline control. No overlay band.
+
+:root {
+    --juice-icon-button-padding: 0.625rem;
+    --juice-icon-button-padding-sm: 0.4rem;
+    --juice-icon-button-padding-lg: 0.875rem;
+    --juice-icon-button-icon-size: 1.25rem;
+    --juice-icon-button-icon-size-sm: 1rem;
+    --juice-icon-button-icon-size-lg: 1.5rem;
+    --juice-icon-button-size: calc(var(--juice-icon-button-icon-size) + (var(--juice-icon-button-padding) * 2));
+    --juice-icon-button-size-sm: calc(var(--juice-icon-button-icon-size-sm) + (var(--juice-icon-button-padding-sm) * 2));
+    --juice-icon-button-size-lg: calc(var(--juice-icon-button-icon-size-lg) + (var(--juice-icon-button-padding-lg) * 2));
+    --juice-icon-button-radius: 0.5rem;
+    --juice-icon-button-radius-sm: 0.375rem;
+    --juice-icon-button-radius-lg: 0.625rem;
+    --juice-icon-button-radius-round: 999px;
+    --juice-icon-button-focus-ring: currentColor;
+}
+
+@mixin -juice-icon-button-box($size, $padding, $radius) {
+    width: $size;
+    height: $size;
+    min-width: $size;
+    min-height: $size;
+    padding: $padding;
+    border-radius: $radius;
+}
+
+@mixin -juice-icon-button-glyph($size) {
+    width: $size;
+    height: $size;
+    max-width: 100%;
+    max-height: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 0 1 auto;
+}
+
+[icon-button],
+button[icon-button],
+[theme] [icon-button],
+[theme] button[icon-button] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    gap: 0;
+    aspect-ratio: 1;
+    line-height: 0;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    @include -juice-icon-button-box(
+        var(--juice-icon-button-size),
+        var(--juice-icon-button-padding),
+        var(--juice-icon-button-radius)
+    );
+    transition:
+        background-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard),
+        color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard),
+        border-color var(--juice-motion-duration-instant) var(--juice-motion-ease-standard),
+        box-shadow var(--juice-motion-duration-instant) var(--juice-motion-ease-standard),
+        transform var(--juice-motion-duration-instant) var(--juice-motion-ease-standard);
+}
+
+[icon-button] [icon],
+button[icon-button] [icon],
+[theme] [icon-button] [icon],
+[theme] button[icon-button] [icon] {
+    @include -juice-icon-button-glyph(var(--juice-icon-button-icon-size));
+    pointer-events: none;
+}
+
+[icon-button][scale="sm"],
+button[icon-button][scale="sm"],
+[theme] [icon-button][scale="sm"],
+[theme] button[icon-button][scale="sm"] {
+    @include -juice-icon-button-box(
+        var(--juice-icon-button-size-sm),
+        var(--juice-icon-button-padding-sm),
+        var(--juice-icon-button-radius-sm)
+    );
+}
+
+[icon-button][scale="sm"] [icon],
+button[icon-button][scale="sm"] [icon],
+[theme] [icon-button][scale="sm"] [icon],
+[theme] button[icon-button][scale="sm"] [icon] {
+    @include -juice-icon-button-glyph(var(--juice-icon-button-icon-size-sm));
+}
+
+[icon-button][scale="lg"],
+button[icon-button][scale="lg"],
+[theme] [icon-button][scale="lg"],
+[theme] button[icon-button][scale="lg"] {
+    @include -juice-icon-button-box(
+        var(--juice-icon-button-size-lg),
+        var(--juice-icon-button-padding-lg),
+        var(--juice-icon-button-radius-lg)
+    );
+}
+
+[icon-button][scale="lg"] [icon],
+button[icon-button][scale="lg"] [icon],
+[theme] [icon-button][scale="lg"] [icon],
+[theme] button[icon-button][scale="lg"] [icon] {
+    @include -juice-icon-button-glyph(var(--juice-icon-button-icon-size-lg));
+}
+
+// Circle wins over scale radius. Size stays on the scale tokens.
+[icon-button="round"],
+[icon-button][round],
+button[icon-button="round"],
+button[icon-button][round],
+[icon-button="round"][scale],
+[icon-button][round][scale],
+[theme] [icon-button="round"],
+[theme] [icon-button][round],
+[theme] button[icon-button="round"],
+[theme] button[icon-button][round],
+[theme] [icon-button="round"][scale],
+[theme] [icon-button][round][scale] {
+    border-radius: var(--juice-icon-button-radius-round);
+}
+
+[icon-button]:focus-visible,
+button[icon-button]:focus-visible,
+[theme] [icon-button]:focus-visible,
+[theme] button[icon-button]:focus-visible {
+    outline: 2px solid var(--juice-icon-button-focus-ring);
+    outline-offset: 2px;
+}
+
+// Same press as [btn="3d"] / [btn="metallic"] hover. Does not repaint fill.
+[icon-button]:active,
+button[icon-button]:active,
+[theme] [icon-button]:active,
+[theme] button[icon-button]:active {
+    transform: translateY(2px);
+}
+
+[icon-button][pressed],
+[icon-button][aria-pressed="true"],
+button[icon-button][pressed],
+button[icon-button][aria-pressed="true"],
+[theme] [icon-button][pressed],
+[theme] [icon-button][aria-pressed="true"],
+[theme] button[icon-button][pressed],
+[theme] button[icon-button][aria-pressed="true"] {
+    box-shadow: inset 0 0 0 2px currentColor;
+}
+
+[icon-button]:disabled,
+[icon-button][disabled],
+[icon-button][aria-disabled="true"],
+button[icon-button]:disabled,
+button[icon-button][disabled],
+button[icon-button][aria-disabled="true"],
+[theme] [icon-button]:disabled,
+[theme] [icon-button][disabled],
+[theme] [icon-button][aria-disabled="true"],
+[theme] button[icon-button]:disabled,
+[theme] button[icon-button][disabled],
+[theme] button[icon-button][aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [icon-button],
+    button[icon-button],
+    [theme] [icon-button],
+    [theme] button[icon-button] {
+        transition: none;
+    }
+
+    // Drop the press offset. Leave [btn="3d"] / [btn="metallic"] hover
+    // transform alone — that press belongs to the button variant.
+    [icon-button]:active,
+    button[icon-button]:active,
+    [theme] [icon-button]:active,
+    [theme] button[icon-button]:active {
+        transform: none;
+    }
+}
