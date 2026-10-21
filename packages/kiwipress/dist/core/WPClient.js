@@ -7,7 +7,7 @@ export class WPClient extends WPCore {
     app;
     constructor(config) {
         super(config);
-        this.app = Seltzer.init().handler({
+        this.app = Seltzer.init().adapter({
             adapter: "node:http",
             options: kiwiCallOptions({
                 baseUrl: `${this.config.url}/${this.config.apiBase}`,

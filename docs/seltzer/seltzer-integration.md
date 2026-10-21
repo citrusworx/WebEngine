@@ -106,7 +106,7 @@ See [WebEngine](../webengine/README.md) and [Nectarine kernel contract](../weben
 
 ## KiwiPress
 
-KiwiPress is a WordPress REST **client**. It may call `Seltzer.init().handler({ adapter: "node:http", options: { baseUrl, headers } })` to store origin and auth headers.
+KiwiPress is a WordPress REST **client**. It calls `Seltzer.init().adapter({ adapter: "node:http", options: { baseUrl, headers } })` to store origin and auth headers. `handler(config)` is a deprecated alias of that stash.
 
 Seltzer `client` does not bypass TLS and does not depend on `undici`. KiwiPress keeps that behavior in its own `requestWordPress` helper, including an `allowSelfSigned` flag that Seltzer's types no longer declare. Do not document KiwiPress as “Seltzer serving WordPress.” It is Seltzer types plus a separate request path.
 

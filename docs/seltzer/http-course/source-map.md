@@ -21,7 +21,7 @@ Baseline: Seltzer **0.9.0** (workspace manifest and the npm tarball published 20
 
 `Seltzer.listen` in `core/seltzer.ts` is the only listener. The hello-world `src/core/server/server.ts` was removed. The course raw server is a teaching example, not a second runtime entrypoint.
 
-`.handler(config)` stores configuration and exposes options on the context. Its adapter name does not automatically choose a database or execute a route. The course does not invent additional semantics for it. No-arg `app.handler()` is a different call: a Node request listener for a host-owned server. The course lessons still use `listen`.
+`.adapter(config)` stores configuration and exposes options on the context. Its adapter name does not automatically choose a database or execute a route. The course does not invent additional semantics for it. `handler(config)` is a deprecated alias of that stash, removed in the next minor after 0.10.0. `app.handler()` is a different call: a Node request listener for a host-owned server. The course lessons still use `listen`.
 
 ## Capability boundaries
 

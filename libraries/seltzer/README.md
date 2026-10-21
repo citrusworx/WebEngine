@@ -50,6 +50,7 @@ Documented version: `0.9.0`.
 | `signal` | client option |
 | `query` | client option |
 | `handler` | app method |
+| `adapter` | app method |
 | `DEFAULT_BODY_LIMIT_BYTES` | export |
 | `DEFAULT_LISTEN_HOST` | export |
 | `DEFAULT_HEADERS_TIMEOUT_MS` | export |
@@ -130,11 +131,13 @@ The same listener works on `http.createServer(app.handler())`. It runs the same 
 
 A host-owned server owns its timeouts. Seltzer does not change them. Copy the defaults above when you want the same 20s / 30s / 5s timers `listen` applies. `0` disables that timer on `listen`; on your server, assign `0` yourself. `server.close()` is also yours.
 
-`app.handler(config)` is a different call. It stores `{ adapter, options }` and returns the app. `options` is copied onto `ctx.options`. `adapter` is unused inbound. Passing a config object never returns a listener. The no-arg call never stores config. KiwiPress uses the config call to stash a base URL. It does not mount HTTP.
+`app.adapter(config)` stores `{ adapter, options }` and returns the app. `options` is copied onto `ctx.options`. `adapter` is unused inbound. Last call wins. That call is not a request listener. KiwiPress uses it to stash a base URL. It does not mount HTTP.
+
+`app.handler(config)` is a deprecated alias of `adapter(config)`. It still stores the same object and returns the app, and the first call in a process emits one `process.emitWarning` (`DeprecationWarning`, code `SELTZER_DEP_HANDLER_CONFIG`). The `init` / `listen` `logger` does not receive that warning. The alias will be removed in the next minor after 0.10.0. `app.handler()` with no arguments does not warn.
 
 `handleRequest` stays private. There is no method that accepts an already-built `http.Server`. Pass the listener into `http.createServer` or `https.createServer` instead.
 
-This listener is in source for the unreleased 0.10.0 minor. `package.json` and the install pin above stay at 0.9.0 until that publish. The published 0.9.0 tarball has no no-arg `handler()`.
+This listener, `app.adapter(config)`, and the `handler(config)` deprecation are in source for the unreleased 0.10.0 minor. `package.json` and the install pin above stay at 0.9.0 until that publish. The published 0.9.0 tarball has no no-arg `handler()` and no `adapter()`. On 0.9.0 the options stash is `handler(config)`.
 
 ## Pipeline
 

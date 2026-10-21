@@ -107,21 +107,29 @@ function functionNameInStack(): never {
     throw new Error("precedence-secret");
 }
 
-describe("app.handler()", () => {
-    it("keeps handler() and handler(config) as different calls on the app", async () => {
-        const app = Seltzer.init()
-            .handler({
-                adapter: "node:http",
-                options: {
-                    baseUrl: "https://stash.example",
-                    headers: { "X-App": "notes" },
-                },
-            })
-            .route({
-                method: "GET",
-                path: "/opts",
-                handler: (ctx): ResponseData => ({ body: ctx.options ?? null }),
-            });
+describe("app.adapter()", () => {
+    it("stores options on ctx and returns the app", async () => {
+        const app = Seltzer.init();
+        const returned = app.adapter({
+            adapter: "node:http",
+            options: {
+                baseUrl: "https://first.example",
+                headers: { "X-App": "1" },
+            },
+        });
+        expect(returned).toBe(app);
+
+        app.adapter({
+            adapter: "memory",
+            options: {
+                baseUrl: "https://stash.example",
+                headers: { "X-App": "notes" },
+            },
+        }).route({
+            method: "GET",
+            path: "/opts",
+            handler: (ctx): ResponseData => ({ body: ctx.options ?? null }),
+        });
 
         const listener = app.handler();
         expect(typeof listener).toBe("function");
@@ -135,6 +143,81 @@ describe("app.handler()", () => {
             baseUrl: "https://stash.example",
             headers: { "X-App": "notes" },
         });
+    });
+});
+
+describe("app.handler()", () => {
+    it("returns a request listener and does not emit the config deprecation", () => {
+        const calls: unknown[] = [];
+        const original = process.emitWarning;
+        process.emitWarning = ((warning: string | Error) => {
+            calls.push(warning);
+        }) as typeof process.emitWarning;
+        try {
+            const listener = Seltzer.init().handler();
+            expect(typeof listener).toBe("function");
+            expect(listener.length).toBe(2);
+            const server = track(http.createServer(listener));
+            expect(server).toBeInstanceOf(http.Server);
+            expect(calls).toEqual([]);
+        } finally {
+            process.emitWarning = original;
+        }
+    });
+
+    it("forwards handler(config) to adapter and warns once per process", async () => {
+        const calls: Array<{ message: unknown; options: unknown }> = [];
+        const original = process.emitWarning;
+        process.emitWarning = ((message: string | Error, options?: { type?: string; code?: string }) => {
+            calls.push({ message, options });
+        }) as typeof process.emitWarning;
+
+        try {
+            const app = Seltzer.init()
+                .handler({
+                    adapter: "node:http",
+                    options: {
+                        baseUrl: "https://first.example",
+                        headers: { "X-App": "1" },
+                    },
+                })
+                .handler({
+                    adapter: "memory",
+                    options: {
+                        baseUrl: "https://second.example",
+                        headers: { "X-App": "2" },
+                    },
+                })
+                .route({
+                    method: "GET",
+                    path: "/opts",
+                    handler: (ctx): ResponseData => ({ body: ctx.options ?? null }),
+                });
+
+            Seltzer.init().handler({
+                adapter: "other",
+                options: { baseUrl: "https://third.example" },
+            });
+
+            expect(calls).toHaveLength(1);
+            expect(String(calls[0]?.message)).toContain("app.adapter(config)");
+            expect(String(calls[0]?.message)).toContain("next minor after 0.10.0");
+            expect(calls[0]?.options).toEqual({
+                type: "DeprecationWarning",
+                code: "SELTZER_DEP_HANDLER_CONFIG",
+            });
+
+            const server = mount(app.handler());
+            await listenOnLoopback(server);
+            const res = await request(`${httpBase(server)}/opts`);
+            expect(res.status).toBe(200);
+            expect(res.json).toEqual({
+                baseUrl: "https://second.example",
+                headers: { "X-App": "2" },
+            });
+        } finally {
+            process.emitWarning = original;
+        }
     });
 
     it("serves routes registered after the listener was created", async () => {
