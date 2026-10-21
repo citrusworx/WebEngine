@@ -161,7 +161,7 @@ export class SigRouter {
 
     set(path: string, component: RouteView, name?: string): this;
     set(routes: RouteMap): this;
-    set(pathOrRoutes: string | RouteMap, component?: RouteView, name?: string) {
+    set(pathOrRoutes: string | RouteMap, component?: RouteView, name?: string): this {
         if (typeof pathOrRoutes === "string") {
             this.register(pathOrRoutes, component ?? null, name);
             return this;
@@ -201,7 +201,7 @@ export class SigRouter {
     }
 
 
-    start(){
+    start(): void {
         if (this.started) {
             this.render(window.location.pathname);
             return;
@@ -212,7 +212,7 @@ export class SigRouter {
         this.render(window.location.pathname);
     }
     
-    navigate(path: string){
+    navigate(path: string): void {
         const normalizedPath = this.normalizePath(path);
         const resolved = this.resolveRoute(normalizedPath);
         if(!resolved) return;
@@ -221,11 +221,11 @@ export class SigRouter {
         this.render(normalizedPath);
     }
 
-    goBack(){
+    goBack(): void {
         window.history.back();
     }
 
-    stop() {
+    stop(): void {
         if (!this.started) {
             return;
         }

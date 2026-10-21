@@ -103,7 +103,7 @@ function setProp(el: HTMLElement, key: string, value: any) {
     applyPropValue(el, key, value);
 }
 
-export function jsx(type: any, props: any) {
+export function jsx(type: any, props: any): any {
     if (typeof type === "function") {
         const { value, dispose } = captureCleanupScope(() => type(props));
         if (value instanceof Node) {
@@ -125,14 +125,14 @@ export function jsx(type: any, props: any) {
     return el;
 }
 
-export function mount(node: Node, target: HTMLElement){
+export function mount(node: Node, target: HTMLElement): void {
     [...target.childNodes].forEach(child => disposeTree(child));
     target.replaceChildren(node);
 }
 
 export const jsxs = jsx;
 
-export const Fragment = (props: any) => {
+export const Fragment = (props: any): DocumentFragment => {
     const frag = document.createDocumentFragment();
     appendChild(frag, props.children);
     return frag;

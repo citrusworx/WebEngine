@@ -13,6 +13,6 @@ export function jsxDEV(
     _isStaticChildren?: any,
     _source?: any,
     _self?: any
-) {
+): any {
     return jsx(type, props);
 }

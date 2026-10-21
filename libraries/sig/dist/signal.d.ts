@@ -16,6 +16,26 @@
  * count.set(1); // Only the effect callback runs, updating the DOM
  * ```
  */
+type Cleanup = () => void;
+type EffectCallback = () => void | Cleanup;
+/**
+ * Collects cleanups registered while `fn` runs and returns them as `dispose`.
+ * The JSX runtime uses this for a component call. `bindList` uses it for a row.
+ * If `fn` throws, those cleanups run before the error propagates.
+ *
+ * App code should not call this. It stays exported so existing imports keep working.
+ *
+ * @internal
+ */
+export declare function captureCleanupScope<T>(fn: () => T): {
+    value: T;
+    dispose: Cleanup;
+};
+/**
+ * Runs `fn` without subscribing the current effect or memo.
+ * Reads inside `fn` still return the current value.
+ */
+export declare function untrack<T>(fn: () => T): T;
 /**
  * Creates a reactive signal that tracks subscribers for state changes.
  *
@@ -35,6 +55,14 @@
  * const current = message.get(); // Returns 'hello'
  * message.set('world'); // Notifies all subscribers
  */
+export declare function Signal<T>(value: T): {
+    get(): T;
+    set(newValue: T): void;
+};
+export declare function batch(fn: () => void): void;
+export declare function memo<T>(fn: () => T): {
+    get(): T;
+};
 /**
  * Registers a function to automatically run whenever accessed signals change.
  *
@@ -43,30 +71,12 @@
  * this effect function will be re-executed.
  *
  * @param fn - The callback function to execute and track for reactive updates
+ * @returns A disposer. Calling it unsubscribes the effect and runs the last cleanup.
  *
  * @example
  * effect(() => {
  *   console.log('Count is:', count.get());
  * });
  */
-type Cleanup = () => void;
-type EffectCallback = () => void | Cleanup;
-export declare function captureCleanupScope<T>(fn: () => T): {
-    value: T;
-    dispose: Cleanup;
-};
-/**
- * Runs `fn` without subscribing the current effect or memo.
- * Reads inside `fn` still return the current value.
- */
-export declare function untrack<T>(fn: () => T): T;
-export declare function Signal<T>(value: T): {
-    get: () => T;
-    set: (newValue: T) => void;
-};
-export declare function batch(fn: () => void): void;
-export declare function memo<T>(fn: () => T): {
-    get: () => T | undefined;
-};
 export declare function effect(fn: EffectCallback): () => void;
 export {};

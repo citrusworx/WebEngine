@@ -172,13 +172,15 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 
 | Import | What it is |
 |--------|------------|
-| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList`, `mount`, `jsx` / `jsxs` / `Fragment`, `SigRouter`, types |
-| `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`) |
-| `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`) |
+| `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList` (experimental), `captureCleanupScope` (internal), `mount`, `disposeTree`, `jsx` / `jsxs` / `Fragment`, `SigRouter`, types. `jsxDEV` is also re-exported; import it from the dev runtime. |
+| `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `Child`) |
+| `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`, `jsxs`, `Fragment`) |
 | `@citrusworx/sigjs/sig-router` | `SigRouter` only |
 | `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` returns `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other runtimes are read-only. Needs `@citrusworx/juiceui` (optional peer). Juice works without this subpath. Guide: [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding). Shipped in 0.4.0. |
 
 `jsxImportSource` uses the `jsx-runtime` / `jsx-dev-runtime` subpaths automatically. You do not import those by hand unless you are calling `jsx()` yourself.
+
+The v1 freeze inventory (stable, experimental, internal) is [API surface](../../docs/sigjs/api-surface.md).
 
 ## TypeScript without a bundler
 

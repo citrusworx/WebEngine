@@ -4,7 +4,7 @@ Public surface of `@citrusworx/sigjs` as implemented in `libraries/sig/src`.
 
 This page is the compact contract. For the mental model, start with [Signals](./sig-signals.md), [Effects](./sig-effects.md), and [JSX and the DOM](./sig-jsx.md).
 
-Exports from the package root: `Signal`, `effect`, `batch`, `memo`, `captureCleanupScope`, `jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `SigRouter`, plus JSX types.
+Exports from the package root: `Signal`, `effect`, `batch`, `memo`, `untrack`, `captureCleanupScope`, `bindList`, `jsx`, `jsxs`, `jsxDEV`, `Fragment`, `mount`, `disposeTree`, `SigRouter`, plus the types named in [API surface](./api-surface.md). That page is the v1 freeze inventory (stable, experimental, internal). `jsxDEV` on the root is an `export *` accident; import it from `@citrusworx/sigjs/jsx-dev-runtime`.
 
 Subpath exports:
 
@@ -126,7 +126,7 @@ sum.get(); // 30
 function captureCleanupScope<T>(fn: () => T): { value: T; dispose: () => void }
 ```
 
-Internal building block used by the JSX runtime when it calls a component function, and by `bindList` for each row. Effects registered during `fn` are attached to the returned `dispose`. If `fn` throws, those effects are disposed before the error propagates. You rarely call this yourself.
+Internal building block used by the JSX runtime when it calls a component function, and by `bindList` for each row. Effects registered during `fn` are attached to the returned `dispose`. If `fn` throws, those effects are disposed before the error propagates. Tagged `@internal`. Still exported. App code should not call it. Hiding it is a breaking change and is listed in [API surface](./api-surface.md).
 
 ## bindList
 
@@ -145,7 +145,9 @@ function bindList<T, K>(
 ): () => void;
 ```
 
-Keyed list. `source` is a `Signal` or a `memo`. `null` or `undefined` from `get()` throws `bindList: source.get() returned no list`.
+Experimental (`@experimental`). The contract may still change before v1. See [API surface](./api-surface.md).
+
+Keyed list. `source` is a `Signal` or a `memo`. `null` or `undefined` from `get()` throws `bindList: source.get() returned no list`. The per-row getter's public name is `ListItem<T>`, also experimental.
 
 - **Array.** Pass `key`. Display order is array order.
 - **Map.** Omit `key`. Iteration order is display order. The map key is the row key.
