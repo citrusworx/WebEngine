@@ -8,6 +8,7 @@ import {
 import { guardRawResponse } from "../core/raw-response.js";
 import { isResponseData } from "../core/response.js";
 import type { CompiledRoute } from "./router.js";
+import { idempotencyStage } from "./idempotency.js";
 import {
     contextStage,
     createRouteStage,
@@ -108,6 +109,7 @@ export function createDefaultPipeline(getRoutes: () => CompiledRoute[]): Pipelin
         { name: "context", stage: contextStage, builtin: true },
         { name: "route", stage: createRouteStage(getRoutes), builtin: true },
         { name: "validate", stage: validateStage, builtin: true },
+        { name: "idempotency", stage: idempotencyStage, builtin: true },
         { name: "handle", stage: handleStage, builtin: true },
         { name: "response", stage: responseStage, builtin: true },
         { name: "send", stage: sendStage, builtin: true },

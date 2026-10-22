@@ -88,6 +88,7 @@ describe("generateRoutes bindings", () => {
             "context",
             "route",
             "validate",
+            "idempotency",
             "handle",
             "response",
             "send",

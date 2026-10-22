@@ -11,8 +11,9 @@ Exports from the package root (`libraries/seltzer/src/index.ts`):
 - `client`, `createClient`, `resolveRequestUrl`, `HttpError`, `TimeoutError`, `AbortError`, `NetworkError`, `UrlError`
 - `generateRoutes`, `UnboundOperationsError`
 - `response`, `send`, `isResponseData`, `isExplicitResponse`, `validationError`
-- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ClientCallOptions`, `HostOptions`, `QueryInput`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`, `OperationHandler`, `UnboundOperationPolicy`, `ClientConfig`, `SeltzerClient`
-- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`, `DEFAULT_BODY_LIMIT_BYTES`, `DEFAULT_CLIENT_TIMEOUT_MS` (`30000`, same number as the request timeout)
+- types: `Route`, `RouteContract`, `RequestContext`, `ValidatedInput`, `ValidationIssue`, `Endpoint`, `ClientCallOptions`, `HostOptions`, `QueryInput`, `ListenOptions`, `CorsOptions`, `ResponseData`, `PipelineContext`, `Stage`, `StageName`, `ApiOperation`, `ExecuteArgs`, `GenerateRoutesOptions`, `HttpMethod`, `OperationHandler`, `UnboundOperationPolicy`, `ClientConfig`, `SeltzerClient`, `IdempotencyOptions`, `IdempotencyStore`, `IdempotencyBeginResult`, `IdempotencyResponse`, `MemoryIdempotencyStoreOptions`
+- `MemoryIdempotencyStore`
+- listen defaults: `DEFAULT_LISTEN_HOST`, `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, `DEFAULT_KEEP_ALIVE_TIMEOUT_MS`, `DEFAULT_BODY_LIMIT_BYTES`, `DEFAULT_CLIENT_TIMEOUT_MS` (`30000`, same number as the request timeout), `DEFAULT_IDEMPOTENCY_TTL_MS` (24 hours), `MAX_IDEMPOTENCY_KEY_LENGTH` (`255`)
 - `InitOptions`
 
 There are no subpath exports. `HandlerConfig` is used by `.adapter(config)` but is not re-exported from the package root. `handler(config)` is a deprecated alias of that call.
@@ -25,7 +26,7 @@ static init<TLocals = unknown>(options?: InitOptions<TLocals>): Seltzer
 
 Returns `new Seltzer()`. Empty route list, default pipeline, `config === null`.
 
-`options` may set `bodyLimit`, `cors`, `logger`, `debug`, and `locals`. Those apply to `listen` and to no-arg `handler()`. `credentials: true` with `origin: "*"` throws here, before any server exists. A non-integer or negative `bodyLimit` throws here when you pass it. `host` and the three server timeouts are not `init` options.
+`options` may set `bodyLimit`, `cors`, `logger`, `debug`, `locals`, and `idempotency`. Those apply to `listen` and to no-arg `handler()`. `credentials: true` with `origin: "*"` throws here, before any server exists. A non-integer or negative `bodyLimit` throws here when you pass it. `idempotency: false` turns the stage off. A bad `ttlMs` or `store` throws here. `host` and the three server timeouts are not `init` options. Idempotency behavior is [Pipeline](./seltzer-pipeline.md#idempotency).
 
 ```ts
 import { Seltzer } from "@citrusworx/seltzer";
@@ -71,7 +72,7 @@ http.createServer(app.handler())
 https.createServer(tlsOptions, app.handler())
 ```
 
-That listener runs the same pipeline as `listen`: `parse` → `context` → `route` → `validate` → `handle` → `response` → `send`. It applies `bodyLimit`, CORS / `OPTIONS` 204, `logger`, `debug`, `locals`, and the strict `ResponseData` checks. It reads those from `init`. A field passed to `listen` does not change this listener. It does not bind a port and it does not set `headersTimeout`, `requestTimeout`, or `keepAliveTimeout`. Copy `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` onto the host server when you want Seltzer's timers. See [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server).
+That listener runs the same pipeline as `listen`: `parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`. It applies `bodyLimit`, CORS / `OPTIONS` 204, `logger`, `debug`, `locals`, `idempotency`, and the strict `ResponseData` checks. It reads those from `init`. A field passed to `listen` does not change this listener. It does not bind a port and it does not set `headersTimeout`, `requestTimeout`, or `keepAliveTimeout`. Copy `DEFAULT_HEADERS_TIMEOUT_MS`, `DEFAULT_REQUEST_TIMEOUT_MS`, and `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` onto the host server when you want Seltzer's timers. See [Bring your own server](../../libraries/seltzer/README.md#bring-your-own-server).
 
 `handleRequest` stays private. Pass the listener in. There is no method that accepts an already-built server.
 
@@ -282,7 +283,7 @@ function createClient(config?: {
 const client: SeltzerClient;
 ```
 
-`client` is `createClient()`. The default timeout is 30s (`DEFAULT_CLIENT_TIMEOUT_MS`). `0` disables it. Per-call `options.timeout` overrides the client. There is no retry. `Idempotency-Key` is an ordinary header. See [Client](./seltzer-client.md).
+`client` is `createClient()`. The default timeout is 30s (`DEFAULT_CLIENT_TIMEOUT_MS`). `0` disables it. Per-call `options.timeout` overrides the client. There is no retry. `Idempotency-Key` is an ordinary header you set. The server stage replays POST and PATCH. This client does not. See [Client](./seltzer-client.md).
 
 ## `Endpoint`
 

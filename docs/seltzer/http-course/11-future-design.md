@@ -58,7 +58,7 @@ client.get({
 
 The deadline covers headers and the body. Caller abort and the deadline are merged (`AbortSignal.any` when it exists, otherwise a Node 18 combine). If the caller signal aborts, the error is `AbortError` even when the timer also fires. `TimeoutError`, `AbortError`, and `NetworkError` are not `HttpError`. The timer is cleared when the call ends. Cancelling the wait does not guarantee a remote write was cancelled.
 
-The client does not retry. That is a [non-goal](../../../libraries/seltzer/README.md#no-client-retries): the caller owns retry policy. An idempotency key needs server-side storage and replay. That stage is planned and is not implemented. `options.headers` can still send `Idempotency-Key`.
+The client does not retry. That is a [non-goal](../../../libraries/seltzer/README.md#no-client-retries): the caller owns retry policy. POST and PATCH idempotency is the server `idempotency` stage. `options.headers` can send `Idempotency-Key`. This client does not retry or replay.
 
 **URL policy:** `baseUrl = http://host/api/v1` and `path = users` is `/api/v1/users`, not `/users`. `new URL(path, baseUrl)` is not the join, because a leading slash would drop the base path. Boundary slashes collapse. A trailing slash on the relative path stays. `options.query` is encoded; `null` and `undefined` are omitted; arrays repeat the key. An absolute `path` throws `UrlError` unless `allowAbsoluteUrl` is set. The path is not re-encoded.
 

@@ -9,20 +9,21 @@ Source: `libraries/seltzer/src/pipeline/**` and `Seltzer#before` / `Seltzer#repl
 ## Stage order
 
 ```text
-parse → context → route → validate → handle → response → send
+parse → context → route → validate → idempotency → handle → response → send
 ```
 
 `STAGE_NAMES` is exported as that tuple. Each builtin occupies a named slot. User stages inserted with `before` share the target’s name but are not `builtin`.
 
 | Stage | Responsibility |
 |---|---|
-| `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. |
+| `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. Keeps the raw bytes on `ctx.rawBody` for the idempotency fingerprint. |
 | `context` | Set `method`, `path`, `query`, and lowercased `headers` on ctx. |
 | `route` | Match a registered route and fill `params`. Unknown path → 404. Known path, wrong method → 405 + `Allow`. Malformed param encoding → 400. |
 | `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. Presence only. Failure → 400 with the messages below. No specs → no-op. Does not set `ctx.valid`. |
+| `idempotency` | POST and PATCH that send `Idempotency-Key`. Replay a stored response or reserve the key. Other methods, and requests without the header, continue. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
 | `response` | Reject non-`ResponseData` handler results with 500 and a log line (route + returned value). Defaults live in `send`. |
-| `send` | Write the HTTP response via `send()`. `replace("send")` throws. |
+| `send` | Finish the idempotency reservation, then write the HTTP response via `send()`. `replace("send")` throws. |
 
 CORS headers and `OPTIONS` 204 run in `listen` **before** `pipeline.run`, and only when `cors` was passed. They are not stages. Without `cors`, `OPTIONS` enters the pipeline like any other method.
 
@@ -212,6 +213,43 @@ app.route({
 `ctx.route.path` is the pattern (`/api/products/:id`), not the request path (`ctx.path`). Generated routes can use `ctx.route.contract.name` (`joinWaitlist`) the same way. `contract.body` is still the YAML spec map, so a replacement can read it, but nothing in Seltzer turns those strings into a schema. A route missing from the map continues with `ctx.valid` unset, including when that route's `contract.body` contains `.required`.
 
 Do not reimplement JSON parse in the replacement. `parse` already did that.
+
+## Idempotency
+
+`idempotency` is a builtin between `validate` and `handle`. It is on unless `init({ idempotency: false })` or `listen({ idempotency: false })`. `before("idempotency", …)` and `replace("idempotency", …)` work like the other names. Replacing the stage removes replay and the in-flight lock.
+
+Only **POST** and **PATCH** with an `Idempotency-Key` header enter it. A missing header, and every other method, continues. The header is read from the lowercased map `context` already built. The key must be 1–255 characters. An empty or longer key is 400 `{ error: "Idempotency-Key must be 1-255 characters" }` and does not reserve anything.
+
+The storage key is `JSON.stringify([method, path, idempotencyKey])`. `method` is uppercased. `path` is the pathname, not the query string. The same header on two routes does not collide.
+
+The fingerprint is SHA-256 (`node:crypto`) of `ctx.rawBody`, the exact bytes `parse` read before JSON parsing. A replacement `parse` should assign `ctx.rawBody` when the fingerprint must match those bytes. If it does not, the stage hashes `ctx.body`: buffers as bytes, strings as UTF-8, and anything else as `JSON.stringify`.
+
+| `begin` outcome | HTTP |
+|---|---|
+| `started` | This request owns the in-flight lock. `handle` runs. `send` stores or releases. |
+| `pending` | Same key and fingerprint, still in flight. **409** `{ error: "Idempotency key is already in progress" }`. |
+| `mismatch` | Same key, different fingerprint, whether or not the first request has finished. **422** `{ error: "Idempotency key was used with a different request body" }`. |
+| `replay` | Stored response plus `Idempotent-Replayed: true`. `handle` does not run. |
+
+`send` is where the reservation ends, so a `before("send")` hook is part of the cached response. Status **200–499** is stored (`complete`), including a handler 4xx. **5xx**, a thrown error, and a non-`ResponseData` result release the key so the client can retry. Those are not replayed. A 400 from `validate` or `parse` never reaches this stage, so it does not consume the key. `Idempotent-Replayed` is added only on the replayed response. It is not written into the stored headers.
+
+TTL defaults to 24 hours (`DEFAULT_IDEMPOTENCY_TTL_MS`). The in-flight record and the stored response both use it. `complete` starts a new window of the same length. `init({ idempotency: { ttlMs, store } })` customizes it. `listen` overrides `ttlMs` and `store` field by field; an omitted inner field keeps the init value. `false` on either call disables the stage for that listener.
+
+`IdempotencyStore` is the swap point for Postgres or Redis:
+
+```ts
+interface IdempotencyStore {
+  begin(key: string, fingerprint: string, ttlMs: number): Promise<IdempotencyBeginResult>;
+  complete(key: string, fingerprint: string, response: IdempotencyResponse): Promise<void>;
+  release(key: string, fingerprint: string): Promise<void>;
+}
+```
+
+`begin` must be atomic: insert a reservation or return the existing record, with no await between the read and the insert. `complete` and `release` no-op when the fingerprint does not match. `MemoryIdempotencyStore` is the default, one `Map` per app. Expiry is checked on access. Once the map grows past 1024 records, each `begin` also scans at most 32 older entries and drops the expired ones. Live records stay. There is no interval, so the store cannot keep the process alive. Pass `now: () => number` to test TTL without fake timers.
+
+If `complete` throws, the failure is logged, the reservation is released, and the HTTP response is still sent. A stuck key otherwise expires with its TTL.
+
+The fetch client does not retry and does not send `Idempotency-Key` for you.
 
 ## Short-circuit vs fall-through
 

@@ -57,7 +57,7 @@ YAML `method` / `endpoint` pairs become `ApiOperation.path`. Seltzer `.route` is
 
 ### 2. `client` results are still `unknown`
 
-Slash-safe join, a 30s deadline, and distinct timeout / abort / network errors shipped. The client still returns `unknown`. Retries are a [non-goal](../../libraries/seltzer/README.md#no-client-retries): the caller owns that policy. A server-side idempotency stage is planned. `Idempotency-Key` is only a header until that stage exists.
+Slash-safe join, a 30s deadline, and distinct timeout / abort / network errors shipped. The client still returns `unknown`. Retries are a [non-goal](../../libraries/seltzer/README.md#no-client-retries): the caller owns that policy. The server `idempotency` stage replays POST and PATCH when the caller sends `Idempotency-Key`. The client does not add that header and does not retry.
 
 ### 3. Listen is HTTP on purpose
 
@@ -101,7 +101,7 @@ Do not add Zod inside Seltzer’s default stage. The hook is documented (`valida
 
 ### Priority 3. Typed client results
 
-Join, abort, and the deadline are in. Generics on the JSON result are the remaining client nicety. Client retries are a non-goal. A server-side idempotency stage is planned.
+Join, abort, and the deadline are in. Generics on the JSON result are the remaining client nicety. Client retries are a non-goal. Server idempotency for POST and PATCH is in the pipeline.
 
 ### Priority 4. Stay complementary to Nectarine, Sig, Juice
 
@@ -113,7 +113,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 
 1. Keep docs and examples locked to source (ongoing).
 2. Host `replace("validate")` for real contracts (the Seltzer side of that hook is documented).
-3. Typed `client` results. Join, abort, and the 30s deadline are in. Client retries stay a non-goal. A server-side idempotency stage is the planned follow-on, separate from the client.
+3. Typed `client` results. Join, abort, and the 30s deadline are in. Client retries stay a non-goal. Server idempotency is a pipeline stage, separate from the client.
 4. Only then: `after(name)`, if a host needs post-handle decoration. HTTPS listen stays a non-goal.
 
 ---
@@ -139,7 +139,7 @@ Seltzer should not grow a YAML compiler, a theme, or a component tree.
 | `parse` JSON + 400 | Urlencoded is a host `URLSearchParams` recipe. Multipart bytes are out of scope |
 | Default `.required` validate; `ctx.valid`; `validationError()`; Zod shown as a host `replace("validate")` | Response-shape checks; a schema bundled in Seltzer |
 | `generateRoutes` + `response()` | Generating OpenAPI |
-| `client.*`, slash-safe join, 30s deadline, abort | Typed JSON results. Retries are a non-goal. Idempotency storage is planned |
+| `client.*`, slash-safe join, 30s deadline, abort. Server idempotency for POST and PATCH | Typed JSON results. Retries are a non-goal. A store other than the in-memory map |
 | CORS + OPTIONS 204 | Per-route CORS overrides |
 | Vitest | — |
 

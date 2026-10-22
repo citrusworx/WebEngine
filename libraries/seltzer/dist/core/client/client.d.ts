@@ -59,8 +59,8 @@ export type SeltzerClient = {
 /**
  * Build a client. There is no retry loop: a 5xx, a timeout, and a dropped
  * connection are each one attempt. Repeat the call yourself.
- * Server-side idempotency is not implemented here. Send `Idempotency-Key`
- * by putting it in `headers` if the server understands it.
+ * This client does not store or replay keys. The server stage does that for
+ * POST and PATCH when you send `Idempotency-Key` in `headers`.
  */
 export declare function createClient(config?: ClientConfig): SeltzerClient;
 /** Default client: 30s timeout, no base URL, no extra headers, no retries. */

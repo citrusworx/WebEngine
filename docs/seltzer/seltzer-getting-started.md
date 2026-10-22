@@ -84,7 +84,7 @@ yarn workspace @citrusworx/seltzer test
 ## The mental model
 
 1. Register `{ method, path, handler }` objects. `:id` segments fill `ctx.params`. Static prefixes beat params.
-2. On each request, Seltzer runs `parse` → `context` → `route` → `validate` → `handle` → `response` → `send`.
+2. On each request, Seltzer runs `parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`.
 3. Your handler **returns `ResponseData`**. The runtime writes the socket.
 4. Returning a bare `{ ok: true }` is a **500** — wrap it as `{ body: { ok: true } }`.
 5. JSON bodies are already on `ctx.body`. Invalid JSON is 400 before the handler.

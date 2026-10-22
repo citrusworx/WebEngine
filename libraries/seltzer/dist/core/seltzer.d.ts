@@ -3,8 +3,10 @@ import type { RequestListener } from "node:http";
 import { isExplicitResponse, isResponseData, response, send, type ResponseData, type SendOptions } from "./response.js";
 import { type HandlerConfig, type InitOptions, type ListenOptions, type RequestContext, type Route } from "./types.js";
 import { type Stage, type StageName } from "../pipeline/index.js";
-export type { ClientCallOptions, CorsOptions, Endpoint, HostOptions, InitOptions, ListenOptions, QueryInput, QueryPrimitive, QueryValue, RequestContext, Route, RouteContract, ValidatedInput, } from "./types.js";
+export type { ClientCallOptions, CorsOptions, Endpoint, HostOptions, IdempotencyOptions, InitOptions, ListenOptions, QueryInput, QueryPrimitive, QueryValue, RequestContext, Route, RouteContract, ValidatedInput, } from "./types.js";
 export { DEFAULT_BODY_LIMIT_BYTES, DEFAULT_CLIENT_TIMEOUT_MS, DEFAULT_HEADERS_TIMEOUT_MS, DEFAULT_KEEP_ALIVE_TIMEOUT_MS, DEFAULT_LISTEN_HOST, DEFAULT_REQUEST_TIMEOUT_MS, } from "./types.js";
+export type { IdempotencyBeginResult, IdempotencyResponse, IdempotencyStore, MemoryIdempotencyStoreOptions, } from "./idempotency.js";
+export { DEFAULT_IDEMPOTENCY_TTL_MS, MAX_IDEMPOTENCY_KEY_LENGTH, MemoryIdempotencyStore, } from "./idempotency.js";
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData, SendOptions };
@@ -16,6 +18,8 @@ export declare class Seltzer {
     private routes;
     private config;
     private foundation;
+    /** Shared by listeners that do not pass their own `idempotency.store`. */
+    private memoryIdempotencyStore;
     /**
      * Set only for the synchronous `handler()` call inside `listen`, so that
      * server snapshots listen overrides without changing later `app.handler()` calls.
@@ -24,10 +28,11 @@ export declare class Seltzer {
     private readonly pipeline;
     constructor();
     /**
-     * Create an app. Pass `bodyLimit`, `cors`, `logger`, `debug`, and `locals`
-     * here when every server for this app should share them.
+     * Create an app. Pass `bodyLimit`, `cors`, `logger`, `debug`, `locals`,
+     * and `idempotency` here when every server for this app should share them.
      * `credentials: true` with `origin: "*"` throws here, before `listen`.
      * A non-integer or negative `bodyLimit` throws here when you pass it.
+     * Idempotency is on unless `idempotency: false`. A bad `ttlMs` or `store` throws here.
      */
     static init<TLocals = unknown>(options?: InitOptions<TLocals>): Seltzer;
     /** Register a single object-based route. Do not model APIs as promise chains. */
@@ -56,7 +61,7 @@ export declare class Seltzer {
      * `http.createServer(app.handler())` or
      * `https.createServer(tlsOptions, app.handler())`.
      * That listener runs the same pipeline as `listen`. It uses `bodyLimit`,
-     * `cors`, `logger`, `debug`, and `locals` from `init`. It does not bind
+     * `cors`, `logger`, `debug`, `locals`, and `idempotency` from `init`. It does not bind
      * a port and it does not set server timeouts. The host owns those.
      * A `listen` override applies only to the server `listen` creates.
      * Calling `handler()` again still returns a listener from `init`.
@@ -80,10 +85,11 @@ export declare class Seltzer {
      * by default; pass `0` on an option to disable that timer. Those timers
      * belong to this server. `handler()` does not set them.
      *
-     * `bodyLimit`, `cors`, `logger`, `debug`, and `locals` passed here replace
-     * the `init` values for this server only. An omitted field keeps the init
-     * value. `cors` is replaced as a whole object, not merged field by field.
-     * `app.handler()` keeps using `init`.
+     * `bodyLimit`, `cors`, `logger`, `debug`, `locals`, and `idempotency` passed
+     * here replace the `init` values for this server only. An omitted field keeps
+     * the init value. `cors` is replaced as a whole object, not merged field by field.
+     * `idempotency: false` disables it. An idempotency object overrides `ttlMs`
+     * and `store` one field at a time. `app.handler()` keeps using `init`.
      *
      * The return value is the real `http.Server`. `server.close()` stops
      * accepting new connections. The close callback waits for open
@@ -101,6 +107,8 @@ export declare class Seltzer {
      * to those lines. The HTTP body of a thrown error stays generic.
      */
     listen<TLocals = unknown>(port: number, options?: ListenOptions<TLocals>): http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
+    private defaultIdempotencyStore;
+    private resolveIdempotency;
     private requestListener;
     private handleRequest;
 }

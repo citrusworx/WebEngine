@@ -3,6 +3,7 @@ import { genericInternalError, logInvalidReturn, routePhrase } from "../core/log
 import { guardRawResponse } from "../core/raw-response.js";
 import { DEFAULT_BODY_LIMIT_BYTES } from "../core/types.js";
 import { isResponseData, send, type ResponseData } from "../core/response.js";
+import { settleIdempotency } from "./idempotency.js";
 import type { CompiledRoute } from "./router.js";
 import { allowedMethods, matchRoute, paramsFromMatch } from "./router.js";
 import type { PipelineContext, Stage } from "./types.js";
@@ -54,7 +55,7 @@ async function readBody(
     req: IncomingMessage,
     res: ServerResponse,
     limit: number,
-): Promise<unknown> {
+): Promise<{ body: unknown; raw: Buffer }> {
     if (limit !== 0) {
         const declared = declaredContentLength(req);
         if (declared !== undefined && declared > limit) {
@@ -77,21 +78,22 @@ async function readBody(
     }
 
     if (chunks.length === 0) {
-        return undefined;
+        return { body: undefined, raw: Buffer.alloc(0) };
     }
 
-    const raw = Buffer.concat(chunks).toString("utf8");
+    const raw = Buffer.concat(chunks);
+    const text = raw.toString("utf8");
     const contentType = String(req.headers["content-type"] ?? "");
 
     if (contentType.includes("application/json")) {
         try {
-            return JSON.parse(raw) as unknown;
+            return { body: JSON.parse(text) as unknown, raw };
         } catch {
             throw new InvalidJsonError();
         }
     }
 
-    return raw;
+    return { body: text, raw };
 }
 
 function normalizeHeaders(headers: IncomingMessage["headers"]): Record<string, string> {
@@ -129,7 +131,9 @@ export async function parseStage(ctx: PipelineContext): Promise<ResponseData | v
     const limit = ctx.bodyLimit ?? DEFAULT_BODY_LIMIT_BYTES;
 
     try {
-        ctx.body = await readBody(ctx.req, ctx.res, limit);
+        const parsed = await readBody(ctx.req, ctx.res, limit);
+        ctx.body = parsed.body;
+        ctx.rawBody = parsed.raw;
     } catch (error) {
         if (error instanceof PayloadTooLargeError) {
             return { status: 413, body: { error: "Payload Too Large" } };
@@ -289,11 +293,13 @@ export function responseStage(ctx: PipelineContext): void {
     };
 }
 
-export function sendStage(ctx: PipelineContext): void {
+export async function sendStage(ctx: PipelineContext): Promise<void> {
     if (!isResponseData(ctx.response)) {
         logInvalidReturn(ctx, ctx.response, `${routePhrase(ctx)} send`);
         ctx.response = genericInternalError();
     }
+
+    await settleIdempotency(ctx);
 
     send(ctx.res, ctx.response, {
         head: (ctx.method ?? "").toUpperCase() === "HEAD",

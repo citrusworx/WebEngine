@@ -235,6 +235,7 @@ describe("default validate stage", () => {
             "context",
             "route",
             "validate",
+            "idempotency",
             "handle",
             "response",
             "send",
