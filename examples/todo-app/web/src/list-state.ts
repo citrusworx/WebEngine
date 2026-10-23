@@ -4,6 +4,6 @@ export function replaceTodo(todos: Sig<Todo[]>, next: Todo) {
   todos.set(todos.get().map((row) => (row.id === next.id ? next : row)));
 }
 
-export function removeTodo(todos: Sig<Todo[]>, id: string) {
+export function removeTodo(todos: Sig<Todo[]>, id: number) {
   todos.set(todos.get().filter((row) => row.id !== id));
 }

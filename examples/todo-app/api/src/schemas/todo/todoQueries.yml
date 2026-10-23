@@ -1,6 +1,8 @@
-# No RETURNING clause. A successful write comes back as
-# { ok: true, rowCount: 1 }, not the saved row. The client keeps the
-# object it sent, then refetches the list.
+# INSERT omits id. SERIAL fills it. `returning: '*'` is compiled, so POST
+# comes back as the saved row.
+# UPDATE and DELETE ignore `returning` in @citrusworx/nectarine 0.5.0.
+# Every column in the update field list is bound. A missing key becomes NULL.
+# The client sends title, notes, and done together.
 todo:
   read:
     allTodos:
@@ -19,11 +21,10 @@ todo:
     createTodo:
       type: INSERT
       table: todos
-      fields: [id, title, notes, done]
+      fields: [title, notes, done]
+      returning: '*'
 
   update:
-    # Every column listed here is bound from the body. A missing key
-    # becomes NULL. The client sends title, notes, and done together.
     updateTodo:
       type: UPDATE
       table: todos

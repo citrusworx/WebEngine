@@ -1,4 +1,6 @@
-# Local Postgres for the ToDo course. Matches apps/todo/back/.env.example.
+# Local Postgres for the ToDo course. Matches api/.env.example.
+name: todo-app
+
 services:
   postgres:
     image: postgres:16

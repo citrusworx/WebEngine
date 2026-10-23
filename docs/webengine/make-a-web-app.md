@@ -107,7 +107,7 @@ Learn the shared types, then look at the engine as a lifecycle sketch — not a 
 
 ## The first end-to-end app
 
-[Create a ToDo App using WebEngine](./todo-course/README.md) is that tutorial. It composes the libraries above in application code: Nectarine and Seltzer on the server, Sig.js and Juice in the browser, Grapevine for a droplet plus a static site. The companion you can run is [`apps/todo`](../../apps/todo/README.md).
+[Create a ToDo App using WebEngine](./todo-course/README.md) is that tutorial. It composes the published packages in application code: Nectarine and Seltzer on the server, Sig.js and Juice in the browser, Grapevine for a droplet plus an App Platform static site. The companion you can run is [`examples/todo-app`](../../examples/todo-app/README.md). It installs from the npm registry. It is not a workspace of this repo.
 
 WebEngine the class is still future glue. The course uses `createNectarineRoutes` from the package and does not wait for `engine.init()` to become a working app. DNS stays an elective if you already have registrar credentials.
 

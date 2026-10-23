@@ -1,0 +1,37 @@
+{
+  "name": "todo-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev:api": "tsx watch api/src/server.ts",
+    "dev:web": "vite --config web/vite.config.ts",
+    "build:api": "tsc -p api/tsconfig.json",
+    "start:api": "node api/dist/server.js",
+    "build:web": "vite build --config web/vite.config.ts",
+    "preview:web": "vite preview --config web/vite.config.ts",
+    "typecheck": "tsc -p api/tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "validate:grape": "node ./node_modules/@citrusworx/grapevine/dist/bin/cli.js validate -c grape.config.yaml",
+    "plan:grape": "node ./node_modules/@citrusworx/grapevine/dist/bin/cli.js plan -c grape.config.yaml",
+    "status:grape": "node ./node_modules/@citrusworx/grapevine/dist/bin/cli.js status -c grape.config.yaml"
+  },
+  "dependencies": {
+    "@citrusworx/grapevine": "0.2.2",
+    "@citrusworx/juiceui": "0.9.2",
+    "@citrusworx/nectarine": "0.5.0",
+    "@citrusworx/seltzer": "0.10.1",
+    "@citrusworx/sigjs": "0.7.0",
+    "@citrusworx/webengine": "0.2.1",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.0",
+    "@types/pg": "8.23.1",
+    "tsx": "4.22.3",
+    "typescript": "5.9.3",
+    "vite": "8.0.8"
+  }
+}

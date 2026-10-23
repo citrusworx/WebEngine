@@ -12,18 +12,21 @@
 
 ### 1. The value you store
 
-`apps/todo/front/src/types.ts`:
+`web/src/types.ts`:
 
 ```ts
 export type Todo = {
-  id: string;
+  id: number;
   title: string;
   notes: string;
   done: boolean;
   created_at?: string;
 };
 
-/** What POST, PATCH, and DELETE return. Not the row, and not status 201. */
+/**
+ * What PATCH and DELETE return. INSERT uses `returning`, so POST is a row.
+ * Status stays 200 unless the host returns `response(...)`.
+ */
 export type WriteAck = {
   ok: true;
   rowCount: number;
@@ -32,13 +35,20 @@ export type WriteAck = {
 export type Sig<T> = { get(): T; set(value: T): void };
 ```
 
-`created_at` is optional because the object you build in the browser does not have it until a refetch. `WriteAck` is the write response from lesson 06. `Sig` is the shape `Signal()` returns. `Signal` is a function, not a class.
+`id` is a number because the column is `SERIAL`. `created_at` is optional on the type because a row you have not refetched might lack it; POST with `returning` includes it. `WriteAck` is the PATCH and DELETE response from lesson 06. `Sig` is the shape `Signal()` returns. `Signal` is a function, not a class.
 
 ### 2. Load into a signal
 
-The top of `apps/todo/front/src/App.tsx`:
+`web/src/App.tsx`:
 
-```ts
+```tsx
+import { Signal } from "@citrusworx/sigjs";
+import { listTodos } from "./api";
+import { EmptyState } from "./EmptyState";
+import { TodoForm } from "./TodoForm";
+import { TodoList } from "./TodoList";
+import type { Todo } from "./types";
+
 export function App() {
   const todos = Signal<Todo[]>([]);
   const error = Signal("");
@@ -55,23 +65,40 @@ export function App() {
     .finally(() => {
       phase.set("ready");
     });
+
+  return (
+    <main container narrow stack gap="2" padding="comfortable" data-todo>
+      <section tide-card stack gap="2" padding="comfortable">
+        <header stack gap="1">
+          <h1 fontSize="xl">ToDo</h1>
+          <p>{() => `${todos.get().length} on the list`}</p>
+        </header>
+        <p hidden={() => phase.get() !== "loading"}>Loading todos…</p>
+        <p data-error hidden={() => error.get().length === 0}>{() => error.get()}</p>
+        <TodoForm todos={todos} error={error} />
+        <EmptyState todos={todos} phase={phase} />
+        <TodoList todos={todos} error={error} />
+      </section>
+    </main>
+  );
+}
 ```
 
-`Signal(value)` returns `{ get, set }`. `get` inside an `effect` or a function child subscribes. `set` notifies every subscriber, even when the next value is the same object identity... it always notifies. There is no equality check. That is the v1 signal.
+`Signal(value)` returns `{ get, set }`. `get` inside an `effect` or a function child subscribes. `set` notifies every subscriber, even when the next value is the same object identity. It always notifies. There is no equality check. That is the v1 signal.
 
-The fetch is not an effect. It runs once when `App` runs. `set` is what wakes the subscribers. Do not read `todos.get()` inside this `.then` before `set` if you were trying to subscribe. You are writing, not reading.
+The fetch is not an effect. It runs once when `App` runs. `set` is what wakes the subscribers.
 
 The count line is a function child. It is the small proof the signal is live:
 
 ```tsx
-<p>{() => `${todos.get().length} on the list`}</p>
+          <p>{() => `${todos.get().length} on the list`}</p>
 ```
 
 Sig turns that function into a text node. The effect inside the JSX runtime writes `textContent` whenever `todos` changes. A function child must return text, a number, or a boolean. It must not return an element. Returning an element stringifies it. That is why there is no `{todos.get().map(...)}` in JSX.
 
 ### 3. bindList
 
-`apps/todo/front/src/TodoList.tsx`:
+`web/src/TodoList.tsx`:
 
 ```tsx
 import { bindList } from "@citrusworx/sigjs";
@@ -105,9 +132,9 @@ When `todos.set` replaces the array, `bindList` reuses the DOM node for an id th
 
 ## Checkpoint
 
-Reload `http://127.0.0.1:5173`. The count matches the number of rows. Add a todo if the form from the finished app is already on the page (it is, in this repo). The count changes and the new row appears without a full reload.
+Reload `http://127.0.0.1:5173`. The count matches the number of rows. Add a todo if the form from the finished app is already on the page (it is, in the companion). The count changes and the new row appears without a full reload.
 
-In the console, you should not see `bindList: parent already has a list`. That error means the ref ran twice on the same element.
+In the console, you should not see a duplicate-key error from `bindList`. That error means two rows shared an id, or the ref ran twice on the same element.
 
 ## What's happening
 
@@ -120,8 +147,6 @@ The row's `item` getter is itself a signal `bindList` owns. When the array entry
 ## Gap
 
 **No Show / when, and no JSX map.** Both are the same limit: Sig does not reconcile element trees returned from functions. Text is a function child. Structure is `bindList`, `hidden`, or `replaceChildren`. Lesson 08 is the conditional half.
-
-**Client ids, preview.** `bindList` keys on `id`. Lesson 06 generates that id before POST so the optimistic row and the refetched row share a key and the DOM node can be reused.
 
 ## Next
 

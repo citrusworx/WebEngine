@@ -12,7 +12,7 @@ No new feature. You will use the scripts and the `VITE_API_BASE` / `CORS_ORIGIN`
 
 ### 1. The API base URL
 
-`apps/todo/front/src/api.ts`:
+`web/src/api.ts`:
 
 ```ts
 /** Dev is same-origin through the Vite proxy. Production sets VITE_API_BASE. */
@@ -25,42 +25,65 @@ export function apiBase(): string {
 }
 ```
 
-Every `fetch` prefixes this. Empty means `/api/todos` on the page's own origin. That is correct for `vite` dev, because of the proxy in `vite.config.ts`.
+Every `fetch` prefixes this. Empty means `/api/todos` on the page's own origin. That is correct for `vite` dev, because of the proxy in `web/vite.config.ts`.
 
-`apps/todo/front/.env.example` documents the production value and leaves it commented, so a local build without the variable stays same-origin:
+`web/.env.example` documents the production value and leaves it commented, so a local build without the variable stays same-origin:
 
-```
+```text
 # Empty in dev. Vite proxies /api to the Seltzer server.
-# Set the droplet origin before a production build, with no trailing slash.
+# Set the API origin before a production build, with no trailing slash.
 # VITE_API_BASE=https://api.todo.example.com
 ```
 
-Vite inlines `VITE_*` at build time. Changing the variable later does not change `dist/` until you build again. Set it in the environment of the build command, or in `apps/todo/front/.env.production`. Do not commit a real origin if it is only yours. The example stays commented.
+Vite inlines `VITE_*` at build time. Changing the variable later does not change `web/dist/` until you build again. Set it in the environment of the build command. Do not commit a real origin if it is only yours. The example stays commented.
 
 ### 2. Build the two halves
 
-From the repository root:
+From the app folder. Stop `npm run dev:api` first if it is still holding port 3001.
 
-```bash
-yarn workspace @citrusworx/todo-back build
-yarn workspace @citrusworx/todo-back start
+The scripts:
+
+```json
+    "build:api": "tsc -p api/tsconfig.json",
+    "start:api": "node api/dist/server.js",
+    "build:web": "vite build --config web/vite.config.ts",
+    "preview:web": "vite preview --config web/vite.config.ts",
 ```
 
 ```bash
-yarn workspace @citrusworx/todo build
+npm run build:api
+npm run start:api
 ```
 
-`back` compiles TypeScript to `apps/todo/back/dist/server.js`. `start` runs that file with Node. The YAML stays next to `nectarine.config.yaml` under `src/schemas`. The server resolves the config from `import.meta.url`, so `dist/server.js` still finds `../nectarine.config.yaml`, and the config's `./src/schemas/...` paths still resolve. You do not copy the YAML into `dist/`.
+```bash
+npm run build:web
+```
 
-`front` writes `apps/todo/front/dist`. That folder is static HTML, JS, and CSS. `vite preview` can serve it locally. Seltzer will not.
+`build:api` compiles TypeScript to `api/dist/server.js`. `start:api` runs that file with Node. The YAML stays next to `nectarine.config.yaml` under `api/src/schemas`. The server resolves the config from `import.meta.url`, so `api/dist/server.js` still finds `../nectarine.config.yaml`, and the config's `./src/schemas/...` paths still resolve. You do not copy the YAML into `dist/`.
+
+`build:web` writes `web/dist`. That folder is static HTML, JS, and CSS. `npm run preview:web` can serve it locally on port 4173. Seltzer will not.
+
+The preview server does not proxy `/api`:
+
+```ts
+  preview: {
+    host: "127.0.0.1",
+    port: 4173,
+    strictPort: true,
+  },
+```
+
+A preview on 4173 with an empty `VITE_API_BASE` asks the preview origin for `/api/todos` and gets Vite's 404. Dev is the server with the proxy. A production page sets `VITE_API_BASE` to the API origin before `npm run build:web`.
 
 ### 3. CORS when the origins differ
 
 If the static site is `https://todo.example.com` and the API is `https://api.todo.example.com` or `http://<droplet>:3001`, the browser sends a cross-origin `fetch`. The API must answer CORS.
 
-`server.ts` reads `CORS_ORIGIN`. The example file leaves it commented. Uncomment it and set the static site's origin, scheme included, no path. The line in `apps/todo/back/.env.example` is:
+`server.ts` reads `CORS_ORIGIN`. The example file leaves it commented. Uncomment it and set the static site's origin, scheme included, no path. The line in `api/.env.example` is:
 
-```
+```text
+# Set this to the static site origin when the browser calls the API
+# on another host. Leave it unset in dev (Vite proxies /api).
 # CORS_ORIGIN=https://todo.example.com
 ```
 
@@ -70,31 +93,31 @@ Leave `CORS_ORIGIN` unset only when the browser and the API share an origin (the
 
 ### 4. What you do not get
 
-There is no command that builds both and uploads them. `kiwi build` prints `Building project...` and exits. The two Yarn scripts are the build.
+There is no command that builds both and uploads them. The packages this course installs do not include a kiwi CLI. `@citrusworx/kiwipress` 0.4.3 has no `bin`. The two npm scripts are the build.
 
-The API process needs `PG_*` in its environment when `.env.example` is not the database you want. On a laptop, the example file matches the compose file. On a droplet, export the managed database values and do not rely on the example password.
+The API process needs `PG_*` in its environment when `.env.example` is not the database you want. On a laptop, the example file matches the compose file. On a droplet, export the database values and do not rely on the example password. Lesson 10's Grapevine file does not create a managed database and does not copy `PG_*` onto the droplet.
 
 ## Checkpoint
 
-1. `yarn workspace @citrusworx/todo-back build` finishes, and `yarn workspace @citrusworx/todo-back start` answers `GET /api/health` if Postgres is up. Stop the dev server first so port 3001 is free, or the start will fail to bind.
-2. `yarn workspace @citrusworx/todo build` writes `apps/todo/front/dist/index.html`.
+1. `npm run build:api` finishes, and `npm run start:api` answers `GET /api/health` if Postgres is up. Stop the dev server first so port 3001 is free, or the start will fail to bind.
+2. `npm run build:web` writes `web/dist/index.html`.
 3. Explain why a production page on another host needs both `VITE_API_BASE` at build time and `CORS_ORIGIN` at API runtime.
 
 [Answers](./answers.md#lesson-09).
 
 ## What's happening
 
-Vite's dev server is a tool, not part of the Seltzer pipeline. The proxy exists only in `vite.config.ts` `server.proxy`. It is absent from `dist/`. `apiBase()` is how the built JS finds the API without that proxy.
+Vite's dev server is a tool, not part of the Seltzer pipeline. The proxy exists only in `vite.config.ts` `server.proxy`. It is absent from `web/dist` and from `preview`. `apiBase()` is how the built JS finds the API without that proxy.
 
 Seltzer's CORS options are a single object on `listen`. They are not per route. Methods you forget to list fail the preflight, and the browser never sends the PATCH.
 
-Nectarine still reads env at process start. The config file names the keys. The host environment supplies the values. Lesson 10's Grapevine database can create those values in DigitalOcean. It does not, by itself, put them in this process.
+Nectarine still reads env at process start. The config file names the keys. The host environment supplies the values. Grapevine does not put those values in this process.
 
 ## Gap
 
-**Static files.** Coming soon would be a Seltzer static adapter. It is not in 0.9.0. Do not add a third-party static server inside the API for this course. Two processes is the honest shape: API on the droplet, files on a static host.
+**Static files.** A Seltzer static adapter is not in 0.10.1. Do not add a third-party static server inside the API for this course. Two processes is the honest shape: API on the droplet, files on an App Platform static site.
 
-**`kiwi build`.** Placeholder. Use the workspace scripts.
+**No kiwi build.** Use the npm scripts in `package.json`.
 
 ## Next
 

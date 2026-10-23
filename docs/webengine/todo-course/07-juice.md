@@ -6,21 +6,21 @@
 
 ## What you'll build
 
-The attributes on `body`, `App`, the form, and the row. Plus `todo.css`, which exists where a Juice selector cannot see a Sig property, or where a Tide rule paints the wrong role.
+The attributes on `body`, `App`, the form, and the row. Plus `web/src/todo.css`, which exists where a Juice selector cannot see a Sig property, or where a Tide rule paints the wrong role.
 
 ## Steps
 
 ### 1. Theme
 
-Tide is the shipped dark product theme. The Juice course lists it as "dark SaaS, lagoon/teal". Citrusmint is a light marketing theme. KiwiPress is a light product theme with a rounded face. Tide is the one that already has Inter, a near-black page, and one accent.
+Tide ships in `@citrusworx/juiceui` 0.9.2. The CSS entry is `@citrusworx/juiceui/styles/themes/tide`. It is the dark product theme: Inter, a near-black page, one lagoon accent. Citrusmint is a light marketing theme. KiwiPress is a light product theme with a rounded face. Tide is the one this page uses.
 
-`body` in `index.html`:
+`body` in `web/index.html`:
 
 ```html
   <body theme="tide">
 ```
 
-`main.tsx` imports core CSS, then the theme:
+`web/src/main.tsx` imports core CSS, then the theme:
 
 ```ts
 import "@citrusworx/juiceui/styles";
@@ -42,6 +42,7 @@ Tokens this page uses, all defined on `[theme="tide"]`:
 | `--tide-border` | Card edge and row dividers |
 | `--tide-surface-muted` | Hover wash and the empty well |
 | `--tide-banner-error` | The error line. On Tide this alias is the accent, not a red |
+| `--tide-measure` | The card's measure, `45rem` |
 
 ### 2. Page shell
 
@@ -56,15 +57,15 @@ The page shell in `App`:
 
 | Attribute | What it does here |
 |---|---|
-| `container` `narrow` | Centers a 960px page column |
+| `container` `narrow` | Centers a page column. `[container][narrow]` maxes out at 960px. `[container]` already has `margin: 0 auto` |
 | `stack` | Column flex |
-| `gap="2"` | `2rem` between the header, form, and list. The generator also shrinks that on narrow viewports |
-| `padding="comfortable"` | A named padding step (`2rem`). This name is real for padding |
-| `tide-card` | Tide's centered surface: about `45rem`, radius, border, shadow. It does not set `margin-inline: auto`. `todo.css` does |
-| `fontSize="xl"` | A type step from the utility scale (`2rem`) |
+| `gap="2"` | `2rem` between the header, form, and list. The published sheet also shrinks that on narrow viewports (1.6rem, then 1.5rem, then 1rem) |
+| `padding="comfortable"` | A named padding step (`2rem`). This name is real for padding. `padding="cozy"` is the empty well |
+| `tide-card` | Tide's surface: the measure, radius, border, shadow. It does not center itself. `todo.css` sets `margin-inline: auto` |
+| `fontSize="xl"` | A type step from the utility scale (`2rem`). `sm` is `0.75rem`. `md` is `1.25rem` |
 | `data-todo` | Not Juice. The hook for `todo.css` |
 
-`gap="2"` is a number. The selector in `libraries/juice/src/core/mixins.scss` is `[gap="#{$i}"]` for `i` from 1 to 100, plus decimals and `rem` / `px` forms. It does not emit `[gap="comfortable"]`. The spacing names `snug`, `cozy`, `comfortable`, `roomy`, and `expansive` are generated for padding and margin. Using `gap="comfortable"` matches nothing.
+`gap="2"` is a number. The published stylesheet matches `[gap="1"]`, `[gap="2"]`, `[gap="0.5"]`, `[gap="0.75"]`, and the other numeric steps. It does not match `[gap="comfortable"]`. The spacing names `snug`, `cozy`, `comfortable`, `roomy`, and `expansive` are generated for padding and margin. Using `gap="comfortable"` matches nothing.
 
 So: `gap="0.5"`, `gap="0.75"`, `gap="1"`, `gap="2"`. Not a word. `padding="comfortable"` and `padding="cozy"` are fine.
 
@@ -80,7 +81,7 @@ The form is layout inside the card, not a second panel:
       gap="1"
 ```
 
-`field` and `field-label` mark the label stack. `gap="0.5"` is half a rem between a label and its control. Text fields carry the boolean attributes `input` and `textarea`, which is how Juice's field chrome (padding, radius, Tide's `--juice-input-*` colors) finds them. A bare `<input>` only gets Tide's generic element rule.
+`field` and `field-label` mark the label stack. `gap="0.5"` is half a rem between a label and its control. Text fields carry the boolean attributes `input` and `textarea`, which is how Juice's field chrome (padding, radius, Tide's input colors) finds them. A bare `<input>` only gets Tide's generic element rule.
 
 The primary button:
 
@@ -88,13 +89,13 @@ The primary button:
         <button data-primary type="submit" btn="flat">Add todo</button>
 ```
 
-`btn="flat"` is one of the button values Juice ships (`flat`, `outline`, `text`, `3d`, `metallic`). `data-primary` is not a Juice attribute. It is the hook that flattens Tide's gradient down to `--tide-accent`. Edit and Delete stay `btn="outline"`.
+`btn="flat"` is one of the button values Juice ships (`flat`, `outline`, `text`, `3d`, `metallic`). `data-primary` is not a Juice attribute. It is the hook that flattens Tide's gradient down to `--tide-accent`. Edit and Delete stay `btn="outline"`. Tide's generic button rule is a lagoon gradient, and in 0.9.2 that rule lands at the same specificity as `[btn]` after the theme file. `btn="outline"` is not quiet until `todo.css` clears the gradient.
 
-The row is a divider, not a nested panel. The checkbox is Juice's `[checkbox]` host, so the box is `1.25rem` with Tide's check color. The title and the actions use `data-inline` so they stay on one line. `row` with `space="between"` and `gap="0.75"` is the cluster. `ul[stack]` removes list bullets.
+The row is a divider, not a nested panel. The checkbox is Juice's `[checkbox]` host, so the box is `1.25rem` with Tide's check color. The title and the actions use `data-inline` so they stay on one line. `row` with `space="between"` and `gap="0.75"` is the cluster. `[row]` becomes a column at `max-width: 768px`. `data-inline` opts this cluster out in `todo.css`. `ul[stack]` removes list bullets.
 
 ### 4. The stylesheet you do need
 
-`apps/todo/front/src/todo.css` is the whole exception list. It is not a second theme.
+`web/src/todo.css` is the whole exception list. It is not a second theme.
 
 ```css
 /* Author CSS beats the user-agent [hidden] rule. :where([stack]) and
@@ -251,13 +252,13 @@ The row is a divider, not a nested panel. The checkbox is Juice's `[checkbox]` h
 }
 ```
 
-Sig's JSX runtime treats `width` and `style` as DOM properties when the element has them (`"width" in input` is true). Assigning `input.width = "100%"` does not create the attribute Juice's `[width="100%"]` rule matches. The same trap exists for a `style` prop.
+Sig's JSX runtime treats `width` and `style` as DOM properties when the element has them (`"width" in input` is true, and the key is not `data-`, `aria-`, or `animate`). Assigning `input.width = "100%"` does not create the attribute Juice's `[width="100%"]` rule matches. The same trap exists for a `style` prop. Control width lives in `todo.css`.
 
 The strikethrough on a finished todo is an effect writing `element.style.textDecoration`, and the muted color is `element.style.color = "var(--tide-text-muted)"`. Juice does not ship a line-through attribute. The effect is in `TodoRow`. Lesson 08 reads it.
 
-Tide also paints every `form`, `header`, and `[field]` as its own glass card, and every `button` as the accent gradient. Inside one product card that is too many surfaces and too many accents. The overrides above flatten the nested chrome, quiet `btn="outline"`, and keep a single flat accent on `[data-primary]`.
+Tide also paints every `section`, `form`, and `header` as its own glass card, and every `button` as the accent gradient. Inside one product card that is too many surfaces and too many accents. The overrides above flatten the nested chrome, quiet `btn="outline"`, and keep a single flat accent on `[data-primary]`.
 
-`[row]` becomes a column at `max-width: 768px`. There is no Juice attribute that opts out. `[data-inline]` keeps the checkbox with its title, and Edit beside Delete, at a phone width.
+`:where([stack])` and `button { display: inline-flex }` are author CSS. They beat the user-agent `[hidden]` rule, so a node Sig has hidden can still paint. The first rule in `todo.css` puts `display: none` back on `[data-todo] [hidden]`.
 
 ## Checkpoint
 
@@ -277,9 +278,9 @@ The [Juice course](../../juice/course/README.md) is the design-system argument, 
 
 ## Gap
 
-**`[gap]` is numeric.** Words that work on `padding` do not work on `gap`. That is the generator, not a theme bug.
+**`[gap]` is numeric.** Words that work on `padding` do not work on `gap`. That is the published stylesheet, not a theme bug.
 
-**Property versus attribute.** Coming soon would be Sig leaving `width` and `style` as attributes when the value is a Juice token. Today the app avoids those props and uses `todo.css` plus `element.style` in an effect.
+**Property versus attribute.** Sig writes `width` and `style` as DOM properties. The app avoids those props and uses `todo.css` plus `element.style` in an effect.
 
 **Tide has no quiet-button attribute that beats its generic button rule, and `[row]` has no "stay horizontal" switch.** Both are in `todo.css` on purpose. They are not a new theme.
 

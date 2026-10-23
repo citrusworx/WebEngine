@@ -44,10 +44,6 @@ apps/*
 !./apps/miamakes/**
 !apps/miamakes/
 !apps/miamakes/**
-!./apps/todo/
-!./apps/todo/**
-!apps/todo/
-!apps/todo/**
 !./apps/kiwipress/
 !./apps/kiwipress/**
 !apps/kiwipress/

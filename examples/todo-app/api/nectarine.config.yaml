@@ -1,5 +1,7 @@
 # ToDo — Nectarine root config.
 # Code reads this file. Secrets stay in env; this file names the keys.
+# `engine: WebEngine` is a label. @citrusworx/webengine 0.2.1 does not
+# read this file or register routes.
 
 version: "0.1"
 app: todo
@@ -17,9 +19,9 @@ database:
 
 transport:
   server: seltzer
-  # CRUD routes: listApiOperations → Seltzer generateRoutes via
-  # @citrusworx/webengine createNectarineRoutes. Health stays hand-written.
-  # There is no sqlite adapter in this package. Postgres is the path.
+  # CRUD routes: listApiOperations, then Seltzer generateRoutes.
+  # Health stays hand-written. Adapters in this package are pg, mysql, and
+  # mongodb. There is no sqlite adapter.
 
 resources:
   - name: todo
