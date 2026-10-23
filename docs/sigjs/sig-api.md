@@ -350,7 +350,7 @@ type JuiceBinding<T> = {
 };
 ```
 
-Optional. Requires `@citrusworx/juiceui` (optional peer). `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change`. `state.set` writes the host for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). The other twenty-one runtimes `bind` accepts are read-only. Icon button is not a `JuiceRuntimeName`, so `bind` does not accept it. `dispose` removes the listeners and is safe to call twice. A `bind` during Sig render also disposes on unmount.
+Optional. Requires `@citrusworx/juiceui` (optional peer). `state` is seeded from `getState()` and updated from `juice:change`. Select, input, and textarea follow native `input` and `change`. `state.set` writes the host for switch (`setChecked`), checkbox (`setChecked`), disclosure (`expand` / `collapse`), and modal (`open` / `close`). The other twenty-one runtimes `bind` accepts are read-only. Icon button and avatar are not `JuiceRuntimeName` values, so `bind` does not accept them. A follow-up for avatar is pending. `dispose` removes the listeners and is safe to call twice. A `bind` during Sig render also disposes on unmount.
 
 State shapes and the write-back column are the table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange). Usage is [Runtime binding](./sig-juice-integration.md#runtime-binding). Juice works without this function.
 

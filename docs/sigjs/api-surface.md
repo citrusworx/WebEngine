@@ -126,7 +126,7 @@ Not re-exported from `.`. The main entry does not import Juice.
 | `JuiceSignal` | `./juice` | type | stable | `{ get, set }` used by the binding. | Close to `Signal`'s return shape. There is still no shared `Signal<T>` type. |
 | `JuiceSignal.get` | `./juice` | method | stable | Reads the latest copied state. | |
 | `JuiceSignal.set` | `./juice` | method | stable | Publishes a new state through the binding. | Write-back is switch, checkbox, disclosure, and modal. The other twenty-one runtimes ignore `set`. |
-| `JuiceRuntimeName` | `./juice` | type | stable | The twenty-five runtime names `bind` accepts. Icon button is not included. | Adding a name is additive. Renaming one is breaking. |
+| `JuiceRuntimeName` | `./juice` | type | stable | The twenty-five runtime names `bind` accepts. Icon button and avatar are not included. A follow-up for avatar is pending. | Adding a name is additive. Renaming one is breaking. |
 | `JuiceRuntimeState` | `./juice` | type | stable | Maps each runtime name to the Juice state type. | Follows `@citrusworx/juiceui`. A breaking Juice state change breaks this type. |
 
 ## Smells

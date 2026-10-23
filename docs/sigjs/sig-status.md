@@ -72,7 +72,7 @@ The feature is more of a direction than a hardened part of the runtime.
 | `"*"` unknown-route fallback | `sig-router.ts` | Optional; without it `navigate` no-ops and `popstate` empties |
 | View dispose on navigate | `sig-router.ts` | `disposeTree` |
 | Package exports | `package.json` | root, jsx-runtime, jsx-dev-runtime, sig-router, juice |
-| Juice `bind` | `juice.ts` | Optional subpath. `bind(host, runtime?)` → `{ state, dispose }` for the twenty-five `JuiceRuntimeName` values. Icon button is not one of them. Main entry does not import Juice. |
+| Juice `bind` | `juice.ts` | Optional subpath. `bind(host, runtime?)` → `{ state, dispose }` for the twenty-five `JuiceRuntimeName` values. Icon button and avatar are not among them. A follow-up for avatar is pending. Main entry does not import Juice. |
 
 ## What is not shipped
 
