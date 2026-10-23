@@ -16,3 +16,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option( 'kiwipress_bridge' );
+delete_option( 'kiwipress_bridge_preview_secret' );

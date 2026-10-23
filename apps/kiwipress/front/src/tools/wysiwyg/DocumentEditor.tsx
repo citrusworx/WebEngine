@@ -18,6 +18,10 @@ type DocumentEditorProps = {
     bindStatus: (node: HTMLSelectElement) => void;
     onTitleInput: () => void;
     onSlugInput: () => void;
+    showPreview?: boolean;
+    previewDisabled?: boolean;
+    previewReason?: string;
+    onPreview?: () => void;
 };
 
 export function DocumentEditor({
@@ -36,7 +40,11 @@ export function DocumentEditor({
     bindSlug,
     bindStatus,
     onTitleInput,
-    onSlugInput
+    onSlugInput,
+    showPreview = false,
+    previewDisabled = false,
+    previewReason = "",
+    onPreview
 }: DocumentEditorProps) {
     return (
         <div section-block post-editor>
@@ -93,6 +101,22 @@ export function DocumentEditor({
                 </div>
 
                 <div save-row>
+                    {showPreview
+                        ? <div>
+                            <button
+                                type="button"
+                                btn="outline"
+                                disabled={busy || previewDisabled || undefined}
+                                onclick={() => onPreview?.()}
+                            >
+                                <i icon="eye" lib="solid" iconSize="sm"></i>
+                                Preview
+                            </button>
+                            {previewReason
+                                ? <p subtle>{previewReason}</p>
+                                : null}
+                        </div>
+                        : null}
                     <div action-group>
                         <button type="button" btn="outline" disabled={busy || undefined} onclick={onCancel}>
                             Cancel

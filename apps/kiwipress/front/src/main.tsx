@@ -30,6 +30,7 @@ import { Billing } from "./pages/app/pages/Billing";
 import { Activity } from "./pages/app/pages/Activity";
 import { Settings } from "./pages/app/pages/Settings";
 import { Account } from "./pages/app/pages/Account";
+import { PreviewPage } from "./pages/preview/Preview";
 
 mount(<App />, document.getElementById("root")!);
 
@@ -40,6 +41,7 @@ router
     .set("/get-kiwipress", <GetKiwiPress />)
     .set("/how-it-works", <HowItWorks />)
     .set("/login", <Login />)
+    .set("/preview", () => <PreviewPage />)
     .set("/wizard", () => <Welcome />)
     .set("/wizard/welcome", () => <Welcome />)
     .set("/wizard/blueprints", () => <WizardBlueprints />)

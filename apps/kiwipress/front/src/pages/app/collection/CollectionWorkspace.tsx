@@ -2,7 +2,9 @@ import { Signal, effect } from "@citrusworx/sigjs";
 import type { Child } from "@citrusworx/sigjs";
 import { DocumentEditor } from "../../../tools/wysiwyg/DocumentEditor";
 import type { WYSIWYG } from "../../../tools/wysiwyg/engine";
+import { createBridgePreview, fetchBridgeStatus } from "../bridge/api";
 import { DashboardLayout } from "../layout/DashboardLayout";
+import { beginDraftPreview, draftPreviewButton, postTypeForKind } from "./preview";
 import {
     createCollectionItem,
     deleteCollectionItem,
@@ -45,6 +47,10 @@ export function CollectionWorkspace({
     const saving = Signal(false);
     const error = Signal("");
     const status = Signal(`Loading ${title.toLowerCase()}…`);
+    const previewGate = Signal<{ ready: boolean; reason: string | null }>({
+        ready: false,
+        reason: "Checking draft preview…"
+    });
 
     let initialized = false;
     let listNode: HTMLElement | null = null;
@@ -130,6 +136,60 @@ export function CollectionWorkspace({
         setNotice("", `Drafting a new ${singular}.`);
         paintEditor();
         paintList();
+    }
+
+    function previewButtonState() {
+        return draftPreviewButton({
+            kind,
+            editing: mode.get() === "edit" && Boolean(selectedItem()),
+            previewReady: previewGate.get().ready,
+            previewReason: previewGate.get().reason
+        });
+    }
+
+    function openPreview() {
+        const current = selectedItem();
+        const button = previewButtonState();
+        if (!current || !button.enabled) {
+            return;
+        }
+
+        const title = titleInput?.value ?? current.title;
+        const content = documentSurface ? (wysiwyg?.getHtml() ?? "") : (contentArea?.value ?? "");
+        const dirty = title !== current.title || content !== current.content;
+        void beginDraftPreview(async () => {
+            const link = await createBridgePreview({
+                postId: Number(current.id),
+                postType: postTypeForKind(kind),
+                draft: dirty,
+                title,
+                content
+            });
+            return link.url;
+        }).catch((caught: unknown) => {
+            const message = caught instanceof Error ? caught.message : "Could not open the preview.";
+            setNotice(message, "Preview failed.");
+        });
+    }
+
+    async function loadPreviewGate() {
+        if (kind !== "posts" && kind !== "pages") {
+            previewGate.set({ ready: false, reason: null });
+            return;
+        }
+
+        try {
+            const bridge = await fetchBridgeStatus();
+            previewGate.set({
+                ready: bridge.previewReady === true,
+                reason: bridge.previewReason ?? null
+            });
+        } catch {
+            previewGate.set({
+                ready: false,
+                reason: "Could not check draft preview."
+            });
+        }
     }
 
     function startEdit(item: ContentItem) {
@@ -340,6 +400,10 @@ export function CollectionWorkspace({
                     onSlugInput={() => {
                         slugTouched = true;
                     }}
+                    showPreview={previewButtonState().show}
+                    previewDisabled={!previewButtonState().enabled}
+                    previewReason={previewButtonState().reason}
+                    onPreview={openPreview}
                 /> as Node
             );
 
@@ -431,6 +495,22 @@ export function CollectionWorkspace({
                         />
                     </div>
                     <div save-row>
+                        {previewButtonState().show
+                            ? <div>
+                                <button
+                                    type="button"
+                                    btn="outline"
+                                    disabled={busy || !previewButtonState().enabled || undefined}
+                                    onclick={() => openPreview()}
+                                >
+                                    <i icon="eye" lib="solid" iconSize="sm"></i>
+                                    Preview
+                                </button>
+                                {previewButtonState().reason
+                                    ? <p subtle>{previewButtonState().reason}</p>
+                                    : null}
+                            </div>
+                            : null}
                         <div action-group>
                             <button type="button" btn="outline" disabled={busy || undefined} onclick={() => closeEditor()}>
                                 Cancel
@@ -587,6 +667,7 @@ export function CollectionWorkspace({
     effect(() => {
         mode.get();
         selectedId.get();
+        previewGate.get();
         paintEditor();
         paintListVisibility();
     });
@@ -647,6 +728,7 @@ export function CollectionWorkspace({
                             if (!initialized) {
                                 initialized = true;
                                 void loadItems();
+                                void loadPreviewGate();
                             }
                         }}
                     />

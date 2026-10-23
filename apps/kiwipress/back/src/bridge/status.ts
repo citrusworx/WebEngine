@@ -2,8 +2,8 @@ import type { BridgeHealth } from "@citrusworx/kiwipress";
 import { isBridgeError } from "@citrusworx/kiwipress";
 import type { BridgeConnectionStatus, BridgeHealthResult } from "./store.js";
 
-/** Oldest plugin release this app will treat as healthy. */
-export const MIN_BRIDGE_VERSION = "0.1.0";
+/** Oldest plugin release this app will treat as healthy. 0.1.0 has no draft preview. */
+export const MIN_BRIDGE_VERSION = "0.2.0";
 
 export const FRONTEND_REACHABILITY_TIMEOUT_MS = 4_000;
 
@@ -74,11 +74,11 @@ export function evaluatePairedStatus(input: StatusInput): BridgeHealthResult {
         const version = compareBridgeVersion(health.plugin_version);
         if (version === "old") {
             reasons.push(
-                `Plugin version ${health.plugin_version} is older than ${MIN_BRIDGE_VERSION}.`
+                `Plugin version ${health.plugin_version} is older than ${MIN_BRIDGE_VERSION}. Update the plugin for draft preview.`
             );
         } else if (version === "invalid") {
             reasons.push(
-                `Plugin version "${health.plugin_version}" is not a supported KiwiPress Bridge version (minimum ${MIN_BRIDGE_VERSION}).`
+                `Plugin version "${health.plugin_version}" is not a supported KiwiPress Bridge version (minimum ${MIN_BRIDGE_VERSION}). Update the plugin for draft preview.`
             );
         }
 
@@ -104,6 +104,78 @@ export function evaluatePairedStatus(input: StatusInput): BridgeHealthResult {
         frontendReachable: input.frontendReachable,
         siteUrl: health?.site_url
     };
+}
+
+export type ContentGatewaySnapshot = {
+    mode: string;
+    siteUrl: string | null;
+};
+
+export type PreviewReady = {
+    previewReady: boolean;
+    previewReason: string | null;
+};
+
+/**
+ * Draft preview is ready when the paired plugin is current, advertises
+ * `preview`, and — when the caller knows the content gateway — that gateway
+ * is in WordPress mode on the same site URL as the pairing.
+ *
+ * `gateway: null` means this process is not looking at the content gateway
+ * (unit tests and callers that only have the bridge). The dashboard passes
+ * a snapshot so the Preview button can stay disabled with a reason.
+ */
+export function evaluatePreviewReady(input: {
+    health: BridgeHealth | null;
+    pairedSiteUrl: string;
+    gateway: ContentGatewaySnapshot | null;
+}): PreviewReady {
+    const health = input.health;
+    if (!health) {
+        return {
+            previewReady: false,
+            previewReason: "Draft preview needs a paired KiwiPress Bridge plugin."
+        };
+    }
+
+    const version = compareBridgeVersion(health.plugin_version);
+    if (version !== "ok") {
+        return {
+            previewReady: false,
+            previewReason: `Plugin version ${health.plugin_version} is older than ${MIN_BRIDGE_VERSION}. Update the plugin for draft preview.`
+        };
+    }
+
+    if (health.paired === false) {
+        return {
+            previewReady: false,
+            previewReason: "WordPress reports this site is not paired."
+        };
+    }
+
+    if (!health.features.includes("preview")) {
+        return {
+            previewReady: false,
+            previewReason: "Update the KiwiPress Bridge plugin for draft preview."
+        };
+    }
+
+    if (input.gateway) {
+        if (input.gateway.mode !== "wordpress") {
+            return {
+                previewReady: false,
+                previewReason: "Draft preview is available when the content gateway is in WordPress mode."
+            };
+        }
+        if (!input.gateway.siteUrl || !urlsMatch(input.gateway.siteUrl, input.pairedSiteUrl)) {
+            return {
+                previewReady: false,
+                previewReason: "The content gateway WordPress URL does not match the paired site."
+            };
+        }
+    }
+
+    return { previewReady: true, previewReason: null };
 }
 
 function healthFailureReason(error: unknown): string {

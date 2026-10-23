@@ -4,9 +4,9 @@ WordPress plugin that lets [KiwiPress](../../apps/kiwipress) pair with a site. I
 
 KiwiPress already knows the site URL. It checks the public health route, stores one [application password](https://wordpress.org/documentation/article/application-passwords/) for an administrator, then writes the frontend URL here. Content keeps moving over core `/wp-json/wp/v2`.
 
-This folder is `plugins/kiwipress-bridge` rather than `apps/kiwipress` or `packages/kiwipress`: it is installed into `wp-content/plugins`, it is not part of the Sig/Juice front or the Seltzer back, and new paths under `apps/` are gitignored in this repo.
+This folder is `plugins/kiwipress-bridge` rather than `apps/kiwipress` or `packages/kiwipress`: it is installed into `wp-content/plugins`, and it is not part of the Sig/Juice front or the Seltzer back.
 
-Version 0.1.0 is the B0 slice: health, settings, lockdown, and a status screen.
+Version 0.2.0 is the B0 slice (health, settings, lockdown, and a status screen) plus B2 draft preview. WordPress holds the only preview secret and mints a short-lived token when a logged-in editor opens a core preview URL.
 
 ## What lockdown does
 
@@ -18,17 +18,17 @@ When lockdown is on (the default after activation):
 
 The front-end admin bar is hidden while lockdown is on.
 
-That behavior is seeded from Drew Winkles' **Activate Headless Mode** plugin, which was not in this repo. Three bugs in that plugin are fixed:
+Draft preview runs first, on `template_redirect` priority `-1`. A logged-in editor who can `edit_post` the requested item, on a paired site with a usable frontend URL, is sent (**302**) to `{frontend_url}{preview_path}?kiwipress_preview=<token>`. The response sets `Referrer-Policy: no-referrer` and `nocache_headers()`. Anonymous `?preview=true` goes to `wp-login.php` and never receives a token. If the site is not paired, or the frontend URL is empty or points at this WordPress site, a logged-in preview stays on the theme (the B0 behavior).
+
+That lockdown behavior is seeded from Drew Winkles' **Activate Headless Mode** plugin, which was not in this repo. Three bugs in that plugin are fixed:
 
 - `deactivate_theme_for_headless_mode()` never received `$template`, so it could not return the original theme template. The `template_include` callback here always accepts `$template` and returns it when the request is not locked.
 - The admin-bar callback was `__return false`. The WordPress function is `__return_false`.
 - The REST auth stub wrote `$restult` and dropped the result. The stub now returns `$result` unchanged. B0 does not add its own REST auth scheme.
 
-Preview requests are not special-cased yet (B2).
+## Options
 
-## Option
-
-One row in `wp_options`: **`kiwipress_bridge`**.
+### `kiwipress_bridge`
 
 | Key | Type | Default | Who writes it |
 | --- | --- | --- | --- |
@@ -36,8 +36,21 @@ One row in `wp_options`: **`kiwipress_bridge`**.
 | `lockdown` | bool | `true` | wp-admin or `POST /settings`. |
 | `paired` | bool | `false` | `POST /settings` from the KiwiPress app when it pairs or unpairs. The status screen shows it and will not overwrite it. |
 | `project_label` | string | `""` | `POST /settings`. Shown on the status screen, not edited there. |
+| `preview_path` | string | `"/preview"` | wp-admin or `POST /settings`. A path only: it must start with `/`, and it must not include a scheme, a host, or `//`. An empty value is saved as `/preview`. |
 
-Deactivating the plugin leaves the option in place. Deleting the plugin removes it (`uninstall.php`).
+Deactivating the plugin leaves this option in place. Deleting the plugin removes it (`uninstall.php`).
+
+### `kiwipress_bridge_preview_secret`
+
+A separate row, **autoload no**, created on activation and again on first use if an in-place upgrade from 0.1.0 skipped the activation hook. It is 64 hex characters (`bin2hex(random_bytes(32))`). The options table is utf8mb4, so the secret is not stored as 32 raw bytes; `hex2bin` restores 32 bytes before the HMAC key is derived.
+
+Health, settings, and the wp-admin form never return this value. KiwiPress does not store it. The pairing flow is unchanged.
+
+`KIWIPRESS_PREVIEW_SECRET` in `wp-config.php`, when set to a non-empty string, overrides the stored row for signing. A 64-character hex string is decoded to 32 bytes. Any other non-empty string is used as the raw key material. Revoke and unpair still rotate the stored row, but they cannot change the constant.
+
+The secret rotates when `paired` changes from true to false (REST unpair, wp-cli, or any other `update_option`) and when an administrator uses **Revoke preview links** (`admin-post.php` plus a nonce). Deleting the plugin deletes the row.
+
+The signing key is `hash_hmac('sha256', 'kiwipress-preview-v1', $secret_bytes, true)`. Tokens look like `kp1.<base64url json>.<base64url hmac>` and last 10 minutes (`kiwipress_bridge_preview_ttl`, a negative value is kept so a test can mint an already-expired token). The payload is `{v, iss, pid, pt, src, uid, iat, exp, jti}` with `src` of `post` or `autosave`. Fetch checks the signature (`hash_equals`), expiry (30 second skew), that `iss` is this site, that the site is still paired, that the post exists, is not trashed, and is `show_in_rest`, and that `user_can(uid, 'edit_post', pid)` is still true.
 
 ## REST
 
@@ -49,12 +62,13 @@ Public. No secrets. The frontend URL is not included, only whether one is set.
 
 ```json
 {
-  "plugin_version": "0.1.0",
+  "plugin_version": "0.2.0",
   "wp_version": "6.6",
   "lockdown": true,
   "paired": false,
   "frontend_url_set": false,
-  "site_url": "https://cms.example.com"
+  "site_url": "https://cms.example.com",
+  "features": ["preview"]
 }
 ```
 
@@ -73,7 +87,8 @@ Requires `manage_options`. An administrator application password is enough.
   "frontend_url": "",
   "lockdown": true,
   "paired": false,
-  "project_label": ""
+  "project_label": "",
+  "preview_path": "/preview"
 }
 ```
 
@@ -84,7 +99,7 @@ curl -sS -u "admin:abcd efgh ijkl mnop qrst uvwx" \
 
 ### `POST /wp-json/kiwipress/v1/settings`
 
-Same capability. Send any subset of `frontend_url`, `lockdown`, `paired`, and `project_label`. Omitted keys stay as they are. Unknown keys are ignored. The response is the saved settings object (same shape as GET).
+Same capability. Send any subset of `frontend_url`, `lockdown`, `paired`, `project_label`, and `preview_path`. Omitted keys stay as they are. Unknown keys are ignored. An invalid `preview_path` is **400**. The response is the saved settings object (same shape as GET). The preview secret is not on this route.
 
 `frontend_url` must be `""` or an absolute `http`/`https` URL (`esc_url_raw`). `localhost` and a port are allowed. Anything else is **400**.
 
@@ -95,12 +110,34 @@ curl -sS -u "admin:abcd efgh ijkl mnop qrst uvwx" \
   "https://cms.example.com/wp-json/kiwipress/v1/settings"
 ```
 
+### `GET /wp-json/kiwipress/v1/preview`
+
+Public. The credential is the `X-KiwiPress-Preview` header, not an application password. A bad `Authorization` header makes WordPress reject the route, so clients must omit it.
+
+The plugin switches to the token's user, loads the post type's own `/wp/v2` route with `context=view`, and restores the previous user. When `src` is `autosave`, title, content, excerpt, and modified are replaced with that user's latest autosave (or the latest autosave on the post). The response is `{preview, source, post_id, post_type, expires_at, post}` with `Cache-Control: no-store, private` and `X-Robots-Tag: noindex`.
+
+| Code | HTTP | When |
+| --- | --- | --- |
+| `kiwipress_bridge_preview_missing` | 401 | No token header. |
+| `kiwipress_bridge_preview_invalid` | 401 | Bad structure, bad signature, or a different site. |
+| `kiwipress_bridge_preview_expired` | 401 | Past `exp` plus the 30 second skew. |
+| `kiwipress_bridge_preview_forbidden` | 403 | The embedded user can no longer edit the post. |
+| `kiwipress_bridge_preview_disabled` | 403 | The site is not paired, or preview cannot be signed. |
+| `kiwipress_bridge_preview_not_found` | 404 | Missing, trashed, or not exposed over REST. |
+
+### `POST /wp-json/kiwipress/v1/preview/token`
+
+Requires the current user to `edit_post` the given `post_id`. A logged-in subscriber gets WordPress's **403**. Body: `{post_id, source}` where `source` is `auto` (autosave when one exists, otherwise the post), `post`, or `autosave`. Response: `{token, url, expires_at}`. The URL is `{frontend_url}{preview_path}?kiwipress_preview=<token>`.
+
+Classic, Gutenberg (`?p=<id>&preview=true`, which does not pass through `preview_post_link`), autosave (`preview_id` / `preview_nonce`), and list-table Preview links all hit the same handoff. `preview_id` mints `src=autosave`. Anything else mints `src=post`.
+
 ## wp-admin
 
 After activation there is a top-level **KiwiPress** menu. It is a status page, not a second app:
 
-- **Connection** — Connected when `paired` is true, otherwise Disconnected. Frontend URL field and lockdown checkbox. Save uses the Settings API.
-- **Health** — the same facts as `GET /health`.
+- **Connection** — Connected when `paired` is true, otherwise Disconnected. Frontend URL, lockdown checkbox, and preview path. Save uses the Settings API.
+- **Preview** — On or Off, an example URL with no token, the TTL, and **Revoke preview links**.
+- **Health** — the same facts as `GET /health`, including features.
 
 No build step and no admin JavaScript.
 
@@ -136,7 +173,7 @@ Content keeps moving over `/wp/v2` with the same application password. This fold
 
 ## End-to-end test
 
-`yarn test:e2e:bridge` boots MariaDB and WordPress in Docker (host network, so the site is `http://127.0.0.1:18080` and MariaDB is `127.0.0.1:3306`), mounts this plugin, installs the site, turns on pretty permalinks, and creates an administrator and a subscriber with application passwords. It then runs the real `kiwi.bridge` client and the KiwiPress back routes (`/projects/:id/bridge/probe|pair|status|unpair`) against that site.
+`yarn test:e2e:bridge` boots MariaDB and WordPress in Docker (host network, so the site is `http://127.0.0.1:18080` and MariaDB is `127.0.0.1:3306`), mounts this plugin and a mu-plugin that registers a REST custom post type, installs the site, turns on pretty permalinks, and creates an administrator, an editor, and a subscriber with application passwords. It then runs the real `kiwi.bridge` client and the KiwiPress back routes (`/projects/:id/bridge/probe|pair|status|unpair|preview`) against that site. The stub frontend's `/preview` route calls `Bridge.preview()` with credentials that must not be sent.
 
 The suite is opt-in. It is not part of `yarn workspace @citrusworx/kiwipress test` or the back unit tests, because it needs a Docker daemon. From the repo root:
 
@@ -157,7 +194,7 @@ GitHub Actions workflow **KiwiPress Bridge E2E** is manual (`workflow_dispatch` 
 
 ## Not in this version
 
-- **B2** — draft preview bypass.
-- **B3** — webhooks.
+- **B3** — webhooks and revalidate. That will use its own shared secret, not the preview secret.
+- Pinned revisions, guest or shareable links, meta/ACF preview, native Nectarine preview, Gutenberg JavaScript changes, and multisite.
 
-No GraphQL and no preview tokens.
+No GraphQL. Preview tokens are signed by WordPress only. They are not stored by KiwiPress.

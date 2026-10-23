@@ -13,6 +13,7 @@ export KIWIPRESS_E2E_COMPOSE_PROJECT="$COMPOSE_PROJECT_NAME"
 export KIWIPRESS_E2E_SITE_URL="http://127.0.0.1:${KIWIPRESS_E2E_WP_PORT}"
 export KIWIPRESS_E2E_ADMIN_USER="kiwipress"
 export KIWIPRESS_E2E_SUBSCRIBER_USER="subscriber"
+export KIWIPRESS_E2E_EDITOR_USER="editor"
 
 APACHE_DIR="$(mktemp -d)"
 export KIWIPRESS_E2E_APACHE_DIR="$APACHE_DIR"
@@ -113,6 +114,13 @@ if ! wp user get "$KIWIPRESS_E2E_SUBSCRIBER_USER" >/dev/null 2>&1; then
     --display_name="Subscriber"
 fi
 
+if ! wp user get "$KIWIPRESS_E2E_EDITOR_USER" >/dev/null 2>&1; then
+  wp user create "$KIWIPRESS_E2E_EDITOR_USER" editor-e2e@example.com \
+    --role=editor \
+    --user_pass="editor-pass" \
+    --display_name="Editor"
+fi
+
 create_app_password() {
   local user="$1"
   local raw password
@@ -131,8 +139,10 @@ create_app_password() {
 echo "Creating application passwords..."
 KIWIPRESS_E2E_ADMIN_APP_PASSWORD="$(create_app_password "$KIWIPRESS_E2E_ADMIN_USER")"
 KIWIPRESS_E2E_SUBSCRIBER_APP_PASSWORD="$(create_app_password "$KIWIPRESS_E2E_SUBSCRIBER_USER")"
+KIWIPRESS_E2E_EDITOR_APP_PASSWORD="$(create_app_password "$KIWIPRESS_E2E_EDITOR_USER")"
 export KIWIPRESS_E2E_ADMIN_APP_PASSWORD
 export KIWIPRESS_E2E_SUBSCRIBER_APP_PASSWORD
+export KIWIPRESS_E2E_EDITOR_APP_PASSWORD
 
 echo "Checking public health before the suite..."
 node --input-type=module -e '
@@ -144,7 +154,15 @@ if (!response.ok) {
   process.exit(1);
 }
 const body = JSON.parse(text);
-if (body.plugin_version !== "0.1.0" || body.lockdown !== true || body.paired !== false) {
+if (body.plugin_version !== "0.2.0" || body.lockdown !== true || body.paired !== false) {
+  console.error(body);
+  process.exit(1);
+}
+if (!Array.isArray(body.features) || !body.features.includes("preview")) {
+  console.error(body);
+  process.exit(1);
+}
+if (Object.prototype.hasOwnProperty.call(body, "preview_secret") || JSON.stringify(body).includes("kiwipress_bridge_preview_secret")) {
   console.error(body);
   process.exit(1);
 }

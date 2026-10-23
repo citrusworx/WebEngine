@@ -68,6 +68,15 @@ function kiwipress_bridge_render_page() {
 	$health  = kiwipress_bridge_health_payload();
 	$paired  = $options['paired'];
 
+	if ( isset( $_GET['preview-revoked'] ) && '1' === $_GET['preview-revoked'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		add_settings_error(
+			'kiwipress_bridge',
+			'kiwipress_bridge_preview_revoked',
+			__( 'Preview links were revoked. Existing draft links no longer open.', 'kiwipress-bridge' ),
+			'success'
+		);
+	}
+
 	echo '<div class="wrap">';
 	echo '<h1>' . esc_html__( 'KiwiPress', 'kiwipress-bridge' ) . '</h1>';
 	echo '<p class="description">';
@@ -122,7 +131,15 @@ function kiwipress_bridge_render_page() {
 	echo '<input name="' . esc_attr( KIWIPRESS_BRIDGE_OPTION ) . '[lockdown]" id="kiwipress-bridge-lockdown" type="checkbox" value="1" ' . checked( $options['lockdown'], true, false ) . ' /> ';
 	echo esc_html__( 'Lock the public theme', 'kiwipress-bridge' );
 	echo '</label>';
-	echo '<p class="description">' . esc_html__( 'Logged-out visitors are redirected to the frontend URL, or see “Headless Mode Activated” when it is empty. wp-admin, login, REST, cron, and AJAX stay open.', 'kiwipress-bridge' ) . '</p>';
+	echo '<p class="description">' . esc_html__( 'Logged-out visitors are redirected to the frontend URL, or see “Headless Mode Activated” when it is empty. wp-admin, login, REST, cron, and AJAX stay open. A logged-in draft preview is sent to the frontend instead.', 'kiwipress-bridge' ) . '</p>';
+	echo '</td>';
+	echo '</tr>';
+
+	echo '<tr>';
+	echo '<th scope="row"><label for="kiwipress-bridge-preview-path">' . esc_html__( 'Preview path', 'kiwipress-bridge' ) . '</label></th>';
+	echo '<td>';
+	echo '<input name="' . esc_attr( KIWIPRESS_BRIDGE_OPTION ) . '[preview_path]" id="kiwipress-bridge-preview-path" type="text" class="regular-text code" value="' . esc_attr( $options['preview_path'] ) . '" />';
+	echo '<p class="description">' . esc_html__( 'Path on the frontend that renders a draft. It must start with / and must not include a scheme, a host, or //. Default /preview.', 'kiwipress-bridge' ) . '</p>';
 	echo '</td>';
 	echo '</tr>';
 
@@ -131,6 +148,38 @@ function kiwipress_bridge_render_page() {
 	submit_button( __( 'Save settings', 'kiwipress-bridge' ) );
 	echo '</div>';
 	echo '</form>';
+
+	$preview_on = kiwipress_bridge_preview_is_available();
+	$example    = kiwipress_bridge_preview_example_url();
+	$ttl        = kiwipress_bridge_preview_ttl();
+
+	echo '<div class="card">';
+	echo '<h2>' . esc_html__( 'Preview', 'kiwipress-bridge' ) . '</h2>';
+	if ( $preview_on ) {
+		echo '<div class="notice notice-success inline"><p><strong>' . esc_html__( 'On', 'kiwipress-bridge' ) . '</strong></p></div>';
+	} else {
+		echo '<div class="notice notice-warning inline"><p><strong>' . esc_html__( 'Off', 'kiwipress-bridge' ) . '</strong></p></div>';
+		echo '<p class="description">' . esc_html__( 'Draft preview turns on after KiwiPress pairs this site and a frontend URL is saved. Logged-in editors still see the WordPress theme preview until then.', 'kiwipress-bridge' ) . '</p>';
+	}
+	if ( $example !== '' ) {
+		echo '<p><strong>' . esc_html__( 'Example URL', 'kiwipress-bridge' ) . '</strong><br><code>' . esc_html( $example ) . '</code></p>';
+	}
+	echo '<p class="description">';
+	echo esc_html(
+		sprintf(
+			/* translators: %d: preview lifetime in seconds */
+			__( 'Links last %d seconds (filter kiwipress_bridge_preview_ttl). Revoking rotates the secret and invalidates links that are still inside that window.', 'kiwipress-bridge' ),
+			$ttl
+		)
+	);
+	echo '</p>';
+
+	echo '<form id="kiwipress-bridge-revoke" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+	wp_nonce_field( 'kiwipress_bridge_revoke_preview', 'kiwipress_bridge_revoke_nonce' );
+	echo '<input type="hidden" name="action" value="kiwipress_bridge_revoke_preview" />';
+	echo '<button type="submit" class="button">' . esc_html__( 'Revoke preview links', 'kiwipress-bridge' ) . '</button>';
+	echo '</form>';
+	echo '</div>';
 
 	echo '<div class="card">';
 	echo '<h2>' . esc_html__( 'Health', 'kiwipress-bridge' ) . '</h2>';
@@ -144,6 +193,11 @@ function kiwipress_bridge_render_page() {
 	kiwipress_bridge_admin_health_row( __( 'Paired', 'kiwipress-bridge' ), $health['paired'] ? __( 'Yes', 'kiwipress-bridge' ) : __( 'No', 'kiwipress-bridge' ) );
 	kiwipress_bridge_admin_health_row( __( 'Frontend URL set', 'kiwipress-bridge' ), $health['frontend_url_set'] ? __( 'Yes', 'kiwipress-bridge' ) : __( 'No', 'kiwipress-bridge' ) );
 	kiwipress_bridge_admin_health_row( __( 'Site URL', 'kiwipress-bridge' ), $health['site_url'] );
+	$features = isset( $health['features'] ) && is_array( $health['features'] ) ? $health['features'] : array();
+	kiwipress_bridge_admin_health_row(
+		__( 'Features', 'kiwipress-bridge' ),
+		$features ? implode( ', ', $features ) : __( 'None', 'kiwipress-bridge' )
+	);
 	echo '</tbody></table>';
 	echo '</div>';
 

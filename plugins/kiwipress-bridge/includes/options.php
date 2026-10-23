@@ -8,6 +8,11 @@
  *   lockdown      bool    Default true on activation. Anonymous front is locked.
  *   paired        bool    Default false. KiwiPress sets this over REST (B1).
  *   project_label string  Optional label KiwiPress sends with pairing.
+ *   preview_path  string  Path on the frontend that renders a draft preview.
+ *                         Default `/preview`. Path only — never a URL.
+ *
+ * The preview HMAC secret is a different option, `kiwipress_bridge_preview_secret`.
+ * It is not merged into this array and is not returned by health or settings.
  *
  * The wp-admin form may change frontend_url and lockdown only. paired and
  * project_label are preserved across that save so a settings click cannot
@@ -26,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * lockdown is true so a freshly activated plugin does not leave the theme
  * public while the frontend URL is still empty.
  *
- * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string}
+ * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string,preview_path:string}
  */
 function kiwipress_bridge_defaults() {
 	return array(
@@ -34,13 +39,14 @@ function kiwipress_bridge_defaults() {
 		'lockdown'      => true,
 		'paired'        => false,
 		'project_label' => '',
+		'preview_path'  => '/preview',
 	);
 }
 
 /**
  * Stored values with defaults filled in for any missing key.
  *
- * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string}
+ * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string,preview_path:string}
  */
 function kiwipress_bridge_get_options() {
 	$stored = get_option( KIWIPRESS_BRIDGE_OPTION, array() );
@@ -54,6 +60,7 @@ function kiwipress_bridge_get_options() {
 	$options['lockdown']      = (bool) $options['lockdown'];
 	$options['paired']        = (bool) $options['paired'];
 	$options['project_label'] = is_string( $options['project_label'] ) ? $options['project_label'] : '';
+	$options['preview_path']  = is_string( $options['preview_path'] ) ? $options['preview_path'] : '/preview';
 
 	return $options;
 }
@@ -61,7 +68,7 @@ function kiwipress_bridge_get_options() {
 /**
  * Settings returned by GET/POST /settings. Authenticated callers may see the URL.
  *
- * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string}
+ * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string,preview_path:string}
  */
 function kiwipress_bridge_settings_payload() {
 	$options = kiwipress_bridge_get_options();
@@ -71,6 +78,7 @@ function kiwipress_bridge_settings_payload() {
 		'lockdown'      => $options['lockdown'],
 		'paired'        => $options['paired'],
 		'project_label' => $options['project_label'],
+		'preview_path'  => $options['preview_path'],
 	);
 }
 
@@ -78,7 +86,7 @@ function kiwipress_bridge_settings_payload() {
  * Public health facts. The frontend URL itself is not included — only whether
  * one is stored — so this route can stay unauthenticated without leaking it.
  *
- * @return array{plugin_version:string,wp_version:string,lockdown:bool,paired:bool,frontend_url_set:bool,site_url:string}
+ * @return array{plugin_version:string,wp_version:string,lockdown:bool,paired:bool,frontend_url_set:bool,site_url:string,features:string[]}
  */
 function kiwipress_bridge_health_payload() {
 	$options = kiwipress_bridge_get_options();
@@ -91,6 +99,7 @@ function kiwipress_bridge_health_payload() {
 		'frontend_url_set' => $options['frontend_url'] !== '',
 		// WordPress address, where /wp-json lives — not home_url, which may differ.
 		'site_url'         => untrailingslashit( get_site_url() ),
+		'features'         => array( 'preview' ),
 	);
 }
 
@@ -193,6 +202,55 @@ function kiwipress_bridge_sanitize_project_label( $value ) {
 }
 
 /**
+ * A path on the frontend. Empty falls back to `/preview`.
+ *
+ * Rejects a scheme, a host, a protocol-relative `//`, backslashes, query
+ * strings, fragments, and `..`. That keeps the preview redirect from
+ * becoming an open redirect off the saved frontend origin.
+ *
+ * @param mixed $value Raw value.
+ * @return string|WP_Error
+ */
+function kiwipress_bridge_sanitize_preview_path( $value ) {
+	if ( ! is_string( $value ) ) {
+		return new WP_Error(
+			'kiwipress_bridge_invalid_preview_path',
+			__( 'preview_path must be a string.', 'kiwipress-bridge' ),
+			array( 'status' => 400 )
+		);
+	}
+
+	$value = trim( $value );
+	if ( $value === '' ) {
+		return '/preview';
+	}
+
+	if ( strlen( $value ) > 1 ) {
+		$value = rtrim( $value, '/' );
+	}
+
+	$invalid = new WP_Error(
+		'kiwipress_bridge_invalid_preview_path',
+		__( 'preview_path must be a path such as /preview, with no scheme, host, or //.', 'kiwipress-bridge' ),
+		array( 'status' => 400 )
+	);
+
+	if ( strlen( $value ) > 180 || false !== strpos( $value, '//' ) || false !== strpos( $value, '..' ) ) {
+		return $invalid;
+	}
+
+	if ( '/' === $value ) {
+		return $value;
+	}
+
+	if ( ! preg_match( '#^/(?:[A-Za-z0-9._~-]+)(?:/[A-Za-z0-9._~-]+)*$#', $value ) ) {
+		return $invalid;
+	}
+
+	return $value;
+}
+
+/**
  * Sanitize callback for the Settings API and for update_option().
  *
  * Two callers share this function, and they mean different things when a
@@ -210,7 +268,7 @@ function kiwipress_bridge_sanitize_project_label( $value ) {
  * a settings error instead. REST validates before it calls update_option().
  *
  * @param mixed $input Posted or proposed option value.
- * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string}
+ * @return array{frontend_url:string,lockdown:bool,paired:bool,project_label:string,preview_path:string}
  */
 function kiwipress_bridge_sanitize_options( $input ) {
 	$current = kiwipress_bridge_get_options();
@@ -255,7 +313,26 @@ function kiwipress_bridge_sanitize_options( $input ) {
 				$next['project_label'] = $label;
 			}
 		}
+		if ( array_key_exists( 'preview_path', $input ) ) {
+			$path = kiwipress_bridge_sanitize_preview_path( $input['preview_path'] );
+			if ( ! is_wp_error( $path ) ) {
+				$next['preview_path'] = $path;
+			}
+		}
 		return $next;
+	}
+
+	if ( array_key_exists( 'preview_path', $input ) ) {
+		$path = kiwipress_bridge_sanitize_preview_path( $input['preview_path'] );
+		if ( is_wp_error( $path ) ) {
+			add_settings_error(
+				'kiwipress_bridge',
+				$path->get_error_code(),
+				$path->get_error_message()
+			);
+		} else {
+			$next['preview_path'] = $path;
+		}
 	}
 
 	// Admin form: checkbox omitted means unchecked. Do not touch pairing.

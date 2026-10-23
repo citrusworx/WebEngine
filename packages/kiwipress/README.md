@@ -100,17 +100,32 @@ await kiwi.bridge.saveSettings({
 });
 
 const settings = await kiwi.bridge.getSettings();
+
+const link = await kiwi.bridge.createPreviewLink({ postId: 42, source: "auto" });
+const draft = await kiwi.bridge.preview(link.token); // no Authorization header
 ```
 
-Failures are a `BridgeError` with `code`:
+`health().features` is `[]` when an older plugin omits the field. 0.2.0 reports `["preview"]`. `preview_path` is part of settings (default `/preview` on the plugin).
+
+`preview()` is unauthenticated even when `WP_USER` / `WP_APP_PASSWORD` or constructor credentials are set. WordPress rejects the public preview route if a bad `Authorization` header is present. `createPreviewLink()` is authenticated and requires `edit_post`.
+
+`previewTokenFromUrl()` and `decodePreviewTokenUnverified()` only find the `kiwipress_preview` query parameter and decode the payload for routing. They do not check the HMAC. Call `preview()` before trusting the claims.
+
+Failures are a `BridgeError` with `code`. Preview codes are chosen from the plugin error code before the HTTP status, so a 401 expired token is not `bad_credentials` and a 404 missing post is not `plugin_missing`.
 
 | Code | When |
 | --- | --- |
 | `bad_credentials` | WordPress returns 401 for the application password. |
 | `insufficient_role` | The user is signed in but `capabilities.manage_options` is not true. |
-| `plugin_missing` | `kiwipress/v1` returns 404. |
+| `plugin_missing` | `kiwipress/v1` returns 404 and the body is not a preview error. |
 | `site_unreachable` | DNS, connection, or timeout. |
 | `request_failed` | Any other unexpected WordPress response. |
+| `preview_missing` | The preview token header was empty. |
+| `preview_invalid` | The token signature or payload is not valid. |
+| `preview_expired` | The token is past its expiry, including the plugin's skew. |
+| `preview_forbidden` | The embedded user can no longer edit the post. |
+| `preview_disabled` | Draft preview is off because the site is not paired. |
+| `preview_not_found` | The post is missing, trashed, or not in the REST API. |
 
 The KiwiPress app encrypts the application password before it stores it. This package does not.
 

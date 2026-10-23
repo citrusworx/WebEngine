@@ -82,6 +82,14 @@ function statusCard() {
                         <span>Plugin</span>
                         <p>{status.pluginVersion ?? "Unknown"}{status.lockdown === true ? " · lockdown on" : status.lockdown === false ? " · lockdown off" : ""}</p>
                     </div>
+                    <div detail>
+                        <span>Draft preview</span>
+                        <p>{status.previewReady ? "Ready" : (status.previewReason || "Unavailable")}</p>
+                    </div>
+                    <div detail>
+                        <span>Preview path</span>
+                        <p>{status.previewPath || "Not set"}</p>
+                    </div>
                 </div>
                 : null}
 

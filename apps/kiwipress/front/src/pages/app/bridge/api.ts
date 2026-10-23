@@ -34,6 +34,27 @@ export type BridgeStatus = {
     pluginPaired?: boolean;
     lockdown?: boolean;
     frontendReachable?: boolean;
+    previewReady?: boolean;
+    previewPath?: string | null;
+    previewReason?: string | null;
+};
+
+export type PreviewLinkResult = {
+    url: string;
+    expiresAt: string;
+};
+
+export type PreviewContent = {
+    preview: boolean;
+    source: string;
+    post_id: number;
+    post_type: string;
+    expires_at: string;
+    post: {
+        title?: { rendered?: string; raw?: string };
+        content?: { rendered?: string; raw?: string };
+        excerpt?: { rendered?: string; raw?: string };
+    };
 };
 
 async function readBody(response: Response): Promise<Record<string, unknown>> {
@@ -130,7 +151,54 @@ export async function fetchBridgeStatus(): Promise<BridgeStatus> {
         pluginVersion: typeof body.pluginVersion === "string" ? body.pluginVersion : undefined,
         pluginPaired: typeof body.pluginPaired === "boolean" ? body.pluginPaired : undefined,
         lockdown: typeof body.lockdown === "boolean" ? body.lockdown : undefined,
-        frontendReachable: typeof body.frontendReachable === "boolean" ? body.frontendReachable : undefined
+        frontendReachable: typeof body.frontendReachable === "boolean" ? body.frontendReachable : undefined,
+        previewReady: typeof body.previewReady === "boolean" ? body.previewReady : undefined,
+        previewPath: typeof body.previewPath === "string" ? body.previewPath : body.previewPath === null ? null : undefined,
+        previewReason: typeof body.previewReason === "string" ? body.previewReason : body.previewReason === null ? null : undefined
+    };
+}
+
+export async function createBridgePreview(input: {
+    postId: number;
+    postType?: string;
+    draft?: boolean;
+    title?: string;
+    content?: string;
+    excerpt?: string;
+}): Promise<PreviewLinkResult> {
+    const response = await gatewayFetch(`/projects/${PROJECT_ID}/bridge/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input)
+    });
+    const body = await readBody(response);
+    if (!response.ok) {
+        throw new Error(errorMessage(body, response.status));
+    }
+    if (typeof body.url !== "string" || typeof body.expiresAt !== "string") {
+        throw new Error("WordPress did not return a preview link.");
+    }
+    return { url: body.url, expiresAt: body.expiresAt };
+}
+
+export async function fetchPreviewContent(token: string): Promise<PreviewContent> {
+    const response = await gatewayFetch(
+        `/projects/${PROJECT_ID}/bridge/preview/content?token=${encodeURIComponent(token)}`
+    );
+    const body = await readBody(response);
+    if (!response.ok) {
+        throw new Error(errorMessage(body, response.status));
+    }
+    const post = body.post;
+    return {
+        preview: body.preview === true,
+        source: typeof body.source === "string" ? body.source : "",
+        post_id: typeof body.post_id === "number" ? body.post_id : 0,
+        post_type: typeof body.post_type === "string" ? body.post_type : "",
+        expires_at: typeof body.expires_at === "string" ? body.expires_at : "",
+        post: post && typeof post === "object" && !Array.isArray(post)
+            ? post as PreviewContent["post"]
+            : {}
     };
 }
 

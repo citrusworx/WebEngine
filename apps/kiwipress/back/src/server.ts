@@ -45,7 +45,13 @@ async function main() {
     };
     registerKiwiPressGateway(server, kiwi, gatewayAuth);
     registerKiwiPressProvision(server, gatewayAuth);
-    registerKiwiPressBridge(server, gatewayAuth);
+    registerKiwiPressBridge(server, {
+        ...gatewayAuth,
+        contentGateway: () => ({
+            mode: kiwi.mode,
+            siteUrl: wordpressUrl || null
+        })
+    });
     // Seltzer defaults to 127.0.0.1. This gateway is the public API.
     server.listen(port, { host: "0.0.0.0" });
 

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { KiwiPress } from "../cms/KiwiPress.js";
 import { Bridge } from "./bridge.js";
 import { BridgeError } from "./errors.js";
+import { decodePreviewTokenUnverified, PREVIEW_HEADER, PREVIEW_QUERY_PARAM, previewTokenFromUrl } from "./preview.js";
 
 const wordpressConfig = {
     url: "https://cms.example.com/",
@@ -10,19 +11,21 @@ const wordpressConfig = {
 };
 
 const healthPayload = {
-    plugin_version: "0.1.0",
+    plugin_version: "0.2.0",
     wp_version: "6.6",
     lockdown: true,
     paired: false,
     frontend_url_set: false,
-    site_url: "https://cms.example.com"
+    site_url: "https://cms.example.com",
+    features: ["preview"]
 };
 
 const settingsPayload = {
     frontend_url: "https://app.example.com",
     lockdown: true,
     paired: true,
-    project_label: "acme"
+    project_label: "acme",
+    preview_path: "/preview"
 };
 
 function jsonResponse(status: number, body: unknown) {
@@ -248,6 +251,98 @@ describe("Bridge", () => {
 
         expect(error).toBeInstanceOf(BridgeError);
         expect((error as BridgeError).code).toBe("request_failed");
+    });
+
+    it("reads a preview without sending application-password credentials", async () => {
+        const previousUser = process.env.WP_USER;
+        const previousPassword = process.env.WP_APP_PASSWORD;
+        process.env.WP_USER = "env-user";
+        process.env.WP_APP_PASSWORD = "env-password-value";
+        const token = "kp1.payload.sig";
+        const fetchMock = vi.fn(async () => jsonResponse(200, {
+            preview: true,
+            source: "post",
+            post_id: 4,
+            post_type: "post",
+            expires_at: "2026-10-23T05:10:00+00:00",
+            post: { title: { rendered: "Draft title" } }
+        }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        try {
+            const bridge = new Bridge({ url: "https://cms.example.com" });
+            const document = await bridge.preview(token);
+            expect(document.post.title?.rendered).toBe("Draft title");
+            const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+            expect(url).toBe("https://cms.example.com/wp-json/kiwipress/v1/preview");
+            expect(headerRecord(init).Authorization).toBeUndefined();
+            expect(headerRecord(init)[PREVIEW_HEADER]).toBe(token);
+        } finally {
+            if (previousUser === undefined) delete process.env.WP_USER;
+            else process.env.WP_USER = previousUser;
+            if (previousPassword === undefined) delete process.env.WP_APP_PASSWORD;
+            else process.env.WP_APP_PASSWORD = previousPassword;
+        }
+    });
+
+    it("maps an expired preview token by its WordPress code, not as bad credentials", async () => {
+        vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(401, {
+            code: "kiwipress_bridge_preview_expired",
+            message: "Preview token has expired.",
+            data: { status: 401 }
+        })));
+
+        await expect(new Bridge(wordpressConfig).preview("kp1.a.b")).rejects.toMatchObject({
+            code: "preview_expired",
+            status: 401
+        });
+    });
+
+    it("creates a preview link with application-password auth", async () => {
+        const fetchMock = vi.fn(async () => jsonResponse(200, {
+            token: "kp1.a.b",
+            url: "https://app.example.com/preview?kiwipress_preview=kp1.a.b",
+            expires_at: "2026-10-23T05:10:00+00:00"
+        }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        const link = await new Bridge(wordpressConfig).createPreviewLink({ postId: 8, source: "auto" });
+        expect(link.token).toBe("kp1.a.b");
+        const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+        expect(url).toBe("https://cms.example.com/wp-json/kiwipress/v1/preview/token");
+        expect(headerRecord(init).Authorization).toMatch(/^Basic /);
+        expect(JSON.parse(String(init.body))).toEqual({ post_id: 8, source: "auto" });
+    });
+
+    it("treats a 0.1.0 health payload with no features field as an empty list", async () => {
+        const legacy = { ...healthPayload, plugin_version: "0.1.0" };
+        delete (legacy as { features?: string[] }).features;
+        vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(200, legacy)));
+
+        const health = await new Bridge(wordpressConfig).health();
+        expect(health.features).toEqual([]);
+        expect(health.plugin_version).toBe("0.1.0");
+    });
+});
+
+describe("preview token helpers", () => {
+    it("decodes a kp1 payload without trusting the signature", () => {
+        const claims = {
+            v: 1,
+            iss: "https://cms.example.com",
+            pid: 5,
+            pt: "post",
+            src: "autosave" as const,
+            uid: 2,
+            iat: 10,
+            exp: 20,
+            jti: "abc"
+        };
+        const token = `kp1.${Buffer.from(JSON.stringify(claims)).toString("base64url")}.not-a-signature`;
+        expect(decodePreviewTokenUnverified(token)).toEqual(claims);
+        expect(decodePreviewTokenUnverified("kp1.only")).toBeNull();
+        expect(previewTokenFromUrl(`https://app.example.com/preview?${PREVIEW_QUERY_PARAM}=${encodeURIComponent(token)}`)).toBe(token);
+        expect(previewTokenFromUrl("https://app.example.com/preview")).toBeNull();
     });
 });
 
