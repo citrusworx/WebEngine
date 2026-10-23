@@ -24,8 +24,10 @@
  * 3. The REST stub assigned `$restult`, so the computed result was dropped.
  *    See kiwipress_bridge_rest_auth_stub() in includes/rest.php.
  *
- * Preview requests are intentionally not special-cased. See the TODO in
- * kiwipress_bridge_should_lock_front().
+ * Draft preview is handled earlier, at template_redirect priority -1, in
+ * includes/preview.php. Anonymous `?preview=true` goes to wp-login and never
+ * receives a token. A logged-in preview on a paired site leaves before this
+ * lockdown redirect. An unpaired site still shows the theme to logged-in users.
  *
  * @package KiwiPressBridge
  */
@@ -156,12 +158,8 @@ function kiwipress_bridge_should_lock_front() {
 		return false;
 	}
 
-	/*
-	 * TODO(B2): preview requests are out of scope. A draft preview
-	 * (?preview=true with preview_id / preview_nonce, or a later KiwiPress
-	 * preview token) should bypass lockdown. B0 locks every anonymous
-	 * front-end hit the same way.
-	 */
+	// Anonymous preview is sent to wp-login by kiwipress_bridge_preview_handoff()
+	// at priority -1, before this redirect. It never falls through with a token.
 
 	return true;
 }

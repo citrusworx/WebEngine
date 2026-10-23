@@ -1,9 +1,39 @@
 import { WPCore } from "../core/WPCore.js";
 import { kiwiCallOptions, sendWordPressRequest } from "../core/route-utils.js";
 import { BridgeError } from "./errors.js";
+import { PREVIEW_HEADER, parsePreviewDocument, parsePreviewLink } from "./preview.js";
 const BRIDGE_API_BASE = "wp-json/kiwipress/v1";
 const REQUEST_TIMEOUT_MS = 10_000;
-const SETTINGS_KEYS = ["frontend_url", "lockdown", "paired", "project_label"];
+const SETTINGS_KEYS = ["frontend_url", "lockdown", "paired", "project_label", "preview_path"];
+function wordpressErrorCode(body) {
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return "";
+    }
+    const code = body.code;
+    return typeof code === "string" ? code : "";
+}
+/**
+ * Plugin error codes win over the HTTP status. An expired preview token is
+ * 401, and that must not be reported as a bad application password.
+ */
+function previewError(code, status, detail) {
+    switch (code) {
+        case "kiwipress_bridge_preview_missing":
+            return new BridgeError("preview_missing", withDetail("The preview token is missing.", detail), status || 401);
+        case "kiwipress_bridge_preview_invalid":
+            return new BridgeError("preview_invalid", withDetail("The preview token is not valid.", detail), status || 401);
+        case "kiwipress_bridge_preview_expired":
+            return new BridgeError("preview_expired", withDetail("The preview token has expired.", detail), status || 401);
+        case "kiwipress_bridge_preview_forbidden":
+            return new BridgeError("preview_forbidden", withDetail("This user can no longer preview that item.", detail), status || 403);
+        case "kiwipress_bridge_preview_disabled":
+            return new BridgeError("preview_disabled", withDetail("Draft preview is off on this WordPress site.", detail), status || 403);
+        case "kiwipress_bridge_preview_not_found":
+            return new BridgeError("preview_not_found", withDetail("That preview item was not found.", detail), status || 404);
+        default:
+            return null;
+    }
+}
 function wordpressMessage(body) {
     if (!body || typeof body !== "object" || Array.isArray(body)) {
         return "";
@@ -23,6 +53,10 @@ function withDetail(message, detail) {
 }
 function errorForStatus(status, endpoint, body) {
     const detail = wordpressMessage(body);
+    const coded = previewError(wordpressErrorCode(body), status, detail);
+    if (coded) {
+        return coded;
+    }
     if (status === 404 && endpoint.includes("/kiwipress/v1")) {
         return new BridgeError("plugin_missing", withDetail("The KiwiPress Bridge plugin is not available at kiwipress/v1 (HTTP 404). Install and activate it, and confirm /wp-json is reachable.", detail), 404);
     }
@@ -54,7 +88,10 @@ function parseHealth(body) {
         lockdown: requireBoolean(body, "lockdown", "request_failed", "The health response was not from the KiwiPress Bridge plugin."),
         paired: requireBoolean(body, "paired", "request_failed", "The health response was not from the KiwiPress Bridge plugin."),
         frontend_url_set: requireBoolean(body, "frontend_url_set", "request_failed", "The health response was not from the KiwiPress Bridge plugin."),
-        site_url: body.site_url
+        site_url: body.site_url,
+        features: Array.isArray(body.features)
+            ? body.features.filter((feature) => typeof feature === "string")
+            : []
     };
 }
 function parseSettings(body) {
@@ -65,7 +102,8 @@ function parseSettings(body) {
         frontend_url: body.frontend_url,
         lockdown: requireBoolean(body, "lockdown", "request_failed", "WordPress did not return KiwiPress Bridge settings."),
         paired: requireBoolean(body, "paired", "request_failed", "WordPress did not return KiwiPress Bridge settings."),
-        project_label: body.project_label
+        project_label: body.project_label,
+        preview_path: typeof body.preview_path === "string" ? body.preview_path : ""
     };
 }
 function hasManageOptions(body) {
@@ -146,6 +184,51 @@ export class Bridge extends WPCore {
             slug: typeof body.slug === "string" ? body.slug : "",
             name: typeof body.name === "string" ? body.name : ""
         };
+    }
+    /**
+     * `GET /wp-json/kiwipress/v1/preview` with the token header.
+     *
+     * Unauthenticated, including when `WP_USER` / `WP_APP_PASSWORD` (or the
+     * constructor credentials) are set. A bad Authorization header would make
+     * WordPress reject this public route.
+     */
+    async preview(token) {
+        const trimmed = token.trim();
+        if (!trimmed) {
+            throw new BridgeError("preview_missing", "The preview token is missing.", 401);
+        }
+        const endpoint = this.endpoint("/preview");
+        const body = await this.request(endpoint, {
+            method: "GET",
+            headers: { [PREVIEW_HEADER]: trimmed }
+        }, false);
+        const document = parsePreviewDocument(body);
+        if (!document) {
+            throw new BridgeError("request_failed", "WordPress did not return a KiwiPress draft preview.");
+        }
+        return document;
+    }
+    /**
+     * `POST /wp-json/kiwipress/v1/preview/token`. Requires the caller to be
+     * able to edit the post. `source: "auto"` lets WordPress pick an autosave
+     * when one exists.
+     */
+    async createPreviewLink(input) {
+        if (!Number.isInteger(input.postId) || input.postId <= 0) {
+            throw new BridgeError("request_failed", "A preview link needs a post id.");
+        }
+        const source = input.source ?? "auto";
+        const endpoint = this.endpoint("/preview/token");
+        const body = await this.request(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: input.postId, source })
+        }, true);
+        const link = parsePreviewLink(body);
+        if (!link) {
+            throw new BridgeError("request_failed", "WordPress did not return a KiwiPress preview link.");
+        }
+        return link;
     }
     endpoint(path) {
         return `${this.config.url}/${this.config.apiBase}${path}`;

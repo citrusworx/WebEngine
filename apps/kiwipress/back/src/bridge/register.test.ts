@@ -17,6 +17,7 @@ type Settings = {
     lockdown: boolean;
     paired: boolean;
     project_label: string;
+    preview_path: string;
 };
 
 type WpState = {
@@ -30,6 +31,9 @@ type WpState = {
     seenAuth: Array<string | undefined>;
     usersMe: number;
     settingsPosts: unknown[];
+    autosaves: unknown[];
+    previewAuth: Array<string | undefined>;
+    previewHosts: string[];
 };
 
 const servers: http.Server[] = [];
@@ -76,7 +80,7 @@ function sendJson(res: http.ServerResponse, status: number, body: unknown) {
 
 function freshState(): WpState {
     return {
-        pluginVersion: "0.1.0",
+        pluginVersion: "0.2.0",
         healthStatus: 200,
         userStatus: 200,
         manageOptions: true,
@@ -86,11 +90,15 @@ function freshState(): WpState {
             frontend_url: "",
             lockdown: true,
             paired: false,
-            project_label: ""
+            project_label: "",
+            preview_path: "/preview"
         },
         seenAuth: [],
         usersMe: 0,
-        settingsPosts: []
+        settingsPosts: [],
+        autosaves: [],
+        previewAuth: [],
+        previewHosts: []
     };
 }
 
@@ -117,7 +125,8 @@ async function startWordPress(state: WpState): Promise<string> {
                 lockdown: state.settings.lockdown,
                 paired: state.settings.paired,
                 frontend_url_set: state.settings.frontend_url !== "",
-                site_url: `http://${req.headers.host}`
+                site_url: `http://${req.headers.host}`,
+                features: state.pluginVersion === "0.2.0" ? ["preview"] : []
             });
             return;
         }
@@ -157,6 +166,70 @@ async function startWordPress(state: WpState): Promise<string> {
             }
             const body = state.confirmLie ? { ...state.settings, paired: false, project_label: "" } : state.settings;
             sendJson(res, 200, body);
+            return;
+        }
+
+        const autosave = url.pathname.match(/^\/wp-json\/wp\/v2\/([^/]+)\/(\d+)\/autosaves$/);
+        if (autosave && req.method === "POST") {
+            const posted = raw ? JSON.parse(raw) as Record<string, unknown> : {};
+            state.autosaves.push(posted);
+            sendJson(res, 200, { id: Number(autosave[2]), parent: Number(autosave[2]) });
+            return;
+        }
+
+        const postRead = url.pathname.match(/^\/wp-json\/wp\/v2\/([^/]+)\/(\d+)$/);
+        if (postRead && req.method === "GET") {
+            sendJson(res, 200, {
+                id: Number(postRead[2]),
+                status: "publish",
+                title: { raw: "Saved title" },
+                content: { raw: "<p>Saved</p>" },
+                excerpt: { raw: "" }
+            });
+            return;
+        }
+
+        if (url.pathname === "/wp-json/kiwipress/v1/preview/token" && req.method === "POST") {
+            const posted = raw ? JSON.parse(raw) as { post_id?: number } : {};
+            const payload = Buffer.from(JSON.stringify({
+                v: 1,
+                iss: "http://169.254.169.254",
+                pid: posted.post_id ?? 0,
+                pt: "post",
+                src: "autosave",
+                uid: 3,
+                iat: 1,
+                exp: 2,
+                jti: "abc"
+            })).toString("base64url");
+            const token = `kp1.${payload}.c2ln`;
+            sendJson(res, 200, {
+                token,
+                url: `${state.settings.frontend_url.replace(/\/+$/, "")}/preview?kiwipress_preview=${token}`,
+                expires_at: "2026-10-23T05:00:00+00:00"
+            });
+            return;
+        }
+
+        if (url.pathname === "/wp-json/kiwipress/v1/preview" && req.method === "GET") {
+            state.previewAuth.push(req.headers.authorization);
+            state.previewHosts.push(req.headers.host ?? "");
+            const header = req.headers["x-kiwipress-preview"];
+            if (header === "expired") {
+                sendJson(res, 401, {
+                    code: "kiwipress_bridge_preview_expired",
+                    message: "Preview token has expired."
+                });
+                return;
+            }
+            sendJson(res, 200, {
+                preview: true,
+                source: "autosave",
+                post_id: 9,
+                post_type: "post",
+                expires_at: "2026-10-23T05:00:00+00:00",
+                post: { title: { rendered: "Autosave title" }, content: { rendered: "<p>Autosave</p>" } }
+            });
             return;
         }
 
@@ -228,7 +301,7 @@ describe("WordPress bridge routes", () => {
         expect(found.status).toBe(200);
         expect(found.json).toMatchObject({
             pluginPresent: true,
-            pluginVersion: "0.1.0",
+            pluginVersion: "0.2.0",
             lockdown: true,
             paired: false
         });
@@ -337,6 +410,9 @@ describe("WordPress bridge routes", () => {
             expect(status.status).toBe(200);
             expect(status.json.status).toBe("connected");
             expect(status.json.reasons).toEqual([]);
+            expect(status.json.previewReady).toBe(true);
+            expect(status.json.previewPath).toBe("/preview");
+            expect(status.json.previewReason).toBeNull();
             expect(status.text).not.toContain(PASSWORD);
             expect(status.text).not.toContain(stored!.applicationPassword);
             expect((await store.get("acme"))?.lastHealth?.result.status).toBe("connected");
@@ -408,10 +484,11 @@ describe("WordPress bridge routes", () => {
         const status = await request(`${base}/projects/acme/bridge/status`);
         expect(status.json.status).toBe("needs_attention");
         expect(status.json.reasons).toEqual([
-            "Plugin version 0.0.9 is older than 0.1.0.",
+            "Plugin version 0.0.9 is older than 0.2.0. Update the plugin for draft preview.",
             "WordPress reports this site is not paired.",
             "The frontend URL is unreachable."
         ]);
+        expect(status.json.previewReady).toBe(false);
         expect((await store.get("acme"))?.lastHealth?.result.status).toBe("needs_attention");
     });
 
@@ -444,6 +521,88 @@ describe("WordPress bridge routes", () => {
 
         const again = await request(`${base}/projects/acme/bridge/status`);
         expect(again.json.status).toBe("disconnected");
+    });
+
+    it("mints a preview from an autosave without publishing, and reads it from the paired site", async () => {
+        const state = freshState();
+        const site = await startWordPress(state);
+        const store = BridgeStore.memory();
+        const base = await startApi(withKey({
+            store,
+            contentGateway: () => ({ mode: "wordpress", siteUrl: site })
+        }));
+        const paired = await request(`${base}/projects/acme/bridge/pair`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(pairBody(site, `${site}/frontend`))
+        });
+        expect(paired.status).toBe(200);
+
+        const skipped = await request(`${base}/projects/acme/bridge/preview`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ postId: 9, postType: "post", draft: false })
+        });
+        expect(skipped.status).toBe(200);
+        expect(state.autosaves).toEqual([]);
+        expect(skipped.text).not.toContain(PASSWORD);
+        expect(String(skipped.json.url)).toContain("/preview?kiwipress_preview=");
+        expect(String(skipped.json.url)).not.toContain("169.254.169.254");
+
+        const drafted = await request(`${base}/projects/acme/bridge/preview`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+                postId: 9,
+                postType: "posts",
+                draft: true,
+                title: "Autosave title",
+                content: "<p>Autosave</p>",
+                status: "publish"
+            })
+        });
+        expect(drafted.status, drafted.text).toBe(200);
+        expect(drafted.text).not.toContain(PASSWORD);
+        expect(state.autosaves).toEqual([
+            { title: "Autosave title", content: "<p>Autosave</p>", excerpt: "" }
+        ]);
+
+        const token = new URL(String(drafted.json.url)).searchParams.get("kiwipress_preview") ?? "";
+        const content = await request(`${base}/projects/acme/bridge/preview/content?token=${encodeURIComponent(token)}`);
+        expect(content.status, content.text).toBe(200);
+        expect(content.json).toMatchObject({
+            preview: true,
+            post: { title: { rendered: "Autosave title" } }
+        });
+        expect(state.previewAuth.every((value) => value === undefined)).toBe(true);
+        expect(state.previewHosts.every((host) => host.startsWith("127.0.0.1"))).toBe(true);
+        expect(content.text).not.toContain(PASSWORD);
+
+        state.previewAuth.length = 0;
+        const expired = await request(`${base}/projects/acme/bridge/preview/content?token=expired`);
+        expect(expired.status).toBe(401);
+        expect(expired.json.code).toBe("preview_expired");
+        expect(expired.json.code).not.toBe("bad_credentials");
+    });
+
+    it("keeps preview off when the content gateway is not the paired WordPress site", async () => {
+        const state = freshState();
+        const site = await startWordPress(state);
+        const store = BridgeStore.memory();
+        const base = await startApi(withKey({
+            store,
+            contentGateway: () => ({ mode: "nectarine", siteUrl: null })
+        }));
+        await request(`${base}/projects/acme/bridge/pair`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(pairBody(site, `${site}/frontend`))
+        });
+
+        const status = await request(`${base}/projects/acme/bridge/status`);
+        expect(status.json.status).toBe("connected");
+        expect(status.json.previewReady).toBe(false);
+        expect(String(status.json.previewReason)).toMatch(/WordPress mode/);
     });
 
     it("requires the same gateway token as the other app routes", async () => {

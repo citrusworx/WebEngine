@@ -1,11 +1,14 @@
 import { authorizeKiwiPressGateway, Bridge, isBridgeError, type KiwiPressGatewayOptions } from "@citrusworx/kiwipress";
 import type { RequestContext, ResponseData, Seltzer } from "@citrusworx/seltzer";
 import { decryptApplicationPassword, encryptApplicationPassword, resolveSecretKey, SecretKeyError } from "./crypto.js";
+import { autosaveFields, rawText, restBaseForPostType } from "./preview.js";
 import {
     evaluatePairedStatus,
+    evaluatePreviewReady,
     FRONTEND_REACHABILITY_TIMEOUT_MS,
     isFrontendReachable,
-    urlsMatch
+    urlsMatch,
+    type ContentGatewaySnapshot
 } from "./status.js";
 import { BridgeStore, defaultBridgeFilePath, type BridgeRecord } from "./store.js";
 
@@ -23,6 +26,12 @@ export type BridgeRouteOptions = KiwiPressGatewayOptions & {
     now?: () => Date;
     resolveKey?: () => Buffer;
     reachabilityTimeoutMs?: number;
+    /**
+     * Content gateway the dashboard edits through. Draft preview stays off
+     * unless this is WordPress mode on the paired site URL. Omit it only
+     * when this process has no content gateway to compare.
+     */
+    contentGateway?: () => ContentGatewaySnapshot | null;
 };
 
 const PROJECT_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
@@ -95,10 +104,15 @@ function failure(error: unknown, secrets: string[] = []): ResponseData {
 
     if (isBridgeError(error)) {
         const status = error.code === "bad_credentials"
+            || error.code === "preview_missing"
+            || error.code === "preview_invalid"
+            || error.code === "preview_expired"
             ? 401
             : error.code === "insufficient_role"
+                || error.code === "preview_forbidden"
+                || error.code === "preview_disabled"
                 ? 403
-                : error.code === "plugin_missing"
+                : error.code === "plugin_missing" || error.code === "preview_not_found"
                     ? 404
                     : 502;
         return json(status, { error: scrub(error.message, secrets), code: error.code });
@@ -126,8 +140,44 @@ function disconnected(projectId: string): ResponseData {
         projectId,
         pluginPresent: false,
         frontendReachable: false,
-        lastHealth: null
+        lastHealth: null,
+        previewReady: false,
+        previewPath: null,
+        previewReason: "This project is not paired with WordPress."
     });
+}
+
+type WordPressReply = {
+    status: number;
+    body: unknown;
+    text: string;
+};
+
+async function wordpressRequest(
+    siteUrl: string,
+    username: string,
+    password: string,
+    path: string,
+    init: RequestInit
+): Promise<WordPressReply> {
+    const endpoint = `${siteUrl.replace(/\/+$/, "")}${path}`;
+    const headers = new Headers(init.headers);
+    headers.set("Authorization", `Basic ${Buffer.from(`${username}:${password}`, "utf8").toString("base64")}`);
+    if (init.body && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+
+    const response = await fetch(endpoint, { ...init, headers });
+    const text = await response.text();
+    let body: unknown = null;
+    if (text) {
+        try {
+            body = JSON.parse(text);
+        } catch {
+            body = null;
+        }
+    }
+    return { status: response.status, body, text };
 }
 
 export function registerKiwiPressBridge(app: Seltzer, options: BridgeRouteOptions = {}): Seltzer {
@@ -279,11 +329,37 @@ export function registerKiwiPressBridge(app: Seltzer, options: BridgeRouteOption
                 }
 
                 const reachable = await isFrontendReachable(record.frontendUrl, reachabilityTimeoutMs);
-                const result = evaluatePairedStatus({
+                const connection = evaluatePairedStatus({
                     health,
                     healthError,
                     frontendReachable: reachable
                 });
+                const preview = evaluatePreviewReady({
+                    health,
+                    pairedSiteUrl: record.siteUrl,
+                    gateway: options.contentGateway ? options.contentGateway() : null
+                });
+                let previewPath: string | null = null;
+                if (health) {
+                    try {
+                        const key = resolveKey();
+                        const password = decryptApplicationPassword(record.applicationPassword, projectId, key);
+                        const settings = await new Bridge({
+                            url: record.siteUrl,
+                            username: record.username,
+                            appPassword: password
+                        }).getSettings();
+                        previewPath = settings.preview_path || null;
+                    } catch {
+                        previewPath = null;
+                    }
+                }
+                const result = {
+                    ...connection,
+                    previewReady: preview.previewReady,
+                    previewPath,
+                    previewReason: preview.previewReason
+                };
                 const lastHealth = { at: now().toISOString(), result };
                 await store.updateLastHealth(projectId, lastHealth);
 
@@ -296,7 +372,10 @@ export function registerKiwiPressBridge(app: Seltzer, options: BridgeRouteOption
                     pluginPaired: result.pluginPaired,
                     lockdown: result.lockdown,
                     wpVersion: result.wpVersion,
-                    frontendReachable: result.frontendReachable
+                    frontendReachable: result.frontendReachable,
+                    previewReady: result.previewReady,
+                    previewPath: result.previewPath,
+                    previewReason: result.previewReason
                 });
             } catch (error) {
                 return failure(error);
@@ -338,6 +417,128 @@ export function registerKiwiPressBridge(app: Seltzer, options: BridgeRouteOption
                 });
             } catch (error) {
                 return failure(error);
+            }
+        })
+    });
+
+    app.route({
+        method: "POST",
+        path: "/projects/:id/bridge/preview",
+        handler: guard(async (ctx) => {
+            const body = asObject(ctx.body);
+            let password = "";
+            let token = "";
+            try {
+                const projectId = assertProjectId(ctx.params.id);
+                const record = await store.get(projectId);
+                if (!record) {
+                    return json(404, {
+                        error: "This project is not paired with WordPress.",
+                        code: "not_paired"
+                    });
+                }
+
+                const postId = typeof body.postId === "number" ? body.postId : Number(body.postId);
+                if (!Number.isInteger(postId) || postId <= 0) {
+                    throw new BridgeInputError("postId is required.");
+                }
+
+                const postType = typeof body.postType === "string" ? body.postType : "post";
+                const base = restBaseForPostType(postType);
+                const key = resolveKey();
+                password = decryptApplicationPassword(record.applicationPassword, projectId, key);
+                const draft = body.draft === true;
+
+                if (draft) {
+                    const current = await wordpressRequest(
+                        record.siteUrl,
+                        record.username,
+                        password,
+                        `/wp-json/wp/v2/${base}/${postId}?context=edit`,
+                        { method: "GET" }
+                    );
+                    if (current.status === 401) {
+                        return json(401, { error: "WordPress rejected the stored application password.", code: "bad_credentials" });
+                    }
+                    if (current.status === 403) {
+                        return json(403, { error: "The paired WordPress user cannot edit that item.", code: "preview_forbidden" });
+                    }
+                    if (current.status === 404) {
+                        return json(404, { error: "That WordPress item was not found.", code: "preview_not_found" });
+                    }
+                    if (current.status < 200 || current.status >= 300) {
+                        throw new Error(`WordPress autosave read failed with HTTP ${current.status}.`);
+                    }
+
+                    const currentPost = asObject(current.body);
+                    const fields = autosaveFields(body, {
+                        title: rawText(currentPost.title),
+                        content: rawText(currentPost.content),
+                        excerpt: rawText(currentPost.excerpt)
+                    });
+                    const saved = await wordpressRequest(
+                        record.siteUrl,
+                        record.username,
+                        password,
+                        `/wp-json/wp/v2/${base}/${postId}/autosaves`,
+                        { method: "POST", body: JSON.stringify(fields) }
+                    );
+                    if (saved.status === 401) {
+                        return json(401, { error: "WordPress rejected the stored application password.", code: "bad_credentials" });
+                    }
+                    if (saved.status === 403) {
+                        return json(403, { error: "The paired WordPress user cannot edit that item.", code: "preview_forbidden" });
+                    }
+                    if (saved.status < 200 || saved.status >= 300) {
+                        throw new Error(`WordPress refused the autosave with HTTP ${saved.status}.`);
+                    }
+                }
+
+                const link = await new Bridge({
+                    url: record.siteUrl,
+                    username: record.username,
+                    appPassword: password
+                }).createPreviewLink({ postId, source: "auto" });
+                token = link.token;
+
+                return json(200, {
+                    url: link.url,
+                    expiresAt: link.expires_at
+                });
+            } catch (error) {
+                return failure(error, [password, token]);
+            }
+        })
+    });
+
+    app.route({
+        method: "GET",
+        path: "/projects/:id/bridge/preview/content",
+        handler: guard(async (ctx) => {
+            const token = typeof ctx.query.token === "string" ? ctx.query.token : "";
+            try {
+                const projectId = assertProjectId(ctx.params.id);
+                if (!token.trim()) {
+                    throw new BridgeInputError("Preview token is required.");
+                }
+                if (token.length > 8192) {
+                    throw new BridgeInputError("Preview token is not valid.");
+                }
+
+                const record = await store.get(projectId);
+                if (!record) {
+                    return json(404, {
+                        error: "This project is not paired with WordPress.",
+                        code: "not_paired"
+                    });
+                }
+
+                // The token's iss is not a URL we fetch. The paired site is.
+                const bridge = new Bridge({ url: record.siteUrl });
+                const document = await bridge.preview(token);
+                return json(200, document);
+            } catch (error) {
+                return failure(error, [token]);
             }
         })
     });

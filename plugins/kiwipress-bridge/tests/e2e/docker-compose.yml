@@ -48,6 +48,7 @@ services:
     volumes:
       - wp_html:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/kiwipress-bridge:ro
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
       - ${KIWIPRESS_E2E_APACHE_DIR:-./apache}/ports.conf:/etc/apache2/ports.conf:ro
       - ${KIWIPRESS_E2E_APACHE_DIR:-./apache}/vhost.conf:/etc/apache2/sites-enabled/000-default.conf:ro
 
@@ -72,6 +73,7 @@ services:
     volumes:
       - wp_html:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/kiwipress-bridge:ro
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
     entrypoint: ["wp"]
     profiles: ["cli"]
 

@@ -2,8 +2,8 @@
 /**
  * Plugin Name: KiwiPress Bridge
  * Plugin URI: https://github.com/citrusworx/WebEngine
- * Description: WordPress-side bridge for KiwiPress. Public health, pairing settings, and optional front-end lockdown. Content stays on /wp/v2.
- * Version: 0.1.0
+ * Description: WordPress-side bridge for KiwiPress. Public health, pairing settings, draft preview, and optional front-end lockdown. Content stays on /wp/v2.
+ * Version: 0.2.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: CitrusWorx
@@ -27,20 +27,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'KIWIPRESS_BRIDGE_VERSION', '0.1.0' );
+define( 'KIWIPRESS_BRIDGE_VERSION', '0.2.0' );
 define( 'KIWIPRESS_BRIDGE_FILE', __FILE__ );
 define( 'KIWIPRESS_BRIDGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'KIWIPRESS_BRIDGE_OPTION', 'kiwipress_bridge' );
+define( 'KIWIPRESS_BRIDGE_PREVIEW_SECRET_OPTION', 'kiwipress_bridge_preview_secret' );
 
 require_once KIWIPRESS_BRIDGE_DIR . 'includes/options.php';
 require_once KIWIPRESS_BRIDGE_DIR . 'includes/lockdown.php';
 require_once KIWIPRESS_BRIDGE_DIR . 'includes/rest.php';
+require_once KIWIPRESS_BRIDGE_DIR . 'includes/preview.php';
 require_once KIWIPRESS_BRIDGE_DIR . 'includes/admin.php';
 
 register_activation_hook( KIWIPRESS_BRIDGE_FILE, 'kiwipress_bridge_activate' );
 
 kiwipress_bridge_lockdown_register();
 kiwipress_bridge_rest_register();
+kiwipress_bridge_preview_register();
 kiwipress_bridge_admin_register();
 
 /**
@@ -57,8 +60,11 @@ function kiwipress_bridge_activate() {
 		// update_option creates the row when it is missing, and replaces a
 		// non-array value if one was stored by hand.
 		update_option( KIWIPRESS_BRIDGE_OPTION, $defaults );
-		return;
+	} else {
+		update_option( KIWIPRESS_BRIDGE_OPTION, array_merge( $defaults, $existing ) );
 	}
 
-	update_option( KIWIPRESS_BRIDGE_OPTION, array_merge( $defaults, $existing ) );
+	// Separate row, autoload no. Upgrades that skip this hook create it on
+	// the first preview mint or verify instead.
+	kiwipress_bridge_ensure_preview_secret();
 }

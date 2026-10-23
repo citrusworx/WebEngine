@@ -48,6 +48,12 @@ apps/*
 !./apps/todo/**
 !apps/todo/
 !apps/todo/**
+!./apps/kiwipress/
+!./apps/kiwipress/**
+!apps/kiwipress/
+!apps/kiwipress/**
+apps/kiwipress/**/node_modules
+apps/kiwipress/**/node_modules/**
 
 ./kiwipresser/*
 kiwipresser/*

@@ -1,6 +1,14 @@
 import { WPCore, type WPCoreConfig } from "../core/WPCore.js";
 import { kiwiCallOptions, sendWordPressRequest } from "../core/route-utils.js";
 import { BridgeError, type BridgeErrorCode } from "./errors.js";
+import {
+    PREVIEW_HEADER,
+    parsePreviewDocument,
+    parsePreviewLink,
+    type PreviewDocument,
+    type PreviewLink,
+    type PreviewLinkSource
+} from "./preview.js";
 
 /** Public health payload from `GET /wp-json/kiwipress/v1/health`. */
 export type BridgeHealth = {
@@ -10,6 +18,8 @@ export type BridgeHealth = {
     paired: boolean;
     frontend_url_set: boolean;
     site_url: string;
+    /** Empty on 0.1.0 sites, which omit the field. 0.2.0 includes `preview`. */
+    features: string[];
 };
 
 /** Settings payload from `GET` or `POST /wp-json/kiwipress/v1/settings`. */
@@ -18,6 +28,8 @@ export type BridgeSettings = {
     lockdown: boolean;
     paired: boolean;
     project_label: string;
+    /** Path only. Empty when an older plugin does not send the field. */
+    preview_path: string;
 };
 
 export type BridgeSettingsPatch = Partial<BridgeSettings>;
@@ -32,7 +44,39 @@ export type BridgeCredentialCheck = {
 const BRIDGE_API_BASE = "wp-json/kiwipress/v1";
 const REQUEST_TIMEOUT_MS = 10_000;
 
-const SETTINGS_KEYS = ["frontend_url", "lockdown", "paired", "project_label"] as const;
+const SETTINGS_KEYS = ["frontend_url", "lockdown", "paired", "project_label", "preview_path"] as const;
+
+function wordpressErrorCode(body: unknown): string {
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return "";
+    }
+
+    const code = (body as { code?: unknown }).code;
+    return typeof code === "string" ? code : "";
+}
+
+/**
+ * Plugin error codes win over the HTTP status. An expired preview token is
+ * 401, and that must not be reported as a bad application password.
+ */
+function previewError(code: string, status: number, detail: string): BridgeError | null {
+    switch (code) {
+        case "kiwipress_bridge_preview_missing":
+            return new BridgeError("preview_missing", withDetail("The preview token is missing.", detail), status || 401);
+        case "kiwipress_bridge_preview_invalid":
+            return new BridgeError("preview_invalid", withDetail("The preview token is not valid.", detail), status || 401);
+        case "kiwipress_bridge_preview_expired":
+            return new BridgeError("preview_expired", withDetail("The preview token has expired.", detail), status || 401);
+        case "kiwipress_bridge_preview_forbidden":
+            return new BridgeError("preview_forbidden", withDetail("This user can no longer preview that item.", detail), status || 403);
+        case "kiwipress_bridge_preview_disabled":
+            return new BridgeError("preview_disabled", withDetail("Draft preview is off on this WordPress site.", detail), status || 403);
+        case "kiwipress_bridge_preview_not_found":
+            return new BridgeError("preview_not_found", withDetail("That preview item was not found.", detail), status || 404);
+        default:
+            return null;
+    }
+}
 
 function wordpressMessage(body: unknown): string {
     if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -58,6 +102,10 @@ function withDetail(message: string, detail: string): string {
 
 function errorForStatus(status: number, endpoint: string, body: unknown): BridgeError {
     const detail = wordpressMessage(body);
+    const coded = previewError(wordpressErrorCode(body), status, detail);
+    if (coded) {
+        return coded;
+    }
 
     if (status === 404 && endpoint.includes("/kiwipress/v1")) {
         return new BridgeError(
@@ -137,7 +185,10 @@ function parseHealth(body: unknown): BridgeHealth {
             "request_failed",
             "The health response was not from the KiwiPress Bridge plugin."
         ),
-        site_url: body.site_url
+        site_url: body.site_url,
+        features: Array.isArray(body.features)
+            ? body.features.filter((feature): feature is string => typeof feature === "string")
+            : []
     };
 }
 
@@ -150,7 +201,8 @@ function parseSettings(body: unknown): BridgeSettings {
         frontend_url: body.frontend_url,
         lockdown: requireBoolean(body, "lockdown", "request_failed", "WordPress did not return KiwiPress Bridge settings."),
         paired: requireBoolean(body, "paired", "request_failed", "WordPress did not return KiwiPress Bridge settings."),
-        project_label: body.project_label
+        project_label: body.project_label,
+        preview_path: typeof body.preview_path === "string" ? body.preview_path : ""
     };
 }
 
@@ -250,6 +302,55 @@ export class Bridge extends WPCore {
             slug: typeof body.slug === "string" ? body.slug : "",
             name: typeof body.name === "string" ? body.name : ""
         };
+    }
+
+    /**
+     * `GET /wp-json/kiwipress/v1/preview` with the token header.
+     *
+     * Unauthenticated, including when `WP_USER` / `WP_APP_PASSWORD` (or the
+     * constructor credentials) are set. A bad Authorization header would make
+     * WordPress reject this public route.
+     */
+    async preview(token: string): Promise<PreviewDocument> {
+        const trimmed = token.trim();
+        if (!trimmed) {
+            throw new BridgeError("preview_missing", "The preview token is missing.", 401);
+        }
+
+        const endpoint = this.endpoint("/preview");
+        const body = await this.request(endpoint, {
+            method: "GET",
+            headers: { [PREVIEW_HEADER]: trimmed }
+        }, false);
+        const document = parsePreviewDocument(body);
+        if (!document) {
+            throw new BridgeError("request_failed", "WordPress did not return a KiwiPress draft preview.");
+        }
+        return document;
+    }
+
+    /**
+     * `POST /wp-json/kiwipress/v1/preview/token`. Requires the caller to be
+     * able to edit the post. `source: "auto"` lets WordPress pick an autosave
+     * when one exists.
+     */
+    async createPreviewLink(input: { postId: number; source?: PreviewLinkSource }): Promise<PreviewLink> {
+        if (!Number.isInteger(input.postId) || input.postId <= 0) {
+            throw new BridgeError("request_failed", "A preview link needs a post id.");
+        }
+
+        const source = input.source ?? "auto";
+        const endpoint = this.endpoint("/preview/token");
+        const body = await this.request(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: input.postId, source })
+        }, true);
+        const link = parsePreviewLink(body);
+        if (!link) {
+            throw new BridgeError("request_failed", "WordPress did not return a KiwiPress preview link.");
+        }
+        return link;
     }
 
     private endpoint(path: string): string {

@@ -2,9 +2,11 @@
 /**
  * REST routes under kiwipress/v1.
  *
- *   GET  /health    public. Version and flags only. No secrets, no frontend URL.
- *   GET  /settings  manage_options. The saved option.
- *   POST /settings  manage_options. Partial update of the four option fields.
+ *   GET  /health         public. Version, flags, and features. No secrets, no frontend URL.
+ *   GET  /settings       manage_options. The saved option, including preview_path.
+ *   POST /settings       manage_options. Partial update. The preview secret is not a field.
+ *   GET  /preview        public, but only with a signed preview token. See includes/preview.php.
+ *   POST /preview/token  edit_post. Mints a preview URL. See includes/preview.php.
  *
  * Application passwords work because WordPress authenticates them before
  * permission_callback runs. A user who can manage_options (typically an
@@ -104,7 +106,8 @@ function kiwipress_bridge_rest_get_settings() {
  * POST /kiwipress/v1/settings
  *
  * Keys omitted from the body stay as they are. Unknown keys are ignored.
- * There is no webhook, preview token, or content payload on this route.
+ * There is no webhook and no preview secret on this route. preview_path is
+ * a path on the frontend (`/preview` by default), not a token.
  *
  * @param WP_REST_Request $request Incoming request.
  * @return WP_REST_Response|WP_Error
@@ -147,6 +150,14 @@ function kiwipress_bridge_rest_update_settings( WP_REST_Request $request ) {
 			return $label;
 		}
 		$next['project_label'] = $label;
+	}
+
+	if ( array_key_exists( 'preview_path', $params ) ) {
+		$path = kiwipress_bridge_sanitize_preview_path( $params['preview_path'] );
+		if ( is_wp_error( $path ) ) {
+			return $path;
+		}
+		$next['preview_path'] = $path;
 	}
 
 	update_option( KIWIPRESS_BRIDGE_OPTION, $next );

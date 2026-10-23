@@ -13,6 +13,9 @@ export type BridgeHealthResult = {
     wpVersion?: string;
     frontendReachable: boolean;
     siteUrl?: string;
+    previewReady?: boolean;
+    previewPath?: string | null;
+    previewReason?: string | null;
 };
 
 export type BridgeLastHealth = {
