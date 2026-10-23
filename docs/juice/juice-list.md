@@ -89,7 +89,7 @@ One unmarked element between the slots is the same primary line. `[list-content]
 </li>
 ```
 
-Without both a leading slot and a trailing slot, the grid columns collapse to `minmax(0, 1fr)`. A row with only a leading slot keeps the three-column track so the label stays in column 2.
+The grid collapses to one column (`minmax(0, 1fr)`) only when the row has neither a leading slot nor a trailing slot. A row that has only one of those slots keeps the three-column track, so the label stays in column 2.
 
 The slot margin is structural. It is not `--juice-list-gap`. A stack gap of `0` would otherwise glue an avatar to the label. Leading and trailing are `inline-flex` with `gap: 0.5rem` between their own children. `[list-content]` stacks its lines with `gap: 0.125rem`. A sibling `[list-secondary]` uses `margin-top: 0.125rem` instead.
 
