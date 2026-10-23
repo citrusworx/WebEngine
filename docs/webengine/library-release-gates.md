@@ -32,7 +32,7 @@ Nectarine’s own status label is **hostable alpha** at published **0.4.0** ([ne
 
 **Should be:** CSS-first, attribute-driven styling and composition, shipped themes, and a small set of auto-enhance runtimes (nav / accordion / tabs). Not a large JS component library.
 
-**Observation:** done on master, unpublished versus the live npm cut. The twenty-seven interactive runtimes expose `getState()`, and they publish changes through `juice:change` (native `input` / `change` for select, input, and textarea). Icon button is the twenty-sixth and avatar is the twenty-seventh. Neither is in the published npm 0.9.2 release. Skeleton is CSS-only loading chrome on master, not in that npm cut, and it is not part of this observation contract. That contract is DOM. Juice works without Sig. The table is [juice-runtime-behavior.md](../juice/juice-runtime-behavior.md#juicechange).
+**Observation:** done on master, unpublished versus the live npm cut. The twenty-seven interactive runtimes expose `getState()`, and they publish changes through `juice:change` (native `input` / `change` for select, input, and textarea). Icon button is the twenty-sixth and avatar is the twenty-seventh. Neither is in the published npm 0.9.2 release. Skeleton is CSS-only loading chrome on master, not in that npm cut, and it is not part of this observation contract. List is CSS-only stacked rows on master, not in that npm cut, and it is not part of this observation contract. That contract is DOM. Juice works without Sig. The table is [juice-runtime-behavior.md](../juice/juice-runtime-behavior.md#juicechange).
 
 **Ready when:**
 
