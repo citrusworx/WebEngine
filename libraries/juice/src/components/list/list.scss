@@ -1,0 +1,434 @@
+// List chrome is structural. Color comes from core roles on :root.
+// Shipped themes are not required to bind --juice-list-*. Divider,
+// secondary ink, and the hover / selected washes are currentColor
+// mixes, so they follow inherited ink on light and dark pages.
+//
+//   --juice-list-gap
+//   --juice-list-padding
+//   --juice-list-padding-dense
+//   --juice-list-divider
+//   --juice-list-secondary
+//   --juice-list-hover
+//   --juice-list-selected
+//   --juice-list-radius
+//
+// Why color is restated on [theme]: a custom property resolves var() on
+// the element that sets it. currentColor stays in these values and
+// resolves where the row paints. Geometry stays on :root only.
+//
+// Checked against KiwiPress (light), Tide (dark), and Aquaflux. Ink on
+// the 8% hover wash and the 14% selected wash stays above 4.5:1 there.
+// Secondary is currentColor at 92% so it still clears that selected
+// wash on KiwiPress (the light pair with the least room). Citrusmint's
+// body ink is already 4.62:1 on its page, so the same washes drop that
+// pair under 4.5:1. This file does not override a theme. The divider
+// is a decorative hairline (under 3:1 on the page). It is not a control
+// boundary.
+//
+// Juice chrome. Stacked rows. Distinct from:
+//   - [menu] / [menuitem] (anchored menu, overlay)
+//   - [combobox-list] (editable listbox)
+//   - [tabs-list] (tab strip)
+//   - [pagination] (page controls)
+//   - [breadcrumb] (trail)
+//
+// Native collision: HTML `list` is not global, but <input list> points
+// at a <datalist>. Selectors are :where(ul, ol, div)[list], so an input
+// is not painted. There is no <list> element. [selected] is scoped to
+// [list-item] — <option selected> is a different attribute use. Do not
+// style [role="list"] or [role="listitem"]. Do not style bare
+// [aria-current] outside this list (breadcrumb and pagination own
+// theirs).
+//
+// Juice names:
+//   [list]            stack on ul, ol, or div. Markers and the list's
+//                     own padding reset. Items stack with --juice-list-gap
+//                     (default 0, so a divided list's rules meet).
+//   [divided]         on [list]. A hairline between direct children.
+//   [dense]           on [list]. Tighter row padding and a tighter
+//                     slot margin. Does not change the stack gap.
+//   [list-item]       one row. Leading slot, content, trailing slot.
+//   [list-leading]    start slot. Holds an [avatar] or an [icon] at
+//                     that component's own size. The slot does not clip,
+//                     so an avatar status dot keeps its rim.
+//   [list-content]    primary line plus an optional [list-secondary].
+//                     One unmarked element between the slots is the
+//                     same primary line.
+//   [list-secondary]  second line. Nested in [list-content], or a
+//                     sibling under the primary element.
+//   [list-trailing]   end slot.
+//   [selected]        on the row or its a/button. Same fill as
+//                     [aria-current] other than "false".
+//
+// [leading] is letter-spacing. The slot is [list-leading], not [leading].
+//
+// Interactive rows: the item is an a or button, or it wraps one.
+// Hover, :active, and :focus-visible paint on that control. The ring
+// is the same 2px currentColor outline as the icon-button focus-ring
+// default. There is no --juice-list-focus-ring. Disabled is native
+// disabled, [disabled], or [aria-disabled="true"] at opacity 0.5.
+// Authors own the accessible name and whether aria-disabled swallows
+// a click. This slice does not.
+//
+// Long primary and secondary lines ellipsize. Bare text in
+// [list-content] wraps (overflow-wrap: anywhere) so an unbreakable
+// string does not widen the row.
+//
+// The slot margin is structural (0.75rem, 0.5rem when dense). It is
+// not the gap role: a 0 stack gap would otherwise glue the avatar to
+// the label.
+//
+// Transitions use --juice-motion-duration-fast and
+// --juice-motion-ease-standard. prefers-reduced-motion removes them.
+// Theme button lift (translate) is cleared. No press offset.
+//
+// z-index: inline rows. No overlay band.
+
+:root,
+[theme] {
+    --juice-list-divider: color-mix(in srgb, currentColor 28%, transparent);
+    --juice-list-secondary: color-mix(in srgb, currentColor 92%, transparent);
+    --juice-list-hover: color-mix(in srgb, currentColor 8%, transparent);
+    --juice-list-selected: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+:root {
+    --juice-list-gap: 0;
+    --juice-list-padding: 0.75rem 1rem;
+    --juice-list-padding-dense: 0.375rem 0.75rem;
+    --juice-list-radius: 0.375rem;
+}
+
+// [theme] companions beat semantic defaults such as
+// [theme="…"] :where(div) fills, :where(li) color, :where(a) link color,
+// and :where(button) CTA paint. :where() keeps the element out of the
+// specificity so a later padding / width utility can still override the
+// row box. Color resets include [theme] so they win anyway.
+
+:where(ul, ol, div)[list],
+[theme] :where(ul, ol, div)[list] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    gap: var(--juice-list-gap);
+    list-style: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+}
+
+[list-item],
+[theme] [list-item] {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+}
+
+// The layout box is the row, unless the row wraps a single a or button.
+// Then that control is the layout box and the hit target.
+
+[list-item]:where(:not(:has(> :is(a, button)))),
+[list-item] > :where(a, button),
+[theme] [list-item]:where(:not(:has(> :is(a, button)))),
+[theme] [list-item] > :where(a, button) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: var(--juice-list-padding);
+    border-radius: var(--juice-list-radius);
+    column-gap: 0;
+    row-gap: 0;
+    overflow-wrap: anywhere;
+}
+
+[list-item]:where(:not(:has([list-leading])):not(:has([list-trailing]))),
+[list-item] > :where(a, button):where(:not(:has([list-leading])):not(:has([list-trailing]))),
+[theme] [list-item]:where(:not(:has([list-leading])):not(:has([list-trailing]))),
+[theme] [list-item] > :where(a, button):where(:not(:has([list-leading])):not(:has([list-trailing]))) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+:where(ul, ol, div)[list][dense] [list-item]:where(:not(:has(> :is(a, button)))),
+:where(ul, ol, div)[list][dense] [list-item] > :where(a, button) {
+    padding: var(--juice-list-padding-dense);
+}
+
+[list-leading],
+[list-trailing],
+[theme] [list-leading],
+[theme] [list-trailing] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    color: inherit;
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+[list-leading] {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    margin-inline-end: 0.75rem;
+}
+
+[list-trailing] {
+    grid-column: 3;
+    grid-row: 1 / -1;
+    margin-inline-start: 0.75rem;
+}
+
+:where(ul, ol, div)[list][dense] [list-leading] {
+    margin-inline-end: 0.5rem;
+}
+
+:where(ul, ol, div)[list][dense] [list-trailing] {
+    margin-inline-start: 0.5rem;
+}
+
+// Do not size the avatar or the icon. [avatar] and [icon] keep their
+// own box. flex: 0 0 auto stops the slot from stretching them.
+// Overflow stays visible so an avatar status dot is not clipped.
+
+[list-leading] :is([avatar], [icon]),
+[list-trailing] :is([avatar], [icon]),
+[theme] [list-leading] :is([avatar], [icon]),
+[theme] [list-trailing] :is([avatar], [icon]) {
+    flex: 0 0 auto;
+}
+
+[list-content],
+[theme] [list-content] {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.125rem;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    color: inherit;
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+[list-content] > :not([list-secondary]),
+[list-item] > :not([list-leading]):not([list-trailing]):not([list-secondary]):not([list-content]):where(:not(a, button)),
+[list-item] > :where(a, button) > :not([list-leading]):not([list-trailing]):not([list-secondary]):not([list-content]) {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+[list-secondary],
+[theme] [list-secondary] {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
+    color: var(--juice-list-secondary);
+    font-size: 0.875em;
+    font-weight: inherit;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+[list-content] > [list-secondary] {
+    grid-column: auto;
+    grid-row: auto;
+}
+
+[list-item] > [list-secondary] {
+    margin-top: 0.125rem;
+}
+
+:where(a, button)[list-item],
+[list-item] > :where(a, button),
+[theme] :where(a, button)[list-item],
+[theme] [list-item] > :where(a, button) {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-align: start;
+    text-decoration: none;
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    transform: none;
+    transition:
+        background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard),
+        color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}
+
+:where(a, button)[list-item]:hover,
+[list-item] > :where(a, button):hover,
+[theme] :where(a, button)[list-item]:hover,
+[theme] [list-item] > :where(a, button):hover {
+    background-color: var(--juice-list-hover);
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+:where(a, button)[list-item]:active,
+[list-item] > :where(a, button):active,
+[theme] :where(a, button)[list-item]:active,
+[theme] [list-item] > :where(a, button):active {
+    background-color: var(--juice-list-selected);
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+[list-item][selected]:where(:not(:has(> :is(a, button)))),
+[list-item][aria-current]:not([aria-current="false"]):where(:not(:has(> :is(a, button)))),
+:where(a, button)[list-item][selected],
+:where(a, button)[list-item][aria-current]:not([aria-current="false"]),
+[list-item][selected] > :where(a, button),
+[list-item][aria-current]:not([aria-current="false"]) > :where(a, button),
+[list-item] > :where(a, button)[selected],
+[list-item] > :where(a, button)[aria-current]:not([aria-current="false"]),
+[theme] [list-item][selected]:where(:not(:has(> :is(a, button)))),
+[theme] [list-item][aria-current]:not([aria-current="false"]):where(:not(:has(> :is(a, button)))),
+[theme] :where(a, button)[list-item][selected],
+[theme] :where(a, button)[list-item][aria-current]:not([aria-current="false"]),
+[theme] [list-item][selected] > :where(a, button),
+[theme] [list-item][aria-current]:not([aria-current="false"]) > :where(a, button),
+[theme] [list-item] > :where(a, button)[selected],
+[theme] [list-item] > :where(a, button)[aria-current]:not([aria-current="false"]) {
+    background-color: var(--juice-list-selected);
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+:where(a, button)[list-item]:is([selected], [aria-current]:not([aria-current="false"])):is(:hover, :active),
+[list-item]:is([selected], [aria-current]:not([aria-current="false"])) > :where(a, button):is(:hover, :active),
+[list-item] > :where(a, button):is([selected], [aria-current]:not([aria-current="false"])):is(:hover, :active),
+[theme] :where(a, button)[list-item]:is([selected], [aria-current]:not([aria-current="false"])):is(:hover, :active),
+[theme] [list-item]:is([selected], [aria-current]:not([aria-current="false"])) > :where(a, button):is(:hover, :active),
+[theme] [list-item] > :where(a, button):is([selected], [aria-current]:not([aria-current="false"])):is(:hover, :active) {
+    background-color: var(--juice-list-selected);
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+:where(a, button)[list-item]:is(:disabled, [disabled], [aria-disabled="true"]),
+[list-item]:is([disabled], [aria-disabled="true"]) > :where(a, button),
+[list-item] > :where(a, button):is(:disabled, [disabled], [aria-disabled="true"]),
+[theme] :where(a, button)[list-item]:is(:disabled, [disabled], [aria-disabled="true"]),
+[theme] [list-item]:is([disabled], [aria-disabled="true"]) > :where(a, button),
+[theme] [list-item] > :where(a, button):is(:disabled, [disabled], [aria-disabled="true"]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+:where(a, button)[list-item]:is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active),
+[list-item]:is([disabled], [aria-disabled="true"]) > :where(a, button):is(:hover, :active),
+[list-item] > :where(a, button):is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active),
+[theme] :where(a, button)[list-item]:is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active),
+[theme] [list-item]:is([disabled], [aria-disabled="true"]) > :where(a, button):is(:hover, :active),
+[theme] [list-item] > :where(a, button):is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active) {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    transform: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+:where(a, button)[list-item]:focus-visible,
+[list-item] > :where(a, button):focus-visible,
+[theme] :where(a, button)[list-item]:focus-visible,
+[theme] [list-item] > :where(a, button):focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    box-shadow: none;
+    transform: none;
+}
+
+// After border: none above, so the hairline survives that reset.
+// Direct children, not only [list-item], so a divided stack of plain
+// rows still rules between them.
+
+:where(ul, ol, div)[list][divided] > * + *,
+[theme] :where(ul, ol, div)[list][divided] > * + * {
+    border-top: 1px solid var(--juice-list-divider);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(a, button)[list-item],
+    [list-item] > :where(a, button),
+    [theme] :where(a, button)[list-item],
+    [theme] [list-item] > :where(a, button) {
+        transition: none;
+    }
+}
