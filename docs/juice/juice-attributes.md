@@ -547,6 +547,36 @@ Copy inside stays in the accessibility tree and does not paint. Authors own `ari
 
 See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`, `highlight`, `radius`, `line-height` / `-sm` / `-lg`, `line-gap` / `-sm` / `-lg`, `circle-size` / `-sm` / `-lg`, `rect-height` / `-sm` / `-lg`, `duration`). Shipped themes are not required to bind them. The highlight is a translucent white sheen. Tune `--juice-skeleton-highlight` on a pale surface.
 
+### List
+
+CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-seven Emerging auto-enhance runtimes.
+
+- `list` — host, on `ul`, `ol`, or `div`. The selector is `:where(ul, ol, div)[list]`, so `<input list>` is not painted. There is no HTML global `list` attribute, and there is no `<list>` element. Markers and the list’s own padding reset. Do not restyle `[role="list"]` or `[role="listitem"]`
+- `divided` — on `[list]`. A hairline between direct children. Ignored without `[list]`
+- `dense` — on `[list]`. Tighter row padding and a tighter slot margin. Does not change the stack gap. Ignored without `[list]`
+- `list-item` — one row
+- `list-leading` — start slot. Not `leading`, which is letter-spacing
+- `list-content` — primary line plus an optional `list-secondary`. One unmarked element between the slots is the same primary line
+- `list-secondary` — second line, nested in `list-content` or a sibling under the primary
+- `list-trailing` — end slot
+- `selected` — visual wash on the row or its `a` / `button`. The same wash as `aria-current` other than `"false"`. Does not set ARIA. `aria-selected` does not paint
+
+An `a` or `button` row, or a row that wraps one, hovers, presses, and takes a 2px `currentColor` `:focus-visible` outline, offset 2px. Disabled interactive rows are `opacity: 0.5`. Authors own the accessible name and whether `aria-disabled` swallows a click.
+
+```html
+<ul list divided>
+  <li list-item>
+    <span list-leading><span avatar>AL</span></span>
+    <div list-content>
+      <span>Ada Lovelace</span>
+      <span list-secondary>Analytical engine</span>
+    </div>
+  </li>
+</ul>
+```
+
+See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColor at 28%), `--juice-list-secondary` (92%), `--juice-list-hover` (8%), and `--juice-list-selected` (14%), on `:root` and again on `[theme]`. Layout roles are `--juice-list-gap` (`0`), `--juice-list-padding` (`0.75rem 1rem`), `--juice-list-padding-dense` (`0.375rem 0.75rem`), and `--juice-list-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
+
 ### Avatar
 
 Initials-or-photo mark. Round by default. Color comes from `--juice-avatar-*`. There is no HTML global `avatar` attribute, and there is no `<avatar>` element.
