@@ -2,7 +2,7 @@
 
 **Rationale — not a backlog of missing stages.**
 
-This document explains why Seltzer is a named request pipeline instead of Express middleware or WordPress-style hooks. The lifecycle it describes (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) is **implemented** in `@citrusworx/seltzer` **0.9.0**. Parametric routes, JSON body parsing, `ResponseData` returns, `before` / `replace`, default `.required` validate, `generateRoutes`, CORS, and `HttpError` are source, not electives.
+This document explains why Seltzer is a named request pipeline instead of Express middleware or WordPress-style hooks. The lifecycle it describes (`parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`) is **implemented** in `@citrusworx/seltzer` **0.9.0**. Parametric routes, JSON body parsing, `ResponseData` returns, `before` / `replace`, default `.required` validate, `generateRoutes`, CORS, and `HttpError` are source, not electives.
 
 **Product path (use the package):** [README](./README.md) → [Getting Started](./seltzer-getting-started.md) → [JSON API tutorial](./seltzer-api-tutorial.md) → [Pipeline](./seltzer-pipeline.md).
 

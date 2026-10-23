@@ -101,7 +101,7 @@ generateRoutes(operations, {
 });
 ```
 
-The 501 handler is a normal route. The pipeline still runs `parse` → `context` → `route` → `validate` → `handle` → `response` → `send`. A `.required` body that fails `validate` is **400** and the 501 handler does not run. Any other `unbound` value throws `Unknown unbound policy … Expected "throw" or "notImplemented".`
+The 501 handler is a normal route. The pipeline still runs `parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`. A `.required` body that fails `validate` is **400** and the 501 handler does not run. Any other `unbound` value throws `Unknown unbound policy … Expected "throw" or "notImplemented".`
 
 ## HTTP status
 

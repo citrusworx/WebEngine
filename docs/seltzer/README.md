@@ -374,7 +374,7 @@ Do not start with exercise 06 if you only need `listen(3000)`. Do not paste `ctx
 
 Shipped: object routes, parametric matching, JSON `parse`, `ResponseData` + `send`, named pipeline, default `validate`, `generateRoutes`, CORS/`OPTIONS`, hardened `client`.
 
-Non-goals (package [README](../../libraries/seltzer/README.md#non-goals)): built-in HTTPS `listen` (mount TLS with `https.createServer(tlsOptions, app.handler())`), `app.use`, form and multipart parsing, templating, sessions, cookies, static files, client retries, an ORM, and any runtime dependency. Urlencoded fields are a host `URLSearchParams` recipe. A server-side idempotency stage is planned. Streaming responses and WebSockets are **Not yet**, not refusals. Response-shape validation and `after` are still open. Zod is a documented `replace("validate")` recipe, not a dependency. The client uses global `fetch`.
+Non-goals (package [README](../../libraries/seltzer/README.md#non-goals)): built-in HTTPS `listen` (mount TLS with `https.createServer(tlsOptions, app.handler())`), `app.use`, form and multipart parsing, templating, sessions, cookies, static files, client retries, an ORM, and any runtime dependency. Urlencoded fields are a host `URLSearchParams` recipe. POST and PATCH idempotency is a server stage (Emerging). Streaming responses and WebSockets are **Not yet**, not refusals. Response-shape validation and `after` are still open. Zod is a documented `replace("validate")` recipe, not a dependency. The client uses global `fetch`.
 
 See [Status](./seltzer-status.md) for the area-by-area matrix and [Roadmap](./seltzer-roadmap.md) for what is worth building next.
 

@@ -4,7 +4,7 @@ Outbound `fetch` helpers exported as `client` and `createClient` from `@citruswo
 
 Source: `libraries/seltzer/src/core/client/client.ts`. Transport is global `fetch` only. The package has no runtime dependencies and does not import `undici`. This is not a full HTTP client. KiwiPress still wraps `fetch` itself for WordPress; treat `client.*` as the packaged sibling of `Seltzer.listen`.
 
-The client does **not** retry. A 5xx, a timeout, and a dropped connection are each one attempt. Call again yourself if that is safe. Sending `Idempotency-Key` is just a header: put it in `options.headers`. Seltzer does not store or replay idempotency keys. That belongs to a future pipeline stage, not this client.
+The client does **not** retry. A 5xx, a timeout, and a dropped connection are each one attempt. Call again yourself if that is safe. Sending `Idempotency-Key` is just a header: put it in `options.headers`. This client does not store or replay keys. The server `idempotency` stage does that for POST and PATCH. See [Pipeline](./seltzer-pipeline.md#idempotency).
 
 ## The object
 
@@ -231,7 +231,7 @@ There is no `app.client`.
 ## What is not here
 
 - Retries. That is a [non-goal](../../libraries/seltzer/README.md#no-client-retries). The caller owns retry policy
-- Server-side idempotency storage (a header is not a replay). A pipeline stage for that is planned and is not in this package
+- Client retries, and any client-side replay. POST and PATCH idempotency is the server stage. This client only forwards a header you set
 - Typed generics on the JSON result
 - Multipart helpers (`FormData` is rejected)
 - Reading `Endpoint.endpoint` even when it is the absolute URL KiwiPress stores

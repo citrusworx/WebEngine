@@ -3,6 +3,7 @@ export const STAGE_NAMES = [
     "context",
     "route",
     "validate",
+    "idempotency",
     "handle",
     "response",
     "send",

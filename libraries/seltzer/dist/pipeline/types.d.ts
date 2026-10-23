@@ -1,7 +1,8 @@
+import type { IdempotencyStore } from "../core/idempotency.js";
 import type { SeltzerLogger } from "../core/log.js";
 import type { RequestContext, Route } from "../core/types.js";
 import type { ResponseData } from "../core/response.js";
-export declare const STAGE_NAMES: readonly ["parse", "context", "route", "validate", "handle", "response", "send"];
+export declare const STAGE_NAMES: readonly ["parse", "context", "route", "validate", "idempotency", "handle", "response", "send"];
 export type StageName = (typeof STAGE_NAMES)[number];
 /**
  * Per-request pipeline state. Stages mutate this object in place.
@@ -20,6 +21,29 @@ export type PipelineContext<TLocals = unknown> = RequestContext<TLocals> & {
     logger?: SeltzerLogger;
     /** From `init({ debug })` or `listen({ debug })`. Stack traces are logged only when true. */
     debug?: boolean;
+    /**
+     * Exact request-body bytes from `parse`, before JSON parsing.
+     * An empty body is an empty buffer. GET and HEAD leave this unset.
+     * The idempotency stage hashes these bytes. A replacement `parse`
+     * should set this when the fingerprint must match the original payload.
+     */
+    rawBody?: Buffer;
+    /**
+     * Resolved idempotency config for this request.
+     * Unset means the builtin stage does nothing (including `idempotency: false`).
+     */
+    idempotency?: {
+        ttlMs: number;
+        store: IdempotencyStore;
+    };
+    /**
+     * In-flight reservation owned by this request.
+     * Set by the builtin idempotency stage and cleared in `send`.
+     */
+    idempotencyClaim?: {
+        key: string;
+        fingerprint: string;
+    };
 };
 /**
  * A pipeline stage. Mutate `ctx` and return void/undefined to continue.

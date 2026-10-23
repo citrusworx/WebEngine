@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Minor Changes
+
+- Builtin `idempotency` pipeline stage between `validate` and `handle`. POST and PATCH requests that send `Idempotency-Key` store a SHA-256 of the raw body and, once `send` runs, the final `ResponseData`. A replay with the same key and body returns that response plus `Idempotent-Replayed: true` and does not run the handler again. The same key while the first request is in flight is **409**. The same key with a different body is **422**, including while the first request is still in flight. Status **200–499** is cached (handler 4xx included). **5xx** and thrown errors release the key so the client can retry. GET, PUT, DELETE, and requests without the header are unchanged. A 400 from `parse` or `validate` does not consume the key. Keys are scoped by method + path (not the query string) and must be 1–255 characters.
+- Default store is in-memory (`MemoryIdempotencyStore`) with a 24 hour TTL (`DEFAULT_IDEMPOTENCY_TTL_MS`). Expiry is lazy, plus a bounded scan. No timer is scheduled. `IdempotencyStore` (`begin`, `complete`, `release`) is the swap point for another database. `init({ idempotency: false })` disables the stage. `init({ idempotency: { ttlMs, store } })` customizes it. `listen` overrides `ttlMs` and `store` field by field. The outbound client still does not retry or replay.
+
 ## 0.10.0
 
 Published 2026-10-21.

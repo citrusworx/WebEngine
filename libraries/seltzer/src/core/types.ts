@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import type { IdempotencyStore } from "./idempotency.js";
 import type { SeltzerLogger } from "./log.js";
 import type { ResponseData } from "./response.js";
 
@@ -176,6 +177,26 @@ export const DEFAULT_CLIENT_TIMEOUT_MS = DEFAULT_REQUEST_TIMEOUT_MS;
 export const DEFAULT_KEEP_ALIVE_TIMEOUT_MS = 5_000;
 
 /**
+ * Options for the built-in idempotency stage.
+ * Omitted fields use the default 24h TTL and the app's in-memory store.
+ * A field passed to `listen` replaces that field and keeps the other from `init`.
+ */
+export type IdempotencyOptions = {
+    /**
+     * Lifetime of an in-flight reservation and of a stored response, in milliseconds.
+     * A positive integer. Default is 24 hours (`DEFAULT_IDEMPOTENCY_TTL_MS`).
+     * Completing a response starts a fresh window of this length.
+     */
+    ttlMs?: number;
+    /**
+     * Where reservations and finished responses are stored.
+     * Default is one {@link MemoryIdempotencyStore} per app.
+     * `begin` must be atomic for a key.
+     */
+    store?: IdempotencyStore;
+};
+
+/**
  * Request options for `Seltzer.init`.
  * `listen` still accepts each field. A field passed to `listen` replaces the
  * init value for that server. `cors` is replaced as a whole object.
@@ -203,6 +224,12 @@ export type InitOptions<TLocals = unknown> = {
      * Off by default. Does not change the HTTP body.
      */
     debug?: boolean;
+    /**
+     * POST and PATCH idempotency. On by default.
+     * `false` disables the stage. An object sets `ttlMs` and `store`.
+     * `listen` overrides each inner field it passes and keeps the rest.
+     */
+    idempotency?: false | IdempotencyOptions;
 };
 
 export type ListenOptions<TLocals = unknown> = {
@@ -264,4 +291,11 @@ export type ListenOptions<TLocals = unknown> = {
      * Passed here, including `false`, this replaces `init({ debug })` for this server.
      */
     debug?: boolean;
+    /**
+     * POST and PATCH idempotency for this server.
+     * `false` disables it. An object overrides `ttlMs` and `store` field by field;
+     * an omitted inner field keeps the `init` value. Omit the option to keep `init`.
+     * Default is on, with a 24 hour in-memory store.
+     */
+    idempotency?: false | IdempotencyOptions;
 };

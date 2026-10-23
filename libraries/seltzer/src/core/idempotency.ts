@@ -1,0 +1,190 @@
+import { createHash } from "node:crypto";
+
+/** How long a stored response and an in-flight reservation live. 24 hours. */
+export const DEFAULT_IDEMPOTENCY_TTL_MS = 86_400_000;
+
+/** `Idempotency-Key` must be this many characters or fewer. */
+export const MAX_IDEMPOTENCY_KEY_LENGTH = 255;
+
+/**
+ * Final response kept for replay. `body` may be a `Buffer`.
+ * `status` is the status `send` would use (`200` when the handler omitted it).
+ */
+export type IdempotencyResponse = {
+    status: number;
+    headers?: Record<string, string>;
+    body?: unknown;
+};
+
+/**
+ * Result of an atomic {@link IdempotencyStore.begin}.
+ *
+ * - `started` — this caller owns the in-flight reservation.
+ * - `pending` — the same key and fingerprint are already in flight (409).
+ * - `mismatch` — the key is stored with a different fingerprint, in flight or complete (422).
+ * - `replay` — a completed response for this fingerprint is still inside its TTL.
+ */
+export type IdempotencyBeginResult =
+    | { outcome: "started" }
+    | { outcome: "pending" }
+    | { outcome: "mismatch" }
+    | { outcome: "replay"; response: IdempotencyResponse };
+
+/**
+ * Persistence for the built-in idempotency stage.
+ *
+ * `begin` must be atomic for one key: either insert a new in-flight reservation
+ * or return the record already stored. Do not await between the read and the insert.
+ * The stage scopes keys as a JSON array `[method, path, idempotencyKey]`
+ * (`method` uppercased, `path` without the query string).
+ *
+ * `complete` stores a finished 2xx/3xx/4xx response. `release` drops an in-flight
+ * reservation after a 5xx or a thrown error so the client can retry.
+ * Both no-op when the fingerprint does not match the reservation.
+ */
+export interface IdempotencyStore {
+    begin(key: string, fingerprint: string, ttlMs: number): Promise<IdempotencyBeginResult>;
+    complete(key: string, fingerprint: string, response: IdempotencyResponse): Promise<void>;
+    release(key: string, fingerprint: string): Promise<void>;
+}
+
+export type MemoryIdempotencyStoreOptions = {
+    /** Clock for TTL checks. Default `Date.now`. Tests pass a fake. */
+    now?: () => number;
+    /**
+     * When the map grows past this many records, scan a bounded batch and drop
+     * expired ones. Default 1024. Live records are not evicted.
+     */
+    cleanupThreshold?: number;
+};
+
+type MemoryRecord = {
+    fingerprint: string;
+    state: "pending" | "complete";
+    response?: IdempotencyResponse;
+    expiresAt: number;
+    ttlMs: number;
+};
+
+const CLEANUP_BATCH = 32;
+
+/**
+ * Process-local idempotency map.
+ *
+ * Expiry is lazy on each key, plus a bounded scan once the map is larger than
+ * `cleanupThreshold`. There is no interval, so stored responses do not keep
+ * the process alive.
+ */
+export class MemoryIdempotencyStore implements IdempotencyStore {
+    private readonly records = new Map<string, MemoryRecord>();
+    private readonly now: () => number;
+    private readonly cleanupThreshold: number;
+
+    constructor(options: MemoryIdempotencyStoreOptions = {}) {
+        this.now = options.now ?? Date.now;
+        const threshold = options.cleanupThreshold ?? 1024;
+        if (!Number.isInteger(threshold) || threshold < 0) {
+            throw new Error(
+                "MemoryIdempotencyStore cleanupThreshold must be a non-negative integer.",
+            );
+        }
+        this.cleanupThreshold = threshold;
+    }
+
+    async begin(key: string, fingerprint: string, ttlMs: number): Promise<IdempotencyBeginResult> {
+        this.sweep();
+        const current = this.read(key);
+        if (current) {
+            if (current.fingerprint !== fingerprint) {
+                return { outcome: "mismatch" };
+            }
+            if (current.state !== "complete" || current.response === undefined) {
+                return { outcome: "pending" };
+            }
+            return { outcome: "replay", response: cloneResponse(current.response) };
+        }
+
+        const now = this.now();
+        this.records.set(key, {
+            fingerprint,
+            state: "pending",
+            expiresAt: now + ttlMs,
+            ttlMs,
+        });
+        return { outcome: "started" };
+    }
+
+    async complete(key: string, fingerprint: string, response: IdempotencyResponse): Promise<void> {
+        const current = this.read(key);
+        if (!current || current.fingerprint !== fingerprint || current.state !== "pending") {
+            return;
+        }
+        current.state = "complete";
+        current.response = cloneResponse(response);
+        current.expiresAt = this.now() + current.ttlMs;
+    }
+
+    async release(key: string, fingerprint: string): Promise<void> {
+        const current = this.read(key);
+        if (!current || current.fingerprint !== fingerprint || current.state !== "pending") {
+            return;
+        }
+        this.records.delete(key);
+    }
+
+    /** Drop one expired key. Live records stay. */
+    private read(key: string): MemoryRecord | undefined {
+        const record = this.records.get(key);
+        if (!record) {
+            return undefined;
+        }
+        if (record.expiresAt <= this.now()) {
+            this.records.delete(key);
+            return undefined;
+        }
+        return record;
+    }
+
+    /** Visit a fixed number of the oldest records and drop the expired ones. */
+    private sweep(): void {
+        if (this.records.size <= this.cleanupThreshold) {
+            return;
+        }
+        const now = this.now();
+        let scanned = 0;
+        for (const [key, record] of this.records) {
+            if (record.expiresAt <= now) {
+                this.records.delete(key);
+            }
+            scanned += 1;
+            if (scanned >= CLEANUP_BATCH) {
+                break;
+            }
+        }
+    }
+}
+
+export function fingerprintBytes(bytes: Buffer): string {
+    return createHash("sha256").update(bytes).digest("hex");
+}
+
+export function cloneResponse(response: IdempotencyResponse): IdempotencyResponse {
+    return {
+        status: response.status,
+        headers: response.headers ? { ...response.headers } : undefined,
+        body: cloneBody(response.body),
+    };
+}
+
+function cloneBody(body: unknown): unknown {
+    if (Buffer.isBuffer(body)) {
+        return Buffer.from(body);
+    }
+    if (body instanceof Uint8Array) {
+        return Buffer.from(body.buffer, body.byteOffset, body.byteLength);
+    }
+    if (body !== null && typeof body === "object") {
+        return structuredClone(body);
+    }
+    return body;
+}

@@ -91,7 +91,7 @@ Keep `execute` as data access. Use `response()` only for explicit transport resu
 
 Good: `baseUrl: "http://127.0.0.1:3000/api/v1"` + `path: "users"`, or a trailing slash on either side. The join keeps one slash and the base path.
 
-Catch `HttpError` for 4xx/5xx. A deadline is `TimeoutError`, a caller abort is `AbortError`, and a dropped connection is `NetworkError`. Do not treat `{ error: "Not Found" }` as a successful `get` result — that was 0.2.0. The client does not retry. Repeat a call only when you know it is safe. `Idempotency-Key` is a header you set; Seltzer does not store it.
+Catch `HttpError` for 4xx/5xx. A deadline is `TimeoutError`, a caller abort is `AbortError`, and a dropped connection is `NetworkError`. Do not treat `{ error: "Not Found" }` as a successful `get` result — that was 0.2.0. The client does not retry. Repeat a call only when you know it is safe. Set `Idempotency-Key` yourself when a POST or PATCH should replay on the server.
 
 ## Use `listen` options instead of reinventing CORS
 

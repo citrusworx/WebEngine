@@ -89,6 +89,7 @@ describe("strict ResponseData", () => {
             "context",
             "route",
             "validate",
+            "idempotency",
             "handle",
             "response",
             "send",

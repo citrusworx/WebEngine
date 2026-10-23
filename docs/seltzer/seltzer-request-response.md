@@ -31,6 +31,7 @@ const ctx: PipelineContext = {
   locals,
   options: this.config?.options,
   bodyLimit,
+  idempotency,
 };
 
 await this.pipeline.run(ctx);
@@ -65,6 +66,8 @@ Pipeline-only fields on `PipelineContext`:
 | `route` | Matched `Route` (includes `contract`) |
 | `response` | `ResponseData` accumulated toward `send` |
 | `bodyLimit` | Byte cap from `listen`. `0` is unlimited. Handlers can ignore it |
+| `rawBody` | Exact body bytes from `parse`, before JSON parsing. The idempotency fingerprint hashes this. GET/HEAD leave it unset |
+| `idempotency` | Resolved `{ ttlMs, store }` for this request. Unset when the stage is off |
 
 ## `ResponseData`
 

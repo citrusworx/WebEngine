@@ -2,6 +2,7 @@ import { genericInternalError, logInvalidReturn, routePhrase } from "../core/log
 import { guardRawResponse } from "../core/raw-response.js";
 import { DEFAULT_BODY_LIMIT_BYTES } from "../core/types.js";
 import { isResponseData, send } from "../core/response.js";
+import { settleIdempotency } from "./idempotency.js";
 import { allowedMethods, matchRoute, paramsFromMatch } from "./router.js";
 class InvalidJsonError extends Error {
     constructor() {
@@ -58,19 +59,20 @@ async function readBody(req, res, limit) {
         chunks.push(buf);
     }
     if (chunks.length === 0) {
-        return undefined;
+        return { body: undefined, raw: Buffer.alloc(0) };
     }
-    const raw = Buffer.concat(chunks).toString("utf8");
+    const raw = Buffer.concat(chunks);
+    const text = raw.toString("utf8");
     const contentType = String(req.headers["content-type"] ?? "");
     if (contentType.includes("application/json")) {
         try {
-            return JSON.parse(raw);
+            return { body: JSON.parse(text), raw };
         }
         catch {
             throw new InvalidJsonError();
         }
     }
-    return raw;
+    return { body: text, raw };
 }
 function normalizeHeaders(headers) {
     const result = {};
@@ -104,7 +106,9 @@ export async function parseStage(ctx) {
     }
     const limit = ctx.bodyLimit ?? DEFAULT_BODY_LIMIT_BYTES;
     try {
-        ctx.body = await readBody(ctx.req, ctx.res, limit);
+        const parsed = await readBody(ctx.req, ctx.res, limit);
+        ctx.body = parsed.body;
+        ctx.rawBody = parsed.raw;
     }
     catch (error) {
         if (error instanceof PayloadTooLargeError) {
@@ -242,11 +246,12 @@ export function responseStage(ctx) {
         },
     };
 }
-export function sendStage(ctx) {
+export async function sendStage(ctx) {
     if (!isResponseData(ctx.response)) {
         logInvalidReturn(ctx, ctx.response, `${routePhrase(ctx)} send`);
         ctx.response = genericInternalError();
     }
+    await settleIdempotency(ctx);
     send(ctx.res, ctx.response, {
         head: (ctx.method ?? "").toUpperCase() === "HEAD",
     });

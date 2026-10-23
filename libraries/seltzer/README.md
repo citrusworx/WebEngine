@@ -56,6 +56,12 @@ Documented version: `0.10.0`.
 | `DEFAULT_HEADERS_TIMEOUT_MS` | export |
 | `DEFAULT_REQUEST_TIMEOUT_MS` | export |
 | `DEFAULT_KEEP_ALIVE_TIMEOUT_MS` | export |
+| `DEFAULT_IDEMPOTENCY_TTL_MS` | export |
+| `idempotency` | init and listen option |
+| `ttlMs` | idempotency option |
+| `store` | idempotency option |
+| `IdempotencyStore` | export |
+| `MemoryIdempotencyStore` | export |
 
 <!-- /seltzer-docs-drift -->
 
@@ -94,7 +100,7 @@ Handlers return `ResponseData` (`{ status?, headers?, body? }`). The runtime wri
 
 `listen` returns the Node `http.Server`. The default bind is `127.0.0.1`. Pass `host: "0.0.0.0"` (or `"::"`) to accept connections from other machines. Header, request, and keep-alive timeouts default to 20s, 30s, and 5s (`0` disables that timer). `server.close()` stops accepting; idle keep-alive sockets delay the callback until `keepAliveTimeout` unless you also call `server.closeIdleConnections()`.
 
-`init` and `listen` accept `locals` (available on `ctx.locals`), `bodyLimit`, `cors`, `logger`, and `debug`. A field passed to `listen` replaces the `init` value for that server. An omitted field keeps the `init` value. `cors` is replaced as a whole object, not merged field by field. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited). `credentials: true` with `origin: "*"` throws at `init` when you pass it there, and at `listen` when that call passes it. `host`, the port, and the three timeouts stay on `listen`. They are not `init` options.
+`init` and `listen` accept `locals` (available on `ctx.locals`), `bodyLimit`, `cors`, `logger`, `debug`, and `idempotency`. A field passed to `listen` replaces the `init` value for that server. An omitted field keeps the `init` value. `cors` is replaced as a whole object, not merged field by field. `idempotency` is on unless you pass `false`. An idempotency object overrides `ttlMs` and `store` one field at a time. CORS is off unless `cors` is set. When it is set, CORS headers and an `OPTIONS` 204 preflight run before the pipeline. Request bodies default to 1 MB (`bodyLimit: 0` is unlimited). `credentials: true` with `origin: "*"` throws at `init` when you pass it there, and at `listen` when that call passes it. `host`, the port, and the three timeouts stay on `listen`. They are not `init` options.
 
 ## Bring your own server
 
@@ -127,7 +133,7 @@ server.keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT_MS;
 server.listen(443, "127.0.0.1");
 ```
 
-The same listener works on `http.createServer(app.handler())`. It runs the same pipeline as `listen` (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`), including the body limit, CORS / `OPTIONS` 204, `logger`, `debug`, and strict `ResponseData` checks. Routes registered after `handler()` still run. The listener reads `bodyLimit`, `cors`, `logger`, `debug`, and `locals` from `init`. It does not read a later `listen` override, and it does not set timeouts.
+The same listener works on `http.createServer(app.handler())`. It runs the same pipeline as `listen` (`parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`), including the body limit, CORS / `OPTIONS` 204, `logger`, `debug`, idempotency, and strict `ResponseData` checks. Routes registered after `handler()` still run. The listener reads `bodyLimit`, `cors`, `logger`, `debug`, `locals`, and `idempotency` from `init`. It does not read a later `listen` override, and it does not set timeouts.
 
 A host-owned server owns its timeouts. Seltzer does not change them. Copy the defaults above when you want the same 20s / 30s / 5s timers `listen` applies. `0` disables that timer on `listen`; on your server, assign `0` yourself. `server.close()` is also yours.
 
@@ -143,17 +149,18 @@ No-arg `app.handler()` and `app.adapter(config)` shipped in 0.10.0. The 0.9.0 ta
 
 Each request runs through a named pipeline:
 
-`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`
+`parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`
 
 | Stage | Responsibility |
 | --- | --- |
-| `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty body → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. Non-JSON content types are not 415. |
+| `parse` | Read the body (JSON or raw UTF-8 string). Invalid JSON → 400. Empty body → `undefined`. Over `bodyLimit` → 413. GET/HEAD skip the body. Non-JSON content types are not 415. Keeps the raw bytes for the idempotency fingerprint. |
 | `context` | Set `method`, `path`, `query`, and `headers` on ctx. |
 | `route` | Match a registered route and fill `params` (`decodeURIComponent`). No path match → 404. Known path, wrong method → 405 + `Allow`. Malformed `%` encoding in a param → 400. |
 | `validate` | If `ctx.route.contract.body` has `.required` keys, they must be present and non-empty on `ctx.body`. That is presence only (a number counts). Failure → 400 `{ error: "Missing required field: …" }` or `{ error: "Request body must be an object" }`. No specs → no-op. Does not set `ctx.valid` and does not change `ctx.body`. |
+| `idempotency` | POST and PATCH with `Idempotency-Key`. Replay a stored response, or reserve the key before `handle`. Other methods and requests without the header skip this stage. |
 | `handle` | Call the matched handler. Handlers must return `ResponseData`. |
 | `response` | Reject non-`ResponseData` handler results with 500 and a log line. |
-| `send` | Write the HTTP response via `send()`. Cannot be replaced. |
+| `send` | Write the HTTP response via `send()`. Stores or releases the idempotency reservation, then writes. Cannot be replaced. |
 
 `before(name, stage)` inserts immediately before a named builtin. `replace(name, stage)` swaps that builtin. `replace("send")` throws: the runtime is the only writer. Returning `ResponseData` from a stage skips the rest of the pipeline and jumps to `send`. Any other returned value is 500. Stages mutate the shared context in place; return `void`/`undefined` to continue.
 
@@ -193,6 +200,56 @@ app.route({
 ```
 
 `init().route().listen()` is the supported shape. A route with `contract.body` `.required` keys turns on presence checks. `listen` binds `127.0.0.1`, applies the default timeouts and the 1 MB body limit, and leaves CORS off until you pass `cors`.
+
+## Idempotency
+
+The `idempotency` stage is on by default. It runs after `validate` and before `handle`. `before("idempotency", …)` and `replace("idempotency", …)` target it like any other named stage.
+
+It applies only to **POST** and **PATCH** requests that send an `Idempotency-Key` header. GET, PUT, DELETE, and requests without the header run as they always have. The key is scoped by method + path, so the same key on `/a` and `/b`, or on POST and PATCH of the same path, does not collide. The query string is not part of the scope. A key must be 1–255 characters; anything else is **400** `{ error: "Idempotency-Key must be 1-255 characters" }` and does not reserve the key.
+
+The fingerprint is the SHA-256 of the raw body bytes (`node:crypto`). `{"a":1}` and `{"a": 1}` are different requests. `parse` keeps those bytes on the pipeline context. A replacement `parse` should set `ctx.rawBody` to the original buffer when that fingerprint matters.
+
+| Situation | Result |
+| --- | --- |
+| Same key, same body, first request finished | Stored response, plus `Idempotent-Replayed: true`. The handler does not run again. |
+| Same key, same body, first request still in flight | **409** `{ error: "Idempotency key is already in progress" }` |
+| Same key, different body (in flight or finished) | **422** `{ error: "Idempotency key was used with a different request body" }` |
+
+Finished responses with status **200–499** are stored, including a handler **4xx**. **5xx** responses and thrown errors are not stored: the key is released so the client can retry. A validation **400** happens in `validate`, before this stage, so it does not consume the key. The reservation is completed in `send`, after `before("send")` hooks, so the cached value is the response that was written. Replay adds `Idempotent-Replayed` on the way out. That header is not part of the stored response. `Buffer` and `Uint8Array` bodies are copied and replayed as bytes.
+
+Records live for 24 hours (`DEFAULT_IDEMPOTENCY_TTL_MS`). Completing a response starts a fresh window. The in-flight lock uses the same TTL, so a request that never finishes does not hold the key forever. The default store is `MemoryIdempotencyStore`, one per app: a `Map` with lazy expiry and a bounded scan of expired entries. It does not schedule a timer, so cached responses do not keep the process alive. Postgres or Redis can replace it. `begin` must be atomic for a key.
+
+```ts
+import { Seltzer, MemoryIdempotencyStore, type IdempotencyStore } from "@citrusworx/seltzer";
+
+const store: IdempotencyStore = new MemoryIdempotencyStore();
+
+const app = Seltzer.init({
+    idempotency: { ttlMs: 60_000, store },
+});
+
+// This server turns the stage off. app.handler() still uses init.
+app.listen(3000, { idempotency: false });
+```
+
+`listen({ idempotency: { ttlMs } })` keeps the init `store` when `store` is omitted, and the other way around. `false` disables it for that server. Omit the option to keep the init setting. `init({ idempotency: false })` then `listen({ idempotency: { ttlMs } })` turns it back on for that server.
+
+```ts
+interface IdempotencyStore {
+    begin(key: string, fingerprint: string, ttlMs: number): Promise<
+        | { outcome: "started" }
+        | { outcome: "pending" }
+        | { outcome: "mismatch" }
+        | { outcome: "replay"; response: { status: number; headers?: Record<string, string>; body?: unknown } }
+    >;
+    complete(key: string, fingerprint: string, response: { status: number; headers?: Record<string, string>; body?: unknown }): Promise<void>;
+    release(key: string, fingerprint: string): Promise<void>;
+}
+```
+
+`begin` either inserts the in-flight reservation or returns the record already stored. Do not await between the read and the insert. The storage key is `JSON.stringify([method, path, idempotencyKey])` with the method uppercased. `complete` stores a finished response. `release` drops an in-flight reservation. Both no-op when the fingerprint does not match. If `complete` throws, the error is logged and the reservation is released; the HTTP response is still sent.
+
+The outbound client does not retry and does not replay. Put `Idempotency-Key` on the request yourself when you call again.
 
 ## Richer validation (`replace("validate")`)
 
@@ -275,7 +332,7 @@ await api.get({ path: "users", endpoint: "users" });
 - A deadline throws `TimeoutError`. The caller's `signal` throws `AbortError` (it wins if both fire). A dropped connection throws `NetworkError`.
 - JSON (`application/json` and `+json`) is parsed. `text/*` is a string. Anything else is a `Uint8Array`. No Content-Type sniffs JSON, then a string. `204`, `205`, and `HEAD` are `undefined`.
 - Objects are sent as JSON, strings as text, `Uint8Array` / `Buffer` as bytes.
-- Put `Idempotency-Key` in `headers` if you need it. The client will not repeat the request, and Seltzer does not store idempotency keys.
+- Put `Idempotency-Key` in `headers` when the server should replay a POST or PATCH. The client still makes one attempt. It does not store or retry.
 
 ## Generate routes from `ApiOperation[]`
 
@@ -399,7 +456,7 @@ Seltzer stays a small HTTP runtime. The list below is a decision, not a backlog.
 
 ### No middleware chain
 
-Order should stay visible. The extension model is the named pipeline (`parse` → `context` → `route` → `validate` → `handle` → `response` → `send`) with `before` and `replace`. An `app.use` chain would hide that order in registration and `next()`. Put auth, logging, and extra checks on a named stage. See [Pipeline](../../docs/seltzer/seltzer-pipeline.md) and [Design](../../docs/seltzer/seltzer-design.md#why-pipelines-were-chosen-over-middleware-and-hooks).
+Order should stay visible. The extension model is the named pipeline (`parse` → `context` → `route` → `validate` → `idempotency` → `handle` → `response` → `send`) with `before` and `replace`. An `app.use` chain would hide that order in registration and `next()`. Put auth, logging, and extra checks on a named stage. See [Pipeline](../../docs/seltzer/seltzer-pipeline.md) and [Design](../../docs/seltzer/seltzer-design.md#why-pipelines-were-chosen-over-middleware-and-hooks).
 
 ### No built-in HTTPS listen
 
@@ -415,7 +472,7 @@ Those belong to the host app or to another CitrusWorx library. Juice and Sig own
 
 ### No client retries
 
-The caller owns retry policy. `client` makes one attempt: a 5xx, a timeout, and a dropped connection are not repeated ([release gate 6](../../docs/webengine/library-release-gates.md)). Call again yourself only when that is safe. A server-side idempotency stage is planned and is not in this package; `Idempotency-Key` is only a header you can send. See [Client](../../docs/seltzer/seltzer-client.md#what-is-not-here).
+The caller owns retry policy. `client` makes one attempt: a 5xx, a timeout, and a dropped connection are not repeated ([release gate 6](../../docs/webengine/library-release-gates.md)). Call again yourself only when that is safe. POST and PATCH can send `Idempotency-Key`; the server stage replays a stored success or 4xx. The client does not add that header and does not retry. See [Idempotency](#idempotency) and [Client](../../docs/seltzer/seltzer-client.md#what-is-not-here).
 
 ### No ORM or database layer
 

@@ -1,6 +1,7 @@
 import { genericInternalError, invalidReturnResponse, logInvalidReturn, logThrown, routePhrase, } from "../core/log.js";
 import { guardRawResponse } from "../core/raw-response.js";
 import { isResponseData } from "../core/response.js";
+import { idempotencyStage } from "./idempotency.js";
 import { contextStage, createRouteStage, handleStage, parseStage, responseStage, sendStage, validateStage, } from "./stages.js";
 export { STAGE_NAMES } from "./types.js";
 export { compileRoute, comparePathRank, matchRoute, rankPath } from "./router.js";
@@ -77,6 +78,7 @@ export function createDefaultPipeline(getRoutes) {
         { name: "context", stage: contextStage, builtin: true },
         { name: "route", stage: createRouteStage(getRoutes), builtin: true },
         { name: "validate", stage: validateStage, builtin: true },
+        { name: "idempotency", stage: idempotencyStage, builtin: true },
         { name: "handle", stage: handleStage, builtin: true },
         { name: "response", stage: responseStage, builtin: true },
         { name: "send", stage: sendStage, builtin: true },

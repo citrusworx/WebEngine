@@ -13,18 +13,19 @@ In Seltzer that worksheet is `PipelineContext`. The steps are functions, called 
 ```text
 Node request
   -> CORS headers / OPTIONS shortcut
-  -> parse -> context -> route -> validate -> handle -> response -> send
+  -> parse -> context -> route -> validate -> idempotency -> handle -> response -> send
 ```
 
 | Stage | Adds or decides |
 |---|---|
-| `parse` | `ctx.body`; malformed input can return 400 |
+| `parse` | `ctx.body`; malformed input can return 400. Keeps raw bytes for idempotency |
 | `context` | `method`, `path`, query strings, normalized headers |
 | `route` | `ctx.route`, `ctx.params`; no match returns 404 |
 | `validate` | Checks required contract fields; can return 400 |
+| `idempotency` | POST/PATCH with `Idempotency-Key`: replay, or reserve the key. Others continue |
 | `handle` | Calls the handler and assigns `ctx.response` |
 | `response` | Checks that the handler returned `ResponseData` |
-| `send` | Writes bytes to Node's response |
+| `send` | Stores or releases the idempotency reservation, then writes bytes to Node's response |
 
 The initial context has empty `path`, `headers`, `query`, and `params`. `parse` reads the raw `req`, not those later-normalized fields. `before("context")` therefore cannot assume `ctx.headers.authorization` is populated yet.
 

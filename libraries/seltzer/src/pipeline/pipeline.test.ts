@@ -62,6 +62,7 @@ describe("Pipeline", () => {
             "context*",
             "route*",
             "validate*",
+            "idempotency*",
             "handle",
             "handle",
             "handle*",
@@ -95,7 +96,7 @@ describe("Pipeline", () => {
         }));
 
         await pipeline.run(fakeCtx());
-        expect(ran).toEqual(["parse", "context", "route", "validate", "send"]);
+        expect(ran).toEqual(["parse", "context", "route", "validate", "idempotency", "send"]);
     });
 
     it("treats validate as a named no-op that still occupies a slot", async () => {
@@ -158,6 +159,7 @@ describe("Pipeline", () => {
             "route*",
             "validate",
             "validate*",
+            "idempotency*",
             "handle*",
             "response*",
             "send*",
@@ -170,6 +172,7 @@ describe("Pipeline", () => {
             "route",
             "before-validate",
             "custom-validate",
+            "idempotency",
             "handle",
             "response",
             "send",

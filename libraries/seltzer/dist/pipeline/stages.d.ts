@@ -38,4 +38,4 @@ export declare function handleStage(ctx: PipelineContext): Promise<void>;
  * names the route and the returned value. Defaults for valid results live in `send`.
  */
 export declare function responseStage(ctx: PipelineContext): void;
-export declare function sendStage(ctx: PipelineContext): void;
+export declare function sendStage(ctx: PipelineContext): Promise<void>;

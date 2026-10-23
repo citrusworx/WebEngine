@@ -1,5 +1,10 @@
 import http from "node:http";
 import type { IncomingMessage, RequestListener, ServerResponse } from "node:http";
+import {
+    DEFAULT_IDEMPOTENCY_TTL_MS,
+    MemoryIdempotencyStore,
+    type IdempotencyStore,
+} from "./idempotency.js";
 import { installRemovedResponseMethods } from "./raw-response.js";
 import {
     isExplicitResponse,
@@ -36,6 +41,7 @@ export type {
     CorsOptions,
     Endpoint,
     HostOptions,
+    IdempotencyOptions,
     InitOptions,
     ListenOptions,
     QueryInput,
@@ -54,6 +60,17 @@ export {
     DEFAULT_LISTEN_HOST,
     DEFAULT_REQUEST_TIMEOUT_MS,
 } from "./types.js";
+export type {
+    IdempotencyBeginResult,
+    IdempotencyResponse,
+    IdempotencyStore,
+    MemoryIdempotencyStoreOptions,
+} from "./idempotency.js";
+export {
+    DEFAULT_IDEMPOTENCY_TTL_MS,
+    MAX_IDEMPOTENCY_KEY_LENGTH,
+    MemoryIdempotencyStore,
+} from "./idempotency.js";
 export type { PipelineContext, Stage, StageName } from "../pipeline/index.js";
 export { STAGE_NAMES } from "../pipeline/index.js";
 export type { ResponseData, SendOptions };
@@ -164,8 +181,31 @@ function resolveBodyLimit(bodyLimit: number | undefined, site: OptionSite): numb
 }
 
 /**
+ * `false` disables. An object overrides `ttlMs` and `store` one field at a time.
+ * An omitted inner field keeps the init value. Omit the whole option to keep init.
+ */
+function mergeIdempotency(
+    base: InitOptions["idempotency"],
+    override: ListenOptions["idempotency"],
+): InitOptions["idempotency"] {
+    if (override === undefined) {
+        return base;
+    }
+    if (override === false) {
+        return false;
+    }
+
+    const previous = base !== undefined && base !== false ? base : undefined;
+    return {
+        ttlMs: override.ttlMs !== undefined ? override.ttlMs : previous?.ttlMs,
+        store: override.store !== undefined ? override.store : previous?.store,
+    };
+}
+
+/**
  * Listen wins per field when the field is passed. Omitted listen fields keep
  * the init value. `cors` is replaced as a whole object, not merged.
+ * `idempotency` merges `ttlMs` and `store` field by field. `false` disables.
  */
 function foundationFromListen(init: InitOptions, options: ListenOptions): InitOptions {
     return {
@@ -174,8 +214,53 @@ function foundationFromListen(init: InitOptions, options: ListenOptions): InitOp
         logger: options.logger !== undefined ? options.logger : init.logger,
         debug: options.debug !== undefined ? options.debug : init.debug,
         locals: options.locals !== undefined ? options.locals : init.locals,
+        idempotency: mergeIdempotency(init.idempotency, options.idempotency),
     };
 }
+
+function assertIdempotency(
+    idempotency: InitOptions["idempotency"],
+    site: OptionSite,
+): void {
+    if (idempotency === undefined || idempotency === false) {
+        return;
+    }
+
+    if (typeof idempotency !== "object" || idempotency === null || Array.isArray(idempotency)) {
+        throw new Error(`${site} idempotency must be false or an options object.`);
+    }
+
+    if (
+        idempotency.ttlMs !== undefined &&
+        (!Number.isInteger(idempotency.ttlMs) || idempotency.ttlMs <= 0)
+    ) {
+        throw new Error(
+            `${site} idempotency.ttlMs must be a positive integer of milliseconds.`,
+        );
+    }
+
+    const store = idempotency.store;
+    if (store === undefined) {
+        return;
+    }
+
+    if (
+        typeof store !== "object" ||
+        store === null ||
+        typeof store.begin !== "function" ||
+        typeof store.complete !== "function" ||
+        typeof store.release !== "function"
+    ) {
+        throw new Error(
+            `${site} idempotency.store must implement begin, complete, and release.`,
+        );
+    }
+}
+
+type ResolvedIdempotency = {
+    ttlMs: number;
+    store: IdempotencyStore;
+};
 
 const HANDLER_CONFIG_DEPRECATION =
     "app.handler(config) is deprecated. Use app.adapter(config). This alias will be removed in the next minor after 0.10.0.";
@@ -247,6 +332,8 @@ export class Seltzer {
     private routes: ReturnType<typeof compileRoute>[] = [];
     private config: HandlerConfig | null = null;
     private foundation: InitOptions = {};
+    /** Shared by listeners that do not pass their own `idempotency.store`. */
+    private memoryIdempotencyStore: MemoryIdempotencyStore | null = null;
     /**
      * Set only for the synchronous `handler()` call inside `listen`, so that
      * server snapshots listen overrides without changing later `app.handler()` calls.
@@ -259,16 +346,18 @@ export class Seltzer {
     }
 
     /**
-     * Create an app. Pass `bodyLimit`, `cors`, `logger`, `debug`, and `locals`
-     * here when every server for this app should share them.
+     * Create an app. Pass `bodyLimit`, `cors`, `logger`, `debug`, `locals`,
+     * and `idempotency` here when every server for this app should share them.
      * `credentials: true` with `origin: "*"` throws here, before `listen`.
      * A non-integer or negative `bodyLimit` throws here when you pass it.
+     * Idempotency is on unless `idempotency: false`. A bad `ttlMs` or `store` throws here.
      */
     static init<TLocals = unknown>(options: InitOptions<TLocals> = {}) {
         assertCors(options.cors, "Seltzer.init");
         if (options.bodyLimit !== undefined) {
             resolveBodyLimit(options.bodyLimit, "Seltzer.init");
         }
+        assertIdempotency(options.idempotency, "Seltzer.init");
 
         const app = new Seltzer();
         app.foundation = {
@@ -277,6 +366,7 @@ export class Seltzer {
             logger: options.logger,
             debug: options.debug,
             locals: options.locals,
+            idempotency: options.idempotency,
         };
         return app;
     }
@@ -323,7 +413,7 @@ export class Seltzer {
      * `http.createServer(app.handler())` or
      * `https.createServer(tlsOptions, app.handler())`.
      * That listener runs the same pipeline as `listen`. It uses `bodyLimit`,
-     * `cors`, `logger`, `debug`, and `locals` from `init`. It does not bind
+     * `cors`, `logger`, `debug`, `locals`, and `idempotency` from `init`. It does not bind
      * a port and it does not set server timeouts. The host owns those.
      * A `listen` override applies only to the server `listen` creates.
      * Calling `handler()` again still returns a listener from `init`.
@@ -364,10 +454,11 @@ export class Seltzer {
      * by default; pass `0` on an option to disable that timer. Those timers
      * belong to this server. `handler()` does not set them.
      *
-     * `bodyLimit`, `cors`, `logger`, `debug`, and `locals` passed here replace
-     * the `init` values for this server only. An omitted field keeps the init
-     * value. `cors` is replaced as a whole object, not merged field by field.
-     * `app.handler()` keeps using `init`.
+     * `bodyLimit`, `cors`, `logger`, `debug`, `locals`, and `idempotency` passed
+     * here replace the `init` values for this server only. An omitted field keeps
+     * the init value. `cors` is replaced as a whole object, not merged field by field.
+     * `idempotency: false` disables it. An idempotency object overrides `ttlMs`
+     * and `store` one field at a time. `app.handler()` keeps using `init`.
      *
      * The return value is the real `http.Server`. `server.close()` stops
      * accepting new connections. The close callback waits for open
@@ -391,6 +482,7 @@ export class Seltzer {
 
         const host = resolveListenHost(options.host);
         const timeouts = resolveListenTimeouts(options);
+        assertIdempotency(options.idempotency, "Seltzer.listen");
         const foundation = foundationFromListen(this.foundation, options);
         assertCors(foundation.cors, "Seltzer.listen");
 
@@ -426,11 +518,33 @@ export class Seltzer {
         return server;
     }
 
+    private defaultIdempotencyStore(): MemoryIdempotencyStore {
+        if (!this.memoryIdempotencyStore) {
+            this.memoryIdempotencyStore = new MemoryIdempotencyStore();
+        }
+        return this.memoryIdempotencyStore;
+    }
+
+    private resolveIdempotency(
+        idempotency: InitOptions["idempotency"],
+    ): ResolvedIdempotency | undefined {
+        if (idempotency === false) {
+            return undefined;
+        }
+
+        const ttlMs = idempotency?.ttlMs ?? DEFAULT_IDEMPOTENCY_TTL_MS;
+        return {
+            ttlMs,
+            store: idempotency?.store ?? this.defaultIdempotencyStore(),
+        };
+    }
+
     private requestListener(foundation: InitOptions, site: OptionSite): RequestListener {
         const bodyLimit = resolveBodyLimit(foundation.bodyLimit, site);
         const locals = foundation.locals ?? {};
+        const idempotency = this.resolveIdempotency(foundation.idempotency);
         return (req, res) => {
-            void this.handleRequest(req, res, locals, foundation, bodyLimit);
+            void this.handleRequest(req, res, locals, foundation, bodyLimit, idempotency);
         };
     }
 
@@ -440,6 +554,7 @@ export class Seltzer {
         locals: TLocals,
         options: Pick<InitOptions, "cors" | "logger" | "debug">,
         bodyLimit: number,
+        idempotency: ResolvedIdempotency | undefined,
     ) {
         if (options.cors) {
             applyCors(req, res, options.cors);
@@ -464,6 +579,7 @@ export class Seltzer {
             bodyLimit,
             logger: options.logger,
             debug: options.debug === true,
+            idempotency,
         };
         installRemovedResponseMethods(ctx);
 

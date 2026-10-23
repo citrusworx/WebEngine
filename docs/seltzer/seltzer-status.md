@@ -37,7 +37,8 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | Area | Maturity | Notes |
 |---|---|---|
 | `Seltzer.init()` / `.route()` / `.listen()` | Stable | Identity of the package. Node `http`. `listen` returns `Server`. Default bind `127.0.0.1`. `host` opts into another interface. Header, request, and keep-alive timeouts are on. `server.close()` stops accept. Covered by `core-api.conformance.test.ts`. |
-| Named pipeline | Stable | `parse` → `send`. `before` / `replace`. Mutation in place. Unknown stage names throw. Covered by `core-api.conformance.test.ts`. |
+| Named pipeline | Stable | `parse` → `send`, including `idempotency` after `validate`. `before` / `replace`. Mutation in place. Unknown stage names throw. Covered by `core-api.conformance.test.ts`. |
+| Server idempotency | Emerging | Builtin `idempotency` stage for POST and PATCH that send `Idempotency-Key`. Same key and raw-body fingerprint replays the stored response with `Idempotent-Replayed: true`. In flight is 409. A different body is 422. Status 200–499 is cached. 5xx and thrown errors release the key. Default `MemoryIdempotencyStore`, 24h TTL, no process-keeping timer. `idempotency: false` disables it. `IdempotencyStore` is the swap point (`begin` / `complete` / `release`). Covered by `idempotency.test.ts`. The store shape can still move. |
 | Parametric match + static-prefix rank | Stable | `/items/new` beats `/items/:id`. Params are `decodeURIComponent`. A trailing slash is a different path. Malformed `%` encoding on a matched param is 400. Known path + wrong method is 405 + `Allow`; unknown paths stay 404. Covered by `http-surface.conformance.test.ts`. |
 | JSON `parse` + 400 on bad JSON | Stable | GET/HEAD skip body. Empty body is `undefined`. Non-JSON content types are a UTF-8 string, not 415. Default body limit is 1 MB (`bodyLimit`, `0` unlimited); over the limit is 413 and reading stops. Covered by `http-surface.conformance.test.ts`. |
 | `ResponseData` + `send` | Stable | Handlers and hooks return `ResponseData`. Bare values are 500 and are logged (route + returned value). Strings are `text/plain; charset=utf-8`, JSON values are `application/json`, buffers are `application/octet-stream`, unless `Content-Type` is set. 204, 304, and HEAD send no body. Thrown errors are a generic 500; the error is logged, stack only with `listen({ debug: true })`. `logger` defaults to `console.error`. No `ctx.json` / `ctx.send`. Writing `ctx.res` throws. `replace("send")` throws. Covered by `response-data.conformance.test.ts`. |
@@ -65,7 +66,7 @@ The package will not grow this. The alternative is in [Non-goals](../../librarie
 | `.adapter(config)` | same | stores config and returns the app. Not a request listener. |
 | `.handler()` | same | Node request listener only. Same pipeline as `listen`. Uses `init` options. Does not set timeouts. `handler(config)` is a deprecated alias of `adapter(config)`. |
 | `.listen(port, options?)` | same | `http.createServer` of that listener, loopback `127.0.0.1`, timeouts 20s / 30s / 5s. A passed `bodyLimit`, `cors`, `logger`, `debug`, or `locals` replaces the `init` value for that server. `cors` is not merged field by field. |
-| Stages | `pipeline/stages.ts` | parse…send |
+| Stages | `pipeline/stages.ts`, `pipeline/idempotency.ts` | parse…send, including idempotency |
 | Matcher | `pipeline/router.ts` | rank + params |
 | `ResponseData` / `send` / `response()` | `core/response.ts` | string, JSON, or bytes. 204, 304, and HEAD send no body. |
 | `validationError()` | `core/validation.ts` | 400 `{ error: "Validation failed", issues }`. `path` is `(string \| number)[]`. |
