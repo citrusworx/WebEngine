@@ -19,7 +19,6 @@ todo:
         endpoint: /api/todos
         query: createTodo
         body:
-          id: string.required
           title: string.required
           notes: string
           done: boolean

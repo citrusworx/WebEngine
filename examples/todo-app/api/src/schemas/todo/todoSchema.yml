@@ -2,7 +2,9 @@ Todo:
   table: todos
   description: One task on the learner's list
   fields:
-    id: string PRIMARY KEY
+    # integer AUTO_INCREMENT compiles to SERIAL on Postgres.
+    # A string default of gen_random_uuid() is rejected by the compiler.
+    id: integer PRIMARY KEY AUTO_INCREMENT
     title: string NOT NULL
     notes: string
     done: boolean NOT NULL DEFAULT false

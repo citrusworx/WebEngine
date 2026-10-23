@@ -6,13 +6,13 @@
 
 ## What you'll build
 
-`apps/todo/front/index.html`, `vite.config.ts`, and `src/main.tsx`. The page is the `App` function from lesson 05 onward. This lesson stops at `mount`.
+`web/index.html`, `web/vite.config.ts`, and `web/src/main.tsx`. The page is the `App` function from lesson 05 onward. This lesson stops at `mount`.
 
 ## Steps
 
 ### 1. HTML shell
 
-`apps/todo/front/index.html`:
+`web/index.html`:
 
 ```html
 <!DOCTYPE html>
@@ -29,19 +29,21 @@
 </html>
 ```
 
-`theme="tide"` is a Juice attribute on `body`. The stylesheet that paints it is imported from `main.tsx`, not linked here. Vite injects the CSS. Tide is the dark SaaS theme: Inter, a near-black page, one lagoon accent. Lesson 07 is where that choice is used.
+`theme="tide"` is a Juice attribute on `body`. The stylesheet that paints it is imported from `main.tsx`, not linked here. Vite injects the CSS. Tide ships in `@citrusworx/juiceui` 0.9.2: Inter, a near-black page, one lagoon accent. Lesson 07 is where that choice is used.
 
 Seltzer is not serving this file. Vite is.
 
 ### 2. Vite proxies the API
 
-`apps/todo/front/vite.config.ts`:
+`web/vite.config.ts`:
 
 ```ts
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  root: import.meta.dirname,
   server: {
+    host: "127.0.0.1",
     port: 5173,
     strictPort: true,
     proxy: {
@@ -51,16 +53,27 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    host: "127.0.0.1",
+    port: 4173,
+    strictPort: true,
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+  },
 });
 ```
 
 The browser calls `/api/todos` on port 5173. Vite forwards that to the Seltzer process. One origin, so lesson 03's CORS config is idle during dev.
 
-`strictPort` means a busy 5173 fails the dev server instead of picking 5174 and invalidating the lesson.
+`host: "127.0.0.1"` keeps the lesson URL on IPv4. `strictPort` means a busy 5173 fails the dev server instead of picking 5174. `root` is the `web/` directory, because the npm script runs Vite from the package root.
+
+`preview` serves the production build on 4173. It does not proxy `/api`. Lesson 09 says why.
 
 ### 3. Mount
 
-`apps/todo/front/src/main.tsx`:
+`web/src/main.tsx`:
 
 ```ts
 import "@citrusworx/juiceui/styles";
@@ -78,21 +91,29 @@ if (!root) {
 mount(<App />, root);
 ```
 
-`jsx()` is not imported by hand. `apps/todo/front/tsconfig.json` sets `jsx` to `react-jsx` and `jsxImportSource` to `@citrusworx/sigjs`. The compiler rewrites `<App />` into a `jsx` call from `@citrusworx/sigjs/jsx-runtime`. That runtime creates DOM nodes. It is not React and it is not a virtual DOM.
+`jsx()` is not imported by hand. `web/tsconfig.json` sets `jsx` to `react-jsx` and `jsxImportSource` to `@citrusworx/sigjs`. The compiler rewrites `<App />` into a `jsx` call from `@citrusworx/sigjs/jsx-runtime`. That runtime creates DOM nodes. It is not React and it is not a virtual DOM.
+
+The compiler options that do that:
+
+```json
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@citrusworx/sigjs"
+```
 
 `mount` clears `#root` and inserts the node `App` returns.
 
-The two Juice imports are the published CSS entrypoints: core attributes, then the tide theme. `todo.css` is the small exception in lesson 07.
+The two Juice imports are published CSS entrypoints: core attributes, then the Tide theme. `todo.css` is the small exception in lesson 07.
 
 ### 4. Start the front end
 
-API still running. From the repository root:
+API still running. From the app folder:
 
 ```bash
-yarn workspace @citrusworx/todo dev
+npm run dev:web
 ```
 
-Open `http://127.0.0.1:5173`. If that address refuses the connection and `http://localhost:5173` works, your Vite bound IPv6 localhost only. The port is still 5173.
+Open `http://127.0.0.1:5173`.
 
 ## Checkpoint
 
@@ -102,15 +123,11 @@ If the heading is missing, the root element was not found or `mount` threw. The 
 
 ## What's happening
 
-Vite transforms TypeScript and serves modules. Sig's `jsx` walks props and creates elements. A function child becomes a text node subscribed with `effect`. You will use that in the next lesson. Juice's CSS matches attributes such as `theme`, `stack`, and `gap` after the browser has the elements. Sig does not know those names. It sets them as attributes, and the stylesheet does the rest.
-
-Blackwater's `front/src/main.tsx` is the same shape: Juice styles, `mount`, a root check.
+Vite transforms TypeScript and serves modules. Sig's `jsx` walks props and creates elements. A function child becomes a text node subscribed with `effect`. You will use that in the next lesson. Juice's CSS matches attributes such as `theme`, `stack`, and `gap` after the browser has the elements. Sig does not know those names. It sets them as attributes, and the stylesheet does the rest. `width` and `style` are the exception in lesson 07, because those names are DOM properties.
 
 ## Gap
 
 **Seltzer does not serve this page.** Stopping the API does not stop Vite, and stopping Vite does not stop the API. Production keeps that split. There is no static middleware to turn on.
-
-**`kiwi dev` does not start either process.** Two Yarn scripts do.
 
 ## Next
 

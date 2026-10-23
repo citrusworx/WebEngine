@@ -2442,40 +2442,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/todo-app@workspace:apps/todo":
-  version: 0.0.0-use.local
-  resolution: "@citrusworx/todo-app@workspace:apps/todo"
-  dependencies:
-    "@citrusworx/grapevine": "workspace:*"
-  languageName: unknown
-  linkType: soft
-
-"@citrusworx/todo-back@workspace:apps/todo/back":
-  version: 0.0.0-use.local
-  resolution: "@citrusworx/todo-back@workspace:apps/todo/back"
-  dependencies:
-    "@citrusworx/nectarine": "workspace:*"
-    "@citrusworx/seltzer": "workspace:*"
-    "@citrusworx/webengine": "workspace:*"
-    "@types/node": "npm:^25.4.0"
-    "@types/pg": "npm:^8.15.2"
-    pg: "npm:^8.16.0"
-    tsx: "npm:^4.20.6"
-    typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@citrusworx/todo@workspace:apps/todo/front":
-  version: 0.0.0-use.local
-  resolution: "@citrusworx/todo@workspace:apps/todo/front"
-  dependencies:
-    "@citrusworx/juiceui": "workspace:*"
-    "@citrusworx/sigjs": "workspace:*"
-    typescript: "npm:^5.9.3"
-    vite: "npm:^8.0.0"
-  languageName: unknown
-  linkType: soft
-
 "@citrusworx/types@npm:^0.2.0, @citrusworx/types@workspace:libraries/types":
   version: 0.0.0-use.local
   resolution: "@citrusworx/types@workspace:libraries/types"

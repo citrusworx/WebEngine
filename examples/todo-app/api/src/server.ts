@@ -34,10 +34,10 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const configPath =
   process.env.NECTARINE_CONFIG?.trim() ||
   path.resolve(here, "../nectarine.config.yaml");
-const backRoot = path.dirname(configPath);
+const apiRoot = path.dirname(configPath);
 
-loadLocalEnv(path.join(backRoot, ".env"));
-loadLocalEnv(path.join(backRoot, ".env.example"));
+loadLocalEnv(path.join(apiRoot, ".env"));
+loadLocalEnv(path.join(apiRoot, ".env.example"));
 
 const port = Number(process.env.PORT ?? 3001);
 const corsOrigin = process.env.CORS_ORIGIN?.trim();

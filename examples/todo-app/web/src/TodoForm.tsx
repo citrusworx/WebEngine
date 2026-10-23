@@ -49,21 +49,10 @@ export function TodoForm(props: { todos: Sig<Todo[]>; error: Sig<string> }) {
       return;
     }
 
-    const todo: Todo = {
-      id: crypto.randomUUID(),
-      title,
-      notes,
-      done: false,
-    };
-
     try {
-      const ack = await createTodo(todo);
-      if (ack.rowCount < 1) {
-        notice.set("The API did not store a row.");
-        return;
-      }
-      // POST does not return the row. Keep this object, then refetch.
-      props.todos.set([todo, ...props.todos.get().filter((row) => row.id !== todo.id)]);
+      const created = await createTodo({ title, notes, done: false });
+      // POST returns the row, including the SERIAL id and created_at.
+      props.todos.set([created, ...props.todos.get().filter((row) => row.id !== created.id)]);
       form.reset();
       notice.set("");
       props.error.set("");

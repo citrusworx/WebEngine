@@ -1,0 +1,95 @@
+# ToDo course — droplet for the Seltzer API, App Platform static site for
+# the Vite build. Shape matches the resources in @citrusworx/grapevine 0.2.2
+# (see examples/blueprints/04-full-web-stack.yaml in that package) plus an
+# `apps` entry. That package's resource list is tags, ssh_keys, vpcs,
+# droplets, firewalls, domains, load_balancers, alert_policies, and apps.
+#
+# Spaces, certificates, a CDN endpoint, and `resources.databases` are not
+# in the schema. Unknown keys are dropped. `grape validate` still says
+# valid. `networking.cdn` is a boolean the applier does not read.
+# There is no `stack` section and no `connection_env`.
+#
+# grape validate / grape plan / grape status do not call DigitalOcean.
+# grape apply does. Do not apply this file until the placeholders below are
+# yours. Apply creates the droplet and sends `apps[].spec` to App Platform.
+# It does not run npm, upload web/dist, install Node on the droplet, or
+# copy PG_* onto that droplet.
+#
+# Replace before apply:
+#   REPLACE_WITH_YOUR_IP      your public IPv4, SSH /32
+#   REPLACE_WITH_GITHUB_REPO  owner/name App Platform can clone
+#   REPLACE_WITH_API_ORIGIN   API origin baked into the static build
+#
+#   export DO_TOKEN=dop_v1_...
+#   npm run validate:grape
+#   npm run plan:grape
+#   npm run status:grape
+
+version: "0.1"
+provider: digitalocean
+credentials:
+  source: env
+  env: DO_TOKEN
+region: nyc1
+
+resources:
+  tags:
+    - todo
+  ssh_keys:
+    - name: todo
+      generate: true
+  vpcs:
+    - name: todo
+      description: ToDo API VPC
+      ip_range: 10.130.0.0/16
+  droplets:
+    - name: todo-api-01
+      size: s-1vcpu-1gb
+      image: ubuntu-24-04-x64
+      vpc: todo
+      monitoring: true
+      tags: [todo]
+  firewalls:
+    - name: todo-api
+      droplets: [todo-api-01]
+      inbound:
+        - protocol: tcp
+          ports: "22"
+          sources: ["REPLACE_WITH_YOUR_IP/32"]
+        - protocol: tcp
+          ports: "80"
+          sources: ["0.0.0.0/0"]
+        - protocol: tcp
+          ports: "443"
+          sources: ["0.0.0.0/0"]
+        - protocol: tcp
+          ports: "3001"
+          sources: ["0.0.0.0/0"]
+        - protocol: icmp
+          sources: ["0.0.0.0/0"]
+      outbound:
+        - protocol: tcp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: udp
+          ports: "all"
+          destinations: ["0.0.0.0/0"]
+        - protocol: icmp
+          destinations: ["0.0.0.0/0"]
+  apps:
+    - spec:
+        name: todo-web
+        region: nyc
+        static_sites:
+          - name: web
+            github:
+              repo: REPLACE_WITH_GITHUB_REPO
+              branch: master
+              deploy_on_push: false
+            build_command: npm run build:web
+            output_dir: web/dist
+            index_document: index.html
+        envs:
+          - key: VITE_API_BASE
+            value: REPLACE_WITH_API_ORIGIN
+            scope: BUILD_TIME

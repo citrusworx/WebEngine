@@ -12,7 +12,7 @@ The empty-state block and the edit panel. Both nodes are created once. An effect
 
 ### 1. There is no Show
 
-Sig's JSX runtime does not include `<Show>`, `<When>`, or `<For>`. A function child is stringified into a text node. `{open.get() && <Panel />}` is not a pattern here. The [Sig status page](../../sigjs/sig-status.md) lists `<Show>` as not present.
+Sig 0.7.0 exports `Signal`, `effect`, `memo`, `batch`, `untrack`, `bindList`, and `mount`. The JSX runtime does not include `<Show>`, `<When>`, or `<For>`. A function child is stringified into a text node. `{open.get() && <Panel />}` is not a pattern here.
 
 Two tools you do have:
 
@@ -23,7 +23,7 @@ Two tools you do have:
 
 ### 2. Empty state
 
-`apps/todo/front/src/EmptyState.tsx`:
+`web/src/EmptyState.tsx`:
 
 ```tsx
 import { effect } from "@citrusworx/sigjs";
@@ -58,12 +58,12 @@ Read every signal you care about on every run. If you put `todos.get()` inside a
 The loading line in `App` is the getter form of the same idea:
 
 ```tsx
-      <p hidden={() => phase.get() !== "loading"}>Loading todos…</p>
+        <p hidden={() => phase.get() !== "loading"}>Loading todos…</p>
 ```
 
 ### 3. Edit panel
 
-`TodoRow` keeps the title view and the editor mounted together. The effect at the bottom of the component:
+`TodoRow` keeps the title view and the editor mounted together. The effect:
 
 ```tsx
   effect(() => {
@@ -109,7 +109,7 @@ The input values are copied when editing becomes true. They are not function pro
 
 ## What's happening
 
-`hidden` is a DOM boolean. The nodes, their listeners, and their effects stay. That is cheaper to reason about than rebuilding, and it is the pattern Sig's own docs use for disclosure.
+`hidden` is a DOM boolean. The nodes, their listeners, and their effects stay. That is cheaper to reason about than rebuilding, and it is the pattern this app uses for disclosure.
 
 The browser's own `[hidden]` rule is user-agent CSS. Juice's `:where([stack])` and `button { display: inline-flex }` are author CSS, so they win, and a node with `hidden === true` can still paint. `todo.css` puts `display: none` back on `[data-todo] [hidden]`. Lesson 07 quotes that rule. After it, the empty block, the editor, and the Edit button actually leave the screen.
 
@@ -117,7 +117,7 @@ The browser's own `[hidden]` rule is user-agent CSS. Juice's `:where([stack])` a
 
 ## Gap
 
-**No `<Show>`.** Coming soon would be a component that mounts and disposes a child. It is not in `@citrusworx/sigjs` 0.7.0. Do not import one from React. The JSX runtime will not reconcile it.
+**No `<Show>`.** A component that mounts and disposes a child is not in `@citrusworx/sigjs` 0.7.0. Do not import one from React. The JSX runtime will not reconcile it.
 
 **The empty-state effect's read order is part of the contract.** An effect subscribes only to signals it actually read on that run. The loading gate is why `phase.get()` is first and always.
 
