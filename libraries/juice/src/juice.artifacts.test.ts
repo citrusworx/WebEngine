@@ -890,6 +890,66 @@ describe("Juice build artifacts", () => {
         expect(tideCss).not.toContain("--juice-avatar-status-online");
     });
 
+    it("includes list structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+
+        expect(css).toContain(":where(ul, ol, div)[list]");
+        expect(css).toContain("[list-item]");
+        expect(css).toContain("[list-leading]");
+        expect(css).toContain("[list-content]");
+        expect(css).toContain("[list-secondary]");
+        expect(css).toContain("[list-trailing]");
+        expect(css).toMatch(/\[list\]\[divided\]/);
+        expect(css).toMatch(/\[list\]\[dense\]/);
+        expect(css).toMatch(/\[list-item\]\[selected\]/);
+        expect(css).toMatch(/\[aria-current\]:not\(\[aria-current=["']?false["']?\]\)/);
+        expect(css).toMatch(/\[list-leading\] :is\(\[avatar\], \[icon\]\)/);
+        expect(css).toMatch(/:where\(a, button\)\[list-item\]:focus-visible/);
+        expect(css).toMatch(/\[list-item\] > :where\(a, button\):focus-visible/);
+        expect(css).toMatch(/\[theme\]\s+:where\(a, button\)\[list-item\]/);
+        expect(css).toMatch(/\[theme\]\s+:where\(ul, ol, div\)\[list\]/);
+        expect(css).toContain("--juice-list-gap: 0;");
+        expect(css).toContain("--juice-list-padding: 0.75rem 1rem");
+        expect(css).toContain("--juice-list-padding-dense: 0.375rem 0.75rem");
+        expect(css).toContain("--juice-list-radius: 0.375rem");
+        expect(css).toContain("--juice-list-divider:");
+        expect(css).toContain("--juice-list-secondary:");
+        expect(css).toContain("--juice-list-hover:");
+        expect(css).toContain("--juice-list-selected:");
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-list-divider:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-list-secondary:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-list-hover:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-list-selected:/);
+        expect(css).toContain("color-mix(in srgb, currentColor 92%, transparent)");
+        expect(css).toContain("color-mix(in srgb, currentColor 8%, transparent)");
+        expect(css).toContain("color-mix(in srgb, currentColor 14%, transparent)");
+        expect(css).toContain("color-mix(in srgb, currentColor 28%, transparent)");
+        expect(css).toContain("list-style: none");
+        expect(css).toContain("text-overflow: ellipsis");
+        expect(css).toContain("overflow-wrap: anywhere");
+        expect(css).toContain("outline: 2px solid currentColor");
+        expect(css).toContain("outline-offset: 2px");
+        expect(css).toContain(
+            "transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard), color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard)"
+        );
+        expect(reduced.some((block) => block.includes("[list-item]") && block.includes("transition: none"))).toBe(true);
+        expect(css).not.toMatch(/input\[list\]/);
+        expect(css).not.toMatch(/\[role=["']?list["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?listitem["']?\]/);
+        expect(css).not.toMatch(/\[list-item\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[list-item\][^{]*\{[^}]*z-index:\s*1000/);
+        expect(css).not.toMatch(/:where\(ul, ol, div\)\[list\][^{]*\{[^}]*--juice-menu/);
+        expect(css).not.toMatch(/:where\(ul, ol, div\)\[list\][^{]*\{[^}]*--juice-combobox/);
+        expect(css).not.toMatch(/:where\(ul, ol, div\)\[list\][^{]*\{[^}]*--juice-avatar/);
+        expect(css).not.toMatch(/:where\(ul, ol, div\)\[list\][^{]*\{[^}]*--juice-pagination/);
+
+        for (const id of readBundledThemeIds()) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-list-");
+        }
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
