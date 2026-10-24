@@ -2,3 +2,7 @@
 /.yarn/releases/*    binary
 /.yarn/plugins/**/*  binary
 /.pnp.*              binary linguist-generated
+
+# Git Bash and MSYS2 reject `set -o pipefail\r`. Keep shell scripts LF even
+# when core.autocrlf is true.
+*.sh text eol=lf

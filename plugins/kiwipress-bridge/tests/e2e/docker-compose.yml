@@ -6,6 +6,9 @@
 # containers reach MariaDB at 127.0.0.1:3306. Published bridge ports are not
 # used. This still works when Docker cannot forward IP between containers
 # (some nested VMs drop those frames) and matches a normal localhost install.
+#
+# Git Bash, MSYS2, and Docker Desktop use docker-compose.bridge.yml instead
+# (host port 18080 published to container port 80). tests/e2e/run.sh chooses.
 
 name: kiwipress-bridge-e2e
 
@@ -49,8 +52,16 @@ services:
       - wp_html:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/kiwipress-bridge:ro
       - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
-      - ${KIWIPRESS_E2E_APACHE_DIR:-./apache}/ports.conf:/etc/apache2/ports.conf:ro
-      - ${KIWIPRESS_E2E_APACHE_DIR:-./apache}/vhost.conf:/etc/apache2/sites-enabled/000-default.conf:ro
+      # Long syntax so a Windows source such as G:/.../.runtime/ports.conf
+      # is not split on the drive-letter colon.
+      - type: bind
+        source: ${KIWIPRESS_E2E_APACHE_DIR:-./apache}/ports.conf
+        target: /etc/apache2/ports.conf
+        read_only: true
+      - type: bind
+        source: ${KIWIPRESS_E2E_APACHE_DIR:-./apache}/vhost.conf
+        target: /etc/apache2/sites-enabled/000-default.conf
+        read_only: true
 
   wpcli:
     image: wordpress:cli-php8.3
