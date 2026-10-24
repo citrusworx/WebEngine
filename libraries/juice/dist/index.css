@@ -103794,6 +103794,232 @@ button[slider-thumb]:focus-visible,
     transition: none;
   }
 }
+:root,
+[theme] {
+  --juice-table-border: color-mix(in srgb, currentColor 24%, transparent);
+  --juice-table-header-bg: color-mix(in srgb, currentColor 6%, transparent);
+  --juice-table-stripe: color-mix(in srgb, currentColor 4%, transparent);
+  --juice-table-hover: color-mix(in srgb, currentColor 6%, transparent);
+  --juice-table-selected: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+:root {
+  --juice-table-padding: 0.75rem 1rem;
+  --juice-table-padding-dense: 0.375rem 0.75rem;
+  --juice-table-radius: 0.375rem;
+}
+
+[table-scroll],
+[theme] [table-scroll] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow-x: auto;
+  border-radius: var(--juice-table-radius);
+  background-color: transparent;
+  background-image: none;
+  color: inherit;
+  box-shadow: none;
+}
+
+[table-scroll]:focus-visible,
+[theme] [table-scroll]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+:where(table)[table],
+[theme] :where(table)[table] {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: none;
+  background-color: var(--juice-surface-strong-bg, #fff);
+  background-image: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  box-shadow: none;
+  border-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > caption,
+[theme] :where(table)[table] > caption {
+  caption-side: top;
+  box-sizing: border-box;
+  padding: var(--juice-table-padding);
+  text-align: start;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  background-color: transparent;
+  background-image: none;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot),
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) {
+  background-color: transparent;
+  color: inherit;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot) > tr,
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) > tr {
+  background-color: transparent;
+  color: inherit;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td),
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td) {
+  box-sizing: border-box;
+  padding: var(--juice-table-padding);
+  border: none;
+  border-inline-end: 1px solid var(--juice-table-border);
+  border-block-end: 1px solid var(--juice-table-border);
+  background-color: transparent;
+  background-image: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: start;
+  vertical-align: middle;
+  box-shadow: none;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td):first-child,
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td):first-child {
+  border-inline-start: 1px solid var(--juice-table-border);
+}
+
+:where(table)[table] :where(th, td, caption) :where(p, span, li, label),
+[theme] :where(table)[table] :where(th, td, caption) :where(p, span, li, label) {
+  color: inherit;
+}
+
+:where(table)[table] > caption + :where(thead, tbody, tfoot) > tr:first-child > :where(th, td),
+:where(table)[table] > :where(thead, tbody, tfoot):first-child > tr:first-child > :where(th, td) {
+  border-block-start: 1px solid var(--juice-table-border);
+}
+
+:where(table)[table] > caption + :where(thead, tbody, tfoot) > tr:first-child > :where(th, td):first-child,
+:where(table)[table] > :where(thead, tbody, tfoot):first-child > tr:first-child > :where(th, td):first-child {
+  border-start-start-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > caption + :where(thead, tbody, tfoot) > tr:first-child > :where(th, td):last-child,
+:where(table)[table] > :where(thead, tbody, tfoot):first-child > tr:first-child > :where(th, td):last-child {
+  border-start-end-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot):last-child > tr:last-child > :where(th, td):first-child {
+  border-end-start-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot):last-child > tr:last-child > :where(th, td):last-child {
+  border-end-end-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+[theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+  font-weight: 600;
+  background-color: var(--juice-table-header-bg);
+  background-image: none;
+  color: inherit;
+}
+
+:where(table)[table][dense] > caption,
+:where(table)[table][dense] > :where(thead, tbody, tfoot) > tr > :where(th, td) {
+  padding: var(--juice-table-padding-dense);
+}
+
+:where(table)[table][striped] > tbody > tr:nth-child(even),
+[theme] :where(table)[table][striped] > tbody > tr:nth-child(even) {
+  background-color: var(--juice-table-stripe);
+  background-image: none;
+  color: inherit;
+}
+
+:where(table)[table] > tbody > tr:hover,
+:where(table)[table][striped] > tbody > tr:hover,
+[theme] :where(table)[table] > tbody > tr:hover,
+[theme] :where(table)[table][striped] > tbody > tr:hover {
+  background-color: var(--juice-table-hover);
+  background-image: none;
+  color: inherit;
+}
+
+:where(table)[table] > tbody > tr:is([selected], [aria-selected=true]),
+:where(table)[table][striped] > tbody > tr:is([selected], [aria-selected=true]),
+:where(table)[table] > tbody > tr:is([selected], [aria-selected=true]):hover,
+:where(table)[table][striped] > tbody > tr:is([selected], [aria-selected=true]):hover,
+[theme] :where(table)[table] > tbody > tr:is([selected], [aria-selected=true]),
+[theme] :where(table)[table][striped] > tbody > tr:is([selected], [aria-selected=true]),
+[theme] :where(table)[table] > tbody > tr:is([selected], [aria-selected=true]):hover,
+[theme] :where(table)[table][striped] > tbody > tr:is([selected], [aria-selected=true]):hover {
+  background-color: var(--juice-table-selected);
+  background-image: none;
+  color: inherit;
+}
+
+:where(table)[table] > :where(thead, tfoot) > tr:is([selected], [aria-selected=true]) > :where(th, td),
+[theme] :where(table)[table] > :where(thead, tfoot) > tr:is([selected], [aria-selected=true]) > :where(th, td) {
+  background-color: var(--juice-table-selected);
+  background-image: none;
+  color: inherit;
+}
+
+:where(table)[table][sticky] > thead > tr > :where(th, td) {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background-color: var(--juice-surface-strong-bg, #fff);
+  background-image: linear-gradient(var(--juice-table-header-bg), var(--juice-table-header-bg)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff));
+}
+
+:where(table)[table][sticky] > thead > tr:is([selected], [aria-selected=true]) > :where(th, td) {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background-color: var(--juice-surface-strong-bg, #fff);
+  background-image: linear-gradient(var(--juice-table-selected), var(--juice-table-selected)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)), linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff));
+}
+
+:where(table)[table] :where(th, td)[table-align=start] {
+  text-align: start;
+}
+
+:where(table)[table] :where(th, td)[table-align=center] {
+  text-align: center;
+}
+
+:where(table)[table] :where(th, td)[table-align=end] {
+  text-align: end;
+}
+
+:where(table)[table] :where(th, td)[numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+:where(table)[table] > tbody > tr,
+:where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+[theme] :where(table)[table] > tbody > tr,
+[theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+  transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(table)[table] > tbody > tr,
+  :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+  [theme] :where(table)[table] > tbody > tr,
+  [theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+    transition: none;
+  }
+}
 [tabs] {
   display: flex;
   flex-direction: column;

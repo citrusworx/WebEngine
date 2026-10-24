@@ -950,6 +950,71 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("includes table structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+
+        expect(css).toContain(":where(table)[table]");
+        expect(css).toContain("[table-scroll]");
+        expect(css).toMatch(/\[table\]\[striped\]/);
+        expect(css).toMatch(/\[table\]\[dense\]/);
+        expect(css).toMatch(/\[table\]\[sticky\]/);
+        expect(css).toContain("[table-align=start]");
+        expect(css).toContain("[table-align=center]");
+        expect(css).toContain("[table-align=end]");
+        expect(css).toContain("[numeric]");
+        expect(css).toContain("font-variant-numeric: tabular-nums");
+        expect(css).toContain(":where(table)[table] :where(th, td, caption) :where(p, span, li, label)");
+        expect(css).toMatch(/tbody > tr:is\(\[selected\], \[aria-selected=["']?true["']?\]\)/);
+        expect(css).toMatch(/\[table-scroll\]:focus-visible/);
+        expect(css).toMatch(/\[theme\]\s+:where\(table\)\[table\]/);
+        expect(css).toMatch(/\[theme\]\s+\[table-scroll\]/);
+        expect(css).toContain("--juice-table-padding: 0.75rem 1rem");
+        expect(css).toContain("--juice-table-padding-dense: 0.375rem 0.75rem");
+        expect(css).toContain("--juice-table-radius: 0.375rem");
+        expect(css).toContain("--juice-table-border:");
+        expect(css).toContain("--juice-table-header-bg:");
+        expect(css).toContain("--juice-table-stripe:");
+        expect(css).toContain("--juice-table-hover:");
+        expect(css).toContain("--juice-table-selected:");
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-table-border:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-table-header-bg:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-table-stripe:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-table-hover:/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-table-selected:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-table-padding:/);
+        expect(css).toContain("color-mix(in srgb, currentColor 24%, transparent)");
+        expect(css).toContain("color-mix(in srgb, currentColor 4%, transparent)");
+        expect(css).toContain("color-mix(in srgb, currentColor 6%, transparent)");
+        expect(css).toContain("color-mix(in srgb, currentColor 8%, transparent)");
+        expect(css).toContain("border-collapse: separate");
+        expect(css).toContain("border-spacing: 0");
+        expect(css).toContain("overflow-x: auto");
+        expect(css).toContain("position: sticky");
+        expect(css).toContain("inset-block-start: 0");
+        expect(css).toContain("outline: 2px solid currentColor");
+        expect(css).toContain("outline-offset: 2px");
+        expect(css).toContain(
+            "transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard)"
+        );
+        expect(reduced.some((block) => block.includes(":where(table)[table]") && block.includes("transition: none"))).toBe(
+            true
+        );
+        expect(css).toMatch(/\[table\]\[sticky\] > thead > tr > :where\(th, td\)[^{]*\{[^}]*z-index:\s*1/);
+        expect(css).not.toMatch(/:where\(table\)\[table\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/:where\(table\)\[table\][^{]*\{[^}]*z-index:\s*1000/);
+        expect(css).not.toMatch(/\[aria-sort/);
+        expect(css).not.toMatch(/\[role=["']?table["']?\]/);
+        expect(css).not.toMatch(/\[role=["']?grid["']?\]/);
+        expect(css).not.toMatch(/:where\(table\)\[table\][^{]*\{[^}]*--juice-list-/);
+        expect(css).not.toMatch(/div\[table\]/);
+
+        for (const id of readBundledThemeIds()) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-table-");
+        }
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
