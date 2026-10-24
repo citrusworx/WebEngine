@@ -1,0 +1,93 @@
+# Real WordPress for the KiwiPress bridge end-to-end test.
+# Selected by tests/e2e/run.sh when host networking cannot serve the machine
+# that runs Node (Windows Git Bash / MSYS2, Docker Desktop).
+#
+# A normal compose network: MariaDB is `db:3306` inside the network and is
+# not published. Apache listens on container port 80. The host reaches
+# WordPress at http://127.0.0.1:${KIWIPRESS_E2E_WP_PORT:-18080}.
+#
+# Host networking stays in docker-compose.yml for Linux environments where
+# container-to-container forwarding is dropped.
+
+name: kiwipress-bridge-e2e
+
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+    command:
+      # The image's server config binds 127.0.0.1, which other containers
+      # cannot reach. 0.0.0.0 is only the container network; the port is not
+      # published on the host.
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${KIWIPRESS_E2E_WP_PORT:-18080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      # Application passwords are refused over plain HTTP unless the
+      # environment type is local. wp-cli reads this from wp-config.php.
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_ENVIRONMENT_TYPE', 'local' );
+        define( 'FORCE_SSL_ADMIN', false );
+    volumes:
+      - wp_html:/var/www/html
+      - ../../:/var/www/html/wp-content/plugins/kiwipress-bridge:ro
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+      # Long syntax so a Windows source such as G:/.../.runtime/ports.conf
+      # is not split on the drive-letter colon.
+      - type: bind
+        source: ${KIWIPRESS_E2E_APACHE_DIR:-./apache-bridge}/ports.conf
+        target: /etc/apache2/ports.conf
+        read_only: true
+      - type: bind
+        source: ${KIWIPRESS_E2E_APACHE_DIR:-./apache-bridge}/vhost.conf
+        target: /etc/apache2/sites-enabled/000-default.conf
+        read_only: true
+
+  wpcli:
+    image: wordpress:cli-php8.3
+    user: "33:33"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      HOME: /tmp
+      # wp-config.php evals this at runtime. The CLI container must set it
+      # too, or application passwords stay disabled (environment type production).
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_ENVIRONMENT_TYPE', 'local' );
+        define( 'FORCE_SSL_ADMIN', false );
+    volumes:
+      - wp_html:/var/www/html
+      - ../../:/var/www/html/wp-content/plugins/kiwipress-bridge:ro
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+    entrypoint: ["wp"]
+    profiles: ["cli"]
+
+volumes:
+  wp_html:

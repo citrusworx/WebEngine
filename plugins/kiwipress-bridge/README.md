@@ -173,7 +173,12 @@ Content keeps moving over `/wp/v2` with the same application password. This fold
 
 ## End-to-end test
 
-`yarn test:e2e:bridge` boots MariaDB and WordPress in Docker (host network, so the site is `http://127.0.0.1:18080` and MariaDB is `127.0.0.1:3306`), mounts this plugin and a mu-plugin that registers a REST custom post type, installs the site, turns on pretty permalinks, and creates an administrator, an editor, and a subscriber with application passwords. It then runs the real `kiwi.bridge` client and the KiwiPress back routes (`/projects/:id/bridge/probe|pair|status|unpair|preview`) against that site. The stub frontend's `/preview` route calls `Bridge.preview()` with credentials that must not be sent.
+`yarn test:e2e:bridge` boots MariaDB and WordPress in Docker, mounts this plugin and a mu-plugin that registers a REST custom post type, installs the site, turns on pretty permalinks, and creates an administrator, an editor, and a subscriber with application passwords. It then runs the real `kiwi.bridge` client and the KiwiPress back routes (`/projects/:id/bridge/probe|pair|status|unpair|preview`) against that site. The stub frontend's `/preview` route calls `Bridge.preview()` with credentials that must not be sent.
+
+The site URL is always `http://127.0.0.1:18080` (or `KIWIPRESS_E2E_WP_PORT`). How that port is reached depends on the Docker network:
+
+- **Host network** (`docker-compose.yml`). WordPress, MariaDB, and wp-cli share the host network namespace. Apache listens on port 18080 and MariaDB listens on `127.0.0.1:3306`. This is the default on Linux, including the manual GitHub Actions workflow, because some nested VMs drop traffic between containers.
+- **Bridge network** (`docker-compose.bridge.yml`). MariaDB is only `db:3306` on the compose network. Apache listens on container port 80, and Docker publishes host port 18080. This is the default under Git Bash / MSYS2 and when the daemon reports Docker Desktop, because host networking there is the utility VM (or is turned off) and Windows cannot open `127.0.0.1:18080`.
 
 The suite is opt-in. It is not part of `yarn workspace @citrusworx/kiwipress test` or the back unit tests, because it needs a Docker daemon. From the repo root:
 
@@ -185,12 +190,33 @@ That script is `plugins/kiwipress-bridge/tests/e2e/run.sh`. Useful overrides:
 
 | Env | Default | Role |
 | --- | --- | --- |
-| `KIWIPRESS_E2E_WP_PORT` | `18080` | Host port published to WordPress. |
+| `KIWIPRESS_E2E_WP_PORT` | `18080` | Host port for WordPress. |
 | `KIWIPRESS_E2E_KEEP` | unset | Set to `1` to leave the containers up after the run. |
+| `KIWIPRESS_E2E_NETWORK` | auto | `host` or `bridge`. Unset uses host on Linux Docker and bridge on Git Bash, MSYS2, and Docker Desktop. |
 
 Application passwords over plain HTTP require `WP_ENVIRONMENT_TYPE=local`. The compose file sets that in `wp-config.php`. The suite generates its own `KIWIPRESS_SECRET_KEY` for the test process and does not read `apps/kiwipress/back/.env`.
 
-GitHub Actions workflow **KiwiPress Bridge E2E** is manual (`workflow_dispatch` only). It runs the same command.
+GitHub Actions workflow **KiwiPress Bridge E2E** is manual (`workflow_dispatch` only). It runs the same command on `ubuntu-latest`, which selects host networking.
+
+### Windows (Git Bash or MSYS2 UCRT64)
+
+Run the same command from **Git Bash** or the **MSYS2 UCRT64** prompt, with Docker Desktop's Linux engine running (`docker context` `desktop-linux` is fine):
+
+```bash
+yarn test:e2e:bridge
+```
+
+No extra environment variables. The script prints which `bash` and `docker` it is using, then selects the bridge compose file.
+
+Do not prefix the command with `MSYS_NO_PATHCONV=1`. That switch stops MSYS from rewriting paths for every Windows program, and corepack then fails with `Cannot find module G:\c\Program Files\nodejs\node_modules\corepack\dist\yarn.js`. The runner turns conversion off only for `docker.exe`, and only after host paths have been converted with `cygpath -m`. Container paths such as `/var/www/html` are not converted.
+
+`*.sh` is stored as LF (`.gitattributes`). If `run.sh` was checked out with CRLF before that rule, Bash stops on line 4 (`set: pipefail\r: invalid option name`). Re-checkout the script so the attribute is applied:
+
+```bash
+git checkout -- plugins/kiwipress-bridge/tests/e2e/run.sh
+```
+
+PowerShell is not the supported shell for this command. `yarn` there often runs `C:\Windows\System32\bash.exe` (WSL). That bash does not see Docker Desktop unless WSL integration is enabled for the distro, and the error names the `bash` and `docker` binaries so you can tell them apart. Use Git Bash instead.
 
 ## Not in this version
 

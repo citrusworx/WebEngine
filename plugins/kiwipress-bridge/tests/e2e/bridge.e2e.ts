@@ -641,7 +641,10 @@ describe("KiwiPress bridge against WordPress", () => {
         const token = String(minted.body.token);
         const parts = token.split(".");
         const signature = parts[2] ?? "";
-        const flipped = signature.slice(0, -1) + (signature.endsWith("a") ? "b" : "a");
+        // A 32-byte HMAC is 43 base64url characters. The last character carries
+        // two unused bits, so flipping it (Y -> a) can decode to the same
+        // signature. The first character is fully consumed.
+        const flipped = (signature.startsWith("a") ? "b" : "a") + signature.slice(1);
         const tampered = await readPreview(`${parts[0]}.${parts[1]}.${flipped}`);
         expect(tampered.status).toBe(401);
         expect(tampered.body.code).toBe("kiwipress_bridge_preview_invalid");
