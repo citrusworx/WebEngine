@@ -5528,8 +5528,218 @@ typeof window < "u" && typeof document < "u" && (document.readyState === "loadin
 	Fl = null, Pl || Ll();
 }, document.addEventListener("DOMContentLoaded", Fl)) : Ll());
 //#endregion
+//#region src/js/src/table/table-runtime.ts
+var zl = "juice:sort", Bl = {
+	root: typeof document < "u" ? document : {},
+	tableSelector: "[table]",
+	sortableSelector: "th[sortable]"
+}, Vl = new Intl.Collator(void 0, {
+	numeric: !0,
+	sensitivity: "base"
+}), Hl = /^[+-]?(?:\d+\.?\d*|\.\d+)$/, Ul = (e) => Array.from(e), Wl = L(), Gl = /* @__PURE__ */ new WeakSet(), Kl = /* @__PURE__ */ new Set(), ql = /* @__PURE__ */ new WeakMap(), Jl = /* @__PURE__ */ new WeakMap(), Yl = /* @__PURE__ */ new WeakMap(), Xl = (e) => {
+	ql.has(e) || ql.set(e, e.getAttribute("aria-sort"));
+}, Zl = (e) => {
+	let t = ql.has(e) ? ql.get(e) ?? null : e.getAttribute("aria-sort");
+	return t === "ascending" || t === "descending" ? t : null;
+}, Ql = (e) => {
+	let t = e.trim().replace(/,/g, "");
+	if (!Hl.test(t)) return null;
+	let n = Number(t);
+	return Number.isFinite(n) ? n : null;
+}, $l = (e, t) => {
+	let n = e.cells[t];
+	return n ? n.hasAttribute("data-sort-value") ? (n.getAttribute("data-sort-value") ?? "").trim() : (n.textContent ?? "").replace(/\s+/g, " ").trim() : "";
+}, eu = (e, t) => {
+	let n = e.querySelectorAll("th, td");
+	for (let r of n) if (r instanceof HTMLTableCellElement && r.closest("table") === e && r.cellIndex === t && r.hasAttribute("numeric")) return !0;
+	return !1;
+}, tu = (e, t, n, r) => {
+	if (r) {
+		let r = Ql(e), i = Ql(t);
+		if (r === null && i === null) return 0;
+		if (r === null) return 1;
+		if (i === null) return -1;
+		if (r === i) return 0;
+		let a = r < i ? -1 : 1;
+		return n === "descending" ? -a : a;
+	}
+	let i = Vl.compare(e, t);
+	return i === 0 ? 0 : n === "descending" ? -i : i;
+}, nu = (e, t, n, r) => n === "none" ? e.slice() : e.map((e, t) => ({
+	row: e,
+	index: t
+})).sort((e, i) => {
+	let a = tu($l(e.row, t), $l(i.row, t), n, r);
+	return a === 0 ? e.index - i.index : a;
+}).map((e) => e.row), ru = (e, t) => {
+	let n = Array.from(e.rows);
+	n.length === t.length && n.every((e, n) => e === t[n]) || t.forEach((t) => e.appendChild(t));
+}, iu = (e) => {
+	Array.from(e.tBodies).forEach((e) => {
+		Jl.set(e, Array.from(e.rows));
+	});
+}, au = (e) => {
+	Array.from(e.tBodies).forEach((e) => {
+		let t = Array.from(e.rows), n = (Jl.get(e) ?? []).filter((t) => t.parentNode === e);
+		if (!Jl.has(e)) {
+			Jl.set(e, t);
+			return;
+		}
+		let r = new Set(n), i = t.filter((e) => !r.has(e));
+		Jl.set(e, [...n, ...i]);
+	});
+}, ou = (e, t, n) => {
+	let r = n !== "none" && eu(e, t);
+	Array.from(e.tBodies).forEach((e) => {
+		ru(e, nu((Jl.get(e) ?? Array.from(e.rows)).filter((t) => t.parentNode === e), t, n, r));
+	});
+}, su = (e) => !e || e.direction === "none" || !e.header || e.header.cellIndex < 0 ? {
+	column: null,
+	direction: "none"
+} : {
+	column: e.header.cellIndex,
+	direction: e.direction
+}, cu = () => ({
+	destroy: () => {},
+	sync: () => {},
+	getState: () => null
+}), lu = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return cu();
+	let t = {
+		...Bl,
+		...e
+	}, n = t.root ?? document, r = n, i = T("table"), a = /* @__PURE__ */ new Set(), o = !1, s = (e) => !(e instanceof HTMLTableElement) || !e.matches(t.tableSelector) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, c = () => {
+		let e = Ul(n.querySelectorAll(t.tableSelector)).filter((e) => e instanceof HTMLTableElement && s(e));
+		return n instanceof HTMLTableElement && s(n) && !e.includes(n) ? [n, ...e] : e;
+	}, l = (e) => Ul(e.querySelectorAll(t.sortableSelector)).filter((t) => t.tagName === "TH" && t.closest("table") === e), u = (e) => {
+		let t = e.children.length === 1 ? e.children[0] : null;
+		if (t instanceof HTMLButtonElement && t.type === "button" && Gl.has(t)) return Kl.add(e), t;
+		let n = e.ownerDocument.createElement("button");
+		for (n.type = "button"; e.firstChild;) n.appendChild(e.firstChild);
+		return e.appendChild(n), Gl.add(n), Kl.add(e), n;
+	}, d = (e) => {
+		let t = e.children.length === 1 ? e.children[0] : null;
+		if (t instanceof HTMLButtonElement && Gl.has(t)) {
+			for (; t.firstChild;) e.insertBefore(t.firstChild, t);
+			t.remove(), Gl.delete(t);
+		}
+		if (ql.has(e)) {
+			let t = ql.get(e) ?? null;
+			t === null ? e.removeAttribute("aria-sort") : e.getAttribute("aria-sort") !== t && e.setAttribute("aria-sort", t), ql.delete(e);
+		}
+		Kl.delete(e);
+	}, f = (e, t) => {
+		l(e).forEach((e) => {
+			let n = t.header === e && t.direction !== "none" ? t.direction : "none";
+			e.getAttribute("aria-sort") !== n && e.setAttribute("aria-sort", n);
+		});
+	}, p = (e, t) => {
+		let n = Yl.get(e);
+		if (!n) {
+			let n = null, r = "none";
+			for (let e of t) {
+				let t = Zl(e);
+				if (t) {
+					n = e, r = t;
+					break;
+				}
+			}
+			let i = {
+				header: n,
+				direction: r,
+				reorder: !1
+			};
+			return Yl.set(e, i), i;
+		}
+		return n.header && !t.includes(n.header) && (n.reorder && (au(e), ou(e, n.header.cellIndex, "none")), n.header = null, n.direction = "none", n.reorder = !1), n;
+	}, m = (e, t) => {
+		let n = new Set(t);
+		Array.from(e.querySelectorAll("th")).forEach((t) => {
+			t instanceof HTMLTableCellElement && (!Kl.has(t) || n.has(t) || t.closest("table") === e && d(t));
+		});
+	}, h = (e) => {
+		a.add(e);
+		let t = l(e);
+		t.forEach((e) => Xl(e));
+		let n = p(e, t);
+		t.forEach((e) => u(e)), m(e, t), f(e, n), n.reorder && n.direction !== "none" && n.header ? (au(e), ou(e, n.header.cellIndex, n.direction)) : iu(e), i.note(e, su(n));
+	}, g = () => {
+		o || c().forEach((e) => {
+			s(e) && h(e);
+		});
+	}, _ = (e, t) => {
+		let n = l(e);
+		n.forEach((e) => Xl(e));
+		let r = p(e, n), a = r.header === t && r.direction !== "none" ? r.direction === "ascending" ? "descending" : "none" : "ascending", o = new CustomEvent(zl, {
+			bubbles: !0,
+			cancelable: !0,
+			composed: !0,
+			detail: {
+				column: t.cellIndex,
+				direction: a
+			}
+		});
+		e.dispatchEvent(o), a === "none" ? (r.header = null, r.direction = "none") : (r.header = t, r.direction = a), n.forEach((e) => u(e)), f(e, r), o.defaultPrevented ? r.reorder = !1 : a === "none" ? (au(e), ou(e, t.cellIndex, "none"), r.reorder = !1) : (r.reorder ? au(e) : iu(e), ou(e, t.cellIndex, a), r.reorder = !0), i.note(e, su(r));
+	}, v = (e) => {
+		if (e) {
+			let t = e instanceof HTMLTableElement ? e : e.closest("table");
+			return t instanceof HTMLTableElement && s(t) ? t : null;
+		}
+		return c()[0] ?? null;
+	}, y = (e) => {
+		if (o) return;
+		let n = e.target;
+		if (!(n instanceof Element)) return;
+		let r = n.closest("button");
+		if (!(r instanceof HTMLButtonElement) || !Gl.has(r) || r.disabled || r.getAttribute("aria-disabled") === "true") return;
+		let i = r.closest("th");
+		if (!(i instanceof HTMLTableCellElement) || !i.matches(t.sortableSelector) || i.hasAttribute("disabled") || i.getAttribute("aria-disabled") === "true" || i.cellIndex < 0) return;
+		let a = i.closest("table");
+		!(a instanceof HTMLTableElement) || !s(a) || Wl(e) && _(a, i);
+	}, b = !1, x = 0, S = () => {
+		b || o || (b = !0, x = requestAnimationFrame(() => {
+			b = !1, g();
+		}));
+	}, C = typeof MutationObserver < "u" ? new MutationObserver(() => S()) : null;
+	return r.addEventListener("click", y), C && n instanceof Node && C.observe(n, {
+		childList: !0,
+		subtree: !0,
+		attributes: !0,
+		attributeFilter: [
+			"table",
+			"sortable",
+			"numeric",
+			"data-sort-value"
+		]
+	}), g(), {
+		destroy: () => {
+			o || (o = !0, b &&= (cancelAnimationFrame(x), !1), r.removeEventListener("click", y), C?.disconnect(), a.forEach((e) => {
+				let t = Yl.get(e);
+				t?.reorder && (au(e), ou(e, t.header?.cellIndex ?? 0, "none")), Array.from(e.querySelectorAll("th")).forEach((t) => {
+					t instanceof HTMLTableCellElement && Kl.has(t) && t.closest("table") === e && d(t);
+				}), Yl.delete(e), Array.from(e.tBodies).forEach((e) => Jl.delete(e));
+			}), a.clear());
+		},
+		sync: g,
+		getState: (e) => {
+			if (o) return null;
+			let t = v(e);
+			if (!t) return null;
+			let n = Yl.get(t);
+			return n ? su(n) : null;
+		}
+	};
+}, uu = lu, du = null, fu = !1, pu = null, mu = () => {
+	!pu || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", pu), pu = null);
+}, hu = () => typeof window > "u" || typeof document > "u" ? null : (fu = !1, mu(), du ? (du.sync(), du) : (du = lu(), du)), gu = () => {
+	fu = !0, mu(), du?.destroy(), du = null;
+};
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (pu = () => {
+	pu = null, fu || hu();
+}, document.addEventListener("DOMContentLoaded", pu)) : hu());
+//#endregion
 //#region src/tokens/index.ts
-var zl = {
+var _u = {
 	colors: {
 		families: [
 			"black",
@@ -5697,4 +5907,4 @@ var zl = {
 	themes: {}
 };
 //#endregion
-export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, jl as createAvatar, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, Ml as initAvatar, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, Ll as startAvatarRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, Rl as stopAvatarRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, zl as tokens };
+export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, jl as createAvatar, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, lu as createTable, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, Ml as initAvatar, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, uu as initTable, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, Ll as startAvatarRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, hu as startTableRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, Rl as stopAvatarRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, gu as stopTableRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, _u as tokens };

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { createAccordion, stopAccordionRuntime } from '../accordion/accordion-runtime.js';
 import { createAvatar, stopAvatarRuntime } from '../avatar/avatar-runtime.js';
+import { createTable, stopTableRuntime } from '../table/table-runtime.js';
 import { createBanner, stopBannerRuntime } from '../banner/banner-runtime.js';
 import {
   createBreadcrumb,
@@ -51,6 +52,7 @@ const resetDom = () => {
 const stopAll = () => {
   stopAccordionRuntime();
   stopAvatarRuntime();
+  stopTableRuntime();
   stopBannerRuntime();
   stopBreadcrumbRuntime();
   stopCheckboxRuntime();
@@ -951,6 +953,49 @@ describe('juice:change', () => {
     });
     expect(photo.getAttribute('alt')).toBe('Ada');
     expect(host.textContent).toContain('AL');
+
+    heard.stop();
+    controller.destroy();
+  });
+
+  it('dispatches one table event per real sort change', () => {
+    document.body.innerHTML = `
+      <table table id="people">
+        <thead><tr><th sortable id="name">Name</th></tr></thead>
+        <tbody>
+          <tr id="b"><td>B</td></tr>
+          <tr id="a"><td>A</td></tr>
+        </tbody>
+      </table>
+    `;
+    stopTableRuntime();
+    const controller = createTable({ root: document.body });
+    const host = document.getElementById('people')!;
+    const heard = listen();
+
+    expect(controller.getState(host)).toEqual({ column: null, direction: 'none' });
+
+    document.querySelector('#name button')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(Array.from(host.querySelectorAll('tbody tr')).map((row) => row.id)).toEqual(['a', 'b']);
+    document.querySelector('#name button')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(heard.events).toHaveLength(2);
+    expect(heard.events[0]?.bubbles).toBe(true);
+    expect(heard.events[0]?.target).toBe(host);
+    expect(heard.events[0]?.detail).toEqual({
+      runtime: 'table',
+      state: { column: 0, direction: 'ascending' },
+    });
+    expect(heard.events[1]?.detail).toEqual({
+      runtime: 'table',
+      state: { column: 0, direction: 'descending' },
+    });
+    expect(controller.getState()).toEqual({ column: 0, direction: 'descending' });
+    expect(Array.from(host.querySelectorAll('tbody tr')).map((row) => row.id)).toEqual(['b', 'a']);
+
+    document.querySelector('#name button')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(heard.events).toHaveLength(3);
+    expect(heard.events[2]?.detail.state).toEqual({ column: null, direction: 'none' });
+    expect(Array.from(host.querySelectorAll('tbody tr')).map((row) => row.id)).toEqual(['b', 'a']);
 
     heard.stop();
     controller.destroy();
