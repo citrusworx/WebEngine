@@ -1,0 +1,349 @@
+// Table chrome is structural. Color comes from core roles on :root.
+// Shipped themes are not required to bind --juice-table-*. The grid,
+// header band, stripe, hover, and selected washes are currentColor
+// mixes, so they follow inherited ink on light and dark pages.
+//
+//   --juice-table-border
+//   --juice-table-header-bg
+//   --juice-table-stripe
+//   --juice-table-hover
+//   --juice-table-selected
+//   --juice-table-padding
+//   --juice-table-padding-dense
+//   --juice-table-radius
+//
+// Why color is restated on [theme]: a custom property resolves var() on
+// the element that sets it. currentColor stays in these values and
+// resolves where the cell paints. Geometry stays on :root only.
+//
+// The table paints --juice-surface-strong-bg (white when that role is
+// absent) so the washes sit on the strong surface, not on the page.
+// Citrusmint body ink is 4.62:1 on its page. A currentColor wash over
+// that page drops under 4.5:1 past 1%, which is too faint to see. The
+// same ink on Citrusmint's strong surface (white) is 5.17:1, so a 4%
+// stripe, a 6% hover / header wash, and an 8% selected wash stay at or
+// above 4.62:1 there. Every other shipped theme has more room on both
+// the page and the strong surface. No theme file is overridden. The
+// border is a 24% hairline (1.42:1 on Citrusmint's plate, and under 3:1
+// on every shipped theme). It is decorative, not a control boundary.
+// p, span, li, and label inside a cell inherit the body ink. Citrusmint
+// muted text is 2.18:1 on the plate, so those elements do not keep it.
+//
+// Checked as sRGB alpha composites of those mixes over each theme's
+// --juice-surface-strong-bg (alpha stripped). For every shipped theme
+// that composite matches the surface painted over the page.
+//
+// Juice chrome. Native table. Distinct from:
+//   - [list] (stacked rows, not a grid)
+//   - dashboard [data-table] (app markup, not this attribute)
+//
+// Nothing in base, typography, or themes styled table / thead / tbody /
+// tfoot / tr / th / td / caption before this file. There is no [table]
+// attribute to extend.
+//
+// Native collision: there is no HTML global `table` attribute. Selectors
+// are :where(table)[table], so <div table> is not painted. Do not style
+// [role="table"] or [role="grid"]. Do not style [aria-sort] (sortable
+// columns are slice B). [selected] is scoped to rows inside this table.
+// [aria-selected="true"] is scoped the same way — tabs own the attribute
+// on their triggers.
+//
+// Juice names:
+//   [table]            on a <table>. Separate borders, one grid, header
+//                      and footer bands, inherited ink. Caption stays
+//                      full ink (a muted mix would drop Citrusmint).
+//   [striped]          on [table]. Even tbody rows take the stripe wash.
+//   [dense]            on [table]. Tighter cell and caption padding.
+//   [sticky]           on [table]. thead cells stick to the top of the
+//                      scrollport. They need a scroll wrapper or page
+//                      scroll. [table-scroll] is itself a scrollport
+//                      (overflow-x: auto also captures vertical sticky),
+//                      so a head inside it sticks to that wrapper, not
+//                      the page. Omit the wrapper for page sticky. Give
+//                      the wrapper a max-height when the rows should
+//                      scroll under the head.
+//   [table-scroll]     horizontal scroll wrapper. max-width 100%,
+//                      overflow-x auto. Authors add tabindex="0",
+//                      role="region", and an accessible name
+//                      (aria-label or aria-labelledby). This slice does
+//                      not set them. :focus-visible is the 2px
+//                      currentColor outline, offset 2px, same as list.
+//   [table-align]      on a th or td. "start", "center", or "end".
+//   [numeric]          on a th or td. font-variant-numeric: tabular-nums.
+//                      Does not set alignment. Pair with
+//                      [table-align="end"] for a figure column.
+//   [selected]         on a tr, or aria-selected="true". Same selected
+//                      wash. Hover does not replace it.
+//
+// Collisions avoided:
+//   [leading] is letter-spacing. This slice has no leading slot.
+//   [center], [left], and [right] are layout utilities (margin and
+//   text-align). Cell alignment is [table-align], not [center].
+//   [align] is p and [section-header]. Not reused.
+//   [sticky] on nav is nav[sticky]. Here it is :where(table)[table][sticky].
+//   [dense] and [selected] are scoped to this table, same as list.
+//   [striped] and [numeric] were free. Both are scoped so they do not
+//   paint outside [table]. [end] is an app data-table hook, not a core
+//   utility; it is not reused.
+//
+// Header and footer cells paint the header wash over the strong surface.
+// Sticky thead cells stack that surface until it is opaque (Tide's
+// strong surface is 0.78 alpha; five copies cover the scrolled rows)
+// and lay the header wash on top, so text does not show through.
+// Body cells stay transparent so the row wash shows.
+//
+// Row hover is tbody only. Transitions use
+// --juice-motion-duration-fast and --juice-motion-ease-standard.
+// prefers-reduced-motion removes them.
+//
+// z-index: sticky header cells use 1 so they paint above body cells
+// in the same table. Inline stacking. No overlay band.
+
+:root,
+[theme] {
+    --juice-table-border: color-mix(in srgb, currentColor 24%, transparent);
+    --juice-table-header-bg: color-mix(in srgb, currentColor 6%, transparent);
+    --juice-table-stripe: color-mix(in srgb, currentColor 4%, transparent);
+    --juice-table-hover: color-mix(in srgb, currentColor 6%, transparent);
+    --juice-table-selected: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+:root {
+    --juice-table-padding: 0.75rem 1rem;
+    --juice-table-padding-dense: 0.375rem 0.75rem;
+    --juice-table-radius: 0.375rem;
+}
+
+// One copy of a translucent surface still shows scrolled text. Tide's
+// strong surface is 0.78 alpha. Five stacked copies are opaque, and the
+// wash is the top layer. On an already-opaque plate (Citrusmint white)
+// the extra copies do not change the color.
+
+@mixin -juice-table-sticky-plate($wash) {
+    background-color: var(--juice-surface-strong-bg, #fff);
+    background-image:
+        linear-gradient($wash, $wash),
+        linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)),
+        linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)),
+        linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff)),
+        linear-gradient(var(--juice-surface-strong-bg, #fff), var(--juice-surface-strong-bg, #fff));
+}
+
+// [theme] companions beat semantic defaults. :where() keeps the element
+// out of the specificity so a later padding utility can still lose only
+// to the attribute, not to the tag.
+
+[table-scroll],
+[theme] [table-scroll] {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    overflow-x: auto;
+    border-radius: var(--juice-table-radius);
+    background-color: transparent;
+    background-image: none;
+    color: inherit;
+    box-shadow: none;
+}
+
+[table-scroll]:focus-visible,
+[theme] [table-scroll]:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+:where(table)[table],
+[theme] :where(table)[table] {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+    background-color: var(--juice-surface-strong-bg, #fff);
+    background-image: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    box-shadow: none;
+    border-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > caption,
+[theme] :where(table)[table] > caption {
+    caption-side: top;
+    box-sizing: border-box;
+    padding: var(--juice-table-padding);
+    text-align: start;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    background-color: transparent;
+    background-image: none;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot),
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) {
+    background-color: transparent;
+    color: inherit;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot) > tr,
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) > tr {
+    background-color: transparent;
+    color: inherit;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td),
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td) {
+    box-sizing: border-box;
+    padding: var(--juice-table-padding);
+    border: none;
+    border-inline-end: 1px solid var(--juice-table-border);
+    border-block-end: 1px solid var(--juice-table-border);
+    background-color: transparent;
+    background-image: none;
+    color: inherit;
+    font: inherit;
+    font-weight: inherit;
+    text-align: start;
+    vertical-align: middle;
+    box-shadow: none;
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td):first-child,
+[theme] :where(table)[table] > :where(thead, tbody, tfoot) > tr > :where(th, td):first-child {
+    border-inline-start: 1px solid var(--juice-table-border);
+}
+
+// Themes such as Citrusmint paint p / span / li / label in muted ink.
+// That muted pair is under 4.5:1 on the plate. Cell copy stays on the
+// inherited body ink. Links, headings, and buttons keep their own color.
+// [fontColor] loads later at the same specificity and still wins.
+
+:where(table)[table] :where(th, td, caption) :where(p, span, li, label),
+[theme] :where(table)[table] :where(th, td, caption) :where(p, span, li, label) {
+    color: inherit;
+}
+
+:where(table)[table] > caption + :where(thead, tbody, tfoot) > tr:first-child > :where(th, td),
+:where(table)[table] > :where(thead, tbody, tfoot):first-child > tr:first-child > :where(th, td) {
+    border-block-start: 1px solid var(--juice-table-border);
+}
+
+:where(table)[table] > caption + :where(thead, tbody, tfoot) > tr:first-child > :where(th, td):first-child,
+:where(table)[table] > :where(thead, tbody, tfoot):first-child > tr:first-child > :where(th, td):first-child {
+    border-start-start-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > caption + :where(thead, tbody, tfoot) > tr:first-child > :where(th, td):last-child,
+:where(table)[table] > :where(thead, tbody, tfoot):first-child > tr:first-child > :where(th, td):last-child {
+    border-start-end-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot):last-child > tr:last-child > :where(th, td):first-child {
+    border-end-start-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > :where(thead, tbody, tfoot):last-child > tr:last-child > :where(th, td):last-child {
+    border-end-end-radius: var(--juice-table-radius);
+}
+
+:where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+[theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+    font-weight: 600;
+    background-color: var(--juice-table-header-bg);
+    background-image: none;
+    color: inherit;
+}
+
+:where(table)[table][dense] > caption,
+:where(table)[table][dense] > :where(thead, tbody, tfoot) > tr > :where(th, td) {
+    padding: var(--juice-table-padding-dense);
+}
+
+:where(table)[table][striped] > tbody > tr:nth-child(even),
+[theme] :where(table)[table][striped] > tbody > tr:nth-child(even) {
+    background-color: var(--juice-table-stripe);
+    background-image: none;
+    color: inherit;
+}
+
+:where(table)[table] > tbody > tr:hover,
+:where(table)[table][striped] > tbody > tr:hover,
+[theme] :where(table)[table] > tbody > tr:hover,
+[theme] :where(table)[table][striped] > tbody > tr:hover {
+    background-color: var(--juice-table-hover);
+    background-image: none;
+    color: inherit;
+}
+
+:where(table)[table] > tbody > tr:is([selected], [aria-selected="true"]),
+:where(table)[table][striped] > tbody > tr:is([selected], [aria-selected="true"]),
+:where(table)[table] > tbody > tr:is([selected], [aria-selected="true"]):hover,
+:where(table)[table][striped] > tbody > tr:is([selected], [aria-selected="true"]):hover,
+[theme] :where(table)[table] > tbody > tr:is([selected], [aria-selected="true"]),
+[theme] :where(table)[table][striped] > tbody > tr:is([selected], [aria-selected="true"]),
+[theme] :where(table)[table] > tbody > tr:is([selected], [aria-selected="true"]):hover,
+[theme] :where(table)[table][striped] > tbody > tr:is([selected], [aria-selected="true"]):hover {
+    background-color: var(--juice-table-selected);
+    background-image: none;
+    color: inherit;
+}
+
+:where(table)[table] > :where(thead, tfoot) > tr:is([selected], [aria-selected="true"]) > :where(th, td),
+[theme] :where(table)[table] > :where(thead, tfoot) > tr:is([selected], [aria-selected="true"]) > :where(th, td) {
+    background-color: var(--juice-table-selected);
+    background-image: none;
+    color: inherit;
+}
+
+:where(table)[table][sticky] > thead > tr > :where(th, td) {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    @include -juice-table-sticky-plate(var(--juice-table-header-bg));
+}
+
+:where(table)[table][sticky] > thead > tr:is([selected], [aria-selected="true"]) > :where(th, td) {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    @include -juice-table-sticky-plate(var(--juice-table-selected));
+}
+
+:where(table)[table] :where(th, td)[table-align="start"] {
+    text-align: start;
+}
+
+:where(table)[table] :where(th, td)[table-align="center"] {
+    text-align: center;
+}
+
+:where(table)[table] :where(th, td)[table-align="end"] {
+    text-align: end;
+}
+
+:where(table)[table] :where(th, td)[numeric] {
+    font-variant-numeric: tabular-nums;
+}
+
+:where(table)[table] > tbody > tr,
+:where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+[theme] :where(table)[table] > tbody > tr,
+[theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+    transition: background-color var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(table)[table] > tbody > tr,
+    :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+    [theme] :where(table)[table] > tbody > tr,
+    [theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+        transition: none;
+    }
+}
