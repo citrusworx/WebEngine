@@ -1511,6 +1511,7 @@ describe("Juice consumer smoke", () => {
             module.stopNavigationRuntime();
             module.stopIconButtonRuntime();
             module.stopAvatarRuntime();
+            module.stopTableRuntime();
         });
     });
 
@@ -1638,6 +1639,64 @@ describe("Juice consumer smoke", () => {
 
             document.body.innerHTML = "";
             module.stopAvatarRuntime();
+            module.stopTableRuntime();
+        });
+    });
+
+    it("lets a consumer sort a table and read juice:change state", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopTableRuntime();
+            document.body.innerHTML = `
+                <table table id="people">
+                    <thead>
+                        <tr>
+                            <th sortable id="name">Name</th>
+                            <th sortable numeric id="age">Age</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="grace"><td>Grace</td><td>85</td></tr>
+                        <tr id="ada"><td data-sort-value="1">Ada</td><td>36</td></tr>
+                    </tbody>
+                </table>
+            `;
+
+            const controller = module.createTable({ root: document.body });
+            const table = document.getElementById("people")!;
+            const name = document.getElementById("name")!;
+            const events: Array<CustomEvent<{ runtime: string; state: { column: number | null; direction: string } }>> = [];
+            const onChange = (event: Event) => {
+                events.push(event as CustomEvent<{ runtime: string; state: { column: number | null; direction: string } }>);
+            };
+            document.body.addEventListener("juice:change", onChange);
+
+            expect(name.querySelector("button")?.getAttribute("type")).toBe("button");
+            expect(name.getAttribute("aria-sort")).toBe("none");
+            expect(controller.getState(table)).toEqual({ column: null, direction: "none" });
+
+            name.querySelector("button")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+            expect(events).toHaveLength(1);
+            expect(events[0]?.bubbles).toBe(true);
+            expect(events[0]?.detail).toEqual({
+                runtime: "table",
+                state: { column: 0, direction: "ascending" }
+            });
+            expect(Array.from(table.querySelectorAll("tbody tr")).map((row) => row.id)).toEqual(["ada", "grace"]);
+
+            table.addEventListener("juice:sort", (event) => event.preventDefault(), { once: true });
+            name.querySelector("button")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+            expect(name.getAttribute("aria-sort")).toBe("descending");
+            expect(Array.from(table.querySelectorAll("tbody tr")).map((row) => row.id)).toEqual(["ada", "grace"]);
+            expect(events[1]?.detail.state).toEqual({ column: 0, direction: "descending" });
+
+            document.body.removeEventListener("juice:change", onChange);
+            controller.destroy();
+            expect(name.querySelector("button")).toBeNull();
+            expect(name.textContent).toBe("Name");
+
+            document.body.innerHTML = "";
+            module.stopTableRuntime();
         });
     });
 });

@@ -299,6 +299,18 @@ export type {
     AvatarState
 } from "./js/src/avatar/avatar-runtime.js";
 export {
+    createTable,
+    initTable,
+    startTableRuntime,
+    stopTableRuntime
+} from "./js/src/table/table-runtime.js";
+export type {
+    TableController,
+    TableOptions,
+    TableSortDirection,
+    TableState
+} from "./js/src/table/table-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,

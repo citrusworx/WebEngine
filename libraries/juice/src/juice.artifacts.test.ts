@@ -1003,7 +1003,22 @@ describe("Juice build artifacts", () => {
         expect(css).toMatch(/\[table\]\[sticky\] > thead > tr > :where\(th, td\)[^{]*\{[^}]*z-index:\s*1/);
         expect(css).not.toMatch(/:where\(table\)\[table\][^{]*\{[^}]*z-index:\s*10/);
         expect(css).not.toMatch(/:where\(table\)\[table\][^{]*\{[^}]*z-index:\s*1000/);
-        expect(css).not.toMatch(/\[aria-sort/);
+        expect(css).toContain("th[sortable]");
+        expect(css).toContain("[aria-sort=ascending]");
+        expect(css).toContain("[aria-sort=descending]");
+        expect(css).toContain("[aria-sort=none]");
+        expect(css).toMatch(/th\[sortable\] > button:focus-visible/);
+        expect(css).toMatch(/th\[sortable\] > button[^{]*\{[^}]*font: inherit/);
+        expect(css).toMatch(/th\[sortable\] > button[^{]*\{[^}]*background-color: transparent/);
+        expect(css).toMatch(/th\[sortable\] > button[^{]*\{[^}]*border: none/);
+        expect(css).toMatch(/\[aria-sort=ascending\][^{]*\{[^}]*border-block-end:[^;]*currentColor/);
+        expect(css).toMatch(/\[aria-sort=descending\][^{]*\{[^}]*border-block-start:[^;]*currentColor/);
+        expect(css).toMatch(
+            /th\[sortable\] > button::after[^{]*\{[^}]*transition: opacity var\(--juice-motion-duration-fast\) var\(--juice-motion-ease-standard\)/
+        );
+        expect(
+            reduced.some((block) => block.includes("th[sortable]") && block.includes("transition: none"))
+        ).toBe(true);
         expect(css).not.toMatch(/\[role=["']?table["']?\]/);
         expect(css).not.toMatch(/\[role=["']?grid["']?\]/);
         expect(css).not.toMatch(/:where\(table\)\[table\][^{]*\{[^}]*--juice-list-/);
@@ -2719,6 +2734,10 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initAvatar");
         expect(module).toHaveProperty("startAvatarRuntime");
         expect(module).toHaveProperty("stopAvatarRuntime");
+        expect(module).toHaveProperty("createTable");
+        expect(module).toHaveProperty("initTable");
+        expect(module).toHaveProperty("startTableRuntime");
+        expect(module).toHaveProperty("stopTableRuntime");
         expect(module).toHaveProperty("tokens");
     });
 

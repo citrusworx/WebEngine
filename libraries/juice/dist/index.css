@@ -104005,6 +104005,124 @@ button[slider-thumb]:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
+:where(table)[table] th[sortable] > button,
+:where(table)[table] th[sortable] > button:hover,
+:where(table)[table] th[sortable] > button:focus,
+:where(table)[table] th[sortable] > button:active,
+[theme] :where(table)[table] th[sortable] > button,
+[theme] :where(table)[table] th[sortable] > button:hover,
+[theme] :where(table)[table] th[sortable] > button:focus,
+[theme] :where(table)[table] th[sortable] > button:active {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4em;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-decoration: none;
+  text-transform: inherit;
+  white-space: inherit;
+  cursor: pointer;
+  vertical-align: middle;
+  outline: none;
+}
+
+:where(table)[table] th[sortable][table-align=center] > button,
+[theme] :where(table)[table] th[sortable][table-align=center] > button {
+  justify-content: center;
+  text-align: center;
+}
+
+:where(table)[table] th[sortable][table-align=end] > button,
+[theme] :where(table)[table] th[sortable][table-align=end] > button {
+  justify-content: flex-end;
+  text-align: end;
+}
+
+:where(table)[table] th[sortable] > button:focus-visible,
+[theme] :where(table)[table] th[sortable] > button:focus-visible {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4em;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-decoration: none;
+  text-transform: inherit;
+  white-space: inherit;
+  cursor: pointer;
+  vertical-align: middle;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+:where(table)[table] th[sortable] > button::after,
+:where(table)[table] th[sortable][aria-sort=none] > button::after,
+[theme] :where(table)[table] th[sortable] > button::after,
+[theme] :where(table)[table] th[sortable][aria-sort=none] > button::after {
+  content: "";
+  flex: none;
+  align-self: center;
+  box-sizing: content-box;
+  width: 0;
+  height: 0.12em;
+  border-style: solid;
+  border-color: transparent;
+  border-inline-width: 0.28em;
+  border-block-start: 0.28em solid currentColor;
+  border-block-end: 0.28em solid currentColor;
+  opacity: 0.45;
+  transition: opacity var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}
+
+:where(table)[table] th[sortable][aria-sort=ascending] > button::after,
+[theme] :where(table)[table] th[sortable][aria-sort=ascending] > button::after {
+  height: 0;
+  border-block-start: 0 solid transparent;
+  border-block-end: 0.35em solid currentColor;
+  opacity: 1;
+}
+
+:where(table)[table] th[sortable][aria-sort=descending] > button::after,
+[theme] :where(table)[table] th[sortable][aria-sort=descending] > button::after {
+  height: 0;
+  border-block-end: 0 solid transparent;
+  border-block-start: 0.35em solid currentColor;
+  opacity: 1;
+}
+
 :where(table)[table] > tbody > tr,
 :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
 [theme] :where(table)[table] > tbody > tr,
@@ -104016,7 +104134,9 @@ button[slider-thumb]:focus-visible,
   :where(table)[table] > tbody > tr,
   :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
   [theme] :where(table)[table] > tbody > tr,
-  [theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+  [theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+  :where(table)[table] th[sortable] > button::after,
+  [theme] :where(table)[table] th[sortable] > button::after {
     transition: none;
   }
 }

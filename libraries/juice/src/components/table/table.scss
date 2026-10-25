@@ -43,10 +43,10 @@
 //
 // Native collision: there is no HTML global `table` attribute. Selectors
 // are :where(table)[table], so <div table> is not painted. Do not style
-// [role="table"] or [role="grid"]. Do not style [aria-sort] (sortable
-// columns are slice B). [selected] is scoped to rows inside this table.
-// [aria-selected="true"] is scoped the same way — tabs own the attribute
-// on their triggers.
+// [role="table"] or [role="grid"]. [aria-sort] is styled only on
+// th[sortable] inside this table (slice B). [selected] is scoped to rows
+// inside this table. [aria-selected="true"] is scoped the same way — tabs
+// own the attribute on their triggers.
 //
 // Juice names:
 //   [table]            on a <table>. Separate borders, one grid, header
@@ -74,6 +74,13 @@
 //                      [table-align="end"] for a figure column.
 //   [selected]         on a tr, or aria-selected="true". Same selected
 //                      wash. Hover does not replace it.
+//   [sortable]         on a th inside [table]. Slice B wraps the header
+//                      text in a button and sets aria-sort. The indicator
+//                      is a currentColor caret on that button: both
+//                      directions at rest and for aria-sort="none", up for
+//                      ascending, down for descending. No new color role.
+//                      The button is reset to header text. :focus-visible
+//                      is the 2px currentColor outline, offset 2px.
 //
 // Collisions avoided:
 //   [leading] is letter-spacing. This slice has no leading slot.
@@ -83,7 +90,9 @@
 //   [sticky] on nav is nav[sticky]. Here it is :where(table)[table][sticky].
 //   [dense] and [selected] are scoped to this table, same as list.
 //   [striped] and [numeric] were free. Both are scoped so they do not
-//   paint outside [table]. [end] is an app data-table hook, not a core
+//   paint outside [table]. [sortable] was free too (no other attribute
+//   uses it). It is scoped to th inside this table, so it does not paint
+//   a bare [sortable]. [end] is an app data-table hook, not a core
 //   utility; it is not reused.
 //
 // Header and footer cells paint the header wash over the strong surface.
@@ -332,6 +341,110 @@
     font-variant-numeric: tabular-nums;
 }
 
+// Sort header. The button fills the cell so the whole label is the hit
+// target, and it sheds theme button chrome (gradient, border, shadow).
+// [table-align] sets text-align on the th; the button is a flex row, so
+// justify-content follows that alignment or the arrow stays at the start.
+
+@mixin -juice-table-sort-button {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.4em;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    color: inherit;
+    font: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-align: inherit;
+    text-decoration: none;
+    text-transform: inherit;
+    white-space: inherit;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+:where(table)[table] th[sortable] > button,
+:where(table)[table] th[sortable] > button:hover,
+:where(table)[table] th[sortable] > button:focus,
+:where(table)[table] th[sortable] > button:active,
+[theme] :where(table)[table] th[sortable] > button,
+[theme] :where(table)[table] th[sortable] > button:hover,
+[theme] :where(table)[table] th[sortable] > button:focus,
+[theme] :where(table)[table] th[sortable] > button:active {
+    @include -juice-table-sort-button;
+    outline: none;
+}
+
+:where(table)[table] th[sortable][table-align="center"] > button,
+[theme] :where(table)[table] th[sortable][table-align="center"] > button {
+    justify-content: center;
+    text-align: center;
+}
+
+:where(table)[table] th[sortable][table-align="end"] > button,
+[theme] :where(table)[table] th[sortable][table-align="end"] > button {
+    justify-content: flex-end;
+    text-align: end;
+}
+
+:where(table)[table] th[sortable] > button:focus-visible,
+[theme] :where(table)[table] th[sortable] > button:focus-visible {
+    @include -juice-table-sort-button;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+// Unsorted and aria-sort="none": up and down carets. Ascending keeps the
+// up caret. Descending keeps the down caret. Opacity is the only motion.
+
+:where(table)[table] th[sortable] > button::after,
+:where(table)[table] th[sortable][aria-sort="none"] > button::after,
+[theme] :where(table)[table] th[sortable] > button::after,
+[theme] :where(table)[table] th[sortable][aria-sort="none"] > button::after {
+    content: "";
+    flex: none;
+    align-self: center;
+    box-sizing: content-box;
+    width: 0;
+    height: 0.12em;
+    border-style: solid;
+    border-color: transparent;
+    border-inline-width: 0.28em;
+    border-block-start: 0.28em solid currentColor;
+    border-block-end: 0.28em solid currentColor;
+    opacity: 0.45;
+    transition: opacity var(--juice-motion-duration-fast) var(--juice-motion-ease-standard);
+}
+
+:where(table)[table] th[sortable][aria-sort="ascending"] > button::after,
+[theme] :where(table)[table] th[sortable][aria-sort="ascending"] > button::after {
+    height: 0;
+    border-block-start: 0 solid transparent;
+    border-block-end: 0.35em solid currentColor;
+    opacity: 1;
+}
+
+:where(table)[table] th[sortable][aria-sort="descending"] > button::after,
+[theme] :where(table)[table] th[sortable][aria-sort="descending"] > button::after {
+    height: 0;
+    border-block-end: 0 solid transparent;
+    border-block-start: 0.35em solid currentColor;
+    opacity: 1;
+}
+
 :where(table)[table] > tbody > tr,
 :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
 [theme] :where(table)[table] > tbody > tr,
@@ -343,7 +456,9 @@
     :where(table)[table] > tbody > tr,
     :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
     [theme] :where(table)[table] > tbody > tr,
-    [theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td) {
+    [theme] :where(table)[table] > :where(thead, tfoot) > tr > :where(th, td),
+    :where(table)[table] th[sortable] > button::after,
+    [theme] :where(table)[table] th[sortable] > button::after {
         transition: none;
     }
 }
