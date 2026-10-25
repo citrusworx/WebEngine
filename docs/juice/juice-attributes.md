@@ -528,7 +528,7 @@ See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spi
 
 ### Skeleton
 
-CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-seven Emerging auto-enhance runtimes.
+CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-eight Emerging auto-enhance runtimes.
 
 - `skeleton` — host. Boolean `[skeleton]` is a rectangle, the same shape as `skeleton="rect"`. `skeleton="text"` is a line. `skeleton="circle"` is a circle. There is no HTML global `skeleton` attribute, and there is no `<skeleton>` element. Do not restyle a bare `[aria-busy]` or `[role="status"]`
 - `lines` — on `[skeleton="text"]`, a count from `"1"` through `"8"`. Anything else keeps one bar. There is no `skeleton-line`
@@ -549,7 +549,7 @@ See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`
 
 ### List
 
-CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-seven Emerging auto-enhance runtimes.
+CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-eight Emerging auto-enhance runtimes.
 
 - `list` — host, on `ul`, `ol`, or `div`. The selector is `:where(ul, ol, div)[list]`, so `<input list>` is not painted. There is no HTML global `list` attribute, and there is no `<list>` element. Markers and the list’s own padding reset. Do not restyle `[role="list"]` or `[role="listitem"]`
 - `divided` — on `[list]`. A hairline between direct children. Ignored without `[list]`
@@ -603,6 +603,43 @@ An `<img>` inside `[avatar]` covers the initials. The runtime hides a broken, em
 ```
 
 The runtime auto-enhances `[avatar]`. It does not touch `alt`, labels, or initials. The status dot needs a text equivalent. The `+N` chip is plain text. See [Avatar](./juice-avatar.md). Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+
+### Table
+
+Native grid. The host is `<table table>` (`:where(table)[table]`). `<div table>` is not painted. Color comes from `--juice-table-*`. There is no HTML global `table` attribute.
+
+- `table` — host, on `<table>`. Separate borders, one grid. The plate is `--juice-surface-strong-bg` (white fallback)
+- `striped` — even `tbody` rows take the stripe wash. Ignored without `[table]`
+- `dense` — tighter cell and caption padding. Ignored without `[table]`
+- `sticky` — `thead` cells stick to the top of the scrollport. Inside `[table-scroll]` they stick to the wrapper. Omit the wrapper for page sticky. Set `max-height` on the wrapper when the body should scroll under the head
+- `table-scroll` — horizontal scroll wrapper. Authors add `tabindex="0"`, `role="region"`, and an accessible name
+- `table-align` — `"start"`, `"center"`, or `"end"` on a `th` or `td`. Logical alignment. Not `[center]`, `[left]`, or `[right]`
+- `numeric` — `font-variant-numeric: tabular-nums` on a `th` or `td`. Also marks that `cellIndex` numeric for sort. Does not set alignment. Pair it with `table-align="end"`
+- `selected` — visual wash on a `tr`, the same wash as `aria-selected="true"`. Hover does not replace it. The runtime does not set it
+- `sortable` — on a `th` inside `[table]`. The runtime wraps the label in a button and sets `aria-sort`
+
+`[leading]` is letter-spacing. This table has no leading slot. `[align]` belongs to `p` and `[section-header]`. `nav[sticky]` is a different selector. `[end]` is an app `[data-table]` hook and is not reused. `[dense]` and `[selected]` are scoped to this table, the same way list scopes them.
+
+```html
+<div table-scroll tabindex="0" role="region" aria-label="People">
+  <table table striped>
+    <thead>
+      <tr>
+        <th sortable>Name</th>
+        <th sortable numeric table-align="end">Age</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ada Lovelace</td>
+        <td numeric table-align="end">36</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+The runtime auto-enhances `<table table>`. `th[sortable]` cycles ascending, then descending, then none. One `[numeric]` cell makes that column numeric. See [Table](./juice-table.md). Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Color roles are `--juice-table-border` (currentColor at 24%), `--juice-table-header-bg` (6%), `--juice-table-stripe` (4%), `--juice-table-hover` (6%), and `--juice-table-selected` (8%), on `:root` and again on `[theme]`. Layout roles are `--juice-table-padding` (`0.75rem 1rem`), `--juice-table-padding-dense` (`0.375rem 0.75rem`), and `--juice-table-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
 
 ### Select
 

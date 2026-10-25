@@ -4,7 +4,7 @@ This document explains the current skeleton chrome in `libraries/juice/src/compo
 
 Skeleton is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createSkeleton`, no auto-enhance, and no `Skeleton()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the twenty-seven Emerging auto-enhance runtimes. That count stays twenty-seven.
+This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the twenty-eight Emerging auto-enhance runtimes. That count stays twenty-eight.
 
 Skeleton is a loading placeholder. It holds the shape of content that has not arrived. A spinner is a busy ring (`[spinner]`). A progress bar is a valued track (`[progress]` / `[progress-fill]`). Those two have runtimes. Skeleton does not.
 
@@ -189,7 +189,7 @@ A spinner is the control for “working” when there is no content shape yet. A
 ## Limitations
 
 - CSS-only. No `Skeleton()` factory, no `createSkeleton`, and no auto-enhance. The JS entry does not boot a skeleton runtime.
-- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The twenty-seven Emerging auto-enhance runtimes stay twenty-seven. Spinner remains the twenty-first. Icon button remains the twenty-sixth. Avatar is the twenty-seventh.
+- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The twenty-eight Emerging auto-enhance runtimes stay twenty-eight. Spinner remains the twenty-first. Icon button remains the twenty-sixth. Avatar is the twenty-seventh. Table is the twenty-eighth.
 - This is not a spinner. `[spinner]` is an indeterminate ring with a runtime that sets `role="status"` and `aria-busy` while shown. See [Spinner Runtime](./juice-spinner-runtime.md).
 - This is not a progress bar. `[progress]` / `[progress-fill]` is a valued bar, including `progress="indeterminate"`. See [Progress Runtime](./juice-progress-runtime.md).
 - `[lines]` accepts `1` through `8`. Any other count keeps one bar. There is no `[skeleton-line]`.

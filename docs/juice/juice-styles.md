@@ -54,6 +54,10 @@ Juice usage today usually falls into these groups:
 
 - `avatar` — initials or photo, optional status dot, and `[avatar-group]` / `[avatar-more]`. See [Avatar](./juice-avatar.md). On master, not in the published npm 0.9.2 release. The twenty-seventh Emerging runtime.
 
+### Sortable grids
+
+- `table` — native `<table table>` grid, with `[striped]`, `[dense]`, `[sticky]`, `[table-scroll]`, `[table-align]`, `[numeric]`, and `th[sortable]`. See [Table](./juice-table.md). On master, not in the published npm 0.9.2 release. The twenty-eighth Emerging runtime.
+
 ### Theme scoping
 
 - `theme="..."`
