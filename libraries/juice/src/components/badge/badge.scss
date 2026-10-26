@@ -1,23 +1,134 @@
-[badge] {
+// Badge chrome is structural. Color comes from core roles on :root.
+// Shipped themes are not required to bind --juice-badge-*. Ink is
+// currentColor (inherited body ink, not muted copy ink). The fill and
+// the border are currentColor mixes, so they follow that ink on light
+// and dark pages.
+//
+//   --juice-badge-bg
+//   --juice-badge-ink
+//   --juice-badge-border
+//   --juice-badge-padding
+//   --juice-badge-radius
+//   --juice-badge-radius-square
+//   --juice-badge-font-size
+//   --juice-badge-gap
+//
+// Why color is restated on [theme]: a custom property resolves var() on
+// the element that sets it. currentColor stays in these values and
+// resolves where the badge paints. Geometry stays on :root only.
+//
+// The fill is a 1% currentColor wash. Citrusmint body ink is 4.62:1 on
+// its page and 5.17:1 on its strong surface (white). The same ink on a
+// currentColor wash over that page drops under 4.5:1 past 1% (2% is
+// 4.499:1). 1% stays at 4.56:1 on the page and 5.10:1 on the strong
+// surface. Every other shipped theme has more room on both.
+// The border is a 24% hairline, same weight as the table grid. It is
+// decorative, not a control boundary. No theme file is overridden.
+//
+// Checked as sRGB alpha composites of that 1% mix over each theme's
+// page color and over --juice-surface-strong-bg (translucent plates
+// composited over the page first).
+//
+// [theme] [badge] is (0, 2, 0). Theme copy rules for p / span / li /
+// label are (0, 1, 0), including Citrusmint muted ink and the
+// line-height: 1.6 rules in KiwiPress, Afterburn, Arcade Glow, and
+// Boardwalk. The badge's own ink and line-height: 1 win. KiwiPress
+// [badge] paint is also (0, 2, 0) and loads after core, so its color
+// and background still win outside [cta]. This file does not set those
+// KiwiPress colors.
+//
+// [theme] [cta] [badge] is (0, 3, 0). It beats a [cta] copy rule that
+// replaces ink and leaves the fill (KiwiPress [cta] :where(p, span, li,
+// small) is (0, 2, 0)). Inside [cta], currentColor is the CTA's own
+// color. [badge][warm] is (0, 3, 0) and loads later, so warm paint
+// still wins. The wizard brand slot is (0, 3, 0) or higher and still
+// owns its tighter box.
+//
+// Juice chrome. Short label. Distinct from:
+//   - [avatar] (initials or photo; [badge="square"] is only the radius)
+//   - [philosophy-badge] (diagram chip, not this attribute)
+//   - a status dot (there is no dot value)
+//
+// Native collision: there is no HTML global `badge` attribute and no
+// <badge> element. [badge] is an attribute selector. Do not style a
+// bare [ribbon]. The ribbon shape is badge="ribbon".
+//
+// Juice names:
+//   [badge]            pill. Inline flex, centered, gap / padding /
+//                      radius / font-size from the layout roles.
+//   [badge="square"]   same pill, radius from --juice-badge-radius-square.
+//   [badge="ribbon"]   absolute, centered on the top edge. Radius stays
+//                      the pill unless square is also set. No z-index.
+//
+// [warm] is not a core value. Themes that paint it keep that paint.
+// There is no [scale], dot, count, or tone variant.
+//
+// A badge that is an a or button takes the 2px currentColor focus
+// outline, offset 2px, same as list and table. There is no
+// --juice-badge-focus-ring. The ring does not set transform, so a
+// ribbon keeps its centering translate.
+
+:root,
+[theme] {
+    --juice-badge-bg: color-mix(in srgb, currentColor 1%, transparent);
+    --juice-badge-ink: currentColor;
+    --juice-badge-border: color-mix(in srgb, currentColor 24%, transparent);
+}
+
+:root {
+    --juice-badge-padding: 0.375rem 0.75rem;
+    --juice-badge-radius: 999px;
+    --juice-badge-radius-square: 0.375rem;
+    --juice-badge-font-size: 0.8125rem;
+    --juice-badge-gap: 0.375rem;
+}
+
+[badge],
+[theme] [badge] {
     display: inline-flex;
     align-items: center;
-    gap: 0.375rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.8125rem;
+    gap: var(--juice-badge-gap);
+    padding: var(--juice-badge-padding);
+    border-radius: var(--juice-badge-radius);
+    font-size: var(--juice-badge-font-size);
     font-weight: 600;
     line-height: 1;
-    border: 1px solid transparent;
+    color: var(--juice-badge-ink);
+    background-color: var(--juice-badge-bg);
+    background-image: none;
+    border: 1px solid var(--juice-badge-border);
+    box-shadow: none;
     box-sizing: border-box;
 }
 
-[badge="square"] {
-    border-radius: 0.375rem;
+[badge="square"],
+[theme] [badge="square"] {
+    border-radius: var(--juice-badge-radius-square);
 }
 
-[badge="ribbon"] {
+[badge="ribbon"],
+[theme] [badge="ribbon"] {
     position: absolute;
     top: -0.75rem;
     left: 50%;
     transform: translateX(-50%);
+}
+
+// Later [cta] copy rules are (0, 2, 0) and only set color. Restate the
+// pair here so the fill stays with the ink. (0, 3, 0) loses to a later
+// (0, 3, 0) theme rule, which is how [badge][warm] keeps its paint.
+
+[theme] [cta] [badge] {
+    color: var(--juice-badge-ink);
+    background-color: var(--juice-badge-bg);
+    background-image: none;
+    border-color: var(--juice-badge-border);
+    box-shadow: none;
+}
+
+:where(a, button)[badge]:focus-visible,
+[theme] :where(a, button)[badge]:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    box-shadow: none;
 }

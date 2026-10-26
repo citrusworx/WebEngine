@@ -1030,6 +1030,54 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("includes badge structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[badge]");
+        expect(css).toContain("[badge=square]");
+        expect(css).toContain("[badge=ribbon]");
+        expect(css).toMatch(/\[theme\]\s+\[badge\]/);
+        expect(css).toMatch(/\[theme\]\s+\[badge=square\]/);
+        expect(css).toMatch(/\[theme\]\s+\[badge=ribbon\]/);
+        expect(css).toMatch(/\[theme\]\s+\[cta\]\s+\[badge\]/);
+        expect(css).toMatch(/:where\(a,\s*button\)\[badge\]:focus-visible/);
+        expect(css).toMatch(/\[theme\]\s+:where\(a,\s*button\)\[badge\]:focus-visible/);
+        expect(css).toContain("--juice-badge-padding: 0.375rem 0.75rem");
+        expect(css).toContain("--juice-badge-radius: 999px");
+        expect(css).toContain("--juice-badge-radius-square: 0.375rem");
+        expect(css).toContain("--juice-badge-font-size: 0.8125rem");
+        expect(css).toContain("--juice-badge-gap: 0.375rem");
+        expect(css).toContain("--juice-badge-bg:");
+        expect(css).toContain("--juice-badge-ink:");
+        expect(css).toContain("--juice-badge-border:");
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-bg:\s*color-mix\(in srgb, currentColor 1%, transparent\)/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-ink:\s*currentColor/);
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-border:\s*color-mix\(in srgb, currentColor 24%, transparent\)/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-padding:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-radius:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-font-size:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-badge-gap:/);
+        expect(css).toMatch(/\[theme\]\s+\[badge\]\s*\{[^}]*color:\s*var\(--juice-badge-ink\)/);
+        expect(css).toMatch(/\[theme\]\s+\[badge\]\s*\{[^}]*background-color:\s*var\(--juice-badge-bg\)/);
+        expect(css).toMatch(/\[theme\]\s+\[badge\]\s*\{[^}]*line-height:\s*1;/);
+        expect(css).toMatch(/\[theme\]\s+\[badge\]\s*\{[^}]*border:\s*1px solid var\(--juice-badge-border\)/);
+        expect(css).toMatch(/\[theme\]\s+\[cta\]\s+\[badge\]\s*\{[^}]*color:\s*var\(--juice-badge-ink\)/);
+        expect(css).toMatch(/\[theme\]\s+\[cta\]\s+\[badge\]\s*\{[^}]*background-color:\s*var\(--juice-badge-bg\)/);
+        expect(css).toMatch(/\[theme\]\s+\[cta\]\s+\[badge\]\s*\{[^}]*border-color:\s*var\(--juice-badge-border\)/);
+        expect(css).toContain("outline: 2px solid currentColor");
+        expect(css).toContain("outline-offset: 2px");
+        expect(css).not.toMatch(/\[badge=dot\]/);
+        expect(css).not.toMatch(/\[badge=lg\]/);
+        expect(css).not.toMatch(/\[badge\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[badge\][^{]*\{[^}]*z-index:\s*1000/);
+        expect(css).not.toContain("--juice-badge-focus-ring");
+
+        for (const id of readBundledThemeIds()) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-badge-");
+        }
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
