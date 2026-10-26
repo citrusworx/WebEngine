@@ -249,6 +249,6 @@ Dividers are borders, not elements. They are decorative and sit under 3:1. Do no
 
 ## Where this sits
 
-Cards, badges, stats, and skeleton are the other CSS-only structural hooks: markup plus core paint, no runtime. List follows that shape. Skeleton holds a loading shape. List holds the rows that replace it. See [Skeleton](./juice-skeleton.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, badges, stats, and skeleton are the other CSS-only structural hooks: markup plus paint, no runtime. List follows that shape. Skeleton holds a loading shape. List holds the rows that replace it. A badge in `[list-trailing]` keeps its own box. See [Badge](./juice-badge.md), [Skeleton](./juice-skeleton.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
 
 Menu, combobox, tabs, pagination, and breadcrumb keep their own names. Do not point `[list]` at those jobs. See [Menu Runtime](./juice-menu-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Tabs Runtime](./juice-tabs-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), and [Breadcrumb Runtime](./juice-breadcrumb-runtime.md).
