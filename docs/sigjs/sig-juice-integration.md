@@ -212,10 +212,10 @@ notes.dispose(); // drop listeners; safe to call again
 
 `state` starts as a copy of `getState()`. After that it follows the host:
 
-- Twenty-four Juice runtimes dispatch a bubbling `juice:change` whose `detail` is `{ runtime, state }`. Icon button and avatar are two of those twenty-four. `bind` accepts the event when `event.target` is the bound host and `detail.runtime` is a runtime it names. Icon button and avatar dispatch the event and are not among those names.
+- Twenty-five Juice runtimes dispatch a bubbling `juice:change` whose `detail` is `{ runtime, state }`. Icon button, avatar, and table are three of those twenty-five. `bind` accepts the event when `event.target` is the bound host and `detail.runtime` is a runtime it names. Icon button, avatar, and table dispatch the event and are not among those names.
 - Select, input, and textarea do not dispatch `juice:change`. `bind` also listens for native `input` and `change` on those hosts and reads `getState()` again.
 
-An equal state does not notify. That includes a `state.set` of the current shape, and a host event whose state matches the signal. The table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange) has twenty-seven Juice runtimes. `bind` accepts the twenty-five names in `JuiceRuntimeName`. Icon button and avatar are in that table and are not among those names. A follow-up for avatar is pending.
+An equal state does not notify. That includes a `state.set` of the current shape, and a host event whose state matches the signal. The table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange) has twenty-eight Juice runtimes. `bind` accepts the twenty-five names in `JuiceRuntimeName`. Icon button, avatar, and table are in that table and are not among those names. A follow-up for avatar is pending. A follow-up for table is pending.
 
 ### Write-back and read-only
 
@@ -228,7 +228,7 @@ An equal state does not notify. That includes a `state.set` of the current shape
 | `disclosure` | `expand` or `collapse` on the first `[disclosure-trigger]` (or the host, when the host is that trigger) |
 | `modal` | `open(host)` or `close(host)` |
 
-The other twenty-one `bind` accepts are read-only: accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea. Icon button and avatar are not in that list. `bind` on an `[icon-button]` host throws (`could not infer a runtime`). `bind(host, "icon-button")` throws the same way, because the name is not a `JuiceRuntimeName`. `bind` on an `[avatar]` host throws the same way, and `bind(host, "avatar")` throws because `"avatar"` is not a `JuiceRuntimeName`. A follow-up for avatar is pending. There is no reader and no write-back case. That is not the read-only path: a read-only runtime still seeds a signal from `getState()`. `set` updates the signal and does not call a controller, so the host stays where the runtime left it. The next `juice:change` (or native `input` / `change`) copies the host back over the signal.
+The other twenty-one `bind` accepts are read-only: accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea. Icon button, avatar, and table are not in that list. `bind` on an `[icon-button]` host throws (`could not infer a runtime`). `bind(host, "icon-button")` throws the same way, because the name is not a `JuiceRuntimeName`. `bind` on an `[avatar]` host throws the same way, and `bind(host, "avatar")` throws because `"avatar"` is not a `JuiceRuntimeName`. A follow-up for avatar is pending. `bind` on a `[table]` host throws the same way, and `bind(host, "table")` throws because `"table"` is not a `JuiceRuntimeName`. A follow-up for table is pending. There is no reader and no write-back case. That is not the read-only path: a read-only runtime still seeds a signal from `getState()`. `set` updates the signal and does not call a controller, so the host stays where the runtime left it. The next `juice:change` (or native `input` / `change`) copies the host back over the signal.
 
 ```tsx
 import { effect, mount } from "@citrusworx/sigjs";

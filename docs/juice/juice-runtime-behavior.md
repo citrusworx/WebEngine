@@ -35,7 +35,7 @@ Juice works without Sig. The observation contract below is DOM. Sig’s optional
 
 ## Current Examples
 
-The navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, and avatar runtimes are the current examples.
+The navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, and table runtimes are the current examples.
 
 They work by:
 
@@ -93,6 +93,7 @@ Shipped built-in runtime features include:
 * fields / help and error descriptions on a wrapped control
 * icon buttons / square and round icon-only controls
 * avatars / initials or photo, with image-error fallback
+* tables / sortable grids on a native `<table>`
 
 Future built-in runtime features could include:
 
@@ -128,6 +129,7 @@ The overlay band is the exception inside itself: modal and drawer do **not** yie
 | — | Field | Never. Typing, change, and keys stay on the wrapped control. | — |
 | — | Icon button | Never. Toggle stays on click, and on Enter / Space for a non-button, non-link `[toggle]` | — |
 | — | Avatar | Never. The runtime does not listen for keys | — |
+| — | Table | Never. Sort stays on the header button's click. Enter and Space stay with the browser | — |
 | — | Pagination | Never. Arrows / Home / End move focus among enabled controls. Enter and Space stay with the browser | — |
 | — | Accordion | The focused open item, or the last opened item, when that accordion context already owns the key. There is no global accordion Escape. | — |
 | — | Disclosure | The focused open disclosure, or the last opened disclosure, when that disclosure already owns the key. There is no global disclosure Escape. | An open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists. |
@@ -157,14 +159,15 @@ Core chrome sets these stacking values. They are **structural bands**, not a the
 | Breadcrumb | `[breadcrumb]` | none | Inline nav chrome; no elevation in this cut |
 | Progress | `[progress]` | none | Inline status chrome; no elevation in this cut |
 | Spinner | `[spinner]` | none | Inline status chrome; no elevation in this cut |
-| Skeleton | `[skeleton]` | none | Inline placeholder; CSS-only, not one of the twenty-seven runtimes |
-| List | `[list]` | none | Inline rows; CSS-only, not one of the twenty-seven runtimes |
+| Skeleton | `[skeleton]` | none | Inline placeholder; CSS-only, not one of the twenty-eight runtimes |
+| List | `[list]` | none | Inline rows; CSS-only, not one of the twenty-eight runtimes |
 | Select | `select[select]` | none | Inline field chrome; the open list is the platform popup |
 | Input | `input[input]` | none | Inline field chrome; text-like types only |
 | Textarea | `textarea[textarea]` | none | Inline field chrome; no auto-grow |
 | Field | `[field]` | none | Inline wrapper chrome; no validation engine |
 | Icon button | `[icon-button]` | none | Inline control; no elevation in this cut |
 | Avatar | `[avatar]` | none | Inline mark. The photo is `z-index` 1 and the status dot is 2, both inside the avatar. A group stacks the first eight faces from 8 down to 1. Not an overlay band |
+| Table | `[table]` | none | Inline grid. Sticky `thead` cells use `z-index` 1 inside the table. Not an overlay band |
 | Pagination | `[pagination]` | none | Inline nav chrome; no elevation in this cut |
 
 Tabs, accordion, and disclosure do not set a stacking band.
@@ -199,7 +202,7 @@ startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 
 Select, input, and textarea publish value changes through the native `input` and `change` events. They do not dispatch `juice:change`. `getState()` still returns `{ value: string }` (`HTMLSelectElement.value` for select, the control value otherwise).
 
-The twenty-seven rows are the whole contract. Per-runtime pages repeat one row; keep them aligned with this table. The last column is how `@citrusworx/sigjs/juice` `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. Icon button and avatar dispatch `juice:change` and expose `getState()`. `bind` does not accept either: `"icon-button"` and `"avatar"` are not `JuiceRuntimeName` values, and inference does not match `[icon-button]` or `[avatar]`. A follow-up for avatar is pending. That is not the read-only path. A read-only runtime still seeds a signal.
+The twenty-eight rows are the whole contract. Per-runtime pages repeat one row; keep them aligned with this table. The last column is how `@citrusworx/sigjs/juice` `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. Icon button, avatar, and table dispatch `juice:change` and expose `getState()`. `bind` does not accept them: `"icon-button"`, `"avatar"`, and `"table"` are not `JuiceRuntimeName` values, and inference does not match `[icon-button]`, `[avatar]`, or `[table]`. A follow-up for avatar is pending. A follow-up for table is pending. That is not the read-only path. A read-only runtime still seeds a signal.
 
 | Runtime | Host | `detail.state` / `getState()` | Readers | Sig `bind` |
 | --- | --- | --- | --- | --- |
@@ -230,8 +233,9 @@ The twenty-seven rows are the whole contract. Per-runtime pages repeat one row; 
 | `textarea` | `textarea[textarea]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
 | `icon-button` | `[icon-button]` | `{ pressed: boolean, disabled: boolean, named: boolean }` | `getState` | not wired |
 | `avatar` | `[avatar]` | `{ loaded: boolean, fallback: boolean, hasImage: boolean }` | `getState` | not wired |
+| `table` | `[table]` | `{ column: number \| null, direction: "ascending" \| "descending" \| "none" }` | `getState` | not wired |
 
-Accordion `expanded` follows trigger order. Disclosure `expanded` is the first trigger. Tabs `selected`, pagination `current`, and breadcrumb `current` are 0-based indexes, or `-1` when nothing is current. Radio `value` is the checked option's `value` attribute, and `index` is its position (`-1` when none are checked). `getChecked()` still returns that element. Tabs `selected()` still returns the trigger element. Menu `open` is whether the `[menu]` panel is shown. Nav `open` is whether the sidebar lacks `hidden`. Field `invalid` is the `[invalid]` attribute on the wrapper. Icon button `pressed` is `aria-pressed="true"` or `[pressed]`. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled button or input. `named` is a non-empty `aria-label`, an `aria-labelledby` that resolves to visible text, or visible text on the host. `title` is not a name. Avatar `loaded` is true when at least one image has loaded. `fallback` is true when the avatar has an image, none have loaded, and none are still loading. `hasImage` is true when the avatar has at least one `<img>`. Initials with no image are `{ loaded: false, fallback: false, hasImage: false }`. Toast `shown` is the `[toast]` host, not the region.
+Accordion `expanded` follows trigger order. Disclosure `expanded` is the first trigger. Tabs `selected`, pagination `current`, and breadcrumb `current` are 0-based indexes, or `-1` when nothing is current. Radio `value` is the checked option's `value` attribute, and `index` is its position (`-1` when none are checked). `getChecked()` still returns that element. Tabs `selected()` still returns the trigger element. Menu `open` is whether the `[menu]` panel is shown. Nav `open` is whether the sidebar lacks `hidden`. Field `invalid` is the `[invalid]` attribute on the wrapper. Icon button `pressed` is `aria-pressed="true"` or `[pressed]`. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled button or input. `named` is a non-empty `aria-label`, an `aria-labelledby` that resolves to visible text, or visible text on the host. `title` is not a name. Avatar `loaded` is true when at least one image has loaded. `fallback` is true when the avatar has an image, none have loaded, and none are still loading. `hasImage` is true when the avatar has at least one `<img>`. Initials with no image are `{ loaded: false, fallback: false, hasImage: false }`. Table `column` is `null` when `direction` is `"none"`. Otherwise it is the active header's `cellIndex`. Toast `shown` is the `[toast]` host, not the region.
 
 ## Sig adapter
 
@@ -246,7 +250,7 @@ notes.state.set({ checked: true }); // write-back: switch, checkbox, disclosure,
 notes.dispose();
 ```
 
-`bind(host, runtime?)` returns `{ state, dispose }`. `state` is seeded from `getState()` and follows `juice:change` (native `input` and `change` for select, input, and textarea). Write-back is the four runtimes in the table above. The other twenty-one names `bind` accepts are read-only. Icon button and avatar are not among those names. `bind` on an `[icon-button]` host throws (`could not infer a runtime`), and `bind(host, "icon-button")` throws the same way. `bind` on an `[avatar]` host throws the same way, and `bind(host, "avatar")` throws because `"avatar"` is not a `JuiceRuntimeName`. A follow-up for avatar is pending. `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts. `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`. `juice:change` and `getState()` are on master, unreleased after 0.9.2. Icon button's and avatar's `getState()` and `juice:change` are on master with that contract, and they are not in the published npm 0.9.2 release.
+`bind(host, runtime?)` returns `{ state, dispose }`. `state` is seeded from `getState()` and follows `juice:change` (native `input` and `change` for select, input, and textarea). Write-back is the four runtimes in the table above. The other twenty-one names `bind` accepts are read-only. Icon button, avatar, and table are not among those names. `bind` on an `[icon-button]` host throws (`could not infer a runtime`), and `bind(host, "icon-button")` throws the same way. `bind` on an `[avatar]` host throws the same way, and `bind(host, "avatar")` throws because `"avatar"` is not a `JuiceRuntimeName`. A follow-up for avatar is pending. `bind` on a `[table]` host throws the same way, and `bind(host, "table")` throws because `"table"` is not a `JuiceRuntimeName`. A follow-up for table is pending. `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts. `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`. `juice:change` and `getState()` are on master, unreleased after 0.9.2. Icon button's, avatar's, and table's `getState()` and `juice:change` are on master with that contract, and they are not in the published npm 0.9.2 release.
 
 How to call it, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).
 

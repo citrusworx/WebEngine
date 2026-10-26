@@ -59,7 +59,7 @@ The split — Juice for structure, Sig for behavior — is the product story. Th
 
 ### 6. The Juice runtime hookup is done
 
-`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. `state` follows Juice’s `juice:change` / `getState()` contract for the twenty-five runtimes `bind` accepts. `state.set` writes back for switch, checkbox, disclosure, and modal. The other twenty-one are read-only. Icon button is the twenty-sixth Juice runtime and avatar is the twenty-seventh. Neither is a `JuiceRuntimeName`, so `bind` does not accept them. A follow-up for avatar is pending. `dispose` drops the listeners, and a `bind` during Sig render also disposes on unmount.
+`@citrusworx/sigjs/juice` exports `bind(host, runtime?)`. It returns `{ state, dispose }`. `state` follows Juice’s `juice:change` / `getState()` contract for the twenty-five runtimes `bind` accepts. `state.set` writes back for switch, checkbox, disclosure, and modal. The other twenty-one are read-only. Icon button is the twenty-sixth Juice runtime, avatar is the twenty-seventh, and table is the twenty-eighth. None of them is a `JuiceRuntimeName`, so `bind` does not accept them. A follow-up for avatar is pending. A follow-up for table is pending. `dispose` drops the listeners, and a `bind` during Sig render also disposes on unmount.
 
 Juice works without that module. The DOM contract stays in Juice, and the main Sig entry does not import Juice. The guide is [Sig.js + Juice](./sig-juice-integration.md#runtime-binding). The state table is [juice:change](../juice/juice-runtime-behavior.md#juicechange). The subpath shipped in `@citrusworx/sigjs@0.4.0`.
 
