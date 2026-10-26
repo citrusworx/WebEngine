@@ -577,6 +577,25 @@ An `a` or `button` row, or a row that wraps one, hovers, presses, and takes a 2p
 
 See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColor at 28%), `--juice-list-secondary` (92%), `--juice-list-hover` (8%), and `--juice-list-selected` (14%), on `:root` and again on `[theme]`. Layout roles are `--juice-list-gap` (`0`), `--juice-list-padding` (`0.75rem 1rem`), `--juice-list-padding-dense` (`0.375rem 0.75rem`), and `--juice-list-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
 
+### Badge
+
+CSS-only label. There is no runtime and no auto-enhance. Core CSS paints the shape. The layout and the KiwiPress paint shipped in npm 0.9.2. It is not one of the twenty-eight Emerging auto-enhance runtimes.
+
+- `badge` — host. Boolean `[badge]` is a pill (radius `999px`, padding `0.375rem 0.75rem`, `0.8125rem` at weight 600). There is no HTML global `badge` attribute, and there is no `<badge>` element. Any value other than `square` or `ribbon` is still that pill
+- `badge="square"` — the same pill with radius `0.375rem`
+- `badge="ribbon"` — absolutely positioned, `top: -0.75rem`, centered. `[card="pricing"]` is `position: relative`. Other parents are not. Juice does not style a bare `[ribbon]`
+- `warm` — separate boolean. Core CSS does not paint it. KiwiPress paints `[badge][warm]`. There is no `[scale]`
+
+There are no `--juice-badge-*` roles. Thirteen shipped themes leave the chip transparent. KiwiPress sets text and background for the default pill, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]`.
+
+```html
+<span badge>New</span>
+<span badge="square">v0.9.2</span>
+<div card="pricing"><span badge="ribbon">Most Popular</span></div>
+```
+
+The words on the badge are the name. A count needs context in the text or on the parent. There is no dot variant. See [Badge](./juice-badge.md).
+
 ### Avatar
 
 Initials-or-photo mark. Round by default. Color comes from `--juice-avatar-*`. There is no HTML global `avatar` attribute, and there is no `<avatar>` element.

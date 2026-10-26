@@ -526,6 +526,14 @@ Defaults: divider is `currentColor` at 28%; secondary ink is `currentColor` at 9
 
 This is Juice chrome for stacked rows. `[list]` is on `ul`, `ol`, or `div` (`:where(ul, ol, div)[list]`, so `<input list>` is left alone). `[divided]` is a hairline between direct children. `[dense]` tightens row padding and the slot margin and does not change the stack gap. `[list-item]` holds `[list-leading]`, `[list-content]`, `[list-secondary]`, and `[list-trailing]`. `[leading]` stays letter-spacing. An `a` or `button` row hovers, presses, and takes a 2px `currentColor` `:focus-visible` outline, offset 2px. There is no `--juice-list-focus-ring`. `[selected]` and `aria-current` other than `"false"` share the selected wash. `[selected]` is visual only. Disabled interactive rows are `opacity: 0.5`. Background and color use `--juice-motion-*`, and reduced motion turns them off. The divider is a decorative hairline. Inline rows — no overlay z-index. There is no runtime. See [List](./juice-list.md). List is on master, not in the published npm 0.9.2 release, and is not one of the twenty-eight Emerging auto-enhance runtimes.
 
+## Badge
+
+Core CSS does not own `--juice-badge-*`. There is no badge color on `:root` and none on `[theme]`. Do not invent a badge hue family to satisfy a role list. The pill, `[badge="square"]`, and `[badge="ribbon"]` are literal geometry in `badge.scss`.
+
+KiwiPress is the only shipped theme that paints `[badge]`. It uses its own `--kw-accent`, `--kw-accent-tint`, `--kw-warm`, `--kw-surface`, and the wizard brand slot’s muted pair. Those tokens live on `[theme="kiwipress"]`. The generator, for an app-owned theme, paints `:where([badge])` from `--jx-accent-tint` / `--jx-accent` and `:where([badge][warm])` from `--jx-warm-soft` / `--jx-warm`. That warm fill is not the KiwiPress warm fill. The generator does not paint ribbon.
+
+This is Juice chrome for a short label. Boolean `[badge]` is the pill. `[badge="square"]` changes the radius. `[badge="ribbon"]` is absolute, and `[card="pricing"]` is the parent positioned for it. `[warm]` is a separate boolean. Inline label — no overlay z-index. There is no runtime. See [Badge](./juice-badge.md). The layout and the KiwiPress paint shipped in npm 0.9.2. Badge is not one of the twenty-eight Emerging auto-enhance runtimes.
+
 ## Table chrome roles
 
 Core CSS owns `--juice-table-*`. Color is stated on `:root` and again on `[theme]`, so the mixes keep `currentColor` and resolve where the cell paints. Layout stays on `:root`. Shipped library themes and generated `--jx-*` themes are not required to bind these roles. Do not add a table hue family.

@@ -142,6 +142,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Table](./juice-table.md) — sortable grid (on master; not in the published npm 0.9.2 release; the twenty-eighth Emerging runtime)
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release)
 - [List](./juice-list.md) — CSS-only stacked rows (on master; not in the published npm 0.9.2 release)
+- [Badge](./juice-badge.md) — CSS-only pill label (layout and KiwiPress paint shipped in npm 0.9.2; not a runtime)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)
 
