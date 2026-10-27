@@ -98,11 +98,16 @@ Blackwater Sound is the current practical example of this model.
 
 Start with the course if you want a curriculum. The pages after it stay the lookup set — this list is not a rewrite of the reference tree.
 
+### Start here
+
 - [Design systems through Juice](./course/README.md) — **do this course first** (start at [See it in 10 minutes](./course/00-first-look.md))
 - [Getting Started](./juice-getting-started.md)
 - [Page Tutorial](./juice-page-tutorial.md) — a *second* build (different CitrusWorx landing page), after the course
 - [Patterns](./juice-patterns.md)
 - [Maturity Matrix](./juice-maturity-matrix.md)
+
+### Foundations
+
 - [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 27 runtimes
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
@@ -112,38 +117,64 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Theme Quality](./juice-theme-quality.md) — identity density and visual ship bar (separate from role binds)
 - [Theme Authoring](./juice-theme-authoring.md)
 - [Theme Manual](./juice-theme-manual.md)
+
+### Runtimes
+
+#### Navigation
+
 - [Navigation Runtime](./juice-navigation-runtime.md)
-- [Accordion Runtime](./juice-accordion-runtime.md)
+- [Menu Runtime](./juice-menu-runtime.md)
 - [Tabs Runtime](./juice-tabs-runtime.md)
+- [Breadcrumb Runtime](./juice-breadcrumb-runtime.md)
+- [Pagination Runtime](./juice-pagination-runtime.md)
+
+#### Overlays
+
 - [Modal Runtime](./juice-modal-runtime.md)
 - [Drawer Runtime](./juice-drawer-runtime.md)
-- [Toast Runtime](./juice-toast-runtime.md)
 - [Popover Runtime](./juice-popover-runtime.md)
-- [Wizard Runtime](./juice-wizard-runtime.md)
 - [Tooltip Runtime](./juice-tooltip-runtime.md)
+- [Toast Runtime](./juice-toast-runtime.md)
+
+#### Forms
+
 - [Combobox Runtime](./juice-combobox-runtime.md)
-- [Banner Runtime](./juice-banner-runtime.md)
-- [Menu Runtime](./juice-menu-runtime.md)
 - [Switch Runtime](./juice-switch-runtime.md)
 - [Slider Runtime](./juice-slider-runtime.md)
 - [Checkbox Runtime](./juice-checkbox-runtime.md)
 - [Radio Runtime](./juice-radio-runtime.md)
-- [Breadcrumb Runtime](./juice-breadcrumb-runtime.md)
-- [Progress Runtime](./juice-progress-runtime.md)
-- [Pagination Runtime](./juice-pagination-runtime.md)
-- [Disclosure Runtime](./juice-disclosure-runtime.md)
-- [Spinner Runtime](./juice-spinner-runtime.md)
 - [Select Runtime](./juice-select-runtime.md)
 - [Input Runtime](./juice-input-runtime.md)
 - [Textarea Runtime](./juice-textarea-runtime.md)
 - [Field Runtime](./juice-field-runtime.md)
 - [Icon Button Runtime](./juice-icon-button-runtime.md)
+
+#### Feedback
+
+- [Banner Runtime](./juice-banner-runtime.md)
+- [Progress Runtime](./juice-progress-runtime.md)
+- [Spinner Runtime](./juice-spinner-runtime.md)
+
+#### Disclosure
+
+- [Accordion Runtime](./juice-accordion-runtime.md)
+- [Wizard Runtime](./juice-wizard-runtime.md)
+- [Disclosure Runtime](./juice-disclosure-runtime.md)
+
+#### Data display
+
 - [Avatar](./juice-avatar.md) — initials-or-photo mark (on master; not in the published npm 0.9.2 release; the twenty-seventh Emerging runtime)
 - [Table](./juice-table.md) — sortable grid (on master; not in the published npm 0.9.2 release; the twenty-eighth Emerging runtime)
+
+### CSS-only
+
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release)
 - [List](./juice-list.md) — CSS-only stacked rows (on master; not in the published npm 0.9.2 release)
 - [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core `--juice-badge-*` roles on master, not in that cut; not a runtime)
 - [Safe Area](./juice-safe-area.md) — CSS-only inset (on master; not in the published npm 0.9.2 release; not a runtime)
+
+### Practice and roadmap
+
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)
 
