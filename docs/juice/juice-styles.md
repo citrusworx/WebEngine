@@ -39,7 +39,7 @@ Juice usage today usually falls into these groups:
 - `panel`
 - `hero`
 - `cta`
-- `badge` — CSS-only pill, `[badge="square"]`, and `[badge="ribbon"]`. See [Badge](./juice-badge.md). Layout and KiwiPress paint shipped in npm 0.9.2. Not a runtime. The other thirteen shipped themes do not paint it.
+- `badge` — CSS-only pill, `[badge="square"]`, and `[badge="ribbon"]`. See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master, not in that cut. Not a runtime. KiwiPress still paints its own colors outside `[cta]`.
 - `stat`
 
 ### Loading placeholders
