@@ -96849,28 +96849,65 @@ section[auto] > * {
     transition: none;
   }
 }
-[badge] {
+:root,
+[theme] {
+  --juice-badge-bg: color-mix(in srgb, currentColor 1%, transparent);
+  --juice-badge-ink: currentColor;
+  --juice-badge-border: color-mix(in srgb, currentColor 24%, transparent);
+}
+
+:root {
+  --juice-badge-padding: 0.375rem 0.75rem;
+  --juice-badge-radius: 999px;
+  --juice-badge-radius-square: 0.375rem;
+  --juice-badge-font-size: 0.8125rem;
+  --juice-badge-gap: 0.375rem;
+}
+
+[badge],
+[theme] [badge] {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.8125rem;
+  gap: var(--juice-badge-gap);
+  padding: var(--juice-badge-padding);
+  border-radius: var(--juice-badge-radius);
+  font-size: var(--juice-badge-font-size);
   font-weight: 600;
   line-height: 1;
-  border: 1px solid transparent;
+  color: var(--juice-badge-ink);
+  background-color: var(--juice-badge-bg);
+  background-image: none;
+  border: 1px solid var(--juice-badge-border);
+  box-shadow: none;
   box-sizing: border-box;
 }
 
-[badge=square] {
-  border-radius: 0.375rem;
+[badge=square],
+[theme] [badge=square] {
+  border-radius: var(--juice-badge-radius-square);
 }
 
-[badge=ribbon] {
+[badge=ribbon],
+[theme] [badge=ribbon] {
   position: absolute;
   top: -0.75rem;
   left: 50%;
   transform: translateX(-50%);
+}
+
+[theme] [cta] [badge] {
+  color: var(--juice-badge-ink);
+  background-color: var(--juice-badge-bg);
+  background-image: none;
+  border-color: var(--juice-badge-border);
+  box-shadow: none;
+}
+
+:where(a, button)[badge]:focus-visible,
+[theme] :where(a, button)[badge]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 :root {
