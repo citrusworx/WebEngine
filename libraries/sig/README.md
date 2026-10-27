@@ -10,7 +10,9 @@ Reactivity is opt-in. Host elements render once; wrap a child or a prop in a fun
 npm install @citrusworx/sigjs@^0.7.0
 ```
 
-Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.7.0` or `pnpm add @citrusworx/sigjs@^0.7.0`. The workspace copy is `0.7.0` and is not on npm yet. `^0.4.0` does not install `0.7.0`.
+Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.7.0` or `pnpm add @citrusworx/sigjs@^0.7.0`. npm latest is **0.7.2**. `^0.7.0` is `>=0.7.0 <0.8.0`, so it installs that release. The workspace copy in this repo is still `0.7.0` (`package.json`). `^0.6.0` and `^0.4.0` do not install `0.7.0` or later.
+
+Before 1.0, a breaking change ships as a minor. `0.7.0` removed root exports and was a minor; a `^0.6.0` install does not receive it. The written policy is [Sig.js release checklist](../../docs/sigjs/release-checklist.md#semver).
 
 ## Signals
 
@@ -173,10 +175,10 @@ Plain `<a href="/about">` links are intercepted. External, `target="_blank"`, `d
 | Import | What it is |
 |--------|------------|
 | `@citrusworx/sigjs` | `Signal`, `effect`, `batch`, `memo`, `untrack`, `bindList` (experimental), `mount`, `disposeTree`, `jsx` / `jsxs` / `Fragment`, the `JSX` namespace, `SigRouter`, types. `jsxDEV` is not on this entry. |
-| `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `Child`) |
-| `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`, `jsxs`, `Fragment`) |
-| `@citrusworx/sigjs/sig-router` | `SigRouter` only |
-| `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` returns `{ state, dispose }`. Write-back is switch, checkbox, disclosure, and modal; the other runtimes are read-only. Needs `@citrusworx/juiceui` (optional peer). Juice works without this subpath. Guide: [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding). Shipped in 0.4.0. |
+| `@citrusworx/sigjs/jsx-runtime` | Production JSX runtime (`jsx`, `jsxs`, `Fragment`, `mount`, `disposeTree`, `Child`, the `JSX` namespace) |
+| `@citrusworx/sigjs/jsx-dev-runtime` | Dev JSX runtime (`jsxDEV`, `jsxs`, `Fragment`, the `JSX` namespace) |
+| `@citrusworx/sigjs/sig-router` | `SigRouter`, plus route types `RouteFactory`, `RouteMap`, `RouteParams`, `RouteView` |
+| `@citrusworx/sigjs/juice` | Optional. `bind(host, runtime?)` returns `{ state, dispose }` for twenty-eight `JuiceRuntimeName` values, including icon-button, avatar, and table. Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only). Avatar and table are read-only. Binding one of those three throws `needs a newer @citrusworx/juiceui` when that start function is missing (published `@citrusworx/juiceui` 0.9.1 and 0.9.2). Optional peer `>=0.9.1 <1`. Juice works without this subpath. Guide: [Runtime binding](../../docs/sigjs/sig-juice-integration.md#runtime-binding). The subpath shipped in 0.4.0. The three names are in npm 0.7.2. |
 
 `jsxImportSource` uses the `jsx-runtime` / `jsx-dev-runtime` subpaths automatically. You do not import those by hand unless you are calling `jsx()` yourself.
 
