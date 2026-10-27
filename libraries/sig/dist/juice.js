@@ -7,14 +7,26 @@
  *
  * Updates follow Juice's DOM contract: a bubbling `juice:change` event whose
  * detail is `{ runtime, state }`. Select, input, and textarea do not emit
- * that event; they use native `input` and `change`. State types are imported
- * as types. Seeding and write-back call the runtime controllers.
+ * that event; they use native `input` and `change`. State types for the
+ * original runtimes are imported as types. Icon button, avatar, and table
+ * use local shapes, so the published declarations do not name Juice types
+ * that older builds do not export. Those three start functions are read from
+ * the Juice module namespace and may be missing. Binding one of them then
+ * throws. The other twenty-five keep named imports, so an older Juice still
+ * loads this module and still binds them.
+ *
+ * `state.set` writes back for switch, checkbox, disclosure, modal, and
+ * icon-button. Icon-button calls `toggle` only when the host has `[toggle]`
+ * and `pressed` changes, then republishes `getState()`. A disabled host or a
+ * host without `[toggle]` refuses the write and the signal matches the host.
+ * Avatar and table are read-only. Table has no Juice API to set sort.
  *
  * `bind` returns `{ state, dispose }`. `dispose` removes the host listeners.
  * A call during Sig render also disposes on unmount: `effect` registers that
  * disposer on the internal cleanup scope (`captureCleanupScope`).
  */
 import { effect, Signal } from "./signal.js";
+import * as juice from "@citrusworx/juiceui";
 import { startAccordionRuntime, startBannerRuntime, startBreadcrumbRuntime, startCheckboxRuntime, startComboboxRuntime, startDisclosureRuntime, startDrawerRuntime, startFieldRuntime, startInputRuntime, startMenuRuntime, startModalRuntime, startNavigationRuntime, startPaginationRuntime, startPopoverRuntime, startProgressRuntime, startRadioRuntime, startSelectRuntime, startSliderRuntime, startSpinnerRuntime, startSwitchRuntime, startTabsRuntime, startTextareaRuntime, startToastRuntime, startTooltipRuntime, startWizardRuntime, } from "@citrusworx/juiceui";
 const JUICE_CHANGE_EVENT = "juice:change";
 const NATIVE_VALUE_RUNTIMES = new Set([
@@ -45,6 +57,45 @@ const statesEqual = (left, right) => {
     }
     return false;
 };
+const NEWER_RUNTIME_EXPORT = {
+    "icon-button": "startIconButtonRuntime",
+    avatar: "startAvatarRuntime",
+    table: "startTableRuntime",
+};
+const juiceExports = juice;
+const optionalStart = (runtime) => {
+    const exportName = NEWER_RUNTIME_EXPORT[runtime];
+    const value = juiceExports[exportName];
+    if (typeof value !== "function")
+        return undefined;
+    return value;
+};
+const readOptional = (runtime, host) => optionalStart(runtime)?.()?.getState(host) ?? null;
+const newerRuntimeExport = (runtime) => {
+    if (!Object.prototype.hasOwnProperty.call(NEWER_RUNTIME_EXPORT, runtime)) {
+        return null;
+    }
+    return NEWER_RUNTIME_EXPORT[runtime];
+};
+const assertRuntimeAvailable = (runtime) => {
+    const exportName = newerRuntimeExport(runtime);
+    if (!exportName)
+        return;
+    if (optionalStart(runtime))
+        return;
+    throw new Error(`Sig juice bind: "${runtime}" needs a newer @citrusworx/juiceui that exports ${exportName}.`);
+};
+const writeIconButton = (host, next) => {
+    const controller = optionalStart("icon-button")?.();
+    if (!controller?.toggle)
+        return;
+    const current = controller.getState(host);
+    if (!current || !host.hasAttribute("toggle"))
+        return;
+    if (current.pressed === next.pressed)
+        return;
+    controller.toggle(host);
+};
 const readers = {
     switch: (host) => startSwitchRuntime()?.getState(host) ?? null,
     checkbox: (host) => startCheckboxRuntime()?.getState(host) ?? null,
@@ -71,6 +122,9 @@ const readers = {
     select: (host) => startSelectRuntime()?.getState(host) ?? null,
     input: (host) => startInputRuntime()?.getState(host) ?? null,
     textarea: (host) => startTextareaRuntime()?.getState(host) ?? null,
+    "icon-button": (host) => readOptional("icon-button", host),
+    avatar: (host) => readOptional("avatar", host),
+    table: (host) => readOptional("table", host),
 };
 const hostMatchers = [
     {
@@ -173,6 +227,18 @@ const hostMatchers = [
         runtime: "field",
         match: (host) => host.hasAttribute("field"),
     },
+    {
+        runtime: "icon-button",
+        match: (host) => host.hasAttribute("icon-button"),
+    },
+    {
+        runtime: "avatar",
+        match: (host) => host.hasAttribute("avatar"),
+    },
+    {
+        runtime: "table",
+        match: (host) => host instanceof HTMLTableElement && host.hasAttribute("table"),
+    },
 ];
 const inferRuntime = (host) => hostMatchers.find((candidate) => candidate.match(host))?.runtime ?? null;
 const readState = (runtime, host) => readers[runtime](host);
@@ -211,6 +277,7 @@ const writeBack = (runtime, host, state) => {
             return;
         }
         default:
+            // Avatar and table are read-only. Table has no Juice API to set sort.
             return;
     }
 };
@@ -220,6 +287,7 @@ export function bind(host, runtime) {
     if (!resolved || !isRuntimeName(resolved)) {
         throw new Error("Sig juice bind: could not infer a runtime from this host. Pass a runtime name.");
     }
+    assertRuntimeAvailable(resolved);
     const seeded = readState(resolved, host);
     if (seeded == null) {
         throw new Error(`Sig juice bind: ${resolved} getState() returned null for this host.`);
@@ -229,6 +297,18 @@ export function bind(host, runtime) {
     const publish = (next, fromHost) => {
         if (disposed)
             return;
+        if (!fromHost && resolved === "icon-button") {
+            // `toggle` dispatches `juice:change`, which publishes the host
+            // state on the way back in. Re-read afterwards so a refused
+            // write (disabled, or no `[toggle]`) cannot leave the signal ahead
+            // of the host, and a successful write cannot notify twice.
+            writeIconButton(host, next);
+            const actual = readState("icon-button", host);
+            if (actual == null || statesEqual(inner.get(), actual))
+                return;
+            inner.set(structuredClone(actual));
+            return;
+        }
         if (statesEqual(inner.get(), next))
             return;
         inner.set(structuredClone(next));

@@ -25,10 +25,17 @@ if (typeof global.document === "undefined") {
 
     install("Document", dom.window.Document);
     install("Element", dom.window.Element);
+    install("HTMLAnchorElement", dom.window.HTMLAnchorElement);
     install("HTMLButtonElement", dom.window.HTMLButtonElement);
+    install("HTMLImageElement", dom.window.HTMLImageElement);
     install("HTMLInputElement", dom.window.HTMLInputElement);
     install("HTMLTextAreaElement", dom.window.HTMLTextAreaElement);
     install("HTMLSelectElement", dom.window.HTMLSelectElement);
+    install("HTMLTableElement", dom.window.HTMLTableElement);
+    install("HTMLTableCellElement", dom.window.HTMLTableCellElement);
+    install("HTMLTableRowElement", dom.window.HTMLTableRowElement);
+    install("HTMLTableSectionElement", dom.window.HTMLTableSectionElement);
+    install("SVGElement", dom.window.SVGElement);
     install("Event", dom.window.Event);
     install("CustomEvent", dom.window.CustomEvent);
     install("MouseEvent", dom.window.MouseEvent);
