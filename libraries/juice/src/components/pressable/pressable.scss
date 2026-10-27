@@ -1,0 +1,244 @@
+// Pressable chrome is structural. Color comes from core roles on :root.
+// Shipped themes are not required to bind --juice-pressable-*. The hover
+// and pressed washes are currentColor mixes, so they follow inherited
+// ink on light and dark pages. The focus ring is currentColor, the same
+// 2px outline, offset 2px, as badge and icon-button.
+//
+//   --juice-pressable-hover-bg
+//   --juice-pressable-pressed-bg
+//   --juice-pressable-focus-ring
+//   --juice-pressable-radius
+//   --juice-pressable-duration
+//   --juice-pressable-easing
+//   --juice-pressable-scale
+//
+// Why color is restated on [theme]: a custom property resolves var() on
+// the element that sets it. currentColor stays in these values and
+// resolves where the pressable paints. Geometry and motion stay on
+// :root only. Duration and easing point at --juice-motion-duration-fast
+// and --juice-motion-ease-standard.
+//
+// The wash is a ::before overlay, not a replacement background, so a
+// button, row, or card keeps the paint it already has. The host is a
+// positioning context (position: relative at (0, 1, 0) only). isolation:
+// isolate keeps the overlay's z-index: -1 behind the text and above the
+// host background. That z-index is paint order inside the host. It is
+// not an overlay band.
+//
+// [pressed] is styling only. The runtime that lands in slice B sets it
+// for the duration of a press. This slice does not. It is not the
+// icon-button toggle: icon-button [pressed] is a latched state, and
+// this attribute is the in-progress press. :active paints the same wash
+// so a press still shows when the runtime is absent.
+//
+// Both washes are a 1% currentColor mix. Citrusmint body ink is 4.62:1
+// on its page and 5.17:1 on its strong surface (white). The same ink on
+// a currentColor wash over that page drops under 4.5:1 past 1% (2% is
+// 4.499:1). 1% stays at 4.56:1 on the page and 5.10:1 on the strong
+// surface. That page pair is the floor. Hover and pressed share the mix
+// so the pressed fill does not cross it. KiwiPress body ink is next, at
+// 7.49:1 under the same wash (its page and strong surface are both
+// white). Every other shipped theme has more room on both.
+//
+// Checked as sRGB alpha composites of that 1% mix over each theme's
+// page color and over --juice-surface-strong-bg (translucent plates
+// composited over the page first).
+//
+// Citrusmint muted copy (p, span, li, label) is already 1.95:1 on the
+// page and 2.18:1 on the strong surface. The wash leaves 1.93:1 and
+// 2.16:1. This file does not set color, so that copy stays. A KiwiPress
+// default button is white on --kw-accent at 3.84:1 before the wash and
+// 3.79:1 under it. The overlay follows the button's own currentColor
+// and does not repaint the label.
+//
+// Juice names. One attribute. Boolean [pressable] is the wash. The
+// value is the press shape, same as [badge="square"] and
+// [safe-area="top"].
+//
+//   [pressable]           any host (div, li, a, button). Pointer,
+//                         manipulation, no tap highlight, no text
+//                         selection. Wash on hover (hover-capable
+//                         pointers only), on :active, and on [pressed].
+//   [pressable="scale"]   the same wash, plus scale() from
+//                         --juice-pressable-scale (0.98) while :active
+//                         or [pressed]. Unknown values stay on the wash.
+//
+// [scale] is button and icon-button size (sm / lg). It is not reused.
+// The default does not transform. prefers-reduced-motion removes the
+// overlay transition, the scale transition, and the scale.
+//
+// Disabled is :disabled, [disabled], or [aria-disabled="true"]. Cursor
+// drops to default. The wash and the scale do not paint. pointer-events
+// stay with the author, same as list: aria-disabled does not swallow
+// the click from here. No opacity, so a host that already dims is not
+// dimmed twice.
+//
+// Native collision: there is no HTML global `pressable` attribute and
+// no <pressable> element. [pressable] is an attribute selector.
+// CSS-only. No runtime in this slice.
+//
+// Specificity. This file does not edit themes, [btn], [icon-button],
+// [list], or [table].
+//
+//   [theme] [pressable]::before                         (0, 2, 1)
+//   [theme] [pressable]:hover::before                   (0, 3, 1)
+//   [theme] [pressable]:is(:active, [pressed])::before  (0, 3, 1)
+//   [theme] [pressable]:focus-visible                   (0, 3, 0)
+//   [theme] [pressable="scale"]:is(:active, [pressed])  (0, 3, 0)
+//   position: relative is [pressable] only              (0, 1, 0)
+//
+// Theme copy for p / span / li / label, and :where(a:hover), is
+// (0, 1, 0) and sets color. It does not override the wash. The wash
+// mixes the ink those rules leave.
+//
+// Theme :where(button:hover, button:focus-visible) is (0, 1, 0). It
+// does not target ::before, so the wash still paints on top of the
+// button fill. KiwiPress and Tide focus glows lose box-shadow to the
+// pressable focus rule. Their hover background and KiwiPress
+// translateY(-1px) stay, because this file does not set those on
+// :hover. KiwiPress :where(button) border-radius (8px) loses to the
+// radius role.
+//
+// [btn="3d"]:hover and [btn="metallic"]:hover are (0, 2, 0). They do
+// not override the wash. Their translateY(2px) loses to the scale
+// variant while :active or [pressed], and stays on hover when the
+// variant is off.
+//
+// [theme] button[icon-button]:active is (0, 3, 1). It beats the scale
+// variant, so an icon-button keeps translateY(2px). The wash still
+// paints. Its focus rule is the same 2px currentColor outline at
+// (0, 3, 1), so it wins the outline property and the ring looks the
+// same. Icon-button disabled (opacity, pointer-events, cursor) is
+// (0, 3, 1) and keeps those.
+//
+// List hover and :active set --juice-list-hover / --juice-list-selected
+// at (0, 3, 0) on the control. They do not target ::before, so the row
+// wash and this overlay both paint. List transform: none ties the scale
+// variant; this file loads later, so the scale wins on :active.
+// List disabled cursor (not-allowed) ties this file's cursor: default
+// and loses. List radius is the same 0.375rem.
+//
+// Table tbody row hover is (0, 3, 2) and does not target ::before, so
+// the row wash and this overlay both paint. Header sticky is (0, 2, 2)
+// and keeps position: sticky. Sort-button focus-visible is (0, 4, 2)
+// and keeps the same 2px currentColor outline. The caret is ::after.
+//
+// Shared ::before. Later or stronger rules replace properties both
+// set, and this overlay's position and inset still apply where the
+// other rule does not set them.
+//
+//   [theme] [spinner]::before                              (0, 2, 1), later
+//   [theme="…"] [spinner]::before                          (0, 2, 1), theme file
+//   [theme] [progress]::before                             (0, 2, 1), later
+//   [theme] [slider]:not([slider="vertical"])::before      (0, 3, 1)
+//   [accordion-item][aria-expanded="true"]::before         (0, 2, 1), earlier,
+//                                                          so the wash wins
+//                                                          and the open bar
+//                                                          loses
+//
+// Position. nav[fixed] and nav[sticky] are (0, 1, 1) and keep fixed or
+// sticky. Those are already containing blocks, so the overlay anchors.
+// [theme] [badge="ribbon"] is (0, 2, 0) and keeps absolute. [drawer] is
+// (0, 1, 0) and loads earlier, so [pressable] on the drawer box
+// replaces absolute with relative.
+
+:root,
+[theme] {
+    --juice-pressable-hover-bg: color-mix(in srgb, currentColor 1%, transparent);
+    --juice-pressable-pressed-bg: color-mix(in srgb, currentColor 1%, transparent);
+    --juice-pressable-focus-ring: currentColor;
+}
+
+:root {
+    --juice-pressable-radius: 0.375rem;
+    --juice-pressable-duration: var(--juice-motion-duration-fast);
+    --juice-pressable-easing: var(--juice-motion-ease-standard);
+    --juice-pressable-scale: 0.98;
+}
+
+[pressable],
+[theme] [pressable] {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    border-radius: var(--juice-pressable-radius);
+    isolation: isolate;
+}
+
+// (0, 1, 0) on purpose. A [theme] companion would beat nav[fixed],
+// nav[sticky], and [badge="ribbon"].
+
+[pressable] {
+    position: relative;
+}
+
+[pressable]::before,
+[theme] [pressable]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: transparent;
+    pointer-events: none;
+    transition: background-color var(--juice-pressable-duration) var(--juice-pressable-easing);
+}
+
+@media (hover: hover) {
+    [pressable]:hover::before,
+    [theme] [pressable]:hover::before {
+        background-color: var(--juice-pressable-hover-bg);
+    }
+}
+
+[pressable]:is(:active, [pressed])::before,
+[theme] [pressable]:is(:active, [pressed])::before {
+    background-color: var(--juice-pressable-pressed-bg);
+}
+
+[pressable]:focus-visible,
+[theme] [pressable]:focus-visible {
+    outline: 2px solid var(--juice-pressable-focus-ring);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+[pressable="scale"],
+[theme] [pressable="scale"] {
+    transition: transform var(--juice-pressable-duration) var(--juice-pressable-easing);
+}
+
+[pressable="scale"]:is(:active, [pressed]),
+[theme] [pressable="scale"]:is(:active, [pressed]) {
+    transform: scale(var(--juice-pressable-scale));
+}
+
+[pressable]:is(:disabled, [disabled], [aria-disabled="true"]),
+[theme] [pressable]:is(:disabled, [disabled], [aria-disabled="true"]) {
+    cursor: default;
+}
+
+[pressable]:is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active, [pressed])::before,
+[theme] [pressable]:is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active, [pressed])::before {
+    background-color: transparent;
+}
+
+[pressable="scale"]:is(:disabled, [disabled], [aria-disabled="true"]):is(:active, [pressed]),
+[theme] [pressable="scale"]:is(:disabled, [disabled], [aria-disabled="true"]):is(:active, [pressed]) {
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [pressable]::before,
+    [theme] [pressable]::before,
+    [pressable="scale"],
+    [theme] [pressable="scale"] {
+        transition: none;
+    }
+
+    [pressable="scale"]:is(:active, [pressed]),
+    [theme] [pressable="scale"]:is(:active, [pressed]) {
+        transform: none;
+    }
+}

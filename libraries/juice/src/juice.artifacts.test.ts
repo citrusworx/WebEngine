@@ -1141,6 +1141,122 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("includes pressable structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+        const hoverBlocks: string[] = [];
+        const hoverNeedle = "@media (hover: hover)";
+        let hoverFrom = 0;
+
+        while (hoverFrom < css.length) {
+            const hoverAt = css.indexOf(hoverNeedle, hoverFrom);
+            if (hoverAt < 0) {
+                break;
+            }
+
+            const hoverOpen = css.indexOf("{", hoverAt);
+            let hoverDepth = 0;
+            let hoverEnd = hoverOpen;
+
+            for (let i = hoverOpen; i < css.length; i += 1) {
+                if (css[i] === "{") {
+                    hoverDepth += 1;
+                } else if (css[i] === "}") {
+                    hoverDepth -= 1;
+                    if (hoverDepth === 0) {
+                        hoverEnd = i;
+                        break;
+                    }
+                }
+            }
+
+            hoverBlocks.push(css.slice(hoverAt, hoverEnd + 1));
+            hoverFrom = hoverEnd + 1;
+        }
+
+        const hoverBlock = hoverBlocks.find((block) => block.includes("[pressable]"));
+        if (!hoverBlock) {
+            throw new Error("missing pressable hover block");
+        }
+
+        expect(css).toContain("[pressable]");
+        expect(css).toMatch(/\[pressable=["']?scale["']?\]/);
+        expect(css).toMatch(/\[pressable\]:is\(:active,\s*\[pressed\]\)/);
+        expect(css).toMatch(/\[pressable\]:is\(:active,\s*\[pressed\]\)::before/);
+        expect(css).toContain("[pressable]:focus-visible");
+        expect(css).toMatch(/\[pressable\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=["']?true["']?\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[pressable\]/);
+        expect(css).toMatch(/\[theme\]\s+\[pressable=scale\]/);
+        expect(css).toMatch(/\[theme\]\s+\[pressable\]::before/);
+        expect(css).toMatch(/\[theme\]\s+\[pressable\]:focus-visible/);
+        expect(hoverBlock).toContain("[pressable]:hover::before");
+        expect(hoverBlock).toContain("var(--juice-pressable-hover-bg)");
+        expect(hoverBlock).not.toContain(":active");
+        expect(hoverBlock).not.toContain("[pressed]");
+        expect(css).toContain("cursor: pointer");
+        expect(css).toContain("touch-action: manipulation");
+        expect(css).toContain("-webkit-tap-highlight-color: transparent");
+        expect(css).toContain("user-select: none");
+        expect(css).toMatch(/(?:^|[},])\s*\[pressable\]\s*\{[^}]*position:\s*relative/);
+        expect(css).toMatch(/\[pressable\]::before[^{]*\{[^}]*position:\s*absolute/);
+        expect(css).toMatch(/\[pressable\]::before[^{]*\{[^}]*inset:\s*0/);
+        expect(css).toMatch(/\[pressable\]::before[^{]*\{[^}]*z-index:\s*-1/);
+        expect(css).toMatch(/\[pressable\]::before[^{]*\{[^}]*pointer-events:\s*none/);
+        expect(css).toMatch(/\[pressable\]::before[^{]*\{[^}]*border-radius:\s*inherit/);
+        expect(css).toContain("background-color: var(--juice-pressable-pressed-bg)");
+        expect(css).toContain("outline: 2px solid var(--juice-pressable-focus-ring)");
+        expect(css).toContain("outline-offset: 2px");
+        expect(css).toContain("transform: scale(var(--juice-pressable-scale))");
+        expect(css).toContain(
+            "transition: background-color var(--juice-pressable-duration) var(--juice-pressable-easing)"
+        );
+        expect(css).toContain(
+            "transition: transform var(--juice-pressable-duration) var(--juice-pressable-easing)"
+        );
+        expect(css).toContain("--juice-pressable-hover-bg:");
+        expect(css).toContain("--juice-pressable-pressed-bg:");
+        expect(css).toContain("--juice-pressable-focus-ring:");
+        expect(css).toMatch(
+            /:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-hover-bg:\s*color-mix\(in srgb, currentColor 1%, transparent\)/
+        );
+        expect(css).toMatch(
+            /:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-pressed-bg:\s*color-mix\(in srgb, currentColor 1%, transparent\)/
+        );
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-focus-ring:\s*currentColor/);
+        expect(css).toContain("--juice-pressable-radius: 0.375rem");
+        expect(css).toContain("--juice-pressable-duration: var(--juice-motion-duration-fast)");
+        expect(css).toContain("--juice-pressable-easing: var(--juice-motion-ease-standard)");
+        expect(css).toContain("--juice-pressable-scale: 0.98");
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-pressable-radius:\s*0\.375rem/);
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-pressable-duration:\s*var\(--juice-motion-duration-fast\)/);
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-pressable-easing:\s*var\(--juice-motion-ease-standard\)/);
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-pressable-scale:\s*0?\.98/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-radius:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-duration:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-easing:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-scale:/);
+        expect(css).toMatch(/\[pressable\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\)[^{]*\{[^}]*cursor:\s*default/);
+        expect(css).toMatch(
+            /\[pressable=scale\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\):is\(:active,\s*\[pressed\]\)[^{]*\{[^}]*transform:\s*none/
+        );
+        expect(
+            reduced.some((block) => block.includes("[pressable]::before") && block.includes("transition: none"))
+        ).toBe(true);
+        expect(
+            reduced.some((block) => block.includes("[pressable=scale]") && block.includes("transform: none"))
+        ).toBe(true);
+        expect(css).not.toMatch(/\[pressable\][^{]*\{[^}]*z-index:\s*10/);
+        expect(css).not.toMatch(/\[pressable\][^{]*\{[^}]*z-index:\s*1000/);
+        expect(css).not.toMatch(/\[pressable\](?![=:])[^{]*\{[^}]*transform:\s*scale/);
+        expect(css).not.toMatch(/\[pressable\]\[scale/);
+
+        for (const id of readBundledThemeIds()) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-pressable-");
+            expect(themeCss).not.toContain("[pressable]");
+        }
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
