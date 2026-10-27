@@ -8,12 +8,15 @@ import {
     startDisclosureRuntime,
     startModalRuntime,
     startSwitchRuntime,
+    stopAvatarRuntime,
     stopCheckboxRuntime,
     stopDisclosureRuntime,
+    stopIconButtonRuntime,
     stopInputRuntime,
     stopModalRuntime,
     stopSelectRuntime,
     stopSwitchRuntime,
+    stopTableRuntime,
     stopTextareaRuntime,
 } from "@citrusworx/juiceui";
 
@@ -46,6 +49,9 @@ const stopRuntimes = () => {
     stopInputRuntime();
     stopSelectRuntime();
     stopTextareaRuntime();
+    stopIconButtonRuntime();
+    stopAvatarRuntime();
+    stopTableRuntime();
 };
 
 test.afterEach(() => {
@@ -356,4 +362,360 @@ test("writes switch, checkbox, disclosure, and modal state back through the cont
 test("throws when the host is not a runtime host", () => {
     const host = document.createElement("div");
     expect(() => bind(host)).toThrow(/could not infer a runtime/);
+});
+
+const iconButtonState = {
+    pressed: false,
+    disabled: false,
+    named: true,
+};
+
+const requireButton = (selector: string) => {
+    const host = document.querySelector(selector);
+    if (!(host instanceof HTMLButtonElement)) throw new Error(`missing ${selector}`);
+    return host;
+};
+
+test("seeds an icon-button signal from getState", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button toggle aria-label="Bold"></button>';
+    const host = requireButton("button");
+
+    const binding = track(bind(host, "icon-button"));
+
+    expect(binding.state.get()).toEqual(iconButtonState);
+    expect(host.getAttribute("aria-pressed")).toBe("false");
+});
+
+test("updates an icon-button signal when the toggle is clicked", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button toggle aria-label="Bold"></button>';
+    const host = requireButton("button");
+    const binding = track(bind(host, "icon-button"));
+    const seen = watch(binding.state);
+
+    host.click();
+
+    expect(binding.state.get()).toEqual({ ...iconButtonState, pressed: true });
+    expect(host.getAttribute("aria-pressed")).toBe("true");
+    expect(seen.count).toBe(2);
+    seen.stop();
+});
+
+test("infers icon-button from the icon-button attribute", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button aria-label="Close"></button>';
+    const host = requireButton("button");
+
+    expect(track(bind(host)).state.get()).toEqual(iconButtonState);
+});
+
+test("removes icon-button listeners on dispose", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button toggle aria-label="Bold"></button>';
+    const host = requireButton("button");
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = track(bind(host, "icon-button"));
+    const seen = watch(binding.state);
+
+    binding.dispose();
+    binding.dispose();
+    host.click();
+
+    expect(binding.state.get()).toEqual(iconButtonState);
+    expect(host.getAttribute("aria-pressed")).toBe("true");
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    seen.stop();
+});
+
+test("writes icon-button pressed back through toggle once", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button toggle aria-label="Bold"></button>';
+    const host = requireButton("button");
+    const binding = track(bind(host, "icon-button"));
+    const seen = watch(binding.state);
+
+    binding.state.set({ ...iconButtonState, pressed: true });
+
+    expect(host.getAttribute("aria-pressed")).toBe("true");
+    expect(host.hasAttribute("pressed")).toBe(true);
+    expect(binding.state.get()).toEqual({ ...iconButtonState, pressed: true });
+    expect(seen.count).toBe(2);
+    seen.stop();
+});
+
+test("snaps an icon-button signal back when a disabled toggle refuses the write", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button toggle disabled aria-label="Bold"></button>';
+    const host = requireButton("button");
+    const binding = track(bind(host, "icon-button"));
+    const seen = watch(binding.state);
+    const refused = { pressed: true, disabled: true, named: true };
+
+    binding.state.set(refused);
+
+    expect(host.getAttribute("aria-pressed")).toBe("false");
+    expect(host.hasAttribute("pressed")).toBe(false);
+    expect(binding.state.get()).toEqual({ pressed: false, disabled: true, named: true });
+    expect(seen.count).toBe(1);
+    seen.stop();
+});
+
+test("snaps an icon-button signal back when the host is not a toggle", () => {
+    document.body.innerHTML =
+        '<button type="button" icon-button aria-label="Bold"></button>';
+    const host = requireButton("button");
+    const binding = track(bind(host, "icon-button"));
+    const seen = watch(binding.state);
+
+    binding.state.set({ ...iconButtonState, pressed: true });
+
+    expect(host.hasAttribute("aria-pressed")).toBe(false);
+    expect(host.hasAttribute("pressed")).toBe(false);
+    expect(binding.state.get()).toEqual(iconButtonState);
+    expect(seen.count).toBe(1);
+    seen.stop();
+});
+
+test("keeps an existing switch matcher ahead of icon-button", () => {
+    document.body.innerHTML =
+        '<button type="button" switch icon-button aria-label="Notifications" aria-checked="true"></button>';
+    const host = requireButton("button");
+
+    expect(track(bind(host)).state.get()).toEqual({ checked: true });
+});
+
+const holdImage = (img: HTMLImageElement, complete: boolean, naturalWidth: number) => {
+    Object.defineProperty(img, "complete", {
+        configurable: true,
+        get: () => complete,
+    });
+    Object.defineProperty(img, "naturalWidth", {
+        configurable: true,
+        get: () => naturalWidth,
+    });
+};
+
+test("seeds an avatar signal from getState", () => {
+    document.body.innerHTML = '<span avatar aria-label="Ada Lovelace">AL</span>';
+    const host = document.querySelector("span");
+    if (!(host instanceof HTMLElement)) throw new Error("missing avatar");
+
+    expect(track(bind(host, "avatar")).state.get()).toEqual({
+        loaded: false,
+        fallback: false,
+        hasImage: false,
+    });
+});
+
+test("updates an avatar signal when its image errors", () => {
+    document.body.innerHTML =
+        '<span avatar aria-label="Ada Lovelace" id="face">AL<img id="photo" alt="Ada Lovelace" src="ada.png"></span>';
+    const host = document.getElementById("face");
+    const photo = document.getElementById("photo");
+    if (!(host instanceof HTMLElement) || !(photo instanceof HTMLImageElement)) {
+        throw new Error("missing avatar");
+    }
+    holdImage(photo, false, 0);
+
+    const binding = track(bind(host, "avatar"));
+    const seen = watch(binding.state);
+
+    expect(binding.state.get()).toEqual({
+        loaded: false,
+        fallback: false,
+        hasImage: true,
+    });
+
+    photo.dispatchEvent(new Event("error"));
+
+    expect(binding.state.get()).toEqual({
+        loaded: false,
+        fallback: true,
+        hasImage: true,
+    });
+    expect(host.hasAttribute("fallback")).toBe(true);
+    expect(photo.hasAttribute("hidden")).toBe(true);
+    expect(seen.count).toBe(2);
+    seen.stop();
+});
+
+test("infers avatar from the avatar attribute", () => {
+    document.body.innerHTML = '<span avatar>AL</span>';
+    const host = document.querySelector("span");
+    if (!(host instanceof HTMLElement)) throw new Error("missing avatar");
+
+    expect(track(bind(host)).state.get()).toEqual({
+        loaded: false,
+        fallback: false,
+        hasImage: false,
+    });
+});
+
+test("removes avatar listeners on dispose", () => {
+    document.body.innerHTML =
+        '<span avatar id="face">AL<img id="photo" alt="Ada" src="ada.png"></span>';
+    const host = document.getElementById("face");
+    const photo = document.getElementById("photo");
+    if (!(host instanceof HTMLElement) || !(photo instanceof HTMLImageElement)) {
+        throw new Error("missing avatar");
+    }
+    holdImage(photo, false, 0);
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = track(bind(host, "avatar"));
+    const seen = watch(binding.state);
+
+    binding.dispose();
+    binding.dispose();
+    photo.dispatchEvent(new Event("error"));
+
+    expect(binding.state.get()).toEqual({
+        loaded: false,
+        fallback: false,
+        hasImage: true,
+    });
+    expect(host.hasAttribute("fallback")).toBe(true);
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    seen.stop();
+});
+
+test("does not write avatar state back to the host", () => {
+    document.body.innerHTML = '<span avatar id="face">AL</span>';
+    const host = document.getElementById("face");
+    if (!(host instanceof HTMLElement)) throw new Error("missing avatar");
+    const binding = track(bind(host, "avatar"));
+    const before = host.outerHTML;
+
+    binding.state.set({ loaded: true, fallback: true, hasImage: true });
+
+    expect(binding.state.get()).toEqual({
+        loaded: true,
+        fallback: true,
+        hasImage: true,
+    });
+    expect(host.outerHTML).toBe(before);
+});
+
+const peopleTable = `
+  <table table id="people">
+    <thead>
+      <tr>
+        <th sortable id="name">Name</th>
+        <th sortable id="age">Age</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="grace"><td>Grace</td><td>85</td></tr>
+      <tr id="ada"><td>Ada</td><td>36</td></tr>
+    </tbody>
+  </table>
+`;
+
+const requireTable = () => {
+    const host = document.querySelector("table");
+    if (!(host instanceof HTMLTableElement)) throw new Error("missing table");
+    return host;
+};
+
+test("seeds a table signal from getState", () => {
+    document.body.innerHTML = peopleTable;
+    const host = requireTable();
+
+    expect(track(bind(host, "table")).state.get()).toEqual({
+        column: null,
+        direction: "none",
+    });
+});
+
+test("updates a table signal when a sortable header is activated", () => {
+    document.body.innerHTML = peopleTable;
+    const host = requireTable();
+    const binding = track(bind(host, "table"));
+    const seen = watch(binding.state);
+    const button = document.querySelector("#name button");
+    if (!(button instanceof HTMLButtonElement)) throw new Error("missing sort button");
+
+    button.click();
+
+    expect(binding.state.get()).toEqual({ column: 0, direction: "ascending" });
+    expect(document.getElementById("name")?.getAttribute("aria-sort")).toBe("ascending");
+    expect(seen.count).toBe(2);
+    seen.stop();
+});
+
+test("infers table only from a table element that has the attribute", () => {
+    document.body.innerHTML = `
+      ${peopleTable}
+      <div table id="fake">Not a host</div>
+      <table id="plain"><tr><th>Name</th></tr></table>
+    `;
+    const host = document.getElementById("people");
+    const fake = document.getElementById("fake");
+    const plain = document.getElementById("plain");
+    if (
+        !(host instanceof HTMLTableElement) ||
+        !(fake instanceof HTMLElement) ||
+        !(plain instanceof HTMLTableElement)
+    ) {
+        throw new Error("missing tables");
+    }
+
+    expect(track(bind(host)).state.get()).toEqual({
+        column: null,
+        direction: "none",
+    });
+    expect(() => bind(fake)).toThrow(/could not infer a runtime/);
+    expect(() => bind(plain)).toThrow(/could not infer a runtime/);
+});
+
+test("removes table listeners on dispose", () => {
+    document.body.innerHTML = peopleTable;
+    const host = requireTable();
+    const removed: string[] = [];
+    const original = host.removeEventListener.bind(host);
+    host.removeEventListener = ((type: string, listener: EventListener) => {
+        removed.push(type);
+        original(type, listener);
+    }) as typeof host.removeEventListener;
+
+    const binding = track(bind(host, "table"));
+    const seen = watch(binding.state);
+    binding.dispose();
+    binding.dispose();
+    const button = document.querySelector("#name button");
+    if (!(button instanceof HTMLButtonElement)) throw new Error("missing sort button");
+    button.click();
+
+    expect(binding.state.get()).toEqual({ column: null, direction: "none" });
+    expect(document.getElementById("name")?.getAttribute("aria-sort")).toBe("ascending");
+    expect(seen.count).toBe(1);
+    expect(removed).toContain("juice:change");
+    seen.stop();
+});
+
+test("does not write table sort back to the host", () => {
+    document.body.innerHTML = peopleTable;
+    const host = requireTable();
+    const binding = track(bind(host, "table"));
+
+    binding.state.set({ column: 1, direction: "descending" });
+
+    expect(binding.state.get()).toEqual({ column: 1, direction: "descending" });
+    expect(document.getElementById("name")?.getAttribute("aria-sort")).toBe("none");
+    expect(document.getElementById("age")?.getAttribute("aria-sort")).toBe("none");
+    expect(host.querySelectorAll("tbody tr")[0]?.id).toBe("grace");
 });

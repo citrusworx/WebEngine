@@ -177,7 +177,7 @@ Juice lays out the chips and cards. Sig.js decides which cards exist.
 
 ## Runtime binding
 
-Juice widgets already change on their own. `bind` is how a Sig signal follows that host, and how four of them accept a write back. Juice works without this module. The DOM contract (`juice:change`, `getState()`) is enough for any other script. This subpath is the only Sig import that talks to Juice controllers.
+Juice widgets already change on their own. `bind` is how a Sig signal follows that host, and how five of them accept a write back. Juice works without this module. The DOM contract (`juice:change`, `getState()`) is enough for any other script. This subpath is the only Sig import that talks to Juice controllers.
 
 The hookup is done. It ships as `@citrusworx/sigjs/juice` in `@citrusworx/sigjs@0.4.0`. `@citrusworx/juiceui` is an optional peer (`^0.9.1`), so installing Sig does not install Juice. The main entry `@citrusworx/sigjs` does not import Juice. Juice depends on Sig's main entry, not on `./juice`.
 
@@ -206,20 +206,20 @@ notes.dispose(); // drop listeners; safe to call again
 | `state` | A Sig signal, `{ get, set }`, seeded from that host's `getState()`. Later host changes update it. |
 | `dispose` | Removes the host listeners. A second call does nothing. |
 
-`bind(host)` infers the runtime from the host element. `bind(host, runtime)` uses the name you pass and types `state` to that runtime's `getState()` shape. Pass the name when inference fails, or when you want the type. A missing host shape throws: inference failure (`could not infer a runtime`) or `getState()` returning `null`.
+`bind(host)` infers the runtime from the host element. `bind(host, runtime)` uses the name you pass and types `state` to that runtime's `getState()` shape. Pass the name when inference fails, or when you want the type. Icon-button matches `[icon-button]`. Avatar matches `[avatar]`. Table matches a `<table table>` only; a `<div table>` is not a host. Those three matchers run after the original ones, so a host that already matches (for example `[switch]`) stays on that runtime. A missing host shape throws: inference failure (`could not infer a runtime`) or `getState()` returning `null`. Binding icon-button, avatar, or table when Juice does not export that start function throws `needs a newer @citrusworx/juiceui` instead.
 
 ### What the signal follows
 
 `state` starts as a copy of `getState()`. After that it follows the host:
 
-- Twenty-five Juice runtimes dispatch a bubbling `juice:change` whose `detail` is `{ runtime, state }`. Icon button, avatar, and table are three of those twenty-five. `bind` accepts the event when `event.target` is the bound host and `detail.runtime` is a runtime it names. Icon button, avatar, and table dispatch the event and are not among those names.
+- Twenty-five Juice runtimes dispatch a bubbling `juice:change` whose `detail` is `{ runtime, state }`. Icon button, avatar, and table are three of those twenty-five. `bind` accepts the event when `event.target` is the bound host and `detail.runtime` matches the binding.
 - Select, input, and textarea do not dispatch `juice:change`. `bind` also listens for native `input` and `change` on those hosts and reads `getState()` again.
 
-An equal state does not notify. That includes a `state.set` of the current shape, and a host event whose state matches the signal. The table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange) has twenty-eight Juice runtimes. `bind` accepts the twenty-five names in `JuiceRuntimeName`. Icon button, avatar, and table are in that table and are not among those names. A follow-up for avatar is pending. A follow-up for table is pending.
+An equal state does not notify. That includes a `state.set` of the current shape, and a host event whose state matches the signal. The table in [Juice runtime behavior](../juice/juice-runtime-behavior.md#juicechange) has twenty-eight Juice runtimes. `bind` accepts all twenty-eight names in `JuiceRuntimeName`.
 
 ### Write-back and read-only
 
-`state.set` stores the next value on the signal. It writes the widget only for these four:
+`state.set` stores the next value on the signal. It writes the widget for these five:
 
 | Runtime | `state.set` calls |
 | --- | --- |
@@ -227,8 +227,11 @@ An equal state does not notify. That includes a `state.set` of the current shape
 | `checkbox` | `setChecked(state.checked, host)` |
 | `disclosure` | `expand` or `collapse` on the first `[disclosure-trigger]` (or the host, when the host is that trigger) |
 | `modal` | `open(host)` or `close(host)` |
+| `icon-button` | `toggle(host)` only when the host has `[toggle]` and `pressed` changes. The signal is then republished from `getState()`. A disabled host, or a host without `[toggle]`, refuses the write, and the signal snaps back to the host so it does not drift. |
 
-The other twenty-one `bind` accepts are read-only: accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea. Icon button, avatar, and table are not in that list. `bind` on an `[icon-button]` host throws (`could not infer a runtime`). `bind(host, "icon-button")` throws the same way, because the name is not a `JuiceRuntimeName`. `bind` on an `[avatar]` host throws the same way, and `bind(host, "avatar")` throws because `"avatar"` is not a `JuiceRuntimeName`. A follow-up for avatar is pending. `bind` on a `[table]` host throws the same way, and `bind(host, "table")` throws because `"table"` is not a `JuiceRuntimeName`. A follow-up for table is pending. There is no reader and no write-back case. That is not the read-only path: a read-only runtime still seeds a signal from `getState()`. `set` updates the signal and does not call a controller, so the host stays where the runtime left it. The next `juice:change` (or native `input` / `change`) copies the host back over the signal.
+The other twenty-three runtimes are read-only: accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, textarea, avatar, and table. Avatar has no write API. Table has no Juice API to set sort. A read-only runtime still seeds a signal from `getState()`. `set` updates the signal and does not call a controller, so the host stays where the runtime left it. The next `juice:change` (or native `input` / `change`) copies the host back over the signal.
+
+Icon-button, avatar, and table are read from `startIconButtonRuntime`, `startAvatarRuntime`, and `startTableRuntime` on the Juice module. A published Juice build that does not export one of those still loads this adapter. Binding that runtime, by name or from the host, throws `Sig juice bind: "table" needs a newer @citrusworx/juiceui that exports startTableRuntime.` The icon-button and avatar errors use the same sentence with their own names. The message has no version number. Binding switch and the other existing runtimes keeps working.
 
 ```tsx
 import { effect, mount } from "@citrusworx/sigjs";
