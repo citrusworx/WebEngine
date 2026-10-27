@@ -1078,6 +1078,69 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    it("includes safe-area structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+
+        expect(css).toContain("[safe-area]");
+        expect(css).toMatch(/\[safe-area=["']?top["']?\]/);
+        expect(css).toMatch(/\[safe-area=["']?bottom["']?\]/);
+        expect(css).toMatch(/\[safe-area=["']?x["']?\]/);
+        expect(css).toMatch(/\[safe-area=["']?y["']?\]/);
+        expect(css).toMatch(/\[safe-area\]:not\(\[safe-area=["']?top["']?\]\)/);
+        expect(css).toMatch(/\[theme\]\s+\[safe-area\]/);
+        expect(css).toMatch(/\[theme\]\s+\[safe-area=["']?top["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[safe-area=["']?bottom["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[safe-area=["']?x["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+\[safe-area=["']?y["']?\]/);
+        expect(css).toMatch(/nav\[fixed\] > \[container\]\[safe-area\]/);
+        expect(css).toMatch(/nav\[sticky\] > \[container\]\[safe-area\]/);
+        expect(css).toMatch(/\[wizard-header\] > \[container\]\[safe-area\]/);
+        expect(css).toContain("--juice-safe-area-pad: 1rem");
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-safe-area-pad:\s*1rem/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-safe-area-pad:/);
+        expect(css).toContain("max(var(--juice-safe-area-pad), env(safe-area-inset-top, 0px))");
+        expect(css).toContain("max(var(--juice-safe-area-pad), env(safe-area-inset-right, 0px))");
+        expect(css).toContain("max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px))");
+        expect(css).toContain("max(var(--juice-safe-area-pad), env(safe-area-inset-left, 0px))");
+        expect(css).toContain("box-sizing: border-box");
+
+        const topRule = css.match(/(?:^|[},])\s*\[safe-area=top\],[^{]*\{[^}]*\}/);
+        expect(topRule?.[0]).toContain("padding-top:");
+        expect(topRule?.[0]).toContain("env(safe-area-inset-top, 0px)");
+        expect(topRule?.[0]).not.toContain("padding-right:");
+        expect(topRule?.[0]).not.toContain("padding-bottom:");
+        expect(topRule?.[0]).not.toContain("padding-left:");
+
+        const bottomRule = css.match(/(?:^|[},])\s*\[safe-area=bottom\],[^{]*\{[^}]*\}/);
+        expect(bottomRule?.[0]).toContain("padding-bottom:");
+        expect(bottomRule?.[0]).not.toContain("padding-top:");
+
+        const xRule = css.match(/(?:^|[},])\s*\[safe-area=x\],[^{]*\{[^}]*\}/);
+        expect(xRule?.[0]).toContain("padding-left:");
+        expect(xRule?.[0]).toContain("padding-right:");
+        expect(xRule?.[0]).toContain("env(safe-area-inset-left, 0px)");
+        expect(xRule?.[0]).toContain("env(safe-area-inset-right, 0px)");
+        expect(xRule?.[0]).not.toContain("padding-top:");
+        expect(xRule?.[0]).not.toContain("padding-bottom:");
+
+        const yRule = css.match(/(?:^|[},])\s*\[safe-area=y\],[^{]*\{[^}]*\}/);
+        expect(yRule?.[0]).toContain("padding-top:");
+        expect(yRule?.[0]).toContain("padding-bottom:");
+        expect(yRule?.[0]).not.toContain("padding-left:");
+        expect(yRule?.[0]).not.toContain("padding-right:");
+
+        expect(css).not.toMatch(/\[safe-area-margin\]/);
+        expect(css).not.toMatch(/\[safe-area\][^{]*\{[^}]*position:\s*(?:fixed|sticky)/);
+        expect(css).not.toMatch(/\[safe-area\][^{]*\{[^}]*z-index:/);
+        expect(css).not.toMatch(/\[safe-area\][^{]*\{[^}]*margin(?:-|\s*:)/);
+
+        for (const id of readBundledThemeIds()) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-safe-area-");
+            expect(themeCss).not.toContain("[safe-area]");
+        }
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
