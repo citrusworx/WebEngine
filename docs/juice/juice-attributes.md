@@ -579,14 +579,14 @@ See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColo
 
 ### Badge
 
-CSS-only label. There is no runtime and no auto-enhance. Core CSS paints the shape. The layout and the KiwiPress paint shipped in npm 0.9.2. It is not one of the twenty-eight Emerging auto-enhance runtimes.
+CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It is not one of the twenty-eight Emerging auto-enhance runtimes.
 
 - `badge` — host. Boolean `[badge]` is a pill (radius `999px`, padding `0.375rem 0.75rem`, `0.8125rem` at weight 600). There is no HTML global `badge` attribute, and there is no `<badge>` element. Any value other than `square` or `ribbon` is still that pill
 - `badge="square"` — the same pill with radius `0.375rem`
 - `badge="ribbon"` — absolutely positioned, `top: -0.75rem`, centered. `[card="pricing"]` is `position: relative`. Other parents are not. Juice does not style a bare `[ribbon]`
 - `warm` — separate boolean. Core CSS does not paint it. KiwiPress paints `[badge][warm]`. There is no `[scale]`
 
-There are no `--juice-badge-*` roles. Thirteen shipped themes leave the chip transparent. KiwiPress sets text and background for the default pill, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]`.
+Color roles are `--juice-badge-bg` (currentColor at 1%), `--juice-badge-ink` (`currentColor`), and `--juice-badge-border` (currentColor at 24%), on `:root` and again on `[theme]`. Layout roles are `--juice-badge-padding` (`0.375rem 0.75rem`), `--juice-badge-radius` (`999px`), `--juice-badge-radius-square` (`0.375rem`), `--juice-badge-font-size` (`0.8125rem`), and `--juice-badge-gap` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them. Outside `[cta]`, KiwiPress still sets text and background for the default pill, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]`.
 
 ```html
 <span badge>New</span>
