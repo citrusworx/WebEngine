@@ -27,7 +27,7 @@ Confirm the registry version with `npm view @citrusworx/sigjs version` if a newe
 
 ## From this repo
 
-This folder is its own npm project (not a Yarn workspace). `package.json` pins `@citrusworx/sigjs` to `^0.7.0`. That range resolves on npm (latest **0.7.2**). `npm install` here installs it. The committed `package-lock.json` does not record that tarball, so `npm ci` fails until the lock is refreshed. Use the `file:../..` override below to run the workspace copy instead of npm.
+This folder is its own npm project (not a Yarn workspace). `package.json` pins `@citrusworx/sigjs` to `^0.7.0`. That range resolves on npm (latest **0.7.2**). The committed `package-lock.json` records `@citrusworx/sigjs@0.7.2`, and `npm ci` installs that release. Use the `file:../..` override below to run the workspace copy instead of npm.
 
 ```bash
 cd libraries/sig/examples/counter

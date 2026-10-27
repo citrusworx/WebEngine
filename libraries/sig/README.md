@@ -10,7 +10,7 @@ Reactivity is opt-in. Host elements render once; wrap a child or a prop in a fun
 npm install @citrusworx/sigjs@^0.7.0
 ```
 
-Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.7.0` or `pnpm add @citrusworx/sigjs@^0.7.0`. npm latest is **0.7.2**. `^0.7.0` is `>=0.7.0 <0.8.0`, so it installs that release. The workspace copy in this repo is still `0.7.0` (`package.json`). `^0.6.0` and `^0.4.0` do not install `0.7.0` or later.
+Yarn / pnpm work the same: `yarn add @citrusworx/sigjs@^0.7.0` or `pnpm add @citrusworx/sigjs@^0.7.0`. npm latest is **0.7.2**. `^0.7.0` is `>=0.7.0 <0.8.0`, so it installs that release. The workspace copy in this repo is `0.7.2` (`package.json`), the same as npm latest. `^0.6.0` and `^0.4.0` do not install `0.7.0` or later.
 
 Before 1.0, a breaking change ships as a minor. `0.7.0` removed root exports and was a minor; a `^0.6.0` install does not receive it. The written policy is [Sig.js release checklist](../../docs/sigjs/release-checklist.md#semver).
 
