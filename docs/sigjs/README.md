@@ -402,13 +402,13 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 
 ## Status
 
-**Alpha** (`@citrusworx/sigjs` **0.7.0** release candidate; npm latest is **0.6.0**). Core reactivity is implemented and tested. The public direction is stable enough to describe clearly:
+**Alpha** (workspace `@citrusworx/sigjs` **0.7.0**; npm latest is **0.7.2**). Core reactivity is implemented and tested. The public direction is stable enough to describe clearly:
 
 - `Signal`, `effect` (with cleanup / dispose), `batch`, `memo`
 - JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
 - `mount` and tree dispose
 - `SigRouter` — exact paths, `:param` segments, named routes, link interception, view cleanup
-- optional `@citrusworx/sigjs/juice` `bind` for Juice hosts (`{ state, dispose }`). Juice works without it. Shipped in 0.4.0. See [Sig.js + Juice](./sig-juice-integration.md#runtime-binding)
+- optional `@citrusworx/sigjs/juice` `bind` for twenty-eight Juice hosts (`{ state, dispose }`), including icon-button, avatar, and table. Write-back adds icon-button (`pressed`, `[toggle]` hosts only). Avatar and table are read-only. Those three need a Juice publish that exports their start functions; published `@citrusworx/juiceui` 0.9.2 does not, and binding one of them then throws `needs a newer @citrusworx/juiceui`. Juice works without this subpath. The subpath shipped in 0.4.0. The three names are in npm `@citrusworx/sigjs@0.7.2`. See [Sig.js + Juice](./sig-juice-integration.md#runtime-binding)
 
 Not shipped:
 

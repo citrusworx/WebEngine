@@ -27,7 +27,7 @@ Confirm the registry version with `npm view @citrusworx/sigjs version` if a newe
 
 ## From this repo
 
-This folder is its own npm project (not a Yarn workspace). `package.json` pins `@citrusworx/sigjs` to `^0.7.0`. That version is not on npm yet, so `npm install` here resolves after the `0.7.0` publish. Until then, use the `file:../..` override below to run the workspace copy.
+This folder is its own npm project (not a Yarn workspace). `package.json` pins `@citrusworx/sigjs` to `^0.7.0`. That range resolves on npm (latest **0.7.2**). `npm install` here installs it. The committed `package-lock.json` does not record that tarball, so `npm ci` fails until the lock is refreshed. Use the `file:../..` override below to run the workspace copy instead of npm.
 
 ```bash
 cd libraries/sig/examples/counter
@@ -55,4 +55,4 @@ Point the example at the workspace package for one install:
 
 Or, from the repo root, Yarn already resolves `@citrusworx/sigjs` as the `libraries/sig` workspace. The counter example is not a workspace member, so it does not pick that up unless you use `file:../..` (or copy the app into a workspace package).
 
-Put the `file:` pin back to `^0.4.0` before treating this folder as the golden-path consumer example.
+Put the `file:` pin back to `^0.7.0` before treating this folder as the golden-path consumer example. `^0.4.0` does not install `0.7.0` or later.
