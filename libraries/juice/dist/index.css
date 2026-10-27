@@ -101082,6 +101082,102 @@ nav[type=actions] a:hover {
   transform: translateX(-0.5rem);
 }
 
+:root,
+[theme] {
+  --juice-pressable-hover-bg: color-mix(in srgb, currentColor 1%, transparent);
+  --juice-pressable-pressed-bg: color-mix(in srgb, currentColor 1%, transparent);
+  --juice-pressable-focus-ring: currentColor;
+}
+
+:root {
+  --juice-pressable-radius: 0.375rem;
+  --juice-pressable-duration: var(--juice-motion-duration-fast);
+  --juice-pressable-easing: var(--juice-motion-ease-standard);
+  --juice-pressable-scale: 0.98;
+}
+
+[pressable],
+[theme] [pressable] {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+          user-select: none;
+  border-radius: var(--juice-pressable-radius);
+  isolation: isolate;
+}
+
+[pressable] {
+  position: relative;
+}
+
+[pressable]::before,
+[theme] [pressable]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: transparent;
+  pointer-events: none;
+  transition: background-color var(--juice-pressable-duration) var(--juice-pressable-easing);
+}
+
+@media (hover: hover) {
+  [pressable]:hover::before,
+  [theme] [pressable]:hover::before {
+    background-color: var(--juice-pressable-hover-bg);
+  }
+}
+[pressable]:is(:active, [pressed])::before,
+[theme] [pressable]:is(:active, [pressed])::before {
+  background-color: var(--juice-pressable-pressed-bg);
+}
+
+[pressable]:focus-visible,
+[theme] [pressable]:focus-visible {
+  outline: 2px solid var(--juice-pressable-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[pressable=scale],
+[theme] [pressable=scale] {
+  transition: transform var(--juice-pressable-duration) var(--juice-pressable-easing);
+}
+
+[pressable=scale]:is(:active, [pressed]),
+[theme] [pressable=scale]:is(:active, [pressed]) {
+  transform: scale(var(--juice-pressable-scale));
+}
+
+[pressable]:is(:disabled, [disabled], [aria-disabled=true]),
+[theme] [pressable]:is(:disabled, [disabled], [aria-disabled=true]) {
+  cursor: default;
+}
+
+[pressable]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active, [pressed])::before,
+[theme] [pressable]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active, [pressed])::before {
+  background-color: transparent;
+}
+
+[pressable=scale]:is(:disabled, [disabled], [aria-disabled=true]):is(:active, [pressed]),
+[theme] [pressable=scale]:is(:disabled, [disabled], [aria-disabled=true]):is(:active, [pressed]) {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [pressable]::before,
+  [theme] [pressable]::before,
+  [pressable=scale],
+  [theme] [pressable=scale] {
+    transition: none;
+  }
+  [pressable=scale]:is(:active, [pressed]),
+  [theme] [pressable=scale]:is(:active, [pressed]) {
+    transform: none;
+  }
+}
 [pagination],
 [theme] [pagination] {
   display: flex;
