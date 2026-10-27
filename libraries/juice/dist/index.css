@@ -102072,6 +102072,60 @@ button[radio][aria-disabled=true],
     transition: none;
   }
 }
+:root {
+  --juice-safe-area-pad: 1rem;
+}
+
+[safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y]),
+[theme] [safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y]),
+nav[fixed] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y]),
+nav[sticky] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y]),
+[wizard-header] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y]) {
+  padding-top: max(var(--juice-safe-area-pad), env(safe-area-inset-top, 0px));
+  padding-right: max(var(--juice-safe-area-pad), env(safe-area-inset-right, 0px));
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px));
+  padding-left: max(var(--juice-safe-area-pad), env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+}
+
+[safe-area=top],
+[theme] [safe-area=top],
+nav[fixed] > [container][safe-area=top],
+nav[sticky] > [container][safe-area=top],
+[wizard-header] > [container][safe-area=top] {
+  padding-top: max(var(--juice-safe-area-pad), env(safe-area-inset-top, 0px));
+  box-sizing: border-box;
+}
+
+[safe-area=bottom],
+[theme] [safe-area=bottom],
+nav[fixed] > [container][safe-area=bottom],
+nav[sticky] > [container][safe-area=bottom],
+[wizard-header] > [container][safe-area=bottom] {
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+[safe-area=x],
+[theme] [safe-area=x],
+nav[fixed] > [container][safe-area=x],
+nav[sticky] > [container][safe-area=x],
+[wizard-header] > [container][safe-area=x] {
+  padding-left: max(var(--juice-safe-area-pad), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--juice-safe-area-pad), env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+
+[safe-area=y],
+[theme] [safe-area=y],
+nav[fixed] > [container][safe-area=y],
+nav[sticky] > [container][safe-area=y],
+[wizard-header] > [container][safe-area=y] {
+  padding-top: max(var(--juice-safe-area-pad), env(safe-area-inset-top, 0px));
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
 [search-panel] {
   max-width: 56rem;
   margin: 0 auto;

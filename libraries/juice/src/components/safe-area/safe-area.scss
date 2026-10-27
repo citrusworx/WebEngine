@@ -1,0 +1,146 @@
+// Safe-area chrome is structural. It pads a host clear of the notch,
+// the home indicator, and rounded corners. There is no paint, so there
+// is nothing for a theme to bind.
+//
+// viewport-fit=cover is required in the viewport meta tag for the
+// insets to be non-zero:
+//
+//   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+//
+// Without that, env(safe-area-inset-*) resolves to 0px and the host
+// keeps only the base pad. Full docs are slice C.
+//
+// Layout role, on :root only. Not a color role, so it is not restated
+// on [theme]. A custom property set on [theme] would re-resolve on the
+// themed element; this length does not depend on the theme.
+//
+//   --juice-safe-area-pad
+//
+// The floor is 1rem (the cozy spacing step, and the block padding on
+// nav). A device with no inset still keeps content off the glass.
+// A device whose inset is larger uses the inset. There is no per-edge
+// floor: every edge reads the same role.
+//
+//   max(var(--juice-safe-area-pad), env(safe-area-inset-top, 0px))
+//
+// and the same for right, bottom, and left.
+//
+// Juice names. One attribute, value is the edge, same as
+// [drawer="left"] and [badge="square"]. Boolean [safe-area] is all
+// four edges, same as boolean [skeleton] being the rect.
+//
+// Spacing utilities spell an axis as its own attribute ([paddingX],
+// [paddingY], [padding-top]). Safe area is one host, so the axis stays
+// a value. x and y are those spacing-axis words: x is left and right,
+// y is top and bottom. They are physical, not inline / block.
+// env(safe-area-inset-*) is a physical viewport inset. A notch does
+// not follow writing mode, and the two horizontal insets can differ.
+//
+//   [safe-area]            all four edges.
+//   [safe-area="top"]      top only.
+//   [safe-area="bottom"]   bottom only.
+//   [safe-area="x"]        left and right.
+//   [safe-area="y"]        top and bottom.
+//
+// The boolean rule does not match the valued forms. [safe-area] would
+// otherwise pad every edge and the value would only add to that.
+// Unknown values (including the empty boolean) take all four edges.
+//
+// Longhands, not the padding shorthand, so a variant replaces only its
+// edges. A lower-specificity padding shorthand on the same element
+// keeps the edges this variant does not set.
+//
+// No margin mode. [safe-area-margin] was considered for fixed bars and
+// left out. Juice modifiers ([dense], [static], [divided]) change a
+// value of the same property. They do not switch padding for margin.
+// The host inside a fixed or sticky bar uses padding so the bar
+// background can still paint into the unsafe area. Margin on that host
+// would open a gap, or collapse through the bar. Margin on the fixed
+// element itself fights nav[fixed] / nav[sticky] (top: 0; left: 0;
+// width: 100%): horizontal margins plus width 100% overflow. That
+// belongs in those components. This slice does not edit them.
+//
+// Positioning is not set. No top, inset, z-index, width, height,
+// display, or margin. nav[fixed], nav[sticky], [drawer], and
+// [wizard-header] keep the boxes they already set. box-sizing is
+// border-box so the pad stays inside a width: 100% host.
+//
+// Specificity that would swallow a host sitting inside those bars is
+// restated here. Those files are not edited.
+//
+//   nav > [container]                 padding: 0 at (0, 1, 1).
+//                                     Beats bare [safe-area] (0, 1, 0).
+//   [wizard-header] > [container]     padding shorthand at (0, 2, 0),
+//                                     later than this file, so it ties
+//                                     [theme] [safe-area] and wins.
+//
+// nav[fixed] > [container][safe-area] and the sticky twin are (0, 3, 1).
+// [wizard-header] > [container][safe-area] is (0, 3, 0). A container
+// that is the host keeps the inset. The nav's own padding is a
+// separate box outside that container; this file does not zero it.
+//
+// [drawer-header] and [drawer-body] are (0, 1, 0) and do not select
+// descendants. A host inside them keeps its pad. [drawer] scrolls
+// (overflow: auto), so that pad scrolls with the panel.
+//
+// Native collision: there is no HTML global `safe-area` attribute and
+// no <safe-area> element. [safe-area] is an attribute selector.
+// CSS-only. No runtime.
+
+:root {
+    --juice-safe-area-pad: 1rem;
+}
+
+@mixin -juice-safe-area-inset($side) {
+    padding-#{$side}: max(var(--juice-safe-area-pad), env(safe-area-inset-#{$side}, 0px));
+}
+
+@mixin -juice-safe-area-rule($value: null) {
+    @if $value == null {
+        [safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"]),
+        [theme] [safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"]),
+        nav[fixed] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"]),
+        nav[sticky] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"]),
+        [wizard-header] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"]) {
+            @content;
+        }
+    } @else {
+        [safe-area="#{$value}"],
+        [theme] [safe-area="#{$value}"],
+        nav[fixed] > [container][safe-area="#{$value}"],
+        nav[sticky] > [container][safe-area="#{$value}"],
+        [wizard-header] > [container][safe-area="#{$value}"] {
+            @content;
+        }
+    }
+}
+
+@include -juice-safe-area-rule {
+    @include -juice-safe-area-inset(top);
+    @include -juice-safe-area-inset(right);
+    @include -juice-safe-area-inset(bottom);
+    @include -juice-safe-area-inset(left);
+    box-sizing: border-box;
+}
+
+@include -juice-safe-area-rule(top) {
+    @include -juice-safe-area-inset(top);
+    box-sizing: border-box;
+}
+
+@include -juice-safe-area-rule(bottom) {
+    @include -juice-safe-area-inset(bottom);
+    box-sizing: border-box;
+}
+
+@include -juice-safe-area-rule(x) {
+    @include -juice-safe-area-inset(left);
+    @include -juice-safe-area-inset(right);
+    box-sizing: border-box;
+}
+
+@include -juice-safe-area-rule(y) {
+    @include -juice-safe-area-inset(top);
+    @include -juice-safe-area-inset(bottom);
+    box-sizing: border-box;
+}
