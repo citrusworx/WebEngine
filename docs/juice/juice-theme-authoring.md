@@ -536,6 +536,10 @@ KiwiPress still paints `[badge]` outside `[cta]` from `--kw-accent`, `--kw-accen
 
 This is Juice chrome for a short label. Boolean `[badge]` is the pill. `[badge="square"]` changes the radius. `[badge="ribbon"]` is absolute, and `[card="pricing"]` is the parent positioned for it. `[warm]` is a separate boolean. An `a` or `button` badge takes a 2px `currentColor` outline, offset 2px. There is no `--juice-badge-focus-ring`. Inline label — no overlay z-index. There is no runtime. See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2. The roles are on master, not in that cut. Badge is not one of the twenty-eight Emerging auto-enhance runtimes.
 
+## Safe area
+
+`--juice-safe-area-pad` is `1rem` on `:root` only. Do not restate it on `[theme]`, and do not add a safe-area hue. Shipped themes are not required to bind it. `[safe-area]` only sets padding. See [Safe Area](./juice-safe-area.md). Safe area is on master, not in the published npm 0.9.2 release, and is not one of the twenty-eight Emerging auto-enhance runtimes.
+
 ## Table chrome roles
 
 Core CSS owns `--juice-table-*`. Color is stated on `:root` and again on `[theme]`, so the mixes keep `currentColor` and resolve where the cell paints. Layout stays on `:root`. Shipped library themes and generated `--jx-*` themes are not required to bind these roles. Do not add a table hue family.

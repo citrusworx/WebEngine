@@ -143,6 +143,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release)
 - [List](./juice-list.md) — CSS-only stacked rows (on master; not in the published npm 0.9.2 release)
 - [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core `--juice-badge-*` roles on master, not in that cut; not a runtime)
+- [Safe Area](./juice-safe-area.md) — CSS-only inset (on master; not in the published npm 0.9.2 release; not a runtime)
 - [Best Practices](./juice-best-practices.md)
 - [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)
 

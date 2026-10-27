@@ -596,6 +596,26 @@ Color roles are `--juice-badge-bg` (currentColor at 1%), `--juice-badge-ink` (`c
 
 The words on the badge are the name. A count needs context in the text or on the parent. There is no dot variant. See [Badge](./juice-badge.md).
 
+### Safe area
+
+CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-eight Emerging auto-enhance runtimes.
+
+- `safe-area` — host. Boolean `[safe-area]` pads all four edges. There is no HTML global `safe-area` attribute, and there is no `<safe-area>` element. An empty value, or any value other than `top`, `bottom`, `x`, or `y`, is still all four edges
+- `safe-area="top"` — top only
+- `safe-area="bottom"` — bottom only
+- `safe-area="x"` — left and right. Physical, not inline
+- `safe-area="y"` — top and bottom. Physical, not block
+
+Each edge is `max(var(--juice-safe-area-pad), env(safe-area-inset-*, 0px))`. The layout role is `--juice-safe-area-pad` (`1rem`) on `:root` only. It is not restated on `[theme]`. Shipped themes are not required to bind it. The page needs `viewport-fit=cover` on the viewport meta tag or the inset is `0px`. There is no `[safe-area-margin]`.
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<header safe-area="top">Harbor</header>
+<main safe-area="x">Departures</main>
+```
+
+See [Safe Area](./juice-safe-area.md).
+
 ### Avatar
 
 Initials-or-photo mark. Round by default. Color comes from `--juice-avatar-*`. There is no HTML global `avatar` attribute, and there is no `<avatar>` element.

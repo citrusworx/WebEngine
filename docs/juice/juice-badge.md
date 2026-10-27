@@ -291,4 +291,4 @@ A `span` badge is not a control. It has no `:focus-visible` ring, no hover fill,
 
 ## Where this sits
 
-Cards, stats, skeleton, and list are the other CSS-only structural hooks. Badge is the label. Skeleton holds a loading shape. List holds rows, and a badge can sit in `[list-trailing]` without a special rule. Avatar is a face, not this pill. See [Cards](./juice-cards.md), [Skeleton](./juice-skeleton.md), [List](./juice-list.md), [Avatar](./juice-avatar.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, stats, skeleton, list, and safe area are the other CSS-only structural hooks. Badge is the label. Skeleton holds a loading shape. List holds rows, and a badge can sit in `[list-trailing]` without a special rule. Safe area only pads. Avatar is a face, not this pill. See [Cards](./juice-cards.md), [Skeleton](./juice-skeleton.md), [List](./juice-list.md), [Safe Area](./juice-safe-area.md), [Avatar](./juice-avatar.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
