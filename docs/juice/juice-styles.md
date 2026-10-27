@@ -50,6 +50,10 @@ Juice usage today usually falls into these groups:
 
 - `list` — CSS-only rows on `ul`, `ol`, or `div`, with `[divided]`, `[dense]`, and `[list-item]` slots. See [List](./juice-list.md). On master, not in the published npm 0.9.2 release. Not a runtime.
 
+### Insets
+
+- `safe-area` — CSS-only padding clear of the notch and the home indicator. Boolean `[safe-area]` pads all four edges. `top`, `bottom`, `x`, and `y` pad those edges. See [Safe Area](./juice-safe-area.md). On master, not in the published npm 0.9.2 release. Not a runtime. `viewport-fit=cover` has to be on the viewport meta tag.
+
 ### Identity marks
 
 - `avatar` — initials or photo, optional status dot, and `[avatar-group]` / `[avatar-more]`. See [Avatar](./juice-avatar.md). On master, not in the published npm 0.9.2 release. The twenty-seventh Emerging runtime.

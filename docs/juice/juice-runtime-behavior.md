@@ -162,6 +162,7 @@ Core chrome sets these stacking values. They are **structural bands**, not a the
 | Skeleton | `[skeleton]` | none | Inline placeholder; CSS-only, not one of the twenty-eight runtimes |
 | List | `[list]` | none | Inline rows; CSS-only, not one of the twenty-eight runtimes |
 | Badge | `[badge]` | none | Inline label. `[badge="ribbon"]` is absolute and still has no z-index. CSS-only, not one of the twenty-eight runtimes. Layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master, not in that cut |
+| Safe area | `[safe-area]` | none | Inset padding only. CSS-only, not one of the twenty-eight runtimes. On master, not in the published npm 0.9.2 release |
 | Select | `select[select]` | none | Inline field chrome; the open list is the platform popup |
 | Input | `input[input]` | none | Inline field chrome; text-like types only |
 | Textarea | `textarea[textarea]` | none | Inline field chrome; no auto-grow |

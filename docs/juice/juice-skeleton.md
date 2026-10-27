@@ -202,4 +202,4 @@ A spinner is the control for “working” when there is no content shape yet. A
 
 ## Where this sits
 
-Cards, badges, and stats are the other CSS-only structural hooks: markup plus theme paint, no runtime. Skeleton follows that shape, with its own roles and a dedicated page because the loading contract is easy to confuse with spinner and progress. See [Badge](./juice-badge.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, badges, and stats are the other CSS-only structural hooks: markup plus theme paint, no runtime. List and safe area are CSS-only too. Safe area only pads. Skeleton follows that shape, with its own roles and a dedicated page because the loading contract is easy to confuse with spinner and progress. See [Badge](./juice-badge.md), [List](./juice-list.md), [Safe Area](./juice-safe-area.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
