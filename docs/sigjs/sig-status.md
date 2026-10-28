@@ -1,6 +1,6 @@
 # Sig.js Status
 
-Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Alpha.** Workspace `libraries/sig/package.json` is **0.7.0**. npm latest is **0.7.2** (2026-10-27). `CHANGELOG.md` still says 0.7.0 is unpublished and that npm latest is **0.6.0**. That changelog sentence is stale.
+Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Alpha.** Workspace `libraries/sig/package.json` is **0.7.2**, the same as npm latest (2026-10-27). `CHANGELOG.md` records **0.7.0**, **0.7.1**, and **0.7.2**.
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 
