@@ -1,8 +1,18 @@
 # @citrusworx/sigjs
 
+## 1.0.0
+
+Stable release of the API frozen in **0.7.2**. Workspace `package.json` is **1.0.0**. Not published yet. npm `latest` remains **0.7.2** (2026-10-27, `gitHead` `c794c06f`, PR #295) until this version is published.
+
+No API change from **0.7.2**. The public entries stay `.`, `./jsx-runtime`, `./jsx-dev-runtime`, `./sig-router`, and `./juice`. `Signal.set` still always notifies, including when the value is unchanged. `bindList` and `ListItem` stay experimental. SSR, a virtual DOM, `<For>`, and `<Show>` stay non-goals.
+
+From **1.0.0**, versions follow semver. A breaking change to a documented stable export is a major. A new public API is a minor. A fix that does not change that API is a patch. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install **1.0.0**. The optional `@citrusworx/juiceui` peer stays `>=0.9.1 <1`. Widening that peer range is a minor. Narrowing it is a major.
+
+`yarn version-packages` was not used. No Sig changeset was added. A changeset would bump this manifest off **1.0.0** the next time that command runs. The **0.7.2** registry cut was itself published by hand. A Changesets bump from **0.7.0** would have proposed **0.8.0**, which is not this release.
+
 ## 0.7.2
 
-Published to npm **2026-10-27** (`gitHead` `c794c06f`, PR #295). This is npm `latest`. Workspace `package.json` matches this version. Do not republish.
+Published to npm **2026-10-27** (`gitHead` `c794c06f`, PR #295). This remains npm `latest` until **1.0.0** is published. Do not republish.
 
 The registry cut is the **0.7.0** tree plus Juice adapter `bind` for icon-button, avatar, and table (PR #295, commit `0c626a9e`). It was published by hand as **0.7.2**. `yarn version-packages` was not used. The changeset for this work was minor; a Changesets bump from **0.7.0** would have proposed **0.8.0**.
 

@@ -397,12 +397,12 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 12. [API Reference](./sig-api.md) — the public surface, one page
 13. [API surface](./api-surface.md) — v1 freeze inventory: stable, experimental, internal
 14. [Troubleshooting](./sig-troubleshooting.md) — the usual “why didn’t it update?” cases
-15. [Status](./sig-status.md) — Alpha maturity matrix
+15. [Status](./sig-status.md) — Stable maturity matrix
 16. [Roadmap](./sig-roadmap.md) — what would move Sig upward, and what would not
 
 ## Status
 
-**Alpha** (workspace `@citrusworx/sigjs` **0.7.2**, the same as npm latest). Core reactivity is implemented and tested. The public direction is stable enough to describe clearly:
+**Stable** (workspace `@citrusworx/sigjs` **1.0.0**). npm latest is still **0.7.2** until **1.0.0** is published. The API matches that cut. Core reactivity is implemented and tested:
 
 - `Signal`, `effect` (with cleanup / dispose), `batch`, `memo`
 - JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
@@ -417,7 +417,7 @@ Not shipped:
 - SSR / hydration
 - Error boundaries
 
-Alpha here means the core is real and documented, not that the API is frozen. See [Status](./sig-status.md) for the area-by-area matrix and [Roadmap](./sig-roadmap.md) for what is worth building next.
+**1.0.0** freezes this API. `Signal.set` always notifies, including when the value is unchanged. SSR, a virtual DOM, `<For>`, and `<Show>` are non-goals for 1.0. See [Status](./sig-status.md) for the area-by-area matrix and [Roadmap](./sig-roadmap.md) for what is worth building next.
 
 ## Sibling packages
 

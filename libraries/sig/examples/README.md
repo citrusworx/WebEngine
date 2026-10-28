@@ -1,6 +1,6 @@
 # Examples
 
-Standalone apps that depend only on `@citrusworx/sigjs`. The [counter](./counter) example pins `@citrusworx/sigjs@^0.7.0` from npm so a fresh consumer does not need this monorepo. That range resolves. npm latest is **0.7.2**. The workspace `package.json` is `0.7.2`.
+Standalone apps that depend only on `@citrusworx/sigjs`. The [counter](./counter) example pins `@citrusworx/sigjs@^0.7.0` from npm so a fresh consumer does not need this monorepo. **1.0.0** is not published yet, so that pin and its lockfile stay on **0.7.x** (the lock records **0.7.2**). The workspace `package.json` is **1.0.0**.
 
 | Example | What it shows |
 |---------|----------------|

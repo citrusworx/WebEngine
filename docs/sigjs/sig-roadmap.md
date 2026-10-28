@@ -21,7 +21,7 @@ The weakest areas are still:
 - live `style` object bindings
 - tests beyond the current signal, JSX, list, and router files
 
-Alpha is the honest label. The core is real enough to teach in depth; it is not frozen.
+**1.0.0** freezes this API. The core is what the docs teach. SSR, a virtual DOM, `<For>`, and `<Show>` are non-goals for this release.
 
 ---
 
@@ -219,6 +219,6 @@ The next stage is refinement:
 - lists are decided: `bindList` for keyed rows, `replaceChildren` for a rewrite, no `<For>` / `<Show>`
 - keep the static-first promise
 - keep param matching boring (exact wins, first registered pattern, `"*"` last)
-- the public surface cleanup is in [API surface](./api-surface.md). `bindList` stays experimental. 1.0 is the publish of that surface
+- the public surface is in [API surface](./api-surface.md). `bindList` stays experimental. **1.0.0** is this surface. npm still has **0.7.2** until that version is published
 
 That is a strong place to be. The docs stay with [Status](./sig-status.md), [API surface](./api-surface.md), and the APIs in `libraries/sig/src`.
