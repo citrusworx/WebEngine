@@ -1244,6 +1244,118 @@ describe("Juice build artifacts", () => {
         }
     });
 
+    describe("keyboard-avoider structural chrome", () => {
+        it("includes keyboard-avoider layout chrome in core CSS", () => {
+            const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+            const start = css.indexOf("@property --juice-keyboard-inset");
+            const end = css.indexOf("[search-panel]", start);
+            expect(start).toBeGreaterThan(-1);
+            expect(end).toBeGreaterThan(start);
+            const slice = css.slice(start, end);
+
+            const word = (name: string) => new RegExp(`\\[keyboard-avoider~=["']?${name}["']?\\]`);
+
+            expect(slice).toContain("[keyboard-avoider]");
+            expect(slice).toMatch(word("padding"));
+            expect(slice).toMatch(word("translate"));
+            expect(slice).toMatch(word("footer"));
+            expect(slice).toMatch(/\[keyboard-avoider\]:not\(\[keyboard-avoider~=["']?padding["']?\]\)/);
+            expect(slice).toMatch(/:not\(\[keyboard-avoider~=["']?translate["']?\]\)/);
+            expect(slice).toMatch(/:not\(\[keyboard-avoider~=["']?footer["']?\]\)/);
+            expect(slice).toMatch(/\[theme\]\s+\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[theme\]\s+\[keyboard-avoider~=["']?padding["']?\]/);
+            expect(slice).toMatch(/\[theme\]\s+\[keyboard-avoider~=["']?translate["']?\]/);
+            expect(slice).toMatch(/\[theme\]\s+\[keyboard-avoider~=["']?footer["']?\]/);
+            expect(slice).toMatch(/nav\[fixed\] > \[container\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/nav\[sticky\] > \[container\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[wizard-header\] > \[container\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/nav\[fixed\] > \[container\]\[keyboard-avoider~=["']?padding["']?\]/);
+            expect(slice).toMatch(/nav\[sticky\] > \[container\]\[keyboard-avoider~=["']?translate["']?\]/);
+            expect(slice).toMatch(/\[wizard-header\] > \[container\]\[keyboard-avoider~=["']?footer["']?\]/);
+            expect(slice).toMatch(/\[safe-area\]:not\(\[safe-area=["']?top["']?\]\)[^{]*\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[safe-area=["']?bottom["']?\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[safe-area=["']?y["']?\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[theme\]\s+\[safe-area=["']?bottom["']?\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[theme\]\s+\[safe-area=["']?y["']?\]\[keyboard-avoider~=["']?padding["']?\]/);
+            expect(slice).toMatch(/nav\[fixed\] > \[container\]\[safe-area=["']?bottom["']?\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/nav\[sticky\] > \[container\]\[safe-area=["']?y["']?\]\[keyboard-avoider\]/);
+            expect(slice).toMatch(/\[wizard-header\] > \[container\]\[safe-area\][^{]*\[keyboard-avoider\]/);
+
+            expect(slice).toContain("--juice-keyboard-inset: 0px");
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-keyboard-inset:\s*0px/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-keyboard-duration:\s*var\(--juice-motion-duration-base\)/);
+            expect(slice).toMatch(/:root\s*\{[^}]*--juice-keyboard-easing:\s*var\(--juice-motion-ease-enter\)/);
+            expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-keyboard-inset:/);
+            expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-keyboard-duration:/);
+            expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-keyboard-easing:/);
+            expect(slice).toContain("@supports (height: env(keyboard-inset-height))");
+            expect(slice).toContain("env(keyboard-inset-height, 0px)");
+            expect(slice).toContain("padding-bottom: var(--juice-keyboard-inset)");
+            expect(slice).toContain("transform: translateY(calc(-1 * var(--juice-keyboard-inset)))");
+            expect(slice).toContain("transition: transform var(--juice-keyboard-duration) var(--juice-keyboard-easing)");
+            expect(slice).toContain("max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))");
+            expect(slice).not.toContain("z-index");
+            expect(slice).not.toMatch(/\bmargin\b/);
+
+            const blocks: { selector: string; body: string }[] = [];
+            const collect = (source: string) => {
+                let cursor = 0;
+                while (cursor < source.length) {
+                    const open = source.indexOf("{", cursor);
+                    if (open < 0) {
+                        break;
+                    }
+                    let depth = 0;
+                    let close = open;
+                    for (let i = open; i < source.length; i += 1) {
+                        if (source[i] === "{") {
+                            depth += 1;
+                        } else if (source[i] === "}") {
+                            depth -= 1;
+                            if (depth === 0) {
+                                close = i;
+                                break;
+                            }
+                        }
+                    }
+                    const selector = source.slice(cursor, open).trim();
+                    const body = source.slice(open + 1, close);
+                    if (selector.startsWith("@")) {
+                        collect(body);
+                    } else if (selector.length > 0) {
+                        blocks.push({ selector, body });
+                    }
+                    cursor = close + 1;
+                }
+            };
+            collect(slice);
+
+            const positioned = blocks.filter((block) => /position\s*:/.test(block.body));
+            expect(positioned.length).toBeGreaterThan(0);
+            for (const block of positioned) {
+                expect(block.selector).toMatch(/\[keyboard-avoider~=["']?footer["']?\]/);
+                expect(block.body).toContain("bottom: var(--juice-keyboard-inset)");
+                expect(block.body.match(/position\s*:\s*[^;]+/g)).toEqual(["position: sticky"]);
+            }
+            for (const block of blocks) {
+                if (!/\[keyboard-avoider~=["']?footer["']?\]/.test(block.selector)) {
+                    expect(block.body).not.toMatch(/position\s*:/);
+                }
+                expect(block.body).not.toMatch(/z-index\s*:/);
+            }
+
+            const reduced = reducedMotionBlocks(css).find((block) => block.includes("[keyboard-avoider"));
+            expect(reduced).toBeDefined();
+            expect(reduced).toContain("transition: none");
+            expect(reduced).toMatch(/\[keyboard-avoider~=["']?translate["']?\]/);
+
+            for (const id of readBundledThemeIds()) {
+                const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+                expect(themeCss).not.toContain("--juice-keyboard-");
+            }
+        });
+    });
+
     it("includes pressable structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
         const reduced = reducedMotionBlocks(css);
