@@ -55,6 +55,8 @@ export { createAvatar, initAvatar, startAvatarRuntime, stopAvatarRuntime } from 
 export type { AvatarController, AvatarOptions, AvatarState } from "./js/src/avatar/avatar-runtime.js";
 export { createTable, initTable, startTableRuntime, stopTableRuntime } from "./js/src/table/table-runtime.js";
 export type { TableController, TableOptions, TableSortDirection, TableState } from "./js/src/table/table-runtime.js";
+export { createPressable, initPressable, startPressableRuntime, stopPressableRuntime } from "./js/src/pressable/pressable-runtime.js";
+export type { PressableController, PressableOptions, PressableState } from "./js/src/pressable/pressable-runtime.js";
 export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./js/src/shared/motion.js";
 export type { MotionCancelToken, MotionDirection, MotionPlayer, MotionResult, MotionState } from "./js/src/shared/motion.js";
 export { JUICE_CHANGE_EVENT } from "./js/src/shared/change.js";

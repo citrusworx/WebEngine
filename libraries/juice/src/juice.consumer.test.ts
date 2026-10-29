@@ -1512,6 +1512,7 @@ describe("Juice consumer smoke", () => {
             module.stopIconButtonRuntime();
             module.stopAvatarRuntime();
             module.stopTableRuntime();
+            module.stopPressableRuntime();
         });
     });
 
@@ -1697,6 +1698,91 @@ describe("Juice consumer smoke", () => {
 
             document.body.innerHTML = "";
             module.stopTableRuntime();
+            module.stopPressableRuntime();
+        });
+    });
+
+    it("lets a consumer press a host and read juice:change state", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopPressableRuntime();
+            module.stopIconButtonRuntime();
+            document.body.innerHTML = `
+                <button type="button" pressable id="go">Go</button>
+                <button type="button" icon-button toggle pressable pressed aria-label="Bold" id="bold"></button>
+            `;
+
+            const controller = module.createPressable({ root: document.body });
+            const icons = module.createIconButton({ root: document.body });
+            const host = document.getElementById("go")!;
+            const bold = document.getElementById("bold")!;
+            const events: Array<CustomEvent<{ runtime: string; state: { pressed: boolean; longPressed: boolean } }>> = [];
+            const onChange = (event: Event) => {
+                events.push(event as CustomEvent<{ runtime: string; state: { pressed: boolean; longPressed: boolean } }>);
+            };
+            document.body.addEventListener("juice:change", onChange);
+
+            expect(controller.getState(host)).toEqual({ pressed: false, longPressed: false });
+            expect(bold.getAttribute("aria-pressed")).toBe("true");
+            expect(bold.hasAttribute("pressed")).toBe(true);
+
+            host.dispatchEvent(new PointerEvent("pointerdown", {
+                bubbles: true,
+                button: 0,
+                pointerId: 1,
+                pointerType: "mouse",
+                isPrimary: true
+            }));
+            expect(events).toHaveLength(1);
+            expect(events[0]?.bubbles).toBe(true);
+            expect(events[0]?.detail).toEqual({
+                runtime: "pressable",
+                state: { pressed: true, longPressed: false }
+            });
+            expect(host.hasAttribute("pressed")).toBe(true);
+
+            host.dispatchEvent(new PointerEvent("pointerup", {
+                bubbles: true,
+                button: 0,
+                pointerId: 1,
+                pointerType: "mouse",
+                isPrimary: true
+            }));
+            expect(host.hasAttribute("pressed")).toBe(false);
+            expect(controller.getState(host)).toEqual({ pressed: false, longPressed: false });
+
+            bold.dispatchEvent(new PointerEvent("pointerdown", {
+                bubbles: true,
+                button: 0,
+                pointerId: 1,
+                pointerType: "mouse",
+                isPrimary: true
+            }));
+            bold.dispatchEvent(new PointerEvent("pointerup", {
+                bubbles: true,
+                button: 0,
+                pointerId: 1,
+                pointerType: "mouse",
+                isPrimary: true
+            }));
+            expect(bold.hasAttribute("pressed")).toBe(true);
+            expect(bold.getAttribute("aria-pressed")).toBe("true");
+
+            document.body.removeEventListener("juice:change", onChange);
+            controller.destroy();
+            icons.destroy();
+            host.dispatchEvent(new PointerEvent("pointerdown", {
+                bubbles: true,
+                button: 0,
+                pointerId: 1,
+                pointerType: "mouse",
+                isPrimary: true
+            }));
+            expect(host.hasAttribute("pressed")).toBe(false);
+
+            document.body.innerHTML = "";
+            module.stopPressableRuntime();
+            module.stopIconButtonRuntime();
         });
     });
 });

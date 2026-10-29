@@ -1235,11 +1235,17 @@ describe("Juice build artifacts", () => {
         expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-easing:/);
         expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-pressable-scale:/);
         expect(css).toMatch(/\[pressable\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\)[^{]*\{[^}]*cursor:\s*default/);
+        const pressableEnabled = String.raw`:where\(:not\(:disabled\):not\(\[disabled\]\):not\(\[aria-disabled=true\]\)\)`;
         expect(css).toMatch(
-            /\[pressable\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\):is\(:hover,\s*:active,\s*\[pressed\]\)[^{]*\{[^}]*box-shadow:\s*none/
+            new RegExp(String.raw`\[pressable\]:hover${pressableEnabled}`)
         );
         expect(css).toMatch(
-            /\[pressable=scale\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\):is\(:active,\s*\[pressed\]\)[^{]*\{[^}]*transform:\s*none/
+            new RegExp(String.raw`\[pressable\]:is\(:active,\s*\[pressed\]\)${pressableEnabled}`)
+        );
+        expect(css).toMatch(
+            new RegExp(
+                String.raw`\[pressable=scale\]:is\(:active,\s*\[pressed\]\)${pressableEnabled}[^{]*\{[^}]*transform:\s*scale\(var\(--juice-pressable-scale\)\)`
+            )
         );
 
         const focusRule = ruleAt("[pressable]:focus-visible,");
@@ -1297,6 +1303,46 @@ describe("Juice build artifacts", () => {
             expect(themeCss).not.toContain("--juice-pressable-");
             expect(themeCss).not.toContain("[pressable]");
         }
+    });
+
+    it("keeps a disabled icon-button pressed ring and paints no pressable ring on a disabled pressable", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const pressableRules = [...css.matchAll(/[^{}]*\[pressable\][^{]*\{[^}]*\}/g)].map((match) => match[0]);
+        const shadowResets = pressableRules.filter((block) => /box-shadow:\s*none/.test(block));
+        expect(shadowResets).toEqual([]);
+
+        const gate = String.raw`:where\(:not\(:disabled\):not\(\[disabled\]\):not\(\[aria-disabled=true\]\)\)`;
+        const pressedRing = pressableRules.find(
+            (block) =>
+                /\[pressable\]:is\(:active,\s*\[pressed\]\)/.test(block) &&
+                block.includes("box-shadow: inset 0 0 0 2px var(--juice-pressable-pressed-ring)")
+        );
+        const hoverRing = pressableRules.find(
+            (block) =>
+                /\[pressable\]:hover/.test(block) &&
+                block.includes("box-shadow: inset 0 0 0 1px var(--juice-pressable-hover-ring)")
+        );
+        expect(pressedRing).toBeDefined();
+        expect(hoverRing).toBeDefined();
+        expect(pressedRing).toMatch(new RegExp(gate));
+        expect(hoverRing).toMatch(new RegExp(gate));
+
+        const disabledPressable = pressableRules.filter((block) =>
+            /\[pressable\][^{]*:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\)/.test(block)
+        );
+        expect(disabledPressable.length).toBeGreaterThan(0);
+        for (const block of disabledPressable) {
+            expect(block).not.toMatch(/box-shadow/);
+            expect(block).not.toMatch(/transform/);
+            expect(block).toMatch(/cursor:\s*default/);
+        }
+
+        expect(css).toMatch(
+            /\[theme\] button\[icon-button\]\[pressed\][^{]*\{[^}]*box-shadow:\s*inset 0 0 0 2px currentColor/
+        );
+        expect(css).not.toMatch(
+            /\[pressable\][^{]*:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\)[^{]*:is\(:hover,\s*:active,\s*\[pressed\]\)[^{]*\{[^}]*box-shadow:\s*none/
+        );
     });
 
     it("includes select structural chrome in core CSS", () => {
@@ -3007,6 +3053,13 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initTable");
         expect(module).toHaveProperty("startTableRuntime");
         expect(module).toHaveProperty("stopTableRuntime");
+        expect(module).toHaveProperty("createPressable");
+        expect(module).toHaveProperty("initPressable");
+        expect(module).toHaveProperty("startPressableRuntime");
+        expect(module).toHaveProperty("stopPressableRuntime");
+        expect(
+            Object.keys(module).filter((key) => key.startsWith("start") && key.endsWith("Runtime"))
+        ).toHaveLength(29);
         expect(module).toHaveProperty("tokens");
     });
 

@@ -311,6 +311,17 @@ export type {
     TableState
 } from "./js/src/table/table-runtime.js";
 export {
+    createPressable,
+    initPressable,
+    startPressableRuntime,
+    stopPressableRuntime
+} from "./js/src/pressable/pressable-runtime.js";
+export type {
+    PressableController,
+    PressableOptions,
+    PressableState
+} from "./js/src/pressable/pressable-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,

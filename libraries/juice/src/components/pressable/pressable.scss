@@ -26,11 +26,11 @@
 // so [drawer], [toast-region], nav[fixed], nav[sticky], [badge="ribbon"],
 // and sticky table cells keep the boxes they already set.
 //
-// [pressed] is styling only. The runtime that lands in slice B sets it
-// for the duration of a press. This slice does not. It is not the
-// icon-button toggle: icon-button [pressed] is a latched state, and
-// this attribute is the in-progress press. :active paints the same
-// inset ring so a press still shows when the runtime is absent.
+// [pressed] is the in-progress press. The runtime sets it for the
+// duration of a gesture on hosts that do not already own it as a
+// latched toggle. It is not the icon-button toggle: icon-button
+// [pressed] is a latched state. :active paints the same inset ring
+// so a press still shows when the runtime is absent.
 //
 // Hover is a 1px inset ring. Pressed is a 2px inset ring. Both colors
 // are currentColor (the full ink, not a translucent mix). A mix under
@@ -91,14 +91,20 @@
 // still appears.
 //
 // Disabled is :disabled, [disabled], or [aria-disabled="true"]. Cursor
-// drops to default. The ring and the scale do not paint. pointer-events
+// drops to default. The ring and the scale do not paint, because those
+// rules are gated with
+// :where(:not(:disabled):not([disabled]):not([aria-disabled="true"])).
+// :where() adds no specificity, so the ring does not outrank a
+// component that already set box-shadow. There is no box-shadow: none
+// and no transform: none on the disabled host, so a disabled
+// [icon-button][pressed] keeps its latched inset ring. pointer-events
 // stay with the author, same as list: aria-disabled does not swallow
 // the click from here. No opacity, so a host that already dims is not
 // dimmed twice.
 //
 // Native collision: there is no HTML global `pressable` attribute and
 // no <pressable> element. [pressable] is an attribute selector.
-// CSS-only. No runtime in this slice.
+// The stylesheet does not require the runtime.
 //
 // Specificity. This file does not edit themes, [btn], [icon-button],
 // [list], or [table]. It sets no pseudo-element and no position.
@@ -132,9 +138,11 @@
 // still paints on :active, because icon-button :active does not set
 // box-shadow. Icon-button [pressed] is an inset 2px currentColor
 // shadow at (0, 3, 1), so a latched icon-button wins the shadow over
-// this ring. Its focus rule is the same 2px currentColor outline at
-// (0, 3, 1). Icon-button transition is (0, 3, 1) and keeps its own.
-// Disabled opacity, pointer-events, and cursor stay at (0, 3, 1).
+// this ring. The disabled gate does not reset box-shadow, so that
+// latched ring also stays when the icon-button is disabled. Its focus
+// rule is the same 2px currentColor outline at (0, 3, 1). Icon-button
+// transition is (0, 3, 1) and keeps its own. Disabled opacity,
+// pointer-events, and cursor stay at (0, 3, 1).
 //
 // List hover and :active still paint --juice-list-hover /
 // --juice-list-selected. This file does not set background, so the
@@ -179,15 +187,18 @@
     transition: box-shadow var(--juice-pressable-duration) var(--juice-pressable-easing);
 }
 
+// :where() keeps these at the same specificity as the ungated rules.
+// A disabled host does not match, and nothing here sets box-shadow: none.
+
 @media (hover: hover) {
-    [pressable]:hover,
-    [theme] [pressable]:hover {
+    [pressable]:hover:where(:not(:disabled):not([disabled]):not([aria-disabled="true"])),
+    [theme] [pressable]:hover:where(:not(:disabled):not([disabled]):not([aria-disabled="true"])) {
         box-shadow: inset 0 0 0 1px var(--juice-pressable-hover-ring);
     }
 }
 
-[pressable]:is(:active, [pressed]),
-[theme] [pressable]:is(:active, [pressed]) {
+[pressable]:is(:active, [pressed]):where(:not(:disabled):not([disabled]):not([aria-disabled="true"])),
+[theme] [pressable]:is(:active, [pressed]):where(:not(:disabled):not([disabled]):not([aria-disabled="true"])) {
     box-shadow: inset 0 0 0 2px var(--juice-pressable-pressed-ring);
 }
 
@@ -207,24 +218,14 @@
         transform var(--juice-pressable-duration) var(--juice-pressable-easing);
 }
 
-[pressable="scale"]:is(:active, [pressed]),
-[theme] [pressable="scale"]:is(:active, [pressed]) {
+[pressable="scale"]:is(:active, [pressed]):where(:not(:disabled):not([disabled]):not([aria-disabled="true"])),
+[theme] [pressable="scale"]:is(:active, [pressed]):where(:not(:disabled):not([disabled]):not([aria-disabled="true"])) {
     transform: scale(var(--juice-pressable-scale));
 }
 
 [pressable]:is(:disabled, [disabled], [aria-disabled="true"]),
 [theme] [pressable]:is(:disabled, [disabled], [aria-disabled="true"]) {
     cursor: default;
-}
-
-[pressable]:is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active, [pressed]),
-[theme] [pressable]:is(:disabled, [disabled], [aria-disabled="true"]):is(:hover, :active, [pressed]) {
-    box-shadow: none;
-}
-
-[pressable="scale"]:is(:disabled, [disabled], [aria-disabled="true"]):is(:active, [pressed]),
-[theme] [pressable="scale"]:is(:disabled, [disabled], [aria-disabled="true"]):is(:active, [pressed]) {
-    transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

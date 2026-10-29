@@ -309,6 +309,17 @@ export type {
     TableSortDirection,
     TableState
 } from "./src/table/table-runtime.js";
+export {
+    createPressable,
+    initPressable,
+    startPressableRuntime,
+    stopPressableRuntime
+} from "./src/pressable/pressable-runtime.js";
+export type {
+    PressableController,
+    PressableOptions,
+    PressableState
+} from "./src/pressable/pressable-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export {
