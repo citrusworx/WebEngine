@@ -33,8 +33,14 @@
  *   the key is held, including on a native button. Native buttons
  *   already match :active; the attribute is set too so the pressed
  *   ring matches a pointer press. Keyup clears it. Repeat keydowns
- *   do not restart the gesture. Keydown does not preventDefault, so
- *   a native click still fires and Space on a non-button can still
+ *   do not restart the gesture. Enter is never preventDefault'd, so
+ *   a native click still fires. Space is preventDefault'd only on a
+ *   custom button-like host, so the page does not scroll. That host's
+ *   first role token is button, switch, checkbox, radio, menuitem,
+ *   menuitemcheckbox, menuitemradio, option, tab, or treeitem, and
+ *   the host is not a native control that already owns Space (button,
+ *   input, textarea, select, summary, or contenteditable). A pressable
+ *   with no button-like role is left alone, and role="link" keeps the
  *   scroll. Long-press is pointer-only. The host has to be the event
  *   target. This runtime does not add tabindex or role.
  *

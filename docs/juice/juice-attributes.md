@@ -245,6 +245,25 @@ Core owns the defaults (button block padding, plus the icon default). Shipped th
 
 The runtime auto-enhances this markup. `[toggle]` flips `aria-pressed` and `[pressed]`. A missing accessible name warns once in development and is not invented. `title` does not count. See [Icon Button Runtime](./juice-icon-button-runtime.md). Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
+### Pressable
+
+Transient press. Mobile-Critical. There is no HTML global `pressable` attribute, and there is no `<pressable>` element. Any value other than `scale` is still the ring.
+
+- `pressable` — host. Boolean `[pressable]` is the ring. 1px inset ring on hover under `@media (hover: hover)`. 2px inset ring on `:active` and `[pressed]`. `touch-action: manipulation`. No tap highlight
+- `pressable="scale"` — the same rings, plus `scale(0.98)` while `:active` or `[pressed]`
+- `pressed` — transient press. The runtime sets it for the gesture and removes it only when it added it. A latched `[icon-button][toggle]` or a host with `aria-pressed` keeps its own `[pressed]`
+- `pressable-longpress` — opt-in. Empty or `"true"` uses 500ms. A non-negative number is the delay. `"false"` is off. Pointer only
+- `pressable-slop` — pixel slop. A non-negative number overrides the default 10
+
+Color roles are `--juice-pressable-hover-ring`, `--juice-pressable-pressed-ring`, and `--juice-pressable-focus-ring` (`currentColor`), on `:root` and again on `[theme]`. Layout and motion roles are `--juice-pressable-radius` (`0.375rem`), `--juice-pressable-duration`, `--juice-pressable-easing`, and `--juice-pressable-scale` (`0.98`), on `:root` only. Shipped themes are not required to bind them. The ring follows host ink. On Citrusmint muted copy it misses 3:1.
+
+```html
+<button type="button" pressable>Save</button>
+<div pressable="scale" role="button" tabindex="0">Hold</div>
+```
+
+The runtime auto-enhances `[pressable]` (`createPressable` / `getState`). Enter is not `preventDefault`'d. Space is, on a custom button host that is not a native Space control, so the page does not scroll. The runtime does not add `role` or `tabindex`. See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name it yet.
+
 ### Cards
 
 - `card`
@@ -528,7 +547,7 @@ See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spi
 
 ### Skeleton
 
-CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-eight Emerging auto-enhance runtimes.
+CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-nine Emerging auto-enhance runtimes.
 
 - `skeleton` — host. Boolean `[skeleton]` is a rectangle, the same shape as `skeleton="rect"`. `skeleton="text"` is a line. `skeleton="circle"` is a circle. There is no HTML global `skeleton` attribute, and there is no `<skeleton>` element. Do not restyle a bare `[aria-busy]` or `[role="status"]`
 - `lines` — on `[skeleton="text"]`, a count from `"1"` through `"8"`. Anything else keeps one bar. There is no `skeleton-line`
@@ -549,7 +568,7 @@ See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`
 
 ### List
 
-CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-eight Emerging auto-enhance runtimes.
+CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-nine Emerging auto-enhance runtimes.
 
 - `list` — host, on `ul`, `ol`, or `div`. The selector is `:where(ul, ol, div)[list]`, so `<input list>` is not painted. There is no HTML global `list` attribute, and there is no `<list>` element. Markers and the list’s own padding reset. Do not restyle `[role="list"]` or `[role="listitem"]`
 - `divided` — on `[list]`. A hairline between direct children. Ignored without `[list]`
@@ -579,7 +598,7 @@ See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColo
 
 ### Badge
 
-CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It is not one of the twenty-eight Emerging auto-enhance runtimes.
+CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It is not one of the twenty-nine Emerging auto-enhance runtimes.
 
 - `badge` — host. Boolean `[badge]` is a pill (radius `999px`, padding `0.375rem 0.75rem`, `0.8125rem` at weight 600). There is no HTML global `badge` attribute, and there is no `<badge>` element. Any value other than `square` or `ribbon` is still that pill
 - `badge="square"` — the same pill with radius `0.375rem`
@@ -598,7 +617,7 @@ The words on the badge are the name. A count needs context in the text or on the
 
 ### Safe area
 
-CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-eight Emerging auto-enhance runtimes.
+CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-nine Emerging auto-enhance runtimes.
 
 - `safe-area` — host. Boolean `[safe-area]` pads all four edges. There is no HTML global `safe-area` attribute, and there is no `<safe-area>` element. An empty value, or any value other than `top`, `bottom`, `x`, or `y`, is still all four edges
 - `safe-area="top"` — top only

@@ -383,6 +383,65 @@ describe('createPressable', () => {
     controller.destroy();
   });
 
+  it('prevents Space from scrolling a custom button and leaves native Space and Enter alone', () => {
+    document.body.innerHTML = `
+      <div pressable role="button" tabindex="0" id="custom">Custom</div>
+      <button type="button" pressable id="native">Native</button>
+      <input type="submit" pressable id="submit" value="Send">
+      <details><summary pressable id="summary">Summary</summary></details>
+      <div pressable tabindex="0" id="plain">Plain</div>
+      <div pressable role="link" tabindex="0" id="link">Link</div>
+      <div pressable role="switch" tabindex="0" id="sw">Switch</div>
+      <div pressable role="button" tabindex="0" id="edit" contenteditable="true">Edit</div>
+    `;
+    stopPressableRuntime();
+    const controller = createPressable({ root: document.body });
+    const custom = document.getElementById('custom')!;
+    const native = document.getElementById('native')!;
+    const submit = document.getElementById('submit')!;
+    const summary = document.getElementById('summary')!;
+    const plain = document.getElementById('plain')!;
+    const link = document.getElementById('link')!;
+    const sw = document.getElementById('sw')!;
+    const edit = document.getElementById('edit')!;
+
+    const key = (target: HTMLElement, code = ' ') => {
+      const event = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        key: code,
+      });
+      target.dispatchEvent(event);
+      return event;
+    };
+
+    const spaceCustom = key(custom);
+    expect(spaceCustom.defaultPrevented).toBe(true);
+    expect(custom.hasAttribute('pressed')).toBe(true);
+    custom.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: ' ' }));
+
+    const spaceNative = key(native);
+    expect(spaceNative.defaultPrevented).toBe(false);
+    expect(native.hasAttribute('pressed')).toBe(true);
+    native.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: ' ' }));
+
+    expect(key(submit).defaultPrevented).toBe(false);
+    expect(key(summary).defaultPrevented).toBe(false);
+    expect(key(plain).defaultPrevented).toBe(false);
+    expect(plain.hasAttribute('pressed')).toBe(true);
+    expect(key(link).defaultPrevented).toBe(false);
+    expect(key(sw).defaultPrevented).toBe(true);
+    expect(key(edit).defaultPrevented).toBe(false);
+
+    const enterCustom = key(custom, 'Enter');
+    expect(enterCustom.defaultPrevented).toBe(false);
+    expect(custom.hasAttribute('pressed')).toBe(true);
+    const enterNative = key(native, 'Enter');
+    expect(enterNative.defaultPrevented).toBe(false);
+
+    controller.destroy();
+  });
+
   it('ignores a disabled host and clears a press that becomes disabled', async () => {
     document.body.innerHTML = `
       <button type="button" pressable disabled id="native">Native</button>
