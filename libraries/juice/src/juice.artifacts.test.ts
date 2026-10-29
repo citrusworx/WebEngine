@@ -1345,6 +1345,178 @@ describe("Juice build artifacts", () => {
         );
     });
 
+    it("includes touchable-row structural chrome in core CSS", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const reduced = reducedMotionBlocks(css);
+
+        const ruleAt = (selector: string) => {
+            const at = css.indexOf(selector);
+            expect(at).toBeGreaterThan(-1);
+            const open = css.indexOf("{", at);
+            const close = css.indexOf("}", open);
+            return css.slice(at, close + 1);
+        };
+
+        expect(css).toContain("@property --juice-touchable-row-ink");
+        expect(css).toContain('syntax: "<color>"');
+        expect(css).toContain("inherits: true");
+        expect(css).toContain("initial-value: #000");
+        expect(css).toContain(":where(a, button, li, div)[touchable-row]");
+        expect(css).toContain("[touchable-row-leading]");
+        expect(css).toContain("[touchable-row-content]");
+        expect(css).toContain("[touchable-row-title]");
+        expect(css).toContain("[touchable-row-subtitle]");
+        expect(css).toContain("[touchable-row-trailing]");
+        expect(css).toMatch(/\[touchable-row~=["']?dense["']?\]/);
+        expect(css).toMatch(/\[touchable-row~=["']?chevron["']?\]/);
+        expect(css).toMatch(/\[touchable-row~=["']?undivided["']?\]/);
+        expect(css).toMatch(/\[touchable-row-title=["']?clamp["']?\]/);
+        expect(css).toMatch(/\[touchable-row-subtitle=["']?clamp["']?\]/);
+        expect(css).toMatch(/\[theme\]\s+:where\(a,\s*button,\s*li,\s*div\)\[touchable-row\]/);
+        expect(css).toMatch(/:where\(a,\s*button,\s*li,\s*div\)\[touchable-row\]:focus-visible/);
+        expect(css).toMatch(
+            /\[touchable-row\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=["']?true["']?\]\)/
+        );
+        expect(css).toMatch(/\[touchable-row\]:is\(\[selected\],\s*\[aria-selected=["']?true["']?\]/);
+        expect(css).toMatch(/\[aria-current\]:not\(\[aria-current=["']?false["']?\]\)/);
+        expect(css).toMatch(/\[touchable-row-leading\] :is\(\[avatar\], \[icon\]\)/);
+        expect(css).toMatch(
+            /\[touchable-row-trailing\] :is\(\[avatar\], \[icon\], \[icon-button\], \[switch\], \[badge\]\)/
+        );
+        expect(css).toContain("--juice-touchable-row-min-height: 44px");
+        expect(css).toContain("--juice-touchable-row-padding: 0.75rem 1rem");
+        expect(css).toContain("--juice-touchable-row-padding-dense: 0.5rem 0.75rem");
+        expect(css).toContain("--juice-touchable-row-gap: 0.75rem");
+        expect(css).toContain("--juice-touchable-row-gap-dense: 0.5rem");
+        expect(css).toContain("--juice-touchable-row-radius: 0.375rem");
+        expect(css).toContain("--juice-touchable-row-selected-width: 3px");
+        expect(css).toContain("--juice-touchable-row-line-clamp: 2");
+        expect(css).toContain("--juice-touchable-row-ink:");
+        expect(css).toContain("--juice-touchable-row-divider:");
+        expect(css).toContain("--juice-touchable-row-selected:");
+        expect(css).toContain("--juice-touchable-row-chevron:");
+        expect(css).toContain("--juice-touchable-row-subtitle:");
+        expect(css).toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-ink:\s*currentColor/);
+        expect(css).toMatch(
+            /:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-divider:\s*color-mix\(in srgb, var\(--juice-touchable-row-ink\) 28%, transparent\)/
+        );
+        expect(css).toMatch(
+            /:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-selected:\s*var\(--juice-touchable-row-ink\)/
+        );
+        expect(css).toMatch(
+            /:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-chevron:\s*var\(--juice-touchable-row-ink\)/
+        );
+        expect(css).toMatch(
+            /:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-subtitle:\s*var\(--juice-touchable-row-ink\)/
+        );
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-touchable-row-min-height:\s*44px/);
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-touchable-row-padding:\s*0\.75rem 1rem/);
+        expect(css).toMatch(/:root\s*\{[^}]*--juice-touchable-row-radius:\s*0\.375rem/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-min-height:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-padding:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-padding-dense:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-gap:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-radius:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-selected-width:/);
+        expect(css).not.toMatch(/:root,\s*\[theme\]\s*\{[^}]*--juice-touchable-row-line-clamp:/);
+        expect(css).not.toContain("--juice-touchable-row-min-height-dense");
+        expect(css).not.toContain("--juice-touchable-row-hover");
+        expect(css).not.toContain("--juice-touchable-row-pressed");
+        expect(css).toContain("min-height: var(--juice-touchable-row-min-height)");
+        expect(css).toContain("padding: var(--juice-touchable-row-padding-dense)");
+        expect(css).toContain("text-overflow: ellipsis");
+        expect(css).toContain("white-space: nowrap");
+        expect(css).toContain("-webkit-line-clamp: var(--juice-touchable-row-line-clamp)");
+        expect(css).toContain("line-clamp: var(--juice-touchable-row-line-clamp)");
+        expect(css).toContain("outline: 2px solid currentColor");
+        expect(css).toContain("outline-offset: 2px");
+        expect(css).toContain("border-inline-start-color: var(--juice-touchable-row-selected)");
+        expect(css).toContain("border-inline-start-width: var(--juice-touchable-row-selected-width)");
+        expect(css).toContain("border-block-end: 1px solid var(--juice-touchable-row-divider)");
+        expect(css).toContain(':not([touchable-row~=undivided]):has(+ :where(a, button, li, div)[touchable-row]:not([touchable-row~=undivided]))');
+        expect(css).toMatch(/\[touchable-row~=chevron\]::after/);
+        expect(css).toContain("border-width: 0 2px 2px 0");
+        expect(css).toContain("transform: rotate(-45deg)");
+        expect(css).toMatch(/:dir\(rtl\) :where\(a, button, li, div\)\[touchable-row~=chevron\]::after/);
+        expect(css).toContain("border-width: 0 0 2px 2px");
+        expect(css).toContain("transform: rotate(45deg)");
+        expect(css).not.toMatch(/\[touchable-row[^\]]*\][^{]*::before/);
+        expect(css).not.toMatch(/\[touchable-row~=chevron\]::before/);
+        expect(css).toContain("width: 100%");
+        expect(css).toContain("opacity: 0.5");
+        expect(css).toMatch(
+            /\[touchable-row\]:is\(:disabled,\s*\[disabled\],\s*\[aria-disabled=true\]\)[^{]*\{[^}]*cursor:\s*default/
+        );
+        expect(css).not.toMatch(/\[touchable-row\][^{]*\{[^}]*pointer-events:\s*none/);
+        expect(css).not.toMatch(/\[touchable-row\][^{]*\{[^}]*z-index:/);
+        expect(css).not.toMatch(/\[touchable-row\][^{]*\{[^}]*position:\s*(?:fixed|absolute|sticky)/);
+        expect(css).not.toMatch(/\[touchable-row\][^{]*\{[^}]*margin(?:-inline|-left|-right)?:\s*-/);
+        expect(css).not.toMatch(/\[touchable-row\][^{]*env\(safe-area-inset/);
+        expect(css).not.toContain("--juice-touchable-row-hover-bg");
+        expect(css).not.toContain("--juice-touchable-row-pressed-bg");
+
+        const denseRule = ruleAt('[touchable-row~=dense],\n[theme] :where(a, button, li, div)[touchable-row~=dense]');
+        expect(denseRule).toContain("padding: var(--juice-touchable-row-padding-dense)");
+        expect(denseRule).not.toContain("min-height");
+
+        const focusRule = ruleAt(":where(a, button, li, div)[touchable-row]:focus-visible,");
+        expect(focusRule).toContain("outline: 2px solid currentColor");
+        expect(focusRule).toContain("outline-offset: 2px");
+        expect(focusRule).not.toContain("box-shadow");
+        expect(focusRule).not.toContain("background");
+
+        const selectedRule = ruleAt(
+            ':where(a, button, li, div)[touchable-row]:is([selected], [aria-selected=true], [aria-current]:not([aria-current=false]))'
+        );
+        expect(selectedRule).toContain("border-inline-start-color: var(--juice-touchable-row-selected)");
+        expect(selectedRule).not.toContain("background");
+
+        const chevronRule = ruleAt(":where(a, button, li, div)[touchable-row~=chevron]::after,");
+        expect(chevronRule).toContain("content: \"\"");
+        expect(chevronRule).toContain("border-width: 0 2px 2px 0");
+        expect(chevronRule).not.toContain("::before");
+
+        const radiusRule = ruleAt(":where(a, button, li, div)[touchable-row]:not([pressable]),");
+        expect(radiusRule).toContain("border-radius: var(--juice-touchable-row-radius)");
+
+        const sortAfter = ruleAt("th[sortable] > button::after,");
+        expect(sortAfter).toContain("border-block-start:");
+        expect(sortAfter).toContain("border-block-end:");
+        expect(sortAfter).not.toContain("touchable-row");
+
+        const switchAfter = ruleAt("[switch]::after,");
+        expect(switchAfter).toContain("border-radius: 999px");
+        expect(switchAfter).not.toContain("touchable-row");
+
+        const avatarAfter = ruleAt('[avatar][status=online]::after,');
+        expect(avatarAfter).toContain("border-radius: 999px");
+        expect(avatarAfter).not.toContain("touchable-row");
+
+        const pressableHover = css.indexOf("[pressable]:hover");
+        const rowRule = css.indexOf(":where(a, button, li, div)[touchable-row]");
+        const safeAreaX = css.indexOf("[safe-area=x]");
+        expect(pressableHover).toBeGreaterThan(-1);
+        expect(rowRule).toBeGreaterThan(pressableHover);
+        expect(safeAreaX).toBeGreaterThan(rowRule);
+
+        expect(
+            reduced.some(
+                (block) => block.includes("[touchable-row]") && block.includes("transition: none")
+            )
+        ).toBe(true);
+        expect(reduced.every((block) => !/\[touchable-row[^\]]*\][^{]*::before/.test(block))).toBe(true);
+        expect(css).not.toMatch(/tr\[touchable-row\]/);
+        expect(css).not.toMatch(/\[menuitem\]\[touchable-row\]/);
+        expect(css).not.toContain("[touchable-row-meta]");
+        expect(css).not.toContain("[touchable-row-chevron]");
+
+        for (const id of readBundledThemeIds()) {
+            const themeCss = readFileSync(join(DIST_DIR, "themes", `${id}.css`), "utf-8");
+            expect(themeCss).not.toContain("--juice-touchable-row-");
+            expect(themeCss).not.toContain("[touchable-row]");
+        }
+    });
+
     it("includes select structural chrome in core CSS", () => {
         const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
 
