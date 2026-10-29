@@ -101084,8 +101084,8 @@ nav[type=actions] a:hover {
 
 :root,
 [theme] {
-  --juice-pressable-hover-bg: color-mix(in srgb, currentColor 1%, transparent);
-  --juice-pressable-pressed-bg: color-mix(in srgb, currentColor 1%, transparent);
+  --juice-pressable-hover-ring: currentColor;
+  --juice-pressable-pressed-ring: currentColor;
   --juice-pressable-focus-ring: currentColor;
 }
 
@@ -101104,46 +101104,29 @@ nav[type=actions] a:hover {
   -webkit-user-select: none;
           user-select: none;
   border-radius: var(--juice-pressable-radius);
-  isolation: isolate;
-}
-
-[pressable] {
-  position: relative;
-}
-
-[pressable]::before,
-[theme] [pressable]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background-color: transparent;
-  pointer-events: none;
-  transition: background-color var(--juice-pressable-duration) var(--juice-pressable-easing);
+  transition: box-shadow var(--juice-pressable-duration) var(--juice-pressable-easing);
 }
 
 @media (hover: hover) {
-  [pressable]:hover::before,
-  [theme] [pressable]:hover::before {
-    background-color: var(--juice-pressable-hover-bg);
+  [pressable]:hover,
+  [theme] [pressable]:hover {
+    box-shadow: inset 0 0 0 1px var(--juice-pressable-hover-ring);
   }
 }
-[pressable]:is(:active, [pressed])::before,
-[theme] [pressable]:is(:active, [pressed])::before {
-  background-color: var(--juice-pressable-pressed-bg);
+[pressable]:is(:active, [pressed]),
+[theme] [pressable]:is(:active, [pressed]) {
+  box-shadow: inset 0 0 0 2px var(--juice-pressable-pressed-ring);
 }
 
 [pressable]:focus-visible,
 [theme] [pressable]:focus-visible {
   outline: 2px solid var(--juice-pressable-focus-ring);
   outline-offset: 2px;
-  box-shadow: none;
 }
 
 [pressable=scale],
 [theme] [pressable=scale] {
-  transition: transform var(--juice-pressable-duration) var(--juice-pressable-easing);
+  transition: box-shadow var(--juice-pressable-duration) var(--juice-pressable-easing), transform var(--juice-pressable-duration) var(--juice-pressable-easing);
 }
 
 [pressable=scale]:is(:active, [pressed]),
@@ -101156,9 +101139,9 @@ nav[type=actions] a:hover {
   cursor: default;
 }
 
-[pressable]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active, [pressed])::before,
-[theme] [pressable]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active, [pressed])::before {
-  background-color: transparent;
+[pressable]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active, [pressed]),
+[theme] [pressable]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active, [pressed]) {
+  box-shadow: none;
 }
 
 [pressable=scale]:is(:disabled, [disabled], [aria-disabled=true]):is(:active, [pressed]),
@@ -101167,8 +101150,8 @@ nav[type=actions] a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [pressable]::before,
-  [theme] [pressable]::before,
+  [pressable],
+  [theme] [pressable],
   [pressable=scale],
   [theme] [pressable=scale] {
     transition: none;
