@@ -2200,7 +2200,7 @@ __metadata:
   resolution: "@citrusworx/blackwater-sound@workspace:apps/blackwatersound/front"
   dependencies:
     "@citrusworx/juiceui": "npm:^0.9.0"
-    "@citrusworx/sigjs": "npm:^0.7.0"
+    "@citrusworx/sigjs": "npm:^1.0.0"
     typescript: "npm:^5.9.3"
     vite: "npm:^8.0.0"
   languageName: unknown
@@ -2264,7 +2264,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@citrusworx/juiceui@workspace:libraries/juice"
   dependencies:
-    "@citrusworx/sigjs": "npm:^0.7.0"
+    "@citrusworx/sigjs": "npm:^1.0.0"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
     "@types/gulp": "npm:^4.0.18"
@@ -2407,7 +2407,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@citrusworx/sigjs@npm:^0.7.0, @citrusworx/sigjs@workspace:*, @citrusworx/sigjs@workspace:^, @citrusworx/sigjs@workspace:libraries/sig":
+"@citrusworx/sigjs@npm:^1.0.0, @citrusworx/sigjs@workspace:*, @citrusworx/sigjs@workspace:^, @citrusworx/sigjs@workspace:libraries/sig":
   version: 0.0.0-use.local
   resolution: "@citrusworx/sigjs@workspace:libraries/sig"
   dependencies:
@@ -2435,7 +2435,7 @@ __metadata:
   resolution: "@citrusworx/sugar@workspace:tooling/sugar"
   dependencies:
     "@citrusworx/juiceui": "npm:^0.9.0"
-    "@citrusworx/sigjs": "npm:^0.7.0"
+    "@citrusworx/sigjs": "npm:^1.0.0"
     json5: "npm:^2.2.3"
     typescript: "npm:^6.0.2"
     vite: "npm:^8.0.0"

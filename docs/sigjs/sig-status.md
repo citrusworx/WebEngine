@@ -1,12 +1,12 @@
 # Sig.js Status
 
-Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Alpha.** Workspace `libraries/sig/package.json` is **0.7.2**, the same as npm latest (2026-10-27). `CHANGELOG.md` records **0.7.0**, **0.7.1**, and **0.7.2**.
+Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Stable.** Workspace `libraries/sig/package.json` is **1.0.0**. npm latest is still **0.7.2** (2026-10-27) until **1.0.0** is published. The API matches that registry cut. `CHANGELOG.md` records **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**.
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 
-**Alpha.** The reactivity core, JSX factory, and client router are implemented and covered by Playwright tests. The API is small enough to describe, but this is pre-1.0: names and behavior can still move.
+**Stable.** The reactivity core, JSX factory, and client router are implemented and covered by Playwright tests. **1.0.0** freezes that API. `Signal.set` always notifies, including when the value is unchanged. SSR, a virtual DOM, `<For>`, and `<Show>` are non-goals for 1.0.
 
-Workspace index calls this **Active alpha**. That matches the code better than “beta” or “production ready.”
+Workspace index calls this **Stable**.
 
 Related: [Roadmap](./sig-roadmap.md) for direction. [API](./sig-api.md) for the surface as it exists. [API surface](./api-surface.md) for the v1 classification (stable, experimental, internal).
 
@@ -14,7 +14,7 @@ Related: [Roadmap](./sig-roadmap.md) for direction. [API](./sig-api.md) for the 
 
 ### `Stable`
 
-The feature is usable today, central to the Sig.js experience, and unlikely to change dramatically in basic concept. Alpha still means the package version can move; the *idea* is settled.
+The feature is usable today, central to the Sig.js experience, and part of the 1.0 contract. A breaking change to it is a major release.
 
 ### `Emerging`
 
@@ -113,7 +113,7 @@ These are already useful, but still need refinement before they feel fully settl
 - documentation as a product surface
 - Juice composition conventions (typed plugin vs today’s attribute convention)
 
-These areas are what will most directly move Sig.js from strong alpha toward a calmer 1.0 story.
+**1.0.0** ships without waiting on these. A later change follows the 1.x rules in the [release checklist](./release-checklist.md#semver).
 
 ## Early or draft areas
 
@@ -170,7 +170,7 @@ Juice works without Sig. Observable widget state is `juice:change` and `getState
 
 If Sig.js is being described externally or internally, the most honest current positioning is:
 
-> Sig.js Alpha is a small signals runtime plus a JSX factory that creates real DOM nodes. It is built for static-first Juice (or HTML) pages that need surgical updates: live text, live attributes, effects, and a small client router (exact + `:param` paths). It is not a virtual-DOM framework, not React, and not a component library.
+> Sig.js 1.0 is a small signals runtime plus a JSX factory that creates real DOM nodes. It is built for static-first Juice (or HTML) pages that need surgical updates: live text, live attributes, effects, and a small client router (exact + `:param` paths). SSR, a virtual DOM, `<For>`, and `<Show>` are non-goals for 1.0. It is not React, and it is not a component library.
 
 That framing matches the strongest current reality.
 

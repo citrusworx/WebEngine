@@ -1,9 +1,9 @@
 /**
  * Fail when Yarn (or npm) has installed a second @citrusworx/sigjs.
  *
- * 0.x carets do not cross minors. A consumer pinned below the workspace
- * version makes Yarn put a registry tarball at
- * `<consumer>/node_modules/@citrusworx/sigjs`. Sig's build must see one copy.
+ * A range that does not include the workspace version makes Yarn put a
+ * registry tarball at `<consumer>/node_modules/@citrusworx/sigjs`.
+ * `^0.7.0` does not include workspace 1.0.0. Sig's build must see one copy.
  *
  * `libraries/sig/examples/counter` is its own npm project, not a workspace
  * member, so an install there is an outside consumer and is ignored.

@@ -1,12 +1,12 @@
 # Sig.js API surface
 
-Freeze inventory for `@citrusworx/sigjs` before v1. This page describes the workspace tree (`libraries/sig/package.json` **0.7.2**). That matches npm latest (2026-10-27, PR #295). **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
+Freeze inventory for `@citrusworx/sigjs` at **1.0.0**. This page describes the workspace tree (`libraries/sig/package.json` **1.0.0**). The API matches npm **0.7.2** (2026-10-27, PR #295). **1.0.0** is not on npm yet. **0.6.0** (2026-10-21) still exports `captureCleanupScope` and `jsxDEV` from the package root. **0.7.0** removed those two from `.`. Behavior and examples stay in [API](./sig-api.md). Maturity labels stay in [Status](./sig-status.md).
 
 Two root names came off the public entry: `captureCleanupScope` (internal module only) and `jsxDEV` (still on `./jsx-dev-runtime`). `Signal.set` always notifies, including when the value is unchanged, and that is frozen for v1. `bindList` and `ListItem` stay experimental.
 
 ## Classifications
 
-- **stable** — freeze for v1. A later change is a breaking release.
+- **stable** — frozen at 1.0.0. A later breaking change is a major release.
 - **experimental** — exported on purpose, and allowed to change. The declaration has a JSDoc `@experimental` tag.
 - **internal** — not a package entry. `captureCleanupScope` lives in `src/cleanup-scope.ts`. The file is emitted into `dist/` because the runtime imports it, and `package.json` `exports` does not expose it. Same rule as `attachNodeCleanup`.
 

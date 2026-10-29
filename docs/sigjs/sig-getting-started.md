@@ -23,10 +23,10 @@ It is not React. There is no `useState`, `useEffect`, or virtual DOM. Components
 ## Install
 
 ```bash
-npm install @citrusworx/sigjs@^0.7.0
+npm install @citrusworx/sigjs
 ```
 
-Workspace `libraries/sig/package.json` is **0.7.2**, the same as npm latest. `^0.7.0` installs that release (`>=0.7.0 <0.8.0`). `^0.6.0` and `^0.4.0` do not install `0.7.0` or later. Yarn / pnpm: `yarn add @citrusworx/sigjs@^0.7.0` / `pnpm add @citrusworx/sigjs@^0.7.0`.
+Workspace `libraries/sig/package.json` is **1.0.0**. npm latest is still **0.7.2** until that version is published, so this command installs **0.7.2** today and **1.0.0** after the publish. The API is the same. `^1.0.0` is `>=1.0.0 <2.0.0`. `^0.7.0` does not install **1.0.0**. Yarn / pnpm: `yarn add @citrusworx/sigjs` / `pnpm add @citrusworx/sigjs`.
 
 ## Configure TypeScript for JSX
 
