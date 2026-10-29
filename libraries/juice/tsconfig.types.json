@@ -43,6 +43,7 @@
     "src/js/src/avatar/avatar-runtime.ts",
     "src/js/src/table/table-runtime.ts",
     "src/js/src/pressable/pressable-runtime.ts",
+    "src/js/src/touchable-row/touchable-row-runtime.ts",
     "src/js/src/shared/events.ts",
     "src/js/src/shared/motion.ts",
     "src/js/src/shared/focus.ts",

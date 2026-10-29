@@ -29,4 +29,5 @@ export declare const createJuiceChanges: <TState>(runtime: string) => {
     has: (host: EventTarget) => boolean;
     prime: (host: EventTarget, state: TState) => void;
     note: (host: EventTarget, state: TState, options?: JuiceChangeNoteOptions<TState>) => void;
+    adopt: (host: EventTarget, state: TState) => void;
 };
