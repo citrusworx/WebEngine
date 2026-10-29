@@ -402,7 +402,7 @@ Juice does not export a `Button` component for Sig to import. Use HTML plus Juic
 
 ## Status
 
-**Stable** (workspace `@citrusworx/sigjs` **1.0.0**). npm latest is still **0.7.2** until **1.0.0** is published. The API matches that cut. Core reactivity is implemented and tested:
+**Stable** (workspace `@citrusworx/sigjs` **1.0.0**). npm `latest` is **1.0.0** (published 2026-10-29). The API matches that cut. Core reactivity is implemented and tested:
 
 - `Signal`, `effect` (with cleanup / dispose), `batch`, `memo`
 - JSX runtime (direct DOM, function-child text, function-valued props, `ref`, `on*` events)
