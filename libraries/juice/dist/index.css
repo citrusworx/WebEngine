@@ -102141,6 +102141,283 @@ button[radio][aria-disabled=true],
     transition: none;
   }
 }
+@property --juice-touchable-row-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #000;
+}
+:root,
+[theme] {
+  --juice-touchable-row-ink: currentColor;
+  --juice-touchable-row-divider: color-mix(in srgb, var(--juice-touchable-row-ink) 28%, transparent);
+  --juice-touchable-row-selected: var(--juice-touchable-row-ink);
+  --juice-touchable-row-chevron: var(--juice-touchable-row-ink);
+  --juice-touchable-row-subtitle: var(--juice-touchable-row-ink);
+}
+
+:root {
+  --juice-touchable-row-min-height: 44px;
+  --juice-touchable-row-padding: 0.75rem 1rem;
+  --juice-touchable-row-padding-dense: 0.5rem 0.75rem;
+  --juice-touchable-row-gap: 0.75rem;
+  --juice-touchable-row-gap-dense: 0.5rem;
+  --juice-touchable-row-radius: 0.375rem;
+  --juice-touchable-row-selected-width: 3px;
+  --juice-touchable-row-line-clamp: 2;
+}
+
+:where(a, button, li, div)[touchable-row],
+[theme] :where(a, button, li, div)[touchable-row] {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--juice-touchable-row-min-height);
+  margin: 0;
+  padding: var(--juice-touchable-row-padding);
+  border-style: solid;
+  border-color: transparent;
+  border-block-width: 0;
+  border-inline-end-width: 0;
+  border-inline-start-width: var(--juice-touchable-row-selected-width);
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--juice-touchable-row-ink);
+  font: inherit;
+  line-height: inherit;
+  text-align: start;
+  text-decoration: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+:where(a, button, li, div)[touchable-row]:not([pressable]),
+[theme] :where(a, button, li, div)[touchable-row]:not([pressable]) {
+  border-radius: var(--juice-touchable-row-radius);
+}
+
+:where(a, button, li, div)[touchable-row~=dense],
+[theme] :where(a, button, li, div)[touchable-row~=dense] {
+  padding: var(--juice-touchable-row-padding-dense);
+}
+
+:where(a, button, li, div)[touchable-row] > [touchable-row-leading],
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-leading] {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  gap: var(--juice-touchable-row-gap);
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  margin-inline-end: var(--juice-touchable-row-gap);
+  padding: 0;
+  color: var(--juice-touchable-row-ink);
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+}
+
+:where(a, button, li, div)[touchable-row~=dense] > [touchable-row-leading],
+[theme] :where(a, button, li, div)[touchable-row~=dense] > [touchable-row-leading] {
+  gap: var(--juice-touchable-row-gap-dense);
+  margin-inline-end: var(--juice-touchable-row-gap-dense);
+}
+
+:where(a, button, li, div)[touchable-row] > [touchable-row-content],
+:where(a, button, li, div)[touchable-row] > [touchable-row-title],
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-content],
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-title] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  justify-content: center;
+  gap: 0.125rem;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  color: var(--juice-touchable-row-ink);
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+}
+
+:where(a, button, li, div)[touchable-row] > [touchable-row-trailing],
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-trailing] {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  align-self: stretch;
+  justify-content: flex-end;
+  gap: var(--juice-touchable-row-gap);
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  padding-inline-start: var(--juice-touchable-row-gap);
+  color: var(--juice-touchable-row-ink);
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+:where(a, button, li, div)[touchable-row~=dense] > [touchable-row-trailing],
+[theme] :where(a, button, li, div)[touchable-row~=dense] > [touchable-row-trailing] {
+  gap: var(--juice-touchable-row-gap-dense);
+  padding-inline-start: var(--juice-touchable-row-gap-dense);
+}
+
+[touchable-row-leading] :is([avatar], [icon]),
+[touchable-row-trailing] :is([avatar], [icon], [icon-button], [switch], [badge]),
+[theme] [touchable-row-leading] :is([avatar], [icon]),
+[theme] [touchable-row-trailing] :is([avatar], [icon], [icon-button], [switch], [badge]) {
+  flex: 0 0 auto;
+}
+
+[touchable-row-title],
+[touchable-row-subtitle],
+[theme] [touchable-row-title],
+[theme] [touchable-row-subtitle] {
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+}
+
+[touchable-row-title],
+[theme] [touchable-row-title] {
+  color: var(--juice-touchable-row-ink);
+  font-weight: 600;
+}
+
+[touchable-row-subtitle],
+[theme] [touchable-row-subtitle] {
+  color: var(--juice-touchable-row-subtitle);
+  font-size: 0.875em;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+[touchable-row-title=clamp],
+[touchable-row-subtitle=clamp],
+[theme] [touchable-row-title=clamp],
+[theme] [touchable-row-subtitle=clamp] {
+  display: -webkit-box;
+  white-space: normal;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--juice-touchable-row-line-clamp);
+  line-clamp: var(--juice-touchable-row-line-clamp);
+}
+
+:where(a, button, li, div)[touchable-row]:not([touchable-row~=undivided]):has(+ :where(a, button, li, div)[touchable-row]:not([touchable-row~=undivided])) > :is([touchable-row-content], [touchable-row-trailing], [touchable-row-title]),
+[theme] :where(a, button, li, div)[touchable-row]:not([touchable-row~=undivided]):has(+ :where(a, button, li, div)[touchable-row]:not([touchable-row~=undivided])) > :is([touchable-row-content], [touchable-row-trailing], [touchable-row-title]) {
+  border-block-end: 1px solid var(--juice-touchable-row-divider);
+}
+
+:where(a, button, li, div)[touchable-row~=chevron]::after,
+[theme] :where(a, button, li, div)[touchable-row~=chevron]::after {
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  align-self: center;
+  box-sizing: border-box;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin: 0;
+  margin-inline-start: var(--juice-touchable-row-gap);
+  border-style: solid;
+  border-color: var(--juice-touchable-row-chevron);
+  border-width: 0 2px 2px 0;
+  transform: rotate(-45deg);
+  transform-origin: 50% 50%;
+}
+
+:where(a, button, li, div)[touchable-row~=dense][touchable-row~=chevron]::after,
+[theme] :where(a, button, li, div)[touchable-row~=dense][touchable-row~=chevron]::after {
+  margin-inline-start: var(--juice-touchable-row-gap-dense);
+}
+
+:dir(rtl) :where(a, button, li, div)[touchable-row~=chevron]::after,
+[dir=rtl] :where(a, button, li, div)[touchable-row~=chevron]::after,
+:dir(rtl) [theme] :where(a, button, li, div)[touchable-row~=chevron]::after,
+[dir=rtl] [theme] :where(a, button, li, div)[touchable-row~=chevron]::after {
+  border-width: 0 0 2px 2px;
+  transform: rotate(45deg);
+}
+
+:where(a, button, li, div)[touchable-row]:is([selected], [aria-selected=true], [aria-current]:not([aria-current=false])),
+[theme] :where(a, button, li, div)[touchable-row]:is([selected], [aria-selected=true], [aria-current]:not([aria-current=false])) {
+  border-inline-start-color: var(--juice-touchable-row-selected);
+  color: var(--juice-touchable-row-ink);
+  text-decoration: none;
+}
+
+:where(a, button, li, div)[touchable-row]:is(:hover, :active, :focus-visible),
+[theme] :where(a, button, li, div)[touchable-row]:is(:hover, :active, :focus-visible) {
+  color: var(--juice-touchable-row-ink);
+  text-decoration: none;
+}
+
+:where(a, button, li, div)[touchable-row]:focus-visible,
+[theme] :where(a, button, li, div)[touchable-row]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+:where(a, button, li, div)[touchable-row]:is(:disabled, [disabled], [aria-disabled=true]),
+[theme] :where(a, button, li, div)[touchable-row]:is(:disabled, [disabled], [aria-disabled=true]) {
+  opacity: 0.5;
+  cursor: default;
+  color: var(--juice-touchable-row-ink);
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+}
+
+:where(a, button, li, div)[touchable-row]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active),
+[theme] :where(a, button, li, div)[touchable-row]:is(:disabled, [disabled], [aria-disabled=true]):is(:hover, :active) {
+  color: var(--juice-touchable-row-ink);
+  background-color: transparent;
+  background-image: none;
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(a, button, li, div)[touchable-row],
+  [theme] :where(a, button, li, div)[touchable-row],
+  :where(a, button, li, div)[touchable-row~=chevron]::after,
+  [theme] :where(a, button, li, div)[touchable-row~=chevron]::after {
+    transition: none;
+  }
+}
 :root {
   --juice-safe-area-pad: 1rem;
 }
