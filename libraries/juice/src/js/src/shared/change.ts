@@ -96,6 +96,14 @@ export const createJuiceChanges = <TState>(runtime: string) => {
     if (!known.has(host)) known.set(host, cloneState(state));
   };
 
+  // Overwrite the snapshot without dispatching. A second controller can
+  // mutate the host first (its listener is closer to the target). The
+  // controller that handles the next mutation rebases onto the DOM so
+  // that mutation still publishes.
+  const adopt = (host: EventTarget, state: TState) => {
+    known.set(host, cloneState(state));
+  };
+
   const note = (
     host: EventTarget,
     state: TState,
@@ -121,5 +129,5 @@ export const createJuiceChanges = <TState>(runtime: string) => {
     dispatchJuiceChange(host, runtime, next);
   };
 
-  return { has, prime, note };
+  return { has, prime, note, adopt };
 };

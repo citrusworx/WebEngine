@@ -102236,9 +102236,7 @@ button[radio][aria-disabled=true],
 }
 
 :where(a, button, li, div)[touchable-row] > [touchable-row-content],
-:where(a, button, li, div)[touchable-row] > [touchable-row-title],
-[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-content],
-[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-title] {
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-content] {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -102246,6 +102244,22 @@ button[radio][aria-disabled=true],
   align-self: stretch;
   justify-content: center;
   gap: 0.125rem;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  color: var(--juice-touchable-row-ink);
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+}
+
+:where(a, button, li, div)[touchable-row] > [touchable-row-title],
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-title] {
+  flex: 1 1 auto;
+  align-self: stretch;
   box-sizing: border-box;
   min-width: 0;
   max-width: 100%;

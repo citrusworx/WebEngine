@@ -5,6 +5,10 @@ import { createAccordion, stopAccordionRuntime } from '../accordion/accordion-ru
 import { createAvatar, stopAvatarRuntime } from '../avatar/avatar-runtime.js';
 import { createTable, stopTableRuntime } from '../table/table-runtime.js';
 import { createPressable, stopPressableRuntime } from '../pressable/pressable-runtime.js';
+import {
+  createTouchableRow,
+  stopTouchableRowRuntime,
+} from '../touchable-row/touchable-row-runtime.js';
 import { createBanner, stopBannerRuntime } from '../banner/banner-runtime.js';
 import {
   createBreadcrumb,
@@ -55,6 +59,7 @@ const stopAll = () => {
   stopAvatarRuntime();
   stopTableRuntime();
   stopPressableRuntime();
+  stopTouchableRowRuntime();
   stopBannerRuntime();
   stopBreadcrumbRuntime();
   stopCheckboxRuntime();
@@ -1053,6 +1058,34 @@ describe('juice:change', () => {
       state: { pressed: false, longPressed: false },
     });
     expect(controller.getState()).toEqual({ pressed: false, longPressed: false });
+
+    heard.stop();
+    controller.destroy();
+  });
+
+  it('dispatches one touchable-row event per real selection change', () => {
+    document.body.innerHTML = '<div touchable-row="select" id="row">Row</div>';
+    stopTouchableRowRuntime();
+    const controller = createTouchableRow({ root: document.body });
+    const host = document.getElementById('row')!;
+    const heard = listen();
+
+    expect(controller.getState(host)).toEqual({ selected: false, disabled: false });
+
+    host.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    host.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    expect(heard.events).toHaveLength(2);
+    expect(heard.events[0]?.bubbles).toBe(true);
+    expect(heard.events[0]?.target).toBe(host);
+    expect(heard.events[0]?.detail).toEqual({
+      runtime: 'touchable-row',
+      state: { selected: true, disabled: false },
+    });
+    expect(heard.events[1]?.detail).toEqual({
+      runtime: 'touchable-row',
+      state: { selected: false, disabled: false },
+    });
+    expect(controller.getState()).toEqual({ selected: false, disabled: false });
 
     heard.stop();
     controller.destroy();

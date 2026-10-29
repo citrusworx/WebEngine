@@ -56,6 +56,8 @@ export { createTable, initTable, startTableRuntime, stopTableRuntime } from "./s
 export type { TableController, TableOptions, TableSortDirection, TableState } from "./src/table/table-runtime.js";
 export { createPressable, initPressable, startPressableRuntime, stopPressableRuntime } from "./src/pressable/pressable-runtime.js";
 export type { PressableController, PressableOptions, PressableState } from "./src/pressable/pressable-runtime.js";
+export { createTouchableRow, initTouchableRow, startTouchableRowRuntime, stopTouchableRowRuntime } from "./src/touchable-row/touchable-row-runtime.js";
+export type { TouchableRowController, TouchableRowOptions, TouchableRowState } from "./src/touchable-row/touchable-row-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./src/shared/motion.js";

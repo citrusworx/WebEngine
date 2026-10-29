@@ -1,6 +1,7 @@
 // Touchable-row chrome is structural. Color comes from core roles on
 // :root. Shipped themes are not required to bind --juice-touchable-row-*.
-// No theme file is edited. Slice B adds runtime. Slice C adds docs.
+// No theme file is edited. The runtime is
+// src/js/src/touchable-row/touchable-row-runtime.ts. Slice C adds docs.
 //
 //   --juice-touchable-row-ink
 //   --juice-touchable-row-divider
@@ -110,6 +111,10 @@
 //                                    height stays 44px.
 //   [touchable-row~="chevron"]       disclosure mark, drawn with ::after.
 //   [touchable-row~="undivided"]     no hairline on this boundary.
+//   [touchable-row~="select"]        runtime opt-in. Toggles [selected].
+//                                    Not styled in this file.
+//   [touchable-row~="activate"]      runtime opt-in. Keyboard button
+//                                    chrome. Not styled in this file.
 //   [touchable-row-leading]          icon or avatar. The slot does not
 //                                    clip, so a status dot keeps its rim.
 //   [touchable-row-content]          title plus optional subtitle.
@@ -142,9 +147,14 @@
 // match this host. :dir(rtl) and [dir="rtl"] mirror the corner.
 //
 // Title and subtitle ellipsize. ="clamp" uses --juice-touchable-row-line-clamp
-// (2). Min height is 44px on every density. Dense padding is 0.5rem
-// 0.75rem, which is shorter than one line plus that padding, and
-// min-height holds the box at 44px. A title and subtitle together grow
+// (2). A direct title is not a flex container: display:flex on that
+// child beat display:block and display:-webkit-box, so the line could
+// not ellipsize and ="clamp" never became a box. The column flex stays
+// on [touchable-row-content]. The direct title still grows, and the
+// hairline rule still borders it. Min height is 44px on every density.
+// Dense padding is 0.5rem 0.75rem, which is shorter than one line plus
+// that padding, and min-height holds the box at 44px. A title and
+// subtitle together grow
 // past 44px in both densities.
 //
 // Disabled is :disabled, [disabled], or [aria-disabled="true"]. Opacity
@@ -297,10 +307,16 @@
     margin-inline-end: var(--juice-touchable-row-gap-dense);
 }
 
+// Column flex is the content wrapper only. A direct title used to share
+// this rule. display:flex here is (0, 2, 0), and the [theme] form is
+// (0, 3, 0). Both beat [touchable-row-title] (0, 1, 0) and
+// [touchable-row-title="clamp"] / [theme] [touchable-row-title="clamp"]
+// (0, 1, 0) and (0, 2, 0). The title stayed a flex container, so a
+// direct title could not single-line ellipsize and ="clamp" never
+// switched to -webkit-box. Do not put display on the direct title.
+
 :where(a, button, li, div)[touchable-row] > [touchable-row-content],
-:where(a, button, li, div)[touchable-row] > [touchable-row-title],
-[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-content],
-[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-title] {
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-content] {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -308,6 +324,22 @@
     align-self: stretch;
     justify-content: center;
     gap: 0.125rem;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    color: var(--juice-touchable-row-ink);
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+:where(a, button, li, div)[touchable-row] > [touchable-row-title],
+[theme] :where(a, button, li, div)[touchable-row] > [touchable-row-title] {
+    flex: 1 1 auto;
+    align-self: stretch;
     box-sizing: border-box;
     min-width: 0;
     max-width: 100%;

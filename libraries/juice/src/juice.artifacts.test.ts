@@ -63,6 +63,109 @@ function reducedMotionBlocks(css: string): string[] {
     return blocks;
 }
 
+function splitSelectors(selector: string) {
+    const parts: string[] = [];
+    let current = "";
+    let depth = 0;
+
+    for (const char of selector) {
+        if (char === "(") depth += 1;
+        if (char === ")") depth -= 1;
+        if (char === "," && depth === 0) {
+            parts.push(current);
+            current = "";
+            continue;
+        }
+        current += char;
+    }
+
+    if (current.trim()) parts.push(current);
+    return parts;
+}
+
+function flatSelector(selector: string) {
+    return selector.replace(/\s+/g, "");
+}
+
+function stripWhere(selector: string) {
+    const needle = ":where(";
+    let result = "";
+    let index = 0;
+
+    while (index < selector.length) {
+        if (selector.startsWith(needle, index)) {
+            let depth = 1;
+            index += needle.length;
+            while (index < selector.length && depth > 0) {
+                if (selector[index] === "(") depth += 1;
+                else if (selector[index] === ")") depth -= 1;
+                index += 1;
+            }
+            continue;
+        }
+        result += selector[index];
+        index += 1;
+    }
+
+    return result;
+}
+
+function selectorSpecificity(selector: string): [number, number, number] {
+    const source = stripWhere(selector);
+    let ids = 0;
+    let attrs = 0;
+    let types = 0;
+
+    for (let index = 0; index < source.length; index += 1) {
+        const char = source[index];
+        if (char === "[") {
+            attrs += 1;
+            const close = source.indexOf("]", index);
+            if (close < 0) break;
+            index = close;
+            continue;
+        }
+        if (char === "#") {
+            ids += 1;
+            continue;
+        }
+        if (char === ".") {
+            attrs += 1;
+            continue;
+        }
+        if (char === ":" && source[index + 1] === ":") {
+            types += 1;
+            index += 1;
+            continue;
+        }
+        if (char === ":") {
+            attrs += 1;
+            continue;
+        }
+        if (/[a-zA-Z*]/.test(char)) {
+            const start = index;
+            while (index < source.length && /[a-zA-Z0-9-]/.test(source[index] ?? "")) index += 1;
+            if (source.slice(start, index) !== "*") types += 1;
+            index -= 1;
+        }
+    }
+
+    return [ids, attrs, types];
+}
+
+function cssDeclarations(css: string) {
+    return [...css.matchAll(/([^{}@]+)\{([^{}]*)\}/g)].map((match) => ({
+        selector: match[1] ?? "",
+        body: match[2] ?? "",
+    }));
+}
+
+function declaredProperty(body: string, property: string) {
+    const escaped = property.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const match = new RegExp(`(?:^|;)\\s*${escaped}\\s*:\\s*([^;]+)`, "i").exec(body);
+    return match?.[1]?.trim() ?? null;
+}
+
 function motionDeclarationsWithDurationLiterals(css: string): string[] {
     const found: string[] = [];
     const re = /(?:^|[{;])\s*((?:-\w+-)?(?:transition|animation)(?:-duration|-delay)?)\s*:\s*([^;{}]+)/g;
@@ -1515,6 +1618,94 @@ describe("Juice build artifacts", () => {
             expect(themeCss).not.toContain("--juice-touchable-row-");
             expect(themeCss).not.toContain("[touchable-row]");
         }
+    });
+
+    it("lets a direct touchable-row title ellipsize and clamp", () => {
+        const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+        const rules = cssDeclarations(css);
+        const directTitle = ":where(a, button, li, div)[touchable-row] > [touchable-row-title]";
+        const themedDirectTitle = `[theme] ${directTitle}`;
+        const content = ":where(a, button, li, div)[touchable-row] > [touchable-row-content]";
+
+        // The direct-child selector is more specific than both truncation
+        // modes. A display declaration on it would keep the title a flex
+        // container, which cannot ellipsize, and would beat ="clamp".
+        expect(selectorSpecificity(directTitle)).toEqual([0, 2, 0]);
+        expect(selectorSpecificity("[touchable-row-title]")).toEqual([0, 1, 0]);
+        expect(selectorSpecificity("[touchable-row-title=clamp]")).toEqual([0, 1, 0]);
+        expect(selectorSpecificity(themedDirectTitle)).toEqual([0, 3, 0]);
+        expect(selectorSpecificity("[theme] [touchable-row-title]")).toEqual([0, 2, 0]);
+        expect(selectorSpecificity("[theme] [touchable-row-title=clamp]")).toEqual([0, 2, 0]);
+
+        const directRule = rules.find((rule) =>
+            splitSelectors(rule.selector).some((part) => flatSelector(part) === flatSelector(directTitle))
+        );
+        expect(directRule, "direct title rule").toBeDefined();
+        expect(declaredProperty(directRule!.body, "display")).toBeNull();
+        expect(directRule!.body).toContain("flex: 1 1 auto");
+        expect(directRule!.body).toContain("align-self: stretch");
+        expect(directRule!.body).toContain("min-width: 0");
+        expect(directRule!.body).not.toContain("flex-direction");
+        expect(directRule!.body).not.toContain("justify-content");
+        expect(
+            splitSelectors(directRule!.selector).some((part) => flatSelector(part) === flatSelector(themedDirectTitle))
+        ).toBe(true);
+
+        const contentRule = rules.find((rule) =>
+            splitSelectors(rule.selector).some((part) => flatSelector(part) === flatSelector(content))
+        );
+        expect(contentRule, "content wrapper rule").toBeDefined();
+        expect(declaredProperty(contentRule!.body, "display")).toBe("flex");
+        expect(contentRule!.body).toContain("flex-direction: column");
+        expect(contentRule!.body).toContain("justify-content: center");
+        expect(
+            splitSelectors(contentRule!.selector).some((part) => part.includes("[touchable-row-title]"))
+        ).toBe(false);
+
+        for (const rule of rules) {
+            for (const part of splitSelectors(rule.selector)) {
+                const selector = part.replace(/\s+/g, " ").trim();
+                if (!/>\s*\[touchable-row-title(?:\]|=)/.test(selector)) continue;
+                expect(declaredProperty(rule.body, "display"), selector).toBeNull();
+            }
+        }
+
+        const titleRule = rules.find((rule) =>
+            splitSelectors(rule.selector).some((part) => flatSelector(part) === "[touchable-row-title]")
+        );
+        expect(titleRule, "title ellipsis rule").toBeDefined();
+        expect(declaredProperty(titleRule!.body, "display")).toBe("block");
+        expect(declaredProperty(titleRule!.body, "overflow")).toBe("hidden");
+        expect(declaredProperty(titleRule!.body, "text-overflow")).toBe("ellipsis");
+        expect(declaredProperty(titleRule!.body, "white-space")).toBe("nowrap");
+
+        const clampRule = rules.find((rule) =>
+            splitSelectors(rule.selector).some((part) => {
+                const flat = flatSelector(part);
+                return (
+                    flat === "[touchable-row-title=clamp]" ||
+                    flat === '[touchable-row-title="clamp"]' ||
+                    flat === "[touchable-row-title='clamp']"
+                );
+            })
+        );
+        expect(clampRule, "title clamp rule").toBeDefined();
+        expect(declaredProperty(clampRule!.body, "display")).toBe("-webkit-box");
+        expect(declaredProperty(clampRule!.body, "white-space")).toBe("normal");
+        expect(declaredProperty(clampRule!.body, "-webkit-box-orient")).toBe("vertical");
+        expect(declaredProperty(clampRule!.body, "-webkit-line-clamp")).toBe(
+            "var(--juice-touchable-row-line-clamp)"
+        );
+        expect(declaredProperty(clampRule!.body, "line-clamp")).toBe(
+            "var(--juice-touchable-row-line-clamp)"
+        );
+
+        expect(css).toContain(
+            "> :is([touchable-row-content], [touchable-row-trailing], [touchable-row-title])"
+        );
+        const hairline = rules.find((rule) => rule.selector.includes("> :is([touchable-row-content], [touchable-row-trailing], [touchable-row-title])"));
+        expect(hairline?.body).toContain("border-block-end: 1px solid var(--juice-touchable-row-divider)");
+        expect(declaredProperty(hairline?.body ?? "", "display")).toBeNull();
     });
 
     it("includes select structural chrome in core CSS", () => {
@@ -3229,9 +3420,13 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initPressable");
         expect(module).toHaveProperty("startPressableRuntime");
         expect(module).toHaveProperty("stopPressableRuntime");
+        expect(module).toHaveProperty("createTouchableRow");
+        expect(module).toHaveProperty("initTouchableRow");
+        expect(module).toHaveProperty("startTouchableRowRuntime");
+        expect(module).toHaveProperty("stopTouchableRowRuntime");
         expect(
             Object.keys(module).filter((key) => key.startsWith("start") && key.endsWith("Runtime"))
-        ).toHaveLength(29);
+        ).toHaveLength(30);
         expect(module).toHaveProperty("tokens");
     });
 

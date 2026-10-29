@@ -322,6 +322,17 @@ export type {
     PressableState
 } from "./js/src/pressable/pressable-runtime.js";
 export {
+    createTouchableRow,
+    initTouchableRow,
+    startTouchableRowRuntime,
+    stopTouchableRowRuntime
+} from "./js/src/touchable-row/touchable-row-runtime.js";
+export type {
+    TouchableRowController,
+    TouchableRowOptions,
+    TouchableRowState
+} from "./js/src/touchable-row/touchable-row-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,

@@ -1785,4 +1785,52 @@ describe("Juice consumer smoke", () => {
             module.stopIconButtonRuntime();
         });
     });
+
+    it("lets a consumer select a touchable row and read juice:change state", () => {
+        const entryUrl = pathToFileURL(join(DIST_DIR, "index.js")).href;
+        return import(entryUrl).then((module) => {
+            module.stopTouchableRowRuntime();
+            document.body.innerHTML = `
+                <div touchable-row="select" id="row">
+                    <span touchable-row-title id="title">Ada Lovelace</span>
+                </div>
+                <button type="button" touchable-row id="native">Native</button>
+            `;
+
+            const controller = module.createTouchableRow({ root: document.body });
+            const row = document.getElementById("row")!;
+            const title = document.getElementById("title")!;
+            const native = document.getElementById("native")!;
+            const events: Array<CustomEvent<{ runtime: string; state: { selected: boolean; disabled: boolean } }>> = [];
+            const onChange = (event: Event) => {
+                events.push(event as CustomEvent<{ runtime: string; state: { selected: boolean; disabled: boolean } }>);
+            };
+            document.body.addEventListener("juice:change", onChange);
+
+            expect(row.getAttribute("role")).toBe("button");
+            expect(controller.getState(row)).toEqual({ selected: false, disabled: false });
+
+            title.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            expect(events).toHaveLength(1);
+            expect(events[0]?.bubbles).toBe(true);
+            expect(events[0]?.detail).toEqual({
+                runtime: "touchable-row",
+                state: { selected: true, disabled: false }
+            });
+            expect(row.getAttribute("aria-selected")).toBe("true");
+
+            const space = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: " " });
+            native.dispatchEvent(space);
+            expect(space.defaultPrevented).toBe(false);
+            expect(native.hasAttribute("selected")).toBe(false);
+
+            document.body.removeEventListener("juice:change", onChange);
+            controller.destroy();
+            title.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            expect(row.hasAttribute("selected")).toBe(true);
+
+            document.body.innerHTML = "";
+            module.stopTouchableRowRuntime();
+        });
+    });
 });
