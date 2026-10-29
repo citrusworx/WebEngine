@@ -26,13 +26,13 @@ That means it should work for:
 
 The user should not need to manually initialize pressable in their app code.
 
-There is no `Pressable()` Sig factory. Markup plus the runtime is the contract. `@citrusworx/sigjs/juice` `bind()` does not name pressable yet. There is no `JuiceRuntimeName` for it.
+There is no `Pressable()` Sig factory. Markup plus the runtime is the contract. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet. There is no `JuiceRuntimeName` for either.
 
 This surface is Emerging, not Stable. Valid markup should paint from core CSS, and a press should set transient state after importing the JS entry, but the API is still likely to evolve.
 
 Pressable is a transient press. It is not a latched toggle (`[icon-button][toggle]` owns `[pressed]`). It is not a switch, not a checkbox, and not an icon button. CSS does not add `role` or `tabindex`. There is no focus trap and no Escape handler.
 
-Pressable is the twenty-ninth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth. Avatar is the twenty-seventh. Table is the twenty-eighth. Pressable (chrome in #299 and #301, runtime in #303) is on master and is not in the published npm 0.9.2 release. All twenty-nine stay Emerging.
+Pressable is the twenty-ninth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth. Avatar is the twenty-seventh. Table is the twenty-eighth. Pressable (chrome in #299 and #301, runtime in #303) is on master and is not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
 
 ## Markup
 
@@ -342,8 +342,8 @@ That keeps the runtime from reacting too aggressively while still updating quick
 ## Limitations
 
 - No `Pressable()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Pressable is the twenty-ninth Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Table remains the twenty-eighth and is also on master, not in that cut. All twenty-nine stay Emerging.
-- `@citrusworx/sigjs/juice` `bind()` does not name pressable. Do not pass `"pressable"` as a `JuiceRuntimeName`. See [Sig `bind()`](#sig-bind).
+- This surface is Emerging, not Stable. Pressable is the twenty-ninth Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Table remains the twenty-eighth and is also on master, not in that cut. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
+- `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row. Do not pass `"pressable"` or `"touchable-row"` as a `JuiceRuntimeName`. See [Sig `bind()`](#sig-bind).
 - The runtime does not add `role` or `tabindex`. A `div` without them is not a button.
 - Enter is never `preventDefault`'d. Space is `preventDefault`'d only for the custom button roles above, and only when the host itself is the event target.
 - `[pressed]` on a latched host is not this runtime's attribute. An author `[pressed]` that was already present is left in place.

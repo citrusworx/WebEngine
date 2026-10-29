@@ -108,7 +108,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 ### Foundations
 
-- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 27 runtimes
+- [Runtime Behavior](./juice-runtime-behavior.md) — auto-enhance, and `juice:change` / `getState` for all 30 runtimes
 - [Attributes](./juice-attributes.md)
 - [Layout](./juice-layout.md)
 - [Styles](./juice-styles.md)
@@ -149,6 +149,7 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Field Runtime](./juice-field-runtime.md)
 - [Icon Button Runtime](./juice-icon-button-runtime.md)
 - [Pressable](./juice-pressable.md) — transient press (on master; not in the published npm 0.9.2 release; the twenty-ninth Emerging runtime)
+- [Touchable Row](./juice-touchable-row.md) — 44px touch row (on master; not in the published npm 0.9.2 release; the thirtieth Emerging runtime)
 
 #### Feedback
 
