@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Stable release of the API frozen in **0.7.2**. Workspace `package.json` is **1.0.0**. Not published yet. npm `latest` remains **0.7.2** (2026-10-27, `gitHead` `c794c06f`, PR #295) until this version is published.
+Stable release of the API frozen in **0.7.2**. Workspace `package.json` is **1.0.0**. Published to npm **2026-10-29** (`gitHead` `4ef7b2e7`). npm `latest` is **1.0.0**.
 
 No API change from **0.7.2**. The public entries stay `.`, `./jsx-runtime`, `./jsx-dev-runtime`, `./sig-router`, and `./juice`. `Signal.set` still always notifies, including when the value is unchanged. `bindList` and `ListItem` stay experimental. SSR, a virtual DOM, `<For>`, and `<Show>` stay non-goals.
 
@@ -12,7 +12,7 @@ From **1.0.0**, versions follow semver. A breaking change to a documented stable
 
 ## 0.7.2
 
-Published to npm **2026-10-27** (`gitHead` `c794c06f`, PR #295). This remains npm `latest` until **1.0.0** is published. Do not republish.
+Published to npm **2026-10-27** (`gitHead` `c794c06f`, PR #295). npm `latest` moved to **1.0.0** on 2026-10-29. Do not republish.
 
 The registry cut is the **0.7.0** tree plus Juice adapter `bind` for icon-button, avatar, and table (PR #295, commit `0c626a9e`). It was published by hand as **0.7.2**. `yarn version-packages` was not used. The changeset for this work was minor; a Changesets bump from **0.7.0** would have proposed **0.8.0**.
 

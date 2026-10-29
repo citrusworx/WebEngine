@@ -1,6 +1,6 @@
 # Sig.js Status
 
-Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Stable.** Workspace `libraries/sig/package.json` is **1.0.0**. npm latest is still **0.7.2** (2026-10-27) until **1.0.0** is published. The API matches that registry cut. `CHANGELOG.md` records **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**.
+Honest snapshot of `@citrusworx/sigjs` against `libraries/sig/src`. **Stable.** Workspace `libraries/sig/package.json` is **1.0.0**. npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`). The API matches that registry cut and the **0.7.2** surface it freezes. `CHANGELOG.md` records **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**.
 
 The goal is the same as Juice’s maturity writing: make it easy to answer what is ready today, what is usable but still evolving, and what is still early.
 

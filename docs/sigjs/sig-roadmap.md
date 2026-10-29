@@ -219,6 +219,6 @@ The next stage is refinement:
 - lists are decided: `bindList` for keyed rows, `replaceChildren` for a rewrite, no `<For>` / `<Show>`
 - keep the static-first promise
 - keep param matching boring (exact wins, first registered pattern, `"*"` last)
-- the public surface is in [API surface](./api-surface.md). `bindList` stays experimental. **1.0.0** is this surface. npm still has **0.7.2** until that version is published
+- the public surface is in [API surface](./api-surface.md). `bindList` stays experimental. **1.0.0** is this surface, and npm `latest` is **1.0.0** (published 2026-10-29)
 
 That is a strong place to be. The docs stay with [Status](./sig-status.md), [API surface](./api-surface.md), and the APIs in `libraries/sig/src`.

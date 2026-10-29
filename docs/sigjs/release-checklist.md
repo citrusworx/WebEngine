@@ -2,7 +2,7 @@
 
 Use this before publishing `@citrusworx/sigjs`.
 
-Workspace `libraries/sig/package.json` is **1.0.0**. `libraries/sig/CHANGELOG.md` records **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**. npm **`0.7.2`** is still the registry cut (published 2026-10-27, `gitHead` `c794c06f`, PR #295). **1.0.0** is that same API, prepared in the workspace, and it is not on npm until Drew publishes it. Do **not** republish `0.7.2`, `0.7.1`, `0.7.0`, `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`.
+Workspace `libraries/sig/package.json` is **1.0.0**. `libraries/sig/CHANGELOG.md` records **1.0.0**, **0.7.2**, **0.7.1**, and **0.7.0**. npm `latest` is **1.0.0** (published 2026-10-29, `gitHead` `4ef7b2e7`). **1.0.0** is the **0.7.2** API (published 2026-10-27, `gitHead` `c794c06f`, PR #295). Do **not** republish `1.0.0`, `0.7.2`, `0.7.1`, `0.7.0`, `0.6.0`, `0.4.0`, `0.3.0`, or `0.2.0`.
 
 **0.7.0** was published 2026-10-21 (`gitHead` `747f2f71`, PR #270). **0.7.1** (2026-10-27, `gitHead` `b2f2b287`) is a stale build: the tarball matches **0.7.0** except the `version` field, and its published `dist/juice.d.ts` does not name icon-button, avatar, or table. **0.7.2** does. **1.0.0** keeps that **0.7.2** surface.
 
@@ -36,7 +36,7 @@ The public API is every documented export of these entries, including the behavi
 
 `bindList` and `ListItem` are exported and tagged experimental. A breaking change to an experimental export can ship as a minor. A breaking change to a stable export is a major. `captureCleanupScope` is not a public export. `Signal.set` always notifies, including when the value is unchanged. That behavior is part of the 1.x contract.
 
-`^1.0.0` is `>=1.0.0 <2.0.0`. It installs minors and patches. It does not install `2.0.0`. `^0.7.0` is `>=0.7.0 <0.8.0` and still installs npm **0.7.2** until **1.0.0** is published. It never installs **1.0.0**. Older 0.x carets stay inside one minor: `^0.4.0` is `>=0.4.0 <0.5.0`, and `^0.6.0` does not install `0.7.0` or later.
+`^1.0.0` is `>=1.0.0 <2.0.0`. It installs minors and patches. It does not install `2.0.0`. `^0.7.0` is `>=0.7.0 <0.8.0`. It installs npm **0.7.2** and never installs **1.0.0**. Older 0.x carets stay inside one minor: `^0.4.0` is `>=0.4.0 <0.5.0`, and `^0.6.0` does not install `0.7.0` or later.
 
 The optional peer `@citrusworx/juiceui` stays `>=0.9.1 <1`. Widening that range (accepting more peer versions, `bind` unchanged) is a minor. Narrowing it is a major, because an install that worked can start failing. The peer stays optional. The main entry does not import Juice.
 
@@ -54,11 +54,11 @@ Juice Package CI is the path-filter gate (`libraries/sig/**` → `yarn verify:ju
 
 ## This version
 
-The workspace version is **1.0.0**. npm latest is still **0.7.2**. Do not bump `libraries/sig/package.json` again in a docs-only change. Do not run `yarn version-packages` while other packages have pending changesets, and do not run it to publish **1.0.0**.
+The workspace version is **1.0.0**. npm `latest` is **1.0.0**. Do not bump `libraries/sig/package.json` in a docs-only change. Do not run `yarn version-packages` while other packages have pending changesets. Do not add a Sig changeset for work already in **1.0.0**. A Sig changeset would move the manifest off **1.0.0** the next time that command runs.
 
-Confirm with `npm view @citrusworx/sigjs version` before writing install lines. Until **1.0.0** is published, `npm install @citrusworx/sigjs` installs **0.7.2**. After that publish, the same command installs **1.0.0**. Add a Changeset only for work that is **not** already in **1.0.0**.
+Confirm with `npm view @citrusworx/sigjs version` before writing install lines. `npm install @citrusworx/sigjs` installs **1.0.0**. Add a Changeset only for work that is **not** already in **1.0.0**.
 
-Workspace packages that publish (`@citrusworx/juiceui`, `@citrusworx/sugar`) declare `@citrusworx/sigjs` `^1.0.0` so Yarn links `libraries/sig`. `^0.7.0` does not. Do not publish those packages until **1.0.0** is on npm. Their published manifests would otherwise require a Sig version the registry does not have. Private apps may keep `workspace:*` (MiaMakes front and KiwiPress front do) or `workspace:^` (Drew Winkles does). Blackwater front is private and declares `^1.0.0`.
+Workspace packages that publish (`@citrusworx/juiceui`, `@citrusworx/sugar`) declare `@citrusworx/sigjs` `^1.0.0` so Yarn links `libraries/sig`. `^0.7.0` does not. **1.0.0** is on npm, so a published manifest that requires `^1.0.0` can resolve. Private apps may keep `workspace:*` (MiaMakes front and KiwiPress front do) or `workspace:^` (Drew Winkles does). Blackwater front is private and declares `^1.0.0`.
 
 ## Publish Flow
 
@@ -67,7 +67,7 @@ Drew publishes. This checklist does not publish.
 1. Do not add a Sig changeset. **1.0.0** is already in `package.json` and `CHANGELOG.md`.
 2. Merge with Juice Package CI green (`yarn install --immutable`, `yarn verify:juice`, `yarn changeset status`).
 3. On a clean `master`, do not run `yarn version-packages`. That command versions every package with a pending changeset (grapevine, kiwipress, nectarine, webengine, juice, sugar, and the rest) and would move `@citrusworx/sigjs` off **1.0.0** if a Sig changeset existed.
-4. Review `libraries/sig/package.json` and `CHANGELOG.md` against `npm view @citrusworx/sigjs version`. The manifest and changelog say **1.0.0**. The registry should still say **0.7.2**.
+4. Review `libraries/sig/package.json` and `CHANGELOG.md` against `npm view @citrusworx/sigjs version`. The manifest, the changelog, and the registry `latest` tag are **1.0.0**. Do not republish **1.0.0**.
 5. Do not publish from a dirty worktree.
 6. Build is `prepack` (`tsc`). Publish **Sig only**:
 
@@ -78,12 +78,12 @@ Drew publishes. This checklist does not publish.
 
    `yarn release-packages` publishes **every** versioned public package in that commit. Use it only when that is intended.
 
-7. After **1.0.0** is on npm, bump `libraries/sig/examples/counter` from `^0.7.0` to `^1.0.0` and refresh its `package-lock.json`. That example is not a Yarn workspace member. It stays on the published **0.7.2** lock until that follow-up. `examples/todo-app` pins `@citrusworx/sigjs` at `0.7.0` from npm and is also outside the workspace. That course pin is a separate follow-up.
-8. If you used `changeset publish`, push any tags it created. This **1.0.0** publish does not use it.
+7. `libraries/sig/examples/counter` pins `@citrusworx/sigjs@^1.0.0`. Its `package-lock.json` records **1.0.0**. That example is not a Yarn workspace member. `examples/todo-app` still pins `@citrusworx/sigjs` at `0.7.0` from npm and is outside the workspace. The ToDo course pins that same **0.7.0**. Leave that pin for a separate follow-up.
+8. If you used `changeset publish`, push any tags it created. The **1.0.0** publish did not use it.
 
 ## Notes
 
 - Do **not** run `npm publish` from CI in this repository until a documented workflow exists with a real org token.
 - Keep published packages on a caret range that matches the workspace version being published (`^1.0.0`). Do not use `workspace:^` on packages that `changeset publish` will pack; npm does not rewrite Yarn workspace protocol.
 - Private apps may keep `workspace:*` / `workspace:^`.
-- `libraries/sig/examples/counter` installs `@citrusworx/sigjs@^0.7.0` from the registry. That range resolves to npm **0.7.2**. The committed `package-lock.json` records `@citrusworx/sigjs@0.7.2`, and `npm ci` in that folder installs it. Leave that pin until **1.0.0** is published.
+- `libraries/sig/examples/counter` installs `@citrusworx/sigjs@^1.0.0` from the registry. The committed `package-lock.json` records `@citrusworx/sigjs@1.0.0`, and `npm ci` in that folder installs it.
