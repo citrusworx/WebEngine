@@ -262,7 +262,30 @@ Color roles are `--juice-pressable-hover-ring`, `--juice-pressable-pressed-ring`
 <div pressable="scale" role="button" tabindex="0">Hold</div>
 ```
 
-The runtime auto-enhances `[pressable]` (`createPressable` / `getState`). Enter is not `preventDefault`'d. Space is, on a custom button host that is not a native Space control, so the page does not scroll. The runtime does not add `role` or `tabindex`. See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name it yet.
+The runtime auto-enhances `[pressable]` (`createPressable` / `getState`). Enter is not `preventDefault`'d. Space is, on a custom button host that is not a native Space control, so the page does not scroll. The runtime does not add `role` or `tabindex`. See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+
+### Touchable row
+
+44px touch row. Mobile-Critical. There is no HTML global `touchable-row` attribute, and there is no `<touchable-row>` element. Any value is still a row. Words compose. CSS hosts are `a`, `button`, `li`, and `div`.
+
+- `touchable-row` — host. Boolean `[touchable-row]` is the row
+- `touchable-row~="dense"` — tighter padding and gap. Minimum height stays `44px`
+- `touchable-row~="chevron"` — disclosure mark, drawn with `::after`
+- `touchable-row~="undivided"` — no hairline on this boundary
+- `touchable-row~="select"` — runtime opt-in. Activation toggles `[selected]`. Not styled in the stylesheet
+- `touchable-row~="activate"` — runtime opt-in. Keyboard button chrome. Not styled in the stylesheet
+- `touchable-row-leading` / `touchable-row-content` / `touchable-row-title` / `touchable-row-subtitle` / `touchable-row-trailing` — slots. There is no `[touchable-row-meta]`. `[leading]` stays letter-spacing
+- `touchable-row-title="clamp"` and `touchable-row-subtitle="clamp"` — two-line clamp. A direct child title truncates and clamps
+
+Color roles are `--juice-touchable-row-ink` (registered `<color>`, `currentColor`), `--juice-touchable-row-divider` (28% mix), `--juice-touchable-row-selected`, `--juice-touchable-row-chevron`, and `--juice-touchable-row-subtitle`, on `:root` and again on `[theme]`. Layout roles are min-height `44px`, padding, dense padding, gap, dense gap, radius `0.375rem`, selected width `3px`, and line-clamp `2`, on `:root` only. There is no motion role. Shipped themes are not required to bind them. The selected bar clears 3:1 on every theme. Citrusmint is the floor at 4.62:1. The divider is decorative and stays under 3:1.
+
+```html
+<div touchable-row="chevron select" pressable>
+  <span touchable-row-title>Row</span>
+</div>
+```
+
+The runtime auto-enhances `[touchable-row]` (`createTouchableRow` / `getState`). Enter and Space on an `li` or `div` dispatch one click. Space is `preventDefault`'d on those hosts. `a` and `button` keep the native click. See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
 
 ### Cards
 
@@ -547,7 +570,7 @@ See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spi
 
 ### Skeleton
 
-CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-nine Emerging auto-enhance runtimes.
+CSS-only loading placeholder. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the thirty Emerging auto-enhance runtimes.
 
 - `skeleton` — host. Boolean `[skeleton]` is a rectangle, the same shape as `skeleton="rect"`. `skeleton="text"` is a line. `skeleton="circle"` is a circle. There is no HTML global `skeleton` attribute, and there is no `<skeleton>` element. Do not restyle a bare `[aria-busy]` or `[role="status"]`
 - `lines` — on `[skeleton="text"]`, a count from `"1"` through `"8"`. Anything else keeps one bar. There is no `skeleton-line`
@@ -568,7 +591,7 @@ See [Skeleton](./juice-skeleton.md). Core roles are `--juice-skeleton-*` (`base`
 
 ### List
 
-CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-nine Emerging auto-enhance runtimes.
+CSS-only stacked rows. There is no runtime and no auto-enhance. Core CSS paints it. It is on master, not in the published npm 0.9.2 release, and it is not one of the thirty Emerging auto-enhance runtimes.
 
 - `list` — host, on `ul`, `ol`, or `div`. The selector is `:where(ul, ol, div)[list]`, so `<input list>` is not painted. There is no HTML global `list` attribute, and there is no `<list>` element. Markers and the list’s own padding reset. Do not restyle `[role="list"]` or `[role="listitem"]`
 - `divided` — on `[list]`. A hairline between direct children. Ignored without `[list]`
@@ -598,7 +621,7 @@ See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColo
 
 ### Badge
 
-CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It is not one of the twenty-nine Emerging auto-enhance runtimes.
+CSS-only label. There is no runtime and no auto-enhance. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It is not one of the thirty Emerging auto-enhance runtimes.
 
 - `badge` — host. Boolean `[badge]` is a pill (radius `999px`, padding `0.375rem 0.75rem`, `0.8125rem` at weight 600). There is no HTML global `badge` attribute, and there is no `<badge>` element. Any value other than `square` or `ribbon` is still that pill
 - `badge="square"` — the same pill with radius `0.375rem`
@@ -617,7 +640,7 @@ The words on the badge are the name. A count needs context in the text or on the
 
 ### Safe area
 
-CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It is on master, not in the published npm 0.9.2 release, and it is not one of the twenty-nine Emerging auto-enhance runtimes.
+CSS-only inset. There is no runtime and no auto-enhance. Core CSS pads the host. It is on master, not in the published npm 0.9.2 release, and it is not one of the thirty Emerging auto-enhance runtimes.
 
 - `safe-area` — host. Boolean `[safe-area]` pads all four edges. There is no HTML global `safe-area` attribute, and there is no `<safe-area>` element. An empty value, or any value other than `top`, `bottom`, `x`, or `y`, is still all four edges
 - `safe-area="top"` — top only

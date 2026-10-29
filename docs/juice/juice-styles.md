@@ -65,6 +65,7 @@ Juice usage today usually falls into these groups:
 ### Press feedback
 
 - `pressable` — transient press ring on any host, with `[pressable="scale"]`, `[pressable-longpress]`, and `[pressable-slop]`. See [Pressable](./juice-pressable.md). On master, not in the published npm 0.9.2 release. The twenty-ninth Emerging runtime. Mobile-Critical.
+- `touchable-row` — 44px row on `a`, `button`, `li`, or `div`, with `dense`, `chevron`, `undivided`, and the leading / content / title / subtitle / trailing slots. See [Touchable Row](./juice-touchable-row.md). On master, not in the published npm 0.9.2 release. The thirtieth Emerging runtime. Mobile-Critical.
 
 ### Theme scoping
 

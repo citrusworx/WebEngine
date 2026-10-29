@@ -1,0 +1,507 @@
+# Juice Touchable Row
+
+This document explains the current touchable-row chrome in `libraries/juice/src/components/touchable-row/touchable-row.scss` and the touchable-row runtime in `libraries/juice/src/js/src/touchable-row/touchable-row-runtime.ts` (monorepo paths; outside this vault). `components.scss` forwards the stylesheet after `radio.scss` and before `safe-area.scss`.
+
+Touchable row is Mobile-Critical. It is the 44px touch row a list of actions needs: a full-width flex host, an optional disclosure chevron, a start bar when the row is selected, and keyboard activation on an `li` or `div`. Press feedback is `[pressable]`. This file does not paint a wash. A theme does not have to bind a color for the bar, the label, or the chevron to show.
+
+The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, and pressable:
+
+> If a user writes a valid Juice touchable row and it exists in the browser, an interactive row should activate from the pointer and from Enter or Space.
+
+That is the standard. The stylesheet does not require the runtime. `[selected]`, `aria-selected="true"`, and `aria-current` other than `"false"` paint the start bar when the JS entry is absent. The runtime is what toggles that state, and what gives a non-native interactive row a button role.
+
+## The Goal
+
+The touchable-row runtime is not a framework adapter and not a second component API.
+
+It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
+
+That means it should work for:
+
+- raw HTML pages
+- Twig or other server-rendered templates
+- Sig-rendered DOM
+- React-rendered DOM
+- any other environment that eventually produces browser DOM
+
+The user should not need to manually initialize touchable row in their app code.
+
+There is no `TouchableRow()` Sig factory. Markup plus the runtime is the contract. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet. There is no `JuiceRuntimeName` for either. `JuiceRuntimeName` stops at twenty-eight names, through `table`.
+
+This surface is Emerging, not Stable. Valid markup should paint from core CSS, and a selectable row should toggle after importing the JS entry, but the API is still likely to evolve.
+
+Touchable row is a layout shell that can also be a control. It is not `[list]` / `[list-item]`. It is not `[menuitem]`. It is not a table row. It is not a single-select group. Press feedback is not invented here.
+
+Touchable row is the thirtieth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth. Avatar is the twenty-seventh. Table is the twenty-eighth. Pressable (chrome in #299 and #301, runtime in #303) is the twenty-ninth. Touchable row (chrome in #306, runtime in #308) is on master and is not in the published npm 0.9.2 release. All thirty stay Emerging.
+
+## When to use it
+
+Use `[touchable-row]` when the row itself is the touch target: a settings row, a disclosure row, a selectable row, or a row whose trailing control is a switch or an icon button. The host is the target. Minimum height stays `44px` at both densities.
+
+Use [list](./juice-list.md) when the job is a stacked list and the row does not need this keyboard contract. `[list]` / `[list-item]` is CSS-only. `[selected]` there is visual only. Hover and selected are washes. There is no runtime, no `juice:change`, and no synthesized click. An `a` or `button` inside a list item is the control. A touchable row can sit on a list item. List's wash still paints. See [Composition](#composition).
+
+Use `[menuitem]` inside `[menu-root]` for a menu. The menu runtime owns Enter and Space and clicks the item once. A `[menuitem]` host is not given a second click or a button role by this runtime. Putting both attributes on one element replaces the menu item's block layout with this flex row, because this file loads later. See [Menu Runtime](./juice-menu-runtime.md).
+
+Use [table](./juice-table.md) for a grid. A `tr` is not a touchable-row host, so table row hover and the sort caret stay on the table. Do not put `[touchable-row]` on a table row.
+
+## Markup
+
+There is no HTML global `touchable-row` attribute, and there is no `<touchable-row>` element. `[touchable-row]` is an attribute selector. One attribute. Boolean `[touchable-row]` is the row. Any value is still a row. Words compose, the same shape as `[touchable-row="dense"]` matching `[touchable-row~="dense"]`. `[leading]` is letter-spacing, so the slot is not `[leading]`. There is no `[touchable-row-meta]`. Meta text is content in the trailing slot. The chevron is not a child.
+
+CSS hosts are `a`, `button`, `li`, and `div`, via `:where(a, button, li, div)[touchable-row]`. The runtime selector is any `[touchable-row]`. A host the stylesheet does not paint can still be enhanced.
+
+```html
+<div touchable-row>
+  <span touchable-row-title>Inbox</span>
+</div>
+
+<a href="/settings" touchable-row="chevron">
+  <span touchable-row-title>Settings</span>
+</a>
+
+<li touchable-row="dense">
+  <span touchable-row-title>Dense row</span>
+</li>
+
+<div touchable-row="undivided">
+  <span touchable-row-title>No hairline on this boundary</span>
+</div>
+```
+
+A leading avatar or icon, and a trailing meta line, badge, switch, or icon button:
+
+```html
+<div touchable-row>
+  <span touchable-row-leading>
+    <span avatar>AL</span>
+  </span>
+  <span touchable-row-content>
+    <span touchable-row-title>Ada Lovelace</span>
+    <span touchable-row-subtitle>Notes</span>
+  </span>
+  <span touchable-row-trailing>
+    <span>2h</span>
+    <span badge>New</span>
+    <button type="button" switch aria-label="Pin"></button>
+    <button type="button" icon-button aria-label="More"></button>
+  </span>
+</div>
+```
+
+Do not nest a `button` in a `button` or an anchor. The icon button and the switch are buttons. Use a `div` or `li` host when the trailing slot has one. The row is the 44px target. The icon button keeps its own box (default `2.5rem`). The switch track stays `2.75rem` by `1.5rem`.
+
+Title and subtitle. The default is a single-line ellipsis. `="clamp"` is the multi-line opt-in (2 lines). A title may be a direct child of the host. That direct title truncates, and `="clamp"` clamps. The column flex stays on `[touchable-row-content]`. A direct title is not a flex container, so `display: block` and `display: -webkit-box` apply.
+
+```html
+<div touchable-row>
+  <span touchable-row-content>
+    <span touchable-row-title>One line, then an ellipsis</span>
+    <span touchable-row-subtitle="clamp">Two lines, then a clamp. The rest is hidden.</span>
+  </span>
+</div>
+
+<div touchable-row>
+  <span touchable-row-title="clamp">A direct title clamps. It is not wrapped in content.</span>
+</div>
+```
+
+Selectable rows toggle `[selected]` on activation. Activate rows are keyboard buttons that do not toggle. Press feedback is a second attribute.
+
+```html
+<div touchable-row="select">Pick</div>
+
+<div touchable-row="activate">Open</div>
+
+<div touchable-row="select" pressable pressable-longpress>Hold or tap</div>
+
+<a href="/now" touchable-row="chevron select" pressable="scale">Current</a>
+```
+
+| Attribute | What it is |
+|---|---|
+| `[touchable-row]` | Host. Any value, including an empty value, is still a row. CSS paints `a`, `button`, `li`, and `div`. |
+| `[touchable-row~="dense"]` | Tighter padding and gap. Minimum height stays `44px`. |
+| `[touchable-row~="chevron"]` | Disclosure mark, drawn with `::after`. Not a child. |
+| `[touchable-row~="undivided"]` | No hairline on this boundary. Either side's word removes that line. |
+| `[touchable-row~="select"]` | Runtime opt-in. Activation toggles selection. Not styled in the stylesheet. |
+| `[touchable-row~="activate"]` | Runtime opt-in. Keyboard button chrome when the row is not `[pressable]` and not selectable. Not styled in the stylesheet. |
+| `[touchable-row-leading]` | Direct child. Icon or avatar. The slot does not clip, so a status dot keeps its rim. |
+| `[touchable-row-content]` | Direct child. Title plus optional subtitle. Column flex. |
+| `[touchable-row-title]` | Primary line. Single-line ellipsis. `="clamp"` is the multi-line opt-in. A direct child also truncates and clamps. |
+| `[touchable-row-subtitle]` | Second line. Same ellipsis and `="clamp"`. |
+| `[touchable-row-trailing]` | Direct child. Meta text, badge, switch, icon button. `white-space: nowrap`. |
+| `[selected]` | Selected signal, with `aria-selected="true"` or `aria-current` other than `"false"`. The start border takes the ink. |
+| `[pressable]` | Press feedback stays on Pressable. This runtime does not set `[pressed]`. |
+| `[pressable-longpress]` | Pressable's long-press. Not implemented in this runtime. |
+
+`[disabled]`, the `disabled` property, and `[aria-disabled="true"]` set opacity `0.5` and `cursor: default`. `pointer-events` stay with the author. See [Disabled](#disabled).
+
+Core CSS does not give `[touchable-row]` a z-index. Position is not set. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
+
+## Why the bar, and why the ink is registered
+
+The selected indicator is a `3px` `border-inline-start` in the body ink. It is not a background. The width is always the selected width. The color is transparent until the row is selected, so the bar does not change the text pair. This file does not paint a wash.
+
+`--juice-touchable-row-ink` is a registered `<color>` (`@property`, `inherits: true`, initial value `#000`, replaced on `:root`). On `[theme]`, `currentColor` resolves to that element's body color, and the computed color inherits as an absolute value. An unregistered `currentColor` would resolve on the row. A row inside Citrusmint muted copy (`p`, `span`, `li`, `label`) would then paint at **1.95:1** on the page and **2.18:1** on the strong surface. The bar and the label need the body ink. Registration is what captures it. No theme bind is required.
+
+Selected, chevron, and subtitle all point at that ink. Subtitle is not a mix. A 92% `currentColor` mix is **4.03:1** on the Citrusmint page, under 4.5:1. Full ink leaves the body pair unchanged.
+
+The divider is a 28% mix of that ink, the same weight as `--juice-list-divider`. It is a decorative hairline. It does not clear 3:1. Reaching 3:1 on Citrusmint takes a 75% mix, which reads as a second bar. Checked as the composited mix against each theme's page and against `--juice-surface-strong-bg` (translucent plates composited over the page first):
+
+| Theme | Page | Strong |
+|---|---:|---:|
+| Citrusmint | 1.46 | 1.51 |
+| KiwiPress | 1.56 | 1.56 |
+| Tide | 2.39 | 2.39 |
+| Aquaflux | 1.68 | 1.68 |
+| Afterburn | 2.31 | 2.17 |
+| Arcade Glow | 2.24 | 2.27 |
+| Boardwalk | 1.76 | 1.74 |
+| Denim Dial | 1.77 | 1.77 |
+| Forest Radio | 1.78 | 1.78 |
+| Orchard Club | 1.78 | 1.78 |
+| Poolside Pop | 1.81 | 1.81 |
+| Signal Garden | 1.86 | 1.86 |
+| Sunset Motel | 1.81 | 1.81 |
+| Violet Parlor | 1.84 | 1.84 |
+
+The bar is that same body ink against the unchanged plate, so its non-text contrast is the text pair. Every theme clears 3:1. Citrusmint is the floor. The chevron uses the same ink, so it shares these ratios.
+
+| Theme | Page | Strong |
+|---|---:|---:|
+| Citrusmint | 4.62 | 5.17 |
+| KiwiPress | 7.60 | 7.60 |
+| Tide | 15.66 | 15.66 |
+| Aquaflux | 10.55 | 10.55 |
+| Afterburn | 14.01 | 9.91 |
+| Arcade Glow | 16.52 | 11.73 |
+| Boardwalk | 13.85 | 12.99 |
+| Denim Dial | 13.95 | 13.95 |
+| Forest Radio | 14.20 | 14.20 |
+| Orchard Club | 14.32 | 14.32 |
+| Poolside Pop | 15.64 | 15.64 |
+| Signal Garden | 16.72 | 16.72 |
+| Sunset Motel | 15.63 | 15.63 |
+| Violet Parlor | 15.75 | 15.75 |
+
+Citrusmint's section plate (`--cm-surface-muted`) is already **4.22:1** for this ink. The row is transparent, so that pair is unchanged. The bar still clears 3:1 there.
+
+Those ratios are the token math in the stylesheet header. There is no automated contrast test for the tables.
+
+## Roles
+
+Color is restated on `[theme]`. A custom property resolves `var()` on the element that sets it. Geometry stays on `:root` only. Shipped library themes and generated `--jx-*` themes are not required to bind `--juice-touchable-row-*`. Do not add a touchable-row hue family.
+
+| Role | Where | Default |
+|---|---|---|
+| `--juice-touchable-row-ink` | `:root` and `[theme]` | `currentColor`, registered `<color>` |
+| `--juice-touchable-row-divider` | `:root` and `[theme]` | `color-mix(in srgb, var(--juice-touchable-row-ink) 28%, transparent)` |
+| `--juice-touchable-row-selected` | `:root` and `[theme]` | `var(--juice-touchable-row-ink)` |
+| `--juice-touchable-row-chevron` | `:root` and `[theme]` | `var(--juice-touchable-row-ink)` |
+| `--juice-touchable-row-subtitle` | `:root` and `[theme]` | `var(--juice-touchable-row-ink)` |
+| `--juice-touchable-row-min-height` | `:root` only | `44px` |
+| `--juice-touchable-row-padding` | `:root` only | `0.75rem 1rem` |
+| `--juice-touchable-row-padding-dense` | `:root` only | `0.5rem 0.75rem` |
+| `--juice-touchable-row-gap` | `:root` only | `0.75rem` |
+| `--juice-touchable-row-gap-dense` | `:root` only | `0.5rem` |
+| `--juice-touchable-row-radius` | `:root` only | `0.375rem` |
+| `--juice-touchable-row-selected-width` | `:root` only | `3px` |
+| `--juice-touchable-row-line-clamp` | `:root` only | `2` |
+
+There is no motion role. This file does not set a `transition` on the host. That shorthand would replace `[pressable]`'s `box-shadow` transition. `prefers-reduced-motion: reduce` still sets `transition: none` on the host and on the chevron, so a theme button timing does not run. The runtime does not read `prefers-reduced-motion` and does not animate.
+
+The stack gap inside `[touchable-row-content]` is a fixed `0.125rem`. It is not a role. Title weight is `600`. Subtitle size is `0.875em`, weight `400`, line-height `1.35`. The chevron box is `0.45rem` with a `2px` corner. Those are not roles.
+
+Focus is a `2px` solid `currentColor` outline, offset `2px`. Outline does not set `box-shadow`, so Pressable's pressed ring and this outline can both show.
+
+See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md).
+
+## Layout
+
+The host is a nowrap row, `align-items: stretch`, `gap: 0`, `width: 100%`, `min-width: 0`. The start border is always `--juice-touchable-row-selected-width`. Block borders and the end border are `0`. Background is transparent. `box-shadow: none` and `transform: none` are `(0, 2, 0)`. Pressable's hover ring and scale are `(0, 3, 0)` and win. Radius is set only without `[pressable]`, so Pressable's radius token wins when both are present. The default is the same `0.375rem`.
+
+The leading slot uses `margin-inline-end` for the gap. The trailing slot uses `padding-inline-start`. The host gap stays `0`, so the hairline boxes touch. A flex gap would split the borders.
+
+The hairline is `border-block-end` on the content slot, the trailing slot, and a direct title. It starts after the leading slot and stops at the row's padding edge. It is not under the chevron. It paints only when the next sibling is another touchable row that is also not `undivided`. The last row has none. Either side's `undivided` word removes that boundary. A title inside content does not draw a second line.
+
+The chevron is `::after`: `border-width: 0 2px 2px 0`, `rotate(-45deg)`. `::before` is not used. Pressable, spinner, progress, slider, and the accordion open bar keep `::before`. The mark is not on the trailing control, so `[switch]::after`, `[avatar][status]::after`, `[radio]::after`, and `[checkbox]::after` stay on those elements. `:dir(rtl)` and `[dir="rtl"]` use `border-width: 0 0 2px 2px` and `rotate(45deg)`.
+
+Minimum height is `44px` on every density. Dense padding is `0.5rem 0.75rem`, which is shorter than one line plus that padding, and `min-height` holds the box at `44px`. A title and a subtitle together grow past `44px` in both densities.
+
+A direct `[touchable-row-title]` used to share the content rule. `display: flex` on that child beat `display: block` and `display: -webkit-box`, so the line could not ellipsize and `="clamp"` never became a box. Column flex stays on `[touchable-row-content]`. The direct title still grows (`flex: 1 1 auto`), and the hairline rule still borders it.
+
+## Cascade
+
+`:where()` keeps the host rules from adding element specificity. `[theme]` restates the same selectors one class higher.
+
+| Selector | Specificity |
+|---|---|
+| `[theme] :where(a, button, li, div)[touchable-row]` | 0, 2, 0 |
+| `[theme] :where(...)[touchable-row] > [touchable-row-content]` | 0, 3, 0 |
+| `[theme] [touchable-row-title="clamp"]` | 0, 2, 0 |
+| `[touchable-row-title]` | 0, 1, 0 |
+
+The direct-child rule does not set `display`. The title and the clamp rules do. That is why a direct title truncates and clamps.
+
+Hover, `:active`, and `:focus-visible` set `color` and `text-decoration` only. `background-color` would erase a `[list-item]` wash. `box-shadow` would erase the `[pressable]` ring. `transform` would erase `[pressable="scale"]`.
+
+This file does not edit themes, `[list]`, `[table]`, `[pressable]`, `[switch]`, `[icon-button]`, `[badge]`, `[avatar]`, or `[safe-area]`. What that leaves is in [Composition](#composition).
+
+## Automatic Boot
+
+The runtime starts automatically in the browser.
+
+At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the touchable-row runtime:
+
+```ts
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    bootOnReady = () => {
+      bootOnReady = null;
+      if (!autoStartSuspended) {
+        startTouchableRowRuntime();
+      }
+    };
+    document.addEventListener('DOMContentLoaded', bootOnReady);
+  } else {
+    startTouchableRowRuntime();
+  }
+}
+```
+
+Importing the Juice JS entrypoint is enough for the normal behavior. The entry re-exports this module, so the boot runs.
+
+`stopTouchableRowRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start. Outside a browser, `startTouchableRowRuntime()` returns `null` and `createTouchableRow()` returns a controller whose methods do nothing (`getState()` returns `null`).
+
+## Public API
+
+The runtime still exposes functions, but they are secondary to the automatic behavior.
+
+```ts
+createTouchableRow(options?)
+initTouchableRow(options?)
+startTouchableRowRuntime()
+stopTouchableRowRuntime()
+```
+
+These are useful for internal control, tests, or advanced cases.
+
+A real change of `{ selected, disabled }` dispatches a bubbling, composed `juice:change` from the host. `detail` is `{ runtime: "touchable-row", state }`. `state` is `{ selected: boolean, disabled: boolean }`. `selected` is the CSS selected state (`[selected]`, `aria-selected="true"`, or `aria-current` other than `"false"`), not the `select` word. `disabled` is the `disabled` property, `[disabled]`, or `aria-disabled="true"`. `getState()` reads that same shape, or `null` when the host is missing. The first observation of a host is recorded and does not dispatch. A later `sync()` that leaves the state unchanged does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2. See [juice:change](./juice-runtime-behavior.md#juicechange).
+
+`createTouchableRow()` can run alongside the automatic document runtime. Each click and key is claimed once, so a custom-root controller does not double-toggle with the singleton.
+
+`initTouchableRow()` is the same function as `createTouchableRow()`.
+
+`startTouchableRowRuntime()` is an idempotent singleton. A second call syncs and returns the same controller.
+
+## TouchableRowOptions
+
+```ts
+type TouchableRowOptions = {
+  root?: ParentNode;
+  touchableRowSelector?: string;
+};
+```
+
+By default, Juice uses:
+
+```ts
+{
+  root: document,
+  touchableRowSelector: '[touchable-row]',
+}
+```
+
+A custom `root` limits sync to rows inside that root. When the root itself matches, that host is managed too. Hosts outside the root are left alone. There is no long-press option. Long-press is `[pressable-longpress]` on the Pressable runtime.
+
+## TouchableRowController
+
+```ts
+type TouchableRowState = {
+  selected: boolean;
+  disabled: boolean;
+};
+
+type TouchableRowController = {
+  destroy: () => void;
+  sync: () => void;
+  getState: (target?: HTMLElement | null) => TouchableRowState | null;
+};
+```
+
+`destroy()` removes the listeners, disconnects the observer, and cancels a scheduled sync. It does not remove a `role` or `tabindex` this runtime added, and it does not clear `[selected]`. `sync()` records each managed host and adds button chrome when the row is interactive. With no target, `getState()` uses the first managed `[touchable-row]` in the root. A target inside a host resolves to that host. A node that is not a row and is not inside one returns `null`. After `destroy()`, `getState()` returns `null`.
+
+## What the Runtime Actually Does
+
+The runtime performs six main jobs:
+
+1. Find `[touchable-row]` hosts inside the root. Any attribute value stays as authored. `dense`, `chevron`, and `undivided` are CSS words. `select` and `activate` are the two words this runtime owns
+2. Add `role="button"` and `tabindex="0"` only when the row is interactive, the author has not set that attribute, the host is not an `a` or a `button`, the host is not a menuitem, and the host is not disabled
+3. On Enter or Space, on an `li` or `div` (and any other non-native host), dispatch one bubbling click. Repeat keydowns do not. Native `a` and `button` keep the platform click
+4. When `[touchable-row~="select"]` is present, toggle selection on that click. Rows without the word do not toggle. Siblings are not cleared
+5. Ignore the click, the key, and `juice:change` when the host is disabled
+6. Ignore keys and clicks that start in an interactive descendant, so a trailing control works on its own
+
+There is no focus trap. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, combobox, banner, or menu. Escape is not handled. This runtime does not set `[pressed]`.
+
+## Keyboard
+
+Enter or Space on a non-native host dispatches one bubbling, cancelable, composed `click`. The event is a `MouseEvent`. Repeat keydowns do not dispatch another. `isComposing` is ignored. Enter is never `preventDefault`'d.
+
+Space is `preventDefault`'d only on those non-native hosts, when the event is cancelable, so the page does not scroll. That is the Pressable Space fix, applied to every `li` or `div` row rather than only to a button-like role. A plain row with no `role` still gets the `preventDefault` if the key target is the row. Native `a` and `button` already activate from the platform (Enter on a link, Enter and Space on a button). This runtime does not dispatch a second click and does not `preventDefault` Space on them.
+
+An `<a>` without `href` is still native (`HTMLAnchorElement`). Give it an `href`, or use a `div` with `select`, `activate`, or `pressable`.
+
+An editing host is left alone, so Space can type. A `[menuitem]` host (the attribute, or a `menuitem`, `menuitemcheckbox`, or `menuitemradio` role) is left alone on the key. The menu runtime owns Enter and Space and clicks the item once. This runtime still sees that click, and a selectable menuitem row toggles on it.
+
+A disabled host returns before any of that. Space is not `preventDefault`'d, no click is synthesized, and selection does not change.
+
+Keys and clicks that start in an interactive descendant do not activate the row. The descendant is a `button`, `a`, `input`, `textarea`, `select`, `summary`, `[switch]`, `[icon-button]`, `[menuitem]`, an editing host, or an element whose first role token is `button`, `switch`, `checkbox`, `radio`, `link`, `menuitem`, `menuitemcheckbox`, `menuitemradio`, `option`, `tab`, `textbox`, `searchbox`, `combobox`, `slider`, or `spinbutton`. Space on those descendants is not `preventDefault`'d by this runtime.
+
+| Host | Space | Enter |
+|---|---|---|
+| `<div touchable-row>` or `<li touchable-row>` | `defaultPrevented`. One click. | Not `defaultPrevented`. One click. |
+| Repeat Enter or Space | No second click. | No second click. |
+| `<button touchable-row>`, `<a href touchable-row>` | Not `defaultPrevented`. No synthesized click. | Not `defaultPrevented`. No synthesized click. |
+| Disabled `div`, including `aria-disabled="true"` | Not `defaultPrevented`. No click. | Not `defaultPrevented`. No click. |
+| `[menuitem]` or `role="menuitem"` | Not `defaultPrevented`. No synthesized click. A later click still selects when the row is selectable. | Same. |
+| Contenteditable host | Left alone. The space is text. | Left alone. |
+| Key or click on a trailing `button`, `[switch]`, `[icon-button]`, link, or field | The row does not activate. | The row does not activate. |
+
+`Spacebar` is treated as Space.
+
+## Role and tabindex
+
+A plain row is a layout shell. Sync does not give it a role or a tabindex, or it would enter the tab order just by being drawn. `dense` and `chevron` do not make it interactive.
+
+Chrome is added only when the row is interactive, the author has not set that attribute, the host is not native, and the host is not a menuitem:
+
+- `[pressable]` — the row is a press target
+- `[touchable-row~="select"]` — the row toggles selection
+- `[touchable-row~="activate"]` — explicit opt-in
+
+The added role is `button` and the added tabindex is `0`. An author role or tabindex is kept, including `role="link"`. Native links and buttons already have a platform role and tab stop. Menuitems keep the role the menu runtime writes. A disabled row is not given a tab stop it did not already have. `destroy()` does not remove a role or tabindex this runtime added.
+
+Pressable's own runtime does not add `role` or `tabindex`. On a `div` or `li` that has both attributes, this runtime supplies them.
+
+## Selection
+
+Independent toggles. There is no single-select group. List has no runtime, and its `[selected]` wash is author state. Tabs are a different widget (panels and a roving tabindex). Radio groups use the native `name` on inputs. This row has no container. Activating one selectable row does not clear its siblings.
+
+Activation is the click, including the click this runtime dispatches for a non-native host. Rows without `[touchable-row~="select"]` do not toggle. A keyboard click on a plain row still fires, so an author listener runs, and `[selected]` stays absent.
+
+The written signal depends on the host:
+
+- An `<a>`, or `role="link"`, gets `[selected]` plus `aria-current="true"` or `"false"`. `aria-selected` is not the link signal. Turning the row off writes `aria-current="false"` and, if `aria-selected` is still `"true"`, writes that to `"false"` too.
+- Every other host gets `[selected]` plus `aria-selected="true"` or `"false"`. Turning the row off removes `[selected]`, writes `aria-selected="false"`, and writes `aria-current="false"` when that attribute is still a selected value.
+
+CSS treats `[selected]`, `aria-selected="true"`, and `aria-current` other than `"false"` as selected. `getState().selected` reads that same trio. A row that was authored selected reports `selected: true` on the first look and does not dispatch. The next activation turns it off and does dispatch.
+
+`aria-current` written by this runtime is the string `"true"`, not `"page"`. An author `aria-current="page"` already counts as selected, so the first toggle turns the row off.
+
+## Long-press
+
+Not implemented here. A row with `[pressable][pressable-longpress]` uses Pressable's `juice:longpress`. Pressable suppresses the click that follows a long-press on the capture phase (`preventDefault` and `stopPropagation`) unless that event was canceled. Selection listens for `click` on the bubble phase, so the suppressed click never toggles. A later click does. Canceling `juice:longpress` leaves the click alone, and the selectable row toggles.
+
+## Disabled
+
+`:disabled` (the `disabled` property), `[disabled]`, and `[aria-disabled="true"]` are ignored entirely. No click is synthesized, selection does not change, and the attempt does not dispatch `juice:change`. Space is not `preventDefault`'d.
+
+CSS sets opacity `0.5` and `cursor: default`. It does not change `pointer-events`. `aria-disabled` does not swallow the click from here. Pressable already drops its ring on a disabled host. A disabled `[switch]` inside a disabled row compounds opacity, because opacity multiplies. Disable the row or the switch.
+
+The focus outline is not removed. A focusable disabled host can still show the 2px outline.
+
+## Reduced motion
+
+`prefers-reduced-motion: reduce` sets `transition: none` on the host and on the chevron. There is no motion role and no animation in this file. The runtime does not read the media query.
+
+## Server render
+
+`createTouchableRow()` returns a no-op controller when `window` or `document` is missing. `destroy`, `sync`, and `getState` do nothing, and `getState()` returns `null`. `startTouchableRowRuntime()` returns `null`. The auto-boot at the bottom of the module is inside the same guard, so importing the module during a server render does not touch a DOM.
+
+## Composition
+
+These conflicts are what the cascade leaves. This file does not edit the other components.
+
+- **Pressable.** Pressable owns the ring, `[pressed]`, the scale variant, and the radius when both attributes are set. This file does not set a hover wash, a pressed wash, or an inset ring. `box-shadow: none` and `transform: none` are `(0, 2, 0)`. Pressable's hover ring and scale are `(0, 3, 0)` and win. Focus is the same 2px outline and does not set `box-shadow`, so the ring and the outline can both show. A `div` or `li` with both attributes gets `role="button"` and `tabindex="0"` from this runtime when the author has not set them. A long-press that is not canceled suppresses the click, so the row does not select. A canceled long-press still selects. See [Pressable](./juice-pressable.md).
+- **List.** List's hover and selected washes still paint when the element is a list item or sits inside one. This file does not add a wash. On Citrusmint the list 8% hover wash puts body ink at **4.16:1** and the 14% selected wash at **3.84:1**. The start bar against that 14% wash is **3.84:1** and still clears 3:1. List's own comment already records that those washes miss 4.5:1 on Citrusmint. That pair is a known issue. It is not fixed here.
+- **Switch.** The thumb stays `::after` on the switch. Track size stays `2.75rem` by `1.5rem`. A click or key that starts on the switch does not toggle the row. A disabled switch inside a disabled row compounds opacity.
+- **Icon button.** The trailing control keeps its own box (default `2.5rem`, under `44px`). The row is the 44px target. Do not nest a button in a button or an anchor. Use a `div` or `li` host.
+- **Badge.** Keeps its own fill and ink. The 1% wash is the badge, not the row.
+- **Avatar.** Status `::after` stays on the avatar. The leading slot does not clip it.
+- **Safe area.** This file is forwarded before `safe-area.scss`. A row inside `[safe-area]` or `[safe-area="x"]` is `width: 100%` of that padded content box, with no negative margin, so the horizontal inset remains. The row's own padding is a second inset inside it. `[safe-area="x"]` on the row itself sets `padding-left` and `padding-right` after this file's shorthand, so those longhands keep the safe-area inset and the block padding stays the row's. See [Safe Area](./juice-safe-area.md).
+- **Menuitem.** Not this row. The menu runtime owns the key. Combining the attributes replaces the menu item's block layout with this flex row.
+- **Table.** `tr` is not a host. The sort caret is `th[sortable] > button::after` and does not match this host.
+
+## Why MutationObserver Is Used
+
+The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
+
+If a row appears later, or `touchable-row`, `pressable`, `selected`, `disabled`, `role`, `tabindex`, `href`, `aria-disabled`, `aria-selected`, `aria-current`, or `menuitem` changes, the observer schedules a `sync()`.
+
+Removing `[touchable-row]` drops the host. `destroy()` stops that observation.
+
+## Why Sync Is Scheduled
+
+Mutation-heavy environments can change the DOM a lot in a short burst.
+
+So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
+
+That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
+
+## Sig `bind()`
+
+`@citrusworx/sigjs/juice` `bind()` does not include pressable or touchable-row. `JuiceRuntimeName` stops at twenty-eight names, through `table`. Passing `"touchable-row"` is not a supported name. Passing `"pressable"` is not a supported name. This runtime does not call `bind`, and Juice does not import Sig.
+
+`juice:change` and `getState()` still work without Sig. Listen on the host, or call `getState()` on the controller.
+
+## Accessibility
+
+- Prefer `<button type="button" touchable-row>` or `<a href touchable-row>` so the platform already supplies the role and the activation. This runtime does not add `role` or `tabindex` on those hosts
+- A `div` or `li` that should act as a button needs `[touchable-row~="select"]`, `[touchable-row~="activate"]`, or `[pressable]`. This runtime then adds `role="button"` and `tabindex="0"` when the author has not set them. A plain row does not enter the tab order
+- Enter on an `li` or `div` is not `preventDefault`'d and dispatches one click. Space on those hosts does not scroll the page
+- Do not put the only action on a trailing control and also make the row selectable unless both actions are meant to be separate. A click on the control does not toggle the row
+- Selectable rows are independent. This is not a radiogroup and not a tablist. If the widget is one-of-many, use radio or tabs
+- On a link, the selected signal is `aria-current`, not `aria-selected`. On every other host it is `aria-selected`, plus `[selected]`
+- Disabled is the `disabled` property, `[disabled]`, or `aria-disabled="true"`. The runtime ignores the attempt. `aria-disabled` does not remove the click from here. A disabled custom row does not `preventDefault` Space
+- The label and the bar use registered body ink, so a row inside Citrusmint muted copy does not drop to the muted pair. The divider is decorative and stays under 3:1. The selected bar clears 3:1 on every theme. Citrusmint is the floor at **4.62:1** on the page and **5.17:1** on the strong surface
+- A touchable row inside a Citrusmint list still takes the list selected wash. Body ink on that wash is **3.84:1**. The bar against that wash is the same **3.84:1** and still clears 3:1. The text pair misses 4.5:1. That is list's known Citrusmint wash, recorded here and on the list stylesheet
+- Focus is the `:focus-visible` outline. The runtime does not move focus and does not trap it
+- Do not nest a button or an anchor inside a button or an anchor. A trailing `[switch]` or `[icon-button]` wants a `div` or `li` host
+
+## Limitations
+
+- No `TouchableRow()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
+- This surface is Emerging, not Stable. Touchable row is the thirtieth Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Pressable remains the twenty-ninth and is also on master, not in that cut. All thirty stay Emerging.
+- `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row. Do not pass `"touchable-row"` as a `JuiceRuntimeName`. See [Sig `bind()`](#sig-bind).
+- CSS hosts are `a`, `button`, `li`, and `div`. A `tr` is not a host. `[menuitem]` is not a host by itself.
+- The runtime does not add `role` or `tabindex` on a plain row, a native link, a native button, a menuitem, or a disabled row. `destroy()` does not remove chrome it added.
+- Enter is never `preventDefault`'d. Space is `preventDefault`'d on non-native hosts that are not editing hosts and not menuitems. A disabled host does not get that `preventDefault`.
+- Selection is an independent toggle. There is no group, and activating one row does not clear its siblings. Rows without the `select` word do not toggle.
+- `aria-current` written here is `"true"` or `"false"`. An author value such as `"page"` already counts as selected, so the first toggle turns the row off.
+- Long-press is Pressable's. A suppressed click does not select. Canceling `juice:longpress` keeps the click, and the row selects.
+- There is no motion role. A host `transition` would replace Pressable's ring timing.
+- The divider is decorative and misses 3:1 on every theme in the table above. The Citrusmint list selected wash misses 4.5:1 for body ink. The start bar still clears 3:1.
+- The composition conflicts in [Composition](#composition) are unchanged: list washes still paint, Pressable owns the ring, and a combined `[menuitem]` takes this flex row.
+- There is no focus trap and no Escape handling. Touchable row is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+- There is no z-index elevation. Touchable row is inline chrome. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
+- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and accordion behavior are not part of this runtime. Pressable is the press language this row composes with. It is a separate runtime.
+
+## Why This Matches Navigation
+
+The touchable-row runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, and pressable lifecycle by convention:
+
+- DOM-first
+- automatic boot
+- event delegation for click and for Enter / Space
+- MutationObserver plus rAF `sync()`
+- idempotent singleton `start*Runtime` / `stop*Runtime`
+- framework-agnostic
+
+Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API. `juice:change` comes from that shared helper. Touchable row does not import Sig.
+
+## Design Rule Going Forward
+
+Interactive Juice browser features should follow this standard:
+
+> Valid Juice markup should work automatically when it reaches the browser.
