@@ -5747,33 +5747,55 @@ var _u = "juice:longpress", vu = {
 }, yu = (e) => Array.from(e), bu = L(), xu = {
 	pressed: !1,
 	longPressed: !1
-}, Su = (e) => !!(e.getAttribute("aria-disabled") === "true" || e.hasAttribute("disabled") || "disabled" in e && e.disabled), Cu = (e) => e.hasAttribute("aria-pressed") || e.hasAttribute("icon-button") && e.hasAttribute("toggle"), wu = (e) => e === "Enter" || e === " " || e === "Spacebar", Tu = (e) => {
+}, Su = (e) => !!(e.getAttribute("aria-disabled") === "true" || e.hasAttribute("disabled") || "disabled" in e && e.disabled), Cu = (e) => e.hasAttribute("aria-pressed") || e.hasAttribute("icon-button") && e.hasAttribute("toggle"), wu = (e) => e === "Enter" || e === " " || e === "Spacebar", Tu = (e) => e === " " || e === "Spacebar", Eu = new Set([
+	"button",
+	"switch",
+	"checkbox",
+	"radio",
+	"menuitem",
+	"menuitemcheckbox",
+	"menuitemradio",
+	"option",
+	"tab",
+	"treeitem"
+]), Du = (e) => !!(e instanceof HTMLButtonElement || e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement || e instanceof HTMLSelectElement || e.tagName === "SUMMARY" || Ou(e)), Ou = (e) => {
+	if (e.isContentEditable) return !0;
+	let t = e.getAttribute("contenteditable");
+	if (t === null) return !1;
+	let n = t.trim().toLowerCase();
+	return n === "" || n === "true" || n === "plaintext-only";
+}, ku = (e) => {
+	let t = e.getAttribute("role");
+	if (!t) return !1;
+	let n = t.trim().toLowerCase().split(/\s+/)[0];
+	return n !== void 0 && Eu.has(n);
+}, Au = (e) => ku(e) && !Du(e), ju = (e) => {
 	if (e === null) return null;
 	let t = e.trim();
 	if (t === "" || !/^\d+(?:\.\d+)?$/.test(t)) return null;
 	let n = Number(t);
 	return Number.isFinite(n) ? n : null;
-}, Eu = (e, t) => {
+}, Mu = (e, t) => {
 	if (!e.hasAttribute("pressable-longpress")) return null;
 	let n = e.getAttribute("pressable-longpress");
 	if (n !== null && n.trim().toLowerCase() === "false") return null;
-	let r = Tu(n);
+	let r = ju(n);
 	return r === null ? t : r;
-}, Du = (e, t) => {
+}, Nu = (e, t) => {
 	if (!e.hasAttribute("pressable-slop")) return t;
-	let n = Tu(e.getAttribute("pressable-slop"));
+	let n = ju(e.getAttribute("pressable-slop"));
 	return n === null ? t : n;
-}, Ou = (e, t) => typeof e != "number" || !Number.isFinite(e) || e < 0 ? t : e, ku = () => ({
+}, Pu = (e, t) => typeof e != "number" || !Number.isFinite(e) || e < 0 ? t : e, Fu = () => ({
 	destroy: () => {},
 	sync: () => {},
 	getState: () => null
-}), Au = (e = {}) => {
-	if (typeof window > "u" || typeof document > "u") return ku();
+}), Iu = (e = {}) => {
+	if (typeof window > "u" || typeof document > "u") return Fu();
 	let t = {
 		...vu,
 		...e,
-		longPressDelay: Ou(e.longPressDelay, vu.longPressDelay),
-		moveSlop: Ou(e.moveSlop, vu.moveSlop)
+		longPressDelay: Pu(e.longPressDelay, vu.longPressDelay),
+		moveSlop: Pu(e.moveSlop, vu.moveSlop)
 	}, n = t.root ?? document, r = n, i = T("pressable"), a = /* @__PURE__ */ new Map(), o = /* @__PURE__ */ new Map(), s = !1, c = (e) => !(e instanceof HTMLElement) || !e.matches(t.pressableSelector) ? !1 : n instanceof Document ? !0 : n instanceof Node ? n === e || n.contains(e) : !1, l = () => {
 		let e = yu(n.querySelectorAll(t.pressableSelector)).filter(c);
 		return n instanceof HTMLElement && c(n) ? [n, ...e.filter((e) => e !== n)] : e;
@@ -5836,7 +5858,7 @@ var _u = "juice:longpress", vu = {
 		let n = t.suppressClick;
 		a.delete(e), n && _(e), p(e);
 	}, b = (e, n) => {
-		let r = Eu(e, t.longPressDelay);
+		let r = Mu(e, t.longPressDelay);
 		r !== null && (n.timer = setTimeout(() => {
 			if (n.timer = null, s || a.get(e) !== n) return;
 			if (Su(e) || !c(e)) {
@@ -5862,7 +5884,7 @@ var _u = "juice:longpress", vu = {
 			pointerId: r?.pointerId ?? null,
 			originX: r?.clientX ?? 0,
 			originY: r?.clientY ?? 0,
-			slop: Du(e, t.moveSlop),
+			slop: Nu(e, t.moveSlop),
 			timer: null,
 			active: !0,
 			longPressed: !1,
@@ -5920,9 +5942,9 @@ var _u = "juice:longpress", vu = {
 			!n || n.source !== "pointer" || S(t, e.target) && y(t);
 		}
 	}, A = (e) => {
-		if (s || !(e instanceof KeyboardEvent) || e.repeat || !wu(e.key) || !(e.target instanceof HTMLElement) || !e.target.matches(t.pressableSelector)) return;
+		if (s || !(e instanceof KeyboardEvent) || !wu(e.key) || !(e.target instanceof HTMLElement) || !e.target.matches(t.pressableSelector)) return;
 		let n = e.target;
-		!c(n) || Su(n) || a.has(n) || bu(e) && x(n, "keyboard", null);
+		c(n) && (Tu(e.key) && Au(n) && e.cancelable && e.preventDefault(), !(e.repeat || Su(n) || a.has(n)) && bu(e) && x(n, "keyboard", null));
 	}, j = (e) => {
 		if (s || !(e instanceof KeyboardEvent) || !wu(e.key) || !(e.target instanceof HTMLElement) || !e.target.matches(t.pressableSelector)) return;
 		let n = a.get(e.target);
@@ -5982,17 +6004,17 @@ var _u = "juice:longpress", vu = {
 			return t ? f(t) : null;
 		}
 	};
-}, ju = Au, Mu = null, Nu = !1, Pu = null, Fu = () => {
-	!Pu || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", Pu), Pu = null);
-}, Iu = () => typeof window > "u" || typeof document > "u" ? null : (Nu = !1, Fu(), Mu ? (Mu.sync(), Mu) : (Mu = Au(), Mu)), Lu = () => {
-	Nu = !0, Fu(), Mu?.destroy(), Mu = null;
+}, Lu = Iu, Ru = null, zu = !1, Bu = null, Vu = () => {
+	!Bu || typeof document > "u" || (document.removeEventListener("DOMContentLoaded", Bu), Bu = null);
+}, Hu = () => typeof window > "u" || typeof document > "u" ? null : (zu = !1, Vu(), Ru ? (Ru.sync(), Ru) : (Ru = Iu(), Ru)), Uu = () => {
+	zu = !0, Vu(), Ru?.destroy(), Ru = null;
 };
-typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Pu = () => {
-	Pu = null, Nu || Iu();
-}, document.addEventListener("DOMContentLoaded", Pu)) : Iu());
+typeof window < "u" && typeof document < "u" && (document.readyState === "loading" ? (Bu = () => {
+	Bu = null, zu || Hu();
+}, document.addEventListener("DOMContentLoaded", Bu)) : Hu());
 //#endregion
 //#region src/tokens/index.ts
-var Ru = {
+var Wu = {
 	colors: {
 		families: [
 			"black",
@@ -6160,4 +6182,4 @@ var Ru = {
 	themes: {}
 };
 //#endregion
-export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, jl as createAvatar, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, Au as createPressable, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, lu as createTable, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, Ml as initAvatar, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, ju as initPressable, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, uu as initTable, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, Ll as startAvatarRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, Iu as startPressableRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, hu as startTableRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, Rl as stopAvatarRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Lu as stopPressableRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, gu as stopTableRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, Ru as tokens };
+export { y as Accordion, b as JUICE_CHANGE_EVENT, ve as createAccordion, jl as createAvatar, $r as createBanner, po as createBreadcrumb, ja as createCheckbox, Fr as createCombobox, Ss as createDisclosure, xt as createDrawer, se as createElementMotion, Rc as createField, ll as createIconButton, cc as createInput, bi as createMenu, rt as createModal, te as createMotionCancelToken, M as createNavigation, ns as createPagination, vn as createPopover, Iu as createPressable, No as createProgress, Za as createRadio, qs as createSelect, pa as createSlider, Ps as createSpinner, Ri as createSwitch, lu as createTable, Pe as createTabs, xc as createTextarea, Ut as createToast, Wn as createTooltip, dr as createWizard, ye as initAccordion, Ml as initAvatar, ei as initBanner, mo as initBreadcrumb, Ma as initCheckbox, Ir as initCombobox, Cs as initDisclosure, St as initDrawer, zc as initField, ul as initIconButton, lc as initInput, xi as initMenu, it as initModal, N as initNavigation, rs as initPagination, yn as initPopover, Lu as initPressable, Po as initProgress, Qa as initRadio, Js as initSelect, ma as initSlider, Fs as initSpinner, zi as initSwitch, uu as initTable, Fe as initTabs, Sc as initTextarea, Wt as initToast, Gn as initTooltip, fr as initWizard, K as prefersReducedMotion, oe as runMotion, we as startAccordionRuntime, Ll as startAvatarRuntime, ai as startBannerRuntime, yo as startBreadcrumbRuntime, La as startCheckboxRuntime, Vr as startComboboxRuntime, Os as startDisclosureRuntime, Dt as startDrawerRuntime, Wc as startFieldRuntime, hl as startIconButtonRuntime, mc as startInputRuntime, Ei as startMenuRuntime, lt as startModalRuntime, F as startNavigationRuntime, cs as startPaginationRuntime, wn as startPopoverRuntime, Hu as startPressableRuntime, zo as startProgressRuntime, ro as startRadioRuntime, $s as startSelectRuntime, ya as startSliderRuntime, Bs as startSpinnerRuntime, Wi as startSwitchRuntime, hu as startTableRuntime, Be as startTabsRuntime, Dc as startTextareaRuntime, Yt as startToastRuntime, Xn as startTooltipRuntime, _r as startWizardRuntime, Te as stopAccordionRuntime, Rl as stopAvatarRuntime, oi as stopBannerRuntime, bo as stopBreadcrumbRuntime, Ra as stopCheckboxRuntime, Hr as stopComboboxRuntime, ks as stopDisclosureRuntime, Ot as stopDrawerRuntime, Gc as stopFieldRuntime, gl as stopIconButtonRuntime, hc as stopInputRuntime, Di as stopMenuRuntime, ut as stopModalRuntime, I as stopNavigationRuntime, ls as stopPaginationRuntime, Tn as stopPopoverRuntime, Uu as stopPressableRuntime, Bo as stopProgressRuntime, io as stopRadioRuntime, ec as stopSelectRuntime, ba as stopSliderRuntime, Vs as stopSpinnerRuntime, Gi as stopSwitchRuntime, gu as stopTableRuntime, Ve as stopTabsRuntime, Oc as stopTextareaRuntime, Xt as stopToastRuntime, Zn as stopTooltipRuntime, vr as stopWizardRuntime, ee as subscribeReducedMotion, Wu as tokens };

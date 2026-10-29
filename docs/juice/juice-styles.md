@@ -62,6 +62,10 @@ Juice usage today usually falls into these groups:
 
 - `table` — native `<table table>` grid, with `[striped]`, `[dense]`, `[sticky]`, `[table-scroll]`, `[table-align]`, `[numeric]`, and `th[sortable]`. See [Table](./juice-table.md). On master, not in the published npm 0.9.2 release. The twenty-eighth Emerging runtime.
 
+### Press feedback
+
+- `pressable` — transient press ring on any host, with `[pressable="scale"]`, `[pressable-longpress]`, and `[pressable-slop]`. See [Pressable](./juice-pressable.md). On master, not in the published npm 0.9.2 release. The twenty-ninth Emerging runtime. Mobile-Critical.
+
 ### Theme scoping
 
 - `theme="..."`

@@ -4,7 +4,7 @@ This document explains the current safe-area chrome in `libraries/juice/src/comp
 
 Safe area is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createSafeArea`, no auto-enhance, and no `SafeArea()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the twenty-eight Emerging auto-enhance runtimes. That count stays twenty-eight. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the twenty-nine Emerging auto-enhance runtimes. That count stays twenty-nine. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 Safe area pads a host clear of the notch, the home indicator, and rounded corners. It does not paint. There is nothing for a theme to bind.
 
@@ -100,7 +100,7 @@ Padding is the inset that lets a fixed or sticky bar keep painting into the unsa
 
 ## Cascade
 
-Specificity below counts each attribute in the selector, including each `:not()`. The all-four rule is `(0, 5, 0)` on its own, not `(0, 1, 0)`. The header comment in `safe-area.scss` still says bare `[safe-area]` is `(0, 1, 0)`. The selector that compiled is the `:not()` chain. `dist/index.css` has the same chain, with the quotes dropped.
+Specificity below counts each attribute in the selector, including each `:not()`. The all-four rule is `(0, 5, 0)` on its own, not `(0, 1, 0)`. The header comment in `safe-area.scss` matches this table. The all-four rule is the `:not()` chain at `(0, 5, 0)`, and `(0, 6, 0)` under `[theme]`. `dist/index.css` has the same chain, with the quotes dropped.
 
 | Selector | Specificity | Edges |
 |---|---|---|
@@ -297,7 +297,7 @@ Padding is not a substitute for a control’s hit target. `[drawer-close]` can s
 ## Limitations
 
 - CSS-only. No `SafeArea()` factory, no `createSafeArea`, and no auto-enhance. The JS entry does not boot a safe-area runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[safe-area]`.
-- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The twenty-eight Emerging auto-enhance runtimes stay twenty-eight.
+- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The twenty-nine Emerging auto-enhance runtimes stay twenty-nine.
 - Shipped themes are not required to bind `--juice-safe-area-pad`. The role is on `:root` only. Bundled theme CSS does not contain it.
 - Values other than `top`, `bottom`, `x`, and `y` pad all four edges. There is no `left`, `right`, `start`, or `end` value.
 - `x` and `y` are physical. They do not follow writing mode.

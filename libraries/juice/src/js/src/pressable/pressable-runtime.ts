@@ -33,8 +33,14 @@
  *   the key is held, including on a native button. Native buttons
  *   already match :active; the attribute is set too so the pressed
  *   ring matches a pointer press. Keyup clears it. Repeat keydowns
- *   do not restart the gesture. Keydown does not preventDefault, so
- *   a native click still fires and Space on a non-button can still
+ *   do not restart the gesture. Enter is never preventDefault'd, so
+ *   a native click still fires. Space is preventDefault'd only on a
+ *   custom button-like host, so the page does not scroll. That host's
+ *   first role token is button, switch, checkbox, radio, menuitem,
+ *   menuitemcheckbox, menuitemradio, option, tab, or treeitem, and
+ *   the host is not a native control that already owns Space (button,
+ *   input, textarea, select, summary, or contenteditable). A pressable
+ *   with no button-like role is left alone, and role="link" keeps the
  *   scroll. Long-press is pointer-only. The host has to be the event
  *   target. This runtime does not add tabindex or role.
  *
@@ -156,6 +162,61 @@ const isLatchedToggle = (element: HTMLElement) =>
   (element.hasAttribute('icon-button') && element.hasAttribute('toggle'));
 
 const isPressKey = (key: string) => key === 'Enter' || key === ' ' || key === 'Spacebar';
+
+const isSpaceKey = (key: string) => key === ' ' || key === 'Spacebar';
+
+// Widget roles whose APG pattern activates on Space. Space would
+// otherwise scroll the page, because these hosts are not native
+// buttons. role="link" is not in this set: a link activates on Enter,
+// and Space keeps scrolling. The first role token wins.
+const CUSTOM_BUTTON_ROLES = new Set([
+  'button',
+  'switch',
+  'checkbox',
+  'radio',
+  'menuitem',
+  'menuitemcheckbox',
+  'menuitemradio',
+  'option',
+  'tab',
+  'treeitem',
+]);
+
+// Native controls whose Space key already does something. preventDefault
+// would swallow a button click, a checkbox or radio toggle, a summary
+// toggle, a select picker, a file dialog, or a typed space.
+const isNativeSpaceOwner = (element: HTMLElement) => {
+  if (element instanceof HTMLButtonElement) return true;
+  if (element instanceof HTMLInputElement) return true;
+  if (element instanceof HTMLTextAreaElement) return true;
+  if (element instanceof HTMLSelectElement) return true;
+  // tagName, not HTMLSummaryElement: that constructor is missing in some
+  // DOM implementations, and reading the unbound name throws.
+  if (element.tagName === 'SUMMARY') return true;
+  if (isEditingHost(element)) return true;
+  return false;
+};
+
+// isContentEditable is the browser signal, including an inherited
+// contenteditable ancestor. The attribute is checked too, because some
+// DOM implementations leave the IDL false when the attribute is set.
+const isEditingHost = (element: HTMLElement) => {
+  if (element.isContentEditable) return true;
+  const value = element.getAttribute('contenteditable');
+  if (value === null) return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized === '' || normalized === 'true' || normalized === 'plaintext-only';
+};
+
+const isCustomButtonHost = (element: HTMLElement) => {
+  const role = element.getAttribute('role');
+  if (!role) return false;
+  const token = role.trim().toLowerCase().split(/\s+/)[0];
+  return token !== undefined && CUSTOM_BUTTON_ROLES.has(token);
+};
+
+const shouldPreventSpaceScroll = (element: HTMLElement) =>
+  isCustomButtonHost(element) && !isNativeSpaceOwner(element);
 
 const parseNonNegative = (value: string | null) => {
   if (value === null) return null;
@@ -478,11 +539,15 @@ export const createPressable = (
   const handleKeyDown = (event: Event) => {
     if (destroyed) return;
     if (!(event instanceof KeyboardEvent)) return;
-    if (event.repeat || !isPressKey(event.key)) return;
+    if (!isPressKey(event.key)) return;
     if (!(event.target instanceof HTMLElement)) return;
     if (!event.target.matches(settings.pressableSelector)) return;
     const host = event.target;
-    if (!isManaged(host) || isDisabled(host) || presses.has(host)) return;
+    if (!isManaged(host)) return;
+    if (isSpaceKey(event.key) && shouldPreventSpaceScroll(host) && event.cancelable) {
+      event.preventDefault();
+    }
+    if (event.repeat || isDisabled(host) || presses.has(host)) return;
     if (!claimEvent(event)) return;
     beginPress(host, 'keyboard', null);
   };

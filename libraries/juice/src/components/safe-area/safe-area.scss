@@ -68,16 +68,39 @@
 // Specificity that would swallow a host sitting inside those bars is
 // restated here. Those files are not edited.
 //
-//   nav > [container]                 padding: 0 at (0, 1, 1).
-//                                     Beats bare [safe-area] (0, 1, 0).
-//   [wizard-header] > [container]     padding shorthand at (0, 2, 0),
-//                                     later than this file, so it ties
-//                                     [theme] [safe-area] and wins.
+// The all-four rule is not a bare [safe-area] at (0, 1, 0). It is
+// [safe-area] plus four :not() selectors, one per valued edge:
 //
-// nav[fixed] > [container][safe-area] and the sticky twin are (0, 3, 1).
-// [wizard-header] > [container][safe-area] is (0, 3, 0). A container
-// that is the host keeps the inset. The nav's own padding is a
-// separate box outside that container; this file does not zero it.
+//   [safe-area]:not([safe-area="top"]):not([safe-area="bottom"])
+//     :not([safe-area="x"]):not([safe-area="y"])           (0, 5, 0)
+//   [theme] plus that chain                              (0, 6, 0)
+//
+// Each :not([safe-area="…"]) counts as one attribute. A valued edge
+// ([safe-area="top"] and the same for bottom, x, and y) stays (0, 1, 0),
+// and [theme] [safe-area="top"] stays (0, 2, 0).
+//
+//   nav > [container]                 padding: 0 at (0, 1, 1).
+//                                     Loses to the all-four chain
+//                                     (0, 5, 0). It still beats a
+//                                     valued edge at (0, 1, 0), which
+//                                     is why the valued rules restate
+//                                     the container host below.
+//   [wizard-header] > [container]     padding shorthand at (0, 2, 0),
+//                                     later than this file. It loses
+//                                     to the all-four chain (0, 5, 0)
+//                                     and to [theme] plus that chain
+//                                     (0, 6, 0). It beats a valued
+//                                     edge at (0, 1, 0) / (0, 2, 0)
+//                                     when it loads later, which is
+//                                     why those rules restate the
+//                                     container host too.
+//
+// With the :not() chain included, nav[fixed] > [container][safe-area]
+// and the sticky twin are (0, 7, 1) for all four edges, and
+// [wizard-header] > [container][safe-area] is (0, 7, 0). The valued
+// forms stay (0, 3, 1) and (0, 3, 0). A container that is the host
+// keeps the inset. The nav's own padding is a separate box outside
+// that container; this file does not zero it.
 //
 // [drawer-header] and [drawer-body] are (0, 1, 0) and do not select
 // descendants. A host inside them keeps its pad. [drawer] scrolls
