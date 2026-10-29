@@ -1,0 +1,284 @@
+// Keyboard-avoider chrome is structural. It keeps a field, a composer,
+// or a bottom bar clear of the software keyboard. There is no paint,
+// so there is nothing for a theme to bind.
+//
+// interactive-widget=resizes-content is a documented alternative on
+// Chrome Android 108+. It asks the browser to shrink the layout
+// viewport when the keyboard opens, so this host is unnecessary there.
+// That token lives on the viewport meta tag. This slice does not change
+// markup. Full docs are slice C.
+//
+//   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+//
+// iOS and Chrome Android's default (resizes-visual) do not shrink the
+// layout viewport. The host below is for that case. The keyboard covers
+// the page, and the inset is the overlap.
+//
+// Layout roles, on :root only. Not color roles, so they are not
+// restated on [theme]. A custom property set on [theme] would
+// re-resolve on the themed element; these lengths and timings do not
+// depend on the theme.
+//
+//   --juice-keyboard-inset
+//   --juice-keyboard-duration
+//   --juice-keyboard-easing
+//
+// The inset defaults to 0px. A closed keyboard and a browser with no
+// inset are the same: no extra pad, no shift. Duration and easing point
+// at the motion scale. Base (0.3s) is the entrance used by drawer,
+// modal, popover, and toast. Enter (ease-out) is the curve that settles
+// a panel into place. Fast (0.2s) and standard (ease) are the press and
+// color timings, and they are shorter than a keyboard. One easing role
+// covers both directions.
+//
+// --juice-keyboard-inset is a registered <length> so translateY can
+// interpolate when the variable changes. The initial value is 0px.
+// inherits is true so a value written on <html> reaches the host.
+//
+// Pure CSS fallback, Chromium only. The Virtual Keyboard environment
+// variable keyboard-inset-height (Chrome 108+) is applied inside
+// @supports. The query does not pass a fallback, so a browser that
+// only understands env() with a fallback does not match. Elsewhere the
+// block is a no-op and the role stays 0px. Inside the block the
+// declaration still carries the 0px fallback.
+//
+//   env(keyboard-inset-height, 0px)
+//
+// The runtime (slice B, not this file) will write
+// --juice-keyboard-inset on <html> and set [keyboard-open]. An inline
+// value beats both the 0px role and the @supports override. This file
+// does not select [keyboard-open]. The inset is the layout input, so a
+// missing attribute and a closed keyboard look the same.
+//
+// Juice names. One attribute. Words compose with ~=, same as
+// [touchable-row~="dense"]. Boolean [keyboard-avoider] is the padding
+// mode, same as boolean [safe-area] being all four edges.
+//
+//   [keyboard-avoider]                  padding mode.
+//   [keyboard-avoider="padding"]        padding mode. Matches ~= .
+//   [keyboard-avoider~="translate"]     translateY by the inset.
+//   [keyboard-avoider~="footer"]        sticky, bottom is the inset.
+//
+// The boolean rule does not match a host that already carries a word.
+// [keyboard-avoider] would otherwise pad every valued host, and the
+// word would only add to that. Unknown values (including the empty
+// boolean) take padding mode.
+//
+//   [keyboard-avoider]:not([keyboard-avoider~="padding"])
+//     :not([keyboard-avoider~="translate"])
+//     :not([keyboard-avoider~="footer"])                 (0, 4, 0)
+//   [theme] plus that chain                               (0, 5, 0)
+//
+// Each :not([keyboard-avoider~="…"]) counts as one attribute. A word
+// ([keyboard-avoider~="padding"] and the same for translate and footer)
+// stays (0, 1, 0), and [theme] [keyboard-avoider~="padding"] stays
+// (0, 2, 0). "padding translate" matches both words and not the bare
+// chain.
+//
+// Padding mode sets the padding-bottom longhand to the inset, so a
+// scroll container can reach its last field. It does not set the
+// padding shorthand. A lower-specificity shorthand on the same element
+// keeps the edges this mode does not set. box-sizing is border-box so
+// the pad stays inside a width: 100% host. There is no transition on
+// the padding. Reflow is the point, and the translate mode is the one
+// that moves.
+//
+// Translate mode is for a floating composer or toolbar:
+//
+//   transform: translateY(calc(-1 * var(--juice-keyboard-inset)));
+//
+// The transition uses --juice-keyboard-duration and
+// --juice-keyboard-easing. It replaces a lower-specificity transition
+// on that host. It does not set padding.
+//
+// Footer mode is the bottom-pinned action bar:
+//
+//   position: sticky;
+//   bottom: var(--juice-keyboard-inset);
+//
+// It is the only mode that sets position. It does not set top, so a
+// bar that already has top: 0 keeps that top. nav[fixed] is
+// position: fixed at (0, 1, 1) and beats this mode, so a fixed nav
+// stays fixed. bottom still applies, because nav[fixed] does not set
+// it. [drawer] is position: absolute and bottom: 0 at (0, 1, 0). This
+// file loads later, so footer on the drawer itself replaces both.
+// Put padding mode on the scrolling body inside the drawer instead.
+//
+// No margin mode. No z-index. No width, height, display, or inset
+// shorthand. nav[fixed], nav[sticky], [drawer], and [wizard-header]
+// keep the boxes they already set, except the footer tie with [drawer]
+// above.
+//
+// Safe-area composition is always on for padding mode. Bottom padding
+// on a host that is also a [safe-area] bottom, y, or bare form is one
+// max(), never a sum:
+//
+//   max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))
+//
+// A sum would stack the home-indicator pad on the keyboard. The max
+// keeps whichever is larger. Translate-only and footer-only do not
+// take that formula. They already move by the inset, and folding the
+// inset into padding would move twice. A padding word composed with
+// translate or footer still takes the max, because the author asked
+// for the padding. [safe-area="top"] and [safe-area="x"] do not set
+// padding-bottom, so they are not restated. safe-area.scss is not
+// edited. The combined selectors live here and load later.
+//
+// Specificity that would swallow a host sitting inside a fixed or
+// sticky bar, or inside a wizard header, is restated here. Those
+// files are not edited.
+//
+//   nav > [container]                 padding: 0 at (0, 1, 1).
+//                                     Loses to the bare chain
+//                                     (0, 4, 0). It beats a word at
+//                                     (0, 1, 0), which is why the
+//                                     word rules restate the
+//                                     container host below.
+//   [wizard-header] > [container]     padding shorthand at (0, 2, 0),
+//                                     earlier than this file. It
+//                                     loses to the bare chain
+//                                     (0, 4, 0) and to [theme] plus
+//                                     that chain (0, 5, 0). It beats
+//                                     a word at (0, 1, 0) / (0, 2, 0)
+//                                     when it has loaded, which is
+//                                     why those rules restate the
+//                                     container host too.
+//
+// With the :not() chain included, nav[fixed] > [container][keyboard-avoider]
+// and the sticky twin are (0, 6, 1) for padding mode's bare form, and
+// [wizard-header] > [container][keyboard-avoider] is (0, 6, 0). A word
+// on that container is (0, 3, 1) and (0, 3, 0).
+//
+// The safe-area combined rule has to beat both files. Bare
+// [safe-area] is (0, 5, 0) and its nav host is (0, 7, 1). Padding
+// mode's bare chain is (0, 4, 0) and its nav host is (0, 6, 1).
+// [safe-area]:not(the four edges)[keyboard-avoider]:not(the three
+// words) is (0, 9, 0), and the same chain on
+// nav[fixed] > [container] is (0, 11, 1). [safe-area="bottom"] plus
+// the bare keyboard chain is (0, 5, 0). [safe-area="bottom"] plus
+// the padding word is (0, 2, 0), which still beats the padding word
+// alone at (0, 1, 0) and safe-area's own bottom rule at (0, 1, 0).
+// The nav forms add the same two attributes and stay ahead of both
+// parents. y matches bottom. [theme] adds one attribute on each.
+//
+// prefers-reduced-motion sets transition: none on the translate
+// mode, at the same specificity as the transition, later in the file.
+// The motion scale also collapses durations. transition: none is the
+// one this component owns. Padding mode sets no transition, so a
+// reduced-motion rule on every host would erase a button transition
+// the author did not ask to replace.
+//
+// Native collision: there is no HTML global `keyboard-avoider`
+// attribute and no <keyboard-avoider> element. [keyboard-avoider] is
+// an attribute selector. CSS-only. No runtime.
+
+@property --juice-keyboard-inset {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
+:root {
+    --juice-keyboard-inset: 0px;
+    --juice-keyboard-duration: var(--juice-motion-duration-base);
+    --juice-keyboard-easing: var(--juice-motion-ease-enter);
+}
+
+// The fallback is omitted from the query on purpose. env(name, 0px)
+// is valid anywhere env() accepts a fallback, which would turn this
+// into a match on every current browser. keyboard-inset-height alone
+// matches Chromium's Virtual Keyboard variable and nowhere else.
+
+@supports (height: env(keyboard-inset-height)) {
+    :root {
+        --juice-keyboard-inset: env(keyboard-inset-height, 0px);
+    }
+}
+
+@mixin -juice-keyboard-avoider-rule($word: null) {
+    @if $word == null {
+        [keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [theme] [keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        nav[fixed] > [container][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        nav[sticky] > [container][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [wizard-header] > [container][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]) {
+            @content;
+        }
+    } @else {
+        [keyboard-avoider~="#{$word}"],
+        [theme] [keyboard-avoider~="#{$word}"],
+        nav[fixed] > [container][keyboard-avoider~="#{$word}"],
+        nav[sticky] > [container][keyboard-avoider~="#{$word}"],
+        [wizard-header] > [container][keyboard-avoider~="#{$word}"] {
+            @content;
+        }
+    }
+}
+
+@mixin -juice-keyboard-safe-area-rule($value: null) {
+    @if $value == null {
+        [safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [theme] [safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        nav[fixed] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        nav[sticky] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [wizard-header] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider~="padding"],
+        [theme] [safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider~="padding"],
+        nav[fixed] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider~="padding"],
+        nav[sticky] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider~="padding"],
+        [wizard-header] > [container][safe-area]:not([safe-area="top"]):not([safe-area="bottom"]):not([safe-area="x"]):not([safe-area="y"])[keyboard-avoider~="padding"] {
+            @content;
+        }
+    } @else {
+        [safe-area="#{$value}"][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [theme] [safe-area="#{$value}"][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        nav[fixed] > [container][safe-area="#{$value}"][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        nav[sticky] > [container][safe-area="#{$value}"][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [wizard-header] > [container][safe-area="#{$value}"][keyboard-avoider]:not([keyboard-avoider~="padding"]):not([keyboard-avoider~="translate"]):not([keyboard-avoider~="footer"]),
+        [safe-area="#{$value}"][keyboard-avoider~="padding"],
+        [theme] [safe-area="#{$value}"][keyboard-avoider~="padding"],
+        nav[fixed] > [container][safe-area="#{$value}"][keyboard-avoider~="padding"],
+        nav[sticky] > [container][safe-area="#{$value}"][keyboard-avoider~="padding"],
+        [wizard-header] > [container][safe-area="#{$value}"][keyboard-avoider~="padding"] {
+            @content;
+        }
+    }
+}
+
+@include -juice-keyboard-avoider-rule {
+    padding-bottom: var(--juice-keyboard-inset);
+    box-sizing: border-box;
+}
+
+@include -juice-keyboard-avoider-rule(padding) {
+    padding-bottom: var(--juice-keyboard-inset);
+    box-sizing: border-box;
+}
+
+@include -juice-keyboard-avoider-rule(translate) {
+    transform: translateY(calc(-1 * var(--juice-keyboard-inset)));
+    transition: transform var(--juice-keyboard-duration) var(--juice-keyboard-easing);
+}
+
+@include -juice-keyboard-avoider-rule(footer) {
+    position: sticky;
+    bottom: var(--juice-keyboard-inset);
+}
+
+@include -juice-keyboard-safe-area-rule {
+    padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+@include -juice-keyboard-safe-area-rule(bottom) {
+    padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+@include -juice-keyboard-safe-area-rule(y) {
+    padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @include -juice-keyboard-avoider-rule(translate) {
+        transition: none;
+    }
+}

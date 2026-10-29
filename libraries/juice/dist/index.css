@@ -102486,6 +102486,106 @@ nav[sticky] > [container][safe-area=y],
   box-sizing: border-box;
 }
 
+@property --juice-keyboard-inset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+:root {
+  --juice-keyboard-inset: 0px;
+  --juice-keyboard-duration: var(--juice-motion-duration-base);
+  --juice-keyboard-easing: var(--juice-motion-ease-enter);
+}
+
+@supports (height: env(keyboard-inset-height)) {
+  :root {
+    --juice-keyboard-inset: env(keyboard-inset-height, 0px);
+  }
+}
+[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[theme] [keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[fixed] > [container][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[sticky] > [container][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[wizard-header] > [container][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]) {
+  padding-bottom: var(--juice-keyboard-inset);
+  box-sizing: border-box;
+}
+
+[keyboard-avoider~=padding],
+[theme] [keyboard-avoider~=padding],
+nav[fixed] > [container][keyboard-avoider~=padding],
+nav[sticky] > [container][keyboard-avoider~=padding],
+[wizard-header] > [container][keyboard-avoider~=padding] {
+  padding-bottom: var(--juice-keyboard-inset);
+  box-sizing: border-box;
+}
+
+[keyboard-avoider~=translate],
+[theme] [keyboard-avoider~=translate],
+nav[fixed] > [container][keyboard-avoider~=translate],
+nav[sticky] > [container][keyboard-avoider~=translate],
+[wizard-header] > [container][keyboard-avoider~=translate] {
+  transform: translateY(calc(-1 * var(--juice-keyboard-inset)));
+  transition: transform var(--juice-keyboard-duration) var(--juice-keyboard-easing);
+}
+
+[keyboard-avoider~=footer],
+[theme] [keyboard-avoider~=footer],
+nav[fixed] > [container][keyboard-avoider~=footer],
+nav[sticky] > [container][keyboard-avoider~=footer],
+[wizard-header] > [container][keyboard-avoider~=footer] {
+  position: sticky;
+  bottom: var(--juice-keyboard-inset);
+}
+
+[safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[theme] [safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[fixed] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[sticky] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[wizard-header] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider~=padding],
+[theme] [safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider~=padding],
+nav[fixed] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider~=padding],
+nav[sticky] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider~=padding],
+[wizard-header] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider~=padding] {
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+[safe-area=bottom][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[theme] [safe-area=bottom][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[fixed] > [container][safe-area=bottom][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[sticky] > [container][safe-area=bottom][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[wizard-header] > [container][safe-area=bottom][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[safe-area=bottom][keyboard-avoider~=padding],
+[theme] [safe-area=bottom][keyboard-avoider~=padding],
+nav[fixed] > [container][safe-area=bottom][keyboard-avoider~=padding],
+nav[sticky] > [container][safe-area=bottom][keyboard-avoider~=padding],
+[wizard-header] > [container][safe-area=bottom][keyboard-avoider~=padding] {
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+[safe-area=y][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[theme] [safe-area=y][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[fixed] > [container][safe-area=y][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+nav[sticky] > [container][safe-area=y][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[wizard-header] > [container][safe-area=y][keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
+[safe-area=y][keyboard-avoider~=padding],
+[theme] [safe-area=y][keyboard-avoider~=padding],
+nav[fixed] > [container][safe-area=y][keyboard-avoider~=padding],
+nav[sticky] > [container][safe-area=y][keyboard-avoider~=padding],
+[wizard-header] > [container][safe-area=y][keyboard-avoider~=padding] {
+  padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [keyboard-avoider~=translate],
+  [theme] [keyboard-avoider~=translate],
+  nav[fixed] > [container][keyboard-avoider~=translate],
+  nav[sticky] > [container][keyboard-avoider~=translate],
+  [wizard-header] > [container][keyboard-avoider~=translate] {
+    transition: none;
+  }
+}
 [search-panel] {
   max-width: 56rem;
   margin: 0 auto;
