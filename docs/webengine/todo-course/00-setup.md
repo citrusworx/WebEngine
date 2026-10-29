@@ -18,7 +18,7 @@ The finished copy in this repository is [`examples/todo-app`](../../../examples/
 mkdir todo-app
 cd todo-app
 npm init -y
-npm install @citrusworx/grapevine@0.2.2 @citrusworx/juiceui@0.9.2 @citrusworx/nectarine@0.5.0 @citrusworx/seltzer@0.10.1 @citrusworx/sigjs@0.7.0 @citrusworx/webengine@0.2.1 pg@8.23.0
+npm install @citrusworx/grapevine@0.2.2 @citrusworx/juiceui@0.9.2 @citrusworx/nectarine@0.5.0 @citrusworx/seltzer@0.10.1 @citrusworx/sigjs@^1.0.0 @citrusworx/webengine@0.2.1 pg@8.23.0
 npm install -D @types/node@25.6.0 @types/pg@8.23.1 tsx@4.22.3 typescript@5.9.3 vite@8.0.8
 ```
 
@@ -50,7 +50,7 @@ npm install -D @types/node@25.6.0 @types/pg@8.23.1 tsx@4.22.3 typescript@5.9.3 v
     "@citrusworx/juiceui": "0.9.2",
     "@citrusworx/nectarine": "0.5.0",
     "@citrusworx/seltzer": "0.10.1",
-    "@citrusworx/sigjs": "0.7.0",
+    "@citrusworx/sigjs": "^1.0.0",
     "@citrusworx/webengine": "0.2.1",
     "pg": "8.23.0"
   },
@@ -142,7 +142,7 @@ Leave both for the later lessons. This lesson only needs the database to exist. 
 
 Connect to database `todo` as user `todo` on `127.0.0.1` port `5432` and run a one-row select. You should get a row back. The `todos` table does not exist yet. Lesson 01 describes it. Lesson 03 creates it on boot.
 
-In `node_modules/@citrusworx/*/package.json`, the `version` fields are the table in the [hub](./README.md#published-packages). None of those folders are symlinks into another checkout.
+In `node_modules/@citrusworx/*/package.json`, the `version` fields are the table in the [hub](./README.md#published-packages). For `@citrusworx/sigjs` the installed `version` is `1.0.0`, the release `^1.0.0` resolved. None of those folders are symlinks into another checkout.
 
 ## What's happening
 

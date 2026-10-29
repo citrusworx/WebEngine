@@ -12,7 +12,7 @@ The API is Seltzer + Nectarine on Postgres. The browser is Sig + Juice, built by
 mkdir todo-app
 cd todo-app
 npm init -y
-npm install @citrusworx/grapevine@0.2.2 @citrusworx/juiceui@0.9.2 @citrusworx/nectarine@0.5.0 @citrusworx/seltzer@0.10.1 @citrusworx/sigjs@0.7.0 @citrusworx/webengine@0.2.1 pg@8.23.0
+npm install @citrusworx/grapevine@0.2.2 @citrusworx/juiceui@0.9.2 @citrusworx/nectarine@0.5.0 @citrusworx/seltzer@0.10.1 @citrusworx/sigjs@^1.0.0 @citrusworx/webengine@0.2.1 pg@8.23.0
 npm install -D @types/node@25.6.0 @types/pg@8.23.1 tsx@4.22.3 typescript@5.9.3 vite@8.0.8
 ```
 
@@ -24,7 +24,7 @@ npm install -D @types/node@25.6.0 @types/pg@8.23.1 tsx@4.22.3 typescript@5.9.3 v
 npm install
 ```
 
-The pinned packages are in `package.json`.
+The versions are in `package.json`. `@citrusworx/sigjs` is `^1.0.0`, the stable 1.0 line (`>=1.0.0 <2.0.0`). A clean install resolves 1.0.0. The other packages stay exact pins.
 
 The `grape` name npm puts on `PATH` exits without printing. `@citrusworx/grapevine` 0.2.2 runs its CLI only when `node` is pointed at `dist/bin/cli.js` itself. The `validate:grape`, `plan:grape`, and `status:grape` scripts do that.
 

@@ -23,7 +23,7 @@
     "@citrusworx/juiceui": "0.9.2",
     "@citrusworx/nectarine": "0.5.0",
     "@citrusworx/seltzer": "0.10.1",
-    "@citrusworx/sigjs": "0.7.0",
+    "@citrusworx/sigjs": "^1.0.0",
     "@citrusworx/webengine": "0.2.1",
     "pg": "8.23.0"
   },

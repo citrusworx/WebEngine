@@ -78,7 +78,7 @@ Drew publishes. This checklist does not publish.
 
    `yarn release-packages` publishes **every** versioned public package in that commit. Use it only when that is intended.
 
-7. `libraries/sig/examples/counter` pins `@citrusworx/sigjs@^1.0.0`. Its `package-lock.json` records **1.0.0**. That example is not a Yarn workspace member. `examples/todo-app` still pins `@citrusworx/sigjs` at `0.7.0` from npm and is outside the workspace. The ToDo course pins that same **0.7.0**. Leave that pin for a separate follow-up.
+7. `libraries/sig/examples/counter` and `examples/todo-app` pin `@citrusworx/sigjs@^1.0.0`. Each `package-lock.json` records **1.0.0**. The ToDo course uses that same range. Neither folder is a Yarn workspace member.
 8. If you used `changeset publish`, push any tags it created. The **1.0.0** publish did not use it.
 
 ## Notes
