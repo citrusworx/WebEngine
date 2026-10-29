@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createAccordion, stopAccordionRuntime } from '../accordion/accordion-runtime.js';
 import { createAvatar, stopAvatarRuntime } from '../avatar/avatar-runtime.js';
 import { createTable, stopTableRuntime } from '../table/table-runtime.js';
+import { createPressable, stopPressableRuntime } from '../pressable/pressable-runtime.js';
 import { createBanner, stopBannerRuntime } from '../banner/banner-runtime.js';
 import {
   createBreadcrumb,
@@ -53,6 +54,7 @@ const stopAll = () => {
   stopAccordionRuntime();
   stopAvatarRuntime();
   stopTableRuntime();
+  stopPressableRuntime();
   stopBannerRuntime();
   stopBreadcrumbRuntime();
   stopCheckboxRuntime();
@@ -996,6 +998,61 @@ describe('juice:change', () => {
     expect(heard.events).toHaveLength(3);
     expect(heard.events[2]?.detail.state).toEqual({ column: null, direction: 'none' });
     expect(Array.from(host.querySelectorAll('tbody tr')).map((row) => row.id)).toEqual(['b', 'a']);
+
+    heard.stop();
+    controller.destroy();
+  });
+
+  it('dispatches one pressable event per real press', () => {
+    document.body.innerHTML = '<button type="button" pressable id="go">Go</button>';
+    stopPressableRuntime();
+    const controller = createPressable({ root: document.body });
+    const host = document.getElementById('go')!;
+    const heard = listen();
+
+    expect(controller.getState(host)).toEqual({ pressed: false, longPressed: false });
+
+    host.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        button: 0,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+      })
+    );
+    host.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        button: 0,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+      })
+    );
+    expect(heard.events).toHaveLength(1);
+    expect(heard.events[0]?.bubbles).toBe(true);
+    expect(heard.events[0]?.target).toBe(host);
+    expect(heard.events[0]?.detail).toEqual({
+      runtime: 'pressable',
+      state: { pressed: true, longPressed: false },
+    });
+
+    host.dispatchEvent(
+      new PointerEvent('pointerup', {
+        bubbles: true,
+        button: 0,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+      })
+    );
+    expect(heard.events).toHaveLength(2);
+    expect(heard.events[1]?.detail).toEqual({
+      runtime: 'pressable',
+      state: { pressed: false, longPressed: false },
+    });
+    expect(controller.getState()).toEqual({ pressed: false, longPressed: false });
 
     heard.stop();
     controller.destroy();

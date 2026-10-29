@@ -80,9 +80,9 @@ Built files are `dist/index.css` (core) and `dist/themes/<id>.css`. Each theme i
 
 ## Components and runtimes
 
-The top-level JS entry is intentionally small. The named exports below are the stable runtime API Juice currently promises. All twenty-eight stay Emerging.
+The top-level JS entry is intentionally small. The named exports below are the stable runtime API Juice currently promises. All twenty-nine stay Emerging.
 
-Navigation through field (twenty-five runtimes) are in the published `@citrusworx/juiceui@0.9.2` release. Icon button, avatar, and table are on master and are not in that release. Rows marked **master** are those three.
+Navigation through field (twenty-five runtimes) are in the published `@citrusworx/juiceui@0.9.2` release. Icon button, avatar, table, and pressable are on master and are not in that release. Rows marked **master** are those four.
 
 ### Overlays
 
@@ -118,6 +118,7 @@ Navigation through field (twenty-five runtimes) are in the published `@citruswor
 | Slider | `[slider]` | APG slider (`setValue` / `getValue` / `increment` / `decrement`). Not a layered overlay. | [Slider](../../docs/juice/juice-slider-runtime.md) |
 | Field | `[field]` | Wrapper. Visible help and error describe the first input, textarea, or select. The twenty-fifth Emerging runtime. Shipped in 0.9.2. | [Field](../../docs/juice/juice-field-runtime.md) |
 | Icon button (**master**) | `[icon-button]` | Square control on button chrome (`sync` / `toggle` / `getState`). Not a switch and not a checkbox. The twenty-sixth Emerging runtime. Not in npm 0.9.2. | [Icon button](../../docs/juice/juice-icon-button-runtime.md) |
+| Pressable (**master**) | `[pressable]` | Transient press (`sync` / `getState`). Sets `[pressed]` for the gesture. `[pressable-longpress]` opts into `juice:longpress`. Not a latched toggle. The twenty-ninth Emerging runtime. Not in npm 0.9.2. | Slice C |
 
 ### Feedback
 
@@ -144,15 +145,15 @@ Navigation through field (twenty-five runtimes) are in the published `@citruswor
 
 ### Auto-start
 
-Importing `@citrusworx/juiceui` enhances valid markup in the browser. The entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, and table. Most apps need no `init` call.
+Importing `@citrusworx/juiceui` enhances valid markup in the browser. The entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, and pressable. Most apps need no `init` call.
 
-These hooks work without app init: `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, `[menu-root]`, `[switch]`, `[slider]`, `[checkbox]`, `[radiogroup]`, `[breadcrumb]`, `[progress]`, `[pagination]`, `[disclosure]`, `[spinner]`, `<select select>`, `<input input>`, `<textarea textarea>`, `[field]`, `[icon-button]`, `[avatar]`, `[table]`, and navigation (`nav[type="bar"]`, `nav[type="links"]`, `nav[type="mobile"]`, `nav[type="sidebar"]`).
+These hooks work without app init: `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, `[menu-root]`, `[switch]`, `[slider]`, `[checkbox]`, `[radiogroup]`, `[breadcrumb]`, `[progress]`, `[pagination]`, `[disclosure]`, `[spinner]`, `<select select>`, `<input input>`, `<textarea textarea>`, `[field]`, `[icon-button]`, `[avatar]`, `[table]`, `[pressable]`, and navigation (`nav[type="bar"]`, `nav[type="links"]`, `nav[type="mobile"]`, `nav[type="sidebar"]`).
 
 The JS module is optional. Core CSS plus a theme is enough when the page does not use a runtime.
 
 ### Naming pattern
 
-Every runtime exports the same four functions. `<Name>` is the stem: Navigation, Accordion, Tabs, Modal, Drawer, Toast, Popover, Wizard, Tooltip, Combobox, Banner, Menu, Switch, Slider, Checkbox, Radio, Breadcrumb, Progress, Pagination, Disclosure, Spinner, Select, Input, Textarea, Field, IconButton, Avatar, Table.
+Every runtime exports the same four functions. `<Name>` is the stem: Navigation, Accordion, Tabs, Modal, Drawer, Toast, Popover, Wizard, Tooltip, Combobox, Banner, Menu, Switch, Slider, Checkbox, Radio, Breadcrumb, Progress, Pagination, Disclosure, Spinner, Select, Input, Textarea, Field, IconButton, Avatar, Table, Pressable.
 
 | Export | What it does |
 | --- | --- |
@@ -161,7 +162,7 @@ Every runtime exports the same four functions. `<Name>` is the stem: Navigation,
 | `start<Name>Runtime()` | Boots the document-level controller that enhances matching markup. A second call syncs and returns that controller. Returns `null` when there is no document. |
 | `stop<Name>Runtime()` | Destroys that document-level controller. |
 
-Modal shows the four export names. The other twenty-seven use the same `create` / `init` / `start` / `stop` names. Controller methods differ by runtime.
+Modal shows the four export names. The other twenty-eight use the same `create` / `init` / `start` / `stop` names. Controller methods differ by runtime.
 
 ```ts
 import {
@@ -182,13 +183,13 @@ stopModalRuntime();
 
 `tokens` is the shared token object: color families and swatches, and the `adobe` and `google` font providers. `Accordion` is a Sig component that renders one `[accordion]` section (trigger plus panel). It is not the document runtime. The runtime is `createAccordion` / `startAccordionRuntime`.
 
-Icon button, avatar, and table export the same four names on master. Those twelve functions are not in the published `@citrusworx/juiceui@0.9.2` build: `createIconButton`, `initIconButton`, `startIconButtonRuntime`, `stopIconButtonRuntime`, `createAvatar`, `initAvatar`, `startAvatarRuntime`, `stopAvatarRuntime`, `createTable`, `initTable`, `startTableRuntime`, and `stopTableRuntime`.
+Icon button, avatar, table, and pressable export the same four names on master. Those sixteen functions are not in the published `@citrusworx/juiceui@0.9.2` build: `createIconButton`, `initIconButton`, `startIconButtonRuntime`, `stopIconButtonRuntime`, `createAvatar`, `initAvatar`, `startAvatarRuntime`, `stopAvatarRuntime`, `createTable`, `initTable`, `startTableRuntime`, `stopTableRuntime`, `createPressable`, `initPressable`, `startPressableRuntime`, and `stopPressableRuntime`.
 
 ### `juice:change` and `getState`
 
-Interactive runtimes dispatch a bubbling `juice:change` event from the widget host when observable state actually changes. `detail` is `{ runtime, state }`. `getState()` reads that same shape. Select, input, and textarea publish value changes through the native `input` and `change` events and still expose `getState()`. The contract stays Emerging, covers all twenty-eight runtimes, and is on master, unreleased after 0.9.2. `JUICE_CHANGE_EVENT` is not in the published 0.9.2 types.
+Interactive runtimes dispatch a bubbling `juice:change` event from the widget host when observable state actually changes. `detail` is `{ runtime, state }`. `getState()` reads that same shape. Select, input, and textarea publish value changes through the native `input` and `change` events and still expose `getState()`. The contract stays Emerging, covers all twenty-nine runtimes, and is on master, unreleased after 0.9.2. `JUICE_CHANGE_EVENT` is not in the published 0.9.2 types.
 
-`@citrusworx/sigjs/juice` `bind` names all twenty-eight runtimes. `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values, and `bind` accepts them. That is this workspace and published `@citrusworx/sigjs@0.7.2`. Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` still stop at twenty-five names, through `textarea`. Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws, because that cut does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. Juice works without Sig: any page can listen or call `getState()`. The optional Sig adapter is `@citrusworx/sigjs/juice` only. See [`juice:change`](../../docs/juice/juice-runtime-behavior.md#juicechange) and [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
+`@citrusworx/sigjs/juice` `bind` names twenty-eight runtimes, through `table`. Pressable is the twenty-ninth Emerging runtime and is not a `JuiceRuntimeName` yet. `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values, and `bind` accepts them. That is this workspace and published `@citrusworx/sigjs@0.7.2`. Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` still stop at twenty-five names, through `textarea`. Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws, because that cut does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. Juice works without Sig: any page can listen or call `getState()`. The optional Sig adapter is `@citrusworx/sigjs/juice` only. See [`juice:change`](../../docs/juice/juice-runtime-behavior.md#juicechange) and [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
 
 ### Markup examples
 
@@ -369,9 +370,11 @@ Juice keeps styling attribute-first. Interactive patterns still need accessible 
 
 **Table.** Native `<table table>` grid (`createTable` / `sync` / `getState`). `th[sortable]` cycles ascending, descending, and none, sets `aria-sort`, and reorders each `tbody`. `column` is null when direction is none. A canceled `juice:sort` updates state without reordering. `cellIndex` is not a visual column. No Sig Table factory. `bind` on current Sig accepts `table`. The published npm 0.9.2 package does not export this runtime, so binding it there throws. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
+**Pressable.** Transient press on `[pressable]` (`createPressable` / `sync` / `getState`). Primary pointerdown sets `[pressed]` until pointerup, pointercancel, pointerleave, a move outside the host, lostpointercapture, or blur. Enter and Space do the same while held, including on a native button, and do not call `preventDefault`. A move past the slop (default 10px, `[pressable-slop]` or `moveSlop`) or a scroll on the host or an ancestor cancels the press and the long-press timer. `[pressable-longpress]` arms `juice:longpress` (default 500ms, a numeric value or `longPressDelay`). If that event is not canceled, the following click is suppressed once. Disabled hosts (`:disabled`, `[disabled]`, `[aria-disabled="true"]`) do not press. `[icon-button][toggle]` and any host with `aria-pressed` keep their latched `[pressed]`; this runtime does not write that attribute there. `getState()` is `{ pressed, longPressed }`. It is not a toggle and not an icon button. Reduced motion stays in CSS. No Sig Pressable factory. `bind` does not name it yet. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Runtime docs are slice C.
+
 ### CSS-only chrome
 
-These are not runtimes. They do not auto-enhance, they do not dispatch `juice:change`, and they are not part of the twenty-eight.
+These are not runtimes. They do not auto-enhance, they do not dispatch `juice:change`, and they are not part of the twenty-nine.
 
 **Skeleton.** `[skeleton]` is a loading placeholder (boolean and `skeleton="rect"` are the rectangle, `skeleton="text"` is a line, `skeleton="circle"` is a circle). `[lines="1"` through `"8"]` or stacked element children supply the lines. A `width` on the last child shortens it. `[scale="sm"|"lg"]` steps the shape. `[static]` and `prefers-reduced-motion` remove the sheen and keep the base. Roles are `--juice-skeleton-*` on core. Color is restated on `[theme]` (inherited ink mixed into the muted surface). The highlight is a translucent white sheen. Tune `--juice-skeleton-highlight` on a pale surface. Shipped themes are not required to bind the roles. Copy stays in the accessibility tree and does not paint. Authors own `aria-busy` on the loading region. On master, not in the published npm 0.9.2 release. See [Skeleton](../../docs/juice/juice-skeleton.md).
 
