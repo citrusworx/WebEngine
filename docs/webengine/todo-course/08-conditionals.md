@@ -12,7 +12,7 @@ The empty-state block and the edit panel. Both nodes are created once. An effect
 
 ### 1. There is no Show
 
-Sig 0.7.0 exports `Signal`, `effect`, `memo`, `batch`, `untrack`, `bindList`, and `mount`. The JSX runtime does not include `<Show>`, `<When>`, or `<For>`. A function child is stringified into a text node. `{open.get() && <Panel />}` is not a pattern here.
+Sig 1.0.0 exports `Signal`, `effect`, `memo`, `batch`, `untrack`, `bindList`, and `mount`. The JSX runtime does not include `<Show>`, `<When>`, or `<For>`. A function child is stringified into a text node. `{open.get() && <Panel />}` is not a pattern here.
 
 Two tools you do have:
 
@@ -117,7 +117,7 @@ The browser's own `[hidden]` rule is user-agent CSS. Juice's `:where([stack])` a
 
 ## Gap
 
-**No `<Show>`.** A component that mounts and disposes a child is not in `@citrusworx/sigjs` 0.7.0. Do not import one from React. The JSX runtime will not reconcile it.
+**No `<Show>`.** A component that mounts and disposes a child is not in `@citrusworx/sigjs` 1.0.0. Do not import one from React. The JSX runtime will not reconcile it.
 
 **The empty-state effect's read order is part of the contract.** An effect subscribes only to signals it actually read on that run. The loading gate is why `phase.get()` is first and always.
 

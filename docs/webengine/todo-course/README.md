@@ -41,14 +41,14 @@ You do not need a checkout of this repository to build the app. The checkout is 
 
 ## Published packages
 
-Versions below are the ones `examples/todo-app/package.json` installs from the npm registry on 23 Oct 2026. They are exact, not ranges.
+Versions below are what `examples/todo-app/package.json` installs from the npm registry. The other packages are exact pins. `@citrusworx/sigjs` is `^1.0.0`, the stable 1.0 line (`>=1.0.0 <2.0.0`). A clean install resolves **1.0.0**. That release is the **0.7.2** API.
 
 | Package | Version | Role in this app |
 |---|---|---|
 | `@citrusworx/nectarine` | 0.5.0 | YAML schema, queries, API. Postgres through `@citrusworx/nectarine/adapters/pg`. `pg` is a peer, so the app depends on it directly |
 | `@citrusworx/webengine` | 0.2.1 | The `WebEngine` class only. It does not register routes |
 | `@citrusworx/seltzer` | 0.10.1 | HTTP server, routing, `ResponseData`, `generateRoutes` |
-| `@citrusworx/sigjs` | 0.7.0 | `jsx()`, `Signal`, `effect`, `memo`, `bindList`, `mount` |
+| `@citrusworx/sigjs` | ^1.0.0 | `jsx()`, `Signal`, `effect`, `memo`, `bindList`, `mount` |
 | `@citrusworx/juiceui` | 0.9.2 | Attribute CSS and the Tide theme (`@citrusworx/juiceui/styles/themes/tide`) |
 | `@citrusworx/grapevine` | 0.2.2 | DigitalOcean config. The CLI file is `dist/bin/cli.js` |
 | `pg` | 8.23.0 | Driver the Nectarine Postgres adapter imports |

@@ -12,7 +12,7 @@ Either a client-side filter or a due date. Do one. Write down the gap you hit, i
 
 The array in the `todos` signal is every row. A filter is another signal, for example `"all" | "open" | "done"`, and a derived list.
 
-`memo` is exported from `@citrusworx/sigjs` 0.7.0. It is `{ get() }`, which is a legal `bindList` source. Read both the filter signal and `todos` inside the memo so both subscribe. Point `bindList` at the memo instead of at `todos`.
+`memo` is exported from `@citrusworx/sigjs` 1.0.0. It is `{ get() }`, which is a legal `bindList` source. Read both the filter signal and `todos` inside the memo so both subscribe. Point `bindList` at the memo instead of at `todos`.
 
 Keep the empty state honest. "Nothing on the list yet" is the wrong sentence when the user has finished todos and the filter is "open". Read `phase`, the raw length, and the filtered length in the effect in `EmptyState`. Remember lesson 08: a signal you do not read on a run is a signal you will not hear.
 
