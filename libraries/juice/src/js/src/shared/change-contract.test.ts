@@ -9,6 +9,10 @@ import {
   createTouchableRow,
   stopTouchableRowRuntime,
 } from '../touchable-row/touchable-row-runtime.js';
+import {
+  createKeyboardAvoider,
+  stopKeyboardAvoiderRuntime,
+} from '../keyboard-avoider/keyboard-avoider-runtime.js';
 import { createBanner, stopBannerRuntime } from '../banner/banner-runtime.js';
 import {
   createBreadcrumb,
@@ -60,6 +64,7 @@ const stopAll = () => {
   stopTableRuntime();
   stopPressableRuntime();
   stopTouchableRowRuntime();
+  stopKeyboardAvoiderRuntime();
   stopBannerRuntime();
   stopBreadcrumbRuntime();
   stopCheckboxRuntime();
@@ -1089,5 +1094,99 @@ describe('juice:change', () => {
 
     heard.stop();
     controller.destroy();
+  });
+
+  it('dispatches one keyboard-avoider event per open flip', () => {
+    const viewport = new EventTarget() as EventTarget & {
+      height: number;
+      offsetTop: number;
+      scale: number;
+    };
+    viewport.height = 800;
+    viewport.offsetTop = 0;
+    viewport.scale = 1;
+    const originalViewport = Object.getOwnPropertyDescriptor(window, 'visualViewport');
+    const originalInnerHeight = Object.getOwnPropertyDescriptor(window, 'innerHeight');
+    const originalRequest = window.requestAnimationFrame;
+    const originalCancel = window.cancelAnimationFrame;
+    const frames: FrameRequestCallback[] = [];
+    Object.defineProperty(window, 'visualViewport', {
+      configurable: true,
+      writable: true,
+      value: viewport,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      writable: true,
+      value: 800,
+    });
+    window.requestAnimationFrame = (cb: FrameRequestCallback) => {
+      frames.push(cb);
+      return frames.length;
+    };
+    window.cancelAnimationFrame = () => {};
+
+    try {
+      document.body.innerHTML =
+        '<div keyboard-avoider id="host"><input id="field"></div>';
+      stopKeyboardAvoiderRuntime();
+      const host = document.getElementById('host')!;
+      const heard = listen();
+      const controller = createKeyboardAvoider({ root: document.body });
+
+      expect(controller.getState(host)).toEqual({ open: false, inset: 0 });
+      expect(heard.events).toHaveLength(0);
+
+      (document.getElementById('field') as HTMLInputElement).focus();
+      viewport.height = 500;
+      controller.sync();
+      controller.sync();
+      expect(heard.events).toHaveLength(1);
+      expect(heard.events[0]?.bubbles).toBe(true);
+      expect(heard.events[0]?.target).toBe(host);
+      expect(heard.events[0]?.detail).toEqual({
+        runtime: 'keyboard-avoider',
+        state: { open: true, inset: 300 },
+      });
+
+      viewport.height = 470;
+      controller.sync();
+      expect(heard.events).toHaveLength(1);
+      expect(controller.getState(host)).toEqual({ open: true, inset: 330 });
+
+      viewport.height = 410;
+      controller.sync();
+      expect(heard.events).toHaveLength(2);
+      expect(heard.events[1]?.detail).toEqual({
+        runtime: 'keyboard-avoider',
+        state: { open: true, inset: 390 },
+      });
+
+      (document.getElementById('field') as HTMLInputElement).blur();
+      controller.sync();
+      expect(heard.events).toHaveLength(3);
+      expect(heard.events[2]?.detail).toEqual({
+        runtime: 'keyboard-avoider',
+        state: { open: false, inset: 390 },
+      });
+
+      heard.stop();
+      controller.destroy();
+      expect(document.documentElement.style.getPropertyValue('--juice-keyboard-inset')).toBe('');
+      expect(document.documentElement.hasAttribute('keyboard-open')).toBe(false);
+    } finally {
+      window.requestAnimationFrame = originalRequest;
+      window.cancelAnimationFrame = originalCancel;
+      if (originalViewport) {
+        Object.defineProperty(window, 'visualViewport', originalViewport);
+      } else {
+        delete (window as { visualViewport?: VisualViewport | null }).visualViewport;
+      }
+      if (originalInnerHeight) {
+        Object.defineProperty(window, 'innerHeight', originalInnerHeight);
+      }
+      document.documentElement.removeAttribute('keyboard-open');
+      document.documentElement.style.removeProperty('--juice-keyboard-inset');
+    }
   });
 });

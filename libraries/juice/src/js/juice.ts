@@ -331,6 +331,17 @@ export type {
     TouchableRowOptions,
     TouchableRowState
 } from "./src/touchable-row/touchable-row-runtime.js";
+export {
+    createKeyboardAvoider,
+    initKeyboardAvoider,
+    startKeyboardAvoiderRuntime,
+    stopKeyboardAvoiderRuntime
+} from "./src/keyboard-avoider/keyboard-avoider-runtime.js";
+export type {
+    KeyboardAvoiderController,
+    KeyboardAvoiderOptions,
+    KeyboardAvoiderState
+} from "./src/keyboard-avoider/keyboard-avoider-runtime.js";
 export { JUICE_CHANGE_EVENT } from "./src/shared/change.js";
 export type { JuiceChangeDetail } from "./src/shared/change.js";
 export {
