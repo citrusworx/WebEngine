@@ -3536,9 +3536,13 @@ describe("Juice package contract", () => {
         expect(module).toHaveProperty("initTouchableRow");
         expect(module).toHaveProperty("startTouchableRowRuntime");
         expect(module).toHaveProperty("stopTouchableRowRuntime");
+        expect(module).toHaveProperty("createKeyboardAvoider");
+        expect(module).toHaveProperty("initKeyboardAvoider");
+        expect(module).toHaveProperty("startKeyboardAvoiderRuntime");
+        expect(module).toHaveProperty("stopKeyboardAvoiderRuntime");
         expect(
             Object.keys(module).filter((key) => key.startsWith("start") && key.endsWith("Runtime"))
-        ).toHaveLength(30);
+        ).toHaveLength(31);
         expect(module).toHaveProperty("tokens");
     });
 

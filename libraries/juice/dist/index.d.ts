@@ -59,6 +59,8 @@ export { createPressable, initPressable, startPressableRuntime, stopPressableRun
 export type { PressableController, PressableOptions, PressableState } from "./js/src/pressable/pressable-runtime.js";
 export { createTouchableRow, initTouchableRow, startTouchableRowRuntime, stopTouchableRowRuntime } from "./js/src/touchable-row/touchable-row-runtime.js";
 export type { TouchableRowController, TouchableRowOptions, TouchableRowState } from "./js/src/touchable-row/touchable-row-runtime.js";
+export { createKeyboardAvoider, initKeyboardAvoider, startKeyboardAvoiderRuntime, stopKeyboardAvoiderRuntime } from "./js/src/keyboard-avoider/keyboard-avoider-runtime.js";
+export type { KeyboardAvoiderController, KeyboardAvoiderOptions, KeyboardAvoiderState } from "./js/src/keyboard-avoider/keyboard-avoider-runtime.js";
 export { prefersReducedMotion, subscribeReducedMotion, createMotionCancelToken, runMotion, createElementMotion } from "./js/src/shared/motion.js";
 export type { MotionCancelToken, MotionDirection, MotionPlayer, MotionResult, MotionState } from "./js/src/shared/motion.js";
 export { JUICE_CHANGE_EVENT } from "./js/src/shared/change.js";

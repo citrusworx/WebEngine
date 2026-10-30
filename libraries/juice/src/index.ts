@@ -333,6 +333,17 @@ export type {
     TouchableRowState
 } from "./js/src/touchable-row/touchable-row-runtime.js";
 export {
+    createKeyboardAvoider,
+    initKeyboardAvoider,
+    startKeyboardAvoiderRuntime,
+    stopKeyboardAvoiderRuntime
+} from "./js/src/keyboard-avoider/keyboard-avoider-runtime.js";
+export type {
+    KeyboardAvoiderController,
+    KeyboardAvoiderOptions,
+    KeyboardAvoiderState
+} from "./js/src/keyboard-avoider/keyboard-avoider-runtime.js";
+export {
     prefersReducedMotion,
     subscribeReducedMotion,
     createMotionCancelToken,
