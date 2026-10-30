@@ -102538,6 +102538,11 @@ nav[sticky] > [container][keyboard-avoider~=footer],
   bottom: var(--juice-keyboard-inset);
 }
 
+nav[fixed][keyboard-avoider~=footer],
+[theme] nav[fixed][keyboard-avoider~=footer] {
+  bottom: auto;
+}
+
 [safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
 [theme] [safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),
 nav[fixed] > [container][safe-area]:not([safe-area=top]):not([safe-area=bottom]):not([safe-area=x]):not([safe-area=y])[keyboard-avoider]:not([keyboard-avoider~=padding]):not([keyboard-avoider~=translate]):not([keyboard-avoider~=footer]),

@@ -142,7 +142,7 @@ Translate-only and footer-only hosts keep Safe Area's own padding. A padding wor
 
 ## Footer, fixed nav, and drawer
 
-Do not put footer mode on `nav[fixed]`. `position: fixed` and `top: 0` stay, and `bottom` becomes the inset, so the bar stretches. A separate fix is planned.
+Footer mode on `nav[fixed]` sets `bottom: auto`. The bar keeps `top: 0` and does not stretch down to the keyboard. `nav[sticky]` still takes the footer `bottom`. A sticky box is sized in flow, so that inset does not stretch it.
 
 Footer mode on `[drawer]` replaces the drawer's `position` and `bottom`. Put padding mode on the scrolling body inside the drawer.
 

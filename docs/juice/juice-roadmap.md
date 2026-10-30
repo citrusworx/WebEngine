@@ -463,7 +463,7 @@ Safe area chrome and docs are on master and are not in the published npm 0.9.2 r
 
 * **KeyboardAvoider A→B→C.** Layout roles on `:root` only (`[keyboard-avoider]`, #310). Not restated on `[theme]`. `--juice-keyboard-inset` is a registered `<length>` (`0px`).
 * Padding, translate, and footer compose with `~=`. `noscroll` is a runtime word. Safe Area padding mode uses `max()` of the floor, the home indicator, and the keyboard inset.
-* Translate-only and footer-only keep Safe Area's own padding. Do not put footer mode on `nav[fixed]` (a separate fix is planned). Put padding mode on a drawer's scroll body.
+* Translate-only and footer-only keep Safe Area's own padding. Footer mode on `nav[fixed]` sets `bottom: auto`, so the bar does not stretch. Put padding mode on a drawer's scroll body.
 * DOM-first runtime (#311): `createKeyboardAvoider` / `initKeyboardAvoider` / `startKeyboardAvoiderRuntime` / `stopKeyboardAvoiderRuntime`. State is `{ open, inset }`.
 * `open` is the overlap greater than `threshold` (default 80) and an editable field focused. There is no MutationObserver. No Sig KeyboardAvoider factory.
 * `bind()` does not name keyboard-avoider, pressable, or touchable-row yet. On master, not in npm 0.9.2. The thirty-first Emerging auto-enhance runtime.
