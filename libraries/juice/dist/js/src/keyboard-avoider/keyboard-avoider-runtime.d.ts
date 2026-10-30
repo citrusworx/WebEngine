@@ -38,12 +38,14 @@
  * the measured overlap. Only the custom property is cleared.
  *
  * open is inset > threshold (default 80) and an editable element has
- * focus. Editable is a text-like input (missing type, empty type, text,
- * email, password, search, tel, url, number), a textarea, a select, or
- * [contenteditable] (including a focused descendant). A hardware
- * keyboard does not shrink the visual viewport, so a focused field
- * stays closed. Checkbox, radio, range, date, and button inputs are
- * not editable here.
+ * focus. Editable is a text-like input, the same set as the Input
+ * runtime (missing type, empty type, text, email, password, search,
+ * tel, url, number), plus a textarea, a select, or [contenteditable]
+ * (including a focused descendant). A hardware keyboard does not
+ * shrink the visual viewport, so a focused field stays closed. Every
+ * other input type is not editable: checkbox, radio, range, date,
+ * time, datetime-local, month, week, color, file, hidden, button,
+ * submit, reset, and image.
  *
  * Listeners: visualViewport resize and scroll, window resize and
  * orientationchange, focusin and focusout on root. Updates are

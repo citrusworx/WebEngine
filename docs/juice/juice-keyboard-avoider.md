@@ -493,7 +493,6 @@ A composer that should not scroll the page when a field inside it focuses:
 - Translate-only and footer-only keep safe area's own padding. They do not take the `max()` formula. Padding mode, including a padding word composed with another word, does.
 - Footer mode on `[drawer]` replaces the drawer's `position` and `bottom`. Put padding mode on the scrolling body inside the drawer. Footer mode on `nav[fixed]` does not win `position`; `bottom` still applies, and `top: 0` remains, so the bar can stretch.
 - `interactive-widget=resizes-content` is a viewport meta token. Juice does not add it. On Chrome Android 108+ it makes this host unnecessary, and the runtime's formula stays near `0`.
-- The header comment in `keyboard-avoider.scss` still says "CSS-only. No runtime." The runtime is this document. The comment was not edited.
 - There is no focus trap and no Escape handling. Keyboard avoider is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - There is no z-index elevation. Footer mode sets `position: sticky` and does not set `z-index`. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 - Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and accordion behavior are not part of this runtime.
