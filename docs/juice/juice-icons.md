@@ -101,7 +101,11 @@ Button with icon:
 
 Keep the glyph and label as inline content so they stay on one line. Do not put `row` on the button: `[row]` collapses to a column below 768px. Prefer `iconSize="sm"` or the `1rem` default inside buttons; `lg` / `xl` belong on media regions, not in the label.
 
-Icon-only buttons use `[icon-button]`. The control is square (or `[icon-button="round"]`), centered, and sized from `--juice-icon-button-*`. Do not set `iconSize` for that box — the scale (`sm` / default / `lg`) picks the glyph. Hover color stays with `[btn]`. The runtime keeps a `[toggle]` pressed and warns in development when the control has no accessible name. See [Icon Button Runtime](./juice-icon-button-runtime.md).
+Icon-only buttons use `[icon-button]`. The control is square (or `[icon-button="round"]`), centered, and sized from `--juice-icon-button-*`.
+
+Do not set `iconSize` for that box — the scale (`sm` / default / `lg`) picks the glyph. Hover color stays with `[btn]`.
+
+The runtime keeps a `[toggle]` pressed and warns in development when the control has no accessible name. See [Icon Button Runtime](./juice-icon-button-runtime.md).
 
 ```html
 <button type="button" icon-button btn="flat" aria-label="Add">

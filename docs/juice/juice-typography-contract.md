@@ -75,7 +75,11 @@ That pairing is the same advice as [Visual design language](./juice-visual-desig
 
 Themes own the default pair. Authors override locally.
 
-Library themes bind `--<prefix>-body-font` and `--<prefix>-heading-font` (`--cm-*`, `--kw-*`, `--aqua-*`, `--tide-*`). Generated app themes bind `--jx-body-font` and `--jx-heading-font` from `typography.body` / `typography.heading`. Optional `typography.variants` become `--jx-font-…` for app selectors. Juice core does not consume those variants. See [Theme Authoring](./juice-theme-authoring.md) and the [Theme Contract](./juice-theme-contract.md).
+Library themes bind `--<prefix>-body-font` and `--<prefix>-heading-font` (`--cm-*`, `--kw-*`, `--aqua-*`, `--tide-*`). Generated app themes bind `--jx-body-font` and `--jx-heading-font` from `typography.body` / `typography.heading`.
+
+Optional `typography.variants` become `--jx-font-…` for app selectors. Juice core does not consume those variants.
+
+See [Theme Authoring](./juice-theme-authoring.md) and the [Theme Contract](./juice-theme-contract.md).
 
 Under `[theme="…"]` the usual defaults are:
 
@@ -87,7 +91,11 @@ Under `[theme="…"]` the usual defaults are:
 
 **When to set `font=`.** One-off voice that is not the theme pair: a code sample (`source-code-pro`), a script accent, a display lockup that should stay Oswald after a Tide swap. Keep those local. Do not restamp the theme pair on every node.
 
-**Cascade.** Bare `[font]`, `[fontColor]`, `[fontWeight]`, and `[lineHeight]` are `(0,1,0)`. Theme semantic rules are `[theme="…"] :where(h1, …)` — also `(0,1,0)`, because `:where()` zeroes the element. Core therefore pairs each author type attribute with `[theme] [attr]`, the same raise as `[theme] [surfaceTone]`. That companion is `(0,2,0)`, so **author attrs win on themed `h1`–`h6` / `p` (and similar) when present**. Omit the attr and only the theme semantic rule matches, so the brand face / color / weight / leading still apply. `font=` on nodes the theme does not restyle (`div`, `code`, unmarked wrappers) keeps winning at `(0,1,0)`.
+**Cascade.** Bare `[font]`, `[fontColor]`, `[fontWeight]`, and `[lineHeight]` are `(0,1,0)`. Theme semantic rules are `[theme="…"] :where(h1, …)` — also `(0,1,0)`, because `:where()` zeroes the element.
+
+Core therefore pairs each author type attribute with `[theme] [attr]`, the same raise as `[theme] [surfaceTone]`. That companion is `(0,2,0)`, so **author attrs win on themed `h1`–`h6` / `p` (and similar) when present**.
+
+Omit the attr and only the theme semantic rule matches, so the brand face / color / weight / leading still apply. `font=` on nodes the theme does not restyle (`div`, `code`, unmarked wrappers) keeps winning at `(0,1,0)`.
 
 `fontSize` is not in that fight. Themes do not set `font-size` on headings, so the scale always applies.
 

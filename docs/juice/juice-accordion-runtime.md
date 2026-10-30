@@ -1,32 +1,12 @@
-# Juice Accordion Runtime
+# Accordion
 
-This document explains the current accordion runtime in `libraries/juice/src/js/src/accordion/accordion-runtime.ts` (monorepo path; outside this vault).
+An accordion expands one or more sections under `[accordion]`.
 
-The key idea is the same as navigation:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`. All 14 shipped themes bind `--juice-accordion-*`.
 
-> If a user writes valid Juice accordion markup and it exists in the browser, the disclosure behavior should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The accordion runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM, including the `Accordion()` factory
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize accordion behavior in their app code.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s accordion chrome:
+## Markup
 
 ```html
 <section accordion name="faq-account">
@@ -50,152 +30,104 @@ The runtime is aligned with Juice’s accordion chrome:
 </section>
 ```
 
-It requires an `[accordion]` root. Orphan `[accordion-item]` nodes are ignored.
+A root may hold one trigger and panel, or several. Multi-item roots stay multi-open.
 
-A root may contain one trigger/panel pair or several. Multi-item roots stay multi-open. Exclusive accordion behavior is not part of this runtime.
+## Attributes
 
-## Automatic Boot
+| Hook | What it does |
+| --- | --- |
+| `[accordion]` | Root. Orphan `[accordion-item]` nodes outside it are ignored. |
+| `[accordion-item]` | Trigger. Paired with its panel by `aria-controls`, then the next sibling. |
+| `hidden` | Native closed state on the panel. The runtime does not write layout `content`. |
+| `[motion="accordion"]` | On the panel, not the trigger. Animates height. Without it, show and hide are instant. |
+| `name` | On the root. Becomes the slug for generated ids. |
 
-The runtime starts automatically in the browser.
+## JavaScript
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the accordion runtime:
+| Export | What it does |
+| --- | --- |
+| `createAccordion(options?)` | Controller for `options.root`, or the document. |
+| `initAccordion(options?)` | Same call as `createAccordion`. |
+| `startAccordionRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopAccordionRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startAccordionRuntime();
-    });
-  } else {
-    startAccordionRuntime();
-  }
-}
-```
+A custom-root controller can run beside the document runtime. Each click or key is claimed once.
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+### Options
 
-## Public API
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `accordionSelector` | `[accordion]` | Root query. |
+| `triggerSelector` | `[accordion-item]` | Trigger query. |
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+### Controller
 
-```ts
-createAccordion(options?)
-initAccordion(options?)
-startAccordionRuntime()
-stopAccordionRuntime()
-```
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Wires ids, ARIA, and panel state. |
+| `expand(trigger?)` | Opens that trigger's panel. |
+| `collapse(trigger?)` | Closes that trigger's panel. |
+| `toggle(trigger?)` | Expands or collapses that trigger. |
+| `isExpanded(trigger?)` | Reads one trigger. |
+| `getState(target?)` | Returns `{ expanded: boolean[] }` in trigger order, or `null`. |
 
-These are useful for internal control, tests, or advanced cases.
+### Events
 
-A real expand or collapse dispatches a bubbling `juice:change` from `[accordion]`. `detail` is `{ runtime: "accordion", state: { expanded: boolean[] } }` in trigger order. `isExpanded()` reads one trigger. `getState()` returns the list. A write that leaves that list unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+A real expand or collapse dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[accordion]`.
 
-`createAccordion()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-toggle with the singleton.
+`detail` is `{ runtime: "accordion", state: { expanded: boolean[] } }` in trigger order. An unchanged list does not dispatch. This surface stays Emerging.
 
-## AccordionOptions
+## Accessibility
 
-The configurable shape is:
+- Enter and Space activate non-button `[accordion-item]` triggers. Native buttons already synthesize a click.
+- Escape collapses the focused open item, or the last opened item, and returns focus to that trigger. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- There is no global accordion Escape, and no arrow-key roving tabindex.
+- Sync fills missing ids, `aria-controls`, panel `role="region"`, and `aria-labelledby`.
+- Accordion does not set a stacking band. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-```ts
-type AccordionOptions = {
-  root?: ParentNode;
-  accordionSelector?: string;
-  triggerSelector?: string;
-};
-```
+## Behavior
 
-By default, Juice uses:
+1. Find `[accordion]` roots and their `[accordion-item]` triggers.
+2. Pair each trigger with its panel (`aria-controls`, then the next sibling).
+3. Fill missing ids, `aria-controls`, `role="region"`, and `aria-labelledby`.
+4. Toggle `aria-expanded`, panel `hidden`, and `aria-hidden` on click.
+5. Handle Enter and Space on non-button triggers, and Escape to close.
 
-```ts
-{
-  root: document,
-  accordionSelector: '[accordion]',
-  triggerSelector: '[accordion-item]',
-}
-```
+Open and closed state uses native `hidden` plus ARIA. The runtime does not write `content="active"` or `content="hidden"`.
 
-## AccordionController
+### Motion
 
-```ts
-type AccordionController = {
-  destroy: () => void;
-  sync: () => void;
-  expand: (trigger?: HTMLElement | null) => void;
-  collapse: (trigger?: HTMLElement | null) => void;
-  toggle: (trigger?: HTMLElement | null) => void;
-  isExpanded: (trigger?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => AccordionState | null;
-};
-```
+`[motion="accordion"]` must be on the panel. The runtime measures `scrollHeight`, sets an explicit pixel height, and transitions height on `--juice-motion-duration-base` and `--juice-motion-ease-in-out`.
 
-## What the Runtime Actually Does
+`aria-expanded` updates immediately. Expand removes `hidden` before the height runs. Collapse sets `hidden` only after the height finishes, because native `hidden` cannot interpolate to or from `auto`.
 
-The runtime performs five main jobs:
+Reduced motion stays instant even when the attribute is present. [Animations](./juice-animations.md).
 
-1. Find `[accordion]` roots and their `[accordion-item]` triggers
-2. Pair each trigger with its panel (`aria-controls`, then the next sibling)
-3. Fill missing ids, `aria-controls`, `role="region"`, and `aria-labelledby`
-4. Toggle `aria-expanded`, panel `hidden`, and `aria-hidden` on click. A panel with `[motion="accordion"]` animates height; `hidden` waits until collapse finishes
-5. Handle Enter/Space on non-button triggers and Escape to close
+### `Accordion()`
 
-Open/closed state uses native `hidden` plus ARIA. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
-
-## Motion
-
-`[motion="accordion"]` must be on the panel, not the trigger. The runtime measures that panel's `scrollHeight`, sets an explicit pixel height, and transitions height on `--juice-motion-duration-base` and `--juice-motion-ease-in-out`. `aria-expanded` updates immediately. Expand removes `hidden` before the height runs. Collapse sets `hidden` only after the height finishes, because native `hidden` cannot interpolate to or from `auto`.
-
-Without the attribute, show and hide stay an instant `hidden` toggle. Reduced motion stays instant even when the attribute is present. See [Animations](./juice-animations.md).
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If an accordion appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA and start handling clicks.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- Enter and Space activate non-button `[accordion-item]` triggers (native buttons already synthesize a click)
-- Escape collapses the focused open item, or the last opened item, and returns focus to that trigger
-
-Arrow-key roving tabindex is intentionally out of scope. Escape is contextual, not global — see [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-## Coexistence With `Accordion()`
-
-The `Accordion()` factory emits markup and initial expanded state.
+`Accordion()` is the only shipped Sig factory among the auto-enhance runtimes. It emits markup and the initial expanded state.
 
 The runtime owns clicks. The factory does not attach a private `onclick`, so a click cannot expand and immediately collapse.
 
-## Limitations
-
-- Exclusive accordion is not in scope. Multi-item roots stay multi-open.
+- Exclusive accordion is out of scope. Multi-item roots stay multi-open.
 - Orphan `[accordion-item]` nodes outside `[accordion]` are ignored.
-- Panels use native `hidden`, never layout `content=`.
-- Arrow-key roving tabindex is out of scope.
-- Escape is contextual: it collapses the focused or last open item only when that accordion already owns the key. There is no global accordion Escape. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- `Accordion()` is the only shipped Sig factory among the thirty auto-enhance runtimes. Markup plus auto-enhance is still the contract. Checkbox and radio count as two of those runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion, and shipped in 0.9.2. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure, and shipped in 0.9.2. Select is a styled native `<select>`, distinct from combobox, and shipped in 0.9.2. Input is a styled native `<input>`, distinct from combobox and from select, and shipped in 0.9.2. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox, and shipped in 0.9.2. Field is a wrapper around a control, distinct from input, textarea, select, and combobox, and shipped in 0.9.2. Icon button is a square icon-only control on button chrome, distinct from switch and from checkbox, and is on master, not in the published npm 0.9.2 release. Avatar is an initials-or-photo mark (`[avatar]`), distinct from a badge and from `[skeleton="circle"]`, and is on master, not in the published npm 0.9.2 release. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in that cut. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in that cut. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in that cut. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet. Motion core shipped in 0.9.2 and stays Emerging.
 
-## Why This Matches Navigation
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-The accordion runtime copies the navigation lifecycle by convention:
+## Not to be confused with
 
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
+| This | Not this |
+| --- | --- |
+| Multi-item, multi-open sections | Disclosure (one trigger, one panel) |
+| `[accordion]` / `[accordion-item]` | APG Tabs |
+| Inline disclosure | A dialog or layered overlay |
 
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
+## Related
 
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Disclosure](./juice-disclosure-runtime.md)
+- [Tabs](./juice-tabs-runtime.md)

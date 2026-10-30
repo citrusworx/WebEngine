@@ -1,264 +1,134 @@
-# Juice Navigation Runtime
+# Navigation
 
-This document explains the current navigation runtime in `libraries/juice/src/js/src/nav/navigation.ts` (monorepo path; outside this vault).
+Navigation is the responsive behavior for `nav[type="bar"]`, `nav[type="links"]`, `nav[type="mobile"]`, and `nav[type="sidebar"]`.
 
-The key idea is simple:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice navigation markup and it exists in the browser, the responsive behavior should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
+## Markup
 
-## The Goal
-
-The navigation runtime is not meant to be a framework adapter.
-
-It is meant to be a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize navigation behavior in their app code.
-
-## What It Uses
-
-The runtime is aligned with Juice’s built-in navigation surface:
-
-- `nav[type="bar"]`
-- `nav[type="links"]`
-- `nav[type="mobile"]`
-- `nav[type="sidebar"]`
-
-It does not invent a second navigation API.
-
-It does not rely on custom `data-*` state attributes.
-
-## Automatic Boot
-
-The runtime starts automatically in the browser.
-
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the navigation runtime:
-
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startNavigationRuntime();
-    });
-  } else {
-    startNavigationRuntime();
-  }
-}
+```html
+<nav type="bar">Primary</nav>
+<nav type="links">Sections</nav>
+<nav type="mobile">Menu</nav>
+<nav type="sidebar">Sections</nav>
 ```
 
-This means the user does not need to call anything for the normal Juice behavior.
+These four `type` values are the hooks. Sidebar open and closed is the `hidden` attribute.
 
-## Public API
+## Attributes
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+| Hook | What it does |
+| --- | --- |
+| `nav[type="bar"]` | Desktop bar. Shown above the breakpoint and hidden on mobile. |
+| `nav[type="links"]` | Desktop links. Shown and hidden with the bar. |
+| `nav[type="mobile"]` | Mobile toggle. Hidden on desktop and shown on mobile. |
+| `nav[type="sidebar"]` | Sidebar. Desktop removes `hidden`. Mobile keeps the current `hidden` state until a toggle changes it. |
 
-```ts
-createNavigation(options?)
-initNavigation(options?)
-startNavigationRuntime()
-stopNavigationRuntime()
-```
+## JavaScript
 
-These are useful for internal control, tests, or advanced cases, but the main feature is the automatic runtime.
+| Export | What it does |
+| --- | --- |
+| `createNavigation(options?)` | Controller for `options.root`, or the document. |
+| `initNavigation(options?)` | Same call as `createNavigation`. |
+| `startNavigationRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopNavigationRuntime()` | Destroys that controller. It does not cancel a deferred boot. |
 
-A real sidebar open or close dispatches a bubbling `juice:change` from `nav[type="sidebar"]`. `detail` is `{ runtime: "nav", state: { open: boolean } }`. `open` means the sidebar lacks `hidden`. `isOpen()` and `getState()` read it. The mobile toggle is the meaningful change. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+### Options
 
-## NavigationOptions
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Queries descendants. The document when omitted. |
+| `navSelector` | `nav[type="bar"], nav[type="links"]` | Desktop navs. |
+| `sidebarSelector` | `nav[type="sidebar"]` | Sidebars. |
+| `toggleSelector` | `nav[type="mobile"]` | Mobile toggles. |
+| `mobileBreakpoint` | `960` | Mobile when `window.innerWidth` is less than or equal to this value. |
 
-The configurable shape is:
+### Controller
 
-```ts
-type NavigationOptions = {
-  root?: ParentNode;
-  navSelector?: string;
-  sidebarSelector?: string;
-  toggleSelector?: string;
-  mobileBreakpoint?: number;
-};
-```
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Removes the resize, click, and keydown listeners and disconnects the observer. |
+| `openSidebar(toggle?)` | Shows the paired sidebar, sets `aria-hidden="false"`, and sets the toggle's `aria-expanded` to `true`. |
+| `closeSidebar(toggle?)` | On mobile, hides the sidebar and moves focus to the toggle. Sets `aria-expanded` to `false`. |
+| `toggleSidebar(toggle?)` | Opens a closed sidebar and closes an open one. |
+| `sync()` | Applies the viewport rules to every match. |
+| `isMobile()` | True when `window.innerWidth` is less than or equal to `mobileBreakpoint`. |
+| `isOpen(target?)` | True when the paired sidebar lacks `hidden`. |
+| `getState(target?)` | `{ open: boolean }` for that sidebar, or `null`. |
 
-By default, Juice uses:
+### Events
 
-```ts
-{
-  root: document,
-  navSelector: 'nav[type="bar"], nav[type="links"]',
-  sidebarSelector: 'nav[type="sidebar"]',
-  toggleSelector: 'nav[type="mobile"]',
-  mobileBreakpoint: 768
-}
-```
+A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `nav[type="sidebar"]`. `detail` is `{ runtime: "nav", state: { open: boolean } }`. `open` means the sidebar lacks `hidden`; `isOpen()` and `getState()` read it, and a write that leaves `open` unchanged does not dispatch.
 
-## What the Runtime Actually Does
+## Accessibility
 
-The runtime performs four main jobs:
+- Visibility uses `hidden`. A sidebar also gets `aria-hidden`. The toggle gets `aria-expanded`, `aria-controls`, and a generated sidebar id when the sidebar has none.
+- An empty toggle with no `aria-label` or `aria-labelledby` is named `Toggle navigation menu`. It receives `data-nav-toggle-icon="default"` when it has no visible content.
+- A toggle that is not a `button` or an `a` gets `role="button"` and `tabindex="0"`. Enter and Space toggle it. A `button` or `a` uses click.
+- On a mobile viewport, Escape closes every sidebar that lacks `hidden` and returns focus to its toggle. See [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Sidebar chrome uses `z-index: 30`. That is a structural band. See [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
+- There is no focus trap and no click-away close.
 
-1. Detect whether the viewport is mobile or desktop
-2. Hide desktop nav types on mobile
-3. Show mobile toggle nav types on mobile
-4. Open and close the corresponding sidebar nav
+## Behavior
 
-On desktop:
+1. Treat the viewport as mobile when `window.innerWidth` is less than or equal to `mobileBreakpoint`.
+2. Show or hide bar, links, and the mobile toggle for that viewport.
+3. Pair each toggle with a sidebar and open or close that sidebar on click.
+4. On mobile, close every open sidebar when Escape is pressed.
+5. Write `hidden`, `aria-hidden`, and `aria-expanded` from that visibility.
 
-- `nav[type="bar"]` and `nav[type="links"]` are shown
-- `nav[type="mobile"]` is hidden
-- `nav[type="sidebar"]` stays visible
+### Viewport
 
-On mobile:
+| Viewport | Bar and links | Mobile | Sidebar |
+| --- | --- | --- | --- |
+| Wider than `mobileBreakpoint` | Shown | Hidden | Visible (`hidden` removed) |
+| `innerWidth` at or below `mobileBreakpoint` | Hidden | Shown | Keeps current `hidden` |
 
-- `nav[type="bar"]` and `nav[type="links"]` are hidden
-- `nav[type="mobile"]` is shown
-- `nav[type="sidebar"]` is hidden until toggled
+On desktop, `sync()` removes `hidden` from each sidebar and sets the toggle's `aria-expanded` to `false`. On mobile, a sidebar that lacks `hidden` stays open. A sidebar that has `hidden` stays closed until a toggle opens it.
 
-## Why It Works Better Across Environments
+### Multiple sets
 
-The important detail is that the runtime is DOM-driven, not framework-driven.
+The runtime queries every match for the desktop, toggle, and sidebar selectors. A page may contain more than one set.
 
-It does not care whether the DOM came from:
+### Pairing
 
-- a static HTML file
-- server-rendered templates
-- a reactive render pass
-- a client-side app shell
+1. Look in the toggle's parent.
+2. Walk upward through ancestors.
+3. Fall back to the first sidebar.
 
-It only cares that the correct Juice markup exists.
+The same walk finds a toggle from a sidebar.
 
-That is what makes it framework-agnostic.
+### Visibility
 
-## Multiple Navigation Sets
+Shown elements lose `hidden`. Hidden elements get `hidden="true"`. Open state is that attribute, not a second state attribute.
 
-The runtime is no longer built around one single nav element.
+<details>
+<summary>Edge cases</summary>
 
-Instead, it queries collections:
+- Resize calls `sync()` immediately. DOM mutations schedule it.
+- The observer watches child list changes and the attributes `hidden` and `type`.
+- `closeSidebar()` sets `hidden` only while the viewport is mobile. On mobile it then focuses the toggle.
+- An empty toggle receives `data-nav-toggle-icon="default"`. A toggle with visible content loses that attribute.
 
-- all matching desktop navs
-- all matching mobile navs
-- all matching sidebar navs
+</details>
 
-This matters because a page may contain:
+### Limits
 
-- a primary header nav
-- a local app nav
-- a dashboard sidebar
-- multiple layout shells on the same page
+- There is no focus trap, click-away close, or open and close animation.
+- There is no Sig navigation factory. The contract is `createNavigation`, `initNavigation`, `startNavigationRuntime`, and `stopNavigationRuntime`.
+- `stopNavigationRuntime()` does not remove a pending `DOMContentLoaded` boot.
 
-The runtime is designed to behave reasonably in those cases instead of assuming there is only one navigation instance in the entire document.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-## How Toggle-to-Sidebar Pairing Works
+## Not to be confused with
 
-The hardest part is deciding which sidebar a mobile toggle should control.
+| This | Not this |
+| --- | --- |
+| Responsive nav types `bar`, `links`, `mobile`, and `sidebar` | An APG menu |
 
-The runtime uses DOM locality heuristics:
+## Related
 
-1. look in the toggle's parent
-2. walk upward through ancestors
-3. fall back to the first available sidebar
-
-This is not magical routing logic. It is simply a practical way to make “drop in Juice nav markup and it works” feasible for common document structures.
-
-The same logic is used in reverse when a sidebar needs to find its nearest toggle.
-
-## Why MutationObserver Is Used
-
-The runtime also uses `MutationObserver`.
-
-That is there for one reason:
-
-> the DOM may change after the initial page load
-
-This is exactly what happens in many reactive or server-hydrated environments.
-
-If a nav appears later, the observer schedules a `sync()` call so Juice can re-apply the responsive behavior.
-
-This is how the feature keeps working even when markup is rendered after the first boot.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Visibility and State
-
-The runtime uses:
-
-- `hidden`
-- `aria-hidden`
-- `aria-expanded`
-
-This keeps the behavior aligned with:
-
-- built-in HTML visibility semantics
-- accessibility expectations
-- Juice’s existing attribute model
-
-It does not define a parallel custom state system.
-
-## Why This Is Better Than the Original Script
-
-The old version was:
-
-- global
-- singular
-- ID-based
-- style-mutation based
-- page-load only
-
-The current version is:
-
-- automatic
-- attribute-aligned
-- collection-aware
-- DOM-local
-- responsive to late-rendered markup
-- framework-agnostic
-
-That is a much better fit for what Juice is trying to be.
-
-## Limitations
-
-This runtime is stronger than the original version, but it is still intentionally focused.
-
-It does not yet handle:
-
-- focus trapping
-- escape-key close (Escape is out of scope; see [Runtime Behavior](./juice-runtime-behavior.md#escape--layering))
-- click-away close
-- animated open/close transitions
-- complex nested nav trees
-- richer keyboard interaction rules
-- a Sig Navigation factory (create / init / start / stop only)
-
-Those are possible future improvements, but they are not required for the core “works out-of-the-box” responsive nav feature. Sidebar chrome uses `z-index: 30`; that is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
-
-That is the right mental model for:
-
-- navigation
-- accordions
-- tabs
-- modal / dialog
-- drawers
-- toasts / snackbars
-- popovers
-- wizards / multi-step shells
-- tooltips / hover-focus tips
-- comboboxes / list autocomplete
-- banners / inline alerts
-- other built-in responsive interactions
+- [Attributes](./juice-attributes.md)
+- [Runtime behavior](./juice-runtime-behavior.md)

@@ -96,7 +96,13 @@ Spacing utilities spell an axis as its own attribute: `[paddingX]`, `[paddingY]`
 
 There is no `[safe-area-margin]`. Juice modifiers (`[dense]`, `[static]`, `[divided]`) change a value of the same property. They do not switch padding for margin.
 
-Padding is the inset that lets a fixed or sticky bar keep painting into the unsafe area. The bar’s background still reaches the glass. The content stops at the pad. Margin on that inner host opens a gap, or collapses through the bar. Margin on the fixed element itself fights `nav[fixed]` and `nav[sticky]`: those rules set `top: 0` and `left: 0`, and `nav` is `width: 100%`. Horizontal margins plus `width: 100%` overflow. That belongs on those components. This file does not set `margin`, and it does not edit `nav.scss`.
+Padding is the inset that lets a fixed or sticky bar keep painting into the unsafe area. The bar’s background still reaches the glass.
+
+The content stops at the pad. Margin on that inner host opens a gap, or collapses through the bar.
+
+Margin on the fixed element itself fights `nav[fixed]` and `nav[sticky]`: those rules set `top: 0` and `left: 0`, and `nav` is `width: 100%`. Horizontal margins plus `width: 100%` overflow.
+
+That belongs on those components. This file does not set `margin`, and it does not edit `nav.scss`.
 
 ## Cascade
 
@@ -119,7 +125,11 @@ Specificity below counts each attribute in the selector, including each `:not()`
 
 Padding utilities such as `[padding-top]` and `[paddingX]` are `(0, 1, 0)` and load before this file (`mixins.scss` is used before `components.scss`). A safe-area longhand replaces that edge. A later shorthand at the same or higher specificity can still replace every edge. That is the wizard container, the toast region, and `[toast]`, below.
 
-`[container]` sets `padding: 1rem` at `(0, 1, 0)`, then `2rem` from the `md` breakpoint and `3rem` from `lg`. Those shorthands load in the layout layer, before safe area. A valued longhand replaces only its edges, so the other edges keep that responsive padding. A boolean host is `(0, 5, 0)` and replaces all four, including the `2rem` and `3rem` steps. `nav > [container]` and `[wizard-header] > [container]` beat the plain container shorthand. Those two are the bars below.
+`[container]` sets `padding: 1rem` at `(0, 1, 0)`, then `2rem` from the `md` breakpoint and `3rem` from `lg`. Those shorthands load in the layout layer, before safe area.
+
+A valued longhand replaces only its edges, so the other edges keep that responsive padding. A boolean host is `(0, 5, 0)` and replaces all four, including the `2rem` and `3rem` steps.
+
+`nav > [container]` and `[wizard-header] > [container]` beat the plain container shorthand. Those two are the bars below.
 
 ## Composition
 
@@ -171,7 +181,11 @@ Putting `[safe-area]` on the `nav` replaces that edge. The longhand wins over `n
 
 It ties `[theme] [safe-area="top"]` at `(0, 2, 0)` and wins for a valued host, which is why the shorthand would wipe the longhand. It does not tie the all-four chain. That chain is `(0, 5, 0)`, or `(0, 6, 0)` under `[theme]`, and it already beats the shorthand.
 
-`[wizard-header] > [container][safe-area]` is restated at `(0, 3, 0)` for a valued host and `(0, 7, 0)` for the all-four chain. The container keeps the edges that value sets. The other edges stay on the wizard shorthand. A boolean host replaces all four, so the `1.5rem` horizontal padding becomes `max(1rem, env(safe-area-inset-left, 0px))` and the matching right inset. When the inset is under `1rem`, that is a shorter side pad than the wizard rule.
+`[wizard-header] > [container][safe-area]` is restated at `(0, 3, 0)` for a valued host and `(0, 7, 0)` for the all-four chain. The container keeps the edges that value sets.
+
+The other edges stay on the wizard shorthand. A boolean host replaces all four, so the `1.5rem` horizontal padding becomes `max(1rem, env(safe-area-inset-left, 0px))` and the matching right inset.
+
+When the inset is under `1rem`, that is a shorter side pad than the wizard rule.
 
 ```html
 <div wizard-header>
@@ -194,7 +208,13 @@ It ties `[theme] [safe-area="top"]` at `(0, 2, 0)` and wins for a valued host, w
 </div>
 ```
 
-`[drawer-header]` and `[drawer-body]` are `(0, 1, 0)` and do not select descendants. A host inside them keeps its pad. Those two rules load before safe area. On the header or the body itself, a valued longhand ties `(0, 1, 0)` and wins because it comes later. The other edges keep the header or body padding. A boolean host is `(0, 5, 0)` and replaces all four. The `768px` padding step on those parts is the same specificity and still loses the edges safe area sets.
+`[drawer-header]` and `[drawer-body]` are `(0, 1, 0)` and do not select descendants. A host inside them keeps its pad.
+
+Those two rules load before safe area. On the header or the body itself, a valued longhand ties `(0, 1, 0)` and wins because it comes later.
+
+The other edges keep the header or body padding. A boolean host is `(0, 5, 0)` and replaces all four.
+
+The `768px` padding step on those parts is the same specificity and still loses the edges safe area sets.
 
 `[drawer-close]` is `position: absolute`, `top: 1rem`, `right: 1rem`. That offset is not `max(1rem, env(safe-area-inset-*))`. The control can sit in the unsafe area. Moving it is a drawer change. This file does not edit `drawer.scss`.
 
@@ -297,7 +317,7 @@ Padding is not a substitute for a control’s hit target. `[drawer-close]` can s
 ## Limitations
 
 - CSS-only. No `SafeArea()` factory, no `createSafeArea`, and no auto-enhance. The JS entry does not boot a safe-area runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[safe-area]`.
-- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty Emerging auto-enhance runtimes stay thirty.
+- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty-one Emerging runtimes stay thirty-one.
 - Shipped themes are not required to bind `--juice-safe-area-pad`. The role is on `:root` only. Bundled theme CSS does not contain it.
 - Values other than `top`, `bottom`, `x`, and `y` pad all four edges. There is no `left`, `right`, `start`, or `end` value.
 - `x` and `y` are physical. They do not follow writing mode.
@@ -324,4 +344,16 @@ These are the conflicts the chrome left in place. This page records them. It doe
 
 ## Where this sits
 
-Cards, badges, stats, skeleton, and list are the other CSS-only structural hooks: markup plus core CSS, no runtime. Safe area is the inset. It does not paint a surface, a row, or a label. Skeleton holds a loading shape. List holds rows. Badge is the label. See [Badge](./juice-badge.md), [Skeleton](./juice-skeleton.md), [List](./juice-list.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, badges, stats, skeleton, and list are the other CSS-only structural hooks: markup plus core CSS, no runtime. Safe area is the inset.
+
+It does not paint a surface, a row, or a label. Skeleton holds a loading shape.
+
+List holds rows. Badge is the label.
+
+See [Badge](./juice-badge.md) [Skeleton](./juice-skeleton.md)
+
+[List](./juice-list.md) [Cards](./juice-cards.md)
+
+[Styles](./juice-styles.md) [Attributes](./juice-attributes.md)
+
+and the [maturity matrix](./juice-maturity-matrix.md).

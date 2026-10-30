@@ -1,36 +1,12 @@
-# Juice Table
+# Table
 
-This document explains the current table chrome in `libraries/juice/src/components/table/table.scss` and the sortable runtime in `libraries/juice/src/js/src/table/table-runtime.ts` (monorepo paths; outside this vault).
+A table is a sortable grid on `<table table>`. A `th[sortable]` cycles direction and each `tbody` follows.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, and avatar:
+Emerging. The twenty-eighth runtime. On master. Not in the published `@citrusworx/juiceui@0.9.2` release.
 
-> If a user writes a valid Juice table and it exists in the browser, a sortable header should cycle and the rows should follow.
+`createTable`, `initTable`, `startTableRuntime`, and `stopTableRuntime` are not in that npm cut.
 
-That is the standard.
-
-## The Goal
-
-The table runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize table sorting in their app code.
-
-There is no `Table()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should paint from core CSS, and `th[sortable]` should sort after importing the JS entry, but the API is still likely to evolve.
-
-Table is a grid of cells. It is not a stack of rows (`[list]`). It is not the dashboard `[data-table]` hook. It is not `[role="table"]` and not `[role="grid"]`. CSS does not style those roles. There is no focus trap and no Escape handler.
-
-Table is the twenty-eighth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth. Avatar is the twenty-seventh. Table (chrome and this runtime) is on master and is not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
+Importing `@citrusworx/juiceui` enhances valid markup on master. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published 0.9.2 package does not include this runtime.
 
 ## Markup
 
@@ -75,7 +51,9 @@ There is no HTML global `table` attribute. The host selector is `:where(table)[t
 </table>
 ```
 
-| Attribute | What it is |
+## Attributes
+
+| Hook | What it does |
 |---|---|
 | `[table]` | Host, on a `<table>`. Separate borders, one grid, header and footer bands, inherited ink. Caption stays full ink. |
 | `[striped]` | On `[table]`. Even `tbody` rows take the stripe wash. |
@@ -88,11 +66,27 @@ There is no HTML global `table` attribute. The host selector is `:where(table)[t
 | `[sortable]` | On a `th` inside `[table]`. The runtime wraps the label in a button and sets `aria-sort`. |
 | `data-sort-value` | On a body cell. The runtime compares this instead of the visible text. |
 
-`[leading]` is letter-spacing. This table has no leading slot. `[center]`, `[left]`, and `[right]` are layout utilities. Cell alignment is `[table-align]`, not `[center]`. `[align]` belongs to `p` and `[section-header]`. `nav[sticky]` is a different selector. Here sticky is `:where(table)[table][sticky]`. `[dense]` and `[selected]` are scoped to this table, the same way list scopes them. `[striped]`, `[numeric]`, and `[sortable]` were free. Each is scoped so it does not paint outside `[table]`. `[end]` is an app `[data-table]` hook and is not reused.
+`[leading]` is letter-spacing. This table has no leading slot.
+
+`[center]`, `[left]`, and `[right]` are layout utilities. Cell alignment is `[table-align]`, not `[center]`.
+
+`[align]` belongs to `p` and `[section-header]`. `nav[sticky]` is a different selector.
+
+Here sticky is `:where(table)[table][sticky]`. `[dense]` and `[selected]` are scoped to this table, the same way list scopes them.
+
+`[striped]`, `[numeric]`, and `[sortable]` were free. Each is scoped so it does not paint outside `[table]`.
+
+`[end]` is an app `[data-table]` hook and is not reused.
 
 The host is `width: 100%`, `border-collapse: separate`, `border-spacing: 0`, no outer border, inherited color and font, `text-align: start`, radius `--juice-table-radius` (`0.375rem`). The plate is `--juice-surface-strong-bg`, with a white fallback (`#fff`) when that role is absent. Washes sit on that plate, not on the page.
 
-Cells take `--juice-table-padding` (`0.75rem 1rem`), `vertical-align: middle`, and a `1px` hairline on the inline end and block end. The first cell in a row also takes the inline-start hairline. The first row also takes the block-start hairline. Corner cells take the radius. Header and footer cells are `font-weight: 600` and paint the header wash. Body cells stay transparent so the row wash shows. The caption sits on top, `font-weight: 600`, full ink, with the same padding as a cell.
+Cells take `--juice-table-padding` (`0.75rem 1rem`), `vertical-align: middle`, and a `1px` hairline on the inline end and block end. The first cell in a row also takes the inline-start hairline.
+
+The first row also takes the block-start hairline. Corner cells take the radius.
+
+Header and footer cells are `font-weight: 600` and paint the header wash. Body cells stay transparent so the row wash shows.
+
+The caption sits on top, `font-weight: 600`, full ink, with the same padding as a cell.
 
 `[theme]` companions on those resets beat semantic defaults. `:where()` keeps the element type out of the specificity, so a later padding utility can still override the cell box.
 
@@ -128,7 +122,11 @@ Core CSS does not give the table an overlay `z-index`. Sticky header cells use `
 </div>
 ```
 
-Sticky `thead` cells use `position: sticky` and `inset-block-start: 0`. One copy of a translucent surface still shows scrolled text. Tide's strong surface is `0.78` alpha. The sticky plate stacks the strong surface five times and lays the header wash on top, so the scrolled rows disappear. On an already-opaque plate (Citrusmint's white) the extra copies do not change the color. A selected sticky head uses the selected wash as that top layer.
+Sticky `thead` cells use `position: sticky` and `inset-block-start: 0`. One copy of a translucent surface still shows scrolled text.
+
+Tide's strong surface is `0.78` alpha. The sticky plate stacks the strong surface five times and lays the header wash on top, so the scrolled rows disappear.
+
+On an already-opaque plate (Citrusmint's white) the extra copies do not change the color. A selected sticky head uses the selected wash as that top layer.
 
 `[striped]` paints `--juice-table-stripe` on even `tbody` rows (`tr:nth-child(even)`). Header and footer rows are not striped. `[dense]` sets caption and cell padding to `--juice-table-padding-dense` (`0.375rem 0.75rem`). Dense padding is not restated under `[theme]`.
 
@@ -201,64 +199,42 @@ See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-att
 
 The grid, header band, stripe, hover, and selected washes are `currentColor` mixes, so they follow inherited ink on light and dark pages. Shipped themes do not bind `--juice-table-*`. No theme file is overridden.
 
-The plate is the strong surface. Citrusmint body ink is `4.62:1` on its page. A `currentColor` wash over that page drops under `4.5:1` past `1%`, which is too faint to see. The same ink on Citrusmint's strong surface (white) is `5.17:1`. A `4%` stripe, a `6%` hover wash, a `6%` header wash, and an `8%` selected wash stay at or above `4.62:1` there. The selected wash is the floor. Every other shipped theme has more room on both the page and the strong surface. Every shipped theme passes `4.5:1` on the plate.
+The plate is the strong surface. Citrusmint body ink is `4.62:1` on its page.
+
+A `currentColor` wash over that page drops under `4.5:1` past `1%`, which is too faint to see. The same ink on Citrusmint's strong surface (white) is `5.17:1`.
+
+A `4%` stripe, a `6%` hover wash, a `6%` header wash, and an `8%` selected wash stay at or above `4.62:1` there. The selected wash is the floor.
+
+Every other shipped theme has more room on both the page and the strong surface. Every shipped theme passes `4.5:1` on the plate.
 
 Those ratios are sRGB alpha composites of the mixes over each theme's `--juice-surface-strong-bg` (alpha stripped). For every shipped theme that composite matches the surface painted over the page.
 
 The border is a `24%` hairline (`1.42:1` on Citrusmint's plate, and under `3:1` on every shipped theme). It is decorative, not a control boundary. Do not use the hairline as the only separation between cells. Padding and the text do that work.
 
-## Automatic Boot
+## JavaScript
 
-The runtime starts automatically in the browser.
+Outside a browser, `startTableRuntime()` returns `null` and `createTable()` returns a controller whose methods do nothing (`getState()` returns `null`).
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the table runtime:
+| Export | What it does |
+| --- | --- |
+| `createTable(options?)` | Controller for `options.root`, or the document. |
+| `initTable(options?)` | Same call as `createTable`. |
+| `startTableRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopTableRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    bootOnReady = () => {
-      bootOnReady = null;
-      if (!autoStartSuspended) {
-        startTableRuntime();
-      }
-    };
-    document.addEventListener('DOMContentLoaded', bootOnReady);
-  } else {
-    startTableRuntime();
-  }
-}
-```
+A custom-root controller can run beside the document runtime. Each click is claimed once. The header is wrapped once.
 
-Importing the Juice JS entrypoint is enough for the normal behavior. The entry re-exports this module, so the boot runs.
+### Events
 
-`stopTableRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start. Outside a browser, `startTableRuntime()` returns `null` and `createTable()` returns a controller whose methods do nothing (`getState()` returns `null`).
+A real change of `{ column, direction }` dispatches a bubbling, composed [juice:change](./juice-runtime-behavior.md#juicechange) from the `<table>`. `detail` is `{ runtime: "table", state }`.
 
-## Public API
+`getState()` reads that shape, or `null` when the host is missing. The first observation does not dispatch, including the `aria-sort="none"` written on first sync.
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+A later `sync()` that leaves the state unchanged does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2.
 
-```ts
-createTable(options?)
-initTable(options?)
-startTableRuntime()
-stopTableRuntime()
-```
+Before a reorder, the table also dispatches a bubbling, cancelable, composed `juice:sort`. That event is separate from `juice:change`. [Server-side sort](#server-side-sort).
 
-These are useful for internal control, tests, or advanced cases.
-
-A real change of `{ column, direction }` dispatches a bubbling, composed `juice:change` from the `<table>`. `detail` is `{ runtime: "table", state }`. `getState()` reads that same shape, or `null` when the host is missing. The first observation of a table is recorded and does not dispatch, including the `aria-sort="none"` the runtime writes on first sync. A later `sync()` that leaves the state unchanged does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2. See [juice:change](./juice-runtime-behavior.md#juicechange).
-
-Before a reorder, the table also dispatches a bubbling, cancelable, composed `juice:sort`. That event is separate from `juice:change`. See [Server-side sort](#server-side-sort).
-
-`createTable()` can run alongside the automatic document runtime. Each click is claimed once, so a custom-root controller does not sort twice with the singleton. The button wrap is shared, so the header is wrapped once.
-
-`initTable()` is the same function as `createTable()`.
-
-`startTableRuntime()` is an idempotent singleton. A second call syncs and returns the same controller.
-
-## TableOptions
-
-The configurable shape is:
+### Options
 
 ```ts
 type TableOptions = {
@@ -280,7 +256,7 @@ By default, Juice uses:
 
 A custom `root` limits sync to tables inside that root. When the root itself is a `<table>` that matches `tableSelector`, that host is managed too. Tables outside the root are left alone. A `th[sortable]` outside a managed table is left alone. `<div table>` is not a host.
 
-## TableController
+### Controller
 
 ```ts
 type TableSortDirection = 'ascending' | 'descending' | 'none';
@@ -299,11 +275,17 @@ type TableController = {
 
 `column` is `null` when `direction` is `"none"`. Otherwise it is the active header's `cellIndex`.
 
-`destroy()` removes the click listener, disconnects the observer, and cancels a scheduled sync. It unwraps buttons this runtime created and puts the original header nodes back. It puts author `aria-sort` back (and removes `aria-sort` when the author had not set it). When this runtime had reordered rows, it puts each `tbody` back in the remembered order. Shared sort memory for those tables is cleared, so a second live controller re-reads the restored DOM on its next sync. `getState()` returns `null` after destroy. A second `destroy()` does nothing.
+`destroy()` removes the click listener, disconnects the observer, and cancels a scheduled sync. It unwraps buttons this runtime created and puts the original header nodes back.
+
+It puts author `aria-sort` back (and removes `aria-sort` when the author had not set it). When this runtime had reordered rows, it puts each `tbody` back in the remembered order.
+
+Shared sort memory for those tables is cleared, so a second live controller re-reads the restored DOM on its next sync. `getState()` returns `null` after destroy.
+
+A second `destroy()` does nothing.
 
 `sync()` walks each managed table, wraps new sortable headers, drops `[sortable]` from headers that lost it, and re-applies a client sort so rows added later join it. With no target, `getState()` uses the first managed `[table]` in the root. A target inside a table, including a cell or the sort button, resolves to that table. A node that is not a managed table and is not inside one returns `null`.
 
-## What the Runtime Actually Does
+## Behavior
 
 The runtime performs six main jobs:
 
@@ -369,21 +351,11 @@ table.addEventListener("juice:sort", (event) => {
 
 A canceled sort still dispatches `juice:change`, because the state changed.
 
-## Why MutationObserver Is Used
+## DOM updates
 
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-If a table, a sortable header, a `[numeric]` cell, or a `data-sort-value` appears later, the observer schedules a `sync()` call so Juice can wrap the new header and join new rows to the current sort.
-
-The observer watches child-list changes and these attributes: `table`, `sortable`, `numeric`, and `data-sort-value`. `[striped]`, `[dense]`, `[sticky]`, and `[table-align]` stay CSS and are not in that list. Removing `[sortable]` unwraps that header. `destroy()` stops that observation.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
+The observer watches child-list changes and `table`, `sortable`, `numeric`, and `data-sort-value`. `[striped]`, `[dense]`, `[sticky]`, and `[table-align]` stay CSS. Removing `[sortable]` unwraps that header. `destroy()` stops that observation.
 
 A click publishes on the event. It is not deferred to that frame.
 
@@ -391,7 +363,13 @@ A click publishes on the event. It is not deferred to that frame.
 
 `@citrusworx/sigjs/juice` `bind(host, runtime?)` accepts table. `JuiceRuntimeName` in `libraries/sig/src/juice.ts` includes `"table"`, `"avatar"`, and `"icon-button"`. The table matcher looks for a `<table table>` only. A `<div table>` is not a host. That matcher runs after the earlier ones, so a host that already matches stays on that runtime.
 
-`bind(table)` seeds a signal from `getState()`. `bind(table, "table")` does the same. Table is read-only. There is no Juice API to set sort, and `state.set` does not call a controller. The next `juice:change` copies the host back over the signal. On a Juice build that does not export `startTableRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2; the export is on master only), binding table throws `Sig juice bind: "table" needs a newer @citrusworx/juiceui that exports startTableRuntime.` The module still loads, and the other runtimes still bind. Juice does not import Sig, and this runtime does not call `bind`.
+`bind(table)` seeds a signal from `getState()`. `bind(table, "table")` does the same.
+
+Table is read-only. There is no Juice API to set sort, and `state.set` does not call a controller.
+
+The next `juice:change` copies the host back over the signal. On a Juice build that does not export `startTableRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2; the export is on master only), binding table throws `Sig juice bind: "table" needs a newer @citrusworx/juiceui that exports startTableRuntime.` The module still loads, and the other runtimes still bind.
+
+Juice does not import Sig, and this runtime does not call `bind`.
 
 `juice:change`, `juice:sort`, and `getState()` still work without Sig. Listen on the table, or call `getState()` on the controller.
 
@@ -411,9 +389,8 @@ The hairline is decorative and sits under `3:1`. It is not a control boundary.
 
 ## Limitations
 
-- No `Table()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Table is the twenty-eighth Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Avatar remains the twenty-seventh and is also on master, not in that cut. Icon button remains the twenty-sixth and is also on master, not in that cut. Field remains the twenty-fifth and shipped in that cut. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
-- Hosts are real `<table>` elements only, via `:where(table)[table]`. `<div table>` is not painted and is not sorted. There is no `<table>` element restyle of a bare table without `[table]`.
+- There is no `Table()` factory. Author the markup and let the runtime enhance it.
+- Hosts are real `<table>` elements only, via `:where(table)[table]`. `<div table>` is not painted and is not sorted.
 - `[table-scroll]` does not set `tabindex`, `role`, or an accessible name. Authors do. A sticky head inside that wrapper sticks to the wrapper. Omit the wrapper for page sticky. Set `max-height` on the wrapper when the body should scroll under the head.
 - `cellIndex` is not a visual column. Colspan and rowspan are not expanded. A sortable header belongs in `thead`. A `th[sortable]` in `tbody` is sorted with that body's rows.
 - One `[numeric]` cell makes the column numeric, in every `tbody`. Values that do not parse sort last, in both directions.
@@ -425,24 +402,22 @@ The hairline is decorative and sits under `3:1`. It is not a control boundary.
 - There is no focus trap and no Escape handling. Table is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - Sticky header cells use `z-index: 1` inside the table. There is no overlay z-index. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 - Sig `bind()` accepts this runtime and stays read-only. A Juice build without `startTableRuntime` throws `needs a newer @citrusworx/juiceui`. See [Sig `bind()`](#sig-bind).
-- Shipped themes do not bind `--juice-table-*`. The plate is `--juice-surface-strong-bg` (white when that role is absent). Cell `p`, `span`, `li`, and `label` use body ink. Citrusmint muted text is `2.18:1` on the plate. Borders stay a decorative hairline under `3:1`. The selected-wash floor on Citrusmint is `4.62:1`.
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, skeleton, list, and accordion behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Progress Runtime](./juice-progress-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), [Disclosure Runtime](./juice-disclosure-runtime.md), [Spinner Runtime](./juice-spinner-runtime.md), [Select Runtime](./juice-select-runtime.md), [Input Runtime](./juice-input-runtime.md), [Textarea Runtime](./juice-textarea-runtime.md), [Field Runtime](./juice-field-runtime.md), [Icon Button Runtime](./juice-icon-button-runtime.md), [Avatar](./juice-avatar.md), [Skeleton](./juice-skeleton.md), [List](./juice-list.md), and [Accordion Runtime](./juice-accordion-runtime.md).
+- Shipped themes do not bind `--juice-table-*`. The plate is `--juice-surface-strong-bg`, with white when that role is absent.
+- Cell `p`, `span`, `li`, and `label` use body ink. Citrusmint muted text is `2.18:1` on the plate.
+- Borders stay a decorative hairline under `3:1`. The selected-wash floor on Citrusmint is `4.62:1`.
+- A bare `<table>` without `[table]` is not restyled.
 
-## Why This Matches Navigation
+## Not to be confused with
 
-The table runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon-button, and avatar lifecycle by convention:
+| This | Not this |
+| --- | --- |
+| Sortable `<table table>` | `[list]`, a stack of rows |
+| This grid | The dashboard `[data-table]` hook |
+| Attribute host | `[role="table"]` or `[role="grid"]` (CSS does not style those roles) |
 
-- DOM-first
-- automatic boot
-- event delegation for the sort button's click
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
+## Related
 
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API. `juice:change` comes from that shared helper. Table does not import Sig.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [List](./juice-list.md)

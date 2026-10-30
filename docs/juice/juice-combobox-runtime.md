@@ -1,38 +1,12 @@
-# Juice Combobox Runtime
+# Combobox
 
-This document explains the current combobox runtime in `libraries/juice/src/js/src/combobox/combobox-runtime.ts` (monorepo path; outside this vault).
+Combobox is an editable input plus a listbox popup on `[combobox]`, with `[combobox-input]`, an optional `[combobox-trigger]`, and `[combobox-list]`.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, and tooltip:
+It is Emerging and shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice combobox markup and it exists in the browser, the listbox should just work.
+Importing `@citrusworx/juiceui` enhances valid markup ([Automatic behavior](./juice-runtime-behavior.md#automatic-behavior)).
 
-That is the standard.
-
-## The Goal
-
-The combobox runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize combobox behavior in their app code.
-
-There is no `Combobox()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Combobox is an editable input plus a listbox popup (APG list autocomplete, manual selection). It is not a native `<select>` restyle, not a popover, not a tooltip, and not a dialog overlay. Single-select only. No async / remote fetch, no creatable options, and no multi-select.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s combobox chrome:
+## Markup
 
 ```html
 <label for="fruit-input">Fruit</label>
@@ -47,194 +21,127 @@ The runtime is aligned with Juice’s combobox chrome:
 </div>
 ```
 
-It requires a `[combobox]` root. Closed vs open is the native `hidden` attribute on `[combobox-list]`. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+Closed and open is the native `hidden` attribute on `[combobox-list]`. Authors name the input with a `<label>`, `aria-label`, or `aria-labelledby`. A root `name` or `id` is only the slug for generated ids.
 
-Authors must name the input. Use a `<label>`, `aria-label`, or `aria-labelledby`. The root `name` is only an id slug. The runtime does not invent an accessible name.
+## Attributes
 
-**Do not restyle or replace native `<select>`.** Combobox is Juice chrome: an input plus a listbox popup. Use role in markup; attrs own Juice structure.
+| Hook | What it does |
+| --- | --- |
+| `[combobox]` | Composite root. `name` or `id` becomes the slug for generated list and option ids. |
+| `[combobox-input]` | Text field. Sync sets `role="combobox"`, `aria-autocomplete="list"`, `aria-expanded`, and `aria-controls`. |
+| `[combobox-trigger]` | Optional toggle. Sync sets `aria-expanded`, `aria-controls`, and `aria-haspopup="listbox"`. |
+| `[combobox-list]` | Popup. `hidden` closes it. Sync sets `role="listbox"` and an id. |
+| `[combobox-option]` | Option row. Sync sets `role="option"` and an id. `"active"` is the highlighted row. |
+| `data-value` | When present, filter can match it and select writes it into the input. Otherwise select writes the option text. |
 
-**Parts:**
+## JavaScript
 
-- `[combobox]` — composite root
-- `[combobox-input]` — text field (`role="combobox"`)
-- `[combobox-trigger]` — optional chevron button
-- `[combobox-list]` — popup (`role="listbox"`)
-- `[combobox-option]` — row (`role="option"`)
+| Export | What it does |
+| --- | --- |
+| `createCombobox` | Builds a controller for the comboboxes under `root`. |
+| `initCombobox` | Same call as `createCombobox`. |
+| `startComboboxRuntime` | Starts the document controller. A second call syncs. Returns null without a document. |
+| `stopComboboxRuntime` | Destroys that controller and cancels a deferred boot. |
 
-Prefer shipping those roles in markup. The runtime fills them if they are missing, plus a missing list / option id, `aria-controls` from the input (and trigger) to the list, `aria-autocomplete="list"` on the input, and `aria-haspopup="listbox"` on the trigger.
+A custom-root `createCombobox()` can run beside the document runtime, and each click, focus, input, or key event is claimed once.
 
-When `[combobox]` has a `name` or `id`, that value becomes the slug used for generated ids (`fruit-list`, `fruit-option-1`).
+### Options
 
-Theme paint uses `--juice-combobox-*` roles. Core CSS paints `[combobox-list]` at **z-index 1050** (same band as popover, below tooltip `1060` and toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[combobox]` is an input + listbox popup, not a native select, not a popover, not a tooltip, not a dialog overlay, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Parent node to search. |
+| `rootSelector` | `[combobox]` | Composite root. |
+| `inputSelector` | `[combobox-input]` | Text field inside that root. |
+| `triggerSelector` | `[combobox-trigger]` | Optional toggle inside that root. |
+| `listSelector` | `[combobox-list]` | Popup. Open means `hidden` is absent. |
+| `optionSelector` | `[combobox-option]` | Option rows inside the list. |
 
-## Automatic Boot
+### Controller
 
-The runtime starts automatically in the browser.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Removes the document listeners and disconnects the observer. |
+| `sync()` | Fills roles, ids, and ARIA. An open list is filtered again. Records the current state. |
+| `open(target?)` | Opens the resolved combobox. A missing or disabled input is ignored. An open list is refiltered. |
+| `close(target?)` | Closes an open list, clears the active option, and shows every option again. |
+| `toggle(target?)` | Closes when the list is open. Otherwise opens. |
+| `select(target?)` | Commits the option at `target`, or the option that contains it. Otherwise commits the active option, then closes. |
+| `isOpen(target?)` | Whether the resolved list is open. False when none resolves. |
+| `getState(target?)` | `{ open: boolean, value: string }` from the list and the input, or `null`. |
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the combobox runtime:
+With no target, `open`, `close`, `toggle`, `select`, `isOpen`, and `getState` use the open combobox, or the first one in the root.
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startComboboxRuntime();
-    });
-  } else {
-    startComboboxRuntime();
-  }
-}
-```
+## Events
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+A real open or value change dispatches a bubbling `juice:change` from `[combobox]`. The detail is `{ runtime: "combobox", state: { open: boolean, value: string } }`. One action publishes the final state once, and a write that leaves both fields unchanged does not dispatch ([juice:change](./juice-runtime-behavior.md#juicechange)).
 
-`stopComboboxRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+## Accessibility
 
-## Public API
+- The input is `role="combobox"` with `aria-autocomplete="list"`, `aria-expanded`, and `aria-controls`. The list is `role="listbox"`. Each option is `role="option"` with an id. The committed option is `aria-selected="true"`.
+- Focus stays on the input. The highlighted row is `aria-activedescendant` plus `combobox-option="active"`. There is no focus trap, and Tab is not wrapped.
+- Authors name the input. The runtime does not invent an accessible name.
+- ArrowDown and ArrowUp open the list if needed, then move among visible options without wrapping. Home and End move to the first or last visible option while the list is open. While closed, Home and End keep the native cursor.
+- Enter selects the active option. Tab closes without committing it. Enter or Space on a non-button trigger toggles the list. IME composition is ignored.
+- Escape closes without changing the input value, unless an open dialog overlay, popover, or menu already owns Escape. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- `[combobox-list]` paints at z-index 1050. Theme paint uses `--juice-combobox-*` roles. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+## Behavior
 
-```ts
-createCombobox(options?)
-initCombobox(options?)
-startComboboxRuntime()
-stopComboboxRuntime()
-```
+1. Find `[combobox]` roots and the input, optional trigger, list, and options inside each root. Orphan nodes outside a `[combobox]` are ignored.
+2. Fill missing `combobox`, `listbox`, and `option` roles, list and option ids, `aria-autocomplete="list"`, `aria-controls`, and trigger `aria-haspopup="listbox"`.
+3. Open on input focus, typing, or trigger click. Close on Escape (yielding to an open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[menu-root] [menu]:not([hidden])`), outside click, blur unless focus stays inside the combobox, Tab, or after select.
+4. Filter visible options with a case-insensitive substring of option text and, when present, `data-value`. Non-matches get `hidden`. An empty match set stays open.
+5. Write `aria-expanded` on the input and, when present, the trigger. Keyboard focus on a row is `aria-activedescendant` plus `combobox-option="active"`.
+6. Selection is single-select. The input becomes the option text, or `data-value` when that attribute is present. The chosen option gets `aria-selected="true"`. Siblings are cleared.
+7. Opening one combobox closes the other open ones.
+8. Closing, including after select, Tab, or Escape, clears `combobox-option="active"` and `aria-activedescendant`, so a later Enter cannot commit a stale option.
 
-These are useful for internal control, tests, or advanced cases.
+Focus stays on the input. Disabled inputs are ignored. Option `mousedown` is cancelled so the input keeps focus through click-to-select.
 
-A real open or value change dispatches a bubbling `juice:change` from `[combobox]`. `detail` is `{ runtime: "combobox", state: { open: boolean, value: string } }`. `isOpen()` and `getState()` read it. One user action publishes the final state once. A write that leaves both fields unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+### Filter
 
-`createCombobox()` can run alongside the automatic document runtime. Each click, focus, input, or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+The query is the current input value, trimmed and lowercased. An option matches when its text includes that query, or when `data-value` includes it. An empty query shows every option. Non-matches get native `hidden`. An empty match set leaves the list open with no visible rows. Closing clears those `hidden` flags so the next open starts from the full list, then filters again.
 
-## ComboboxOptions
+### Placement
 
-The configurable shape is:
+Placement is CSS only. `[combobox-list]` is absolutely positioned under the field at z-index 1050. The runtime does not measure, flip, or shift the list.
 
-```ts
-type ComboboxOptions = {
-  root?: ParentNode;
-  rootSelector?: string;
-  inputSelector?: string;
-  triggerSelector?: string;
-  listSelector?: string;
-  optionSelector?: string;
-};
-```
+<details>
+<summary>Edge cases</summary>
 
-By default, Juice uses:
+- Generated ids prefer an existing element id. Otherwise they use the root `name` or `id` slug (`fruit-list`, `fruit-option-1`).
+- A trigger that is not a button, and not a link with `href`, gets `role="button"` and `tabindex="0"` when `tabindex` is missing.
+- A click inside the combobox that is not an option or the trigger does not close the list. An outside click closes every open list in the root.
+- Opening also closes other open comboboxes in the document that match the same root selector.
+- The runtime does not write layout `content="active"` or `content="hidden"`.
+- Escape is also ignored when the event is already `defaultPrevented`.
 
-```ts
-{
-  root: document,
-  rootSelector: '[combobox]',
-  inputSelector: '[combobox-input]',
-  triggerSelector: '[combobox-trigger]',
-  listSelector: '[combobox-list]',
-  optionSelector: '[combobox-option]',
-}
-```
+</details>
 
-## ComboboxController
+- Single-select only. No multi-select, no async or remote fetch, and no creatable options.
+- No `Combobox()` factory. Author the markup and let the runtime enhance it.
+- Orphan `[combobox-input]`, `[combobox-list]`, and `[combobox-option]` nodes outside `[combobox]` are ignored.
+- Only one list is open at a time.
+- Optional `surfaceTone` on `[combobox-list]` is allowed. The runtime does not set it.
 
-```ts
-type ComboboxController = {
-  destroy: () => void;
-  sync: () => void;
-  open: (target?: HTMLElement | null) => void;
-  close: (target?: HTMLElement | null) => void;
-  toggle: (target?: HTMLElement | null) => void;
-  select: (target?: HTMLElement | null) => void;
-  isOpen: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => ComboboxState | null;
-};
-```
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-`open()` / `close()` / `toggle()` toggle native `hidden` on `[combobox-list]`. `select()` commits one option and then closes.
+## Not to be confused with
 
-## What the Runtime Actually Does
+| This | Not this |
+| --- | --- |
+| Input + listbox | A native select |
+| Input + listbox | A popover |
+| Input + listbox | A tooltip |
 
-The runtime performs eight main jobs:
+## Related
 
-1. Find `[combobox]` roots and resolve the input, optional trigger, list, and options inside that root. Orphan nodes outside a `[combobox]` are ignored
-2. Fill missing roles (`combobox` / `listbox` / `option`), list and option ids, `aria-autocomplete="list"`, `aria-controls`, and trigger `aria-haspopup="listbox"`
-3. Open on input focus, typing, or trigger click. Close on Escape (yields when an open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists), outside click, blur (unless focus stays inside the combobox), Tab, or after select. Option `mousedown` is prevented so the input keeps focus through click-to-select
-4. Filter visible options with a case-insensitive substring against option text and, when present, `data-value`. Non-matches get `hidden`. An empty match set stays open
-5. Write `aria-expanded` on the input and, when present, the trigger. Visual / keyboard focus on a row is `aria-activedescendant` plus `combobox-option="active"`
-6. Select is single-select only. The input value becomes option text, or `data-value` when that attribute is present. The chosen option gets `aria-selected="true"`; siblings are cleared
-7. Opening one managed combobox closes the others. Exclusive open is among comboboxes
-8. Closing (including after select, Tab, or Escape) clears `combobox-option="active"` and `aria-activedescendant` so a later Enter cannot commit a stale option
-
-Focus stays on the input. There is no focus trap. Disabled inputs are ignored.
-
-Exclusive open is among comboboxes. This runtime does not close a modal, drawer, toast, popover, wizard, or tooltip, and those runtimes do not close a combobox.
-
-## Filter
-
-Filter is case-insensitive substring match.
-
-The query is the current input value. Each option matches when its text includes that query, or when a `data-value` attribute includes it. Non-matches get the native `hidden` attribute. An empty query shows every option. An empty match set leaves the list open with no visible rows.
-
-Closing reveals hidden options again so the next open starts from a full list, then re-filters from the current input.
-
-## Placement
-
-Placement is CSS-only. There is no Floating UI.
-
-`[combobox-list]` is absolutely positioned under the field. Core CSS paints it at z-index **1050**. The runtime does not measure, flip, or shift the list.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a combobox appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA, start handling focus / typing / keys, and filter any already-open list.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- ArrowDown / ArrowUp open the list if needed, then move `combobox-option="active"` among visible options (no wrap). Focus stays on the input; `aria-activedescendant` tracks the active row
-- Home / End move to the first / last visible option while the list is open. Closed, those keys keep native input-cursor behavior
-- Enter selects the active option
-- Escape closes without changing the input value, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[menu-root] [menu]:not([hidden])` exists (those surfaces own Escape). See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Tab closes without committing the active option (APG manual selection). Focus moves on
-- IME composition keys are ignored
-- Enter / Space on a non-button trigger toggles the list
-
-There is no focus trap. Tab is not wrapped. The runtime does not move focus into the list.
-
-## Limitations
-
-- No `Combobox()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Distinct from native `<select>`. Do not restyle or replace `<select>`.
-- Single-select only. No multi-select, no async / remote fetch, and no creatable options.
-- Orphan `[combobox-input]` / `[combobox-list]` / `[combobox-option]` nodes that are not inside `[combobox]` are ignored.
-- Lists use native `hidden`, never layout `content=`.
-- Opening is exclusive among comboboxes. Only one managed list is open at a time.
-- Placement has no Floating UI. The list stays CSS-absolute under the field.
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, and tooltip behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), and [Tooltip Runtime](./juice-tooltip-runtime.md).
-- Escape closes without commit only when no open modal/drawer overlay, popover, or menu exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-## Why This Matches Navigation
-
-The combobox runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, and tooltip lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal runtime](./juice-modal-runtime.md)
+- [Drawer runtime](./juice-drawer-runtime.md)
+- [Toast runtime](./juice-toast-runtime.md)
+- [Popover runtime](./juice-popover-runtime.md)
+- [Wizard runtime](./juice-wizard-runtime.md)
+- [Tooltip runtime](./juice-tooltip-runtime.md)

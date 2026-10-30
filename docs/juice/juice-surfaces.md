@@ -304,7 +304,11 @@ Shipped binds (existing tokens only; no new hue family):
 | Citrusmint | `color-mix` of `--cm-surface` at 88% | `--cm-surface` | `--cm-surface-muted` | `--cm-border` / heading mix (no `--cm-border-strong`) | wintergreen / lime (same green family) | `--cm-surface` / `--cm-surface-muted` |
 | Tide | `--tide-surface` + line glow + 16px blur | `--tide-surface-strong` | `--tide-surface-muted` | `--tide-border` / `--tide-border-strong` | lagoon mix + line glow / `--tide-shadow` | `--tide-page` / `--tide-page-tint` |
 
-Tide must read as a **dark** frosted or elevated panel, not a white frost. Tide `borderStrength="bold"` uses `--tide-border-strong` (lagoon line at higher alpha, 2px) — not a light gray rule. Tide `shadowTone` uses `--tide-accent` mixed into `--tide-shadow` (cool, plus line glow) and `--tide-shadow` (warm ink) — not a light gray drop shadow. Tide `overlay` uses `--tide-page` (frost) and `--tide-page-tint` (tint) mixed into transparent — a dark veil, not a white wash. Tide `variant` recipes reuse those same binds (`glass` / `tinted` via overlay, `monochromatic` via soft hairline + `--tide-line-glow` soft shadow) — still dark, not a white glass. Light themes stay close to the original soft look.
+Tide must read as a **dark** frosted or elevated panel, not a white frost. Tide `borderStrength="bold"` uses `--tide-border-strong` (lagoon line at higher alpha, 2px) — not a light gray rule.
+
+Tide `shadowTone` uses `--tide-accent` mixed into `--tide-shadow` (cool, plus line glow) and `--tide-shadow` (warm ink) — not a light gray drop shadow. Tide `overlay` uses `--tide-page` (frost) and `--tide-page-tint` (tint) mixed into transparent — a dark veil, not a white wash.
+
+Tide `variant` recipes reuse those same binds (`glass` / `tinted` via overlay, `monochromatic` via soft hairline + `--tide-line-glow` soft shadow) — still dark, not a white glass. Light themes stay close to the original soft look.
 
 `variant` recipes consume those same roles. There is no required `--juice-variant-*` bind family.
 
@@ -329,18 +333,48 @@ Import core + theme CSS separately (see [Theme authoring](./juice-theme-authorin
 
 A–C surface utilities and remaining depth slices A–C (`shadowTone`, `overlay`, `variant`) ship. Structural `card="…"` recipes can stay later — see [Cards](./juice-cards.md) and the [Surface Spec](./juice-surface-spec.md).
 
-Modal / dialog **theme chrome** (`--juice-modal-*` on `[modal-overlay]` / `[modal]` / `[modal-close]`) also ships. That is a component scrim, not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses native `hidden`. The dialog runtime auto-enhances valid overlay markup — see [Modal Runtime](./juice-modal-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+Modal / dialog **theme chrome** (`--juice-modal-*` on `[modal-overlay]` / `[modal]` / `[modal-close]`) also ships. That is a component scrim, not the surface `overlay="frost|tint"` utility.
 
-Drawer **theme chrome** (`--juice-drawer-*` on `[drawer-overlay]` / `[drawer]` / `[drawer-close]`) ships the same way: a component scrim and edge panel, not `overlay="frost|tint"`. Optional `surfaceTone` on `[drawer]` is allowed; do not force it. Closed vs open uses native `hidden`. Edge is `[drawer]` / `[drawer="right"]` / `[drawer="left"]`; optional width is `[drawer-size="sm|lg"]`. The dialog runtime auto-enhances valid overlay markup — see [Drawer Runtime](./juice-drawer-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+Optional `surfaceTone` on `[modal]` is allowed; do not force it. Closed vs open uses native `hidden`.
 
-Toast **theme chrome** (`--juice-toast-*` on `[toast-region]` / `[toast]` / `[toast-close]`) is non-modal feedback, not a dialog overlay and not `overlay="frost|tint"`. Optional `surfaceTone` on `[toast]` is allowed; do not force it. The region stays in the DOM; individual toasts hide with native `hidden`. Region position is `top-right` by default (`top-left` / `bottom-right` / `bottom-left`). Status is `[toast="success|error|info|warning"]` (bare `[toast]` is neutral). The snackbar runtime auto-enhances valid region markup — see [Toast Runtime](./juice-toast-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+The dialog runtime auto-enhances valid overlay markup — see [Modal Runtime](./juice-modal-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
 
-Banner **theme chrome** (`--juice-banner-*` on `[banner]` / `[banner-body]` / `[banner-close]`) is an inline alert / callout, not a toast stack, not a dialog overlay, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[banner]` is allowed; do not force it. Closed vs open uses native `hidden` on `[banner]`. Layout is `[banner]` / `[banner="full"]`; optional status is `[banner-tone="info|success|warning|error"]`. There is no panel-shadow role and no `[banner-region]`. The runtime auto-enhances valid root markup — see [Banner Runtime](./juice-banner-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+Drawer **theme chrome** (`--juice-drawer-*` on `[drawer-overlay]` / `[drawer]` / `[drawer-close]`) ships the same way: a component scrim and edge panel, not `overlay="frost|tint"`. Optional `surfaceTone` on `[drawer]` is allowed; do not force it.
 
-Popover **theme chrome** (`--juice-popover-*` on `[popover-root]` / `[popover-panel]` / `[popover-close]`) is an anchored non-modal dialog, not a modal overlay, not a drawer, not a toast stack, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it. Closed vs open uses native `hidden` on `[popover-root]`. Placement is `bottom` by default (`top` / `left` / `right`). Never use a bare `popover` attribute. The runtime auto-enhances valid root markup — see [Popover Runtime](./juice-popover-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+Closed vs open uses native `hidden`. Edge is `[drawer]` / `[drawer="right"]` / `[drawer="left"]`; optional width is `[drawer-size="sm|lg"]`.
 
-Tooltip **theme chrome** (`--juice-tooltip-*` on `[tooltip-root]` / `[tooltip-panel]`) is a hover/focus tip, not a popover, not a modal overlay, not a drawer, not a toast stack, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[tooltip-panel]` is allowed; do not force it. Closed vs open uses native `hidden` on `[tooltip-root]`. Placement is `top` by default (`bottom` / `left` / `right`). Never use a bare `tooltip` attribute or native `title`. The runtime auto-enhances valid root markup — see [Tooltip Runtime](./juice-tooltip-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+The dialog runtime auto-enhances valid overlay markup — see [Drawer Runtime](./juice-drawer-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
 
-Combobox **theme chrome** (`--juice-combobox-*` on `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]`) is an input + listbox popup, not a native `<select>`, not a popover, not a tooltip, not a dialog overlay, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it. Closed vs open uses native `hidden` on `[combobox-list]`. Placement is CSS-only (absolute under the field). The runtime auto-enhances valid root markup — see [Combobox Runtime](./juice-combobox-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+Toast **theme chrome** (`--juice-toast-*` on `[toast-region]` / `[toast]` / `[toast-close]`) is non-modal feedback, not a dialog overlay and not `overlay="frost|tint"`. Optional `surfaceTone` on `[toast]` is allowed; do not force it.
 
-Wizard **theme chrome** (`--juice-wizard-*` on `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step]`) is a multi-step onboarding shell, not a dialog overlay, not a toast stack, not APG Tabs, and not `overlay="frost|tint"`. Step progress uses `[step="pending"|"active"|"completed"]`. Pages hide with native `hidden`. The runtime auto-enhances valid shell markup — see [Wizard Runtime](./juice-wizard-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+The region stays in the DOM; individual toasts hide with native `hidden`. Region position is `top-right` by default (`top-left` / `bottom-right` / `bottom-left`).
+
+Status is `[toast="success|error|info|warning"]` (bare `[toast]` is neutral). The snackbar runtime auto-enhances valid region markup — see [Toast Runtime](./juice-toast-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+
+Banner **theme chrome** (`--juice-banner-*` on `[banner]` / `[banner-body]` / `[banner-close]`) is an inline alert / callout, not a toast stack, not a dialog overlay, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[banner]` is allowed; do not force it.
+
+Closed vs open uses native `hidden` on `[banner]`. Layout is `[banner]` / `[banner="full"]`; optional status is `[banner-tone="info|success|warning|error"]`.
+
+There is no panel-shadow role and no `[banner-region]`. The runtime auto-enhances valid root markup — see [Banner Runtime](./juice-banner-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+
+Popover **theme chrome** (`--juice-popover-*` on `[popover-root]` / `[popover-panel]` / `[popover-close]`) is an anchored non-modal dialog, not a modal overlay, not a drawer, not a toast stack, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[popover-panel]` is allowed; do not force it.
+
+Closed vs open uses native `hidden` on `[popover-root]`. Placement is `bottom` by default (`top` / `left` / `right`).
+
+Never use a bare `popover` attribute. The runtime auto-enhances valid root markup — see [Popover Runtime](./juice-popover-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+
+Tooltip **theme chrome** (`--juice-tooltip-*` on `[tooltip-root]` / `[tooltip-panel]`) is a hover/focus tip, not a popover, not a modal overlay, not a drawer, not a toast stack, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[tooltip-panel]` is allowed; do not force it.
+
+Closed vs open uses native `hidden` on `[tooltip-root]`. Placement is `top` by default (`bottom` / `left` / `right`).
+
+Never use a bare `tooltip` attribute or native `title`. The runtime auto-enhances valid root markup — see [Tooltip Runtime](./juice-tooltip-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+
+Combobox **theme chrome** (`--juice-combobox-*` on `[combobox]` / `[combobox-input]` / `[combobox-list]` / `[combobox-option]`) is an input + listbox popup, not a native `<select>`, not a popover, not a tooltip, not a dialog overlay, and not `overlay="frost|tint"`. Optional `surfaceTone` on `[combobox-list]` is allowed; do not force it.
+
+Closed vs open uses native `hidden` on `[combobox-list]`. Placement is CSS-only (absolute under the field).
+
+The runtime auto-enhances valid root markup — see [Combobox Runtime](./juice-combobox-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
+
+Wizard **theme chrome** (`--juice-wizard-*` on `[wizard-shell]` / `[wizard-header]` / `[wizard-rail]` / `[step]`) is a multi-step onboarding shell, not a dialog overlay, not a toast stack, not APG Tabs, and not `overlay="frost|tint"`. Step progress uses `[step="pending"|"active"|"completed"]`.
+
+Pages hide with native `hidden`. The runtime auto-enhances valid shell markup — see [Wizard Runtime](./juice-wizard-runtime.md) and the [Theme Contract](./juice-theme-contract.md).

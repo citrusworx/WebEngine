@@ -1,40 +1,12 @@
-# Juice Pagination Runtime
+# Pagination
 
-This document explains the current pagination runtime in `libraries/juice/src/js/src/pagination/pagination-runtime.ts` (monorepo path; outside this vault).
+Pagination is a page set on `[pagination]`. Prev and next disable at inferable ends, Arrow, Home, and End move among enabled controls, and the landmark name is `Pagination`. It is not a router.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress:
+Emerging. The nineteenth runtime. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice pagination markup and it exists in the browser, the current page, the landmark name, and disabled prev/next at the ends should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The pagination runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize pagination behavior in their app code.
-
-There is no `Pagination()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Pagination is an APG-inspired **page set**. It is not the site `[nav]` / navigation runtime, not `nav[type="pagination"]`, not a breadcrumb, not tabs, and not the wizard step tracker. It is not a router. v1 does not listen to history, does not remove `href`, and does not trap focus. Escape is not handled.
-
-Pagination is the nineteenth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). Pagination shipped in `@citrusworx/juiceui@0.9.1`. Disclosure is the twentieth, spinner is the twenty-first, select is the twenty-second, input is the twenty-third, textarea is the twenty-fourth, and field is the twenty-fifth. Those six, and motion core, shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s pagination chrome:
+## Markup
 
 ```html
 <nav pagination>
@@ -61,209 +33,142 @@ The runtime is aligned with Juice’s pagination chrome:
 </nav>
 ```
 
-`[pagination]` is the page-set root. `[pagination-item]` is one cell and is layout only. Anchors and buttons inside the control are enough. `[pagination-link]` is optional. `[pagination-prev]` and `[pagination-next]` mark those controls; the attribute may sit on the control or on the item that wraps it. `[pagination-ellipsis]` is an optional gap marker. `[pagination-status]` is optional text such as "Page 2 of 12".
+`[pagination]` is the page set and `[pagination-item]` is one cell. Anchors and buttons are enough.
 
-**A boolean `[pagination]` attribute is fine.** There is no HTML global `pagination` attribute.
+## Attributes
 
-**What this runtime enhances:**
+| Hook | What it does |
+| --- | --- |
+| `[pagination]` | Page-set root. Typical hosts are `nav` and `ol`. A plain element is enhanced too. |
+| `[pagination-item]` | One cell. Layout only. |
+| `[pagination-link]` | Optional control. An anchor or `button` is enough. |
+| `[pagination-prev]` | Previous control. The attribute may sit on the control or on the item that wraps it. |
+| `[pagination-next]` | Next control. The attribute may sit on the control or on the item that wraps it. |
+| `[pagination-ellipsis]` | Gap marker. Not a page control. |
+| `[pagination-status]` | Optional text, such as "Page 2 of 12". Ends are not parsed from it. |
 
-- A `[pagination]` root. Typical hosts are `<nav pagination>` and `<ol pagination>`. A plain element with `[pagination]` is also enhanced.
-- Owned parts belong to the nearest `[pagination]`. Nested page sets stay independent.
-- Page controls are cells, anchors, buttons, and `[pagination-link]` elements that are not prev, next, ellipsis, or status.
+A boolean `[pagination]` attribute is enough. There is no HTML global `pagination` attribute. `nav[type="pagination"]` is an older layout and this runtime ignores it. Nested page sets stay independent.
 
-`nav[type="pagination"]` is an older layout pattern. It is not this chrome, and this runtime ignores it. Do not style bare `[aria-current="page"]` outside the page set.
+Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). The trail stays transparent; `surface` is the page control, not a bar.
 
-**Landmark:** sync makes the root a navigation landmark only when that is safe.
+## JavaScript
 
-- `<nav>` is already a landmark. Sync does not add a redundant `role="navigation"`.
-- An element with no role that is not a list (`ol`, `ul`, or `menu`) gets `role="navigation"`.
-- `role="navigation"` on a list would drop the list semantics, so `<ol pagination>`, `<ul pagination>`, and `<menu pagination>` are left alone. They are not given `aria-label="Pagination"` either.
-- An author `role` is never overwritten. A `role="group"` root stays a group and is not labeled.
-- Ancestor `<nav>` elements are not relabeled. A parent nav may be a larger landmark than this page set.
+| Export | What it does |
+| --- | --- |
+| `createPagination(options?)` | Controller for `options.root`, or the document. |
+| `initPagination(options?)` | Same call as `createPagination`. |
+| `startPaginationRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopPaginationRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-**Landmark name:** when the root is a navigation landmark and `aria-label`, `aria-labelledby`, and `title` are all missing or blank, sync sets `aria-label="Pagination"`. A non-empty author name is kept, including a non-empty `title`. Lists and other non-navigation roots are not given that label. That landmark name is the only string this runtime invents. It does not invent names for individual controls.
+A custom-root controller can run beside the document runtime, and each click or key event is claimed once.
 
-**Current page:** `aria-current="page"` paints the current control. Sync keeps a single one inside the root when the set has a page control.
+### Options
 
-- If the author already set `aria-current="page"`, the first one in tree order stays. Any others in this root are removed. A current on the root itself counts, and it wins when it is first.
-- If none is set, the first page control is marked, on its link or button when it has one.
-- A set with no page control is left without a current page. Ellipsis and status are not page controls, so they are not chosen as that fallback.
-- A later `sync()` keeps the first current. It does not jump back to the first page control after `setCurrent()` has moved the marker.
-- Sync does not rewrite a control’s `href`.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Queries `root`, and includes `root` when it is a page set. The document when omitted. |
+| `paginationSelector` | `[pagination]` | Page-set root. |
+| `itemSelector` | `[pagination-item]` | Cells. Layout only. |
 
-**Ends:** prev and next are disabled when that is inferable from page controls and optional ellipsis. Status text is not parsed.
+### Controller
 
-- Prev is disabled when the current page is the first page control and no ellipsis sits before it.
-- Prev is also disabled when that control’s trimmed text or `aria-label` is the digits `1`, even if an ellipsis sits before it.
-- Next is disabled when the current page is the last page control and no ellipsis sits after it. There is no matching “last page number” read from the label.
-- A single page control with no ellipsis disables both ends.
-- A set with no page control, or a kept current that is not on a page control, does not infer either end.
-- Author-owned disabled (`aria-disabled="true"`, native `disabled`, or `[disabled]` already present before this runtime wrote it) is never cleared.
-- Runtime-owned disabled is `aria-disabled="true"`. On a button, the runtime also sets the `disabled` property so the button does not activate. An anchor gets `aria-disabled` only. A disabled link’s click is cancelled so it does not navigate.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Removes click and keydown listeners, disconnects the observer, and cancels a scheduled sync. |
+| `sync()` | Applies the landmark, current-page, and end rules on each root. |
+| `setCurrent(itemOrIndex, pagination?)` | Moves the single `aria-current="page"` to a page control or page index, then refreshes prev and next. It does not change the URL. |
+| `getCurrent(target?)` | The 0-based page index, or `-1`. |
+| `getState(target?)` | `{ current: number }`, or `null`. |
 
-Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). Core CSS does not give `[pagination]` a z-index. It is inline nav chrome — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). The trail stays transparent; `surface` is the page control, not a bar. See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md).
+An element passed to `setCurrent()` resolves to the page control that contains it. A link or button inside the cell is marked when the argument is that element. Otherwise the cell's link or button is marked, or the cell itself.
 
-## Automatic Boot
+Prev and next are not page indexes. A non-integer index, or an index that matches no page control, is a no-op. When `pagination` is omitted, an index uses the first root. A later `sync()` keeps an existing current.
 
-The runtime starts automatically in the browser.
+### Events
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the pagination runtime:
+A real page change dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[pagination]`. `detail` is `{ runtime: "pagination", state: { current: number } }`. `current` is the 0-based page index, or `-1` when none are current; `getCurrent()` and `getState()` read it, and a write that leaves `current` unchanged does not dispatch.
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startPaginationRuntime();
-    });
-  } else {
-    startPaginationRuntime();
-  }
-}
-```
+## Accessibility
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+- Sync makes the root a navigation landmark only when that keeps an author role and list semantics. `nav` does not receive a redundant `role="navigation"`.
+- An element with no role that is not `ol`, `ul`, or `menu` gets `role="navigation"`. Those lists stay lists and are not labeled. An author role is kept, including `role="group"`. Ancestor `nav` elements are not relabeled.
+- When the root is a navigation landmark and `aria-label`, `aria-labelledby`, and `title` are missing or blank, sync sets `aria-label="Pagination"`. A non-empty author name is kept, including a non-empty `title`. That is the only string this runtime invents.
+- One `aria-current="page"` is kept. The runtime does not rewrite `href`.
+- ArrowLeft and ArrowUp move focus to the previous enabled control. ArrowRight and ArrowDown move to the next. Home and End move to the first and last enabled control.
+- That set is page controls plus prev and next. Ellipsis, status, and disabled controls are skipped. Focus does not wrap. An arrow at an end is handled and focus stays.
+- Enter and Space stay with the browser. Alt, Ctrl, Meta, and Shift are ignored. Keys from `input`, `textarea`, `select`, or `contenteditable` are ignored.
+- Escape is not handled. See [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- There is no focus trap. Tab is not wrapped. The runtime does not set `tabindex`.
+- Core CSS does not give `[pagination]` a z-index. It is inline nav chrome. See [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-`stopPaginationRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+## Behavior
 
-## Public API
+1. Find `[pagination]` roots, ignore `nav[type="pagination"]`, and keep nested page sets independent.
+2. Make the root a navigation landmark only when that keeps list semantics and an author role.
+3. Name an unlabeled navigation landmark `Pagination`.
+4. Keep a single `aria-current="page"`, using an author current when one exists, otherwise the first page control.
+5. Disable prev and next at the ends when page controls and ellipsis make that inferable.
+6. Move focus with Arrow, Home, and End among enabled controls, without wrapping.
+7. `setCurrent()` moves the current page by control or index, without navigating, and refreshes the ends.
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+### Current page
 
-```ts
-createPagination(options?)
-initPagination(options?)
-startPaginationRuntime()
-stopPaginationRuntime()
-```
+The first `aria-current="page"` in tree order stays, including one on the root. Any others in that root are removed. When none is set, the first page control is marked on its link or button when it has one. A set with no page control is left without a current page. Ellipsis and status are not that fallback. A later `sync()` keeps the first current.
 
-These are useful for internal control, tests, or advanced cases.
+### Ends
 
-A real page change dispatches a bubbling `juice:change` from `[pagination]`. `detail` is `{ runtime: "pagination", state: { current: number } }`. `current` is the 0-based page index, or `-1` when none are current. `getCurrent()` and `getState()` read it. A write that leaves `current` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+Prev is disabled when the current page is the first page control and no ellipsis sits before it. Prev is also disabled when that control's trimmed text or `aria-label` is only digits and equals 1. Next is disabled when the current page is the last page control and no ellipsis sits after it. A single page control with no ellipsis disables both ends.
 
-`createPagination()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+A set with no page control, or a current that is not on a page control, does not infer either end. Status text is not parsed. Author-owned disabled (`aria-disabled="true"`, native `disabled`, or `[disabled]` already present) is never cleared.
 
-`initPagination()` is the same function as `createPagination()`.
+Runtime-owned disabled is `aria-disabled="true"`. A button also gets the `disabled` property. An anchor gets `aria-disabled` only, and a disabled link click is cancelled.
 
-## PaginationOptions
+<details>
+<summary>Edge cases</summary>
 
-The configurable shape is:
+- `setCurrent()` with a non-integer index, or an index that matches no page control, does nothing.
+- When `pagination` is omitted, an index applies to the first root. Prev and next are not page indexes.
+- A later `sync()` does not move the marker back to the first page control. It does refresh the ends. Runtime-owned disabled clears when the current page leaves that end.
+- The observer watches child list changes and `pagination`, `pagination-item`, `pagination-link`, `pagination-prev`, `pagination-next`, `pagination-ellipsis`, `pagination-status`, `aria-current`, `aria-label`, `aria-labelledby`, `aria-disabled`, `disabled`, `role`, and `title`.
 
-```ts
-type PaginationOptions = {
-  root?: ParentNode;
-  paginationSelector?: string;
-  itemSelector?: string;
-};
-```
+</details>
 
-By default, Juice uses:
+### Limits
 
-```ts
-{
-  root: document,
-  paginationSelector: '[pagination]',
-  itemSelector: '[pagination-item]',
-}
-```
+- There is no `Pagination()` factory.
+- `setCurrent()` does not change the URL, follow a link, or remove `href`.
+- `nav[type="pagination"]` is not enhanced.
+- Ends come from page controls and ellipsis, not from `[pagination-status]`.
+- There is no focus trap and no Escape handling.
 
-## PaginationController
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-```ts
-type PaginationController = {
-  destroy: () => void;
-  sync: () => void;
-  setCurrent: (
-    itemOrIndex: HTMLElement | number,
-    pagination?: HTMLElement | null
-  ) => void;
-  getCurrent: (target?: HTMLElement | null) => number;
-  getState: (target?: HTMLElement | null) => PaginationState | null;
-};
-```
+## Not to be confused with
 
-`sync()` walks each managed root and applies the landmark, current-page, and end rules. `setCurrent()` moves that single `aria-current="page"`. An element target resolves to the page control that contains it. When that element is a link or button inside the cell, the element is marked; otherwise the preferred target is the cell’s link or button, or the cell itself. An index applies to page controls only (prev and next are not pages), on the given root, or on the first root when `pagination` is omitted. A non-integer index, or an index that does not match a page control, is a no-op. `setCurrent()` is not a navigation: it does not change the URL, follow a link, or listen to history.
+| This | Not this |
+| --- | --- |
+| Page set, prev and next disabled at inferable ends, Arrow, Home, and End among enabled controls, landmark name `Pagination` | A router |
+| `[pagination]` | A breadcrumb |
+| `[pagination]` | Site navigation, or `nav[type="pagination"]` |
+| `[pagination]` | Tabs, or a wizard step tracker |
 
-A later `sync()` keeps an existing current. It does not jump back to the first page control after `setCurrent()` has moved the marker. Moving the current also refreshes disabled prev/next. Runtime-owned disabled clears when the current page leaves that end. Author-owned disabled stays.
+## Related
 
-## What the Runtime Actually Does
-
-The runtime performs seven main jobs:
-
-1. Find `[pagination]` roots. `nav[type="pagination"]` is ignored. A part belongs to its nearest root. Nested page sets stay independent
-2. Make the root a navigation landmark only when that is safe. `<nav>` is left without a redundant role. A non-list element with no role gets `role="navigation"`. `<ol>`, `<ul>`, and `<menu>` stay lists. An author role is kept. Ancestor navs are not relabeled
-3. Name that landmark `Pagination` only when it is a navigation landmark and `aria-label`, `aria-labelledby`, and `title` are missing or blank. A non-empty author name is kept. Lists and other non-navigation roots are not labeled
-4. Keep a single `aria-current="page"`. An author current wins: the first in tree order stays and the rest in that root are removed. A current on the root itself counts. If none is set, the first page control is marked, on its link or button when it has one. A set with no page control is left without a current page. Ellipsis and status are not that fallback. `href` is left alone
-5. Disable prev and next at the ends when page controls and optional ellipsis make that inferable. Status text is not parsed. Page `1` disables prev even when an ellipsis sits before the current control. An ellipsis after the current page keeps next enabled. Author-owned disabled is never cleared. Runtime-owned disabled is `aria-disabled="true"`, and `disabled` on buttons. A disabled link click is cancelled
-6. Move focus with ArrowLeft / ArrowUp and ArrowRight / ArrowDown to the previous or next enabled control, and with Home / End to the first or last enabled control. Disabled controls are skipped. Focus does not wrap. Enter and Space stay with the browser. Ellipsis and status are not in that set
-7. `setCurrent()` moves that single current by page control or page index. It is not a navigation. A later `sync()` keeps the first current instead of resetting to the first page control, and it refreshes the ends
-
-Escape is not handled. Pagination does not participate in the overlay / popover / menu / combobox / toast / tooltip yield order. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-There is no focus trap. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, combobox, banner, or menu, and it does not toggle a switch, move a slider, toggle a checkbox, select a radio, move a breadcrumb current page, or change a progress value.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a page set appears later, the observer schedules a `sync()` call so Juice can wire the landmark, a single `aria-current="page"`, and disabled prev/next.
-
-The observer watches child list changes and these attributes: `pagination`, `pagination-item`, `pagination-link`, `pagination-prev`, `pagination-next`, `pagination-ellipsis`, `pagination-status`, `aria-current`, `aria-label`, `aria-labelledby`, `aria-disabled`, `disabled`, `role`, and `title`.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- ArrowLeft and ArrowUp move focus to the previous enabled control
-- ArrowRight and ArrowDown move focus to the next enabled control
-- Home moves to the first enabled control. End moves to the last
-- The set is page controls plus prev and next. Ellipsis and status are skipped. Disabled controls are skipped
-- Focus does not wrap. An arrow at an end is handled and focus stays
-- Enter and Space are not handled. They stay with the browser
-- Escape is not handled. Pagination never steals it. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering)
-- Alt, Ctrl, Meta, and Shift are ignored
-- Keys from an editable control inside the page set (`input`, `textarea`, `select`, or `contenteditable`) are ignored
-- There is no focus trap. Tab is not wrapped. The runtime does not set `tabindex`
-
-Authors own whether a control is a link. The runtime does not remove `href`.
-
-## Limitations
-
-- No `Pagination()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Pagination is the nineteenth Emerging auto-enhance runtime and shipped in `@citrusworx/juiceui@0.9.1`. Disclosure is the twentieth, spinner is the twenty-first, select is the twenty-second, input is the twenty-third, textarea is the twenty-fourth, and field is the twenty-fifth. Those six, and motion core, shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
-- This is not a router. v1 does not listen to history, and `setCurrent()` does not navigate or remove `href`.
-- The only invented name is `aria-label="Pagination"` on an unlabeled navigation landmark. Control names stay author-owned.
-- `<nav pagination>` does not get a redundant `role="navigation"`. `<ol>`, `<ul>`, and `<menu>` stay lists and are not labeled. An author role is never overwritten. Ancestor navs are not relabeled.
-- `nav[type="pagination"]` is not this chrome and is not enhanced.
-- When more than one `aria-current="page"` is set, sync keeps the first in tree order. When none is set, the first page control is marked, on its link or button when it has one. A set with no page control gets no current page.
-- `setCurrent()` with an index that does not match a page control is a no-op. Prev and next are not page indexes. It does not fall back to another root unless `pagination` is omitted, in which case the first root is used.
-- A later `sync()` preserves an existing current. It does not move the marker back to the first page control.
-- Ends are inferred from page controls and ellipsis, not from `[pagination-status]` text. Page `1` (digits only, on the control text or `aria-label`) disables prev. An ellipsis after the current page keeps next enabled.
-- Author-owned disabled is never cleared. Runtime-owned disabled is `aria-disabled="true"`, plus the `disabled` property on buttons. A disabled link click is cancelled.
-- Arrow / Home / End move focus among enabled controls and do not wrap. Enter and Space stay with the browser. There is no focus trap and no Escape handling. Pagination is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- There is no z-index elevation. Pagination is inline nav chrome. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), and [Progress Runtime](./juice-progress-runtime.md).
-
-## Why This Matches Navigation
-
-The pagination runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, and progress lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal](./juice-modal-runtime.md)
+- [Drawer](./juice-drawer-runtime.md)
+- [Toast](./juice-toast-runtime.md)
+- [Popover](./juice-popover-runtime.md)
+- [Wizard](./juice-wizard-runtime.md)
+- [Tooltip](./juice-tooltip-runtime.md)
+- [Combobox](./juice-combobox-runtime.md)
+- [Banner](./juice-banner-runtime.md)
+- [Menu](./juice-menu-runtime.md)
+- [Switch](./juice-switch-runtime.md)
+- [Slider](./juice-slider-runtime.md)
+- [Checkbox](./juice-checkbox-runtime.md)
+- [Radio](./juice-radio-runtime.md)
+- [Breadcrumb](./juice-breadcrumb-runtime.md)
+- [Progress](./juice-progress-runtime.md)

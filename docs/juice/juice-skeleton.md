@@ -51,7 +51,13 @@ A value other than `text`, `circle`, or `rect` is not its own shape. Geometry fo
 
 There is no `[skeleton-line]`. A line is not a separate component name. The parent supplies the meaning, which matches Juice attribute naming. `[lines]` is a count because a boolean cannot say how many bars to reserve when the copy is not in the DOM yet.
 
-Copy inside stays in the accessibility tree and does not paint. Glyphs use `-webkit-text-fill-color: transparent`, which leaves `color` (and `currentColor`) alone. Rect, circle, and `[lines]` children are clipped. Text-line children keep their box — that box is the bar — and hide glyphs. Replaced content (`img`, `svg`, `video`, `canvas`, `picture`, `iframe`) is not shown. Authors own `aria-busy` and the accessible name. This chrome does not set them. Do not expect paint from a bare `[aria-busy]` or `[role="status"]`.
+Copy inside stays in the accessibility tree and does not paint. Glyphs use `-webkit-text-fill-color: transparent`, which leaves `color` (and `currentColor`) alone.
+
+Rect, circle, and `[lines]` children are clipped. Text-line children keep their box — that box is the bar — and hide glyphs.
+
+Replaced content (`img`, `svg`, `video`, `canvas`, `picture`, `iframe`) is not shown. Authors own `aria-busy` and the accessible name.
+
+This chrome does not set them. Do not expect paint from a bare `[aria-busy]` or `[role="status"]`.
 
 Core CSS does not give `[skeleton]` a z-index. It is an inline placeholder. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 
@@ -106,7 +112,11 @@ The circle is `inline-block`, with `border-radius: 999px`. A rect host and a tex
 
 ## Static and reduced motion
 
-The sweep is `juice-skeleton-shimmer`. It runs on a `::after` sheen: a horizontal gradient that moves from `-100%` to `100%`, timed with `--juice-skeleton-duration` and `--juice-motion-ease-linear`, looping. The default duration is `calc(var(--juice-motion-duration-slow) * 1.6)`. Core `--juice-motion-duration-slow` is `1s`, so the default sweep is `1.6s`. Override `--juice-skeleton-duration` to retune it. Do not put a literal `ms` or `s` on the animation.
+The sweep is `juice-skeleton-shimmer`. It runs on a `::after` sheen: a horizontal gradient that moves from `-100%` to `100%`, timed with `--juice-skeleton-duration` and `--juice-motion-ease-linear`, looping.
+
+The default duration is `calc(var(--juice-motion-duration-slow) * 1.6)`. Core `--juice-motion-duration-slow` is `1s`, so the default sweep is `1.6s`.
+
+Override `--juice-skeleton-duration` to retune it. Do not put a literal `ms` or `s` on the animation.
 
 `[static]` removes that sheen and keeps the base color. Use it when a placeholder should sit still even for people who have not asked for reduced motion.
 
@@ -189,7 +199,7 @@ A spinner is the control for “working” when there is no content shape yet. A
 ## Limitations
 
 - CSS-only. No `Skeleton()` factory, no `createSkeleton`, and no auto-enhance. The JS entry does not boot a skeleton runtime.
-- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty Emerging auto-enhance runtimes stay thirty. Spinner remains the twenty-first. Icon button remains the twenty-sixth. Avatar is the twenty-seventh. Table is the twenty-eighth.
+- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty-one Emerging runtimes stay thirty-one. Spinner remains the twenty-first. Icon button remains the twenty-sixth. Avatar is the twenty-seventh. Table is the twenty-eighth.
 - This is not a spinner. `[spinner]` is an indeterminate ring with a runtime that sets `role="status"` and `aria-busy` while shown. See [Spinner Runtime](./juice-spinner-runtime.md).
 - This is not a progress bar. `[progress]` / `[progress-fill]` is a valued bar, including `progress="indeterminate"`. See [Progress Runtime](./juice-progress-runtime.md).
 - `[lines]` accepts `1` through `8`. Any other count keeps one bar. There is no `[skeleton-line]`.
@@ -202,4 +212,14 @@ A spinner is the control for “working” when there is no content shape yet. A
 
 ## Where this sits
 
-Cards, badges, and stats are the other CSS-only structural hooks: markup plus theme paint, no runtime. List and safe area are CSS-only too. Safe area only pads. Skeleton follows that shape, with its own roles and a dedicated page because the loading contract is easy to confuse with spinner and progress. See [Badge](./juice-badge.md), [List](./juice-list.md), [Safe Area](./juice-safe-area.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, badges, and stats are the other CSS-only structural hooks: markup plus theme paint, no runtime. List and safe area are CSS-only too.
+
+Safe area only pads. Skeleton follows that shape, with its own roles and a dedicated page because the loading contract is easy to confuse with spinner and progress.
+
+See [Badge](./juice-badge.md) [List](./juice-list.md)
+
+[Safe Area](./juice-safe-area.md) [Cards](./juice-cards.md)
+
+[Styles](./juice-styles.md) [Attributes](./juice-attributes.md)
+
+and the [maturity matrix](./juice-maturity-matrix.md).

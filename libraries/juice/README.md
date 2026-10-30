@@ -80,9 +80,11 @@ Built files are `dist/index.css` (core) and `dist/themes/<id>.css`. Each theme i
 
 ## Components and runtimes
 
-The top-level JS entry is intentionally small. The named exports below are the stable runtime API Juice currently promises. All thirty stay Emerging.
+The top-level JS entry is small. Thirty-one runtimes stay Emerging.
 
-Navigation through field (twenty-five runtimes) are in the published `@citrusworx/juiceui@0.9.2` release. Icon button, avatar, table, pressable, and touchable row are on master and are not in that release. Rows marked **master** are those five.
+Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, table, pressable, touchable row, and keyboard avoider are on master and are not in that release. Rows marked **master** are those six.
+
+The full index, including how to choose between similar components, is [Runtime behavior](../../docs/juice/juice-runtime-behavior.md#components).
 
 ### Overlays
 
@@ -142,19 +144,23 @@ Navigation through field (twenty-five runtimes) are in the published `@citruswor
 | Component | Markup | What it is | Docs |
 | --- | --- | --- | --- |
 | Avatar (**master**) | `[avatar]` | Initials or photo (`sync` / `getState`). Not a badge and not `[skeleton="circle"]`. The twenty-seventh Emerging runtime. Not in npm 0.9.2. | [Avatar](../../docs/juice/juice-avatar.md) |
-| Table (**master**) | `<table table>` | Sortable grid (`createTable` / `sync` / `getState`). The twenty-eighth Emerging runtime. Not in npm 0.9.2. | [Table](../../docs/juice/juice-table.md) |
+| Table (**master**) | `<table table>` | Sortable grid. The twenty-eighth runtime. Not in npm 0.9.2. | [Table](../../docs/juice/juice-table.md) |
+
+### Page chrome
+
+| Component | Markup | What it is | Docs |
+| --- | --- | --- | --- |
+| Keyboard avoider (**master**) | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Not in npm 0.9.2. Not a `JuiceRuntimeName`. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
 
 ### Auto-start
 
-Importing `@citrusworx/juiceui` enhances valid markup in the browser. The entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row. Most apps need no `init` call.
-
-These hooks work without app init: `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, `[menu-root]`, `[switch]`, `[slider]`, `[checkbox]`, `[radiogroup]`, `[breadcrumb]`, `[progress]`, `[pagination]`, `[disclosure]`, `[spinner]`, `<select select>`, `<input input>`, `<textarea textarea>`, `[field]`, `[icon-button]`, `[avatar]`, `[table]`, `[pressable]`, `[touchable-row]`, and navigation (`nav[type="bar"]`, `nav[type="links"]`, `nav[type="mobile"]`, `nav[type="sidebar"]`).
+Importing `@citrusworx/juiceui` enhances the hooks in the tables above. Most apps need no `init` call.
 
 The JS module is optional. Core CSS plus a theme is enough when the page does not use a runtime.
 
 ### Naming pattern
 
-Every runtime exports the same four functions. `<Name>` is the stem: Navigation, Accordion, Tabs, Modal, Drawer, Toast, Popover, Wizard, Tooltip, Combobox, Banner, Menu, Switch, Slider, Checkbox, Radio, Breadcrumb, Progress, Pagination, Disclosure, Spinner, Select, Input, Textarea, Field, IconButton, Avatar, Table, Pressable, TouchableRow.
+Every runtime exports the same four functions. `<Name>` is the component stem, such as `Modal` or `KeyboardAvoider`.
 
 | Export | What it does |
 | --- | --- |
@@ -163,7 +169,7 @@ Every runtime exports the same four functions. `<Name>` is the stem: Navigation,
 | `start<Name>Runtime()` | Boots the document-level controller that enhances matching markup. A second call syncs and returns that controller. Returns `null` when there is no document. |
 | `stop<Name>Runtime()` | Destroys that document-level controller. |
 
-Modal shows the four export names. The other twenty-nine use the same `create` / `init` / `start` / `stop` names. Controller methods differ by runtime.
+Modal shows the four export names. The other thirty use the same `create` / `init` / `start` / `stop` names. Controller methods differ by runtime.
 
 ```ts
 import {
@@ -184,13 +190,26 @@ stopModalRuntime();
 
 `tokens` is the shared token object: color families and swatches, and the `adobe` and `google` font providers. `Accordion` is a Sig component that renders one `[accordion]` section (trigger plus panel). It is not the document runtime. The runtime is `createAccordion` / `startAccordionRuntime`.
 
-Icon button, avatar, table, pressable, and touchable row export the same four names on master. Those twenty functions are not in the published `@citrusworx/juiceui@0.9.2` build: `createIconButton`, `initIconButton`, `startIconButtonRuntime`, `stopIconButtonRuntime`, `createAvatar`, `initAvatar`, `startAvatarRuntime`, `stopAvatarRuntime`, `createTable`, `initTable`, `startTableRuntime`, `stopTableRuntime`, `createPressable`, `initPressable`, `startPressableRuntime`, `stopPressableRuntime`, `createTouchableRow`, `initTouchableRow`, `startTouchableRowRuntime`, and `stopTouchableRowRuntime`.
+Icon button, avatar, table, pressable, touchable row, and keyboard avoider export the same four names on master. Those twenty-four functions are not in `@citrusworx/juiceui@0.9.2`.
 
 ### `juice:change` and `getState`
 
-Interactive runtimes dispatch a bubbling `juice:change` event from the widget host when observable state actually changes. `detail` is `{ runtime, state }`. `getState()` reads that same shape. Select, input, and textarea publish value changes through the native `input` and `change` events and still expose `getState()`. The contract stays Emerging, covers all thirty runtimes, and is on master, unreleased after 0.9.2. `JUICE_CHANGE_EVENT` is not in the published 0.9.2 types.
+Interactive runtimes dispatch a bubbling `juice:change` from the widget host when observable state changes. `detail` is `{ runtime, state }`. `getState()` reads that shape.
 
-`@citrusworx/sigjs/juice` `bind` names twenty-eight runtimes, through `table`. Pressable is the twenty-ninth Emerging runtime and touchable row is the thirtieth. Neither is a `JuiceRuntimeName` yet. `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values, and `bind` accepts them. That is this workspace and published `@citrusworx/sigjs@0.7.2`. Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` still stop at twenty-five names, through `textarea`. Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws, because that cut does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. Juice works without Sig: any page can listen or call `getState()`. The optional Sig adapter is `@citrusworx/sigjs/juice` only. See [`juice:change`](../../docs/juice/juice-runtime-behavior.md#juicechange) and [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
+Select, input, and textarea publish through native `input` and `change`. They still expose `getState()`.
+
+The contract covers all thirty-one runtimes. It is on master, unreleased after 0.9.2. `JUICE_CHANGE_EVENT` is not in the published 0.9.2 types.
+
+`@citrusworx/sigjs/juice` `bind` names twenty-eight runtimes, through `table`, on master and in `@citrusworx/sigjs@0.7.2`.
+
+- `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values.
+- Pressable, touchable row, and keyboard avoider are not.
+- `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
+- Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws. That cut does not export their start functions.
+
+Juice works without Sig. The optional adapter is `@citrusworx/sigjs/juice` only.
+
+See [`juice:change`](../../docs/juice/juice-runtime-behavior.md#juicechange) and [Sig.js + Juice](../../docs/sigjs/sig-juice-integration.md#runtime-binding).
 
 ### Markup examples
 
@@ -313,79 +332,26 @@ Interactive runtimes dispatch a bubbling `juice:change` event from the widget ho
 
 ### Notes
 
-Juice keeps styling attribute-first. Interactive patterns still need accessible relationships and names.
+Open and closed state uses native `hidden`, not layout `content="active"` or `content="hidden"`.
 
-**Navigation.** A mobile nav toggle should expose an accessible name and control a sidebar with `aria-controls`. The runtime watches `nav[type="bar"]`, `nav[type="links"]`, `nav[type="mobile"]` (the toggle), and `nav[type="sidebar"]`.
+Nav hooks are `nav[type="bar"]`, `nav[type="links"]`, `nav[type="mobile"]`, and `nav[type="sidebar"]`.
 
-**Accordion.** Triggers should use `aria-expanded` and `aria-controls`. Panels should be labeled regions when they contain meaningful content. Chrome colors come from `--juice-accordion-*` roles bound by the active theme. Every shipped theme binds them, including the retro family. Group FAQ stacks in a card or panel surface (`[aqua-card]` / `[aqua-panel]` under Aquaflux, `[tide-card]` / `[tide-panel]` under Tide) so the accordion wrapper stays structural. Open and closed panels use the native `hidden` attribute. Do not use `content="active"` or `content="hidden"` for accordion state. Those clash with layout `[content]`. Optional `[motion="accordion"]` is height easing, not required for show and hide.
+All 14 shipped themes bind `--juice-accordion-*` and `--juice-tabs-*`.
 
-**Tabs.** Tabs live under a `[tabs]` root with `[tabs-list]`, `[tab]` triggers, and `[tab-panel]` panels. Orphan triggers and panels are ignored. Selection dual-writes Juice `[active]` and `aria-selected`. The runtime also wires `role="tablist"` / `tab` / `tabpanel`, roving tabindex, and labeled panels. Chrome colors come from `--juice-tabs-*` roles bound by the active theme. Every shipped theme binds them, and generated themes bind `--jx-tabs-*` aliases. Visible and hidden panels use the native `hidden` attribute. Do not use `content="active"` or `content="hidden"` for panel state.
+Attributes, keyboard behavior, and theme roles for each component are on the page linked from the tables above.
 
-**Modal.** Chrome colors come from `--juice-modal-*` roles bound by the active theme. Hide `[modal-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive).
-
-**Drawer.** Chrome colors come from `--juice-drawer-*` roles bound by the active theme. Hide `[drawer-overlay]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the overlay id. The dialog runtime auto-enhances that markup (open/close, Escape, focus trap, exclusive). Edge is `[drawer]` / `[drawer="left"|"right"]`. Optional width is `[drawer-size="sm|lg"]`.
-
-**Toast.** Chrome colors come from `--juice-toast-*` roles bound by the active theme. `[toast-region]` is a non-modal stack (default `top-right`). Hide an individual `[toast]` with the native `hidden` attribute. Status is `[toast="success|error|info|warning"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[toast-close]`, `toast-duration`, live-region ARIA). It is not a dialog: no focus trap, no `aria-modal`, and stacking is allowed.
-
-**Popover.** Chrome colors come from `--juice-popover-*` roles bound by the active theme. Hide `[popover-root]` with the native `hidden` attribute. Openers use `aria-controls` pointing at the root id. The runtime auto-enhances that markup (open/close, Escape, outside click, Tab trap, exclusive, one-axis flip). The panel is a non-modal dialog (`role="dialog"`, no `aria-modal`). Never use a bare `popover` attribute. The surface is `[popover-panel]`. Placement is `[popover-root]` / `[popover-root="bottom"]` (default), `"top"`, `"left"`, `"right"`.
-
-**Wizard.** Chrome colors come from `--juice-wizard-*` roles bound by the active theme. Scope is `[wizard-shell]`. The runtime paints `[step="pending"|"active"|"completed"]`, shows one `[step-page]` with native `hidden`, and wires `[wizard-prev]` / `[wizard-next]` (or unmarked buttons in `[step-nav]`). Default navigation jumps to completed plus current. `wizard-shell="linear"` is prev/next only. `wizard-shell="free"` jumps to any step. Do not use `content="active"` or `content="hidden"` for page state.
-
-**Tooltip.** Chrome colors come from `--juice-tooltip-*` roles bound by the active theme. Hide `[tooltip-root]` with the native `hidden` attribute. Triggers prefer `aria-describedby` pointing at the root id (`aria-controls` is also accepted). The runtime auto-enhances that markup (show/hide, Escape, exclusive, one-axis flip). There is no focus trap. Focus never moves into the tip. Never use a bare `tooltip` attribute or native `title`. The surface is `[tooltip-panel]`. Placement is `[tooltip-root]` / `[tooltip-root="top"]` (default), `"bottom"`, `"left"`, `"right"`.
-
-**Combobox.** Chrome colors come from `--juice-combobox-*` roles bound by the active theme. Hide `[combobox-list]` with the native `hidden` attribute. Scope is `[combobox]` with `[combobox-input]`, optional `[combobox-trigger]`, `[combobox-list]`, and `[combobox-option]`. The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, case-insensitive substring filter, Arrow/Home/End/Enter/Escape/Tab). `aria-expanded` is written on the input and trigger. `aria-activedescendant` tracks the active option. Select writes option text or `data-value`. Distinct from native `<select>`. Placement is CSS-only (absolute under the field).
-
-**Banner.** Chrome colors come from `--juice-banner-*` roles bound by the active theme. `[banner]` is an inline alert / callout, not a toast stack and not a dialog. Hide with the native `hidden` attribute. Layout is `[banner]` / `[banner="full"]`. Optional status is `[banner-tone="info|success|warning|error"]`. The runtime auto-enhances that markup (`show` / `dismiss`, `[banner-close]`, optional `banner-persist="session|local"` with `name` / `id`). It is not a dialog: no focus trap, no `aria-modal`, no Escape steal.
-
-**Menu.** Chrome colors come from `--juice-menu-*` roles bound by the active theme. `[menu-root]` wraps an opener plus `[menu]`. Hide the panel with the native `hidden` attribute. Optional `[menu-button]` is surface paint, not a CTA. Items are `[menuitem]` (value `"active"` is keyboard focus). Optional `[menu-separator]` / `[menu-label]`. APG Menu Button, not a popover, combobox, native `<select>`, or menubar. Placement is CSS-only (`[menu-root]` / `"bottom"` default, `"top"`, `"left"`, `"right"`). The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`, roving tabindex, Escape with popover).
-
-**Switch.** Chrome colors come from `--juice-switch-*` roles bound by the active theme. `[switch]` is an APG switch on a button host (checkbox-backed hosts are a secondary story). The runtime auto-enhances that markup (`toggle` / `check` / `uncheck` / `setChecked`, `role="switch"`, binary `aria-checked`). Authors supply the accessible name. It is not a form checkbox as the only story, not menuitemcheckbox, and not a layered overlay: no focus trap, no Escape steal, no tri-state.
-
-**Slider.** Chrome colors come from `--juice-slider-*` roles bound by the active theme. `[slider]` is the track host. `[slider-thumb]` is the APG slider (`role="slider"`). The runtime auto-enhances that markup (`setValue` / `getValue` / `increment` / `decrement`, arrows / Home / End / PageUp / PageDown, pointer jump and drag, `--juice-slider-ratio`). Authors supply the accessible name. It is horizontal and single-thumb: no vertical, no multi-thumb, no native `<input type="range">` restyle, no focus trap, and no Escape.
-
-**Checkbox.** Chrome colors come from `--juice-checkbox-*` roles bound by the active theme. `[checkbox]` is a binary APG checkbox on a button host (a native `<input type="checkbox" checkbox>` is allowed). The runtime auto-enhances that markup (`toggle` / `check` / `uncheck` / `setChecked`, `role="checkbox"`, binary `aria-checked`). Authors supply the accessible name. It is not `[switch]`, not menuitemcheckbox, and not a layered overlay: no focus trap, no Escape steal, no tri-state. Checkbox and radio are two runtimes.
-
-**Radio.** Chrome colors come from `--juice-radio-*` roles bound by the active theme. `[radio]` is an APG radio on a button host inside `[radiogroup]` (a native `<input type="radio" radio>` is allowed). `[radiogroup]` is layout only. The runtime auto-enhances exclusive selection (`select` / `getChecked`, roving tabindex, arrows plus Space/Enter/click). Orphans outside `[radiogroup]` are ignored. Authors supply the accessible name. It is not `[switch]`, not `[checkbox]`, and not a layered overlay: no focus trap and no Escape.
-
-**Breadcrumb.** Chrome colors come from `--juice-breadcrumb-*` roles bound by the active theme. `[breadcrumb]` is an APG-inspired trail on `<nav>` or `<ol>`, with `[breadcrumb-item]` crumbs. Current page is `aria-current="page"` inside the trail. `surface` stays transparent unless crumbs sit on a bar. It is not site nav, `nav[type="breadcrumb"]`, tabs, a wizard step tracker, or pagination, and it is not a layered overlay. The light runtime auto-enhances `[breadcrumb]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Breadcrumb`, and a single `aria-current="page"` is filled on the last crumb when none is set. It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol breadcrumb>` stays a list. Not a router. No Sig Breadcrumb factory.
-
-**Progress.** Chrome colors come from `--juice-progress-*` roles bound by the active theme. `[progress]` is an APG-inspired progressbar track on `<div progress>`, with `[progress-fill]` for the completed portion and optional `[progress-label]`. The runtime auto-enhances that markup (`setValue` / `getValue` / `setIndeterminate`, `role="progressbar"`, `aria-valuemin` / `aria-valuemax` / `aria-valuenow`, `--juice-progress-ratio`). `progress="indeterminate"` slides the fill and omits `aria-valuenow`. Authors supply the accessible name. `aria-valuetext` is kept when the author set it. It is not a slider, not a spinner, and not a native `<progress>` restyle. Authors do not style the HTML `<progress>` element alone. Inline status chrome: no overlay, no focus trap, no Escape. No Sig Progress factory.
-
-**Pagination.** Chrome colors come from `--juice-pagination-*` roles bound by the active theme. `[pagination]` is an APG-inspired page set on `<nav pagination>` or `<ol pagination>`, with `[pagination-item]` cells, `[pagination-prev]` / `[pagination-next]`, and optional `[pagination-link]`, `[pagination-ellipsis]`, and `[pagination-status]`. Current page is `aria-current="page"` on the control. Disabled prev/next use `aria-disabled="true"`, native `disabled`, or `[disabled]`. The trail stays transparent. `surface` is the page control, not a bar. It is not site nav, `nav[type="pagination"]`, a breadcrumb, tabs, or a wizard step tracker, and it is not a layered overlay. The runtime auto-enhances `[pagination]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Pagination`, a single `aria-current="page"` is kept (author current wins; otherwise the first page control), and prev/next are disabled at ends when page controls and optional ellipsis make that inferable. Author-owned disabled is kept. Arrow / Home / End move focus among enabled controls. It does not remove `href`, trap focus, steal Escape, or activate links on Enter/Space. `<ol pagination>` stays a list. Pagination is the nineteenth Emerging auto-enhance runtime. No Sig Pagination factory.
-
-**Disclosure.** Chrome colors come from `--juice-disclosure-*` roles bound by the active theme. `[disclosure]` is a standalone APG disclosure: one `[disclosure-trigger]` and one `[disclosure-panel]`. Pair the panel with `aria-controls`, or place it as the next sibling of the trigger. Expanded state is `aria-expanded` on the trigger plus native `hidden` and `aria-hidden` on the panel. The runtime never writes layout `content=`. Orphans outside `[disclosure]` are ignored. Click toggles. Enter and Space toggle non-button triggers. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover. There is no exclusive group and no arrow roving. It is not an accordion (`[accordion]` / `[accordion-item]` stays multi-item and multi-open) and not a layered overlay. Disclosure is the twentieth Emerging auto-enhance runtime. Shipped in 0.9.2. No Sig Disclosure factory.
-
-**Spinner.** Chrome colors come from `--juice-spinner-*` roles bound by the active theme. `[spinner]` is a standalone indeterminate busy indicator. The ring is `::before` on the host. Optional `[spinner-label]` is author text. CSS owns the spin (`juice-spinner-spin`). `prefers-reduced-motion` stops that animation and leaves the indicator. The runtime auto-enhances `[spinner]` (`sync` / `show` / `hide` / `isShown`): a shown host is `role="status"` and `aria-busy="true"`, and `hide` sets native `hidden` and clears both so a hidden spinner does not announce as busy. The runtime does not invent `aria-label` when there is no visible label, and it does not copy a label into a name. Authors supply the accessible name when there is no visible `[spinner-label]`. It is not a progress bar and not a disclosure. No value, no keyboard, no Escape, no focus trap, and no Sig Spinner factory. Inline status chrome: no overlay. Spinner is the twenty-first Emerging auto-enhance runtime. Shipped in 0.9.2.
-
-**Select.** Chrome colors come from `--juice-select-*` roles bound by the active theme. `<select select>` is a styled native dropdown. Optional `[select-label]` is a visible label. The chevron is a `background-image`. `[multiple]` and `size` listboxes stay native selects. `[multiple]` and `size` other than `1` drop the chevron. The open list stays the platform popup. The runtime auto-enhances `<select select>` (`sync`): a visible associated label, wrapping label, or `[select-label]` names the control when the author has not set `aria-label` or `aria-labelledby`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the select, so the selected option is not part of the name. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Change events and the keyboard stay native. It is not a combobox. No keyboard rewrite, no Escape, no focus trap, and no Sig Select factory. Inline field chrome: no overlay, no listbox. Select is the twenty-second Emerging auto-enhance runtime. Shipped in 0.9.2.
-
-**Input.** Chrome colors come from `--juice-input-*` roles bound by the active theme. `<input input>` is a styled native text field. Optional `[input-label]` is a visible label. Text-like controls only: missing type, empty type, text, email, password, search, tel, url, and number. Checkbox, radio, range, file, date, time, datetime-local, month, week, color, hidden, button, submit, reset, and image are ignored. The runtime auto-enhances `<input input>` (`sync`): a visible associated label, wrapping label, or `[input-label]` names the control when the author has not set `aria-label` or `aria-labelledby`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the input's own value. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Typing, change, and the keyboard stay native. It is not a combobox and not a select. Textarea and the field wrapper are not this runtime. No mask, no validation engine, no floating label, no keyboard rewrite, no Escape, no focus trap, and no Sig Input factory. Inline field chrome: no overlay. Input is the twenty-third Emerging auto-enhance runtime. Shipped in 0.9.2.
-
-**Textarea.** Chrome colors come from `--juice-textarea-*` roles bound by the active theme. `<textarea textarea>` is a styled native multiline field. Optional `[textarea-label]` is a visible label. The runtime auto-enhances `<textarea textarea>` (`sync`): a visible associated label, wrapping label, or `[textarea-label]` names the control when the author has not set `aria-label` or `aria-labelledby`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the textarea's own value. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Typing, change, and the keyboard stay native. It is not an input, not a select, and not a combobox. The field wrapper is not this runtime. No auto-grow, no character count, no validation, no floating label, no keyboard rewrite, no Escape, no focus trap, and no Sig Textarea factory. Inline field chrome: no overlay. Textarea is the twenty-fourth Emerging auto-enhance runtime. Shipped in 0.9.2.
-
-**Field.** Chrome colors come from `--juice-field-*` roles bound by the active theme. `[field]` is a wrapper around a control (`sync`). Optional `[field-label]`, `[field-help]`, and `[field-error]` are parts. `[invalid]` paints the wrapper border. The first input, textarea, or select inside the wrapper is described by visible `[field-help]` and `[field-error]` when the author has not set `aria-describedby`, and `[invalid]` sets `aria-invalid="true"` when the author has not set it. Hidden or empty help and error text are skipped, and missing ids are added only for parts the runtime references. Author `aria-describedby` and `aria-invalid` are kept. Clearing `[invalid]`, removing a part, or calling `destroy` removes only what the runtime wrote. `[field-label]` is chrome only. Naming stays with the input, textarea, and select runtimes. Typing, change, and the keyboard stay native. It is not a validation engine, not a floating label, and not a restyle of input, textarea, select, or combobox. No focus trap, no Escape, and no Sig Field factory. Inline wrapper chrome: no overlay. Field is the twenty-fifth Emerging auto-enhance runtime. Shipped in 0.9.2.
-
-**Icon button.** Square `[icon-button]` on button chrome (`sync` / `toggle` / `getState`). `[toggle]` keeps `aria-pressed` and `[pressed]` in sync. Disabled hosts do not flip. A missing accessible name warns once in development. `title` does not count. No name is invented. It is not a switch and not a checkbox. No focus trap, no Escape, and no Sig IconButton factory. `bind` on current Sig accepts `icon-button`. The published npm 0.9.2 package does not export this runtime, so binding it there throws. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
-
-**Avatar.** Initials-or-photo mark (`[avatar]`, `sync` / `getState`). A broken, empty, or already-failed image sets `[fallback]` and hides the image. A later load clears both. An empty `src` with a real `srcset` waits. `getState()` is `{ loaded, fallback, hasImage }`. `destroy()` keeps the fallback. The runtime does not touch `alt`, labels, or initials. `[avatar-more]` stays plain text. It is not a badge and not `[skeleton="circle"]`. No keyboard, no Escape, and no Sig Avatar factory. `bind` on current Sig accepts `avatar`. The published npm 0.9.2 package does not export this runtime, so binding it there throws. Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
-
-**Table.** Native `<table table>` grid (`createTable` / `sync` / `getState`). `th[sortable]` cycles ascending, descending, and none, sets `aria-sort`, and reorders each `tbody`. `column` is null when direction is none. A canceled `juice:sort` updates state without reordering. `cellIndex` is not a visual column. No Sig Table factory. `bind` on current Sig accepts `table`. The published npm 0.9.2 package does not export this runtime, so binding it there throws. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
-
-**Pressable.** Transient press on `[pressable]` (`createPressable` / `sync` / `getState`). Primary pointerdown sets `[pressed]` until pointerup, pointercancel, pointerleave, a move outside the host, lostpointercapture, or blur. Enter and Space do the same while held, including on a native button. Enter is not `preventDefault`'d, so a native click still fires. Space is `preventDefault`'d on a custom button-like host (`role="button"`, and `switch`, `checkbox`, `radio`, `menuitem`, `menuitemcheckbox`, `menuitemradio`, `option`, `tab`, `treeitem`) that is not a native control which already owns Space (`button`, any `input`, `textarea`, `select`, `summary`, or contenteditable). A move past the slop (default 10px, `[pressable-slop]` or `moveSlop`) or a scroll on the host or an ancestor cancels the press and the long-press timer. `[pressable-longpress]` arms `juice:longpress` (default 500ms, a numeric value or `longPressDelay`). If that event is not canceled, the following click is suppressed once. Disabled hosts (`:disabled`, `[disabled]`, `[aria-disabled="true"]`) do not press. `[icon-button][toggle]` and any host with `aria-pressed` keep their latched `[pressed]`; this runtime does not write that attribute there. `getState()` is `{ pressed, longPressed }`. It is not a toggle and not an icon button. Reduced motion stays in CSS. No Sig Pressable factory. `bind` does not name pressable or touchable-row yet. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. See [Pressable](../../docs/juice/juice-pressable.md).
-
-**Touchable row.** 44px row on `[touchable-row]` (`createTouchableRow` / `sync` / `getState`). Hosts are `a`, `button`, `li`, and `div`. `dense` tightens padding and gap and keeps the 44px minimum. `chevron` draws the disclosure mark with `::after`. `undivided` drops the hairline on that boundary. `[touchable-row~="select"]` toggles `[selected]` plus `aria-selected`, or `aria-current` on a link or `role="link"`. Sibling rows stay selected. `[touchable-row~="activate"]` and `[pressable]` add `role="button"` and `tabindex="0"` on a non-native host when the author has not set them. Enter and Space on an `li` or `div` dispatch one click. Enter is not `preventDefault`'d. Space is, on those hosts, so the page does not scroll. Native `a` and `button` keep the platform click. A trailing button, switch, or icon button does not activate the row. A `[pressable-longpress]` that is not canceled suppresses the click, so the row does not select. Canceling `juice:longpress` still selects. `getState()` is `{ selected, disabled }`. Disabled hosts are ignored. There is no motion role. No Sig TouchableRow factory. `bind` does not name pressable or touchable-row yet. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. See [Touchable row](../../docs/juice/juice-touchable-row.md).
+[Choosing between similar components](../../docs/juice/juice-runtime-behavior.md#choosing-between-similar-components).
 
 ### CSS-only chrome
 
-These are not runtimes. They do not auto-enhance, they do not dispatch `juice:change`, and they are not part of the thirty.
+These do not auto-enhance, do not dispatch `juice:change`, and are not part of the thirty-one runtimes.
 
-**Skeleton.** `[skeleton]` is a loading placeholder (boolean and `skeleton="rect"` are the rectangle, `skeleton="text"` is a line, `skeleton="circle"` is a circle). `[lines="1"` through `"8"]` or stacked element children supply the lines. A `width` on the last child shortens it. `[scale="sm"|"lg"]` steps the shape. `[static]` and `prefers-reduced-motion` remove the sheen and keep the base. Roles are `--juice-skeleton-*` on core. Color is restated on `[theme]` (inherited ink mixed into the muted surface). The highlight is a translucent white sheen. Tune `--juice-skeleton-highlight` on a pale surface. Shipped themes are not required to bind the roles. Copy stays in the accessibility tree and does not paint. Authors own `aria-busy` on the loading region. On master, not in the published npm 0.9.2 release. See [Skeleton](../../docs/juice/juice-skeleton.md).
-
-**List.** `[list]` on `ul`, `ol`, or `div` stacks rows (`:where(ul, ol, div)[list]`, so `<input list>` is left alone). `[divided]` is a hairline between direct children. `[dense]` tightens row padding and the slot margin and does not change the stack gap. `[list-item]` holds `[list-leading]`, `[list-content]`, `[list-secondary]`, and `[list-trailing]`. `[leading]` stays letter-spacing. An `a` or `button` row hovers, presses, and takes a 2px `currentColor` `:focus-visible` outline, offset 2px. `[selected]` and `aria-current` other than `"false"` share the selected wash. Disabled interactive rows are `opacity: 0.5`. `[selected]` is visual only. Color roles are `--juice-list-*` mixes of `currentColor`, restated on `[theme]`. Layout roles stay on `:root`. Shipped themes are not required to bind them. Background and color use `--juice-motion-duration-fast` and `--juice-motion-ease-standard`, and `prefers-reduced-motion` sets `transition: none`. On master, not in the published npm 0.9.2 release. See [List](../../docs/juice/juice-list.md).
-
-**Badge.** `[badge]` is a pill (`inline-flex`, radius `999px`, `0.8125rem` at weight 600). `[badge="square"]` uses radius `0.375rem`. `[badge="ribbon"]` is absolutely positioned (`top: -0.75rem`, centered). There is no `[scale]`. Color roles are `--juice-badge-bg` (currentColor at 1%), `--juice-badge-ink` (`currentColor`), and `--juice-badge-border` (currentColor at 24%), on `:root` and again on `[theme]`. Layout roles stay on `:root`. Shipped themes are not required to bind them. Outside `[cta]`, KiwiPress still paints the default, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]`. `[card="pricing"]` is the positioned parent for a ribbon. `[dev-hero-header] > [badge]` switches that child to `inline-block`. The base layout shipped in npm 0.9.2. The roles are on master and are not in that cut. See [Badge](../../docs/juice/juice-badge.md).
-
-**Safe area.** `[safe-area]` pads a host clear of the notch and the home indicator. Boolean `[safe-area]` and any value other than `top`, `bottom`, `x`, or `y` pad all four edges. `x` is left and right. `y` is top and bottom. Both are physical. Each edge is `max(var(--juice-safe-area-pad), env(safe-area-inset-*, 0px))`. `--juice-safe-area-pad` is `1rem` on `:root` only and is not restated on `[theme]`. Shipped themes are not required to bind it. The viewport meta tag needs `viewport-fit=cover`. There is no `[safe-area-margin]`. On master, not in the published npm 0.9.2 release. See [Safe area](../../docs/juice/juice-safe-area.md).
+| Chrome | Hook | Release | Docs |
+| --- | --- | --- | --- |
+| Skeleton | `[skeleton]` | On master, not in npm 0.9.2 | [Skeleton](../../docs/juice/juice-skeleton.md) |
+| List | `[list]` | On master, not in npm 0.9.2 | [List](../../docs/juice/juice-list.md) |
+| Badge | `[badge]` | Layout shipped in npm 0.9.2. `--juice-badge-*` roles are on master, not in that cut | [Badge](../../docs/juice/juice-badge.md) |
+| Safe area | `[safe-area]` | On master, not in npm 0.9.2 | [Safe area](../../docs/juice/juice-safe-area.md) |
 
 ## Layout
 
@@ -397,7 +363,11 @@ Built-in breakpoints, `row` collapse, and scaled spacing are documented in [Resp
 
 ## Surfaces
 
-Beta-stable: `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, `blur="sm|md"`, `shadowTone="cool|warm"`, `overlay="frost|tint"`, and `variant="monochromatic|glass|tinted"`. Themes bind `--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, and `--juice-overlay-*` roles. Variant recipes compose those same roles. Standalone blur uses fixed `6px` / `16px` lengths. See [Surfaces](../../docs/juice/juice-surfaces.md).
+Beta-stable: `surfaceTone="soft|strong|muted"`, `borderStrength="soft|bold"`, `blur="sm|md"`, `shadowTone="cool|warm"`, `overlay="frost|tint"`, and `variant="monochromatic|glass|tinted"`. Themes bind `--juice-surface-*`, `--juice-border-strength-*`, `--juice-shadow-tone-*`, and `--juice-overlay-*` roles.
+
+Variant recipes compose those same roles. Standalone blur uses fixed `6px` / `16px` lengths.
+
+See [Surfaces](../../docs/juice/juice-surfaces.md).
 
 ## Motion
 
@@ -419,7 +389,20 @@ The production package surface is intentionally small. The stable consumer-facin
 If you are hosting Juice assets yourself, the main built files are:
 
 - `dist/index.css` (core)
-- `dist/themes/aquaflux.css`, `dist/themes/kiwipress.css`, `dist/themes/citrusmint.css`, `dist/themes/tide.css`, `dist/themes/retro-afterburn.css`, `dist/themes/retro-arcade-glow.css`, `dist/themes/retro-boardwalk.css`, `dist/themes/retro-denim-dial.css`, `dist/themes/retro-forest-radio.css`, `dist/themes/retro-orchard-club.css`, `dist/themes/retro-poolside-pop.css`, `dist/themes/retro-signal-garden.css`, `dist/themes/retro-sunset-motel.css`, `dist/themes/retro-violet-parlor.css`
+- `dist/themes/aquaflux.css`
+- `dist/themes/kiwipress.css`
+- `dist/themes/citrusmint.css`
+- `dist/themes/tide.css`
+- `dist/themes/retro-afterburn.css`
+- `dist/themes/retro-arcade-glow.css`
+- `dist/themes/retro-boardwalk.css`
+- `dist/themes/retro-denim-dial.css`
+- `dist/themes/retro-forest-radio.css`
+- `dist/themes/retro-orchard-club.css`
+- `dist/themes/retro-poolside-pop.css`
+- `dist/themes/retro-signal-garden.css`
+- `dist/themes/retro-sunset-motel.css`
+- `dist/themes/retro-violet-parlor.css`
 - `dist/index.js`
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.

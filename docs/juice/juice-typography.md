@@ -378,13 +378,9 @@ All fonts include fallback font stacks for better compatibility:
 
 ## Complete Font List
 
-### Google Fonts (32 fonts)
-- Abril Fatface, Acme, Anton, Architects Daughter, Archivo Black, Bebas Neue
-- Caveat, Comfortaa, Dancing Script, Homemade Apple, Indie Flower, Inter
-- Josefin Sans, Lato, Lilita One, Lobster, Luckiest Guy, Macondo
-- Montserrat, Open Sans, Oswald, Pacifico, Play, Playfair Display
-- Poppins, Poppins Light, Raleway, Reenie Beanie, Roboto, Satisfy
-- Source Code Pro, Titillium Web, Ubuntu, Yanone Kaffeesatz
+### Google Fonts (32 fonts) - Abril Fatface, Acme, Anton, Architects Daughter, Archivo Black, Bebas Neue - Caveat, Comfortaa, Dancing Script, Homemade Apple, Indie Flower, Inter - Josefin Sans, Lato, Lilita One, Lobster, Luckiest Guy, Macondo - Montserrat, Open Sans, Oswald, Pacifico, Play, Playfair Display - Poppins, Poppins Light, Raleway, Reenie Beanie, Roboto, Satisfy - Source Code Pro, Titillium Web, Ubuntu
+
+Yanone Kaffeesatz
 
 ### Adobe Fonts (7 fonts)
 - Alien Tz, Darka, Grange, Korolev Rounded (3 weights), P22 Sting, Private Sans

@@ -1,34 +1,12 @@
-# Juice Modal Runtime
+# Modal
 
-This document explains the current modal dialog runtime in `libraries/juice/src/js/src/modal/modal-runtime.ts` (monorepo path; outside this vault).
+A modal is a centered dialog rooted at `[modal-overlay]`.
 
-The key idea is the same as navigation, accordion, and tabs:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice modal markup and it exists in the browser, the dialog behavior should just work.
+Importing `@citrusworx/juiceui` enhances valid markup through [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The modal runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize modal behavior in their app code.
-
-There is no `Modal()` Sig factory. Markup plus the runtime is the contract.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s modal chrome:
+## Markup
 
 ```html
 <div modal-overlay id="demo-modal" hidden>
@@ -41,168 +19,126 @@ The runtime is aligned with Juice’s modal chrome:
 <button type="button" aria-controls="demo-modal">Open</button>
 ```
 
-It requires a `[modal-overlay]` root. Closed vs open is the native `hidden` attribute on that overlay. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+Closed vs open is the native `hidden` attribute on `[modal-overlay]`.
 
-**Opener pairing:** any element whose `aria-controls` token list includes the overlay `id`. There is no extra Juice opener attribute.
+## Attributes
 
-**Close:** `[modal-close]` inside the overlay, Escape, or a click on the overlay backdrop.
+| Hook | What it does |
+| --- | --- |
+| `[modal-overlay]` | Root scrim whose open and closed state is native `hidden`. |
+| `[modal]` | Dialog panel inside the overlay. |
+| `[modal-header]` | Header slot whose heading supplies the accessible name when `aria-labelledby` is missing. |
+| `[modal-body]` | Body slot for dialog content. |
+| `[modal-close]` | Dismiss control inside the overlay, with an empty name filled as `aria-label="Close"`. |
+| `hidden` | Native closed state on `[modal-overlay]`. |
+| `aria-controls` | Pairs an opener whose token list includes the overlay `id`, with no extra opener attribute. |
+| `modal-overlay="static"` | Opts out of backdrop dismiss while Escape and `[modal-close]` still close. |
+| `role="dialog"` | Dialog role on `[modal]`, set by the runtime when missing. |
+| `aria-modal="true"` | Marks the dialog modal, and the runtime sets it when missing. |
+| `aria-labelledby` | Names the dialog from the header heading when neither this nor `aria-label` is set. |
+| `aria-expanded` | Opener open state, kept in sync by the runtime. |
+| `aria-haspopup="dialog"` | Opener popup hint, set by the runtime when missing. |
+| `name`, `id` | Overlay `name` or `id` is the slug for generated ids, and a missing overlay id becomes `${slug}-overlay`. |
+| `--juice-modal-*` | Theme paint roles for modal chrome. |
 
-**Backdrop opt-out:** `modal-overlay="static"` (or `createModal({ closeOnBackdrop: false })`). Clicks on the dialog panel itself never close.
+## JavaScript
 
-Prefer shipping `role="dialog"`, `aria-modal="true"`, and a labelled heading in markup. The runtime fills those if they are missing, plus opener `aria-expanded` / `aria-haspopup="dialog"` and an empty close name (`aria-label="Close"`).
+| Export | What it does |
+| --- | --- |
+| `createModal(options?)` | Controller for `options.root`, or the document. |
+| `initModal(options?)` | Same call as `createModal`. |
+| `startModalRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopModalRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-Theme paint uses `--juice-modal-*` roles. See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[modal-overlay]` is a dialog scrim, not the surface `overlay="frost|tint"` utility.
+A custom-root controller can run beside the document runtime; each click or key is claimed once.
 
-## Automatic Boot
+### Options
 
-The runtime starts automatically in the browser.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `overlaySelector` | `[modal-overlay]` | Overlay query. |
+| `dialogSelector` | `[modal]` | Dialog query. |
+| `closeSelector` | `[modal-close]` | Close control query. |
+| `closeOnBackdrop` | `true` | Backdrop click closes, and `false` matches `modal-overlay="static"`. |
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the modal runtime:
+### Controller
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startModalRuntime();
-    });
-  } else {
-    startModalRuntime();
-  }
-}
-```
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Wires ids, ARIA, and openers for overlays in the root. |
+| `open(target?)` | Opens the overlay: removes `hidden`, then plays, and closes any other open overlay. |
+| `close(target?)` | Plays the exit, then sets `hidden` and restores focus to the opener. |
+| `toggle(target?)` | Opens a closed overlay or closes an open one. |
+| `isOpen(target?)` | Reads whether the overlay is open. |
+| `getState(target?)` | Reads `{ open: boolean }` for that overlay. |
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+### Events
 
-`stopModalRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[modal-overlay]` with `detail` `{ runtime: "modal", state: { open: boolean } }`.
 
-## Public API
+`isOpen()` and `getState()` read that state.
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+An unchanged `open` write does not dispatch, and this surface stays Emerging.
 
-```ts
-createModal(options?)
-initModal(options?)
-startModalRuntime()
-stopModalRuntime()
-```
+## Accessibility
 
-These are useful for internal control, tests, or advanced cases.
+- Escape closes the open overlay and returns focus to the opener; modal shares the highest band with drawer, and popover, combobox, toast, and tooltip yield. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Tab and Shift+Tab wrap inside the open dialog.
+- Enter and Space activate non-button openers and `[modal-close]` controls.
+- Prefer `role="dialog"`, `aria-modal="true"`, and a labelled heading, which the runtime fills along with opener `aria-expanded`, `aria-haspopup="dialog"`, and an empty close name `aria-label="Close"`.
+- Overlay chrome is `z-index: 1000`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
+- Arrow-key roving is out of scope.
 
-A real open or close dispatches a bubbling `juice:change` from `[modal-overlay]`. `detail` is `{ runtime: "modal", state: { open: boolean } }`. `isOpen()` and `getState()` read it. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+## Behavior
 
-`createModal()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+1. Find `[modal-overlay]` roots and pair openers whose `aria-controls` token list includes that overlay `id`.
+2. Resolve the dialog as `[modal]`, then `[role="dialog"]`, then the overlay's first element child.
+3. Fill missing overlay, dialog, and title ids, plus `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading.
+4. Fill opener `aria-expanded` and `aria-haspopup="dialog"`, and an empty `[modal-close]` name (`aria-label="Close"`).
+5. Enter removes native `hidden`, then plays; exit plays first, and `hidden` is set only after it finishes, while opening one overlay closes any other open overlay.
+6. Trap focus and honor Escape while the overlay is open, including during exit, and restore focus to the opener after `hidden` is set.
+7. Handle opener, close, and backdrop clicks, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes.
 
-## ModalOptions
+- Orphan `aria-controls` that do not target a `[modal-overlay]` are ignored.
+- A `name` or `id` on `[modal-overlay]` is the slug for generated ids (`seats-modal-dialog`, `seats-modal-title`), and a missing overlay id is `${slug}-overlay`.
+- Opening is exclusive among modals.
+- Modal and drawer stay independently exclusive: both may be open, and one Escape then closes both.
+- Overlays use native `hidden`, never layout `content="active"` or `content="hidden"`.
+- Clicks on the dialog panel never close.
+- `modal-overlay="static"`, or `closeOnBackdrop: false`, opts out of backdrop click only; Escape and `[modal-close]` still dismiss.
+- There is no `Modal()` factory.
 
-The configurable shape is:
-
-```ts
-type ModalOptions = {
-  root?: ParentNode;
-  overlaySelector?: string;
-  dialogSelector?: string;
-  closeSelector?: string;
-  closeOnBackdrop?: boolean;
-};
-```
-
-By default, Juice uses:
-
-```ts
-{
-  root: document,
-  overlaySelector: '[modal-overlay]',
-  dialogSelector: '[modal]',
-  closeSelector: '[modal-close]',
-  closeOnBackdrop: true,
-}
-```
-
-## ModalController
-
-```ts
-type ModalController = {
-  destroy: () => void;
-  sync: () => void;
-  open: (target?: HTMLElement | null) => void;
-  close: (target?: HTMLElement | null) => void;
-  toggle: (target?: HTMLElement | null) => void;
-  isOpen: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => ModalState | null;
-};
-```
-
-## What the Runtime Actually Does
-
-The runtime performs seven main jobs:
-
-1. Find `[modal-overlay]` roots and pair openers whose `aria-controls` token list includes that overlay `id`
-2. Resolve the dialog (`[modal]`, then `[role="dialog"]`, then the overlay’s first element child)
-3. Fill missing overlay / dialog / title ids, `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading
-4. Fill opener `aria-expanded` / `aria-haspopup="dialog"` and an empty `[modal-close]` name
-5. Enter removes native `hidden`, then plays. Exit plays first; `hidden` is set only after it finishes. Opening one overlay closes any other open overlay
-6. Trap focus and honor Escape while the overlay is open, including during exit. Focus restores to the opener after `hidden` is set
-7. Handle click (opener, close, backdrop) and keyboard (Escape, Tab trap, Enter/Space on non-button openers and closes)
-
-Orphan `aria-controls` that do not target a `[modal-overlay]` are ignored.
-
-When `[modal-overlay]` has a `name` or `id`, that value becomes the slug used for generated ids (`seats-modal-dialog`, `seats-modal-title`). A missing overlay id is filled as `${slug}-overlay`.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a modal appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA and start handling clicks.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Motion
+### Motion
 
 Enter removes `hidden` on `[modal-overlay]`, moves focus in, then sets `data-motion-state="entering"`. The scrim fades in and the panel rises from `translateY(0.75rem)` on `--juice-motion-duration-base` and `--juice-motion-ease-enter`. The state becomes `entered` when that finishes.
 
-Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel drops to `translateY(0.75rem)` on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. The focus trap and Escape still apply during that exit. A second Escape does not start a second close. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then.
+Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel drops to `translateY(0.75rem)` on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then.
 
-Reduced motion, or a computed duration of `0`, does the same steps in the same turn. A new open cancels an in-flight exit. See [Animations](./juice-animations.md).
+<details>
+<summary>Edge cases</summary>
 
-## Keyboard
+- The focus trap and Escape still apply during exit.
+- A second Escape does not start a second close.
+- Reduced motion, or a computed duration of `0`, does the same steps in the same turn.
+- A new open cancels an in-flight exit.
+- Duration tokens live in [Animations](./juice-animations.md).
 
-- Escape closes the open overlay and returns focus to the opener. Modal shares the highest Escape band with drawer; if a drawer overlay is also open, that same Escape closes both. Popover, combobox, toast, and tooltip yield. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Tab / Shift+Tab wrap inside the open dialog (focus trap)
-- Enter and Space activate non-button openers and `[modal-close]` controls (native buttons already synthesize a click)
+</details>
 
-Arrow-key roving is intentionally out of scope.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-## Limitations
+## Not to be confused with
 
-- No `Modal()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Orphan `aria-controls` that do not target `[modal-overlay]` are ignored.
-- Opening is exclusive among modals. Only one modal overlay is open at a time. Modal and drawer stay independently exclusive: both may be open at once, and one Escape then closes both. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Overlays use native `hidden`, never layout `content=`.
-- Drawer / sheet behavior is not part of this runtime. See [Drawer Runtime](./juice-drawer-runtime.md).
-- `modal-overlay="static"` (or `closeOnBackdrop: false`) opts out of backdrop click only. Escape and `[modal-close]` still dismiss.
-- Overlay chrome is `z-index: 1000`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
+| This | Not this |
+| --- | --- |
+| Centered dialog on `[modal-overlay]` | Surface `overlay="frost"` or `overlay="tint"` |
+| Modal scrim and focus trap | Drawer or sheet |
 
-## Why This Matches Navigation
+## Related
 
-The modal runtime copies the navigation, accordion, and tabs lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Drawer Runtime](./juice-drawer-runtime.md)

@@ -8,7 +8,9 @@ This surface is Emerging, not Stable. It is not one of the thirty Emerging auto-
 
 Two cuts are in play, and they are not the same CSS:
 
-- The base `[badge]` layout shipped in the published `@citrusworx/juiceui@0.9.2` npm cut. `npm view @citrusworx/juiceui@0.9.2` reports `gitHead` `03cf749c8e8ddc740e7613f398840864bc5ba827` (published 2026-10-14). That commit’s `badge.scss` is the literal pill, `[badge="square"]`, and `[badge="ribbon"]`. Its compiled `dist/index.css` has those rules and does not have `--juice-badge-*`. The published tarball contains those core rules and the four KiwiPress `[badge]` rules in `dist/themes/kiwipress.css`.
+- The base `[badge]` layout shipped in the published `@citrusworx/juiceui@0.9.2` npm cut. `npm view @citrusworx/juiceui@0.9.2` reports `gitHead` `03cf749c8e8ddc740e7613f398840864bc5ba827` (published 2026-10-14).
+- That commit’s `badge.scss` is the literal pill, `[badge="square"]`, and `[badge="ribbon"]`. Its compiled `dist/index.css` has those rules and does not have `--juice-badge-*`.
+- The published tarball contains those core rules and the four KiwiPress `[badge]` rules in `dist/themes/kiwipress.css`.
 - The core roles, the `[theme] [badge]` ink and `line-height`, the `[theme] [cta] [badge]` companion, and the `a` / `button` focus outline are on master and are not in that 0.9.2 cut. No version number is assigned to them here.
 
 `dist/index.css` on master matches `badge.scss`. The compiler drops quotes on attribute values (`[badge=square]`, `[badge=ribbon]`). The declarations are the same. Shipped theme CSS does not mention `--juice-badge-*`.
@@ -96,11 +98,19 @@ See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-att
 
 The focus rule does not set `transform`, so a ribbon keeps `translateX(-50%)`. There is no `--juice-badge-focus-ring`.
 
-`[theme] [badge]` sets `box-shadow: none` at `(0, 2, 0)`. A theme button shadow on `:where(button)` or `:where(button:hover, button:focus-visible)` is `(0, 1, 0)`, so a button badge loses that shadow, including on hover and focus. The rule does not set `transform`. A non-ribbon button badge can still pick up a theme hover `translateY` when that declaration is only `(0, 1, 0)`. A ribbon’s `transform` is `(0, 2, 0)` and keeps the centering translate.
+`[theme] [badge]` sets `box-shadow: none` at `(0, 2, 0)`. A theme button shadow on `:where(button)` or `:where(button:hover, button:focus-visible)` is `(0, 1, 0)`, so a button badge loses that shadow, including on hover and focus.
+
+The rule does not set `transform`. A non-ribbon button badge can still pick up a theme hover `translateY` when that declaration is only `(0, 1, 0)`.
+
+A ribbon’s `transform` is `(0, 2, 0)` and keeps the centering translate.
 
 `[dev-hero-header] > [badge]` is the same specificity as `[theme] [badge]` and comes later in `components.scss` (`badge.scss` is forwarded first, then `developers.scss`). It switches that direct child to `inline-block`, so the pill’s `gap` no longer applies between its children. It does not set color or background.
 
-`[wizard-header] [brand] [badge]` is `(0, 3, 0)` and comes later (`wizard.scss` is forwarded after badge). It tightens the box: `font-size: 0.75rem` (12px), padding `0.25rem 0.625rem`, radius `0.375rem`, `font-weight: 500`, `line-height: 1.4`. That radius applies even when the attribute is boolean `[badge]`, not `badge="square"`. Those declarations beat the core roles for the properties they set. `[wizard-header]` itself is `z-index: 50`. The badge does not add a band of its own.
+`[wizard-header] [brand] [badge]` is `(0, 3, 0)` and comes later (`wizard.scss` is forwarded after badge). It tightens the box: `font-size: 0.75rem` (12px), padding `0.25rem 0.625rem`, radius `0.375rem`, `font-weight: 500`, `line-height: 1.4`.
+
+That radius applies even when the attribute is boolean `[badge]`, not `badge="square"`. Those declarations beat the core roles for the properties they set.
+
+`[wizard-header]` itself is `z-index: 50`. The badge does not add a band of its own.
 
 ### KiwiPress selectors
 
@@ -147,7 +157,13 @@ Default and ribbon do not set `border-color`. They pick up the core 24% `current
 }
 ```
 
-`:where([badge])` adds no specificity, so each rule is only the theme attribute `(0, 1, 0)`. Core `[theme] [badge]` is `(0, 2, 0)` and wins `color` and `background-color` regardless of source order. The generator paint does not show. The generator does not emit `--juice-badge-*`, does not paint `[badge="ribbon"]`, and does not paint the wizard brand slot. The warm source still names `--jx-warm-soft`. KiwiPress warm still names `--kw-surface`. Those recipes are not the same, and only the KiwiPress one still paints, because it is `(0, 3, 0)`.
+`:where([badge])` adds no specificity, so each rule is only the theme attribute `(0, 1, 0)`. Core `[theme] [badge]` is `(0, 2, 0)` and wins `color` and `background-color` regardless of source order.
+
+The generator paint does not show. The generator does not emit `--juice-badge-*`, does not paint `[badge="ribbon"]`, and does not paint the wizard brand slot.
+
+The warm source still names `--jx-warm-soft`. KiwiPress warm still names `--kw-surface`.
+
+Those recipes are not the same, and only the KiwiPress one still paints, because it is `(0, 3, 0)`.
 
 ## Contrast
 
@@ -214,7 +230,9 @@ The same companion beats the `[cta]` copy rules in Afterburn, Arcade Glow, and B
 - Arcade Glow: the same shape, with `retro-arcade-glow`
 - Boardwalk: `[theme="retro-boardwalk"] [cta] :where(p, span, li, a)`
 
-Afterburn and Arcade Glow also paint `[cta] :where(button)` at `(0, 2, 0)`. The companion beats that too, so a button badge inside those CTAs keeps the core pair. Boardwalk’s plain CTA button is different: `[theme="retro-boardwalk"] [cta] button:not([btn])` is `(0, 3, 1)` and beats the companion. A `<button badge>` inside a Boardwalk `[cta]` that does not also carry `[btn]` keeps that button’s background, color, and `border-color`, not the core wash.
+Afterburn and Arcade Glow also paint `[cta] :where(button)` at `(0, 2, 0)`. The companion beats that too, so a button badge inside those CTAs keeps the core pair.
+
+Boardwalk’s plain CTA button is different: `[theme="retro-boardwalk"] [cta] button:not([btn])` is `(0, 3, 1)` and beats the companion. A `<button badge>` inside a Boardwalk `[cta]` that does not also carry `[btn]` keeps that button’s background, color, and `border-color`, not the core wash.
 
 A theme-file change that would put the KiwiPress pairs back inside `[cta]` (still under 4.5:1, but the theme’s own colors) was written for `libraries/juice/src/themes/kiwipress/kiwipress.scss`, after the CTA copy rule. It was not applied. Themes are paused. The snippet is:
 
@@ -240,11 +258,21 @@ Nothing in badge, button, avatar, tabs, or list SCSS restyles a badge inside tho
 
 ### Still open: hero, card, and panel
 
-Hero, card, and panel copy rules in Afterburn, Arcade Glow, and Boardwalk are `(0, 2, 0)` and only set `color`. They tie `[theme] [badge]`. When the theme file loads after core, they replace badge ink and leave the core fill. The selectors look like `[theme="retro-afterburn"] [hero] :where(p, span, li)` and the matching `[card]` and `[panel]` rules (the same shape in Arcade Glow and Boardwalk, including the `afb-hero` / `acg-hero` / `bdw-hero` aliases). A hero link rule (`:where(a)`) and a hero `small` / `figcaption` rule sit at the same specificity and do this to an `<a badge>` or a `<small badge>`.
+Hero, card, and panel copy rules in Afterburn, Arcade Glow, and Boardwalk are `(0, 2, 0)` and only set `color`. They tie `[theme] [badge]`.
+
+When the theme file loads after core, they replace badge ink and leave the core fill. The selectors look like `[theme="retro-afterburn"] [hero] :where(p, span, li)` and the matching `[card]` and `[panel]` rules (the same shape in Arcade Glow and Boardwalk, including the `afb-hero` / `acg-hero` / `bdw-hero` aliases).
+
+A hero link rule (`:where(a)`) and a hero `small` / `figcaption` rule sit at the same specificity and do this to an `<a badge>` or a `<small badge>`.
 
 Beating them from core would take a context selector at `(0, 3, 0)` for each of those attributes, which would also cover KiwiPress badges inside cards and heroes. This chrome only adds the `[cta]` companion.
 
-Footer copy is not in that set. Boardwalk’s footer text rule is `[theme="retro-boardwalk"] :where(footer) :where(p, span, li, label, dt, dd, blockquote)`. `:where(footer)` adds nothing, so the rule is `(0, 1, 0)` and loses to `[theme] [badge]`. The nested footer card rule is inside `:where()` as well and is also `(0, 1, 0)`. Afterburn, Arcade Glow, and KiwiPress paint the `<footer>` element with `:where(footer)` at `(0, 1, 0)`. They do not have a `(0, 2, 0)` footer copy rule for `p` or `span`. There is no `[footer]` attribute in the theme files. Footer copy does not replace badge ink.
+Footer copy is not in that set. Boardwalk’s footer text rule is `[theme="retro-boardwalk"] :where(footer) :where(p, span, li, label, dt, dd, blockquote)`.
+
+`:where(footer)` adds nothing, so the rule is `(0, 1, 0)` and loses to `[theme] [badge]`. The nested footer card rule is inside `:where()` as well and is also `(0, 1, 0)`.
+
+Afterburn, Arcade Glow, and KiwiPress paint the `<footer>` element with `:where(footer)` at `(0, 1, 0)`. They do not have a `(0, 2, 0)` footer copy rule for `p` or `span`.
+
+There is no `[footer]` attribute in the theme files. Footer copy does not replace badge ink.
 
 ## Accessibility
 
@@ -275,7 +303,7 @@ A `span` badge is not a control. It has no `:focus-visible` ring, no hover fill,
 ## Limitations
 
 - CSS-only. No `Badge()` factory, no `createBadge`, and no auto-enhance. The JS entry does not boot a badge runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[badge]`.
-- Emerging, not Stable. The base layout shipped in `@citrusworx/juiceui@0.9.2`. The `--juice-badge-*` roles, the `[theme] [badge]` ink, the `[cta]` companion, and the focus outline are on master and are not in that cut. The thirty Emerging auto-enhance runtimes stay thirty.
+- Emerging, not Stable. The base layout shipped in `@citrusworx/juiceui@0.9.2`. The `--juice-badge-*` roles, the `[theme] [badge]` ink, the `[cta]` companion, and the focus outline are on master and are not in that cut. The thirty-one Emerging runtimes stay thirty-one.
 - Shipped themes are not required to bind `--juice-badge-*`. Bundled theme CSS does not contain those names.
 - No `[scale]`. The only size step is `[wizard-header] [brand] [badge]`, which overrides the layout roles for that slot.
 - Values other than `square` and `ribbon` are the pill. There is no dot, count, or tone value. `[warm]` is a separate boolean. Core does not paint it.
@@ -291,4 +319,16 @@ A `span` badge is not a control. It has no `:focus-visible` ring, no hover fill,
 
 ## Where this sits
 
-Cards, stats, skeleton, list, and safe area are the other CSS-only structural hooks. Badge is the label. Skeleton holds a loading shape. List holds rows, and a badge can sit in `[list-trailing]` without a special rule. Safe area only pads. Avatar is a face, not this pill. See [Cards](./juice-cards.md), [Skeleton](./juice-skeleton.md), [List](./juice-list.md), [Safe Area](./juice-safe-area.md), [Avatar](./juice-avatar.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, stats, skeleton, list, and safe area are the other CSS-only structural hooks. Badge is the label.
+
+Skeleton holds a loading shape. List holds rows, and a badge can sit in `[list-trailing]` without a special rule.
+
+Safe area only pads. Avatar is a face, not this pill.
+
+See [Cards](./juice-cards.md) [Skeleton](./juice-skeleton.md)
+
+[List](./juice-list.md) [Safe Area](./juice-safe-area.md)
+
+[Avatar](./juice-avatar.md) [Styles](./juice-styles.md)
+
+[Attributes](./juice-attributes.md) and the [maturity matrix](./juice-maturity-matrix.md).

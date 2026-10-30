@@ -10,7 +10,13 @@ List is a stack of rows. It is distinct from an anchored menu (`[menu]` / `[menu
 
 ## Markup
 
-HTML `list` is not a global attribute, and there is no `<list>` element. `<input list>` points at a `<datalist>`. The host selector is `:where(ul, ol, div)[list]`, so an input is not painted. Do not style `[role="list"]` or `[role="listitem"]`. `[selected]` paint is scoped to `[list-item]`, so `<option selected>` is a different attribute use. Do not style a bare `[aria-current]` outside this list. Breadcrumb and pagination own theirs.
+HTML `list` is not a global attribute, and there is no `<list>` element. `<input list>` points at a `<datalist>`.
+
+The host selector is `:where(ul, ol, div)[list]`, so an input is not painted. Do not style `[role="list"]` or `[role="listitem"]`.
+
+`[selected]` paint is scoped to `[list-item]`, so `<option selected>` is a different attribute use. Do not style a bare `[aria-current]` outside this list.
+
+Breadcrumb and pagination own theirs.
 
 ```html
 <ul list>
@@ -52,7 +58,9 @@ HTML `list` is not a global attribute, and there is no `<list>` element. `<input
 
 `[leading]` is letter-spacing (`"1px"` through `"10px"`). The slot is `[list-leading]`, not `[leading]`. See [Attributes](./juice-attributes.md).
 
-The host is a column flex, `width: 100%`, `list-style: none`, margin and padding `0`, transparent background, inherited color and font, `text-align: start`. `[theme]` companions on those resets beat semantic defaults such as `[theme="…"] :where(div)` fills, `:where(li)` color, `:where(a)` link color, and `:where(button)` call-to-action paint. `:where()` keeps the element type out of the specificity, so a later padding or width utility can still override the row box.
+The host is a column flex, `width: 100%`, `list-style: none`, margin and padding `0`, transparent background, inherited color and font, `text-align: start`. `[theme]` companions on those resets beat semantic defaults such as `[theme="…"] :where(div)` fills, `:where(li)` color, `:where(a)` link color, and `:where(button)` call-to-action paint.
+
+`:where()` keeps the element type out of the specificity, so a later padding or width utility can still override the row box.
 
 Core CSS does not give `[list]` or `[list-item]` a z-index. Rows are inline. Nothing here is `z-index: 10` or `1000`. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 
@@ -177,7 +185,11 @@ The wash can sit on a static row, on an `a` or `button` that is the item, on the
 
 A selected or current control stays on the selected wash while hovered or pressed. Hover does not replace it with the lighter wash.
 
-Disabled is native `:disabled`, `[disabled]`, or `[aria-disabled="true"]`, at `opacity: 0.5`, with `cursor: not-allowed`. The background stays transparent, including on hover and `:active`, so a disabled selected row does not keep the selected wash. The rule matches an `a` or `button` that is the item, a control inside a row that carries `[disabled]` or `[aria-disabled="true"]`, or a disabled control inside the row. A static row with `[disabled]` and no control is not dimmed. `:disabled` matches a native button. An anchor needs `[disabled]` or `[aria-disabled="true"]`.
+Disabled is native `:disabled`, `[disabled]`, or `[aria-disabled="true"]`, at `opacity: 0.5`, with `cursor: not-allowed`. The background stays transparent, including on hover and `:active`, so a disabled selected row does not keep the selected wash.
+
+The rule matches an `a` or `button` that is the item, a control inside a row that carries `[disabled]` or `[aria-disabled="true"]`, or a disabled control inside the row. A static row with `[disabled]` and no control is not dimmed.
+
+`:disabled` matches a native button. An anchor needs `[disabled]` or `[aria-disabled="true"]`.
 
 ```html
 <ul list>
@@ -223,7 +235,11 @@ Color is restated on `[theme]` for the same custom-property reason as skeleton. 
 
 Use real list semantics. `ul` / `ol` and `li` announce as a list. CSS does not set `role="list"` or `role="listitem"`, and it does not style those roles. A `div[list]` is a stack until the author adds roles.
 
-`[selected]` is visual only. It does not set `aria-selected` or `aria-current`. Pair it with the attribute that matches the widget: `aria-current` (other than `"false"`) for a current item in a set of links, `aria-selected` when the row is an option in a selection widget. CSS paints `[selected]` and `aria-current`. CSS does not paint `aria-selected`. A selection that should look selected needs `[selected]` as well as `aria-selected`.
+`[selected]` is visual only. It does not set `aria-selected` or `aria-current`.
+
+Pair it with the attribute that matches the widget: `aria-current` (other than `"false"`) for a current item in a set of links, `aria-selected` when the row is an option in a selection widget. CSS paints `[selected]` and `aria-current`.
+
+CSS does not paint `aria-selected`. A selection that should look selected needs `[selected]` as well as `aria-selected`.
 
 Authors own the accessible name. Chrome does not write a label.
 
@@ -236,7 +252,7 @@ Dividers are borders, not elements. They are decorative and sit under 3:1. Do no
 ## Limitations
 
 - CSS-only. No `List()` factory, no `createList`, and no auto-enhance. The JS entry does not boot a list runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[list]`.
-- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty Emerging auto-enhance runtimes stay thirty.
+- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty-one Emerging runtimes stay thirty-one.
 - Hosts are `ul`, `ol`, and `div` only, via `:where(ul, ol, div)[list]`. `<input list>` is not painted. There is no `<list>` element.
 - `[divided]` and `[dense]` apply only with `[list]` on that host. `[dense]` tightens padding and the slot margin. It does not change the stack gap.
 - `[leading]` is letter-spacing. The slot is `[list-leading]`.
@@ -249,6 +265,24 @@ Dividers are borders, not elements. They are decorative and sit under 3:1. Do no
 
 ## Where this sits
 
-Cards, badges, stats, skeleton, and safe area are the other CSS-only structural hooks: markup plus paint, no runtime. List follows that shape. Skeleton holds a loading shape. List holds the rows that replace it. A badge in `[list-trailing]` keeps its own box. Safe area only pads. See [Badge](./juice-badge.md), [Skeleton](./juice-skeleton.md), [Safe Area](./juice-safe-area.md), [Cards](./juice-cards.md), [Styles](./juice-styles.md), [Attributes](./juice-attributes.md), and the [maturity matrix](./juice-maturity-matrix.md).
+Cards, badges, stats, skeleton, and safe area are the other CSS-only structural hooks: markup plus paint, no runtime. List follows that shape.
 
-Menu, combobox, tabs, pagination, and breadcrumb keep their own names. Do not point `[list]` at those jobs. See [Menu Runtime](./juice-menu-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Tabs Runtime](./juice-tabs-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), and [Breadcrumb Runtime](./juice-breadcrumb-runtime.md).
+Skeleton holds a loading shape. List holds the rows that replace it.
+
+A badge in `[list-trailing]` keeps its own box. Safe area only pads.
+
+See [Badge](./juice-badge.md) [Skeleton](./juice-skeleton.md)
+
+[Safe Area](./juice-safe-area.md) [Cards](./juice-cards.md)
+
+[Styles](./juice-styles.md) [Attributes](./juice-attributes.md)
+
+and the [maturity matrix](./juice-maturity-matrix.md).
+
+Menu, combobox, tabs, pagination, and breadcrumb keep their own names. Do not point `[list]` at those jobs.
+
+See [Menu Runtime](./juice-menu-runtime.md) [Combobox Runtime](./juice-combobox-runtime.md)
+
+[Tabs Runtime](./juice-tabs-runtime.md) [Pagination Runtime](./juice-pagination-runtime.md)
+
+and [Breadcrumb Runtime](./juice-breadcrumb-runtime.md).

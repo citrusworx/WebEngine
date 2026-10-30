@@ -229,7 +229,11 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 
 `[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
 
-Those features should work without app init, and they work without Sig. Observable state on master is the DOM contract `juice:change` plus `getState()`, unreleased after 0.9.2 — see [Runtime Behavior](./juice-runtime-behavior.md#juicechange). Sig’s optional adapter is a separate import, `@citrusworx/sigjs/juice`. See [Accordion Runtime](./juice-accordion-runtime.md), [Tabs Runtime](./juice-tabs-runtime.md), [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Progress Runtime](./juice-progress-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), [Disclosure Runtime](./juice-disclosure-runtime.md), [Spinner Runtime](./juice-spinner-runtime.md), [Select Runtime](./juice-select-runtime.md), [Input Runtime](./juice-input-runtime.md), [Textarea Runtime](./juice-textarea-runtime.md), [Field Runtime](./juice-field-runtime.md), [Icon Button Runtime](./juice-icon-button-runtime.md), [Avatar](./juice-avatar.md), [Table](./juice-table.md), [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), and [Navigation Runtime](./juice-navigation-runtime.md).
+Those features should work without app init, and they work without Sig.
+
+Observable state on master is the DOM contract `juice:change` plus `getState()`, unreleased after 0.9.2. Sig’s optional adapter is a separate import, `@citrusworx/sigjs/juice`.
+
+The component index is [Runtime behavior](./juice-runtime-behavior.md#components). State shapes are [`juice:change`](./juice-runtime-behavior.md#juicechange).
 
 Use Sig.js for app-specific state:
 
