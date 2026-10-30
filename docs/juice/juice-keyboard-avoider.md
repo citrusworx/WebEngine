@@ -198,7 +198,7 @@ With that token, `window.innerHeight` shrinks with the keyboard. The runtime's i
 
 ## Footer, fixed nav, and drawer
 
-`nav[fixed]` is `position: fixed` at `(0, 1, 1)` and beats footer mode, so a fixed nav stays fixed. `bottom` still applies, because `nav[fixed]` does not set it. `nav[fixed]` also sets `top: 0`. A fixed element with both `top` and `bottom` stretches between them. Do not put footer mode on `nav[fixed]` itself. Put padding mode on the scrolling body, or put the footer host on an element that is not the fixed nav.
+`nav[fixed]` is `position: fixed` and `top: 0` at `(0, 1, 1)`. That beats the footer word at `(0, 1, 0)`, so an unthemed fixed nav stays fixed. A fixed box with `top`, `bottom`, and `height: auto` stretches from the viewport top to the keyboard. Footer mode does not leave that `bottom` on the nav. A later rule sets `bottom: auto` on `nav[fixed][keyboard-avoider~="footer"]` at `(0, 2, 1)`, and the same declaration on `[theme] nav[fixed][keyboard-avoider~="footer"]` at `(0, 3, 1)`. `(0, 2, 1)` already beats the footer word and `[theme] [keyboard-avoider~="footer"]` at `(0, 2, 0)`. The reset does not set `position`. `[theme] [keyboard-avoider~="footer"]` still beats `nav[fixed]` on `position`, so a themed fixed nav becomes `sticky`. `bottom: auto` means that box does not stretch either. A container inside the nav (`nav[fixed] > [container][keyboard-avoider~="footer"]`) is a different element. It still takes `position: sticky` and the inset.
 
 `[drawer]` is `position: absolute` and `bottom: 0` at `(0, 1, 0)`. This file loads later, so footer mode on the drawer itself replaces both `position` and `bottom`. That undocks the panel. Put padding mode on the scrolling body inside the drawer (`[drawer-body]`, or the element that actually scrolls) instead.
 
@@ -210,7 +210,7 @@ With that token, `window.innerHeight` shrinks with the keyboard. The runtime's i
 </div>
 ```
 
-`nav[sticky]` is `position: sticky` at the same kind of specificity as `nav[fixed]` for `position`. Footer mode's `bottom` still applies when the sticky rule does not set `bottom`. The restated `nav[fixed] > [container]` and `nav[sticky] > [container]` selectors are for a container that is the host. They do not move the nav's own box.
+`nav[sticky]` is `position: sticky` and `top: 0` at `(0, 1, 1)`. Footer mode's `bottom` still applies, because the sticky rule does not set `bottom`. A sticky box is sized in flow. That `bottom` is a sticky constraint, not a stretch, so `nav[sticky]` is not in the reset. `[wizard-header]` is `position: sticky` and `top: 0` at `(0, 1, 0)`. `wizard.scss` loads later than keyboard-avoider, so the unthemed tie keeps that position. It does not set `bottom`. The footer `bottom` stays, and the box does not stretch. The restated `nav[fixed] > [container]` and `nav[sticky] > [container]` selectors are for a container that is the host. They do not move the nav's own box.
 
 ## Reduced motion
 
@@ -491,7 +491,7 @@ A composer that should not scroll the page when a field inside it focuses:
 - `juice:change` fires on an open flip, or on an inset drift of at least `threshold` while open. Smaller steps update the property and `getState()` and do not dispatch. A drift while closed does not dispatch.
 - This runtime does not set `navigator.virtualKeyboard.overlaysContent`.
 - Translate-only and footer-only keep safe area's own padding. They do not take the `max()` formula. Padding mode, including a padding word composed with another word, does.
-- Footer mode on `[drawer]` replaces the drawer's `position` and `bottom`. Put padding mode on the scrolling body inside the drawer. Footer mode on `nav[fixed]` does not win `position`; `bottom` still applies, and `top: 0` remains, so the bar can stretch.
+- Footer mode on `[drawer]` replaces the drawer's `position` and `bottom`. Put padding mode on the scrolling body inside the drawer. Footer mode on `nav[fixed]` sets `bottom: auto`, so `top: 0` does not stretch the bar down to the keyboard. `nav[sticky]` still takes the footer `bottom`. A sticky box does not stretch.
 - `interactive-widget=resizes-content` is a viewport meta token. Juice does not add it. On Chrome Android 108+ it makes this host unnecessary, and the runtime's formula stays near `0`.
 - There is no focus trap and no Escape handling. Keyboard avoider is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
 - There is no z-index elevation. Footer mode sets `position: sticky` and does not set `z-index`. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).

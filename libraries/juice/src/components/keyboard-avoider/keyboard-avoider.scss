@@ -102,10 +102,32 @@
 //
 // It is the only mode that sets position. It does not set top, so a
 // bar that already has top: 0 keeps that top. nav[fixed] is
-// position: fixed at (0, 1, 1) and beats this mode, so a fixed nav
-// stays fixed. bottom still applies, because nav[fixed] does not set
-// it. Do not use footer mode on nav[fixed]: top: 0 stays and bottom
-// becomes the inset, so the bar stretches. A separate fix is planned.
+// position: fixed and top: 0 at (0, 1, 1). That beats the footer word
+// (0, 1, 0), so an unthemed fixed nav stays fixed. A fixed box with
+// top, bottom, and height auto stretches from the viewport top to the
+// keyboard. The rule after the footer word sets bottom: auto on
+// nav[fixed][keyboard-avoider~="footer"]. That selector is (0, 2, 1),
+// so it beats the word and the [theme] restatement of the word at
+// (0, 2, 0). The same declaration is restated on
+// [theme] nav[fixed][keyboard-avoider~="footer"] at (0, 3, 1). The
+// reset does not set position. [theme] [keyboard-avoider~="footer"]
+// still beats nav[fixed] on position ((0, 2, 0) over (0, 1, 1)), so a
+// themed fixed nav becomes sticky. bottom: auto means that box does
+// not stretch either.
+//
+// Excluding nav[fixed] with :not() would raise every footer selector.
+// The word would stop being (0, 1, 0). A (0, 2, 1) word would tie
+// nav[type="sidebar"] and beat [theme] [toast-region]. The reset
+// leaves those ties alone and only clears the longhand that stretches.
+//
+// nav[sticky] is position: sticky and top: 0 at (0, 1, 1). A sticky
+// box is sized in flow. bottom does not stretch it, so the footer
+// word's bottom stays, as a sticky constraint. [wizard-header] is
+// sticky and top: 0 at (0, 1, 0). wizard.scss loads later, so the
+// unthemed tie keeps that position. It does not set bottom. The
+// footer bottom stays, and the box does not stretch. Neither host is
+// in the reset.
+//
 // [drawer] is position: absolute and bottom: 0 at (0, 1, 0). This
 // file loads later, so footer on the drawer itself replaces both.
 // Put padding mode on the scrolling body inside the drawer instead.
@@ -272,6 +294,16 @@
 @include -juice-keyboard-avoider-rule(footer) {
     position: sticky;
     bottom: var(--juice-keyboard-inset);
+}
+
+// (0, 2, 1) already beats [theme] [keyboard-avoider~="footer"] at
+// (0, 2, 0). The theme twin is the same declaration at (0, 3, 1).
+// position stays with whichever rule already won it. nav[sticky] is
+// not listed: sticky bottom does not stretch the bar.
+
+nav[fixed][keyboard-avoider~="footer"],
+[theme] nav[fixed][keyboard-avoider~="footer"] {
+    bottom: auto;
 }
 
 @include -juice-keyboard-safe-area-rule {

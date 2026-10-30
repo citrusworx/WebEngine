@@ -1354,6 +1354,77 @@ describe("Juice build artifacts", () => {
                 expect(themeCss).not.toContain("--juice-keyboard-");
             }
         });
+
+        it("resets bottom on a fixed nav in footer mode and still sticks a normal footer", () => {
+            const css = readFileSync(join(DIST_DIR, "index.css"), "utf-8");
+            const start = css.indexOf("@property --juice-keyboard-inset");
+            const end = css.indexOf("[search-panel]", start);
+            expect(start).toBeGreaterThan(-1);
+            expect(end).toBeGreaterThan(start);
+            const slice = css.slice(start, end);
+
+            const blocks: { selector: string; body: string }[] = [];
+            const collect = (source: string) => {
+                let cursor = 0;
+                while (cursor < source.length) {
+                    const open = source.indexOf("{", cursor);
+                    if (open < 0) {
+                        break;
+                    }
+                    let depth = 0;
+                    let close = open;
+                    for (let i = open; i < source.length; i += 1) {
+                        if (source[i] === "{") {
+                            depth += 1;
+                        } else if (source[i] === "}") {
+                            depth -= 1;
+                            if (depth === 0) {
+                                close = i;
+                                break;
+                            }
+                        }
+                    }
+                    const selector = source.slice(cursor, open).trim();
+                    const body = source.slice(open + 1, close);
+                    if (selector.startsWith("@")) {
+                        collect(body);
+                    } else if (selector.length > 0) {
+                        blocks.push({ selector, body });
+                    }
+                    cursor = close + 1;
+                }
+            };
+            collect(slice);
+
+            const footerWord = String.raw`\[keyboard-avoider~=["']?footer["']?\]`;
+            const fixedHost = new RegExp(`nav\\[fixed\\]${footerWord}`);
+            const themedFixedHost = new RegExp(`\\[theme\\]\\s+nav\\[fixed\\]${footerWord}`);
+            const stickyHost = new RegExp(`nav\\[sticky\\]${footerWord}`);
+            const fixedContainer = new RegExp(`nav\\[fixed\\] > \\[container\\]${footerWord}`);
+
+            const reset = blocks.filter((block) => fixedHost.test(block.selector));
+            expect(reset).toHaveLength(1);
+            expect(reset[0]?.selector).toMatch(themedFixedHost);
+            expect(reset[0]?.body).toMatch(/bottom:\s*auto/);
+            expect(reset[0]?.body).not.toMatch(/position\s*:/);
+            expect(reset[0]?.body).not.toMatch(/bottom:\s*var\(--juice-keyboard-inset\)/);
+            expect(reset[0]?.selector).not.toMatch(/:not\(nav\[fixed\]\)/);
+
+            const stuck = blocks.filter((block) => (
+                new RegExp(footerWord).test(block.selector) &&
+                /position\s*:\s*sticky/.test(block.body)
+            ));
+            expect(stuck.length).toBeGreaterThan(0);
+            for (const block of stuck) {
+                expect(block.body).toContain("bottom: var(--juice-keyboard-inset)");
+                expect(block.body.match(/position\s*:\s*[^;]+/g)).toEqual(["position: sticky"]);
+                expect(block.selector).not.toMatch(/:not\(nav\[fixed\]\)/);
+                expect(block.selector).not.toMatch(fixedHost);
+            }
+            expect(stuck.some((block) => fixedContainer.test(block.selector))).toBe(true);
+            expect(stuck.some((block) => new RegExp(`(^|,)\\s*${footerWord}`).test(block.selector))).toBe(true);
+            expect(slice).not.toMatch(stickyHost);
+        });
     });
 
     it("includes pressable structural chrome in core CSS", () => {
