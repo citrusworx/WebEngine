@@ -1,38 +1,12 @@
-# Juice Banner Runtime
+# Banner
 
-This document explains the current banner runtime in `libraries/juice/src/js/src/banner/banner-runtime.ts` (monorepo path; outside this vault).
+A banner is an inline alert rooted at `[banner]`.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice banner markup and it exists in the browser, the dismissible callout should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The banner runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize banner behavior in their app code.
-
-There is no `Banner()` Sig factory. Markup plus the runtime is the contract. Authors place `[banner]` nodes — this is not a portal.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Banner is an inline alert / callout. It is not a toast stack, not a dialog overlay, not a drawer, and not the surface `overlay="frost|tint"` utility. There is no `[banner-region]`, no focus trap, no Escape steal, and no auto-dismiss timer. The banner stays until dismiss.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s banner chrome:
+## Markup
 
 ```html
 <div banner role="status">
@@ -46,172 +20,100 @@ The runtime is aligned with Juice’s banner chrome:
 </div>
 ```
 
-It requires a `[banner]` root. Closed vs open is the native `hidden` attribute on that root. The node stays in the DOM. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+The node stays in the DOM. Closed vs open is native `hidden` on the root.
 
-**Layout:** `[banner]` / `[banner="full"]`. Bare is inset. `full` is edge-to-edge (width 100%, no radius). Do not put status on the `banner` attribute — that slot is layout.
+## Attributes
 
-**Status:** optional `[banner-tone="info|success|warning|error"]`. Bare `[banner]` without `banner-tone` is neutral.
+| Hook | What it does |
+| --- | --- |
+| `[banner]` | Root. Bare is inset. There is no `[banner-region]` and no portal. |
+| `[banner="full"]` | Edge-to-edge layout (width 100%, no radius). Status does not go on this attribute. |
+| `[banner-tone]` | Optional status: `info`, `success`, `warning`, `error`. Bare is neutral. |
+| `[banner-body]` | Optional body slot. |
+| `[banner-close]` | Dismiss control. An empty name is filled as `aria-label="Dismiss"`. |
+| `banner-persist` | `session` or `local`, plus a `name` or `id`. Without both, dismiss is in-memory only. |
+| `hidden` | Native closed state. The runtime does not write layout `content`. |
+| `--juice-banner-*` | Theme paint. There is no panel-shadow role. |
 
-**Slots:** optional `[banner-body]` and `[banner-close]` inside the banner.
+Optional `surfaceTone` on `[banner]` is allowed. Do not force it.
 
-**Persist:** optional `banner-persist="session|local"` plus a `name` or `id` key. Without persist, or without a key, dismiss is in-memory only.
+## JavaScript
 
-**Close:** `[banner-close]` inside the banner. Enter / Space also dismiss when the close control is not a native button. Escape is never stolen — see [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
+| Export | What it does |
+| --- | --- |
+| `createBanner(options?)` | Controller for `options.root`, or the document. |
+| `initBanner(options?)` | Same call as `createBanner`. |
+| `startBannerRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopBannerRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-Prefer shipping `role="status"` (info / success / neutral) or `role="alert"` (error / warning) in markup. The runtime fills that if it is missing, plus an empty close name (`aria-label="Dismiss"`).
+A custom-root controller can run beside the document runtime. Each click or key is claimed once.
 
-Theme paint uses `--juice-banner-*` roles. There is no panel-shadow role; banner is inline, not an elevated snackbar. See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[banner]` is an inline alert / callout, not a toast stack, not a dialog overlay, not a drawer, and not the surface `overlay="frost|tint"` utility. There is no scrim and no `[banner-region]`. Optional `surfaceTone` on `[banner]` is allowed; do not force it. Toast is a corner snackbar stack; banner is an in-flow callout.
+### Options
 
-## Automatic Boot
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `bannerSelector` | `[banner]` | Root query. |
+| `closeSelector` | `[banner-close]` | Close control query. |
 
-The runtime starts automatically in the browser.
+### Controller
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the banner runtime:
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Wires role, close name, and persisted dismiss. |
+| `show(target?)` | Removes `hidden`. Never hides siblings. Does not move focus in. |
+| `dismiss(target?)` | Sets `hidden` on that banner. |
+| `isShown(target?)` | Whether that banner lacks `hidden`. |
+| `getState(target?)` | Returns `{ shown: boolean }`, or `null`. |
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startBannerRuntime();
-    });
-  } else {
-    startBannerRuntime();
-  }
-}
-```
+### Events
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+A real show or dismiss dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[banner]`.
 
-`stopBannerRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+`detail` is `{ runtime: "banner", state: { shown: boolean } }`. An unchanged `shown` does not dispatch. This surface stays Emerging.
 
-## Public API
+## Accessibility
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+- Prefer `role="status"` for info, success, and neutral, or `role="alert"` for error and warning. The runtime fills a missing role.
+- Enter and Space activate non-button `[banner-close]` controls.
+- Escape is not handled. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- There is no focus trap, and show does not move focus into the banner.
+- Banner has no z-index. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-```ts
-createBanner(options?)
-initBanner(options?)
-startBannerRuntime()
-stopBannerRuntime()
-```
+## Behavior
 
-These are useful for internal control, tests, or advanced cases.
+1. Find `[banner]` and `[banner="full"]` roots. There is no region wrapper.
+2. Set `role="status"` for info, success, and neutral, or `role="alert"` for `banner-tone="error"` or `"warning"`.
+3. Fill an empty `[banner-close]` name and button role and tabindex on non-native closes.
+4. Show and dismiss with native `hidden`. `show()` never hides siblings.
+5. Remember dismiss when `banner-persist` is `session` or `local` and a `name` or `id` is set.
+6. Handle `[banner-close]` clicks, and Enter or Space on non-button closes.
+7. Leave Escape to the overlay yield order.
 
-A real show or dismiss dispatches a bubbling `juice:change` from `[banner]`. `detail` is `{ runtime: "banner", state: { shown: boolean } }`. `isShown()` and `getState()` read it. A write that leaves `shown` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+There is no auto-dismiss timer. The banner stays until dismiss. This runtime does not close other surfaces, and they do not close a banner.
 
-`createBanner()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+### Persist
 
-## BannerOptions
+`banner-persist="session"` writes `sessionStorage`. `banner-persist="local"` writes `localStorage`.
 
-The configurable shape is:
+The key is `name` when present, otherwise `id`. The stored name is `juice-banner:<key>` with value `"1"`.
 
-```ts
-type BannerOptions = {
-  root?: ParentNode;
-  bannerSelector?: string;
-  closeSelector?: string;
-};
-```
+A later `sync()` re-hides a persisted banner that is visible again. `show()` removes the stored key. Storage errors still dismiss in the current document.
 
-By default, Juice uses:
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-```ts
-{
-  root: document,
-  bannerSelector: '[banner]',
-  closeSelector: '[banner-close]',
-}
-```
+## Not to be confused with
 
-## BannerController
+| This | Not this |
+| --- | --- |
+| Inline alert | Toast stack (`[toast-region]`) |
+| In-flow callout | Dialog, drawer, or scrim |
+| `[banner]` | Surface `overlay="frost"` or `overlay="tint"` |
 
-```ts
-type BannerController = {
-  destroy: () => void;
-  sync: () => void;
-  show: (target?: HTMLElement | null) => void;
-  dismiss: (target?: HTMLElement | null) => void;
-  isShown: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => BannerState | null;
-};
-```
+## Related
 
-`show()` and `dismiss()` toggle native `hidden` on a `[banner]`. `show()` never hides siblings and never moves focus into the banner.
-
-## What the Runtime Actually Does
-
-The runtime performs seven main jobs:
-
-1. Find `[banner]` / `[banner="full"]` roots. There is no region wrapper and no portal
-2. Set banner `role="status"` for info / success / neutral, or `role="alert"` for `banner-tone="error|warning"`
-3. Fill an empty `[banner-close]` name (`aria-label="Dismiss"`) and button role/tabindex on non-native closes
-4. Show / dismiss via native `hidden` on the banner (the node stays); `show()` never hides siblings and does not move focus into the banner
-5. Remember dismiss when `banner-persist="session|local"` plus a `name` or `id` is set (`juice-banner:<key>`). `show()` clears that key
-6. Handle click (`[banner-close]`) and keyboard (Enter / Space on non-button closes)
-7. Leave Escape to the overlay / popover / combobox / toast / tooltip yield order. Banner does not steal it. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-Banner is not exclusive. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, or combobox, and those runtimes do not close a banner.
-
-There is no focus trap. There is no auto-dismiss timer. The banner stays until dismiss.
-
-## Persist
-
-Persist is optional and lean.
-
-`banner-persist="session"` writes to `sessionStorage`. `banner-persist="local"` writes to `localStorage`. The key is `name` when present, otherwise `id`. The stored name is `juice-banner:<key>` with value `"1"`.
-
-Without `banner-persist`, or without a `name` / `id`, dismiss is in-memory only. A later `sync()` (or a new controller) re-hides a persisted banner that is visible again. `show()` removes the stored key so the callout can return.
-
-Storage errors (private mode / quota) still apply dismiss in the current document.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a banner appears later, the observer schedules a `sync()` call so Juice can wire roles and close names, apply a persisted dismiss, and start handling close.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- Enter and Space activate non-button `[banner-close]` controls (native buttons already synthesize a click)
-- Escape is not handled. Banner never steals it. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- There is no focus trap. Tab is not wrapped. The runtime does not move focus into the banner on show
-
-Arrow-key roving is intentionally out of scope. There is no auto-dismiss timer.
-
-## Limitations
-
-- No `Banner()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Banner is not a toast stack: no `[banner-region]`, no corner portal, no stacking runtime, and no auto-dismiss timer.
-- Banner is not a dialog: no focus trap, no `aria-modal`, no overlay, and no Escape steal. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Roots use native `hidden`, never layout `content=`. The node stays in the DOM.
-- Persist needs `banner-persist="session|local"` plus a `name` or `id`. Without both, dismiss is in-memory only.
-- `show()` never hides siblings. Multiple banners can stay visible.
-- There is no z-index elevation. Banner is inline chrome. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, and combobox behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), and [Combobox Runtime](./juice-combobox-runtime.md).
-
-## Why This Matches Navigation
-
-The banner runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, and combobox lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Toast](./juice-toast-runtime.md)

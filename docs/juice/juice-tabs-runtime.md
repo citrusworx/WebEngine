@@ -1,34 +1,12 @@
-# Juice Tabs Runtime
+# Tabs
 
-This document explains the current tabs runtime in `libraries/juice/src/js/src/tabs/tabs-runtime.ts` (monorepo path; outside this vault).
+Tabs keep one selected panel inside `[tabs]`.
 
-The key idea is the same as navigation and accordion:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice tabs markup and it exists in the browser, the tab selection behavior should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The tabs runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize tabs behavior in their app code.
-
-There is no `Tabs()` Sig factory. Markup plus the runtime is the contract.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s tabs chrome:
+## Markup
 
 ```html
 <div tabs name="settings">
@@ -41,156 +19,111 @@ The runtime is aligned with Juice’s tabs chrome:
 </div>
 ```
 
-It requires a `[tabs]` root. Orphan `[tab]` / `[tab-panel]` nodes outside a root are ignored.
+The root owns the strip and the panels. Orphan `[tab]` and `[tab-panel]` nodes outside `[tabs]` are ignored.
 
-Triggers are `[tab]` nodes, `[role="tab"]` nodes, or direct-child `button` elements in `[tabs-list]` (or, for legacy strip markup, on `[tabs]` itself). Buttons inside `[tab-panel]` stay ordinary controls.
+## Attributes
 
-A root may use `[tabs-list]` for the strip, or legacy markup:
+| Hook | What it does |
+| --- | --- |
+| `[tabs]` | Root. `name` becomes the tablist `aria-label` when `aria-label` and `aria-labelledby` are absent, and it slugs generated ids. |
+| `[tabs-list]` | Optional strip. Direct child `button` elements in the strip are triggers. |
+| `[tab]` | Trigger. A `[role="tab"]` in the strip also counts. Buttons inside `[tab-panel]` stay ordinary controls. |
+| `[tab-panel]` | Panel. Shown and hidden with native `hidden` and `aria-hidden`. |
+| `[active]` | Selected trigger, written together with `aria-selected="true"`. |
 
-- strip-only: `[tabs]` with direct `[tab]` / `button` children and no panels
-- mixed: direct triggers plus `[tab-panel]` children, without `[tabs-list]`
+Selection is exclusive. The runtime does not write layout `content`. Prefer shipping `[active]` and `aria-selected` together. Sync fills the missing one.
 
-Selection is exclusive. One trigger is selected per root. Visible vs hidden panels use native `hidden` plus ARIA. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+## JavaScript
 
-Selected state is dual-written: Juice `[active]` and `aria-selected="true"` together. CSS paints both. Prefer shipping both in markup; the runtime fills the other if only one is present.
+| Export | What it does |
+| --- | --- |
+| `createTabs(options?)` | Controller for `options.root`, or the document. |
+| `initTabs(options?)` | Same call as `createTabs`. |
+| `startTabsRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopTabsRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-## Automatic Boot
+A custom-root controller can run beside the document runtime, and each click or key event is claimed once.
 
-The runtime starts automatically in the browser.
+### Options
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the tabs runtime:
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Queries descendants. The document when omitted. |
+| `tabsSelector` | `[tabs]` | Widget root. |
+| `listSelector` | `[tabs-list]` | Optional strip. A direct child of the root. |
+| `triggerSelector` | `[tab]` | Marked triggers. |
+| `panelSelector` | `[tab-panel]` | Panels owned by that root. |
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startTabsRuntime();
-    });
-  } else {
-    startTabsRuntime();
-  }
-}
-```
+### Controller
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Removes click and keydown listeners and disconnects the observer. |
+| `sync()` | Wires each root and selects the marked trigger, or the first when none are marked. |
+| `select(trigger?)` | Selects the given trigger, or the first managed trigger when the argument is omitted. |
+| `selected(target?)` | Returns the selected trigger, or the first trigger when none are marked, or `null` when there are none. |
+| `getState(target?)` | `{ selected: number }`, or `null`. The index is 0-based, or `-1` when none are marked. |
 
-## Public API
+### Events
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+A real selection change dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[tabs]`. `detail` is `{ runtime: "tabs", state: { selected: number } }`. `selected` is the 0-based trigger index, or `-1` when none are selected; `selected()` returns the trigger element, `getState()` returns the index, and an unchanged index does not dispatch.
 
-```ts
-createTabs(options?)
-initTabs(options?)
-startTabsRuntime()
-stopTabsRuntime()
-```
+## Accessibility
 
-These are useful for internal control, tests, or advanced cases.
+- The strip uses horizontal automatic activation. Moving focus selects that tab and shows its panel.
+- ArrowRight and ArrowLeft wrap to the next and previous trigger, then select and focus it.
+- Home and End jump to the first and last trigger, then select and focus it.
+- Enter and Space activate a non-button `[tab]`. A native `button`, or an `a` with `href`, uses click.
+- Escape, ArrowUp, and ArrowDown are ignored. There is no vertical orientation. See [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Keys from `input`, `textarea`, `select`, or `contenteditable` inside the strip are ignored.
+- The selected trigger gets `tabindex="0"`. The others get `tabindex="-1"`. The selected panel gets `tabindex="0"`; the others lose `tabindex`.
+- Sync fills `role="tablist"`, `role="tab"`, and `role="tabpanel"`, plus `aria-controls` and `aria-labelledby`. `role="tablist"` goes on `[tabs-list]`, or on `[tabs]` when the root has no panels.
 
-A real selection change dispatches a bubbling `juice:change` from `[tabs]`. `detail` is `{ runtime: "tabs", state: { selected: number } }`. `selected` is the 0-based trigger index, or `-1` when none are selected. `selected()` still returns the trigger element. `getState()` returns the index. A write that leaves the index unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+## Behavior
 
-`createTabs()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-select with the singleton.
+1. Find each `[tabs]` root and ignore orphan `[tab]` and `[tab-panel]` nodes.
+2. Collect triggers and pair each one with a panel.
+3. Fill missing ids and the tab, tablist, and tabpanel roles.
+4. Select one trigger, dual-write `[active]` and `aria-selected`, and hide the other panels with `hidden`.
+5. When no trigger is `[active]` or `aria-selected="true"`, select the first trigger.
+6. Handle click and horizontal arrow keys on the strip.
 
-## TabsOptions
+Pairing checks `aria-controls` when that id is a `[tab-panel]` in the same root, then the panel at the same index, then a following sibling panel. The sibling walk stops at another trigger.
 
-The configurable shape is:
+A `name` on `[tabs]` becomes the tablist `aria-label` when `aria-label` and `aria-labelledby` are absent. Its slug is the generated-id prefix. With more than one trigger the ids look like `settings-tab-1` and `settings-panel-1`. With one trigger the numeric suffix is omitted.
 
-```ts
-type TabsOptions = {
-  root?: ParentNode;
-  tabsSelector?: string;
-  listSelector?: string;
-  triggerSelector?: string;
-  panelSelector?: string;
-};
-```
+### Markup modes
 
-By default, Juice uses:
+- `[tabs-list]` is the strip when it is a direct child of `[tabs]`.
+- Strip-only markup is direct `[tab]` or `button` children and no panels. The root receives `role="tablist"`.
+- Mixed markup is direct triggers plus `[tab-panel]` children, without `[tabs-list]`.
 
-```ts
-{
-  root: document,
-  tabsSelector: '[tabs]',
-  listSelector: '[tabs-list]',
-  triggerSelector: '[tab]',
-  panelSelector: '[tab-panel]',
-}
-```
+<details>
+<summary>Edge cases</summary>
 
-## TabsController
+- A non-native trigger with no `tabindex` starts at `tabindex="-1"` until selection sets `0` or `-1`.
+- Generated ids without a `name` use `juice-tabs-trigger-N` and `juice-tabs-panel-N`.
+- The observer watches child list changes and `hidden`, `active`, `aria-selected`, `aria-controls`, `tabs`, `tabs-list`, `tab`, and `tab-panel`.
 
-```ts
-type TabsController = {
-  destroy: () => void;
-  sync: () => void;
-  select: (trigger?: HTMLElement | null) => void;
-  selected: (target?: HTMLElement | null) => HTMLElement | null;
-  getState: (target?: HTMLElement | null) => TabsState | null;
-};
-```
+</details>
 
-## What the Runtime Actually Does
+### Limits
 
-The runtime performs six main jobs:
+- There is no `Tabs()` factory.
+- Selection is one trigger per root.
+- Panels use native `hidden`. The runtime does not write layout `content`.
+- Keyboard movement is horizontal only.
 
-1. Find `[tabs]` roots, their `[tabs-list]` (when present), `[tab]` triggers, and `[tab-panel]` panels
-2. Pair each trigger with its panel (`aria-controls`, then same-index panel, then the next sibling)
-3. Fill missing ids, `role="tablist"` / `role="tab"` / `role="tabpanel"`, `aria-controls`, and `aria-labelledby`
-4. Dual-write Juice `[active]` and `aria-selected`, plus roving `tabindex` (`0` selected, `-1` others)
-5. Show the selected panel and hide the others with native `hidden` plus `aria-hidden`
-6. Handle click and APG keyboard on the tab strip
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-If no trigger is already `[active]` or `aria-selected="true"`, the first trigger is selected.
+## Not to be confused with
 
-When `[tabs]` has a `name`, that value becomes the tablist `aria-label` (unless one is already set) and the slug used for generated ids (`settings-tab-1`, `settings-panel-1`).
+| This | Not this |
+| --- | --- |
+| One selected panel | An accordion |
+| `[tab]` and `[tab-panel]` inside `[tabs]` | Orphan `[tab]` and `[tab-panel]`, which are ignored |
 
-## Why MutationObserver Is Used
+## Related
 
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a tabs widget appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA and start handling clicks.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-The strip uses WAI-ARIA APG tabs with **horizontal automatic activation**: moving focus also selects that tab and shows its panel.
-
-- ArrowRight / ArrowLeft wrap to the next / previous trigger, then select and focus it
-- Home / End jump to the first / last trigger
-- Enter and Space activate non-button `[tab]` triggers (native buttons already synthesize a click)
-
-Escape, ArrowUp, and ArrowDown are intentionally out of scope. There is no vertical orientation. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-## Limitations
-
-- No `Tabs()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Orphan `[tab]` / `[tab-panel]` nodes outside `[tabs]` are ignored.
-- Selection is exclusive per root. Multi-select tabs are not part of this runtime.
-- Panels use native `hidden`, never layout `content=`.
-- Keyboard is horizontal only. Escape, ArrowUp, and ArrowDown are out of scope. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-## Why This Matches Navigation
-
-The tabs runtime copies the navigation and accordion lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Runtime behavior](./juice-runtime-behavior.md)

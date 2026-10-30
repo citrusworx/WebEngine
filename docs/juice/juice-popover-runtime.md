@@ -1,38 +1,12 @@
-# Juice Popover Runtime
+# Popover
 
-This document explains the current popover runtime in `libraries/juice/src/js/src/popover/popover-runtime.ts` (monorepo path; outside this vault).
+A popover is an anchored panel rooted at `[popover-root]`.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, and toast:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice popover markup and it exists in the browser, the popover behavior should just work.
+Importing `@citrusworx/juiceui` enhances valid markup through [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The popover runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize popover behavior in their app code.
-
-There is no `Popover()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Popover is a non-modal dialog. It is not a modal, not a drawer, and not a toast stack.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s popover chrome:
+## Markup
 
 ```html
 <button type="button" aria-controls="demo-pop">Open help</button>
@@ -45,185 +19,140 @@ The runtime is aligned with Juice’s popover chrome:
 </div>
 ```
 
-It requires a `[popover-root]` root. Closed vs open is the native `hidden` attribute on that root. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+Closed vs open is the native `hidden` attribute on `[popover-root]`. The floating surface is `[popover-panel]`.
 
-**Never use a bare `popover` attribute.** `popover=""` / `popover="manual"` activates the native HTML Popover API. The floating surface is `[popover-panel]`.
+## Attributes
 
-**Placement:** `[popover-root]` / `[popover-root="bottom"]` / `"top"` / `"left"` / `"right"`. Bare or unspecified is bottom.
+| Hook | What it does |
+| --- | --- |
+| `[popover-root]` | Anchored wrapper with values `bottom`, `top`, `left`, `right`, defaulting to `bottom` when bare. |
+| `[popover-panel]` | Floating surface inside the root. |
+| `[popover-header]` | Header slot whose heading supplies the accessible name when `aria-labelledby` is missing. |
+| `[popover-body]` | Body slot for panel content. |
+| `[popover-close]` | Dismiss control inside the root, with an empty name filled as `aria-label="Close"`. |
+| `hidden` | Native closed state on `[popover-root]`. |
+| `aria-controls` | Pairs an opener whose token list includes the root `id`, with no extra opener attribute. |
+| `role="dialog"` | Dialog role on `[popover-panel]`, set by the runtime when missing. |
+| `aria-modal` | Not set by the runtime, though authors may set it, because the background stays interactive. |
+| `aria-labelledby` | Names the panel from the header heading when neither this nor `aria-label` is set. |
+| `aria-expanded` | Opener open state, kept in sync by the runtime. |
+| `aria-haspopup="dialog"` | Opener popup hint, set by the runtime when missing. |
+| `popover` | Bare `popover`, including `popover=""` and `popover="manual"`, starts the native Popover API. |
+| `name`, `id` | Root `name` or `id` is the slug for generated ids, and a missing root id becomes `${slug}-root`. |
+| `--juice-popover-*` | Theme paint roles for popover chrome. |
 
-**Opener pairing:** any element whose `aria-controls` token list includes the root `id`. There is no extra Juice opener attribute.
+## JavaScript
 
-**Close:** `[popover-close]` inside the root, Escape, or a click outside the open root (and outside its opener). Clicks inside the root stay open.
+| Export | What it does |
+| --- | --- |
+| `createPopover(options?)` | Controller for `options.root`, or the document. |
+| `initPopover(options?)` | Same call as `createPopover`. |
+| `startPopoverRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopPopoverRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-Prefer shipping `role="dialog"` and a labelled heading in markup. The runtime fills those if they are missing, plus opener `aria-expanded` / `aria-haspopup="dialog"` and an empty close name (`aria-label="Close"`). It does **not** set `aria-modal`. Authors may set it; the runtime does not, because the background stays interactive.
+A custom-root controller can run beside the document runtime; each click or key is claimed once.
 
-Theme paint uses `--juice-popover-*` roles. Core CSS paints `[popover-root]` at **z-index 1050** (above modal/drawer `1000`, below toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[popover-root]` is an anchored positioning wrapper, not a dialog overlay, not a drawer, not a toast stack, and not the surface `overlay="frost|tint"` utility. Modal is a centered dialog; drawer is an edge-docked panel; toast is a corner snackbar; popover is a floating panel next to its opener.
+### Options
 
-## Automatic Boot
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `rootSelector` | `[popover-root]` | Root query. |
+| `panelSelector` | `[popover-panel]` | Panel query. |
+| `closeSelector` | `[popover-close]` | Close control query. |
+| `gap` | `8` | Pixels between the opener and the root. |
 
-The runtime starts automatically in the browser.
+### Controller
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the popover runtime:
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Wires ids, ARIA, and openers, and places any already-open root. |
+| `open(target?)` | Opens the root: removes `hidden`, places the panel, moves focus in, then plays, and closes any other open popover. |
+| `close(target?)` | Plays the exit, then sets `hidden`, clears placement, and restores focus. |
+| `toggle(target?)` | Opens a closed root or closes an open one. |
+| `isOpen(target?)` | Reads whether the root is open. |
+| `getState(target?)` | Reads `{ open: boolean }` for that root. |
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startPopoverRuntime();
-    });
-  } else {
-    startPopoverRuntime();
-  }
-}
-```
+### Events
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[popover-root]` with `detail` `{ runtime: "popover", state: { open: boolean } }`.
 
-`stopPopoverRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+`isOpen()` and `getState()` read that state.
 
-## Public API
+An unchanged `open` write does not dispatch, and this surface stays Emerging.
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+## Accessibility
 
-```ts
-createPopover(options?)
-initPopover(options?)
-startPopoverRuntime()
-stopPopoverRuntime()
-```
+- Escape closes the open popover and returns focus to the opener only when no `[modal-overlay]` or `[drawer-overlay]` is open; menu shares that band, and combobox, toast, and tooltip yield. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Tab and Shift+Tab wrap inside the open panel, and the background is not inert.
+- Enter and Space activate non-button openers and `[popover-close]` controls.
+- Prefer `role="dialog"` and a labelled heading, which the runtime fills along with opener `aria-expanded`, `aria-haspopup="dialog"`, and an empty close name `aria-label="Close"`, without setting `aria-modal`.
+- `[popover-root]` is `z-index: 1050`, above modal and drawer `1000` and below toast `1100`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
+- Arrow-key roving is out of scope, because this is not `role="menu"`.
 
-These are useful for internal control, tests, or advanced cases.
+## Behavior
 
-A real open or close dispatches a bubbling `juice:change` from `[popover-root]`. `detail` is `{ runtime: "popover", state: { open: boolean } }`. `isOpen()` and `getState()` read it. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+1. Find `[popover-root]` roots and pair openers whose `aria-controls` token list includes that root `id`.
+2. Resolve the panel as `[popover-panel]`, then `[role="dialog"]`, then the root's first element child.
+3. Fill missing root, panel, and title ids, plus `role="dialog"` and `aria-labelledby` from the header heading, and do not set `aria-modal`.
+4. Fill opener `aria-expanded` and `aria-haspopup="dialog"`, and an empty `[popover-close]` name (`aria-label="Close"`).
+5. Enter removes native `hidden`, places the panel, then plays; exit plays first, and `hidden` plus placement cleanup run only after it finishes, while opening one managed popover closes any other open popover.
+6. On open, focus moves to `[autofocus]`, else the first focusable, else `tabindex="-1"` on the panel; Tab and Escape apply while open, including during exit, and focus returns to the opener after `hidden` is set.
+7. Place the root with `position: fixed` from the opener's `getBoundingClientRect` plus an 8px gap, flip once if the preferred side overflows, and reposition on open, window resize, and capture scroll.
+8. Handle opener toggle, close, and outside clicks, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes.
 
-`createPopover()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+- Orphan `aria-controls` that do not target a `[popover-root]` are ignored.
+- A `name` or `id` on `[popover-root]` is the slug for generated ids (`help-panel`, `help-title`), and a missing root id is `${slug}-root`.
+- Opening is exclusive among popovers, so only one managed popover is open at a time.
+- This runtime does not close a modal, drawer, or toast, and those runtimes do not close a popover.
+- Roots use native `hidden`, never layout `content="active"` or `content="hidden"`.
+- Clicks inside the root stay open; a click outside the open root and outside its opener closes.
+- The floating surface is `[popover-panel]`; a bare `popover` attribute starts the native Popover API.
+- The panel is a non-modal dialog: `role="dialog"` without `aria-modal`, and the background stays interactive.
+- Placement has no Floating UI.
+- There is no `Popover()` factory.
 
-## PopoverOptions
+### Placement
 
-The configurable shape is:
+Placement reads `[popover-root="top|bottom|left|right"]` (default `bottom`) and sets the root to `position: fixed` from the opener's `getBoundingClientRect`. The gap is `8` unless `createPopover({ gap })` overrides it.
 
-```ts
-type PopoverOptions = {
-  root?: ParentNode;
-  rootSelector?: string;
-  panelSelector?: string;
-  closeSelector?: string;
-  gap?: number;
-};
-```
+`fixed` uses viewport coordinates and needs no scroll offset. If the preferred side overflows that axis, the runtime flips once (`bottom` with `top`, `left` with `right`), does not shift or resize, and repositions open roots on window resize and capture-phase scroll with `requestAnimationFrame`.
 
-By default, Juice uses:
+### Motion
 
-```ts
-{
-  root: document,
-  rootSelector: '[popover-root]',
-  panelSelector: '[popover-panel]',
-  closeSelector: '[popover-close]',
-  gap: 8,
-}
-```
+Enter removes `hidden` on `[popover-root]`, places the panel, moves focus in, then sets `data-motion-state="entering"`. The root fades in. Enter uses `--juice-motion-duration-base` and `--juice-motion-ease-enter`.
 
-## PopoverController
+The panel shifts `0.5rem` from the trigger side. `bottom` and the default use `translateY(-0.5rem)`, and `top` uses `translateY(0.5rem)`. `left` uses `translateX(0.5rem)`, and `right` uses `translateX(-0.5rem)`.
 
-```ts
-type PopoverController = {
-  destroy: () => void;
-  sync: () => void;
-  open: (target?: HTMLElement | null) => void;
-  close: (target?: HTMLElement | null) => void;
-  toggle: (target?: HTMLElement | null) => void;
-  isOpen: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => PopoverState | null;
-};
-```
+Exit sets `data-motion-state="exiting"` before `hidden`. The root fades out and the panel shifts back toward the trigger on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. `hidden`, placement cleanup, and focus restore run only after the exit finishes (`exited`).
 
-## What the Runtime Actually Does
+<details>
+<summary>Edge cases</summary>
 
-The runtime performs eight main jobs:
+- The focus trap and Escape still apply during exit.
+- A second Escape does not start a second close.
+- Reduced motion, or a computed duration of `0`, does the same steps in the same turn.
+- A new open cancels an in-flight exit.
+- Duration tokens live in [Animations](./juice-animations.md).
 
-1. Find `[popover-root]` roots and pair openers whose `aria-controls` token list includes that root `id`
-2. Resolve the panel (`[popover-panel]`, then `[role="dialog"]`, then the root’s first element child)
-3. Fill missing root / panel / title ids, `role="dialog"`, and `aria-labelledby` from the header heading. It does not set `aria-modal`
-4. Fill opener `aria-expanded` / `aria-haspopup="dialog"` and an empty `[popover-close]` name
-5. Enter removes native `hidden`, places the panel, then plays. Exit plays first; `hidden` and placement cleanup run only after it finishes. Opening one managed popover closes any other open popover
-6. Move focus into the panel on open (`[autofocus]` if present, else the first focusable, else `tabindex="-1"` on the panel). Trap Tab and honor Escape while the popover is open, including during exit. Focus restores to the opener after `hidden` is set
-7. Place the root with `position: fixed` from the opener’s `getBoundingClientRect` plus an 8px gap; flip once to the opposite side if the preferred side overflows; reposition on open, window resize, and capture scroll (rAF-throttled)
-8. Handle click (opener toggle, close, outside) and keyboard (Escape, Tab trap, Enter/Space on non-button openers and closes)
+</details>
 
-Orphan `aria-controls` that do not target a `[popover-root]` are ignored.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-When `[popover-root]` has a `name` or `id`, that value becomes the slug used for generated ids (`help-panel`, `help-title`). A missing root id is filled as `${slug}-root`.
+## Not to be confused with
 
-Exclusive open is among popovers. This runtime does not close a modal, drawer, or toast, and those runtimes do not close a popover.
+| This | Not this |
+| --- | --- |
+| Anchored panel `[popover-panel]` | A bare `popover` attribute |
+| Non-modal dialog beside its opener | Modal, drawer, or toast |
+| `[popover-root]` positioning wrapper | Surface `overlay="frost"` or `overlay="tint"` |
 
-## Placement
+## Related
 
-Placement is dependency-free. There is no Floating UI.
-
-The runtime reads `[popover-root="top|bottom|left|right"]` (default `bottom`), then positions the root `fixed` from the opener rect in viewport coordinates. `fixed` needs no scroll offset. The gap is `8` unless `createPopover({ gap })` overrides it.
-
-If the preferred side overflows the viewport on that one axis, the runtime flips once to the opposite side (`bottom` ↔ `top`, `left` ↔ `right`). There is no shift or size middleware.
-
-Open popovers reposition on window resize and capture-phase scroll, scheduled with `requestAnimationFrame`.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a popover appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA, start handling clicks, and place any already-open root.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Motion
-
-Enter removes `hidden` on `[popover-root]`, places the panel, moves focus in, then sets `data-motion-state="entering"`. The root fades in. The panel shifts `0.5rem` from the trigger side (`bottom` and the default from `translateY(-0.5rem)`, `top` from `translateY(0.5rem)`, `left` from `translateX(0.5rem)`, `right` from `translateX(-0.5rem)`). Enter uses `--juice-motion-duration-base` and `--juice-motion-ease-enter`.
-
-Exit sets `data-motion-state="exiting"` before `hidden`. The root fades out and the panel shifts back toward the trigger on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. The focus trap and Escape still apply during that exit. A second Escape does not start a second close. `hidden`, placement cleanup, and focus restore run only after the exit finishes (`exited`).
-
-Reduced motion, or a computed duration of `0`, does the same steps in the same turn. A new open cancels an in-flight exit. See [Animations](./juice-animations.md).
-
-## Keyboard
-
-- Escape closes the open popover and returns focus to the opener, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape). Menu sits in the same Escape band as popover. Combobox, toast, and tooltip yield to an open popover or an open menu. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Tab / Shift+Tab wrap inside the open panel (focus trap). The background is not inert
-- Enter and Space activate non-button openers and `[popover-close]` controls (native buttons already synthesize a click)
-
-Arrow-key roving is intentionally out of scope. This is not `role="menu"`.
-
-## Limitations
-
-- No `Popover()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Orphan `aria-controls` that do not target `[popover-root]` are ignored.
-- Opening is exclusive among popovers. Only one managed popover is open at a time.
-- Roots use native `hidden`, never layout `content=`.
-- Never use a bare `popover` attribute. The surface is `[popover-panel]`.
-- The panel is a non-modal dialog: `role="dialog"` without `aria-modal`. The background stays interactive.
-- Placement has no Floating UI. One opposite-side flip only; no shift or size middleware.
-- Centered modal / dialog, edge-docked drawer, and toast-stack behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), and [Toast Runtime](./juice-toast-runtime.md).
-- Escape dismisses the open popover only when no open modal/drawer overlay exists. Menu sits in the same Escape band. Combobox, toast, and tooltip yield to an open popover or an open menu. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-## Why This Matches Navigation
-
-The popover runtime copies the navigation, accordion, tabs, modal, drawer, and toast lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal Runtime](./juice-modal-runtime.md)
+- [Drawer Runtime](./juice-drawer-runtime.md)
+- [Toast Runtime](./juice-toast-runtime.md)

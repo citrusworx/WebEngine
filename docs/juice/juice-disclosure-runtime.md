@@ -1,40 +1,12 @@
-# Juice Disclosure Runtime
+# Disclosure
 
-This document explains the current disclosure runtime in `libraries/juice/src/js/src/disclosure/disclosure-runtime.ts` (monorepo path; outside this vault).
+A disclosure is one trigger and one panel, rooted at `[disclosure]`.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination:
+Emerging. The twentieth runtime. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice disclosure markup and it exists in the browser, the trigger, the panel, and Escape should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The disclosure runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize disclosure behavior in their app code.
-
-There is no `Disclosure()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Disclosure is the APG **Disclosure** pattern: one trigger, one panel. It is not an accordion. Accordion stays multi-item `[accordion]` / `[accordion-item]` (multi-open). Disclosure is not a layered overlay. There is no exclusive group and no arrow-key roving tabindex.
-
-Disclosure is the twentieth Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s disclosure chrome:
+## Markup
 
 ```html
 <section disclosure name="shift-notes">
@@ -45,215 +17,120 @@ The runtime is aligned with Juice’s disclosure chrome:
     Gate B closes at 9.
   </div>
 </section>
-
-<section disclosure>
-  <button type="button" disclosure-trigger aria-controls="gate-panel">
-    Gate
-  </button>
-  <div id="gate-panel" disclosure-panel hidden>
-    Use gate C.
-  </div>
-</section>
 ```
 
-`[disclosure]` is the root. `[disclosure-trigger]` is the button. `[disclosure-panel]` is the controlled region. A boolean `[disclosure]` attribute is fine. There is no HTML global `disclosure` attribute.
+A boolean `[disclosure]` attribute is valid. There is no HTML global `disclosure` attribute.
 
-**What this runtime enhances:**
+## Attributes
 
-- A `[disclosure]` root. A plain element with `[disclosure]` is enhanced. Typical hosts are `<section disclosure>` and `<div disclosure>`.
-- Triggers and panels belong to the nearest `[disclosure]`. Nested disclosures stay independent.
-- Orphan `[disclosure-trigger]` and `[disclosure-panel]` nodes outside a `[disclosure]` root are ignored. Accordion markup (`[accordion]` / `[accordion-item]`) is not enhanced here.
+| Hook | What it does |
+| --- | --- |
+| `[disclosure]` | Root. Triggers and panels belong to the nearest root. Nested roots stay independent. |
+| `[disclosure-trigger]` | The button. Orphans outside a root are ignored. |
+| `[disclosure-panel]` | The controlled region. |
+| `name` | Root slug. Trimmed, lowercased, non-alphanumeric runs become dashes. |
+| `hidden` | Native closed state on the panel. The runtime does not write layout `content`. |
+| `[motion="accordion"]` | On the panel. Same height opt-in as accordion. |
+| `--juice-disclosure-*` | `surface`, `border`, `trigger`, `trigger-hover`, `trigger-open`, `ink`, `chevron`, `focus-ring`. |
 
-**Pairing:** each trigger owns one panel.
+`surface` is the panel, not a bar. The trigger is a surface, not the CTA gradient.
 
-- If the trigger has `aria-controls`, the element with that id inside the same root is the panel. The lookup stays inside the root. A control id that points at the trigger itself is ignored.
-- Otherwise the next sibling is the panel when it is a `[disclosure-panel]`, or when it is not another trigger and not a nested `[disclosure]`. An unmarked next sibling is enough.
-- A later sibling is used when the immediate next sibling is another trigger or a nested disclosure.
+## JavaScript
 
-**Ids and names:** sync fills missing ids and the pair relationship. Author ids are kept.
+| Export | What it does |
+| --- | --- |
+| `createDisclosure(options?)` | Controller for `options.root`, or the document. |
+| `initDisclosure(options?)` | Same call as `createDisclosure`. |
+| `startDisclosureRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopDisclosureRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-- A `name` on the root becomes the slug (`shift-notes` → `shift-notes-trigger` / `shift-notes-panel`). The slug is trimmed, lowercased, and non-alphanumeric runs become dashes.
-- Without a name, generated ids are `juice-disclosure-trigger-N` and `juice-disclosure-panel-N`.
-- More than one trigger in the same root is not an exclusive group. Generated ids gain a numeric suffix (`name-trigger-1`, `name-panel-1`). The contract is still one trigger and one panel. Extra triggers in one root stay independent.
+A custom-root controller can run beside the document runtime. Each click or key is claimed once.
 
-**Accessibility wiring:** sync writes the pair, not a second component API.
+### Options
 
-- `aria-controls` on the trigger is set to the panel id.
-- The panel gets `role="region"` and `aria-labelledby` pointing at the trigger.
-- A trigger that is not a `<button>` and not an `<a href>` gets `role="button"`. It gets `tabindex="0"` only when `tabindex` is missing. Buttons and links with `href` keep their native role and tabindex.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `disclosureSelector` | `[disclosure]` | Root query. |
+| `triggerSelector` | `[disclosure-trigger]` | Trigger query. |
 
-**Open and closed:** state is `aria-expanded` on the trigger plus native `hidden` and `aria-hidden` on the panel. This runtime never writes layout `content="active"` or `content="hidden"`.
+### Controller
 
-- When a panel is paired, native `hidden` is the source of truth. Sync writes `aria-expanded` and `aria-hidden` to match. An author `aria-expanded="true"` on a still-hidden panel is corrected to closed.
-- A trigger with no panel and no `aria-expanded` becomes `aria-expanded="false"`. An author `aria-expanded` without a panel is kept.
-- Expanded paint is `aria-expanded="true"` on the trigger. Closed panels use the native `hidden` attribute.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Applies pairing, ids, and open state. |
+| `expand(trigger?)` | Opens that pair and remembers it as last opened. |
+| `collapse(trigger?)` | Closes that pair. |
+| `toggle(trigger?)` | Expands when the panel is hidden, otherwise collapses. |
+| `isExpanded(trigger?)` | Reads that trigger. |
+| `getState(target?)` | Returns `{ expanded: boolean }` for the first trigger, or `null`. |
 
-There is no exclusive group. Opening one disclosure does not collapse another. Arrow keys do not move a roving tabindex.
+An element argument resolves to a `[disclosure-trigger]` inside a root, or to the closest trigger. Omitted, the first trigger in tree order is used. A node outside a root is ignored. These methods do not close siblings.
 
-Theme paint uses `--juice-disclosure-*` roles (`surface`, `border`, `trigger`, `trigger-hover`, `trigger-open`, `ink`, `chevron`, `focus-ring`). Core CSS does not give `[disclosure]` a z-index. It is inline chrome — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). `surface` is the panel, not a bar. The trigger is a surface, not the CTA button gradient. See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md).
+### Events
 
-## Automatic Boot
+A real expand or collapse dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[disclosure]`.
 
-The runtime starts automatically in the browser.
+`detail` is `{ runtime: "disclosure", state: { expanded: boolean } }` for the first trigger. An unchanged value does not dispatch. This surface stays Emerging.
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the disclosure runtime:
+## Accessibility
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startDisclosureRuntime();
-    });
-  } else {
-    startDisclosureRuntime();
-  }
-}
-```
+- Sync sets `aria-controls` on the trigger, and `role="region"` plus `aria-labelledby` on the panel.
+- A trigger that is not a `<button>` and not an `<a href>` gets `role="button"`, and `tabindex="0"` only when `tabindex` is missing.
+- Authors own the trigger name. The runtime does not invent a visible label.
+- Enter and Space toggle non-button, non-link triggers. Those keys are prevented. Buttons and links keep the browser path.
+- Escape collapses the focused open disclosure, the one whose panel contains the target, or the last opened disclosure. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Escape yields when the event is already handled, or when an open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists.
+- There is no focus trap and no roving tabindex. Disclosure has no z-index. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+## Behavior
 
-`stopDisclosureRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+1. Find `[disclosure]` roots. Orphans and `[accordion]` markup are ignored.
+2. Pair each trigger with one panel. `aria-controls` inside the root wins. Otherwise the next eligible sibling is the panel.
+3. Fill ids from the root `name`, or `juice-disclosure-trigger-N` / `juice-disclosure-panel-N`. Author ids are kept.
+4. Wire `aria-controls`, `role="region"`, and `aria-labelledby`.
+5. Keep state on `aria-expanded`, native `hidden`, and `aria-hidden`. When a panel exists, `hidden` wins.
+6. Toggle on click. Enter and Space toggle only non-button triggers that are not anchors with `href`.
+7. Escape collapses one disclosure and returns focus to that trigger.
 
-## Public API
+### Pairing
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+| Rule | Result |
+| --- | --- |
+| Trigger `aria-controls` | The element with that id inside the same root. An id that points at the trigger is ignored. |
+| No `aria-controls` | The next sibling when it is a `[disclosure-panel]`, or when it is not another trigger and not a nested `[disclosure]`. |
+| Next sibling is a trigger or nested root | A later sibling is used. |
 
-```ts
-createDisclosure(options?)
-initDisclosure(options?)
-startDisclosureRuntime()
-stopDisclosureRuntime()
-```
+Extra triggers in one root are not an exclusive group. Generated ids gain a numeric suffix (`name-trigger-1`). Opening one disclosure does not collapse another.
 
-These are useful for internal control, tests, or advanced cases.
+When a panel is paired, an author `aria-expanded="true"` on a still-hidden panel is corrected to closed. A trigger with no panel keeps an author `aria-expanded`. With none, sync writes `"false"`.
 
-A real expand or collapse dispatches a bubbling `juice:change` from `[disclosure]`. `detail` is `{ runtime: "disclosure", state: { expanded: boolean } }` for the first trigger. `isExpanded()` and `getState()` read it. A write that leaves `expanded` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+### Motion
 
-`createDisclosure()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+`[motion="accordion"]` must be on `[disclosure-panel]`. Height uses `--juice-motion-duration-base` and `--juice-motion-ease-in-out`. `aria-expanded` updates immediately. Collapse sets `hidden` after the height finishes.
 
-`initDisclosure()` is the same function as `createDisclosure()`.
+Without the attribute, show and hide are an instant `hidden` toggle. Reduced motion stays instant. [Animations](./juice-animations.md).
 
-## DisclosureOptions
+### Limits
 
-The configurable shape is:
-
-```ts
-type DisclosureOptions = {
-  root?: ParentNode;
-  disclosureSelector?: string;
-  triggerSelector?: string;
-};
-```
-
-By default, Juice uses:
-
-```ts
-{
-  root: document,
-  disclosureSelector: '[disclosure]',
-  triggerSelector: '[disclosure-trigger]',
-}
-```
-
-## DisclosureController
-
-```ts
-type DisclosureController = {
-  destroy: () => void;
-  sync: () => void;
-  expand: (trigger?: HTMLElement | null) => void;
-  collapse: (trigger?: HTMLElement | null) => void;
-  toggle: (trigger?: HTMLElement | null) => void;
-  isExpanded: (trigger?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => DisclosureState | null;
-};
-```
-
-`sync()` walks each managed root and applies pairing, ids, and open/closed state. `expand()`, `collapse()`, and `toggle()` act on one trigger. An element argument resolves to that trigger when it matches `[disclosure-trigger]` inside a root, or to the closest trigger. When the argument is omitted, the first trigger in tree order is used. A node that is not inside a `[disclosure]` root is ignored.
-
-`expand()` opens that pair and remembers it as the last opened disclosure. `collapse()` closes it. If that trigger was the last opened one, the last-opened memory moves to another disclosure that is still open, or clears. `toggle()` expands when the panel is hidden and collapses when it is open. These methods do not close siblings. They never write layout `content=`.
-
-## What the Runtime Actually Does
-
-The runtime performs seven main jobs:
-
-1. Find `[disclosure]` roots. Orphans outside a root are ignored. A part belongs to its nearest root. Nested disclosures stay independent. `[accordion]` markup is not enhanced
-2. Pair each trigger with one panel. `aria-controls` inside the root wins. Otherwise the next sibling panel is used, including an unmarked sibling that is not another trigger or a nested disclosure
-3. Fill missing ids from the root `name` when it is set, otherwise from `juice-disclosure-trigger-N` / `juice-disclosure-panel-N`. Author ids are kept. Extra triggers in one root stay independent and get a numeric suffix. They are not an exclusive group
-4. Wire `aria-controls`, `role="region"`, and `aria-labelledby`. A non-button trigger that is not an anchor with `href` gets `role="button"` and `tabindex="0"` when tabindex is missing
-5. Keep open/closed state on `aria-expanded`, native `hidden`, and `aria-hidden`. When a panel exists, `hidden` wins and sync rewrites the other two to match. A panel with `[motion="accordion"]` animates height, and `hidden` waits until collapse finishes. Layout `content=` is never written
-6. Toggle on click. Enter and Space toggle only non-button triggers that are not anchors with `href`. Buttons and those anchors keep the browser activation path
-7. Escape collapses the focused open disclosure, or the last opened one, and returns focus to that trigger. It yields to an open modal, drawer, or popover, and to an already-handled Escape. There is no global disclosure Escape
-
-There is no focus trap and no arrow-key roving tabindex. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, combobox, banner, or menu, and it does not toggle a switch, move a slider, toggle a checkbox, select a radio, move a breadcrumb or pagination current page, change a progress value, or collapse an accordion item.
-
-## Motion
-
-`[motion="accordion"]` must be on `[disclosure-panel]`, not the trigger. The runtime measures that panel's `scrollHeight`, sets an explicit pixel height, and transitions height on `--juice-motion-duration-base` and `--juice-motion-ease-in-out`. `aria-expanded` updates immediately. Expand removes `hidden` before the height runs. Collapse sets `hidden` only after the height finishes, because native `hidden` cannot interpolate to or from `auto`.
-
-Without the attribute, show and hide stay an instant `hidden` toggle. Reduced motion stays instant even when the attribute is present. This is the same height opt-in as accordion. Disclosure is still one trigger and one panel, not an accordion. See [Animations](./juice-animations.md).
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a disclosure appears later, the observer schedules a `sync()` call so Juice can wire the pair and the open/closed state.
-
-The observer watches child list changes and these attributes: `hidden`, `aria-expanded`, `aria-controls`, `disclosure`, `disclosure-trigger`, and `disclosure-panel`.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- Click toggles the trigger’s panel
-- Enter and Space toggle a trigger that is not a `<button>` and not an `<a href>`. Those keys are prevented so the host does not do something else
-- Enter and Space on a `<button>` or an `<a href>` stay with the browser. A button’s activation still arrives as a click, and that click toggles
-- Arrow keys are not handled. There is no roving tabindex
-- Escape collapses the focused open disclosure, or the disclosure whose panel contains the event target. If neither applies, it collapses the last opened disclosure that is still open. Focus returns to that trigger
-- Escape does nothing when no disclosure is open. It does not collapse every open disclosure
-- Escape yields when the event is already handled, or when an open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering)
-- There is no focus trap. Tab is not wrapped
-
-Authors own the accessible name on the trigger. The runtime does not invent a visible label. It does label the panel with `aria-labelledby`.
-
-## Limitations
-
-- No `Disclosure()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Disclosure is the twentieth Emerging auto-enhance runtime, shipped in `@citrusworx/juiceui@0.9.2`. Pagination shipped in 0.9.1 and remains the nineteenth. Spinner is the twenty-first and also shipped in 0.9.2. Select is the twenty-second and also shipped in 0.9.2. Input is the twenty-third and also shipped in 0.9.2. Textarea is the twenty-fourth and also shipped in 0.9.2. Field is the twenty-fifth and also shipped in 0.9.2. Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
-- This is not an accordion. `[accordion]` / `[accordion-item]` is a different runtime. The two do not toggle each other.
-- Orphan triggers and panels outside `[disclosure]` are ignored.
-- There is no exclusive group. Opening one disclosure leaves the others open. Arrow-key roving tabindex is out of scope.
-- The contract is one trigger and one panel. Extra triggers inside one root are paired independently. They are not a stack and not an accordion.
-- When a panel is paired, native `hidden` wins over a conflicting `aria-expanded`. Sync rewrites `aria-expanded` and `aria-hidden` to match. Layout `content=` is never written.
-- Generated ids use the root `name` when it is set. Author ids are kept. `aria-controls`, panel `role`, and `aria-labelledby` are written to the pair.
-- A non-native trigger gets `role="button"`. `tabindex="0"` is added only when `tabindex` is missing. Buttons and anchors with `href` are left to the browser for Enter and Space.
 - The runtime does not special-case `disabled` or `aria-disabled`. A native disabled button does not click. An `aria-disabled` trigger still toggles.
-- A link trigger’s click is not cancelled, so an `<a href disclosure-trigger>` can navigate and toggle.
-- Escape collapses one disclosure: the focused open one, the one whose panel contains focus, or the last opened. It yields to an open modal, drawer, or popover. There is no global disclosure Escape and no focus trap. Disclosure is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- There is no z-index elevation. Disclosure is inline chrome. Tabs, accordion, and disclosure do not set a stacking band. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, and accordion behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Progress Runtime](./juice-progress-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), [Icon Button Runtime](./juice-icon-button-runtime.md), and [Accordion Runtime](./juice-accordion-runtime.md).
+- A link trigger's click is not cancelled, so `<a href disclosure-trigger>` can navigate and toggle.
+- There is no `Disclosure()` factory.
 
-## Why This Matches Navigation
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-The disclosure runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, and pagination lifecycle by convention:
+## Not to be confused with
 
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
+| This | Not this |
+| --- | --- |
+| One trigger, one panel | Accordion (`[accordion]` / `[accordion-item]`, multi-open) |
+| Inline disclosure | A dialog or layered overlay |
+| Independent pairs | An exclusive group or APG Tabs |
 
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
+## Related
 
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Accordion](./juice-accordion-runtime.md)

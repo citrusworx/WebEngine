@@ -50,16 +50,9 @@ Juice uses HTML attributes to apply styles directly in markup. Attributes are gr
 
 First-class attributes. The size scale is real CSS, not font-dependent. Canonical rules: [Typography Contract](./juice-typography-contract.md).
 
-- `font`: face alias
-  Values: shipped Google, Adobe, and custom aliases such as `"bebas-neue"`, `"lato"`, `"oswald"`, `"playfair-display"`, `"source-code-pro"`, `"korolev-rounded"`, `"korolev-rounded-bold"`
-- `fontSize`: stepped size from `libraries/juice/src/core/typography.scss`
-  Values: `"sm"` (`0.75rem`), `"md"` (`1.25rem`), `"lg"` (`1.5rem`), `"xl"` (`2rem`), `"xxl"` (`3rem`)
-- `fontColor`: token-backed text color
-  Values: palette steps such as `"obsidian-900"`, `"gray-700"`, `"white-100"`
-- `lineHeight`: explicit leading
-  Values: `"1rem"` through `"10rem"`
-- `fontWeight`: numeric weight
-  Values: `"100"` through `"900"`
+- `font`: face alias Values: shipped Google, Adobe, and custom aliases such as `"bebas-neue"`, `"lato"`, `"oswald"`, `"playfair-display"`, `"source-code-pro"`, `"korolev-rounded"`, `"korolev-rounded-bold"` - `fontSize`: stepped size from `libraries/juice/src/core/typography.scss` Values: `"sm"` (`0.75rem`), `"md"` (`1.25rem`), `"lg"` (`1.5rem`), `"xl"` (`2rem`)
+
+`"xxl"` (`3rem`) - `fontColor`: token-backed text color Values: palette steps such as `"obsidian-900"`, `"gray-700"`, `"white-100"` - `lineHeight`: explicit leading Values: `"1rem"` through `"10rem"` - `fontWeight`: numeric weight Values: `"100"` through `"900"`
 
 Display / title / body / caption are hierarchy roles mapped onto `fontSize` + `font`, not attributes. Under a theme, omit `font=` and let body / heading defaults apply; set `font=` (or `fontColor` / `fontWeight` / `lineHeight`) only for a local override. Those author attrs beat theme semantic defaults on `h1`–`h6` / `p` — see the contract.
 
@@ -160,18 +153,21 @@ For more detail, see [Sizing Reference](./juice-sizing.md).
 - `variant`
   Values: `"monochromatic"`, `"glass"`, `"tinted"`
 
-Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur`, `--juice-border-strength-<soft|bold>-width|color`, `--juice-shadow-tone-<cool|warm>-color|shadow`, and `--juice-overlay-<frost|tint>-wash|layer` roles. Unthemed fallbacks keep the original light frost for `soft` tones, a gray hairline / heavier rule for strength, a bluish / amber-ish drop for shadow tone, and a white veil / bluish wash for overlay. `borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. Standalone `blur` applies `backdrop-filter` and overrides a tone's blur length when both are set, without wiping tone fill / border / shadow. `shadowTone` paints shadow cast color / temperature only; with `[shadow][depth]` it sets `--shadow-color` and leaves geometry to `depth`. `overlay` paints a frost / tint wash via `background-image` only, so `surfaceTone` fill and `bgColor` swatches stay. `variant` recipes compose those same roles (`glass` = frost overlay + soft-tone frost, `tinted` = tint overlay, `monochromatic` = soft hairline + restrained shadow). When a recipe and a finer attr are both set, the finer attr wins its property. Optional `--juice-blur-sm` / `--juice-blur-md` restyles; themes do not bind a second blur scale or a `--juice-variant-*` family. See [Surfaces](./juice-surfaces.md).
+Theme paint uses `--juice-surface-<tone>-bg|border|shadow|blur`, `--juice-border-strength-<soft|bold>-width|color`, `--juice-shadow-tone-<cool|warm>-color|shadow`, and `--juice-overlay-<frost|tint>-wash|layer` roles. Unthemed fallbacks keep the original light frost for `soft` tones, a gray hairline / heavier rule for strength, a bluish / amber-ish drop for shadow tone, and a white veil / bluish wash for overlay.
+
+`borderStrength` composes with `surfaceTone` (width only) and optional `borderColor` swatches. Standalone `blur` applies `backdrop-filter` and overrides a tone's blur length when both are set, without wiping tone fill / border / shadow.
+
+`shadowTone` paints shadow cast color / temperature only; with `[shadow][depth]` it sets `--shadow-color` and leaves geometry to `depth`. `overlay` paints a frost / tint wash via `background-image` only, so `surfaceTone` fill and `bgColor` swatches stay.
+
+`variant` recipes compose those same roles (`glass` = frost overlay + soft-tone frost, `tinted` = tint overlay, `monochromatic` = soft hairline + restrained shadow). When a recipe and a finer attr are both set, the finer attr wins its property.
+
+Optional `--juice-blur-sm` / `--juice-blur-md` restyles; themes do not bind a second blur scale or a `--juice-variant-*` family. See [Surfaces](./juice-surfaces.md).
 
 ## Icon Attributes
 
 First-class:
 
-- `icon`: applies a FontAwesome Free icon mask
-  Values: any icon key that exists in the Juice solid, regular, or brands sets
-- `iconcolor`: applies icon color through Juice's icon color selectors
-  Values: token-backed color values such as `"red-800"`, `"gray-900"`, or `"freshgreen-600"`
-- `iconSize`: stepped icon size
-  Values: `"xxs"` (10px), `"xs"` (12px), `"sm"` (24px), `"md"` (36px), `"lg"` (48px), `"xl"` (60px), `"xxl"` (72px)
+- `icon`: applies a FontAwesome Free icon mask Values: any icon key that exists in the Juice solid, regular, or brands sets - `iconcolor`: applies icon color through Juice's icon color selectors Values: token-backed color values such as `"red-800"`, `"gray-900"`, or `"freshgreen-600"` - `iconSize`: stepped icon size Values: `"xxs"` (10px), `"xs"` (12px), `"sm"` (24px), `"md"` (36px), `"lg"` (48px), `"xl"` (60px), `"xxl"` (72px)
 
 Set selection:
 
@@ -212,14 +208,11 @@ For more detail, see [Icons](./juice-icons.md).
 
 Square icon-only control on the existing button chrome. Color, border, and hover fill stay with `button` and `btn`. Geometry is `[icon-button]`.
 
-- `icon-button`
-  Values: boolean, or `"round"` for a circle
-- `round`
-  On `[icon-button]`, same circle as `icon-button="round"`
-- `scale`
-  `"sm"` and `"lg"` keep the control square and step the icon. Unmarked scale matches a default button.
-- `pressed`
-  Visual toggle. `aria-pressed="true"` paints the same state. On `[icon-button][toggle]`, the runtime keeps `[pressed]` and `aria-pressed` together. Without `[toggle]`, `[pressed]` stays visual.
+- `icon-button` Values: boolean, or `"round"` for a circle - `round` On `[icon-button]`, same circle as `icon-button="round"` - `scale` `"sm"` and `"lg"` keep the control square and step the icon. Unmarked scale matches a default button. - `pressed` Visual toggle.
+
+`aria-pressed="true"` paints the same state. On `[icon-button][toggle]`, the runtime keeps `[pressed]` and `aria-pressed` together.
+
+Without `[toggle]`, `[pressed]` stays visual.
 
 Core owns the defaults (button block padding, plus the icon default). Shipped themes do not bind them.
 
@@ -255,14 +248,24 @@ Transient press. Mobile-Critical. There is no HTML global `pressable` attribute,
 - `pressable-longpress` — opt-in. Empty or `"true"` uses 500ms. A non-negative number is the delay. `"false"` is off. Pointer only
 - `pressable-slop` — pixel slop. A non-negative number overrides the default 10
 
-Color roles are `--juice-pressable-hover-ring`, `--juice-pressable-pressed-ring`, and `--juice-pressable-focus-ring` (`currentColor`), on `:root` and again on `[theme]`. Layout and motion roles are `--juice-pressable-radius` (`0.375rem`), `--juice-pressable-duration`, `--juice-pressable-easing`, and `--juice-pressable-scale` (`0.98`), on `:root` only. Shipped themes are not required to bind them. The ring follows host ink. On Citrusmint muted copy it misses 3:1.
+Color roles are `--juice-pressable-hover-ring`, `--juice-pressable-pressed-ring`, and `--juice-pressable-focus-ring` (`currentColor`), on `:root` and again on `[theme]`. Layout and motion roles are `--juice-pressable-radius` (`0.375rem`), `--juice-pressable-duration`, `--juice-pressable-easing`, and `--juice-pressable-scale` (`0.98`), on `:root` only.
+
+Shipped themes are not required to bind them. The ring follows host ink.
+
+On Citrusmint muted copy it misses 3:1.
 
 ```html
 <button type="button" pressable>Save</button>
 <div pressable="scale" role="button" tabindex="0">Hold</div>
 ```
 
-The runtime auto-enhances `[pressable]` (`createPressable` / `getState`). Enter is not `preventDefault`'d. Space is, on a custom button host that is not a native Space control, so the page does not scroll. The runtime does not add `role` or `tabindex`. See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+The runtime auto-enhances `[pressable]` (`createPressable` / `getState`). Enter is not `preventDefault`'d.
+
+Space is, on a custom button host that is not a native Space control, so the page does not scroll. The runtime does not add `role` or `tabindex`.
+
+See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+
+`@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
 
 ### Touchable row
 
@@ -277,7 +280,13 @@ The runtime auto-enhances `[pressable]` (`createPressable` / `getState`). Enter 
 - `touchable-row-leading` / `touchable-row-content` / `touchable-row-title` / `touchable-row-subtitle` / `touchable-row-trailing` — slots. There is no `[touchable-row-meta]`. `[leading]` stays letter-spacing
 - `touchable-row-title="clamp"` and `touchable-row-subtitle="clamp"` — two-line clamp. A direct child title truncates and clamps
 
-Color roles are `--juice-touchable-row-ink` (registered `<color>`, `currentColor`), `--juice-touchable-row-divider` (28% mix), `--juice-touchable-row-selected`, `--juice-touchable-row-chevron`, and `--juice-touchable-row-subtitle`, on `:root` and again on `[theme]`. Layout roles are min-height `44px`, padding, dense padding, gap, dense gap, radius `0.375rem`, selected width `3px`, and line-clamp `2`, on `:root` only. There is no motion role. Shipped themes are not required to bind them. The selected bar clears 3:1 on every theme. Citrusmint is the floor at 4.62:1. The divider is decorative and stays under 3:1.
+Color roles are `--juice-touchable-row-ink` (registered `<color>`, `currentColor`), `--juice-touchable-row-divider` (28% mix), `--juice-touchable-row-selected`, `--juice-touchable-row-chevron`, and `--juice-touchable-row-subtitle`, on `:root` and again on `[theme]`. Layout roles are min-height `44px`, padding, dense padding, gap, dense gap, radius `0.375rem`, selected width `3px`, and line-clamp `2`, on `:root` only.
+
+There is no motion role. Shipped themes are not required to bind them.
+
+The selected bar clears 3:1 on every theme. Citrusmint is the floor at 4.62:1.
+
+The divider is decorative and stays under 3:1.
 
 ```html
 <div touchable-row="chevron select" pressable>
@@ -285,7 +294,13 @@ Color roles are `--juice-touchable-row-ink` (registered `<color>`, `currentColor
 </div>
 ```
 
-The runtime auto-enhances `[touchable-row]` (`createTouchableRow` / `getState`). Enter and Space on an `li` or `div` dispatch one click. Space is `preventDefault`'d on those hosts. `a` and `button` keep the native click. See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+The runtime auto-enhances `[touchable-row]` (`createTouchableRow` / `getState`). Enter and Space on an `li` or `div` dispatch one click.
+
+Space is `preventDefault`'d on those hosts. `a` and `button` keep the native click.
+
+See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+
+`@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
 
 ### Cards
 
@@ -457,17 +472,31 @@ See [Combobox Runtime](./juice-combobox-runtime.md). Theme paint uses `--juice-c
 
 Pairing is wrapped: `[menu-root]` contains the opener and `[menu]`. The runtime fills opener `aria-haspopup="menu"` plus `aria-controls` pointing at the `[menu]` id. Closed vs open is `hidden` on `[menu]`, not the root.
 
-Menu is an APG menu button. It is not a popover, not a combobox, not a native `<select>`, not a menubar, not a context menu, and not the surface `overlay="frost|tint"` utility. Placement is CSS-only (absolute from the root). No submenus and no typeahead in v1. The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`); Escape sits with popover (yields to modal/drawer). There is no focus trap and no Sig Menu factory.
+Menu is an APG menu button. It is not a popover, not a combobox, not a native `<select>`, not a menubar, not a context menu, and not the surface `overlay="frost|tint"` utility.
+
+Placement is CSS-only (absolute from the root). No submenus and no typeahead in v1.
+
+The runtime auto-enhances that markup (`open` / `close` / `toggle` / `select`); Escape sits with popover (yields to modal/drawer). There is no focus trap and no Sig Menu factory.
 
 See [Menu Runtime](./juice-menu-runtime.md). Theme paint uses `--juice-menu-*` roles (`panel`, `panel-border`, `panel-shadow`, `ink`, `item`, `item-hover`, `item-active`, `separator`, `focus-ring`, `opener`, `opener-ink`).
 
 ### Switch
 
-- `switch` — the control root (boolean attr). Primary host is `<button type="button" switch>`. The runtime fills `role="switch"` and `aria-checked` `"true"`|`"false"`. A boolean `[switch]` attribute is fine: there is no HTML global `switch` attribute. WebKit's checkbox `switch` attr is an opt-in on `<input type="checkbox">`, not a global; Juice `[switch]` on that host is a valid secondary story (`:checked` paints it, and the runtime keeps `aria-checked` in lockstep). Do not restyle bare `[role="switch"]`
+- `switch` — the control root (boolean attr). Primary host is `<button type="button" switch>`.
+- The runtime fills `role="switch"` and `aria-checked` `"true"`|`"false"`. A boolean `[switch]` attribute is fine: there is no HTML global `switch` attribute.
+- WebKit's checkbox `switch` attr is an opt-in on `<input type="checkbox">`, not a global; Juice `[switch]` on that host is a valid secondary story (`:checked` paints it, and the runtime keeps `aria-checked` in lockstep). Do not restyle bare `[role="switch"]`
 
-Checked paint is `aria-checked="true"` so chrome and runtime share one story. There is no `switch="on"`. Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children, no `switch-size`, and `scale` does not change track/thumb geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name — the runtime does not invent one.
+Checked paint is `aria-checked="true"` so chrome and runtime share one story. There is no `switch="on"`.
 
-Switch is an APG switch (toggle). It is not a form checkbox as the only story, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances button (and checkbox) `[switch]` markup (`toggle` / `check` / `uncheck` / `setChecked`); there is no focus trap, no Escape steal, and no tri-state. No Sig Switch factory.
+Track and thumb are CSS pseudo-elements on `[switch]` (the host is the track; `::after` is the thumb). There are no `[switch-track]` / `[switch-thumb]` children, no `switch-size`, and `scale` does not change track/thumb geometry.
+
+Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name — the runtime does not invent one.
+
+Switch is an APG switch (toggle). It is not a form checkbox as the only story, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility.
+
+Inline control — no overlay z-index. The runtime auto-enhances button (and checkbox) `[switch]` markup (`toggle` / `check` / `uncheck` / `setChecked`); there is no focus trap, no Escape steal, and no tri-state.
+
+No Sig Switch factory.
 
 See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switch-*` roles (`track`, `track-checked`, `thumb`, `thumb-checked`, `focus-ring`).
 
@@ -477,7 +506,15 @@ See [Switch Runtime](./juice-switch-runtime.md). Theme paint uses `--juice-switc
 
 Checked paint is `aria-checked="true"` so chrome and runtime share one story. `:checked` covers the native host. The host is the box; `::after` is the checkmark. There is no `checkbox-size`, and `scale` does not change box geometry. Visible labels live beside the control (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply that name.
 
-Checkbox is an APG checkbox (binary). It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. v1 does not paint `aria-checked="mixed"`. Inline control — no overlay z-index. The runtime auto-enhances button and native `[checkbox]` markup (`toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, binary `aria-checked`). Click and Enter/Space toggle. Native `disabled` and `aria-disabled="true"` are ignored. Authors must supply the accessible name. There is no focus trap, no Escape steal, and no tri-state. No Sig Checkbox factory.
+Checkbox is an APG checkbox (binary). It is not `[switch]`, not a native `<input type="checkbox">` restyle as the only story, not a menu `menuitemcheckbox`, and not the surface `overlay="frost|tint"` utility. v1 does not paint `aria-checked="mixed"`.
+
+Inline control — no overlay z-index. The runtime auto-enhances button and native `[checkbox]` markup (`toggle` / `check` / `uncheck` / `setChecked` / `isChecked`, binary `aria-checked`).
+
+Click and Enter/Space toggle. Native `disabled` and `aria-disabled="true"` are ignored.
+
+Authors must supply the accessible name. There is no focus trap, no Escape steal, and no tri-state.
+
+No Sig Checkbox factory.
 
 See [Checkbox Runtime](./juice-checkbox-runtime.md). Theme paint uses `--juice-checkbox-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
 
@@ -488,7 +525,15 @@ See [Checkbox Runtime](./juice-checkbox-runtime.md). Theme paint uses `--juice-c
 
 Checked paint is `aria-checked="true"`. `:checked` covers the native host. The host is the disc; `::after` is the dot. There is no `radio-size`, and `scale` does not change disc geometry. Visible labels live beside the option (`<label>`, `aria-label`, or `aria-labelledby`). Authors must supply the group name and each option name — the runtime does not invent one.
 
-Radio is an APG radio in a radiogroup. It is not `[switch]`, not `[checkbox]`, not a native `<input type="radio">` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances `[radio]` options inside `[radiogroup]` (`select` / `getChecked`, exclusive selection, roving tabindex). Click, Enter, and Space select. Arrow keys move among enabled options and wrap. Orphans outside `[radiogroup]` are ignored. Exclusivity is the nearest group, not the native input `name`. There is no focus trap and no Escape. No Sig Radio factory.
+Radio is an APG radio in a radiogroup. It is not `[switch]`, not `[checkbox]`, not a native `<input type="radio">` restyle as the only story, and not the surface `overlay="frost|tint"` utility.
+
+Inline control — no overlay z-index. The runtime auto-enhances `[radio]` options inside `[radiogroup]` (`select` / `getChecked`, exclusive selection, roving tabindex).
+
+Click, Enter, and Space select. Arrow keys move among enabled options and wrap.
+
+Orphans outside `[radiogroup]` are ignored. Exclusivity is the nearest group, not the native input `name`.
+
+There is no focus trap and no Escape. No Sig Radio factory.
 
 See [Radio Runtime](./juice-radio-runtime.md). Theme paint uses `--juice-radio-*` roles (`control`, `control-checked`, `border`, `border-checked`, `mark`, `focus-ring`).
 
@@ -501,7 +546,13 @@ See [Radio Runtime](./juice-radio-runtime.md). Theme paint uses `--juice-radio-*
 
 The separator is `::after` on every item except the last: a decorative chevron (empty content). Current page is `aria-current="page"` on the last item or its link. Do not style bare `[aria-current="page"]` outside the trail. `nav[type="breadcrumb"]` is an older layout pattern and is not this chrome.
 
-Breadcrumb is an APG-inspired navigation trail. It is not the site `[nav]` / navigation runtime, not tabs, not the wizard step tracker, and not pagination. Inline nav chrome — no overlay z-index. The runtime auto-enhances `[breadcrumb]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Breadcrumb`, and a single `aria-current="page"` stays on the trail. It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol breadcrumb>` stays a list. No Sig Breadcrumb factory.
+Breadcrumb is an APG-inspired navigation trail. It is not the site `[nav]` / navigation runtime, not tabs, not the wizard step tracker, and not pagination.
+
+Inline nav chrome — no overlay z-index. The runtime auto-enhances `[breadcrumb]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Breadcrumb`, and a single `aria-current="page"` stays on the trail.
+
+It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol breadcrumb>` stays a list.
+
+No Sig Breadcrumb factory.
 
 See [Breadcrumb Runtime](./juice-breadcrumb-runtime.md). Theme paint uses `--juice-breadcrumb-*` roles (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`). Shipped themes bind `surface` to `transparent` so the trail stays inline. Point that role at a surface token when crumbs sit on a bar.
 
@@ -513,9 +564,17 @@ See [Breadcrumb Runtime](./juice-breadcrumb-runtime.md). Theme paint uses `--jui
 
 There is no `[slider-track]`: `[slider]` is the track host. There is no `slider-value` attribute and no `slider-size`. `scale` does not change track or thumb geometry.
 
-Value paint aligns with ARIA. Integer `aria-valuenow` from 0 through 100 paints the fill and thumb when `aria-valuemin` / `aria-valuemax` are omitted or are `0` / `100`. Put those attributes on `[slider]` or on `[slider-thumb]` (the thumb wins when both are set — that is the APG focus target). The runtime also writes the structural paint hook `--juice-slider-ratio` (unitless 0–1) on `[slider]` for every range. That hook is not a theme role and not an author attribute. Authors must supply the accessible name — the runtime does not invent one, and it does not invent or rewrite `aria-valuetext`.
+Value paint aligns with ARIA. Integer `aria-valuenow` from 0 through 100 paints the fill and thumb when `aria-valuemin` / `aria-valuemax` are omitted or are `0` / `100`.
 
-Slider is an APG slider. It is not a native `<input type="range">` restyle as the only story (a range input cannot host a thumb child), not a progress meter (no thumb / not interactive), not a scrollbar, and not the surface `overlay="frost|tint"` utility. Inline control — no overlay z-index. The runtime auto-enhances horizontal `[slider]` markup that owns a `[slider-thumb]` (`setValue` / `getValue` / `increment` / `decrement`, arrows / Home / End / PageUp / PageDown, pointer jump and drag). v1 is horizontal and single-thumb: no vertical, no multi-thumb, no focus trap, and no Escape. No Sig Slider factory.
+Put those attributes on `[slider]` or on `[slider-thumb]` (the thumb wins when both are set — that is the APG focus target). The runtime also writes the structural paint hook `--juice-slider-ratio` (unitless 0–1) on `[slider]` for every range.
+
+That hook is not a theme role and not an author attribute. Authors must supply the accessible name — the runtime does not invent one, and it does not invent or rewrite `aria-valuetext`.
+
+Slider is an APG slider. It is not a native `<input type="range">` restyle as the only story (a range input cannot host a thumb child), not a progress meter (no thumb / not interactive), not a scrollbar, and not the surface `overlay="frost|tint"` utility.
+
+Inline control — no overlay z-index. The runtime auto-enhances horizontal `[slider]` markup that owns a `[slider-thumb]` (`setValue` / `getValue` / `increment` / `decrement`, arrows / Home / End / PageUp / PageDown, pointer jump and drag). v1 is horizontal and single-thumb: no vertical, no multi-thumb, no focus trap, and no Escape.
+
+No Sig Slider factory.
 
 See [Slider Runtime](./juice-slider-runtime.md). Theme paint uses `--juice-slider-*` roles (`track`, `track-border`, `fill`, `thumb`, `thumb-border`, `thumb-shadow`, `focus-ring`).
 
@@ -525,9 +584,21 @@ See [Slider Runtime](./juice-slider-runtime.md). Theme paint uses `--juice-slide
 - `progress-fill` — filled portion. Same idea as `slider-fill`. There is no `progress-bar` and no `progress-track`
 - `progress-label` — optional value text. Uses ink. Authors own the accessible name
 
-Integer `aria-valuenow` from 0 through 100 on the host paints the fill when min/max are omitted or are `0` / `100`. Other ranges use the structural paint hook `--juice-progress-ratio` (unitless 0–1) on `[progress]`. That hook is not a theme role. Missing `aria-valuenow` is an empty determinate bar, not indeterminate. `progress="indeterminate"` slides `[progress-fill]` and wins over a stale value. `prefers-reduced-motion` stops that animation.
+Integer `aria-valuenow` from 0 through 100 on the host paints the fill when min/max are omitted or are `0` / `100`. Other ranges use the structural paint hook `--juice-progress-ratio` (unitless 0–1) on `[progress]`.
 
-Progress is an APG-inspired progressbar. It is not a slider, not a spinner-only loader, not a native `<progress>` restyle as the only story, and not the surface `overlay="frost|tint"` utility. Inline status chrome — no overlay z-index. The host is usually not focusable. The runtime auto-enhances `[progress]` (`setValue` / `getValue` / `setIndeterminate`, `role="progressbar"`, min / max / now, `--juice-progress-ratio`). Indeterminate markup omits `aria-valuenow`. Authors supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`. There is no Sig Progress factory.
+That hook is not a theme role. Missing `aria-valuenow` is an empty determinate bar, not indeterminate.
+
+`progress="indeterminate"` slides `[progress-fill]` and wins over a stale value. `prefers-reduced-motion` stops that animation.
+
+Progress is an APG-inspired progressbar. It is not a slider, not a spinner-only loader, not a native `<progress>` restyle as the only story, and not the surface `overlay="frost|tint"` utility.
+
+Inline status chrome — no overlay z-index. The host is usually not focusable.
+
+The runtime auto-enhances `[progress]` (`setValue` / `getValue` / `setIndeterminate`, `role="progressbar"`, min / max / now, `--juice-progress-ratio`). Indeterminate markup omits `aria-valuenow`.
+
+Authors supply the accessible name. The runtime does not invent or rewrite `aria-valuetext`.
+
+There is no Sig Progress factory.
 
 See [Progress Runtime](./juice-progress-runtime.md). Theme paint uses `--juice-progress-*` roles (`track`, `track-border`, `fill`, `ink`, `focus-ring`).
 
@@ -543,7 +614,17 @@ See [Progress Runtime](./juice-progress-runtime.md). Theme paint uses `--juice-p
 
 Current page is `aria-current="page"` on the control or its item. Disabled prev/next is `aria-disabled="true"`, native `disabled`, or `[disabled]`. Hover does not brighten a disabled control. `nav[type="pagination"]` is an older layout pattern and is not this chrome.
 
-Pagination is an APG-inspired page set. It is not the site `[nav]` / navigation runtime, not a breadcrumb, not tabs, not the wizard step tracker, and not the surface `overlay="frost|tint"` utility. Inline nav chrome — no overlay z-index. The runtime auto-enhances `[pagination]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Pagination`, and a single `aria-current="page"` stays on the set (author current wins; otherwise the first page control). Prev/next disable at ends when page controls and optional ellipsis make that inferable. Author-owned disabled is kept. Arrow / Home / End move focus among enabled controls. Enter and Space stay with the browser. It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol pagination>` stays a list. No Sig Pagination factory. Pagination is the nineteenth Emerging auto-enhance runtime.
+Pagination is an APG-inspired page set. It is not the site `[nav]` / navigation runtime, not a breadcrumb, not tabs, not the wizard step tracker, and not the surface `overlay="frost|tint"` utility.
+
+Inline nav chrome — no overlay z-index. The runtime auto-enhances `[pagination]` (`sync` / `setCurrent`): an unlabeled navigation landmark is named `Pagination`, and a single `aria-current="page"` stays on the set (author current wins; otherwise the first page control).
+
+Prev/next disable at ends when page controls and optional ellipsis make that inferable. Author-owned disabled is kept.
+
+Arrow / Home / End move focus among enabled controls. Enter and Space stay with the browser.
+
+It does not remove `href`, trap focus, steal Escape, or listen to history. `<ol pagination>` stays a list.
+
+No Sig Pagination factory. Pagination is the nineteenth Emerging auto-enhance runtime.
 
 See [Pagination Runtime](./juice-pagination-runtime.md). Theme paint uses `--juice-pagination-*` roles (`surface`, `surface-hover`, `surface-current`, `ink`, `ink-hover`, `ink-current`, `ink-disabled`, `border`, `focus-ring`, `ellipsis`). `surface` is the page control, not a bar.
 
@@ -553,7 +634,17 @@ See [Pagination Runtime](./juice-pagination-runtime.md). Theme paint uses `--jui
 - `disclosure-trigger` — the button. Expanded paint is `aria-expanded="true"`
 - `disclosure-panel` — the controlled region. Pair it with `aria-controls`, or place it as the next sibling of the trigger. Closed panels use the native `hidden` attribute
 
-Disclosure is the APG Disclosure pattern. It is not an accordion (`[accordion]` / `[accordion-item]` is multi-item and multi-open) and not the surface `overlay="frost|tint"` utility. Inline chrome — no overlay z-index. The runtime auto-enhances `[disclosure]` (`sync` / `expand` / `collapse` / `toggle`): one trigger toggles one panel with `aria-expanded`, native `hidden`, and `aria-hidden`. Orphans outside the root are ignored. Click toggles. Enter and Space toggle non-button triggers. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover. There is no exclusive group, no arrow roving, and no layout `content=`. No Sig Disclosure factory. Disclosure is the twentieth Emerging auto-enhance runtime and shipped in 0.9.2.
+Disclosure is the APG Disclosure pattern. It is not an accordion (`[accordion]` / `[accordion-item]` is multi-item and multi-open) and not the surface `overlay="frost|tint"` utility.
+
+Inline chrome — no overlay z-index. The runtime auto-enhances `[disclosure]` (`sync` / `expand` / `collapse` / `toggle`): one trigger toggles one panel with `aria-expanded`, native `hidden`, and `aria-hidden`.
+
+Orphans outside the root are ignored. Click toggles.
+
+Enter and Space toggle non-button triggers. Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover.
+
+There is no exclusive group, no arrow roving, and no layout `content=`. No Sig Disclosure factory.
+
+Disclosure is the twentieth Emerging auto-enhance runtime and shipped in 0.9.2.
 
 See [Disclosure Runtime](./juice-disclosure-runtime.md). Theme paint uses `--juice-disclosure-*` roles (`surface`, `border`, `trigger`, `trigger-hover`, `trigger-open`, `ink`, `chevron`, `focus-ring`). `surface` is the panel, not a bar.
 
@@ -564,7 +655,15 @@ See [Disclosure Runtime](./juice-disclosure-runtime.md). Theme paint uses `--jui
 
 CSS owns the spin (`juice-spinner-spin`). `prefers-reduced-motion` stops that animation and leaves the indicator. The host is usually not focusable.
 
-Spinner is a standalone indeterminate busy indicator. It is not a progress bar (`[progress]` / `[progress-fill]` is a valued bar) and not a disclosure. Inline status chrome — no overlay z-index. The runtime auto-enhances `[spinner]` (`sync` / `show` / `hide` / `isShown`): a shown host is `role="status"` and `aria-busy="true"`, and `hide` sets native `hidden` and clears both so a hidden spinner does not announce as busy. A visible `[spinner-label]` is author text. The runtime does not invent `aria-label` when there is no visible label. No value, no keyboard, no Escape, and no focus trap. No Sig Spinner factory. Spinner is the twenty-first Emerging auto-enhance runtime and shipped in 0.9.2.
+Spinner is a standalone indeterminate busy indicator. It is not a progress bar (`[progress]` / `[progress-fill]` is a valued bar) and not a disclosure.
+
+Inline status chrome — no overlay z-index. The runtime auto-enhances `[spinner]` (`sync` / `show` / `hide` / `isShown`): a shown host is `role="status"` and `aria-busy="true"`, and `hide` sets native `hidden` and clears both so a hidden spinner does not announce as busy.
+
+A visible `[spinner-label]` is author text. The runtime does not invent `aria-label` when there is no visible label.
+
+No value, no keyboard, no Escape, and no focus trap. No Sig Spinner factory.
+
+Spinner is the twenty-first Emerging auto-enhance runtime and shipped in 0.9.2.
 
 See [Spinner Runtime](./juice-spinner-runtime.md). Theme paint uses `--juice-spinner-*` roles (`track`, `indicator`, `ink`, `focus-ring`). `track` is the inactive ring. `indicator` is the leading arc.
 
@@ -617,7 +716,9 @@ An `a` or `button` row, or a row that wraps one, hovers, presses, and takes a 2p
 </ul>
 ```
 
-See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColor at 28%), `--juice-list-secondary` (92%), `--juice-list-hover` (8%), and `--juice-list-selected` (14%), on `:root` and again on `[theme]`. Layout roles are `--juice-list-gap` (`0`), `--juice-list-padding` (`0.75rem 1rem`), `--juice-list-padding-dense` (`0.375rem 0.75rem`), and `--juice-list-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
+See [List](./juice-list.md). Color roles are `--juice-list-divider` (currentColor at 28%), `--juice-list-secondary` (92%), `--juice-list-hover` (8%), and `--juice-list-selected` (14%), on `:root` and again on `[theme]`.
+
+Layout roles are `--juice-list-gap` (`0`), `--juice-list-padding` (`0.75rem 1rem`), `--juice-list-padding-dense` (`0.375rem 0.75rem`), and `--juice-list-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
 
 ### Badge
 
@@ -628,7 +729,9 @@ CSS-only label. There is no runtime and no auto-enhance. The base layout shipped
 - `badge="ribbon"` — absolutely positioned, `top: -0.75rem`, centered. `[card="pricing"]` is `position: relative`. Other parents are not. Juice does not style a bare `[ribbon]`
 - `warm` — separate boolean. Core CSS does not paint it. KiwiPress paints `[badge][warm]`. There is no `[scale]`
 
-Color roles are `--juice-badge-bg` (currentColor at 1%), `--juice-badge-ink` (`currentColor`), and `--juice-badge-border` (currentColor at 24%), on `:root` and again on `[theme]`. Layout roles are `--juice-badge-padding` (`0.375rem 0.75rem`), `--juice-badge-radius` (`999px`), `--juice-badge-radius-square` (`0.375rem`), `--juice-badge-font-size` (`0.8125rem`), and `--juice-badge-gap` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them. Outside `[cta]`, KiwiPress still sets text and background for the default pill, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]`.
+Color roles are `--juice-badge-bg` (currentColor at 1%), `--juice-badge-ink` (`currentColor`), and `--juice-badge-border` (currentColor at 24%), on `:root` and again on `[theme]`. Layout roles are `--juice-badge-padding` (`0.375rem 0.75rem`), `--juice-badge-radius` (`999px`), `--juice-badge-radius-square` (`0.375rem`), `--juice-badge-font-size` (`0.8125rem`), and `--juice-badge-gap` (`0.375rem`), on `:root` only.
+
+Shipped themes are not required to bind them. Outside `[cta]`, KiwiPress still sets text and background for the default pill, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]`.
 
 ```html
 <span badge>New</span>
@@ -720,7 +823,13 @@ Native grid. The host is `<table table>` (`:where(table)[table]`). `<div table>`
 </div>
 ```
 
-The runtime auto-enhances `<table table>`. `th[sortable]` cycles ascending, then descending, then none. One `[numeric]` cell makes that column numeric. See [Table](./juice-table.md). Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Color roles are `--juice-table-border` (currentColor at 24%), `--juice-table-header-bg` (6%), `--juice-table-stripe` (4%), `--juice-table-hover` (6%), and `--juice-table-selected` (8%), on `:root` and again on `[theme]`. Layout roles are `--juice-table-padding` (`0.75rem 1rem`), `--juice-table-padding-dense` (`0.375rem 0.75rem`), and `--juice-table-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
+The runtime auto-enhances `<table table>`. `th[sortable]` cycles ascending, then descending, then none.
+
+One `[numeric]` cell makes that column numeric. See [Table](./juice-table.md).
+
+Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Color roles are `--juice-table-border` (currentColor at 24%), `--juice-table-header-bg` (6%), `--juice-table-stripe` (4%), `--juice-table-hover` (6%), and `--juice-table-selected` (8%), on `:root` and again on `[theme]`.
+
+Layout roles are `--juice-table-padding` (`0.75rem 1rem`), `--juice-table-padding-dense` (`0.375rem 0.75rem`), and `--juice-table-radius` (`0.375rem`), on `:root` only. Shipped themes are not required to bind them.
 
 ### Select
 
@@ -729,7 +838,17 @@ The runtime auto-enhances `<table table>`. `th[sortable]` cycles ascending, then
 
 `[multiple]` and `size` listboxes stay native selects. The chevron is a `background-image` on the closed dropdown. `size` other than `1` drops that chevron.
 
-Select is a styled native `<select>`. It is not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup). Inline field chrome — no overlay z-index. The runtime auto-enhances `<select select>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`. Order: associated `<label for>`, wrapping `<label>`, then `[select-label]`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the select, so the selected option is not part of the name. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Change events and the keyboard stay native. There is no listbox, no Escape handler, no focus trap, and no Sig Select factory. Select is the twenty-second Emerging auto-enhance runtime and shipped in 0.9.2.
+Select is a styled native `<select>`. It is not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup).
+
+Inline field chrome — no overlay z-index. The runtime auto-enhances `<select select>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`.
+
+Order: associated `<label for>`, wrapping `<label>`, then `[select-label]`. A separate label is referenced with `aria-labelledby`.
+
+A wrapping label is copied into `aria-label` as its visible text excluding the select, so the selected option is not part of the name. Hidden or empty labels are skipped.
+
+No name is invented when nothing visible is there. Change events and the keyboard stay native.
+
+There is no listbox, no Escape handler, no focus trap, and no Sig Select factory. Select is the twenty-second Emerging auto-enhance runtime and shipped in 0.9.2.
 
 See [Select Runtime](./juice-select-runtime.md). Theme paint uses `--juice-select-*` roles (`surface`, `border`, `ink`, `chevron`, `focus-ring`).
 
@@ -740,7 +859,17 @@ See [Select Runtime](./juice-select-runtime.md). Theme paint uses `--juice-selec
 
 Checkbox, radio, range, file, date, time, datetime-local, month, week, color, hidden, button, submit, reset, and image are ignored. Textarea and the `[field]` wrapper are not this runtime.
 
-Input is a styled native `<input>`. It is not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup) and not a select (`<select select>` is a native dropdown). Inline field chrome — no overlay z-index. The runtime auto-enhances `<input input>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`. Order: associated `<label for>`, wrapping `<label>`, then `[input-label]`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the input's own value. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Typing, change, and the keyboard stay native. There is no mask, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Input factory. Input is the twenty-third Emerging auto-enhance runtime and shipped in 0.9.2.
+Input is a styled native `<input>`. It is not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup) and not a select (`<select select>` is a native dropdown).
+
+Inline field chrome — no overlay z-index. The runtime auto-enhances `<input input>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`.
+
+Order: associated `<label for>`, wrapping `<label>`, then `[input-label]`. A separate label is referenced with `aria-labelledby`.
+
+A wrapping label is copied into `aria-label` as its visible text excluding the input's own value. Hidden or empty labels are skipped.
+
+No name is invented when nothing visible is there. Typing, change, and the keyboard stay native.
+
+There is no mask, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Input factory. Input is the twenty-third Emerging auto-enhance runtime and shipped in 0.9.2.
 
 See [Input Runtime](./juice-input-runtime.md). Theme paint uses `--juice-input-*` roles (`surface`, `border`, `ink`, `placeholder`, `focus-ring`).
 
@@ -751,7 +880,17 @@ See [Input Runtime](./juice-input-runtime.md). Theme paint uses `--juice-input-*
 
 An `<input>`, a `[field]` wrapper, and a combobox field are not this runtime.
 
-Textarea is a styled native `<textarea>`. It is not an input (`<input input>` is a single-line text field), not a select (`<select select>` is a native dropdown), and not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup). Inline field chrome — no overlay z-index. The runtime auto-enhances `<textarea textarea>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`. Order: associated `<label for>`, wrapping `<label>`, then `[textarea-label]`. A separate label is referenced with `aria-labelledby`. A wrapping label is copied into `aria-label` as its visible text excluding the textarea's own value. Hidden or empty labels are skipped. No name is invented when nothing visible is there. Typing, change, and the keyboard stay native. There is no auto-grow, no character count, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Textarea factory. Textarea is the twenty-fourth Emerging auto-enhance runtime and shipped in 0.9.2.
+Textarea is a styled native `<textarea>`. It is not an input (`<input input>` is a single-line text field), not a select (`<select select>` is a native dropdown), and not a combobox (`[combobox]` / `[combobox-input]` / `[combobox-list]` is an input plus a listbox popup).
+
+Inline field chrome — no overlay z-index. The runtime auto-enhances `<textarea textarea>` (`sync`): a visible label names the control when the author has not set `aria-label` or `aria-labelledby`.
+
+Order: associated `<label for>`, wrapping `<label>`, then `[textarea-label]`. A separate label is referenced with `aria-labelledby`.
+
+A wrapping label is copied into `aria-label` as its visible text excluding the textarea's own value. Hidden or empty labels are skipped.
+
+No name is invented when nothing visible is there. Typing, change, and the keyboard stay native.
+
+There is no auto-grow, no character count, no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Textarea factory. Textarea is the twenty-fourth Emerging auto-enhance runtime and shipped in 0.9.2.
 
 See [Textarea Runtime](./juice-textarea-runtime.md). Theme paint uses `--juice-textarea-*` roles (`surface`, `border`, `ink`, `placeholder`, `focus-ring`).
 
@@ -765,7 +904,15 @@ See [Textarea Runtime](./juice-textarea-runtime.md). Theme paint uses `--juice-t
 
 `[field-label]` is chrome only. Name the control with an associated `<label for>`, a wrapping `<label>`, or the control's own label part (`[input-label]`, `[textarea-label]`, `[select-label]`).
 
-Field is a wrapper around a control. It is not an input, not a textarea, not a select, and not a combobox. Inline wrapper chrome — no overlay z-index. The runtime auto-enhances `[field]` (`sync` / `destroy`): visible `[field-help]` and `[field-error]` describe the control when the author has not set `aria-describedby`. `[invalid]` sets `aria-invalid="true"` when the author has not set `aria-invalid`. Hidden or empty parts are skipped. Author values are kept. There is no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Field factory. Field is the twenty-fifth Emerging auto-enhance runtime and shipped in 0.9.2.
+Field is a wrapper around a control. It is not an input, not a textarea, not a select, and not a combobox.
+
+Inline wrapper chrome — no overlay z-index. The runtime auto-enhances `[field]` (`sync` / `destroy`): visible `[field-help]` and `[field-error]` describe the control when the author has not set `aria-describedby`.
+
+`[invalid]` sets `aria-invalid="true"` when the author has not set `aria-invalid`. Hidden or empty parts are skipped.
+
+Author values are kept. There is no validation engine, no floating label, no Escape handler, no focus trap, and no Sig Field factory.
+
+Field is the twenty-fifth Emerging auto-enhance runtime and shipped in 0.9.2.
 
 See [Field Runtime](./juice-field-runtime.md). Theme paint uses the six `--juice-field-*` roles (`surface`, `gap`, `label-ink`, `help-ink`, `error-ink`, `invalid-border`).
 

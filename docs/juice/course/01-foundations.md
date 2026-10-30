@@ -62,7 +62,13 @@ import "@citrusworx/juiceui/styles/themes/citrusmint";
 </body>
 ```
 
-`stack` and `gap` are Juice. `theme="citrusmint"` is identity. Neither is a Vue/React component. Importing `@citrusworx/juiceui` (the JS entry) also auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row runtimes for valid markup. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure. Select is a styled native `<select>`, distinct from combobox. Input is a styled native `<input>`, distinct from combobox and from select. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox. Field is a wrapper around a control, distinct from input, textarea, select, and combobox. Icon button is a square icon-only control on button chrome, distinct from switch and from checkbox, and is on master, not in the published npm 0.9.2 release. Avatar is an initials-or-photo mark (`[avatar]`), distinct from a badge and from `[skeleton="circle"]`, and is on master, not in the published npm 0.9.2 release. Table is a sortable grid on `<table table>`, and is on master, not in the published npm 0.9.2 release. You do not need that for this lesson.
+`stack` and `gap` are Juice. `theme="citrusmint"` is identity. Neither is a Vue or React component.
+
+Importing `@citrusworx/juiceui` auto-starts the runtimes for valid markup. The index is [Runtime behavior](../juice-runtime-behavior.md#components).
+
+Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, table, pressable, touchable row, and keyboard avoider are on master and are not in that release.
+
+How similar components differ is [Choosing between similar components](../juice-runtime-behavior.md#choosing-between-similar-components). You do not need that for this lesson.
 
 Juice is **stable-ish** as an attribute model and **emerging** as a theme and component system. See the [maturity matrix](../juice-maturity-matrix.md). Do not wait for a finished “Juice Design System 1.0” to start thinking in layers.
 

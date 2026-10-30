@@ -1,38 +1,12 @@
-# Juice Breadcrumb Runtime
+# Breadcrumb
 
-This document explains the current breadcrumb runtime in `libraries/juice/src/js/src/breadcrumb/breadcrumb-runtime.ts` (monorepo path; outside this vault).
+Breadcrumb is a light trail on `[breadcrumb]`, with one `aria-current="page"` and landmark name `Breadcrumb`. It is not a router.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, and radio:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice breadcrumb markup and it exists in the browser, the trail’s current page and landmark name should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The breadcrumb runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize breadcrumb behavior in their app code.
-
-There is no `Breadcrumb()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Breadcrumb is a light APG-inspired **Breadcrumb** trail. It is not the site `[nav]` / navigation runtime, not `nav[type="breadcrumb"]`, not tabs, not the wizard step tracker, and not pagination. It is not a router. v1 does not listen to history, clicks, or the keyboard. No focus trap and no Escape handling.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s breadcrumb chrome:
+## Markup
 
 ```html
 <nav breadcrumb>
@@ -52,190 +26,124 @@ The runtime is aligned with Juice’s breadcrumb chrome:
 </nav>
 ```
 
-`[breadcrumb]` is the trail root. `[breadcrumb-item]` is one crumb. Anchors inside the trail are enough. `[breadcrumb-link]` is optional. `[breadcrumb-separator]` is optional and author-owned; chrome suppresses the generated chevron when it is present. The separator itself is a CSS pseudo-element (`::after`) on every item except the last.
+`[breadcrumb]` is the trail and `[breadcrumb-item]` is one crumb. Anchors inside the trail are enough.
 
-**A boolean `[breadcrumb]` attribute is fine.** There is no HTML global `breadcrumb` attribute.
+## Attributes
 
-**What this runtime enhances:**
+| Hook | What it does |
+| --- | --- |
+| `[breadcrumb]` | Trail root. Typical hosts are `nav` and `ol`. A plain element is enhanced too. |
+| `[breadcrumb-item]` | One crumb. It belongs to the nearest `[breadcrumb]`. |
+| `[breadcrumb-link]` | Optional. An anchor in the trail is enough. |
+| `[breadcrumb-separator]` | Optional and author-owned. It suppresses the generated chevron. |
 
-- A `[breadcrumb]` root. Typical hosts are `<nav breadcrumb>` and `<ol breadcrumb>`. A plain element with `[breadcrumb]` is also enhanced.
-- Owned `[breadcrumb-item]` descendants. A crumb belongs to its nearest `[breadcrumb]`.
-- When a trail has no `[breadcrumb-item]`, direct-child anchors and `[breadcrumb-link]` elements are the crumbs. That is the same flat markup the chrome styles.
+A boolean `[breadcrumb]` attribute is enough. There is no HTML global `breadcrumb` attribute. The separator chevron is `::after` on every item except the last. `nav[type="breadcrumb"]` is an older layout and this runtime ignores it.
 
-`nav[type="breadcrumb"]` is an older layout pattern. It is not this chrome, and this runtime ignores it. Do not style bare `[aria-current="page"]` outside the trail.
+Theme paint uses `--juice-breadcrumb-*` roles (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`).
 
-**Landmark:** sync makes the root a navigation landmark only when that is safe.
+## JavaScript
 
-- `<nav>` is already a landmark. Sync does not add a redundant `role="navigation"`.
-- An element with no role that is not a list (`ol`, `ul`, or `menu`) gets `role="navigation"`.
-- `role="navigation"` on a list would drop the list semantics, so `<ol breadcrumb>`, `<ul breadcrumb>`, and `<menu breadcrumb>` are left alone. They are not given `aria-label="Breadcrumb"` either.
-- An author `role` is never overwritten. A `role="group"` root stays a group and is not labeled.
-- Ancestor `<nav>` elements are not relabeled. A parent nav may be a larger landmark than this trail.
+| Export | What it does |
+| --- | --- |
+| `createBreadcrumb(options?)` | Controller for `options.root`, or the document. |
+| `initBreadcrumb(options?)` | Same call as `createBreadcrumb`. |
+| `startBreadcrumbRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopBreadcrumbRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-**Landmark name:** when the root is a navigation landmark and `aria-label`, `aria-labelledby`, and `title` are all missing or blank, sync sets `aria-label="Breadcrumb"`. A non-empty author name is kept, including a non-empty `title`. Lists and other non-navigation roots are not given that label. That landmark name is the only string this runtime invents. It does not invent names for individual crumbs.
+### Options
 
-**Current page:** `aria-current="page"` paints the current crumb. Sync keeps a single one inside the trail.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Queries `root`, and includes `root` when it is a trail. The document when omitted. |
+| `breadcrumbSelector` | `[breadcrumb]` | Trail root. |
+| `itemSelector` | `[breadcrumb-item]` | Crumbs. When a trail has none, direct-child anchors and `[breadcrumb-link]` are the crumbs. |
 
-- If the author already set `aria-current="page"`, the first one in tree order stays. Any others in this trail are removed. A current on the trail root itself counts, and it wins when it is first.
-- If none is set and the trail has crumbs, the last crumb is marked.
-- A crumb that contains a link is marked on that link: the last owned anchor or `[breadcrumb-link]`. Otherwise the crumb element itself is marked.
-- Sync does not rewrite the current crumb’s `href`, click behavior, or disabled state. Authors own whether the current page is a link.
+### Controller
 
-Theme paint uses `--juice-breadcrumb-*` roles (`ink`, `ink-current`, `ink-hover`, `separator`, `focus-ring`, `surface`). Core CSS does not give `[breadcrumb]` a z-index. It is inline nav chrome — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[breadcrumb]` is an APG-inspired trail, not the site navigation runtime and not the surface `overlay="frost|tint"` utility.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects the observer and cancels a scheduled sync. |
+| `sync()` | Applies the landmark and current-page rules on each trail. |
+| `setCurrent(itemOrIndex, trail?)` | Moves the single `aria-current="page"`. An index uses `trail`, or the first trail when `trail` is omitted. It does not change the URL. |
+| `getCurrent(target?)` | The 0-based crumb index, or `-1`. |
+| `getState(target?)` | `{ current: number }`, or `null`. |
 
-## Automatic Boot
+An element passed to `setCurrent()` resolves to the crumb that contains it. A link inside that crumb is marked when the argument is that link. Otherwise the crumb's last owned link is marked, or the crumb itself. An index that matches no crumb is a no-op. A later `sync()` keeps an existing current.
 
-The runtime starts automatically in the browser.
+### Events
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the breadcrumb runtime:
+A real current-crumb change dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[breadcrumb]`. `detail` is `{ runtime: "breadcrumb", state: { current: number } }`. `current` is the 0-based crumb index, or `-1` when none are current; `getCurrent()` and `getState()` read it, and a write that leaves `current` unchanged does not dispatch.
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startBreadcrumbRuntime();
-    });
-  } else {
-    startBreadcrumbRuntime();
-  }
-}
-```
+## Accessibility
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+- Sync makes the root a navigation landmark only when that keeps an author role and list semantics. `nav` does not receive a redundant `role="navigation"`.
+- An element with no role that is not `ol`, `ul`, or `menu` gets `role="navigation"`. Those lists stay lists and are not labeled. An author role is kept, including `role="group"`. Ancestor `nav` elements are not relabeled.
+- When the root is a navigation landmark and `aria-label`, `aria-labelledby`, and `title` are missing or blank, sync sets `aria-label="Breadcrumb"`. A non-empty author name is kept, including a non-empty `title`. That is the only string this runtime invents.
+- One `aria-current="page"` is kept. The runtime does not rewrite `href`, click behavior, or disabled state. Authors own whether the current crumb is a link.
+- Breadcrumb does not listen for keys. Escape, Enter, Space, and arrows are not handled. See [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- There is no focus trap. The runtime does not move focus or set `tabindex`.
+- Core CSS does not give `[breadcrumb]` a z-index. It is inline nav chrome. See [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-`stopBreadcrumbRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+## Behavior
 
-## Public API
+1. Find `[breadcrumb]` trails, ignore `nav[type="breadcrumb"]`, and assign each crumb to its nearest trail.
+2. Make the root a navigation landmark only when that keeps list semantics and an author role.
+3. Name an unlabeled navigation landmark `Breadcrumb`.
+4. Keep a single `aria-current="page"`, using an author current when one exists, otherwise the last crumb.
+5. `setCurrent()` moves that current by crumb or index and does not navigate.
+6. Leave clicks, keys, history, and Escape alone.
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+### Landmark
 
-```ts
-createBreadcrumb(options?)
-initBreadcrumb(options?)
-startBreadcrumbRuntime()
-stopBreadcrumbRuntime()
-```
+`nav` is already a landmark. A non-list element with no role gets `role="navigation"`. `ol`, `ul`, and `menu` stay lists and do not receive `aria-label="Breadcrumb"`. A parent `nav` may be a larger landmark than this trail, so it is left as authored.
 
-These are useful for internal control, tests, or advanced cases.
+### Current page
 
-A real current-crumb change dispatches a bubbling `juice:change` from `[breadcrumb]`. `detail` is `{ runtime: "breadcrumb", state: { current: number } }`. `current` is the 0-based crumb index, or `-1` when none are current. `getCurrent()` and `getState()` read it. A write that leaves `current` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+The first `aria-current="page"` in tree order stays, including one on the trail root. Any others in that trail are removed. When none is set and the trail has crumbs, the last crumb is marked on its last owned anchor or `[breadcrumb-link]`, or on the crumb when it has no link. When a trail has no `[breadcrumb-item]`, direct-child anchors and `[breadcrumb-link]` elements are the crumbs.
 
-`createBreadcrumb()` can run alongside the automatic document runtime. This runtime claims no clicks, keys, or history events, so there is nothing to double-fire.
+<details>
+<summary>Edge cases</summary>
 
-`initBreadcrumb()` is the same function as `createBreadcrumb()`.
+- `setCurrent()` with an index that matches no crumb does nothing.
+- When `trail` is omitted, an index applies to the first trail.
+- A later `sync()` does not move the marker back to the last crumb.
+- The observer watches child list changes and `breadcrumb`, `breadcrumb-item`, `breadcrumb-link`, `aria-current`, `aria-label`, `aria-labelledby`, `role`, and `title`.
 
-## BreadcrumbOptions
+</details>
 
-The configurable shape is:
+### Limits
 
-```ts
-type BreadcrumbOptions = {
-  root?: ParentNode;
-  breadcrumbSelector?: string;
-  itemSelector?: string;
-};
-```
+- There is no `Breadcrumb()` factory.
+- `setCurrent()` does not change the URL, follow a link, or listen to history.
+- `nav[type="breadcrumb"]` is not enhanced.
+- There is no focus trap and no Escape handling.
 
-By default, Juice uses:
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-```ts
-{
-  root: document,
-  breadcrumbSelector: '[breadcrumb]',
-  itemSelector: '[breadcrumb-item]',
-}
-```
+## Not to be confused with
 
-## BreadcrumbController
+| This | Not this |
+| --- | --- |
+| Light trail, one `aria-current="page"`, landmark name `Breadcrumb` | A router |
+| `[breadcrumb]` | Pagination |
+| `[breadcrumb]` | Site navigation, or `nav[type="breadcrumb"]` |
+| `[breadcrumb]` | Tabs, or a wizard step tracker |
 
-```ts
-type BreadcrumbController = {
-  destroy: () => void;
-  sync: () => void;
-  setCurrent: (
-    itemOrIndex: HTMLElement | number,
-    trail?: HTMLElement | null
-  ) => void;
-  getCurrent: (target?: HTMLElement | null) => number;
-  getState: (target?: HTMLElement | null) => BreadcrumbState | null;
-};
-```
+## Related
 
-`sync()` walks each managed trail and applies the landmark and current-page rules. `setCurrent()` moves that single `aria-current="page"`. An element target resolves to the crumb that contains it. When that element is a link inside the crumb, the link is marked; otherwise the preferred target is the crumb’s last owned link, or the crumb itself. An index applies to the given trail, or to the first trail when `trail` is omitted. An index that does not match a crumb is a no-op. `setCurrent()` is not a navigation: it does not change the URL, follow a link, or listen to history.
-
-A later `sync()` keeps an existing current. It does not jump back to the last crumb after `setCurrent()` has moved the page marker.
-
-## What the Runtime Actually Does
-
-The runtime performs six main jobs:
-
-1. Find `[breadcrumb]` trails. `nav[type="breadcrumb"]` is ignored. A crumb belongs to its nearest trail
-2. Make the root a navigation landmark only when that is safe. `<nav>` is left without a redundant role. A non-list element with no role gets `role="navigation"`. `<ol>`, `<ul>`, and `<menu>` stay lists. An author role is kept. Ancestor navs are not relabeled
-3. Name that landmark `Breadcrumb` only when it is a navigation landmark and `aria-label`, `aria-labelledby`, and `title` are missing or blank. A non-empty author name is kept. Lists and other non-navigation roots are not labeled
-4. Keep a single `aria-current="page"`. Owned `[breadcrumb-item]` elements are the crumbs. When a trail has none, direct-child anchors and `[breadcrumb-link]` elements are the crumbs. An author current wins: the first in tree order stays and the rest in that trail are removed. If none is set, the last crumb is marked, on its last owned link when it has one. `href`, clicks, and disabled state are left alone
-5. `setCurrent()` moves that single current by crumb or index. It is not a navigation. A later `sync()` keeps the first current instead of resetting to the last crumb
-6. Leave Escape, clicks, and history alone. Breadcrumb claims no events and does not participate in the overlay / popover / menu / combobox / toast / tooltip yield order. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-There is no focus trap. There is no keyboard map. This runtime does not close a modal, drawer, toast, popover, wizard, tooltip, combobox, banner, or menu, and it does not toggle a switch, move a slider, toggle a checkbox, or select a radio.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a breadcrumb appears later, the observer schedules a `sync()` call so Juice can wire the landmark and a single `aria-current="page"`.
-
-The observer watches child list changes and these attributes: `breadcrumb`, `breadcrumb-item`, `breadcrumb-link`, `aria-current`, `aria-label`, `aria-labelledby`, `role`, and `title`.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-Breadcrumb does not listen for keys.
-
-- Escape is not handled. Breadcrumb never steals it. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Enter, Space, and arrows are not handled
-- There is no focus trap. Tab is not wrapped. The runtime does not move focus
-
-Authors own whether a crumb is a link. The runtime does not remove `href` from the current page.
-
-## Limitations
-
-- No `Breadcrumb()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable.
-- This is not a router. v1 does not listen to history, clicks, or the keyboard, and `setCurrent()` does not navigate.
-- The only invented name is `aria-label="Breadcrumb"` on an unlabeled navigation landmark. Crumb names stay author-owned.
-- `<nav breadcrumb>` does not get a redundant `role="navigation"`. `<ol>`, `<ul>`, and `<menu>` stay lists and are not labeled. An author role is never overwritten. Ancestor navs are not relabeled.
-- `nav[type="breadcrumb"]` is not this chrome and is not enhanced.
-- When more than one `aria-current="page"` is set, sync keeps the first in tree order. When none is set, the last crumb is marked, on its last owned link when it has one.
-- `setCurrent()` with an index that does not match a crumb is a no-op. It does not fall back to another trail unless `trail` is omitted, in which case the first trail is used.
-- A later `sync()` preserves an existing current. It does not move the marker back to the last crumb.
-- The runtime does not rewrite `href`, click behavior, or disabled state on the current crumb.
-- There is no focus trap and no Escape handling. Breadcrumb is not a layered overlay. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- There is no z-index elevation. Breadcrumb is inline nav chrome. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, and radio behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), and [Radio Runtime](./juice-radio-runtime.md).
-
-## Why This Matches Navigation
-
-The breadcrumb runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, and radio lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-It does not copy their event delegation. v1 claims no events.
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal](./juice-modal-runtime.md)
+- [Drawer](./juice-drawer-runtime.md)
+- [Toast](./juice-toast-runtime.md)
+- [Popover](./juice-popover-runtime.md)
+- [Wizard](./juice-wizard-runtime.md)
+- [Tooltip](./juice-tooltip-runtime.md)
+- [Combobox](./juice-combobox-runtime.md)
+- [Banner](./juice-banner-runtime.md)
+- [Menu](./juice-menu-runtime.md)
+- [Switch](./juice-switch-runtime.md)
+- [Slider](./juice-slider-runtime.md)
+- [Checkbox](./juice-checkbox-runtime.md)
+- [Radio](./juice-radio-runtime.md)

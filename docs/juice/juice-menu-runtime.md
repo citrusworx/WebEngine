@@ -1,38 +1,12 @@
-# Juice Menu Runtime
+# Menu
 
-This document explains the current menu runtime in `libraries/juice/src/js/src/menu/menu-runtime.ts` (monorepo path; outside this vault).
+Menu is an APG menu button. `[menu-root]` holds an opener and a `[menu]` of `[menuitem]` rows.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice menu markup and it exists in the browser, the menu button should just work.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The menu runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize menu behavior in their app code.
-
-There is no `Menu()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Menu is an APG **Menu Button** (an opener toggles a menu of menuitems). It is not a popover, not a combobox, not a native `<select>` restyle, not a menubar, and not a context menu. No submenus and no typeahead in v1.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s menu chrome:
+## Markup
 
 ```html
 <div menu-root name="file">
@@ -47,193 +21,131 @@ The runtime is aligned with Juice’s menu chrome:
 </div>
 ```
 
-It requires a `[menu-root]` wrapper. Closed vs open is the native `hidden` attribute on `[menu]`, not on the root (hiding the root would hide the opener). The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+The root holds the opener and the panel. Open and closed is native `hidden` on `[menu]`, and authors write `<div menu>` rather than the HTML `<menu>` element.
 
-**A boolean `[menu]` attribute is fine.** There is no HTML global `menu` attribute, and unlike `popover=""` it has no platform behavior. Do not use the HTML `<menu>` element. Authors should write `<div menu>`, not `<menu>`.
+## Attributes
 
-**Placement:** `[menu-root]` / `[menu-root="bottom"]` / `"top"` / `"left"` / `"right"`. Bare or unspecified is bottom. Placement is CSS-absolute from the root. There is no Floating UI.
+| Hook | What it does |
+| --- | --- |
+| `[menu-root]` | Opener plus panel. Placement is bare, `bottom`, `top`, `left`, or `right`. Bare means bottom. |
+| `[menu-button]` | Optional opener. Otherwise `[aria-haspopup="menu"]`, an `aria-controls` match, or the first `button`, `[role="button"]`, or `a[href]` outside the panel. |
+| `[menu]` | Panel. `hidden` on this element is closed. Missing `role="menu"` is filled. |
+| `[menuitem]` | Item. `menuitem="active"` is keyboard and visual focus. Missing `role="menuitem"` is filled. |
+| `[menu-separator]` | Non-interactive divider. Missing `role="separator"` is filled. |
+| `[menu-label]` | Non-interactive group label. It receives no role. |
+| `name` | On the root, `name` or `id` is the slug for generated ids such as `file-menu` and `file-item-1`. |
 
-**Opener:** prefer `[menu-button]` inside the root. Authors who want a themed CTA opener omit that attr and use a plain button (or `[role="button"]` / `a[href]`) inside `[menu-root]`. Pairing is wrapped: the opener lives inside the root with the panel. The runtime fills opener `aria-haspopup="menu"` plus `aria-controls` pointing at the `[menu]` id.
+A boolean `[menu]` attribute is enough. There is no HTML global `menu` attribute. Optional `surfaceTone` on `[menu]` is allowed. Theme paint uses `--juice-menu-*` roles.
 
-**Parts:**
+## JavaScript
 
-- `[menu-root]` — composite wrapper (opener + panel)
-- `[menu-button]` — optional opener chrome (surface paint, not a CTA)
-- `[menu]` — the menu panel (`role="menu"`)
-- `[menuitem]` — item row (`role="menuitem"`); value `"active"` is keyboard / visual focus
-- `[menu-separator]` — non-interactive divider (`role="separator"`)
-- `[menu-label]` — non-interactive group label
+| Export | What it does |
+| --- | --- |
+| `createMenu(options?)` | Controller for `options.root`, or the document. |
+| `initMenu(options?)` | Same call as `createMenu`. |
+| `startMenuRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopMenuRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-Prefer shipping those roles in markup. The runtime fills them if they are missing, plus missing panel / item ids and opener `aria-expanded`. It does **not** set `aria-modal`. Separators get `role="separator"`; labels stay non-interactive and do not get a role.
+A custom-root controller can run beside the document runtime, and each click or key event is claimed once.
 
-When `[menu-root]` has a `name` or `id`, that value becomes the slug used for generated ids (`file-menu`, `file-item-1`).
+### Options
 
-Theme paint uses `--juice-menu-*` roles. Core CSS paints `[menu]` at **z-index 1050** (same band as popover / combobox, below tooltip `1060` and toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[menu-root]` is an APG menu button, not a popover, not a combobox, not a native `<select>`, not a menubar, not a context menu, and not the surface `overlay="frost|tint"` utility. Optional `surfaceTone` on `[menu]` is allowed; do not force it.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Queries descendants. The document when omitted. |
+| `rootSelector` | `[menu-root]` | Composite wrapper. |
+| `buttonSelector` | `[menu-button]` | Optional opener chrome. |
+| `menuSelector` | `[menu]` | Panel. Opener clicks are claimed only when a panel resolves. |
+| `itemSelector` | `[menuitem]` | Item rows. |
+| `separatorSelector` | `[menu-separator]` | Dividers. |
+| `labelSelector` | `[menu-label]` | Group labels. |
 
-## Automatic Boot
+### Controller
 
-The runtime starts automatically in the browser.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Removes the document listeners and disconnects the observer. |
+| `sync()` | Fills ids and ARIA, and applies roving tabindex on an open panel. |
+| `open(target?)` | Shows `[menu]` and moves focus to an enabled item. |
+| `close(target?)` | Hides `[menu]` and returns focus to the opener. |
+| `toggle(target?)` | Opens a closed menu and closes an open one. |
+| `select(target?)` | Clicks one enabled menuitem. That click closes the menu. |
+| `isOpen(target?)` | True when `[menu]` lacks `hidden`. |
+| `getState(target?)` | `{ open: boolean }`, or `null`. |
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the menu runtime:
+### Events
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startMenuRuntime();
-    });
-  } else {
-    startMenuRuntime();
-  }
-}
-```
+A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[menu-root]`. `detail` is `{ runtime: "menu", state: { open: boolean } }`. `open` means the `[menu]` panel is shown; `isOpen()` and `getState()` read it, and a write that leaves `open` unchanged does not dispatch.
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+## Accessibility
 
-`stopMenuRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+- ArrowDown on a closed opener opens the menu and focuses the first enabled item. ArrowUp opens onto the last enabled item.
+- When the menu is open, ArrowDown and ArrowUp move `menuitem="active"` among enabled items and wrap. Focus moves onto the menuitem. This is roving tabindex, not `aria-activedescendant`.
+- Home and End move to the first and last enabled item while the menu is open.
+- Enter and Space activate the focused menuitem. On a non-native opener they toggle the menu. A native button uses click.
+- Escape closes and returns focus to the opener, unless an open `[modal-overlay]` or `[drawer-overlay]` exists. Menu sits with popover in that band. Combobox, toast, and tooltip yield to an open menu. See [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Tab closes without activating. Focus returns to the opener so Tab continues from there. There is no focus trap.
+- Disabled items (`aria-disabled="true"`, or a disabled `button` or `input`) and hidden items are skipped. A disabled item click is cancelled before author handlers run.
+- Sync fills `role="menu"`, `role="menuitem"`, and `role="separator"`, plus `aria-haspopup="menu"`, `aria-controls`, and `aria-expanded`. It does not set `aria-modal`. A non-native opener gets `role="button"` and `tabindex="0"` when `tabindex` is missing.
+- `[menu]` is painted at z-index 1050, the same band as popover and combobox, below tooltip 1060 and toast 1100. See [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
 
-## Public API
+## Behavior
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+1. Find each `[menu-root]` and ignore orphan `[menu]` and `[menuitem]` nodes.
+2. Resolve the opener, the `[menu]` panel, and the `[menuitem]` rows inside that root.
+3. Fill missing roles, ids, `aria-haspopup`, `aria-controls`, and `aria-expanded`.
+4. Toggle native `hidden` on `[menu]`, and close other open menus when one opens.
+5. Move focus to an enabled menuitem on open, with roving tabindex.
+6. Open from the opener, and close on Escape, outside click, Tab, or item activation.
 
-```ts
-createMenu(options?)
-initMenu(options?)
-startMenuRuntime()
-stopMenuRuntime()
-```
+A click, Enter, or Space that opens the menu focuses the previously active enabled item when it is still enabled, otherwise the first. ArrowDown and ArrowUp on a closed opener force the first and last enabled items.
 
-These are useful for internal control, tests, or advanced cases.
+### Placement
 
-A real open or close dispatches a bubbling `juice:change` from `[menu-root]`. `detail` is `{ runtime: "menu", state: { open: boolean } }`, where `open` means the `[menu]` panel is shown. `isOpen()` and `getState()` read it. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+Placement is CSS absolute from `[menu-root]`. Values are `top`, `bottom`, `left`, and `right`. Bare means bottom. The runtime does not measure, flip, or shift the panel. There is no Floating UI.
 
-`createMenu()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton. A controller claims opener clicks only when it can resolve a panel (a custom `menuSelector` can coexist with the auto singleton).
+<details>
+<summary>Edge cases</summary>
 
-## MenuOptions
+- Opening one menu also closes other open menus found in the document.
+- Exclusive open is among menus. This runtime does not close a modal, drawer, or popover.
+- When no enabled item exists, the panel receives `tabindex="-1"` and takes focus.
+- Escape does nothing when the event default is already prevented.
+- The observer watches child list changes and `hidden`, `aria-controls`, `aria-expanded`, `aria-disabled`, `aria-haspopup`, `disabled`, `menu-root`, `menu-button`, `menu`, `menuitem`, `menu-separator`, and `menu-label`.
 
-The configurable shape is:
+</details>
 
-```ts
-type MenuOptions = {
-  root?: ParentNode;
-  rootSelector?: string;
-  buttonSelector?: string;
-  menuSelector?: string;
-  itemSelector?: string;
-  separatorSelector?: string;
-  labelSelector?: string;
-};
-```
+### Limits
 
-By default, Juice uses:
+- There is no `Menu()` factory.
+- There are no submenus and no typeahead.
+- Orphan `[menu]` and `[menuitem]` nodes outside `[menu-root]` are ignored.
+- `hidden` stays on `[menu]`, not on the root. The runtime does not write layout `content`.
+- The background stays interactive. There is no focus trap and no `aria-modal`.
 
-```ts
-{
-  root: document,
-  rootSelector: '[menu-root]',
-  buttonSelector: '[menu-button]',
-  menuSelector: '[menu]',
-  itemSelector: '[menuitem]',
-  separatorSelector: '[menu-separator]',
-  labelSelector: '[menu-label]',
-}
-```
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-## MenuController
+## Not to be confused with
 
-```ts
-type MenuController = {
-  destroy: () => void;
-  sync: () => void;
-  open: (target?: HTMLElement | null) => void;
-  close: (target?: HTMLElement | null) => void;
-  toggle: (target?: HTMLElement | null) => void;
-  select: (target?: HTMLElement | null) => void;
-  isOpen: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => MenuState | null;
-};
-```
+| This | Not this |
+| --- | --- |
+| APG menu button | A popover |
+| APG menu button | A combobox |
+| APG menu button | A menubar |
+| APG menu button | A native `<select>` |
+| APG menu button | A context menu |
+| `<div menu>` | The HTML `<menu>` element |
 
-`open()` / `close()` / `toggle()` toggle native `hidden` on `[menu]`. `select()` activates one enabled menuitem (clicks it) and then closes.
+## Related
 
-## What the Runtime Actually Does
-
-The runtime performs eight main jobs:
-
-1. Find `[menu-root]` roots and resolve the opener, `[menu]` panel, and `[menuitem]` rows inside that root. Orphan nodes outside a `[menu-root]` are ignored. The opener is `[menu-button]` when present, else `[aria-haspopup="menu"]`, else an `aria-controls` match to the panel id, else the first `button` / `[role="button"]` / `a[href]` that is not inside the panel
-2. Fill missing roles (`menu` / `menuitem` / `separator`), panel and item ids, opener `aria-haspopup="menu"` / `aria-controls` / `aria-expanded`, and `role="button"` plus `tabindex="0"` on a non-native opener. It does not set `aria-modal`
-3. Toggle native `hidden` on `[menu]` (not the root). Opening one managed menu closes the others
-4. Move focus onto a menuitem on open. Keyboard focus is **roving tabindex**: the active row gets `tabindex="0"` plus `menuitem="active"`; siblings get `tabindex="-1"`. Separators and labels are skipped. Disabled items (`aria-disabled="true"` or native `disabled`) are skipped
-5. Open on opener click / Enter / Space (native buttons already synthesize a click). ArrowDown on a closed opener opens and focuses the first enabled item (or the previously active item). ArrowUp opens onto the last enabled item
-6. Close on Escape (yields when an open `[modal-overlay]` or `[drawer-overlay]` exists — menu sits with popover in the dialog-adjacent band), outside click, Tab (closes without activating; focus returns to the opener so Tab’s default can move to the next / previous control), or after activating an item. Activating an item clicks it and restores focus to the opener. Disabled items are intercepted on capture so author click handlers never run
-7. `aria-expanded` on the opener tracks open vs closed
-8. Handle click (opener toggle, item activate, outside) and keyboard (Escape, Tab, ArrowUp/Down, Home/End, Enter/Space)
-
-There is no focus trap. Tab is not wrapped. The background stays interactive.
-
-Exclusive open is among menus. This runtime does not close a modal, drawer, or popover, and those runtimes do not close a menu.
-
-## Placement
-
-Placement is CSS-only. There is no Floating UI.
-
-`[menu]` is absolutely positioned from `[menu-root]` (`top|bottom|left|right`, default `bottom`). Core CSS paints it at z-index **1050**. The runtime does not measure, flip, or shift the panel.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a menu appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA, start handling clicks and keys, and apply roving tabindex on any already-open panel.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- ArrowDown / ArrowUp on a closed opener open the menu and focus the first / last enabled item. Open, those keys move `menuitem="active"` among enabled items (wrap). Focus moves onto the menuitem itself — this is not combobox `aria-activedescendant`
-- Home / End move to the first / last enabled item while the menu is open
-- Enter and Space activate the focused menuitem (or toggle a non-button opener)
-- Escape closes and returns focus to the opener, but only when no open `[modal-overlay]` or `[drawer-overlay]` exists (those dialogs own Escape). Menu sits with popover in the same Escape band. Combobox, toast, and tooltip yield to an open menu. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Tab closes without activating the item. Focus returns to the opener so Tab’s default keeps sequential focus. There is no focus trap
-
-Disabled items are skipped by the roving keys. They never fire author click handlers.
-
-## Limitations
-
-- No `Menu()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This is an APG Menu Button, not a menubar, not a context menu, and not a submenu tree. No submenus and no typeahead in v1.
-- Distinct from popover (generic non-modal dialog), combobox (editable listbox), and native `<select>`. Do not restyle or replace `<select>`.
-- Orphan `[menu]` / `[menuitem]` nodes that are not inside `[menu-root]` are ignored.
-- Panels use native `hidden` on `[menu]`, never on the root, and never layout `content=`.
-- Opening is exclusive among menus. Only one managed menu is open at a time.
-- Placement has no Floating UI. The panel stays CSS-absolute from the root.
-- Do not use the HTML `<menu>` element. A boolean `[menu]` attribute is the Juice name.
-- The panel is not a dialog overlay: no `aria-modal`, no focus trap, and the background stays interactive.
-- This surface is Emerging, not Stable.
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, and banner behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), and [Banner Runtime](./juice-banner-runtime.md).
-- Escape dismisses the open menu only when no open modal/drawer overlay exists. Combobox, toast, and tooltip yield to an open menu like they yield to an open popover. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Panel chrome is `z-index: 1050`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
-
-## Why This Matches Navigation
-
-The menu runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, and banner lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal](./juice-modal-runtime.md)
+- [Drawer](./juice-drawer-runtime.md)
+- [Toast](./juice-toast-runtime.md)
+- [Popover](./juice-popover-runtime.md)
+- [Wizard](./juice-wizard-runtime.md)
+- [Tooltip](./juice-tooltip-runtime.md)
+- [Combobox](./juice-combobox-runtime.md)
+- [Banner](./juice-banner-runtime.md)

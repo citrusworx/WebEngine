@@ -1,36 +1,12 @@
-# Juice Avatar
+# Avatar
 
-This document explains the current avatar chrome in `libraries/juice/src/components/avatar/avatar.scss` and the avatar runtime in `libraries/juice/src/js/src/avatar/avatar-runtime.ts` (monorepo paths; outside this vault).
+An avatar is an initials or photo mark rooted at `[avatar]`. A broken or empty photo steps aside so the initials show.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, and icon button:
+Emerging. The twenty-seventh runtime. On master. Not in the published `@citrusworx/juiceui@0.9.2` release.
 
-> If a user writes valid Juice avatar markup and it exists in the browser, a broken or empty photo should step aside so the initials show.
+`createAvatar`, `initAvatar`, `startAvatarRuntime`, and `stopAvatarRuntime` are not in that npm cut.
 
-That is the standard.
-
-## The Goal
-
-The avatar runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize avatar behavior in their app code.
-
-There is no `Avatar()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should paint from core CSS, and a photo should fall back after importing the JS entry, but the API is still likely to evolve.
-
-Avatar is an identity mark. It is not a badge (`[badge]` is a pill label; `[badge="square"]` is only the square precedent). See [Badge](./juice-badge.md). It is not a loading placeholder (`[skeleton="circle"]` uses the same sizes and can stand in for the same box). It is not a control (`[icon-button="round"]` is a button; the circle there is the option). There is no focus trap, no keyboard handler, and no Escape handler.
-
-Avatar is the twenty-seventh Emerging auto-enhance runtime. `@citrusworx/juiceui@0.9.0` shipped eighteen (navigation through progress). `@citrusworx/juiceui@0.9.2` is the live npm cut. `@citrusworx/juiceui@0.9.1` added pagination, the nineteenth. Disclosure is the twentieth. Spinner is the twenty-first. Select is the twenty-second. Input is the twenty-third. Textarea is the twenty-fourth. Field is the twenty-fifth. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button is the twenty-sixth. Avatar (chrome and this runtime) is on master and is not in the published npm 0.9.2 release. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
+Importing `@citrusworx/juiceui` enhances valid markup on master. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published 0.9.2 package does not include this runtime.
 
 ## Markup
 
@@ -71,7 +47,9 @@ There is no HTML global `avatar` attribute, and there is no `<avatar>` element. 
 </div>
 ```
 
-| Attribute | What it is |
+## Attributes
+
+| Hook | What it does |
 |---|---|
 | `[avatar]` | Host. Round mark. Boolean `[avatar]` is the round. Any value, including `"square"` and `"round"`, is still an avatar. |
 | `[avatar="round"]` | The same round shape as boolean `[avatar]`. |
@@ -85,7 +63,11 @@ There is no HTML global `avatar` attribute, and there is no `<avatar>` element. 
 
 `[avatar-more="round"]` is the round chip. `[avatar-more="square"]` is the squared chip. The status dot is only on `[avatar]`. `[avatar-more]` does not grow a `::after`.
 
-An `<img>` inside `[avatar]` is taken out of flow (`position: absolute; inset: 0; object-fit: cover`) and stacked above the initials (`z-index: 1` inside the avatar's `isolation`). Initials, a `<span>` or bare text, stay centered underneath. Hiding or removing that image is what reveals the initials. The runtime does that with the `hidden` attribute. Avatar CSS does not set `display` on the photo, so the user-agent `[hidden]` rule is what takes the photo out.
+An `<img>` inside `[avatar]` is taken out of flow (`position: absolute; inset: 0; object-fit: cover`) and stacked above the initials (`z-index: 1` inside the avatar's `isolation`). Initials, a `<span>` or bare text, stay centered underneath.
+
+Hiding or removing that image is what reveals the initials. The runtime does that with the `hidden` attribute.
+
+Avatar CSS does not set `display` on the photo, so the user-agent `[hidden]` rule is what takes the photo out.
 
 Initials paint at `font-weight: 600`, `line-height: 1`, `text-transform: uppercase`, and `white-space: nowrap`. The uppercase is paint. The runtime does not rewrite the text.
 
@@ -97,9 +79,19 @@ Core CSS does not give `[avatar]` an overlay `z-index`. The photo is `1` and the
 
 `[avatar="square"]` uses `--juice-avatar-radius-square` (`0.375rem`), the same radius as `[badge="square"]` and `[skeleton]`. The round uses `999px`.
 
-The status dot hangs off the bottom-right rim (`translate(20%, 20%)`). `[avatar][status]` sets `overflow: visible` so the ring is not clipped. The ring is a `2px` shadow in `--juice-avatar-ring`, not a border, so the box size does not change. The dot's `background-color` eases with `--juice-motion-duration-fast` and `--juice-motion-ease-standard`. `prefers-reduced-motion: reduce` sets `transition: none` on that dot. The translate is placement, and it stays. `pointer-events: none` keeps the dot out of hit testing. Only `online`, `away`, `busy`, and `offline` paint a dot.
+The status dot hangs off the bottom-right rim (`translate(20%, 20%)`). `[avatar][status]` sets `overflow: visible` so the ring is not clipped.
 
-`[avatar-group]` is an inline row with no gap. Each face after the first gets `margin-inline-start: var(--juice-avatar-group-overlap)`, a negative quarter of the current size. The group restates that overlap, and `[scale]` on the group reassigns `--juice-avatar-size` and `--juice-avatar-font-size`, so the stack tightens with the box. A child `[scale]` sets width and font-size on that child and leaves `--juice-avatar-size` alone, so it does not change the group's overlap. Faces in a group also wear the `2px` ring as a shadow.
+The ring is a `2px` shadow in `--juice-avatar-ring`, not a border, so the box size does not change. The dot's `background-color` eases with `--juice-motion-duration-fast` and `--juice-motion-ease-standard`.
+
+`prefers-reduced-motion: reduce` sets `transition: none` on that dot. The translate is placement, and it stays.
+
+`pointer-events: none` keeps the dot out of hit testing. Only `online`, `away`, `busy`, and `offline` paint a dot.
+
+`[avatar-group]` is an inline row with no gap. Each face after the first gets `margin-inline-start: var(--juice-avatar-group-overlap)`, a negative quarter of the current size.
+
+The group restates that overlap, and `[scale]` on the group reassigns `--juice-avatar-size` and `--juice-avatar-font-size`, so the stack tightens with the box. A child `[scale]` sets width and font-size on that child and leaves `--juice-avatar-size` alone, so it does not change the group's overlap.
+
+Faces in a group also wear the `2px` ring as a shadow.
 
 The first eight faces paint above the ones after them, so a bottom-right dot stays on the visible rim. Past eight, later faces paint in source order.
 
@@ -132,7 +124,11 @@ See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-att
 
 The fill is the shared muted surface. Ink is `currentColor`. Status hues follow banner success, warning, and error, then toast, then the unthemed swatch. KiwiPress and Aquaflux read with no avatar override, because those themes already set the muted surface and the banner status hues.
 
-Color is restated on `[theme]` for a custom-property reason. A `var()` resolves on the element that sets the property. `:root` does not see a theme's `--juice-surface-muted-bg` or `--juice-banner-success`, so a formula that lived only on `:root` would bake the unthemed fallback in for every descendant. `[theme]` states the same formula again. `currentColor` stays inside the ink and offline values and resolves where the avatar paints.
+Color is restated on `[theme]` for a custom-property reason. A `var()` resolves on the element that sets the property.
+
+`:root` does not see a theme's `--juice-surface-muted-bg` or `--juice-banner-success`, so a formula that lived only on `:root` would bake the unthemed fallback in for every descendant. `[theme]` states the same formula again.
+
+`currentColor` stays inside the ink and offline values and resolves where the avatar paints.
 
 **Tide away.** Tide's banner warning is lagoon-800. That step sits on the muted surface (the same hue at low alpha) and the away dot disappears. The theme source notes that contrast at about 1.6:1. `libraries/juice/src/themes/tide/tide.scss` lifts only `--juice-avatar-status-away`:
 
@@ -142,56 +138,20 @@ Color is restated on `[theme]` for a custom-property reason. A `var()` resolves 
 
 The warning hue moves toward Tide's text color so the dot stays in family and readable. Online, busy, and offline already clear that surface. Tide does not override any other `--juice-avatar-*` name. No other shipped theme binds an avatar role.
 
-## Automatic Boot
+## JavaScript
 
-The runtime starts automatically in the browser.
+Outside a browser, `startAvatarRuntime()` returns `null` and `createAvatar()` returns a controller whose methods do nothing (`getState()` returns `null`).
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the avatar runtime:
+| Export | What it does |
+| --- | --- |
+| `createAvatar(options?)` | Controller for `options.root`, or the document. |
+| `initAvatar(options?)` | Same call as `createAvatar`. |
+| `startAvatarRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopAvatarRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    bootOnReady = () => {
-      bootOnReady = null;
-      if (!autoStartSuspended) {
-        startAvatarRuntime();
-      }
-    };
-    document.addEventListener('DOMContentLoaded', bootOnReady);
-  } else {
-    startAvatarRuntime();
-  }
-}
-```
+A custom-root controller can run beside the document runtime. Each `load` and `error` is claimed once.
 
-Importing the Juice JS entrypoint is enough for the normal behavior. The entry re-exports this module, so the boot runs.
-
-`stopAvatarRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start. Outside a browser, `startAvatarRuntime()` returns `null` and `createAvatar()` returns a controller whose methods do nothing (`getState()` returns `null`).
-
-## Public API
-
-The runtime still exposes functions, but they are secondary to the automatic behavior.
-
-```ts
-createAvatar(options?)
-initAvatar(options?)
-startAvatarRuntime()
-stopAvatarRuntime()
-```
-
-These are useful for internal control, tests, or advanced cases.
-
-A real change of `{ loaded, fallback, hasImage }` dispatches a bubbling, composed `juice:change` from `[avatar]`. `detail` is `{ runtime: "avatar", state }`. `getState()` reads that same shape, or `null` when the host is missing. The first observation of a host is recorded and does not dispatch, including an image that is already broken when the runtime starts. A later `sync()` that leaves the state unchanged does not dispatch. A second `error` on a photo that is already in fallback does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2. See [juice:change](./juice-runtime-behavior.md#juicechange).
-
-`createAvatar()` can run alongside the automatic document runtime. Each `load` and `error` is claimed once, so a custom-root controller does not double-apply fallback with the singleton.
-
-`initAvatar()` is the same function as `createAvatar()`.
-
-`startAvatarRuntime()` is an idempotent singleton. A second call syncs and returns the same controller.
-
-## AvatarOptions
-
-The configurable shape is:
+### Options
 
 ```ts
 type AvatarOptions = {
@@ -209,9 +169,11 @@ By default, Juice uses:
 }
 ```
 
-A custom `root` limits sync to avatars inside that root. When the root itself is an `[avatar]`, that host is managed too. Hosts outside the root are left alone. `[avatar-group]` and `[avatar-more]` are not hosts, whatever the selector is, unless an author points `avatarSelector` at them. The shipped default does not.
+A custom `root` limits sync to avatars inside that root. When the root itself is an `[avatar]`, that host is managed too.
 
-## AvatarController
+Hosts outside the root are left alone. `[avatar-group]` and `[avatar-more]` are not hosts, unless an author points `avatarSelector` at them. The shipped default does not.
+
+### Controller
 
 ```ts
 type AvatarState = {
@@ -227,13 +189,33 @@ type AvatarController = {
 };
 ```
 
-`destroy()` removes the `load` and `error` listeners, disconnects the observer, and cancels a scheduled sync. It does not remove `[fallback]` or unhide an image this runtime hid. Clearing those would paint a broken photo over the initials again. The last visual decision stays. The runtime simply stops updating it. A later `load`, `error`, or `sync()` does not clear that fallback. `getState()` still reads the image, so a photo that is still broken still reports fallback.
+`destroy()` removes the `load` and `error` listeners, disconnects the observer, and cancels a scheduled sync. It does not remove `[fallback]` or unhide an image this runtime hid.
 
-`sync()` walks each managed host and classifies its images. `getState()` reads that classification. With no target, `getState()` uses the first managed `[avatar]` in the root. A target inside a host, including the `<img>`, resolves to that host. A node that is not an `[avatar]` and is not inside one returns `null`. `[avatar-more]`, `[avatar-group]`, and a stray `<img>` return `null`.
+Clearing those would paint a broken photo over the initials again. The last visual decision stays.
 
-`loaded` is true when at least one image in that avatar has loaded. `hasImage` is true when the avatar has at least one `<img>`, including one that is still loading or already in fallback. `fallback` is true when the avatar has an image, none of them have loaded, and none of them are still loading. Initials with no `<img>` are `{ loaded: false, fallback: false, hasImage: false }`. A stale `[fallback]` on that host is removed so the attribute matches.
+The runtime simply stops updating it. A later `load`, `error`, or `sync()` does not clear that fallback.
 
-## What the Runtime Actually Does
+`getState()` still reads the image, so a photo that is still broken still reports fallback.
+
+`sync()` walks each managed host and classifies its images. `getState()` reads that classification.
+
+With no target, `getState()` uses the first managed `[avatar]` in the root. A target inside a host, including the `<img>`, resolves to that host. A node that is not an `[avatar]` and is not inside one returns `null`. `[avatar-more]`, `[avatar-group]`, and a stray `<img>` return `null`.
+
+### Events
+
+A real change of `{ loaded, fallback, hasImage }` dispatches a bubbling, composed [juice:change](./juice-runtime-behavior.md#juicechange) from `[avatar]`. `detail` is `{ runtime: "avatar", state }`.
+
+`getState()` reads that shape, or `null` when the host is missing. The first observation does not dispatch, including an image that is already broken when the runtime starts.
+
+A later `sync()` that leaves the state unchanged does not dispatch. A second `error` on a photo that is already in fallback does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2.
+
+`loaded` is true when at least one image in that avatar has loaded. `hasImage` is true when the avatar has at least one `<img>`, including one that is still loading or already in fallback.
+
+`fallback` is true when the avatar has an image, none of them have loaded, and none of them are still loading. Initials with no `<img>` are `{ loaded: false, fallback: false, hasImage: false }`.
+
+A stale `[fallback]` on that host is removed so the attribute matches.
+
+## Behavior
 
 The runtime performs five main jobs:
 
@@ -260,7 +242,11 @@ An `<img>` is classified as one of four outcomes:
 | Loaded | `load`, or `img.complete` with `naturalWidth > 0` | `[fallback]` off, and `hidden` removed if this runtime set it |
 | Pending | A usable source, and the image is not complete yet | Leave the image visible. Leave `[fallback]` off. `hasImage` is true, so a pending photo is not the initials state |
 
-**Empty `src` with `srcset`.** A usable source is a non-blank `src` or a non-blank `srcset`. An image with an empty or missing `src` and a real `srcset` is not empty. While that image is not complete, the outcome is pending: the runtime waits for `load` or `error`, does not set `[fallback]`, and does not hide the image. A whitespace-only `src` together with a whitespace-only `srcset` is empty and falls back immediately. `src=""` with no `srcset` is empty.
+**Empty `src` with `srcset`.** A usable source is a non-blank `src` or a non-blank `srcset`. An image with an empty or missing `src` and a real `srcset` is not empty.
+
+While that image is not complete, the outcome is pending: the runtime waits for `load` or `error`, does not set `[fallback]`, and does not hide the image. A whitespace-only `src` together with a whitespace-only `srcset` is empty and falls back immediately.
+
+`src=""` with no `srcset` is empty.
 
 Changing `src` or `srcset` drops the previous verdict. The image is classified again. A new `src` that is still broken does not dispatch a second `juice:change` when the avatar was already in fallback. A new `src` that is still loading clears fallback and does dispatch, because the state changed.
 
@@ -268,21 +254,11 @@ Several images in one avatar: a broken one stays hidden. The avatar is in fallba
 
 Images added or removed later are picked up on the next sync. Removing the last image clears `[fallback]` and returns the initials state.
 
-## Why MutationObserver Is Used
+## DOM updates
 
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-If an avatar or an image appears later, or `src`, `srcset`, `hidden`, or `[fallback]` changes, the observer schedules a `sync()` call so Juice can classify the photo again.
-
-The observer watches child-list changes and these attributes: `avatar`, `src`, `srcset`, `fallback`, and `hidden`. `[scale]` and `[status]` stay CSS and are not in that list. Removing `[avatar]` drops the host. `destroy()` stops that observation.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
+The observer watches child-list changes and `avatar`, `src`, `srcset`, `fallback`, and `hidden`. `[scale]` and `[status]` stay CSS. Removing `[avatar]` drops the host. `destroy()` stops that observation.
 
 `load` and `error` publish on the event. They are not deferred to that frame.
 
@@ -290,7 +266,11 @@ That keeps the runtime from reacting too aggressively while still updating quick
 
 `@citrusworx/sigjs/juice` `bind(host, runtime?)` accepts avatar. `JuiceRuntimeName` in `libraries/sig/src/juice.ts` includes `"avatar"`. The host matcher looks for `[avatar]`, after the earlier matchers, so a host that already matches stays on that runtime.
 
-`bind(avatar)` seeds a signal from `getState()`. `bind(avatar, "avatar")` does the same. Avatar is read-only: there is no write API, and `state.set` does not call a controller. The next `juice:change` copies the host back over the signal. On a Juice build that does not export `startAvatarRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2; the export is on master only), binding avatar throws `Sig juice bind: "avatar" needs a newer @citrusworx/juiceui that exports startAvatarRuntime.` The module still loads, and the other runtimes still bind. Juice does not import Sig, and this runtime does not call `bind`.
+`bind(avatar)` seeds a signal from `getState()`. `bind(avatar, "avatar")` does the same.
+
+Avatar is read-only: there is no write API, and `state.set` does not call a controller. The next `juice:change` copies the host back over the signal.
+
+On a Juice build that does not export `startAvatarRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2; the export is on master only), binding avatar throws `Sig juice bind: "avatar" needs a newer @citrusworx/juiceui that exports startAvatarRuntime.` The module still loads, and the other runtimes still bind. Juice does not import Sig, and this runtime does not call `bind`.
 
 `juice:change` and `getState()` still work without Sig. Listen on the host, or call `getState()` on the controller.
 
@@ -326,8 +306,7 @@ The group label is the author's. Chrome does not set it.
 
 ## Limitations
 
-- No `Avatar()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- This surface is Emerging, not Stable. Avatar is the twenty-seventh Emerging auto-enhance runtime. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. Icon button remains the twenty-sixth and is also on master, not in that cut. Field remains the twenty-fifth and shipped in that cut. Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty stay Emerging.
+- There is no `Avatar()` factory. Author the markup and let the runtime enhance it.
 - Only `[avatar]` hosts are handled. `[avatar-group]` is a row. `[avatar-more]` stays text. A stray `<img>` is ignored.
 - A broken, empty, or already-failed image sets `[fallback]` on the avatar and `hidden` on that image. A later successful load clears both. An empty `src` with a real `srcset` waits. Core CSS does not style `[fallback]`.
 - `destroy()` keeps the fallback in place. It does not unhide the image.
@@ -337,23 +316,20 @@ The group label is the author's. Chrome does not set it.
 - There is no overlay z-index. The photo, the dot, and the group ladder stack inside the mark. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
 - Sig `bind()` accepts this runtime and stays read-only. A Juice build without `startAvatarRuntime` throws `needs a newer @citrusworx/juiceui`. See [Sig `bind()`](#sig-bind).
 - Shipped themes do not have to bind `--juice-avatar-*`. Tide lifts `--juice-avatar-status-away` only.
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, skeleton, and accordion behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), [Wizard Runtime](./juice-wizard-runtime.md), [Tooltip Runtime](./juice-tooltip-runtime.md), [Combobox Runtime](./juice-combobox-runtime.md), [Banner Runtime](./juice-banner-runtime.md), [Menu Runtime](./juice-menu-runtime.md), [Switch Runtime](./juice-switch-runtime.md), [Slider Runtime](./juice-slider-runtime.md), [Checkbox Runtime](./juice-checkbox-runtime.md), [Radio Runtime](./juice-radio-runtime.md), [Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Progress Runtime](./juice-progress-runtime.md), [Pagination Runtime](./juice-pagination-runtime.md), [Disclosure Runtime](./juice-disclosure-runtime.md), [Spinner Runtime](./juice-spinner-runtime.md), [Select Runtime](./juice-select-runtime.md), [Input Runtime](./juice-input-runtime.md), [Textarea Runtime](./juice-textarea-runtime.md), [Field Runtime](./juice-field-runtime.md), [Icon Button Runtime](./juice-icon-button-runtime.md), [Skeleton](./juice-skeleton.md), and [Accordion Runtime](./juice-accordion-runtime.md).
 
-## Why This Matches Navigation
+## Not to be confused with
 
-The avatar runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, and icon-button lifecycle by convention:
+| This | Not this |
+| --- | --- |
+| Initials or photo mark | Badge (`[badge]` is a pill; `[badge="square"]` is only the square precedent) |
+| Same box sizes as a circle skeleton | `[skeleton="circle"]`, which is a loading placeholder |
+| A non-control | `[icon-button="round"]`, which is a button |
 
-- DOM-first
-- automatic boot
-- event delegation for image `load` and `error`
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
+## Related
 
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API. `juice:change` comes from that shared helper. Avatar does not import Sig.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Badge](./juice-badge.md)
+- [Skeleton](./juice-skeleton.md)
+- [Icon button](./juice-icon-button-runtime.md)

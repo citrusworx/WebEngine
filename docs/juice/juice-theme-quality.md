@@ -2,7 +2,9 @@
 
 Canonical visual and identity quality bar for Juice themes.
 
-The [Theme Contract](./juice-theme-contract.md) checks that required `--juice-*` roles exist. The [Typography Contract](./juice-typography-contract.md) checks how authors use `font` / `fontSize` / related attributes. This page is separate: it is the ship bar for identity density so new colors and swatches do not repeat weak heading ink, cross-hue CTA gradients, outline chips filled with CTA paint, thin ink ladders, templated surfaces, or one shared type pair across a family of themes.
+The [Theme Contract](./juice-theme-contract.md) checks that required `--juice-*` roles exist. The [Typography Contract](./juice-typography-contract.md) checks how authors use `font` / `fontSize` / related attributes.
+
+This page is separate: it is the ship bar for identity density so new colors and swatches do not repeat weak heading ink, cross-hue CTA gradients, outline chips filled with CTA paint, thin ink ladders, templated surfaces, or one shared type pair across a family of themes.
 
 ## Purpose
 

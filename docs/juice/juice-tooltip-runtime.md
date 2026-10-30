@@ -1,38 +1,12 @@
-# Juice Tooltip Runtime
+# Tooltip
 
-This document explains the current tooltip runtime in `libraries/juice/src/js/src/tooltip/tooltip-runtime.ts` (monorepo path; outside this vault).
+A tooltip is a hover and focus tip rooted at `[tooltip-root]`.
 
-The key idea is the same as navigation, accordion, tabs, modal, drawer, toast, popover, and wizard:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice tooltip markup and it exists in the browser, the hover/focus tip should just work.
+Importing `@citrusworx/juiceui` enhances valid markup through [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The tooltip runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize tooltip behavior in their app code.
-
-There is no `Tooltip()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-Tooltip is a hover/focus tip. It is not a popover (interactive), not a native `title` attribute, not a modal, not a drawer, and not a toast stack.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s tooltip chrome:
+## Markup
 
 ```html
 <button type="button" aria-describedby="demo-tip">Save</button>
@@ -41,181 +15,124 @@ The runtime is aligned with Juice’s tooltip chrome:
 </div>
 ```
 
-It requires a `[tooltip-root]` root. Closed vs open is the native `hidden` attribute on that root. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+Closed vs open is the native `hidden` attribute on `[tooltip-root]`. The floating surface is `[tooltip-panel]`.
 
-**Never use a bare `tooltip` attribute.** The floating surface is `[tooltip-panel]`. This is Juice chrome, not the native HTML `title` attribute — do not restyle or replace `title`.
+## Attributes
 
-**Placement:** `[tooltip-root]` / `[tooltip-root="top"]` / `"bottom"` / `"left"` / `"right"`. Bare or unspecified is top.
+| Hook | What it does |
+| --- | --- |
+| `[tooltip-root]` | Anchored wrapper with values `top`, `bottom`, `left`, `right`, defaulting to `top` when bare. |
+| `[tooltip-panel]` | Floating tip inside the root. |
+| `hidden` | Native closed state on `[tooltip-root]`. |
+| `aria-describedby` | Preferred trigger pairing, whose token list includes the root `id`. |
+| `aria-controls` | Also pairs a trigger whose token list includes the root `id`. |
+| `role="tooltip"` | Tip role on `[tooltip-panel]`, set by the runtime when missing. |
+| `tooltip` | Not a Juice hook; the floating surface is `[tooltip-panel]`. |
+| `title` | Native HTML tooltip that this runtime does not restyle or replace. |
+| `name`, `id` | Root `name` or `id` is the slug for generated ids, and a missing root id becomes `${slug}-root`. |
+| `--juice-tooltip-*` | Theme paint roles for tooltip chrome. |
 
-**Trigger pairing:** prefer `aria-describedby` pointing at the root `id` (APG). `aria-controls` is also accepted for consistency with other Juice runtimes. There is no extra Juice trigger attribute.
+## JavaScript
 
-Prefer shipping `role="tooltip"` on the panel. The runtime fills that if it is missing, plus a missing root id, and it ensures the trigger `aria-describedby` token list includes that id.
+| Export | What it does |
+| --- | --- |
+| `createTooltip(options?)` | Controller for `options.root`, or the document. |
+| `initTooltip(options?)` | Same call as `createTooltip`. |
+| `startTooltipRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopTooltipRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-Theme paint uses `--juice-tooltip-*` roles. Core CSS paints `[tooltip-root]` at **z-index 1060** (slightly above popover `1050`, below toast `1100`). That is a structural band, not a theme contract — see [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands). See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[tooltip-root]` is an anchored positioning wrapper, not a dialog overlay, not a drawer, not a toast stack, not a popover, and not the surface `overlay="frost|tint"` utility. Popover is an interactive floating panel; tooltip is a hover/focus tip. Focus never moves into the tip.
+A custom-root controller can run beside the document runtime; each pointer or key is claimed once.
 
-## Automatic Boot
+### Options
 
-The runtime starts automatically in the browser.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `rootSelector` | `[tooltip-root]` | Root query. |
+| `panelSelector` | `[tooltip-panel]` | Panel query. |
+| `gap` | `8` | Pixels between the trigger and the root. |
+| `hideDelay` | `150` | Milliseconds before hide after pointer leave or blur. |
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the tooltip runtime:
+### Controller
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startTooltipRuntime();
-    });
-  } else {
-    startTooltipRuntime();
-  }
-}
-```
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Wires ids and ARIA, and places any already-open tip. |
+| `show(target?)` | Removes `hidden` on `[tooltip-root]` and never moves focus into the tip. |
+| `hide(target?)` | Sets `hidden` on `[tooltip-root]`. |
+| `isShown(target?)` | Reads whether the tip is shown. |
+| `getState(target?)` | Reads `{ shown: boolean }` for that tip. |
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+### Events
 
-`stopTooltipRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+A real show or hide dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[tooltip-root]` with `detail` `{ runtime: "tooltip", state: { shown: boolean } }`.
 
-## Public API
+`isShown()` and `getState()` read that state.
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+An unchanged `shown` write does not dispatch, and this surface stays Emerging.
 
-```ts
-createTooltip(options?)
-initTooltip(options?)
-startTooltipRuntime()
-stopTooltipRuntime()
-```
+## Accessibility
 
-These are useful for internal control, tests, or advanced cases.
+- Escape hides the open tip only when no `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, or `[combobox-list]` is open, and toast does not block that Escape. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- There is no focus trap: Tab is not wrapped, and focus never moves into the tip.
+- Show and hide use hover (`mouseover` / `mouseout`) and keyboard focus (`focusin` / `focusout`).
+- Prefer `role="tooltip"` on the panel, which the runtime fills, along with a missing root id and a trigger `aria-describedby` that includes that id.
+- `[tooltip-root]` is `z-index: 1060`, above popover `1050` and below toast `1100`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
+- Arrow-key roving is out of scope.
 
-A real show or hide dispatches a bubbling `juice:change` from `[tooltip-root]`. `detail` is `{ runtime: "tooltip", state: { shown: boolean } }`. `isShown()` and `getState()` read it. A write that leaves `shown` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+## Behavior
 
-`createTooltip()` can run alongside the automatic document runtime. Each pointer or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
+1. Find `[tooltip-root]` roots and pair triggers whose `aria-describedby` token list (preferred) or `aria-controls` token list includes that root `id`.
+2. Resolve the panel as `[tooltip-panel]`, then `[role="tooltip"]`, then the root's first element child.
+3. Fill a missing root id and `role="tooltip"` on the panel, and ensure the trigger `aria-describedby` token list includes that id.
+4. Show on `mouseover` or `focusin` of the trigger, and hide on `mouseout` or `focusout` after a grace delay (default 150ms) so a brief leave does not flicker.
+5. Opening one managed tooltip hides any other open tooltip.
+6. Do not move focus into the tip or trap focus; the tip has `pointer-events: none` in chrome, so the delay is not a hover bridge onto the tip.
+7. Place the root with `position: fixed` from the trigger's `getBoundingClientRect` plus an 8px gap, flip once if the preferred side overflows, and reposition on show, window resize, and capture scroll.
+8. Hide the open tip on Escape, yielding to an open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, or `[combobox-list]`, while toast does not block that Escape.
 
-## TooltipOptions
+- Orphan `aria-describedby` or `aria-controls` that do not target a `[tooltip-root]` are ignored.
+- A `name` or `id` on `[tooltip-root]` is the slug for generated ids (`help-root`), and a missing root id is `${slug}-root`.
+- Opening is exclusive among tooltips, so only one managed tip is open at a time.
+- This runtime does not close a modal, drawer, toast, popover, or wizard, and those runtimes do not close a tooltip.
+- Roots use native `hidden`, never layout `content="active"` or `content="hidden"`.
+- The floating surface is `[tooltip-panel]`, and native `title` stays a platform tooltip.
+- There is no interactive content, no close button, and no focus trap.
+- Placement has no Floating UI.
+- Touch and first-tap are later; v1 is hover and keyboard focus only.
+- There is no `Tooltip()` factory.
 
-The configurable shape is:
+### Placement
 
-```ts
-type TooltipOptions = {
-  root?: ParentNode;
-  rootSelector?: string;
-  panelSelector?: string;
-  gap?: number;
-  hideDelay?: number;
-};
-```
+Placement reads `[tooltip-root="top|bottom|left|right"]` (default `top`) and sets the root to `position: fixed` from the trigger's `getBoundingClientRect`. The gap is `8` unless `createTooltip({ gap })` overrides it, and `fixed` uses viewport coordinates and needs no scroll offset.
 
-By default, Juice uses:
+If the preferred side overflows that axis, the runtime flips once (`top` with `bottom`, `left` with `right`) and does not shift or resize. Open tips reposition on window resize and capture-phase scroll, scheduled with `requestAnimationFrame`.
 
-```ts
-{
-  root: document,
-  rootSelector: '[tooltip-root]',
-  panelSelector: '[tooltip-panel]',
-  gap: 8,
-  hideDelay: 150,
-}
-```
+<details>
+<summary>Edge cases</summary>
 
-## TooltipController
+- If a transformed or filtered ancestor is the fixed containing block, the runtime subtracts that origin.
 
-```ts
-type TooltipController = {
-  destroy: () => void;
-  sync: () => void;
-  show: (target?: HTMLElement | null) => void;
-  hide: (target?: HTMLElement | null) => void;
-  isShown: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => TooltipState | null;
-};
-```
+</details>
 
-`show()` and `hide()` toggle native `hidden` on `[tooltip-root]`. `show()` never moves focus into the tip.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-## What the Runtime Actually Does
+## Not to be confused with
 
-The runtime performs eight main jobs:
+| This | Not this |
+| --- | --- |
+| Hover and focus tip `[tooltip-panel]` | Native `title` |
+| Non-interactive tip | Popover |
+| Focus stays on the trigger | A panel that takes focus |
 
-1. Find `[tooltip-root]` roots and pair triggers whose `aria-describedby` token list (preferred) or `aria-controls` token list includes that root `id`
-2. Resolve the panel (`[tooltip-panel]`, then `[role="tooltip"]`, then the root’s first element child)
-3. Fill a missing root id and `role="tooltip"` on the panel. Ensure the trigger `aria-describedby` token list includes that id
-4. Show on `mouseover` / `focusin` of the trigger; hide on `mouseout` / `focusout` after a grace delay (default 150ms) so a brief leave does not flicker
-5. Opening one managed tooltip hides any other open tooltip
-6. Do not move focus into the tip. There is no focus trap. The tip has `pointer-events: none` in chrome, so the delay is not a hover bridge onto the tip
-7. Place the root with `position: fixed` from the trigger’s `getBoundingClientRect` plus an 8px gap; flip once to the opposite side if the preferred side overflows; reposition on show, window resize, and capture scroll (rAF-throttled)
-8. Handle Escape (hide the open tip, but yield to an open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, or `[combobox-list]`). Toast does not block tooltip Escape.
+## Related
 
-Orphan `aria-describedby` / `aria-controls` that do not target a `[tooltip-root]` are ignored.
-
-When `[tooltip-root]` has a `name` or `id`, that value becomes the slug used for generated ids (`help-root`). A missing root id is filled as `${slug}-root`.
-
-Exclusive open is among tooltips. This runtime does not close a modal, drawer, toast, popover, or wizard, and those runtimes do not close a tooltip.
-
-Touch / first-tap is later. v1 is hover and keyboard focus only.
-
-## Placement
-
-Placement is dependency-free. There is no Floating UI.
-
-The runtime reads `[tooltip-root="top|bottom|left|right"]` (default `top`), then positions the root `fixed` from the trigger rect in viewport coordinates. `fixed` needs no scroll offset. The gap is `8` unless `createTooltip({ gap })` overrides it.
-
-If a transformed or filtered ancestor is the fixed containing block, the runtime subtracts that origin.
-
-If the preferred side overflows the viewport on that one axis, the runtime flips once to the opposite side (`top` ↔ `bottom`, `left` ↔ `right`). There is no shift or size middleware.
-
-Open tooltips reposition on window resize and capture-phase scroll, scheduled with `requestAnimationFrame`.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a tooltip appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA, start handling hover/focus, and place any already-open root.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Keyboard
-
-- Escape hides the open tip, but only when no open `[modal-overlay]`, `[drawer-overlay]`, `[popover-root]`, `[menu-root] [menu]:not([hidden])`, or `[combobox-list]` exists (those surfaces own Escape). Toast does not block tooltip Escape — the tip can hide while toasts remain. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- There is no focus trap. Tab is not wrapped. The runtime does not move focus into the tip
-- Hover (`mouseover` / `mouseout`) and keyboard focus (`focusin` / `focusout`) are the v1 show/hide path
-
-Arrow-key roving is intentionally out of scope. Touch / first-tap is later.
-
-## Limitations
-
-- No `Tooltip()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Orphan `aria-describedby` / `aria-controls` that do not target `[tooltip-root]` are ignored.
-- Opening is exclusive among tooltips. Only one managed tip is open at a time.
-- Roots use native `hidden`, never layout `content=`.
-- Never use a bare `tooltip` attribute. The surface is `[tooltip-panel]`. Do not restyle or replace native `title`.
-- Tooltip is not a popover: no interactive content, no close button, no focus trap, and focus never moves into the tip.
-- Placement has no Floating UI. One opposite-side flip only; no shift or size middleware.
-- Touch / first-tap is later. v1 is hover and keyboard focus only.
-- Centered modal / dialog, edge-docked drawer, toast-stack, popover, and wizard behavior are not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md), [Drawer Runtime](./juice-drawer-runtime.md), [Toast Runtime](./juice-toast-runtime.md), [Popover Runtime](./juice-popover-runtime.md), and [Wizard Runtime](./juice-wizard-runtime.md).
-- Escape hides the open tip only when no open modal/drawer overlay, popover-root, menu, or combobox list exists. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-
-## Why This Matches Navigation
-
-The tooltip runtime copies the navigation, accordion, tabs, modal, drawer, toast, popover, and wizard lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal Runtime](./juice-modal-runtime.md)
+- [Drawer Runtime](./juice-drawer-runtime.md)
+- [Toast Runtime](./juice-toast-runtime.md)
+- [Popover Runtime](./juice-popover-runtime.md)
+- [Wizard Runtime](./juice-wizard-runtime.md)

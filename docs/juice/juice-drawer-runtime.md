@@ -1,36 +1,12 @@
-# Juice Drawer Runtime
+# Drawer
 
-This document explains the current drawer dialog runtime in `libraries/juice/src/js/src/drawer/drawer-runtime.ts` (monorepo path; outside this vault).
+A drawer is an edge-docked dialog rooted at `[drawer-overlay]`.
 
-The key idea is the same as navigation, accordion, tabs, and modal:
+Emerging. Shipped in `@citrusworx/juiceui@0.9.2`.
 
-> If a user writes valid Juice drawer markup and it exists in the browser, the dialog behavior should just work.
+Importing `@citrusworx/juiceui` enhances valid markup through [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
-That is the standard.
-
-## The Goal
-
-The drawer runtime is not a framework adapter and not a second component API.
-
-It is a browser-side Juice feature that works regardless of how the markup got into the DOM.
-
-That means it should work for:
-
-- raw HTML pages
-- Twig or other server-rendered templates
-- Sig-rendered DOM
-- React-rendered DOM
-- any other environment that eventually produces browser DOM
-
-The user should not need to manually initialize drawer behavior in their app code.
-
-There is no `Drawer()` Sig factory. Markup plus the runtime is the contract.
-
-This surface is Emerging, not Stable. Valid markup should work after importing the JS entry, but the API is still likely to evolve.
-
-## Markup Contract
-
-The runtime is aligned with Juice’s drawer chrome:
+## Markup
 
 ```html
 <div drawer-overlay id="demo-drawer" hidden>
@@ -43,174 +19,129 @@ The runtime is aligned with Juice’s drawer chrome:
 <button type="button" aria-controls="demo-drawer">Open</button>
 ```
 
-It requires a `[drawer-overlay]` root. Closed vs open is the native `hidden` attribute on that overlay. The runtime does **not** write `content="active"` or `content="hidden"`. Those values clash with Juice layout `[content]`.
+Closed vs open is the native `hidden` attribute on `[drawer-overlay]`. Edge is `left` or `right`; optional width is `drawer-size`.
 
-**Edge:** `[drawer]` / `[drawer="right"]` / `[drawer="left"]`. Bare or unspecified docks right.
+## Attributes
 
-**Size:** optional `[drawer-size="sm|lg"]` (default `22rem`, `sm` `16rem`, `lg` `32rem`). Do not put size on the `drawer` attribute — that slot is the edge.
+| Hook | What it does |
+| --- | --- |
+| `[drawer-overlay]` | Root scrim whose open and closed state is native `hidden`. |
+| `[drawer]` | Dialog panel with values `left` or `right`, docking right when bare or unspecified. |
+| `[drawer-size]` | Optional width of `22rem` by default, `16rem` for `sm`, and `32rem` for `lg`, not a value of `drawer`. |
+| `[drawer-header]` | Header slot whose heading supplies the accessible name when `aria-labelledby` is missing. |
+| `[drawer-body]` | Body slot for drawer content. |
+| `[drawer-close]` | Dismiss control inside the overlay, with an empty name filled as `aria-label="Close"`. |
+| `hidden` | Native closed state on `[drawer-overlay]`. |
+| `aria-controls` | Pairs an opener whose token list includes the overlay `id`, with no extra opener attribute. |
+| `drawer-overlay="static"` | Opts out of backdrop dismiss while Escape and `[drawer-close]` still close. |
+| `role="dialog"` | Dialog role on `[drawer]`, set by the runtime when missing. |
+| `aria-modal="true"` | Marks the dialog modal, and the runtime sets it when missing. |
+| `aria-labelledby` | Names the dialog from the header heading when neither this nor `aria-label` is set. |
+| `aria-expanded` | Opener open state, kept in sync by the runtime. |
+| `aria-haspopup="dialog"` | Opener popup hint, set by the runtime when missing. |
+| `name`, `id` | Overlay `name` or `id` is the slug for generated ids, and a missing overlay id becomes `${slug}-overlay`. |
+| `--juice-drawer-*` | Theme paint roles for drawer chrome. |
 
-**Opener pairing:** any element whose `aria-controls` token list includes the overlay `id`. There is no extra Juice opener attribute.
+## JavaScript
 
-**Close:** `[drawer-close]` inside the overlay, Escape, or a click on the overlay backdrop.
+| Export | What it does |
+| --- | --- |
+| `createDrawer(options?)` | Controller for `options.root`, or the document. |
+| `initDrawer(options?)` | Same call as `createDrawer`. |
+| `startDrawerRuntime()` | Document controller. A second call syncs and returns it. Returns `null` when there is no document. |
+| `stopDrawerRuntime()` | Destroys that controller and cancels a deferred boot. |
 
-**Backdrop opt-out:** `drawer-overlay="static"` (or `createDrawer({ closeOnBackdrop: false })`). Clicks on the drawer panel itself never close.
+A custom-root controller can run beside the document runtime; each click or key is claimed once.
 
-Prefer shipping `role="dialog"`, `aria-modal="true"`, and a labelled heading in markup. The runtime fills those if they are missing, plus opener `aria-expanded` / `aria-haspopup="dialog"` and an empty close name (`aria-label="Close"`).
+### Options
 
-Theme paint uses `--juice-drawer-*` roles. See the [Theme Contract](./juice-theme-contract.md) and [Attributes](./juice-attributes.md). `[drawer-overlay]` is a drawer scrim, not the surface `overlay="frost|tint"` utility, and not `[modal-overlay]`. Modal is a centered dialog; drawer is an edge-docked panel.
+| Option | Default | Notes |
+| --- | --- | --- |
+| `root` | `document` | Node to search. |
+| `overlaySelector` | `[drawer-overlay]` | Overlay query. |
+| `dialogSelector` | `[drawer]` | Dialog query. |
+| `closeSelector` | `[drawer-close]` | Close control query. |
+| `closeOnBackdrop` | `true` | Backdrop click closes, and `false` matches `drawer-overlay="static"`. |
 
-## Automatic Boot
+### Controller
 
-The runtime starts automatically in the browser.
+| Method | What it does |
+| --- | --- |
+| `destroy()` | Disconnects this controller. |
+| `sync()` | Wires ids, ARIA, and openers for overlays in the root. |
+| `open(target?)` | Opens the overlay: removes `hidden`, then plays, and closes any other open drawer overlay. |
+| `close(target?)` | Plays the exit, then sets `hidden` and restores focus to the opener. |
+| `toggle(target?)` | Opens a closed overlay or closes an open one. |
+| `isOpen(target?)` | Reads whether the overlay is open. |
+| `getState(target?)` | Reads `{ open: boolean }` for that overlay. |
 
-At the bottom of the file, Juice checks whether it is running in a browser environment and then boots the drawer runtime:
+### Events
 
-```ts
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      startDrawerRuntime();
-    });
-  } else {
-    startDrawerRuntime();
-  }
-}
-```
+A real open or close dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicechange) from `[drawer-overlay]` with `detail` `{ runtime: "drawer", state: { open: boolean } }`.
 
-Importing the Juice JS entrypoint is enough for the normal behavior.
+`isOpen()` and `getState()` read that state.
 
-`stopDrawerRuntime()` also cancels a deferred `DOMContentLoaded` boot, so a test or host that stops the singleton before ready does not get a surprise start.
+An unchanged `open` write does not dispatch, and this surface stays Emerging.
 
-## Public API
+## Accessibility
 
-The runtime still exposes functions, but they are secondary to the automatic behavior.
+- Escape closes the open overlay and returns focus to the opener; drawer shares the highest band with modal, and popover, combobox, toast, and tooltip yield. [Escape and layering](./juice-runtime-behavior.md#escape--layering).
+- Tab and Shift+Tab wrap inside the open dialog.
+- Enter and Space activate non-button openers and `[drawer-close]` controls.
+- Prefer `role="dialog"`, `aria-modal="true"`, and a labelled heading, which the runtime fills along with opener `aria-expanded`, `aria-haspopup="dialog"`, and an empty close name `aria-label="Close"`.
+- Overlay chrome is `z-index: 1000`. [Z-index bands](./juice-runtime-behavior.md#z-index-bands).
+- Arrow-key roving is out of scope.
 
-```ts
-createDrawer(options?)
-initDrawer(options?)
-startDrawerRuntime()
-stopDrawerRuntime()
-```
+## Behavior
 
-These are useful for internal control, tests, or advanced cases.
+1. Find `[drawer-overlay]` roots and pair openers whose `aria-controls` token list includes that overlay `id`.
+2. Resolve the dialog as `[drawer]`, then `[role="dialog"]`, then the overlay's first element child.
+3. Fill missing overlay, dialog, and title ids, plus `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading.
+4. Fill opener `aria-expanded` and `aria-haspopup="dialog"`, and an empty `[drawer-close]` name (`aria-label="Close"`).
+5. Enter removes native `hidden`, then plays; exit plays first, and `hidden` is set only after it finishes, while opening one overlay closes any other open drawer overlay.
+6. Trap focus and honor Escape while the overlay is open, including during exit, and restore focus to the opener after `hidden` is set.
+7. Handle opener, close, and backdrop clicks, plus Escape, the Tab trap, and Enter or Space on non-button openers and closes.
 
-A real open or close dispatches a bubbling `juice:change` from `[drawer-overlay]`. `detail` is `{ runtime: "drawer", state: { open: boolean } }`. `isOpen()` and `getState()` read it. A write that leaves `open` unchanged does not dispatch. This surface stays Emerging. See [juice:change](./juice-runtime-behavior.md#juicechange).
+- Orphan `aria-controls` that do not target a `[drawer-overlay]` are ignored.
+- A `name` or `id` on `[drawer-overlay]` is the slug for generated ids (`filters-drawer-dialog`, `filters-drawer-title`), and a missing overlay id is `${slug}-overlay`.
+- Opening is exclusive among drawers.
+- This runtime does not close a modal, and the modal runtime does not close a drawer.
+- Modal and drawer may both be open; one Escape then closes both.
+- Overlays use native `hidden`, never layout `content="active"` or `content="hidden"`.
+- Clicks on the drawer panel never close.
+- `drawer-overlay="static"`, or `closeOnBackdrop: false`, opts out of backdrop click only; Escape and `[drawer-close]` still dismiss.
+- There is no `Drawer()` factory.
 
-`createDrawer()` can run alongside the automatic document runtime. Each click or key event is claimed once, so a custom-root controller does not double-fire with the singleton.
-
-## DrawerOptions
-
-The configurable shape is:
-
-```ts
-type DrawerOptions = {
-  root?: ParentNode;
-  overlaySelector?: string;
-  dialogSelector?: string;
-  closeSelector?: string;
-  closeOnBackdrop?: boolean;
-};
-```
-
-By default, Juice uses:
-
-```ts
-{
-  root: document,
-  overlaySelector: '[drawer-overlay]',
-  dialogSelector: '[drawer]',
-  closeSelector: '[drawer-close]',
-  closeOnBackdrop: true,
-}
-```
-
-## DrawerController
-
-```ts
-type DrawerController = {
-  destroy: () => void;
-  sync: () => void;
-  open: (target?: HTMLElement | null) => void;
-  close: (target?: HTMLElement | null) => void;
-  toggle: (target?: HTMLElement | null) => void;
-  isOpen: (target?: HTMLElement | null) => boolean;
-  getState: (target?: HTMLElement | null) => DrawerState | null;
-};
-```
-
-## What the Runtime Actually Does
-
-The runtime performs seven main jobs:
-
-1. Find `[drawer-overlay]` roots and pair openers whose `aria-controls` token list includes that overlay `id`
-2. Resolve the dialog (`[drawer]`, then `[role="dialog"]`, then the overlay’s first element child)
-3. Fill missing overlay / dialog / title ids, `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` from the header heading
-4. Fill opener `aria-expanded` / `aria-haspopup="dialog"` and an empty `[drawer-close]` name
-5. Enter removes native `hidden`, then plays. Exit plays first; `hidden` is set only after it finishes. Opening one overlay closes any other open drawer overlay
-6. Trap focus and honor Escape while the overlay is open, including during exit. Focus restores to the opener after `hidden` is set
-7. Handle click (opener, close, backdrop) and keyboard (Escape, Tab trap, Enter/Space on non-button openers and closes)
-
-Orphan `aria-controls` that do not target a `[drawer-overlay]` are ignored.
-
-When `[drawer-overlay]` has a `name` or `id`, that value becomes the slug used for generated ids (`filters-drawer-dialog`, `filters-drawer-title`). A missing overlay id is filled as `${slug}-overlay`.
-
-Exclusive open is among drawers. This runtime does not close a modal, and the modal runtime does not close a drawer.
-
-## Why MutationObserver Is Used
-
-The DOM may change after the initial page load. That is what happens in reactive or server-hydrated environments.
-
-If a drawer appears later, the observer schedules a `sync()` call so Juice can wire ids and ARIA and start handling clicks.
-
-## Why Sync Is Scheduled
-
-Mutation-heavy environments can change the DOM a lot in a short burst.
-
-So instead of calling `sync()` immediately for every change, the runtime schedules it with `requestAnimationFrame`.
-
-That keeps the runtime from reacting too aggressively while still updating quickly enough for UI behavior.
-
-## Motion
+### Motion
 
 Enter removes `hidden` on `[drawer-overlay]`, moves focus in, then sets `data-motion-state="entering"`. The scrim fades in on `--juice-motion-duration-base` and `--juice-motion-ease-enter`. The panel slides in from the edge: `translateX(100%)` for the default and `right`, `translateX(-100%)` for `left`.
 
-Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel slides back off that edge on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. The focus trap and Escape still apply during that exit. A second Escape does not start a second close. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then.
+Exit sets `data-motion-state="exiting"` before `hidden`. The scrim fades out and the panel slides back off that edge on `--juice-motion-duration-fast` and `--juice-motion-ease-exit`. `hidden` is set only after the exit finishes (`exited`), and focus restores to the opener then.
 
-Reduced motion, or a computed duration of `0`, does the same steps in the same turn. A new open cancels an in-flight exit. See [Animations](./juice-animations.md).
+<details>
+<summary>Edge cases</summary>
 
-## Keyboard
+- The focus trap and Escape still apply during exit.
+- A second Escape does not start a second close.
+- Reduced motion, or a computed duration of `0`, does the same steps in the same turn.
+- A new open cancels an in-flight exit.
+- Duration tokens live in [Animations](./juice-animations.md).
 
-- Escape closes the open overlay and returns focus to the opener. Drawer shares the highest Escape band with modal; if a modal overlay is also open, that same Escape closes both. Popover, combobox, toast, and tooltip yield. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Tab / Shift+Tab wrap inside the open dialog (focus trap)
-- Enter and Space activate non-button openers and `[drawer-close]` controls (native buttons already synthesize a click)
+</details>
 
-Arrow-key roving is intentionally out of scope.
+Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
 
-## Limitations
+## Not to be confused with
 
-- No `Drawer()` factory. Author markup (or emit it from Sig/React) and let the runtime enhance it.
-- Orphan `aria-controls` that do not target `[drawer-overlay]` are ignored.
-- Opening is exclusive among drawers. Only one drawer overlay is open at a time. Modal and drawer stay independently exclusive: both may be open at once, and one Escape then closes both. See [Runtime Behavior](./juice-runtime-behavior.md#escape--layering).
-- Overlays use native `hidden`, never layout `content=`.
-- Centered modal / dialog behavior is not part of this runtime. See [Modal Runtime](./juice-modal-runtime.md).
-- `drawer-overlay="static"` (or `closeOnBackdrop: false`) opts out of backdrop click only. Escape and `[drawer-close]` still dismiss.
-- Overlay chrome is `z-index: 1000`. That is a structural band, not a theme contract. See [Runtime Behavior](./juice-runtime-behavior.md#z-index-bands).
+| This | Not this |
+| --- | --- |
+| Edge-docked dialog (`left` or `right`) | Centered modal |
+| Optional `drawer-size` of `sm` or `lg` | A size value on `drawer` |
+| `[drawer-overlay]` scrim | Surface `overlay="frost"` or `overlay="tint"` |
 
-## Why This Matches Navigation
+## Related
 
-The drawer runtime copies the navigation, accordion, tabs, and modal lifecycle by convention:
-
-- DOM-first
-- automatic boot
-- event delegation
-- MutationObserver plus rAF `sync()`
-- idempotent singleton `start*Runtime` / `stop*Runtime`
-- framework-agnostic
-
-Shared internals under `libraries/juice/src/js/src/shared/` are not a public multi-feature runtime API.
-
-## Design Rule Going Forward
-
-Interactive Juice browser features should follow this standard:
-
-> If valid Juice markup exists in the browser, the feature should activate automatically and work without app glue.
+- [Attributes](./juice-attributes.md)
+- [Theme contract](./juice-theme-contract.md)
+- [Runtime behavior](./juice-runtime-behavior.md)
+- [Modal Runtime](./juice-modal-runtime.md)

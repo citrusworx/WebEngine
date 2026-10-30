@@ -1,184 +1,206 @@
-# Juice Runtime Behavior
+# Runtime behavior
 
-## Purpose
+Import `@citrusworx/juiceui` and valid markup runs in the browser. Most pages never call `init`.
 
-Juice is not only a CSS system.
+Juice does not load Sig. Observation is the DOM contract below. The optional adapter is `@citrusworx/sigjs/juice`.
 
-It also has a browser runtime layer for built-in interactive behavior.
+Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Six more are on master and are not in that release: icon button, avatar, table, pressable, touchable row, and keyboard avoider. All thirty-one stay Emerging.
 
-This document explains how to think about that layer.
+## Components
 
-## Core Rule
+### Navigation
 
-If valid Juice markup exists in the browser, the feature should work automatically.
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Navigation | `nav[type="bar\|links\|mobile\|sidebar"]` | Shows bar and links on desktop, and a mobile toggle for the sidebar. | [Navigation](./juice-navigation-runtime.md) |
+| Menu | `[menu-root]` | Action menu on a button. | [Menu](./juice-menu-runtime.md) |
+| Tabs | `[tabs]` | One selected panel. All 14 themes bind `--juice-tabs-*`. | [Tabs](./juice-tabs-runtime.md) |
+| Breadcrumb | `[breadcrumb]` | A trail of links. Landmark name `Breadcrumb`. | [Breadcrumb](./juice-breadcrumb-runtime.md) |
+| Pagination | `[pagination]` | A set of pages. Landmark name `Pagination`. | [Pagination](./juice-pagination-runtime.md) |
 
-That is the desired standard for Juice runtime behavior.
+### Overlays
 
-Users should not need to manually initialize built-in Juice features in normal cases.
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Modal | `[modal-overlay]` | Centered dialog. Focus trap. One modal at a time. | [Modal](./juice-modal-runtime.md) |
+| Drawer | `[drawer-overlay]` | Edge dialog, `left` or `right`. Focus trap. | [Drawer](./juice-drawer-runtime.md) |
+| Popover | `[popover-root]` | Panel anchored to a control. Surface is `[popover-panel]`. | [Popover](./juice-popover-runtime.md) |
+| Tooltip | `[tooltip-root]` | Hover or focus tip. Surface is `[tooltip-panel]`. | [Tooltip](./juice-tooltip-runtime.md) |
+| Toast | `[toast-region]` | Corner stack of messages. Default `top-right`. | [Toast](./juice-toast-runtime.md) |
 
-## What This Means
+### Forms
 
-Juice runtime behavior should be:
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Input | `<input input>` | Native text field. | [Input](./juice-input-runtime.md) |
+| Textarea | `<textarea textarea>` | Native multiline field. | [Textarea](./juice-textarea-runtime.md) |
+| Select | `<select select>` | Native dropdown. The open list stays the platform popup. | [Select](./juice-select-runtime.md) |
+| Combobox | `[combobox]` | Text field plus a filtered list. | [Combobox](./juice-combobox-runtime.md) |
+| Checkbox | `[checkbox]` | Binary checkbox. | [Checkbox](./juice-checkbox-runtime.md) |
+| Radio | `[radiogroup]` | One option in a group. `[radio]` outside the group is ignored. | [Radio](./juice-radio-runtime.md) |
+| Switch | `[switch]` | Binary toggle on a button. A checkbox host is secondary. | [Switch](./juice-switch-runtime.md) |
+| Slider | `[slider]` | Single horizontal value the user sets. | [Slider](./juice-slider-runtime.md) |
+| Field | `[field]` | Help and error text around a control. Not a validator. | [Field](./juice-field-runtime.md) |
+| Icon button | `[icon-button]` | Square icon-only control. On master, not in npm 0.9.2. | [Icon button](./juice-icon-button-runtime.md) |
+| Pressable | `[pressable]` | Transient press. On master, not in npm 0.9.2. | [Pressable](./juice-pressable.md) |
+| Touchable row | `[touchable-row]` | 44px row. On master, not in npm 0.9.2. | [Touchable row](./juice-touchable-row.md) |
 
-* browser-driven
-* framework-agnostic
-* aligned with Juice markup conventions
-* automatic when possible
+### Feedback
 
-It should not require:
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Banner | `[banner]` | Inline alert. Stays until dismiss. | [Banner](./juice-banner-runtime.md) |
+| Progress | `[progress]` | Meter the user does not set. | [Progress](./juice-progress-runtime.md) |
+| Spinner | `[spinner]` | Busy indicator with no value. | [Spinner](./juice-spinner-runtime.md) |
 
-* app glue
-* a framework adapter
-* custom user bootstrapping for basic behavior
+### Disclosure
 
-Juice works without Sig. The observation contract below is DOM. Sig’s optional `bind` is a separate import, `@citrusworx/sigjs/juice`, and the runtimes do not load it.
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Accordion | `[accordion]` | Several sections, multi-open. All 14 themes bind `--juice-accordion-*`. | [Accordion](./juice-accordion-runtime.md) |
+| Disclosure | `[disclosure]` | One trigger and one panel. | [Disclosure](./juice-disclosure-runtime.md) |
+| Wizard | `[wizard-shell]` | Multi-step flow. One page visible. | [Wizard](./juice-wizard-runtime.md) |
 
-## Current Examples
+### Data display
 
-The navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row runtimes are the current examples.
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Avatar | `[avatar]` | Initials or a photo. On master, not in npm 0.9.2. | [Avatar](./juice-avatar.md) |
+| Table | `<table table>` | Sortable grid. On master, not in npm 0.9.2. | [Table](./juice-table.md) |
 
-They work by:
+### Page chrome
 
-* watching for valid Juice nav, `[accordion]`, `[tabs]`, `[modal-overlay]`, `[drawer-overlay]`, `[toast-region]`, `[popover-root]`, `[wizard-shell]`, `[tooltip-root]`, `[combobox]`, `[banner]`, `[menu-root]`, `[switch]`, `[slider]`, `[checkbox]`, `[radiogroup]`, `[breadcrumb]`, `[progress]`, `[pagination]`, `[disclosure]`, `[spinner]`, `<select select>`, `<input input>`, `<textarea textarea>`, `[field]`, `[icon-button]`, or `[avatar]` markup
-* booting automatically in the browser
-* responding to DOM changes
-* applying behavior without user init code
+| Component | Markup hook | What it's for | Docs |
+| --- | --- | --- | --- |
+| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. On master, not in npm 0.9.2. Not a `JuiceRuntimeName`. | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
 
-See [Juice Navigation Runtime](./juice-navigation-runtime.md), [Juice Accordion Runtime](./juice-accordion-runtime.md), [Juice Tabs Runtime](./juice-tabs-runtime.md), [Juice Modal Runtime](./juice-modal-runtime.md), [Juice Drawer Runtime](./juice-drawer-runtime.md), [Juice Toast Runtime](./juice-toast-runtime.md), [Juice Popover Runtime](./juice-popover-runtime.md), [Juice Wizard Runtime](./juice-wizard-runtime.md), [Juice Tooltip Runtime](./juice-tooltip-runtime.md), [Juice Combobox Runtime](./juice-combobox-runtime.md), [Juice Banner Runtime](./juice-banner-runtime.md), [Juice Menu Runtime](./juice-menu-runtime.md), [Juice Switch Runtime](./juice-switch-runtime.md), [Juice Slider Runtime](./juice-slider-runtime.md), [Juice Checkbox Runtime](./juice-checkbox-runtime.md), [Juice Radio Runtime](./juice-radio-runtime.md), [Juice Breadcrumb Runtime](./juice-breadcrumb-runtime.md), [Juice Progress Runtime](./juice-progress-runtime.md), [Juice Pagination Runtime](./juice-pagination-runtime.md), [Juice Disclosure Runtime](./juice-disclosure-runtime.md), [Juice Spinner Runtime](./juice-spinner-runtime.md), [Juice Select Runtime](./juice-select-runtime.md), and [Juice Input Runtime](./juice-input-runtime.md), [Juice Textarea Runtime](./juice-textarea-runtime.md), [Juice Field Runtime](./juice-field-runtime.md), and [Juice Icon Button Runtime](./juice-icon-button-runtime.md), and [Avatar](./juice-avatar.md). Toast is a non-modal stack (`[toast-region]` / `[toast]`), not a dialog. Popover is a non-modal anchored dialog (`[popover-root]` / `[popover-panel]`), not a modal, drawer, or toast. Wizard is a multi-step onboarding shell (`[wizard-shell]` / `[step-page]`), not a dialog and not APG Tabs. Tooltip is a hover/focus tip (`[tooltip-root]` / `[tooltip-panel]`), not a popover and not native `title`. Combobox is an input + listbox popup (`[combobox]` / `[combobox-list]`), not a native `<select>` and not a popover. Banner is an inline alert / callout (`[banner]` / `[banner-close]`), not a toast stack and not a dialog. Menu is an APG menu button (`[menu-root]` / `[menu]` / `[menuitem]`), not a popover, not a combobox, and not a menubar. Switch is an APG switch (`[switch]` on a button host, with checkbox hosts as a secondary story), not a form checkbox as the only story and not a layered overlay. Slider is an APG slider (`[slider]` track host, `[slider-thumb]` with `role="slider"`), not a native `<input type="range">` restyle, not a progress meter, and not a layered overlay. Checkbox is an APG checkbox (`[checkbox]` on a button host, with native checkbox hosts as a secondary story), binary `aria-checked`, not `[switch]` and not a layered overlay. Radio is an APG radio (`[radio]` inside `[radiogroup]`, roving tabindex, arrows plus Space/Enter/click), not a checkbox and not a layered overlay. Orphan radios outside a `[radiogroup]` are ignored. Breadcrumb is a light trail (`[breadcrumb]` / `[breadcrumb-item]`, one `aria-current="page"`, unlabeled navigation landmark named `Breadcrumb`), not a router and not a layered overlay. Progress is an APG-inspired progressbar (`[progress]` / `[progress-fill]`, `setValue` / `setIndeterminate`, `aria-valuenow` omitted while `progress="indeterminate"`), not a slider and not a layered overlay. Pagination is a page set (`[pagination]` / `[pagination-item]`, one `aria-current="page"`, unlabeled navigation landmark named `Pagination`, prev/next disabled at inferable ends, Arrow / Home / End among enabled controls), not a router and not a layered overlay. Disclosure is a standalone one-trigger / one-panel control (`[disclosure]` / `[disclosure-trigger]` / `[disclosure-panel]`, `expand` / `collapse` / `toggle`, `aria-expanded` plus native `hidden` and `aria-hidden`, Escape collapses the focused or last-opened disclosure and yields to an open modal, drawer, or popover), not an accordion and not a layered overlay. Spinner is an indeterminate busy indicator (`[spinner]` / optional `[spinner-label]`, `show` / `hide`, `role="status"` and `aria-busy="true"` while shown, `hide` sets native `hidden` and clears both, CSS owns `juice-spinner-spin`, `prefers-reduced-motion` stops the spin), not a progress bar and not a disclosure. Select is a native dropdown (`<select select>` / optional `[select-label]`, `sync`, a visible label names the control when the author has not set one, the open list stays the platform popup), not a combobox. Input is a native text field (`<input input>` / optional `[input-label]`, `sync`, a visible label names text-like controls when the author has not set one, typing, change, and the keyboard stay native), not a combobox and not a select. Textarea is a native multiline field (`<textarea textarea>` / optional `[textarea-label]`, `sync`, a visible label names the control when the author has not set one, typing, change, and the keyboard stay native), not an input, not a select, and not a combobox. Field is a wrapper (`[field]` / `[field-help]` / `[field-error]`, `sync`, visible help and error text describe the first input, textarea, or select when the author has not set `aria-describedby`, and `[invalid]` sets `aria-invalid` when the author has not set it). Naming stays with the input, textarea, and select runtimes. Typing and the keyboard stay native. It is not a validation engine. Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Checkbox and radio are two runtimes. Breadcrumb is a light trail. Progress is a progressbar. Pagination is a page set. Disclosure is a standalone one-trigger / one-panel control, distinct from accordion. Spinner is a standalone indeterminate busy indicator, distinct from progress and disclosure. Select is a styled native `<select>`, distinct from combobox. Input is a styled native `<input>`, distinct from combobox and from select. Textarea is a styled native `<textarea>`, distinct from input, select, and combobox. Field is a wrapper around a control, distinct from input, textarea, select, and combobox. Field is a wrapper around a control, distinct from input, textarea, select, and combobox chrome. Icon button is a square icon-only control on button chrome, distinct from switch and from checkbox, and is on master, not in the published npm 0.9.2 release. Avatar is an initials-or-photo mark (`[avatar]`), distinct from a badge and from `[skeleton="circle"]`, and is on master, not in the published npm 0.9.2 release.
+CSS-only, and not part of the thirty-one:
 
-When several of those surfaces are open, [Escape / layering](#escape--layering) decides who owns the key. [Z-index bands](#z-index-bands) are a separate structural paint order.
+- [Skeleton](./juice-skeleton.md)
+- [List](./juice-list.md)
+- [Badge](./juice-badge.md)
+- [Safe area](./juice-safe-area.md)
 
-## Runtime Scope
+## Choosing between similar components
 
-The runtime should own:
+| You need | Use | Not |
+| --- | --- | --- |
+| A centered dialog with a focus trap | Modal | Drawer, popover, toast |
+| An edge-docked dialog | Drawer | Modal |
+| A floating panel anchored to a control | Popover | Tooltip, menu, modal |
+| A hover or focus tip with no interactive content | Tooltip | Popover, native `title` |
+| A corner stack of messages | Toast | Banner, a dialog |
+| An inline alert that stays until dismiss | Banner | Toast |
+| An action menu | Menu | Popover, combobox, a menubar |
+| A text field with a filtered list | Combobox | Native select, popover |
+| The platform dropdown | Select | Combobox |
+| A native text field | Input | Combobox, select |
+| A native multiline field | Textarea | Input, select, combobox |
+| Help and error text around a control | Field | A validation engine |
+| A binary toggle that is not a form checkbox | Switch | Checkbox |
+| A form checkbox | Checkbox | Switch |
+| One option in a group | Radio | Checkbox |
+| A value the user sets | Slider | Progress |
+| A meter the user does not set | Progress | Slider, spinner |
+| A busy indicator with no value | Spinner | Progress |
+| One panel at a time in a tablist | Tabs | Accordion, wizard |
+| Several sections, more than one open | Accordion | Disclosure |
+| One trigger and one panel | Disclosure | Accordion |
+| A multi-step flow | Wizard | Tabs, a dialog |
+| A trail of links | Breadcrumb | Pagination, a router |
+| A set of pages | Pagination | Breadcrumb, a router |
+| A square icon-only control | Icon button | Switch, checkbox |
+| A transient press | Pressable | A latched toggle |
+| A 44px row | Touchable row | Table, list |
+| Initials or a photo | Avatar | Badge, `[skeleton="circle"]` |
+| A sortable grid | Table | List |
+| Space for the software keyboard | Keyboard avoider | Safe area |
 
-* built-in interaction logic
-* automatic behavior tied to Juice markup
-* accessibility state where appropriate
+## Automatic behavior
 
-It should not try to own:
+The entry watches for the hooks in the tables above.
 
-* business logic
-* app-specific workflows
-* framework state management
+- It boots on `DOMContentLoaded` when the document is still loading, and immediately otherwise.
+- It responds to later DOM changes. [Sync](#sync).
+- It does not need app init, a framework adapter, or business logic.
 
-## Good Runtime Features
+The same markup works in raw HTML, server templates, Sig, and React, because the runtime sees DOM.
 
-Shipped built-in runtime features include:
+`stop*Runtime()` destroys the document controller. A second `start*Runtime()` syncs and returns the same controller, or `null` when there is no document.
 
-* navigation
-* accordion / disclosure behavior
-* tabs
-* modal / dialog
-* drawers
-* toasts / snackbars
-* popovers
-* wizards / multi-step shells
-* tooltips / hover-focus tips
-* comboboxes / list autocomplete
-* banners / inline alerts
-* menus / menu buttons
-* switches / APG toggles
-* sliders / APG sliders
-* checkboxes / APG checkboxes
-* radios / APG radio groups
-* breadcrumbs / light trails
-* progress bars / APG progressbars
-* pagination / page sets
-* disclosures / one trigger, one panel
-* spinners / indeterminate busy indicators
-* selects / native dropdowns
-* inputs / native text fields
-* textareas / native multiline fields
-* fields / help and error descriptions on a wrapped control
-* icon buttons / square and round icon-only controls
-* avatars / initials or photo, with image-error fallback
-* tables / sortable grids on a native `<table>`
+`stopNavigationRuntime()` does not cancel a deferred boot. That `DOMContentLoaded` listener is anonymous. Every other `stop*Runtime()` cancels its deferred boot.
 
-Future built-in runtime features could include:
+Each runtime also exports `create*` and `init*`. `init*` is the same call as `create*`. A custom-root controller can run beside the document runtime. Where a runtime claims clicks or keys, each event is claimed once.
 
-* additional disclosure patterns
+<details>
+<summary>What a runtime owns</summary>
 
-But each should follow the same rule:
+The runtime owns built-in interaction and the accessibility state that markup implies.
 
-* valid Juice markup should be enough
+It does not own business logic, app workflows, or framework state.
+
+If valid Juice markup is in the browser, the feature should run without app glue.
+
+</details>
+
+## Sync
+
+The DOM can change after load, including in hydrated pages.
+
+A mutation observer schedules `sync()` on the next animation frame, so a burst of edits becomes one pass.
+
+Some events publish immediately and are not deferred to that frame. Avatar `load` and `error`, and a table sort click, are two of those. Each runtime page names its own.
+
+Shared helpers under `libraries/juice/src/js/src/shared/` are not a public multi-feature API.
 
 ## Escape / layering
 
-When several Emerging surfaces are open, **later bands yield** so a higher band owns Escape. Highest band first. This is the keyboard contract, not the paint order — see [z-index bands](#z-index-bands).
+When several surfaces are open, later bands yield so a higher band owns Escape. Highest band first. This is the keyboard contract, not the paint order. See [z-index bands](#z-index-bands).
 
-The overlay band is the exception inside itself: modal and drawer do **not** yield to each other. If both overlays are open, one Escape closes both (separate capture handlers and per-runtime claims).
+Modal and drawer do not yield to each other. If both overlays are open, one Escape closes both.
 
 | Order | Surface | Owns Escape when | Yields when |
-|---|---|---|---|
-| 1 | Modal / drawer | An open `[modal-overlay]:not([hidden])` or `[drawer-overlay]:not([hidden])` | Does not yield to later bands. Modal and drawer stay independently exclusive: both may be open at once, and they do not yield to each other — one Escape closes both. This pass does not make them exclusive across types. |
-| 2 | Popover / menu | An open `[popover-root]:not([hidden])` or an open `[menu-root] [menu]:not([hidden])` | An open dialog overlay exists. Popover and menu sit in the same band; they do not yield to each other. Closed vs open for menu is `hidden` on `[menu]`, not on `[menu-root]`. See [Menu Runtime](./juice-menu-runtime.md). |
-| 3 | Combobox | An open `[combobox-list]:not([hidden])` | An open dialog overlay, open popover, or open menu exists |
-| 4 | Toast / tooltip | See the interaction below | See the interaction below |
-| — | Banner | Never. Dismiss stays on `[banner-close]` | — |
-| — | Switch | Never. Toggle stays on click / Enter / Space | — |
-| — | Slider | Never. Value stays on arrows / Home / End / PageUp / PageDown and pointer | — |
-| — | Checkbox | Never. Toggle stays on click / Enter / Space | — |
-| — | Radio | Never. Selection stays on click / Enter / Space and arrows inside `[radiogroup]` | — |
-| — | Breadcrumb | Never. The trail does not listen for keys or history | — |
-| — | Progress | Never. The bar does not listen for keys | — |
-| — | Spinner | Never. The spinner does not listen for keys | — |
-| — | Select | Never. Change and keys stay on the native `<select>`. The open list is the platform popup | — |
-| — | Input | Never. Typing, change, and keys stay on the native `<input>`. Text-like types only | — |
-| — | Textarea | Never. Typing, change, and keys stay on the native `<textarea>`. | — |
-| — | Field | Never. Typing, change, and keys stay on the wrapped control. | — |
-| — | Icon button | Never. Toggle stays on click, and on Enter / Space for a non-button, non-link `[toggle]` | — |
-| — | Avatar | Never. The runtime does not listen for keys | — |
-| — | Table | Never. Sort stays on the header button's click. Enter and Space stay with the browser | — |
-| — | Pagination | Never. Arrows / Home / End move focus among enabled controls. Enter and Space stay with the browser | — |
-| — | Accordion | The focused open item, or the last opened item, when that accordion context already owns the key. There is no global accordion Escape. | — |
-| — | Disclosure | The focused open disclosure, or the last opened disclosure, when that disclosure already owns the key. There is no global disclosure Escape. | An open `[modal-overlay]`, `[drawer-overlay]`, or `[popover-root]` exists. |
-| — | Tabs, navigation, wizard | Out of scope. Tabs ignores Escape. Wizard is not a dialog. Navigation does not close on Escape. | — |
+| --- | --- | --- | --- |
+| 1 | Modal / drawer | An open `[modal-overlay]` or `[drawer-overlay]` without `hidden` | Does not yield to later bands, or to each other |
+| 2 | Popover / menu | An open `[popover-root]` or an open `[menu]` | An open dialog overlay exists. Popover and menu do not yield to each other. Menu `hidden` is on `[menu]`, not `[menu-root]` |
+| 3 | Combobox | An open `[combobox-list]` | An open dialog, popover, or menu exists |
+| 4 | Toast / tooltip | See the note below | See the note below |
+| — | Banner, switch, slider, checkbox, radio, breadcrumb, progress, spinner, select, input, textarea, field, icon button, avatar, table, pagination, pressable, touchable row, keyboard avoider | Never | Dismiss, toggle, sort, or value stays on the control |
+| — | Accordion | The focused open item, or the last opened item, in that accordion | There is no global accordion Escape |
+| — | Disclosure | The focused open disclosure, or the last opened one | An open modal, drawer, or popover exists |
+| — | Tabs, wizard | Out of scope | Tabs ignores Escape. Wizard is not a dialog |
+| — | Navigation | On a mobile viewport, Escape closes open sidebars | Desktop navigation does not close on Escape |
 
-**Toast / tooltip interaction:** toast does **not** block tooltip Escape. With both open, the first Escape hides the tip and leaves toasts visible; the next Escape dismisses the most recently shown visible toast. Tooltip yields to an open dialog overlay, popover, menu, or combobox list. Toast yields to those plus an open tooltip.
+Toast does not block tooltip Escape. With both open, the first Escape hides the tip and leaves toasts visible. The next Escape dismisses the most recently shown visible toast.
 
-Yield checks use internal shared overlay queries (`libraries/juice/src/js/src/shared/`); the public create / init / start / stop contract is unchanged.
+Tooltip yields to an open dialog, popover, menu, or combobox list. Toast yields to those, plus an open tooltip.
+
+Yield checks use internal overlay queries in `libraries/juice/src/js/src/shared/`. The public `create` / `init` / `start` / `stop` contract is unchanged.
 
 ## Z-index bands
 
-Core chrome sets these stacking values. They are **structural bands**, not a theme contract: there is no `--juice-z-*` token, and authors should not treat the numbers as public API. Visual stacking is also **not** the Escape order (toast paints above tooltip; tooltip still owns Escape first when both are open).
+Core chrome sets these stacking values. They are structural bands, not a theme contract. There is no `--juice-z-*` token. Visual stacking is not the Escape order: toast paints above tooltip, and tooltip still owns Escape first when both are open.
 
 | Band | Surfaces | `z-index` | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Overlay | `[modal-overlay]`, `[drawer-overlay]` | `1000` | Dialog scrims |
 | Anchored | `[popover-root]`, `[combobox-list]`, `[menu]` | `1050` | Floating panel, listbox, and menu |
 | Tip | `[tooltip-root]` | `1060` | Slightly above anchored chrome |
 | Snackbar | `[toast-region]` | `1100` | Highest overlay chrome |
 | Wizard chrome | `[wizard-header]` | `50` | Sticky in-page header |
-| Nav chrome | `nav[type="sidebar"]` | `30` | Sidebar / mobile panel |
-| Banner | `[banner]` | none | Inline callout; no elevation in this cut |
-| Switch | `[switch]` | none | Inline control; no elevation in this cut |
-| Slider | `[slider]` | none | Inline control; the thumb’s z-index `1` only stacks it above the fill |
-| Checkbox | `[checkbox]` | none | Inline control; no elevation in this cut |
-| Radio | `[radio]` | none | Inline control; `[radiogroup]` is layout only |
-| Breadcrumb | `[breadcrumb]` | none | Inline nav chrome; no elevation in this cut |
-| Progress | `[progress]` | none | Inline status chrome; no elevation in this cut |
-| Spinner | `[spinner]` | none | Inline status chrome; no elevation in this cut |
-| Skeleton | `[skeleton]` | none | Inline placeholder; CSS-only, not one of the thirty runtimes |
-| List | `[list]` | none | Inline rows; CSS-only, not one of the thirty runtimes |
-| Badge | `[badge]` | none | Inline label. `[badge="ribbon"]` is absolute and still has no z-index. CSS-only, not one of the thirty runtimes. Layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master, not in that cut |
-| Safe area | `[safe-area]` | none | Inset padding only. CSS-only, not one of the thirty runtimes. On master, not in the published npm 0.9.2 release |
-| Select | `select[select]` | none | Inline field chrome; the open list is the platform popup |
-| Input | `input[input]` | none | Inline field chrome; text-like types only |
-| Textarea | `textarea[textarea]` | none | Inline field chrome; no auto-grow |
-| Field | `[field]` | none | Inline wrapper chrome; no validation engine |
-| Icon button | `[icon-button]` | none | Inline control; no elevation in this cut |
-| Avatar | `[avatar]` | none | Inline mark. The photo is `z-index` 1 and the status dot is 2, both inside the avatar. A group stacks the first eight faces from 8 down to 1. Not an overlay band |
-| Table | `[table]` | none | Inline grid. Sticky `thead` cells use `z-index` 1 inside the table. Not an overlay band |
-| Pressable | `[pressable]` | none | Inline press chrome. No pseudo-element and no position, so spinner, progress, slider, accordion, drawer, toast, nav, and ribbon keep their boxes. Not an overlay band |
-| Touchable row | `[touchable-row]` | none | Inline row. The chevron is `::after`. No position, so safe-area, list, and table boxes stay put. Not an overlay band |
-| Pagination | `[pagination]` | none | Inline nav chrome; no elevation in this cut |
+| Nav chrome | `nav[type="sidebar"]` | `30` | Sidebar and mobile panel |
+| Banner, switch, slider, checkbox, radio, breadcrumb, progress, spinner, select, input, textarea, field, icon button, pagination, pressable, touchable row, keyboard avoider | those hooks | none | Inline. Slider thumb is `z-index: 1` inside the track |
+| Avatar | `[avatar]` | none | Photo is `1` and the status dot is `2`, inside the avatar. A group stacks the first eight faces from 8 down to 1 |
+| Table | `[table]` | none | Sticky `thead` cells use `z-index: 1` inside the table |
+| Skeleton, list, badge, safe area | those hooks | none | CSS-only. Badge layout shipped in npm 0.9.2. Badge roles, skeleton, list, and safe area are on master, not in that cut |
 
 Tabs, accordion, and disclosure do not set a stacking band.
 
 ## juice:change
 
-Interactive runtimes dispatch a bubbling, composed `juice:change` `CustomEvent` from the widget host when observable state actually changes. Clicks, keys, and programmatic writes all count. A write that leaves the previous state unchanged does not dispatch. The first observation of a host is recorded and does not dispatch, so init can normalize ARIA without looking like a change.
+Interactive runtimes dispatch a bubbling, composed `juice:change` `CustomEvent` from the widget host when observable state changes. Clicks, keys, and programmatic writes all count.
+
+A write that leaves the previous state unchanged does not dispatch. The first observation of a host is recorded and does not dispatch, so init can normalize ARIA without looking like a change.
 
 ```ts
 type JuiceChangeDetail<TState> = {
@@ -187,9 +209,11 @@ type JuiceChangeDetail<TState> = {
 };
 ```
 
-`JUICE_CHANGE_EVENT` is the string `'juice:change'`. Listen on the host or any ancestor. `detail.state` is a copy of the state below. Each controller also exposes `getState(target)`, which returns that same shape, or `null` when the host is missing. This observation contract stays Emerging. It is on master, unreleased after 0.9.2. It is Juice core. The runtimes do not import Sig.
+`JUICE_CHANGE_EVENT` is the string `'juice:change'`. It is on master, unreleased after 0.9.2, and is not in the published 0.9.2 types.
 
-Juice works without Sig. `juice:change` and `getState()` are a framework-agnostic DOM contract. Any script can listen or call the controller. The optional Sig adapter is `@citrusworx/sigjs/juice` only; see [Sig adapter](#sig-adapter) and [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding).
+Listen on the host or any ancestor. `detail.state` is a copy. `getState(target)` returns that same shape, or `null` when the host is missing.
+
+Select, input, and textarea publish value changes through the native `input` and `change` events. They do not dispatch `juice:change`. `getState()` still returns `{ value: string }`.
 
 ```ts
 import { startSwitchRuntime } from "@citrusworx/juiceui";
@@ -204,9 +228,9 @@ host.addEventListener("juice:change", (event) => {
 startSwitchRuntime()?.getState(host); // { checked: boolean } | null
 ```
 
-Select, input, and textarea publish value changes through the native `input` and `change` events. They do not dispatch `juice:change`. `getState()` still returns `{ value: string }` (`HTMLSelectElement.value` for select, the control value otherwise).
+The table is the whole contract. Pressable is the twenty-ninth runtime, touchable row is the thirtieth, and keyboard avoider is the thirty-first. `@citrusworx/sigjs/juice` `bind()` names twenty-eight runtimes, through `table`. It does not name pressable, touchable-row, or keyboard-avoider.
 
-The thirty rows are the whole contract. Pressable is the twenty-ninth. Touchable row is the thirtieth. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet. Per-runtime pages repeat one row; keep them aligned with this table. The last column is how `@citrusworx/sigjs/juice` `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. Icon button writes back through `toggle` when the host has `[toggle]` and `pressed` changes; a refused write snaps the signal back to the host. Avatar and table are read-only. Table has no Juice API to set sort. A read-only runtime still seeds a signal.
+The last column is how `bind` treats `state.set`. Read-only means the signal can update from the host, and `set` does not call a controller. A read-only runtime still seeds a signal.
 
 | Runtime | Host | `detail.state` / `getState()` | Readers | Sig `bind` |
 | --- | --- | --- | --- | --- |
@@ -235,31 +259,65 @@ The thirty rows are the whole contract. Pressable is the twenty-ninth. Touchable
 | `select` | `select[select]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
 | `input` | `input[input]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
 | `textarea` | `textarea[textarea]` | `{ value: string }` | `getState` (native `input` / `change`) | read-only |
-| `icon-button` | `[icon-button]` | `{ pressed: boolean, disabled: boolean, named: boolean }` | `getState` | write-back `toggle` when `[toggle]` and `pressed` changes; refused writes snap back |
+| `icon-button` | `[icon-button]` | `{ pressed: boolean, disabled: boolean, named: boolean }` | `getState` | write-back `toggle` when `[toggle]` and `pressed` changes |
 | `avatar` | `[avatar]` | `{ loaded: boolean, fallback: boolean, hasImage: boolean }` | `getState` | read-only |
 | `table` | `[table]` | `{ column: number \| null, direction: "ascending" \| "descending" \| "none" }` | `getState` | read-only |
-| `pressable` | `[pressable]` | `{ pressed: boolean, longPressed: boolean }` | `getState` | not a `JuiceRuntimeName` yet |
-| `touchable-row` | `[touchable-row]` | `{ selected: boolean, disabled: boolean }` | `getState` | not a `JuiceRuntimeName` yet |
+| `pressable` | `[pressable]` | `{ pressed: boolean, longPressed: boolean }` | `getState` | not a `JuiceRuntimeName` |
+| `touchable-row` | `[touchable-row]` | `{ selected: boolean, disabled: boolean }` | `getState` | not a `JuiceRuntimeName` |
+| `keyboard-avoider` | `[keyboard-avoider]` | `{ open: boolean, inset: number }` | `getState` | not a `JuiceRuntimeName` |
 
-Accordion `expanded` follows trigger order. Disclosure `expanded` is the first trigger. Tabs `selected`, pagination `current`, and breadcrumb `current` are 0-based indexes, or `-1` when nothing is current. Radio `value` is the checked option's `value` attribute, and `index` is its position (`-1` when none are checked). `getChecked()` still returns that element. Tabs `selected()` still returns the trigger element. Menu `open` is whether the `[menu]` panel is shown. Nav `open` is whether the sidebar lacks `hidden`. Field `invalid` is the `[invalid]` attribute on the wrapper. Icon button `pressed` is `aria-pressed="true"` or `[pressed]`. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled button or input. `named` is a non-empty `aria-label`, an `aria-labelledby` that resolves to visible text, or visible text on the host. `title` is not a name. Avatar `loaded` is true when at least one image has loaded. `fallback` is true when the avatar has an image, none have loaded, and none are still loading. `hasImage` is true when the avatar has at least one `<img>`. Initials with no image are `{ loaded: false, fallback: false, hasImage: false }`. Table `column` is `null` when `direction` is `"none"`. Otherwise it is the active header's `cellIndex`. Pressable `pressed` is the transient gesture, not a latched `[pressed]`. `longPressed` is true only after `juice:longpress` has fired for that gesture. Touchable row `selected` is `[selected]`, `aria-selected="true"`, or `aria-current` other than `"false"`. It is not the `select` word. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled control. Toast `shown` is the `[toast]` host, not the region.
+### State notes
+
+| Runtime | Reading `state` |
+| --- | --- |
+| Accordion | `expanded` follows trigger order. |
+| Disclosure | `expanded` is the first trigger. |
+| Tabs, pagination, breadcrumb | Index is 0-based, or `-1` when nothing is current. Tabs `selected()` still returns the trigger element. |
+| Radio | `value` is the checked option's `value` attribute. `index` is its position, or `-1`. `getChecked()` still returns the element. |
+| Menu | `open` is whether `[menu]` is shown. |
+| Nav | `open` means the sidebar lacks `hidden`. |
+| Field | `invalid` is `[invalid]` on the wrapper. |
+| Toast | `shown` is the `[toast]` host, not the region. |
+| Icon button | `pressed` is `aria-pressed="true"` or `[pressed]`. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled control. `named` is a non-empty `aria-label`, an `aria-labelledby` that resolves to visible text, or visible text. `title` is not a name. A refused write snaps the signal back. |
+| Avatar | `loaded` is true when at least one image has loaded. `fallback` is true when the avatar has an image, none have loaded, and none are still loading. `hasImage` is true when there is at least one `<img>`. Initials with no image are all false. |
+| Table | `column` is `null` when `direction` is `"none"`. Otherwise it is the active header's `cellIndex`. There is no API to set sort. |
+| Pressable | `pressed` is the transient gesture, not a latched `[pressed]`. `longPressed` is true only after `juice:longpress` for that gesture. |
+| Touchable row | `selected` is `[selected]`, `aria-selected="true"`, or `aria-current` other than `"false"`. It is not the `select` word. `disabled` is `[disabled]`, `aria-disabled="true"`, or a native disabled control. |
+| Keyboard avoider | `open` is inset above `threshold` (default 80) while an editable control is focused. `inset` is the measured overlap in pixels. |
 
 ## Sig adapter
 
-The hookup is done. It lives in Sig. Juice runtimes still do not import Sig, and Juice still runs when Sig is absent.
+`bind` lives in Sig. Juice runtimes do not import Sig, and Juice still runs when Sig is absent.
 
 ```ts
 import { bind } from "@citrusworx/sigjs/juice";
 
 const notes = bind(switchHost, "switch");
 notes.state.get(); // { checked: boolean }, a Sig signal
-notes.state.set({ checked: true }); // write-back: switch, checkbox, disclosure, modal, icon-button
+notes.state.set({ checked: true }); // write-back
 notes.dispose();
 ```
 
-`bind(host, runtime?)` returns `{ state, dispose }`. `state` is seeded from `getState()` and follows `juice:change` (native `input` and `change` for select, input, and textarea). Write-back is switch, checkbox, disclosure, modal, and icon-button. Icon-button calls `toggle` only when the host has `[toggle]` and `pressed` changes, then the signal is republished from the host. A disabled host or a host without `[toggle]` refuses that write, and the signal matches the host. Avatar and table are read-only. Table has no Juice API to set sort. The other read-only names are accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea. On a Juice build that does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`, binding that runtime throws (`needs a newer @citrusworx/juiceui`). The other runtimes still bind. `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts. `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`. `juice:change` and `getState()` are on master, unreleased after 0.9.2. Icon button's, avatar's, table's, pressable's, and touchable row's `getState()` and `juice:change` are on master with that contract, and they are not in the published npm 0.9.2 release. `bind()` does not name pressable or touchable-row. `JuiceRuntimeName` is still twenty-eight names, through `table`.
+`bind(host, runtime?)` returns `{ state, dispose }`.
 
-How to call it, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).
+- `state` is seeded from `getState()` and follows `juice:change`.
+- Select, input, and textarea follow native `input` and `change`.
+- Write-back is switch, checkbox, disclosure, modal, and icon-button.
+- Icon-button calls `toggle` only when the host has `[toggle]` and `pressed` changes. The signal is then republished from the host.
+- A disabled host, or a host without `[toggle]`, refuses that write. The signal matches the host.
+- Avatar and table are read-only. Table has no API to set sort.
+- The other read-only names are accordion, drawer, popover, menu, combobox, slider, progress, radio, tabs, pagination, breadcrumb, wizard, toast, banner, tooltip, spinner, nav, field, select, input, and textarea.
 
-## Summary
+`JuiceRuntimeName` is twenty-eight names, through `table`, on master and in `@citrusworx/sigjs@0.7.2`.
 
-Juice runtime behavior should feel like a natural extension of the markup system, not a separate app framework.
+Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
+
+Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws, because that cut does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. The other runtimes still bind.
+
+`dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts.
+
+`@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
+
+`juice:change` and `getState()` are on master, unreleased after 0.9.2. Icon button, avatar, table, pressable, touchable row, and keyboard avoider ship that contract on master, and they are not in the published npm 0.9.2 release.
+
+How to call `bind`, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).
