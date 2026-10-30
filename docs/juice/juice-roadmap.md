@@ -382,7 +382,7 @@ Safe area chrome and docs are on master and are not in the published npm 0.9.2 r
 * Shipped themes are not required to bind the roles. No runtime, no JS export, and no Sig Skeleton factory.
 * Authors own `aria-busy`. Distinct from spinner and from progress.
 * Docs in this pass. On master, not in the published npm 0.9.2 release.
-* Not one of the thirty Emerging auto-enhance runtimes. See [Skeleton](./juice-skeleton.md).
+* Not one of the thirty-one Emerging auto-enhance runtimes. See [Skeleton](./juice-skeleton.md).
 * **List chrome and docs.** Core `--juice-list-*` roles on `:where(ul, ol, div)[list]` (#283). `[divided]` and `[dense]` apply only with `[list]`.
 * `[list-item]` holds `[list-leading]`, `[list-content]`, `[list-secondary]`, and `[list-trailing]`. `[leading]` stays letter-spacing.
 * Interactive `a` / `button` rows hover, press, and take a 2px `currentColor` `:focus-visible` outline, offset 2px. `[selected]` and `aria-current` other than `"false"` share the selected wash.
@@ -391,21 +391,21 @@ Safe area chrome and docs are on master and are not in the published npm 0.9.2 r
 * Background and color use `--juice-motion-duration-fast` and `--juice-motion-ease-standard`. `prefers-reduced-motion` sets `transition: none`.
 * No runtime, no JS export, no `juice:change`, no `getState()`, and no Sig List factory. `[selected]` is visual only.
 * Distinct from menu, combobox, tabs, pagination, and breadcrumb. `<input list>` is not painted.
-* On master, not in the published npm 0.9.2 release. Not one of the thirty Emerging auto-enhance runtimes.
+* On master, not in the published npm 0.9.2 release. Not one of the thirty-one Emerging auto-enhance runtimes.
 * See [List](./juice-list.md).
 * **Badge chrome and docs.** Core layout on `[badge]` / `[badge="square"]` / `[badge="ribbon"]` shipped in npm 0.9.2 (`badge.scss`, compiled into `dist/index.css`).
 * Core `--juice-badge-*` roles are on master and are not in that cut: color (`--juice-badge-bg` at 1% `currentColor`, `--juice-badge-ink` as `currentColor`, `--juice-badge-border` at 24%) on `:root` and again on `[theme]`, layout (padding, radius, square radius, font size, gap) on `:root` only. `[theme] [badge]` is `(0, 2, 0)` and keeps that ink and `line-height: 1` over theme copy rules.
 * `[theme] [cta] [badge]` is `(0, 3, 0)`. An `a` or `button` badge takes a 2px `currentColor` focus outline.
 * KiwiPress still paints the default, `[warm]`, ribbon, and `[wizard-header] [brand] [badge]` outside `[cta]`. `[dev-hero-header] > [badge]` and `[wizard-header] [brand] [badge]` adjust the box.
 * `[card="pricing"]` is the positioned parent for a ribbon. No runtime, no JS export, no `juice:change`, no `getState()`, and no Sig Badge factory.
-* Not one of the thirty Emerging auto-enhance runtimes. See [Badge](./juice-badge.md).
+* Not one of the thirty-one Emerging auto-enhance runtimes. See [Badge](./juice-badge.md).
 * **Safe area chrome and docs.** CSS-only padding on `[safe-area]` / `[safe-area="top"]` / `[safe-area="bottom"]` / `[safe-area="x"]` / `[safe-area="y"]` (#294). An empty or unknown value pads all four edges.
 * Each edge is `max(var(--juice-safe-area-pad), env(safe-area-inset-*, 0px))`. `--juice-safe-area-pad` is `1rem` on `:root` only and is not restated on `[theme]`.
 * The all-four selector is a `:not()` chain at `(0, 5, 0)`. `nav[fixed] > [container][safe-area]` and the sticky twin, and `[wizard-header] > [container][safe-area]`, restate the host.
 * `x` and `y` are physical. There is no margin mode and no runtime.
 * `viewport-fit=cover` is required on the viewport meta tag. Shipped themes do not bind the role.
 * Docs in this pass. On master, not in the published npm 0.9.2 release.
-* Not one of the thirty Emerging auto-enhance runtimes. See [Safe Area](./juice-safe-area.md).
+* Not one of the thirty-one Emerging auto-enhance runtimes. See [Safe Area](./juice-safe-area.md).
 * **Avatar A→B→C.** Core `--juice-avatar-*` roles on `[avatar]` (#275): round by default, `[avatar="square"]`, `[scale="sm"|"lg"]`, an `<img>` covering the initials, `[status="online|away|busy|offline"]` as a `::after` dot, and `[avatar-group]` with `[avatar-more]` as a `+N` chip. Shipped themes are not required to bind the roles.
 * Tide lifts `--juice-avatar-status-away` only. DOM-first image-fallback runtime (#277): `createAvatar` / `initAvatar` / `startAvatarRuntime` / `stopAvatarRuntime`, auto-boot.
 * `createAvatar` and `initAvatar` are the same function. The controller is `destroy`, `sync`, and `getState`.
@@ -442,7 +442,7 @@ Safe area chrome and docs are on master and are not in the published npm 0.9.2 r
 * Native buttons, inputs, textareas, selects, summaries, and contenteditable hosts keep Space. Enter is never `preventDefault`'d.
 * The runtime does not add `role` or `tabindex`. `[icon-button][toggle]` and `aria-pressed` keep latched `[pressed]`.
 * Disabled hosts do not press, and the `:where()` gate does not clear a latched icon-button ring. No pseudo-element and no position.
-* No Sig Pressable factory. `bind()` does not name pressable or touchable-row yet.
+* No Sig Pressable factory. `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
 * Docs in this pass. On master, not in the published npm 0.9.2 release.
 * The twenty-ninth Emerging auto-enhance runtime. See [Pressable](./juice-pressable.md).
 
@@ -457,16 +457,24 @@ Safe area chrome and docs are on master and are not in the published npm 0.9.2 r
 * Enter and Space on an `li` or `div` dispatch one click. Space on those hosts is `preventDefault`'d.
 * Native `a` and `button` keep their click. A canceled `[pressable-longpress]` still selects.
 * A suppressed long-press click does not. No Sig TouchableRow factory.
-* `bind()` does not name pressable or touchable-row yet. Docs in this pass.
+* `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. Docs in this pass.
 * On master, not in the published npm 0.9.2 release. The thirtieth Emerging auto-enhance runtime.
 * See [Touchable Row](./juice-touchable-row.md).
 
-* **Mobile-Critical.** Safe area, pressable, and touchable row are on master, not in npm 0.9.2. Keyboard avoider is also on master, not in that release.
+* **KeyboardAvoider A→B→C.** Layout roles on `:root` only (`[keyboard-avoider]`, #310). Not restated on `[theme]`. `--juice-keyboard-inset` is a registered `<length>` (`0px`).
+* Padding, translate, and footer compose with `~=`. `noscroll` is a runtime word. Safe Area padding mode uses `max()` of the floor, the home indicator, and the keyboard inset.
+* Translate-only and footer-only keep Safe Area's own padding. Do not put footer mode on `nav[fixed]` (a separate fix is planned). Put padding mode on a drawer's scroll body.
+* DOM-first runtime (#311): `createKeyboardAvoider` / `initKeyboardAvoider` / `startKeyboardAvoiderRuntime` / `stopKeyboardAvoiderRuntime`. State is `{ open, inset }`.
+* `open` is the overlap greater than `threshold` (default 80) and an editable field focused. There is no MutationObserver. No Sig KeyboardAvoider factory.
+* `bind()` does not name keyboard-avoider, pressable, or touchable-row yet. On master, not in npm 0.9.2. The thirty-first Emerging auto-enhance runtime.
+* See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md).
 
-Sheet, SwipeActions, and PullToRefresh are not in this tree. This note does not describe their markup.
+* **Mobile-Critical.** Safe area, pressable, touchable row, and keyboard avoider A→B→C are done on master, not in npm 0.9.2.
+
+Sheet, SwipeActions, and PullToRefresh remain. They are not in this tree. This note does not describe their markup.
 
 * **Sig hookup is done.** All thirty-one runtimes expose `getState()`. Twenty-eight dispatch `juice:change`; select, input, and textarea publish through native `input` and `change` (#247).
-* Icon button, avatar, table, pressable, and touchable row are five of the twenty-seven. Pressable and touchable row are not `JuiceRuntimeName` values yet.
+* Icon button, avatar, table, pressable, touchable row, and keyboard avoider are six of the twenty-eight. Pressable, touchable row, and keyboard avoider are not `JuiceRuntimeName` values yet.
 * The table is [Runtime Behavior](./juice-runtime-behavior.md#juicechange). Juice works without Sig: that contract is DOM, and the runtimes do not import Sig.
 * The optional adapter is `@citrusworx/sigjs/juice` `bind(host, runtime?)` (#249), documented in [Sig.js + Juice](../sigjs/sig-juice-integration.md#runtime-binding). Write-back is switch, checkbox, disclosure, modal, and icon-button (`pressed`, `[toggle]` hosts only; a refused write snaps the signal back).
 * Avatar and table are read-only. `JuiceRuntimeName` is twenty-eight names, including icon-button, avatar, and table (PR #295, npm `@citrusworx/sigjs@0.7.2`).
@@ -614,7 +622,7 @@ Safe area chrome and docs are done on master (CSS-only, not a runtime, not in th
 * Do not invent a next version number; the next cut happens when new Juice changesets exist.
 * **Sig hookup.** Done on master, unreleased after 0.9.2. `juice:change` and `getState()` cover the thirty-one runtimes.
 * Pressable is the twenty-ninth. Touchable row is the thirtieth.
-* `bind` does not name pressable or touchable-row yet. Optional `bind` lives at `@citrusworx/sigjs/juice` and names all twenty-eight (`JuiceRuntimeName` includes icon-button, avatar, and table).
+* `bind` does not name pressable, touchable-row, or keyboard-avoider yet. Optional `bind` lives at `@citrusworx/sigjs/juice` and names all twenty-eight (`JuiceRuntimeName` includes icon-button, avatar, and table).
 * Icon-button writes back on a `[toggle]` host. Avatar and table are read-only.
 * A Juice build that does not export those three start functions throws `needs a newer @citrusworx/juiceui` for that runtime only. Juice still runs with no Sig import.
 * See [Runtime Behavior](./juice-runtime-behavior.md#juicechange).
@@ -849,7 +857,7 @@ Enter is left alone. The runtime does not add `role` or `tabindex`.
 
 A disabled pressable does not clear an icon-button's latched ring. No focus trap, no Escape handler, and no Sig Pressable factory.
 
-`@citrusworx/sigjs/juice` `bind` does not name pressable or touchable-row yet. See [Pressable](./juice-pressable.md).
+`@citrusworx/sigjs/juice` `bind` does not name pressable, touchable-row, or keyboard-avoider yet. See [Pressable](./juice-pressable.md).
 
 Touchable row **A→B→C is done on master** (not in the published npm 0.9.2 release): core roles (`--juice-touchable-row-*`), touchable-row runtime, and these docs. Valid `[touchable-row]` markup auto-enhances.
 
@@ -863,7 +871,7 @@ Enter and Space on an `li` or `div` dispatch one click. Space on those hosts doe
 
 There is no motion role and no single-select group. No focus trap, no Escape handler, and no Sig TouchableRow factory.
 
-`@citrusworx/sigjs/juice` `bind` does not name pressable or touchable-row yet. See [Touchable Row](./juice-touchable-row.md).
+`@citrusworx/sigjs/juice` `bind` does not name pressable, touchable-row, or keyboard-avoider yet. See [Touchable Row](./juice-touchable-row.md).
 
 Do not oversell a component roadmap. A Sig Modal, Sig Drawer, Sig Toast, Sig Popover, Sig Wizard, Sig Tooltip, Sig Combobox, Sig Banner, Sig Menu, Sig Switch, Sig Slider, Sig Checkbox, Sig Radio, Sig Breadcrumb, Sig Progress, Sig Pagination, Sig Disclosure, Sig Spinner, Sig Select, Sig Input, Sig Textarea, Sig Field, Sig IconButton, Sig Avatar, Sig Table, or Sig Pressable or Sig TouchableRow factory stays later.
 
@@ -892,7 +900,7 @@ The Juice CLI (`tooling/cli/juice`) is a parallel track. It must not block the n
 
 Skeleton **chrome and docs are done on master** (not in the published npm 0.9.2 release). `[skeleton]` is a CSS-only loading placeholder: rect, text (`[lines="1"`…`"8"]` or stacked children), and circle, plus `[scale]` and `[static]`.
 
-There is no runtime slice. It is not one of the thirty Emerging auto-enhance runtimes.
+There is no runtime slice. It is not one of the thirty-one Emerging auto-enhance runtimes.
 
 Valid markup paints from core CSS. Authors own `aria-busy`.
 
@@ -902,7 +910,7 @@ See [Skeleton](./juice-skeleton.md).
 
 List **chrome and docs are done on master** (not in the published npm 0.9.2 release). `[list]` is CSS-only stacked rows on `ul`, `ol`, or `div`: `[divided]`, `[dense]`, and `[list-item]` with `[list-leading]`, `[list-content]`, `[list-secondary]`, and `[list-trailing]`.
 
-There is no runtime slice. It is not one of the thirty Emerging auto-enhance runtimes.
+There is no runtime slice. It is not one of the thirty-one Emerging auto-enhance runtimes.
 
 Valid markup paints from core CSS. `[selected]` is visual only.
 
@@ -912,7 +920,7 @@ Badge **chrome and docs are done on master**. The base layout shipped in npm 0.9
 
 Core `--juice-badge-*` roles are on master and are not in that cut. `[badge]` is a CSS-only pill: `[badge="square"]`, `[badge="ribbon"]`, and theme-owned `[warm]`.
 
-There is no runtime slice. It is not one of the thirty Emerging auto-enhance runtimes.
+There is no runtime slice. It is not one of the thirty-one Emerging auto-enhance runtimes.
 
 KiwiPress default, warm, and ribbon text stay under 4.5:1 outside `[cta]`. See [Badge](./juice-badge.md).
 
@@ -920,7 +928,7 @@ Safe area **chrome and docs are done on master** (not in the published npm 0.9.2
 
 An empty or unknown value pads all four edges. There is no runtime slice and no margin mode.
 
-It is not one of the thirty Emerging auto-enhance runtimes. `--juice-safe-area-pad` is `1rem` on `:root` only.
+It is not one of the thirty-one Emerging auto-enhance runtimes. `--juice-safe-area-pad` is `1rem` on `:root` only.
 
 Shipped themes are not required to bind it. `viewport-fit=cover` is required on the viewport meta tag.
 
@@ -1029,7 +1037,7 @@ The next stage is post-0.9.2 refinement:
 * table A→B→C is done on master (not in the published npm 0.9.2 release) skeleton chrome and docs are done on master (CSS-only, not a runtime, not in the published npm 0.9.2 release)
 * list chrome and docs are done on master (CSS-only, not a runtime, not in the published npm 0.9.2 release) badge chrome and docs are done on master (CSS-only, not a runtime; the base layout shipped in npm 0.9.2; core `--juice-badge-*` roles are on master and are not in that cut)
 * safe area chrome and docs are done on master (CSS-only, not a runtime, not in the published npm 0.9.2 release) pressable A→B→C is done on master (the twenty-ninth Emerging auto-enhance runtime, not in the published npm 0.9.2 release)
-* touchable row A→B→C is done on master (the thirtieth Emerging auto-enhance runtime, not in the published npm 0.9.2 release; `bind()` does not name pressable or touchable-row yet) grow the next runtime only when the markup contract is honest
+* touchable row A→B→C is done on master (the thirtieth Emerging auto-enhance runtime, not in the published npm 0.9.2 release; `bind()` does not name pressable, touchable-row, or keyboard-avoider yet) grow the next runtime only when the markup contract is honest
 * keep templates as stress tests; CLI in parallel
 
 That is a strong place to be.

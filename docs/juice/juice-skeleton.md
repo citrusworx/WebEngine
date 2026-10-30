@@ -4,7 +4,7 @@ This document explains the current skeleton chrome in `libraries/juice/src/compo
 
 Skeleton is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createSkeleton`, no auto-enhance, and no `Skeleton()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty Emerging auto-enhance runtimes. That count stays thirty.
+This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one.
 
 Skeleton is a loading placeholder. It holds the shape of content that has not arrived. A spinner is a busy ring (`[spinner]`). A progress bar is a valued track (`[progress]` / `[progress-fill]`). Those two have runtimes. Skeleton does not.
 

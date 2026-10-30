@@ -220,8 +220,8 @@ If you are building with Juice today:
 - use `[safe-area]` from core CSS as Emerging — on master, not in the published npm 0.9.2 release, and not an auto-enhance runtime. See [Safe Area](./juice-safe-area.md)
 - use `[avatar]` as Emerging — on master, not in the published npm 0.9.2 release. The twenty-seventh auto-enhance runtime. See [Avatar](./juice-avatar.md)
 - use `[table]` as Emerging — on master, not in the published npm 0.9.2 release. The twenty-eighth auto-enhance runtime. See [Table](./juice-table.md)
-- use `[pressable]` as Emerging — on master, not in the published npm 0.9.2 release. The twenty-ninth auto-enhance runtime. `bind()` does not name pressable or touchable-row yet. See [Pressable](./juice-pressable.md)
-- use `[touchable-row]` as Emerging — on master, not in the published npm 0.9.2 release. The thirtieth auto-enhance runtime. `bind()` does not name pressable or touchable-row yet. See [Touchable Row](./juice-touchable-row.md)
+- use `[pressable]` as Emerging — on master, not in the published npm 0.9.2 release. The twenty-ninth auto-enhance runtime. `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. See [Pressable](./juice-pressable.md)
+- use `[touchable-row]` as Emerging — on master, not in the published npm 0.9.2 release. The thirtieth auto-enhance runtime. `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. See [Touchable Row](./juice-touchable-row.md)
 - use the shipped auto-enhance runtimes (navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, and touchable row) and the Sig Accordion factory as Emerging
 - valid markup should work after importing the JS entry, but that surface is not Stable. Checkbox and radio are two runtimes.
 - Breadcrumb is a light trail. Progress is a progressbar.

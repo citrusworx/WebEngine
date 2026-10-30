@@ -8,6 +8,8 @@ Emerging. The thirty-first runtime. On master. Not in the published `@citrusworx
 
 Importing `@citrusworx/juiceui` enhances valid markup on master. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published 0.9.2 package does not include this runtime.
 
+The layout contract, Safe Area composition, and examples are in [Keyboard avoider layout](./juice-keyboard-avoider.md). The stylesheet works without the runtime: the inset role stays `0px`, and Chromium can use `env(keyboard-inset-height)`.
+
 ## Markup
 
 ```html
@@ -62,7 +64,7 @@ No `window`, or no `visualViewport`, is a no-op. `getState()` then returns `{ op
 | `sync()` | Reads the viewport and updates hosts. |
 | `getState(target?)` | Returns `{ open: boolean, inset: number }`, or `null`. |
 
-`getState().inset` is the measured overlap. Only the custom property is cleared when the keyboard closes.
+`getState().inset` is the measured overlap and can stay non-zero after blur. Only the custom property is cleared when the keyboard closes. Open is page-wide. Scroll runs only for a focus inside a host.
 
 ### Events
 
@@ -86,9 +88,9 @@ The overlap is `max(0, round(innerHeight - (visualViewport.height + visualViewpo
 
 | Editable | Not editable here |
 | --- | --- |
-| Text-like input: missing type, empty type, text, email, password, search, tel, url, number | Checkbox, radio, range, date, and button inputs |
-| `textarea`, `select` | |
-| `[contenteditable]`, including a focused descendant (`""`, `true`, or `plaintext-only`) | |
+| Text-like input, same set as Input: missing type, empty type, text, email, password, search, tel, url, number | Every other input type: checkbox, radio, range, date, time, datetime-local, month, week, color, file, hidden, button, submit, reset, image |
+| `textarea`, `select` | A `<button>` |
+| `[contenteditable]`, including a focused descendant (`""`, `true`, or `plaintext-only`) | `contenteditable="false"` |
 
 Chrome Android with `interactive-widget=resizes-content` shrinks `innerHeight` with the keyboard, so the formula is about `0` and this runtime does not pad on top of the layout viewport.
 
@@ -106,7 +108,72 @@ The scroll runs two frames after geometry events go quiet, so a resize burst set
 
 There is no `KeyboardAvoider()` factory.
 
-Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-runtime-behavior.md#sync).
+There is no `MutationObserver`. Call `sync()` when a host is added and no geometry or focus event will follow. The first time that host is seen, `juice:change` is silent.
+
+## CSS
+
+Roles stay on `:root`. They are not restated on `[theme]`.
+
+| Role | Default |
+| --- | --- |
+| `--juice-keyboard-inset` | `0px`. Registered `<length>`. |
+| `--juice-keyboard-duration` | `var(--juice-motion-duration-base)` |
+| `--juice-keyboard-easing` | `var(--juice-motion-ease-enter)` |
+
+Padding mode sets `padding-bottom` and `box-sizing: border-box`. It does not transition. Translate mode uses `translateY(calc(-1 * var(--juice-keyboard-inset)))`. Footer mode is `position: sticky` with `bottom` set to the inset.
+
+`@supports (height: env(keyboard-inset-height))` sets the inset to `env(keyboard-inset-height, 0px)`. The query omits the fallback, so only Chromium's Virtual Keyboard variable matches. An inline length on `<html>` beats that fallback while open.
+
+`prefers-reduced-motion: reduce` sets `transition: none` on translate mode only.
+
+## Safe area
+
+Padding mode on a bare `[safe-area]`, `[safe-area="bottom"]`, or `[safe-area="y"]` host uses one `max()`, not a sum:
+
+```css
+padding-bottom: max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset));
+```
+
+Translate-only and footer-only hosts keep Safe Area's own padding. A padding word composed with translate or footer still takes the max.
+
+## Viewport
+
+`interactive-widget=resizes-content` on the viewport meta tag is an alternative on Chrome Android 108+. The layout viewport shrinks, the inset formula is about `0`, and this host is unnecessary there. iOS and Chrome Android's default (`resizes-visual`) do not shrink the layout viewport.
+
+## Footer, fixed nav, and drawer
+
+Do not put footer mode on `nav[fixed]`. `position: fixed` and `top: 0` stay, and `bottom` becomes the inset, so the bar stretches. A separate fix is planned.
+
+Footer mode on `[drawer]` replaces the drawer's `position` and `bottom`. Put padding mode on the scrolling body inside the drawer.
+
+## Examples
+
+Scrolling form.
+
+```html
+<form keyboard-avoider>
+  <label>Name <input name="name"></label>
+</form>
+```
+
+Chat composer.
+
+```html
+<div keyboard-avoider="translate">
+  <input name="message">
+</div>
+```
+
+Sticky action bar, with Safe Area. The footer keeps Safe Area's padding. The form takes the `max()`.
+
+```html
+<div safe-area="bottom" keyboard-avoider>
+  <textarea></textarea>
+</div>
+<footer safe-area="bottom" keyboard-avoider="footer">
+  <button type="button">Done</button>
+</footer>
+```
 
 ## Not to be confused with
 

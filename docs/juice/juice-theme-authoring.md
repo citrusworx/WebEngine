@@ -862,7 +862,7 @@ Inline placeholder — no overlay z-index. There is no runtime.
 
 Authors own `aria-busy`. See [Skeleton](./juice-skeleton.md).
 
-Skeleton is on master, not in the published npm 0.9.2 release, and is not one of the thirty Emerging auto-enhance runtimes.
+Skeleton is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ## List chrome roles
 
@@ -886,7 +886,7 @@ The divider is a decorative hairline. Inline rows — no overlay z-index.
 
 There is no runtime. See [List](./juice-list.md).
 
-List is on master, not in the published npm 0.9.2 release, and is not one of the thirty Emerging auto-enhance runtimes.
+List is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ## Badge chrome roles
 
@@ -912,11 +912,11 @@ There is no runtime. See [Badge](./juice-badge.md).
 
 The base layout shipped in npm 0.9.2. The roles are on master, not in that cut.
 
-Badge is not one of the thirty Emerging auto-enhance runtimes.
+Badge is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ## Safe area
 
-`--juice-safe-area-pad` is `1rem` on `:root` only. Do not restate it on `[theme]`, and do not add a safe-area hue. Shipped themes are not required to bind it. `[safe-area]` only sets padding. See [Safe Area](./juice-safe-area.md). Safe area is on master, not in the published npm 0.9.2 release, and is not one of the thirty Emerging auto-enhance runtimes.
+`--juice-safe-area-pad` is `1rem` on `:root` only. Do not restate it on `[theme]`, and do not add a safe-area hue. Shipped themes are not required to bind it. `[safe-area]` only sets padding. See [Safe Area](./juice-safe-area.md). Safe area is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ## Table chrome roles
 
@@ -966,7 +966,7 @@ Body ink is 4.62:1 on the page and 5.17:1 on the strong surface. Muted copy on a
 
 Inline press — no overlay z-index. The pressable runtime auto-enhances `[pressable]` (`sync` / `getState`, transient `[pressed]`, opt-in `juice:longpress`, Space `preventDefault` on a custom button host) — see [Pressable](./juice-pressable.md).
 
-Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
 
 ## Touchable row chrome roles
 
@@ -994,7 +994,13 @@ Citrusmint is the floor at 4.62:1 on the page and 5.17:1 on the strong surface. 
 
 Inline row — no overlay z-index. The touchable-row runtime auto-enhances `[touchable-row]` (`sync` / `getState`, independent `[selected]`, Enter and Space on an `li` or `div`) — see [Touchable Row](./juice-touchable-row.md).
 
-Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
+
+## Keyboard avoider chrome roles
+
+`--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. Do not restate them on `[theme]`. The inset is a registered `<length>` (`0px`). Duration and easing point at the motion tokens. There is no keyboard hue.
+
+The runtime writes the inset on `<html>` while open. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. `bind()` does not name keyboard-avoider, pressable, or touchable-row yet.
 
 ## Wizard chrome roles
 
