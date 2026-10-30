@@ -148,12 +148,12 @@ Start with the course if you want a curriculum. The pages after it stay the look
 - [Textarea Runtime](./juice-textarea-runtime.md)
 - [Field Runtime](./juice-field-runtime.md)
 - [Icon Button Runtime](./juice-icon-button-runtime.md)
-- [Pressable](./juice-pressable.md) — transient press (on master; not in the published npm 0.9.2 release; the twenty-ninth Emerging runtime)
-- [Touchable Row](./juice-touchable-row.md) — 44px touch row (on master; not in the published npm 0.9.2 release; the thirtieth Emerging runtime)
+- [Pressable](./juice-pressable.md) — transient press (shipped in 0.9.4; the twenty-ninth Emerging runtime)
+- [Touchable Row](./juice-touchable-row.md) — 44px touch row (shipped in 0.9.4; the thirtieth Emerging runtime)
 
 #### Page chrome
 
-- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (on master; not in the published npm 0.9.2 release; the thirty-first Emerging runtime; not a `JuiceRuntimeName`)
+- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime; not a `JuiceRuntimeName`)
 
 #### Feedback
 
@@ -169,20 +169,20 @@ Start with the course if you want a curriculum. The pages after it stay the look
 
 #### Data display
 
-- [Avatar](./juice-avatar.md) — initials-or-photo mark (on master; not in the published npm 0.9.2 release; the twenty-seventh Emerging runtime)
-- [Table](./juice-table.md) — sortable grid (on master; not in the published npm 0.9.2 release; the twenty-eighth Emerging runtime)
+- [Avatar](./juice-avatar.md) — initials-or-photo mark (shipped in 0.9.3; the twenty-seventh Emerging runtime)
+- [Table](./juice-table.md) — sortable grid (shipped in 0.9.3; the twenty-eighth Emerging runtime)
 
 ### CSS-only
 
-- [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release)
-- [List](./juice-list.md) — CSS-only stacked rows (on master; not in the published npm 0.9.2 release)
-- [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core `--juice-badge-*` roles on master, not in that cut; not a runtime)
-- [Safe Area](./juice-safe-area.md) — CSS-only inset (on master; not in the published npm 0.9.2 release; not a runtime)
+- [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (shipped in 0.9.3)
+- [List](./juice-list.md) — CSS-only stacked rows (shipped in 0.9.3)
+- [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core `--juice-badge-*` roles shipped in 0.9.3; not a runtime)
+- [Safe Area](./juice-safe-area.md) — CSS-only inset (shipped in 0.9.3; not a runtime)
 
 ### Practice and roadmap
 
 - [Best Practices](./juice-best-practices.md)
-- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.2` live on npm)
+- [Roadmap](./juice-roadmap.md) (`@citrusworx/juiceui@0.9.5` live on npm)
 
 ## Status
 

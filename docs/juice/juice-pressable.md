@@ -2,9 +2,9 @@
 
 Pressable is transient press feedback on any host. `createPressable` shows that press for the gesture and can fire an opt-in long-press.
 
-Emerging. The twenty-ninth runtime. On master. Not in `@citrusworx/juiceui@0.9.2`. Its four exports are not in that cut. `@citrusworx/sigjs/juice` `bind` does not name `pressable`. It is not a `JuiceRuntimeName`.
+Emerging. The twenty-ninth runtime. Shipped in 0.9.4. Its four exports shipped in that cut. `@citrusworx/sigjs/juice` `bind` does not name `pressable`. It is not a `JuiceRuntimeName`.
 
-Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published `@citrusworx/juiceui@0.9.2` package does not include this runtime.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 Pressable is Mobile-Critical. The stylesheet is `libraries/juice/src/components/pressable/pressable.scss`. `components.scss` forwards it after `popover.scss` and before `pagination.scss`.
 

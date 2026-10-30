@@ -43,17 +43,17 @@ That must pass before publishing.
 - If browser targets or shipped asset directories change, update the README and artifact tests in the same change.
 - `sideEffects` must include `./dist/index.js` as well as the CSS entries.
 - The JS entry auto-starts navigation, accordion, tabs, modal, drawer, toast, popover, wizard, tooltip, combobox, banner, menu, switch, slider, checkbox, radio, breadcrumb, progress, pagination, disclosure, spinner, select, input, textarea, field, icon button, avatar, table, pressable, touchable row, and keyboard avoider; bundlers that trust `sideEffects` can drop that auto-enhance if the JS file is treated as pure.
-- Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, table, pressable, touchable row, and keyboard avoider auto-start with that entry and are on master, not in the published npm 0.9.2 release.
+- Disclosure, spinner, select, input, textarea, field, and motion core shipped in 0.9.2. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. All six auto-start with that entry.
 - See [Avatar](./juice-avatar.md) [Table](./juice-table.md)
 - [Pressable](./juice-pressable.md), [Touchable Row](./juice-touchable-row.md), and [Keyboard avoider](./juice-keyboard-avoider-runtime.md).
 - `bind()` does not name pressable, touchable-row, or keyboard-avoider yet. Skeleton (`[skeleton]`) is CSS-only loading chrome.
-- It does not auto-start, it is not one of those runtimes, and it is on master, not in the published npm 0.9.2 release. See [Skeleton](./juice-skeleton.md).
-- List (`[list]`) is CSS-only stacked rows. It does not auto-start, it is not one of those runtimes, and it is on master, not in the published npm 0.9.2 release.
+- It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3. See [Skeleton](./juice-skeleton.md).
+- List (`[list]`) is CSS-only stacked rows. It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3.
 - See [List](./juice-list.md). Badge (`[badge]`) is CSS-only label chrome.
 - It does not auto-start, it is not one of those runtimes. The base layout shipped in npm 0.9.2.
-- Core `--juice-badge-*` roles are on master and are not in that cut. See [Badge](./juice-badge.md).
-- Safe area (`[safe-area]`) is CSS-only inset chrome. It does not auto-start, it is not one of those runtimes, and it is on master, not in the published npm 0.9.2 release.
+- Core `--juice-badge-*` roles shipped in 0.9.3. See [Badge](./juice-badge.md).
+- Safe area (`[safe-area]`) is CSS-only inset chrome. It does not auto-start, it is not one of those runtimes, and it shipped in 0.9.3.
 - See [Safe Area](./juice-safe-area.md).
 - Keep `@citrusworx/sigjs` on a caret range that matches the workspace version being published (currently `^1.0.0`), not `workspace:^`. This repo publishes with `changeset publish`, which uses `npm publish` and does not rewrite Yarn workspace protocol.
 - Yarn resolves `^1.0.0` to the local `libraries/sig` workspace during development. `^0.7.0` does not include workspace **1.0.0** and would install a nested registry copy.
-- Do not publish Juice until `@citrusworx/sigjs@1.0.0` is on npm. The published Juice manifest would otherwise require a Sig version the registry does not have.
+- `@citrusworx/sigjs@1.0.0` is on npm (published 2026-10-29). `@citrusworx/juiceui@0.9.5` is the current Juice latest (published 2026-10-30 15:11 UTC). Keep the Juice peer on `^1.0.0`, not `workspace:^`.

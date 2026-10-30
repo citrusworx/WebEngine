@@ -39,37 +39,37 @@ Juice usage today usually falls into these groups:
 - `panel`
 - `hero`
 - `cta`
-- `badge` — CSS-only pill, `[badge="square"]`, and `[badge="ribbon"]`. See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master, not in that cut. Not a runtime. KiwiPress still paints its own colors outside `[cta]`.
+- `badge` — CSS-only pill, `[badge="square"]`, and `[badge="ribbon"]`. See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.9.3. Not a runtime. KiwiPress still paints its own colors outside `[cta]`.
 - `stat`
 
 ### Loading placeholders
 
-- `skeleton` — CSS-only rect, text, and circle bars. See [Skeleton](./juice-skeleton.md). On master, not in the published npm 0.9.2 release. Not a runtime.
+- `skeleton` — CSS-only rect, text, and circle bars. See [Skeleton](./juice-skeleton.md). Shipped in 0.9.3. Not a runtime.
 
 ### Stacked rows
 
-- `list` — CSS-only rows on `ul`, `ol`, or `div`, with `[divided]`, `[dense]`, and `[list-item]` slots. See [List](./juice-list.md). On master, not in the published npm 0.9.2 release. Not a runtime.
+- `list` — CSS-only rows on `ul`, `ol`, or `div`, with `[divided]`, `[dense]`, and `[list-item]` slots. See [List](./juice-list.md). Shipped in 0.9.3. Not a runtime.
 
 ### Insets
 
-- `safe-area` — CSS-only padding clear of the notch and the home indicator. Boolean `[safe-area]` pads all four edges. `top`, `bottom`, `x`, and `y` pad those edges. See [Safe Area](./juice-safe-area.md). On master, not in the published npm 0.9.2 release. Not a runtime. `viewport-fit=cover` has to be on the viewport meta tag.
+- `safe-area` — CSS-only padding clear of the notch and the home indicator. Boolean `[safe-area]` pads all four edges. `top`, `bottom`, `x`, and `y` pad those edges. See [Safe Area](./juice-safe-area.md). Shipped in 0.9.3. Not a runtime. `viewport-fit=cover` has to be on the viewport meta tag.
 
 ### Identity marks
 
-- `avatar` — initials or photo, optional status dot, and `[avatar-group]` / `[avatar-more]`. See [Avatar](./juice-avatar.md). On master, not in the published npm 0.9.2 release. The twenty-seventh Emerging runtime.
+- `avatar` — initials or photo, optional status dot, and `[avatar-group]` / `[avatar-more]`. See [Avatar](./juice-avatar.md). Shipped in 0.9.3. The twenty-seventh Emerging runtime.
 
 ### Sortable grids
 
-- `table` — native `<table table>` grid, with `[striped]`, `[dense]`, `[sticky]`, `[table-scroll]`, `[table-align]`, `[numeric]`, and `th[sortable]`. See [Table](./juice-table.md). On master, not in the published npm 0.9.2 release. The twenty-eighth Emerging runtime.
+- `table` — native `<table table>` grid, with `[striped]`, `[dense]`, `[sticky]`, `[table-scroll]`, `[table-align]`, `[numeric]`, and `th[sortable]`. See [Table](./juice-table.md). Shipped in 0.9.3. The twenty-eighth Emerging runtime.
 
 ### Press feedback
 
-- `pressable` — transient press ring on any host, with `[pressable="scale"]`, `[pressable-longpress]`, and `[pressable-slop]`. See [Pressable](./juice-pressable.md). On master, not in the published npm 0.9.2 release. The twenty-ninth Emerging runtime. Mobile-Critical.
-- `touchable-row` — 44px row on `a`, `button`, `li`, or `div`, with `dense`, `chevron`, `undivided`, and the leading / content / title / subtitle / trailing slots. See [Touchable Row](./juice-touchable-row.md). On master, not in the published npm 0.9.2 release. The thirtieth Emerging runtime. Mobile-Critical.
+- `pressable` — transient press ring on any host, with `[pressable="scale"]`, `[pressable-longpress]`, and `[pressable-slop]`. See [Pressable](./juice-pressable.md). Shipped in 0.9.4. The twenty-ninth Emerging runtime. Mobile-Critical.
+- `touchable-row` — 44px row on `a`, `button`, `li`, or `div`, with `dense`, `chevron`, `undivided`, and the leading / content / title / subtitle / trailing slots. See [Touchable Row](./juice-touchable-row.md). Shipped in 0.9.4. The thirtieth Emerging runtime. Mobile-Critical.
 
 ### Keyboard inset
 
-- `keyboard-avoider` — padding, translate, or sticky footer clear of the software keyboard. `[keyboard-avoider~="noscroll"]` is a runtime word. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). On master, not in the published npm 0.9.2 release. The thirty-first Emerging runtime. Mobile-Critical. Layout roles stay on `:root`.
+- `keyboard-avoider` — padding, translate, or sticky footer clear of the software keyboard. `[keyboard-avoider~="noscroll"]` is a runtime word. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). Shipped in 0.9.5. The thirty-first Emerging runtime. Mobile-Critical. Layout roles stay on `:root`.
 
 ### Theme scoping
 

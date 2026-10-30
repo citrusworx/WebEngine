@@ -11,7 +11,7 @@ Two cuts are in play, and they are not the same CSS:
 - The base `[badge]` layout shipped in the published `@citrusworx/juiceui@0.9.2` npm cut. `npm view @citrusworx/juiceui@0.9.2` reports `gitHead` `03cf749c8e8ddc740e7613f398840864bc5ba827` (published 2026-10-14).
 - That commit’s `badge.scss` is the literal pill, `[badge="square"]`, and `[badge="ribbon"]`. Its compiled `dist/index.css` has those rules and does not have `--juice-badge-*`.
 - The published tarball contains those core rules and the four KiwiPress `[badge]` rules in `dist/themes/kiwipress.css`.
-- The core roles, the `[theme] [badge]` ink and `line-height`, the `[theme] [cta] [badge]` companion, and the `a` / `button` focus outline are on master and are not in that 0.9.2 cut. No version number is assigned to them here.
+- The core roles, the `[theme] [badge]` ink and `line-height`, the `[theme] [cta] [badge]` companion, and the `a` / `button` focus outline shipped in `@citrusworx/juiceui@0.9.3`. `npm view @citrusworx/juiceui@0.9.3` reports `gitHead` `c794c06f421f3682e1efd1e96465cffc0a6404d1` (published 2026-10-27).
 
 `dist/index.css` on master matches `badge.scss`. The compiler drops quotes on attribute values (`[badge=square]`, `[badge=ribbon]`). The declarations are the same. Shipped theme CSS does not mention `--juice-badge-*`.
 
@@ -303,7 +303,7 @@ A `span` badge is not a control. It has no `:focus-visible` ring, no hover fill,
 ## Limitations
 
 - CSS-only. No `Badge()` factory, no `createBadge`, and no auto-enhance. The JS entry does not boot a badge runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[badge]`.
-- Emerging, not Stable. The base layout shipped in `@citrusworx/juiceui@0.9.2`. The `--juice-badge-*` roles, the `[theme] [badge]` ink, the `[cta]` companion, and the focus outline are on master and are not in that cut. The thirty-one Emerging runtimes stay thirty-one.
+- Emerging, not Stable. The base layout shipped in `@citrusworx/juiceui@0.9.2`. The `--juice-badge-*` roles, the `[theme] [badge]` ink, the `[cta]` companion, and the focus outline shipped in 0.9.3. The thirty-one Emerging runtimes stay thirty-one.
 - Shipped themes are not required to bind `--juice-badge-*`. Bundled theme CSS does not contain those names.
 - No `[scale]`. The only size step is `[wizard-header] [brand] [badge]`, which overrides the layout roles for that slot.
 - Values other than `square` and `ribbon` are the pill. There is no dot, count, or tone value. `[warm]` is a separate boolean. Core does not paint it.

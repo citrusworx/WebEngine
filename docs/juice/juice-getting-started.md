@@ -31,21 +31,21 @@ Monorepo contributors already have the workspace package linked — you do not a
 
 ## Plain HTML / CDN (no bundler)
 
-The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.2`:
+The published files live in `dist/` (`index.css`, `themes/<id>.css`, `index.js`). There is no first-party Juice CDN, but those files are on npm, so jsDelivr and unpkg serve them. Verified against `@citrusworx/juiceui@0.9.5`:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/themes/kiwipress.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/themes/kiwipress.css" />
 
 <body theme="kiwipress">
   <!-- markup -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/index.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/index.js"></script>
 </body>
 ```
 
 The JS `<script>` is optional. Loading it auto-enhances Emerging runtimes. Core CSS plus a theme is enough for CSS-first composition. Pin a version — do not rely on a floating `@latest` for production.
 
-unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.2/`.
+unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.5/`.
 
 If you prefer not to hit a CDN, copy the same files from `node_modules/@citrusworx/juiceui/dist/` (or `libraries/juice/dist/` in this repo) next to your HTML. See the [course first look](./course/00-first-look.md) standalone path.
 
@@ -214,25 +214,25 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 - inputs / native text fields (shipped in 0.9.2)
 - textareas / native multiline fields (shipped in 0.9.2)
 - fields / help and error on a wrapped control (shipped in 0.9.2)
-- icon buttons / square and round controls, with optional `[toggle]` (on master; not in the published npm 0.9.2 release)
-- avatars / initials or photo, with image-error fallback (on master; not in the published npm 0.9.2 release)
-- tables / sortable headers on a native table (on master; not in the published npm 0.9.2 release)
-- pressables / transient press on any host (on master; not in the published npm 0.9.2 release)
-- touchable rows / 44px rows with optional selection (on master; not in the published npm 0.9.2 release)
-- keyboard avoiders / padding, translate, or a sticky footer clear of the software keyboard (on master; not in the published npm 0.9.2 release)
+- icon buttons / square and round controls, with optional `[toggle]` (shipped in 0.9.3)
+- avatars / initials or photo, with image-error fallback (shipped in 0.9.3)
+- tables / sortable headers on a native table (shipped in 0.9.3)
+- pressables / transient press on any host (shipped in 0.9.4)
+- touchable rows / 44px rows with optional selection (shipped in 0.9.4)
+- keyboard avoiders / padding, translate, or a sticky footer clear of the software keyboard (shipped in 0.9.5)
 - motion core / tokens, overlay enter and exit, and `[motion="accordion"]` height (shipped in 0.9.2)
 
-`[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty-one runtime count. See [Skeleton](./juice-skeleton.md).
+`[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-one runtime count. See [Skeleton](./juice-skeleton.md).
 
-`[list]` is not in that list. It is CSS-only stacked rows: core CSS paints `[list]` on `ul`, `ol`, or `div`, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty-one runtime count. See [List](./juice-list.md).
+`[list]` is not in that list. It is CSS-only stacked rows: core CSS paints `[list]` on `ul`, `ol`, or `div`, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-one runtime count. See [List](./juice-list.md).
 
-`[badge]` is not in that list. It is CSS-only label chrome: core CSS paints the pill, square, and ribbon, and the JS entry does not boot it. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It does not change the thirty-one runtime count. See [Badge](./juice-badge.md).
+`[badge]` is not in that list. It is CSS-only label chrome: core CSS paints the pill, square, and ribbon, and the JS entry does not boot it. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.9.3. It does not change the thirty-one runtime count. See [Badge](./juice-badge.md).
 
-`[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty-one runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
+`[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-one runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
 
 Those features should work without app init, and they work without Sig.
 
-Observable state on master is the DOM contract `juice:change` plus `getState()`, unreleased after 0.9.2. Sig’s optional adapter is a separate import, `@citrusworx/sigjs/juice`.
+Observable state is the DOM contract `juice:change` plus `getState()`, shipped in 0.9.3. Sig’s optional adapter is a separate import, `@citrusworx/sigjs/juice`.
 
 The component index is [Runtime behavior](./juice-runtime-behavior.md#components). State shapes are [`juice:change`](./juice-runtime-behavior.md#juicechange).
 
@@ -272,12 +272,12 @@ If you are not in a bundler app, use the CDN or copy-dist path under [Plain HTML
 - [Theme Authoring](./juice-theme-authoring.md)
 - [Theme Manual](./juice-theme-manual.md)
 - [Best Practices](./juice-best-practices.md)
-- [Avatar](./juice-avatar.md) — initials-or-photo mark (on master; not in the published npm 0.9.2 release; the twenty-seventh Emerging runtime)
-- [Table](./juice-table.md) — sortable grid (on master; not in the published npm 0.9.2 release; the twenty-eighth Emerging runtime)
-- [Pressable](./juice-pressable.md) — transient press (on master; not in the published npm 0.9.2 release; the twenty-ninth Emerging runtime)
-- [Touchable Row](./juice-touchable-row.md) — 44px touch row (on master; not in the published npm 0.9.2 release; the thirtieth Emerging runtime)
-- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (on master; not in the published npm 0.9.2 release; the thirty-first Emerging runtime)
-- [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release; not a runtime)
-- [List](./juice-list.md) — CSS-only stacked rows (on master; not in the published npm 0.9.2 release; not a runtime)
-- [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core roles on master, not in that cut; not a runtime)
-- [Safe Area](./juice-safe-area.md) — CSS-only inset (on master; not in the published npm 0.9.2 release; not a runtime)
+- [Avatar](./juice-avatar.md) — initials-or-photo mark (shipped in 0.9.3; the twenty-seventh Emerging runtime)
+- [Table](./juice-table.md) — sortable grid (shipped in 0.9.3; the twenty-eighth Emerging runtime)
+- [Pressable](./juice-pressable.md) — transient press (shipped in 0.9.4; the twenty-ninth Emerging runtime)
+- [Touchable Row](./juice-touchable-row.md) — 44px touch row (shipped in 0.9.4; the thirtieth Emerging runtime)
+- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime)
+- [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (shipped in 0.9.3; not a runtime)
+- [List](./juice-list.md) — CSS-only stacked rows (shipped in 0.9.3; not a runtime)
+- [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core roles shipped in 0.9.3; not a runtime)
+- [Safe Area](./juice-safe-area.md) — CSS-only inset (shipped in 0.9.3; not a runtime)

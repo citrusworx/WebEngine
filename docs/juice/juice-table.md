@@ -2,11 +2,11 @@
 
 A table is a sortable grid on `<table table>`. A `th[sortable]` cycles direction and each `tbody` follows.
 
-Emerging. The twenty-eighth runtime. On master. Not in the published `@citrusworx/juiceui@0.9.2` release.
+Emerging. The twenty-eighth runtime. Shipped in 0.9.3.
 
-`createTable`, `initTable`, `startTableRuntime`, and `stopTableRuntime` are not in that npm cut.
+`createTable`, `initTable`, `startTableRuntime`, and `stopTableRuntime` shipped in 0.9.3.
 
-Importing `@citrusworx/juiceui` enhances valid markup on master. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published 0.9.2 package does not include this runtime.
+Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ## Markup
 
@@ -230,7 +230,7 @@ A real change of `{ column, direction }` dispatches a bubbling, composed [juice:
 
 `getState()` reads that shape, or `null` when the host is missing. The first observation does not dispatch, including the `aria-sort="none"` written on first sync.
 
-A later `sync()` that leaves the state unchanged does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2.
+A later `sync()` that leaves the state unchanged does not dispatch. This surface stays Emerging and shipped in 0.9.3.
 
 Before a reorder, the table also dispatches a bubbling, cancelable, composed `juice:sort`. That event is separate from `juice:change`. [Server-side sort](#server-side-sort).
 
@@ -367,7 +367,7 @@ A click publishes on the event. It is not deferred to that frame.
 
 Table is read-only. There is no Juice API to set sort, and `state.set` does not call a controller.
 
-The next `juice:change` copies the host back over the signal. On a Juice build that does not export `startTableRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2; the export is on master only), binding table throws `Sig juice bind: "table" needs a newer @citrusworx/juiceui that exports startTableRuntime.` The module still loads, and the other runtimes still bind.
+The next `juice:change` copies the host back over the signal. On a Juice build that does not export `startTableRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2 do not export it; it shipped in 0.9.3), binding table throws `Sig juice bind: "table" needs a newer @citrusworx/juiceui that exports startTableRuntime.` The module still loads, and the other runtimes still bind.
 
 Juice does not import Sig, and this runtime does not call `bind`.
 

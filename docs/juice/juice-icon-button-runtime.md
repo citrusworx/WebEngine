@@ -2,9 +2,9 @@
 
 Icon button is a square icon-only control on the existing button chrome. `createIconButton` keeps a `[toggle]` pressed state in sync with `aria-pressed`.
 
-Emerging. The twenty-sixth runtime. On master. Not in the published `@citrusworx/juiceui@0.9.2` release. `createIconButton`, `initIconButton`, `startIconButtonRuntime`, and `stopIconButtonRuntime` are not in that npm cut.
+Emerging. The twenty-sixth runtime. Shipped in 0.9.3. `createIconButton`, `initIconButton`, `startIconButtonRuntime`, and `stopIconButtonRuntime` shipped in 0.9.3.
 
-Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published `@citrusworx/juiceui@0.9.2` package does not include this runtime.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 Color, border, and hover fill stay with `button` and `[btn]`. There is no focus trap, no Escape handler, and no `IconButton()` factory.
 
@@ -210,7 +210,7 @@ Later DOM changes schedule `sync()` on the next animation frame. [Sync](./juice-
 
 Write-back calls `toggle` only when the host has `[toggle]` and `pressed` changes, then republishes `getState()`. A disabled host, or a host without `[toggle]`, refuses the write, and the signal snaps back to the host.
 
-Binding `icon-button` against `@citrusworx/juiceui@0.9.2` throws because `startIconButtonRuntime` is not exported:
+Binding `icon-button` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws because `startIconButtonRuntime` is not exported. It shipped in 0.9.3:
 
 ```text
 Sig juice bind: "icon-button" needs a newer @citrusworx/juiceui that exports startIconButtonRuntime.

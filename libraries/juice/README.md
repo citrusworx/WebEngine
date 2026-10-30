@@ -82,7 +82,7 @@ Built files are `dist/index.css` (core) and `dist/themes/<id>.css`. Each theme i
 
 The top-level JS entry is small. Thirty-one runtimes stay Emerging.
 
-Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, table, pressable, touchable row, and keyboard avoider are on master and are not in that release. Rows marked **master** are those six.
+Navigation through field (twenty-five) shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
 
 The full index, including how to choose between similar components, is [Runtime behavior](../../docs/juice/juice-runtime-behavior.md#components).
 
@@ -119,9 +119,9 @@ The full index, including how to choose between similar components, is [Runtime 
 | Switch | `[switch]` | APG switch (`toggle` / `check` / `uncheck` / `setChecked`). Not a layered overlay. | [Switch](../../docs/juice/juice-switch-runtime.md) |
 | Slider | `[slider]` | APG slider (`setValue` / `getValue` / `increment` / `decrement`). Not a layered overlay. | [Slider](../../docs/juice/juice-slider-runtime.md) |
 | Field | `[field]` | Wrapper. Visible help and error describe the first input, textarea, or select. The twenty-fifth Emerging runtime. Shipped in 0.9.2. | [Field](../../docs/juice/juice-field-runtime.md) |
-| Icon button (**master**) | `[icon-button]` | Square control on button chrome (`sync` / `toggle` / `getState`). Not a switch and not a checkbox. The twenty-sixth Emerging runtime. Not in npm 0.9.2. | [Icon button](../../docs/juice/juice-icon-button-runtime.md) |
-| Pressable (**master**) | `[pressable]` | Transient press (`sync` / `getState`). Sets `[pressed]` for the gesture. `[pressable-longpress]` opts into `juice:longpress`. Not a latched toggle. The twenty-ninth Emerging runtime. Not in npm 0.9.2. | [Pressable](../../docs/juice/juice-pressable.md) |
-| Touchable row (**master**) | `[touchable-row]` | 44px row (`sync` / `getState`). `[touchable-row~="select"]` toggles selection. Enter and Space activate an `li` or `div`. Not a single-select group. The thirtieth Emerging runtime. Not in npm 0.9.2. | [Touchable row](../../docs/juice/juice-touchable-row.md) |
+| Icon button | `[icon-button]` | Square control on button chrome (`sync` / `toggle` / `getState`). Not a switch and not a checkbox. The twenty-sixth Emerging runtime. Shipped in 0.9.3. | [Icon button](../../docs/juice/juice-icon-button-runtime.md) |
+| Pressable | `[pressable]` | Transient press (`sync` / `getState`). Sets `[pressed]` for the gesture. `[pressable-longpress]` opts into `juice:longpress`. Not a latched toggle. The twenty-ninth Emerging runtime. Shipped in 0.9.4. | [Pressable](../../docs/juice/juice-pressable.md) |
+| Touchable row | `[touchable-row]` | 44px row (`sync` / `getState`). `[touchable-row~="select"]` toggles selection. Enter and Space activate an `li` or `div`. Not a single-select group. The thirtieth Emerging runtime. Shipped in 0.9.4. | [Touchable row](../../docs/juice/juice-touchable-row.md) |
 
 ### Feedback
 
@@ -143,14 +143,14 @@ The full index, including how to choose between similar components, is [Runtime 
 
 | Component | Markup | What it is | Docs |
 | --- | --- | --- | --- |
-| Avatar (**master**) | `[avatar]` | Initials or photo (`sync` / `getState`). Not a badge and not `[skeleton="circle"]`. The twenty-seventh Emerging runtime. Not in npm 0.9.2. | [Avatar](../../docs/juice/juice-avatar.md) |
-| Table (**master**) | `<table table>` | Sortable grid. The twenty-eighth runtime. Not in npm 0.9.2. | [Table](../../docs/juice/juice-table.md) |
+| Avatar | `[avatar]` | Initials or photo (`sync` / `getState`). Not a badge and not `[skeleton="circle"]`. The twenty-seventh Emerging runtime. Shipped in 0.9.3. | [Avatar](../../docs/juice/juice-avatar.md) |
+| Table | `<table table>` | Sortable grid. The twenty-eighth runtime. Shipped in 0.9.3. | [Table](../../docs/juice/juice-table.md) |
 
 ### Page chrome
 
 | Component | Markup | What it is | Docs |
 | --- | --- | --- | --- |
-| Keyboard avoider (**master**) | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Not in npm 0.9.2. Not a `JuiceRuntimeName`. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
+| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. The thirty-first runtime. Shipped in 0.9.5. Not a `JuiceRuntimeName`. | [Keyboard avoider](../../docs/juice/juice-keyboard-avoider-runtime.md) |
 
 ### Auto-start
 
@@ -190,7 +190,7 @@ stopModalRuntime();
 
 `tokens` is the shared token object: color families and swatches, and the `adobe` and `google` font providers. `Accordion` is a Sig component that renders one `[accordion]` section (trigger plus panel). It is not the document runtime. The runtime is `createAccordion` / `startAccordionRuntime`.
 
-Icon button, avatar, table, pressable, touchable row, and keyboard avoider export the same four names on master. Those twenty-four functions are not in `@citrusworx/juiceui@0.9.2`.
+Icon button, avatar, table, pressable, touchable row, and keyboard avoider export the same four names. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5.
 
 ### `juice:change` and `getState`
 
@@ -198,14 +198,14 @@ Interactive runtimes dispatch a bubbling `juice:change` from the widget host whe
 
 Select, input, and textarea publish through native `input` and `change`. They still expose `getState()`.
 
-The contract covers all thirty-one runtimes. It is on master, unreleased after 0.9.2. `JUICE_CHANGE_EVENT` is not in the published 0.9.2 types.
+The contract covers all thirty-one runtimes. `juice:change` and `JUICE_CHANGE_EVENT` shipped in 0.9.3. Pressable and touchable row dispatch that contract from 0.9.4. Keyboard avoider dispatches it from 0.9.5.
 
 `@citrusworx/sigjs/juice` `bind` names twenty-eight runtimes, through `table`, on master and in `@citrusworx/sigjs@0.7.2`.
 
 - `icon-button`, `avatar`, and `table` are `JuiceRuntimeName` values.
 - Pressable, touchable row, and keyboard avoider are not.
 - `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
-- Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws. That cut does not export their start functions.
+- Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws. Those cuts do not export their start functions. The three exports shipped in 0.9.3.
 
 Juice works without Sig. The optional adapter is `@citrusworx/sigjs/juice` only.
 
@@ -348,10 +348,10 @@ These do not auto-enhance, do not dispatch `juice:change`, and are not part of t
 
 | Chrome | Hook | Release | Docs |
 | --- | --- | --- | --- |
-| Skeleton | `[skeleton]` | On master, not in npm 0.9.2 | [Skeleton](../../docs/juice/juice-skeleton.md) |
-| List | `[list]` | On master, not in npm 0.9.2 | [List](../../docs/juice/juice-list.md) |
-| Badge | `[badge]` | Layout shipped in npm 0.9.2. `--juice-badge-*` roles are on master, not in that cut | [Badge](../../docs/juice/juice-badge.md) |
-| Safe area | `[safe-area]` | On master, not in npm 0.9.2 | [Safe area](../../docs/juice/juice-safe-area.md) |
+| Skeleton | `[skeleton]` | Shipped in 0.9.3 | [Skeleton](../../docs/juice/juice-skeleton.md) |
+| List | `[list]` | Shipped in 0.9.3 | [List](../../docs/juice/juice-list.md) |
+| Badge | `[badge]` | Layout shipped in npm 0.9.2. `--juice-badge-*` roles shipped in 0.9.3 | [Badge](../../docs/juice/juice-badge.md) |
+| Safe area | `[safe-area]` | Shipped in 0.9.3 | [Safe area](../../docs/juice/juice-safe-area.md) |
 
 ## Layout
 
@@ -407,15 +407,15 @@ If you are hosting Juice assets yourself, the main built files are:
 
 Load core plus at least one theme CSS file when using `theme="..."` on the root element.
 
-There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@0.9.2`):
+There is no first-party Juice CDN. Those `dist/` files are on npm, so jsDelivr and unpkg serve them (verified for `@citrusworx/juiceui@0.9.5`):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/themes/kiwipress.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.2/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/themes/kiwipress.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@citrusworx/juiceui@0.9.5/dist/index.js"></script>
 ```
 
-The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page. unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.2/`.
+The JS module is optional. Pin a version. You can also copy the same files out of `node_modules/@citrusworx/juiceui/dist/` next to a plain HTML page. unpkg uses the same paths under `https://unpkg.com/@citrusworx/juiceui@0.9.5/`.
 
 ### What the build contains
 
@@ -426,8 +426,8 @@ The JS module is optional. Pin a version. You can also copy the same files out o
 - attribute selectors for color, spacing, width, height, gradients, shadows, and icons
 - layout primitives for `stack`, `row`, `grid`, `gap`, and `span`
 - FontAwesome Free icon integration across the solid, regular, and brands sets
-- CSS-only `[skeleton]`, `[list]`, `[badge]` (base layout in 0.9.2; `--juice-badge-*` roles on master), and `[safe-area]`, described above
-- `[avatar]`, `[table]`, `[pressable]`, and `[touchable-row]` runtimes, on master, not in npm 0.9.2
+- CSS-only `[skeleton]`, `[list]`, `[badge]` (base layout in 0.9.2; `--juice-badge-*` roles in 0.9.3), and `[safe-area]` (shipped in 0.9.3), described above
+- `[avatar]` and `[table]` runtimes shipped in 0.9.3. `[pressable]` and `[touchable-row]` shipped in 0.9.4
 
 <details>
 <summary>Internal workspace assets</summary>
