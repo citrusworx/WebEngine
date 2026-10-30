@@ -2,9 +2,9 @@
 
 Touchable row is a 44px action row. `createTouchableRow` activates an `li` or `div` from Enter or Space, and toggles selection when the row opts in.
 
-Emerging. The thirtieth runtime. On master. Not in `@citrusworx/juiceui@0.9.2`. Its four exports are not in that cut. `bind` does not name `touchable-row`. Not a `JuiceRuntimeName`.
+Emerging. The thirtieth runtime. Shipped in 0.9.4. Its four exports shipped in that cut. `bind` does not name `touchable-row`. Not a `JuiceRuntimeName`.
 
-Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published `@citrusworx/juiceui@0.9.2` package does not include this runtime.
+Importing `@citrusworx/juiceui` enhances valid markup. See [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 Touchable row is Mobile-Critical. The stylesheet is `libraries/juice/src/components/touchable-row/touchable-row.scss`. `components.scss` forwards it after `radio.scss` and before `safe-area.scss`.
 

@@ -1115,7 +1115,7 @@ Transitions use `--juice-motion-*`. The runtime auto-enhances that markup (`crea
 
 `[toggle]` keeps `aria-pressed` and `[pressed]` in sync. A missing name warns once in development and is not invented.
 
-See [Icon Button Runtime](./juice-icon-button-runtime.md). Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+See [Icon Button Runtime](./juice-icon-button-runtime.md). Icon button is the twenty-sixth Emerging auto-enhance runtime and shipped in 0.9.3.
 
 ### Skeleton (optional override)
 
@@ -1142,7 +1142,7 @@ The highlight is a translucent white sheen, not `--juice-surface-strong-bg`. On 
 
 Do not set `color: transparent` on the host. Authors own `aria-busy`.
 
-See [Skeleton](./juice-skeleton.md). Skeleton is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
+See [Skeleton](./juice-skeleton.md). Skeleton shipped in 0.9.3, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### List (optional override)
 
@@ -1173,7 +1173,7 @@ Disabled interactive rows are `opacity: 0.5`. The divider is decorative (under 3
 
 Authors own list semantics and whether `aria-disabled` swallows a click. See [List](./juice-list.md).
 
-List is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
+List shipped in 0.9.3 and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### Badge (optional override)
 
@@ -1206,11 +1206,11 @@ Those rules are `(0, 1, 0)` and lose to core. It does not emit `--juice-badge-*`
 
 See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2.
 
-The roles are on master, not in that cut. Badge is not one of the thirty-one Emerging auto-enhance runtimes.
+The roles shipped in 0.9.3. Badge is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### Safe area (not a theme bind)
 
-`--juice-safe-area-pad` is `1rem` on `:root` only. It is a layout length, not a color role, and it is not restated on `[theme]`. Shipped library themes and generated `--jx-*` themes do not bind it. There is no runtime. See [Safe Area](./juice-safe-area.md). Safe area is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
+`--juice-safe-area-pad` is `1rem` on `:root` only. It is a layout length, not a color role, and it is not restated on `[theme]`. Shipped library themes and generated `--jx-*` themes do not bind it. There is no runtime. See [Safe Area](./juice-safe-area.md). Safe area shipped in 0.9.3, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### Avatar (optional override)
 
@@ -1245,7 +1245,7 @@ A later load clears both. An empty `src` with a real `srcset` waits.
 
 `destroy()` keeps the fallback. The runtime does not touch `alt`, labels, or initials.
 
-See [Avatar](./juice-avatar.md). Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+See [Avatar](./juice-avatar.md). Avatar is the twenty-seventh Emerging auto-enhance runtime and shipped in 0.9.3.
 
 ### Table (optional override)
 
@@ -1278,7 +1278,7 @@ Cell `p`, `span`, `li`, and `label` inherit body ink. The border is decorative (
 
 The runtime auto-enhances `<table table>` (`createTable` / `getState`). `th[sortable]` cycles ascending, descending, and none.
 
-See [Table](./juice-table.md). Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+See [Table](./juice-table.md). Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3.
 
 Tide's banner warning is lagoon-800 and disappears on the muted surface, so Tide sets `--juice-avatar-status-away: color-mix(in srgb, var(--tide-banner-warning) 45%, var(--tide-text))`. Online, busy, and offline are not overridden.
 
@@ -1308,7 +1308,7 @@ Citrusmint body ink is 4.62:1 on the page and 5.17:1 on the strong surface. A 1%
 
 Muted Citrusmint copy (`p`, `span`, `li`, `label`) is 1.95:1 on the page and 2.18:1 on the strong surface, and an `li` host's ring follows that ink. The runtime auto-enhances `[pressable]` (`createPressable` / `getState`).
 
-See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
 `@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
 
@@ -1346,11 +1346,11 @@ The divider is decorative and stays under 3:1. Subtitle is the full ink.
 
 A 92% mix would be 4.03:1 on the Citrusmint page. The runtime auto-enhances `[touchable-row]` (`createTouchableRow` / `getState`).
 
-See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4.
 
 `@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
 
-`[keyboard-avoider]` keeps a field or a bottom bar clear of the software keyboard. `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. They are not restated on `[theme]`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+`[keyboard-avoider]` keeps a field or a bottom bar clear of the software keyboard. `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. They are not restated on `[theme]`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and shipped in 0.9.5.
 
 Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/textarea/field/wizard/surface/border-strength/shadow-tone/overlay roles, and they pass motion through as above. They do not emit the optional accordion/tabs hooks.
 
@@ -1572,11 +1572,11 @@ How to generate, import, and map tokens is in [Theme authoring](./juice-theme-au
 
 This is Priority 2 through remaining depth slice C plus modal A→B→C, drawer A→B→C, toast A→B→C, popover A→B→C, wizard A→B→C, tooltip A→B→C, combobox A→B→C, banner A→B→C, menu A→B→C, switch A→B→C, slider A→B→C, checkbox A→B→C, radio A→B→C, breadcrumb A→B→C, progress A→B→C, pagination A→B→C, disclosure A→B→C, spinner A→B→C, select A→B→C (theme chrome, runtime, and runtime docs)
 
-input A→B→C (theme chrome, runtime, and runtime docs), textarea A→B→C (theme chrome, runtime, and runtime docs), field A→B→C (theme chrome, runtime, and runtime docs), icon button A→B→C (chrome, runtime, and runtime docs; on master, not in the published npm 0.9.2 release), avatar A→B→C (chrome, runtime, and runtime docs; on master, not in the published npm 0.9.2 release)
+input A→B→C (theme chrome, runtime, and runtime docs), textarea A→B→C (theme chrome, runtime, and runtime docs), field A→B→C (theme chrome, runtime, and runtime docs), icon button A→B→C (chrome, runtime, and runtime docs; shipped in 0.9.3), avatar A→B→C (chrome, runtime, and runtime docs; shipped in 0.9.3)
 
-table A→B→C (chrome, runtime, and runtime docs; on master, not in the published npm 0.9.2 release), pressable A→B→C (chrome, runtime, and docs; on master, not in the published npm 0.9.2 release; themes may restate `--juice-pressable-*` and are not required to)
+table A→B→C (chrome, runtime, and runtime docs; shipped in 0.9.3), pressable A→B→C (chrome, runtime, and docs; shipped in 0.9.4; themes may restate `--juice-pressable-*` and are not required to)
 
-and touchable row A→B→C (chrome, runtime, and docs; on master, not in the published npm 0.9.2 release; themes are not required to bind `--juice-touchable-row-*`; there is no motion role): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`
+and touchable row A→B→C (chrome, runtime, and docs; shipped in 0.9.4; themes are not required to bind `--juice-touchable-row-*`; there is no motion role): the checklist plus automated bind tests, including `shadowTone`, `overlay`, `variant` recipes, `--juice-modal-*`, `--juice-drawer-*`, `--juice-toast-*`, `--juice-banner-*`, `--juice-popover-*`, `--juice-tooltip-*`
 
 `--juice-combobox-*`, `--juice-menu-*`, `--juice-switch-*`, `--juice-slider-*`, `--juice-checkbox-*`, `--juice-radio-*`, `--juice-breadcrumb-*`, `--juice-progress-*`, `--juice-pagination-*`, `--juice-disclosure-*`, `--juice-spinner-*`, `--juice-select-*`, `--juice-input-*`, `--juice-textarea-*`, `--juice-field-*`, and `--juice-wizard-*`. Checkbox and radio are two runtimes.
 
@@ -1596,18 +1596,18 @@ Textarea shipped in 0.9.2. Field is a wrapper around a control, distinct from in
 
 Field shipped in 0.9.2. Motion core (tokens, the shared helper, and overlay enter/exit) shipped in 0.9.2.
 
-Icon button is the twenty-sixth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Avatar is the twenty-seventh Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+Icon button is the twenty-sixth Emerging auto-enhance runtime and shipped in 0.9.3. Avatar is the twenty-seventh Emerging auto-enhance runtime and shipped in 0.9.3.
 
-Table is the twenty-eighth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
+Table is the twenty-eighth Emerging auto-enhance runtime and shipped in 0.9.3. Pressable is the twenty-ninth Emerging auto-enhance runtime and shipped in 0.9.4.
 
-Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release. All thirty-one stay Emerging. Keyboard avoider is the thirty-first, on master, not in npm 0.9.2, and is not a `JuiceRuntimeName`.
+Touchable row is the thirtieth Emerging auto-enhance runtime and shipped in 0.9.4. All thirty-one stay Emerging. Keyboard avoider is the thirty-first, shipped in 0.9.5, and is not a `JuiceRuntimeName`.
 
-Skeleton chrome and docs are on master (CSS-only, not a runtime, not in the published npm 0.9.2 release). `--juice-skeleton-*` stays a core default.
+Skeleton chrome and docs shipped in 0.9.3 (CSS-only, not a runtime). `--juice-skeleton-*` stays a core default.
 
-List chrome and docs are on master (CSS-only, not a runtime, not in the published npm 0.9.2 release). `--juice-list-*` stays a core default.
+List chrome and docs shipped in 0.9.3 (CSS-only, not a runtime). `--juice-list-*` stays a core default.
 
-Badge chrome and docs are on master (CSS-only, not a runtime; the base layout shipped in npm 0.9.2; `--juice-badge-*` roles are on master and are not in that cut). `--juice-badge-*` stays a core default.
+Badge chrome and docs shipped in 0.9.3 for the `--juice-badge-*` roles (CSS-only, not a runtime; the base layout shipped in npm 0.9.2). `--juice-badge-*` stays a core default.
 
-Safe area chrome and docs are on master (CSS-only, not a runtime, not in the published npm 0.9.2 release). `--juice-safe-area-pad` stays on `:root` and is not a theme bind.
+Safe area chrome shipped in 0.9.3 (CSS-only, not a runtime). `--juice-safe-area-pad` stays on `:root` and is not a theme bind.
 
 Motion stays Emerging. Blush, CLI, and publish are out of scope here.

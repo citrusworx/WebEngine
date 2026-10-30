@@ -4,7 +4,7 @@ Import `@citrusworx/juiceui` and valid markup runs in the browser. Most pages ne
 
 Juice does not load Sig. Observation is the DOM contract below. The optional adapter is `@citrusworx/sigjs/juice`.
 
-Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Six more are on master and are not in that release: icon button, avatar, table, pressable, touchable row, and keyboard avoider. All thirty-one stay Emerging.
+Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@0.9.2`. Icon button, avatar, and table shipped in 0.9.3. Pressable and touchable row shipped in 0.9.4. Keyboard avoider shipped in 0.9.5. All thirty-one stay Emerging.
 
 ## Components
 
@@ -41,9 +41,9 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 | Switch | `[switch]` | Binary toggle on a button. A checkbox host is secondary. | [Switch](./juice-switch-runtime.md) |
 | Slider | `[slider]` | Single horizontal value the user sets. | [Slider](./juice-slider-runtime.md) |
 | Field | `[field]` | Help and error text around a control. Not a validator. | [Field](./juice-field-runtime.md) |
-| Icon button | `[icon-button]` | Square icon-only control. On master, not in npm 0.9.2. | [Icon button](./juice-icon-button-runtime.md) |
-| Pressable | `[pressable]` | Transient press. On master, not in npm 0.9.2. | [Pressable](./juice-pressable.md) |
-| Touchable row | `[touchable-row]` | 44px row. On master, not in npm 0.9.2. | [Touchable row](./juice-touchable-row.md) |
+| Icon button | `[icon-button]` | Square icon-only control. Shipped in 0.9.3. | [Icon button](./juice-icon-button-runtime.md) |
+| Pressable | `[pressable]` | Transient press. Shipped in 0.9.4. | [Pressable](./juice-pressable.md) |
+| Touchable row | `[touchable-row]` | 44px row. Shipped in 0.9.4. | [Touchable row](./juice-touchable-row.md) |
 
 ### Feedback
 
@@ -65,14 +65,14 @@ Twenty-five runtimes, navigation through field, shipped in `@citrusworx/juiceui@
 
 | Component | Markup hook | What it's for | Docs |
 | --- | --- | --- | --- |
-| Avatar | `[avatar]` | Initials or a photo. On master, not in npm 0.9.2. | [Avatar](./juice-avatar.md) |
-| Table | `<table table>` | Sortable grid. On master, not in npm 0.9.2. | [Table](./juice-table.md) |
+| Avatar | `[avatar]` | Initials or a photo. Shipped in 0.9.3. | [Avatar](./juice-avatar.md) |
+| Table | `<table table>` | Sortable grid. Shipped in 0.9.3. | [Table](./juice-table.md) |
 
 ### Page chrome
 
 | Component | Markup hook | What it's for | Docs |
 | --- | --- | --- | --- |
-| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. On master, not in npm 0.9.2. Not a `JuiceRuntimeName`. | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
+| Keyboard avoider | `[keyboard-avoider]` | Inset while the software keyboard is open. Shipped in 0.9.5. Not a `JuiceRuntimeName`. | [Keyboard avoider](./juice-keyboard-avoider-runtime.md) |
 
 CSS-only, and not part of the thirty-one:
 
@@ -192,7 +192,7 @@ Core chrome sets these stacking values. They are structural bands, not a theme c
 | Banner, switch, slider, checkbox, radio, breadcrumb, progress, spinner, select, input, textarea, field, icon button, pagination, pressable, touchable row, keyboard avoider | those hooks | none | Inline. Slider thumb is `z-index: 1` inside the track |
 | Avatar | `[avatar]` | none | Photo is `1` and the status dot is `2`, inside the avatar. A group stacks the first eight faces from 8 down to 1 |
 | Table | `[table]` | none | Sticky `thead` cells use `z-index: 1` inside the table |
-| Skeleton, list, badge, safe area | those hooks | none | CSS-only. Badge layout shipped in npm 0.9.2. Badge roles, skeleton, list, and safe area are on master, not in that cut |
+| Skeleton, list, badge, safe area | those hooks | none | CSS-only. Badge layout shipped in npm 0.9.2. Badge `--juice-badge-*` roles, skeleton, list, and safe area shipped in 0.9.3 |
 
 Tabs, accordion, and disclosure do not set a stacking band.
 
@@ -209,7 +209,7 @@ type JuiceChangeDetail<TState> = {
 };
 ```
 
-`JUICE_CHANGE_EVENT` is the string `'juice:change'`. It is on master, unreleased after 0.9.2, and is not in the published 0.9.2 types.
+`JUICE_CHANGE_EVENT` is the string `'juice:change'`. It shipped in 0.9.3. It is not in the published 0.9.2 types.
 
 Listen on the host or any ancestor. `detail.state` is a copy. `getState(target)` returns that same shape, or `null` when the host is missing.
 
@@ -312,12 +312,12 @@ notes.dispose();
 
 Published `@citrusworx/sigjs@0.7.0` and `@citrusworx/sigjs@0.7.1` stop at twenty-five names, through `textarea`.
 
-Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.2` throws, because that cut does not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. The other runtimes still bind.
+Binding `icon-button`, `avatar`, or `table` against `@citrusworx/juiceui@0.9.1` or `@citrusworx/juiceui@0.9.2` throws, because those cuts do not export `startIconButtonRuntime`, `startAvatarRuntime`, or `startTableRuntime`. The three exports shipped in 0.9.3. The other runtimes still bind.
 
 `dispose` drops the listeners, including when the binding was created during Sig render and the view unmounts.
 
 `@citrusworx/juiceui` is an optional peer of Sig. The main Sig entry does not import it. The subpath shipped in `@citrusworx/sigjs@0.4.0` and is not part of `@citrusworx/juiceui`.
 
-`juice:change` and `getState()` are on master, unreleased after 0.9.2. Icon button, avatar, table, pressable, touchable row, and keyboard avoider ship that contract on master, and they are not in the published npm 0.9.2 release.
+`juice:change` and `getState()` shipped in 0.9.3. Icon button, avatar, and table ship that contract from 0.9.3. Pressable and touchable row ship it from 0.9.4. Keyboard avoider ships it from 0.9.5.
 
 How to call `bind`, including disposal, is [Runtime binding](../sigjs/sig-juice-integration.md#runtime-binding).

@@ -4,7 +4,7 @@ This document explains the current list chrome in `libraries/juice/src/component
 
 List is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createList`, no auto-enhance, and no `List()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It shipped in 0.9.3. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 List is a stack of rows. It is distinct from an anchored menu (`[menu]` / `[menuitem]`), a combobox listbox (`[combobox-list]`), a tab strip (`[tabs-list]`), a page set (`[pagination]`), and a trail (`[breadcrumb]`). Those have their own attributes and, except for this list, their own runtimes.
 
@@ -252,7 +252,7 @@ Dividers are borders, not elements. They are decorative and sit under 3:1. Do no
 ## Limitations
 
 - CSS-only. No `List()` factory, no `createList`, and no auto-enhance. The JS entry does not boot a list runtime. There is no `juice:change` and no `getState()`. `@citrusworx/sigjs/juice` `bind()` does not accept `[list]`.
-- Emerging, not Stable. On master, and not in the published `@citrusworx/juiceui@0.9.2` npm cut. The thirty-one Emerging runtimes stay thirty-one.
+- Emerging, not Stable. On master, and shipped in 0.9.3. The thirty-one Emerging runtimes stay thirty-one.
 - Hosts are `ul`, `ol`, and `div` only, via `:where(ul, ol, div)[list]`. `<input list>` is not painted. There is no `<list>` element.
 - `[divided]` and `[dense]` apply only with `[list]` on that host. `[dense]` tightens padding and the slot margin. It does not change the stack gap.
 - `[leading]` is letter-spacing. The slot is `[list-leading]`.

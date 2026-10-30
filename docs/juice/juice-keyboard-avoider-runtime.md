@@ -2,11 +2,11 @@
 
 Keyboard avoider pads or shifts a host at `[keyboard-avoider]` when the on-screen keyboard covers the page.
 
-Emerging. The thirty-first runtime. On master. Not in the published `@citrusworx/juiceui@0.9.2` release.
+Emerging. The thirty-first runtime. Shipped in 0.9.5.
 
-`createKeyboardAvoider`, `initKeyboardAvoider`, `startKeyboardAvoiderRuntime`, and `stopKeyboardAvoiderRuntime` are not in that npm cut. `@citrusworx/sigjs/juice` `bind` does not name `keyboard-avoider`. It is not a `JuiceRuntimeName`.
+`createKeyboardAvoider`, `initKeyboardAvoider`, `startKeyboardAvoiderRuntime`, and `stopKeyboardAvoiderRuntime` shipped in 0.9.5. `@citrusworx/sigjs/juice` `bind` does not name `keyboard-avoider`. It is not a `JuiceRuntimeName`.
 
-Importing `@citrusworx/juiceui` enhances valid markup on master. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published 0.9.2 package does not include this runtime.
+Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 The layout contract, Safe Area composition, and examples are in [Keyboard avoider layout](./juice-keyboard-avoider.md). The stylesheet works without the runtime: the inset role stays `0px`, and Chromium can use `env(keyboard-inset-height)`.
 
@@ -72,7 +72,7 @@ A change dispatches a bubbling [juice:change](./juice-runtime-behavior.md#juicec
 
 The first observation is silent. Later events fire when `open` flips, or when `inset` has moved by at least `threshold` pixels from the last published inset while open.
 
-Smaller steps still update the custom property and `getState()`. They accumulate, so a slow drift still publishes once it is stale by `threshold`. This surface stays Emerging and is on master, unreleased after 0.9.2.
+Smaller steps still update the custom property and `getState()`. They accumulate, so a slow drift still publishes once it is stale by `threshold`. This surface stays Emerging and shipped in 0.9.5.
 
 ## Accessibility
 

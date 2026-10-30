@@ -2,11 +2,11 @@
 
 An avatar is an initials or photo mark rooted at `[avatar]`. A broken or empty photo steps aside so the initials show.
 
-Emerging. The twenty-seventh runtime. On master. Not in the published `@citrusworx/juiceui@0.9.2` release.
+Emerging. The twenty-seventh runtime. Shipped in 0.9.3.
 
-`createAvatar`, `initAvatar`, `startAvatarRuntime`, and `stopAvatarRuntime` are not in that npm cut.
+`createAvatar`, `initAvatar`, `startAvatarRuntime`, and `stopAvatarRuntime` shipped in 0.9.3.
 
-Importing `@citrusworx/juiceui` enhances valid markup on master. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior). The published 0.9.2 package does not include this runtime.
+Importing `@citrusworx/juiceui` enhances valid markup. [Automatic behavior](./juice-runtime-behavior.md#automatic-behavior).
 
 ## Markup
 
@@ -207,7 +207,7 @@ A real change of `{ loaded, fallback, hasImage }` dispatches a bubbling, compose
 
 `getState()` reads that shape, or `null` when the host is missing. The first observation does not dispatch, including an image that is already broken when the runtime starts.
 
-A later `sync()` that leaves the state unchanged does not dispatch. A second `error` on a photo that is already in fallback does not dispatch. This surface stays Emerging and is on master, unreleased after 0.9.2.
+A later `sync()` that leaves the state unchanged does not dispatch. A second `error` on a photo that is already in fallback does not dispatch. This surface stays Emerging and shipped in 0.9.3.
 
 `loaded` is true when at least one image in that avatar has loaded. `hasImage` is true when the avatar has at least one `<img>`, including one that is still loading or already in fallback.
 
@@ -270,7 +270,7 @@ The observer watches child-list changes and `avatar`, `src`, `srcset`, `fallback
 
 Avatar is read-only: there is no write API, and `state.set` does not call a controller. The next `juice:change` copies the host back over the signal.
 
-On a Juice build that does not export `startAvatarRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2; the export is on master only), binding avatar throws `Sig juice bind: "avatar" needs a newer @citrusworx/juiceui that exports startAvatarRuntime.` The module still loads, and the other runtimes still bind. Juice does not import Sig, and this runtime does not call `bind`.
+On a Juice build that does not export `startAvatarRuntime` (published `@citrusworx/juiceui` 0.9.1 and 0.9.2 do not export it; it shipped in 0.9.3), binding avatar throws `Sig juice bind: "avatar" needs a newer @citrusworx/juiceui that exports startAvatarRuntime.` The module still loads, and the other runtimes still bind. Juice does not import Sig, and this runtime does not call `bind`.
 
 `juice:change` and `getState()` still work without Sig. Listen on the host, or call `getState()` on the controller.
 
