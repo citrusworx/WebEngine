@@ -44,11 +44,15 @@
 //
 //   env(keyboard-inset-height, 0px)
 //
-// The runtime (slice B, not this file) will write
-// --juice-keyboard-inset on <html> and set [keyboard-open]. An inline
-// value beats both the 0px role and the @supports override. This file
-// does not select [keyboard-open]. The inset is the layout input, so a
-// missing attribute and a closed keyboard look the same.
+// The keyboard-avoider runtime
+// (src/js/src/keyboard-avoider/keyboard-avoider-runtime.ts) writes
+// --juice-keyboard-inset inline on <html> and sets [keyboard-open]
+// while open. This file works standalone: the 0px role and the
+// env(keyboard-inset-height) fallback still apply when that inline
+// value is absent. An inline value beats both the 0px role and the
+// @supports override. This file does not select [keyboard-open]. The
+// inset is the layout input, so a missing attribute and a closed
+// keyboard look the same.
 //
 // Juice names. One attribute. Words compose with ~=, same as
 // [touchable-row~="dense"]. Boolean [keyboard-avoider] is the padding
@@ -100,7 +104,9 @@
 // bar that already has top: 0 keeps that top. nav[fixed] is
 // position: fixed at (0, 1, 1) and beats this mode, so a fixed nav
 // stays fixed. bottom still applies, because nav[fixed] does not set
-// it. [drawer] is position: absolute and bottom: 0 at (0, 1, 0). This
+// it. Do not use footer mode on nav[fixed]: top: 0 stays and bottom
+// becomes the inset, so the bar stretches. A separate fix is planned.
+// [drawer] is position: absolute and bottom: 0 at (0, 1, 0). This
 // file loads later, so footer on the drawer itself replaces both.
 // Put padding mode on the scrolling body inside the drawer instead.
 //
@@ -170,7 +176,10 @@
 //
 // Native collision: there is no HTML global `keyboard-avoider`
 // attribute and no <keyboard-avoider> element. [keyboard-avoider] is
-// an attribute selector. CSS-only. No runtime.
+// an attribute selector. The stylesheet stands alone with the 0px
+// role and the env(keyboard-inset-height) fallback. The runtime in
+// src/js/src/keyboard-avoider/keyboard-avoider-runtime.ts writes the
+// inline inset and [keyboard-open] while open.
 
 @property --juice-keyboard-inset {
     syntax: "<length>";

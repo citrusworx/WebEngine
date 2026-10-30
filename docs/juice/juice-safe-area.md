@@ -4,7 +4,7 @@ This document explains the current safe-area chrome in `libraries/juice/src/comp
 
 Safe area is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createSafeArea`, no auto-enhance, and no `SafeArea()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty Emerging auto-enhance runtimes. That count stays thirty. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 Safe area pads a host clear of the notch, the home indicator, and rounded corners. It does not paint. There is nothing for a theme to bind.
 
@@ -305,6 +305,10 @@ An unknown value is all four edges. Prefer a named value when only one edge shou
 <div safe-area="left">This pads all four. There is no left-only value.</div>
 <div safe-area="x">Left and right only.</div>
 ```
+
+## Keyboard avoider
+
+`keyboard-avoider.scss` loads after this file. Padding mode on a bare `[safe-area]`, `[safe-area="bottom"]`, or `[safe-area="y"]` host replaces bottom padding with `max(var(--juice-safe-area-pad), env(safe-area-inset-bottom, 0px), var(--juice-keyboard-inset))`. Translate-only and footer-only hosts keep this file's padding. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md).
 
 ## Accessibility
 

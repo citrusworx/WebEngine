@@ -219,15 +219,16 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 - tables / sortable headers on a native table (on master; not in the published npm 0.9.2 release)
 - pressables / transient press on any host (on master; not in the published npm 0.9.2 release)
 - touchable rows / 44px rows with optional selection (on master; not in the published npm 0.9.2 release)
+- keyboard avoiders / padding, translate, or a sticky footer clear of the software keyboard (on master; not in the published npm 0.9.2 release)
 - motion core / tokens, overlay enter and exit, and `[motion="accordion"]` height (shipped in 0.9.2)
 
-`[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty runtime count. See [Skeleton](./juice-skeleton.md).
+`[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty-one runtime count. See [Skeleton](./juice-skeleton.md).
 
-`[list]` is not in that list. It is CSS-only stacked rows: core CSS paints `[list]` on `ul`, `ol`, or `div`, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty runtime count. See [List](./juice-list.md).
+`[list]` is not in that list. It is CSS-only stacked rows: core CSS paints `[list]` on `ul`, `ol`, or `div`, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty-one runtime count. See [List](./juice-list.md).
 
-`[badge]` is not in that list. It is CSS-only label chrome: core CSS paints the pill, square, and ribbon, and the JS entry does not boot it. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It does not change the thirty runtime count. See [Badge](./juice-badge.md).
+`[badge]` is not in that list. It is CSS-only label chrome: core CSS paints the pill, square, and ribbon, and the JS entry does not boot it. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles are on master and are not in that cut. It does not change the thirty-one runtime count. See [Badge](./juice-badge.md).
 
-`[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
+`[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It is on master and is not in the published npm 0.9.2 release. It does not change the thirty-one runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
 
 Those features should work without app init, and they work without Sig.
 
@@ -275,6 +276,7 @@ If you are not in a bundler app, use the CDN or copy-dist path under [Plain HTML
 - [Table](./juice-table.md) — sortable grid (on master; not in the published npm 0.9.2 release; the twenty-eighth Emerging runtime)
 - [Pressable](./juice-pressable.md) — transient press (on master; not in the published npm 0.9.2 release; the twenty-ninth Emerging runtime)
 - [Touchable Row](./juice-touchable-row.md) — 44px touch row (on master; not in the published npm 0.9.2 release; the thirtieth Emerging runtime)
+- [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (on master; not in the published npm 0.9.2 release; the thirty-first Emerging runtime)
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (on master; not in the published npm 0.9.2 release; not a runtime)
 - [List](./juice-list.md) — CSS-only stacked rows (on master; not in the published npm 0.9.2 release; not a runtime)
 - [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core roles on master, not in that cut; not a runtime)

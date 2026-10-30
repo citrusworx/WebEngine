@@ -4,7 +4,7 @@ This document explains the current badge chrome in `libraries/juice/src/componen
 
 Badge is CSS-only. Importing the core stylesheet is enough for the shape and the core color. There is no JS entry, no `createBadge`, no auto-enhance, and no `Badge()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is not one of the thirty Emerging auto-enhance runtimes. That count stays thirty. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 Two cuts are in play, and they are not the same CSS:
 

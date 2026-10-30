@@ -1142,7 +1142,7 @@ The highlight is a translucent white sheen, not `--juice-surface-strong-bg`. On 
 
 Do not set `color: transparent` on the host. Authors own `aria-busy`.
 
-See [Skeleton](./juice-skeleton.md). Skeleton is on master, not in the published npm 0.9.2 release, and is not one of the thirty Emerging auto-enhance runtimes.
+See [Skeleton](./juice-skeleton.md). Skeleton is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### List (optional override)
 
@@ -1173,7 +1173,7 @@ Disabled interactive rows are `opacity: 0.5`. The divider is decorative (under 3
 
 Authors own list semantics and whether `aria-disabled` swallows a click. See [List](./juice-list.md).
 
-List is on master, not in the published npm 0.9.2 release, and is not one of the thirty Emerging auto-enhance runtimes.
+List is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### Badge (optional override)
 
@@ -1206,11 +1206,11 @@ Those rules are `(0, 1, 0)` and lose to core. It does not emit `--juice-badge-*`
 
 See [Badge](./juice-badge.md). The base layout shipped in npm 0.9.2.
 
-The roles are on master, not in that cut. Badge is not one of the thirty Emerging auto-enhance runtimes.
+The roles are on master, not in that cut. Badge is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### Safe area (not a theme bind)
 
-`--juice-safe-area-pad` is `1rem` on `:root` only. It is a layout length, not a color role, and it is not restated on `[theme]`. Shipped library themes and generated `--jx-*` themes do not bind it. There is no runtime. See [Safe Area](./juice-safe-area.md). Safe area is on master, not in the published npm 0.9.2 release, and is not one of the thirty Emerging auto-enhance runtimes.
+`--juice-safe-area-pad` is `1rem` on `:root` only. It is a layout length, not a color role, and it is not restated on `[theme]`. Shipped library themes and generated `--jx-*` themes do not bind it. There is no runtime. See [Safe Area](./juice-safe-area.md). Safe area is on master, not in the published npm 0.9.2 release, and is not one of the thirty-one Emerging auto-enhance runtimes.
 
 ### Avatar (optional override)
 
@@ -1310,7 +1310,7 @@ Muted Citrusmint copy (`p`, `span`, `li`, `label`) is 1.95:1 on the page and 2.1
 
 See [Pressable](./juice-pressable.md). Pressable is the twenty-ninth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
 
 ### Touchable row (optional override)
 
@@ -1348,11 +1348,13 @@ A 92% mix would be 4.03:1 on the Citrusmint page. The runtime auto-enhances `[to
 
 See [Touchable Row](./juice-touchable-row.md). Touchable row is the thirtieth Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
-`@citrusworx/sigjs/juice` `bind()` does not name pressable or touchable-row yet.
+`@citrusworx/sigjs/juice` `bind()` does not name pressable, touchable-row, or keyboard-avoider yet.
+
+`[keyboard-avoider]` keeps a field or a bottom bar clear of the software keyboard. `--juice-keyboard-inset`, `--juice-keyboard-duration`, and `--juice-keyboard-easing` stay on `:root` only. They are not restated on `[theme]`. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md). Keyboard avoider is the thirty-first Emerging auto-enhance runtime and is on master, not in the published npm 0.9.2 release.
 
 Generated app themes currently bind required accordion/tabs/modal/drawer/toast/banner/popover/tooltip/combobox/menu/switch/slider/checkbox/radio/breadcrumb/progress/pagination/disclosure/spinner/select/input/textarea/field/wizard/surface/border-strength/shadow-tone/overlay roles, and they pass motion through as above. They do not emit the optional accordion/tabs hooks.
 
-They do not emit `--juice-skeleton-*`, `--juice-list-*`, `--juice-badge-*`, `--juice-safe-area-*`, `--juice-avatar-*`, `--juice-table-*`, `--juice-pressable-*`, or `--juice-touchable-row-*`.
+They do not emit `--juice-skeleton-*`, `--juice-list-*`, `--juice-badge-*`, `--juice-safe-area-*`, `--juice-avatar-*`, `--juice-table-*`, `--juice-pressable-*`, `--juice-touchable-row-*`, or `--juice-keyboard-*`.
 
 ## 6. Identity-prefix alias convention
 

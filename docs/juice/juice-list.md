@@ -4,7 +4,7 @@ This document explains the current list chrome in `libraries/juice/src/component
 
 List is CSS-only. Importing the core stylesheet is enough. There is no JS entry, no `createList`, no auto-enhance, and no `List()` Sig factory. Markup is the contract.
 
-This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty Emerging auto-enhance runtimes. That count stays thirty. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
+This surface is Emerging, not Stable. It is on master and is not in the published `@citrusworx/juiceui@0.9.2` npm cut. It is not one of the thirty-one Emerging auto-enhance runtimes. That count stays thirty-one. There is no `juice:change`, no `getState()`, and `@citrusworx/sigjs/juice` `bind()` does not accept it. There is no runtime to infer and no `JuiceRuntimeName` for it.
 
 List is a stack of rows. It is distinct from an anchored menu (`[menu]` / `[menuitem]`), a combobox listbox (`[combobox-list]`), a tab strip (`[tabs-list]`), a page set (`[pagination]`), and a trail (`[breadcrumb]`). Those have their own attributes and, except for this list, their own runtimes.
 

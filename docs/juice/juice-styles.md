@@ -67,6 +67,10 @@ Juice usage today usually falls into these groups:
 - `pressable` — transient press ring on any host, with `[pressable="scale"]`, `[pressable-longpress]`, and `[pressable-slop]`. See [Pressable](./juice-pressable.md). On master, not in the published npm 0.9.2 release. The twenty-ninth Emerging runtime. Mobile-Critical.
 - `touchable-row` — 44px row on `a`, `button`, `li`, or `div`, with `dense`, `chevron`, `undivided`, and the leading / content / title / subtitle / trailing slots. See [Touchable Row](./juice-touchable-row.md). On master, not in the published npm 0.9.2 release. The thirtieth Emerging runtime. Mobile-Critical.
 
+### Keyboard inset
+
+- `keyboard-avoider` — padding, translate, or sticky footer clear of the software keyboard. `[keyboard-avoider~="noscroll"]` is a runtime word. See [Keyboard avoider](./juice-keyboard-avoider-runtime.md) and the [layout contract](./juice-keyboard-avoider.md). On master, not in the published npm 0.9.2 release. The thirty-first Emerging runtime. Mobile-Critical. Layout roles stay on `:root`.
+
 ### Theme scoping
 
 - `theme="..."`
