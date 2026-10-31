@@ -345,6 +345,8 @@ Closed vs open uses native `hidden`. Edge is `[drawer]` / `[drawer="right"]` / `
 
 The dialog runtime auto-enhances valid overlay markup — see [Drawer Runtime](./juice-drawer-runtime.md) and the [Theme Contract](./juice-theme-contract.md).
 
+Sheet chrome (`[sheet-overlay]` / `[sheet]` / `[sheet-close]`) is a bottom dialog, not an edge drawer and not `overlay="frost|tint"`. Color falls through optional `--juice-sheet-*` roles to `--juice-drawer-*`. There is no required sheet role. Layout lengths stay on `:root`. Set `--juice-sheet-panel-shadow` with a negative Y offset to aim the shadow up. The runtime auto-enhances valid overlay markup — see [Sheet](./juice-sheet-runtime.md). Sheet is on master and is not in npm 0.9.5.
+
 Toast **theme chrome** (`--juice-toast-*` on `[toast-region]` / `[toast]` / `[toast-close]`) is non-modal feedback, not a dialog overlay and not `overlay="frost|tint"`. Optional `surfaceTone` on `[toast]` is allowed; do not force it.
 
 The region stays in the DOM; individual toasts hide with native `hidden`. Region position is `top-right` by default (`top-left` / `bottom-right` / `bottom-left`).

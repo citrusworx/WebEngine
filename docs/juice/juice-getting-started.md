@@ -220,15 +220,16 @@ Importing `@citrusworx/juiceui` auto-starts browser runtimes for valid Juice mar
 - pressables / transient press on any host (shipped in 0.9.4)
 - touchable rows / 44px rows with optional selection (shipped in 0.9.4)
 - keyboard avoiders / padding, translate, or a sticky footer clear of the software keyboard (shipped in 0.9.5)
+- sheets / bottom dialogs with peek, half, and full detents (on master, not in npm 0.9.5)
 - motion core / tokens, overlay enter and exit, and `[motion="accordion"]` height (shipped in 0.9.2)
 
-`[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-one runtime count. See [Skeleton](./juice-skeleton.md).
+`[skeleton]` is not in that list. It is CSS-only loading chrome: core CSS paints the rect, text, and circle placeholders, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-two runtime count. See [Skeleton](./juice-skeleton.md).
 
-`[list]` is not in that list. It is CSS-only stacked rows: core CSS paints `[list]` on `ul`, `ol`, or `div`, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-one runtime count. See [List](./juice-list.md).
+`[list]` is not in that list. It is CSS-only stacked rows: core CSS paints `[list]` on `ul`, `ol`, or `div`, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-two runtime count. See [List](./juice-list.md).
 
-`[badge]` is not in that list. It is CSS-only label chrome: core CSS paints the pill, square, and ribbon, and the JS entry does not boot it. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.9.3. It does not change the thirty-one runtime count. See [Badge](./juice-badge.md).
+`[badge]` is not in that list. It is CSS-only label chrome: core CSS paints the pill, square, and ribbon, and the JS entry does not boot it. The base layout shipped in npm 0.9.2. Core `--juice-badge-*` roles shipped in 0.9.3. It does not change the thirty-two runtime count. See [Badge](./juice-badge.md).
 
-`[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-one runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
+`[safe-area]` is not in that list. It is CSS-only inset chrome: core CSS pads the host, and the JS entry does not boot it. It shipped in 0.9.3. It does not change the thirty-two runtime count. The viewport meta tag needs `viewport-fit=cover`. See [Safe Area](./juice-safe-area.md).
 
 Those features should work without app init, and they work without Sig.
 
@@ -277,6 +278,7 @@ If you are not in a bundler app, use the CDN or copy-dist path under [Plain HTML
 - [Pressable](./juice-pressable.md) — transient press (shipped in 0.9.4; the twenty-ninth Emerging runtime)
 - [Touchable Row](./juice-touchable-row.md) — 44px touch row (shipped in 0.9.4; the thirtieth Emerging runtime)
 - [Keyboard avoider](./juice-keyboard-avoider-runtime.md) — software-keyboard inset (shipped in 0.9.5; the thirty-first Emerging runtime)
+- [Sheet](./juice-sheet-runtime.md) — bottom sheet (on master, not in npm 0.9.5; the thirty-second Emerging runtime). Chrome: [juice-sheet.md](./juice-sheet.md)
 - [Skeleton](./juice-skeleton.md) — CSS-only loading placeholder (shipped in 0.9.3; not a runtime)
 - [List](./juice-list.md) — CSS-only stacked rows (shipped in 0.9.3; not a runtime)
 - [Badge](./juice-badge.md) — CSS-only pill label (layout shipped in npm 0.9.2; core roles shipped in 0.9.3; not a runtime)
